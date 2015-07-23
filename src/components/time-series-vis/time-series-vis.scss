@@ -1,0 +1,15 @@
+@import '../../variables';
+
+.time-series-vis {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+
+  overflow-y: auto;
+
+  .graph {
+    border-bottom: 1px solid $black;
+  }
+}

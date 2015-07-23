@@ -1,0 +1,98 @@
+@import 'utils/reset';
+@import 'utils/sanity';
+@import 'variables';
+@import 'mixins';
+
+html,
+body {
+  height: 100%;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 13px;
+}
+
+main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+}
+
+.top-bar {
+  position: absolute;
+  height: $header-height;
+  left: 0;
+  right: 0;
+}
+
+.container {
+  position: absolute;
+  top: $header-height;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  .vis-pane {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: $action-bar-width;
+    right: 0;
+
+    .visualization {
+      position: absolute;
+      top: $vis-bar-height;
+      bottom: 0;
+      width: 100%;
+    }
+
+    $action-size: 100px;
+
+    .drop-indicator {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 9;
+
+      .white-out {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: $white;
+        opacity: .5;
+      }
+
+      .actions {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 2 * $action-size + 20px;
+        height: $action-size;
+        margin-left: -1 * ($action-size + 10px);
+        margin-top: -1 * $action-size / 2;
+
+        .action {
+          position: absolute;
+          top: 0;
+          width: $action-size;
+          height: $action-size;
+          border-radius: 10px;
+          background: $gray;
+          font-size: 20px;
+          text-align: center;
+          padding-top: 40px;
+        }
+
+        .replace-split {
+          left: 0;
+        }
+
+        .add-split {
+          right: 0;
+        }
+      }
+    }
+  }
+}

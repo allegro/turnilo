@@ -1,0 +1,37 @@
+// Sizes
+
+$header-height: 35px;
+$action-bar-width: 250px;
+$vis-bar-height: 35px;
+
+// Base Colors
+
+$white: #ffffff;
+$red: #ff0000;
+$black: #000000;
+$gray: #cccccc;
+
+// Colors -------------------
+
+$alpha-background: hsl(216, 57%, 57%);
+$alpha-text-color: $white;
+
+$beta-background: hsl(0, 0%, 90%);
+$beta-text-color: hsl(0, 0%, 53%);
+$beta-border-color: hsl(0, 0%, 73%);
+
+$detail-background: $white;
+$detail-text-color: hsl(0, 0%, 27%);
+$detail-special-text-color: hsl(220, 49%, 52%);
+$detail-border-color: hsl(0, 0%, 80%);
+$detail-hover: hsl(217, 59%, 90%);
+$detail-highlight: hsl(217, 59%, 85%);
+
+$button-primary-background: hsl(220, 45%, 45%);
+$button-primary-text-color: $white;
+$button-secondary-background: hsl(0, 0%, 87%);
+$button-secondary-text-color: hsl(0, 0%, 40%);
+
+// Transitions ----------------
+
+$duration: .2s;

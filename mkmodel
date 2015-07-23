@@ -1,0 +1,63 @@
+#!/usr/bin/env coffee
+
+fs = require('fs')
+mkdirp = require('mkdirp')
+
+if process.argv.length isnt 3
+  console.log('Usage: mkmodel <model-name>')
+  process.exit()
+
+name = process.argv[2]
+
+if not /^([a-z-])+$/.test(name)
+  console.log('must be a hyphen case name')
+  process.exit()
+
+path = './src/models/' + name + '/'
+mkdirp.sync(path)
+console.log('Making path:', path)
+
+camelName = name.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
+
+writeFile = (path, data) ->
+  try
+    fs.writeFileSync(path, data, {
+      flag: 'wx' # x = fail if file exists
+      encoding: 'utf8'
+    })
+  catch
+    console.log("Skipping #{path}")
+
+# Make the TypeScript file
+writeFile(path + name + '.ts', """
+'use strict';
+
+import { $, Expression } from 'plywood';
+
+export class #{camelName} {
+
+  constructor() {
+
+  }
+}
+
+
+""")
+
+
+# Make the TypeScript test file
+writeFile(path + name + '.mocha.ts', """
+'use strict';
+
+import { expect } from 'chai';
+
+import { $, Expression } from 'plywood';
+import { #{camelName} } from './#{name}';
+
+describe('#{camelName}', () => {
+  it('works in empty case', () => {
+
+  });
+});
+
+""")

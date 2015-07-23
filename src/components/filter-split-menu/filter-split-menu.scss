@@ -1,0 +1,83 @@
+@import '../../variables';
+@import '../../mixins';
+
+.filter-split-menu {
+  position: absolute;
+  left: $action-bar-width - 15;
+  width: 250px;
+  background: $detail-background;
+  border: 1px solid $detail-border-color;
+
+  .title-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 100%;
+
+    .title {
+      padding: 15px 0 10px 10px;
+      color: $detail-text-color;
+      font-weight: bold;
+    }
+
+    .close {
+      position: absolute;
+      cursor: pointer;
+      top: 10px;
+      right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+  }
+
+  .cont {
+    position: absolute;
+    top: 40px;
+    bottom: 40px;
+    width: 100%;
+  }
+
+  .button-bar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    color: $detail-special-text-color;
+    padding: 0 0 10px 10px;
+
+    .button {
+      margin-right: 7px;
+    }
+
+    .ok {
+      @extend %button-primary;
+    }
+
+    .cancel {
+      @extend %button-secondary;
+    }
+  }
+
+  $shpitz-size: 13px;
+
+  .shpitz {
+    position: absolute;
+
+    &:before,
+    &:after {
+      content: '';
+      position: absolute;
+      margin-top: -1 * $shpitz-size;
+    }
+
+    &:before {
+      @include triangle(left, $shpitz-size, $shpitz-size, $detail-border-color);
+      left: -1 * $shpitz-size;
+    }
+
+    &:after {
+      @include triangle(left, $shpitz-size, $shpitz-size, $detail-background);
+      left: -1 * $shpitz-size + 1;
+    }
+  }
+}

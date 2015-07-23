@@ -1,0 +1,103 @@
+#!/usr/bin/env coffee
+
+fs = require('fs')
+mkdirp = require('mkdirp')
+
+if process.argv.length isnt 3
+  console.log('Usage: mkcomp <component-name>')
+  process.exit()
+
+name = process.argv[2]
+
+if not /^([a-z-])+$/.test(name)
+  console.log('must be a hyphen case name')
+  process.exit()
+
+path = './src/components/' + name + '/'
+mkdirp.sync(path)
+console.log('Making path:', path)
+
+camelName = name.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
+
+writeFile = (path, data) ->
+  try
+    fs.writeFileSync(path, data, {
+      flag: 'wx' # x = fail if file exists
+      encoding: 'utf8'
+    })
+  catch
+    console.log("Skipping #{path}")
+
+# Make the TypeScript file
+writeFile(path + name + '.ts', """
+'use strict';
+
+import React = require('react');
+import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
+import { Filter, Dimension, Measure } from '../../models/index';
+// import { SomeComp } from '../some-comp/some-comp';
+
+interface #{camelName}Props {
+}
+
+interface #{camelName}State {
+}
+
+export class #{camelName} extends React.Component<#{camelName}Props, #{camelName}State> {
+
+  constructor() {
+    super();
+    // this.state = {};
+
+  }
+
+  componentDidMount() {
+
+  }
+
+  componentWillReceiveProps(nextProps: #{camelName}Props) {
+
+  }
+
+  componentWillUnmount() {
+
+  }
+
+  render() {
+    return JSX(`
+      <div className="#{name}"></div>
+    `);
+  }
+}
+
+""")
+
+
+# Make the TypeScript test file
+writeFile(path + name + '.mocha.ts', """
+'use strict';
+
+import { expect } from 'chai';
+
+import { $, Expression } from 'plywood';
+import { #{camelName} } from './#{name}';
+
+describe('#{camelName}', () => {
+  it('works in empty case', () => {
+
+  });
+});
+
+""")
+
+
+# Make the SASS file
+writeFile(path + name + '.scss', """
+@import '../../variables';
+@import '../../mixins';
+
+.#{name} {
+
+}
+
+""");

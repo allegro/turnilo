@@ -1,0 +1,19 @@
+@import '../../variables';
+
+.header-bar {
+  background: $alpha-background;
+  color: $alpha-text-color;
+  z-index: 11;
+  font-size: 16px;
+
+  .dataset-title {
+    display: inline-block;
+    margin: 10px;
+  }
+
+  .logo {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+}
