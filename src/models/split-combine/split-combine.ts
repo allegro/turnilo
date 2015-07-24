@@ -3,12 +3,12 @@
 import { $, Expression, SortAction, LimitAction } from 'plywood';
 
 export class SplitCombine {
-  public splitExpression: Expression;
+  public splitOn: Expression;
   public sortAction: SortAction;
   public limitAction: LimitAction;
 
-  constructor(splitExpression: Expression, sortAction: SortAction, limitAction: LimitAction) {
-    this.splitExpression = splitExpression;
+  constructor(splitOn: Expression, sortAction: SortAction, limitAction: LimitAction) {
+    this.splitOn = splitOn;
     this.sortAction = sortAction;
     this.limitAction = limitAction;
   }

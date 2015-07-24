@@ -17,8 +17,10 @@ interface ApplicationProps {
 }
 
 interface ApplicationState {
+  dataSource?: DataSource;
   filter?: Filter;
   splits?: SplitCombine[];
+  selectedMeasures?: Measure[];
   dragOver?: boolean;
 }
 
@@ -34,7 +36,10 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
           start: new Date('2013-02-26T00:00:00Z'),
           end: new Date('2013-02-27T00:00:00Z')
         }))
-      ])
+      ]),
+      splits: [
+        new SplitCombine($('page'), null, null)
+      ]
     };
 
     var self = this;
@@ -43,12 +48,27 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         self.setState({ filter });
       },
       changeSplits: (splits: SplitCombine[]) => {
-
+        self.setState({ splits });
       },
       addSplit: (split: SplitCombine) => {
-
+        var { splits } = this.state;
+        self.setState({
+          splits: splits.concat([split])
+        });
       }
     };
+  }
+
+  componentWillMount() {
+    var { dataSources } = this.props;
+    var { dataSource, selectedMeasures } = this.state;
+    if (dataSources.length && !dataSource) {
+      dataSource = dataSources[0];
+      this.setState({
+        dataSource: dataSource,
+        selectedMeasures: dataSource.measures.slice(0, 4)
+      });
+    }
   }
 
   componentDidMount() {
@@ -90,24 +110,31 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   drop(e: DragEvent) {
     this.dragCounter = 0;
     this.setState({
-      dragOver: false
+      dragOver: false,
+      splits: [new SplitCombine($('language'), null, null)] // should use clicker
     });
-    console.log('drop into vis');
   }
 
   render() {
     var clicker = this.clicker;
     var { dataSources } = this.props;
-    var { filter, splits, dragOver } = this.state;
+    var { dataSource, filter, splits, dragOver, selectedMeasures } = this.state;
 
-    var dataSource = dataSources[0];
-    var { dispatcher, dimensions, measures } = dataSource;
+    var dispatcher: Dispatcher = null;
+    var dimensions: Dimension[] = [];
+    if (dataSource) {
+      dispatcher = dataSource.dispatcher;
+      dimensions = dataSource.dimensions;
+    }
 
     // <TimeSeriesVis dispatcher={basicDispatcher} filter={filter} measures={measures}/>
 
-    var visualization = JSX(`
-      <NestedTableVis dispatcher={dispatcher} filter={filter} measures={measures}/>
-    `);
+    var visualization = React.createElement(NestedTableVis, {
+      dataSource: dataSource,
+      filter: filter,
+      splits: splits,
+      measures: selectedMeasures
+    });
 
     var dropIndicator: React.ReactElement<any> = null;
     if (dragOver) {

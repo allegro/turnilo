@@ -2,12 +2,13 @@
 
 import React = require('react');
 import { $, Expression, Dispatcher, NativeDataset, Datum } from 'plywood';
-import { Filter, Dimension, Measure } from '../../models/index';
+import { Filter, SplitCombine, Dimension, Measure, DataSource } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface NestedTableVisProps {
-  dispatcher: Dispatcher;
+  dataSource: DataSource;
   filter: Filter;
+  splits: SplitCombine[];
   measures: Measure[];
 }
 
@@ -24,32 +25,32 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     };
   }
 
-  fetchData(filter: Filter, measures: Measure[]) {
-    var { dispatcher } = this.props;
+  fetchData(filter: Filter, measures: Measure[], splits: SplitCombine[]) {
+    var { dataSource } = this.props;
 
     var query: any = $('main')
       .filter(filter.toExpression())
-      .split($('page'), 'Page');
+      .split(splits[0].splitOn, 'Split');
 
     for (let measure of measures) {
       query = query.apply(measure.name, measure.expression);
     }
     query = query.sort($(measures[0].name), 'descending').limit(100);
 
-    dispatcher(query).then((dataset) => {
+    dataSource.dispatcher(query).then((dataset) => {
       this.setState({ dataset });
     });
   }
 
   componentDidMount() {
     var props = this.props;
-    this.fetchData(props.filter, props.measures);
+    this.fetchData(props.filter, props.measures, props.splits);
   }
 
   componentWillReceiveProps(nextProps: NestedTableVisProps) {
     var props = this.props;
-    if (props.filter !== nextProps.filter || props.measures !== nextProps.measures) {
-      this.fetchData(nextProps.filter, nextProps.measures);
+    if (props.filter !== nextProps.filter || props.measures !== nextProps.measures || props.splits !== nextProps.splits) {
+      this.fetchData(nextProps.filter, nextProps.measures, nextProps.splits);
     }
   }
 
@@ -71,7 +72,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     if (dataset) {
       rows = dataset.data.map((d: Datum, i: number) => {
         var row = [
-          JSX(`<div className="segment" key="_segment">{d['Page']}</div>`)
+          JSX(`<div className="segment" key="_segment">{d['Split']}</div>`)
         ].concat(measures.map(measure => {
             return JSX(`<div className="measure" key={measure.name}>{d[measure.name]}</div>`);
           }));
