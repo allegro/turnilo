@@ -13,26 +13,23 @@
     "url": "http://vadim.ogievetsky.com"
   },
   "private": true,
-  "scripts": {
-    "postinstall": "./node_modules/.bin/gulp all"
-  },
   "dependencies": {
     "chronology": "0.8.x",
     "express": "4.12.4",
     "facetjs-druid-requester": "1.1.x",
     "facetjs-mysql-requester": "1.1.x",
     "higher-object": "^0.2.6",
-    "plywood": "0.0.6",
+    "plywood": "0.0.7",
     "q": "^1.1.2",
     "react": "^0.13.3",
     "react-svg-icons": "^0.1.2",
-    "typescript": "^1.5.0-beta"
+    "typescript": "^1.5.3"
   },
   "devDependencies": {
     "autoprefixer-core": "^5.2.1",
     "browser-sync": "^2.7.12",
-    "browserify": "~10.2.4",
-    "chai": "~3.0.0",
+    "browserify": "~11.0.0",
+    "chai": "~3.2.0",
     "del": "^1.2.0",
     "gulp": "^3.9.0",
     "gulp-cache": "^0.2.10",
@@ -50,9 +47,9 @@
     "jsdom": "^5.4.3",
     "merge-stream": "^0.1.8",
     "mkdirp": "^0.5.1",
-    "mocha": "~2.1.x",
+    "mocha": "~2.2.x",
     "react-tools": "^0.13.3",
-    "underscore": "~1.7.0",
+    "underscore": "~1.8.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "walltime-js": "0.1.2"

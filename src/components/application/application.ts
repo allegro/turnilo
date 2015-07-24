@@ -2,7 +2,7 @@
 
 import React = require('react');
 import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher } from 'plywood';
-import { Filter, Dimension, Measure, SplitCombine, Clicker } from "../../models/index";
+import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
 import { TimeSeriesVis } from '../time-series-vis/time-series-vis';
@@ -12,9 +12,7 @@ import { VisBar } from '../vis-bar/vis-bar';
 
 
 interface ApplicationProps {
-  dispatcher: Dispatcher;
-  dimensions: Dimension[];
-  measures: Measure[];
+  dataSources: DataSource[];
 }
 
 interface ApplicationState {
@@ -98,8 +96,11 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   render() {
     var clicker = this.clicker;
-    var { dispatcher, dimensions, measures } = this.props;
+    var { dataSources } = this.props;
     var { filter, splits, dragOver } = this.state;
+
+    var dataSource = dataSources[0];
+    var { dispatcher, dimensions, measures } = dataSource;
 
     // <TimeSeriesVis dispatcher={basicDispatcher} filter={filter} measures={measures}/>
 
@@ -122,7 +123,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
     return JSX(`
       <main className='explorer'>
-        <HeaderBar/>
+        <HeaderBar dataSource={dataSource}/>
         <div className='container'>
           <FilterSplitPanel clicker={clicker} dispatcher={dispatcher} filter={filter} splits={splits} dimensions={dimensions}/>
           <div
