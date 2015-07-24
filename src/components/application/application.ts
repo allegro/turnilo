@@ -9,6 +9,7 @@ import { TimeSeriesVis } from '../time-series-vis/time-series-vis';
 import { NestedTableVis } from '../nested-table-vis/nested-table-vis';
 import { FilterSplitPanel } from '../filter-split-panel/filter-split-panel';
 import { VisBar } from '../vis-bar/vis-bar';
+import { DropIndicator } from '../drop-indicator/drop-indicator';
 
 
 interface ApplicationProps {
@@ -108,17 +109,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       <NestedTableVis dispatcher={dispatcher} filter={filter} measures={measures}/>
     `);
 
-    var dropIndicator: React.DOMElement<any> = null;
+    var dropIndicator: React.ReactElement<any> = null;
     if (dragOver) {
-      dropIndicator = JSX(`
-        <div className="drop-indicator">
-          <div className="white-out"></div>
-          <div className="actions">
-            <div className="replace-split action">Full view</div>
-            <div className="add-split action">Add split</div>
-          </div>
-        </div>
-      `);
+      dropIndicator = JSX(`<DropIndicator/>`);
     }
 
     return JSX(`

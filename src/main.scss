@@ -47,52 +47,5 @@ main {
       bottom: 0;
       width: 100%;
     }
-
-    $action-size: 100px;
-
-    .drop-indicator {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      z-index: 9;
-
-      .white-out {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: $white;
-        opacity: .5;
-      }
-
-      .actions {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 2 * $action-size + 20px;
-        height: $action-size;
-        margin-left: -1 * ($action-size + 10px);
-        margin-top: -1 * $action-size / 2;
-
-        .action {
-          position: absolute;
-          top: 0;
-          width: $action-size;
-          height: $action-size;
-          border-radius: 10px;
-          background: $gray;
-          font-size: 20px;
-          text-align: center;
-          padding-top: 40px;
-        }
-
-        .replace-split {
-          left: 0;
-        }
-
-        .add-split {
-          right: 0;
-        }
-      }
-    }
   }
 }

@@ -39,4 +39,5 @@ After completing the "Run the project" steps above you should get yourself these
 ```
 npm install -g gulp
 npm install -g coffee-script
+npm install -g browser-sync
 ```
