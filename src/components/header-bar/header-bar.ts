@@ -1,4 +1,4 @@
-import React = require("react");
+import React = require('react');
 import Icon = require('react-svg-icons');
 import { $, Expression, Datum, Dataset, NativeDataset } from 'plywood';
 
@@ -15,11 +15,13 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
   render() {
     var { dataSource } = this.props;
 
-    // <Icon name='cube' width={24} height={24} color='black'/>
     return JSX(`
       <header className="header-bar">
-        <div className="dataset-title">{dataSource.title}</div>
-        <div className="logo">imply</div>
+        <div className="burger-bar">
+          <Icon className="arrow-logo" name="arrow-logo" width={18} height={18} color="white"/>
+          <div className="dataset-title">{dataSource.title}</div>
+        </div>
+        <Icon className="text-logo" name="text-logo" height={20} color="white"/>
       </header>
     `);
   }

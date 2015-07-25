@@ -1,7 +1,6 @@
 'use strict';
 
 import React = require("react");
-import Icon = require('react-svg-icons');
 import { Timezone, WallTime } from "chronology";
 import { $, Expression, Datum, Dataset, NativeDataset, TimeRange } from 'plywood';
 

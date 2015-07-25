@@ -1,14 +1,15 @@
 'use strict';
 
 import React = require('react');
-import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression } from 'plywood';
-import { Filter, Dimension, Measure, Clicker } from "../../models/index";
+import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
+import { Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
 import { FilterSplitMenu } from "../filter-split-menu/filter-split-menu";
 
 interface FilterSplitPanelProps {
   clicker: Clicker;
   dispatcher: Dispatcher;
   filter: Filter;
+  splits: SplitCombine[];
   dimensions: Dimension[];
 }
 
@@ -59,9 +60,15 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     });
   }
 
-  removeFilter(expression: Expression, e: MouseEvent) {
+  removeFilter(expression: ChainExpression, e: MouseEvent) {
     var { filter, clicker } = this.props;
     clicker.setFilter(filter.remove(expression));
+    e.stopPropagation();
+  }
+
+  removeSplit(split: SplitCombine, e: MouseEvent) {
+    var { filter, clicker } = this.props;
+    clicker.removeSplit(split);
     e.stopPropagation();
   }
 
@@ -81,6 +88,20 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       selectedDimension: null,
       anchor: null
     });
+  }
+
+  filterDragStart(dimension: Dimension, operand: ChainExpression, e: DragEvent) {
+    e.dataTransfer.setData("text/dimension", dimension.name);
+    // ToDo: add e.dataTransfer.setData("text/filter", ...);
+  }
+
+  splitDragStart(dimension: Dimension, operand: ChainExpression, e: DragEvent) {
+    e.dataTransfer.setData("text/dimension", dimension.name);
+    // ToDo: add e.dataTransfer.setData("text/split", ...);
+  }
+
+  dimensionDragStart(dimension: Dimension, e: DragEvent) {
+    e.dataTransfer.setData("text/dimension", dimension.name);
   }
 
   dragOver(section: string, e: DragEvent) {
@@ -145,7 +166,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   }
 
   render() {
-    var { dispatcher, filter, dimensions, clicker } = this.props;
+    var { dispatcher, filter, splits, dimensions, clicker } = this.props;
     var { selectedDimension, anchor, rect, dragSection } = this.state;
 
     var menu: React.ReactElement<any> = null;
@@ -163,25 +184,38 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
     var filterItems = filter.operands.map(operand => {
       var operandExpression = operand.expression;
-
-      var dimension: Dimension = null;
-      for (let d of dimensions) {
-        if (d.expression.equals(operandExpression)) {
-          dimension = d;
-          break;
-        }
-      }
+      var dimension = find(dimensions, (d) => d.expression.equals(operandExpression));
       if (!dimension) throw new Error('dimension not found');
 
       return JSX(`
         <div
           className={'item filter' + (dimension === selectedDimension ? ' selected' : '')}
           key={dimension.name}
-          onClick={this.selectDimension.bind(this, dimension)}
           draggable="true"
+          onClick={this.selectDimension.bind(this, dimension)}
+          onDragStart={this.filterDragStart.bind(this, dimension, operand)}
         >
           <div className="reading">{dimension.title}: {this.formatValue(dimension, operand)}</div>
           <div className="remove" onClick={this.removeFilter.bind(this, operandExpression)}>x</div>
+        </div>
+      `);
+    }, this);
+
+    var splitItems = splits.map(split => {
+      var splitExpression = split.splitOn;
+      var dimension = find(dimensions, (d) => d.expression.equals(splitExpression));
+      if (!dimension) throw new Error('dimension not found');
+
+      return JSX(`
+        <div
+          className={'item split' + (dimension === selectedDimension ? ' selected' : '')}
+          key={dimension.name}
+          draggable="true"
+          onClick={this.selectDimension.bind(this, dimension)}
+          onDragStart={this.splitDragStart.bind(this, dimension, split)}
+        >
+          <div className="reading">{dimension.title}</div>
+          <div className="remove" onClick={this.removeSplit.bind(this, split)}>x</div>
         </div>
       `);
     }, this);
@@ -191,11 +225,12 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
         <div
           className={'item dimension' + (dimension === selectedDimension ? ' selected' : '')}
           key={dimension.name}
-          onClick={this.selectDimension.bind(this, dimension)}
           draggable="true"
+          onClick={this.selectDimension.bind(this, dimension)}
+          onDragStart={this.dimensionDragStart.bind(this, dimension)}
         >{dimension.title}</div>
       `);
-    });
+    }, this);
 
     return JSX(`
       <div className="filter-split-panel">
@@ -217,9 +252,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           onDrop={this.drop.bind(this, 'splits')}
         >
           <div className="title">Split</div>
-          <div className="items">
-            <div className="item split" draggable="true">Language</div>
-          </div>
+          <div className="items">{splitItems}</div>
         </div>
         <div
           className={'dimensions section' + (dragSection === 'dimensions' ? ' drag-over' : '')}

@@ -5,4 +5,5 @@ export interface Clicker {
   setFilter(filter: Filter): void;
   changeSplits(splits: SplitCombine[]): void;
   addSplit(split: SplitCombine): void;
+  removeSplit(split: SplitCombine): void;
 }

@@ -1,19 +1,31 @@
 @import '../../variables';
 
 .header-bar {
+  position: absolute;
+  width: 100%;
+  height: $header-height;
   background: $alpha-background;
   color: $alpha-text-color;
   z-index: 11;
   font-size: 16px;
 
-  .dataset-title {
+  .burger-bar {
     display: inline-block;
-    margin: 10px;
+    margin: 10px 10px 0 10px;
+
+    .arrow-logo {
+      margin-top: -2px;
+    }
+
+    .dataset-title {
+      display: inline-block;
+      margin-left: 4px;
+    }
   }
 
-  .logo {
+  .text-logo {
     position: absolute;
-    top: 10px;
+    top: 7px;
     right: 10px;
   }
 }

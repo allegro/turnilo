@@ -55,6 +55,12 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         self.setState({
           splits: splits.concat([split])
         });
+      },
+      removeSplit: (split: SplitCombine) => {
+        var { splits } = this.state;
+        self.setState({
+          splits: splits.filter(s => s !== split)
+        });
       }
     };
   }
@@ -109,9 +115,12 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   drop(e: DragEvent) {
     this.dragCounter = 0;
+    var dataTransfer = e.dataTransfer;
+    //if (!dataTransfer.types.contains("text/dimension")) return;
+    var dimensionName = dataTransfer.getData("text/dimension");
     this.setState({
       dragOver: false,
-      splits: [new SplitCombine($('language'), null, null)] // should use clicker
+      splits: [new SplitCombine($(dimensionName), null, null)] // should use clicker
     });
   }
 
@@ -142,7 +151,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     }
 
     return JSX(`
-      <main className='explorer'>
+      <main className='application'>
         <HeaderBar dataSource={dataSource}/>
         <div className='container'>
           <FilterSplitPanel clicker={clicker} dispatcher={dispatcher} filter={filter} splits={splits} dimensions={dimensions}/>
