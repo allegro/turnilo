@@ -11,7 +11,7 @@ interface MenuTableProps {
   dispatcher: Dispatcher;
   filter: Filter;
   dimension: Dimension;
-  selectFilter: (newFilter: Filter, done?: boolean) => void;
+  selectFilter: (newFilter: Filter, source: string) => void;
 }
 
 interface MenuTableState {
@@ -68,14 +68,14 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     }
     this.setState({ selectedValues });
     if (selectFilter) {
-      selectFilter(filter.setValues(dimension.expression, selectedValues));
+      selectFilter(filter.setValues(dimension.expression, selectedValues), 'checkbox');
     }
   }
 
   onValueClick(value: any) {
     var { filter, dimension, selectFilter } = this.props;
     if (!selectFilter) return;
-    selectFilter(filter.add(dimension.expression, value), true);
+    selectFilter(filter.add(dimension.expression, value), 'value');
   }
 
   render() {

@@ -12,11 +12,20 @@ interface FilterSplitMenuProps {
   dimension: Dimension;
   anchor: number;
   height: number;
+  triger: Element;
   onClose: () => void;
 }
 
 interface FilterSplitMenuState {
   filter?: Filter;
+}
+
+function isInside(child: Element, parent: Element): boolean {
+  while (child) {
+    if (child === parent) return true;
+    child = child.parentElement;
+  }
+  return false;
 }
 
 export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, FilterSplitMenuState> {
@@ -27,18 +36,28 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
       filter: null
     };
     this.selectFilter = this.selectFilter.bind(this);
+    this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
   }
 
   componentDidMount() {
+    window.addEventListener('mousedown', this.globalMouseDownListener);
+  }
 
+  componentWillUnmount() {
+    window.removeEventListener('mousedown', this.globalMouseDownListener);
   }
 
   componentWillReceiveProps(nextProps: FilterSplitMenuProps) {
 
   }
 
-  componentWillUnmount() {
+  globalMouseDownListener(e: MouseEvent) {
+    var { onClose, triger } = this.props;
+    var myElement = React.findDOMNode(this);
+    var target = <Element>e.target;
 
+    if (isInside(target, myElement) || isInside(target, triger)) return;
+    onClose();
   }
 
   onOK() {
@@ -48,16 +67,11 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
     onClose();
   }
 
-  selectFilter(newFilter: Filter, done: boolean = false): void {
+  selectFilter(newFilter: Filter, source: string): void {
     var { clicker, onClose } = this.props;
-    if (done) {
-      clicker.setFilter(newFilter);
-      onClose();
-    } else {
-      this.setState({
-        filter: newFilter
-      });
-    }
+    this.setState({
+      filter: newFilter
+    });
   }
 
   render() {

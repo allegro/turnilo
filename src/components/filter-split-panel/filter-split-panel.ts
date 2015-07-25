@@ -17,6 +17,7 @@ interface FilterSplitPanelState {
   selectedDimension?: Dimension;
   anchor?: number;
   rect?: ClientRect;
+  triger?: Element;
   dragSection?: string;
 }
 
@@ -31,19 +32,19 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       rect: null,
       dragSection: null
     };
-    this.keyDownListener = this.keyDownListener.bind(this);
-    this.resizeListener = this.resizeListener.bind(this);
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
+    this.globalResizeListener = this.globalResizeListener.bind(this);
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', this.keyDownListener);
-    window.addEventListener('resize', this.resizeListener);
-    this.resizeListener();
+    window.addEventListener('keydown', this.globalKeyDownListener);
+    window.addEventListener('resize', this.globalResizeListener);
+    this.globalResizeListener();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.keyDownListener);
-    window.removeEventListener('resize', this.resizeListener);
+    window.removeEventListener('keydown', this.globalKeyDownListener);
+    window.removeEventListener('resize', this.globalResizeListener);
   }
 
   componentWillReceiveProps(nextProps: FilterSplitPanelProps) {
@@ -52,11 +53,17 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
   selectDimension(dimension: Dimension, e: MouseEvent) {
     var target = <Element>e.target;
+    var currentTriger = this.state.triger;
+    if (currentTriger === target) {
+      this.onMenuClose();
+      return;
+    }
     var targetRect = target.getBoundingClientRect();
     var containerRect = this.state.rect;
     this.setState({
       selectedDimension: dimension,
-      anchor: targetRect.top - containerRect.top + Math.floor(targetRect.height / 2)
+      anchor: targetRect.top - containerRect.top + Math.floor(targetRect.height / 2),
+      triger: target
     });
   }
 
@@ -72,12 +79,12 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     e.stopPropagation();
   }
 
-  keyDownListener(event: KeyboardEvent) {
+  globalKeyDownListener(event: KeyboardEvent) {
     if (event.which !== 27) return; // 27 = escape
     this.onMenuClose();
   }
 
-  resizeListener() {
+  globalResizeListener() {
     this.setState({
       rect: React.findDOMNode(this).getBoundingClientRect()
     });
@@ -86,7 +93,8 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   onMenuClose() {
     this.setState({
       selectedDimension: null,
-      anchor: null
+      anchor: null,
+      triger: null
     });
   }
 
@@ -163,7 +171,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
   render() {
     var { dispatcher, filter, splits, dimensions, clicker } = this.props;
-    var { selectedDimension, anchor, rect, dragSection } = this.state;
+    var { selectedDimension, anchor, rect, triger, dragSection } = this.state;
 
     var menu: React.ReactElement<any> = null;
     if (selectedDimension) {
@@ -174,6 +182,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
         dimension={selectedDimension}
         anchor={anchor}
         height={rect.height}
+        triger={triger}
         onClose={this.onMenuClose.bind(this)}
       />`);
     }
