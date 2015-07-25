@@ -2,13 +2,13 @@
 
 import React = require("react");
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
-import { Filter, Dimension, Measure, Clicker } from "../../models/index";
+import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
 // import { DateShow } from "../date-show/date-show";
 
 var topN = 100;
 
 interface MenuTableProps {
-  dispatcher: Dispatcher;
+  dataSource: DataSource;
   filter: Filter;
   dimension: Dimension;
   selectFilter: (newFilter: Filter, source: string) => void;
@@ -30,6 +30,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   }
 
   fetchData(filter: Filter, dimension: Dimension) {
+    var { dataSource } = this.props;
+
     var query: any = $('main')
       .filter(filter.toExpression())
       .split(dimension.expression, dimension.name)
@@ -37,7 +39,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
       .sort('$Measure', 'descending')
       .limit(topN + 1);
 
-    this.props.dispatcher(query).then((dataset) => {
+    dataSource.dispatcher(query).then((dataset) => {
       this.setState({ dataset });
     });
   }

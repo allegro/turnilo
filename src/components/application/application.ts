@@ -44,6 +44,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
     var self = this;
     this.clicker = {
+      changeDataSource: (dataSource: DataSource) => {
+        self.setState({ dataSource });
+      },
       setFilter: (filter: Filter) => {
         self.setState({ filter });
       },
@@ -129,13 +132,6 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var { dataSources } = this.props;
     var { dataSource, filter, splits, dragOver, selectedMeasures } = this.state;
 
-    var dispatcher: Dispatcher = null;
-    var dimensions: Dimension[] = [];
-    if (dataSource) {
-      dispatcher = dataSource.dispatcher;
-      dimensions = dataSource.dimensions;
-    }
-
     // <TimeSeriesVis dispatcher={basicDispatcher} filter={filter} measures={measures}/>
 
     var visualization = React.createElement(NestedTableVis, {
@@ -154,7 +150,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       <main className='application'>
         <HeaderBar dataSource={dataSource}/>
         <div className='container'>
-          <FilterSplitPanel clicker={clicker} dispatcher={dispatcher} filter={filter} splits={splits} dimensions={dimensions}/>
+          <FilterSplitPanel dataSource={dataSource} clicker={clicker} filter={filter} splits={splits}/>
           <div
             className='vis-pane'
             onDragOver={this.dragOver.bind(this)}

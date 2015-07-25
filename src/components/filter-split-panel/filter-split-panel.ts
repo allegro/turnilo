@@ -3,15 +3,14 @@
 import React = require('react');
 import d3 = require('d3');
 import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
-import { Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
+import { DataSource, Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
 import { FilterSplitMenu } from "../filter-split-menu/filter-split-menu";
 
 interface FilterSplitPanelProps {
   clicker: Clicker;
-  dispatcher: Dispatcher;
+  dataSource: DataSource;
   filter: Filter;
   splits: SplitCombine[];
-  dimensions: Dimension[];
 }
 
 interface FilterSplitPanelState {
@@ -213,14 +212,14 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   }
 
   render() {
-    var { dispatcher, filter, splits, dimensions, clicker } = this.props;
+    var { dataSource, filter, splits, clicker } = this.props;
     var { selectedDimension, anchor, rect, trigger, dragSection } = this.state;
 
     var menu: React.ReactElement<any> = null;
     if (selectedDimension) {
       menu = JSX(`<FilterSplitMenu
         clicker={clicker}
-        dispatcher={dispatcher}
+        dataSource={dataSource}
         filter={filter}
         dimension={selectedDimension}
         anchor={anchor}
@@ -232,7 +231,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
     var filterItems = filter.operands.map(operand => {
       var operandExpression = operand.expression;
-      var dimension = find(dimensions, (d) => d.expression.equals(operandExpression));
+      var dimension = find(dataSource.dimensions, (d) => d.expression.equals(operandExpression));
       if (!dimension) throw new Error('dimension not found');
 
       return JSX(`
@@ -251,7 +250,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
     var splitItems = splits.map(split => {
       var splitExpression = split.splitOn;
-      var dimension = find(dimensions, (d) => d.expression.equals(splitExpression));
+      var dimension = find(dataSource.dimensions, (d) => d.expression.equals(splitExpression));
       if (!dimension) throw new Error('dimension not found');
 
       return JSX(`
@@ -268,7 +267,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       `);
     }, this);
 
-    var dimensionItems = dimensions.map(dimension => {
+    var dimensionItems = dataSource.dimensions.map(dimension => {
       return JSX(`
         <div
           className={'item dimension' + (dimension === selectedDimension ? ' selected' : '')}

@@ -2,12 +2,12 @@
 
 import React = require('react');
 import { $, Expression, Dispatcher } from 'plywood';
-import { Filter, Dimension, Measure, Clicker } from "../../models/index";
+import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { MenuTable } from "../menu-table/menu-table";
 
 interface FilterSplitMenuProps {
   clicker: Clicker;
-  dispatcher: Dispatcher;
+  dataSource: DataSource;
   filter: Filter;
   dimension: Dimension;
   anchor: number;
@@ -75,7 +75,7 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
   }
 
   render() {
-    var { onClose, dispatcher, filter, dimension, anchor } = this.props;
+    var { onClose, dataSource, filter, dimension, anchor } = this.props;
 
     var height = 400;
     var containerHeight = this.props.height;
@@ -94,7 +94,7 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
           <div className="title">{dimension.title}</div>
           <div className="close" onClick={onClose}>x</div>
         </div>
-        <MenuTable dispatcher={dispatcher} filter={filter} dimension={dimension} selectFilter={this.selectFilter}/>
+        <MenuTable dataSource={dataSource} filter={filter} dimension={dimension} selectFilter={this.selectFilter}/>
         <div className="button-bar">
           <div className="ok button" onClick={this.onOK.bind(this)}>OK</div>
           <div className="cancel button" onClick={onClose}>Cancel</div>

@@ -6,6 +6,7 @@
       <w>keydown</w>
       <w>linter</w>
       <w>postcss</w>
+      <w>quotemark</w>
       <w>rimraf</w>
       <w>scss</w>
       <w>scsslint</w>
