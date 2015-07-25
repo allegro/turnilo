@@ -74,8 +74,13 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
   onValueClick(value: any) {
     var { filter, dimension, selectFilter } = this.props;
-    if (!selectFilter) return;
-    selectFilter(filter.add(dimension.expression, value), 'value');
+    var { selectedValues } = this.state;
+    this.setState({
+      selectedValues: [value]
+    });
+    if (selectFilter) {
+      selectFilter(filter.add(dimension.expression, value), 'value');
+    }
   }
 
   render() {
