@@ -2,13 +2,7 @@
 @import '../../mixins';
 
 .vis-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: $vis-bar-height;
   padding: 12px 0 0 10px;
-  z-index: 9;
 
   background: $beta-background;
   color: $beta-text-color;

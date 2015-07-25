@@ -94,9 +94,7 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
           <div className="title">{dimension.title}</div>
           <div className="close" onClick={onClose}>x</div>
         </div>
-        <div className="cont">
-          <MenuTable dispatcher={dispatcher} filter={filter} dimension={dimension} selectFilter={this.selectFilter}/>
-        </div>
+        <MenuTable dispatcher={dispatcher} filter={filter} dimension={dimension} selectFilter={this.selectFilter}/>
         <div className="button-bar">
           <div className="ok button" onClick={this.onOK.bind(this)}>OK</div>
           <div className="cancel button" onClick={onClose}>Cancel</div>

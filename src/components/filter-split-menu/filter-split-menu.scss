@@ -1,6 +1,9 @@
 @import '../../variables';
 @import '../../mixins';
 
+$title-bar-height: 40px;
+$button-bar-height: 40px;
+
 .filter-split-menu {
   position: absolute;
   left: $action-bar-width - 15;
@@ -12,7 +15,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 40px;
+    height: $title-bar-height;
     width: 100%;
 
     .title {
@@ -31,10 +34,10 @@
     }
   }
 
-  .cont {
+  .menu-table {
     position: absolute;
-    top: 40px;
-    bottom: 40px;
+    top: $title-bar-height;
+    bottom: $button-bar-height;
     width: 100%;
   }
 
@@ -42,6 +45,7 @@
     position: absolute;
     bottom: 0;
     width: 100%;
+    height: $button-bar-height;
     color: $detail-special-text-color;
     padding: 0 0 10px 10px;
 
