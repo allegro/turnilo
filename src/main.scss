@@ -9,3 +9,14 @@ body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 13px;
 }
+
+.drag-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -10;
+  padding: 3px 10px;
+  border: 1px solid $black;
+  background: $white;
+  border-radius: 5px;
+}

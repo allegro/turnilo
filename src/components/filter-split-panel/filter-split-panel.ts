@@ -1,6 +1,7 @@
 'use strict';
 
 import React = require('react');
+import d3 = require('d3');
 import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
 import { Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
 import { FilterSplitMenu } from "../filter-split-menu/filter-split-menu";
@@ -19,6 +20,15 @@ interface FilterSplitPanelState {
   rect?: ClientRect;
   trigger?: Element;
   dragSection?: string;
+}
+
+function dataTransferTypesContain(types: any, neededType: string): boolean {
+  if (Array.isArray(types)) {
+    return types.indexOf(neededType) !== -1;
+  } else if (types instanceof DOMStringList) {
+    return types.contains(neededType);
+  }
+  return false;
 }
 
 export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, FilterSplitPanelState> {
@@ -99,24 +109,48 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   }
 
   filterDragStart(dimension: Dimension, operand: ChainExpression, e: DragEvent) {
-    e.dataTransfer.setData("text/dimension", dimension.name);
     // ToDo: add e.dataTransfer.setData("text/filter", ...);
+    this.dimensionDragStart(dimension, e);
   }
 
   splitDragStart(dimension: Dimension, operand: ChainExpression, e: DragEvent) {
-    e.dataTransfer.setData("text/dimension", dimension.name);
     // ToDo: add e.dataTransfer.setData("text/split", ...);
+    this.dimensionDragStart(dimension, e);
   }
 
   dimensionDragStart(dimension: Dimension, e: DragEvent) {
-    e.dataTransfer.setData("text/dimension", dimension.name);
+    var dataTransfer = e.dataTransfer;
+    // dataTransfer.effectAllowed = 'linkMove'; // Alt: set this to just 'move'
+    dataTransfer.setData("text/url-list", 'http://imply.io'); // ToDo: make this generate a real URL
+    dataTransfer.setData("text/plain", 'http://imply.io');
+    dataTransfer.setData("text/dimension", dimension.name);
+
+    // Thanks to http://www.kryogenix.org/code/browser/custom-drag-image.html
+    var dragGhost = d3.select(document.body).append('div')
+      .attr('class', 'drag-ghost')
+      .text(dimension.title);
+
+    // remove <any> when DataTransfer interface in lib.d.ts includes setDragImage
+    (<any>dataTransfer).setDragImage(dragGhost.node(), -20, -20);
+
+    // Remove the host after a ms because it is no longer needed
+    setTimeout(() => {
+      dragGhost.remove();
+    }, 1);
+  }
+
+  canDrop(section: string, e: DragEvent) {
+    return dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
   }
 
   dragOver(section: string, e: DragEvent) {
+    if (!this.canDrop(section, e)) return;
+    e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
   }
 
   dragEnter(section: string, e: DragEvent) {
+    if (!this.canDrop(section, e)) return;
     var { dragSection } = this.state;
     if (dragSection !== section) {
       this.dragCounter = 0;
@@ -129,6 +163,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   }
 
   dragLeave(section: string, e: DragEvent) {
+    if (!this.canDrop(section, e)) return;
     var { dragSection } = this.state;
     if (dragSection !== section) return;
     if (this.dragCounter === 0) {
@@ -141,6 +176,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   }
 
   drop(section: string, e: DragEvent) {
+    if (!this.canDrop(section, e)) return;
     var { clicker } = this.props;
     this.dragCounter = 0;
     this.setState({

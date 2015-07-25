@@ -78,7 +78,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     if (dataset) {
       rows = dataset.data[0]['Split'].data.map((d: Datum, i: number) => {
         var row = [
-          JSX(`<div className="segment" key="_segment">{d['Split']}</div>`)
+          JSX(`<div className="segment" key="_segment">{String(d['Split'])}</div>`)
         ].concat(measures.map(measure => {
             return JSX(`<div className="measure" key={measure.name}>{d[measure.name]}</div>`);
           }));
