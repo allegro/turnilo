@@ -12,7 +12,7 @@ interface FilterSplitMenuProps {
   dimension: Dimension;
   anchor: number;
   height: number;
-  triger: Element;
+  trigger: Element;
   onClose: () => void;
 }
 
@@ -52,11 +52,11 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
   }
 
   globalMouseDownListener(e: MouseEvent) {
-    var { onClose, triger } = this.props;
+    var { onClose, trigger } = this.props;
     var myElement = React.findDOMNode(this);
     var target = <Element>e.target;
 
-    if (isInside(target, myElement) || isInside(target, triger)) return;
+    if (isInside(target, myElement) || isInside(target, trigger)) return;
     onClose();
   }
 

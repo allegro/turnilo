@@ -116,7 +116,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   drop(e: DragEvent) {
     this.dragCounter = 0;
     var dataTransfer = e.dataTransfer;
-    //if (!dataTransfer.types.contains("text/dimension")) return;
+    //ToDo: if (!dataTransfer.types.contains("text/dimension")) return;
     var dimensionName = dataTransfer.getData("text/dimension");
     this.setState({
       dragOver: false,

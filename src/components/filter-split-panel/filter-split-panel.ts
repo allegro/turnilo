@@ -17,7 +17,7 @@ interface FilterSplitPanelState {
   selectedDimension?: Dimension;
   anchor?: number;
   rect?: ClientRect;
-  triger?: Element;
+  trigger?: Element;
   dragSection?: string;
 }
 
@@ -53,7 +53,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
   selectDimension(dimension: Dimension, e: MouseEvent) {
     var target = <Element>e.target;
-    var currentTriger = this.state.triger;
+    var currentTriger = this.state.trigger;
     if (currentTriger === target) {
       this.onMenuClose();
       return;
@@ -63,7 +63,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     this.setState({
       selectedDimension: dimension,
       anchor: targetRect.top - containerRect.top + Math.floor(targetRect.height / 2),
-      triger: target
+      trigger: target
     });
   }
 
@@ -94,7 +94,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     this.setState({
       selectedDimension: null,
       anchor: null,
-      triger: null
+      trigger: null
     });
   }
 
@@ -141,11 +141,18 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   }
 
   drop(section: string, e: DragEvent) {
+    var { clicker } = this.props;
     this.dragCounter = 0;
     this.setState({
       dragSection: null
     });
-    console.log('drop into ' + section);
+    if (section === 'splits') {
+      var dataTransfer = e.dataTransfer;
+      var dimensionName = dataTransfer.getData("text/dimension");
+      clicker.addSplit(new SplitCombine($(dimensionName), null, null));
+    } else {
+      console.log('drop into ' + section);
+    }
   }
 
   formatValue(dimension: Dimension, operand: ChainExpression) {
@@ -171,7 +178,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
   render() {
     var { dispatcher, filter, splits, dimensions, clicker } = this.props;
-    var { selectedDimension, anchor, rect, triger, dragSection } = this.state;
+    var { selectedDimension, anchor, rect, trigger, dragSection } = this.state;
 
     var menu: React.ReactElement<any> = null;
     if (selectedDimension) {
@@ -182,7 +189,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
         dimension={selectedDimension}
         anchor={anchor}
         height={rect.height}
-        triger={triger}
+        trigger={trigger}
         onClose={this.onMenuClose.bind(this)}
       />`);
     }
