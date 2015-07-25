@@ -68,10 +68,8 @@ export class Filter {
   }
 
   public remove(attribute: Expression): Filter {
-    console.log('attribute', attribute);
     var operands = this.operands;
     var index = this.indexOfOperand(attribute);
-    console.log('index', index);
     if (index === -1) return this;
     operands = operands.slice();
     operands.splice(index, 1);

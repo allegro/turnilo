@@ -28,14 +28,20 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
   fetchData(filter: Filter, measures: Measure[], splits: SplitCombine[]) {
     var { dataSource } = this.props;
 
-    var query: any = $('main')
-      .filter(filter.toExpression())
-      .split(splits[0].splitOn, 'Split');
+    var $main = $('main');
+    var query: any = $()
+      .apply('main', $main.filter(filter.toExpression()));
 
-    for (let measure of measures) {
-      query = query.apply(measure.name, measure.expression);
+    for (let split of splits) {
+      var subQuery = $main.split(split.splitOn, 'Split');
+
+      for (let measure of measures) {
+        subQuery = subQuery.apply(measure.name, measure.expression);
+      }
+      subQuery = subQuery.sort($(measures[0].name), 'descending').limit(100);
+
+      query = query.apply('Split', subQuery);
     }
-    query = query.sort($(measures[0].name), 'descending').limit(100);
 
     dataSource.dispatcher(query).then((dataset) => {
       this.setState({ dataset });
@@ -70,7 +76,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
 
     var rows: React.DOMElement<any>[] = [];
     if (dataset) {
-      rows = dataset.data.map((d: Datum, i: number) => {
+      rows = dataset.data[0]['Split'].data.map((d: Datum, i: number) => {
         var row = [
           JSX(`<div className="segment" key="_segment">{d['Split']}</div>`)
         ].concat(measures.map(measure => {

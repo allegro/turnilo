@@ -145,20 +145,16 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       case 'STRING':
         var inAction = operand.actions[0];
         if (inAction instanceof InAction) {
-          var setLiteral = inAction.expression;
-          if (setLiteral instanceof LiteralExpression) {
-            var value = setLiteral.value;
-            return value.elements.join(', ');
-          } else {
-            return 'S0';
-          }
+          var setLiteral = inAction.getLiteralValue();
+          if (!setLiteral) return '?';
+          return setLiteral.elements.join(', ');
         } else {
           return 'S';
         }
         break;
 
       case 'TIME':
-        return 'T';
+        return 'T -> T';
 
       default:
         throw new Error('unknown type ' + dimension.type);
