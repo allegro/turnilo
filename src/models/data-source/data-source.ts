@@ -10,6 +10,7 @@ function upperCaseFirst(title: string): string {
 }
 
 export interface DataSourceValue {
+  name: string;
   title: string;
   dispatcher: Dispatcher;
   dimensions: Dimension[];
@@ -17,6 +18,7 @@ export interface DataSourceValue {
 }
 
 export interface DataSourceJS {
+  name: string;
   title: string;
   dimensions: DimensionJS[];
   measures: MeasureJS[];
@@ -26,6 +28,7 @@ var check: ImmutableClass<DataSourceValue, DataSourceJS>;
 export class DataSource implements ImmutableInstance<DataSourceValue, DataSourceJS> {
 
   public dispatcher: Dispatcher;
+  public name: string;
   public title: string;
   public dimensions: Dimension[];
   public measures: Measure[];
@@ -34,7 +37,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     return isInstanceOf(candidate, DataSource);
   }
 
-  static fromNativeDataset(title: string, rawData: any[]): DataSource {
+  static fromNativeDataset(name: string, title: string, rawData: any[]): DataSource {
     var nativeDataset = <NativeDataset>Dataset.fromJS(rawData);
     nativeDataset.introspect();
 
@@ -86,12 +89,13 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       }
     });
 
-    return new DataSource({ title, dispatcher, dimensions, measures });
+    return new DataSource({ name, title, dispatcher, dimensions, measures });
   }
 
   static fromJS(parameters: DataSourceJS): DataSource {
     return new DataSource({
       dispatcher: null,
+      name: parameters.name,
       title: parameters.title,
       dimensions: parameters.dimensions.map(Dimension.fromJS),
       measures: parameters.measures.map(Measure.fromJS)
@@ -100,6 +104,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
 
   constructor(parameters: DataSourceValue) {
     this.dispatcher = parameters.dispatcher;
+    this.name = parameters.name;
     this.title = parameters.title;
     this.dimensions = parameters.dimensions;
     this.measures = parameters.measures;
@@ -108,6 +113,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
   public valueOf(): DataSourceValue {
     return {
       dispatcher: this.dispatcher,
+      name: this.name,
       title: this.title,
       dimensions: this.dimensions,
       measures: this.measures
@@ -116,6 +122,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
 
   public toJS(): DataSourceJS {
     return {
+      name: this.name,
       title: this.title,
       dimensions: this.dimensions.map(dimension => dimension.toJS()),
       measures: this.measures.map(measure => measure.toJS())
@@ -127,11 +134,12 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
   }
 
   public toString(): string {
-    return `[DataSource: ${this.title}]`;
+    return `[DataSource: ${this.name}]`;
   }
 
   public equals(other: DataSource): boolean {
     return DataSource.isDataSource(other) &&
+      this.name === other.name &&
       this.title === other.title &&
       arraysEqual(this.dimensions, other.dimensions) &&
       arraysEqual(this.measures, other.measures);

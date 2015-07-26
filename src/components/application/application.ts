@@ -1,7 +1,7 @@
 'use strict';
 
 import React = require('react/addons');
-import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher } from 'plywood';
+import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher, find } from 'plywood';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
@@ -19,6 +19,7 @@ interface ApplicationProps {
 }
 
 interface ApplicationState {
+  dataSources?: DataSource[];
   dataSource?: DataSource;
   filter?: Filter;
   splits?: SplitCombine[];
@@ -48,6 +49,15 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var self = this;
     this.clicker = {
       changeDataSource: (dataSource: DataSource) => {
+        var { dataSources } = self.state;
+        var dataSourceName = dataSource.name;
+        var existingDataSource = find(dataSources, (ds) => ds.name === dataSourceName);
+        if (!existingDataSource) throw new Error(`unknown DataSource changed: ${dataSourceName}`);
+        if (!existingDataSource.equals(dataSource)) {
+          self.setState({
+            dataSources: dataSources.map((ds) => ds.name === dataSourceName ? dataSource : ds)
+          });
+        }
         self.setState({ dataSource });
       },
       setFilter: (filter: Filter) => {
@@ -77,6 +87,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     if (dataSources.length && !dataSource) {
       dataSource = dataSources[0];
       this.setState({
+        dataSources,
         dataSource: dataSource,
         selectedMeasures: dataSource.measures.slice(0, 4)
       });
@@ -140,8 +151,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   render() {
     var clicker = this.clicker;
-    var { dataSources } = this.props;
-    var { dataSource, filter, splits, dragOver, drawerOpen, selectedMeasures } = this.state;
+    var { dataSources, dataSource, filter, splits, dragOver, drawerOpen, selectedMeasures } = this.state;
 
     // <TimeSeriesVis dispatcher={basicDispatcher} filter={filter} measures={measures}/>
 
@@ -161,6 +171,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     if (drawerOpen) {
       sideDrawer = React.createElement(<any>SideDrawer, {
         key: 'drawer',
+        clicker,
+        dataSources,
+        selectedDataSource: dataSource,
         onClose: this.closeSideDrawer.bind(this)
       });
     }

@@ -4,11 +4,14 @@ import React = require('react/addons');
 import Icon = require('react-svg-icons');
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
 import { isInside } from '../../utils/dom';
-import { Filter, Dimension, Measure } from '../../models/index';
+import { DataSource, Clicker } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 
 interface SideDrawerProps {
+  clicker: Clicker;
+  dataSources: DataSource[];
+  selectedDataSource: DataSource;
   onClose: () => void;
 }
 
@@ -51,18 +54,32 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     this.props.onClose();
   }
 
+  selectDataSource(dataSource: DataSource) {
+    var { clicker, onClose } = this.props;
+    clicker.changeDataSource(dataSource);
+    onClose();
+  }
+
   render() {
-    var { onClose } = this.props;
+    var { onClose, dataSources, selectedDataSource } = this.props;
+    var selectedDataSourceName = selectedDataSource.name;
+
+    var dataSourceItems = dataSources.map((dataSource) => {
+      return JSX(`
+        <li
+          key={dataSource.name}
+          className={dataSource.name === selectedDataSourceName ? 'selected' : ''}
+          onClick={this.selectDataSource.bind(this, dataSource)}
+        >{dataSource.title}</li>
+      `);
+    });
 
     return JSX(`
       <div className="side-drawer">
         <div className="title" onClick={onClose}>
           <Icon className="text-logo" name="combo-logo" height={24} color="#666666"/>
         </div>
-        <ul className="data-sources">
-          <li>Wikipedia</li>
-          <li>Koalas to the Max</li>
-        </ul>
+        <ul className="data-sources">{dataSourceItems}</ul>
         <div className="add-data-source">Add dataset</div>
       </div>
     `);

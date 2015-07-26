@@ -23,11 +23,25 @@ $side-drawer-width: 250px;
   .data-sources {
     li {
       padding: 12px 15px;
+      cursor: pointer;
+
+      &.selected {
+        background: $detail-highlight;
+      }
+
+      &:hover {
+        background: $detail-hover;
+      }
     }
   }
 
   .add-data-source {
     padding: 12px 15px;
+    cursor: pointer;
+
+    &:hover {
+      background: $detail-highlight;
+    }
   }
 }
 

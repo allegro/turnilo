@@ -18,8 +18,8 @@ var wikiRawData: any[] = (<any>window)['wiki_day_data'];
 for (let d of wikiRawData) d['time'] = new Date(d['time']);
 
 var dataSources = [
-  DataSource.fromNativeDataset('Wikipedia', wikiRawData),
-  DataSource.fromNativeDataset('Wikipedia 2', wikiRawData)
+  DataSource.fromNativeDataset('wiki', 'Wikipedia', wikiRawData),
+  DataSource.fromNativeDataset('wiki2', 'Wikipedia 2', wikiRawData)
 ];
 
 React.render(
