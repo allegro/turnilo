@@ -2,16 +2,9 @@
 
 import React = require('react/addons');
 import { $, Expression, Dispatcher } from 'plywood';
+import { isInside } from '../../utils/dom';
 import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { MenuTable } from "../menu-table/menu-table";
-
-function isInside(child: Element, parent: Element): boolean {
-  while (child) {
-    if (child === parent) return true;
-    child = child.parentElement;
-  }
-  return false;
-}
 
 interface FilterSplitMenuProps {
   clicker: Clicker;

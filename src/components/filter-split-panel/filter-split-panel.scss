@@ -30,10 +30,6 @@
         cursor: pointer;
         overflow: hidden;
 
-        &:hover {
-          background: $detail-hover;
-        }
-
         &.selected {
           background: $detail-highlight;
         }
@@ -55,8 +51,14 @@
       }
 
       .drag-placeholder {
-        height: 3px;
-        background: $red;
+        height: 15px;
+        background: $beta-background;
+      }
+    }
+
+    &.no-drag {
+      .item:hover {
+        background: $detail-hover;
       }
     }
 

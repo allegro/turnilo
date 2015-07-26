@@ -1,3 +1,5 @@
+'use strict';
+
 export function findFirstIndex<T>(array: T[], fn: (x: T) => boolean): number {
   for (var i = 0; i < array.length; i++) {
     var v = array[i];

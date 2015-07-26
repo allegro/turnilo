@@ -3,16 +3,10 @@
 import React = require('react/addons');
 import Icon = require('react-svg-icons');
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
+import { isInside } from '../../utils/dom';
 import { Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-function isInside(child: Element, parent: Element): boolean {
-  while (child) {
-    if (child === parent) return true;
-    child = child.parentElement;
-  }
-  return false;
-}
 
 interface SideDrawerProps {
   onClose: () => void;
@@ -58,9 +52,11 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   render() {
+    var { onClose } = this.props;
+
     return JSX(`
       <div className="side-drawer">
-        <div className="title">
+        <div className="title" onClick={onClose}>
           <Icon className="text-logo" name="combo-logo" height={24} color="#666666"/>
         </div>
         <ul className="data-sources">

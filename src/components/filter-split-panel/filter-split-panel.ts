@@ -320,7 +320,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     return JSX(`
       <div className="filter-split-panel">
         <div
-          className={'filters section' + (dragSection === 'filters' ? ' drag-over' : '')}
+          className={'filters section ' + (dragSection === 'filters' ? 'drag-over' : 'no-drag')}
           onDragOver={this.dragOver.bind(this, 'filters')}
           onDragEnter={this.dragEnter.bind(this, 'filters')}
           onDragLeave={this.dragLeave.bind(this, 'filters')}
@@ -330,7 +330,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           <div className="items">{filterItems}</div>
         </div>
         <div
-          className={'splits section' + (dragSection === 'splits' ? ' drag-over' : '')}
+          className={'splits section ' + (dragSection === 'splits' ? 'drag-over' : 'no-drag')}
           onDragOver={this.dragOver.bind(this, 'splits')}
           onDragEnter={this.dragEnter.bind(this, 'splits')}
           onDragLeave={this.dragLeave.bind(this, 'splits')}
@@ -340,7 +340,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           <div className="items">{splitItems}</div>
         </div>
         <div
-          className={'dimensions section' + (dragSection === 'dimensions' ? ' drag-over' : '')}
+          className={'dimensions section ' + (dragSection === 'dimensions' ? 'drag-over' : 'no-drag')}
           onDragOver={this.dragOver.bind(this, 'dimensions')}
           onDragEnter={this.dragEnter.bind(this, 'dimensions')}
           onDragLeave={this.dragLeave.bind(this, 'dimensions')}
