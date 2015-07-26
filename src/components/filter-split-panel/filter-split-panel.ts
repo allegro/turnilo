@@ -3,6 +3,7 @@
 import React = require('react');
 import d3 = require('d3');
 import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
+import { findFirstIndex, moveInArray } from '../../utils/general';
 import { DataSource, Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
 import { FilterSplitMenu } from "../filter-split-menu/filter-split-menu";
 
@@ -19,6 +20,7 @@ interface FilterSplitPanelState {
   rect?: ClientRect;
   trigger?: Element;
   dragSection?: string;
+  dragPosition?: number;
 }
 
 function dataTransferTypesContain(types: any, neededType: string): boolean {
@@ -142,10 +144,27 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     return dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
   }
 
+  calculateDragPosition(section: string, e: DragEvent) {
+    var itemHeight = 30;
+    if (section !== 'dimensions') {
+      this.setState({ dragPosition: 0 });
+      return;
+    }
+
+    var numItems = this.props.dataSource.dimensions.length;
+    var rect = React.findDOMNode(this.refs['dimensionItems']).getBoundingClientRect();
+    var offset = e.clientY - rect.top;
+
+    this.setState({
+      dragPosition: Math.min(Math.max(0, Math.round(offset / itemHeight)), numItems)
+    });
+  }
+
   dragOver(section: string, e: DragEvent) {
     if (!this.canDrop(section, e)) return;
     e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
+    this.calculateDragPosition(section, e);
   }
 
   dragEnter(section: string, e: DragEvent) {
@@ -153,9 +172,8 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     var { dragSection } = this.state;
     if (dragSection !== section) {
       this.dragCounter = 0;
-      this.setState({
-        dragSection: section
-      });
+      this.setState({ dragSection: section });
+      this.calculateDragPosition(section, e);
     } else {
       this.dragCounter++;
     }
@@ -167,7 +185,8 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     if (dragSection !== section) return;
     if (this.dragCounter === 0) {
       this.setState({
-        dragSection: null
+        dragSection: null,
+        dragPosition: null
       });
     } else {
       this.dragCounter--;
@@ -176,18 +195,28 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
   drop(section: string, e: DragEvent) {
     if (!this.canDrop(section, e)) return;
-    var { clicker } = this.props;
-    this.dragCounter = 0;
-    this.setState({
-      dragSection: null
-    });
+    var { clicker, dataSource } = this.props;
+    var { dragPosition } = this.state;
+
+    var dataTransfer = e.dataTransfer;
+    var dimensionName = dataTransfer.getData("text/dimension");
     if (section === 'splits') {
-      var dataTransfer = e.dataTransfer;
-      var dimensionName = dataTransfer.getData("text/dimension");
       clicker.addSplit(new SplitCombine($(dimensionName), null, null));
+    } else if (section === 'dimensions') {
+      var dimensions = dataSource.dimensions;
+      var index = findFirstIndex(dimensions, (d) => d.name === dimensionName);
+      if (index !== -1 && index !== dragPosition) {
+        clicker.changeDataSource(dataSource.changeDimensions(moveInArray(dimensions, index, dragPosition)));
+      }
     } else {
       console.log('drop into ' + section);
     }
+
+    this.dragCounter = 0;
+    this.setState({
+      dragSection: null,
+      dragPosition: null
+    });
   }
 
   formatValue(dimension: Dimension, operand: ChainExpression) {
@@ -213,7 +242,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
   render() {
     var { dataSource, filter, splits, clicker } = this.props;
-    var { selectedDimension, anchor, rect, trigger, dragSection } = this.state;
+    var { selectedDimension, anchor, rect, trigger, dragSection, dragPosition } = this.state;
 
     var menu: React.ReactElement<any> = null;
     if (selectedDimension) {
@@ -229,7 +258,12 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       />`);
     }
 
-    var filterItems = filter.operands.map(operand => {
+    var dragPlaceholder: React.DOMElement<any> = null;
+    if (dragSection) {
+      dragPlaceholder = JSX(`<div className="drag-placeholder" key="_placeholder"></div>`);
+    }
+
+    var filterItems: Array<React.DOMElement<any>> = filter.operands.map(operand => {
       var operandExpression = operand.expression;
       var dimension = find(dataSource.dimensions, (d) => d.expression.equals(operandExpression));
       if (!dimension) throw new Error('dimension not found');
@@ -248,7 +282,11 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       `);
     }, this);
 
-    var splitItems = splits.map(split => {
+    if (dragSection === 'filters') {
+      filterItems.splice(dragPosition, 0, dragPlaceholder);
+    }
+
+    var splitItems: Array<React.DOMElement<any>> = splits.map(split => {
       var splitExpression = split.splitOn;
       var dimension = find(dataSource.dimensions, (d) => d.expression.equals(splitExpression));
       if (!dimension) throw new Error('dimension not found');
@@ -267,7 +305,11 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       `);
     }, this);
 
-    var dimensionItems = dataSource.dimensions.map(dimension => {
+    if (dragSection === 'splits') {
+      splitItems.splice(dragPosition, 0, dragPlaceholder);
+    }
+
+    var dimensionItems: Array<React.DOMElement<any>> = dataSource.dimensions.map(dimension => {
       return JSX(`
         <div
           className={'item dimension' + (dimension === selectedDimension ? ' selected' : '')}
@@ -278,6 +320,10 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
         >{dimension.title}</div>
       `);
     }, this);
+
+    if (dragSection === 'dimensions') {
+      dimensionItems.splice(dragPosition, 0, dragPlaceholder);
+    }
 
     return JSX(`
       <div className="filter-split-panel">
@@ -309,7 +355,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           onDrop={this.drop.bind(this, 'dimensions')}
         >
           <div className="title">Dimensions</div>
-          <div className="items">{dimensionItems}</div>
+          <div className="items" ref="dimensionItems">{dimensionItems}</div>
         </div>
         {menu}
       </div>

@@ -24,9 +24,11 @@
       color: $detail-text-color;
 
       .item {
-        padding: 8px 10px;
+        height: 30px;
+        padding: 8px 0 0 10px;
         border-bottom: 1px solid $detail-border-color;
         cursor: pointer;
+        overflow: hidden;
 
         &:hover {
           background: $detail-hover;
@@ -51,6 +53,11 @@
           cursor: pointer;
         }
       }
+
+      .drag-placeholder {
+        height: 3px;
+        background: $red;
+      }
     }
 
     &.dimensions {
@@ -63,10 +70,6 @@
         width: 100%;
         overflow: auto;
       }
-    }
-
-    &.drag-over {
-      border-bottom: 3px solid $red;
     }
   }
 }

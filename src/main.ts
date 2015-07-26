@@ -22,12 +22,9 @@ var dataSources = [
   DataSource.fromNativeDataset('Wikipedia 2', wikiRawData)
 ];
 
-function render() {
-  React.render(
-    React.createElement(Application, {
-      dataSources: dataSources
-    }),
-    document.body
-  );
-}
-render();
+React.render(
+  React.createElement(Application, {
+    dataSources: dataSources
+  }),
+  document.body
+);
