@@ -1,0 +1,16 @@
+@import '../../variables';
+@import '../../mixins';
+
+.tile-header {
+  .search {
+    position: absolute;
+    top: 3px;
+    right: 25px;
+  }
+
+  .close {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+  }
+}

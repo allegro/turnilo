@@ -3,9 +3,9 @@
 import { expect } from 'chai';
 
 import { $, Expression } from 'plywood';
-import { MeasuresContext } from './measures-context';
+import { DimensionTile } from './dimension-tile';
 
-describe('MeasuresContext', () => {
+describe('DimensionTile', () => {
   it('works in empty case', () => {
 
   });

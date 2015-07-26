@@ -3,15 +3,15 @@
 import React = require('react/addons');
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../models/index';
-// import { SomeComp } from '../some-comp/some-comp';
+import { TileHeader } from '../tile-header/tile-header';
 
-interface MeasuresContextProps {
+interface MeasuresTileProps {
 }
 
-interface MeasuresContextState {
+interface MeasuresTileState {
 }
 
-export class MeasuresContext extends React.Component<MeasuresContextProps, MeasuresContextState> {
+export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTileState> {
 
   constructor() {
     super();
@@ -27,13 +27,15 @@ export class MeasuresContext extends React.Component<MeasuresContextProps, Measu
 
   }
 
-  componentWillReceiveProps(nextProps: MeasuresContextProps) {
+  componentWillReceiveProps(nextProps: MeasuresTileProps) {
 
   }
 
   render() {
     return JSX(`
-      <div className="measures-context"></div>
+      <div className="measures-tile">
+        <TileHeader title="Measures"/>
+      </div>
     `);
   }
 }

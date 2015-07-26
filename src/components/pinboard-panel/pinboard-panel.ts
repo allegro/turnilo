@@ -3,8 +3,8 @@
 import React = require('react/addons');
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../models/index';
-import { DimensionContext } from '../dimension-context/dimension-context';
-import { MeasuresContext } from '../measures-context/measures-context';
+import { DimensionTile } from '../dimension-tile/dimension-tile';
+import { MeasuresTile } from '../measures-tile/measures-tile';
 
 interface PinboardPanelProps {
 }
@@ -35,9 +35,9 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   render() {
     return JSX(`
       <div className="pinboard-panel">
-        <MeasuresContext></MeasuresContext>
-        <DimensionContext></DimensionContext>
-        <DimensionContext></DimensionContext>
+        <MeasuresTile></MeasuresTile>
+        <DimensionTile></DimensionTile>
+        <DimensionTile></DimensionTile>
       </div>
     `);
   }

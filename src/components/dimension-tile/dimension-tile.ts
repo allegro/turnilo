@@ -3,15 +3,15 @@
 import React = require('react/addons');
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../models/index';
-// import { SomeComp } from '../some-comp/some-comp';
+import { TileHeader } from '../tile-header/tile-header';
 
-interface DimensionContextProps {
+interface DimensionTileProps {
 }
 
-interface DimensionContextState {
+interface DimensionTileState {
 }
 
-export class DimensionContext extends React.Component<DimensionContextProps, DimensionContextState> {
+export class DimensionTile extends React.Component<DimensionTileProps, DimensionTileState> {
 
   constructor() {
     super();
@@ -27,13 +27,15 @@ export class DimensionContext extends React.Component<DimensionContextProps, Dim
 
   }
 
-  componentWillReceiveProps(nextProps: DimensionContextProps) {
+  componentWillReceiveProps(nextProps: DimensionTileProps) {
 
   }
 
   render() {
     return JSX(`
-      <div className="dimension-context"></div>
+      <div className="dimension-tile">
+        <TileHeader title="Dim"/>
+      </div>
     `);
   }
 }
