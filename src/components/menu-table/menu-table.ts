@@ -1,6 +1,6 @@
 'use strict';
 
-import React = require("react");
+import React = require('react/addons');
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
 import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
 // import { DateShow } from "../date-show/date-show";

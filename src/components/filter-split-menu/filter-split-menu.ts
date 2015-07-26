@@ -1,9 +1,17 @@
 'use strict';
 
-import React = require('react');
+import React = require('react/addons');
 import { $, Expression, Dispatcher } from 'plywood';
 import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { MenuTable } from "../menu-table/menu-table";
+
+function isInside(child: Element, parent: Element): boolean {
+  while (child) {
+    if (child === parent) return true;
+    child = child.parentElement;
+  }
+  return false;
+}
 
 interface FilterSplitMenuProps {
   clicker: Clicker;
@@ -20,14 +28,6 @@ interface FilterSplitMenuState {
   filter?: Filter;
 }
 
-function isInside(child: Element, parent: Element): boolean {
-  while (child) {
-    if (child === parent) return true;
-    child = child.parentElement;
-  }
-  return false;
-}
-
 export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, FilterSplitMenuState> {
 
   constructor() {
@@ -37,14 +37,17 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
     };
     this.selectFilter = this.selectFilter.bind(this);
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentDidMount() {
     window.addEventListener('mousedown', this.globalMouseDownListener);
+    window.addEventListener('keydown', this.globalKeyDownListener);
   }
 
   componentWillUnmount() {
     window.removeEventListener('mousedown', this.globalMouseDownListener);
+    window.removeEventListener('keydown', this.globalKeyDownListener);
   }
 
   componentWillReceiveProps(nextProps: FilterSplitMenuProps) {
@@ -58,6 +61,11 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
 
     if (isInside(target, myElement) || isInside(target, trigger)) return;
     onClose();
+  }
+
+  globalKeyDownListener(event: KeyboardEvent) {
+    if (event.which !== 27) return; // 27 = escape
+    this.props.onClose();
   }
 
   onOK() {

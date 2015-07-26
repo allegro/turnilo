@@ -1,6 +1,6 @@
 'use strict';
 
-import React = require('react');
+import React = require('react/addons');
 import d3 = require('d3');
 import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
 import { findFirstIndex, moveInArray } from '../../utils/general';
@@ -43,18 +43,15 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       rect: null,
       dragSection: null
     };
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
     this.globalResizeListener = this.globalResizeListener.bind(this);
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', this.globalKeyDownListener);
     window.addEventListener('resize', this.globalResizeListener);
     this.globalResizeListener();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.globalKeyDownListener);
     window.removeEventListener('resize', this.globalResizeListener);
   }
 
@@ -88,11 +85,6 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     var { filter, clicker } = this.props;
     clicker.removeSplit(split);
     e.stopPropagation();
-  }
-
-  globalKeyDownListener(event: KeyboardEvent) {
-    if (event.which !== 27) return; // 27 = escape
-    this.onMenuClose();
   }
 
   globalResizeListener() {

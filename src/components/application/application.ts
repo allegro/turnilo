@@ -1,6 +1,6 @@
 'use strict';
 
-import React = require('react');
+import React = require('react/addons');
 import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher } from 'plywood';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
@@ -10,7 +10,9 @@ import { NestedTableVis } from '../nested-table-vis/nested-table-vis';
 import { FilterSplitPanel } from '../filter-split-panel/filter-split-panel';
 import { VisBar } from '../vis-bar/vis-bar';
 import { DropIndicator } from '../drop-indicator/drop-indicator';
+import { SideDrawer } from '../side-drawer/side-drawer';
 
+var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 interface ApplicationProps {
   dataSources: DataSource[];
@@ -22,6 +24,7 @@ interface ApplicationState {
   splits?: SplitCombine[];
   selectedMeasures?: Measure[];
   dragOver?: boolean;
+  drawerOpen?: boolean;
 }
 
 export class Application extends React.Component<ApplicationProps, ApplicationState> {
@@ -127,10 +130,18 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     });
   }
 
+  openSideDrawer() {
+    this.setState({ drawerOpen: true });
+  }
+
+  closeSideDrawer() {
+    this.setState({ drawerOpen: false });
+  }
+
   render() {
     var clicker = this.clicker;
     var { dataSources } = this.props;
-    var { dataSource, filter, splits, dragOver, selectedMeasures } = this.state;
+    var { dataSource, filter, splits, dragOver, drawerOpen, selectedMeasures } = this.state;
 
     // <TimeSeriesVis dispatcher={basicDispatcher} filter={filter} measures={measures}/>
 
@@ -146,9 +157,17 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       dropIndicator = JSX(`<DropIndicator/>`);
     }
 
+    var sideDrawer: React.ReactElement<any> = null;
+    if (drawerOpen) {
+      sideDrawer = React.createElement(<any>SideDrawer, {
+        key: 'drawer',
+        onClose: this.closeSideDrawer.bind(this)
+      });
+    }
+
     return JSX(`
       <main className='application'>
-        <HeaderBar dataSource={dataSource}/>
+        <HeaderBar dataSource={dataSource} onNavClick={this.openSideDrawer.bind(this)}/>
         <div className='container'>
           <FilterSplitPanel dataSource={dataSource} clicker={clicker} filter={filter} splits={splits}/>
           <div
@@ -163,6 +182,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             {dropIndicator}
           </div>
         </div>
+        <ReactCSSTransitionGroup component="div" className="side-drawer-container" transitionName="side-drawer">
+          {sideDrawer}
+        </ReactCSSTransitionGroup>
       </main>
     `);
   }

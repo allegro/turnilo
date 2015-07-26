@@ -1,6 +1,6 @@
 'use strict';
 
-import React = require("react");
+import React = require('react/addons');
 import d3 = require('d3');
 import { $, Dispatcher, Expression, NativeDataset, Datum } from 'plywood';
 

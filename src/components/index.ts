@@ -6,4 +6,5 @@ export * from './filter-split-panel/filter-split-panel';
 export * from './filter-split-menu/filter-split-menu';
 export * from './vis-bar/vis-bar';
 export * from './drop-indicator/drop-indicator';
+export * from './side-drawer/side-drawer';
 export * from './application/application';

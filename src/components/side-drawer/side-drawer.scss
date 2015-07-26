@@ -1,0 +1,50 @@
+@import '../../variables';
+@import '../../mixins';
+
+$side-drawer-width: 250px;
+
+.side-drawer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: $side-drawer-width;
+
+  font-size: 16px;
+  background: $detail-background;
+  border-right: 1px solid $detail-border-color;
+
+  .title {
+    height: $header-height;
+    padding: 5px 0 0 15px;
+    border-bottom: 1px solid $detail-border-color;
+  }
+
+  .data-sources {
+    li {
+      padding: 12px 15px;
+    }
+  }
+
+  .add-data-source {
+    padding: 12px 15px;
+  }
+}
+
+.side-drawer-enter {
+  left: -$side-drawer-width - 1;
+
+  &.side-drawer-enter-active {
+    left: 0;
+    transition: left .2s cubic-bezier(.4, 0, .2, 1) .1s;
+  }
+}
+
+.side-drawer-leave {
+  left: 0;
+
+  &.side-drawer-leave-active {
+    left: -$side-drawer-width - 1;
+    transition: left .2s cubic-bezier(.4, 0, .2, 1) .1s;
+  }
+}

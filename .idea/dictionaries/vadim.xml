@@ -2,6 +2,7 @@
   <dictionary name="vadim">
     <words>
       <w>autoprefixer</w>
+      <w>bezier</w>
       <w>fontcustom</w>
       <w>keydown</w>
       <w>linter</w>
