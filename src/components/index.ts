@@ -7,4 +7,7 @@ export * from './filter-split-menu/filter-split-menu';
 export * from './vis-bar/vis-bar';
 export * from './drop-indicator/drop-indicator';
 export * from './side-drawer/side-drawer';
+export * from './pinboard-panel/pinboard-panel';
+export * from './measures-context/measures-context';
+export * from './dimension-context/dimension-context';
 export * from './application/application';

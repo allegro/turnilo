@@ -1,6 +1,9 @@
 @import '../../variables';
 @import '../../mixins';
 
+// Do not worry Ofir, this is temporary!
+$pinboard-width: 200px;
+
 .application {
   overflow: hidden;
 
@@ -31,7 +34,7 @@
       top: 0;
       bottom: 0;
       left: $action-bar-width;
-      right: 0;
+      right: $pinboard-width;
 
       .vis-bar {
         position: absolute;
@@ -40,6 +43,8 @@
         right: 0;
         height: $vis-bar-height;
         z-index: 8;
+
+        overflow: hidden;
       }
 
       .visualization {
@@ -67,6 +72,14 @@
         height: 100%;
         z-index: 9;
       }
+    }
+
+    .pinboard-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: $pinboard-width;
     }
   }
 

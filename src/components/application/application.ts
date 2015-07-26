@@ -11,6 +11,7 @@ import { FilterSplitPanel } from '../filter-split-panel/filter-split-panel';
 import { VisBar } from '../vis-bar/vis-bar';
 import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { SideDrawer } from '../side-drawer/side-drawer';
+import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
@@ -194,6 +195,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             <div className='visualization'>{visualization}</div>
             {dropIndicator}
           </div>
+          <PinboardPanel/>
         </div>
         <ReactCSSTransitionGroup component="div" className="side-drawer-container" transitionName="side-drawer">
           {sideDrawer}

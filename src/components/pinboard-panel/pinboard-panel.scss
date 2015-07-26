@@ -1,0 +1,18 @@
+@import '../../variables';
+@import '../../mixins';
+
+.pinboard-panel {
+  background: $beta-background;
+  border-left: 1px solid $beta-border-color;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+
+  .measures-context,
+  .dimension-context {
+    flex-grow: 1;
+    width: 180px;
+    min-height: 150px;
+    margin: 10px;
+  }
+}
