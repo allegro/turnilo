@@ -24,12 +24,21 @@ $button-bar-height: 40px;
       font-weight: bold;
     }
 
+    .pin {
+      position: absolute;
+      top: 10px;
+      right: 25px;
+      width: 20px;
+      cursor: pointer;
+      text-align: center;
+    }
+
     .close {
       position: absolute;
-      cursor: pointer;
       top: 10px;
       right: 10px;
       width: 20px;
+      cursor: pointer;
       text-align: center;
     }
   }
@@ -46,7 +55,6 @@ $button-bar-height: 40px;
     bottom: 0;
     width: 100%;
     height: $button-bar-height;
-    color: $detail-special-text-color;
     padding: 0 0 10px 10px;
 
     .button {
@@ -59,6 +67,13 @@ $button-bar-height: 40px;
 
     .cancel {
       @extend %button-secondary;
+    }
+
+    .link {
+      display: inline-block;
+      margin: 0 3px;
+      cursor: pointer;
+      color: $detail-special-text-color;
     }
   }
 

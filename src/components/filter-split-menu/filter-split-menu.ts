@@ -1,9 +1,10 @@
 'use strict';
 
 import React = require('react/addons');
+import { List } from 'immutable';
 import { $, Expression, Dispatcher } from 'plywood';
 import { isInside } from '../../utils/dom';
-import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
+import { DataSource, SplitCombine, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { MenuTable } from "../menu-table/menu-table";
 
 interface FilterSplitMenuProps {
@@ -75,6 +76,24 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
     });
   }
 
+  pinDimension(): void {
+    var { clicker, dimension, onClose } = this.props;
+    clicker.pinDimension(dimension);
+    onClose();
+  }
+
+  addSplit(): void {
+    var { clicker, dimension, onClose } = this.props;
+    clicker.addSplit(new SplitCombine($(dimension.name), null, null));
+    onClose();
+  }
+
+  changeSplit(): void {
+    var { clicker, dimension, onClose } = this.props;
+    clicker.changeSplits(List([new SplitCombine($(dimension.name), null, null)]));
+    onClose();
+  }
+
   render() {
     var { onClose, dataSource, filter, dimension, anchor } = this.props;
 
@@ -93,12 +112,15 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
       <div className="filter-split-menu" style={style}>
         <div className="title-bar">
           <div className="title">{dimension.title}</div>
+          <div className="pin" onClick={this.pinDimension.bind(this)}>p</div>
           <div className="close" onClick={onClose}>x</div>
         </div>
         <MenuTable dataSource={dataSource} filter={filter} dimension={dimension} selectFilter={this.selectFilter}/>
         <div className="button-bar">
           <div className="ok button" onClick={this.onOK.bind(this)}>OK</div>
           <div className="cancel button" onClick={onClose}>Cancel</div>
+          <div className="add-split link" onClick={this.addSplit.bind(this)}>+</div>
+          <div className="change-split link" onClick={this.changeSplit.bind(this)}>&rarr;</div>
         </div>
         <div className="shpitz" style={shpitzStyle}></div>
       </div>
