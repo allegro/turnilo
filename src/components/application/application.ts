@@ -157,12 +157,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     });
   }
 
-  openSideDrawer() {
-    this.setState({ drawerOpen: true });
-  }
-
-  closeSideDrawer() {
-    this.setState({ drawerOpen: false });
+  sideDrawerOpen(state: boolean): void {
+    this.setState({ drawerOpen: state });
   }
 
   render() {
@@ -190,18 +186,19 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
     var sideDrawer: React.ReactElement<any> = null;
     if (drawerOpen) {
-      sideDrawer = React.createElement(<any>SideDrawer, {
+      var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
+      sideDrawer = React.createElement(SideDrawer, {
         key: 'drawer',
         clicker,
         dataSources,
-        selectedDataSource: dataSource,
-        onClose: this.closeSideDrawer.bind(this)
+        selectedDataSource: dataSource.name,
+        onClose: closeSideDrawer
       });
     }
 
     return JSX(`
       <main className='application'>
-        <HeaderBar dataSource={dataSource} onNavClick={this.openSideDrawer.bind(this)}/>
+        <HeaderBar dataSource={dataSource} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
         <div className='container'>
           <FilterSplitPanel dataSource={dataSource} clicker={clicker} filter={filter} splits={splits}/>
           <div

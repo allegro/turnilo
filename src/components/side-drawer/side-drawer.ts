@@ -2,6 +2,7 @@
 
 import React = require('react/addons');
 import Icon = require('react-svg-icons');
+import { List } from 'immutable';
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
 import { isInside } from '../../utils/dom';
 import { DataSource, Clicker } from '../../models/index';
@@ -10,8 +11,8 @@ import { DataSource, Clicker } from '../../models/index';
 
 interface SideDrawerProps {
   clicker: Clicker;
-  dataSources: DataSource[];
-  selectedDataSource: DataSource;
+  dataSources: List<DataSource>;
+  selectedDataSource: string;
   onClose: () => void;
 }
 
@@ -62,13 +63,12 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
   render() {
     var { onClose, dataSources, selectedDataSource } = this.props;
-    var selectedDataSourceName = selectedDataSource.name;
 
-    var dataSourceItems = dataSources.map((dataSource) => {
+    var dataSourceItems = dataSources.toArray().map((dataSource) => {
       return JSX(`
         <li
           key={dataSource.name}
-          className={dataSource.name === selectedDataSourceName ? 'selected' : ''}
+          className={dataSource.name === selectedDataSource ? 'selected' : ''}
           onClick={this.selectDataSource.bind(this, dataSource)}
         >{dataSource.title}</li>
       `);
