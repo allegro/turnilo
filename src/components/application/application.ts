@@ -1,7 +1,7 @@
 'use strict';
 
 import React = require('react/addons');
-import { List } from 'immutable';
+import { List, OrderedSet } from 'immutable';
 import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher, find } from 'plywood';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
@@ -25,7 +25,8 @@ interface ApplicationState {
   dataSource?: DataSource;
   filter?: Filter;
   splits?: List<SplitCombine>;
-  selectedMeasures?: List<Measure>;
+  selectedMeasures?: OrderedSet<string>;
+  pinnedDimensions?: OrderedSet<string>;
   dragOver?: boolean;
   drawerOpen?: boolean;
 }
@@ -79,6 +80,18 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         self.setState({
           splits: <List<SplitCombine>>splits.filter(s => s !== split)
         });
+      },
+      pinDimension: (dimension: Dimension) => {
+        var { pinnedDimensions } = this.state;
+        self.setState({
+          pinnedDimensions: pinnedDimensions.add(dimension.name)
+        });
+      },
+      unpinDimension: (dimension: Dimension) => {
+        var { pinnedDimensions } = this.state;
+        self.setState({
+          pinnedDimensions: pinnedDimensions.remove(dimension.name)
+        });
       }
     };
   }
@@ -91,7 +104,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       this.setState({
         dataSources,
         dataSource: dataSource,
-        selectedMeasures: <List<Measure>>dataSource.measures.slice(0, 4)
+        selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
+        pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(0, 2).map(d => d.name))
       });
     }
   }
@@ -153,7 +167,12 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   render() {
     var clicker = this.clicker;
-    var { dataSources, dataSource, filter, splits, dragOver, drawerOpen, selectedMeasures } = this.state;
+    var {
+      dataSources, dataSource, filter, splits, selectedMeasures, pinnedDimensions,
+      dragOver, drawerOpen
+    } = this.state;
+
+    var measures = dataSource.measures;
 
     // <TimeSeriesVis dispatcher={basicDispatcher} filter={filter} measures={measures}/>
 
@@ -161,7 +180,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       dataSource: dataSource,
       filter: filter,
       splits: splits,
-      measures: selectedMeasures
+      measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName))
     });
 
     var dropIndicator: React.ReactElement<any> = null;
@@ -196,7 +215,12 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             <div className='visualization'>{visualization}</div>
             {dropIndicator}
           </div>
-          <PinboardPanel/>
+          <PinboardPanel
+            dataSource={dataSource}
+            clicker={clicker}
+            selectedMeasures={selectedMeasures}
+            pinnedDimensions={pinnedDimensions}
+          />
         </div>
         <ReactCSSTransitionGroup component="div" className="side-drawer-container" transitionName="side-drawer">
           {sideDrawer}
