@@ -1,9 +1,10 @@
 'use strict';
 
+import { List } from 'immutable';
 import React = require('react/addons');
 import d3 = require('d3');
 import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
-import { findFirstIndex, moveInArray } from '../../utils/general';
+import { moveInList } from '../../utils/general';
 import { DataSource, Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
 import { FilterSplitMenu } from "../filter-split-menu/filter-split-menu";
 
@@ -11,7 +12,7 @@ interface FilterSplitPanelProps {
   clicker: Clicker;
   dataSource: DataSource;
   filter: Filter;
-  splits: SplitCombine[];
+  splits: List<SplitCombine>;
 }
 
 interface FilterSplitPanelState {
@@ -143,7 +144,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       return;
     }
 
-    var numItems = this.props.dataSource.dimensions.length;
+    var numItems = this.props.dataSource.dimensions.size;
     var rect = React.findDOMNode(this.refs['dimensionItems']).getBoundingClientRect();
     var offset = e.clientY - rect.top;
 
@@ -196,9 +197,9 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       clicker.addSplit(new SplitCombine($(dimensionName), null, null));
     } else if (section === 'dimensions') {
       var dimensions = dataSource.dimensions;
-      var index = findFirstIndex(dimensions, (d) => d.name === dimensionName);
+      var index = dimensions.findIndex((d) => d.name === dimensionName);
       if (index !== -1 && index !== dragPosition) {
-        clicker.changeDataSource(dataSource.changeDimensions(moveInArray(dimensions, index, dragPosition)));
+        clicker.changeDataSource(dataSource.changeDimensions(moveInList(dimensions, index, dragPosition)));
       }
     } else {
       console.log('drop into ' + section);
@@ -255,9 +256,9 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       dragPlaceholder = JSX(`<div className="drag-placeholder" key="_placeholder"></div>`);
     }
 
-    var filterItems: Array<React.DOMElement<any>> = filter.operands.map(operand => {
+    var filterItems: Array<React.DOMElement<any>> = filter.operands.toArray().map(operand => {
       var operandExpression = operand.expression;
-      var dimension = find(dataSource.dimensions, (d) => d.expression.equals(operandExpression));
+      var dimension = dataSource.dimensions.find((d) => d.expression.equals(operandExpression));
       if (!dimension) throw new Error('dimension not found');
 
       return JSX(`
@@ -278,9 +279,9 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       filterItems.splice(dragPosition, 0, dragPlaceholder);
     }
 
-    var splitItems: Array<React.DOMElement<any>> = splits.map(split => {
+    var splitItems: Array<React.DOMElement<any>> = splits.toArray().map(split => {
       var splitExpression = split.splitOn;
-      var dimension = find(dataSource.dimensions, (d) => d.expression.equals(splitExpression));
+      var dimension = dataSource.dimensions.find((d) => d.expression.equals(splitExpression));
       if (!dimension) throw new Error('dimension not found');
 
       return JSX(`
@@ -301,7 +302,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       splitItems.splice(dragPosition, 0, dragPlaceholder);
     }
 
-    var dimensionItems: Array<React.DOMElement<any>> = dataSource.dimensions.map(dimension => {
+    var dimensionItems: Array<React.DOMElement<any>> = dataSource.dimensions.toArray().map(dimension => {
       return JSX(`
         <div
           className={'item dimension' + (dimension === selectedDimension ? ' selected' : '')}

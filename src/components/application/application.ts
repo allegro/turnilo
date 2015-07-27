@@ -1,6 +1,7 @@
 'use strict';
 
 import React = require('react/addons');
+import { List } from 'immutable';
 import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher, find } from 'plywood';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
@@ -16,15 +17,15 @@ import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 interface ApplicationProps {
-  dataSources: DataSource[];
+  dataSources: List<DataSource>;
 }
 
 interface ApplicationState {
-  dataSources?: DataSource[];
+  dataSources?: List<DataSource>;
   dataSource?: DataSource;
   filter?: Filter;
-  splits?: SplitCombine[];
-  selectedMeasures?: Measure[];
+  splits?: List<SplitCombine>;
+  selectedMeasures?: List<Measure>;
   dragOver?: boolean;
   drawerOpen?: boolean;
 }
@@ -36,15 +37,15 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   constructor() {
     super();
     this.state = {
-      filter: new Filter([
+      filter: new Filter(List([
         $('time').in(TimeRange.fromJS({
           start: new Date('2013-02-26T00:00:00Z'),
           end: new Date('2013-02-27T00:00:00Z')
         }))
-      ]),
-      splits: [
+      ])),
+      splits: List([
         new SplitCombine($('page'), null, null)
-      ]
+      ])
     };
 
     var self = this;
@@ -52,11 +53,11 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       changeDataSource: (dataSource: DataSource) => {
         var { dataSources } = self.state;
         var dataSourceName = dataSource.name;
-        var existingDataSource = find(dataSources, (ds) => ds.name === dataSourceName);
+        var existingDataSource = dataSources.find((ds) => ds.name === dataSourceName);
         if (!existingDataSource) throw new Error(`unknown DataSource changed: ${dataSourceName}`);
         if (!existingDataSource.equals(dataSource)) {
           self.setState({
-            dataSources: dataSources.map((ds) => ds.name === dataSourceName ? dataSource : ds)
+            dataSources: <List<DataSource>>dataSources.map((ds) => ds.name === dataSourceName ? dataSource : ds)
           });
         }
         self.setState({ dataSource });
@@ -64,19 +65,19 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       setFilter: (filter: Filter) => {
         self.setState({ filter });
       },
-      changeSplits: (splits: SplitCombine[]) => {
+      changeSplits: (splits: List<SplitCombine>) => {
         self.setState({ splits });
       },
       addSplit: (split: SplitCombine) => {
         var { splits } = this.state;
         self.setState({
-          splits: splits.concat([split])
+          splits: <List<SplitCombine>>splits.concat(split)
         });
       },
       removeSplit: (split: SplitCombine) => {
         var { splits } = this.state;
         self.setState({
-          splits: splits.filter(s => s !== split)
+          splits: <List<SplitCombine>>splits.filter(s => s !== split)
         });
       }
     };
@@ -85,12 +86,12 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   componentWillMount() {
     var { dataSources } = this.props;
     var { dataSource, selectedMeasures } = this.state;
-    if (dataSources.length && !dataSource) {
-      dataSource = dataSources[0];
+    if (dataSources.size && !dataSource) {
+      dataSource = dataSources.first();
       this.setState({
         dataSources,
         dataSource: dataSource,
-        selectedMeasures: dataSource.measures.slice(0, 4)
+        selectedMeasures: <List<Measure>>dataSource.measures.slice(0, 4)
       });
     }
   }
@@ -138,7 +139,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var dimensionName = dataTransfer.getData("text/dimension");
     this.setState({
       dragOver: false,
-      splits: [new SplitCombine($(dimensionName), null, null)] // should use clicker
+      splits: List([new SplitCombine($(dimensionName), null, null)]) // should use clicker
     });
   }
 

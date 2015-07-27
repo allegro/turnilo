@@ -1,22 +1,16 @@
 'use strict';
 
-export function findFirstIndex<T>(array: T[], fn: (x: T) => boolean): number {
-  for (var i = 0; i < array.length; i++) {
-    var v = array[i];
-    if (fn(v)) return i;
-  }
-  return -1;
-}
+import { List } from 'immutable';
 
-export function moveInArray<T>(array: T[], itemIndex: number, insertPoint: number): T[] {
-  var n = array.length;
+export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {
+  var n = list.size;
   if (itemIndex < 0 || itemIndex >= n) throw new Error('itemIndex out of range');
   if (insertPoint < 0 || insertPoint > n) throw new Error('insertPoint out of range');
   var newArray: T[] = [];
-  for (var i = 0; i < n; i++) {
-    if (i === insertPoint) newArray.push(array[itemIndex]);
-    if (i !== itemIndex) newArray.push(array[i]);
-  }
-  if (i === insertPoint) newArray.push(array[itemIndex]);
-  return newArray;
+  list.forEach((value, i) => {
+    if (i === insertPoint) newArray.push(list.get(itemIndex));
+    if (i !== itemIndex) newArray.push(value);
+  });
+  if (n === insertPoint) newArray.push(list.get(itemIndex));
+  return List(newArray);
 }

@@ -1,5 +1,6 @@
 'use strict';
 
+import { List } from 'immutable';
 import React = require('react/addons');
 import d3 = require('d3');
 import { $, Dispatcher, Expression, NativeDataset, Datum } from 'plywood';
@@ -11,7 +12,7 @@ import { bindOne, bindMany } from "../../utils/render";
 interface TimeSeriesVisProps {
   dispatcher: Dispatcher;
   filter: Filter;
-  measures: Measure[];
+  measures: List<Measure>;
 }
 
 interface TimeSeriesVisState {
@@ -27,14 +28,14 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     };
   }
 
-  fetchData(filter: Filter, measures: Measure[]) {
+  fetchData(filter: Filter, measures: List<Measure>) {
     var query: any = $('main')
       .filter(filter.toExpression())
       .split($('time').timeBucket('PT1H', 'Etc/UTC'), 'Time');
 
-    for (let measure of measures) {
+    measures.forEach((measure) => {
       query = query.apply(measure.name, measure.expression);
-    }
+    });
     query = query.sort('$Time', 'ascending');
 
     this.props.dispatcher(query).then((dataset) => {

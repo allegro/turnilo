@@ -1,5 +1,6 @@
 'use strict';
 
+import { List } from 'immutable';
 import React = require('react/addons');
 import { Timezone, WallTime } from "chronology";
 import { $, Expression, Datum, Dataset, NativeDataset, TimeRange } from 'plywood';
@@ -17,10 +18,10 @@ if (!WallTime.rules) {
 var wikiRawData: any[] = (<any>window)['wiki_day_data'];
 for (let d of wikiRawData) d['time'] = new Date(d['time']);
 
-var dataSources = [
+var dataSources = List([
   DataSource.fromNativeDataset('wiki', 'Wikipedia', wikiRawData),
   DataSource.fromNativeDataset('wiki2', 'Wikipedia 2', wikiRawData)
-];
+]);
 
 React.render(
   React.createElement(Application, {

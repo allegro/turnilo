@@ -1,5 +1,6 @@
 'use strict';
 
+import { List } from 'immutable';
 import React = require('react/addons');
 import { $, Expression, Dispatcher, NativeDataset, Datum } from 'plywood';
 import { Filter, SplitCombine, Dimension, Measure, DataSource } from '../../models/index';
@@ -8,8 +9,8 @@ import { Filter, SplitCombine, Dimension, Measure, DataSource } from '../../mode
 interface NestedTableVisProps {
   dataSource: DataSource;
   filter: Filter;
-  splits: SplitCombine[];
-  measures: Measure[];
+  splits: List<SplitCombine>;
+  measures: List<Measure>;
 }
 
 interface NestedTableVisState {
@@ -25,23 +26,23 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     };
   }
 
-  fetchData(filter: Filter, measures: Measure[], splits: SplitCombine[]) {
+  fetchData(filter: Filter, measures: List<Measure>, splits: List<SplitCombine>) {
     var { dataSource } = this.props;
 
     var $main = $('main');
     var query: any = $()
       .apply('main', $main.filter(filter.toExpression()));
 
-    for (let split of splits) {
+    splits.forEach((split) => {
       var subQuery = $main.split(split.splitOn, 'Split');
 
-      for (let measure of measures) {
+      measures.forEach((measure) => {
         subQuery = subQuery.apply(measure.name, measure.expression);
-      }
-      subQuery = subQuery.sort($(measures[0].name), 'descending').limit(100);
+      });
+      subQuery = subQuery.sort($(measures.first().name), 'descending').limit(100);
 
       query = query.apply('Split', subQuery);
-    }
+    });
 
     dataSource.dispatcher(query).then((dataset) => {
       this.setState({ dataset });
@@ -68,9 +69,11 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     var { measures } = this.props;
     var { dataset } = this.state;
 
+    var measuresArray = measures.toArray();
+
     var headerColumns = [
       JSX(`<div className="segment" key="_segment">Segment</div>`)
-    ].concat(measures.map(measure => {
+    ].concat(measuresArray.map(measure => {
         return JSX(`<div className="measure" key={measure.name}>{measure.title}</div>`);
       }));
 
@@ -79,7 +82,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
       rows = dataset.data[0]['Split'].data.map((d: Datum, i: number) => {
         var row = [
           JSX(`<div className="segment" key="_segment">{String(d['Split'])}</div>`)
-        ].concat(measures.map(measure => {
+        ].concat(measuresArray.map(measure => {
             return JSX(`<div className="measure" key={measure.name}>{d[measure.name]}</div>`);
           }));
 

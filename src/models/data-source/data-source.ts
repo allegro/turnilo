@@ -1,6 +1,7 @@
 'use strict';
 
-import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
+import { List } from 'immutable';
+import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
 import { $, Expression, Dispatcher, basicDispatcherFactory, NativeDataset, Dataset } from 'plywood';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -13,8 +14,8 @@ export interface DataSourceValue {
   name: string;
   title: string;
   dispatcher: Dispatcher;
-  dimensions: Dimension[];
-  measures: Measure[];
+  dimensions: List<Dimension>;
+  measures: List<Measure>;
 }
 
 export interface DataSourceJS {
@@ -30,8 +31,8 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
   public dispatcher: Dispatcher;
   public name: string;
   public title: string;
-  public dimensions: Dimension[];
-  public measures: Measure[];
+  public dimensions: List<Dimension>;
+  public measures: List<Measure>;
 
   static isDataSource(candidate: any): boolean {
     return isInstanceOf(candidate, DataSource);
@@ -42,11 +43,11 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     nativeDataset.introspect();
 
     var attributes = nativeDataset.attributes;
-    var dimensions: Dimension[] = [];
-    var measures: Measure[] = [];
+    var dimensionArray: Dimension[] = [];
+    var measureArray: Measure[] = [];
 
     if (!attributes['count']) {
-      measures.push(new Measure({
+      measureArray.push(new Measure({
         name: 'count',
         title: 'Count',
         expression: $('main').count()
@@ -59,7 +60,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       switch (type) {
         case 'STRING':
         case 'TIME':
-          dimensions.push(new Dimension({
+          dimensionArray.push(new Dimension({
             name: k,
             title: upperCaseFirst(k),
             expression: $(k),
@@ -68,7 +69,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
           break;
 
         case 'NUMBER':
-          measures.push(new Measure({
+          measureArray.push(new Measure({
             name: k,
             title: upperCaseFirst(k),
             expression: $('main').sum($(k))
@@ -80,8 +81,8 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       }
     }
 
-    dimensions.sort((a, b) => a.title.localeCompare(b.title));
-    measures.sort((a, b) => a.title.localeCompare(b.title));
+    dimensionArray.sort((a, b) => a.title.localeCompare(b.title));
+    measureArray.sort((a, b) => a.title.localeCompare(b.title));
 
     var dispatcher = basicDispatcherFactory({
       datasets: {
@@ -89,7 +90,13 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       }
     });
 
-    return new DataSource({ name, title, dispatcher, dimensions, measures });
+    return new DataSource({
+      name,
+      title,
+      dispatcher,
+      dimensions: List(dimensionArray),
+      measures: List(measureArray)
+    });
   }
 
   static fromJS(parameters: DataSourceJS): DataSource {
@@ -97,8 +104,8 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       dispatcher: null,
       name: parameters.name,
       title: parameters.title,
-      dimensions: parameters.dimensions.map(Dimension.fromJS),
-      measures: parameters.measures.map(Measure.fromJS)
+      dimensions: List(parameters.dimensions.map(Dimension.fromJS)),
+      measures: List(parameters.measures.map(Measure.fromJS))
     });
   }
 
@@ -124,8 +131,8 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     return {
       name: this.name,
       title: this.title,
-      dimensions: this.dimensions.map(dimension => dimension.toJS()),
-      measures: this.measures.map(measure => measure.toJS())
+      dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
+      measures: this.measures.toArray().map(measure => measure.toJS())
     };
   }
 
@@ -141,11 +148,11 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     return DataSource.isDataSource(other) &&
       this.name === other.name &&
       this.title === other.title &&
-      arraysEqual(this.dimensions, other.dimensions) &&
-      arraysEqual(this.measures, other.measures);
+      this.dimensions.equals(other.dimensions) &&
+      this.measures.equals(other.measures);
   }
 
-  public changeDimensions(dimensions: Dimension[]): DataSource {
+  public changeDimensions(dimensions: List<Dimension>): DataSource {
     var value = this.valueOf();
     value.dimensions = dimensions;
     return new DataSource(value);
