@@ -38,8 +38,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   }
 
-  onSearch() {
-    this.setState({ showSearch: true });
+  toggleSearch() {
+    var { showSearch } = this.state;
+    this.setState({ showSearch: !showSearch });
   }
 
   selectFilter() {
@@ -54,7 +55,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       <div className="dimension-tile">
         <TileHeader
           title={dimension.title}
-          onSearch={this.onSearch.bind(this)}
+          onSearch={this.toggleSearch.bind(this)}
           onClose={clicker.unpinDimension.bind(clicker, dimension)}
         />
         <MenuTable
