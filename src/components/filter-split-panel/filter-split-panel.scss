@@ -25,7 +25,7 @@
       transition: height 0.1s ease-in-out;
 
       .item {
-        @include pin-top(30);
+        @include pin-top(30px);
 
         padding: 8px 0 0 10px;
         background: $detail-background;
@@ -43,11 +43,7 @@
         }
 
         .remove {
-          position: absolute;
-          right: 0;
-          top: 0;
-          height: 100%;
-          width: 25px;
+          @include pin-right(25px);
           text-align: center;
           padding-top: 8px;
           cursor: pointer;

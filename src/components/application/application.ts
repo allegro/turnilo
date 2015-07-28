@@ -221,8 +221,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             {dropIndicator}
           </div>
           <PinboardPanel
-            dataSource={dataSource}
             clicker={clicker}
+            dataSource={dataSource}
+            filter={filter}
             selectedMeasures={selectedMeasures}
             pinnedDimensions={pinnedDimensions}
           />

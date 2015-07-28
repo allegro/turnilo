@@ -8,24 +8,15 @@ $pinboard-width: 200px;
   overflow: hidden;
 
   .header-bar {
-    position: absolute;
-    width: 100%;
-    height: $header-height;
+    @include pin-top($header-height);
     z-index: 11;
   }
 
   .container {
-    position: absolute;
-    top: $header-height;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    @include unpin-top($header-height);
 
     .filter-split-panel {
-      position: absolute;
-      height: 100%;
-      left: 0;
-      width: $action-bar-width;
+      @include pin-left($action-bar-width);
       z-index: 10;
     }
 
@@ -37,49 +28,29 @@ $pinboard-width: 200px;
       right: $pinboard-width;
 
       .vis-bar {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: $vis-bar-height;
+        @include pin-top($vis-bar-height);
         z-index: 8;
 
         overflow: hidden;
       }
 
       .visualization {
-        position: absolute;
-        top: $vis-bar-height;
-        bottom: 0;
-        width: 100%;
+        @include unpin-top($vis-bar-height);
 
-        .time-series-vis {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-        }
-
+        .time-series-vis,
         .nested-table-vis {
-          position: absolute;
-          width: 100%;
-          height: 100%;
+          @include pin-full;
         }
       }
 
       .drop-indicator {
-        position: absolute;
-        width: 100%;
-        height: 100%;
+        @include pin-full;
         z-index: 9;
       }
     }
 
     .pinboard-panel {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: $pinboard-width;
+      @include pin-right($pinboard-width);
     }
   }
 

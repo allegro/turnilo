@@ -29,7 +29,6 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
     this.state = {
       filter: null
     };
-    this.selectFilter = this.selectFilter.bind(this);
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
@@ -115,7 +114,12 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
           <div className="pin" onClick={this.pinDimension.bind(this)}>p</div>
           <div className="close" onClick={onClose}>x</div>
         </div>
-        <MenuTable dataSource={dataSource} filter={filter} dimension={dimension} selectFilter={this.selectFilter}/>
+        <MenuTable
+          dataSource={dataSource}
+          filter={filter}
+          dimension={dimension}
+          selectFilter={this.selectFilter.bind(this)}
+        />
         <div className="button-bar">
           <div className="ok button" onClick={this.onOK.bind(this)}>OK</div>
           <div className="cancel button" onClick={onClose}>Cancel</div>

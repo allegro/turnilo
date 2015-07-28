@@ -3,4 +3,8 @@
 
 .dimension-tile {
   background: $detail-background;
+
+  .menu-table {
+    @include unpin-top(20px);
+  }
 }

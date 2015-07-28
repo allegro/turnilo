@@ -12,11 +12,7 @@ $button-bar-height: 40px;
   border: 1px solid $detail-border-color;
 
   .title-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: $title-bar-height;
-    width: 100%;
+    @include pin-top($title-bar-height);
 
     .title {
       padding: 15px 0 10px 10px;
@@ -51,10 +47,7 @@ $button-bar-height: 40px;
   }
 
   .button-bar {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: $button-bar-height;
+    @include pin-bottom($button-bar-height);
     padding: 10px 0 0 10px;
 
     .button {

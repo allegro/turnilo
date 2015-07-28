@@ -1,7 +1,7 @@
 @import 'variables';
 
 // positioning
-@mixin pin-full($height) {
+@mixin pin-full {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -14,7 +14,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: $height * 1px;
+  height: $height;
 }
 
 @mixin pin-bottom($height) {
@@ -22,7 +22,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: $height * 1px;
+  height: $height;
 }
 
 @mixin pin-left($width) {
@@ -30,7 +30,7 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width: $width * 1px;
+  width: $width;
 }
 
 @mixin pin-right($width) {
@@ -38,7 +38,39 @@
   top: 0;
   bottom: 0;
   right: 0;
-  width: $width * 1px;
+  width: $width;
+}
+
+@mixin unpin-top($top) {
+  position: absolute;
+  top: $top;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+@mixin unpin-bottom($bottom) {
+  position: absolute;
+  top: 0;
+  bottom: $bottom;
+  left: 0;
+  right: 0;
+}
+
+@mixin unpin-left($left) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: $left;
+  right: 0;
+}
+
+@mixin unpin-right($right) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: $right;
 }
 
 // for the shpitz

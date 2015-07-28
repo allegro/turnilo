@@ -1,14 +1,12 @@
 @import '../../variables';
+@import '../../mixins';
 
 .menu-table {
   background: $detail-background;
   color: $detail-text-color;
 
   .search {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 30px;
+    @include pin-top(30px);
     padding: 0 10px;
 
     input {

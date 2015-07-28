@@ -7,11 +7,7 @@
   }
 
   .rows {
-    position: absolute;
-    left: 0;
-    top: 25px;
-    bottom: 0;
-    width: 100%;
+    @include unpin-top(25px);
     overflow-x: hidden;
     overflow-y: auto;
 

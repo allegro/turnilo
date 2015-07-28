@@ -5,9 +5,7 @@ $action-size: 100px;
 
 .drop-indicator {
   .white-out {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+    @include pin-full;
     background: $white;
     opacity: .5;
   }

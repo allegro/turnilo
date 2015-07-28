@@ -11,6 +11,7 @@ import { MeasuresTile } from '../measures-tile/measures-tile';
 interface PinboardPanelProps {
   clicker: Clicker;
   dataSource: DataSource;
+  filter: Filter;
   selectedMeasures: OrderedSet<string>;
   pinnedDimensions: OrderedSet<string>;
 }
@@ -92,7 +93,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   }
 
   render() {
-    var { clicker, dataSource, selectedMeasures, pinnedDimensions } = this.props;
+    var { clicker, dataSource, filter, selectedMeasures, pinnedDimensions } = this.props;
     var { dragOver } = this.state;
 
     var dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
@@ -102,6 +103,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
           key={dimension.name}
           clicker={clicker}
           dataSource={dataSource}
+          filter={filter}
           dimension={dimension}
         />
       `);
