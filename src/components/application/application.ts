@@ -3,6 +3,7 @@
 import React = require('react/addons');
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher, find } from 'plywood';
+import { dataTransferTypesContain } from '../../utils/dom';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
@@ -118,11 +119,18 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   }
 
+  canDrop(e: DragEvent) {
+    return dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
+  }
+
   dragOver(e: DragEvent) {
+    if (!this.canDrop(e)) return;
+    e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
   }
 
   dragEnter(e: DragEvent) {
+    if (!this.canDrop(e)) return;
     var { dragOver } = this.state;
     if (!dragOver) {
       this.dragCounter = 0;
@@ -135,6 +143,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   }
 
   dragLeave(e: DragEvent) {
+    if (!this.canDrop(e)) return;
     var { dragOver } = this.state;
     if (!dragOver) return;
     if (this.dragCounter === 0) {
@@ -147,10 +156,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   }
 
   drop(e: DragEvent) {
+    if (!this.canDrop(e)) return;
     this.dragCounter = 0;
-    var dataTransfer = e.dataTransfer;
-    //ToDo: if (!dataTransfer.types.contains("text/dimension")) return;
-    var dimensionName = dataTransfer.getData("text/dimension");
+    var dimensionName = e.dataTransfer.getData("text/dimension");
     this.setState({
       dragOver: false,
       splits: List([new SplitCombine($(dimensionName), null, null)]) // should use clicker

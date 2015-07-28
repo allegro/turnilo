@@ -152,6 +152,14 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       this.measures.equals(other.measures);
   }
 
+  public getDimension(dimensionName: string) {
+    return this.dimensions.find(dimension => dimension.name === dimensionName);
+  }
+
+  public getMeasure(measureName: string) {
+    return this.measures.find(measure => measure.name === measureName);
+  }
+
   public changeDimensions(dimensions: List<Dimension>): DataSource {
     var value = this.valueOf();
     value.dimensions = dimensions;

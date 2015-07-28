@@ -5,8 +5,11 @@ import React = require('react/addons');
 import d3 = require('d3');
 import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
 import { moveInList } from '../../utils/general';
+import { dataTransferTypesContain } from '../../utils/dom';
 import { DataSource, Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
 import { FilterSplitMenu } from "../filter-split-menu/filter-split-menu";
+
+enum Section { Filter, Splits, Dimensions }
 
 interface FilterSplitPanelProps {
   clicker: Clicker;
@@ -20,17 +23,8 @@ interface FilterSplitPanelState {
   anchor?: number;
   rect?: ClientRect;
   trigger?: Element;
-  dragSection?: string;
+  dragSection?: Section;
   dragPosition?: number;
-}
-
-function dataTransferTypesContain(types: any, neededType: string): boolean {
-  if (Array.isArray(types)) {
-    return types.indexOf(neededType) !== -1;
-  } else if (types instanceof DOMStringList) {
-    return types.contains(neededType);
-  }
-  return false;
 }
 
 export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, FilterSplitPanelState> {
@@ -133,13 +127,9 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     }, 1);
   }
 
-  canDrop(section: string, e: DragEvent) {
-    return dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
-  }
-
-  calculateDragPosition(section: string, e: DragEvent) {
+  calculateDragPosition(section: Section, e: DragEvent) {
     var itemHeight = 30;
-    if (section !== 'dimensions') {
+    if (section !== Section.Dimensions) {
       this.setState({ dragPosition: 0 });
       return;
     }
@@ -153,14 +143,18 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     });
   }
 
-  dragOver(section: string, e: DragEvent) {
+  canDrop(section: Section, e: DragEvent) {
+    return dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
+  }
+
+  dragOver(section: Section, e: DragEvent) {
     if (!this.canDrop(section, e)) return;
     e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
     this.calculateDragPosition(section, e);
   }
 
-  dragEnter(section: string, e: DragEvent) {
+  dragEnter(section: Section, e: DragEvent) {
     if (!this.canDrop(section, e)) return;
     var { dragSection } = this.state;
     if (dragSection !== section) {
@@ -172,7 +166,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     }
   }
 
-  dragLeave(section: string, e: DragEvent) {
+  dragLeave(section: Section, e: DragEvent) {
     if (!this.canDrop(section, e)) return;
     var { dragSection } = this.state;
     if (dragSection !== section) return;
@@ -186,16 +180,16 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     }
   }
 
-  drop(section: string, e: DragEvent) {
+  drop(section: Section, e: DragEvent) {
     if (!this.canDrop(section, e)) return;
     var { clicker, dataSource } = this.props;
     var { dragPosition } = this.state;
 
     var dataTransfer = e.dataTransfer;
     var dimensionName = dataTransfer.getData("text/dimension");
-    if (section === 'splits') {
+    if (section === Section.Splits) {
       clicker.addSplit(new SplitCombine($(dimensionName), null, null));
-    } else if (section === 'dimensions') {
+    } else if (section === Section.Dimensions) {
       var dimensions = dataSource.dimensions;
       var index = dimensions.findIndex((d) => d.name === dimensionName);
       if (index !== -1 && index !== dragPosition) {
@@ -236,6 +230,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   render() {
     var { dataSource, filter, splits, clicker } = this.props;
     var { selectedDimension, anchor, rect, trigger, dragSection, dragPosition } = this.state;
+    const itemHeight = 30;
 
     var menu: React.ReactElement<any> = null;
     if (selectedDimension) {
@@ -251,15 +246,15 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       />`);
     }
 
-    var dragPlaceholder: React.DOMElement<any> = null;
-    if (dragSection) {
-      dragPlaceholder = JSX(`<div className="drag-placeholder" key="_placeholder"></div>`);
-    }
-
-    var filterItems: Array<React.DOMElement<any>> = filter.operands.toArray().map(operand => {
+    var filterItemY = 0;
+    var filterItems = filter.operands.toArray().map((operand, i) => {
       var operandExpression = operand.expression;
       var dimension = dataSource.dimensions.find((d) => d.expression.equals(operandExpression));
       if (!dimension) throw new Error('dimension not found');
+
+      if (dragSection === Section.Filter && dragPosition === i) filterItemY += itemHeight;
+      var style = { transform: `translate3d(0,${filterItemY}px,0)` };
+      filterItemY += itemHeight;
 
       return JSX(`
         <div
@@ -268,21 +263,24 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           draggable="true"
           onClick={this.selectDimension.bind(this, dimension)}
           onDragStart={this.filterDragStart.bind(this, dimension, operand)}
+          style={style}
         >
           <div className="reading">{dimension.title}: {this.formatValue(dimension, operand)}</div>
           <div className="remove" onClick={this.removeFilter.bind(this, operandExpression)}>x</div>
         </div>
       `);
     }, this);
+    if (dragSection === Section.Filter && dragPosition === filter.operands.size) filterItemY += itemHeight;
 
-    if (dragSection === 'filters') {
-      filterItems.splice(dragPosition, 0, dragPlaceholder);
-    }
-
-    var splitItems: Array<React.DOMElement<any>> = splits.toArray().map(split => {
+    var splitItemY = 0;
+    var splitItems = splits.toArray().map((split, i) => {
       var splitExpression = split.splitOn;
       var dimension = dataSource.dimensions.find((d) => d.expression.equals(splitExpression));
       if (!dimension) throw new Error('dimension not found');
+
+      if (dragSection === Section.Splits && dragPosition === i) splitItemY += itemHeight;
+      var style = { transform: `translate3d(0,${splitItemY}px,0)` };
+      splitItemY += itemHeight;
 
       return JSX(`
         <div
@@ -291,18 +289,21 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           draggable="true"
           onClick={this.selectDimension.bind(this, dimension)}
           onDragStart={this.splitDragStart.bind(this, dimension, split)}
+          style={style}
         >
           <div className="reading">{dimension.title}</div>
           <div className="remove" onClick={this.removeSplit.bind(this, split)}>x</div>
         </div>
       `);
     }, this);
+    if (dragSection === Section.Splits && dragPosition === splits.size) splitItemY += itemHeight;
 
-    if (dragSection === 'splits') {
-      splitItems.splice(dragPosition, 0, dragPlaceholder);
-    }
+    var dimensionItemY = 0;
+    var dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
+      if (dragSection === Section.Dimensions && dragPosition === i) dimensionItemY += itemHeight;
+      var style = { transform: `translate3d(0,${dimensionItemY}px,0)` };
+      dimensionItemY += itemHeight;
 
-    var dimensionItems: Array<React.DOMElement<any>> = dataSource.dimensions.toArray().map(dimension => {
       return JSX(`
         <div
           className={'item dimension' + (dimension === selectedDimension ? ' selected' : '')}
@@ -310,45 +311,53 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           draggable="true"
           onClick={this.selectDimension.bind(this, dimension)}
           onDragStart={this.dimensionDragStart.bind(this, dimension)}
-        >{dimension.title}</div>
+          style={style}
+        >
+          <div className="icon">Ab</div>
+          {dimension.title}
+        </div>
       `);
     }, this);
-
-    if (dragSection === 'dimensions') {
-      dimensionItems.splice(dragPosition, 0, dragPlaceholder);
-    }
+    if (dragSection === Section.Dimensions && dragPosition === dataSource.dimensions.size) dimensionItemY += itemHeight;
 
     return JSX(`
       <div className="filter-split-panel">
         <div
-          className={'filters section ' + (dragSection === 'filters' ? 'drag-over' : 'no-drag')}
-          onDragOver={this.dragOver.bind(this, 'filters')}
-          onDragEnter={this.dragEnter.bind(this, 'filters')}
-          onDragLeave={this.dragLeave.bind(this, 'filters')}
-          onDrop={this.drop.bind(this, 'filters')}
+          className={'filters section ' + (dragSection === Section.Filter ? 'drag-over' : 'no-drag')}
+          onDragOver={this.dragOver.bind(this, Section.Filter)}
+          onDragEnter={this.dragEnter.bind(this, Section.Filter)}
+          onDragLeave={this.dragLeave.bind(this, Section.Filter)}
+          onDrop={this.drop.bind(this, Section.Filter)}
         >
           <div className="title">Filter</div>
-          <div className="items">{filterItems}</div>
+          <div className="items" ref="filterItems" style={{ height: filterItemY + 'px' }}>
+            {filterItems}
+          </div>
         </div>
         <div
-          className={'splits section ' + (dragSection === 'splits' ? 'drag-over' : 'no-drag')}
-          onDragOver={this.dragOver.bind(this, 'splits')}
-          onDragEnter={this.dragEnter.bind(this, 'splits')}
-          onDragLeave={this.dragLeave.bind(this, 'splits')}
-          onDrop={this.drop.bind(this, 'splits')}
+          className={'splits section ' + (dragSection === Section.Splits ? 'drag-over' : 'no-drag')}
+          onDragOver={this.dragOver.bind(this, Section.Splits)}
+          onDragEnter={this.dragEnter.bind(this, Section.Splits)}
+          onDragLeave={this.dragLeave.bind(this, Section.Splits)}
+          onDrop={this.drop.bind(this, Section.Splits)}
         >
           <div className="title">Split</div>
-          <div className="items">{splitItems}</div>
+          <div className="items" ref="splitItems" style={{ height: splitItemY + 'px' }}>
+            {splitItems}
+          </div>
         </div>
         <div
-          className={'dimensions section ' + (dragSection === 'dimensions' ? 'drag-over' : 'no-drag')}
-          onDragOver={this.dragOver.bind(this, 'dimensions')}
-          onDragEnter={this.dragEnter.bind(this, 'dimensions')}
-          onDragLeave={this.dragLeave.bind(this, 'dimensions')}
-          onDrop={this.drop.bind(this, 'dimensions')}
+          className={'dimensions section ' + (dragSection === Section.Dimensions ? 'drag-over' : 'no-drag')}
+          onDragOver={this.dragOver.bind(this, Section.Dimensions)}
+          onDragEnter={this.dragEnter.bind(this, Section.Dimensions)}
+          onDragLeave={this.dragLeave.bind(this, Section.Dimensions)}
+          onDrop={this.drop.bind(this, Section.Dimensions)}
         >
           <div className="title">Dimensions</div>
-          <div className="items" ref="dimensionItems">{dimensionItems}</div>
+          <div className="items" ref="dimensionItems">
+            {dimensionItems}
+            <div className="dummy-item" style={{ top: dimensionItemY + 'px' }}></div>
+          </div>
         </div>
         {menu}
       </div>

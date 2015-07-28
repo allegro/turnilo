@@ -1,4 +1,5 @@
 @import '../../variables';
+@import '../../mixins';
 
 .filter-split-panel {
   padding: 0 10px 10px 10px;
@@ -20,15 +21,18 @@
     }
 
     .items {
-      background: $detail-background;
       color: $detail-text-color;
+      transition: height 0.1s ease-in-out;
 
       .item {
-        height: 30px;
+        @include pin-top(30);
+
         padding: 8px 0 0 10px;
+        background: $detail-background;
         border-bottom: 1px solid $detail-border-color;
         cursor: pointer;
         overflow: hidden;
+        transition: transform 0.1s ease-in-out;
 
         &.selected {
           background: $detail-highlight;
@@ -48,11 +52,12 @@
           padding-top: 8px;
           cursor: pointer;
         }
-      }
 
-      .drag-placeholder {
-        height: 15px;
-        background: $beta-background;
+        .icon {
+          display: inline-block;
+          margin-right: 5px;
+          cursor: ns-resize;
+        }
       }
     }
 
@@ -71,6 +76,14 @@
         bottom: 0;
         width: 100%;
         overflow: auto;
+
+        .dummy-item {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          background: $detail-background;
+          transition: top 0.1s ease-in-out;
+        }
       }
     }
   }

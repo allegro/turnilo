@@ -9,10 +9,16 @@
   flex-wrap: wrap;
 
   .measures-tile,
-  .dimension-tile {
+  .dimension-tile,
+  .placeholder-tile {
     flex-grow: 1;
     width: 180px;
     min-height: 150px;
     margin: 10px;
+  }
+
+  .placeholder-tile {
+    border: 2px dashed $gray;
+    border-radius: 5px;
   }
 }

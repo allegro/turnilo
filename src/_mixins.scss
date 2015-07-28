@@ -1,5 +1,46 @@
 @import 'variables';
 
+// positioning
+@mixin pin-full($height) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+@mixin pin-top($height) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: $height * 1px;
+}
+
+@mixin pin-bottom($height) {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: $height * 1px;
+}
+
+@mixin pin-left($width) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: $width * 1px;
+}
+
+@mixin pin-right($width) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: $width * 1px;
+}
+
 // for the shpitz
 @mixin triangle($direction, $base, $altitude, $color) {
   @if $direction == up {
