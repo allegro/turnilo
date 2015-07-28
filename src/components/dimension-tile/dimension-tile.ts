@@ -14,14 +14,16 @@ interface DimensionTileProps {
 }
 
 interface DimensionTileState {
+  showSearch: boolean;
 }
 
 export class DimensionTile extends React.Component<DimensionTileProps, DimensionTileState> {
 
   constructor() {
     super();
-    // this.state = {};
-
+    this.state = {
+      showSearch: false
+    };
   }
 
   componentDidMount() {
@@ -36,22 +38,31 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   }
 
+  onSearch() {
+    this.setState({ showSearch: true });
+  }
+
   selectFilter() {
 
   }
 
   render() {
     var { clicker, dataSource, filter, dimension } = this.props;
+    var { showSearch } = this.state;
 
     return JSX(`
       <div className="dimension-tile">
-        <TileHeader title={dimension.title} onClose={clicker.unpinDimension.bind(clicker, dimension)}/>
+        <TileHeader
+          title={dimension.title}
+          onSearch={this.onSearch.bind(this)}
+          onClose={clicker.unpinDimension.bind(clicker, dimension)}
+        />
         <MenuTable
           dataSource={dataSource}
           filter={filter}
           dimension={dimension}
           selectFilter={this.selectFilter.bind(this)}
-          showSearch={false}
+          showSearch={showSearch}
           showCheckboxes={false}
         />
       </div>
