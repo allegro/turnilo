@@ -51,6 +51,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           filter={filter}
           dimension={dimension}
           selectFilter={this.selectFilter.bind(this)}
+          showSearch={false}
+          showCheckboxes={false}
         />
       </div>
     `);

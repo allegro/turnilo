@@ -2,6 +2,8 @@
 @import '../../mixins';
 
 .tile-header {
+  height: 20px;
+  padding: 5px 0 0 10px;
 
   .search {
     position: absolute;

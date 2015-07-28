@@ -11,6 +11,8 @@ interface MenuTableProps {
   dataSource: DataSource;
   filter: Filter;
   dimension: Dimension;
+  showSearch: boolean;
+  showCheckboxes: boolean;
   selectFilter: (newFilter: Filter, source: string) => void;
 }
 
@@ -60,7 +62,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
   }
 
-  onBoxClick(value: any) {
+  onBoxClick(value: any, e: MouseEvent) {
+    e.stopPropagation();
     var { filter, dimension, selectFilter } = this.props;
     var { selectedValues } = this.state;
     if (selectedValues.indexOf(value) > -1) {
@@ -86,30 +89,49 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   }
 
   render() {
-    var { dimension } = this.props;
+    var { dimension, showSearch, showCheckboxes } = this.props;
     var { dataset, selectedValues } = this.state;
 
     var rows: Array<React.DOMElement<any>> = [];
     var hasMore = false;
     if (dataset) {
       hasMore = dataset.data.length > topN;
-      rows = dataset.data.slice(0, topN).map((d, i) => {
-        var segmentValue = d[dimension.name];
+      rows = dataset.data.slice(0, topN).map((d) => {
+        var segmentValue = String(d[dimension.name]);
         var measureValue = d['Measure'];
         var selected = selectedValues.indexOf(segmentValue) > -1;
+
+        var checkbox: React.DOMElement<any> = null;
+        if (showCheckboxes) {
+          checkbox = JSX(`<div className="checkbox" onClick={this.onBoxClick.bind(this, segmentValue)}></div>`);
+        }
+
         return JSX(`
-          <div className={'row' + (selected ? ' selected' : '')} key={i}>
-            <div className="checkbox" onClick={this.onBoxClick.bind(this, segmentValue)}></div>
-            <div className="segment-value" onClick={this.onValueClick.bind(this, segmentValue)}>{String(segmentValue)}</div>
+          <div className={'row' + (selected ? ' selected' : '')} key={segmentValue}>
+            <div className="segment-value" onClick={this.onValueClick.bind(this, segmentValue)}>
+              {checkbox}
+              <div className="label">{segmentValue}</div>
+            </div>
             <div className="measure-value">{measureValue}</div>
           </div>
         `);
       });
     }
 
+    var className = [
+      'menu-table',
+      (hasMore ? 'has-more' : 'no-more'),
+      (showSearch ? 'with-search' : 'no-search')
+    ].join(' ');
+
+    var searchBar: React.DOMElement<any> = null;
+    if (showSearch) {
+      searchBar = JSX(`<div className="search"><input type="text" placeholder="Search"/></div>`);
+    }
+
     return JSX(`
-      <div className={'menu-table ' + (hasMore ? 'has-more' : 'no-more')}>
-        <div className="search"><input type="text" placeholder="Search"/></div>
+      <div className={className}>
+        {searchBar}
         <div className="rows">{rows}</div>
       </div>
     `);

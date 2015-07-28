@@ -119,6 +119,8 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
           filter={filter}
           dimension={dimension}
           selectFilter={this.selectFilter.bind(this)}
+          showSearch={true}
+          showCheckboxes={true}
         />
         <div className="button-bar">
           <div className="ok button" onClick={this.onOK.bind(this)}>OK</div>

@@ -4,6 +4,7 @@
 .menu-table {
   background: $detail-background;
   color: $detail-text-color;
+  user-select: none;
 
   .search {
     @include pin-top(30px);
@@ -18,12 +19,16 @@
 
   .rows {
     position: absolute;
-    top: 30px;
+    top: 0;
     bottom: 0;
     left: 10px;
     right: 0;
 
     overflow: auto;
+  }
+
+  &.with-search .rows {
+    top: 30px;
   }
 
   .row {
@@ -34,55 +39,52 @@
     }
 
     &.selected {
-      .checkbox:before {
+      .checkbox:after {
+        position: absolute;
         content: 'v';
+        top: 4px;
+        left: 3px;
       }
     }
   }
 
-  $checkbox-width: 15px;
+  $checkbox-width: 20px;
   $measure-width: 80px;
 
-  .checkbox {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: $checkbox-width;
-    height: 100%;
-
-    cursor: pointer;
-
-    &:before {
-      position: absolute;
-      content: '';
-      background: $gray;
-      width: 14px;
-      height: 14px;
-      top: 4px;
-      left: 0;
-    }
-  }
-
   .segment-value {
-    position: absolute;
-    left: $checkbox-width;
-    right: $measure-width;
-    top: 0;
-    height: 100%;
+    @include unpin-right($measure-width);
 
     cursor: pointer;
     overflow: hidden;
-    padding-top: 4px;
-    padding-left: 4px;
     white-space: nowrap;
+
+    .checkbox {
+      display: inline-block;
+      vertical-align: top;
+      width: $checkbox-width;
+      height: 100%;
+      cursor: pointer;
+
+      &:before {
+        position: absolute;
+        content: '';
+        background: $gray;
+        width: 14px;
+        height: 14px;
+        top: 4px;
+        left: 0;
+      }
+    }
+
+    .label {
+      display: inline-block;
+      vertical-align: top;
+      padding-top: 4px;
+    }
   }
 
   .measure-value {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: $measure-width;
-    height: 100%;
+    @include pin-right($measure-width);
 
     text-align: right;
     padding-top: 4px;
