@@ -15,8 +15,11 @@ if (!WallTime.rules) {
 }
 
 // Fake data
+var secInHour = 60 * 60;
 var wikiRawData: any[] = (<any>window)['wiki_day_data'];
-for (let d of wikiRawData) d['time'] = new Date(d['time']);
+wikiRawData.forEach((d, i) => {
+  d['time'] = new Date(Date.parse(d['time']) + (i % secInHour) * 1000);
+});
 
 var dataSources = List([
   DataSource.fromNativeDataset('wiki', 'Wikipedia', wikiRawData),

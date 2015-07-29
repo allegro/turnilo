@@ -83,13 +83,13 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
 
   addSplit(): void {
     var { clicker, dimension, onClose } = this.props;
-    clicker.addSplit(new SplitCombine($(dimension.name), null, null));
+    clicker.addSplit(dimension.getSplitCombine());
     onClose();
   }
 
   changeSplit(): void {
     var { clicker, dimension, onClose } = this.props;
-    clicker.changeSplits(List([new SplitCombine($(dimension.name), null, null)]));
+    clicker.changeSplits(List([dimension.getSplitCombine()]));
     onClose();
   }
 

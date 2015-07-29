@@ -13,6 +13,7 @@ interface TimeSeriesVisProps {
   filter: Filter;
   splits: List<SplitCombine>;
   measures: List<Measure>;
+  stage: ClientRect;
 }
 
 interface TimeSeriesVisState {
@@ -62,9 +63,23 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
   }
 
   render() {
+    var { measures, stage } = this.props;
+    var { dataset } = this.state;
+
+    var measureGraphs: Array<React.ReactElement<any>> = null;
+    if (dataset) {
+      measureGraphs = measures.toArray().map((measure) => {
+        return JSX(`
+          <div className="measure-graph" key={measure.name}>
+            {measure.title}: {stage.width}, {stage.height}
+          </div>
+        `);
+      });
+    }
+
     return JSX(`
       <div className="time-series-vis">
-        Time Series Vis!!!
+        {measureGraphs}
       </div>
     `);
   }

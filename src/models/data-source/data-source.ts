@@ -16,7 +16,7 @@ export interface DataSourceValue {
   dispatcher: Dispatcher;
   dimensions: List<Dimension>;
   measures: List<Measure>;
-  defaultMeasure: string;
+  defaultSortOn: string;
 }
 
 export interface DataSourceJS {
@@ -24,7 +24,7 @@ export interface DataSourceJS {
   title: string;
   dimensions: DimensionJS[];
   measures: MeasureJS[];
-  defaultMeasure: string;
+  defaultSortOn: string;
 }
 
 var check: ImmutableClass<DataSourceValue, DataSourceJS>;
@@ -35,7 +35,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
   public title: string;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
-  public defaultMeasure: string;
+  public defaultSortOn: string;
 
   static isDataSource(candidate: any): boolean {
     return isInstanceOf(candidate, DataSource);
@@ -48,7 +48,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     var attributes = nativeDataset.attributes;
     var dimensionArray: Dimension[] = [];
     var measureArray: Measure[] = [];
-    var defaultMeasure: string = null;
+    var defaultSortOn: string = null;
 
     if (!attributes['count']) {
       measureArray.push(new Measure({
@@ -57,21 +57,21 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
         expression: $('main').count(),
         format: Measure.DEFAULT_FORMAT
       }));
-      defaultMeasure = 'count';
+      defaultSortOn = 'count';
     }
 
     for (let k in attributes) {
       if (!attributes.hasOwnProperty(k)) continue;
       let type = attributes[k].type;
       switch (type) {
-        case 'STRING':
         case 'TIME':
+        case 'STRING':
           dimensionArray.push(new Dimension({
             name: k,
             title: upperCaseFirst(k),
             expression: $(k),
             type: type,
-            sortMeasure: null
+            sortOn: null
           }));
           break;
 
@@ -92,8 +92,8 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     dimensionArray.sort((a, b) => a.title.localeCompare(b.title));
     measureArray.sort((a, b) => a.title.localeCompare(b.title));
 
-    if (!defaultMeasure && measureArray.length) {
-      defaultMeasure = measureArray[0].name;
+    if (!defaultSortOn && measureArray.length) {
+      defaultSortOn = measureArray[0].name;
     }
 
     var dispatcher = basicDispatcherFactory({
@@ -108,7 +108,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       dispatcher,
       dimensions: List(dimensionArray),
       measures: List(measureArray),
-      defaultMeasure
+      defaultSortOn
     });
   }
 
@@ -119,7 +119,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       title: parameters.title,
       dimensions: List(parameters.dimensions.map(Dimension.fromJS)),
       measures: List(parameters.measures.map(Measure.fromJS)),
-      defaultMeasure: parameters.defaultMeasure
+      defaultSortOn: parameters.defaultSortOn
     });
   }
 
@@ -129,7 +129,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     this.title = parameters.title;
     this.dimensions = parameters.dimensions;
     this.measures = parameters.measures;
-    this.defaultMeasure = parameters.defaultMeasure;
+    this.defaultSortOn = parameters.defaultSortOn;
   }
 
   public valueOf(): DataSourceValue {
@@ -139,7 +139,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       title: this.title,
       dimensions: this.dimensions,
       measures: this.measures,
-      defaultMeasure: this.defaultMeasure
+      defaultSortOn: this.defaultSortOn
     };
   }
 
@@ -149,7 +149,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       title: this.title,
       dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
       measures: this.measures.toArray().map(measure => measure.toJS()),
-      defaultMeasure: this.defaultMeasure
+      defaultSortOn: this.defaultSortOn
     };
   }
 
@@ -167,7 +167,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       this.title === other.title &&
       arraysEqual(this.dimensions.toArray(), other.dimensions.toArray()) &&
       arraysEqual(this.measures.toArray(), other.measures.toArray()) &&
-      this.defaultMeasure === other.defaultMeasure;
+      this.defaultSortOn === other.defaultSortOn;
   }
 
   public getDimension(dimensionName: string): Dimension {
@@ -179,8 +179,8 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
   }
 
   public getSortMeasure(dimension: Dimension): Measure {
-    var sortMeasure = dimension.sortMeasure || this.defaultMeasure;
-    return this.getMeasure(sortMeasure);
+    var sortOn = dimension.sortOn || this.defaultSortOn;
+    return this.getMeasure(sortOn);
   }
 
   public changeDimensions(dimensions: List<Dimension>): DataSource {

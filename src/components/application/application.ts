@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
 import { Timezone } from "chronology";
-import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher, find } from 'plywood';
+import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher, ChainExpression } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
@@ -31,6 +31,7 @@ interface ApplicationState {
   pinnedDimensions?: OrderedSet<string>;
   visualization?: string;
   visualizations?: List<string>;
+  visualizationStage?: ClientRect;
   timezone?: Timezone;
   dragOver?: boolean;
   drawerOpen?: boolean;
@@ -50,9 +51,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
           end: new Date('2013-02-27T00:00:00Z')
         }))
       ])),
-      splits: List([
-        new SplitCombine($('page'), null, null)
-      ])
+      splits: <List<SplitCombine>>List()
     };
 
     var self = this;
@@ -115,6 +114,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         });
       }
     };
+
+    this.globalResizeListener = this.globalResizeListener.bind(this);
   }
 
   componentWillMount() {
@@ -122,10 +123,12 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var { dataSource, selectedMeasures, splits } = this.state;
     if (dataSources.size && !dataSource) {
       dataSource = dataSources.first();
+      splits = List([dataSource.getDimension('page').getSplitCombine()]);
       var visualizations = this.getPossibleVisualizations(dataSource, splits);
       this.setState({
         dataSources,
         dataSource: dataSource,
+        splits,
         selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
         pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(0, 2).map(d => d.name)),
         visualizations: visualizations,
@@ -135,11 +138,19 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   }
 
   componentDidMount() {
-
+    window.addEventListener('resize', this.globalResizeListener);
+    this.globalResizeListener();
   }
 
   componentWillUnmount() {
+    window.removeEventListener('resize', this.globalResizeListener);
+  }
 
+  globalResizeListener() {
+    var { visualization } = this.refs;
+    this.setState({
+      visualizationStage: React.findDOMNode(visualization).getBoundingClientRect()
+    });
   }
 
   canDrop(e: DragEvent) {
@@ -176,10 +187,13 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
+    var { dataSource } = this.state;
     this.dragCounter = 0;
-    var dimensionName = e.dataTransfer.getData("text/dimension");
+    var dimension = dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
     this.setState({ dragOver: false });
-    this.clicker.changeSplits(List([new SplitCombine($(dimensionName), null, null)]));
+    if (dimension) {
+      this.clicker.changeSplits(List([dimension.getSplitCombine()]));
+    }
   }
 
   sideDrawerOpen(state: boolean): void {
@@ -191,7 +205,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
     if (splits.size === 1) {
       var firstSplit = splits.first();
-      var splitDimension = dataSource.dimensions.find((d) => d.expression.equals(firstSplit.splitOn));
+      var splitDimension = dataSource.getDimension(firstSplit.dimension);
       if (splitDimension.type === 'TIME') {
         visArray.push('time-series-vis');
       }
@@ -204,7 +218,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var clicker = this.clicker;
     var {
       dataSources, dataSource, filter, splits, selectedMeasures, pinnedDimensions, timezone,
-      visualizations, visualization,
+      visualizations, visualization, visualizationStage,
       dragOver, drawerOpen
     } = this.state;
 
@@ -216,14 +230,16 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         dataSource: dataSource,
         filter: filter,
         splits: splits,
-        measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName))
+        measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName)),
+        stage: visualizationStage
       });
     } else {
       visElement = React.createElement(NestedTableVis, {
         dataSource: dataSource,
         filter: filter,
         splits: splits,
-        measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName))
+        measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName)),
+        stage: visualizationStage
       });
     }
 
@@ -263,7 +279,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             onDrop={this.drop.bind(this)}
           >
             <VisBar clicker={clicker} visualizations={visualizations} visualization={visualization}/>
-            <div className='visualization'>{visElement}</div>
+            <div className='visualization' ref='visualization'>{visElement}</div>
             {dropIndicator}
           </div>
           <PinboardPanel

@@ -2,13 +2,14 @@
 
 import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
 import { $, Expression, ExpressionJS } from 'plywood';
+import { SplitCombine } from '../split-combine/split-combine';
 
 export interface DimensionValue {
   name: string;
   title: string;
   expression: Expression;
   type: string;
-  sortMeasure: string;
+  sortOn: string;
 }
 
 export interface DimensionJS {
@@ -16,7 +17,7 @@ export interface DimensionJS {
   title: string;
   expression: ExpressionJS;
   type: string;
-  sortMeasure?: string;
+  sortOn?: string;
 }
 
 var check: ImmutableClass<DimensionValue, DimensionJS>;
@@ -25,7 +26,7 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
   public title: string;
   public expression: Expression;
   public type: string;
-  public sortMeasure: string;
+  public sortOn: string;
 
   static isDimension(candidate: any): boolean {
     return isInstanceOf(candidate, Dimension);
@@ -37,7 +38,7 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
       title: parameters.title,
       expression: Expression.fromJS(parameters.expression),
       type: parameters.type,
-      sortMeasure: parameters.sortMeasure || null
+      sortOn: parameters.sortOn || null
     });
   }
 
@@ -46,7 +47,7 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
     this.title = parameters.title;
     this.expression = parameters.expression;
     this.type = parameters.type;
-    this.sortMeasure = parameters.sortMeasure;
+    this.sortOn = parameters.sortOn;
   }
 
   public valueOf(): DimensionValue {
@@ -55,7 +56,7 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
       title: this.title,
       expression: this.expression,
       type: this.type,
-      sortMeasure: this.sortMeasure
+      sortOn: this.sortOn
     };
   }
 
@@ -66,7 +67,7 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
       expression: this.expression.toJS(),
       type: this.type
     };
-    if (this.sortMeasure) js.sortMeasure = this.sortMeasure;
+    if (this.sortOn) js.sortOn = this.sortOn;
     return js;
   }
 
@@ -84,7 +85,24 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
       this.title === other.title &&
       this.expression.equals(other.expression) &&
       this.type === other.type &&
-      this.sortMeasure === other.sortMeasure;
+      this.sortOn === other.sortOn;
+  }
+
+  public getSplitExpression(): Expression {
+    var { expression } = this;
+    if (this.type === 'TIME') {
+      return expression.timeBucket('PT1H', 'Etc/UTC');
+    }
+    return expression;
+  }
+
+  public getSplitCombine(): SplitCombine {
+    return new SplitCombine({
+      dimension: this.name,
+      splitOn: this.getSplitExpression(),
+      sortAction: null,
+      limitAction: null
+    });
   }
 }
 check = Dimension;

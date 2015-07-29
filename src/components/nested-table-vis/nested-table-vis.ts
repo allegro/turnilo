@@ -13,6 +13,7 @@ interface NestedTableVisProps {
   filter: Filter;
   splits: List<SplitCombine>;
   measures: List<Measure>;
+  stage: ClientRect;
 }
 
 interface NestedTableVisState {

@@ -53,14 +53,20 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     window.removeEventListener('resize', this.globalResizeListener);
   }
 
+  globalResizeListener() {
+    this.setState({
+      rect: React.findDOMNode(this).getBoundingClientRect()
+    });
+  }
+
   componentWillReceiveProps(nextProps: FilterSplitPanelProps) {
 
   }
 
   selectDimension(dimension: Dimension, e: MouseEvent) {
     var target = <Element>e.target;
-    var currentTriger = this.state.trigger;
-    if (currentTriger === target) {
+    var currentTrigger = this.state.trigger;
+    if (currentTrigger === target) {
       this.onMenuClose();
       return;
     }
@@ -83,12 +89,6 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     var { filter, clicker } = this.props;
     clicker.removeSplit(split);
     e.stopPropagation();
-  }
-
-  globalResizeListener() {
-    this.setState({
-      rect: React.findDOMNode(this).getBoundingClientRect()
-    });
   }
 
   onMenuClose() {
@@ -188,12 +188,12 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     var { clicker, dataSource } = this.props;
     var { dragPosition } = this.state;
 
-    var dataTransfer = e.dataTransfer;
-    var dimensionName = dataTransfer.getData("text/dimension");
+    var dimension = dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
     if (section === Section.Splits) {
-      clicker.addSplit(new SplitCombine($(dimensionName), null, null));
+      clicker.addSplit(dimension.getSplitCombine());
     } else if (section === Section.Dimensions) {
       var dimensions = dataSource.dimensions;
+      var dimensionName = dimension.name;
       var index = dimensions.findIndex((d) => d.name === dimensionName);
       if (index !== -1 && index !== dragPosition) {
         clicker.changeDataSource(dataSource.changeDimensions(moveInList(dimensions, index, dragPosition)));
@@ -285,8 +285,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
     var splitItemY = 0;
     var splitItems = splits.toArray().map((split, i) => {
-      var splitExpression = split.splitOn;
-      var dimension = dataSource.dimensions.find((d) => d.expression.equals(splitExpression));
+      var dimension = dataSource.getDimension(split.dimension);
       if (!dimension) throw new Error('dimension not found');
 
       if (dragSection === Section.Splits && dragPosition === i) splitItemY += itemHeight;
