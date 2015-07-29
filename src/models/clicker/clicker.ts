@@ -12,6 +12,7 @@ export interface Clicker {
   changeSplits(splits: List<SplitCombine>): void;
   addSplit(split: SplitCombine): void;
   removeSplit(split: SplitCombine): void;
+  selectVisualization(visualization: string): void;
   pinDimension(dimension: Dimension): void;
   unpinDimension(dimension: Dimension): void;
 }

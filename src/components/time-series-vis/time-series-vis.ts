@@ -4,14 +4,14 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
 import { $, Dispatcher, Expression, NativeDataset, Datum } from 'plywood';
-
-import { Filter, Dimension, Measure } from "../../models/index";
-
 import { bindOne, bindMany } from "../../utils/render";
+import { SplitCombine, Filter, Dimension, Measure, DataSource } from "../../models/index";
+
 
 interface TimeSeriesVisProps {
-  dispatcher: Dispatcher;
+  dataSource: DataSource;
   filter: Filter;
+  splits: List<SplitCombine>;
   measures: List<Measure>;
 }
 
@@ -29,6 +29,8 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
   }
 
   fetchData(filter: Filter, measures: List<Measure>) {
+    var { dataSource } = this.props;
+
     var query: any = $('main')
       .filter(filter.toExpression())
       .split($('time').timeBucket('PT1H', 'Etc/UTC'), 'Time');
@@ -38,14 +40,14 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     });
     query = query.sort('$Time', 'ascending');
 
-    this.props.dispatcher(query).then((dataset) => {
+    dataSource.dispatcher(query).then((dataset) => {
       this.setState({ dataset });
     });
   }
 
   componentDidMount() {
-    var props = this.props;
-    this.fetchData(props.filter, props.measures);
+    var { filter, measures } = this.props;
+    this.fetchData(filter, measures);
   }
 
   componentWillReceiveProps(nextProps: TimeSeriesVisProps) {
@@ -60,6 +62,10 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
   }
 
   render() {
-    return JSX(`<div className="time-series-vis"></div>`);
+    return JSX(`
+      <div className="time-series-vis">
+        Time Series Vis!!!
+      </div>
+    `);
   }
 }

@@ -7,13 +7,13 @@ import { dataTransferTypesContain } from '../../utils/dom';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
-import { TimeSeriesVis } from '../time-series-vis/time-series-vis';
-import { NestedTableVis } from '../nested-table-vis/nested-table-vis';
 import { FilterSplitPanel } from '../filter-split-panel/filter-split-panel';
 import { VisBar } from '../vis-bar/vis-bar';
 import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { SideDrawer } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
+import { TimeSeriesVis } from '../time-series-vis/time-series-vis';
+import { NestedTableVis } from '../nested-table-vis/nested-table-vis';
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
@@ -28,6 +28,8 @@ interface ApplicationState {
   splits?: List<SplitCombine>;
   selectedMeasures?: OrderedSet<string>;
   pinnedDimensions?: OrderedSet<string>;
+  visualization?: string;
+  visualizations?: List<string>;
   dragOver?: boolean;
   drawerOpen?: boolean;
 }
@@ -68,18 +70,33 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         self.setState({ filter });
       },
       changeSplits: (splits: List<SplitCombine>) => {
-        self.setState({ splits });
+        var { dataSource } = self.state;
+        self.setState({
+          splits,
+          visualizations: self.getPossibleVisualizations(dataSource, splits)
+        });
       },
       addSplit: (split: SplitCombine) => {
-        var { splits } = this.state;
+        var { dataSource, splits } = this.state;
+        splits = <List<SplitCombine>>splits.concat(split);
         self.setState({
-          splits: <List<SplitCombine>>splits.concat(split)
+          splits,
+          visualizations: self.getPossibleVisualizations(dataSource, splits)
         });
       },
       removeSplit: (split: SplitCombine) => {
-        var { splits } = this.state;
+        var { dataSource, splits } = this.state;
+        splits = <List<SplitCombine>>splits.filter(s => s !== split);
         self.setState({
-          splits: <List<SplitCombine>>splits.filter(s => s !== split)
+          splits,
+          visualizations: self.getPossibleVisualizations(dataSource, splits)
+        });
+      },
+      selectVisualization: (visualization: string) => {
+        var { visualizations } = this.state;
+        if (!visualizations.includes(visualization)) return;
+        self.setState({
+          visualization
         });
       },
       pinDimension: (dimension: Dimension) => {
@@ -99,14 +116,17 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   componentWillMount() {
     var { dataSources } = this.props;
-    var { dataSource, selectedMeasures } = this.state;
+    var { dataSource, selectedMeasures, splits } = this.state;
     if (dataSources.size && !dataSource) {
       dataSource = dataSources.first();
+      var visualizations = this.getPossibleVisualizations(dataSource, splits);
       this.setState({
         dataSources,
         dataSource: dataSource,
         selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
-        pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(0, 2).map(d => d.name))
+        pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(0, 2).map(d => d.name)),
+        visualizations: visualizations,
+        visualization: visualizations.first()
       });
     }
   }
@@ -134,9 +154,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var { dragOver } = this.state;
     if (!dragOver) {
       this.dragCounter = 0;
-      this.setState({
-        dragOver: true
-      });
+      this.setState({ dragOver: true });
     } else {
       this.dragCounter++;
     }
@@ -147,9 +165,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var { dragOver } = this.state;
     if (!dragOver) return;
     if (this.dragCounter === 0) {
-      this.setState({
-        dragOver: false
-      });
+      this.setState({ dragOver: false });
     } else {
       this.dragCounter--;
     }
@@ -159,33 +175,53 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     if (!this.canDrop(e)) return;
     this.dragCounter = 0;
     var dimensionName = e.dataTransfer.getData("text/dimension");
-    this.setState({
-      dragOver: false,
-      splits: List([new SplitCombine($(dimensionName), null, null)]) // should use clicker
-    });
+    this.setState({ dragOver: false });
+    this.clicker.changeSplits(List([new SplitCombine($(dimensionName), null, null)]));
   }
 
   sideDrawerOpen(state: boolean): void {
     this.setState({ drawerOpen: state });
   }
 
+  getPossibleVisualizations(dataSource: DataSource, splits: List<SplitCombine>): List<string> {
+    var visArray: string[] = ['nested-table-vis'];
+
+    if (splits.size === 1) {
+      var firstSplit = splits.first();
+      var splitDimension = dataSource.dimensions.find((d) => d.expression.equals(firstSplit.splitOn));
+      if (splitDimension.type === 'TIME') {
+        visArray.push('time-series-vis');
+      }
+    }
+
+    return List(visArray);
+  }
+
   render() {
     var clicker = this.clicker;
     var {
-      dataSources, dataSource, filter, splits, selectedMeasures, pinnedDimensions,
+      dataSources, dataSource, filter, splits, selectedMeasures, pinnedDimensions, visualizations, visualization,
       dragOver, drawerOpen
     } = this.state;
 
     var measures = dataSource.measures;
 
-    // <TimeSeriesVis dispatcher={basicDispatcher} filter={filter} measures={measures}/>
-
-    var visualization = React.createElement(NestedTableVis, {
-      dataSource: dataSource,
-      filter: filter,
-      splits: splits,
-      measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName))
-    });
+    var visElement: React.ReactElement<any> = null;
+    if (visualization === 'time-series-vis') {
+      visElement = React.createElement(TimeSeriesVis, {
+        dataSource: dataSource,
+        filter: filter,
+        splits: splits,
+        measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName))
+      });
+    } else {
+      visElement = React.createElement(NestedTableVis, {
+        dataSource: dataSource,
+        filter: filter,
+        splits: splits,
+        measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName))
+      });
+    }
 
     var dropIndicator: React.ReactElement<any> = null;
     if (dragOver) {
@@ -216,8 +252,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             onDragLeave={this.dragLeave.bind(this)}
             onDrop={this.drop.bind(this)}
           >
-            <VisBar/>
-            <div className='visualization'>{visualization}</div>
+            <VisBar clicker={clicker} visualizations={visualizations} visualization={visualization}/>
+            <div className='visualization'>{visElement}</div>
             {dropIndicator}
           </div>
           <PinboardPanel

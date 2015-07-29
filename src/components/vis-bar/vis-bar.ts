@@ -1,11 +1,19 @@
 'use strict';
 
 import * as React from 'react/addons';
+import { List } from 'immutable';
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
-import { Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
+function toTitle(str: string) {
+  return str.replace('-vis', '').replace(/-/g, ' ');
+}
+
 interface VisBarProps {
+  clicker: Clicker;
+  visualizations: List<string>;
+  visualization: string;
 }
 
 interface VisBarState {
@@ -32,8 +40,22 @@ export class VisBar extends React.Component<VisBarProps, VisBarState> {
   }
 
   render() {
+    var { clicker, visualizations, visualization } = this.props;
+
+    var visItems = visualizations.toArray().map(v => {
+      return JSX(`
+        <div
+          key={v}
+          className={'vis-item' + (v === visualization ? ' selected' : '')}
+          onClick={clicker.selectVisualization.bind(clicker, v)}
+        >{toTitle(v)}</div>
+      `);
+    });
+
     return JSX(`
-      <div className="vis-bar">Table Lines</div>
+      <div className="vis-bar">
+        {visItems}
+      </div>
     `);
   }
 }

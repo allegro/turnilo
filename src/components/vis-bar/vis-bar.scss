@@ -7,4 +7,14 @@
   background: $beta-background;
   color: $beta-text-color;
   border-bottom: 1px solid $beta-border-color;
+
+  .vis-item {
+    display: inline-block;
+    margin-left: 5px;
+    cursor: pointer;
+
+    &.selected {
+      text-decoration: underline;
+    }
+  }
 }
