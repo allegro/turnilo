@@ -20,6 +20,7 @@
     "facetjs-druid-requester": "1.1.x",
     "facetjs-mysql-requester": "1.1.x",
     "higher-object": "^0.2.6",
+    "numeral": "^1.5.3",
     "plywood": "0.0.7",
     "q": "^1.1.2",
     "react": "^0.13.3",

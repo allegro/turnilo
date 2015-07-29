@@ -1,7 +1,8 @@
 'use strict';
 
-import React = require('react/addons');
+import * as React from 'react/addons';
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
+import { formatterFromData } from '../../utils/formatter';
 import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
 // import { DateShow } from "../date-show/date-show";
 
@@ -33,12 +34,13 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
   fetchData(filter: Filter, dimension: Dimension) {
     var { dataSource } = this.props;
+    var measure = dataSource.getSortMeasure(dimension);
 
     var query: any = $('main')
       .filter(filter.toExpression())
       .split(dimension.expression, dimension.name)
-      .apply('Measure', '$main.count()')
-      .sort('$Measure', 'descending')
+      .apply(measure.name, measure.expression)
+      .sort($(measure.name), 'descending')
       .limit(topN + 1);
 
     dataSource.dispatcher(query).then((dataset) => {
@@ -47,13 +49,16 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   }
 
   componentDidMount() {
-    var props = this.props;
-    this.fetchData(props.filter, props.dimension);
+    var { filter, dimension } = this.props;
+    this.fetchData(filter, dimension);
   }
 
   componentWillReceiveProps(nextProps: MenuTableProps) {
     var props = this.props;
-    if (props.filter !== nextProps.filter || props.dimension !== nextProps.dimension) {
+    if (
+      props.filter !== nextProps.filter ||
+      props.dimension !== nextProps.dimension
+    ) {
       this.fetchData(nextProps.filter, nextProps.dimension);
     }
   }
@@ -89,16 +94,23 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   }
 
   render() {
-    var { dimension, showSearch, showCheckboxes } = this.props;
+    var { dataSource, dimension, showSearch, showCheckboxes } = this.props;
     var { dataset, selectedValues } = this.state;
+    var measure = dataSource.getSortMeasure(dimension);
+
+    var dimensionName = dimension.name;
+    var measureName = measure.name;
 
     var rows: Array<React.DOMElement<any>> = [];
     var hasMore = false;
     if (dataset) {
       hasMore = dataset.data.length > topN;
-      rows = dataset.data.slice(0, topN).map((d) => {
-        var segmentValue = String(d[dimension.name]);
-        var measureValue = d['Measure'];
+      var rowData = dataset.data.slice(0, topN);
+      var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
+      rows = rowData.map((d) => {
+        var segmentValue = String(d[dimensionName]);
+        var measureValue = d[measureName];
+        var measureValueStr = formatter(measureValue);
         var selected = selectedValues.indexOf(segmentValue) > -1;
 
         var checkbox: React.DOMElement<any> = null;
@@ -112,7 +124,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
               {checkbox}
               <div className="label">{segmentValue}</div>
             </div>
-            <div className="measure-value">{measureValue}</div>
+            <div className="measure-value">{measureValueStr}</div>
           </div>
         `);
       });

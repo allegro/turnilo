@@ -1,6 +1,6 @@
 'use strict';
 
-import React = require('react/addons');
+import * as React from 'react/addons';
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';

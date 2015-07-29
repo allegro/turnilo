@@ -1,6 +1,6 @@
 'use strict';
 
-import d3 = require('d3');
+import * as d3 from 'd3';
 import Selection = d3.Selection;
 import { $, Expression, NativeDataset, Datum } from 'plywood';
 

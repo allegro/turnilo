@@ -1,8 +1,8 @@
 'use strict';
 
 import { List } from 'immutable';
-import React = require('react/addons');
-import d3 = require('d3');
+import * as React from 'react/addons';
+import * as d3 from 'd3';
 import { $, Dispatcher, Expression, NativeDataset, Datum } from 'plywood';
 
 import { Filter, Dimension, Measure } from "../../models/index";

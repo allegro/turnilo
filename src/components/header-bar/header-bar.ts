@@ -1,4 +1,4 @@
-import React = require('react/addons');
+import * as React from 'react/addons';
 import Icon = require('react-svg-icons');
 import { $, Expression, Datum, Dataset, NativeDataset } from 'plywood';
 

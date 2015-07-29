@@ -1,6 +1,6 @@
 'use strict';
 
-import React = require('react/addons');
+import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';

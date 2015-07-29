@@ -1,8 +1,8 @@
 'use strict';
 
 import { List } from 'immutable';
-import React = require('react/addons');
-import d3 = require('d3');
+import * as React from 'react/addons';
+import * as d3 from 'd3';
 import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
 import { moveInList } from '../../utils/general';
 import { dataTransferTypesContain } from '../../utils/dom';

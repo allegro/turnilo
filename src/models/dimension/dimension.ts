@@ -8,6 +8,7 @@ export interface DimensionValue {
   title: string;
   expression: Expression;
   type: string;
+  sortMeasure: string;
 }
 
 export interface DimensionJS {
@@ -15,6 +16,7 @@ export interface DimensionJS {
   title: string;
   expression: ExpressionJS;
   type: string;
+  sortMeasure?: string;
 }
 
 var check: ImmutableClass<DimensionValue, DimensionJS>;
@@ -23,6 +25,7 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
   public title: string;
   public expression: Expression;
   public type: string;
+  public sortMeasure: string;
 
   static isDimension(candidate: any): boolean {
     return isInstanceOf(candidate, Dimension);
@@ -33,7 +36,8 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
       name: parameters.name,
       title: parameters.title,
       expression: Expression.fromJS(parameters.expression),
-      type: parameters.type
+      type: parameters.type,
+      sortMeasure: parameters.sortMeasure || null
     });
   }
 
@@ -42,6 +46,7 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
     this.title = parameters.title;
     this.expression = parameters.expression;
     this.type = parameters.type;
+    this.sortMeasure = parameters.sortMeasure;
   }
 
   public valueOf(): DimensionValue {
@@ -49,17 +54,20 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
       name: this.name,
       title: this.title,
       expression: this.expression,
-      type: this.type
+      type: this.type,
+      sortMeasure: this.sortMeasure
     };
   }
 
   public toJS(): DimensionJS {
-    return {
+    var js: DimensionJS = {
       name: this.name,
       title: this.title,
       expression: this.expression.toJS(),
       type: this.type
     };
+    if (this.sortMeasure) js.sortMeasure = this.sortMeasure;
+    return js;
   }
 
   public toJSON(): DimensionJS {
@@ -75,7 +83,8 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
       this.name === other.name &&
       this.title === other.title &&
       this.expression.equals(other.expression) &&
-      this.type === other.type;
+      this.type === other.type &&
+      this.sortMeasure === other.sortMeasure;
   }
 }
 check = Dimension;

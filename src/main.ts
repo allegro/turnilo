@@ -1,7 +1,7 @@
 'use strict';
 
 import { List } from 'immutable';
-import React = require('react/addons');
+import * as React from 'react/addons';
 import { Timezone, WallTime } from "chronology";
 import { $, Expression, Datum, Dataset, NativeDataset, TimeRange } from 'plywood';
 

@@ -1,6 +1,6 @@
 'use strict';
 
-import React = require('react/addons');
+import * as React from 'react/addons';
 import Icon = require('react-svg-icons');
 import { List } from 'immutable';
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';

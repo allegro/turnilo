@@ -1,8 +1,10 @@
 'use strict';
 
 import { List } from 'immutable';
-import React = require('react/addons');
+import * as React from 'react/addons';
+import * as numeral from 'numeral';
 import { $, Expression, Dispatcher, NativeDataset, Datum } from 'plywood';
+import { formatterFromData } from '../../utils/formatter';
 import { Filter, SplitCombine, Dimension, Measure, DataSource } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
@@ -79,14 +81,24 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
 
     var rows: React.DOMElement<any>[] = [];
     if (dataset) {
-      rows = dataset.data[0]['Split'].data.map((d: Datum, i: number) => {
+      var rowData = dataset.data[0]['Split'].data;
+
+      var formatters = measuresArray.map(measure => {
+        var measureName = measure.name;
+        var measureValues = rowData.map((d: Datum) => d[measureName]);
+        return formatterFromData(measureValues, measure.format);
+      });
+
+      rows = rowData.map((d: Datum, rowIndex: number) => {
         var row = [
           JSX(`<div className="segment" key="_segment">{String(d['Split'])}</div>`)
-        ].concat(measuresArray.map(measure => {
-            return JSX(`<div className="measure" key={measure.name}>{d[measure.name]}</div>`);
+        ].concat(measuresArray.map((measure, i) => {
+            var measureValue = d[measure.name];
+            var measureValueStr = formatters[i](measureValue);
+            return JSX(`<div className="measure" key={measure.name}>{measureValueStr}</div>`);
           }));
 
-        return JSX(`<div className="row" key={'_' + i}>{row}</div>`);
+        return JSX(`<div className="row" key={'_' + rowIndex}>{row}</div>`);
       });
     }
 
