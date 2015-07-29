@@ -2,6 +2,7 @@
 
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
+import { Timezone } from "chronology";
 import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher, find } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
@@ -30,6 +31,7 @@ interface ApplicationState {
   pinnedDimensions?: OrderedSet<string>;
   visualization?: string;
   visualizations?: List<string>;
+  timezone?: Timezone;
   dragOver?: boolean;
   drawerOpen?: boolean;
 }
@@ -41,6 +43,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   constructor() {
     super();
     this.state = {
+      timezone: Timezone.UTC,
       filter: new Filter(List([
         $('time').in(TimeRange.fromJS({
           start: new Date('2013-02-26T00:00:00Z'),
@@ -200,7 +203,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   render() {
     var clicker = this.clicker;
     var {
-      dataSources, dataSource, filter, splits, selectedMeasures, pinnedDimensions, visualizations, visualization,
+      dataSources, dataSource, filter, splits, selectedMeasures, pinnedDimensions, timezone,
+      visualizations, visualization,
       dragOver, drawerOpen
     } = this.state;
 
@@ -244,7 +248,13 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       <main className='application'>
         <HeaderBar dataSource={dataSource} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
         <div className='container'>
-          <FilterSplitPanel dataSource={dataSource} clicker={clicker} filter={filter} splits={splits}/>
+          <FilterSplitPanel
+            dataSource={dataSource}
+            clicker={clicker}
+            filter={filter}
+            splits={splits}
+            timezone={timezone}
+          />
           <div
             className='vis-pane'
             onDragOver={this.dragOver.bind(this)}

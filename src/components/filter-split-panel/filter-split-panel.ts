@@ -3,8 +3,10 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
+import { Timezone } from "chronology";
 import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
 import { moveInList } from '../../utils/general';
+import { formatStartEnd } from '../../utils/date';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { DataSource, Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
 import { FilterSplitMenu } from "../filter-split-menu/filter-split-menu";
@@ -16,6 +18,7 @@ interface FilterSplitPanelProps {
   dataSource: DataSource;
   filter: Filter;
   splits: List<SplitCombine>;
+  timezone: Timezone;
 }
 
 interface FilterSplitPanelState {
@@ -206,7 +209,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     });
   }
 
-  formatValue(dimension: Dimension, operand: ChainExpression) {
+  formatValue(dimension: Dimension, operand: ChainExpression, timezone: Timezone) {
     switch (dimension.type) {
       case 'STRING':
         var inAction = operand.actions[0];
@@ -215,12 +218,20 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           if (!setLiteral) return '?';
           return setLiteral.elements.join(', ');
         } else {
-          return 'S';
+          return '[not in]';
         }
         break;
 
       case 'TIME':
-        return 'T -> T';
+        var inAction = operand.actions[0];
+        if (inAction instanceof InAction) {
+          var timeRangeLiteral = inAction.getLiteralValue();
+          if (!timeRangeLiteral) return '?';
+          return formatStartEnd(timeRangeLiteral.start, timeRangeLiteral.end, timezone).join(' -> ');
+        } else {
+          return '[not in]';
+        }
+        break;
 
       default:
         throw new Error('unknown type ' + dimension.type);
@@ -228,7 +239,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   }
 
   render() {
-    var { dataSource, filter, splits, clicker } = this.props;
+    var { dataSource, filter, splits, clicker, timezone } = this.props;
     var { selectedDimension, anchor, rect, trigger, dragSection, dragPosition } = this.state;
     const itemHeight = 30;
 
@@ -265,7 +276,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           onDragStart={this.filterDragStart.bind(this, dimension, operand)}
           style={style}
         >
-          <div className="reading">{dimension.title}: {this.formatValue(dimension, operand)}</div>
+          <div className="reading">{dimension.title}: {this.formatValue(dimension, operand, timezone)}</div>
           <div className="remove" onClick={this.removeFilter.bind(this, operandExpression)}>x</div>
         </div>
       `);
