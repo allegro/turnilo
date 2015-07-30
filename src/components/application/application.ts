@@ -123,7 +123,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var { dataSource, selectedMeasures, splits } = this.state;
     if (dataSources.size && !dataSource) {
       dataSource = dataSources.first();
-      splits = List([dataSource.getDimension('page').getSplitCombine()]);
+      splits = List([dataSource.getDimension('time').getSplitCombine()]);
       var visualizations = this.getPossibleVisualizations(dataSource, splits);
       this.setState({
         dataSources,
@@ -132,7 +132,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
         pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(0, 2).map(d => d.name)),
         visualizations: visualizations,
-        visualization: visualizations.first()
+        visualization: visualizations.last()
       });
     }
   }
