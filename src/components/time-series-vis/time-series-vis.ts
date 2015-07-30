@@ -3,6 +3,7 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
+import * as numeral from 'numeral';
 import { $, Dispatcher, Expression, NativeDataset, Datum, TimeRange } from 'plywood';
 import { bindOne, bindMany } from "../../utils/render";
 import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from "../../models/index";
@@ -62,7 +63,6 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     });
 
     dataSource.dispatcher(query).then((dataset) => {
-      console.log(dataset);
       this.setState({ dataset });
     });
   }
@@ -91,7 +91,11 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       return JSX(`<div className="time-series-vis"></div>`);
     }
 
+    var numberOfColumns = 2;
+
     var measureGraphs: Array<React.ReactElement<any>> = null;
+    var bottomAxes: Array<React.ReactElement<any>> = null;
+
     if (dataset && splits.size) {
       var myDatum: Datum = dataset.data[0];
       var myDataset: NativeDataset = myDatum['Split'];
@@ -101,13 +105,16 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       var minTime = d3.min(myDataset.data, (d: Datum) => (<TimeRange>d[splitName]).start);
       var maxTime = d3.max(myDataset.data, (d: Datum) => (<TimeRange>d[splitName]).end);
 
+      var width = Math.floor(stage.width / numberOfColumns);
+      var height = 120;
+      var innerHeight = 100;
+
       var scaleX = d3.time.scale()
         .domain([minTime, maxTime])
-        .range([0, stage.width]);
+        .range([0, width]);
 
-      var height = 100;
-
-      measureGraphs = measures.toArray().map((measure) => {
+      var measuresArray = measures.toArray();
+      measureGraphs = measuresArray.map((measure) => {
         var measureName = measure.name;
         var extentY = d3.extent(myDataset.data, (d: Datum) => d[measureName]);
         extentY[0] = Math.min(extentY[0] * 1.1, 0);
@@ -115,7 +122,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
 
         var scaleY = d3.scale.linear()
           .domain(extentY)
-          .range([height, 0]);
+          .range([innerHeight, 0]);
 
         var getX = (d: Datum) => {
           var timeRange = d[splitName];
@@ -127,31 +134,42 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
         };
 
         var lineStage: Stage = {
-          width: stage.width,
-          height: height
+          width,
+          height: innerHeight
         };
 
+        var measureText = `${measure.title}: ${numeral(myDatum[measureName]).format(measure.format)}`;
         return JSX(`
-          <svg className="measure-graph" key={measure.name} width={lineStage.width} height={lineStage.height}>
-            <ChartLine
-              dataset={myDataset}
-              getX={getX}
-              getY={getY}
-              scaleX={scaleX}
-              scaleY={scaleY}
-              stage={lineStage}
-            />
+          <svg className="measure-graph" key={measure.name} width={width} height={height}>
+            <g transform="translate(0,20)">
+              <ChartLine
+                dataset={myDataset}
+                getX={getX}
+                getY={getY}
+                scaleX={scaleX}
+                scaleY={scaleY}
+                stage={lineStage}
+              />
+            </g>
+            <text x="5" y="15">{measureText}</text>
           </svg>
         `);
       });
+
+      bottomAxes = [];
+      for (var i = 0; i < numberOfColumns; i++) {
+        bottomAxes.push(JSX(`
+          <svg className="bottom-axis" key={'bottom-axis-' + i} width={width} height={50}>
+            <TimeAxis />
+          </svg>
+        `));
+      }
     }
 
     return JSX(`
       <div className="time-series-vis">
         {measureGraphs}
-        <svg className="bottom-axis" key="bottom-axis" width={stage.width} height={50}>
-          <TimeAxis />
-        </svg>
+        {bottomAxes}
       </div>
     `);
   }

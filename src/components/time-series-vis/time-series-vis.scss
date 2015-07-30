@@ -1,6 +1,7 @@
 @import '../../variables';
 
 .time-series-vis {
+  display: inline-block;
   overflow-y: auto;
 
   .measure-graph {
