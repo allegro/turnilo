@@ -3,10 +3,11 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
-import { $, Dispatcher, Expression, NativeDataset, Datum } from 'plywood';
+import { $, Dispatcher, Expression, NativeDataset, Datum, TimeRange } from 'plywood';
 import { bindOne, bindMany } from "../../utils/render";
 import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from "../../models/index";
 import { ChartLine } from '../chart-line/chart-line';
+import { TimeAxis } from '../time-axis/time-axis';
 
 function between(start: Date, end: Date) {
   return new Date((start.valueOf() + end.valueOf()) / 2);
@@ -35,19 +36,33 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
 
   fetchData(filter: Filter, measures: List<Measure>) {
     var { dataSource, splits } = this.props;
+    var $main = $('main');
 
-    var query: any = $('main')
-      .filter(filter.toExpression());
-
-    var firstSplit = splits.first();
-    query = query.split(firstSplit.splitOn, firstSplit.dimension);
+    var query: any = $()
+      .apply('main', $main.filter(filter.toExpression()));
 
     measures.forEach((measure) => {
       query = query.apply(measure.name, measure.expression);
     });
-    query = query.sort($(firstSplit.dimension), 'ascending');
+
+    splits.forEach((split, i) => {
+      var isLast = i === splits.size - 1;
+      var subQuery = $main.split(split.splitOn, split.dimension);
+
+      measures.forEach((measure) => {
+        subQuery = subQuery.apply(measure.name, measure.expression);
+      });
+      if (isLast) {
+        subQuery = subQuery.sort($(split.dimension), 'ascending');
+      } else {
+        subQuery = subQuery.sort($(measures.first().name), 'descending').limit(100);
+      }
+
+      query = query.apply('Split', subQuery);
+    });
 
     dataSource.dispatcher(query).then((dataset) => {
+      console.log(dataset);
       this.setState({ dataset });
     });
   }
@@ -72,12 +87,19 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     var { filter, splits, measures, stage } = this.props;
     var { dataset } = this.state;
 
+    if (!stage) {
+      return JSX(`<div className="time-series-vis"></div>`);
+    }
+
     var measureGraphs: Array<React.ReactElement<any>> = null;
     if (dataset && splits.size) {
+      var myDatum: Datum = dataset.data[0];
+      var myDataset: NativeDataset = myDatum['Split'];
+
       var firstSplit = splits.first();
       var splitName = firstSplit.dimension;
-      var minTime = d3.min(dataset.data, (d) => d[splitName].start);
-      var maxTime = d3.max(dataset.data, (d) => d[splitName].end);
+      var minTime = d3.min(myDataset.data, (d: Datum) => (<TimeRange>d[splitName]).start);
+      var maxTime = d3.max(myDataset.data, (d: Datum) => (<TimeRange>d[splitName]).end);
 
       var scaleX = d3.time.scale()
         .domain([minTime, maxTime])
@@ -87,7 +109,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
 
       measureGraphs = measures.toArray().map((measure) => {
         var measureName = measure.name;
-        var extentY = d3.extent(dataset.data, (d) => d[measureName]);
+        var extentY = d3.extent(myDataset.data, (d: Datum) => d[measureName]);
         extentY[0] = Math.min(extentY[0] * 1.1, 0);
         extentY[1] = Math.max(extentY[1] * 1.1, 0);
 
@@ -112,7 +134,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
         return JSX(`
           <svg className="measure-graph" key={measure.name} width={lineStage.width} height={lineStage.height}>
             <ChartLine
-              dataset={dataset}
+              dataset={myDataset}
               getX={getX}
               getY={getY}
               scaleX={scaleX}
@@ -127,6 +149,9 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     return JSX(`
       <div className="time-series-vis">
         {measureGraphs}
+        <svg className="bottom-axis" key="bottom-axis" width={stage.width} height={50}>
+          <TimeAxis />
+        </svg>
       </div>
     `);
   }

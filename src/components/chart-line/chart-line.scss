@@ -2,6 +2,8 @@
 @import '../../mixins';
 
 .chart-line {
+  pointer-events: none;
+
   .line {
     fill: none;
     stroke: $main-time-line;

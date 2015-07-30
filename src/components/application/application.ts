@@ -203,9 +203,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   getPossibleVisualizations(dataSource: DataSource, splits: List<SplitCombine>): List<string> {
     var visArray: string[] = ['nested-table-vis'];
 
-    if (splits.size === 1) {
-      var firstSplit = splits.first();
-      var splitDimension = dataSource.getDimension(firstSplit.dimension);
+    if (splits.size) {
+      var lastSplit = splits.last();
+      var splitDimension = dataSource.getDimension(lastSplit.dimension);
       if (splitDimension.type === 'TIME') {
         visArray.push('time-series-vis');
       }

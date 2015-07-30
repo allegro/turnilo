@@ -31,10 +31,14 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
 
   fetchData(filter: Filter, measures: List<Measure>, splits: List<SplitCombine>) {
     var { dataSource } = this.props;
-
     var $main = $('main');
+
     var query: any = $()
       .apply('main', $main.filter(filter.toExpression()));
+
+    measures.forEach((measure) => {
+      query = query.apply(measure.name, measure.expression);
+    });
 
     splits.forEach((split) => {
       var subQuery = $main.split(split.splitOn, 'Split');
