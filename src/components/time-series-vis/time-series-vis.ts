@@ -10,8 +10,10 @@ import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from "../
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
 
-function between(start: Date, end: Date) {
-  return new Date((start.valueOf() + end.valueOf()) / 2);
+const MAX_GRAPH_WIDTH = 500;
+
+function midpoint(timeRange: TimeRange): Date {
+  return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
 interface TimeSeriesVisProps {
@@ -91,7 +93,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       return JSX(`<div className="time-series-vis"></div>`);
     }
 
-    var numberOfColumns = 2;
+    var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
 
     var measureGraphs: Array<React.ReactElement<any>> = null;
     var bottomAxes: Array<React.ReactElement<any>> = null;
@@ -116,7 +118,17 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       var measuresArray = measures.toArray();
       measureGraphs = measuresArray.map((measure) => {
         var measureName = measure.name;
-        var extentY = d3.extent(myDataset.data, (d: Datum) => d[measureName]);
+        var getY = (d: Datum) => d[measureName];
+        var extentY = d3.extent(myDataset.data, getY);
+
+        if (isNaN(extentY[0])) {
+          return JSX(`
+            <svg className="measure-graph" key={measure.name} width={width} height={height}>
+              <text x="5" y="15">{measure.title + ': Loading'}</text>
+            </svg>
+          `);
+        }
+
         extentY[0] = Math.min(extentY[0] * 1.1, 0);
         extentY[1] = Math.max(extentY[1] * 1.1, 0);
 
@@ -124,21 +136,13 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
           .domain(extentY)
           .range([innerHeight, 0]);
 
-        var getX = (d: Datum) => {
-          var timeRange = d[splitName];
-          return between(timeRange.start, timeRange.end);
-        };
-
-        var getY = (d: Datum) => {
-          return d[measureName];
-        };
+        var getX = (d: Datum) => midpoint(d[splitName]);
 
         var lineStage: Stage = {
           width,
           height: innerHeight
         };
 
-        var measureText = `${measure.title}: ${numeral(myDatum[measureName]).format(measure.format)}`;
         return JSX(`
           <svg className="measure-graph" key={measure.name} width={width} height={height}>
             <g transform="translate(0,20)">
@@ -151,7 +155,9 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
                 stage={lineStage}
               />
             </g>
-            <text x="5" y="15">{measureText}</text>
+            <text x="5" y="15">
+              {measure.title + ': ' + numeral(myDatum[measureName]).format(measure.format)}
+            </text>
           </svg>
         `);
       });

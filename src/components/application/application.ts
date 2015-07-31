@@ -112,6 +112,15 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         self.setState({
           pinnedDimensions: pinnedDimensions.remove(dimension.name)
         });
+      },
+      toggleMeasure: (measure: Measure) => {
+        var { selectedMeasures } = self.state;
+        var measureName = measure.name;
+        selectedMeasures = selectedMeasures.has(measureName) ?
+          selectedMeasures.delete(measureName) :
+          selectedMeasures.add(measureName);
+
+        self.setState({ selectedMeasures });
       }
     };
 

@@ -1,6 +1,6 @@
 'use strict';
 
-import { List } from 'immutable';
+import { List, IndexedIterable } from 'immutable';
 import * as React from 'react/addons';
 import { Timezone, WallTime } from "chronology";
 import { $, Expression, Datum, Dataset, NativeDataset, TimeRange } from 'plywood';

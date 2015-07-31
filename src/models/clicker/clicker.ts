@@ -5,6 +5,7 @@ import { DataSource } from '../data-source/data-source';
 import { Filter } from '../filter/filter';
 import { SplitCombine } from '../split-combine/split-combine';
 import { Dimension } from '../dimension/dimension';
+import { Measure } from '../measure/measure';
 
 export interface Clicker {
   changeDataSource(dataSource: DataSource): void;
@@ -15,4 +16,5 @@ export interface Clicker {
   selectVisualization(visualization: string): void;
   pinDimension(dimension: Dimension): void;
   unpinDimension(dimension: Dimension): void;
+  toggleMeasure(measure: Measure): void;
 }

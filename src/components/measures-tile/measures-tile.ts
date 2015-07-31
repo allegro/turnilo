@@ -36,14 +36,8 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
 
   }
 
-  onMeasureClick(measure: Measure) {
-
-  }
-
   render() {
-    (<any>window)['numeral'] = numeral;
-
-    var { dataSource, selectedMeasures } = this.props;
+    var { clicker, dataSource, selectedMeasures } = this.props;
 
     var rows = dataSource.measures.map(measure => {
       var selected = selectedMeasures.has(measure.name);
@@ -51,7 +45,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       var measureValueStr = numeral(measureValue).format(measure.format);
       return JSX(`
         <div className={'row' + (selected ? ' selected' : '')} key={measure.name}>
-          <div className="measure-name" onClick={this.onMeasureClick.bind(this, measure)}>
+          <div className="measure-name" onClick={clicker.toggleMeasure.bind(clicker, measure)}>
             <div className="checkbox"></div>
             <div className="label">{measure.title}</div>
           </div>
