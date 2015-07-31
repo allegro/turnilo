@@ -122,7 +122,12 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         onDragLeave={this.dragLeave.bind(this)}
         onDrop={this.drop.bind(this)}
       >
-        <MeasuresTile clicker={clicker} dataSource={dataSource} selectedMeasures={selectedMeasures}/>
+        <MeasuresTile
+          clicker={clicker}
+          dataSource={dataSource}
+          filter={filter}
+          selectedMeasures={selectedMeasures}
+        />
         {dimensionTiles}
         {placeholderTile}
       </div>
