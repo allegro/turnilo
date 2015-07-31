@@ -16,6 +16,27 @@ function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
+function getTimeExtent(dataset: NativeDataset, splits: List<SplitCombine>): [Date, Date] {
+  if (!splits || !splits.size) return null;
+  var extentData: Date[] = [];
+  var lastSplitDatasets: NativeDataset[] = [dataset.data[0]['Split']];
+
+  // ToDo: flatten / map
+
+  var lastSplitDimension = splits.last().dimension;
+  for (var lastSplitDataset of lastSplitDatasets) {
+    var lastSplitData = lastSplitDataset.data;
+    if (!lastSplitData.length) continue;
+    extentData.push(
+      lastSplitData[0][lastSplitDimension].start,
+      lastSplitData[lastSplitData.length - 1][lastSplitDimension].end
+    );
+  }
+
+  if (!extentData.length) return null;
+  return d3.extent(extentData);
+}
+
 interface TimeSeriesVisProps {
   dataSource: DataSource;
   filter: Filter;
@@ -58,7 +79,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       if (isLast) {
         subQuery = subQuery.sort($(split.dimension), 'ascending');
       } else {
-        subQuery = subQuery.sort($(measures.first().name), 'descending').limit(100);
+        subQuery = subQuery.sort($(measures.first().name), 'descending').limit(5);
       }
 
       query = query.apply('Split', subQuery);
@@ -99,20 +120,20 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     var bottomAxes: Array<React.ReactElement<any>> = null;
 
     if (dataset && splits.size) {
+      var extentX = getTimeExtent(dataset, splits);
+      // if (!extentX)
+
       var myDatum: Datum = dataset.data[0];
       var myDataset: NativeDataset = myDatum['Split'];
 
-      var firstSplit = splits.first();
-      var splitName = firstSplit.dimension;
-      var minTime = d3.min(myDataset.data, (d: Datum) => (<TimeRange>d[splitName]).start);
-      var maxTime = d3.max(myDataset.data, (d: Datum) => (<TimeRange>d[splitName]).end);
+      var splitName = splits.last().dimension;
 
       var width = Math.floor(stage.width / numberOfColumns);
       var height = 120;
       var innerHeight = 100;
 
       var scaleX = d3.time.scale()
-        .domain([minTime, maxTime])
+        .domain(extentX)
         .range([0, width]);
 
       var measuresArray = measures.toArray();
