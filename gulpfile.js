@@ -204,7 +204,7 @@ gulp.task('clean', function(cb) {
   ], cb);
 });
 
-gulp.task('all', ['clean', 'style', 'tsc', 'bundle']);
+gulp.task('all', ['style', 'tsc', 'bundle']);
 
 gulp.task('watch', function() {
   gulp.watch('./src/**', ['style', 'tsc', 'bundle']);
