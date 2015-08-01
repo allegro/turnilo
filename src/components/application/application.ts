@@ -68,7 +68,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         }
         self.setState({ dataSource });
       },
-      setFilter: (filter: Filter) => {
+      changeFilter: (filter: Filter) => {
         self.setState({ filter });
       },
       changeSplits: (splits: List<SplitCombine>) => {

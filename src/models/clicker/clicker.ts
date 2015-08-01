@@ -9,7 +9,7 @@ import { Measure } from '../measure/measure';
 
 export interface Clicker {
   changeDataSource(dataSource: DataSource): void;
-  setFilter(filter: Filter): void;
+  changeFilter(filter: Filter): void;
   changeSplits(splits: List<SplitCombine>): void;
   addSplit(split: SplitCombine): void;
   removeSplit(split: SplitCombine): void;

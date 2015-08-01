@@ -64,7 +64,7 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
   onOK() {
     var { clicker, onClose } = this.props;
     var { filter } = this.state;
-    clicker.setFilter(filter);
+    clicker.changeFilter(filter);
     onClose();
   }
 

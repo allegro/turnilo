@@ -159,6 +159,7 @@ gulp.task('tsc', function() {
       typescript: require('typescript'),
       noImplicitAny: true,
       noEmitOnError: true,
+      target: 'ES5',
       module: 'commonjs'
     }, undefined, tscReporter())) // typescript.reporter.longReporter()))
     //.pipe(debug({title: 'compiled:'}))

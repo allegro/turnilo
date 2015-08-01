@@ -81,12 +81,12 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
   removeFilter(expression: ChainExpression, e: MouseEvent) {
     var { filter, clicker } = this.props;
-    clicker.setFilter(filter.remove(expression));
+    clicker.changeFilter(filter.remove(expression));
     e.stopPropagation();
   }
 
   removeSplit(split: SplitCombine, e: MouseEvent) {
-    var { filter, clicker } = this.props;
+    var { clicker } = this.props;
     clicker.removeSplit(split);
     e.stopPropagation();
   }
@@ -313,6 +313,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       if (dragSection === Section.Dimensions && dragPosition === i) dimensionItemY += itemHeight;
       var style = { transform: `translate3d(0,${dimensionItemY}px,0)` };
       dimensionItemY += itemHeight;
+      var iconText = dimension.type === 'TIME' ? 'Ti' : 'Ab';
 
       return JSX(`
         <div
@@ -323,7 +324,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           onDragStart={this.dimensionDragStart.bind(this, dimension)}
           style={style}
         >
-          <div className="icon">Ab</div>
+          <div className="icon">{iconText}</div>
           {dimension.title}
         </div>
       `);

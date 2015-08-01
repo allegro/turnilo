@@ -43,8 +43,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.setState({ showSearch: !showSearch });
   }
 
-  selectFilter() {
-
+  selectFilter(filter: Filter) {
+    var { clicker } = this.props;
+    clicker.changeFilter(filter);
   }
 
   render() {
