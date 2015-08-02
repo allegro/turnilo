@@ -96,18 +96,33 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var { clicker, dataSource, filter, selectedMeasures, pinnedDimensions } = this.props;
     var { dragOver } = this.state;
 
-    var dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
-      var dimension: Dimension = dataSource.getDimension(dimensionName);
-      return JSX(`
-        <DimensionTile
-          key={dimension.name}
+    var metricTile: React.ReactElement<any> = null;
+    if (dataSource.dataLoaded) {
+      metricTile = JSX(`
+        <MeasuresTile
           clicker={clicker}
           dataSource={dataSource}
           filter={filter}
-          dimension={dimension}
+          selectedMeasures={selectedMeasures}
         />
       `);
-    });
+    }
+
+    var dimensionTiles: Array<React.ReactElement<any>> = null;
+    if (dataSource.dataLoaded) {
+      dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
+        var dimension: Dimension = dataSource.getDimension(dimensionName);
+        return JSX(`
+          <DimensionTile
+            key={dimension.name}
+            clicker={clicker}
+            dataSource={dataSource}
+            filter={filter}
+            dimension={dimension}
+          />
+        `);
+      });
+    }
 
     var placeholderTile: React.DOMElement<any> = null;
     if (dragOver) {
@@ -122,12 +137,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         onDragLeave={this.dragLeave.bind(this)}
         onDrop={this.drop.bind(this)}
       >
-        <MeasuresTile
-          clicker={clicker}
-          dataSource={dataSource}
-          filter={filter}
-          selectedMeasures={selectedMeasures}
-        />
+        {metricTile}
         {dimensionTiles}
         {placeholderTile}
       </div>

@@ -61,12 +61,13 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         var dataSourceName = dataSource.name;
         var existingDataSource = dataSources.find((ds) => ds.name === dataSourceName);
         if (!existingDataSource) throw new Error(`unknown DataSource changed: ${dataSourceName}`);
+
+        var newState: ApplicationState = { dataSource };
         if (!existingDataSource.equals(dataSource)) {
-          self.setState({
-            dataSources: <List<DataSource>>dataSources.map((ds) => ds.name === dataSourceName ? dataSource : ds)
-          });
+          // We are actually updating info within the named dataSource
+          newState.dataSources = <List<DataSource>>dataSources.map((ds) => ds.name === dataSourceName ? dataSource : ds);
         }
-        self.setState({ dataSource });
+        self.setState(newState);
       },
       changeFilter: (filter: Filter) => {
         self.setState({ filter });
@@ -129,21 +130,38 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   componentWillMount() {
     var { dataSources } = this.props;
-    var { dataSource, selectedMeasures, splits } = this.state;
+    var { dataSource } = this.state;
+
+    this.setState({ dataSources });
+
     if (dataSources.size && !dataSource) {
       dataSource = dataSources.first();
-      splits = List([dataSource.getDimension('time').getSplitCombine()]);
-      var visualizations = this.getPossibleVisualizations(dataSource, splits);
-      this.setState({
-        dataSources,
-        dataSource: dataSource,
-        splits,
-        selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
-        pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(0, 2).map(d => d.name)),
-        visualizations: visualizations,
-        visualization: visualizations.last()
-      });
+      this.setState({ dataSource });
     }
+
+    if (!dataSource) return;
+
+    if (dataSource.dataLoaded) {
+      this.fillInDetails(dataSource);
+    } else {
+      var self = this;
+      dataSource.loadSource().then((newDataSource) => {
+        self.clicker.changeDataSource(newDataSource);
+        self.fillInDetails(newDataSource);
+      }).done();
+    }
+  }
+
+  fillInDetails(dataSource: DataSource) {
+    var splits = List([dataSource.getDimension('time').getSplitCombine()]);
+    var visualizations = this.getPossibleVisualizations(dataSource, splits);
+    this.setState({
+      splits,
+      selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
+      pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(0, 2).map(d => d.name)),
+      visualizations: visualizations,
+      visualization: visualizations.last()
+    });
   }
 
   componentDidMount() {
@@ -157,8 +175,10 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   globalResizeListener() {
     var { visualization } = this.refs;
+    var visualizationDOM = React.findDOMNode(visualization);
+    if (!visualizationDOM) return;
     this.setState({
-      visualizationStage: React.findDOMNode(visualization).getBoundingClientRect()
+      visualizationStage: visualizationDOM.getBoundingClientRect()
     });
   }
 
@@ -223,6 +243,12 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     return List(visArray);
   }
 
+  shouldComponentUpdate(nextProps: ApplicationProps, nextState: ApplicationState): boolean {
+    return Boolean(nextState.selectedMeasures) &&
+           Boolean(nextState.pinnedDimensions) &&
+           Boolean(nextState.visualization);
+  }
+
   render() {
     var clicker = this.clicker;
     var {
@@ -234,22 +260,24 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var measures = dataSource.measures;
 
     var visElement: React.ReactElement<any> = null;
-    if (visualization === 'time-series-vis') {
-      visElement = React.createElement(TimeSeriesVis, {
-        dataSource: dataSource,
-        filter: filter,
-        splits: splits,
-        measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName)),
-        stage: visualizationStage
-      });
-    } else {
-      visElement = React.createElement(NestedTableVis, {
-        dataSource: dataSource,
-        filter: filter,
-        splits: splits,
-        measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName)),
-        stage: visualizationStage
-      });
+    if (dataSource.dataLoaded) {
+      if (visualization === 'time-series-vis') {
+        visElement = React.createElement(TimeSeriesVis, {
+          dataSource: dataSource,
+          filter: filter,
+          splits: splits,
+          measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName)),
+          stage: visualizationStage
+        });
+      } else {
+        visElement = React.createElement(NestedTableVis, {
+          dataSource: dataSource,
+          filter: filter,
+          splits: splits,
+          measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName)),
+          stage: visualizationStage
+        });
+      }
     }
 
     var dropIndicator: React.ReactElement<any> = null;

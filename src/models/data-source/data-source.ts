@@ -1,8 +1,10 @@
 'use strict';
 
 import { List } from 'immutable';
+import * as d3 from 'd3';
+import * as Q from 'q';
 import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
-import { $, Expression, Dispatcher, basicDispatcherFactory, NativeDataset, Dataset } from 'plywood';
+import { $, Expression, Dispatcher, basicDispatcherFactory, NativeDataset, Dataset, Datum } from 'plywood';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 
@@ -10,38 +12,66 @@ function upperCaseFirst(title: string): string {
   return title[0].toUpperCase() + title.substring(1);
 }
 
+function listsEqual<T>(listA: List<T>, listB: List<T>): boolean {
+  if (listA === listB) return true;
+  if (!listA || !listB) return false;
+  return arraysEqual(listA.toArray(), listB.toArray());
+}
+
 export interface DataSourceValue {
   name: string;
   title: string;
-  dispatcher: Dispatcher;
-  dimensions: List<Dimension>;
-  measures: List<Measure>;
-  defaultSortOn: string;
+  source: string;
+  dataLoaded: boolean;
+  loadError: string;
+
+  dimensions?: List<Dimension>;
+  measures?: List<Measure>;
+  defaultSortOn?: string;
+
+  dispatcher?: Dispatcher;
 }
 
 export interface DataSourceJS {
   name: string;
   title: string;
-  dimensions: DimensionJS[];
-  measures: MeasureJS[];
-  defaultSortOn: string;
+  source: string;
+
+  dimensions?: DimensionJS[];
+  measures?: MeasureJS[];
+  defaultSortOn?: string;
 }
 
 var check: ImmutableClass<DataSourceValue, DataSourceJS>;
 export class DataSource implements ImmutableInstance<DataSourceValue, DataSourceJS> {
 
-  public dispatcher: Dispatcher;
   public name: string;
   public title: string;
+  public source: string;
+  public dataLoaded: boolean;
+  public loadError: string;
+
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public defaultSortOn: string;
+
+  public dispatcher: Dispatcher;
 
   static isDataSource(candidate: any): boolean {
     return isInstanceOf(candidate, DataSource);
   }
 
-  static fromNativeDataset(name: string, title: string, rawData: any[]): DataSource {
+  static fromDataURL(name: string, title: string, source: string): DataSource {
+    return new DataSource({
+      name,
+      title,
+      source,
+      dataLoaded: false,
+      loadError: null
+    });
+  }
+
+  static fromDataArray(name: string, title: string, source: string, rawData: any[]): DataSource {
     var nativeDataset = <NativeDataset>Dataset.fromJS(rawData);
     nativeDataset.introspect();
 
@@ -105,52 +135,76 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     return new DataSource({
       name,
       title,
-      dispatcher,
+      source,
+      dataLoaded: true,
+      loadError: null,
       dimensions: List(dimensionArray),
       measures: List(measureArray),
-      defaultSortOn
+      defaultSortOn,
+      dispatcher
     });
   }
 
   static fromJS(parameters: DataSourceJS): DataSource {
-    return new DataSource({
+    var value: DataSourceValue = {
       dispatcher: null,
       name: parameters.name,
       title: parameters.title,
-      dimensions: List(parameters.dimensions.map(Dimension.fromJS)),
-      measures: List(parameters.measures.map(Measure.fromJS)),
-      defaultSortOn: parameters.defaultSortOn
-    });
+      source: parameters.source,
+      dataLoaded: false,
+      loadError: null
+    };
+    if (parameters.dimensions) {
+      value.dimensions = List(parameters.dimensions.map(Dimension.fromJS));
+      value.measures = List(parameters.measures.map(Measure.fromJS));
+      value.defaultSortOn = parameters.defaultSortOn;
+    }
+    return new DataSource(value);
   }
 
   constructor(parameters: DataSourceValue) {
-    this.dispatcher = parameters.dispatcher;
     this.name = parameters.name;
     this.title = parameters.title;
+    this.source = parameters.source;
+    this.dataLoaded = parameters.dataLoaded;
+    this.loadError = parameters.loadError;
     this.dimensions = parameters.dimensions;
     this.measures = parameters.measures;
     this.defaultSortOn = parameters.defaultSortOn;
+    this.dispatcher = parameters.dispatcher;
   }
 
   public valueOf(): DataSourceValue {
-    return {
-      dispatcher: this.dispatcher,
+    var value: DataSourceValue = {
       name: this.name,
       title: this.title,
-      dimensions: this.dimensions,
-      measures: this.measures,
-      defaultSortOn: this.defaultSortOn
+      source: this.source,
+      dataLoaded: this.dataLoaded,
+      loadError: this.loadError
     };
+    if (this.dimensions) {
+      value.dimensions = this.dimensions;
+      value.measures = this.measures;
+      value.defaultSortOn = this.defaultSortOn;
+    }
+    if (this.dispatcher) {
+      value.dispatcher = this.dispatcher;
+    }
+    return value;
   }
 
   public toJS(): DataSourceJS {
-    return {
+    var js: DataSourceJS = {
       name: this.name,
       title: this.title,
-      dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
-      measures: this.measures.toArray().map(measure => measure.toJS()),
-      defaultSortOn: this.defaultSortOn
+      source: this.source
     };
+    if (this.dimensions) {
+      js.dimensions = this.dimensions.toArray().map(dimension => dimension.toJS());
+      js.measures = this.measures.toArray().map(measure => measure.toJS());
+      js.defaultSortOn = this.defaultSortOn;
+    }
+    return js;
   }
 
   public toJSON(): DataSourceJS {
@@ -165,8 +219,9 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     return DataSource.isDataSource(other) &&
       this.name === other.name &&
       this.title === other.title &&
-      arraysEqual(this.dimensions.toArray(), other.dimensions.toArray()) &&
-      arraysEqual(this.measures.toArray(), other.measures.toArray()) &&
+      this.source === other.source &&
+      listsEqual(this.dimensions, other.dimensions) &&
+      listsEqual(this.measures, other.measures) &&
       this.defaultSortOn === other.defaultSortOn;
   }
 
@@ -187,6 +242,25 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     var value = this.valueOf();
     value.dimensions = dimensions;
     return new DataSource(value);
+  }
+
+  public loadSource(): Q.Promise<DataSource> {
+    var deferred = <Q.Deferred<DataSource>>Q.defer();
+    if (this.dataLoaded) throw new Error('already loaded');
+    var self = this;
+    d3.json(this.source, (err, json) => {
+      if (err) {
+
+      } else {
+        var secInHour = 60 * 60;
+        json.forEach((d: Datum, i: number) => {
+          d['time'] = new Date(Date.parse(d['time']) + (i % secInHour) * 1000);
+        });
+
+        deferred.resolve(DataSource.fromDataArray(self.name, self.title, self.source, json));
+      }
+    });
+    return deferred.promise;
   }
 }
 check = DataSource;

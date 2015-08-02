@@ -14,16 +14,9 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-// Fake data
-var secInHour = 60 * 60;
-var wikiRawData: any[] = (<any>window)['wiki_day_data'];
-wikiRawData.forEach((d, i) => {
-  d['time'] = new Date(Date.parse(d['time']) + (i % secInHour) * 1000);
-});
-
 var dataSources = List([
-  DataSource.fromNativeDataset('wiki', 'Wikipedia', wikiRawData),
-  DataSource.fromNativeDataset('wiki2', 'Wikipedia 2', wikiRawData)
+  DataSource.fromDataURL('wiki', 'Wikipedia', '/data/wikipedia.json')
+  //DataSource.fromDispatcher('wiki2', 'Wikipedia 2', wikiRawData)
 ]);
 
 React.render(

@@ -42,15 +42,18 @@ export class VisBar extends React.Component<VisBarProps, VisBarState> {
   render() {
     var { clicker, visualizations, visualization } = this.props;
 
-    var visItems = visualizations.toArray().map(v => {
-      return JSX(`
-        <div
-          key={v}
-          className={'vis-item' + (v === visualization ? ' selected' : '')}
-          onClick={clicker.selectVisualization.bind(clicker, v)}
-        >{toTitle(v)}</div>
-      `);
-    });
+    var visItems: Array<React.DOMElement<any>> = null;
+    if (visualizations) {
+      visItems = visualizations.toArray().map(v => {
+        return JSX(`
+          <div
+            key={v}
+            className={'vis-item' + (v === visualization ? ' selected' : '')}
+            onClick={clicker.selectVisualization.bind(clicker, v)}
+          >{toTitle(v)}</div>
+        `);
+      });
+    }
 
     return JSX(`
       <div className="vis-bar">

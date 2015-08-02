@@ -21,7 +21,7 @@
     "higher-object": "^0.2.6",
     "immutable": "^3.7.4",
     "numeral": "^1.5.3",
-    "plywood": "0.0.7",
+    "plywood": "^0.0.7",
     "q": "^1.1.2",
     "react": "^0.13.3",
     "react-svg-icons": "^0.1.2",

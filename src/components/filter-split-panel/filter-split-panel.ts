@@ -258,78 +258,87 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     }
 
     var filterItemY = 0;
-    var filterItems = filter.operands.toArray().map((operand, i) => {
-      var operandExpression = operand.expression;
-      var dimension = dataSource.dimensions.find((d) => d.expression.equals(operandExpression));
-      if (!dimension) throw new Error('dimension not found');
+    var filterItems: Array<React.ReactElement<any>> = null;
+    if (dataSource.dataLoaded) {
+      filterItems = filter.operands.toArray().map((operand, i) => {
+        var operandExpression = operand.expression;
+        var dimension = dataSource.dimensions.find((d) => d.expression.equals(operandExpression));
+        if (!dimension) throw new Error('dimension not found');
 
-      if (dragSection === Section.Filter && dragPosition === i) filterItemY += itemHeight;
-      var style = { transform: `translate3d(0,${filterItemY}px,0)` };
-      filterItemY += itemHeight;
+        if (dragSection === Section.Filter && dragPosition === i) filterItemY += itemHeight;
+        var style = { transform: `translate3d(0,${filterItemY}px,0)` };
+        filterItemY += itemHeight;
 
-      return JSX(`
-        <div
-          className={'item filter' + (dimension === selectedDimension ? ' selected' : '')}
-          key={dimension.name}
-          draggable="true"
-          onClick={this.selectDimension.bind(this, dimension)}
-          onDragStart={this.filterDragStart.bind(this, dimension, operand)}
-          style={style}
-        >
-          <div className="reading">{dimension.title}: {this.formatValue(dimension, operand, timezone)}</div>
-          <div className="remove" onClick={this.removeFilter.bind(this, operandExpression)}>x</div>
-        </div>
-      `);
-    }, this);
-    if (dragSection === Section.Filter && dragPosition === filter.operands.size) filterItemY += itemHeight;
+        return JSX(`
+          <div
+            className={'item filter' + (dimension === selectedDimension ? ' selected' : '')}
+            key={dimension.name}
+            draggable="true"
+            onClick={this.selectDimension.bind(this, dimension)}
+            onDragStart={this.filterDragStart.bind(this, dimension, operand)}
+            style={style}
+          >
+            <div className="reading">{dimension.title}: {this.formatValue(dimension, operand, timezone)}</div>
+            <div className="remove" onClick={this.removeFilter.bind(this, operandExpression)}>x</div>
+          </div>
+        `);
+      }, this);
+      if (dragSection === Section.Filter && dragPosition === filter.operands.size) filterItemY += itemHeight;
+    }
 
     var splitItemY = 0;
-    var splitItems = splits.toArray().map((split, i) => {
-      var dimension = dataSource.getDimension(split.dimension);
-      if (!dimension) throw new Error('dimension not found');
+    var splitItems: Array<React.ReactElement<any>> = null;
+    if (dataSource.dataLoaded) {
+      splitItems = splits.toArray().map((split, i) => {
+        var dimension = dataSource.getDimension(split.dimension);
+        if (!dimension) throw new Error('dimension not found');
 
-      if (dragSection === Section.Splits && dragPosition === i) splitItemY += itemHeight;
-      var style = { transform: `translate3d(0,${splitItemY}px,0)` };
-      splitItemY += itemHeight;
+        if (dragSection === Section.Splits && dragPosition === i) splitItemY += itemHeight;
+        var style = { transform: `translate3d(0,${splitItemY}px,0)` };
+        splitItemY += itemHeight;
 
-      return JSX(`
-        <div
-          className={'item split' + (dimension === selectedDimension ? ' selected' : '')}
-          key={dimension.name}
-          draggable="true"
-          onClick={this.selectDimension.bind(this, dimension)}
-          onDragStart={this.splitDragStart.bind(this, dimension, split)}
-          style={style}
-        >
-          <div className="reading">{dimension.title}</div>
-          <div className="remove" onClick={this.removeSplit.bind(this, split)}>x</div>
-        </div>
-      `);
-    }, this);
-    if (dragSection === Section.Splits && dragPosition === splits.size) splitItemY += itemHeight;
+        return JSX(`
+          <div
+            className={'item split' + (dimension === selectedDimension ? ' selected' : '')}
+            key={dimension.name}
+            draggable="true"
+            onClick={this.selectDimension.bind(this, dimension)}
+            onDragStart={this.splitDragStart.bind(this, dimension, split)}
+            style={style}
+          >
+            <div className="reading">{dimension.title}</div>
+            <div className="remove" onClick={this.removeSplit.bind(this, split)}>x</div>
+          </div>
+        `);
+      }, this);
+      if (dragSection === Section.Splits && dragPosition === splits.size) splitItemY += itemHeight;
+    }
 
     var dimensionItemY = 0;
-    var dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
-      if (dragSection === Section.Dimensions && dragPosition === i) dimensionItemY += itemHeight;
-      var style = { transform: `translate3d(0,${dimensionItemY}px,0)` };
-      dimensionItemY += itemHeight;
-      var iconText = dimension.type === 'TIME' ? 'Ti' : 'Ab';
+    var dimensionItems: Array<React.ReactElement<any>> = null;
+    if (dataSource.dataLoaded) {
+      dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
+        if (dragSection === Section.Dimensions && dragPosition === i) dimensionItemY += itemHeight;
+        var style = { transform: `translate3d(0,${dimensionItemY}px,0)` };
+        dimensionItemY += itemHeight;
+        var iconText = dimension.type === 'TIME' ? 'Ti' : 'Ab';
 
-      return JSX(`
-        <div
-          className={'item dimension' + (dimension === selectedDimension ? ' selected' : '')}
-          key={dimension.name}
-          draggable="true"
-          onClick={this.selectDimension.bind(this, dimension)}
-          onDragStart={this.dimensionDragStart.bind(this, dimension)}
-          style={style}
-        >
-          <div className="icon">{iconText}</div>
-          {dimension.title}
-        </div>
-      `);
-    }, this);
-    if (dragSection === Section.Dimensions && dragPosition === dataSource.dimensions.size) dimensionItemY += itemHeight;
+        return JSX(`
+          <div
+            className={'item dimension' + (dimension === selectedDimension ? ' selected' : '')}
+            key={dimension.name}
+            draggable="true"
+            onClick={this.selectDimension.bind(this, dimension)}
+            onDragStart={this.dimensionDragStart.bind(this, dimension)}
+            style={style}
+          >
+            <div className="icon">{iconText}</div>
+            {dimension.title}
+          </div>
+        `);
+      }, this);
+      if (dragSection === Section.Dimensions && dragPosition === dataSource.dimensions.size) dimensionItemY += itemHeight;
+    }
 
     return JSX(`
       <div className="filter-split-panel">
