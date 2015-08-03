@@ -2,7 +2,7 @@
 
 import * as d3 from 'd3';
 import Selection = d3.Selection;
-import { $, Expression, NativeDataset, Datum } from 'plywood';
+import { $, Expression, Dataset, Datum } from 'plywood';
 
 
 interface TagAndClasses {

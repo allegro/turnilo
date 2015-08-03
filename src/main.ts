@@ -3,7 +3,7 @@
 import { List, IndexedIterable } from 'immutable';
 import * as React from 'react/addons';
 import { Timezone, WallTime } from "chronology";
-import { $, Expression, Datum, Dataset, NativeDataset, TimeRange } from 'plywood';
+import { $, Expression, Datum, Dataset, TimeRange } from 'plywood';
 
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "./models/index";
 import { Application } from "./components/index";

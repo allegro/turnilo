@@ -1,12 +1,12 @@
 'use strict';
 
 import React = require('react/addons');
-import { $, Expression, Dispatcher, NativeDataset, Datum } from 'plywood';
+import { $, Expression, Dispatcher, Dataset, Datum } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface ChartLineProps {
-  dataset: NativeDataset;
+  dataset: Dataset;
   getX: (d: Datum) => any;
   getY: (d: Datum) => any;
   scaleX: (v: any) => number;

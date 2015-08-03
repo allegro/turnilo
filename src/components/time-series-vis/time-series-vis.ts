@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
 import * as numeral from 'numeral';
-import { $, Dispatcher, Expression, NativeDataset, Datum, TimeRange } from 'plywood';
+import { $, Dispatcher, Expression, Dataset, Datum, TimeRange } from 'plywood';
 import { bindOne, bindMany } from "../../utils/render";
 import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from "../../models/index";
 import { ChartLine } from '../chart-line/chart-line';
@@ -16,10 +16,10 @@ function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
-function getTimeExtent(dataset: NativeDataset, splits: List<SplitCombine>): [Date, Date] {
+function getTimeExtent(dataset: Dataset, splits: List<SplitCombine>): [Date, Date] {
   if (!splits || !splits.size) return null;
   var extentData: Date[] = [];
-  var lastSplitDatasets: NativeDataset[] = [dataset.data[0]['Split']];
+  var lastSplitDatasets: Dataset[] = [dataset.data[0]['Split']];
 
   // ToDo: flatten / map
 
@@ -46,7 +46,7 @@ interface TimeSeriesVisProps {
 }
 
 interface TimeSeriesVisState {
-  dataset: NativeDataset;
+  dataset: Dataset;
 }
 
 export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSeriesVisState> {
@@ -124,7 +124,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       // if (!extentX)
 
       var myDatum: Datum = dataset.data[0];
-      var myDataset: NativeDataset = myDatum['Split'];
+      var myDataset: Dataset = myDatum['Split'];
 
       var splitName = splits.last().dimension;
 

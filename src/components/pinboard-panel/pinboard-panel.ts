@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
-import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
+import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { DimensionTile } from '../dimension-tile/dimension-tile';

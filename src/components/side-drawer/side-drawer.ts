@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import Icon = require('react-svg-icons');
 import { List } from 'immutable';
-import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
+import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { isInside } from '../../utils/dom';
 import { DataSource, Clicker } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';

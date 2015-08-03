@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
 import { Timezone } from "chronology";
-import { $, Expression, Datum, Dataset, NativeDataset, TimeRange, Dispatcher, ChainExpression } from 'plywood';
+import { $, Expression, Datum, Dataset, TimeRange, Dispatcher, ChainExpression } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 

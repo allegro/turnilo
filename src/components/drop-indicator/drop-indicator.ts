@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
+import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 

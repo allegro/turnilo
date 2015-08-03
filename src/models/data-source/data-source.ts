@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as d3 from 'd3';
 import * as Q from 'q';
 import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
-import { $, Expression, Dispatcher, basicDispatcherFactory, NativeDataset, Dataset, Datum } from 'plywood';
+import { $, Expression, Dispatcher, basicDispatcherFactory, Dataset, Datum } from 'plywood';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 
@@ -72,10 +72,10 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
   }
 
   static fromDataArray(name: string, title: string, source: string, rawData: any[]): DataSource {
-    var nativeDataset = <NativeDataset>Dataset.fromJS(rawData);
-    nativeDataset.introspect();
+    var mainDataset = Dataset.fromJS(rawData);
+    mainDataset.introspect();
 
-    var attributes = nativeDataset.attributes;
+    var attributes = mainDataset.attributes;
     var dimensionArray: Dimension[] = [];
     var measureArray: Measure[] = [];
     var defaultSortOn: string = null;
@@ -128,7 +128,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
 
     var dispatcher = basicDispatcherFactory({
       datasets: {
-        main: nativeDataset
+        main: mainDataset
       }
     });
 

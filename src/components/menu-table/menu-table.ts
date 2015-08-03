@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
+import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { formatterFromData } from '../../utils/formatter';
 import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
 // import { DateShow } from "../date-show/date-show";
@@ -18,7 +18,7 @@ interface MenuTableProps {
 }
 
 interface MenuTableState {
-  dataset?: NativeDataset;
+  dataset?: Dataset;
   selectedValues?: string[];
 }
 

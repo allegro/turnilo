@@ -3,7 +3,7 @@
 import { List, OrderedSet } from 'immutable';
 import * as React from 'react/addons';
 import * as numeral from 'numeral';
-import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
+import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 
@@ -20,7 +20,7 @@ interface MeasuresTileProps {
 }
 
 interface MeasuresTileState {
-  dataset?: NativeDataset;
+  dataset?: Dataset;
 }
 
 export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTileState> {

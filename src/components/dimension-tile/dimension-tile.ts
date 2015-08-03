@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
+import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { MenuTable } from "../menu-table/menu-table";

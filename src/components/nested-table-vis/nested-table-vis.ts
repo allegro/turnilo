@@ -3,7 +3,7 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as numeral from 'numeral';
-import { $, Expression, Dispatcher, NativeDataset, Datum } from 'plywood';
+import { $, Expression, Dispatcher, Dataset, Datum } from 'plywood';
 import { formatterFromData } from '../../utils/formatter';
 import { Filter, SplitCombine, Dimension, Measure, DataSource } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
@@ -17,7 +17,7 @@ interface NestedTableVisProps {
 }
 
 interface NestedTableVisState {
-  dataset: NativeDataset;
+  dataset: Dataset;
 }
 
 export class NestedTableVis extends React.Component<NestedTableVisProps, NestedTableVisState> {
