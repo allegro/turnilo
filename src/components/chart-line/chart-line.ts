@@ -43,13 +43,13 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
     var xFn = (d: Datum) => scaleX(getX(d));
     var yFn = (d: Datum) => scaleY(getY(d));
 
-    var lineFn = d3.svg.line<Datum>().x(xFn).y(yFn);
     var areaFn = d3.svg.area<Datum>().x(xFn).y(yFn).y0(scaleY(0));
+    var lineFn = d3.svg.line<Datum>().x(xFn).y(yFn);
 
     return JSX(`
       <g className="chart-line">
-        <path className="line" d={lineFn(dataset.data)}/>
         <path className="area" d={areaFn(dataset.data)}/>
+        <path className="line" d={lineFn(dataset.data)}/>
       </g>
     `);
   }
