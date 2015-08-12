@@ -3,6 +3,7 @@
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
+var path = require('path');
 
 var gulp = require('gulp');
 var gutil = require('gulp-util');
@@ -14,13 +15,13 @@ var tsc = require('gulp-typescript');
 var replace = require('gulp-replace');
 var concat = require('gulp-concat');
 var tslint = require('gulp-tslint');
+var foreach = require('gulp-foreach');
 
 var merge = require('merge-stream');
 var debug = require('gulp-debug');
 var reactTools = require('react-tools');
 var del = require('del');
 var typescript = require('typescript');
-var browserSync = require('browser-sync');
 
 var mocha = require('gulp-mocha');
 
@@ -154,33 +155,34 @@ gulp.task('client:test', function() {
     }));
 });
 
-gulp.task('bundle', ['client:tsc'], function() {
-  // From: https://github.com/gulpjs/gulp/blob/master/docs/recipes/browserify-uglify-sourcemap.md
-  var b = browserify({
-    entries: './client_build/main.js'
-  });
-
-  return b.bundle()
-    .pipe(source('explorer.js'))
-    .pipe(buffer())
-    .pipe(gulp.dest('./public/'));
+gulp.task('server:test', function() {
+  return gulp.src('./build/**/*.mocha.js', {read: false})
+    // gulp-mocha needs filepaths so you can't have any plugins before it
+    .pipe(mocha({
+      reporter: 'spec'
+    }));
 });
 
-gulp.task('browser-sync', function() {
-  // browser-sync start --server --files "bundle/*,index.html"
-  browserSync({
-    server: {
-      baseDir: "./"
-    }
-  });
+gulp.task('bundle', ['client:tsc'], function() {
+  return gulp.src('client_build/*.js')
+    .pipe(foreach(function(stream, file) {
+      // From: https://github.com/gulpjs/gulp/blob/master/docs/recipes/browserify-uglify-sourcemap.md
+      var b = browserify({
+        entries: file.path
+      });
+
+      return b.bundle()
+        .pipe(source(path.basename(file.path)))
+        .pipe(buffer());
+    }))
+    .pipe(gulp.dest('public'));
 });
 
 gulp.task('clean', function(cb) {
   del([
     './build/**',
     './client_build/**',
-    './client_build_tmp/**',
-    './.tsc-cache'
+    './client_build_tmp/**'
   ], cb);
 });
 
