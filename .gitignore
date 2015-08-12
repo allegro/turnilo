@@ -4,7 +4,9 @@
 node_modules/
 tmp/
 build/
-bundle/
+client_build_tmp/
+client_build/
+public/
 .tsc-cache
 webstorm/*-errors
 tasks

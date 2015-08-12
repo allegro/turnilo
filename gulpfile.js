@@ -1,6 +1,5 @@
 'use strict';
 
-var fs = require('fs');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
@@ -25,43 +24,24 @@ var browserSync = require('browser-sync');
 
 var mocha = require('gulp-mocha');
 
-function writeErrors(path, errorLines) {
-  var data;
-  if (errorLines.length) {
-    data = errorLines.join('\n') + '\nTotal: ' + errorLines.length + ' error' + (errorLines.length > 1 ? 's' : '');
-  } else {
-    data = '';
-  }
-  fs.writeFileSync(path, data, 'utf8');
-}
+var gr = require('./gulp-reporters');
+
+// client -> client_build_tmp -> client_build -> public
+// server -> build
 
 gulp.task('style', function() {
   var errorTexts = [];
-  function lintReporter(file, stream) {
-    if (!file.scsslint.success) {
-      file.scsslint.issues.forEach(function (issue) {
-        var linter = issue.linter ? (issue.linter + ': ') : '';
-        var logMsg = file.path + '(' + issue.line + ',0): ' + linter + issue.reason;
 
-        errorTexts.push(logMsg);
-        console.error(gutil.colors.red(logMsg));
-      });
-    }
-  }
-
-  function sassError(error) {
-    var message = error.message.replace(/\n\s\s/, '(').replace(/(\d+):(\d+)/, '$1,$2):');
-    errorTexts.push(message);
-    console.error(gutil.colors.red(message));
-    this.emit('end');
-  }
-
-  return gulp.src('./src/**/*.scss')
+  return gulp.src('./client/**/*.scss')
     .pipe(scsslint({
       config: 'sass-lint.yml',
-      customReport: lintReporter
+      customReport: gr.sassLintReporterFactory({
+        errorTexts: errorTexts
+      })
     }))
-    .pipe(sass().on('error', sassError))
+    .pipe(sass().on('error', gr.sassErrorFactory({
+      errorTexts: errorTexts
+    })))
     .pipe(postcss([
       autoprefixer({
         browsers: ['> 1%', 'last 3 versions', 'Firefox ESR', 'Opera 12.1'],
@@ -69,64 +49,22 @@ gulp.task('style', function() {
       })
     ]))
     .pipe(concat('explorer.css'))
-    .pipe(gulp.dest('./bundle'))
+    .pipe(gulp.dest('./public'))
     .on('finish', function() {
-      writeErrors('./webstorm/style-errors', errorTexts);
+      gr.writeErrors('./webstorm/style-errors', errorTexts);
     });
 });
 
 // TypeScript ------------------------------------------
 
-function flattenDiagnosticsVerbose(message, index) {
-  if (index == null) index = 0;
-  if (typeof message === 'undefined') {
-    return '';
-  } else if (typeof message === 'string') {
-    return message;
-  } else {
-    var result;
-    if (index === 0) {
-      result = message.messageText;
-    } else {
-      result = '\n> TS' + message.code + ' ' + message.messageText;
-    }
-    return result + flattenDiagnosticsVerbose(message.next, index + 1);
-  }
-}
-
-gulp.task('tsc', function() {
+gulp.task('client:tsc', function() {
   var errorTexts = [];
 
-  function tscLintReporter(failures, file) {
-    failures.forEach(function(failure) {
-      // line + 1 because TSLint's first line and character is 0
-      var errorText = file.path.replace('/tmp/', '/src/') +
-        '(' + (failure.startPosition.line + 1) + ',' + (failure.startPosition.character + 1) + '): ' +
-        failure.ruleName + ': ' + failure.failure;
-
-      errorTexts.push(errorText);
-      console.error(gutil.colors.red(errorText));
-    });
+  function fixPath(str) {
+    return str.replace('/client_build_tmp/', '/client/');
   }
 
-  function tscReporter() {
-    return {
-      error: function(error) {
-        if (error.tsFile) {
-          var errorText = error.fullFilename.replace('/tmp/', '/src/') + '(' + error.startPosition.line + ',' + error.startPosition.character + '): error TS' + error.diagnostic.code + ' ' + flattenDiagnosticsVerbose(error.diagnostic.messageText);
-          errorTexts.push(errorText);
-          console.error(gutil.colors.red(errorText));
-        } else {
-          console.error(error.message);
-        }
-      },
-      finish: function(results) {
-        writeErrors('./webstorm/tsc-errors', errorTexts);
-      }
-    }
-  }
-
-  var sourceFiles = gulp.src(['./src/**/*.ts'])
+  var sourceFiles = gulp.src(['./client/**/*.ts'])
     .pipe(replace(/JSX\((`([^`]*)`)\)/gm, function (match, fullMatch, stringContents) {
       var transformed;
       try {
@@ -143,44 +81,89 @@ gulp.task('tsc', function() {
       }
       return transformed;
     }))
-    .pipe(gulp.dest('./tmp/')) // typescript requires actual files on disk, not just in memory
-    .pipe(tslint()) // Re-enable tslint when TS 1.5 is supported
-    .pipe(tslint.report(tscLintReporter, { emitError: false }));
+    .pipe(gulp.dest('./client_build_tmp/')) // typescript requires actual files on disk, not just in memory
+    .pipe(tslint())
+    .pipe(tslint.report(
+      gr.tscLintReporterFactory({
+        errorTexts: errorTexts,
+        fixPath: fixPath
+      }),
+      { emitError: false }
+    ));
 
   var typeFiles = gulp.src(['./typings/**/*.d.ts']);
 
   return merge(sourceFiles, typeFiles)
-    .pipe(typescript({
-      typescript: typescript,
-      noImplicitAny: true,
-      noEmitOnError: true,
-      target: 'ES5',
-      module: 'commonjs'
-    }, undefined, tscReporter())) // typescript.reporter.longReporter()))
-    //.pipe(debug({title: 'compiled:'}))
+    .pipe(tsc(
+      {
+        typescript: typescript,
+        noImplicitAny: true,
+        noEmitOnError: true,
+        target: 'ES5',
+        module: 'commonjs'
+      },
+      undefined,
+      gr.tscReporterFactory({
+        errorTexts: errorTexts,
+        fixPath: fixPath,
+        onFinish: function() { gr.writeErrors('./webstorm/tsc-client-errors', errorTexts); }
+      })
+    ))
+    .pipe(gulp.dest('./client_build/'));
+});
+
+gulp.task('server:tsc', function() {
+  var errorTexts = [];
+
+  var sourceFiles = gulp.src(['./server/**/*.ts'])
+    .pipe(tslint())
+    .pipe(tslint.report(
+      gr.tscLintReporterFactory({
+        errorTexts: errorTexts
+      }),
+      { emitError: false }
+    ));
+
+  var typeFiles = gulp.src(['./typings/**/*.d.ts']);
+
+  return merge(sourceFiles, typeFiles)
+    .pipe(tsc(
+      {
+        typescript: typescript,
+        noImplicitAny: true,
+        noEmitOnError: true,
+        target: 'ES5',
+        module: 'commonjs'
+      },
+      undefined,
+      gr.tscReporterFactory({
+        errorTexts: errorTexts,
+        onFinish: function() { gr.writeErrors('./webstorm/tsc-server-errors', errorTexts); }
+      })
+    ))
     .pipe(gulp.dest('./build/'));
 });
 
 // ----------------------------------------------------------------
 
-gulp.task('test', function() {
-  return gulp.src('./build/**/*.mocha.js', {read: false})
+gulp.task('client:test', function() {
+  return gulp.src('./client_build/**/*.mocha.js', {read: false})
     // gulp-mocha needs filepaths so you can't have any plugins before it
     .pipe(mocha({
       reporter: 'spec'
     }));
 });
 
-gulp.task('bundle', ['tsc'], function() {
+gulp.task('bundle', ['client:tsc'], function() {
   // From: https://github.com/gulpjs/gulp/blob/master/docs/recipes/browserify-uglify-sourcemap.md
   var b = browserify({
-    entries: './build/main.js'
+    entries: './client_build/main.js'
   });
 
   return b.bundle()
     .pipe(source('explorer.js'))
     .pipe(buffer())
-    .pipe(gulp.dest('./bundle/'));
+    .pipe(gulp.dest('./public/'));
 });
 
 gulp.task('browser-sync', function() {
@@ -195,14 +178,16 @@ gulp.task('browser-sync', function() {
 gulp.task('clean', function(cb) {
   del([
     './build/**',
-    './tmp/**',
+    './client_build/**',
+    './client_build_tmp/**',
     './.tsc-cache'
   ], cb);
 });
 
-gulp.task('all', ['style', 'tsc', 'bundle']);
+gulp.task('all', ['style', 'server:tsc', 'client:tsc', 'bundle']);
 
 gulp.task('watch', ['all'], function() {
-  gulp.watch('./src/**', ['style', 'tsc', 'bundle']);
+  gulp.watch('./client/**', ['style', 'client:tsc', 'bundle']);
+  gulp.watch('./server/**', ['server:tsc']);
   gulp.watch('./icons/**', ['bundle']);
 });

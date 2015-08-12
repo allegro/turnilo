@@ -1,4 +1,3 @@
-#!/bin/bash
+#!/bin/bash -eu
 
-echo "Starting server"
-python -m SimpleHTTPServer
+exec node build/www.js

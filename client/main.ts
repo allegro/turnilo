@@ -15,7 +15,7 @@ if (!WallTime.rules) {
 }
 
 var dataSources = List([
-  DataSource.fromDataURL('wiki', 'Wikipedia', '/data/wikipedia.json')
+  DataSource.fromDataURL('wiki', 'Wikipedia', '/wikipedia.json')
   //DataSource.fromDispatcher('wiki2', 'Wikipedia 2', wikiRawData)
 ]);
 

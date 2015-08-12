@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Server Source Files" pattern="file[explorer]:server//*" />
+</component>
