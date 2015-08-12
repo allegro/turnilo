@@ -11,18 +11,16 @@ var sass = require('gulp-sass');
 var scsslint = require('gulp-scss-lint');
 var postcss = require('gulp-postcss');
 var autoprefixer = require('autoprefixer-core');
-var typescript = require('gulp-typescript');
+var tsc = require('gulp-typescript');
 var replace = require('gulp-replace');
 var concat = require('gulp-concat');
 var tslint = require('gulp-tslint');
-var cache = require("gulp-cache-money")({
-  cacheFile: __dirname + "/.tsc-cache"
-});
 
 var merge = require('merge-stream');
 var debug = require('gulp-debug');
 var reactTools = require('react-tools');
 var del = require('del');
+var typescript = require('typescript');
 var browserSync = require('browser-sync');
 
 var mocha = require('gulp-mocha');
@@ -129,9 +127,6 @@ gulp.task('tsc', function() {
   }
 
   var sourceFiles = gulp.src(['./src/**/*.ts'])
-    //.pipe(cache().on("cache-report", function(hits) {
-    //  gutil.log(gutil.colors.magenta(hits.length), "cache hits");
-    //}))
     .pipe(replace(/JSX\((`([^`]*)`)\)/gm, function (match, fullMatch, stringContents) {
       var transformed;
       try {
@@ -156,7 +151,7 @@ gulp.task('tsc', function() {
 
   return merge(sourceFiles, typeFiles)
     .pipe(typescript({
-      typescript: require('typescript'),
+      typescript: typescript,
       noImplicitAny: true,
       noEmitOnError: true,
       target: 'ES5',
@@ -207,7 +202,7 @@ gulp.task('clean', function(cb) {
 
 gulp.task('all', ['style', 'tsc', 'bundle']);
 
-gulp.task('watch', function() {
+gulp.task('watch', ['all'], function() {
   gulp.watch('./src/**', ['style', 'tsc', 'bundle']);
   gulp.watch('./icons/**', ['bundle']);
 });
