@@ -49,7 +49,7 @@ gulp.task('style', function() {
         remove: false // If you have no legacy code, this option will make Autoprefixer about 10% faster.
       })
     ]))
-    .pipe(concat('explorer.css'))
+    .pipe(concat('style.css'))
     .pipe(gulp.dest('./public'))
     .on('finish', function() {
       gr.writeErrors('./webstorm/style-errors', errorTexts);

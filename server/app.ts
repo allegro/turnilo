@@ -18,6 +18,7 @@ if (!WallTime.rules) {
 var app = express();
 
 const SECRET = 'Always wring a secret Towel, to surprise the enemy.';
+const VERSION = 'v1.1';
 
 app.disable('x-powered-by');
 
@@ -31,8 +32,6 @@ app.engine('.hbs', handlebars({
 app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', '.hbs');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 
 app.use(bodyParser.json());
@@ -42,7 +41,10 @@ app.use(express.static(path.join(__dirname, '../favicon')));
 app.use(express.static(path.join(__dirname, '../data')));
 
 app.get('/', (req: Request, res: Response, next: Function) => {
-  res.render('index',  { layout: false });
+  res.render('explorer', {
+    version: VERSION,
+    title: 'Explorer'
+  });
 });
 
 //catch 404 and forward to error handler
@@ -62,7 +64,9 @@ if (app.get('env') === 'development') { // NODE_ENV
     res.status(err['status'] || 500);
     res.render('error', {
       message: err.message,
-      error: err
+      error: err,
+      version: VERSION,
+      title: 'Explorer Error'
     });
   });
 }
@@ -73,7 +77,9 @@ app.use((err: any, req: Request, res: Response, next: Function) => {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
-    error: {}
+    error: {},
+    version: VERSION,
+    title: 'Explorer Error'
   });
 });
 
