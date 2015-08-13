@@ -6,6 +6,7 @@ import { Request, Response } from 'express';
 import * as path from 'path';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
+import * as compress from 'compression';
 import * as handlebars from 'express-handlebars';
 
 import { Timezone, WallTime } from "chronology";
@@ -32,6 +33,7 @@ app.engine('.hbs', handlebars({
 app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', '.hbs');
 
+app.use(compress());
 app.use(logger('dev'));
 
 app.use(bodyParser.json());
