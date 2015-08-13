@@ -30,6 +30,8 @@ var gr = require('./gulp-reporters');
 // client -> client_build_tmp -> client_build -> public
 // server -> build
 
+var STYLE_NAME = 'explorer.css';
+
 gulp.task('style', function() {
   var errorTexts = [];
 
@@ -49,7 +51,7 @@ gulp.task('style', function() {
         remove: false // If you have no legacy code, this option will make Autoprefixer about 10% faster.
       })
     ]))
-    .pipe(concat('style.css'))
+    .pipe(concat(STYLE_NAME))
     .pipe(gulp.dest('./public'))
     .on('finish', function() {
       gr.writeErrors('./webstorm/style-errors', errorTexts);
@@ -72,7 +74,10 @@ gulp.task('client:tsc', function() {
         transformed = reactTools.transform(stringContents);
         transformed = transformed.replace(/\s+\n/g, '\n'); // Trim trailing whitespace
       } catch (e) {
-        return '["' + e.message + '"]';
+        var errorText = e.message;
+        console.error(gutil.colors.red(errorText));
+        errorTexts.push(errorText);
+        return '$error_in_JSX$';
       }
       if (transformed.split('\n').length !== stringContents.split('\n').length) {
         throw new Error('transformed line count does not match');

@@ -13,7 +13,7 @@ if not /^([a-z-])+$/.test(name)
   console.log('must be a hyphen case name')
   process.exit()
 
-path = './src/components/' + name + '/'
+path = './client/components/' + name + '/'
 mkdirp.sync(path)
 console.log('Making path:', path)
 
@@ -32,7 +32,7 @@ writeFile = (path, data) ->
 writeFile(path + name + '.ts', """
 'use strict';
 
-import React = require('react/addons');
+import * as React from 'react/addons';
 import { $, Expression, Dispatcher, NativeDataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';

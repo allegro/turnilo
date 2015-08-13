@@ -1,6 +1,6 @@
 'use strict';
 
-import React = require('react/addons');
+import * as React from 'react/addons';
 import { $, Expression, Dispatcher, Dataset, Datum } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
