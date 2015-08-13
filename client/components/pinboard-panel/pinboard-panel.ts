@@ -13,6 +13,7 @@ interface PinboardPanelProps {
   dataSource: DataSource;
   filter: Filter;
   selectedMeasures: OrderedSet<string>;
+  pinnedMeasures: boolean;
   pinnedDimensions: OrderedSet<string>;
 }
 
@@ -88,16 +89,16 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     this.dragCounter = 0;
     var dimensionName = e.dataTransfer.getData("text/dimension");
     var { clicker, dataSource } = this.props;
-    clicker.pinDimension(dataSource.getDimension(dimensionName));
+    clicker.pin(dataSource.getDimension(dimensionName));
     this.setState({ dragOver: false });
   }
 
   render() {
-    var { clicker, dataSource, filter, selectedMeasures, pinnedDimensions } = this.props;
+    var { clicker, dataSource, filter, selectedMeasures, pinnedMeasures, pinnedDimensions } = this.props;
     var { dragOver } = this.state;
 
     var metricTile: React.ReactElement<any> = null;
-    if (dataSource.dataLoaded) {
+    if (dataSource.dataLoaded && pinnedMeasures) {
       metricTile = JSX(`
         <MeasuresTile
           clicker={clicker}

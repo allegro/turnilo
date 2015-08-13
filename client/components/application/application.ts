@@ -28,6 +28,7 @@ interface ApplicationState {
   filter?: Filter;
   splits?: List<SplitCombine>;
   selectedMeasures?: OrderedSet<string>;
+  pinnedMeasures?: boolean;
   pinnedDimensions?: OrderedSet<string>;
   visualization?: string;
   visualizations?: List<string>;
@@ -51,7 +52,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
           end: new Date('2013-02-27T00:00:00Z')
         }))
       ])),
-      splits: <List<SplitCombine>>List()
+      splits: <List<SplitCombine>>List(),
+      pinnedMeasures: true
     };
 
     var self = this;
@@ -102,17 +104,33 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
           visualization
         });
       },
-      pinDimension: (dimension: Dimension) => {
-        var { pinnedDimensions } = this.state;
-        self.setState({
-          pinnedDimensions: pinnedDimensions.add(dimension.name)
-        });
+      pin: (what: string | Dimension) => {
+        if (what instanceof Dimension) {
+          var { pinnedDimensions } = this.state;
+          self.setState({
+            pinnedDimensions: pinnedDimensions.add(what.name)
+          });
+        } else if (what === 'measures') {
+          self.setState({
+            pinnedMeasures: true
+          });
+        } else {
+          throw new Error('bad pin parameter');
+        }
       },
-      unpinDimension: (dimension: Dimension) => {
-        var { pinnedDimensions } = this.state;
-        self.setState({
-          pinnedDimensions: pinnedDimensions.remove(dimension.name)
-        });
+      unpin: (what: string | Dimension) => {
+        if (what instanceof Dimension) {
+          var { pinnedDimensions } = this.state;
+          self.setState({
+            pinnedDimensions: pinnedDimensions.remove(what.name)
+          });
+        } else if (what === 'measures') {
+          self.setState({
+            pinnedMeasures: false
+          });
+        } else {
+          throw new Error('bad pin parameter');
+        }
       },
       toggleMeasure: (measure: Measure) => {
         var { selectedMeasures } = self.state;
@@ -252,7 +270,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   render() {
     var clicker = this.clicker;
     var {
-      dataSources, dataSource, filter, splits, selectedMeasures, pinnedDimensions, timezone,
+      dataSources, dataSource, filter, splits, selectedMeasures, pinnedMeasures, pinnedDimensions, timezone,
       visualizations, visualization, visualizationStage,
       dragOver, drawerOpen
     } = this.state;
@@ -324,6 +342,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             dataSource={dataSource}
             filter={filter}
             selectedMeasures={selectedMeasures}
+            pinnedMeasures={pinnedMeasures}
             pinnedDimensions={pinnedDimensions}
           />
         </div>

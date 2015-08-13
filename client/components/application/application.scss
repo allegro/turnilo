@@ -1,9 +1,6 @@
 @import '../../variables';
 @import '../../mixins';
 
-// Do not worry Ofir, this is temporary!
-$pinboard-width: 200px;
-
 .application {
   overflow: hidden;
 
@@ -16,7 +13,7 @@ $pinboard-width: 200px;
     @include unpin-top($header-height);
 
     .filter-split-panel {
-      @include pin-left($action-bar-width);
+      @include pin-left($left-panel-width);
       z-index: 10;
     }
 
@@ -24,7 +21,7 @@ $pinboard-width: 200px;
       position: absolute;
       top: 0;
       bottom: 0;
-      left: $action-bar-width;
+      left: $left-panel-width;
       right: $pinboard-width;
 
       .vis-bar {

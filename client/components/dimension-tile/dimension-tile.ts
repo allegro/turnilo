@@ -57,7 +57,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         <TileHeader
           title={dimension.title}
           onSearch={this.toggleSearch.bind(this)}
-          onClose={clicker.unpinDimension.bind(clicker, dimension)}
+          onClose={clicker.unpin.bind(clicker, dimension)}
         />
         <MenuTable
           dataSource={dataSource}

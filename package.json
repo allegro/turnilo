@@ -16,6 +16,7 @@
   "dependencies": {
     "body-parser": "^1.13.3",
     "chronology": "0.8.x",
+    "compression": "^1.5.2",
     "d3": "^3.5.6",
     "debug": "^2.2.0",
     "express": "^4.13.3",

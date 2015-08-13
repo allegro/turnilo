@@ -77,7 +77,7 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
 
   pinDimension(): void {
     var { clicker, dimension, onClose } = this.props;
-    clicker.pinDimension(dimension);
+    clicker.pin(dimension);
     onClose();
   }
 

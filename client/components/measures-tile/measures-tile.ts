@@ -94,7 +94,10 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
 
     return JSX(`
       <div className="measures-tile">
-        <TileHeader title="Measures"/>
+        <TileHeader
+          title="Measures"
+          onClose={clicker.unpin.bind(clicker, 'measures')}
+        />
         <div className="rows">{rows}</div>
       </div>
     `);

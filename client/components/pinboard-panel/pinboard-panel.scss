@@ -12,7 +12,7 @@
   .dimension-tile,
   .placeholder-tile {
     flex-grow: 1;
-    width: 180px;
+    width: $pinboard-width - 20px;
     min-height: 150px;
     margin: 10px;
   }

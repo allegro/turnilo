@@ -1,6 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
+import * as Icon from 'react-svg-icons';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
@@ -40,8 +41,12 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
     return JSX(`
       <div className="tile-header">
         <div className="title">{title}</div>
-        <div className="search" onClick={onSearch}>Q</div>
-        <div className="close" onClick={onClose}>X</div>
+        <div className="search" onClick={onSearch}>
+          <Icon name="loupe" width={12} height={12}/>
+        </div>
+        <div className="close" onClick={onClose}>
+          <Icon name="x" width={12} height={12}/>
+        </div>
       </div>
     `);
   }

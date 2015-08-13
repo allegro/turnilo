@@ -1,5 +1,5 @@
 import * as React from 'react/addons';
-import Icon = require('react-svg-icons');
+import * as Icon from 'react-svg-icons';
 import { $, Expression, Datum, Dataset } from 'plywood';
 
 import { DataSource } from "../../models/index";

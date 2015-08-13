@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import Icon = require('react-svg-icons');
+import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { isInside } from '../../utils/dom';
