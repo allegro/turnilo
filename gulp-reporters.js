@@ -2,6 +2,8 @@
 
 var fs = require('fs');
 var gutil = require('gulp-util');
+var replace = require('gulp-replace');
+var reactTools = require('react-tools');
 
 function flattenDiagnosticsVerbose(message, index) {
   if (index == null) index = 0;
@@ -93,4 +95,31 @@ exports.sassErrorFactory = function(opt) {
     console.error(gutil.colors.red(message));
     this.emit('end');
   }
+};
+
+exports.jsxFixerFactory = function() {
+  return replace(/JSX\((`([^`]*)`)\)/gm, function (match, fullMatch, stringContents) {
+    var transformed;
+
+    if (stringContents.indexOf('\n\n') !== -1) {
+      return '$_can_not_have_double_new_line_in_JSX';
+    }
+
+    try {
+      transformed = reactTools.transform(stringContents);
+      transformed = transformed.replace(/\s+\n/g, '\n'); // Trim trailing whitespace
+    } catch (e) {
+      return e.message.replace(/\W/g, '_');
+    }
+
+    if (transformed.split('\n').length !== stringContents.split('\n').length) {
+      return '$_transformed_line_count_does_not_match';
+    }
+
+    if (transformed[0] === '\n') {
+      transformed = '(' + transformed + ')';
+    }
+
+    return transformed;
+  });
 };

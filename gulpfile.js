@@ -6,20 +6,17 @@ var buffer = require('vinyl-buffer');
 var path = require('path');
 
 var gulp = require('gulp');
-var gutil = require('gulp-util');
 var sass = require('gulp-sass');
 var scsslint = require('gulp-scss-lint');
 var postcss = require('gulp-postcss');
 var autoprefixer = require('autoprefixer-core');
 var tsc = require('gulp-typescript');
-var replace = require('gulp-replace');
 var concat = require('gulp-concat');
 var tslint = require('gulp-tslint');
 var foreach = require('gulp-foreach');
 
 var merge = require('merge-stream');
 var debug = require('gulp-debug');
-var reactTools = require('react-tools');
 var del = require('del');
 var typescript = require('typescript');
 
@@ -68,25 +65,7 @@ gulp.task('client:tsc', function() {
   }
 
   var sourceFiles = gulp.src(['./client/**/*.ts'])
-    .pipe(replace(/JSX\((`([^`]*)`)\)/gm, function (match, fullMatch, stringContents) {
-      var transformed;
-      try {
-        transformed = reactTools.transform(stringContents);
-        transformed = transformed.replace(/\s+\n/g, '\n'); // Trim trailing whitespace
-      } catch (e) {
-        var errorText = e.message;
-        console.error(gutil.colors.red(errorText));
-        errorTexts.push(errorText);
-        return '$error_in_JSX$';
-      }
-      if (transformed.split('\n').length !== stringContents.split('\n').length) {
-        throw new Error('transformed line count does not match');
-      }
-      if (transformed[0] === '\n') {
-        transformed = '(' + transformed + ')';
-      }
-      return transformed;
-    }))
+    .pipe(gr.jsxFixerFactory())
     .pipe(gulp.dest('./client_build_tmp/')) // typescript requires actual files on disk, not just in memory
     .pipe(tslint())
     .pipe(tslint.report(
