@@ -112,7 +112,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var { clicker, dataSource } = this.props;
     var { dragPosition } = this.state;
 
-    console.log('drop into filter');
+    var dimension = dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
+    clicker.addSplit(dimension.getSplitCombine());
 
     this.dragCounter = 0;
     this.setState({
