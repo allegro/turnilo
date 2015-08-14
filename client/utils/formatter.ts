@@ -56,10 +56,12 @@ export function formatterFromData(values: number[], format: string): Formatter {
     var append = unit ? space + unit : '';
 
     return (n: number) => {
+      if (isNaN(n)) return '';
       return numeral(n / scale).format(numberFormat) + append;
     };
   } else {
     return (n: number) => {
+      if (isNaN(n)) return '';
       return numeral(n).format(format);
     };
   }

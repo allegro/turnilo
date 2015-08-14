@@ -14,6 +14,9 @@ $row-height: 25px;
     width: $segment-width;
     height: $header-height;
     overflow: hidden;
+    padding: 5px 0 0 6px;
+    font-weight: bold;
+    border-bottom: 1px solid $gray;
   }
 
   .header-cont {
@@ -23,6 +26,8 @@ $row-height: 25px;
     right: 0;
     height: $header-height;
     overflow: hidden;
+    font-weight: bold;
+    border-bottom: 1px solid $gray;
 
     .header {
       white-space: nowrap;
@@ -49,6 +54,7 @@ $row-height: 25px;
 
     .row {
       white-space: nowrap;
+      width: 100%;
     }
   }
 
@@ -73,7 +79,7 @@ $row-height: 25px;
   .measure {
     overflow: hidden;
     white-space: nowrap;
-    padding: 2px 4px;
+    padding: 5px 0 0 6px;
   }
 
   .measure {

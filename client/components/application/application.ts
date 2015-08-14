@@ -174,7 +174,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var visualizations = this.getPossibleVisualizations(dataSource, splits);
     this.setState({
       splits,
-      selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
+      selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
       pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(0, 2).map(d => d.name)),
       visualizations: visualizations,
       visualization: visualizations.last()

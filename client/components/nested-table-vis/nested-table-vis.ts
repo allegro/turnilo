@@ -128,9 +128,16 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
 
     var headerStyle = { left: -scrollLeft };
     var segmentsStyle = { top: -scrollTop };
-    var bodyStyle = { left: -scrollLeft, top: -scrollTop };
+
+    var rowWidth = MEASURE_WIDTH * measuresArray.length + EXTRA_SPACE;
+    var bodyStyle = {
+      left: -scrollLeft,
+      top: -scrollTop,
+      width: rowWidth + 'px'
+    };
+
     var scrollerStyle = {
-      width: (SEGMENT_WIDTH + MEASURE_WIDTH * measuresArray.length + EXTRA_SPACE) + 'px',
+      width: (SEGMENT_WIDTH + rowWidth) + 'px',
       height: (HEADER_HEIGHT + ROW_HEIGHT * rows.length + EXTRA_SPACE) + 'px'
     };
 
