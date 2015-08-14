@@ -177,7 +177,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
             onDragStart={this.dragStart.bind(this, dimension, operand)}
             style={style}
           >
-            <div className="reading">{dimension.title}: {this.formatValue(dimension, operand, timezone)}</div>
+            <div className="reading">{dimension.title + ': ' + this.formatValue(dimension, operand, timezone)}</div>
             <div className="remove" onClick={this.removeFilter.bind(this, operandExpression)}>
               <Icon name="x" width={12} height={12}/>
             </div>

@@ -57,7 +57,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     };
 
     var self = this;
-    this.clicker = {
+    var clicker = {
       changeDataSource: (dataSource: DataSource) => {
         var { dataSources } = self.state;
         var dataSourceName = dataSource.name;
@@ -75,27 +75,22 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         self.setState({ filter });
       },
       changeSplits: (splits: List<SplitCombine>) => {
-        var { dataSource } = self.state;
+        var { dataSource, visualization } = self.state;
+        var visualizations = self.getPossibleVisualizations(dataSource, splits);
+        if (!visualizations.contains(visualization)) visualization = visualizations.get(0);
         self.setState({
           splits,
-          visualizations: self.getPossibleVisualizations(dataSource, splits)
+          visualization,
+          visualizations
         });
       },
       addSplit: (split: SplitCombine) => {
-        var { dataSource, splits } = this.state;
-        splits = <List<SplitCombine>>splits.concat(split);
-        self.setState({
-          splits,
-          visualizations: self.getPossibleVisualizations(dataSource, splits)
-        });
+        var { splits } = this.state;
+        clicker.changeSplits(<List<SplitCombine>>splits.concat(split));
       },
       removeSplit: (split: SplitCombine) => {
-        var { dataSource, splits } = this.state;
-        splits = <List<SplitCombine>>splits.filter(s => s !== split);
-        self.setState({
-          splits,
-          visualizations: self.getPossibleVisualizations(dataSource, splits)
-        });
+        var { splits } = this.state;
+        clicker.changeSplits(<List<SplitCombine>>splits.filter(s => s !== split));
       },
       selectVisualization: (visualization: string) => {
         var { visualizations } = this.state;
@@ -143,6 +138,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       }
     };
 
+    this.clicker = clicker;
     this.globalResizeListener = this.globalResizeListener.bind(this);
   }
 
