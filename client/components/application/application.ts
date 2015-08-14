@@ -167,7 +167,10 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   }
 
   fillInDetails(dataSource: DataSource) {
-    var splits = List([dataSource.getDimension('time').getSplitCombine()]);
+    var splits = List([
+      //dataSource.getDimension('time').getSplitCombine()
+      dataSource.getDimension('page').getSplitCombine()
+    ]);
     var visualizations = this.getPossibleVisualizations(dataSource, splits);
     this.setState({
       splits,

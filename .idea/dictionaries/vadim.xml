@@ -5,6 +5,7 @@
       <w>autoprefixer</w>
       <w>bezier</w>
       <w>fontcustom</w>
+      <w>formatters</w>
       <w>googleapis</w>
       <w>keydown</w>
       <w>linter</w>

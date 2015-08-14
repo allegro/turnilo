@@ -4,12 +4,12 @@
 .nested-table-vis {
   .header {
     white-space: nowrap;
+    overflow: hidden;
   }
 
-  .rows {
+  .table-body {
     @include unpin-top(25px);
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: auto;
 
     .row {
       white-space: nowrap;

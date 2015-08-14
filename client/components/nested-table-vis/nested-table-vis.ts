@@ -17,7 +17,8 @@ interface NestedTableVisProps {
 }
 
 interface NestedTableVisState {
-  dataset: Dataset;
+  dataset?: Dataset;
+  scrollLeft?: number;
 }
 
 export class NestedTableVis extends React.Component<NestedTableVisProps, NestedTableVisState> {
@@ -25,7 +26,8 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
   constructor() {
     super();
     this.state = {
-      dataset: null
+      dataset: null,
+      scrollLeft: 0
     };
   }
 
@@ -72,9 +74,15 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
 
   }
 
+  onScroll(e: UIEvent) {
+    this.setState({
+      scrollLeft: (<Element>e.target).scrollLeft
+    });
+  }
+
   render() {
     var { measures } = this.props;
-    var { dataset } = this.state;
+    var { dataset, scrollLeft } = this.state;
 
     var measuresArray = measures.toArray();
 
@@ -107,10 +115,15 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
       });
     }
 
+    var headerRowStyle = { left: -scrollLeft };
     return JSX(`
       <div className="nested-table-vis">
-        <div className="header">{headerColumns}</div>
-        <div className="rows">{rows}</div>
+        <div className="header">
+          <div className="header-row" style={headerRowStyle}>{headerColumns}</div>
+        </div>
+        <div className="table-body" onScroll={this.onScroll.bind(this)}>
+          <div className="rows">{rows}</div>
+        </div>
       </div>
     `);
   }
