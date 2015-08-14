@@ -2,7 +2,7 @@
 @import '../../mixins';
 
 .measures-tile {
-  background: $detail-background;
+  @extend %module;
 
   .rows {
     position: absolute;

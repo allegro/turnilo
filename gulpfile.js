@@ -173,7 +173,8 @@ gulp.task('clean', function(cb) {
 gulp.task('all', ['style', 'server:tsc', 'client:tsc', 'bundle']);
 
 gulp.task('watch', ['all'], function() {
-  gulp.watch('./client/**', ['style', 'client:tsc', 'bundle']);
+  gulp.watch('./client/**/*.scss', ['style']);
+  gulp.watch('./client/**/*.ts', ['client:tsc', 'bundle']);
   gulp.watch('./server/**', ['server:tsc']);
   gulp.watch('./icons/**', ['bundle']);
 });

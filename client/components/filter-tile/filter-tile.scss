@@ -1,0 +1,49 @@
+@import '../../variables';
+@import '../../mixins';
+
+.filter-tile {
+  @extend %module;
+  @extend %module-title;
+  padding-bottom: 10px;
+
+  .items {
+    transition: height 0.1s ease-in-out;
+
+    .item {
+      position: absolute;
+      top: 0; // It gets vertical position from the JS
+      left: 10px;
+      right: 10px;
+      height: $item-height;
+
+      padding: 8px 0 0 10px;
+      background: $item-background;
+      border: 1px solid $item-border;
+      border-radius: 4px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.1s ease-in-out;
+
+      .remove {
+        @include pin-right(25px);
+        text-align: center;
+        padding-top: 8px;
+        cursor: pointer;
+
+        path {
+          fill: $item-remove-color;
+        }
+      }
+
+      &:hover,
+      &.selected {
+        background: $item-selected-background;
+        border: 1px solid $item-selected-border;
+
+        path {
+          fill: $item-selected-remove-color;
+        }
+      }
+    }
+  }
+}

@@ -2,11 +2,8 @@
 @import '../../mixins';
 
 .vis-bar {
+  @extend %module;
   padding: 12px 0 0 10px;
-
-  background: $beta-background;
-  color: $beta-text-color;
-  border-bottom: 1px solid $beta-border-color;
 
   .vis-item {
     display: inline-block;

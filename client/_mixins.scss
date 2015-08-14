@@ -167,3 +167,19 @@
     color: shade($button-secondary-text-color, 32%);
   }
 }
+
+%module {
+  background: $module-background;
+  box-shadow: 0 2px 2px 0 $module-shadow-color;
+  color: $module-text-color;
+}
+
+%module-title {
+  .title {
+    padding: 10px 0 0 10px;
+    height: $title-height;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: $module-title-color;
+  }
+}

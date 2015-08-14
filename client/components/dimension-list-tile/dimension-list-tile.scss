@@ -1,0 +1,52 @@
+@import '../../variables';
+@import '../../mixins';
+
+.dimension-list-tile {
+  @extend %module;
+  @extend %module-title;
+
+  .items {
+    position: absolute;
+    top: $title-height;
+    bottom: 0;
+    width: 100%;
+    overflow: auto;
+    color: $detail-text-color;
+    transition: height 0.1s ease-in-out;
+
+    .item {
+      @include pin-top(30px);
+
+      padding: 8px 0 0 10px;
+      background: $detail-background;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.1s ease-in-out;
+
+      &.selected {
+        background: $detail-highlight;
+      }
+
+      .icon {
+        display: inline-block;
+        width: 18px;
+        margin-right: 5px;
+        cursor: ns-resize;
+      }
+    }
+
+    .dummy-item {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: $detail-background;
+      transition: top 0.1s ease-in-out;
+    }
+  }
+
+  &.no-drag {
+    .item:hover {
+      background: $detail-hover;
+    }
+  }
+}

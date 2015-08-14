@@ -2,11 +2,10 @@
 @import '../../mixins';
 
 .pinboard-panel {
-  background: $beta-background;
-  border-left: 1px solid $beta-border-color;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  padding: 10px 10px 0 10px;
 
   .measures-tile,
   .dimension-tile,
@@ -14,7 +13,7 @@
     flex-grow: 1;
     width: $pinboard-width - 20px;
     min-height: 150px;
-    margin: 10px;
+    margin-bottom: 10px;
   }
 
   .placeholder-tile {

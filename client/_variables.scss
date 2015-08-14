@@ -5,6 +5,9 @@ $left-panel-width: 250px;
 $pinboard-width: 220px;
 $vis-bar-height: 35px;
 
+$title-height: 35px;
+$item-height: 30px;
+
 // Base Colors
 
 $white: #ffffff;
@@ -14,10 +17,26 @@ $gray: #cccccc;
 
 // Colors -------------------
 
+$base-background: hsl(0, 0%, 89%);
+
+$module-background: $white;
+$module-title-color: hsl(0, 0%, 53%);
+$module-text-color: hsl(0, 0%, 27%);
+$module-shadow-color: hsla(0, 0%, 0%, 0.14);
+
+$item-background: hsl(0, 0%, 95%);
+$item-border: hsl(0, 0%, 82%);
+$item-remove-color: hsl(0, 0%, 73%);
+$item-selected-background: hsl(200, 84%, 88%);
+$item-selected-border: hsl(200, 64%, 73%);
+$item-selected-remove-color: hsl(200, 53%, 63%);
+
+/// other
+
 $alpha-background: hsl(216, 57%, 57%);
 $alpha-text-color: $white;
 
-$beta-background: hsl(0, 0%, 90%);
+$beta-background: hsl(0, 0%, 89%);
 $beta-text-color: hsl(0, 0%, 53%);
 $beta-border-color: hsl(0, 0%, 73%);
 

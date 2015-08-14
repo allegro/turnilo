@@ -2,7 +2,7 @@
 @import '../../mixins';
 
 .dimension-tile {
-  background: $detail-background;
+  @extend %module;
 
   .menu-table {
     @include unpin-top(20px);
