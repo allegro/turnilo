@@ -14,7 +14,7 @@ interface DimensionTileProps {
 }
 
 interface DimensionTileState {
-  showSearch: boolean;
+  showSearch?: boolean;
 }
 
 export class DimensionTile extends React.Component<DimensionTileProps, DimensionTileState> {

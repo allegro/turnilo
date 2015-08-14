@@ -12,6 +12,8 @@ const HEADER_HEIGHT = 25;
 const SEGMENT_WIDTH = 200;
 const MEASURE_WIDTH = 100;
 const ROW_HEIGHT = 25;
+const SPACE_LEFT = 10;
+
 const EXTRA_SPACE = 90;
 
 interface NestedTableVisProps {
@@ -91,8 +93,10 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
   }
 
   render() {
-    var { measures } = this.props;
+    var { dataSource, measures, splits } = this.props;
     var { dataset, scrollLeft, scrollTop } = this.state;
+
+    var segmentTitle = splits.map((split) => dataSource.getDimension(split.dimension).title).join(', ');
 
     var measuresArray = measures.toArray();
 
@@ -137,17 +141,17 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     };
 
     var scrollerStyle = {
-      width: (SEGMENT_WIDTH + rowWidth) + 'px',
+      width: (SPACE_LEFT + SEGMENT_WIDTH + rowWidth) + 'px',
       height: (HEADER_HEIGHT + ROW_HEIGHT * rows.length + EXTRA_SPACE) + 'px'
     };
 
     return JSX(`
       <div className="nested-table-vis">
-        <div className="corner">Segment</div>
-        <div className="header-cont">
+        <div className="corner">{segmentTitle}</div>
+        <div className={'header-cont' + (scrollTop ? ' scroll' : '')}>
           <div className="header" style={headerStyle}>{headerColumns}</div>
         </div>
-        <div className="segments-cont">
+        <div className={'segments-cont' + (scrollLeft ? ' scroll' : '')}>
           <div className="segments" style={segmentsStyle}>{segments}</div>
         </div>
         <div className="body-cont">

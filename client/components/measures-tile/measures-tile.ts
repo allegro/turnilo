@@ -21,6 +21,7 @@ interface MeasuresTileProps {
 
 interface MeasuresTileState {
   dataset?: Dataset;
+  showSearch?: boolean;
 }
 
 export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTileState> {
@@ -28,7 +29,8 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
   constructor() {
     super();
     this.state = {
-      dataset: null
+      dataset: null,
+      showSearch: false
     };
   }
 
@@ -65,9 +67,14 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     }
   }
 
+  toggleSearch() {
+    var { showSearch } = this.state;
+    this.setState({ showSearch: !showSearch });
+  }
+
   render() {
     var { clicker, dataSource, selectedMeasures } = this.props;
-    var { dataset } = this.state;
+    var { dataset, showSearch } = this.state;
 
     var myDatum = dataset ? dataset.data[0] : null;
 
@@ -96,6 +103,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       <div className="measures-tile">
         <TileHeader
           title="Measures"
+          onSearch={this.toggleSearch.bind(this)}
           onClose={clicker.unpin.bind(clicker, 'measures')}
         />
         <div className="rows">{rows}</div>

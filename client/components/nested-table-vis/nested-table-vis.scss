@@ -5,47 +5,56 @@ $header-height: 25px;
 $segment-width: 200px;
 $measure-width: 100px;
 $row-height: 25px;
+$space-left: 10px;
 
 .nested-table-vis {
   .corner {
     position: absolute;
-    left: 0;
+    left: $space-left;
     top: 0;
     width: $segment-width;
     height: $header-height;
     overflow: hidden;
     padding: 5px 0 0 6px;
-    font-weight: bold;
+    font-weight: 600;
     border-bottom: 1px solid $gray;
   }
 
   .header-cont {
     position: absolute;
-    left: $segment-width;
+    left: $space-left + $segment-width;
     top: 0;
     right: 0;
     height: $header-height;
     overflow: hidden;
-    font-weight: bold;
+    font-weight: 600;
     border-bottom: 1px solid $gray;
 
     .header {
       white-space: nowrap;
     }
+
+    &.scroll {
+      box-shadow: 0 2px 2px -2px;
+    }
   }
 
   .segments-cont {
     position: absolute;
-    left: 0;
+    left: $space-left;
     top: $header-height;
     bottom: 0;
     width: $segment-width;
     overflow: hidden;
+
+    &.scroll {
+      box-shadow: 2px 0 2px -2px;
+    }
   }
 
   .body-cont {
     position: absolute;
-    left: $segment-width;
+    left: $space-left + $segment-width;
     right: 0;
     top: $header-height;
     bottom: 0;
