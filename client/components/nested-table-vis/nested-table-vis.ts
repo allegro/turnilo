@@ -8,6 +8,12 @@ import { formatterFromData } from '../../utils/formatter';
 import { Filter, SplitCombine, Dimension, Measure, DataSource } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
+const HEADER_HEIGHT = 25;
+const SEGMENT_WIDTH = 200;
+const MEASURE_WIDTH = 100;
+const ROW_HEIGHT = 25;
+const EXTRA_SPACE = 90;
+
 interface NestedTableVisProps {
   dataSource: DataSource;
   filter: Filter;
@@ -19,6 +25,7 @@ interface NestedTableVisProps {
 interface NestedTableVisState {
   dataset?: Dataset;
   scrollLeft?: number;
+  scrollTop?: number;
 }
 
 export class NestedTableVis extends React.Component<NestedTableVisProps, NestedTableVisState> {
@@ -27,7 +34,8 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     super();
     this.state = {
       dataset: null,
-      scrollLeft: 0
+      scrollLeft: 0,
+      scrollTop: 0
     };
   }
 
@@ -75,23 +83,24 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
   }
 
   onScroll(e: UIEvent) {
+    var target = <Element>e.target;
     this.setState({
-      scrollLeft: (<Element>e.target).scrollLeft
+      scrollLeft: target.scrollLeft,
+      scrollTop: target.scrollTop
     });
   }
 
   render() {
     var { measures } = this.props;
-    var { dataset, scrollLeft } = this.state;
+    var { dataset, scrollLeft, scrollTop } = this.state;
 
     var measuresArray = measures.toArray();
 
-    var headerColumns = [
-      JSX(`<div className="segment" key="_segment">Segment</div>`)
-    ].concat(measuresArray.map(measure => {
-        return JSX(`<div className="measure" key={measure.name}>{measure.title}</div>`);
-      }));
+    var headerColumns = measuresArray.map(measure => {
+      return JSX(`<div className="measure" key={measure.name}>{measure.title}</div>`);
+    });
 
+    var segments: React.DOMElement<any>[] = [];
     var rows: React.DOMElement<any>[] = [];
     if (dataset) {
       var rowData = dataset.data[0]['Split'].data;
@@ -102,27 +111,43 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
         return formatterFromData(measureValues, measure.format);
       });
 
+      segments = rowData.map((d: Datum, rowIndex: number) => {
+        return JSX(`<div className="segment" key={'_' + rowIndex}>{String(d['Split'])}</div>`);
+      });
+
       rows = rowData.map((d: Datum, rowIndex: number) => {
-        var row = [
-          JSX(`<div className="segment" key="_segment">{String(d['Split'])}</div>`)
-        ].concat(measuresArray.map((measure, i) => {
-            var measureValue = d[measure.name];
-            var measureValueStr = formatters[i](measureValue);
-            return JSX(`<div className="measure" key={measure.name}>{measureValueStr}</div>`);
-          }));
+        var row = measuresArray.map((measure, i) => {
+          var measureValue = d[measure.name];
+          var measureValueStr = formatters[i](measureValue);
+          return JSX(`<div className="measure" key={measure.name}>{measureValueStr}</div>`);
+        });
 
         return JSX(`<div className="row" key={'_' + rowIndex}>{row}</div>`);
       });
     }
 
-    var headerRowStyle = { left: -scrollLeft };
+    var headerStyle = { left: -scrollLeft };
+    var segmentsStyle = { top: -scrollTop };
+    var bodyStyle = { left: -scrollLeft, top: -scrollTop };
+    var scrollerStyle = {
+      width: (SEGMENT_WIDTH + MEASURE_WIDTH * measuresArray.length + EXTRA_SPACE) + 'px',
+      height: (HEADER_HEIGHT + ROW_HEIGHT * rows.length + EXTRA_SPACE) + 'px'
+    };
+
     return JSX(`
       <div className="nested-table-vis">
-        <div className="header">
-          <div className="header-row" style={headerRowStyle}>{headerColumns}</div>
+        <div className="corner">Segment</div>
+        <div className="header-cont">
+          <div className="header" style={headerStyle}>{headerColumns}</div>
         </div>
-        <div className="table-body" onScroll={this.onScroll.bind(this)}>
-          <div className="rows">{rows}</div>
+        <div className="segments-cont">
+          <div className="segments" style={segmentsStyle}>{segments}</div>
+        </div>
+        <div className="body-cont">
+          <div className="body" style={bodyStyle}>{rows}</div>
+        </div>
+        <div className="scroller-cont" onScroll={this.onScroll.bind(this)}>
+          <div className="scroller" style={scrollerStyle}></div>
         </div>
       </div>
     `);
