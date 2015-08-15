@@ -242,8 +242,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     }
   }
 
-  sideDrawerOpen(state: boolean): void {
-    this.setState({ drawerOpen: state });
+  sideDrawerOpen(drawerOpen: boolean): void {
+    this.setState({ drawerOpen });
   }
 
   getPossibleVisualizations(dataSource: DataSource, splits: List<SplitCombine>): List<string> {

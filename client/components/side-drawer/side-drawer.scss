@@ -1,10 +1,8 @@
 @import '../../variables';
 @import '../../mixins';
 
-$side-drawer-width: 250px;
-
 .side-drawer {
-  @include pin-right($side-drawer-width);
+  @include pin-left($side-drawer-width);
 
   font-size: 16px;
   background: $detail-background;

@@ -2,6 +2,7 @@
 
 $header-height: 35px;
 $left-panel-width: 250px;
+$side-drawer-width: 250px;
 $pinboard-width: 220px;
 $vis-bar-height: 35px;
 
@@ -16,6 +17,9 @@ $black: #000000;
 $gray: #cccccc;
 
 // Colors -------------------
+
+$header-background: hsl(202, 73%, 51%);
+$header-text-color: $white;
 
 $base-background: hsl(0, 0%, 89%);
 
@@ -32,9 +36,6 @@ $item-selected-border: hsl(200, 64%, 73%);
 $item-selected-remove-color: hsl(200, 53%, 63%);
 
 /// other
-
-$alpha-background: hsl(216, 57%, 57%);
-$alpha-text-color: $white;
 
 $beta-background: hsl(0, 0%, 89%);
 $beta-text-color: hsl(0, 0%, 53%);
