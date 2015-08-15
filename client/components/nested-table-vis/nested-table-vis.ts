@@ -2,6 +2,7 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
+import * as Icon from 'react-svg-icons';
 import * as numeral from 'numeral';
 import { $, Expression, Dispatcher, Dataset, Datum } from 'plywood';
 import { formatterFromData } from '../../utils/formatter';
@@ -102,8 +103,16 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
 
     var measuresArray = measures.toArray();
 
-    var headerColumns = measuresArray.map(measure => {
-      return JSX(`<div className="measure" key={measure.name}>{measure.title}</div>`);
+    var headerColumns = measuresArray.map((measure, i) => {
+      var sortArrow: React.ReactElement<any> = null;
+      if (i === 0) {
+        sortArrow = React.createElement(Icon, {
+          name: 'sort-arrow',
+          className: 'arrow',
+          height: 16
+        });
+      }
+      return JSX(`<div className="measure-name" key={measure.name}>{measure.title}{sortArrow}</div>`);
     });
 
     var segments: React.DOMElement<any>[] = [];

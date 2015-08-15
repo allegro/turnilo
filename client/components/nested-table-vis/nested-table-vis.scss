@@ -38,6 +38,11 @@ $space-left: 10px;
     &.scroll {
       box-shadow: 0 2px 2px -2px;
     }
+
+    .arrow {
+      position: absolute;
+      right: -15px;
+    }
   }
 
   .segments-cont {
@@ -86,12 +91,18 @@ $space-left: 10px;
   }
 
   .segment,
+  .measure-name,
   .measure {
-    overflow: hidden;
     white-space: nowrap;
     padding: 5px 0 0 6px;
   }
 
+  .segment,
+  .measure {
+    overflow: hidden;
+  }
+
+  .measure-name,
   .measure {
     display: inline-block;
     width: $measure-width;
