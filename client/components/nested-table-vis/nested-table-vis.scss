@@ -28,9 +28,10 @@ $space-left: 10px;
     height: $header-height;
     overflow: hidden;
     font-weight: 600;
-    border-bottom: 1px solid $gray;
 
     .header {
+      height: $header-height;
+      border-bottom: 1px solid $gray;
       white-space: nowrap;
     }
 
@@ -94,6 +95,7 @@ $space-left: 10px;
   .measure {
     display: inline-block;
     width: $measure-width;
+    height: 100%;
     text-align: right;
   }
 }

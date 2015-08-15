@@ -13,8 +13,10 @@ const SEGMENT_WIDTH = 200;
 const MEASURE_WIDTH = 100;
 const ROW_HEIGHT = 25;
 const SPACE_LEFT = 10;
+const SPACE_RIGHT = 10;
 
-const EXTRA_SPACE = 90;
+const ROW_PADDING_RIGHT = 50;
+const BODY_PADDING_BOTTOM = 90;
 
 interface NestedTableVisProps {
   dataSource: DataSource;
@@ -93,7 +95,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
   }
 
   render() {
-    var { dataSource, measures, splits } = this.props;
+    var { dataSource, measures, splits, stage } = this.props;
     var { dataset, scrollLeft, scrollTop } = this.state;
 
     var segmentTitle = splits.map((split) => dataSource.getDimension(split.dimension).title).join(', ');
@@ -130,19 +132,32 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
       });
     }
 
-    var headerStyle = { left: -scrollLeft };
-    var segmentsStyle = { top: -scrollTop };
+    var rowWidth = MEASURE_WIDTH * measuresArray.length + ROW_PADDING_RIGHT;
 
-    var rowWidth = MEASURE_WIDTH * measuresArray.length + EXTRA_SPACE;
+    // Extended so that the horizontal lines extend fully
+    var rowWidthExtended = Math.max(
+      rowWidth,
+      stage.width - (SPACE_LEFT + SEGMENT_WIDTH + SPACE_RIGHT)
+    );
+
+    var headerStyle = {
+      width: rowWidthExtended + 'px',
+      left: -scrollLeft
+    };
+
+    var segmentsStyle = {
+      top: -scrollTop
+    };
+
     var bodyStyle = {
       left: -scrollLeft,
       top: -scrollTop,
-      width: rowWidth + 'px'
+      width: rowWidthExtended + 'px'
     };
 
     var scrollerStyle = {
-      width: (SPACE_LEFT + SEGMENT_WIDTH + rowWidth) + 'px',
-      height: (HEADER_HEIGHT + ROW_HEIGHT * rows.length + EXTRA_SPACE) + 'px'
+      width: (SPACE_LEFT + SEGMENT_WIDTH + rowWidth + SPACE_RIGHT) + 'px',
+      height: (HEADER_HEIGHT + ROW_HEIGHT * rows.length + BODY_PADDING_BOTTOM) + 'px'
     };
 
     return JSX(`
