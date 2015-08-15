@@ -1,5 +1,8 @@
-@import '../../variables';
-@import '../../mixins';
+@import '../../config/constants';
+@import '../../utils/mixins';
+
+$checkbox-width: 20px;
+$measure-width: 80px;
 
 .menu-table {
   background: $detail-background;
@@ -47,9 +50,6 @@
       }
     }
   }
-
-  $checkbox-width: 20px;
-  $measure-width: 80px;
 
   .segment-value {
     @include unpin-right($measure-width);

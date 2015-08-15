@@ -2,6 +2,7 @@
 
 import * as React from 'react/addons';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
+import { TITLE_HEIGHT } from '../../config/constants';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { moveInList } from '../../utils/general';
 import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
@@ -156,9 +157,14 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       if (dragOver && dragPosition === dataSource.dimensions.size) dimensionItemY += ITEM_HEIGHT;
     }
 
+    const style = {
+      maxHeight: TITLE_HEIGHT + dimensionItemY
+    };
+
     return JSX(`
       <div
         className={'dimension-list-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
+        style={style}
         onDragOver={this.dragOver.bind(this)}
         onDragEnter={this.dragEnter.bind(this)}
         onDragLeave={this.dragLeave.bind(this)}
@@ -167,7 +173,6 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
         <div className="title">Dimensions</div>
         <div className="items" ref="items">
           {dimensionItems}
-          <div className="dummy-item" style={{ top: dimensionItemY + 'px' }}></div>
         </div>
       </div>
     `);

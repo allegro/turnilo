@@ -1,12 +1,15 @@
-@import '../../variables';
-@import '../../mixins';
+@import '../../config/constants';
+@import '../../utils/mixins';
+
+$checkbox-width: 20px;
+$measure-width: 80px;
 
 .measures-tile {
   @extend %module;
 
   .rows {
     position: absolute;
-    top: 20px;
+    top: $pin-title-height;
     bottom: 0;
     left: 10px;
     right: 0;
@@ -15,7 +18,7 @@
   }
 
   .row {
-    height: 20px;
+    height: $pin-item-height;
 
     &:hover {
       background: $detail-hover;
@@ -30,9 +33,6 @@
       }
     }
   }
-
-  $checkbox-width: 20px;
-  $measure-width: 80px;
 
   .measure-name {
     @include unpin-right($measure-width);

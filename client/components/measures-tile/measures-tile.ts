@@ -4,6 +4,7 @@ import { List, OrderedSet } from 'immutable';
 import * as React from 'react/addons';
 import * as numeral from 'numeral';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
+import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT } from '../../config/constants';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 
@@ -78,6 +79,8 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
 
     var myDatum = dataset ? dataset.data[0] : null;
 
+    var maxHeight = PIN_TITLE_HEIGHT;
+
     var rows = dataSource.measures.map(measure => {
       var measureName = measure.name;
       var selected = selectedMeasures.has(measureName);
@@ -97,10 +100,14 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
         </div>
       `);
     });
+    maxHeight += rows.size * PIN_ITEM_HEIGHT;
 
+    const style = {
+      maxHeight
+    };
 
     return JSX(`
-      <div className="measures-tile">
+      <div className="measures-tile" style={style}>
         <TileHeader
           title="Measures"
           onSearch={this.toggleSearch.bind(this)}

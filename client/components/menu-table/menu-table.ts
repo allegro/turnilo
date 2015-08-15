@@ -4,9 +4,8 @@ import * as React from 'react/addons';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { formatterFromData } from '../../utils/formatter';
 import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
-// import { DateShow } from "../date-show/date-show";
 
-var topN = 100;
+const TOP_N = 100;
 
 interface MenuTableProps {
   dataSource: DataSource;
@@ -41,7 +40,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
       .split(dimension.expression, dimension.name)
       .apply(measure.name, measure.expression)
       .sort($(measure.name), 'descending')
-      .limit(topN + 1);
+      .limit(TOP_N + 1);
 
     dataSource.dispatcher(query).then((dataset) => {
       this.setState({ dataset });
@@ -104,8 +103,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     var rows: Array<React.DOMElement<any>> = [];
     var hasMore = false;
     if (dataset) {
-      hasMore = dataset.data.length > topN;
-      var rowData = dataset.data.slice(0, topN);
+      hasMore = dataset.data.length > TOP_N;
+      var rowData = dataset.data.slice(0, TOP_N);
       var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
       rows = rowData.map((d) => {
         var segmentValue = String(d[dimensionName]);

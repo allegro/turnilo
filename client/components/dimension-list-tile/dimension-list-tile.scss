@@ -1,5 +1,5 @@
-@import '../../variables';
-@import '../../mixins';
+@import '../../config/constants';
+@import '../../utils/mixins';
 
 .dimension-list-tile {
   @extend %module;
@@ -33,14 +33,6 @@
         margin-right: 5px;
         cursor: ns-resize;
       }
-    }
-
-    .dummy-item {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      background: $detail-background;
-      transition: top 0.1s ease-in-out;
     }
   }
 
