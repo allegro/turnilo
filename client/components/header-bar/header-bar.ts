@@ -19,10 +19,12 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
     return JSX(`
       <header className="header-bar">
         <div className="burger-bar" onClick={onNavClick}>
-          <Icon className="arrow-logo" name="arrow-logo" width={18} height={18} color="white"/>
+          <Icon className="menu" name="menu" width={14} height={12} color="white"/>
           <div className="dataset-title">{dataSource.title}</div>
         </div>
-        <Icon className="text-logo" name="text-logo" height={20} color="white"/>
+        <div className="right-bar">
+          <Icon className="text-logo" name="text-logo" height={20} color="white"/>
+        </div>
       </header>
     `);
   }

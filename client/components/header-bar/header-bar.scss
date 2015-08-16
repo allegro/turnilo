@@ -8,23 +8,26 @@
 
   .burger-bar {
     display: inline-block;
-    padding: 10px 20px 0 10px;
     height: 100%;
+    padding-top: 13px;
+    padding-left: 18px;
     cursor: pointer;
 
-    .arrow-logo {
-      margin-top: -2px;
+    .menu {
+      margin-top: 1px;
     }
 
     .dataset-title {
       display: inline-block;
-      margin-left: 4px;
+      margin-left: 12px;
     }
   }
 
-  .text-logo {
+  .right-bar {
     position: absolute;
-    top: 7px;
-    right: 10px;
+    top: 0;
+    right: 0;
+    padding-top: 13px;
+    padding-right: 18px;
   }
 }

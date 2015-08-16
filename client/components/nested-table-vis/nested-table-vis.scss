@@ -1,11 +1,13 @@
 @import '../../config/constants';
 @import '../../utils/mixins';
 
-$header-height: 25px;
+$header-height: 38px;
 $segment-width: 200px;
 $measure-width: 100px;
-$row-height: 25px;
+$row-height: 30px;
 $space-left: 10px;
+
+$header-padding-top: 12px;
 
 .nested-table-vis {
   .corner {
@@ -15,9 +17,9 @@ $space-left: 10px;
     width: $segment-width;
     height: $header-height;
     overflow: hidden;
-    padding: 5px 0 0 6px;
+    padding: $header-padding-top 0 0 6px;
     font-weight: 600;
-    border-bottom: 1px solid $gray;
+    border-bottom: 1px solid $normal-border;
   }
 
   .header-cont {
@@ -31,7 +33,7 @@ $space-left: 10px;
 
     .header {
       height: $header-height;
-      border-bottom: 1px solid $gray;
+      border-bottom: 1px solid $normal-border;
       white-space: nowrap;
     }
 
@@ -87,19 +89,24 @@ $space-left: 10px;
   .segment,
   .row {
     height: $row-height;
-    border-bottom: 1px solid $gray;
+    border-bottom: 1px solid $light-border;
+  }
+
+  .measure-name {
+    padding-top: $header-padding-top;
   }
 
   .segment,
   .measure-name,
   .measure {
     white-space: nowrap;
-    padding: 5px 0 0 6px;
+    padding-left: 6px;
   }
 
   .segment,
   .measure {
     overflow: hidden;
+    padding-top: 8px;
   }
 
   .measure-name,

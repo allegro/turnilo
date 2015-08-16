@@ -10,3 +10,4 @@ public/
 .tsc-cache
 webstorm/*-errors
 tasks
+.DS_Store

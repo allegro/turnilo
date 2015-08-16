@@ -1,16 +1,19 @@
 // Sizes
 
-$header-height: 35px;
-$left-panel-width: 250px;
-$side-drawer-width: 250px;
-$pinboard-width: 220px;
+$header-height: 44px;
+$left-panel-width: 240px;
+$side-drawer-width: 255px;
+$pinboard-width: 240px;
 $vis-bar-height: 35px;
 
 $title-height: 35px;
 $item-height: 30px;
-$pin-title-height: 20px;
+$pin-title-height: 26px;
 $search-box-height: 30px;
-$pin-item-height: 20px;
+$pin-item-height: 22px;
+
+$tile-padding-v: 10px;
+$tile-padding-h: 14px;
 
 // Base Colors
 
@@ -21,18 +24,24 @@ $gray: #cccccc;
 
 // Colors -------------------
 
-$header-background: hsl(202, 73%, 51%);
+$light-border: hsl(0, 0%, 87%);
+$lightish-border: hsl(0, 0%, 82%);
+$normal-border: hsl(0, 0%, 73%);
+
+$light-background: hsl(0, 0%, 95%);
+
+$header-background: hsl(201, 81%, 49%);
 $header-text-color: $white;
 
 $base-background: hsl(0, 0%, 89%);
 
 $module-background: $white;
-$module-title-color: hsl(0, 0%, 53%);
+$module-title-color: hsl(0, 0%, 55%);
 $module-text-color: hsl(0, 0%, 27%);
 $module-shadow-color: hsla(0, 0%, 0%, 0.14);
 
-$item-background: hsl(0, 0%, 95%);
-$item-border: hsl(0, 0%, 82%);
+$item-background: $light-background;
+$item-border: $lightish-border;
 $item-remove-color: hsl(0, 0%, 73%);
 $item-selected-background: hsl(200, 84%, 88%);
 $item-selected-border: hsl(200, 64%, 73%);
@@ -51,15 +60,15 @@ $detail-border-color: hsl(0, 0%, 80%);
 $detail-hover: hsl(217, 59%, 90%);
 $detail-highlight: hsl(217, 59%, 85%);
 
-$button-primary-background: hsl(220, 45%, 45%);
+$button-primary-background: $header-background;
 $button-primary-text-color: $white;
 $button-secondary-background: hsl(0, 0%, 87%);
 $button-secondary-text-color: hsl(0, 0%, 40%);
 
 // Vis
 
-$main-time-line: hsl(217, 32%, 50%);
-$main-time-area: hsl(216, 33%, 91%);
+$main-time-line: $header-background;
+$main-time-area: hsl(202, 81%, 94%);
 
 // Transitions ----------------
 
