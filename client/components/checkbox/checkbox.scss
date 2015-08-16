@@ -1,0 +1,34 @@
+@import '../../config/constants';
+@import '../../utils/mixins';
+
+$checkbox-size: 15px;
+
+.checkbox {
+  display: inline-block;
+  vertical-align: top;
+  width: 20px;
+  height: 100%;
+  cursor: pointer;
+
+  &:before {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    content: '';
+    border: 1px solid $lightish-border;
+    background: $light-background;
+    width: $checkbox-size;
+    height: $checkbox-size;
+  }
+
+  svg {
+    position: absolute;
+    top: 3px;
+    left: 1px;
+  }
+
+  path {
+    // ToDo: fix me
+    fill-rule: nonzero; // Needed because the icon has overlaps
+  }
+}

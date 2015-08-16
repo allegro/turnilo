@@ -1,7 +1,6 @@
 @import '../../config/constants';
 @import '../../utils/mixins';
 
-$checkbox-width: 20px;
 $measure-width: 80px;
 
 .measures-tile {
@@ -23,15 +22,6 @@ $measure-width: 80px;
     &:hover {
       background: $detail-hover;
     }
-
-    &.selected {
-      .checkbox:after {
-        position: absolute;
-        content: 'v';
-        top: 4px;
-        left: 3px;
-      }
-    }
   }
 
   .measure-name {
@@ -40,24 +30,6 @@ $measure-width: 80px;
     cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
-
-    .checkbox {
-      display: inline-block;
-      vertical-align: top;
-      width: $checkbox-width;
-      height: 100%;
-      cursor: pointer;
-
-      &:before {
-        position: absolute;
-        content: '';
-        background: $gray;
-        width: 14px;
-        height: 14px;
-        top: 4px;
-        left: 0;
-      }
-    }
 
     .label {
       display: inline-block;

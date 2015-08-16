@@ -6,6 +6,7 @@ import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT } from '../../conf
 import { formatterFromData } from '../../utils/formatter';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
+import { Checkbox } from '../checkbox/checkbox';
 
 const TOP_N = 100;
 
@@ -128,9 +129,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         var measureValueStr = formatter(measureValue);
         var selected = selectedValues.indexOf(segmentValue) > -1;
 
-        var checkbox: React.DOMElement<any> = null;
+        var checkbox: React.ReactElement<any> = null;
         if (false) {
-          checkbox = JSX(`<div className="checkbox" onClick={this.onBoxClick.bind(this, segmentValue)}></div>`);
+          checkbox = React.createElement(Checkbox, {
+            checked: selected
+          //  onClick: this.onBoxClick.bind(this, segmentValue)
+          });
         }
 
         return JSX(`

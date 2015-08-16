@@ -7,6 +7,7 @@ import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT } from '../../config/constants';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
+import { Checkbox } from '../checkbox/checkbox';
 
 var objectHasOwnProperty = Object.prototype.hasOwnProperty;
 function hasOwnProperty(obj: any, key: string): boolean {
@@ -93,7 +94,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       return JSX(`
         <div className={'row' + (selected ? ' selected' : '')} key={measureName}>
           <div className="measure-name" onClick={clicker.toggleMeasure.bind(clicker, measure)}>
-            <div className="checkbox"></div>
+            <Checkbox checked={selected}/>
             <div className="label">{measure.title}</div>
           </div>
           <div className="measure-value">{measureValueStr}</div>
