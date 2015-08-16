@@ -2,7 +2,7 @@
 
 import { List, IndexedIterable } from 'immutable';
 import * as React from 'react/addons';
-import { Timezone, WallTime } from "chronology";
+import { Timezone, WallTime } from 'chronology';
 import { $, Expression, Datum, Dataset, TimeRange } from 'plywood';
 
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "./models/index";
@@ -15,8 +15,9 @@ if (!WallTime.rules) {
 }
 
 var dataSources = List([
-  DataSource.fromDataURL('wiki', 'Static Wikipedia', '/wikipedia.json')
-  //DataSource.fromDispatcher('wiki2', 'Wikipedia 2', wikiRawData)
+  DataSource.fromQueryURL('wiki', 'Wikipedia', '/query')
+  //DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia', '/wikipedia.json')
+  //DataSource.fromArray('wiki2', 'Wikipedia 2', wikiRawData)
 ]);
 
 React.render(

@@ -5,6 +5,7 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import * as numeral from 'numeral';
 import { $, Expression, Dispatcher, Dataset, Datum } from 'plywood';
+import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
 import { Filter, SplitCombine, Dimension, Measure, DataSource } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
@@ -44,7 +45,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     };
   }
 
-  fetchData(filter: Filter, measures: List<Measure>, splits: List<SplitCombine>) {
+  fetchData(filter: Filter, splits: List<SplitCombine>, measures: List<Measure>) {
     var { dataSource } = this.props;
     var $main = $('main');
 
@@ -73,13 +74,13 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
 
   componentDidMount() {
     var props = this.props;
-    this.fetchData(props.filter, props.measures, props.splits);
+    this.fetchData(props.filter, props.splits, props.measures);
   }
 
   componentWillReceiveProps(nextProps: NestedTableVisProps) {
     var props = this.props;
-    if (props.filter !== nextProps.filter || props.measures !== nextProps.measures || props.splits !== nextProps.splits) {
-      this.fetchData(nextProps.filter, nextProps.measures, nextProps.splits);
+    if (props.filter !== nextProps.filter || props.splits !== nextProps.splits || !listsEqual(props.measures, nextProps.measures)) {
+      this.fetchData(nextProps.filter, nextProps.splits, nextProps.measures);
     }
   }
 
@@ -144,10 +145,13 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     var rowWidth = MEASURE_WIDTH * measuresArray.length + ROW_PADDING_RIGHT;
 
     // Extended so that the horizontal lines extend fully
-    var rowWidthExtended = Math.max(
-      rowWidth,
-      stage.width - (SPACE_LEFT + SEGMENT_WIDTH + SPACE_RIGHT)
-    );
+    var rowWidthExtended = rowWidth;
+    if (stage) {
+      rowWidthExtended = Math.max(
+        rowWidthExtended,
+        stage.width - (SPACE_LEFT + SEGMENT_WIDTH + SPACE_RIGHT)
+      );
+    }
 
     var headerStyle = {
       width: rowWidthExtended + 'px',

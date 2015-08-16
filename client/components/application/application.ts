@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
-import { Timezone } from "chronology";
+import { Timezone, Duration } from 'chronology';
 import { $, Expression, Datum, Dataset, TimeRange, Dispatcher, ChainExpression } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
@@ -46,12 +46,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     super();
     this.state = {
       timezone: Timezone.UTC,
-      filter: new Filter(List([
-        $('time').in(TimeRange.fromJS({
-          start: new Date('2013-02-26T00:00:00Z'),
-          end: new Date('2013-02-27T00:00:00Z')
-        }))
-      ])),
+      filter: new Filter(),
       splits: <List<SplitCombine>>List(),
       pinnedMeasures: true
     };
@@ -155,7 +150,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
     if (!dataSource) return;
 
-    if (dataSource.dataLoaded) {
+    if (dataSource.metadataLoaded) {
       this.fillInDetails(dataSource);
     } else {
       var self = this;
@@ -167,12 +162,32 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   }
 
   fillInDetails(dataSource: DataSource) {
+    var timeRange: TimeRange;
+
+    if ((<any>window)['now'] === 'now') {
+      var day = Duration.fromJS('P1D');
+      var now = day.floor(new Date(), Timezone.UTC);
+      timeRange = TimeRange.fromJS({
+        start: day.move(now, Timezone.UTC, -2),
+        end: day.move(now, Timezone.UTC, 1)
+      });
+    } else {
+      timeRange = TimeRange.fromJS({
+        start: new Date('2013-02-26T00:00:00Z'),
+        end: new Date('2013-02-27T00:00:00Z')
+      });
+    }
+
+    var filter = new Filter(List([
+      $('time').in(timeRange)
+    ]));
     var splits = List([
       //dataSource.getDimension('time').getSplitCombine()
       dataSource.getDimension('page').getSplitCombine()
     ]);
     var visualizations = this.getPossibleVisualizations(dataSource, splits);
     this.setState({
+      filter,
       splits,
       selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
       pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(0, 2).map(d => d.name)),
@@ -277,7 +292,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var measures = dataSource.measures;
 
     var visElement: React.ReactElement<any> = null;
-    if (dataSource.dataLoaded) {
+    if (dataSource.metadataLoaded) {
       if (visualization === 'time-series-vis') {
         visElement = React.createElement(TimeSeriesVis, {
           dataSource: dataSource,

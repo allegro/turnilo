@@ -98,7 +98,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var { dragOver } = this.state;
 
     var metricTile: React.ReactElement<any> = null;
-    if (dataSource.dataLoaded && pinnedMeasures) {
+    if (dataSource.metadataLoaded && pinnedMeasures) {
       metricTile = JSX(`
         <MeasuresTile
           clicker={clicker}
@@ -110,7 +110,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     }
 
     var dimensionTiles: Array<React.ReactElement<any>> = null;
-    if (dataSource.dataLoaded) {
+    if (dataSource.metadataLoaded) {
       dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
         var dimension: Dimension = dataSource.getDimension(dimensionName);
         return JSX(`

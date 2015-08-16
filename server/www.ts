@@ -53,5 +53,6 @@ function onError(error: any) {
  */
 function onListening() {
   var address = server.address();
+  console.log('Listening on http://localhost:' + address.port);
   debug('Listening on ' + address.port);
 }

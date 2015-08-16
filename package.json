@@ -29,6 +29,7 @@
     "numeral": "^1.5.3",
     "plywood": "^0.0.x",
     "q": "^1.1.2",
+    "qajax": "^1.3.0",
     "react": "^0.13.3",
     "react-svg-icons": "^0.1.2",
     "typescript": "^1.5.3"

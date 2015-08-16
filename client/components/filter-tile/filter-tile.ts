@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
-import { Timezone } from "chronology";
+import { Timezone } from 'chronology';
 import { $, Expression, ChainExpression, InAction, Dispatcher, Dataset } from 'plywood';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { formatStartEnd } from '../../utils/date';
@@ -158,7 +158,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     var filterItemY = 0;
     var filterItems: Array<React.ReactElement<any>> = null;
-    if (dataSource.dataLoaded) {
+    if (dataSource.metadataLoaded) {
       filterItems = filter.operands.toArray().map((operand, i) => {
         var operandExpression = operand.expression;
         var dimension = dataSource.dimensions.find((d) => d.expression.equals(operandExpression));

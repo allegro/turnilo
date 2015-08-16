@@ -2,7 +2,7 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-import { Timezone } from "chronology";
+import { Timezone } from 'chronology';
 import { $, Expression, Dispatcher, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
 import { DataSource, Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
 import { FilterSplitMenu } from "../filter-split-menu/filter-split-menu";

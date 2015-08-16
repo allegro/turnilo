@@ -3,11 +3,13 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 
+import { readFileSync } from 'fs';
 import * as path from 'path';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import * as compress from 'compression';
 import * as handlebars from 'express-handlebars';
+import { $, Expression, Datum, Dataset } from 'plywood';
 
 import { Timezone, WallTime } from "chronology";
 // Init chronology
@@ -16,9 +18,27 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
+function getWikiData(): any[] {
+  try {
+    var wikiData = JSON.parse(readFileSync(path.join(__dirname, '../data/wikipedia.json'), 'utf-8'));
+    var secInHour = 60 * 60;
+    wikiData.forEach((d: Datum, i: number) => {
+      d['time'] = new Date(Date.parse(d['time']) + (i % secInHour) * 1000);
+    });
+    return wikiData;
+  } catch (e) {
+    return [];
+  }
+}
+
+var contexts: Lookup<Datum> = {
+  wiki: {
+    main: Dataset.fromJS(getWikiData()).hide()
+  }
+};
+
 var app = express();
 
-const SECRET = 'Always wring a secret Towel, to surprise the enemy.';
 const VERSION = 'v1.1';
 
 app.disable('x-powered-by');
@@ -47,6 +67,44 @@ app.get('/', (req: Request, res: Response, next: Function) => {
     version: VERSION,
     title: 'Explorer'
   });
+});
+
+app.post('/query', (req: Request, res: Response, next: Function) => {
+  var { dataset, expression } = req.body;
+
+  if (typeof dataset !== 'string') {
+    res.status(400).send({ error: 'must have a string dataset' });
+    return;
+  }
+
+  var context = contexts[dataset];
+  if (!context) {
+    res.status(400).send({ error: 'unknown dataset' });
+    return;
+  }
+
+  var ex: Expression = null;
+  try {
+    ex = Expression.fromJS(expression);
+  } catch (e) {
+    res.status(400).send({
+      error: 'bad expression',
+      message: e.message
+    });
+    return;
+  }
+
+  ex.compute(context).then(
+    (data: Dataset) => {
+      res.send(data.toJS());
+    },
+    (e: Error) => {
+      res.status(400).send({
+        error: 'could not compute',
+        message: e.message
+      });
+    }
+  );
 });
 
 //catch 404 and forward to error handler

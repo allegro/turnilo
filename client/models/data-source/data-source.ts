@@ -3,26 +3,112 @@
 import { List } from 'immutable';
 import * as d3 from 'd3';
 import * as Q from 'q';
+import * as Qajax from 'qajax';
 import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
-import { $, Expression, Dispatcher, basicDispatcherFactory, Dataset, Datum } from 'plywood';
+import { $, Expression, Dispatcher, basicDispatcherFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
+import { upperCaseFirst, listsEqual } from '../../utils/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 
-function upperCaseFirst(title: string): string {
-  return title[0].toUpperCase() + title.substring(1);
+function getSplitsDescription(ex: Expression): string {
+  var splits: string[] = [];
+  ex.forEach((ex) => {
+    if (ex instanceof ChainExpression) {
+      ex.actions.forEach((action) => {
+        if (action.action === 'split') splits.push(action.expression.toString());
+      });
+    }
+  });
+  return splits.join(';');
 }
 
-function listsEqual<T>(listA: List<T>, listB: List<T>): boolean {
-  if (listA === listB) return true;
-  if (!listA || !listB) return false;
-  return arraysEqual(listA.toArray(), listB.toArray());
+function queryUrlDispatcherFactory(url: string): Dispatcher {
+  return (ex: Expression) => {
+    return Qajax({
+      method: "POST",
+      url: url + '?by=' + getSplitsDescription(ex),
+      data: {
+        dataset: 'wiki',
+        expression: ex.toJS()
+      }
+    })
+      .then(Qajax.filterSuccess)
+      .then(Qajax.toJSON)
+      .then((dataJS) => Dataset.fromJS(dataJS));
+  };
 }
+
+
+interface DimensionsMetrics {
+  dimensions: List<Dimension>;
+  measures: List<Measure>;
+  defaultSortOn: string;
+}
+
+function makeDimensionsMetricsFromAttributes(attributes: Attributes): DimensionsMetrics {
+  var dimensionArray: Dimension[] = [];
+  var measureArray: Measure[] = [];
+  var defaultSortOn: string = null;
+
+  if (!attributes['count']) {
+    measureArray.push(new Measure({
+      name: 'count',
+      title: 'Count',
+      expression: $('main').count(),
+      format: Measure.DEFAULT_FORMAT
+    }));
+    defaultSortOn = 'count';
+  }
+
+  for (let k in attributes) {
+    if (!attributes.hasOwnProperty(k)) continue;
+    let type = attributes[k].type;
+    switch (type) {
+      case 'TIME':
+      case 'STRING':
+        dimensionArray.push(new Dimension({
+          name: k,
+          title: upperCaseFirst(k),
+          expression: $(k),
+          type: type,
+          sortOn: null
+        }));
+        break;
+
+      case 'NUMBER':
+        measureArray.push(new Measure({
+          name: k,
+          title: upperCaseFirst(k),
+          expression: $('main').sum($(k)),
+          format: Measure.DEFAULT_FORMAT
+        }));
+        break;
+
+      default:
+        throw new Error('bad type ' + type);
+    }
+  }
+
+  dimensionArray.sort((a, b) => a.title.localeCompare(b.title));
+  measureArray.sort((a, b) => a.title.localeCompare(b.title));
+
+  if (!defaultSortOn && measureArray.length) {
+    defaultSortOn = measureArray[0].name;
+  }
+
+  return {
+    dimensions: List(dimensionArray),
+    measures: List(measureArray),
+    defaultSortOn
+  };
+}
+
 
 export interface DataSourceValue {
   name: string;
   title: string;
   source: string;
-  dataLoaded: boolean;
+  metadataLoaded: boolean;
   loadError: string;
 
   dimensions?: List<Dimension>;
@@ -48,7 +134,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
   public name: string;
   public title: string;
   public source: string;
-  public dataLoaded: boolean;
+  public metadataLoaded: boolean;
   public loadError: string;
 
   public dimensions: List<Dimension>;
@@ -61,12 +147,50 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     return isInstanceOf(candidate, DataSource);
   }
 
-  static fromDataURL(name: string, title: string, source: string): DataSource {
+  static fromQueryURL(name: string, title: string, source: string): DataSource {
+    /*
+     "dimensions":["continent","robot","country","city","newPage","unpatrolled","namespace","anonymous","language","page","region","user"],
+     "metrics":["deleted","added","count","delta"]
+     */
+
+    var attributes: Attributes = {
+      time: AttributeInfo.fromJS({ type: 'TIME' }),
+
+      robot: AttributeInfo.fromJS({ type: 'STRING' }),
+      newPage: AttributeInfo.fromJS({ type: 'STRING' }),
+      unpatrolled: AttributeInfo.fromJS({ type: 'STRING' }),
+      namespace: AttributeInfo.fromJS({ type: 'STRING' }),
+      anonymous: AttributeInfo.fromJS({ type: 'STRING' }),
+      language: AttributeInfo.fromJS({ type: 'STRING' }),
+      page: AttributeInfo.fromJS({ type: 'STRING' }),
+      user: AttributeInfo.fromJS({ type: 'STRING' }),
+
+      count: AttributeInfo.fromJS({ type: 'NUMBER' }),
+      added: AttributeInfo.fromJS({ type: 'NUMBER' }),
+      deleted: AttributeInfo.fromJS({ type: 'NUMBER' }),
+      delta: AttributeInfo.fromJS({ type: 'NUMBER' })
+    };
+
+    var dm = makeDimensionsMetricsFromAttributes(attributes);
     return new DataSource({
       name,
       title,
       source,
-      dataLoaded: false,
+      metadataLoaded: true,
+      loadError: null,
+      dimensions: dm.dimensions,
+      measures: dm.measures,
+      defaultSortOn: dm.defaultSortOn,
+      dispatcher: queryUrlDispatcherFactory(source)
+    });
+  }
+
+  static fromDataFileURL(name: string, title: string, source: string): DataSource {
+    return new DataSource({
+      name,
+      title,
+      source,
+      metadataLoaded: false,
       loadError: null
     });
   }
@@ -75,72 +199,22 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     var mainDataset = Dataset.fromJS(rawData);
     mainDataset.introspect();
 
-    var attributes = mainDataset.attributes;
-    var dimensionArray: Dimension[] = [];
-    var measureArray: Measure[] = [];
-    var defaultSortOn: string = null;
-
-    if (!attributes['count']) {
-      measureArray.push(new Measure({
-        name: 'count',
-        title: 'Count',
-        expression: $('main').count(),
-        format: Measure.DEFAULT_FORMAT
-      }));
-      defaultSortOn = 'count';
-    }
-
-    for (let k in attributes) {
-      if (!attributes.hasOwnProperty(k)) continue;
-      let type = attributes[k].type;
-      switch (type) {
-        case 'TIME':
-        case 'STRING':
-          dimensionArray.push(new Dimension({
-            name: k,
-            title: upperCaseFirst(k),
-            expression: $(k),
-            type: type,
-            sortOn: null
-          }));
-          break;
-
-        case 'NUMBER':
-          measureArray.push(new Measure({
-            name: k,
-            title: upperCaseFirst(k),
-            expression: $('main').sum($(k)),
-            format: Measure.DEFAULT_FORMAT
-          }));
-          break;
-
-        default:
-          throw new Error('bad type ' + type);
-      }
-    }
-
-    dimensionArray.sort((a, b) => a.title.localeCompare(b.title));
-    measureArray.sort((a, b) => a.title.localeCompare(b.title));
-
-    if (!defaultSortOn && measureArray.length) {
-      defaultSortOn = measureArray[0].name;
-    }
-
     var dispatcher = basicDispatcherFactory({
       datasets: {
         main: mainDataset
       }
     });
 
+    var dm = makeDimensionsMetricsFromAttributes(mainDataset.attributes);
     return new DataSource({
       name,
       title,
       source,
-      dataLoaded: true,
+      metadataLoaded: true,
       loadError: null,
-      dimensions: List(dimensionArray),
-      measures: List(measureArray),
-      defaultSortOn,
+      dimensions: dm.dimensions,
+      measures: dm.measures,
+      defaultSortOn: dm.defaultSortOn,
       dispatcher
     });
   }
@@ -151,7 +225,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       name: parameters.name,
       title: parameters.title,
       source: parameters.source,
-      dataLoaded: false,
+      metadataLoaded: false,
       loadError: null
     };
     if (parameters.dimensions) {
@@ -166,7 +240,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     this.name = parameters.name;
     this.title = parameters.title;
     this.source = parameters.source;
-    this.dataLoaded = parameters.dataLoaded;
+    this.metadataLoaded = parameters.metadataLoaded;
     this.loadError = parameters.loadError;
     this.dimensions = parameters.dimensions;
     this.measures = parameters.measures;
@@ -179,7 +253,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       name: this.name,
       title: this.title,
       source: this.source,
-      dataLoaded: this.dataLoaded,
+      metadataLoaded: this.metadataLoaded,
       loadError: this.loadError
     };
     if (this.dimensions) {
@@ -246,7 +320,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
 
   public loadSource(): Q.Promise<DataSource> {
     var deferred = <Q.Deferred<DataSource>>Q.defer();
-    if (this.dataLoaded) throw new Error('already loaded');
+    if (this.metadataLoaded) throw new Error('already loaded');
     var self = this;
     d3.json(this.source, (err, json) => {
       if (err) {

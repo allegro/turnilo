@@ -1,6 +1,7 @@
 'use strict';
 
 import { List } from 'immutable';
+import { arraysEqual } from 'higher-object';
 
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {
   var n = list.size;
@@ -13,4 +14,14 @@ export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: num
   });
   if (n === insertPoint) newArray.push(list.get(itemIndex));
   return List(newArray);
+}
+
+export function upperCaseFirst(title: string): string {
+  return title[0].toUpperCase() + title.substring(1);
+}
+
+export function listsEqual<T>(listA: List<T>, listB: List<T>): boolean {
+  if (listA === listB) return true;
+  if (!listA || !listB) return false;
+  return arraysEqual(listA.toArray(), listB.toArray());
 }

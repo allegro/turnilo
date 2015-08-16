@@ -128,7 +128,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     var splitItemY = 0;
     var splitItems: Array<React.ReactElement<any>> = null;
-    if (dataSource.dataLoaded) {
+    if (dataSource.metadataLoaded) {
       splitItems = splits.toArray().map((split, i) => {
         var dimension = dataSource.getDimension(split.dimension);
         if (!dimension) throw new Error('dimension not found');
