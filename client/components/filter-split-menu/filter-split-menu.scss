@@ -2,7 +2,7 @@
 @import '../../utils/mixins';
 
 $title-bar-height: 40px;
-$button-bar-height: 40px;
+$button-bar-height: 52px;
 
 $icon-margin: 10px;
 $icon-width: 20px;
@@ -61,7 +61,7 @@ $shpitz-size: 12px;
 
   .button-bar {
     @include pin-bottom($button-bar-height);
-    padding: 10px 0 0 10px;
+    padding: 16px 0 6px 10px;
 
     .button {
       margin-right: 7px;

@@ -35,7 +35,7 @@ $measure-width: 80px;
   }
 
   .row {
-    height: 20px;
+    height: 24px;
 
     &:hover {
       background: $detail-hover;
@@ -52,7 +52,7 @@ $measure-width: 80px;
     .label {
       display: inline-block;
       vertical-align: top;
-      padding-top: 4px;
+      padding-top: 6px;
     }
   }
 
@@ -60,7 +60,7 @@ $measure-width: 80px;
     @include pin-right($measure-width);
 
     text-align: right;
-    padding-top: 4px;
+    padding-top: 6px;
     padding-right: 10px;
     white-space: nowrap;
   }

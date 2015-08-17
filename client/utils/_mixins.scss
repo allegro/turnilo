@@ -116,8 +116,8 @@
 
 %button-base {
   display: inline-block;
-  padding: 3px 16px;
-  font-size: 14px;
+  padding: 6px 16px;
+  font-size: 13px;
   min-width: 46px;
   text-align: center;
   cursor: pointer;
@@ -185,13 +185,14 @@
 
 %menu-cont {
   background: $white;
+  border-radius: 2px;
   box-shadow: 0 3px 10px 0 hsla(0, 0, 0, 0.26), 0 0 3px 0 hsla(0, 0, 0, 0.16);
 }
 
 %dragged-item {
   padding: 6px 0 0 10px;
-  background: $item-background;
-  border: 1px solid $item-border;
+  background: hsl(201, 92%, 85%);
+  border: 1px solid hsl(201, 92%, 85%);
   border-radius: 4px;
   cursor: pointer;
   overflow: hidden;
@@ -204,21 +205,26 @@
     cursor: pointer;
 
     svg {
-      width: 11px;
+      width: 10px;
     }
 
     path {
-      fill: $item-remove-color;
+      fill: hsla(0, 0, 0, 0.3);
     }
   }
 
   &:hover,
   &.selected {
-    background: $item-selected-background;
-    border: 1px solid $item-selected-border;
+    border: 1px solid hsl(201, 92%, 70%);
+  }
 
-    path {
-      fill: $item-selected-remove-color;
+  &.type-time {
+    background: hsl(122, 49%, 84%);
+    border: 1px solid hsl(122, 49%, 84%);
+
+    &:hover,
+    &.selected {
+      border: 1px solid hsl(122, 49%, 70%);
     }
   }
 }

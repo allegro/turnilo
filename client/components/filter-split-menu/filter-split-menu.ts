@@ -13,7 +13,7 @@ const WIDTH = 250;
 const HEIGHT = 400;
 
 const TITLE_BAR_HEIGHT = 40;
-const BUTTON_BAR_HEIGHT = 40;
+const BUTTON_BAR_HEIGHT = 52;
 
 interface FilterSplitMenuProps {
   clicker: Clicker;
