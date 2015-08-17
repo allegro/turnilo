@@ -11,8 +11,7 @@
   .dimension-tile,
   .placeholder-tile {
     flex-grow: 1;
-    width: $pinboard-width - 2*$tile-padding-h;
-    min-height: 150px;
+    width: $pinboard-width - 2 * $tile-padding-h;
     margin-bottom: $tile-padding-v;
   }
 

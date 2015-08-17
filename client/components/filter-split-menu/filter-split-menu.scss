@@ -4,6 +4,10 @@
 $title-bar-height: 40px;
 $button-bar-height: 40px;
 
+$icon-margin: 10px;
+$icon-width: 20px;
+$icon-height: 16px;
+
 .filter-split-menu {
   position: absolute;
   left: $left-panel-width - 15;
@@ -20,22 +24,31 @@ $button-bar-height: 40px;
       font-weight: 600;
     }
 
-    .pin {
+    .pin,
+    .close {
       position: absolute;
-      top: 10px;
-      right: 25px;
-      width: 20px;
+      top: $icon-margin;
+      width: $icon-width;
+      height: $icon-height;
       cursor: pointer;
-      text-align: center;
+
+      &:hover {
+        path {
+          fill: $item-selected-border;
+        }
+      }
+    }
+
+    .pin {
+      right: $icon-margin + $icon-width;
     }
 
     .close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 20px;
-      cursor: pointer;
-      text-align: center;
+      right: $icon-margin;
+
+      svg {
+        margin-top: 1px;
+      }
     }
   }
 

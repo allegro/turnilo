@@ -1,6 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
+import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Dispatcher } from 'plywood';
 import { isInside } from '../../utils/dom';
@@ -111,8 +112,12 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
       <div className="filter-split-menu" style={style}>
         <div className="title-bar">
           <div className="title">{dimension.title}</div>
-          <div className="pin" onClick={this.pinDimension.bind(this)}>p</div>
-          <div className="close" onClick={onClose}>x</div>
+          <div className="pin" onClick={this.pinDimension.bind(this)}>
+            <Icon name="pinned" height={12}/>
+          </div>
+          <div className="close" onClick={onClose}>
+            <Icon name="x" height={12}/>
+          </div>
         </div>
         <MenuTable
           dataSource={dataSource}
