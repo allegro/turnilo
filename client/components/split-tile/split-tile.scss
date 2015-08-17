@@ -9,7 +9,7 @@
   .items {
     transition: height 0.1s ease-in-out;
 
-    .item {
+    .split {
       @extend %dragged-item;
       position: absolute;
       top: 0; // It gets vertical position from the JS

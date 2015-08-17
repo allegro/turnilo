@@ -14,7 +14,7 @@
     color: $detail-text-color;
     transition: height 0.1s ease-in-out;
 
-    .item {
+    .dimension {
       @include pin-top(30px);
 
       padding: 8px 0 0 $tile-padding-h;
@@ -37,7 +37,7 @@
   }
 
   &.no-drag {
-    .item:hover {
+    .dimension:hover {
       background: $detail-hover;
     }
   }

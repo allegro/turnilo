@@ -27,6 +27,7 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
   public expression: Expression;
   public type: string;
   public sortOn: string;
+  public className: string;
 
   static isDimension(candidate: any): boolean {
     return isInstanceOf(candidate, Dimension);
@@ -46,8 +47,11 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
     this.name = parameters.name;
     this.title = parameters.title;
     this.expression = parameters.expression;
-    this.type = parameters.type;
+    var type = parameters.type;
+    this.type = type;
     this.sortOn = parameters.sortOn;
+
+    this.className = 'type-' + type.toLowerCase().replace(/_/g, '-');
   }
 
   public valueOf(): DimensionValue {

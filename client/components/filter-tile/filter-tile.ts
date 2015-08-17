@@ -168,9 +168,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         var style = { transform: `translate3d(0,${itemY}px,0)` };
         itemY += CORE_ITEM_HEIGHT;
 
+        var classNames = [
+          'filter',
+          dimension.className
+        ];
+        if (dimension === selectedDimension) classNames.push('selected');
         return JSX(`
           <div
-            className={'item filter' + (dimension === selectedDimension ? ' selected' : '')}
+            className={classNames.join(' ')}
             key={dimension.name}
             draggable="true"
             onClick={this.selectDimension.bind(this, dimension)}

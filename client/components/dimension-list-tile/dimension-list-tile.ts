@@ -61,7 +61,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   dragStart(dimension: Dimension, e: DragEvent) {
     var dataTransfer = e.dataTransfer;
-    // dataTransfer.effectAllowed = 'linkMove'; // Alt: set this to just 'move'
+    dataTransfer.effectAllowed = 'linkMove'; // Alt: set this to just 'move'
     dataTransfer.setData("text/url-list", 'http://imply.io'); // ToDo: make this generate a real URL
     dataTransfer.setData("text/plain", 'http://imply.io');
     dataTransfer.setData("text/dimension", dimension.name);
@@ -131,18 +131,23 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var { dataSource, selectedDimension } = this.props;
     var { dragOver, dragPosition } = this.state;
 
-    var dimensionItemY = 0;
+    var itemY = 0;
     var dimensionItems: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
-        if (dragOver && dragPosition === i) dimensionItemY += ITEM_HEIGHT;
-        var style = { transform: `translate3d(0,${dimensionItemY}px,0)` };
-        dimensionItemY += ITEM_HEIGHT;
+        if (dragOver && dragPosition === i) itemY += ITEM_HEIGHT;
+        var style = { transform: `translate3d(0,${itemY}px,0)` };
+        itemY += ITEM_HEIGHT;
         var iconText = dimension.type === 'TIME' ? 'Ti' : 'Ab';
 
+        var classNames = [
+          'dimension',
+          dimension.className
+        ];
+        if (dimension === selectedDimension) classNames.push('selected');
         return JSX(`
           <div
-            className={'item dimension' + (dimension === selectedDimension ? ' selected' : '')}
+            className={classNames.join(' ')}
             key={dimension.name}
             draggable="true"
             onClick={this.selectDimension.bind(this, dimension)}
@@ -154,11 +159,11 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
           </div>
         `);
       }, this);
-      if (dragOver && dragPosition === dataSource.dimensions.size) dimensionItemY += ITEM_HEIGHT;
+      if (dragOver && dragPosition === dataSource.dimensions.size) itemY += ITEM_HEIGHT;
     }
 
     const style = {
-      maxHeight: TITLE_HEIGHT + dimensionItemY
+      maxHeight: TITLE_HEIGHT + itemY
     };
 
     return JSX(`
