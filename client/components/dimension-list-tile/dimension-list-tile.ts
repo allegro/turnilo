@@ -8,6 +8,14 @@ import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/in
 import { moveInList } from '../../utils/general';
 import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 
+var moveableEffect: Lookup<boolean> = {
+  move: true,
+  copyMove: true,
+  linkMove: true,
+  all: true,
+  uninitialized: true
+};
+
 interface DimensionListTileProps {
   clicker: Clicker;
   dataSource: DataSource;
@@ -60,16 +68,25 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   dragStart(dimension: Dimension, e: DragEvent) {
     var dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = 'linkMove'; // Alt: set this to just 'move'
-    dataTransfer.setData("text/url-list", 'http://imply.io'); // ToDo: make this generate a real URL
+    dataTransfer.effectAllowed = 'copyLink';
+    dataTransfer.setData("text/url-list", 'http://imply.io');
     dataTransfer.setData("text/plain", 'http://imply.io');
     dataTransfer.setData("text/dimension", dimension.name);
-
     setDragGhost(dataTransfer, dimension.title);
   }
 
-  canDrop(e: DragEvent) {
-    return dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
+  iconDragStart(dimension: Dimension, e: DragEvent) {
+    e.stopPropagation();
+    var dataTransfer = e.dataTransfer;
+    dataTransfer.effectAllowed = 'move';
+    dataTransfer.setData("text/dimension", dimension.name);
+    setDragGhost(dataTransfer, dimension.title);
+  }
+
+  canDrop(e: DragEvent): boolean {
+    var { dataTransfer } = e;
+    console.log('dataTransfer.effectAllowed', dataTransfer.effectAllowed);
+    return moveableEffect[dataTransfer.effectAllowed] && dataTransferTypesContain(dataTransfer.types, "text/dimension");
   }
 
   dragOver(e: DragEvent) {
@@ -147,12 +164,12 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
           <div
             className={classNames.join(' ')}
             key={dimension.name}
-            draggable="true"
             onClick={this.selectDimension.bind(this, dimension)}
+            draggable="true"
             onDragStart={this.dragStart.bind(this, dimension)}
             style={style}
           >
-            <div className="icon">
+            <div className="icon" draggable="true" onDragStart={this.iconDragStart.bind(this, dimension)}>
               <Icon name={dimension.className}/>
             </div>
             <div className="item-title">{dimension.title}</div>

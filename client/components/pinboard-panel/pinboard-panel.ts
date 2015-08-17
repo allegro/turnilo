@@ -43,7 +43,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   }
 
-  canDrop(e: DragEvent) {
+  canDrop(e: DragEvent): boolean {
     if (dataTransferTypesContain(e.dataTransfer.types, "text/dimension")) {
       var dimensionName = e.dataTransfer.getData("text/dimension");
       var pinnedDimensions = this.props.pinnedDimensions;

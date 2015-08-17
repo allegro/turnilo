@@ -38,6 +38,11 @@ function queryUrlDispatcherFactory(url: string): Dispatcher {
   };
 }
 
+function typePreference(dimension: Dimension): number {
+  if (dimension.type === 'TIME') return 0;
+  return 1;
+}
+
 
 interface DimensionsMetrics {
   dimensions: List<Dimension>;
@@ -89,7 +94,12 @@ function makeDimensionsMetricsFromAttributes(attributes: Attributes): Dimensions
     }
   }
 
-  dimensionArray.sort((a, b) => a.title.localeCompare(b.title));
+  dimensionArray.sort((a, b) => {
+    var prefDiff = typePreference(a) - typePreference(b);
+    if (prefDiff) return prefDiff;
+    return a.title.localeCompare(b.title);
+  });
+
   measureArray.sort((a, b) => a.title.localeCompare(b.title));
 
   if (!defaultSortOn && measureArray.length) {

@@ -180,15 +180,15 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       $('time').in(timeRange)
     ]));
     var splits = List([
-      //dataSource.getDimension('time').getSplitCombine()
-      dataSource.getDimension('page').getSplitCombine()
+      dataSource.getDimension('time').getSplitCombine()
+      //dataSource.getDimension('page').getSplitCombine()
     ]);
     var visualizations = this.getPossibleVisualizations(dataSource, splits);
     this.setState({
       filter,
       splits,
       selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
-      pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(0, 2).map(d => d.name)),
+      pinnedDimensions: OrderedSet(['language', 'page']),
       visualizations: visualizations,
       visualization: visualizations.last()
     });
@@ -212,7 +212,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     });
   }
 
-  canDrop(e: DragEvent) {
+  canDrop(e: DragEvent): boolean {
     return dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
   }
 

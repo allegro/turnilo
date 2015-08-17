@@ -10,7 +10,7 @@ import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from "../
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
 
-const MAX_GRAPH_WIDTH = 500;
+const MAX_GRAPH_WIDTH = 2000;
 
 function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);

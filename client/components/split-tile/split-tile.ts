@@ -69,7 +69,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     this.setState({ dragPosition: 0 });
   }
 
-  canDrop(e: DragEvent) {
+  canDrop(e: DragEvent): boolean {
     return dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
   }
 
