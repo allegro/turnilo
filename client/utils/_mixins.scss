@@ -169,9 +169,8 @@
 }
 
 %module {
-  background: $module-background;
-  box-shadow: 0 2px 2px 0 $module-shadow-color;
-  color: $module-text-color;
+  background: $white;
+  border-radius: 2px;
 }
 
 %module-title {
@@ -186,7 +185,7 @@
 
 %menu-cont {
   background: $white;
-  box-shadow: 0 3px 10px 0 hsla(0, 0, 0, 0.36), 0 0 3px 0 hsla(0, 0, 0, 0.22);
+  box-shadow: 0 3px 10px 0 hsla(0, 0, 0, 0.26), 0 0 3px 0 hsla(0, 0, 0, 0.16);
 }
 
 %dragged-item {
