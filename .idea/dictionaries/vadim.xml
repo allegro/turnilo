@@ -4,9 +4,11 @@
       <w>addons</w>
       <w>autoprefixer</w>
       <w>bezier</w>
+      <w>doctype</w>
       <w>fontcustom</w>
       <w>formatters</w>
       <w>googleapis</w>
+      <w>jsdom</w>
       <w>keydown</w>
       <w>lightish</w>
       <w>linter</w>
@@ -18,10 +20,13 @@
       <w>quotemark</w>
       <w>rimraf</w>
       <w>scroller</w>
+      <w>scry</w>
       <w>scss</w>
       <w>scsslint</w>
       <w>shpitz</w>
+      <w>sinon</w>
       <w>sourcemap</w>
+      <w>svgs</w>
       <w>uglify</w>
       <w>unmount</w>
       <w>unpatrolled</w>
