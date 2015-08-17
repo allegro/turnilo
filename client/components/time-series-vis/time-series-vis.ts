@@ -168,7 +168,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
         };
 
         return JSX(`
-          <svg className="measure-graph" key={measure.name} width={width} height={height}>
+          <svg className="measure-graph" key={measureName} width={width} height={height}>
             <g transform="translate(0,20)">
               <ChartLine
                 dataset={myDataset}

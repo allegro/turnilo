@@ -14,6 +14,7 @@ var tsc = require('gulp-typescript');
 var concat = require('gulp-concat');
 var tslint = require('gulp-tslint');
 var foreach = require('gulp-foreach');
+var watch = require('gulp-watch');
 
 var merge = require('merge-stream');
 var debug = require('gulp-debug');
@@ -147,7 +148,7 @@ gulp.task('server:test', function() {
     }));
 });
 
-gulp.task('bundle', ['client:tsc'], function() {
+gulp.task('client:bundle', ['client:tsc'], function() {
   return gulp.src('client_build/*.js')
     .pipe(foreach(function(stream, file) {
       // From: https://github.com/gulpjs/gulp/blob/master/docs/recipes/browserify-uglify-sourcemap.md
@@ -170,11 +171,19 @@ gulp.task('clean', function(cb) {
   ], cb);
 });
 
-gulp.task('all', ['style', 'server:tsc', 'client:tsc', 'bundle']);
+gulp.task('all', ['style', 'server:tsc', 'client:tsc', 'client:bundle']);
 
 gulp.task('watch', ['all'], function() {
-  gulp.watch('./client/**/*.scss', ['style']);
-  gulp.watch('./client/**/*.ts', ['client:tsc', 'bundle']);
-  gulp.watch('./server/**', ['server:tsc']);
-  gulp.watch('./icons/**', ['bundle']);
+  watch('./client/**/*.scss', function() {
+    gulp.start('style');
+  });
+
+  watch(['./client/**/*.ts', './icons/**'], function() {
+    gulp.start('client:bundle');
+  });
+
+  watch('./server/**', function() {
+    gulp.start('server:tsc');
+  });
+
 });

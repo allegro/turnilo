@@ -1,10 +1,16 @@
 'use strict';
 
 import { List } from 'immutable';
+import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
 import { $, Expression, LiteralExpression, ChainExpression, InAction, Set } from 'plywood';
+import { listsEqual } from '../../utils/general';
 
 export class Filter {
   public operands: List<ChainExpression>;
+
+  static isFilter(candidate: any): boolean {
+    return isInstanceOf(candidate, Filter);
+  }
 
   constructor(operands?: List<ChainExpression>) {
     if (!operands) {
@@ -24,6 +30,11 @@ export class Filter {
       case 1:  return operands.first();
       default: return operands.reduce((red: ChainExpression, next: ChainExpression) => red.and(next));
     }
+  }
+
+  public equals(other: Filter): boolean {
+    return Filter.isFilter(other) &&
+      listsEqual(this.operands, other.operands);
   }
 
   private indexOfOperand(attribute: Expression): number {

@@ -7,6 +7,7 @@ import { $, Expression, Dispatcher } from 'plywood';
 import { isInside } from '../../utils/dom';
 import { DataSource, SplitCombine, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { MenuTable } from "../menu-table/menu-table";
+import { MenuTimeSeries } from "../menu-time-series/menu-time-series";
 
 const WIDTH = 250;
 const HEIGHT = 400;
@@ -115,7 +116,14 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
   }
 
   renderTimeSeries(): React.ReactElement<any> {
-    return null;
+    var { dataSource, filter, dimension } = this.props;
+    return JSX(`
+      <MenuTimeSeries
+        dataSource={dataSource}
+        filter={filter}
+        dimension={dimension}
+      />
+    `);
   }
 
   render() {

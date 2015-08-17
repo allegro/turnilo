@@ -53,6 +53,7 @@
     "gulp-tslint": "^3.1.1-beta",
     "gulp-typescript": "^2.7.6",
     "gulp-util": "^3.0.6",
+    "gulp-watch": "^4.3.4",
     "jsdom": "3.1.2",
     "merge-stream": "^1.0.0",
     "mkdirp": "^0.5.1",

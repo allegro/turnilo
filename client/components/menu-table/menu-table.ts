@@ -59,11 +59,10 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   componentWillReceiveProps(nextProps: MenuTableProps) {
     var props = this.props;
     if (
-      props.filter !== nextProps.filter ||
-      props.dimension !== nextProps.dimension
-    ) {
-      this.fetchData(nextProps.filter, nextProps.dimension);
-    }
+      props.filter.equals(nextProps.filter) &&
+      props.dimension.equals(nextProps.dimension)
+    ) return;
+    this.fetchData(nextProps.filter, nextProps.dimension);
   }
 
   componentWillUnmount() {
