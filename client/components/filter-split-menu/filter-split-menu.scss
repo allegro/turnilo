@@ -8,13 +8,12 @@ $icon-margin: 10px;
 $icon-width: 20px;
 $icon-height: 16px;
 
-$shpitz-size: 13px;
+$shpitz-size: 12px;
 
 .filter-split-menu {
+  @extend %menu-cont;
   position: absolute;
   left: $left-panel-width - 15;
-  background: $detail-background;
-  border: 1px solid $detail-border-color;
 
   .title-bar {
     @include pin-top($title-bar-height);

@@ -2,26 +2,25 @@
 @import '../../utils/mixins';
 
 .tile-header {
-  height: 20px;
-  padding: 5px 0 0 10px;
+  padding: 5px 0 0 $tile-padding-h;
 
   .title {
-    margin-top: 4px;
+    margin-top: 7px;
     font-size: 13px;
     color: $module-title-color;
   }
 
   .search {
     position: absolute;
-    top: 10px;
+    top: 11px;
     right: 30px;
     cursor: pointer;
   }
 
   .close {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 11px;
+    right: $tile-padding-h;
     cursor: pointer;
   }
 }

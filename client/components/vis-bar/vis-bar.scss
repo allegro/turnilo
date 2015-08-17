@@ -3,15 +3,19 @@
 
 .vis-bar {
   @extend %module;
-  padding: 12px 0 0 10px;
+  padding: 12px 0 0 $tile-padding-h;
 
   .vis-item {
     display: inline-block;
     margin-left: 5px;
     cursor: pointer;
+    color: hsl(0, 0%, 71%);
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 500;
 
     &.selected {
-      text-decoration: underline;
+      color: $header-background;
     }
   }
 }

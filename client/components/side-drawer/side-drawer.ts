@@ -77,7 +77,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     return JSX(`
       <div className="side-drawer">
         <div className="title" onClick={onClose}>
-          <Icon className="text-logo" name="combo-logo" height={24} color="#666666"/>
+          <Icon className="text-logo" name="combo-logo"/>
         </div>
         <ul className="data-sources">{dataSourceItems}</ul>
         <div className="add-data-source">Add dataset</div>

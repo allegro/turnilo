@@ -176,10 +176,50 @@
 
 %module-title {
   .title {
-    padding: 10px 0 0 10px;
+    padding: 13px 0 0 $tile-padding-h;
     height: $title-height;
     font-size: 12px;
     text-transform: uppercase;
     color: $module-title-color;
+  }
+}
+
+%menu-cont {
+  background: $white;
+  box-shadow: 0 3px 10px 0 hsla(0, 0, 0, 0.36), 0 0 3px 0 hsla(0, 0, 0, 0.22);
+}
+
+%dragged-item {
+  padding: 6px 0 0 10px;
+  background: $item-background;
+  border: 1px solid $item-border;
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.1s ease-in-out;
+
+  .remove {
+    @include pin-right(25px);
+    text-align: center;
+    padding-top: 7px;
+    cursor: pointer;
+
+    svg {
+      width: 11px;
+    }
+
+    path {
+      fill: $item-remove-color;
+    }
+  }
+
+  &:hover,
+  &.selected {
+    background: $item-selected-background;
+    border: 1px solid $item-selected-border;
+
+    path {
+      fill: $item-selected-remove-color;
+    }
   }
 }

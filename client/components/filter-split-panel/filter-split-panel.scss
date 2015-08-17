@@ -2,13 +2,13 @@
 @import '../../utils/mixins';
 
 .filter-split-panel {
-  padding: $tile-padding-v $tile-padding-h;
+  padding: $tile-margin-v $tile-margin-h;
   display: flex;
   flex-direction: column;
 
   .filter-tile,
   .split-tile {
-    margin-bottom: $tile-padding-v;
+    margin-bottom: $tile-margin-v;
   }
 
   .dimension-list-tile {

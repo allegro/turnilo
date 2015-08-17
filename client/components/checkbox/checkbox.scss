@@ -9,6 +9,7 @@ $checkbox-size: 15px;
   width: 20px;
   height: 100%;
   cursor: pointer;
+  margin-right: 3px;
 
   &:before {
     position: absolute;
@@ -24,11 +25,7 @@ $checkbox-size: 15px;
   svg {
     position: absolute;
     top: 3px;
-    left: 1px;
-  }
-
-  path {
-    // ToDo: fix me
-    fill-rule: nonzero; // Needed because the icon has overlaps
+    left: 2px;
+    width: 13px;
   }
 }

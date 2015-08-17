@@ -5,14 +5,14 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  padding: $tile-padding-v $tile-padding-h 0 $tile-padding-h;
+  padding: $tile-margin-v $tile-margin-h 0 $tile-margin-h;
 
   .measures-tile,
   .dimension-tile,
   .placeholder-tile {
     flex-grow: 1;
-    width: $pinboard-width - 2 * $tile-padding-h;
-    margin-bottom: $tile-padding-v;
+    width: $pinboard-width - 2 * $tile-margin-h;
+    margin-bottom: $tile-margin-v;
   }
 
   .placeholder-tile {

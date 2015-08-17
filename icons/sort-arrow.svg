@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="8px" height="11px" viewBox="0 0 8 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12072) - http://www.bohemiancoding.com/sketch -->
+    <title>Triangle 1</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
     <g id="base-copy-82" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <g id="Rectangle-1-Copy-+-Group-Copy-3" sketch:type="MSLayerGroup" transform="translate(-272.000000, -14.000000)" fill="#979797">
             <g id="Group" transform="translate(10.000000, 0.000000)" sketch:type="MSShapeGroup">
                 <g transform="translate(6.000000, 10.000000)" id="Triangle-1">
-                    <path d="M259,10.5553851 L256,10.5553851 L260,14.5553851 L264,10.5553851 L261,10.5553851 L261,4 L259,4 L259,10.5553851 L259,10.5553851 Z"></path>
+                    <path d="M256,11 L260,15 L264,11 L261,11 L261,4 L259,4 L259,11 L256,11 Z"></path>
                 </g>
             </g>
         </g>

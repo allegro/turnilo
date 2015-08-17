@@ -17,7 +17,7 @@
     .item {
       @include pin-top(30px);
 
-      padding: 8px 0 0 10px;
+      padding: 8px 0 0 $tile-padding-h;
       background: $detail-background;
       cursor: pointer;
       overflow: hidden;

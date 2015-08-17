@@ -6,14 +6,16 @@ $side-drawer-width: 255px;
 $pinboard-width: 240px;
 $vis-bar-height: 35px;
 
-$title-height: 35px;
-$item-height: 30px;
-$pin-title-height: 26px;
+$title-height: 32px;
+$item-height: 27px;
+$pin-title-height: 34px;
 $search-box-height: 30px;
-$pin-item-height: 22px;
+$pin-item-height: 24px;
 
-$tile-padding-v: 10px;
-$tile-padding-h: 14px;
+$tile-margin-v: 10px;
+$tile-margin-h: 14px;
+
+$tile-padding-h: 11px;
 
 // Base Colors
 
@@ -36,7 +38,7 @@ $header-text-color: $white;
 $base-background: hsl(0, 0%, 89%);
 
 $module-background: $white;
-$module-title-color: hsl(0, 0%, 55%);
+$module-title-color: hsl(0, 0%, 60%);
 $module-text-color: hsl(0, 0%, 27%);
 $module-shadow-color: hsla(0, 0%, 0%, 0.14);
 
@@ -57,7 +59,7 @@ $detail-background: $white;
 $detail-text-color: hsl(0, 0%, 27%);
 $detail-special-text-color: hsl(220, 49%, 52%);
 $detail-border-color: hsl(0, 0%, 80%);
-$detail-hover: hsl(217, 59%, 90%);
+$detail-hover: hsl(202, 79%, 89%);
 $detail-highlight: hsl(217, 59%, 85%);
 
 $button-primary-background: $header-background;

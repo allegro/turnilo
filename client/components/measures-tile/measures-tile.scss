@@ -10,7 +10,7 @@ $measure-width: 80px;
     position: absolute;
     top: $pin-title-height;
     bottom: 0;
-    left: 10px;
+    left: 0;
     right: 0;
 
     overflow: auto;
@@ -24,9 +24,14 @@ $measure-width: 80px;
     }
   }
 
+  .checkbox {
+    margin-top: 1px;
+  }
+
   .measure-name {
     @include unpin-right($measure-width);
 
+    left: $tile-padding-h;
     cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
@@ -34,7 +39,7 @@ $measure-width: 80px;
     .label {
       display: inline-block;
       vertical-align: top;
-      padding-top: 4px;
+      padding-top: 5px;
     }
   }
 
@@ -42,8 +47,8 @@ $measure-width: 80px;
     @include pin-right($measure-width);
 
     text-align: right;
-    padding-top: 4px;
-    padding-right: 10px;
+    padding-top: 5px;
+    padding-right: $tile-padding-h;
     white-space: nowrap;
   }
 }

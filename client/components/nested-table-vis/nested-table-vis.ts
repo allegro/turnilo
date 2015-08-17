@@ -113,7 +113,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
         sortArrow = React.createElement(Icon, {
           name: 'sort-arrow',
           className: 'arrow',
-          height: 16
+          width: 8
         });
       }
       return JSX(`<div className="measure-name" key={measure.name}>{measure.title}{sortArrow}</div>`);

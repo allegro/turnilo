@@ -4,14 +4,22 @@
 .side-drawer {
   @include pin-left($side-drawer-width);
 
-  font-size: 16px;
+  font-size: 13px;
   background: $detail-background;
-  border-right: 1px solid $detail-border-color;
+  box-shadow: 1px 0 2px 0 hsla(0, 0, 0, 0.15), 2px 0 12px 0 hsla(0, 0, 0, 0.35);
 
   .title {
-    height: $header-height;
-    padding: 5px 0 0 15px;
+    height: 50px;
+    padding: 10px 0 0 15px;
     border-bottom: 1px solid $detail-border-color;
+
+    svg {
+      height: 29px;
+
+      path {
+        fill: $header-background;
+      }
+    }
   }
 
   .data-sources {
