@@ -6,9 +6,10 @@ import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { Clicker, Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-function toTitle(str: string) {
-  return str.replace('-vis', '').replace(/-/g, ' ');
-}
+var title: Lookup<string> = {
+  'nested-table-vis': 'Table',
+  'time-series-vis': 'Lines'
+};
 
 interface VisBarProps {
   clicker: Clicker;
@@ -50,7 +51,7 @@ export class VisBar extends React.Component<VisBarProps, VisBarState> {
             key={v}
             className={'vis-item' + (v === visualization ? ' selected' : '')}
             onClick={clicker.selectVisualization.bind(clicker, v)}
-          >{toTitle(v)}</div>
+          >{title[v] || '???'}</div>
         `);
       });
     }

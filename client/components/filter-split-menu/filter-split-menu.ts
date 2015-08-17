@@ -8,6 +8,12 @@ import { isInside } from '../../utils/dom';
 import { DataSource, SplitCombine, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { MenuTable } from "../menu-table/menu-table";
 
+const WIDTH = 250;
+const HEIGHT = 400;
+
+const TITLE_BAR_HEIGHT = 40;
+const BUTTON_BAR_HEIGHT = 40;
+
 interface FilterSplitMenuProps {
   clicker: Clicker;
   dataSource: DataSource;
@@ -94,15 +100,33 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
     onClose();
   }
 
+  renderTable(): React.ReactElement<any> {
+    var { dataSource, filter, dimension } = this.props;
+    return JSX(`
+      <MenuTable
+        dataSource={dataSource}
+        filter={filter}
+        dimension={dimension}
+        selectFilter={this.selectFilter.bind(this)}
+        showSearch={true}
+        showCheckboxes={true}
+      />
+    `);
+  }
+
+  renderTimeSeries(): React.ReactElement<any> {
+    return null;
+  }
+
   render() {
     var { onClose, dataSource, filter, dimension, anchor } = this.props;
 
-    var height = 400;
     var containerHeight = this.props.height;
-    var top = Math.min(Math.max(0, anchor - height / 2), containerHeight - height);
+    var top = Math.min(Math.max(0, anchor - HEIGHT / 2), containerHeight - HEIGHT);
     var style = {
       top,
-      height
+      width: WIDTH,
+      height: HEIGHT
     };
     var shpitzStyle = {
       top: anchor - top
@@ -119,14 +143,7 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
             <Icon name="x" height={12}/>
           </div>
         </div>
-        <MenuTable
-          dataSource={dataSource}
-          filter={filter}
-          dimension={dimension}
-          selectFilter={this.selectFilter.bind(this)}
-          showSearch={true}
-          showCheckboxes={true}
-        />
+        {dimension.type === 'TIME' ? this.renderTimeSeries() : this.renderTable()}
         <div className="button-bar">
           <div className="ok button" onClick={this.onOK.bind(this)}>OK</div>
           <div className="cancel button" onClick={onClose}>Cancel</div>

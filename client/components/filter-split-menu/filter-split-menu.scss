@@ -8,10 +8,11 @@ $icon-margin: 10px;
 $icon-width: 20px;
 $icon-height: 16px;
 
+$shpitz-size: 13px;
+
 .filter-split-menu {
   position: absolute;
   left: $left-panel-width - 15;
-  width: 250px;
   background: $detail-background;
   border: 1px solid $detail-border-color;
 
@@ -82,8 +83,6 @@ $icon-height: 16px;
       color: $detail-special-text-color;
     }
   }
-
-  $shpitz-size: 13px;
 
   .shpitz {
     position: absolute;
