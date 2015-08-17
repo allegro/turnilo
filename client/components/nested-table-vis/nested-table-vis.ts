@@ -10,10 +10,10 @@ import { formatterFromData } from '../../utils/formatter';
 import { Filter, SplitCombine, Dimension, Measure, DataSource } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-const HEADER_HEIGHT = 25;
+const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 200;
 const MEASURE_WIDTH = 100;
-const ROW_HEIGHT = 25;
+const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 
@@ -153,38 +153,52 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
       );
     }
 
-    var headerStyle = {
-      width: rowWidthExtended + 'px',
+    const headerStyle = {
+      width: rowWidthExtended,
       left: -scrollLeft
     };
 
-    var segmentsStyle = {
+    const segmentsStyle = {
       top: -scrollTop
     };
 
-    var bodyStyle = {
+    const bodyStyle = {
       left: -scrollLeft,
       top: -scrollTop,
-      width: rowWidthExtended + 'px'
+      width: rowWidthExtended
     };
 
-    var scrollerStyle = {
-      width: (SPACE_LEFT + SEGMENT_WIDTH + rowWidth + SPACE_RIGHT) + 'px',
-      height: (HEADER_HEIGHT + ROW_HEIGHT * rows.length + BODY_PADDING_BOTTOM) + 'px'
+    var horizontalScrollShadowStyle: any = { display: 'none' };
+    if (scrollTop) {
+      horizontalScrollShadowStyle = {
+        width: SEGMENT_WIDTH + rowWidth - scrollLeft
+      };
+    }
+
+    var verticalScrollShadowStyle: any = { display: 'none' };
+    if (scrollLeft) {
+      verticalScrollShadowStyle = {};
+    }
+
+    const scrollerStyle = {
+      width: SPACE_LEFT + SEGMENT_WIDTH + rowWidth + SPACE_RIGHT,
+      height: HEADER_HEIGHT + ROW_HEIGHT * rows.length + BODY_PADDING_BOTTOM
     };
 
     return JSX(`
       <div className="nested-table-vis">
         <div className="corner">{segmentTitle}</div>
-        <div className={'header-cont' + (scrollTop ? ' scroll' : '')}>
+        <div className="header-cont">
           <div className="header" style={headerStyle}>{headerColumns}</div>
         </div>
-        <div className={'segments-cont' + (scrollLeft ? ' scroll' : '')}>
+        <div className="segments-cont">
           <div className="segments" style={segmentsStyle}>{segments}</div>
         </div>
         <div className="body-cont">
           <div className="body" style={bodyStyle}>{rows}</div>
         </div>
+        <div className="horizontal-scroll-shadow" style={horizontalScrollShadowStyle}></div>
+        <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
         <div className="scroller-cont" onScroll={this.onScroll.bind(this)}>
           <div className="scroller" style={scrollerStyle}></div>
         </div>

@@ -37,10 +37,6 @@ $header-padding-top: 12px;
       white-space: nowrap;
     }
 
-    &.scroll {
-      box-shadow: 0 2px 2px -2px;
-    }
-
     .arrow {
       position: absolute;
       right: -15px;
@@ -54,10 +50,6 @@ $header-padding-top: 12px;
     bottom: 0;
     width: $segment-width;
     overflow: hidden;
-
-    &.scroll {
-      box-shadow: 2px 0 2px -2px;
-    }
   }
 
   .body-cont {
@@ -73,6 +65,23 @@ $header-padding-top: 12px;
       white-space: nowrap;
       width: 100%;
     }
+  }
+
+  .horizontal-scroll-shadow {
+    position: absolute;
+    left: $space-left;
+    top: 0;
+    height: $header-height;
+    box-shadow: 0 2px 2px -2px;
+  }
+
+  .vertical-scroll-shadow {
+    position: absolute;
+    left: $space-left;
+    top: 0;
+    bottom: 0;
+    width: $segment-width;
+    box-shadow: 2px 0 2px -2px;
   }
 
   .scroller-cont {
