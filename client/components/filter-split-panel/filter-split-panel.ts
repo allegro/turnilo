@@ -56,7 +56,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
   }
 
-  menuOpen(target: Element, dimension: Dimension) {
+  menuOpen(section: string, target: Element, dimension: Dimension) {
     var currentTrigger = this.state.trigger;
     if (currentTrigger === target) {
       this.menuClose();
@@ -65,6 +65,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
     var targetRect = target.getBoundingClientRect();
     var containerRect = this.state.rect;
     this.setState({
+      selectedSection: section,
       selectedDimension: dimension,
       anchor: targetRect.top - containerRect.top + Math.floor(targetRect.height / 2),
       trigger: target
@@ -97,8 +98,6 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       />`);
     }
 
-    var triggerMenuOpen = this.menuOpen.bind(this);
-
     return JSX(`
       <div className="filter-split-panel">
         <FilterTile
@@ -107,20 +106,20 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           filter={filter}
           timezone={timezone}
           selectedDimension={selectedDimension}
-          triggerMenuOpen={triggerMenuOpen}
+          triggerMenuOpen={this.menuOpen.bind(this, 'filter')}
         />
         <SplitTile
           clicker={clicker}
           dataSource={dataSource}
           splits={splits}
           selectedDimension={selectedDimension}
-          triggerMenuOpen={triggerMenuOpen}
+          triggerMenuOpen={this.menuOpen.bind(this, 'split')}
         />
         <DimensionListTile
           clicker={clicker}
           dataSource={dataSource}
           selectedDimension={selectedDimension}
-          triggerMenuOpen={triggerMenuOpen}
+          triggerMenuOpen={this.menuOpen.bind(this, 'dimension')}
         />
         {menu}
       </div>
