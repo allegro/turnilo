@@ -4,10 +4,9 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
+import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
 import { Clicker, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
 import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
-
-const ITEM_HEIGHT = 30;
 
 interface SplitTileProps {
   clicker: Clicker;
@@ -126,16 +125,17 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var { dataSource, selectedDimension, splits } = this.props;
     var { dragOver, dragPosition } = this.state;
 
-    var splitItemY = 0;
+    var itemY = 0;
     var splitItems: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       splitItems = splits.toArray().map((split, i) => {
         var dimension = dataSource.getDimension(split.dimension);
         if (!dimension) throw new Error('dimension not found');
 
-        if (dragOver && dragPosition === i) splitItemY += ITEM_HEIGHT;
-        var style = { transform: `translate3d(0,${splitItemY}px,0)` };
-        splitItemY += ITEM_HEIGHT;
+        if (i) itemY += CORE_ITEM_GAP;
+        if (dragOver && dragPosition === i) itemY += CORE_ITEM_HEIGHT;
+        var style = { transform: `translate3d(0,${itemY}px,0)` };
+        itemY += CORE_ITEM_HEIGHT;
 
         return JSX(`
           <div
@@ -153,7 +153,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
           </div>
         `);
       }, this);
-      if (dragOver && dragPosition === splits.size) splitItemY += ITEM_HEIGHT;
+      if (dragOver && dragPosition === splits.size) itemY += CORE_ITEM_HEIGHT;
     }
 
     return JSX(`
@@ -165,7 +165,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         onDrop={this.drop.bind(this)}
       >
         <div className="title">Split</div>
-        <div className="items" ref="splitItems" style={{ height: splitItemY + 'px' }}>
+        <div className="items" ref="splitItems" style={{ height: itemY }}>
           {splitItems}
         </div>
       </div>

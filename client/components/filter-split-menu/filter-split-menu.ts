@@ -101,8 +101,8 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
     var containerHeight = this.props.height;
     var top = Math.min(Math.max(0, anchor - height / 2), containerHeight - height);
     var style = {
-      top: top + 'px',
-      height: height + 'px'
+      top,
+      height
     };
     var shpitzStyle = {
       top: anchor - top

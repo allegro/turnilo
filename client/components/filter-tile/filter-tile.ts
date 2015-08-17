@@ -4,11 +4,10 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { Timezone } from 'chronology';
 import { $, Expression, ChainExpression, InAction, Dispatcher, Dataset } from 'plywood';
+import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { formatStartEnd } from '../../utils/date';
 import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
-
-const ITEM_HEIGHT = 30;
 
 interface FilterTileProps {
   clicker: Clicker;
@@ -156,7 +155,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { dataSource, filter, timezone, selectedDimension } = this.props;
     var { dragOver, dragPosition } = this.state;
 
-    var filterItemY = 0;
+    var itemY = 0;
     var filterItems: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       filterItems = filter.operands.toArray().map((operand, i) => {
@@ -164,9 +163,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         var dimension = dataSource.dimensions.find((d) => d.expression.equals(operandExpression));
         if (!dimension) throw new Error('dimension not found');
 
-        if (dragOver && dragPosition === i) filterItemY += ITEM_HEIGHT;
-        var style = { transform: `translate3d(0,${filterItemY}px,0)` };
-        filterItemY += ITEM_HEIGHT;
+        if (i) itemY += CORE_ITEM_GAP;
+        if (dragOver && dragPosition === i) itemY += CORE_ITEM_HEIGHT;
+        var style = { transform: `translate3d(0,${itemY}px,0)` };
+        itemY += CORE_ITEM_HEIGHT;
 
         return JSX(`
           <div
@@ -184,7 +184,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           </div>
         `);
       }, this);
-      if (dragOver && dragPosition === filter.operands.size) filterItemY += ITEM_HEIGHT;
+      if (dragOver && dragPosition === filter.operands.size) itemY += CORE_ITEM_HEIGHT;
     }
 
     return JSX(`
@@ -196,7 +196,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onDrop={this.drop.bind(this)}
       >
         <div className="title">Filter</div>
-        <div className="items" ref="filterItems" style={{ height: filterItemY + 'px' }}>
+        <div className="items" ref="filterItems" style={{ height: itemY }}>
           {filterItems}
         </div>
       </div>
