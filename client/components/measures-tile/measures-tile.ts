@@ -4,7 +4,7 @@ import { List, OrderedSet } from 'immutable';
 import * as React from 'react/addons';
 import * as numeral from 'numeral';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
-import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT } from '../../config/constants';
+import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
@@ -101,7 +101,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
         </div>
       `);
     });
-    maxHeight += rows.size * PIN_ITEM_HEIGHT;
+    maxHeight += rows.size * PIN_ITEM_HEIGHT + PIN_PADDING_BOTTOM;
 
     const style = {
       maxHeight

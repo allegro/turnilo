@@ -2,11 +2,12 @@
 
 import * as React from 'react/addons';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
-import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT } from '../../config/constants';
+import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { formatterFromData } from '../../utils/formatter';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
+
 
 const TOP_N = 100;
 
@@ -149,6 +150,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       });
       maxHeight += rows.length * PIN_ITEM_HEIGHT;
     }
+
+    maxHeight += PIN_PADDING_BOTTOM;
 
     const className = [
       'dimension-tile',
