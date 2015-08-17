@@ -8,14 +8,6 @@ import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/in
 import { moveInList } from '../../utils/general';
 import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 
-var moveableEffect: Lookup<boolean> = {
-  move: true,
-  copyMove: true,
-  linkMove: true,
-  all: true,
-  uninitialized: true
-};
-
 interface DimensionListTileProps {
   clicker: Clicker;
   dataSource: DataSource;
@@ -68,7 +60,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   dragStart(dimension: Dimension, e: DragEvent) {
     var dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = 'copyLink';
+    dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", 'http://imply.io');
     dataTransfer.setData("text/plain", 'http://imply.io');
     dataTransfer.setData("text/dimension", dimension.name);
@@ -86,7 +78,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   canDrop(e: DragEvent): boolean {
     var { dataTransfer } = e;
     console.log('dataTransfer.effectAllowed', dataTransfer.effectAllowed);
-    return moveableEffect[dataTransfer.effectAllowed] && dataTransferTypesContain(dataTransfer.types, "text/dimension");
+    return dataTransfer.effectAllowed === 'move' && dataTransferTypesContain(dataTransfer.types, "text/dimension");
   }
 
   dragOver(e: DragEvent) {
