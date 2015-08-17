@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="13px" height="13px" viewBox="0 0 13 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+<svg width="15px" height="15px" viewBox="0 0 15 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
     <!-- Generator: Sketch 3.3.3 (12072) - http://www.bohemiancoding.com/sketch -->
     <title>Rectangle 92 Copy 5</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="base-copy-110" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-        <g id="Group-Copy-8" sketch:type="MSLayerGroup" transform="translate(-11.000000, -128.000000)" fill="#AAAAAA">
-            <path d="M17.5,141 C21.0898509,141 24,138.089851 24,134.5 C24,130.910149 21.0898509,128 17.5,128 C13.9101491,128 11,130.910149 11,134.5 C11,138.089851 13.9101491,141 17.5,141 Z M17.5,140 C14.4624339,140 12,137.537566 12,134.5 C12,131.462434 14.4624339,129 17.5,129 C20.5375661,129 23,131.462434 23,134.5 C23,137.537566 20.5375661,140 17.5,140 Z M17,130 L18,130 L18,135 L17,135 L17,130 Z M18,134 L21,134 L21,135 L18,135 L18,134 Z" id="Rectangle-92-Copy-5" sketch:type="MSShapeGroup"></path>
-        </g>
+    <g id="base-copy-145" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <path d="M7.5,15 C11.6421356,15 15,11.6421356 15,7.5 C15,3.35786438 11.6421356,0 7.5,0 C3.35786438,0 0,3.35786438 0,7.5 C0,11.6421356 3.35786438,15 7.5,15 Z M7.5,14 C3.91014913,14 1,11.0898509 1,7.5 C1,3.91014913 3.91014913,1 7.5,1 C11.0898509,1 14,3.91014913 14,7.5 C14,11.0898509 11.0898509,14 7.5,14 Z M7,2 L8,2 L8,7 L7,7 L7,2 Z M7,7 L12,7 L12,8 L7,8 L7,7 Z" id="Rectangle-92-Copy-5" fill="#AAAAAA" sketch:type="MSShapeGroup"></path>
     </g>
 </svg>

@@ -73,7 +73,7 @@ $header-padding-top: 12px;
     left: $space-left;
     top: 0;
     height: $header-height;
-    box-shadow: 0 2px 2px -2px;
+    box-shadow: 0 4px 4px -3px hsla(0, 0, 0, 0.25);
   }
 
   .vertical-scroll-shadow {
@@ -82,7 +82,7 @@ $header-padding-top: 12px;
     top: 0;
     bottom: 0;
     width: $segment-width;
-    box-shadow: 2px 0 2px -2px;
+    box-shadow: 4px 0 4px -3px hsla(0, 0, 0, 0.25);
   }
 
   .scroller-cont {

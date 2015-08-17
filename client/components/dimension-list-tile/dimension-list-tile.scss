@@ -1,7 +1,7 @@
 @import '../../config/constants';
 @import '../../utils/mixins';
 
-$icon-width: 33px;
+$icon-width: 34px;
 
 .dimension-list-tile {
   @extend %module;
@@ -35,12 +35,23 @@ $icon-width: 33px;
         svg {
           position: absolute;
           left: $tile-padding-h;
-          width: 14px;
+
+          path {
+            fill: hsla(0, 0, 0, 0.4);
+          }
         }
       }
 
-      &.type-string .icon svg { top: 11px; }
-      &.type-time .icon svg { top: 7px; }
+      &.type-string .icon svg {
+        top: 11px;
+        width: 17px;
+      }
+
+      &.type-time .icon svg {
+        top: 7px;
+        margin-left: 1px;
+        width: 15px;
+      }
 
       .item-title {
         position: absolute;
