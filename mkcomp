@@ -45,6 +45,7 @@ interface #{camelName}State {
 }
 
 export class #{camelName} extends React.Component<#{camelName}Props, #{camelName}State> {
+  public mounted: boolean;
 
   constructor() {
     super();
@@ -53,11 +54,11 @@ export class #{camelName} extends React.Component<#{camelName}Props, #{camelName
   }
 
   componentDidMount() {
-
+    this.mounted = true;
   }
 
   componentWillUnmount() {
-
+    this.mounted = false;
   }
 
   componentWillReceiveProps(nextProps: #{camelName}Props) {

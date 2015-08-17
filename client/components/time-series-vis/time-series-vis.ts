@@ -50,6 +50,7 @@ interface TimeSeriesVisState {
 }
 
 export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSeriesVisState> {
+  public mounted: boolean;
 
   constructor() {
     super();
@@ -86,11 +87,13 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     });
 
     dataSource.dispatcher(query).then((dataset) => {
+      if (!this.mounted) return;
       this.setState({ dataset });
     });
   }
 
   componentDidMount() {
+    this.mounted = true;
     var { filter, measures } = this.props;
     this.fetchData(filter, measures);
   }
@@ -103,7 +106,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
   }
 
   componentWillUnmount() {
-
+    this.mounted = false;
   }
 
   render() {

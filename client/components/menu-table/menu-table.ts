@@ -4,6 +4,7 @@ import * as React from 'react/addons';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { formatterFromData } from '../../utils/formatter';
 import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
+import { Checkbox } from '../checkbox/checkbox';
 
 const TOP_N = 100;
 
@@ -22,6 +23,7 @@ interface MenuTableState {
 }
 
 export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
+  public mounted: boolean;
 
   constructor() {
     super();
@@ -43,11 +45,13 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
       .limit(TOP_N + 1);
 
     dataSource.dispatcher(query).then((dataset) => {
+      if (!this.mounted) return;
       this.setState({ dataset });
     });
   }
 
   componentDidMount() {
+    this.mounted = true;
     var { filter, dimension } = this.props;
     this.fetchData(filter, dimension);
   }
@@ -63,7 +67,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   }
 
   componentWillUnmount() {
-
+    this.mounted = false;
   }
 
   onBoxClick(value: any, e: MouseEvent) {
@@ -112,9 +116,12 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
         var measureValueStr = formatter(measureValue);
         var selected = selectedValues.indexOf(segmentValue) > -1;
 
-        var checkbox: React.DOMElement<any> = null;
+        var checkbox: React.ReactElement<any> = null;
         if (showCheckboxes) {
-          checkbox = JSX(`<div className="checkbox" onClick={this.onBoxClick.bind(this, segmentValue)}></div>`);
+          checkbox = React.createElement(Checkbox, {
+            checked: selected,
+            onClick: <Function>this.onBoxClick.bind(this, segmentValue)
+          });
         }
 
         return JSX(`

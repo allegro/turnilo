@@ -321,7 +321,6 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
   public loadSource(): Q.Promise<DataSource> {
     var deferred = <Q.Deferred<DataSource>>Q.defer();
     if (this.metadataLoaded) throw new Error('already loaded');
-    var self = this;
     d3.json(this.source, (err, json) => {
       if (err) {
 
@@ -331,7 +330,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
           d['time'] = new Date(Date.parse(d['time']) + (i % secInHour) * 1000);
         });
 
-        deferred.resolve(DataSource.fromDataArray(self.name, self.title, self.source, json));
+        deferred.resolve(DataSource.fromDataArray(this.name, this.title, this.source, json));
       }
     });
     return deferred.promise;

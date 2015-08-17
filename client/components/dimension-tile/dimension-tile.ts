@@ -25,6 +25,7 @@ interface DimensionTileState {
 }
 
 export class DimensionTile extends React.Component<DimensionTileProps, DimensionTileState> {
+  public mounted: boolean;
 
   constructor() {
     super();
@@ -47,11 +48,13 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       .limit(TOP_N + 1);
 
     dataSource.dispatcher(query).then((dataset) => {
+      if (!this.mounted) return;
       this.setState({ dataset });
     });
   }
 
   componentDidMount() {
+    this.mounted = true;
     var { filter, dimension } = this.props;
     this.fetchData(filter, dimension);
   }
@@ -67,7 +70,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   componentWillUnmount() {
-
+    this.mounted = false;
   }
 
   toggleSearch() {

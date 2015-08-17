@@ -27,6 +27,7 @@ interface MeasuresTileState {
 }
 
 export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTileState> {
+  public mounted: boolean;
 
   constructor() {
     super();
@@ -49,17 +50,19 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     });
 
     dataSource.dispatcher(query).then((dataset) => {
+      if (!this.mounted) return;
       this.setState({ dataset });
     });
   }
 
   componentDidMount() {
+    this.mounted = true;
     var { filter } = this.props;
     this.fetchData(filter);
   }
 
   componentWillUnmount() {
-
+    this.mounted = false;
   }
 
   componentWillReceiveProps(nextProps: MeasuresTileProps) {

@@ -35,6 +35,7 @@ interface NestedTableVisState {
 }
 
 export class NestedTableVis extends React.Component<NestedTableVisProps, NestedTableVisState> {
+  public mounted: boolean;
 
   constructor() {
     super();
@@ -68,11 +69,13 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     });
 
     dataSource.dispatcher(query).then((dataset) => {
+      if (!this.mounted) return;
       this.setState({ dataset });
     });
   }
 
   componentDidMount() {
+    this.mounted = true;
     var props = this.props;
     this.fetchData(props.filter, props.splits, props.measures);
   }
@@ -85,7 +88,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
   }
 
   componentWillUnmount() {
-
+    this.mounted = false;
   }
 
   onScroll(e: UIEvent) {

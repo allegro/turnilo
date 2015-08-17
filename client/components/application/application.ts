@@ -51,10 +51,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       pinnedMeasures: true
     };
 
-    var self = this;
     var clicker = {
       changeDataSource: (dataSource: DataSource) => {
-        var { dataSources } = self.state;
+        var { dataSources } = this.state;
         var dataSourceName = dataSource.name;
         var existingDataSource = dataSources.find((ds) => ds.name === dataSourceName);
         if (!existingDataSource) throw new Error(`unknown DataSource changed: ${dataSourceName}`);
@@ -64,16 +63,16 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
           // We are actually updating info within the named dataSource
           newState.dataSources = <List<DataSource>>dataSources.map((ds) => ds.name === dataSourceName ? dataSource : ds);
         }
-        self.setState(newState);
+        this.setState(newState);
       },
       changeFilter: (filter: Filter) => {
-        self.setState({ filter });
+        this.setState({ filter });
       },
       changeSplits: (splits: List<SplitCombine>) => {
-        var { dataSource, visualization } = self.state;
-        var visualizations = self.getPossibleVisualizations(dataSource, splits);
+        var { dataSource, visualization } = this.state;
+        var visualizations = this.getPossibleVisualizations(dataSource, splits);
         if (!visualizations.contains(visualization)) visualization = visualizations.get(0);
-        self.setState({
+        this.setState({
           splits,
           visualization,
           visualizations
@@ -90,18 +89,18 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       selectVisualization: (visualization: string) => {
         var { visualizations } = this.state;
         if (!visualizations.includes(visualization)) return;
-        self.setState({
+        this.setState({
           visualization
         });
       },
       pin: (what: string | Dimension) => {
         if (what instanceof Dimension) {
           var { pinnedDimensions } = this.state;
-          self.setState({
+          this.setState({
             pinnedDimensions: pinnedDimensions.add(what.name)
           });
         } else if (what === 'measures') {
-          self.setState({
+          this.setState({
             pinnedMeasures: true
           });
         } else {
@@ -111,11 +110,11 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       unpin: (what: string | Dimension) => {
         if (what instanceof Dimension) {
           var { pinnedDimensions } = this.state;
-          self.setState({
+          this.setState({
             pinnedDimensions: pinnedDimensions.remove(what.name)
           });
         } else if (what === 'measures') {
-          self.setState({
+          this.setState({
             pinnedMeasures: false
           });
         } else {
@@ -123,13 +122,13 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         }
       },
       toggleMeasure: (measure: Measure) => {
-        var { selectedMeasures } = self.state;
+        var { selectedMeasures } = this.state;
         var measureName = measure.name;
         selectedMeasures = selectedMeasures.has(measureName) ?
           selectedMeasures.delete(measureName) :
           selectedMeasures.add(measureName);
 
-        self.setState({ selectedMeasures });
+        this.setState({ selectedMeasures });
       }
     };
 
@@ -153,10 +152,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     if (dataSource.metadataLoaded) {
       this.fillInDetails(dataSource);
     } else {
-      var self = this;
       dataSource.loadSource().then((newDataSource) => {
-        self.clicker.changeDataSource(newDataSource);
-        self.fillInDetails(newDataSource);
+        this.clicker.changeDataSource(newDataSource);
+        this.fillInDetails(newDataSource);
       }).done();
     }
   }
