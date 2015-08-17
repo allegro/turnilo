@@ -20,6 +20,7 @@ interface FilterSplitPanelProps {
 }
 
 interface FilterSplitPanelState {
+  selectedSection?: string;
   selectedDimension?: Dimension;
   anchor?: number;
   rect?: ClientRect;
@@ -30,6 +31,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   constructor() {
     super();
     this.state = {
+      selectedSection: null,
       selectedDimension: null,
       anchor: null,
       rect: null
@@ -74,6 +76,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
   menuClose() {
     this.setState({
+      selectedSection: null,
       selectedDimension: null,
       anchor: null,
       trigger: null
@@ -82,7 +85,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
 
   render() {
     var { dataSource, filter, splits, clicker, timezone } = this.props;
-    var { selectedDimension, anchor, rect, trigger } = this.state;
+    var { selectedSection, selectedDimension, anchor, rect, trigger } = this.state;
 
     var menu: React.ReactElement<any> = null;
     if (selectedDimension) {
@@ -105,20 +108,20 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
           dataSource={dataSource}
           filter={filter}
           timezone={timezone}
-          selectedDimension={selectedDimension}
+          selectedDimension={selectedSection === 'filter' ? selectedDimension : null}
           triggerMenuOpen={this.menuOpen.bind(this, 'filter')}
         />
         <SplitTile
           clicker={clicker}
           dataSource={dataSource}
           splits={splits}
-          selectedDimension={selectedDimension}
+          selectedDimension={selectedSection === 'split' ? selectedDimension : null}
           triggerMenuOpen={this.menuOpen.bind(this, 'split')}
         />
         <DimensionListTile
           clicker={clicker}
           dataSource={dataSource}
-          selectedDimension={selectedDimension}
+          selectedDimension={selectedSection === 'dimension' ? selectedDimension : null}
           triggerMenuOpen={this.menuOpen.bind(this, 'dimension')}
         />
         {menu}
