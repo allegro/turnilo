@@ -1,13 +1,12 @@
 'use strict';
 
 import * as React from 'react/addons';
+import * as Icon from 'react-svg-icons';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
-import { TITLE_HEIGHT } from '../../config/constants';
+import { TITLE_HEIGHT, CORE_ITEM_HEIGHT } from '../../config/constants';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { moveInList } from '../../utils/general';
 import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
-
-const ITEM_HEIGHT = 30;
 
 interface DimensionListTileProps {
   clicker: Clicker;
@@ -55,7 +54,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var offset = e.clientY - rect.top;
 
     this.setState({
-      dragPosition: Math.min(Math.max(0, Math.round(offset / ITEM_HEIGHT)), numItems)
+      dragPosition: Math.min(Math.max(0, Math.round(offset / CORE_ITEM_HEIGHT)), numItems)
     });
   }
 
@@ -135,10 +134,9 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var dimensionItems: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
-        if (dragOver && dragPosition === i) itemY += ITEM_HEIGHT;
+        if (dragOver && dragPosition === i) itemY += CORE_ITEM_HEIGHT;
         var style = { transform: `translate3d(0,${itemY}px,0)` };
-        itemY += ITEM_HEIGHT;
-        var iconText = dimension.type === 'TIME' ? 'Ti' : 'Ab';
+        itemY += CORE_ITEM_HEIGHT;
 
         var classNames = [
           'dimension',
@@ -154,12 +152,14 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
             onDragStart={this.dragStart.bind(this, dimension)}
             style={style}
           >
-            <div className="icon">{iconText}</div>
-            {dimension.title}
+            <div className="icon">
+              <Icon name={dimension.className}/>
+            </div>
+            <div className="item-title">{dimension.title}</div>
           </div>
         `);
       }, this);
-      if (dragOver && dragPosition === dataSource.dimensions.size) itemY += ITEM_HEIGHT;
+      if (dragOver && dragPosition === dataSource.dimensions.size) itemY += CORE_ITEM_HEIGHT;
     }
 
     const style = {

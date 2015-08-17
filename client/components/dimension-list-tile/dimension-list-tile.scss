@@ -1,6 +1,8 @@
 @import '../../config/constants';
 @import '../../utils/mixins';
 
+$icon-width: 30px;
+
 .dimension-list-tile {
   @extend %module;
   @extend %module-title;
@@ -17,7 +19,6 @@
     .dimension {
       @include pin-top(30px);
 
-      padding: 8px 0 0 $tile-padding-h;
       background: $detail-background;
       cursor: pointer;
       overflow: hidden;
@@ -28,10 +29,23 @@
       }
 
       .icon {
-        display: inline-block;
-        width: 18px;
-        margin-right: 5px;
+        @include pin-left($icon-width);
         cursor: ns-resize;
+
+        svg {
+          position: absolute;
+          left: $tile-padding-h;
+          width: 14px;
+        }
+      }
+
+      &.type-string .icon svg { top: 11px; }
+      &.type-time .icon svg { top: 7px; }
+
+      .item-title {
+        position: absolute;
+        top: 8px;
+        left: $icon-width;
       }
     }
   }
