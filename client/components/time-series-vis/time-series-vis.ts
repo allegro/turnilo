@@ -9,8 +9,15 @@ import { bindOne, bindMany } from "../../utils/render";
 import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from "../../models/index";
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
+import { VerticalAxis } from '../vertical-axis/vertical-axis';
+import { GridLines } from '../grid-lines/grid-lines';
 
 const MAX_GRAPH_WIDTH = 2000;
+const Y_AXIS_WIDTH = 60;
+
+function translate(x: number, y: number): string {
+  return `translate(${x},${y})`;
+}
 
 function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
@@ -130,14 +137,22 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       var myDataset: Dataset = myDatum['Split'];
 
       var splitName = splits.last().dimension;
+      var getX = (d: Datum) => midpoint(d[splitName]);
 
       var width = Math.floor(stage.width / numberOfColumns);
       var height = 120;
       var innerHeight = 100;
 
+      var lineStage: Stage = {
+        width: width - Y_AXIS_WIDTH,
+        height: innerHeight
+      };
+
       var scaleX = d3.time.scale()
         .domain(extentX)
-        .range([0, width]);
+        .range([0, lineStage.width]);
+
+      var xTicks = scaleX.ticks();
 
       var measuresArray = measures.toArray();
       measureGraphs = measuresArray.map((measure) => {
@@ -158,18 +173,25 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
 
         var scaleY = d3.scale.linear()
           .domain(extentY)
-          .range([innerHeight, 0]);
+          .range([lineStage.height, 0]);
 
-        var getX = (d: Datum) => midpoint(d[splitName]);
-
-        var lineStage: Stage = {
-          width,
-          height: innerHeight
-        };
+        var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
 
         return JSX(`
           <svg className="measure-graph" key={measureName} width={width} height={height}>
-            <g transform="translate(0,20)">
+            <g transform={translate(0, 20)}>
+              <GridLines
+                orientation="horizontal"
+                scale={scaleY}
+                ticks={yTicks}
+                stage={lineStage}
+              />
+              <GridLines
+                orientation="vertical"
+                scale={scaleX}
+                ticks={xTicks}
+                stage={lineStage}
+              />
               <ChartLine
                 dataset={myDataset}
                 getX={getX}
@@ -177,6 +199,12 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
                 scaleX={scaleX}
                 scaleY={scaleY}
                 stage={lineStage}
+              />
+            </g>
+            <g transform={translate(lineStage.width, 20)}>
+              <VerticalAxis
+                yTicks={yTicks}
+                scaleY={scaleY}
               />
             </g>
             <text x="5" y="15">
@@ -190,7 +218,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       for (var i = 0; i < numberOfColumns; i++) {
         bottomAxes.push(JSX(`
           <svg className="bottom-axis" key={'bottom-axis-' + i} width={width} height={50}>
-            <TimeAxis />
+            <TimeAxis xTicks={xTicks} scaleX={scaleX}/>
           </svg>
         `));
       }

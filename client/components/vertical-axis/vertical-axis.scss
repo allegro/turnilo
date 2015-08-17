@@ -1,12 +1,8 @@
 @import '../../config/constants';
 @import '../../utils/mixins';
 
-.time-axis {
+.vertical-axis {
   line {
     stroke: $gray;
-  }
-
-  text {
-    text-anchor: middle;
   }
 }

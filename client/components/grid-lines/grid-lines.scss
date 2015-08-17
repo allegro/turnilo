@@ -1,12 +1,9 @@
 @import '../../config/constants';
 @import '../../utils/mixins';
 
-.time-axis {
+.grid-lines {
   line {
-    stroke: $gray;
-  }
-
-  text {
-    text-anchor: middle;
+    pointer-events: none;
+    stroke: $grid-line-color;
   }
 }
