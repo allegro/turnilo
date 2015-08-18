@@ -198,6 +198,14 @@
   overflow: hidden;
   transition: transform 0.1s ease-in-out;
 
+  .reading {
+    white-space: nowrap;
+    margin-right: 20px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    height: 16px;
+  }
+
   .remove {
     @include pin-right(25px);
     text-align: center;
@@ -210,6 +218,10 @@
 
     path {
       fill: hsla(0, 0, 0, 0.3);
+    }
+
+    &:hover path {
+      fill: hsla(0, 0, 0, 0.65);
     }
   }
 
