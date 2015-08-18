@@ -1,13 +1,13 @@
 @import '../../config/constants';
 @import '../../utils/mixins';
 
-$action-size: 100px;
+$action-size: 160px;
 
 .drop-indicator {
   .white-out {
     @include pin-full;
     background: $white;
-    opacity: .5;
+    opacity: .65;
   }
 
   .actions {
@@ -25,10 +25,37 @@ $action-size: 100px;
       width: $action-size;
       height: $action-size;
       border-radius: 10px;
-      background: $gray;
-      font-size: 20px;
-      text-align: center;
-      padding-top: 40px;
+      background: $white;
+      border: 1px dashed $medium-text-color;
+
+      .label {
+        display: none;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+        margin-top: 110px;
+      }
+
+      .icon {
+        position: absolute;
+        width: $action-size;
+        height: $action-size;
+        text-align: center;
+        left: auto;
+        right: auto;
+
+        path {
+          fill: $medium-text-color;
+        }
+      }
+
+      &.replace-split .icon {
+        top: 66px;
+      }
+
+      &.add-split .icon {
+        top: 70px;
+      }
     }
 
     .replace-split {

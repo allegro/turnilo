@@ -27,14 +27,15 @@ $shpitz-size: 12px;
     .pin,
     .close {
       position: absolute;
-      top: $icon-margin;
+      text-align: center;
+      top: $icon-margin + 1;
       width: $icon-width;
       height: $icon-height;
       cursor: pointer;
 
       &:hover {
         path {
-          fill: $item-selected-border;
+          fill: $medium-text-color;
         }
       }
     }
@@ -65,7 +66,9 @@ $shpitz-size: 12px;
     padding: 16px 0 6px 10px;
 
     .button {
-      margin-right: 7px;
+
+      padding-top: 5px;
+      padding-bottom: 5px;   margin-right: 7px;
     }
 
     .ok {

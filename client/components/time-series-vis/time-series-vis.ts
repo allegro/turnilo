@@ -14,10 +14,10 @@ import { GridLines } from '../grid-lines/grid-lines';
 
 const H_PADDING = 10;
 const TITLE_TEXT_LEFT = 6;
-const TITLE_TEXT_TOP = 17;
-const TEXT_SPACER = 20;
+const TITLE_TEXT_TOP = 23;
+const TEXT_SPACER = 36;
 const Y_AXIS_WIDTH = 60;
-const GRAPH_HEIGHT = 100;
+const GRAPH_HEIGHT = 120;
 const MAX_GRAPH_WIDTH = 2000;
 
 function midpoint(timeRange: TimeRange): Date {

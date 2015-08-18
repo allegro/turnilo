@@ -29,8 +29,10 @@ $gray: #cccccc;
 $light-border: hsl(0, 0%, 87%);
 $lightish-border: hsl(0, 0%, 82%);
 $normal-border: hsl(0, 0%, 73%);
+$dark-border: hsl(0, 0%, 60%);
 
 $light-background: hsl(0, 0%, 95%);
+$dark-background: #a6a6a6;
 
 $header-background: hsl(201, 81%, 49%);
 $header-text-color: $white;
@@ -41,6 +43,8 @@ $module-background: $white;
 $module-title-color: hsl(0, 0%, 60%);
 $module-text-color: hsl(0, 0%, 27%);
 $module-shadow-color: hsla(0, 0%, 0%, 0.14);
+$lighter-text-color: #999;
+$medium-text-color: #666;
 
 $item-background: $light-background;
 $item-border: $lightish-border;
@@ -59,8 +63,8 @@ $detail-background: $white;
 $detail-text-color: hsl(0, 0%, 27%);
 $detail-special-text-color: hsl(220, 49%, 52%);
 $detail-border-color: hsl(0, 0%, 80%);
-$detail-hover: hsl(202, 79%, 89%);
-$detail-highlight: hsl(217, 59%, 85%);
+$detail-hover: hsl(202, 79%, 92%);
+$detail-highlight: hsl(217, 59%, 87%);
 
 $button-primary-background: $header-background;
 $button-primary-text-color: $white;
@@ -70,7 +74,7 @@ $button-secondary-text-color: hsl(0, 0%, 40%);
 // Vis
 
 $main-time-line: $header-background;
-$main-time-area: hsl(202, 81%, 94%);
+$main-time-area: hsla(201, 81%, 49%, 0.14);
 $grid-line-color: hsl(0, 0%, 94%);
 
 // Transitions ----------------

@@ -1,7 +1,7 @@
 @import '../../config/constants';
 @import '../../utils/mixins';
 
-$icon-width: 34px;
+$icon-width: 35px;
 
 .dimension-list-tile {
   @extend %module;
@@ -37,7 +37,7 @@ $icon-width: 34px;
           left: $tile-padding-h;
 
           path {
-            fill: hsla(0, 0, 0, 0.4);
+            fill: hsla(0, 0, 0, 0.35);
           }
         }
       }

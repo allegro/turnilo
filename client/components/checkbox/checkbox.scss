@@ -1,7 +1,7 @@
 @import '../../config/constants';
 @import '../../utils/mixins';
 
-$checkbox-size: 15px;
+$checkbox-size: 16px;
 
 .checkbox {
   display: inline-block;
@@ -16,16 +16,24 @@ $checkbox-size: 15px;
     left: 0;
     top: 2px;
     content: '';
-    border: 1px solid $lightish-border;
-    background: $light-background;
+    background: $base-background;
     width: $checkbox-size;
     height: $checkbox-size;
+    border-radius: 1px;
+  }
+
+  &.checked:before {
+    background: $dark-background;
   }
 
   svg {
     position: absolute;
     top: 3px;
     left: 2px;
-    width: 13px;
+    width: 12px;
+
+    path {
+      fill: $white;
+    }
   }
 }
