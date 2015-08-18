@@ -163,8 +163,6 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
         <div className="button-bar">
           <div className="ok button" onClick={this.onOK.bind(this)}>OK</div>
           <div className="cancel button" onClick={onClose}>Cancel</div>
-          <div className="add-split link" onClick={this.addSplit.bind(this)}>+</div>
-          <div className="change-split link" onClick={this.changeSplit.bind(this)}>&rarr;</div>
         </div>
         <div className="shpitz" style={shpitzStyle}></div>
       </div>

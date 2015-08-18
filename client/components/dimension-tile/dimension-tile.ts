@@ -128,7 +128,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         if (false) {
           checkbox = React.createElement(Checkbox, {
             checked: selected
-          //  onClick: this.onBoxClick.bind(this, segmentValue)
+            //onClick: this.onBoxClick.bind(this, segmentValue)
           });
         }
 

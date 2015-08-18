@@ -84,17 +84,6 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     }
   }
 
-  onValueClick(value: any) {
-    var { filter, dimension, selectFilter } = this.props;
-    var { selectedValues } = this.state;
-    this.setState({
-      selectedValues: [value]
-    });
-    if (selectFilter) {
-      selectFilter(filter.add(dimension.expression, value), 'value');
-    }
-  }
-
   render() {
     var { dataSource, dimension, showSearch, showCheckboxes } = this.props;
     var { dataset, selectedValues } = this.state;
@@ -125,7 +114,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
         return JSX(`
           <div className={'row' + (selected ? ' selected' : '')} key={segmentValue}>
-            <div className="segment-value" onClick={this.onValueClick.bind(this, segmentValue)}>
+            <div className="segment-value" onClick={this.onBoxClick.bind(this, segmentValue)}>
               {checkbox}
               <div className="label">{segmentValue}</div>
             </div>

@@ -2,7 +2,11 @@
 @import '../../utils/mixins';
 
 .vertical-axis {
-  line {
+  line.border {
+    stroke: $gray;
+  }
+
+  line.tick {
     stroke: $gray;
   }
 }

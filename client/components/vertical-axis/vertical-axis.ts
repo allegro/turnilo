@@ -35,7 +35,7 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
     var lines = yTicks.map((tick: any, i: number) => {
       var y = scaleY(tick);
       return JSX(`
-        <line key={String(tick)} x1={0} y1={y} x2={TICK_WIDTH} y2={y}/>
+        <line className="tick" key={String(tick)} x1={0} y1={y} x2={TICK_WIDTH} y2={y}/>
       `);
     });
 
@@ -44,12 +44,13 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
     var labels = yTicks.map((tick: any, i: number) => {
       var y = scaleY(tick);
       return JSX(`
-        <text key={String(tick)} x={labelX} y={y} dy={dy}>{formatter(tick)}</text>
+        <text className="tick" key={String(tick)} x={labelX} y={y} dy={dy}>{formatter(tick)}</text>
       `);
     });
 
     return JSX(`
       <g className="vertical-axis" transform={stage.getTransform()}>
+        <line className="border" x1={0} x2={0} y1={0} y2={stage.height}/>
         {lines}
         {labels}
       </g>

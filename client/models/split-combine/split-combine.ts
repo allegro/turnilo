@@ -1,7 +1,7 @@
 'use strict';
 
 import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
-import { $, Expression, ExpressionJS, Action, ActionJS, SortAction, LimitAction } from 'plywood';
+import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction } from 'plywood';
 
 export interface SplitCombineValue {
   dimension: string;
@@ -76,5 +76,22 @@ export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitC
       this.splitOn.equals(other.splitOn) &&
       this.sortAction.equals(other.sortAction) &&
       this.limitAction.equals(other.limitAction);
+  }
+
+  public getExtraTitle(): string {
+    var splitOn = this.splitOn;
+    if (splitOn instanceof ChainExpression) {
+      var action = splitOn.actions[0];
+      if (action instanceof TimeBucketAction) {
+        var duration = action.duration.toString();
+        switch (duration) {
+          case 'P1D': return ' (Day)';
+          case 'PT1H': return ' (Hour)';
+          case 'PT1M': return ' (Minute)';
+          default: return '';
+        }
+      }
+    }
+    return '';
   }
 }

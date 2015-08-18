@@ -151,7 +151,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
             onDragStart={this.dragStart.bind(this, dimension, split)}
             style={style}
           >
-            <div className="reading">{dimension.title}</div>
+            <div className="reading">{dimension.title + split.getExtraTitle()}</div>
             <div className="remove" onClick={this.removeSplit.bind(this, split)}>
               <Icon name="x" width={12} height={12}/>
             </div>

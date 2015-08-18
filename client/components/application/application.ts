@@ -71,7 +71,11 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       changeSplits: (splits: List<SplitCombine>) => {
         var { dataSource, visualization } = this.state;
         var visualizations = this.getPossibleVisualizations(dataSource, splits);
-        if (!visualizations.contains(visualization)) visualization = visualizations.get(0);
+        if (visualizations.contains(visualization)) {
+          visualization = visualizations.last();
+        } else {
+          visualization = visualizations.first();
+        }
         this.setState({
           splits,
           visualization,
