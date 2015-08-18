@@ -7,12 +7,16 @@ import { $, Expression, Dispatcher, Dataset, Datum, TimeRange } from 'plywood';
 import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../models/index';
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
+import { VerticalAxis } from '../vertical-axis/vertical-axis';
+
+const Y_AXIS_WIDTH = 60;
 
 function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
 interface MenuTimeSeriesProps {
+  stage: Stage;
   dataSource: DataSource;
   filter: Filter;
   dimension: Dimension;
@@ -68,12 +72,11 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
   }
 
   render() {
-    var { dataSource, dimension } = this.props;
+    var { stage, dataSource, dimension } = this.props;
     var { dataset } = this.state;
     var measure = dataSource.getSortMeasure(dimension);
 
-    var width = 240;
-    var height = 200;
+    var svgStage = stage;
 
     var svg: React.ReactElement<any> = null;
     if (dataset) {
@@ -92,35 +95,37 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
       extentY[0] = Math.min(extentY[0] * 1.1, 0);
       extentY[1] = Math.max(extentY[1] * 1.1, 0);
 
+      var lineStage = svgStage.within({ right: Y_AXIS_WIDTH });
+      var yAxisStage = svgStage.within({ left: lineStage.width });
+
       var scaleX = d3.time.scale()
         .domain(extentX)
-        .range([0, width]);
+        .range([0, lineStage.width]);
 
       var scaleY = d3.scale.linear()
         .domain(extentY)
-        .range([height, 0]);
+        .range([lineStage.height, 0]);
 
-      var lineStage: Stage = {
-        width,
-        height: height
-      };
+      var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
 
       svg = JSX(`
-        <svg className="graph" width={width} height={height}>
-          <g transform="translate(0,20)">
-            <ChartLine
-              dataset={dataset}
-              getX={getX}
-              getY={getY}
-              scaleX={scaleX}
-              scaleY={scaleY}
-              stage={lineStage}
-            />
-          </g>
+        <svg className="graph" width={svgStage.width} height={svgStage.height}>
+          <ChartLine
+            dataset={dataset}
+            getX={getX}
+            getY={getY}
+            scaleX={scaleX}
+            scaleY={scaleY}
+            stage={lineStage}
+          />
+          <VerticalAxis
+            stage={yAxisStage}
+            yTicks={yTicks}
+            scaleY={scaleY}
+          />
         </svg>
       `);
     }
-
 
     return JSX(`
       <div className="menu-time-series">

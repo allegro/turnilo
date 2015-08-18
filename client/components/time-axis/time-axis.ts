@@ -2,13 +2,14 @@
 
 import * as React from 'react/addons';
 import * as d3 from 'd3';
-import { Filter, Dimension, Measure } from '../../models/index';
+import { Stage, Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 const TICK_HEIGHT = 5;
 const TEXT_OFFSET = 12;
 
 interface TimeAxisProps {
+  stage: Stage;
   xTicks: Date[];
   scaleX: any;
 }
@@ -24,7 +25,7 @@ export class TimeAxis extends React.Component<TimeAxisProps, TimeAxisState> {
   }
 
   render() {
-    var { xTicks, scaleX } = this.props;
+    var { stage, xTicks, scaleX } = this.props;
 
     //var format = d3.time.format('%b %-d');
     var format = scaleX.tickFormat();
@@ -45,7 +46,7 @@ export class TimeAxis extends React.Component<TimeAxisProps, TimeAxisState> {
     });
 
     return JSX(`
-      <g className="time-axis">
+      <g className="time-axis" transform={stage.getTransform()}>
         {lines}
         {labels}
       </g>

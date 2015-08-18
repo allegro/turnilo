@@ -5,12 +5,9 @@ import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Dispatcher } from 'plywood';
 import { isInside } from '../../utils/dom';
-import { DataSource, SplitCombine, Filter, Dimension, Measure, Clicker } from "../../models/index";
+import { Stage, DataSource, SplitCombine, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { MenuTable } from "../menu-table/menu-table";
 import { MenuTimeSeries } from "../menu-time-series/menu-time-series";
-
-const WIDTH = 250;
-const HEIGHT = 400;
 
 const TITLE_BAR_HEIGHT = 40;
 const BUTTON_BAR_HEIGHT = 52;
@@ -119,6 +116,7 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
     var { dataSource, filter, dimension } = this.props;
     return JSX(`
       <MenuTimeSeries
+        stage={Stage.fromSize(400, 100)}
         dataSource={dataSource}
         filter={filter}
         dimension={dimension}
@@ -129,12 +127,22 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
   render() {
     var { onClose, dataSource, filter, dimension, anchor } = this.props;
 
+    var menuWidth: number;
+    var menuHeight: number;
+    if (dimension.type === 'TIME') {
+      menuWidth = 400;
+      menuHeight = TITLE_BAR_HEIGHT + 100 + BUTTON_BAR_HEIGHT;
+    } else {
+      menuWidth = 250;
+      menuHeight = 400;
+    }
+
     var containerHeight = this.props.height;
-    var top = Math.min(Math.max(0, anchor - HEIGHT / 2), containerHeight - HEIGHT);
+    var top = Math.min(Math.max(0, anchor - menuHeight / 2), containerHeight - menuHeight);
     var style = {
       top,
-      width: WIDTH,
-      height: HEIGHT
+      width: menuWidth,
+      height: menuHeight
     };
     var shpitzStyle = {
       top: anchor - top

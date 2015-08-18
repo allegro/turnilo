@@ -15,10 +15,6 @@ import { GridLines } from '../grid-lines/grid-lines';
 const MAX_GRAPH_WIDTH = 2000;
 const Y_AXIS_WIDTH = 60;
 
-function translate(x: number, y: number): string {
-  return `translate(${x},${y})`;
-}
-
 function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
@@ -49,7 +45,7 @@ interface TimeSeriesVisProps {
   filter: Filter;
   splits: List<SplitCombine>;
   measures: List<Measure>;
-  stage: ClientRect;
+  stage: Stage;
 }
 
 interface TimeSeriesVisState {
@@ -120,10 +116,6 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     var { filter, splits, measures, stage } = this.props;
     var { dataset } = this.state;
 
-    if (!stage) {
-      return JSX(`<div className="time-series-vis"></div>`);
-    }
-
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
 
     var measureGraphs: Array<React.ReactElement<any>> = null;
@@ -139,14 +131,9 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       var splitName = splits.last().dimension;
       var getX = (d: Datum) => midpoint(d[splitName]);
 
-      var width = Math.floor(stage.width / numberOfColumns);
-      var height = 120;
-      var innerHeight = 100;
-
-      var lineStage: Stage = {
-        width: width - Y_AXIS_WIDTH,
-        height: innerHeight
-      };
+      var svgStage = Stage.fromSize(Math.floor(stage.width / numberOfColumns), 120);
+      var lineStage = svgStage.within({ top: 20, right: Y_AXIS_WIDTH });
+      var yAxisStage = svgStage.within({ top: 20, left: lineStage.width });
 
       var scaleX = d3.time.scale()
         .domain(extentX)
@@ -162,7 +149,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
 
         if (isNaN(extentY[0])) {
           return JSX(`
-            <svg className="measure-graph" key={measure.name} width={width} height={height}>
+            <svg className="measure-graph" key={measure.name} width={svgStage.width} height={svgStage.height}>
               <text x="5" y="15">{measure.title + ': Loading'}</text>
             </svg>
           `);
@@ -178,35 +165,32 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
         var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
 
         return JSX(`
-          <svg className="measure-graph" key={measureName} width={width} height={height}>
-            <g transform={translate(0, 20)}>
-              <GridLines
-                orientation="horizontal"
-                scale={scaleY}
-                ticks={yTicks}
-                stage={lineStage}
-              />
-              <GridLines
-                orientation="vertical"
-                scale={scaleX}
-                ticks={xTicks}
-                stage={lineStage}
-              />
-              <ChartLine
-                dataset={myDataset}
-                getX={getX}
-                getY={getY}
-                scaleX={scaleX}
-                scaleY={scaleY}
-                stage={lineStage}
-              />
-            </g>
-            <g transform={translate(lineStage.width, 20)}>
-              <VerticalAxis
-                yTicks={yTicks}
-                scaleY={scaleY}
-              />
-            </g>
+          <svg className="measure-graph" key={measureName} width={svgStage.width} height={svgStage.height}>
+            <GridLines
+              orientation="horizontal"
+              scale={scaleY}
+              ticks={yTicks}
+              stage={lineStage}
+            />
+            <GridLines
+              orientation="vertical"
+              scale={scaleX}
+              ticks={xTicks}
+              stage={lineStage}
+            />
+            <ChartLine
+              dataset={myDataset}
+              getX={getX}
+              getY={getY}
+              scaleX={scaleX}
+              scaleY={scaleY}
+              stage={lineStage}
+            />
+            <VerticalAxis
+              stage={yAxisStage}
+              yTicks={yTicks}
+              scaleY={scaleY}
+            />
             <text x="5" y="15">
               {measure.title + ': ' + numeral(myDatum[measureName]).format(measure.format)}
             </text>
@@ -214,11 +198,12 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
         `);
       });
 
+      var xAxisStage = Stage.fromSize(svgStage.width, 50);
       bottomAxes = [];
       for (var i = 0; i < numberOfColumns; i++) {
         bottomAxes.push(JSX(`
-          <svg className="bottom-axis" key={'bottom-axis-' + i} width={width} height={50}>
-            <TimeAxis xTicks={xTicks} scaleX={scaleX}/>
+          <svg className="bottom-axis" key={'bottom-axis-' + i} width={xAxisStage.width} height={xAxisStage.height}>
+            <TimeAxis stage={xAxisStage} xTicks={xTicks} scaleX={scaleX}/>
           </svg>
         `));
       }

@@ -6,12 +6,12 @@ import { Stage, Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface ChartLineProps {
+  stage: Stage;
   dataset: Dataset;
   getX: (d: Datum) => any;
   getY: (d: Datum) => any;
   scaleX: (v: any) => number;
   scaleY: (v: any) => number;
-  stage: Stage;
 }
 
 interface ChartLineState {
@@ -38,7 +38,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
   }
 
   render() {
-    var { dataset, getX, getY, scaleX, scaleY, stage } = this.props;
+    var { stage, dataset, getX, getY, scaleX, scaleY } = this.props;
 
     var xFn = (d: Datum) => scaleX(getX(d));
     var yFn = (d: Datum) => scaleY(getY(d));
@@ -47,7 +47,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
     var lineFn = d3.svg.line<Datum>().x(xFn).y(yFn);
 
     return JSX(`
-      <g className="chart-line">
+      <g className="chart-line" transform={stage.getTransform()}>
         <path className="area" d={areaFn(dataset.data)}/>
         <path className="line" d={lineFn(dataset.data)}/>
       </g>

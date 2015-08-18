@@ -49,7 +49,7 @@ export class GridLines extends React.Component<GridLinesProps, GridLinesState> {
     });
 
     return JSX(`
-      <g className={'grid-lines ' + orientation}>
+      <g className={'grid-lines ' + orientation} transform={stage.getTransform()}>
         {lines}
       </g>
     `);

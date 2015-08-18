@@ -52,7 +52,8 @@ $shpitz-size: 12px;
     }
   }
 
-  .menu-table {
+  .menu-table,
+  .menu-time-series {
     position: absolute;
     top: $title-bar-height;
     bottom: $button-bar-height;

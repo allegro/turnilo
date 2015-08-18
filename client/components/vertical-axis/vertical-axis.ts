@@ -4,13 +4,14 @@ import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import * as d3 from 'd3';
 import { formatterFromData } from '../../utils/formatter';
-import { Filter, Dimension, Measure } from '../../models/index';
+import { Stage, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 const TICK_WIDTH = 5;
 const TEXT_OFFSET = 2;
 
 interface VerticalAxisProps {
+  stage: Stage;
   yTicks: number[];
   scaleY: any;
 }
@@ -27,7 +28,7 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
   }
 
   render() {
-    var { yTicks, scaleY } = this.props;
+    var { stage, yTicks, scaleY } = this.props;
 
     var formatter = formatterFromData(yTicks, Measure.DEFAULT_FORMAT);
 
@@ -48,7 +49,7 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
     });
 
     return JSX(`
-      <g className="vertical-axis">
+      <g className="vertical-axis" transform={stage.getTransform()}>
         {lines}
         {labels}
       </g>

@@ -5,7 +5,7 @@ import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration } from 'chronology';
 import { $, Expression, Datum, Dataset, TimeRange, Dispatcher, ChainExpression } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
-import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
+import { Stage, Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
 import { FilterSplitPanel } from '../filter-split-panel/filter-split-panel';
@@ -32,7 +32,7 @@ interface ApplicationState {
   pinnedDimensions?: OrderedSet<string>;
   visualization?: string;
   visualizations?: List<string>;
-  visualizationStage?: ClientRect;
+  visualizationStage?: Stage;
   timezone?: Timezone;
   dragOver?: boolean;
   drawerOpen?: boolean;
@@ -207,8 +207,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var { visualization } = this.refs;
     var visualizationDOM = React.findDOMNode(visualization);
     if (!visualizationDOM) return;
+    var visRect = visualizationDOM.getBoundingClientRect();
     this.setState({
-      visualizationStage: visualizationDOM.getBoundingClientRect()
+      visualizationStage: Stage.fromSize(visRect.width, visRect.height)
     });
   }
 
@@ -290,7 +291,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var measures = dataSource.measures;
 
     var visElement: React.ReactElement<any> = null;
-    if (dataSource.metadataLoaded) {
+    if (dataSource.metadataLoaded && visualizationStage) {
       if (visualization === 'time-series-vis') {
         visElement = React.createElement(TimeSeriesVis, {
           dataSource: dataSource,
