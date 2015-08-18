@@ -24,7 +24,7 @@ $measure-width: 80px;
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 10px;
+    left: 0;
     right: 0;
 
     overflow: auto;
@@ -48,11 +48,13 @@ $measure-width: 80px;
     cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
+    padding-left: 10px;
+    padding-top: 2px;
 
     .label {
       display: inline-block;
       vertical-align: top;
-      padding-top: 6px;
+      padding-top: 4px;
     }
   }
 
@@ -60,7 +62,7 @@ $measure-width: 80px;
     @include pin-right($measure-width);
 
     text-align: right;
-    padding-top: 6px;
+    padding-top: 4px;
     padding-right: 10px;
     white-space: nowrap;
   }
