@@ -4,6 +4,16 @@ import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
 import { $, Expression, ExpressionJS } from 'plywood';
 import { SplitCombine } from '../split-combine/split-combine';
 
+var geoNames = [
+  'continent',
+  'country',
+  'city',
+  'region'
+];
+function isGeo(name: string): boolean {
+  return geoNames.indexOf(name) !== -1;
+}
+
 export interface DimensionValue {
   name: string;
   title: string;
@@ -44,14 +54,19 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
   }
 
   constructor(parameters: DimensionValue) {
-    this.name = parameters.name;
+    var name = parameters.name;
+    this.name = name;
     this.title = parameters.title;
     this.expression = parameters.expression;
     var type = parameters.type;
     this.type = type;
     this.sortOn = parameters.sortOn;
 
-    this.className = 'type-' + type.toLowerCase().replace(/_/g, '-');
+    if (type === 'STRING' && isGeo(name)) {
+      this.className = 'type-string-geo';
+    } else {
+      this.className = 'type-' + type.toLowerCase().replace(/_/g, '-');
+    }
   }
 
   public valueOf(): DimensionValue {

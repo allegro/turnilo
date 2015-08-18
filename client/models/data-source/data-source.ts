@@ -183,18 +183,16 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       page: AttributeInfo.fromJS({ type: 'STRING' }),
       user: AttributeInfo.fromJS({ type: 'STRING' }),
 
+      continent: AttributeInfo.fromJS({ type: 'STRING' }),
+      country: AttributeInfo.fromJS({ type: 'STRING' }),
+      city: AttributeInfo.fromJS({ type: 'STRING' }),
+      region: AttributeInfo.fromJS({ type: 'STRING' }),
+
       count: AttributeInfo.fromJS({ type: 'NUMBER' }),
       added: AttributeInfo.fromJS({ type: 'NUMBER' }),
       deleted: AttributeInfo.fromJS({ type: 'NUMBER' }),
       delta: AttributeInfo.fromJS({ type: 'NUMBER' })
     };
-
-    if ((<any>window)['now'] === 'now') { // ToDo: remove this crazy hack!!!
-      attributes['continent'] = AttributeInfo.fromJS({ type: 'STRING' });
-      attributes['country'] = AttributeInfo.fromJS({ type: 'STRING' });
-      attributes['city'] = AttributeInfo.fromJS({ type: 'STRING' });
-      attributes['region'] = AttributeInfo.fromJS({ type: 'STRING' });
-    }
 
     var dm = makeDimensionsMetricsFromAttributes(attributes);
     return new DataSource({

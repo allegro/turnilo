@@ -53,6 +53,12 @@ $icon-width: 34px;
         width: 15px;
       }
 
+      &.type-string-geo .icon svg {
+        top: 7px;
+        margin-left: 1px;
+        width: 15px;
+      }
+
       .item-title {
         position: absolute;
         top: 8px;
