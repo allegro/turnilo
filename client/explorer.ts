@@ -15,9 +15,9 @@ if (!WallTime.rules) {
 }
 
 var dataSources = List([
-  DataSource.fromQueryURL('wiki', 'Wikipedia', '/query')
-  //DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia', '/wikipedia.json')
-  //DataSource.fromArray('wiki2', 'Wikipedia 2', wikiRawData)
+  DataSource.fromQueryURL('wiki', 'Wikipedia Edits', '/query')
+  //DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia Edits', '/wikipedia.json')
+  //DataSource.fromArray('wiki2', 'Wikipedia Edits 2', wikiRawData)
 ]);
 
 React.render(

@@ -12,8 +12,13 @@ import { TimeAxis } from '../time-axis/time-axis';
 import { VerticalAxis } from '../vertical-axis/vertical-axis';
 import { GridLines } from '../grid-lines/grid-lines';
 
-const MAX_GRAPH_WIDTH = 2000;
+const H_PADDING = 10;
+const TITLE_TEXT_LEFT = 6;
+const TITLE_TEXT_TOP = 17;
+const TEXT_SPACER = 20;
 const Y_AXIS_WIDTH = 60;
+const GRAPH_HEIGHT = 100;
+const MAX_GRAPH_WIDTH = 2000;
 
 function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
@@ -131,9 +136,16 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       var splitName = splits.last().dimension;
       var getX = (d: Datum) => midpoint(d[splitName]);
 
-      var svgStage = Stage.fromSize(Math.floor(stage.width / numberOfColumns), 120);
-      var lineStage = svgStage.within({ top: 20, right: Y_AXIS_WIDTH });
-      var yAxisStage = svgStage.within({ top: 20, left: lineStage.width });
+      var parentWidth = stage.width - H_PADDING * 2;
+      var svgStage = new Stage({
+        x: H_PADDING,
+        y: 0,
+        width: Math.floor(parentWidth / numberOfColumns),
+        height: TEXT_SPACER + GRAPH_HEIGHT
+      });
+
+      var lineStage = svgStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH });
+      var yAxisStage = svgStage.within({ top: TEXT_SPACER, left: lineStage.width });
 
       var scaleX = d3.time.scale()
         .domain(extentX)
@@ -150,7 +162,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
         if (isNaN(extentY[0])) {
           return JSX(`
             <svg className="measure-graph" key={measure.name} width={svgStage.width} height={svgStage.height}>
-              <text x="5" y="15">{measure.title + ': Loading'}</text>
+              <text x={TITLE_TEXT_LEFT} y={TITLE_TEXT_TOP}>{measure.title + ': Loading'}</text>
             </svg>
           `);
         }
@@ -191,7 +203,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
               yTicks={yTicks}
               scaleY={scaleY}
             />
-            <text x="5" y="15">
+            <text x={TITLE_TEXT_LEFT} y={TITLE_TEXT_TOP}>
               {measure.title + ': ' + numeral(myDatum[measureName]).format(measure.format)}
             </text>
           </svg>

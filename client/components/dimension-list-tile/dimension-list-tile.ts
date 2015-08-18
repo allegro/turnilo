@@ -77,7 +77,6 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   canDrop(e: DragEvent): boolean {
     var { dataTransfer } = e;
-    console.log('dataTransfer.effectAllowed', dataTransfer.effectAllowed);
     return dataTransfer.effectAllowed === 'move' && dataTransferTypesContain(dataTransfer.types, "text/dimension");
   }
 
@@ -171,14 +170,9 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       if (dragOver && dragPosition === dataSource.dimensions.size) itemY += CORE_ITEM_HEIGHT;
     }
 
-    const style = {
-      maxHeight: TITLE_HEIGHT + itemY
-    };
-
     return JSX(`
       <div
         className={'dimension-list-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
-        style={style}
         onDragOver={this.dragOver.bind(this)}
         onDragEnter={this.dragEnter.bind(this)}
         onDragLeave={this.dragLeave.bind(this)}

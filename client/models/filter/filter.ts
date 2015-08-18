@@ -41,6 +41,10 @@ export class Filter {
     return this.operands.findIndex(operand => operand.expression.equals(attribute));
   }
 
+  public filteredOn(attribute: Expression): boolean {
+    return this.indexOfOperand(attribute) !== -1;
+  }
+
   public add(attribute: Expression, value: any): Filter {
     var operands = this.operands;
     var index = this.indexOfOperand(attribute);

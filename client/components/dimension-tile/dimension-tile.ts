@@ -20,7 +20,6 @@ interface DimensionTileProps {
 
 interface DimensionTileState {
   dataset?: Dataset;
-  selectedValues?: string[];
   showSearch?: boolean;
 }
 
@@ -31,7 +30,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     super();
     this.state = {
       dataset: null,
-      selectedValues: [],
       showSearch: false
     };
   }
@@ -86,28 +84,21 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   onBoxClick(value: any, e: MouseEvent) {
     e.stopPropagation();
     var { filter, dimension } = this.props;
-    var { selectedValues } = this.state;
-    if (selectedValues.indexOf(value) > -1) {
-      selectedValues = selectedValues.filter(selectedValue => selectedValue !== value);
-    } else {
-      selectedValues = selectedValues.concat([value]);
-    }
-    this.setState({ selectedValues });
-    this.selectFilter(filter.setValues(dimension.expression, selectedValues));
+    this.selectFilter(filter.add(dimension.expression, value));
   }
 
   onValueClick(value: any) {
     var { filter, dimension } = this.props;
-    var { selectedValues } = this.state;
-    this.setState({
-      selectedValues: [value]
-    });
-    this.selectFilter(filter.add(dimension.expression, value));
+    if (filter.filteredOn(dimension.expression)) {
+      this.selectFilter(filter.remove(dimension.expression));
+    } else {
+      this.selectFilter(filter.setValues(dimension.expression, [value]));
+    }
   }
 
   render() {
     var { clicker, dataSource, filter, dimension } = this.props;
-    var { showSearch, dataset, selectedValues } = this.state;
+    var { showSearch, dataset } = this.state;
     var measure = dataSource.getSortMeasure(dimension);
 
     var dimensionName = dimension.name;
@@ -131,7 +122,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         var segmentValue = String(d[dimensionName]);
         var measureValue = d[measureName];
         var measureValueStr = formatter(measureValue);
-        var selected = selectedValues.indexOf(segmentValue) > -1;
+        var selected = false; //selectedValues.indexOf(segmentValue) > -1;
 
         var checkbox: React.ReactElement<any> = null;
         if (false) {

@@ -1,8 +1,11 @@
 @import '../../config/constants';
 
+$h-padding: 10px;
+
 .time-series-vis {
   display: inline-block;
   overflow-y: auto;
+  padding-left: $h-padding;
 
   .measure-graph {
     border-bottom: 1px solid $gray;
