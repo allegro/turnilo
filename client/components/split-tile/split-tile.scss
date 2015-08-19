@@ -11,7 +11,7 @@
     transition: height 0.1s ease-in-out;
 
     .split {
-      @extend %dragged-item;
+      @extend %dimension-item;
       position: absolute;
       top: 0; // It gets vertical position from the JS
       left: $tile-padding-h;
