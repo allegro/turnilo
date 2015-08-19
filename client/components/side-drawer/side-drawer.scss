@@ -1,5 +1,4 @@
-@import '../../config/constants';
-@import '../../utils/mixins';
+@import '../../imports';
 
 .side-drawer {
   @include pin-left($side-drawer-width);

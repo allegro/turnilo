@@ -110,8 +110,7 @@ describe('#{camelName}', () => {
 
 # Make the SASS file
 writeFile(path + name + '.scss', """
-@import '../../config/constants';
-@import '../../utils/mixins';
+@import '../../imports';
 
 .#{name} {
 

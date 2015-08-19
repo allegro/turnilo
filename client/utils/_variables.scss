@@ -1,0 +1,40 @@
+// Base Colors
+
+$white: #ffffff;
+$red: #ff0000;
+$black: #000000;
+$gray: #cccccc;
+
+// Colors -------------------
+
+$brand:                  hsl(201, 81%, 49%);
+
+$border-extra-light:     hsl(0, 0%, 87%);
+$border-light:           hsl(0, 0%, 82%);
+$border-medium:          hsl(0, 0%, 73%);
+$border-dark:            hsl(0, 0%, 60%);
+
+$background-base:        hsl(0, 0%, 89%);
+$background-light:       hsl(0, 0%, 95%);
+$background-medium:      hsl(0, 0%, 87%);
+$background-dark:        hsl(0, 0%, 65%);
+
+$text-standard:          hsl(0, 0%, 27%);
+$text-medium:            hsl(0, 0%, 40%);
+$text-light:             hsl(0, 0%, 60%);
+$text-link: $brand;
+
+/// other
+
+$hover:                  hsl(202, 79%, 92%);
+$highlight:              hsl(217, 59%, 87%);
+
+// Vis
+
+$main-time-line:         $brand;
+$main-time-area:         rgba($brand, 0.14);
+$grid-line-color:        hsl(0, 0%, 94%);
+
+// Transitions ----------------
+
+$duration: .2s;
