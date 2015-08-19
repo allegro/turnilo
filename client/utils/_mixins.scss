@@ -142,29 +142,29 @@
 
 %button-primary {
   @extend %button-base;
-  background: $button-primary-background;
-  color: $button-primary-text-color;
+  background: $brand;
+  color: $white;
 
   // &:hover { ... }
 
   &.active,
   &:active {
-    background: shade($button-primary-background, 8%);
-    color: darken($button-primary-text-color, 18%);
+    background: shade($brand, 8%);
+    color: darken($white, 18%);
   }
 }
 
 %button-secondary {
   @extend %button-base;
-  background: $button-secondary-background;
-  color: $button-secondary-text-color;
+  background: $background-medium;
+  color: $text-medium;
 
   // &:hover { ... }
 
   &.active,
   &:active {
-    background: shade($button-secondary-background, 8%);
-    color: shade($button-secondary-text-color, 32%);
+    background: shade($background-medium, 8%);
+    color: shade($text-medium, 32%);
   }
 }
 
@@ -179,7 +179,7 @@
     height: $title-height;
     font-size: 12px;
     text-transform: uppercase;
-    color: $module-title-color;
+    color: $text-light;
   }
 }
 

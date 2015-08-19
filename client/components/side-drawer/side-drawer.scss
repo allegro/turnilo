@@ -5,19 +5,19 @@
   @include pin-left($side-drawer-width);
 
   font-size: 13px;
-  background: $detail-background;
+  background: $white;
   box-shadow: 1px 0 2px 0 hsla(0, 0, 0, 0.13), 2px 0 12px 0 hsla(0, 0, 0, 0.26);
 
   .title {
     height: 50px;
     padding: 10px 0 0 15px;
-    border-bottom: 1px solid $detail-border-color;
+    border-bottom: 1px solid $border-light;
 
     svg {
       height: 29px;
 
       path {
-        fill: $header-background;
+        fill: $brand;
       }
     }
   }
@@ -28,11 +28,11 @@
       cursor: pointer;
 
       &.selected {
-        background: $detail-highlight;
+        background: $highlight;
       }
 
       &:hover {
-        background: $detail-hover;
+        background: $hover;
       }
     }
   }
@@ -42,7 +42,7 @@
     cursor: pointer;
 
     &:hover {
-      background: $detail-highlight;
+      background: $highlight;
     }
   }
 }

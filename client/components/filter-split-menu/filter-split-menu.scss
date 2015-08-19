@@ -20,7 +20,7 @@ $shpitz-size: 12px;
 
     .title {
       padding: 15px 0 10px 10px;
-      color: $detail-text-color;
+      color: $text-standard;
       font-weight: 600;
     }
 
@@ -35,7 +35,7 @@ $shpitz-size: 12px;
 
       &:hover {
         path {
-          fill: $medium-text-color;
+          fill: $text-medium;
         }
       }
     }
@@ -83,7 +83,7 @@ $shpitz-size: 12px;
       display: inline-block;
       margin: 0 3px;
       cursor: pointer;
-      color: $detail-special-text-color;
+      color: $text-link;
     }
   }
 
@@ -98,12 +98,12 @@ $shpitz-size: 12px;
     }
 
     &:before {
-      @include triangle(left, $shpitz-size, $shpitz-size, $detail-border-color);
+      @include triangle(left, $shpitz-size, $shpitz-size, $border-light);
       left: -1 * $shpitz-size;
     }
 
     &:after {
-      @include triangle(left, $shpitz-size, $shpitz-size, $detail-background);
+      @include triangle(left, $shpitz-size, $shpitz-size, $white);
       left: -1 * $shpitz-size + 1;
     }
   }

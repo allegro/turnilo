@@ -13,19 +13,19 @@ $icon-width: 35px;
     bottom: 0;
     width: 100%;
     overflow: auto;
-    color: $detail-text-color;
+    color: $text-standard;
     transition: height 0.1s ease-in-out;
 
     .dimension {
       @include pin-top(30px);
 
-      background: $detail-background;
+      background: $white;
       cursor: pointer;
       overflow: hidden;
       transition: transform 0.1s ease-in-out;
 
       &.selected {
-        background: darken($detail-hover, 7%);
+        background: darken($hover, 7%);
       }
 
       .icon {
@@ -69,7 +69,7 @@ $icon-width: 35px;
 
   &.no-drag {
     .dimension:hover {
-      background: $detail-hover;
+      background: $hover;
     }
   }
 }

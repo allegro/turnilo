@@ -26,56 +26,33 @@ $gray: #cccccc;
 
 // Colors -------------------
 
-$light-border: hsl(0, 0%, 87%);
-$lightish-border: hsl(0, 0%, 82%);
-$normal-border: hsl(0, 0%, 73%);
-$dark-border: hsl(0, 0%, 60%);
+$brand:                  hsl(201, 81%, 49%);
 
-$light-background: hsl(0, 0%, 95%);
-$dark-background: #a6a6a6;
+$border-extra-light:     hsl(0, 0%, 87%);
+$border-light:           hsl(0, 0%, 82%);
+$border-medium:          hsl(0, 0%, 73%);
+$border-dark:            hsl(0, 0%, 60%);
 
-$header-background: hsl(201, 81%, 49%);
-$header-text-color: $white;
+$background-base:        hsl(0, 0%, 89%);
+$background-light:       hsl(0, 0%, 95%);
+$background-medium:      hsl(0, 0%, 87%);
+$background-dark:        hsl(0, 0%, 65%);
 
-$base-background: hsl(0, 0%, 89%);
-
-$module-background: $white;
-$module-title-color: hsl(0, 0%, 60%);
-$module-text-color: hsl(0, 0%, 27%);
-$module-shadow-color: hsla(0, 0%, 0%, 0.14);
-$lighter-text-color: #999;
-$medium-text-color: #666;
-
-$item-background: $light-background;
-$item-border: $lightish-border;
-$item-remove-color: hsl(0, 0%, 73%);
-$item-selected-background: hsl(200, 84%, 88%);
-$item-selected-border: hsl(200, 64%, 73%);
-$item-selected-remove-color: hsl(200, 53%, 63%);
+$text-standard:          hsl(0, 0%, 27%);
+$text-medium:            hsl(0, 0%, 40%);
+$text-light:             hsl(0, 0%, 60%);
+$text-link: $brand;
 
 /// other
 
-$beta-background: hsl(0, 0%, 89%);
-$beta-text-color: hsl(0, 0%, 53%);
-$beta-border-color: hsl(0, 0%, 73%);
-
-$detail-background: $white;
-$detail-text-color: hsl(0, 0%, 27%);
-$detail-special-text-color: hsl(220, 49%, 52%);
-$detail-border-color: hsl(0, 0%, 80%);
-$detail-hover: hsl(202, 79%, 92%);
-$detail-highlight: hsl(217, 59%, 87%);
-
-$button-primary-background: $header-background;
-$button-primary-text-color: $white;
-$button-secondary-background: hsl(0, 0%, 87%);
-$button-secondary-text-color: hsl(0, 0%, 40%);
+$hover:                  hsl(202, 79%, 92%);
+$highlight:              hsl(217, 59%, 87%);
 
 // Vis
 
-$main-time-line: $header-background;
-$main-time-area: hsla(201, 81%, 49%, 0.14);
-$grid-line-color: hsl(0, 0%, 94%);
+$main-time-line:         $brand;
+$main-time-area:         rgba($brand, 0.14);
+$grid-line-color:        hsl(0, 0%, 94%);
 
 // Transitions ----------------
 

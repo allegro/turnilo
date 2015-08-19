@@ -5,8 +5,8 @@ $checkbox-width: 20px;
 $measure-width: 80px;
 
 .menu-table {
-  background: $detail-background;
-  color: $detail-text-color;
+  background: $white;
+  color: $text-standard;
   user-select: none;
 
   .search {
@@ -14,7 +14,7 @@ $measure-width: 80px;
     padding: 0 10px;
 
     input {
-      border: 1px solid $detail-border-color;
+      border: 1px solid $border-light;
       width: 100%;
       height: 23px;
     }
@@ -38,7 +38,7 @@ $measure-width: 80px;
     height: 24px;
 
     &:hover {
-      background: $detail-hover;
+      background: $hover;
     }
   }
 

@@ -26,7 +26,7 @@ $action-size: 160px;
       height: $action-size;
       border-radius: 10px;
       background: $white;
-      border: 1px dashed $medium-text-color;
+      border: 1px dashed $text-medium;
 
       .label {
         display: none;
@@ -45,7 +45,7 @@ $action-size: 160px;
         right: auto;
 
         path {
-          fill: $medium-text-color;
+          fill: $text-medium;
         }
       }
 

@@ -16,14 +16,14 @@ $checkbox-size: 16px;
     left: 0;
     top: 2px;
     content: '';
-    background: $base-background;
+    background: $background-base;
     width: $checkbox-size;
     height: $checkbox-size;
     border-radius: 1px;
   }
 
   &.checked:before {
-    background: $dark-background;
+    background: $background-dark;
   }
 
   svg {
