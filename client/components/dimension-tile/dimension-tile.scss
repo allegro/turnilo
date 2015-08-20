@@ -1,5 +1,6 @@
 @import '../../imports';
 
+$loader-height: 150px;
 $checkbox-width: 20px;
 $measure-width: 80px;
 
@@ -71,5 +72,9 @@ $measure-width: 80px;
     padding-top: 5px;
     padding-right: $tile-padding-h;
     white-space: nowrap;
+  }
+
+  .loader {
+    height: $loader-height;
   }
 }

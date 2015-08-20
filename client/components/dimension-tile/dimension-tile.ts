@@ -1,14 +1,16 @@
 'use strict';
 
 import * as React from 'react/addons';
+// import * as Icon from 'react-svg-icons';
 import { $, Expression, Dispatcher, Dataset } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { formatterFromData } from '../../utils/formatter';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
+import { Loader } from '../loader/loader';
 
-
+const LOADER_HEIGHT = 150;
 const TOP_N = 100;
 
 interface DimensionTileProps {
@@ -19,6 +21,7 @@ interface DimensionTileProps {
 }
 
 interface DimensionTileState {
+  loading?: boolean;
   dataset?: Dataset;
   showSearch?: boolean;
 }
@@ -29,6 +32,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   constructor() {
     super();
     this.state = {
+      loading: false,
       dataset: null,
       showSearch: false
     };
@@ -45,9 +49,15 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       .sort($(measure.name), 'descending')
       .limit(TOP_N + 1);
 
+    this.setState({
+      loading: true
+    });
     dataSource.dispatcher(query).then((dataset) => {
       if (!this.mounted) return;
-      this.setState({ dataset });
+      this.setState({
+        loading: false,
+        dataset
+      });
     });
   }
 
@@ -98,7 +108,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   render() {
     var { clicker, dataSource, filter, dimension } = this.props;
-    var { showSearch, dataset } = this.state;
+    var { loading, showSearch, dataset } = this.state;
     var measure = dataSource.getSortMeasure(dimension);
 
     var dimensionName = dimension.name;
@@ -145,6 +155,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       maxHeight += rows.length * PIN_ITEM_HEIGHT;
     }
 
+    var loader: React.ReactElement<any> = null;
+    if (loading) {
+      loader = React.createElement(Loader, null);
+      maxHeight += LOADER_HEIGHT;
+    }
+
     maxHeight += PIN_PADDING_BOTTOM;
 
     const className = [
@@ -165,6 +181,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         />
         {searchBar}
         <div className="rows">{rows}</div>
+        {loader}
       </div>
     `);
   }
