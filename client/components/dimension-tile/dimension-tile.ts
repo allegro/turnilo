@@ -146,7 +146,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           <div className={'row' + (selected ? ' selected' : '')} key={segmentValue}>
             <div className="segment-value" onClick={this.onValueClick.bind(this, segmentValue)}>
               {checkbox}
-              <div className="label">{segmentValue}</div>
+              <div className="label" title={segmentValue}>{segmentValue}</div>
             </div>
             <div className="measure-value">{measureValueStr}</div>
           </div>
