@@ -9,6 +9,8 @@ $space-left: 10px;
 $header-padding-top: 12px;
 
 .nested-table-vis {
+  overflow: hidden;
+
   .corner {
     position: absolute;
     left: $space-left;

@@ -174,7 +174,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     var horizontalScrollShadowStyle: any = { display: 'none' };
     if (scrollTop) {
       horizontalScrollShadowStyle = {
-        width: SEGMENT_WIDTH + rowWidth - scrollLeft
+        width: SEGMENT_WIDTH + rowWidthExtended - scrollLeft
       };
     }
 
