@@ -45,7 +45,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     super();
     this.state = {
       timezone: Timezone.UTC,
-      filter: new Filter(),
+      filter: Filter.EMPTY,
       splits: <List<SplitCombine>>List()
     };
 
@@ -167,9 +167,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       });
     }
 
-    var filter = new Filter(List([
-      $('time').in(timeRange)
-    ]));
+    var filter = new Filter({
+      operands: List([$('time').in(timeRange)])
+    });
     var splits = List([
       dataSource.getDimension('time').getSplitCombine()
       //dataSource.getDimension('page').getSplitCombine()

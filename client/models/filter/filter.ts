@@ -2,25 +2,60 @@
 
 import { List } from 'immutable';
 import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
-import { $, Expression, LiteralExpression, ChainExpression, InAction, Set, TimeRange } from 'plywood';
+import { $, Expression, LiteralExpression, ChainExpression, ExpressionJS, InAction, Set, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
 
-export class Filter {
+export interface FilterValue {
+  operands: List<ChainExpression>;
+}
+
+export interface FilterJS {
+  operands: ExpressionJS[];
+}
+
+var check: ImmutableClass<FilterValue, FilterJS>;
+export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
+  static EMPTY: Filter;
+
   public operands: List<ChainExpression>;
 
   static isFilter(candidate: any): boolean {
     return isInstanceOf(candidate, Filter);
   }
 
-  constructor(operands?: List<ChainExpression>) {
-    if (!operands) {
-      operands = <List<ChainExpression>>List();
-    }
-    this.operands = operands;
+  static fromJS(parameters: FilterJS): Filter {
+    return new Filter({
+      operands: List(parameters.operands.map(operand => ChainExpression.fromJS(operand)))
+    });
+  }
+
+  constructor(parameters: FilterValue) {
+    this.operands = parameters.operands;
+  }
+
+  public valueOf(): FilterValue {
+    return {
+      operands: this.operands
+    };
+  }
+
+  public toJS(): FilterJS {
+    return {
+      operands: this.operands.toArray().map(operand => operand.toJS())
+    };
+  }
+
+  public toJSON(): FilterJS {
+    return this.toJS();
   }
 
   public toString() {
     return this.operands.map(operand => operand.toString()).join(' and ');
+  }
+
+  public equals(other: Filter): boolean {
+    return Filter.isFilter(other) &&
+      listsEqual(this.operands, other.operands);
   }
 
   public toExpression(): Expression {
@@ -30,11 +65,6 @@ export class Filter {
       case 1:  return operands.first();
       default: return operands.reduce((red: ChainExpression, next: ChainExpression) => red.and(next));
     }
-  }
-
-  public equals(other: Filter): boolean {
-    return Filter.isFilter(other) &&
-      listsEqual(this.operands, other.operands);
   }
 
   private indexOfOperand(attribute: Expression): number {
@@ -49,7 +79,9 @@ export class Filter {
     var operands = this.operands;
     var index = this.indexOfOperand(attribute);
     if (index === -1) {
-      return new Filter(<List<ChainExpression>>operands.concat(attribute.in([value])));
+      return new Filter({
+        operands: <List<ChainExpression>>operands.concat(attribute.in([value]))
+      });
     } else {
       var operand = operands.get(index);
       var action = operand.actions[0];
@@ -59,7 +91,9 @@ export class Filter {
       } else {
         throw new Error('invalid operand');
       }
-      return new Filter(<List<ChainExpression>>operands.splice(index, 1, operand));
+      return new Filter({
+        operands: <List<ChainExpression>>operands.splice(index, 1, operand)
+      });
     }
   }
 
@@ -68,10 +102,11 @@ export class Filter {
     var index = this.indexOfOperand(attribute);
     var newOperand = attribute.in(values);
     if (index === -1) {
-      return new Filter(<List<ChainExpression>>operands.concat(newOperand));
+      operands = <List<ChainExpression>>operands.concat(newOperand);
     } else {
-      return new Filter(<List<ChainExpression>>operands.splice(index, 1, newOperand));
+      operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
     }
+    return new Filter({ operands });
   }
 
   public setTimeRange(attribute: Expression, timeRange: TimeRange): Filter {
@@ -79,16 +114,22 @@ export class Filter {
     var index = this.indexOfOperand(attribute);
     var newOperand = attribute.in(timeRange);
     if (index === -1) {
-      return new Filter(<List<ChainExpression>>operands.concat(newOperand));
+      operands = <List<ChainExpression>>operands.concat(newOperand);
     } else {
-      return new Filter(<List<ChainExpression>>operands.splice(index, 1, newOperand));
+      operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
     }
+    return new Filter({ operands });
   }
 
   public remove(attribute: Expression): Filter {
     var operands = this.operands;
     var index = this.indexOfOperand(attribute);
     if (index === -1) return this;
-    return new Filter(operands.delete(index));
+    return new Filter({
+      operands: operands.delete(index)
+    });
   }
 }
+check = Filter;
+
+Filter.EMPTY = new Filter({ operands: <List<ChainExpression>>List() });

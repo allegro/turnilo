@@ -7,13 +7,13 @@ import { $, Expression } from 'plywood';
 
 describe('Filter', () => {
   it('works in empty case', () => {
-    var filter = new Filter();
+    var filter = Filter.EMPTY;
 
     expect(filter.toExpression().toString()).to.equal('()');
   });
 
   it('add work', () => {
-    var filter = new Filter();
+    var filter = Filter.EMPTY;
 
     filter = filter.add($('language'), 'en');
 

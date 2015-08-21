@@ -35,12 +35,64 @@ writeFile(path + name + '.ts', """
 import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
 import { $, Expression } from 'plywood';
 
-export class #{camelName} {
+interface #{camelName}Value {
 
-  constructor() {
+}
+
+interface #{camelName}JS {
+
+}
+
+var check: ImmutableClass<#{camelName}Value, #{camelName}JS>;
+export class #{camelName} implements ImmutableInstance<#{camelName}Value, #{camelName}JS> {
+
+  static is#{camelName}(candidate: any): boolean {
+    return isInstanceOf(candidate, #{camelName});
+  }
+
+  static fromJS(parameters: #{camelName}JS): #{camelName} {
+    return new #{camelName}(/* */);
+  }
+
+  constructor(parameters: #{camelName}Value) {
 
   }
+
+  public valueOf(): #{camelName}Value {
+    return {
+      name: this.name,
+      title: this.title,
+      expression: this.expression,
+      type: this.type,
+      sortOn: this.sortOn
+    };
+  }
+
+  public toJS(): #{camelName}JS {
+    var js: #{camelName}JS = {
+      name: this.name,
+      title: this.title,
+      expression: this.expression.toJS(),
+      type: this.type
+    };
+    if (this.sortOn) js.sortOn = this.sortOn;
+    return js;
+  }
+
+  public toJSON(): #{camelName}JS {
+    return this.toJS();
+  }
+
+  public toString(): string {
+    return `[#{camelName}: ${this.name}]`;
+  }
+
+  public equals(other: #{camelName}): boolean {
+    return #{camelName}.is#{camelName}(other); // && more...
+  }
+
 }
+check = #{camelName};
 
 
 """)
