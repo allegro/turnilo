@@ -1,0 +1,26 @@
+@import '../../imports';
+
+$button-width: 30px;
+$button-frame-gap: 7px;
+
+.highlighter {
+  .frame {
+    position: absolute;
+    height: 100%;
+    border: 2px solid $brand;
+
+    .button-bar {
+      position: absolute;
+      width: $button-width;
+      right: -($button-width + $button-frame-gap);
+
+      .button {
+        background: $brand;
+        cursor: pointer;
+        margin-bottom: 5px;
+        color: $white;
+        padding: 4px;
+      }
+    }
+  }
+}

@@ -10,4 +10,12 @@ $h-padding: 10px;
   .measure-graph {
     border-bottom: 1px solid $gray;
   }
+
+  .highlighter {
+    position: absolute;
+    top: 0;
+    left: $h-padding;
+    right: $h-padding;
+    bottom: 0;
+  }
 }

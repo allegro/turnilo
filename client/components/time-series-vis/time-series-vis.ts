@@ -4,13 +4,14 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
 import * as numeral from 'numeral';
-import { $, Dispatcher, Expression, Dataset, Datum, TimeRange } from 'plywood';
+import { $, Dispatcher, Expression, Dataset, Datum, TimeRange, NumberRange } from 'plywood';
 import { bindOne, bindMany } from "../../utils/render";
 import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from "../../models/index";
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
 import { VerticalAxis } from '../vertical-axis/vertical-axis';
 import { GridLines } from '../grid-lines/grid-lines';
+import { Highlighter } from '../highlighter/highlighter';
 
 const H_PADDING = 10;
 const TITLE_TEXT_LEFT = 6;
@@ -54,7 +55,8 @@ interface TimeSeriesVisProps {
 }
 
 interface TimeSeriesVisState {
-  dataset: Dataset;
+  dataset?: Dataset;
+  dragStart?: number;
 }
 
 export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSeriesVisState> {
@@ -63,7 +65,8 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
   constructor() {
     super();
     this.state = {
-      dataset: null
+      dataset: null,
+      dragStart: null
     };
   }
 
@@ -117,9 +120,19 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     this.mounted = false;
   }
 
+  onMouseDown(e: MouseEvent) {
+    var myDOM = React.findDOMNode(this);
+    var dragStart = e.clientX - (myDOM.getBoundingClientRect().left + H_PADDING);
+    this.setState({ dragStart });
+  }
+
+  onHighlightEnd() {
+    this.setState({ dragStart: null });
+  }
+
   render() {
     var { filter, splits, measures, stage } = this.props;
-    var { dataset } = this.state;
+    var { dataset, dragStart } = this.state;
 
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
 
@@ -177,7 +190,13 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
         var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
 
         return JSX(`
-          <svg className="measure-graph" key={measureName} width={svgStage.width} height={svgStage.height}>
+          <svg
+            className="measure-graph"
+            key={measureName}
+            width={svgStage.width}
+            height={svgStage.height}
+            onMouseDown={this.onMouseDown.bind(this)}
+          >
             <GridLines
               orientation="horizontal"
               scale={scaleY}
@@ -219,12 +238,22 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
           </svg>
         `));
       }
+
+      var highlighter: React.ReactElement<any> = null;
+      if (dragStart !== null) {
+        highlighter = React.createElement(Highlighter, {
+          scaleX,
+          dragStart,
+          onHighlightEnd: <Function>this.onHighlightEnd.bind(this)
+        });
+      }
     }
 
     return JSX(`
       <div className="time-series-vis">
         {measureGraphs}
         {bottomAxes}
+        {highlighter}
       </div>
     `);
   }
