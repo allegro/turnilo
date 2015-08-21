@@ -7,8 +7,12 @@ $h-padding: 10px;
   overflow-y: auto;
   padding-left: $h-padding;
 
-  .measure-graph {
-    border-bottom: 1px solid $gray;
+  .measure-graphs {
+    overflow: auto;
+
+    .measure-graph {
+      border-bottom: 1px solid $gray;
+    }
   }
 
   .highlighter {

@@ -17,6 +17,7 @@ const H_PADDING = 10;
 const TITLE_TEXT_LEFT = 6;
 const TITLE_TEXT_TOP = 23;
 const TEXT_SPACER = 36;
+const X_AXIS_HEIGHT = 30;
 const Y_AXIS_WIDTH = 60;
 const GRAPH_HEIGHT = 120;
 const MAX_GRAPH_WIDTH = 2000;
@@ -229,7 +230,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
         `);
       });
 
-      var xAxisStage = Stage.fromSize(svgStage.width, 50);
+      var xAxisStage = Stage.fromSize(svgStage.width, X_AXIS_HEIGHT);
       bottomAxes = [];
       for (var i = 0; i < numberOfColumns; i++) {
         bottomAxes.push(JSX(`
@@ -249,9 +250,15 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       }
     }
 
+    var measureGraphsStyle = {
+      maxHeight: stage.height - X_AXIS_HEIGHT
+    };
+
     return JSX(`
       <div className="time-series-vis">
-        {measureGraphs}
+        <div className="measure-graphs" style={measureGraphsStyle}>
+          {measureGraphs}
+        </div>
         {bottomAxes}
         {highlighter}
       </div>
