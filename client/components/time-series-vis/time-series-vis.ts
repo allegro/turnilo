@@ -4,9 +4,9 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
 import * as numeral from 'numeral';
-import { $, Dispatcher, Expression, Dataset, Datum, TimeRange, NumberRange } from 'plywood';
+import { $, Dispatcher, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
 import { bindOne, bindMany } from "../../utils/render";
-import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from "../../models/index";
+import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker } from "../../models/index";
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
 import { VerticalAxis } from '../vertical-axis/vertical-axis';
@@ -48,6 +48,7 @@ function getTimeExtent(dataset: Dataset, splits: List<SplitCombine>): [Date, Dat
 }
 
 interface TimeSeriesVisProps {
+  clicker: Clicker;
   dataSource: DataSource;
   filter: Filter;
   splits: List<SplitCombine>;
@@ -132,7 +133,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
   }
 
   render() {
-    var { filter, splits, measures, stage } = this.props;
+    var { clicker, filter, splits, measures, stage } = this.props;
     var { dataset, dragStart } = this.state;
 
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
@@ -242,9 +243,14 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
 
       var highlighter: React.ReactElement<any> = null;
       if (dragStart !== null) {
+        var timeSplit = splits.first(); // ToDo: fix this
+        var timeBucketAction = <TimeBucketAction>(<ChainExpression>timeSplit.splitOn).actions[0];
         highlighter = React.createElement(Highlighter, {
+          clicker,
           scaleX,
           dragStart,
+          duration: timeBucketAction.duration,
+          timezone: timeBucketAction.timezone,
           onHighlightEnd: <Function>this.onHighlightEnd.bind(this)
         });
       }

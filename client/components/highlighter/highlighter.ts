@@ -1,20 +1,24 @@
 'use strict';
 
 import * as React from 'react/addons';
-// import * as Icon from 'react-svg-icons';
-import { $, Expression, Dispatcher, Dataset, NumberRange } from 'plywood';
-import { Filter, Dimension, Measure } from '../../models/index';
+import * as Icon from 'react-svg-icons';
+import { Timezone, Duration } from 'chronology';
+import { $, Expression, Dispatcher, Dataset, TimeRange } from 'plywood';
+import { Clicker, Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface HighlighterProps {
+  clicker: Clicker;
   scaleX: any;
   dragStart: number;
+  duration: Duration;
+  timezone: Timezone;
   onHighlightEnd: Function;
 }
 
 interface HighlighterState {
-  highlight?: NumberRange;
-  confirm?: boolean;
+  highlight?: TimeRange;
+  dragging?: boolean;
 }
 
 export class Highlighter extends React.Component<HighlighterProps, HighlighterState> {
@@ -23,93 +27,125 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
   constructor() {
     super();
     this.state = {
-      highlight: null
+      highlight: null,
+      dragging: true
     };
 
     this.globalMouseMoveListener = this.globalMouseMoveListener.bind(this);
     this.globalMouseUpListener = this.globalMouseUpListener.bind(this);
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentDidMount() {
     this.mounted = true;
     window.addEventListener('mousemove', this.globalMouseMoveListener);
     window.addEventListener('mouseup', this.globalMouseUpListener);
+    window.addEventListener('keydown', this.globalKeyDownListener);
   }
 
   componentWillUnmount() {
     this.mounted = false;
     window.removeEventListener('mousemove', this.globalMouseMoveListener);
     window.removeEventListener('mouseup', this.globalMouseUpListener);
+    window.removeEventListener('keydown', this.globalKeyDownListener);
   }
 
-  componentWillReceiveProps(nextProps: HighlighterProps) {
+  getHighlight(eventX: number): TimeRange {
+    var { dragStart, scaleX } = this.props;
+    var myDOM = React.findDOMNode(this);
+    var d1 = scaleX.invert(dragStart);
+    var d2 = scaleX.invert(eventX - myDOM.getBoundingClientRect().left);
 
+    if (d1 < d2) {
+      return TimeRange.fromJS({ start: d1, end: d2 });
+    } else {
+      return TimeRange.fromJS({ start: d2, end: d1 });
+    }
   }
 
   globalMouseMoveListener(e: MouseEvent) {
-    var { dragStart, scaleX } = this.props;
-    var { confirm } = this.state;
-    if (confirm) return;
-    var myDOM = React.findDOMNode(this);
-
-    dragStart = scaleX.invert(dragStart);
-    var myX = scaleX.invert(e.clientX - myDOM.getBoundingClientRect().left);
-
+    var { dragging } = this.state;
+    if (!dragging) return;
     this.setState({
-      highlight: NumberRange.fromJS({
-        start: Math.min(dragStart, myX),
-        end: Math.max(dragStart, myX)
-      })
+      highlight: this.getHighlight(e.clientX)
     });
   }
 
   globalMouseUpListener(e: MouseEvent) {
-    var { confirm } = this.state;
-    if (confirm) return;
+    var { duration, timezone } = this.props;
+    var { dragging } = this.state;
+    if (!dragging) return;
+    var highlight = this.getHighlight(e.clientX);
     this.setState({
-      confirm: true
+      dragging: false,
+      highlight: TimeRange.fromJS({
+        start: duration.floor(highlight.start, timezone),
+        end: duration.move(duration.floor(highlight.end, timezone), timezone, 1)
+      })
     });
   }
 
-  onYes() {
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (e.which !== 27) return; // 27 = escape
     var { onHighlightEnd } = this.props;
-    console.log('YES');
     onHighlightEnd();
   }
 
-  onNo() {
+  onAccept() {
+    var { onHighlightEnd, clicker } = this.props;
+    var { highlight } = this.state;
+    clicker.changeTimeRange(highlight);
+    onHighlightEnd();
+  }
+
+  onCancel() {
     var { onHighlightEnd } = this.props;
     onHighlightEnd();
   }
 
   render() {
     var { scaleX } = this.props;
-    var { highlight, confirm } = this.state;
+    var { highlight, dragging } = this.state;
 
     if (!highlight) {
       return JSX(`<div className="highlighter"></div>`);
     }
 
     var buttonBar: React.DOMElement<any> = null;
-    if (confirm) {
+    if (!dragging) {
       buttonBar = JSX(`
         <div className="button-bar">
-          <div className="button yes" onClick={this.onYes.bind(this)}>Yes</div>
-          <div className="button no" onClick={this.onNo.bind(this)}>No</div>
+          <div className="button accept" onClick={this.onAccept.bind(this)}>
+            <Icon name="check"/>
+          </div>
+          <div className="button cancel" onClick={this.onCancel.bind(this)}>
+            <Icon name="x"/>
+          </div>
         </div>
       `);
     }
 
+    var startPos = scaleX(highlight.start);
+    var endPos = scaleX(highlight.end);
+
+    var whiteoutLeftStyle = {
+      width: startPos
+    };
+
     var frameStyle = {
-      left: scaleX(highlight.start),
-      width: scaleX(highlight.end) - scaleX(highlight.start)
+      left: startPos,
+      width: endPos - startPos
+    };
+
+    var whiteoutRightStyle = {
+      left: endPos
     };
 
     return JSX(`
-      <div className="highlighter">
-        <div className="frame" style={frameStyle}>
-          {buttonBar}
-        </div>
+      <div className={'highlighter ' + (dragging ? 'dragging' : 'confirm')}>
+        <div className="whiteout left" style={whiteoutLeftStyle}></div>
+        <div className="frame" style={frameStyle}>{buttonBar}</div>
+        <div className="whiteout right" style={whiteoutRightStyle}></div>
       </div>
     `);
   }

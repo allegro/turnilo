@@ -2,7 +2,7 @@
 
 import { List } from 'immutable';
 import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
-import { $, Expression, LiteralExpression, ChainExpression, InAction, Set } from 'plywood';
+import { $, Expression, LiteralExpression, ChainExpression, InAction, Set, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
 
 export class Filter {
@@ -66,11 +66,22 @@ export class Filter {
   public setValues(attribute: Expression, values: any[]): Filter {
     var operands = this.operands;
     var index = this.indexOfOperand(attribute);
-    var operand = attribute.in(values);
+    var newOperand = attribute.in(values);
     if (index === -1) {
-      return new Filter(<List<ChainExpression>>operands.concat(operand));
+      return new Filter(<List<ChainExpression>>operands.concat(newOperand));
     } else {
-      return new Filter(<List<ChainExpression>>operands.splice(index, 1, operand));
+      return new Filter(<List<ChainExpression>>operands.splice(index, 1, newOperand));
+    }
+  }
+
+  public setTimeRange(attribute: Expression, timeRange: TimeRange): Filter {
+    var operands = this.operands;
+    var index = this.indexOfOperand(attribute);
+    var newOperand = attribute.in(timeRange);
+    if (index === -1) {
+      return new Filter(<List<ChainExpression>>operands.concat(newOperand));
+    } else {
+      return new Filter(<List<ChainExpression>>operands.splice(index, 1, newOperand));
     }
   }
 

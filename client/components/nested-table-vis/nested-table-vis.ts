@@ -7,7 +7,7 @@ import * as numeral from 'numeral';
 import { $, Expression, Dispatcher, Dataset, Datum } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
-import { Stage, Filter, SplitCombine, Dimension, Measure, DataSource } from '../../models/index';
+import { Stage, Filter, SplitCombine, Dimension, Measure, DataSource, Clicker } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 const HEADER_HEIGHT = 38;
@@ -21,6 +21,7 @@ const ROW_PADDING_RIGHT = 50;
 const BODY_PADDING_BOTTOM = 90;
 
 interface NestedTableVisProps {
+  clicker: Clicker;
   dataSource: DataSource;
   filter: Filter;
   splits: List<SplitCombine>;

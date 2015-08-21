@@ -61,8 +61,8 @@ export class FilterSplitMenu extends React.Component<FilterSplitMenuProps, Filte
     onClose();
   }
 
-  globalKeyDownListener(event: KeyboardEvent) {
-    if (event.which !== 27) return; // 27 = escape
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (e.which !== 27) return; // 27 = escape
     this.props.onClose();
   }
 

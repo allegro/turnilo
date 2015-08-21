@@ -68,6 +68,11 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       changeFilter: (filter: Filter) => {
         this.setState({ filter });
       },
+      changeTimeRange: (timeRange: TimeRange) => {
+        var { dataSource, filter } = this.state;
+        var timeDimension = dataSource.getDimension('time');
+        clicker.changeFilter(filter.setTimeRange(timeDimension.expression, timeRange));
+      },
       changeSplits: (splits: List<SplitCombine>) => {
         var { dataSource, visualization } = this.state;
         var visualizations = this.getPossibleVisualizations(dataSource, splits);
@@ -296,22 +301,19 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
     var visElement: React.ReactElement<any> = null;
     if (dataSource.metadataLoaded && visualizationStage) {
+      var visProps = {
+        clicker,
+        dataSource,
+        filter,
+        splits,
+        measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName)),
+        stage: visualizationStage
+      };
+
       if (visualization === 'time-series-vis') {
-        visElement = React.createElement(TimeSeriesVis, {
-          dataSource: dataSource,
-          filter: filter,
-          splits: splits,
-          measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName)),
-          stage: visualizationStage
-        });
+        visElement = React.createElement(TimeSeriesVis, visProps);
       } else {
-        visElement = React.createElement(NestedTableVis, {
-          dataSource: dataSource,
-          filter: filter,
-          splits: splits,
-          measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName)),
-          stage: visualizationStage
-        });
+        visElement = React.createElement(NestedTableVis, visProps);
       }
     }
 

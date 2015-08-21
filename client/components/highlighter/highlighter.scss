@@ -1,6 +1,6 @@
 @import '../../imports';
 
-$button-width: 30px;
+$button-width: 26px;
 $button-frame-gap: 7px;
 
 .highlighter {
@@ -8,6 +8,7 @@ $button-frame-gap: 7px;
     position: absolute;
     height: 100%;
     border: 2px solid $brand;
+    z-index: 1; // Put this above the whiteout
 
     .button-bar {
       position: absolute;
@@ -16,11 +17,27 @@ $button-frame-gap: 7px;
 
       .button {
         background: $brand;
-        cursor: pointer;
         margin-bottom: 5px;
-        color: $white;
         padding: 4px;
+        cursor: pointer;
+
+        svg {
+          height: 16px;
+        }
+
+        path {
+          fill: $white;
+        }
       }
     }
+  }
+
+  .whiteout {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    right: 0;
+    background: $white;
+    opacity: 0.5;
   }
 }
