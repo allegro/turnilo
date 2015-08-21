@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { Timezone, Duration } from 'chronology';
-import { $, Expression, Dispatcher, Dataset, TimeRange } from 'plywood';
+import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { Clicker, Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 

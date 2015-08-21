@@ -3,7 +3,7 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
-import { $, Expression, Dispatcher, Dataset, Datum, TimeRange } from 'plywood';
+import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
 import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../models/index';
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
@@ -46,7 +46,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
       .apply(measure.name, measure.expression)
       .sort($(dimension.name), 'ascending');
 
-    dataSource.dispatcher(query).then((dataset) => {
+    dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
       this.setState({ dataset });
     });

@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import * as numeral from 'numeral';
-import { $, Expression, Dispatcher, Dataset, Datum } from 'plywood';
+import { $, Expression, Executor, Dataset, Datum } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
 import { Stage, Filter, SplitCombine, Dimension, Measure, DataSource, Clicker } from '../../models/index';
@@ -69,7 +69,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
       query = query.apply('Split', subQuery);
     });
 
-    dataSource.dispatcher(query).then((dataset) => {
+    dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
       this.setState({ dataset });
     });

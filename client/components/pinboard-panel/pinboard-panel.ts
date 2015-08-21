@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
-import { $, Expression, Dispatcher, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
@@ -13,7 +13,6 @@ interface PinboardPanelProps {
   dataSource: DataSource;
   filter: Filter;
   selectedMeasures: OrderedSet<string>;
-  pinnedMeasures: boolean;
   pinnedDimensions: OrderedSet<string>;
 }
 
@@ -94,11 +93,11 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   }
 
   render() {
-    var { clicker, dataSource, filter, selectedMeasures, pinnedMeasures, pinnedDimensions } = this.props;
+    var { clicker, dataSource, filter, selectedMeasures, pinnedDimensions } = this.props;
     var { dragOver } = this.state;
 
     var metricTile: React.ReactElement<any> = null;
-    if (dataSource.metadataLoaded && pinnedMeasures) {
+    if (dataSource.metadataLoaded) {
       metricTile = JSX(`
         <MeasuresTile
           clicker={clicker}

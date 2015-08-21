@@ -3,7 +3,7 @@
 import { List, OrderedSet } from 'immutable';
 import * as React from 'react/addons';
 import * as numeral from 'numeral';
-import { $, Expression, Dispatcher, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
@@ -49,7 +49,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       query = query.apply(measure.name, measure.expression);
     });
 
-    dataSource.dispatcher(query).then((dataset) => {
+    dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
       this.setState({ dataset });
     });

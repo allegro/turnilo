@@ -3,7 +3,7 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
-import { $, Expression, Dispatcher, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
 import { Clicker, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
 import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';

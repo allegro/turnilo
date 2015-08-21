@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import { $, Expression, Dispatcher, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { formatterFromData } from '../../utils/formatter';
 import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { Checkbox } from '../checkbox/checkbox';
@@ -44,7 +44,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
       .sort($(measure.name), 'descending')
       .limit(TOP_N + 1);
 
-    dataSource.dispatcher(query).then((dataset) => {
+    dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
       this.setState({ dataset });
     });

@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
-import { $, Expression, Dispatcher, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 

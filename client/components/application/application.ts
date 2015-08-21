@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration } from 'chronology';
-import { $, Expression, Datum, Dataset, TimeRange, Dispatcher, ChainExpression } from 'plywood';
+import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { Stage, Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
@@ -28,7 +28,6 @@ interface ApplicationState {
   filter?: Filter;
   splits?: List<SplitCombine>;
   selectedMeasures?: OrderedSet<string>;
-  pinnedMeasures?: boolean;
   pinnedDimensions?: OrderedSet<string>;
   visualization?: string;
   visualizations?: List<string>;
@@ -47,8 +46,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     this.state = {
       timezone: Timezone.UTC,
       filter: new Filter(),
-      splits: <List<SplitCombine>>List(),
-      pinnedMeasures: true
+      splits: <List<SplitCombine>>List()
     };
 
     var clicker = {
@@ -102,33 +100,17 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
           visualization
         });
       },
-      pin: (what: string | Dimension) => {
-        if (what instanceof Dimension) {
-          var { pinnedDimensions } = this.state;
-          this.setState({
-            pinnedDimensions: pinnedDimensions.add(what.name)
-          });
-        } else if (what === 'measures') {
-          this.setState({
-            pinnedMeasures: true
-          });
-        } else {
-          throw new Error('bad pin parameter');
-        }
+      pin: (dimension: Dimension) => {
+        var { pinnedDimensions } = this.state;
+        this.setState({
+          pinnedDimensions: pinnedDimensions.add(dimension.name)
+        });
       },
-      unpin: (what: string | Dimension) => {
-        if (what instanceof Dimension) {
-          var { pinnedDimensions } = this.state;
-          this.setState({
-            pinnedDimensions: pinnedDimensions.remove(what.name)
-          });
-        } else if (what === 'measures') {
-          this.setState({
-            pinnedMeasures: false
-          });
-        } else {
-          throw new Error('bad pin parameter');
-        }
+      unpin: (dimension: Dimension) => {
+        var { pinnedDimensions } = this.state;
+        this.setState({
+          pinnedDimensions: pinnedDimensions.remove(dimension.name)
+        });
       },
       toggleMeasure: (measure: Measure) => {
         var { selectedMeasures } = this.state;
@@ -292,7 +274,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   render() {
     var clicker = this.clicker;
     var {
-      dataSources, dataSource, filter, splits, selectedMeasures, pinnedMeasures, pinnedDimensions, timezone,
+      dataSources, dataSource, filter, splits, selectedMeasures, pinnedDimensions, timezone,
       visualizations, visualization, visualizationStage,
       dragOver, drawerOpen
     } = this.state;
@@ -361,7 +343,6 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             dataSource={dataSource}
             filter={filter}
             selectedMeasures={selectedMeasures}
-            pinnedMeasures={pinnedMeasures}
             pinnedDimensions={pinnedDimensions}
           />
         </div>

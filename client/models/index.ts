@@ -5,4 +5,5 @@ export * from './dimension/dimension';
 export * from './split-combine/split-combine';
 export * from './measure/measure';
 export * from './filter/filter';
+export * from './essence/essence';
 export * from './data-source/data-source';

@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
-import { $, Expression, Dispatcher } from 'plywood';
+import { $, Expression, Executor } from 'plywood';
 import { isInside } from '../../utils/dom';
 import { Stage, DataSource, SplitCombine, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { MenuTable } from "../menu-table/menu-table";

@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
-import { $, Expression, Dispatcher, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, CORE_ITEM_HEIGHT } from '../../config/constants';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { moveInList } from '../../utils/general';

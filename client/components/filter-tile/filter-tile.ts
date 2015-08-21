@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { Timezone } from 'chronology';
-import { $, Expression, ChainExpression, InAction, Dispatcher, Dataset } from 'plywood';
+import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
 import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { formatStartEnd } from '../../utils/date';

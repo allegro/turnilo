@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 import * as Q from 'q';
 import * as Qajax from 'qajax';
 import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
-import { $, Expression, Dispatcher, basicDispatcherFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
+import { $, Expression, Executor, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
 import { upperCaseFirst, listsEqual } from '../../utils/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -22,7 +22,7 @@ function getSplitsDescription(ex: Expression): string {
   return splits.join(';');
 }
 
-function queryUrlDispatcherFactory(url: string): Dispatcher {
+function queryUrlExecutorFactory(url: string): Executor {
   return (ex: Expression) => {
     return Qajax({
       method: "POST",
@@ -133,7 +133,7 @@ export interface DataSourceValue {
   measures?: List<Measure>;
   defaultSortOn?: string;
 
-  dispatcher?: Dispatcher;
+  executor?: Executor;
 }
 
 export interface DataSourceJS {
@@ -159,7 +159,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
   public measures: List<Measure>;
   public defaultSortOn: string;
 
-  public dispatcher: Dispatcher;
+  public executor: Executor;
 
   static isDataSource(candidate: any): boolean {
     return isInstanceOf(candidate, DataSource);
@@ -204,7 +204,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       dimensions: dm.dimensions,
       measures: dm.measures,
       defaultSortOn: dm.defaultSortOn,
-      dispatcher: queryUrlDispatcherFactory(source)
+      executor: queryUrlExecutorFactory(source)
     });
   }
 
@@ -222,7 +222,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     var mainDataset = Dataset.fromJS(rawData);
     mainDataset.introspect();
 
-    var dispatcher = basicDispatcherFactory({
+    var executor = basicExecutorFactory({
       datasets: {
         main: mainDataset
       }
@@ -238,13 +238,13 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       dimensions: dm.dimensions,
       measures: dm.measures,
       defaultSortOn: dm.defaultSortOn,
-      dispatcher
+      executor
     });
   }
 
   static fromJS(parameters: DataSourceJS): DataSource {
     var value: DataSourceValue = {
-      dispatcher: null,
+      executor: null,
       name: parameters.name,
       title: parameters.title,
       source: parameters.source,
@@ -268,7 +268,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     this.dimensions = parameters.dimensions;
     this.measures = parameters.measures;
     this.defaultSortOn = parameters.defaultSortOn;
-    this.dispatcher = parameters.dispatcher;
+    this.executor = parameters.executor;
   }
 
   public valueOf(): DataSourceValue {
@@ -284,8 +284,8 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       value.measures = this.measures;
       value.defaultSortOn = this.defaultSortOn;
     }
-    if (this.dispatcher) {
-      value.dispatcher = this.dispatcher;
+    if (this.executor) {
+      value.executor = this.executor;
     }
     return value;
   }

@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import { List } from 'immutable';
-import { $, Expression, Dispatcher, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { Clicker, Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 

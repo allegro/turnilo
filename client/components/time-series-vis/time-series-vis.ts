@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
 import * as numeral from 'numeral';
-import { $, Dispatcher, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
+import { $, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
 import { bindOne, bindMany } from "../../utils/render";
 import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker } from "../../models/index";
 import { ChartLine } from '../chart-line/chart-line';
@@ -99,7 +99,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       query = query.apply('Split', subQuery);
     });
 
-    dataSource.dispatcher(query).then((dataset) => {
+    dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
       this.setState({ dataset });
     });
