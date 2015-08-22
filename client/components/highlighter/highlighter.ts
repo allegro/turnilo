@@ -73,9 +73,14 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
 
   globalMouseUpListener(e: MouseEvent) {
     var { duration, timezone } = this.props;
-    var { dragging } = this.state;
+    var { dragging, highlight } = this.state;
     if (!dragging) return;
-    var highlight = this.getHighlight(e.clientX);
+    if (!highlight) { // There was no mouse move so just quetly cancel out
+      this.onCancel();
+      return;
+    }
+
+    highlight = this.getHighlight(e.clientX);
     this.setState({
       dragging: false,
       highlight: TimeRange.fromJS({

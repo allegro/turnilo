@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import { Timezone } from 'chronology';
 import { $, Expression, Executor, InAction, ChainExpression, LiteralExpression, find } from 'plywood';
-import { DataSource, Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
+import { Essence, DataSource, Filter, SplitCombine, Dimension, Measure, Clicker } from "../../models/index";
 import { FilterSplitMenu } from "../filter-split-menu/filter-split-menu";
 import { FilterTile } from '../filter-tile/filter-tile';
 import { SplitTile } from '../split-tile/split-tile';
@@ -12,11 +12,7 @@ import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
 
 interface FilterSplitPanelProps {
   clicker: Clicker;
-  dataSource: DataSource;
-  filter: Filter;
-  splits: List<SplitCombine>;
-  timezone: Timezone;
-  selectedDimension: Dimension;
+  essence: Essence;
 }
 
 interface FilterSplitPanelState {
@@ -84,8 +80,9 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   }
 
   render() {
-    var { dataSource, filter, splits, clicker, timezone } = this.props;
+    var { essence, clicker } = this.props;
     var { selectedSection, selectedDimension, anchor, rect, trigger } = this.state;
+    var { dataSource, filter, timezone, splits } = essence;
 
     var menu: React.ReactElement<any> = null;
     if (selectedDimension) {
@@ -120,7 +117,7 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
         />
         <DimensionListTile
           clicker={clicker}
-          dataSource={dataSource}
+          essence={essence}
           selectedDimension={selectedSection === 'dimension' ? selectedDimension : null}
           triggerMenuOpen={this.menuOpen.bind(this, 'dimension')}
         />

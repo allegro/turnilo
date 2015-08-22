@@ -2,15 +2,16 @@
 
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
+import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, CORE_ITEM_HEIGHT } from '../../config/constants';
-import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { moveInList } from '../../utils/general';
 import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 
 interface DimensionListTileProps {
   clicker: Clicker;
-  dataSource: DataSource;
+  essence: Essence;
   selectedDimension: Dimension;
   triggerMenuOpen: (target: Element, dimension: Dimension) => void;
 }
@@ -49,7 +50,8 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   calculateDragPosition(e: DragEvent) {
-    var numItems = this.props.dataSource.dimensions.size;
+    var { essence } = this.props;
+    var numItems = essence.dataSource.dimensions.size;
     var rect = React.findDOMNode(this.refs['items']).getBoundingClientRect();
     var offset = e.clientY - rect.top;
 
@@ -59,10 +61,14 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   dragStart(dimension: Dimension, e: DragEvent) {
+    var { essence } = this.props;
+
+    var newUrl = essence.changeSplits(List([dimension.getSplitCombine()])).getURL();
+
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
-    dataTransfer.setData("text/url-list", 'http://imply.io');
-    dataTransfer.setData("text/plain", 'http://imply.io');
+    dataTransfer.setData("text/url-list", newUrl);
+    dataTransfer.setData("text/plain", newUrl);
     dataTransfer.setData("text/dimension", dimension.name);
     setDragGhost(dataTransfer, dimension.title);
   }
@@ -115,8 +121,9 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
-    var { clicker, dataSource } = this.props;
+    var { clicker, essence } = this.props;
     var { dragPosition } = this.state;
+    var { dataSource } = essence;
 
     var dimension = dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
 
@@ -135,8 +142,9 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   render() {
-    var { dataSource, selectedDimension } = this.props;
+    var { essence, selectedDimension } = this.props;
     var { dragOver, dragPosition } = this.state;
+    var { dataSource } = essence;
 
     var itemY = 0;
     var dimensionItems: Array<React.ReactElement<any>> = null;

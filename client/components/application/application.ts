@@ -5,7 +5,7 @@ import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration } from 'chronology';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
-import { Stage, Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
+import { Stage, Essence, Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
 import { FilterSplitPanel } from '../filter-split-panel/filter-split-panel';
@@ -23,16 +23,8 @@ interface ApplicationProps {
 }
 
 interface ApplicationState {
-  dataSources?: List<DataSource>;
-  dataSource?: DataSource;
-  filter?: Filter;
-  splits?: List<SplitCombine>;
-  selectedMeasures?: OrderedSet<string>;
-  pinnedDimensions?: OrderedSet<string>;
-  visualization?: string;
-  visualizations?: List<string>;
+  essence?: Essence;
   visualizationStage?: Stage;
-  timezone?: Timezone;
   dragOver?: boolean;
   drawerOpen?: boolean;
 }
@@ -40,105 +32,68 @@ interface ApplicationState {
 export class Application extends React.Component<ApplicationProps, ApplicationState> {
   private clicker: Clicker;
   private dragCounter: number;
+  private hashUpdating: boolean = false;
 
   constructor() {
     super();
     this.state = {
-      timezone: Timezone.UTC,
-      filter: Filter.EMPTY,
-      splits: <List<SplitCombine>>List()
+      essence: null,
+      dragOver: false,
+      drawerOpen: false
     };
 
     var clicker = {
       changeDataSource: (dataSource: DataSource) => {
-        var { dataSources } = this.state;
-        var dataSourceName = dataSource.name;
-        var existingDataSource = dataSources.find((ds) => ds.name === dataSourceName);
-        if (!existingDataSource) throw new Error(`unknown DataSource changed: ${dataSourceName}`);
-
-        var newState: ApplicationState = { dataSource };
-        if (!existingDataSource.equals(dataSource)) {
-          // We are actually updating info within the named dataSource
-          newState.dataSources = <List<DataSource>>dataSources.map((ds) => ds.name === dataSourceName ? dataSource : ds);
-        }
-        this.setState(newState);
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeDataSource(dataSource) });
       },
       changeFilter: (filter: Filter) => {
-        this.setState({ filter });
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeFilter(filter) });
       },
       changeTimeRange: (timeRange: TimeRange) => {
-        var { dataSource, filter } = this.state;
-        var timeDimension = dataSource.getDimension('time');
-        clicker.changeFilter(filter.setTimeRange(timeDimension.expression, timeRange));
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeTimeRange(timeRange) });
       },
       changeSplits: (splits: List<SplitCombine>) => {
-        var { dataSource, visualization } = this.state;
-        var visualizations = this.getPossibleVisualizations(dataSource, splits);
-        if (visualizations.contains(visualization)) {
-          visualization = visualizations.last();
-        } else {
-          visualization = visualizations.first();
-        }
-        this.setState({
-          splits,
-          visualization,
-          visualizations
-        });
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeSplits(splits) });
       },
       addSplit: (split: SplitCombine) => {
-        var { splits } = this.state;
-        clicker.changeSplits(<List<SplitCombine>>splits.concat(split));
+        var { essence } = this.state;
+        this.setState({ essence: essence.addSplit(split) });
       },
       removeSplit: (split: SplitCombine) => {
-        var { splits } = this.state;
-        clicker.changeSplits(<List<SplitCombine>>splits.filter(s => s !== split));
+        var { essence } = this.state;
+        this.setState({ essence: essence.removeSplit(split) });
       },
       selectVisualization: (visualization: string) => {
-        var { visualizations } = this.state;
-        if (!visualizations.includes(visualization)) return;
-        this.setState({
-          visualization
-        });
+        var { essence } = this.state;
+        this.setState({ essence: essence.selectVisualization(visualization) });
       },
       pin: (dimension: Dimension) => {
-        var { pinnedDimensions } = this.state;
-        this.setState({
-          pinnedDimensions: pinnedDimensions.add(dimension.name)
-        });
+        var { essence } = this.state;
+        this.setState({ essence: essence.pin(dimension) });
       },
       unpin: (dimension: Dimension) => {
-        var { pinnedDimensions } = this.state;
-        this.setState({
-          pinnedDimensions: pinnedDimensions.remove(dimension.name)
-        });
+        var { essence } = this.state;
+        this.setState({ essence: essence.unpin(dimension) });
       },
       toggleMeasure: (measure: Measure) => {
-        var { selectedMeasures } = this.state;
-        var measureName = measure.name;
-        selectedMeasures = selectedMeasures.has(measureName) ?
-          selectedMeasures.delete(measureName) :
-          selectedMeasures.add(measureName);
-
-        this.setState({ selectedMeasures });
+        var { essence } = this.state;
+        this.setState({ essence: essence.toggleMeasure(measure) });
       }
     };
 
     this.clicker = clicker;
     this.globalResizeListener = this.globalResizeListener.bind(this);
+    this.globalHashChangeListener = this.globalHashChangeListener.bind(this);
   }
 
   componentWillMount() {
     var { dataSources } = this.props;
-    var { dataSource } = this.state;
-
-    this.setState({ dataSources });
-
-    if (dataSources.size && !dataSource) {
-      dataSource = dataSources.first();
-      this.setState({ dataSource });
-    }
-
-    if (!dataSource) return;
+    if (!dataSources.size) throw new Error('must have data sources');
+    var dataSource = dataSources.first();
 
     if (dataSource.metadataLoaded) {
       this.fillInDetails(dataSource);
@@ -150,48 +105,71 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     }
   }
 
-  fillInDetails(dataSource: DataSource) {
-    var timeRange: TimeRange;
+  componentWillUpdate(nextProps: ApplicationProps, nextState: ApplicationState): void {
+    this.hashUpdating = true;
+    window.location.hash = nextState.essence.toHash();
+    // delay unflagging the update so that the hashchange event has a chance to fire a blank
+    setTimeout(() => { this.hashUpdating = false; }, 10);
+  }
 
-    if ((<any>window)['now'] === 'now') {
-      var day = Duration.fromJS('P1D');
-      var now = day.floor(new Date(), Timezone.UTC);
-      timeRange = TimeRange.fromJS({
-        start: day.move(now, Timezone.UTC, -2),
-        end: day.move(now, Timezone.UTC, 1)
-      });
-    } else {
-      timeRange = TimeRange.fromJS({
-        start: new Date('2013-02-26T00:00:00Z'),
-        end: new Date('2013-02-27T00:00:00Z')
+  fillInDetails(dataSource: DataSource) {
+    var essence = this.getEssenceFromHash();
+
+    if (!essence) {
+      var timeRange: TimeRange;
+      if ((<any>window)['now'] === 'now') {
+        var day = Duration.fromJS('P1D');
+        var now = day.floor(new Date(), Timezone.UTC);
+        timeRange = TimeRange.fromJS({
+          start: day.move(now, Timezone.UTC, -2),
+          end: day.move(now, Timezone.UTC, 1)
+        });
+      } else {
+        timeRange = TimeRange.fromJS({
+          start: new Date('2013-02-26T00:00:00Z'),
+          end: new Date('2013-02-27T00:00:00Z')
+        });
+      }
+
+      essence = new Essence({
+        dataSources: this.props.dataSources,
+        dataSource: dataSource,
+        timezone: Timezone.UTC,
+        filter: new Filter({
+          operands: List([$('time').in(timeRange)])
+        }),
+        splits: List([
+          dataSource.getDimension('time').getSplitCombine()
+          //dataSource.getDimension('page').getSplitCombine()
+        ]),
+        selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
+        pinnedDimensions: OrderedSet(['language', 'page']),
+        visualization: null
       });
     }
 
-    var filter = new Filter({
-      operands: List([$('time').in(timeRange)])
-    });
-    var splits = List([
-      dataSource.getDimension('time').getSplitCombine()
-      //dataSource.getDimension('page').getSplitCombine()
-    ]);
-    var visualizations = this.getPossibleVisualizations(dataSource, splits);
-    this.setState({
-      filter,
-      splits,
-      selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
-      pinnedDimensions: OrderedSet(['language', 'page']),
-      visualizations: visualizations,
-      visualization: visualizations.last()
-    });
+    this.setState({ essence });
   }
 
   componentDidMount() {
     window.addEventListener('resize', this.globalResizeListener);
+    window.addEventListener('hashchange', this.globalHashChangeListener);
     this.globalResizeListener();
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.globalResizeListener);
+    window.removeEventListener('hashchange', this.globalHashChangeListener);
+  }
+
+  getDataSources(): List<DataSource> {
+    var { essence } = this.state;
+    return essence ? essence.dataSources : this.props.dataSources;
+  }
+
+  getEssenceFromHash(): Essence {
+    var hash = window.location.hash;
+    return Essence.fromHash(hash, this.getDataSources());
   }
 
   globalResizeListener() {
@@ -202,6 +180,13 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     this.setState({
       visualizationStage: Stage.fromSize(visRect.width, visRect.height)
     });
+  }
+
+  globalHashChangeListener() {
+    if (this.hashUpdating) return;
+    var essence = this.getEssenceFromHash();
+    if (!essence) return;
+    this.setState({ essence });
   }
 
   canDrop(e: DragEvent): boolean {
@@ -238,9 +223,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
-    var { dataSource } = this.state;
+    var { essence } = this.state;
     this.dragCounter = 0;
-    var dimension = dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
+    var dimension = essence.dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
     this.setState({ dragOver: false });
     if (dimension) {
       this.clicker.changeSplits(List([dimension.getSplitCombine()]));
@@ -251,33 +236,20 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     this.setState({ drawerOpen });
   }
 
-  getPossibleVisualizations(dataSource: DataSource, splits: List<SplitCombine>): List<string> {
-    var visArray: string[] = ['nested-table-vis'];
-
-    if (splits.size) {
-      var lastSplit = splits.last();
-      var splitDimension = dataSource.getDimension(lastSplit.dimension);
-      if (splitDimension.type === 'TIME') {
-        visArray.push('time-series-vis');
-      }
-    }
-
-    return List(visArray);
-  }
-
   shouldComponentUpdate(nextProps: ApplicationProps, nextState: ApplicationState): boolean {
-    return Boolean(nextState.selectedMeasures) &&
-           Boolean(nextState.pinnedDimensions) &&
-           Boolean(nextState.visualization);
+    return Boolean(nextState.essence);
   }
 
   render() {
     var clicker = this.clicker;
+    var { essence, visualizationStage, dragOver, drawerOpen } = this.state;
+
     var {
-      dataSources, dataSource, filter, splits, selectedMeasures, pinnedDimensions, timezone,
-      visualizations, visualization, visualizationStage,
-      dragOver, drawerOpen
-    } = this.state;
+      dataSources, dataSource, filter, splits,
+      selectedMeasures, pinnedDimensions, timezone, visualization
+    } = essence;
+
+    var visualizations = essence.getVisualizations();
 
     var measures = dataSource.measures;
 
@@ -321,11 +293,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         <HeaderBar dataSource={dataSource} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
         <div className='container'>
           <FilterSplitPanel
-            dataSource={dataSource}
             clicker={clicker}
-            filter={filter}
-            splits={splits}
-            timezone={timezone}
+            essence={essence}
           />
           <div
             className='vis-pane'

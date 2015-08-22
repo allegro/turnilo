@@ -12,9 +12,9 @@ export interface SplitCombineValue {
 
 export interface SplitCombineJS {
   dimension: string;
-  splitOn: ExpressionJS;
-  sortAction: ActionJS;
-  limitAction: ActionJS;
+  splitOn?: ExpressionJS;
+  sortAction?: ActionJS;
+  limitAction?: ActionJS;
 }
 
 var check: ImmutableClass<SplitCombineValue, SplitCombineJS>;
@@ -29,12 +29,17 @@ export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitC
   }
 
   static fromJS(parameters: SplitCombineJS): SplitCombine {
-    return new SplitCombine({
+    var value: SplitCombineValue = {
       dimension: parameters.dimension,
-      splitOn: Expression.fromJS(parameters.splitOn),
-      sortAction: SortAction.fromJS(parameters.sortAction),
-      limitAction: LimitAction.fromJS(parameters.limitAction)
-    });
+      splitOn: null,
+      sortAction: null,
+      limitAction: null
+    };
+
+    if (parameters.splitOn) value.splitOn = Expression.fromJS(parameters.splitOn);
+    if (parameters.sortAction) value.sortAction = SortAction.fromJS(parameters.sortAction);
+    if (parameters.limitAction) value.limitAction = LimitAction.fromJS(parameters.limitAction);
+    return new SplitCombine(value);
   }
 
   constructor(parameters: SplitCombineValue) {
@@ -54,12 +59,13 @@ export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitC
   }
 
   public toJS(): SplitCombineJS {
-    return {
-      dimension: this.dimension,
-      splitOn: this.splitOn.toJS(),
-      sortAction: this.sortAction.toJS(),
-      limitAction: this.limitAction.toJS()
+    var js: SplitCombineJS = {
+      dimension: this.dimension
     };
+    if (this.splitOn) js.splitOn = this.splitOn.toJS();
+    if (this.sortAction) js.sortAction = this.sortAction.toJS();
+    if (this.limitAction) js.limitAction = this.limitAction.toJS();
+    return js;
   }
 
   public toJSON(): SplitCombineJS {

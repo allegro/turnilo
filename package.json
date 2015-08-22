@@ -25,6 +25,7 @@
     "facetjs-mysql-requester": "1.1.x",
     "higher-object": "^0.2.6",
     "immutable": "^3.7.4",
+    "lz-string": "^1.4.4",
     "morgan": "^1.6.1",
     "numeral": "^1.5.3",
     "plywood": "^0.0.x",

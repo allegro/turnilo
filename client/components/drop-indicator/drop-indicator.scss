@@ -1,6 +1,7 @@
 @import '../../imports';
 
-$action-size: 160px;
+$action-padding: 20px;
+$icon-size: 30px;
 
 .drop-indicator {
   .white-out {
@@ -9,60 +10,26 @@ $action-size: 160px;
     opacity: .65;
   }
 
-  .actions {
+  .action {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 2 * $action-size + 20px;
-    height: $action-size;
-    margin-left: -1 * ($action-size + 10px);
-    margin-top: -1 * $action-size / 2;
+    top: $action-padding;
+    bottom: $action-padding;
+    left: $action-padding;
+    right: $action-padding;
+    border-radius: 10px;
+    border: 1px dashed $text-medium;
 
-    .action {
+    svg {
       position: absolute;
-      top: 0;
-      width: $action-size;
-      height: $action-size;
-      border-radius: 10px;
-      background: $white;
-      border: 1px dashed $text-medium;
-
-      .label {
-        display: none;
-        font-size: 14px;
-        font-weight: 500;
-        text-align: center;
-        margin-top: 110px;
-      }
-
-      .icon {
-        position: absolute;
-        width: $action-size;
-        height: $action-size;
-        text-align: center;
-        left: auto;
-        right: auto;
-
-        path {
-          fill: $text-medium;
-        }
-      }
-
-      &.replace-split .icon {
-        top: 66px;
-      }
-
-      &.add-split .icon {
-        top: 70px;
-      }
+      width: $icon-size;
+      top: 50%;
+      left: 50%;
+      margin-left: -$icon-size / 2;
+      margin-top: -$icon-size / 2;
     }
 
-    .replace-split {
-      left: 0;
-    }
-
-    .add-split {
-      right: 0;
+    path {
+      fill: $text-medium;
     }
   }
 }
