@@ -3,7 +3,7 @@ export * from '../visualizations/time-series-vis/time-series-vis';
 export * from '../visualizations/nested-table-vis/nested-table-vis';
 export * from './menu-table/menu-table';
 export * from './filter-split-panel/filter-split-panel';
-export * from './filter-split-menu/filter-split-menu';
+export * from './bubble-menu/bubble-menu';
 export * from './vis-bar/vis-bar';
 export * from './drop-indicator/drop-indicator';
 export * from './side-drawer/side-drawer';

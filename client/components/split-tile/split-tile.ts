@@ -5,13 +5,12 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
-import { Clicker, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
 import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 
 interface SplitTileProps {
   clicker: Clicker;
-  dataSource: DataSource;
-  splits: List<SplitCombine>;
+  essence: Essence;
   selectedDimension: Dimension;
   triggerMenuOpen: (target: Element, dimension: Dimension) => void;
 }
@@ -108,10 +107,10 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
-    var { clicker, dataSource } = this.props;
+    var { clicker, essence } = this.props;
     var { dragPosition } = this.state;
 
-    var dimension = dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
+    var dimension = essence.dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
     clicker.addSplit(dimension.getSplitCombine());
 
     this.dragCounter = 0;
@@ -122,8 +121,9 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   render() {
-    var { dataSource, selectedDimension, splits } = this.props;
+    var { essence, selectedDimension } = this.props;
     var { dragOver, dragPosition } = this.state;
+    var { dataSource, splits } = essence;
 
     var itemY = 0;
     var splitItems: Array<React.ReactElement<any>> = null;

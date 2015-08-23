@@ -9,11 +9,33 @@ $icon-height: 16px;
 
 $shpitz-size: 12px;
 
-.filter-split-menu {
+.bubble-menu {
   @extend %menu-cont;
   position: absolute;
   left: $left-panel-width - 15;
 
+  .shpitz {
+    position: absolute;
+
+    &:before,
+    &:after {
+      content: '';
+      position: absolute;
+      margin-top: -1 * $shpitz-size;
+    }
+
+    &:before {
+      @include triangle(left, $shpitz-size, $shpitz-size, $border-light);
+      left: -1 * $shpitz-size;
+    }
+
+    &:after {
+      @include triangle(left, $shpitz-size, $shpitz-size, $white);
+      left: -1 * $shpitz-size + 1;
+    }
+  }
+
+  /*
   .title-bar {
     @include pin-top($title-bar-height);
 
@@ -51,6 +73,7 @@ $shpitz-size: 12px;
       }
     }
   }
+  */
 
   .menu-table,
   .menu-time-series {
@@ -60,50 +83,7 @@ $shpitz-size: 12px;
     width: 100%;
   }
 
-  .button-bar {
+  .menu-action-bar {
     @include pin-bottom($button-bar-height);
-    padding: 16px 0 6px 10px;
-
-    .button {
-
-      padding-top: 5px;
-      padding-bottom: 5px;   margin-right: 7px;
-    }
-
-    .ok {
-      @extend %button-primary;
-    }
-
-    .cancel {
-      @extend %button-secondary;
-    }
-
-    .link {
-      display: inline-block;
-      margin: 0 3px;
-      cursor: pointer;
-      color: $text-link;
-    }
-  }
-
-  .shpitz {
-    position: absolute;
-
-    &:before,
-    &:after {
-      content: '';
-      position: absolute;
-      margin-top: -1 * $shpitz-size;
-    }
-
-    &:before {
-      @include triangle(left, $shpitz-size, $shpitz-size, $border-light);
-      left: -1 * $shpitz-size;
-    }
-
-    &:after {
-      @include triangle(left, $shpitz-size, $shpitz-size, $white);
-      left: -1 * $shpitz-size + 1;
-    }
   }
 }

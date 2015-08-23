@@ -1,0 +1,14 @@
+@import '../../imports';
+
+.menu-action-bar {
+  .action {
+    display: inline-block;
+    width: 25%;
+    height: 100%;
+    cursor: pointer;
+
+    svg {
+      width: 30px;
+    }
+  }
+}

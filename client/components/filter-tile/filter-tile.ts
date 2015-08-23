@@ -5,15 +5,13 @@ import * as Icon from 'react-svg-icons';
 import { Timezone } from 'chronology';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
-import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { formatStartEnd } from '../../utils/date';
 import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 
 interface FilterTileProps {
   clicker: Clicker;
-  dataSource: DataSource;
-  filter: Filter;
-  timezone: Timezone;
+  essence: Essence;
   selectedDimension: Dimension;
   triggerMenuOpen: (target: Element, dimension: Dimension) => void;
 }
@@ -52,8 +50,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   removeFilter(expression: ChainExpression, e: MouseEvent) {
-    var { filter, clicker } = this.props;
-    clicker.changeFilter(filter.remove(expression));
+    var { essence, clicker } = this.props;
+    clicker.changeFilter(essence.filter.remove(expression));
     e.stopPropagation();
   }
 
@@ -110,7 +108,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
-    var { clicker, dataSource } = this.props;
+    var { clicker, essence } = this.props;
     var { dragPosition } = this.state;
 
     console.log('drop into filter');
@@ -152,8 +150,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   render() {
-    var { dataSource, filter, timezone, selectedDimension } = this.props;
+    var { essence, selectedDimension } = this.props;
     var { dragOver, dragPosition } = this.state;
+    var { dataSource, filter, timezone } = essence;
 
     var itemY = 0;
     var filterItems: Array<React.ReactElement<any>> = null;

@@ -8,20 +8,20 @@ var { TestUtils } = React.addons;
 var { Simulate } = TestUtils;
 
 import { $, Expression } from 'plywood';
-import { FilterSplitMenu } from './filter-split-menu';
+import { BubbleMenu } from './bubble-menu';
 
-describe('FilterSplitMenu', () => {
+describe('BubbleMenu', () => {
   setupDOM();
 
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       JSX(`
-        <FilterSplitMenu/>
+        <BubbleMenu/>
       `)
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('filter-split-menu');
+    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('bubble-menu');
   });
 
 });
