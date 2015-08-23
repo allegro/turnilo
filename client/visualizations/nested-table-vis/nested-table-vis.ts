@@ -8,7 +8,6 @@ import { $, Expression, Executor, Dataset, Datum } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
 import { Stage, Filter, SplitCombine, Dimension, Measure, DataSource, Clicker } from '../../models/index';
-// import { SomeComp } from '../some-comp/some-comp';
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 200;

@@ -12,6 +12,8 @@ import { SplitCombine, SplitCombineJS } from '../split-combine/split-combine';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
 
+const HASH_VERSION = 1;
+
 interface EssenceValue {
   dataSources?: List<DataSource>;
 
@@ -49,26 +51,40 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     return isInstanceOf(candidate, Essence);
   }
 
+  static getBaseURL(): string {
+    var url = window.location;
+    return url.origin + url.pathname;
+  }
+
   static fromHash(hash: string, dataSources: List<DataSource>): Essence {
     // trim a potential leading #
     if (hash[0] === '#') hash = hash.substr(1);
 
     var parts = hash.split('/');
-    if (parts.length < 3) return null;
+    if (parts.length < 4) return null;
     var dataSource = parts.shift();
     var visualization = parts.shift();
+    var version = parseInt(parts.shift(), 10);
 
-    var js: any = null;
+    if (version !== 1) return null;
+
+    var jsArray: any[] = null;
     try {
-      js = JSON.parse(decompressFromBase64(parts.join('/')));
+      jsArray = JSON.parse('[' + decompressFromBase64(parts.join('/')) + ']');
     } catch (e) {
       return null;
     }
 
-    if (!js || typeof js !== 'object') return null;
-    js.dataSource = dataSource;
-    js.visualization = visualization;
-    return Essence.fromJS(js, dataSources);
+    if (!Array.isArray(jsArray) || jsArray.length !== 5) return null;
+    return Essence.fromJS({
+      dataSource: dataSource,
+      visualization: visualization,
+      filter: jsArray[0],
+      timezone: jsArray[1],
+      splits: jsArray[2],
+      selectedMeasures: jsArray[3],
+      pinnedDimensions: jsArray[4]
+    }, dataSources);
   }
 
   static fromJS(parameters: EssenceJS, dataSources?: List<DataSource>): Essence {
@@ -151,20 +167,22 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
 
   public toHash(): string {
     var js: any = this.toJS();
-    var dataSource = js.dataSource;
-    var visualization = js.visualization;
-    delete js.dataSource;
-    delete js.visualization;
     return '#' + [
-      dataSource,
-      visualization,
-      compressToBase64(JSON.stringify(js))
+      js.dataSource,
+      js.visualization,
+      HASH_VERSION,
+      compressToBase64([
+        js.filter,
+        js.timezone,
+        js.splits,
+        js.selectedMeasures,
+        js.pinnedDimensions
+      ].map(p => JSON.stringify(p)).join(','))
     ].join('/');
   }
 
   public getURL(): string {
-    var url = window.location;
-    return url.origin + url.pathname + this.toHash();
+    return Essence.getBaseURL() + this.toHash();
   }
 
   public getVisualizations(): List<string> {

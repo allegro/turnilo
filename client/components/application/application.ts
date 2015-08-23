@@ -13,8 +13,9 @@ import { VisBar } from '../vis-bar/vis-bar';
 import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { SideDrawer } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
-import { TimeSeriesVis } from '../time-series-vis/time-series-vis';
-import { NestedTableVis } from '../nested-table-vis/nested-table-vis';
+
+import { TimeSeriesVis } from '../../visualizations/time-series-vis/time-series-vis';
+import { NestedTableVis } from '../../visualizations/nested-table-vis/nested-table-vis';
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
@@ -290,12 +291,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
     return JSX(`
       <main className='application'>
-        <HeaderBar dataSource={dataSource} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
+        <HeaderBar essence={essence} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
         <div className='container'>
-          <FilterSplitPanel
-            clicker={clicker}
-            essence={essence}
-          />
+          <FilterSplitPanel clicker={clicker} essence={essence}/>
           <div
             className='vis-pane'
             onDragOver={this.dragOver.bind(this)}
@@ -307,13 +305,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             <div className='visualization' ref='visualization'>{visElement}</div>
             {dropIndicator}
           </div>
-          <PinboardPanel
-            clicker={clicker}
-            dataSource={dataSource}
-            filter={filter}
-            selectedMeasures={selectedMeasures}
-            pinnedDimensions={pinnedDimensions}
-          />
+          <PinboardPanel clicker={clicker} essence={essence}/>
         </div>
         <ReactCSSTransitionGroup component="div" className="side-drawer-container" transitionName="side-drawer">
           {sideDrawer}

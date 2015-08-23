@@ -7,11 +7,11 @@ import * as numeral from 'numeral';
 import { $, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
 import { bindOne, bindMany } from "../../utils/render";
 import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker } from "../../models/index";
-import { ChartLine } from '../chart-line/chart-line';
-import { TimeAxis } from '../time-axis/time-axis';
-import { VerticalAxis } from '../vertical-axis/vertical-axis';
-import { GridLines } from '../grid-lines/grid-lines';
-import { Highlighter } from '../highlighter/highlighter';
+import { ChartLine } from '../../components/chart-line/chart-line';
+import { TimeAxis } from '../../components/time-axis/time-axis';
+import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
+import { GridLines } from '../../components/grid-lines/grid-lines';
+import { Highlighter } from '../../components/highlighter/highlighter';
 
 const H_PADDING = 10;
 const TITLE_TEXT_LEFT = 6;

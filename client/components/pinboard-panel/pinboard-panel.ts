@@ -4,16 +4,13 @@ import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
-import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
 import { MeasuresTile } from '../measures-tile/measures-tile';
 
 interface PinboardPanelProps {
   clicker: Clicker;
-  dataSource: DataSource;
-  filter: Filter;
-  selectedMeasures: OrderedSet<string>;
-  pinnedDimensions: OrderedSet<string>;
+  essence: Essence;
 }
 
 interface PinboardPanelState {
@@ -45,7 +42,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   canDrop(e: DragEvent): boolean {
     if (dataTransferTypesContain(e.dataTransfer.types, "text/dimension")) {
       var dimensionName = e.dataTransfer.getData("text/dimension");
-      var pinnedDimensions = this.props.pinnedDimensions;
+      var pinnedDimensions = this.props.essence.pinnedDimensions;
       return !pinnedDimensions.has(dimensionName);
     }
     return false;
@@ -87,14 +84,15 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     if (!this.canDrop(e)) return;
     this.dragCounter = 0;
     var dimensionName = e.dataTransfer.getData("text/dimension");
-    var { clicker, dataSource } = this.props;
-    clicker.pin(dataSource.getDimension(dimensionName));
+    var { clicker, essence } = this.props;
+    clicker.pin(essence.dataSource.getDimension(dimensionName));
     this.setState({ dragOver: false });
   }
 
   render() {
-    var { clicker, dataSource, filter, selectedMeasures, pinnedDimensions } = this.props;
+    var { clicker, essence } = this.props;
     var { dragOver } = this.state;
+    var { dataSource, filter, selectedMeasures, pinnedDimensions } = essence;
 
     var metricTile: React.ReactElement<any> = null;
     if (dataSource.metadataLoaded) {
