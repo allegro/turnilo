@@ -5,20 +5,25 @@ import * as Icon from 'react-svg-icons';
 import { Timezone } from 'chronology';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
-import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { formatStartEnd } from '../../utils/date';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { BubbleMenu } from '../bubble-menu/bubble-menu';
+import { MenuHeader } from '../menu-header/menu-header';
+import { MenuTable } from '../menu-table/menu-table';
+import { MenuActionBar } from '../menu-action-bar/menu-action-bar';
 
 const FILTER_CLASS_NAME = 'filter';
 
 interface FilterTileProps {
   clicker: Clicker;
   essence: Essence;
-  selectedDimension: Dimension;
-  triggerMenuOpen: (target: Element, dimension: Dimension) => void;
+  menuStage: Stage;
 }
 
 interface FilterTileState {
+  menuOpenOn?: Element;
+  menuDimension?: Dimension;
   dragOver?: boolean;
   dragPosition?: number;
 }
@@ -29,26 +34,31 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   constructor() {
     super();
     this.state = {
+      menuOpenOn: null,
+      menuDimension: null,
       dragOver: false,
       dragPosition: null
     };
   }
 
-  componentDidMount() {
-
+  clickDimension(dimension: Dimension, e: MouseEvent) {
+    var { menuOpenOn } = this.state;
+    var target = findParentWithClass(<Element>e.target, FILTER_CLASS_NAME);
+    if (menuOpenOn === target) {
+      this.closeMenu();
+      return;
+    }
+    this.setState({
+      menuOpenOn: target,
+      menuDimension: dimension
+    });
   }
 
-  componentWillUnmount() {
-
-  }
-
-  componentWillReceiveProps(nextProps: FilterTileProps) {
-
-  }
-
-  selectDimension(dimension: Dimension, e: MouseEvent) {
-    var { triggerMenuOpen } = this.props;
-    triggerMenuOpen(findParentWithClass(<Element>e.target, FILTER_CLASS_NAME), dimension);
+  closeMenu() {
+    this.setState({
+      menuOpenOn: null,
+      menuDimension: null
+    });
   }
 
   removeFilter(expression: ChainExpression, e: MouseEvent) {
@@ -151,9 +161,29 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
   }
 
+  renderMenu(): React.ReactElement<any> {
+    var { essence, clicker, menuStage } = this.props;
+    var { menuOpenOn, menuDimension } = this.state;
+    if (!menuDimension) return null;
+    var onClose = this.closeMenu.bind(this);
+
+    return JSX(`
+      <BubbleMenu containerStage={menuStage} openOn={menuOpenOn} onClose={onClose}>
+        <MenuHeader dimension={menuDimension}/>
+        <MenuTable
+          essence={essence}
+          dimension={menuDimension}
+          showSearch={true}
+          showCheckboxes={true}
+        />
+        <MenuActionBar clicker={clicker} essence={essence} dimension={menuDimension} onClose={onClose}/>
+      </BubbleMenu>
+    `);
+  }
+
   render() {
-    var { essence, selectedDimension } = this.props;
-    var { dragOver, dragPosition } = this.state;
+    var { essence } = this.props;
+    var { menuDimension, dragOver, dragPosition } = this.state;
     var { dataSource, filter, timezone } = essence;
 
     var itemY = 0;
@@ -173,13 +203,13 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           FILTER_CLASS_NAME,
           dimension.className
         ];
-        if (dimension === selectedDimension) classNames.push('selected');
+        if (dimension === menuDimension) classNames.push('selected');
         return JSX(`
           <div
             className={classNames.join(' ')}
             key={dimension.name}
             draggable="true"
-            onClick={this.selectDimension.bind(this, dimension)}
+            onClick={this.clickDimension.bind(this, dimension)}
             onDragStart={this.dragStart.bind(this, dimension, operand)}
             style={style}
           >
@@ -205,6 +235,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         <div className="items" ref="filterItems" style={{ height: itemY }}>
           {filterItems}
         </div>
+        {this.renderMenu()}
       </div>
     `);
   }

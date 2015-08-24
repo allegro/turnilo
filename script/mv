@@ -37,10 +37,13 @@ fs.renameSync(newPath + oldName + '.ts', newPath + newName + '.ts')
 fs.renameSync(newPath + oldName + '.scss', newPath + newName + '.scss')
 fs.renameSync(newPath + oldName + '.mocha.ts', newPath + newName + '.mocha.ts')
 
+replacePath = './client/'
+#replacePath = newPath
+
 replace({
   regex: oldName,
   replacement: newName,
-  paths: [newPath],
+  paths: [replacePath],
   recursive: true,
   silent: true,
 })
@@ -48,7 +51,7 @@ replace({
 replace({
   regex: camelOldName,
   replacement: camelNewName,
-  paths: [newPath],
+  paths: [replacePath],
   recursive: true,
   silent: true,
 })

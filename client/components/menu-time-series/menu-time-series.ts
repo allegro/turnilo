@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
-import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../models/index';
+import { Stage, Essence, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../models/index';
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
 import { VerticalAxis } from '../vertical-axis/vertical-axis';
@@ -16,10 +16,9 @@ function midpoint(timeRange: TimeRange): Date {
 }
 
 interface MenuTimeSeriesProps {
-  stage: Stage;
-  dataSource: DataSource;
-  filter: Filter;
+  essence: Essence;
   dimension: Dimension;
+  stage: Stage;
 }
 
 interface MenuTimeSeriesState {
@@ -37,7 +36,8 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
   }
 
   fetchData(filter: Filter, dimension: Dimension) {
-    var { dataSource } = this.props;
+    var { essence } = this.props;
+    var { dataSource } = essence;
     var measure = dataSource.getSortMeasure(dimension);
 
     var query: any = $('main')
@@ -54,8 +54,8 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
 
   componentDidMount() {
     this.mounted = true;
-    var { filter, dimension } = this.props;
-    this.fetchData(filter, dimension);
+    var { essence, dimension } = this.props;
+    this.fetchData(essence.filter, dimension);
   }
 
   componentWillUnmount() {
@@ -63,18 +63,19 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
   }
 
   componentWillReceiveProps(nextProps: MenuTimeSeriesProps) {
-    var props = this.props;
+    var essence = this.props.essence;
+    var nextEssence = nextProps.essence;
     if (
-      props.filter.equals(nextProps.filter) &&
-      props.dimension.equals(nextProps.dimension)
+      essence.filter.equals(nextEssence.filter) &&
+      this.props.dimension.equals(nextProps.dimension)
     ) return;
-    this.fetchData(nextProps.filter, nextProps.dimension);
+    this.fetchData(nextEssence.filter, nextProps.dimension);
   }
 
   render() {
-    var { stage, dataSource, dimension } = this.props;
+    var { stage, essence, dimension } = this.props;
     var { dataset } = this.state;
-    var measure = dataSource.getSortMeasure(dimension);
+    var measure = essence.dataSource.getSortMeasure(dimension);
 
     var svgStage = stage;
 

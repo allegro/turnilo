@@ -5,20 +5,26 @@ import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, CORE_ITEM_HEIGHT } from '../../config/constants';
-import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { moveInList } from '../../utils/general';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { BubbleMenu } from '../bubble-menu/bubble-menu';
+import { MenuHeader } from '../menu-header/menu-header';
+import { MenuTable } from '../menu-table/menu-table';
+import { MenuTimeSeries } from '../menu-time-series/menu-time-series';
+import { MenuActionBar } from '../menu-action-bar/menu-action-bar';
 
 const DIMENSION_CLASS_NAME = 'dimension';
 
 interface DimensionListTileProps {
   clicker: Clicker;
   essence: Essence;
-  selectedDimension: Dimension;
-  triggerMenuOpen: (target: Element, dimension: Dimension) => void;
+  menuStage: Stage;
 }
 
 interface DimensionListTileState {
+  menuOpenOn?: Element;
+  menuDimension?: Dimension;
   dragOver?: boolean;
   dragPosition?: number;
 }
@@ -29,26 +35,31 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   constructor() {
     super();
     this.state = {
+      menuOpenOn: null,
+      menuDimension: null,
       dragOver: false,
       dragPosition: null
     };
   }
 
-  componentDidMount() {
-
+  clickDimension(dimension: Dimension, e: MouseEvent) {
+    var { menuOpenOn } = this.state;
+    var target = findParentWithClass(<Element>e.target, DIMENSION_CLASS_NAME);
+    if (menuOpenOn === target) {
+      this.closeMenu();
+      return;
+    }
+    this.setState({
+      menuOpenOn: target,
+      menuDimension: dimension
+    });
   }
 
-  componentWillUnmount() {
-
-  }
-
-  componentWillReceiveProps(nextProps: DimensionListTileProps) {
-
-  }
-
-  selectDimension(dimension: Dimension, e: MouseEvent) {
-    var { triggerMenuOpen } = this.props;
-    triggerMenuOpen(findParentWithClass(<Element>e.target, DIMENSION_CLASS_NAME), dimension);
+  closeMenu() {
+    this.setState({
+      menuOpenOn: null,
+      menuDimension: null
+    });
   }
 
   calculateDragPosition(e: DragEvent) {
@@ -143,9 +154,40 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     });
   }
 
+  renderMenu(): React.ReactElement<any> {
+    var { essence, clicker, menuStage } = this.props;
+    var { menuOpenOn, menuDimension } = this.state;
+    if (!menuDimension) return null;
+    var onClose = this.closeMenu.bind(this);
+
+    var menuVisualization: React.ReactElement<any> = null;
+    if (menuDimension.type === 'TIME') {
+      menuVisualization = React.createElement(MenuTimeSeries, {
+        essence,
+        dimension: menuDimension,
+        stage: Stage.fromSize(200, 100)
+      });
+    } else {
+      menuVisualization = React.createElement(MenuTable, {
+        essence,
+        dimension: menuDimension,
+        showSearch: true,
+        showCheckboxes: true
+      });
+    }
+
+    return JSX(`
+      <BubbleMenu containerStage={menuStage} openOn={menuOpenOn} onClose={onClose}>
+        <MenuHeader dimension={menuDimension}/>
+        {menuVisualization}
+        <MenuActionBar clicker={clicker} essence={essence} dimension={menuDimension} onClose={onClose}/>
+      </BubbleMenu>
+    `);
+  }
+
   render() {
-    var { essence, selectedDimension } = this.props;
-    var { dragOver, dragPosition } = this.state;
+    var { essence } = this.props;
+    var { menuDimension, dragOver, dragPosition } = this.state;
     var { dataSource } = essence;
 
     var itemY = 0;
@@ -160,12 +202,12 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
           DIMENSION_CLASS_NAME,
           dimension.className
         ];
-        if (dimension === selectedDimension) classNames.push('selected');
+        if (dimension === menuDimension) classNames.push('selected');
         return JSX(`
           <div
             className={classNames.join(' ')}
             key={dimension.name}
-            onClick={this.selectDimension.bind(this, dimension)}
+            onClick={this.clickDimension.bind(this, dimension)}
             draggable="true"
             onDragStart={this.dragStart.bind(this, dimension)}
             style={style}
@@ -192,6 +234,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
         <div className="items" ref="items">
           {dimensionItems}
         </div>
+        {this.renderMenu()}
       </div>
     `);
   }

@@ -5,19 +5,23 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
-import { Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { BubbleMenu } from '../bubble-menu/bubble-menu';
+import { MenuHeader } from '../menu-header/menu-header';
+import { MenuActionBar } from '../menu-action-bar/menu-action-bar';
 
 const SPLIT_CLASS_NAME = 'split';
 
 interface SplitTileProps {
   clicker: Clicker;
   essence: Essence;
-  selectedDimension: Dimension;
-  triggerMenuOpen: (target: Element, dimension: Dimension) => void;
+  menuStage: Stage;
 }
 
 interface SplitTileState {
+  menuOpenOn?: Element;
+  menuDimension?: Dimension;
   dragOver?: boolean;
   dragPosition?: number;
 }
@@ -28,26 +32,31 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   constructor() {
     super();
     this.state = {
+      menuOpenOn: null,
+      menuDimension: null,
       dragOver: false,
       dragPosition: null
     };
   }
 
-  componentDidMount() {
-
-  }
-
-  componentWillUnmount() {
-
-  }
-
-  componentWillReceiveProps(nextProps: SplitTileProps) {
-
-  }
-
   selectDimension(dimension: Dimension, e: MouseEvent) {
-    var { triggerMenuOpen } = this.props;
-    triggerMenuOpen(findParentWithClass(<Element>e.target, SPLIT_CLASS_NAME), dimension);
+    var { menuOpenOn } = this.state;
+    var target = findParentWithClass(<Element>e.target, SPLIT_CLASS_NAME);
+    if (menuOpenOn === target) {
+      this.closeMenu();
+      return;
+    }
+    this.setState({
+      menuOpenOn: target,
+      menuDimension: dimension
+    });
+  }
+
+  closeMenu() {
+    this.setState({
+      menuOpenOn: null,
+      menuDimension: null
+    });
   }
 
   removeSplit(split: SplitCombine, e: MouseEvent) {
@@ -122,9 +131,24 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     });
   }
 
+  renderMenu(): React.ReactElement<any> {
+    var { essence, clicker, menuStage } = this.props;
+    var { menuOpenOn, menuDimension } = this.state;
+    if (!menuDimension) return null;
+    var onClose = this.closeMenu.bind(this);
+
+    return JSX(`
+      <BubbleMenu containerStage={menuStage} openOn={menuOpenOn} onClose={onClose}>
+        <MenuHeader dimension={menuDimension}/>
+        <div>SPLIT YO</div>
+        <MenuActionBar clicker={clicker} essence={essence} dimension={menuDimension} onClose={onClose}/>
+      </BubbleMenu>
+    `);
+  }
+
   render() {
-    var { essence, selectedDimension } = this.props;
-    var { dragOver, dragPosition } = this.state;
+    var { essence } = this.props;
+    var { menuDimension, dragOver, dragPosition } = this.state;
     var { dataSource, splits } = essence;
 
     var itemY = 0;
@@ -143,7 +167,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
           SPLIT_CLASS_NAME,
           dimension.className
         ];
-        if (dimension === selectedDimension) classNames.push('selected');
+        if (dimension === menuDimension) classNames.push('selected');
         return JSX(`
           <div
             className={classNames.join(' ')}
@@ -175,6 +199,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         <div className="items" ref="splitItems" style={{ height: itemY }}>
           {splitItems}
         </div>
+        {this.renderMenu()}
       </div>
     `);
   }
