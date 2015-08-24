@@ -61,6 +61,7 @@
     "mkdirp": "^0.5.1",
     "mocha": "~2.2.x",
     "react-tools": "^0.13.3",
+    "replace": "^0.3.0",
     "sinon": "^1.15.4",
     "underscore": "~1.8.0",
     "vinyl-buffer": "^1.0.0",

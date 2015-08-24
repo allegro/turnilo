@@ -6,7 +6,7 @@ import { List } from 'immutable';
 import { $, Expression, Executor } from 'plywood';
 import { isInside, escapeKey } from '../../utils/dom';
 import { Stage } from '../../models/index';
-import { MenuPortal } from '../menu-portal/menu-portal';
+import { BodyPortal } from '../body-portal/body-portal';
 
 interface BubbleMenuProps {
   containerStage: Stage;
@@ -84,12 +84,12 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     };
 
     return JSX(`
-      <MenuPortal>
+      <BodyPortal>
         <div className="bubble-menu" style={style}>
           {children}
           <div className="shpitz" style={shpitzStyle}></div>
         </div>
-      </MenuPortal>
+      </BodyPortal>
     `);
   }
 }

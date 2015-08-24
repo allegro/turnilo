@@ -2,6 +2,7 @@
 
 fs = require('fs-extra')
 mkdirp = require('mkdirp')
+replace = require("replace")
 
 if process.argv.length isnt 5
   console.log('Usage: mv <what> <old-component-name> <new-component-name>')
@@ -26,111 +27,28 @@ if not /^([a-z-])+$/.test(newName)
 oldPath = './client/' + what + 's/' + oldName + '/'
 newPath = './client/' + what + 's/' + newName + '/'
 
+camelOldName = oldName.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
+camelNewName = newName.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
+
+console.log('Making path:', newPath)
 fs.copySync(oldPath, newPath)
+fs.removeSync(oldPath)
+fs.renameSync(newPath + oldName + '.ts', newPath + newName + '.ts')
+fs.renameSync(newPath + oldName + '.scss', newPath + newName + '.scss')
+fs.renameSync(newPath + oldName + '.mocha.ts', newPath + newName + '.mocha.ts')
 
+replace({
+  regex: oldName,
+  replacement: newName,
+  paths: [newPath],
+  recursive: true,
+  silent: true,
+})
 
-return
-
-mkdirp.sync(path)
-console.log('Making path:', path)
-
-camelName = name.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
-
-writeFile = (path, data) ->
-  try
-    fs.writeFileSync(path, data, {
-      flag: 'wx' # x = fail if file exists
-      encoding: 'utf8'
-    })
-  catch
-    console.log("Skipping #{path}")
-
-# Make the TypeScript file
-writeFile(path + name + '.ts', """
-'use strict';
-
-import * as React from 'react/addons';
-// import * as Icon from 'react-svg-icons';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Clicker, Essence, Filter, Dimension, Measure } from '../../models/index';
-// import { SomeComp } from '../some-comp/some-comp';
-
-interface #{camelName}Props {
-}
-
-interface #{camelName}State {
-}
-
-export class #{camelName} extends React.Component<#{camelName}Props, #{camelName}State> {
-  public mounted: boolean;
-
-  constructor() {
-    super();
-    // this.state = {};
-
-  }
-
-  componentDidMount() {
-    this.mounted = true;
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
-  }
-
-  componentWillReceiveProps(nextProps: #{camelName}Props) {
-
-  }
-
-  render() {
-    return JSX(`
-      <div className="#{name}"></div>
-    `);
-  }
-}
-
-""")
-
-
-# Make the TypeScript test file
-writeFile(path + name + '.mocha.ts', """
-'use strict';
-
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import { setupDOM } from '../../utils/jsdom-setup';
-import * as React from 'react/addons';
-var { TestUtils } = React.addons;
-var { Simulate } = TestUtils;
-
-import { $, Expression } from 'plywood';
-import { #{camelName} } from './#{name}';
-
-describe('#{camelName}', () => {
-  setupDOM();
-
-  it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
-      JSX(`
-        <#{camelName}/>
-      `)
-    );
-
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('#{name}');
-  });
-
-});
-
-""")
-
-
-# Make the SASS file
-writeFile(path + name + '.scss', """
-@import '../../imports';
-
-.#{name} {
-
-}
-
-""");
+replace({
+  regex: camelOldName,
+  replacement: camelNewName,
+  paths: [newPath],
+  recursive: true,
+  silent: true,
+})

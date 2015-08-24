@@ -8,8 +8,8 @@ var { TestUtils } = React.addons;
 var { Simulate } = TestUtils;
 
 import { $, Expression } from 'plywood';
-import { MenuPortal } from './menu-portal';
+import { BodyPortal } from './body-portal';
 
-describe('MenuPortal', () => {
+describe('BodyPortal', () => {
 
 });
