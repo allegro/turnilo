@@ -1,18 +1,13 @@
 @import '../../imports';
 
 $title-bar-height: 40px;
-$button-bar-height: 52px;
-
-$icon-margin: 10px;
-$icon-width: 20px;
-$icon-height: 16px;
+$action-bar-height: 52px;
 
 $shpitz-size: 12px;
 
 .bubble-menu {
   @extend %menu-cont;
   position: absolute;
-  left: $left-panel-width - 15;
 
   .shpitz {
     position: absolute;
@@ -35,55 +30,19 @@ $shpitz-size: 12px;
     }
   }
 
-  /*
-  .title-bar {
+  .menu-header {
     @include pin-top($title-bar-height);
-
-    .title {
-      padding: 15px 0 10px 10px;
-      color: $text-standard;
-      font-weight: 600;
-    }
-
-    .pin,
-    .close {
-      position: absolute;
-      text-align: center;
-      top: $icon-margin + 1;
-      width: $icon-width;
-      height: $icon-height;
-      cursor: pointer;
-
-      &:hover {
-        path {
-          fill: $text-medium;
-        }
-      }
-    }
-
-    .pin {
-      right: $icon-margin + $icon-width;
-    }
-
-    .close {
-      right: $icon-margin;
-
-      svg {
-        margin-top: 1px;
-      }
-    }
   }
-  */
 
   .menu-table,
   .menu-time-series {
     position: absolute;
     top: $title-bar-height;
-    bottom: $button-bar-height;
+    bottom: $action-bar-height;
     width: 100%;
   }
 
   .menu-action-bar {
-    @include pin-bottom($button-bar-height);
+    @include pin-bottom($action-bar-height);
   }
 }

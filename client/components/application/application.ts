@@ -25,6 +25,7 @@ interface ApplicationProps {
 
 interface ApplicationState {
   essence?: Essence;
+  menuStage?: Stage;
   visualizationStage?: Stage;
   dragOver?: boolean;
   drawerOpen?: boolean;
@@ -174,12 +175,13 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   }
 
   globalResizeListener() {
-    var { visualization } = this.refs;
+    var { container, visualization } = this.refs;
+    var containerDOM = React.findDOMNode(container);
     var visualizationDOM = React.findDOMNode(visualization);
-    if (!visualizationDOM) return;
-    var visRect = visualizationDOM.getBoundingClientRect();
+    if (!containerDOM || !visualizationDOM) return;
     this.setState({
-      visualizationStage: Stage.fromSize(visRect.width, visRect.height)
+      menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
+      visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect())
     });
   }
 
@@ -243,7 +245,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   render() {
     var clicker = this.clicker;
-    var { essence, visualizationStage, dragOver, drawerOpen } = this.state;
+    var { essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
 
     var {
       dataSources, dataSource, filter, splits,
@@ -290,10 +292,10 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     }
 
     return JSX(`
-      <main className='application'>
+      <main className='application' id='portal-cont'>
         <HeaderBar essence={essence} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
-        <div className='container'>
-          <FilterSplitPanel clicker={clicker} essence={essence}/>
+        <div className='container' ref='container'>
+          <FilterSplitPanel clicker={clicker} essence={essence} menuStage={menuStage}/>
           <div
             className='vis-pane'
             onDragOver={this.dragOver.bind(this)}

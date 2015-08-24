@@ -10,6 +10,14 @@ export function isInside(child: Element, parent: Element): boolean {
   return false;
 }
 
+export function findParentWithClass(child: Element, className: string): Element {
+  while (child) {
+    if (child.classList.contains(className)) return child;
+    child = <Element>child.parentNode;
+  }
+  return null;
+}
+
 export function dataTransferTypesContain(types: any, neededType: string): boolean {
   if (Array.isArray(types)) {
     return types.indexOf(neededType) !== -1;
@@ -32,4 +40,8 @@ export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
   setTimeout(() => {
     dragGhost.remove();
   }, 1);
+}
+
+export function escapeKey(e: KeyboardEvent): boolean {
+  return e.which === 27; // 27 is the code for escape
 }

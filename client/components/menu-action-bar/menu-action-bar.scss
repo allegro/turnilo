@@ -6,9 +6,15 @@
     width: 25%;
     height: 100%;
     cursor: pointer;
+    text-align: center;
+    color: $brand;
 
     svg {
       width: 30px;
+
+      path {
+        fill: $brand;
+      }
     }
   }
 }

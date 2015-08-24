@@ -7,7 +7,9 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, CORE_ITEM_HEIGHT } from '../../config/constants';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { moveInList } from '../../utils/general';
-import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+
+const DIMENSION_CLASS_NAME = 'dimension';
 
 interface DimensionListTileProps {
   clicker: Clicker;
@@ -46,7 +48,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   selectDimension(dimension: Dimension, e: MouseEvent) {
     var { triggerMenuOpen } = this.props;
-    triggerMenuOpen(<Element>e.target, dimension);
+    triggerMenuOpen(findParentWithClass(<Element>e.target, DIMENSION_CLASS_NAME), dimension);
   }
 
   calculateDragPosition(e: DragEvent) {
@@ -155,7 +157,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
         itemY += CORE_ITEM_HEIGHT;
 
         var classNames = [
-          'dimension',
+          DIMENSION_CLASS_NAME,
           dimension.className
         ];
         if (dimension === selectedDimension) classNames.push('selected');

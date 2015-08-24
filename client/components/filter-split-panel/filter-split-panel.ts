@@ -9,18 +9,19 @@ import { FilterTile } from '../filter-tile/filter-tile';
 import { SplitTile } from '../split-tile/split-tile';
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
+import { MenuHeader } from '../menu-header/menu-header';
+import { MenuTable } from '../menu-table/menu-table';
 import { MenuActionBar } from '../menu-action-bar/menu-action-bar';
 
 interface FilterSplitPanelProps {
   clicker: Clicker;
   essence: Essence;
+  menuStage: Stage;
 }
 
 interface FilterSplitPanelState {
   selectedSection?: string;
   selectedDimension?: Dimension;
-  anchor?: number;
-  stage?: Stage;
   trigger?: Element;
 }
 
@@ -33,46 +34,20 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
       anchor: null,
       stage: null
     };
-    this.globalResizeListener = this.globalResizeListener.bind(this);
-  }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.globalResizeListener);
-    this.globalResizeListener();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.globalResizeListener);
-  }
-
-  globalResizeListener() {
-    var rect = React.findDOMNode(this).getBoundingClientRect();
-    this.setState({
-      stage: new Stage({
-        x: rect.left,
-        y: rect.top,
-        width: rect.width,
-        height: rect.height
-      })
-    });
-  }
-
-  componentWillReceiveProps(nextProps: FilterSplitPanelProps) {
-
   }
 
   menuOpen(section: string, target: Element, dimension: Dimension) {
     var currentTrigger = this.state.trigger;
     if (currentTrigger === target) {
       this.menuClose();
+      console.log('cur close');
       return;
     }
+    console.log('do open');
     var targetRect = target.getBoundingClientRect();
-    var containerStage = this.state.stage;
     this.setState({
       selectedSection: section,
       selectedDimension: dimension,
-      anchor: targetRect.top - containerStage.y + Math.floor(targetRect.height / 2),
       trigger: target
     });
   }
@@ -87,27 +62,32 @@ export class FilterSplitPanel extends React.Component<FilterSplitPanelProps, Fil
   }
 
   renderMenu(): React.ReactElement<any> {
-    var { essence, clicker } = this.props;
-    var { selectedSection, selectedDimension, anchor, stage, trigger } = this.state;
+    var { essence, clicker, menuStage } = this.props;
+    var { selectedSection, selectedDimension, trigger } = this.state;
     if (!selectedDimension) return null;
+    var onClose = this.menuClose.bind(this);
 
-    return JSX(`
-      <BubbleMenu
-        anchor={anchor}
-        parentStage={stage}
-        trigger={trigger}
-        onClose={this.menuClose.bind(this)}
-      >
-        <div>Hello World</div>
-        <MenuActionBar clicker={clicker} essence={essence} dimension={selectedDimension}/>
-      </BubbleMenu>
-    `);
+    if (selectedSection === 'dimension') {
+      return JSX(`
+        <BubbleMenu containerStage={menuStage} openOn={trigger} onClose={onClose}>
+          <MenuHeader dimension={selectedDimension}/>
+          <MenuTable
+            essence={essence}
+            dimension={selectedDimension}
+            showSearch={true}
+            showCheckboxes={true}
+          />
+          <MenuActionBar clicker={clicker} essence={essence} dimension={selectedDimension} onClose={onClose}/>
+        </BubbleMenu>
+      `);
+    } else {
+
+    }
   }
 
   render() {
     var { essence, clicker } = this.props;
     var { selectedSection, selectedDimension } = this.state;
-    var { dataSource, filter, timezone, splits } = essence;
 
     return JSX(`
       <div className="filter-split-panel">

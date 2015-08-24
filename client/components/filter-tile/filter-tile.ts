@@ -7,7 +7,9 @@ import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'ply
 import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { formatStartEnd } from '../../utils/date';
-import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+
+const FILTER_CLASS_NAME = 'filter';
 
 interface FilterTileProps {
   clicker: Clicker;
@@ -46,7 +48,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   selectDimension(dimension: Dimension, e: MouseEvent) {
     var { triggerMenuOpen } = this.props;
-    triggerMenuOpen(<Element>e.target, dimension);
+    triggerMenuOpen(findParentWithClass(<Element>e.target, FILTER_CLASS_NAME), dimension);
   }
 
   removeFilter(expression: ChainExpression, e: MouseEvent) {
@@ -168,7 +170,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         itemY += CORE_ITEM_HEIGHT;
 
         var classNames = [
-          'filter',
+          FILTER_CLASS_NAME,
           dimension.className
         ];
         if (dimension === selectedDimension) classNames.push('selected');

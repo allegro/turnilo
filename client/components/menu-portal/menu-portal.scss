@@ -1,0 +1,7 @@
+@import '../../imports';
+
+.menu-portal {
+  @include pin-full;
+  z-index: 200;
+  pointer-events: none;
+}

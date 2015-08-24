@@ -3,14 +3,13 @@
 import * as React from 'react/addons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { formatterFromData } from '../../utils/formatter';
-import { DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
+import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { Checkbox } from '../checkbox/checkbox';
 
 const TOP_N = 100;
 
 interface MenuTableProps {
-  dataSource: DataSource;
-  filter: Filter;
+  essence: Essence;
   dimension: Dimension;
   showSearch: boolean;
   showCheckboxes: boolean;
@@ -34,7 +33,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   }
 
   fetchData(filter: Filter, dimension: Dimension) {
-    var { dataSource } = this.props;
+    var { essence } = this.props;
+    var { dataSource } = essence;
     var measure = dataSource.getSortMeasure(dimension);
 
     var query: any = $('main')
@@ -52,17 +52,18 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
   componentDidMount() {
     this.mounted = true;
-    var { filter, dimension } = this.props;
-    this.fetchData(filter, dimension);
+    var { essence, dimension } = this.props;
+    this.fetchData(essence.filter, dimension);
   }
 
   componentWillReceiveProps(nextProps: MenuTableProps) {
-    var props = this.props;
+    var essence = this.props.essence;
+    var nextEssence = nextProps.essence;
     if (
-      props.filter.equals(nextProps.filter) &&
-      props.dimension.equals(nextProps.dimension)
+      essence.filter.equals(nextEssence.filter) &&
+      this.props.dimension.equals(nextProps.dimension)
     ) return;
-    this.fetchData(nextProps.filter, nextProps.dimension);
+    this.fetchData(nextEssence.filter, nextProps.dimension);
   }
 
   componentWillUnmount() {
@@ -71,7 +72,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
   onBoxClick(value: any, e: MouseEvent) {
     e.stopPropagation();
-    var { filter, dimension, selectFilter } = this.props;
+    var { essence, dimension, selectFilter } = this.props;
     var { selectedValues } = this.state;
     if (selectedValues.indexOf(value) > -1) {
       selectedValues = selectedValues.filter(selectedValue => selectedValue !== value);
@@ -80,14 +81,14 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     }
     this.setState({ selectedValues });
     if (selectFilter) {
-      selectFilter(filter.setValues(dimension.expression, selectedValues), 'checkbox');
+      selectFilter(essence.filter.setValues(dimension.expression, selectedValues), 'checkbox');
     }
   }
 
   render() {
-    var { dataSource, dimension, showSearch, showCheckboxes } = this.props;
+    var { essence, dimension, showSearch, showCheckboxes } = this.props;
     var { dataset, selectedValues } = this.state;
-    var measure = dataSource.getSortMeasure(dimension);
+    var measure = essence.dataSource.getSortMeasure(dimension);
 
     var dimensionName = dimension.name;
     var measureName = measure.name;

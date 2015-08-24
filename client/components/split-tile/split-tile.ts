@@ -6,7 +6,9 @@ import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
 import { Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
-import { dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+
+const SPLIT_CLASS_NAME = 'split';
 
 interface SplitTileProps {
   clicker: Clicker;
@@ -45,7 +47,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   selectDimension(dimension: Dimension, e: MouseEvent) {
     var { triggerMenuOpen } = this.props;
-    triggerMenuOpen(<Element>e.target, dimension);
+    triggerMenuOpen(findParentWithClass(<Element>e.target, SPLIT_CLASS_NAME), dimension);
   }
 
   removeSplit(split: SplitCombine, e: MouseEvent) {
@@ -138,7 +140,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         itemY += CORE_ITEM_HEIGHT;
 
         var classNames = [
-          'split',
+          SPLIT_CLASS_NAME,
           dimension.className
         ];
         if (dimension === selectedDimension) classNames.push('selected');

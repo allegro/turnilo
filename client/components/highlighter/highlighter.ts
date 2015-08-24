@@ -5,6 +5,7 @@ import * as Icon from 'react-svg-icons';
 import { Timezone, Duration } from 'chronology';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { Clicker, Filter, Dimension, Measure } from '../../models/index';
+import { isInside, escapeKey } from '../../utils/dom';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface HighlighterProps {
@@ -91,7 +92,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
-    if (e.which !== 27) return; // 27 = escape
+    if (!escapeKey(e)) return;
     var { onHighlightEnd } = this.props;
     onHighlightEnd();
   }

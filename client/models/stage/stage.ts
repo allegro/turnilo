@@ -23,6 +23,15 @@ export class Stage {
   public width: number;
   public height: number;
 
+  static fromClientRect(rect: ClientRect): Stage {
+    return new Stage({
+      x: rect.left,
+      y: rect.top,
+      width: rect.width,
+      height: rect.height
+    });
+  }
+
   static fromSize(width: number, height: number): Stage {
     return new Stage({
       x: 0,

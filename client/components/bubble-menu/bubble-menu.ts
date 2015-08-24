@@ -4,21 +4,20 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Executor } from 'plywood';
-import { isInside } from '../../utils/dom';
-import { Stage } from "../../models/index";
-
-const TITLE_BAR_HEIGHT = 40;
-const BUTTON_BAR_HEIGHT = 52;
+import { isInside, escapeKey } from '../../utils/dom';
+import { Stage } from '../../models/index';
+import { MenuPortal } from '../menu-portal/menu-portal';
 
 interface BubbleMenuProps {
-  anchor: number;
-  parentStage: Stage;
-  trigger: Element;
+  containerStage: Stage;
+  openOn: Element;
   onClose: Function;
   children: any;
 }
 
 interface BubbleMenuState {
+  x: number;
+  y: number;
 }
 
 export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState> {
@@ -28,6 +27,14 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     //this.state = {};
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
+  }
+
+  componentWillMount() {
+    var rect = this.props.openOn.getBoundingClientRect();
+    this.setState({
+      x: rect.left + rect.width - 10,
+      y: rect.top + rect.height / 2
+    });
   }
 
   componentDidMount() {
@@ -41,22 +48,23 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   globalMouseDownListener(e: MouseEvent) {
-    var { onClose, trigger } = this.props;
+    var { onClose, openOn } = this.props;
     var myElement = React.findDOMNode(this);
     var target = <Element>e.target;
 
-    if (isInside(target, myElement) || isInside(target, trigger)) return;
+    if (isInside(target, myElement) || isInside(target, openOn)) return;
     onClose();
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
-    if (e.which !== 27) return; // 27 = escape
+    if (!escapeKey(e)) return;
     var { onClose } = this.props;
     onClose();
   }
 
   render() {
-    var { onClose, anchor, parentStage, children } = this.props;
+    var { onClose, containerStage, children } = this.props;
+    var { x, y } = this.state;
 
     var menuWidth: number;
     var menuHeight: number;
@@ -64,21 +72,24 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     menuWidth = 250;
     menuHeight = 400;
 
-    var top = Math.min(Math.max(0, anchor - menuHeight / 2), parentStage.height - menuHeight);
+    var top = Math.min(Math.max(containerStage.y, y - menuHeight / 2), containerStage.y + containerStage.height - menuHeight);
     var style = {
-      top,
+      left: x,
+      top: top,
       width: menuWidth,
       height: menuHeight
     };
     var shpitzStyle = {
-      top: anchor - top
+      top: y - top
     };
 
     return JSX(`
-      <div className="bubble-menu" style={style}>
-        {children}
-        <div className="shpitz" style={shpitzStyle}></div>
-      </div>
+      <MenuPortal>
+        <div className="bubble-menu" style={style}>
+          {children}
+          <div className="shpitz" style={shpitzStyle}></div>
+        </div>
+      </MenuPortal>
     `);
   }
 }
@@ -147,15 +158,6 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     `);
   }
 
-<div className="title-bar">
-  <div className="title">{dimension.title}</div>
-  <div className="pin" onClick={this.pinDimension.bind(this)}>
-    <Icon name="pinned" height={12}/>
-  </div>
-  <div className="close" onClick={onClose}>
-    <Icon name="x" height={12}/>
-  </div>
-</div>
 {dimension.type === 'TIME' ? this.renderTimeSeries() : this.renderTable()}
 <div className="button-bar">
   <div className="ok button" onClick={this.onOK.bind(this)}>OK</div>
