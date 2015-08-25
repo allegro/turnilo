@@ -76,15 +76,23 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     }
 
     if (!Array.isArray(jsArray) || jsArray.length !== 5) return null;
-    return Essence.fromJS({
-      dataSource: dataSource,
-      visualization: visualization,
-      filter: jsArray[0],
-      timezone: jsArray[1],
-      splits: jsArray[2],
-      selectedMeasures: jsArray[3],
-      pinnedDimensions: jsArray[4]
-    }, dataSources);
+
+    var essence: Essence;
+    try {
+      essence = Essence.fromJS({
+        dataSource: dataSource,
+        visualization: visualization,
+        filter: jsArray[0],
+        timezone: jsArray[1],
+        splits: jsArray[2],
+        selectedMeasures: jsArray[3],
+        pinnedDimensions: jsArray[4]
+      }, dataSources);
+    } catch (e) {
+      return null;
+    }
+
+    return essence;
   }
 
   static fromJS(parameters: EssenceJS, dataSources?: List<DataSource>): Essence {

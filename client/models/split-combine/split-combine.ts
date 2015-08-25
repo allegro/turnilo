@@ -112,6 +112,7 @@ export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitC
   }
 
   public getTitle(dataSource: DataSource): string {
-    return this.getDimension(dataSource) + this.getBucketTitle();
+    var dimension = this.getDimension(dataSource);
+    return (dimension ? dimension.title : '?') + this.getBucketTitle();
   }
 }
