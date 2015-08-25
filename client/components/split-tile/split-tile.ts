@@ -9,7 +9,6 @@ import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, M
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { MenuHeader } from '../menu-header/menu-header';
-import { MenuActionBar } from '../menu-action-bar/menu-action-bar';
 
 const SPLIT_CLASS_NAME = 'split';
 
@@ -137,11 +136,12 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
+    var menuSize = Stage.fromSize(250, 400);
+
     return JSX(`
-      <BubbleMenu containerStage={menuStage} openOn={menuOpenOn} onClose={onClose}>
+      <BubbleMenu containerStage={menuStage} stage={menuSize} openOn={menuOpenOn} onClose={onClose}>
         <MenuHeader dimension={menuDimension}/>
         <div>SPLIT YO</div>
-        <MenuActionBar clicker={clicker} essence={essence} dimension={menuDimension} onClose={onClose}/>
       </BubbleMenu>
     `);
   }

@@ -160,14 +160,17 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
+    var menuSize: Stage = null;
     var menuVisualization: React.ReactElement<any> = null;
     if (menuDimension.type === 'TIME') {
+      menuSize = Stage.fromSize(350, 300);
       menuVisualization = React.createElement(MenuTimeSeries, {
         essence,
         dimension: menuDimension,
-        stage: Stage.fromSize(200, 100)
+        stage: menuSize.within({ top: 40, bottom: 52 }) // ToDo: remove magic numbers
       });
     } else {
+      menuSize = Stage.fromSize(250, 400);
       menuVisualization = React.createElement(MenuTable, {
         essence,
         dimension: menuDimension,
@@ -177,9 +180,9 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     }
 
     return JSX(`
-      <BubbleMenu containerStage={menuStage} openOn={menuOpenOn} onClose={onClose}>
+      <BubbleMenu containerStage={menuStage} stage={menuSize} openOn={menuOpenOn} onClose={onClose}>
         <MenuHeader dimension={menuDimension}/>
-        {menuVisualization}
+        <div className="menu-cont">{menuVisualization}</div>
         <MenuActionBar clicker={clicker} essence={essence} dimension={menuDimension} onClose={onClose}/>
       </BubbleMenu>
     `);

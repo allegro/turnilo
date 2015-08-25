@@ -9,6 +9,7 @@ import { Stage } from '../../models/index';
 import { BodyPortal } from '../body-portal/body-portal';
 
 interface BubbleMenuProps {
+  stage: Stage;
   containerStage: Stage;
   openOn: Element;
   onClose: Function;
@@ -63,14 +64,11 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   render() {
-    var { onClose, containerStage, children } = this.props;
+    var { stage, containerStage, children } = this.props;
     var { x, y } = this.state;
 
-    var menuWidth: number;
-    var menuHeight: number;
-
-    menuWidth = 250;
-    menuHeight = 400;
+    var menuWidth = stage.width;
+    var menuHeight = stage.height;
 
     var top = Math.min(Math.max(containerStage.y, y - menuHeight / 2), containerStage.y + containerStage.height - menuHeight);
     var style = {
@@ -93,74 +91,3 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     `);
   }
 }
-
-/*
-
- import { MenuTable } from "../menu-table/menu-table";
- import { MenuTimeSeries } from "../menu-time-series/menu-time-series";
-
-
-  onOK() {
-    var { clicker, onClose } = this.props;
-    var { filter } = this.state;
-    clicker.changeFilter(filter);
-    onClose();
-  }
-
-  selectFilter(newFilter: Filter, source: string): void {
-    var { clicker, onClose } = this.props;
-    this.setState({
-      filter: newFilter
-    });
-  }
-
-  pinDimension(): void {
-    var { clicker, dimension, onClose } = this.props;
-    clicker.pin(dimension);
-    onClose();
-  }
-
-  addSplit(): void {
-    var { clicker, dimension, onClose } = this.props;
-    clicker.addSplit(dimension.getSplitCombine());
-    onClose();
-  }
-
-  changeSplit(): void {
-    var { clicker, dimension, onClose } = this.props;
-    clicker.changeSplits(List([dimension.getSplitCombine()]));
-    onClose();
-  }
-
-  renderTable(): React.ReactElement<any> {
-    var { dataSource, filter, dimension } = this.props;
-    return JSX(`
-      <MenuTable
-        dataSource={dataSource}
-        filter={filter}
-        dimension={dimension}
-        selectFilter={this.selectFilter.bind(this)}
-        showSearch={true}
-        showCheckboxes={true}
-      />
-    `);
-  }
-
-  renderTimeSeries(): React.ReactElement<any> {
-    var { dataSource, filter, dimension } = this.props;
-    return JSX(`
-      <MenuTimeSeries
-        stage={Stage.fromSize(400, 100)}
-        dataSource={dataSource}
-        filter={filter}
-        dimension={dimension}
-      />
-    `);
-  }
-
-{dimension.type === 'TIME' ? this.renderTimeSeries() : this.renderTable()}
-<div className="button-bar">
-  <div className="ok button" onClick={this.onOK.bind(this)}>OK</div>
-  <div className="cancel button" onClick={onClose}>Cancel</div>
-</div>
- */

@@ -3,6 +3,8 @@
 $title-bar-height: 40px;
 $action-bar-height: 52px;
 
+$presets-width: 200px;
+
 $shpitz-size: 12px;
 
 .bubble-menu {
@@ -34,12 +36,30 @@ $shpitz-size: 12px;
     @include pin-top($title-bar-height);
   }
 
-  .menu-table,
-  .menu-time-series {
+  .menu-cont {
     position: absolute;
     top: $title-bar-height;
     bottom: $action-bar-height;
     width: 100%;
+
+    &.presets {
+      ul {
+        width: $presets-width;
+        padding-left: 10px;
+
+        li {
+          margin-bottom: 2px;
+          color: $brand;
+          cursor: pointer;
+        }
+      }
+
+      .menu-time-series {
+        position: absolute;
+        left: $presets-width;
+        top: 0;
+      }
+    }
   }
 
   .menu-action-bar {

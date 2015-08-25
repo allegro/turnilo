@@ -11,7 +11,7 @@ import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { MenuHeader } from '../menu-header/menu-header';
 import { MenuTable } from '../menu-table/menu-table';
-import { MenuActionBar } from '../menu-action-bar/menu-action-bar';
+import { MenuTimeSeries } from '../menu-time-series/menu-time-series';
 
 const FILTER_CLASS_NAME = 'filter';
 
@@ -167,16 +167,43 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
+    var menuSize: Stage = null;
+    var menuCont: React.DOMElement<any> = null;
+    if (menuDimension.type === 'TIME') {
+      menuSize = Stage.fromSize(550, 300);
+      var menuVisSize = menuSize.within({ left: 200, top: 40, bottom: 52 });  // ToDo: remove magic numbers
+      menuCont = JSX(`
+        <div className="menu-cont presets">
+          <ul>
+            <li>Today</li>
+            <li>Yesterday</li>
+            <li>Last week</li>
+          </ul>
+          <MenuTimeSeries
+            essence={essence}
+            dimension={menuDimension}
+            stage={menuVisSize}
+          />
+        </div>
+      `);
+    } else {
+      menuSize = Stage.fromSize(250, 400);
+      menuCont = JSX(`
+        <div className="menu-cont">
+          <MenuTable
+            essence={essence}
+            dimension={menuDimension}
+            showSearch={true}
+            showCheckboxes={true}
+          />
+        </div>
+      `);
+    }
+
     return JSX(`
-      <BubbleMenu containerStage={menuStage} openOn={menuOpenOn} onClose={onClose}>
+      <BubbleMenu containerStage={menuStage} stage={menuSize} openOn={menuOpenOn} onClose={onClose}>
         <MenuHeader dimension={menuDimension}/>
-        <MenuTable
-          essence={essence}
-          dimension={menuDimension}
-          showSearch={true}
-          showCheckboxes={true}
-        />
-        <MenuActionBar clicker={clicker} essence={essence} dimension={menuDimension} onClose={onClose}/>
+        {menuCont}
       </BubbleMenu>
     `);
   }
