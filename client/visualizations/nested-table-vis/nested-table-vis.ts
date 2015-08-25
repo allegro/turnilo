@@ -76,13 +76,13 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
 
   componentDidMount() {
     this.mounted = true;
-    var props = this.props;
-    this.fetchData(props.filter, props.splits, props.measures);
+    var { filter, splits, measures } = this.props;
+    this.fetchData(filter, splits, measures);
   }
 
   componentWillReceiveProps(nextProps: NestedTableVisProps) {
     var props = this.props;
-    if (props.filter !== nextProps.filter || props.splits !== nextProps.splits || !listsEqual(props.measures, nextProps.measures)) {
+    if (props.filter !== nextProps.filter || !listsEqual(props.splits, nextProps.splits) || !listsEqual(props.measures, nextProps.measures)) {
       this.fetchData(nextProps.filter, nextProps.splits, nextProps.measures);
     }
   }

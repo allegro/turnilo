@@ -109,6 +109,13 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
     return new Filter({ operands });
   }
 
+  public getValues(attribute: Expression): any[] {
+    var operands = this.operands;
+    var index = this.indexOfOperand(attribute);
+    if (index === -1) return null;
+    return operands.get(index).actions[0].getLiteralValue();
+  }
+
   public setTimeRange(attribute: Expression, timeRange: TimeRange): Filter {
     var operands = this.operands;
     var index = this.indexOfOperand(attribute);
@@ -119,6 +126,13 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
       operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
     }
     return new Filter({ operands });
+  }
+
+  public getTimeRange(attribute: Expression): TimeRange {
+    var operands = this.operands;
+    var index = this.indexOfOperand(attribute);
+    if (index === -1) return null;
+    return operands.get(index).actions[0].getLiteralValue();
   }
 
   public remove(attribute: Expression): Filter {

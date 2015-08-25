@@ -233,6 +233,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
   public changeFilter(filter: Filter): Essence {
     var value = this.valueOf();
     value.filter = filter;
+    value.splits = SplitCombine.updateWithFilter(value.splits, value.dataSource, value.filter);
     return new Essence(value);
   }
 

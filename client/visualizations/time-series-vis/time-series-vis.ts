@@ -5,7 +5,7 @@ import * as React from 'react/addons';
 import * as d3 from 'd3';
 import * as numeral from 'numeral';
 import { $, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
-import { bindOne, bindMany } from "../../utils/render";
+import { listsEqual } from '../../utils/general';
 import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker } from "../../models/index";
 import { ChartLine } from '../../components/chart-line/chart-line';
 import { TimeAxis } from '../../components/time-axis/time-axis';
@@ -71,8 +71,8 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     };
   }
 
-  fetchData(filter: Filter, measures: List<Measure>) {
-    var { dataSource, splits } = this.props;
+  fetchData(filter: Filter, splits: List<SplitCombine>, measures: List<Measure>) {
+    var { dataSource } = this.props;
     var $main = $('main');
 
     var query: any = $()
@@ -106,14 +106,14 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
 
   componentDidMount() {
     this.mounted = true;
-    var { filter, measures } = this.props;
-    this.fetchData(filter, measures);
+    var { filter, splits, measures } = this.props;
+    this.fetchData(filter, splits, measures);
   }
 
   componentWillReceiveProps(nextProps: TimeSeriesVisProps) {
     var props = this.props;
-    if (props.filter !== nextProps.filter || props.measures !== nextProps.measures) {
-      this.fetchData(nextProps.filter, nextProps.measures);
+    if (props.filter !== nextProps.filter || !listsEqual(props.splits, nextProps.splits) || !listsEqual(props.measures, nextProps.measures)) {
+      this.fetchData(nextProps.filter, nextProps.splits, nextProps.measures);
     }
   }
 

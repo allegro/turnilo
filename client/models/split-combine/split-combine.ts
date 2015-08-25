@@ -1,9 +1,23 @@
 'use strict';
 
+import { List } from 'immutable';
 import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
-import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction } from 'plywood';
+import { Timezone, Duration, day, hour } from 'chronology';
+import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction, TimeRange } from 'plywood';
 import { DataSource } from '../data-source/data-source';
+import { Filter } from '../filter/filter';
 import { Dimension } from '../dimension/dimension';
+
+function getBestGranularity(timeRange: TimeRange): Duration {
+  var len = timeRange.end.valueOf() - timeRange.start.valueOf();
+  if (len > 6 * day.canonicalLength) {
+    return Duration.fromJS('P1D');
+  } else if (len > 12 * hour.canonicalLength) {
+    return Duration.fromJS('PT1H');
+  } else {
+    return Duration.fromJS('PT1M');
+  }
+}
 
 export interface SplitCombineValue {
   expression: Expression;
@@ -28,6 +42,21 @@ export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitC
 
   static isSplitCombine(candidate: any): boolean {
     return isInstanceOf(candidate, SplitCombine);
+  }
+
+  static updateWithFilter(splits: List<SplitCombine>, dataSource: DataSource, filter: Filter): List<SplitCombine> {
+    if (splits.size !== 1) return splits;
+    var timeSplit = splits.get(0);
+    var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
+    if (!timeBucketAction) return splits;
+    var timeRange = filter.getTimeRange(dataSource.getDimension('time').expression);
+    if (!timeRange) return splits;
+    var granularity = getBestGranularity(timeRange);
+    if (timeBucketAction.duration.equals(granularity)) return splits;
+    return List([timeSplit.changeBucketAction(new TimeBucketAction({
+      timezone: timeBucketAction.timezone,
+      duration: granularity
+    }))]);
   }
 
   static fromJS(parameters: SplitCombineJS): SplitCombine {
@@ -91,6 +120,12 @@ export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitC
     var bucketAction = this.bucketAction;
     if (!bucketAction) return expression;
     return expression.performAction(bucketAction);
+  }
+
+  public changeBucketAction(bucketAction: Action): SplitCombine {
+    var value = this.valueOf();
+    value.bucketAction = bucketAction;
+    return new SplitCombine(value);
   }
 
   public getDimension(dataSource: DataSource): Dimension {
