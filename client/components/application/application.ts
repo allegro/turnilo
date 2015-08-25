@@ -138,14 +138,14 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         dataSource: dataSource,
         timezone: Timezone.UTC,
         filter: new Filter({
-          operands: List([$('time').in(timeRange)])
+          operands: List([dataSource.timeAttribute.in(timeRange)])
         }),
         splits: List([
-          dataSource.getDimension('time').getSplitCombine()
+          dataSource.getDimensionByExpression(dataSource.timeAttribute).getSplitCombine()
           //dataSource.getDimension('page').getSplitCombine()
         ]),
         selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
-        pinnedDimensions: OrderedSet(['language', 'page']),
+        pinnedDimensions: OrderedSet([dataSource.dimensions.get(1).name, dataSource.dimensions.get(5).name]),
         visualization: null
       });
     }

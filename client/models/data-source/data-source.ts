@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 import * as Q from 'q';
 import * as Qajax from 'qajax';
 import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
-import { $, Expression, Executor, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
+import { $, Expression, ExpressionJS, Executor, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
 import { upperCaseFirst, listsEqual } from '../../utils/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -51,12 +51,14 @@ function measurePreference(measure: Measure): number {
 interface DimensionsMetrics {
   dimensions: List<Dimension>;
   measures: List<Measure>;
+  timeAttribute: Expression;
   defaultSortOn: string;
 }
 
 function makeDimensionsMetricsFromAttributes(attributes: Attributes): DimensionsMetrics {
   var dimensionArray: Dimension[] = [];
   var measureArray: Measure[] = [];
+  var timeAttribute = $('time');
   var defaultSortOn: string = null;
 
   if (!attributes['count']) {
@@ -70,7 +72,6 @@ function makeDimensionsMetricsFromAttributes(attributes: Attributes): Dimensions
   }
 
   for (let k in attributes) {
-    if (!attributes.hasOwnProperty(k)) continue;
     let type = attributes[k].type;
     switch (type) {
       case 'TIME':
@@ -117,6 +118,7 @@ function makeDimensionsMetricsFromAttributes(attributes: Attributes): Dimensions
   return {
     dimensions: List(dimensionArray),
     measures: List(measureArray),
+    timeAttribute,
     defaultSortOn
   };
 }
@@ -131,6 +133,7 @@ export interface DataSourceValue {
 
   dimensions?: List<Dimension>;
   measures?: List<Measure>;
+  timeAttribute?: Expression;
   defaultSortOn?: string;
 
   executor?: Executor;
@@ -143,6 +146,7 @@ export interface DataSourceJS {
 
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
+  timeAttribute?: ExpressionJS;
   defaultSortOn?: string;
 }
 
@@ -157,6 +161,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
 
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
+  public timeAttribute: Expression;
   public defaultSortOn: string;
 
   public executor: Executor;
@@ -165,35 +170,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     return isInstanceOf(candidate, DataSource);
   }
 
-  static fromQueryURL(name: string, title: string, source: string): DataSource {
-    /*
-     "dimensions":["continent","robot","country","city","newPage","unpatrolled","namespace","anonymous","language","page","region","user"],
-     "metrics":["deleted","added","count","delta"]
-     */
-
-    var attributes: Attributes = {
-      time: AttributeInfo.fromJS({ type: 'TIME' }),
-
-      robot: AttributeInfo.fromJS({ type: 'STRING' }),
-      newPage: AttributeInfo.fromJS({ type: 'STRING' }),
-      unpatrolled: AttributeInfo.fromJS({ type: 'STRING' }),
-      namespace: AttributeInfo.fromJS({ type: 'STRING' }),
-      anonymous: AttributeInfo.fromJS({ type: 'STRING' }),
-      language: AttributeInfo.fromJS({ type: 'STRING' }),
-      page: AttributeInfo.fromJS({ type: 'STRING' }),
-      user: AttributeInfo.fromJS({ type: 'STRING' }),
-
-      continent: AttributeInfo.fromJS({ type: 'STRING' }),
-      country: AttributeInfo.fromJS({ type: 'STRING' }),
-      city: AttributeInfo.fromJS({ type: 'STRING' }),
-      region: AttributeInfo.fromJS({ type: 'STRING' }),
-
-      count: AttributeInfo.fromJS({ type: 'NUMBER' }),
-      added: AttributeInfo.fromJS({ type: 'NUMBER' }),
-      deleted: AttributeInfo.fromJS({ type: 'NUMBER' }),
-      delta: AttributeInfo.fromJS({ type: 'NUMBER' })
-    };
-
+  static fromQueryURL(name: string, title: string, source: string, attributes: Attributes): DataSource {
     var dm = makeDimensionsMetricsFromAttributes(attributes);
     return new DataSource({
       name,
@@ -203,6 +180,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       loadError: null,
       dimensions: dm.dimensions,
       measures: dm.measures,
+      timeAttribute: dm.timeAttribute,
       defaultSortOn: dm.defaultSortOn,
       executor: queryUrlExecutorFactory(source)
     });
@@ -237,6 +215,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       loadError: null,
       dimensions: dm.dimensions,
       measures: dm.measures,
+      timeAttribute: dm.timeAttribute,
       defaultSortOn: dm.defaultSortOn,
       executor
     });
@@ -254,6 +233,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     if (parameters.dimensions) {
       value.dimensions = List(parameters.dimensions.map(Dimension.fromJS));
       value.measures = List(parameters.measures.map(Measure.fromJS));
+      value.timeAttribute = Expression.fromJS(parameters.timeAttribute);
       value.defaultSortOn = parameters.defaultSortOn;
     }
     return new DataSource(value);
@@ -267,6 +247,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     this.loadError = parameters.loadError;
     this.dimensions = parameters.dimensions;
     this.measures = parameters.measures;
+    this.timeAttribute = parameters.timeAttribute;
     this.defaultSortOn = parameters.defaultSortOn;
     this.executor = parameters.executor;
   }
@@ -282,6 +263,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     if (this.dimensions) {
       value.dimensions = this.dimensions;
       value.measures = this.measures;
+      value.timeAttribute = this.timeAttribute;
       value.defaultSortOn = this.defaultSortOn;
     }
     if (this.executor) {
@@ -299,6 +281,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     if (this.dimensions) {
       js.dimensions = this.dimensions.toArray().map(dimension => dimension.toJS());
       js.measures = this.measures.toArray().map(measure => measure.toJS());
+      js.timeAttribute = this.timeAttribute.toJS();
       js.defaultSortOn = this.defaultSortOn;
     }
     return js;
@@ -319,6 +302,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       this.source === other.source &&
       listsEqual(this.dimensions, other.dimensions) &&
       listsEqual(this.measures, other.measures) &&
+      this.timeAttribute.equals(other.timeAttribute) &&
       this.defaultSortOn === other.defaultSortOn;
   }
 

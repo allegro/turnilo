@@ -136,12 +136,12 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
-    var menuSize = Stage.fromSize(250, 400);
+    var menuSize = Stage.fromSize(250, 200);
 
     return JSX(`
       <BubbleMenu containerStage={menuStage} stage={menuSize} openOn={menuOpenOn} onClose={onClose}>
         <MenuHeader dimension={menuDimension}/>
-        <div>SPLIT YO</div>
+        <div className="menu-cont">SPLIT YO</div>
       </BubbleMenu>
     `);
   }

@@ -1,9 +1,9 @@
 'use strict';
 
-import { List, IndexedIterable } from 'immutable';
+import { List } from 'immutable';
 import * as React from 'react/addons';
 import { Timezone, WallTime } from 'chronology';
-import { $, Expression, Datum, Dataset, TimeRange } from 'plywood';
+import { $, Expression, Datum, Dataset, TimeRange, AttributeInfo } from 'plywood';
 
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "./models/index";
 import { Application } from "./components/index";
@@ -14,11 +14,18 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-var dataSources = List([
-  DataSource.fromQueryURL('wiki', 'Wikipedia Edits', '/query')
-  //DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia Edits', '/wikipedia.json')
-  //DataSource.fromArray('wiki2', 'Wikipedia Edits 2', wikiRawData)
-]);
+var dataSources: List<DataSource>;
+if ((<any>window)['ds']) {
+  var ds: any[] = (<any>window)['ds'];
+  dataSources = List(ds.map(d => {
+    return DataSource.fromQueryURL(d.name, d.title, '/query', AttributeInfo.fromJSs(d.attributes));
+  }));
+} else {
+  dataSources = List([
+    DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia Edits', '/wikipedia.json')
+    //DataSource.fromArray('wiki2', 'Wikipedia Edits 2', wikiRawData)
+  ]);
+}
 
 React.render(
   React.createElement(Application, {

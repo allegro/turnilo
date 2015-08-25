@@ -16,6 +16,10 @@
       left: $tile-padding-h;
       right: $tile-padding-h;
       height: $item-height;
+
+      .remove svg {
+        width: 12px;
+      }
     }
   }
 }

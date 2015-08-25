@@ -60,6 +60,10 @@ $shpitz-size: 12px;
         top: 0;
       }
     }
+
+    .menu-table {
+      @include pin-full;
+    }
   }
 
   .menu-action-bar {

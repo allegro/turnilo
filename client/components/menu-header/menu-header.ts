@@ -25,12 +25,19 @@ export class MenuHeader extends React.Component<MenuHeaderProps, MenuHeaderState
   render() {
     var { dimension, onSearchToggle } = this.props;
 
-    return JSX(`
-      <div className="menu-header">
-        <div className="menu-title">{dimension.title}</div>
+    var searchBar: React.DOMElement<any> = null;
+    if (onSearchToggle) {
+      searchBar = JSX(`
         <div className="search" onClick={onSearchToggle}>
           <Icon name="loupe"/>
         </div>
+      `);
+    }
+
+    return JSX(`
+      <div className="menu-header">
+        <div className="menu-title">{dimension.title}</div>
+        {searchBar}
       </div>
     `);
   }

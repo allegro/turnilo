@@ -276,6 +276,15 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         var style = { transform: `translate3d(0,${itemY}px,0)` };
         itemY += CORE_ITEM_HEIGHT;
 
+        var removeButton: React.DOMElement<any> = null;
+        if (!operandExpression.equals(dataSource.timeAttribute)) {
+          removeButton = JSX(`
+            <div className="remove" onClick={this.removeFilter.bind(this, operandExpression)}>
+              <Icon name="x"/>
+            </div>
+          `);
+        }
+
         var classNames = [
           FILTER_CLASS_NAME,
           dimension.className
@@ -291,9 +300,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
             style={style}
           >
             <div className="reading">{dimension.title + ': ' + this.formatValue(dimension, operand, timezone)}</div>
-            <div className="remove" onClick={this.removeFilter.bind(this, operandExpression)}>
-              <Icon name="x" width={12} height={12}/>
-            </div>
+            {removeButton}
           </div>
         `);
       }, this);
