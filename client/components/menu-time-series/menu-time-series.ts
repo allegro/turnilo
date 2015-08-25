@@ -42,7 +42,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
 
     var query: any = $('main')
       .filter(filter.toExpression())
-      .split(dimension.getSplitCombine().splitOn, dimension.name)
+      .split(dimension.getSplitCombine().toSplitExpression(), dimension.name)
       .apply(measure.name, measure.expression)
       .sort($(dimension.name), 'ascending');
 

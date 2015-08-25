@@ -58,7 +58,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     });
 
     splits.forEach((split) => {
-      var subQuery = $main.split(split.splitOn, 'Split');
+      var subQuery = $main.split(split.toSplitExpression(), 'Split');
 
       measures.forEach((measure) => {
         subQuery = subQuery.apply(measure.name, measure.expression);
@@ -103,7 +103,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     var { dataSource, measures, splits, stage } = this.props;
     var { dataset, scrollLeft, scrollTop } = this.state;
 
-    var segmentTitle = splits.map((split) => dataSource.getDimension(split.dimension).title).join(', ');
+    var segmentTitle = splits.map((split) => split.getDimension(dataSource).title).join(', ');
 
     var measuresArray = measures.toArray();
 

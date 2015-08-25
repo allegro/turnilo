@@ -60,23 +60,14 @@ export class #{camelName} implements ImmutableInstance<#{camelName}Value, #{came
 
   public valueOf(): #{camelName}Value {
     return {
-      name: this.name,
-      title: this.title,
-      expression: this.expression,
-      type: this.type,
-      sortOn: this.sortOn
+
     };
   }
 
   public toJS(): #{camelName}JS {
-    var js: #{camelName}JS = {
-      name: this.name,
-      title: this.title,
-      expression: this.expression.toJS(),
-      type: this.type
+    return {
+
     };
-    if (this.sortOn) js.sortOn = this.sortOn;
-    return js;
   }
 
   public toJSON(): #{camelName}JS {

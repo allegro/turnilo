@@ -50,7 +50,9 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
   globalMouseDownListener(e: MouseEvent) {
     var { onClose, openOn } = this.props;
-    var myElement = React.findDOMNode(this);
+    // can not use React.findDOMNode(this) because portal?
+    var myElement = <Element>document.getElementsByClassName('bubble-menu')[0];
+    if (!myElement) return;
     var target = <Element>e.target;
 
     if (isInside(target, myElement) || isInside(target, openOn)) return;

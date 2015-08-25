@@ -2,10 +2,10 @@
 
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
-import { Timezone } from 'chronology';
+import { Timezone, Duration, hour, day, week } from 'chronology';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../models/index';
 import { formatStartEnd } from '../../utils/date';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
@@ -14,6 +14,46 @@ import { MenuTable } from '../menu-table/menu-table';
 import { MenuTimeSeries } from '../menu-time-series/menu-time-series';
 
 const FILTER_CLASS_NAME = 'filter';
+
+var tz = Timezone.UTC;
+var now = hour.ceil(new Date(), tz);
+const TIME_PRESETS: TimePreset[] = [
+  TimePreset.fromJS({
+    name: 'Past hour',
+    timeRange: {
+      start: hour.floor(now, tz),
+      end: now
+    }
+  }),
+  TimePreset.fromJS({
+    name: 'Past 6 hours',
+    timeRange: {
+      start: hour.move(hour.floor(now, tz), tz, -5),
+      end: now
+    }
+  }),
+  TimePreset.fromJS({
+    name: 'Past day',
+    timeRange: {
+      start: day.floor(now, tz),
+      end: now
+    }
+  }),
+  TimePreset.fromJS({
+    name: 'Past 7 days',
+    timeRange: {
+      start: day.move(day.floor(now, tz), tz, -6),
+      end: now
+    }
+  }),
+  TimePreset.fromJS({
+    name: 'Past week',
+    timeRange: {
+      start: week.floor(now, tz),
+      end: now
+    }
+  })
+];
 
 interface FilterTileProps {
   clicker: Clicker;
@@ -65,6 +105,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { essence, clicker } = this.props;
     clicker.changeFilter(essence.filter.remove(expression));
     e.stopPropagation();
+  }
+
+  onPresetClick(preset: TimePreset) {
+    console.log('preset-click', preset.timeRange);
+    var { clicker } = this.props;
+    clicker.changeTimeRange(preset.timeRange);
   }
 
   dragStart(dimension: Dimension, operand: ChainExpression, e: DragEvent) {
@@ -170,15 +216,19 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var menuSize: Stage = null;
     var menuCont: React.DOMElement<any> = null;
     if (menuDimension.type === 'TIME') {
+      var presets = TIME_PRESETS.map((preset) => {
+        return JSX(`
+          <li key={preset.name} onClick={this.onPresetClick.bind(this, preset)}>
+            {preset.name}
+          </li>
+        `);
+      });
+
       menuSize = Stage.fromSize(550, 300);
       var menuVisSize = menuSize.within({ left: 200, top: 40, bottom: 52 });  // ToDo: remove magic numbers
       menuCont = JSX(`
         <div className="menu-cont presets">
-          <ul>
-            <li>Today</li>
-            <li>Yesterday</li>
-            <li>Last week</li>
-          </ul>
+          <ul>{presets}</ul>
           <MenuTimeSeries
             essence={essence}
             dimension={menuDimension}

@@ -33,13 +33,12 @@ function getTimeExtent(dataset: Dataset, splits: List<SplitCombine>): [Date, Dat
 
   // ToDo: flatten / map
 
-  var lastSplitDimension = splits.last().dimension;
   for (var lastSplitDataset of lastSplitDatasets) {
     var lastSplitData = lastSplitDataset.data;
     if (!lastSplitData.length) continue;
     extentData.push(
-      lastSplitData[0][lastSplitDimension].start,
-      lastSplitData[lastSplitData.length - 1][lastSplitDimension].end
+      lastSplitData[0]['Segment'].start,
+      lastSplitData[lastSplitData.length - 1]['Segment'].end
     );
   }
 
@@ -85,13 +84,13 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
 
     splits.forEach((split, i) => {
       var isLast = i === splits.size - 1;
-      var subQuery = $main.split(split.splitOn, split.dimension);
+      var subQuery = $main.split(split.toSplitExpression(), 'Segment');
 
       measures.forEach((measure) => {
         subQuery = subQuery.apply(measure.name, measure.expression);
       });
       if (isLast) {
-        subQuery = subQuery.sort($(split.dimension), 'ascending');
+        subQuery = subQuery.sort($('Segment'), 'ascending');
       } else {
         subQuery = subQuery.sort($(measures.first().name), 'descending').limit(5);
       }
@@ -148,8 +147,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       var myDatum: Datum = dataset.data[0];
       var myDataset: Dataset = myDatum['Split'];
 
-      var splitName = splits.last().dimension;
-      var getX = (d: Datum) => midpoint(d[splitName]);
+      var getX = (d: Datum) => midpoint(d['Segment']);
 
       var parentWidth = stage.width - H_PADDING * 2;
       var svgStage = new Stage({
@@ -244,7 +242,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
       var highlighter: React.ReactElement<any> = null;
       if (dragStart !== null) {
         var timeSplit = splits.first(); // ToDo: fix this
-        var timeBucketAction = <TimeBucketAction>(<ChainExpression>timeSplit.splitOn).actions[0];
+        var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
         highlighter = React.createElement(Highlighter, {
           clicker,
           scaleX,

@@ -195,7 +195,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
 
     if (splits.size) {
       var lastSplit = splits.last();
-      var splitDimension = dataSource.getDimension(lastSplit.dimension);
+      var splitDimension = lastSplit.getDimension(dataSource);
       if (splitDimension.type === 'TIME') {
         visArray.push('time-series-vis');
       }

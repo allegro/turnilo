@@ -326,6 +326,10 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     return this.dimensions.find(dimension => dimension.name === dimensionName);
   }
 
+  public getDimensionByExpression(expression: Expression): Dimension {
+    return this.dimensions.find(dimension => dimension.expression.equals(expression));
+  }
+
   public getMeasure(measureName: string): Measure {
     return this.measures.find(measure => measure.name === measureName);
   }

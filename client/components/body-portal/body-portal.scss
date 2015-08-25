@@ -4,4 +4,8 @@
   @include pin-full;
   z-index: 200;
   pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
 }

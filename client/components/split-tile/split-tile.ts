@@ -155,7 +155,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var splitItems: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       splitItems = splits.toArray().map((split, i) => {
-        var dimension = dataSource.getDimension(split.dimension);
+        var dimension = split.getDimension(dataSource);
         if (!dimension) throw new Error('dimension not found');
 
         if (i) itemY += CORE_ITEM_GAP;
@@ -177,7 +177,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
             onDragStart={this.dragStart.bind(this, dimension, split)}
             style={style}
           >
-            <div className="reading">{dimension.title + split.getExtraTitle()}</div>
+            <div className="reading">{split.getTitle(dataSource)}</div>
             <div className="remove" onClick={this.removeSplit.bind(this, split)}>
               <Icon name="x" width={12} height={12}/>
             </div>

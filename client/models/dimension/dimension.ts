@@ -1,7 +1,7 @@
 'use strict';
 
 import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
-import { $, Expression, ExpressionJS } from 'plywood';
+import { $, Expression, ExpressionJS, Action } from 'plywood';
 import { SplitCombine } from '../split-combine/split-combine';
 
 var geoNames = [
@@ -107,18 +107,21 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
       this.sortOn === other.sortOn;
   }
 
-  public getSplitExpression(): Expression {
-    var { expression } = this;
+  public getBucketAction(): Action {
     if (this.type === 'TIME') {
-      return expression.timeBucket('PT1H', 'Etc/UTC');
+      return Action.fromJS({
+        action: 'timeBucket',
+        duration: 'PT1H',
+        timezone: 'Etc/UTC'
+      });
     }
-    return expression;
+    return null;
   }
 
   public getSplitCombine(): SplitCombine {
     return new SplitCombine({
-      dimension: this.name,
-      splitOn: this.getSplitExpression(),
+      expression: this.expression,
+      bucketAction: this.getBucketAction(),
       sortAction: null,
       limitAction: null
     });

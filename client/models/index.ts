@@ -7,3 +7,4 @@ export * from './measure/measure';
 export * from './filter/filter';
 export * from './essence/essence';
 export * from './data-source/data-source';
+export * from './time-preset/time-preset';
