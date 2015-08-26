@@ -23,7 +23,7 @@ if ((<any>window)['ds']) {
   }));
 } else {
   dataSources = List([
-    DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia Edits', '/wikipedia.json', new Date('2013-02-27T00:00:00Z'))
+    DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia Edits', '/wikipedia.json', new Date())
     //DataSource.fromArray('wiki2', 'Wikipedia Edits 2', wikiRawData)
   ]);
 }
