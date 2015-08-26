@@ -22,13 +22,13 @@ function getSplitsDescription(ex: Expression): string {
   return splits.join(';');
 }
 
-function queryUrlExecutorFactory(url: string): Executor {
+function queryUrlExecutorFactory(name: string, url: string): Executor {
   return (ex: Expression) => {
     return Qajax({
       method: "POST",
       url: url + '?by=' + getSplitsDescription(ex),
       data: {
-        dataset: 'wiki',
+        dataset: name,
         expression: ex.toJS()
       }
     })
@@ -182,7 +182,7 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
       measures: dm.measures,
       timeAttribute: dm.timeAttribute,
       defaultSortOn: dm.defaultSortOn,
-      executor: queryUrlExecutorFactory(source)
+      executor: queryUrlExecutorFactory(name, source)
     });
   }
 
