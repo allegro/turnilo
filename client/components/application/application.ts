@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
-import { Timezone, Duration } from 'chronology';
+import { Timezone, Duration, day } from 'chronology';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { Stage, Essence, Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
@@ -118,20 +118,11 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var essence = this.getEssenceFromHash();
 
     if (!essence) {
-      var timeRange: TimeRange;
-      if ((<any>window)['now'] === 'now') {
-        var day = Duration.fromJS('P1D');
-        var now = day.floor(new Date(), Timezone.UTC);
-        timeRange = TimeRange.fromJS({
-          start: day.move(now, Timezone.UTC, -2),
-          end: day.move(now, Timezone.UTC, 1)
-        });
-      } else {
-        timeRange = TimeRange.fromJS({
-          start: new Date('2013-02-26T00:00:00Z'),
-          end: new Date('2013-02-27T00:00:00Z')
-        });
-      }
+      var now = dataSource.getMaxTime();
+      var timeRange = TimeRange.fromJS({
+        start: day.move(now, Timezone.UTC, -3),
+        end: now
+      });
 
       essence = new Essence({
         dataSources: this.props.dataSources,

@@ -18,11 +18,12 @@ var dataSources: List<DataSource>;
 if ((<any>window)['ds']) {
   var ds: any[] = (<any>window)['ds'];
   dataSources = List(ds.map(d => {
-    return DataSource.fromQueryURL(d.name, d.title, '/query', AttributeInfo.fromJSs(d.attributes));
+    var maxTime = d.maxTime ? new Date(d.maxTime) : null;
+    return DataSource.fromQueryURL(d.name, d.title, '/query', maxTime, AttributeInfo.fromJSs(d.attributes));
   }));
 } else {
   dataSources = List([
-    DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia Edits', '/wikipedia.json')
+    DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia Edits', '/wikipedia.json', new Date('2013-02-27T00:00:00Z'))
     //DataSource.fromArray('wiki2', 'Wikipedia Edits 2', wikiRawData)
   ]);
 }
