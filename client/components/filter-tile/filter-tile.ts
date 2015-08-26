@@ -111,6 +111,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     console.log('preset-click', preset.timeRange);
     var { clicker } = this.props;
     clicker.changeTimeRange(preset.timeRange);
+    this.closeMenu();
   }
 
   dragStart(dimension: Dimension, operand: ChainExpression, e: DragEvent) {
