@@ -22,7 +22,9 @@ interface PreviewMenuProps {
 
 interface PreviewMenuState {
   selectedValues?: List<any>;
+  showSearch?: boolean;
   filterMode?: boolean;
+  filteredDimension?: boolean;
 }
 
 export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuState> {
@@ -31,15 +33,24 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
     super();
     this.state = {
       selectedValues: <List<string>>List(),
-      filterMode: false
+      showSearch: false,
+      filterMode: false,
+      filteredDimension: false
     };
   }
 
   componentDidMount() {
     var { essence, dimension } = this.props;
+    var selectedValues = essence.filter.getValues(dimension.expression);
     this.setState({
-      selectedValues: List(essence.filter.getValues(dimension.expression))
+      selectedValues: List(selectedValues || []),
+      filteredDimension: Boolean(selectedValues)
     });
+  }
+
+  onSearchClick() {
+    var { showSearch } = this.state;
+    this.setState({ showSearch: !showSearch });
   }
 
   onValueClick(value: any) {
@@ -69,7 +80,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
 
   render() {
     var { essence, clicker, containerStage, openOn, dimension, onClose } = this.props;
-    var { selectedValues, filterMode } = this.state;
+    var { selectedValues, showSearch, filterMode, filteredDimension } = this.state;
     if (!dimension) return null;
 
     var menuSize: Stage = null;
@@ -99,8 +110,8 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
       menuVisualization = React.createElement(MenuTable, {
         essence,
         dimension: dimension,
-        showSearch: true,
-        showCheckboxes: true,
+        showSearch,
+        showCheckboxes: filteredDimension || filterMode,
         selectedValues,
         onValueClick: this.onValueClick.bind(this)
       });
@@ -117,7 +128,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
 
     return JSX(`
       <BubbleMenu className="preview-menu" containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
-        <MenuHeader dimension={dimension}/>
+        <MenuHeader dimension={dimension} onSearchClick={this.onSearchClick.bind(this)}/>
         <div className="menu-cont">{menuVisualization}</div>
         {bottomBar}
       </BubbleMenu>

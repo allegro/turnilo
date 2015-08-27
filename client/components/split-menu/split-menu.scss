@@ -1,5 +1,34 @@
 @import '../../imports';
 
-.split-menu {
+$border-radius: 3px;
 
+.split-menu {
+  .button-group {
+    padding-left: 10px;
+
+    li {
+      display: inline-block;
+      cursor: pointer;
+      width: 45px;
+      text-align: center;
+      padding: 4px 1px;
+      border: 1px solid $border-light;
+      border-right: 0;
+
+      &:first-child {
+        border-top-left-radius: $border-radius;
+        border-bottom-left-radius: $border-radius;
+      }
+
+      &:last-child {
+        border-right: 1px solid $border-light;
+        border-top-right-radius: $border-radius;
+        border-bottom-right-radius: $border-radius;
+      }
+
+      &:hover {
+        background: $background-light;
+      }
+    }
+  }
 }

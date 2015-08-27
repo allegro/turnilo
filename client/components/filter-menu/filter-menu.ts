@@ -62,6 +62,7 @@ interface FilterMenuProps {
 
 interface FilterMenuState {
   selectedValues?: List<any>;
+  showSearch?: boolean;
 }
 
 export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
@@ -69,15 +70,21 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   constructor() {
     super();
     this.state = {
-      selectedValues: <List<string>>List()
+      selectedValues: <List<string>>List(),
+      showSearch: false
     };
   }
 
   componentDidMount() {
     var { essence, dimension } = this.props;
     this.setState({
-      selectedValues: List(essence.filter.getValues(dimension.expression))
+      selectedValues: List(essence.filter.getValues(dimension.expression) || [])
     });
+  }
+
+  onSearchClick() {
+    var { showSearch } = this.state;
+    this.setState({ showSearch: !showSearch });
   }
 
   onPresetClick(preset: TimePreset) {
@@ -110,7 +117,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
 
   render() {
     var { essence, clicker, containerStage, openOn, dimension, onClose } = this.props;
-    var { selectedValues } = this.state;
+    var { selectedValues, showSearch } = this.state;
     if (!dimension) return null;
 
     var menuSize: Stage = null;
@@ -145,7 +152,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
           <MenuTable
             essence={essence}
             dimension={dimension}
-            showSearch={true}
+            showSearch={showSearch}
             showCheckboxes={true}
             selectedValues={selectedValues}
             onValueClick={this.onValueClick.bind(this)}

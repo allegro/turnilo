@@ -8,7 +8,7 @@ import { Clicker, Essence, Filter, Dimension, Measure } from '../../models/index
 interface MenuHeaderProps {
   //clicker: Clicker;
   dimension: Dimension;
-  onSearchToggle?: Function;
+  onSearchClick: Function;
 }
 
 interface MenuHeaderState {
@@ -23,12 +23,12 @@ export class MenuHeader extends React.Component<MenuHeaderProps, MenuHeaderState
   }
 
   render() {
-    var { dimension, onSearchToggle } = this.props;
+    var { dimension, onSearchClick } = this.props;
 
     var searchBar: React.DOMElement<any> = null;
-    if (onSearchToggle) {
+    if (onSearchClick) {
       searchBar = JSX(`
-        <div className="search" onClick={onSearchToggle}>
+        <div className="search" onClick={onSearchClick}>
           <Icon name="loupe"/>
         </div>
       `);
