@@ -73,10 +73,10 @@ function makeDimensionsMetricsFromAttributes(attributes: Attributes): Dimensions
   }
 
   for (let k in attributes) {
-    let type = attributes[k].type;
+    let attribute = attributes[k];
+    let type = attribute.type;
     switch (type) {
       case 'TIME':
-      case 'STRING':
         dimensionArray.push(new Dimension({
           name: k,
           title: upperCaseFirst(k),
@@ -84,6 +84,25 @@ function makeDimensionsMetricsFromAttributes(attributes: Attributes): Dimensions
           type: type,
           sortOn: null
         }));
+        break;
+
+      case 'STRING':
+        if (attribute.special === 'unique') {
+          measureArray.push(new Measure({
+            name: k,
+            title: upperCaseFirst(k),
+            expression: $('main').countDistinct($(k)),
+            format: Measure.DEFAULT_FORMAT
+          }));
+        } else {
+          dimensionArray.push(new Dimension({
+            name: k,
+            title: upperCaseFirst(k),
+            expression: $(k),
+            type: type,
+            sortOn: null
+          }));
+        }
         break;
 
       case 'NUMBER':
