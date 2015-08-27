@@ -199,7 +199,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
 
   public computePossibleVisualizations(splits: List<SplitCombine>): List<string> {
     var { dataSource } = this;
-    var visArray: string[] = ['nested-table-vis'];
+    var visArray: string[] = ['nested-table'];
 
     if (splits.size) {
       var lastSplit = splits.last();

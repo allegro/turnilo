@@ -7,7 +7,7 @@ import { Clicker, Filter, Dimension, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 var title: Lookup<string> = {
-  'nested-table-vis': 'Table',
+  'nested-table': 'Table',
   'time-series-vis': 'Lines'
 };
 

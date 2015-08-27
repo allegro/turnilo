@@ -19,7 +19,7 @@ const SPACE_RIGHT = 10;
 const ROW_PADDING_RIGHT = 50;
 const BODY_PADDING_BOTTOM = 90;
 
-interface NestedTableVisProps {
+interface NestedTableProps {
   clicker: Clicker;
   dataSource: DataSource;
   filter: Filter;
@@ -28,13 +28,13 @@ interface NestedTableVisProps {
   stage: Stage;
 }
 
-interface NestedTableVisState {
+interface NestedTableState {
   dataset?: Dataset;
   scrollLeft?: number;
   scrollTop?: number;
 }
 
-export class NestedTableVis extends React.Component<NestedTableVisProps, NestedTableVisState> {
+export class NestedTable extends React.Component<NestedTableProps, NestedTableState> {
   public mounted: boolean;
 
   constructor() {
@@ -80,7 +80,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     this.fetchData(filter, splits, measures);
   }
 
-  componentWillReceiveProps(nextProps: NestedTableVisProps) {
+  componentWillReceiveProps(nextProps: NestedTableProps) {
     var props = this.props;
     if (props.filter !== nextProps.filter || !listsEqual(props.splits, nextProps.splits) || !listsEqual(props.measures, nextProps.measures)) {
       this.fetchData(nextProps.filter, nextProps.splits, nextProps.measures);
@@ -189,7 +189,7 @@ export class NestedTableVis extends React.Component<NestedTableVisProps, NestedT
     };
 
     return JSX(`
-      <div className="nested-table-vis">
+      <div className="nested-table">
         <div className="corner">{segmentTitle}</div>
         <div className="header-cont">
           <div className="header" style={headerStyle}>{headerColumns}</div>

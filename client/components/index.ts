@@ -1,6 +1,6 @@
 export * from './header-bar/header-bar';
 export * from '../visualizations/time-series-vis/time-series-vis';
-export * from '../visualizations/nested-table-vis/nested-table-vis';
+export * from '../visualizations/nested-table/nested-table';
 export * from './menu-table/menu-table';
 export * from './filter-split-panel/filter-split-panel';
 export * from './bubble-menu/bubble-menu';

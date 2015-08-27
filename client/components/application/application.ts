@@ -15,7 +15,7 @@ import { SideDrawer } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 
 import { TimeSeriesVis } from '../../visualizations/time-series-vis/time-series-vis';
-import { NestedTableVis } from '../../visualizations/nested-table-vis/nested-table-vis';
+import { NestedTable } from '../../visualizations/nested-table/nested-table';
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
@@ -261,7 +261,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       if (visualization === 'time-series-vis') {
         visElement = React.createElement(TimeSeriesVis, visProps);
       } else {
-        visElement = React.createElement(NestedTableVis, visProps);
+        visElement = React.createElement(NestedTable, visProps);
       }
     }
 
