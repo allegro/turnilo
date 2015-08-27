@@ -3,17 +3,25 @@
 fs = require('fs')
 mkdirp = require('mkdirp')
 
-if process.argv.length isnt 3
-  console.log('Usage: mkcomp <component-name>')
+if not (process.argv.length in [3, 4])
+  console.log('Usage: mkcomp <what?> <component-name>')
   process.exit()
 
-name = process.argv[2]
+if process.argv.length is 4
+  what = process.argv[2]
+  name = process.argv[3]
+  if not (what in ['component', 'visualization'])
+    console.log('bad what')
+    process.exit()
+else
+  what = 'component'
+  name = process.argv[2]
 
 if not /^([a-z-])+$/.test(name)
   console.log('must be a hyphen case name')
   process.exit()
 
-path = './client/components/' + name + '/'
+path = './client/' + what + 's/' + name + '/'
 mkdirp.sync(path)
 console.log('Making path:', path)
 

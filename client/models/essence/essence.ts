@@ -198,15 +198,15 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
   }
 
   public computePossibleVisualizations(splits: List<SplitCombine>): List<string> {
+    if (!splits.size) return List(['totals']);
+
     var { dataSource } = this;
     var visArray: string[] = ['nested-table'];
 
-    if (splits.size) {
-      var lastSplit = splits.last();
-      var splitDimension = lastSplit.getDimension(dataSource);
-      if (splitDimension.type === 'TIME') {
-        visArray.push('time-series');
-      }
+    var lastSplit = splits.last();
+    var splitDimension = lastSplit.getDimension(dataSource);
+    if (splitDimension.type === 'TIME') {
+      visArray.push('time-series');
     }
 
     return List(visArray);
@@ -246,11 +246,8 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
   public changeSplits(splits: List<SplitCombine>): Essence {
     var { visualization } = this;
     var visualizations = this.computePossibleVisualizations(splits);
-    if (visualizations.contains(visualization)) {
-      visualization = visualizations.last();
-    } else {
-      visualization = visualizations.first();
-    }
+    visualization = visualizations.last();
+
     var value = this.valueOf();
     value.splits = splits;
     value.visualization = visualization;

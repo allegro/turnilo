@@ -14,6 +14,7 @@ import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { SideDrawer } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 
+import { Totals } from '../../visualizations/totals/totals';
 import { TimeSeries } from '../../visualizations/time-series/time-series';
 import { NestedTable } from '../../visualizations/nested-table/nested-table';
 
@@ -131,10 +132,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         filter: new Filter({
           operands: List([dataSource.timeAttribute.in(timeRange)])
         }),
-        splits: List([
-          dataSource.getDimensionByExpression(dataSource.timeAttribute).getSplitCombine()
-          //dataSource.getDimension('page').getSplitCombine()
-        ]),
+        splits: <List<SplitCombine>>List(),
         selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
         pinnedDimensions: OrderedSet([dataSource.dimensions.get(1).name, dataSource.dimensions.get(5).name]),
         visualization: null
@@ -260,8 +258,10 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
       if (visualization === 'time-series') {
         visElement = React.createElement(TimeSeries, visProps);
-      } else {
+      } else if (visualization === 'nested-table') {
         visElement = React.createElement(NestedTable, visProps);
+      } else {
+        visElement = React.createElement(Totals, visProps);
       }
     }
 
