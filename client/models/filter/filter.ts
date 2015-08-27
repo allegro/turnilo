@@ -113,7 +113,7 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
     var operands = this.operands;
     var index = this.indexOfOperand(attribute);
     if (index === -1) return null;
-    return operands.get(index).actions[0].getLiteralValue();
+    return operands.get(index).actions[0].getLiteralValue().elements;
   }
 
   public setTimeRange(attribute: Expression, timeRange: TimeRange): Filter {

@@ -1,10 +1,19 @@
 @import '../../imports';
 
+<<<<<<< HEAD
 $title-bar-height: 40px;
 $action-bar-height: 52px;
 
 $presets-width: 140px;
 
+||||||| merged common ancestors
+$title-bar-height: 40px;
+$action-bar-height: 52px;
+
+$presets-width: 200px;
+
+=======
+>>>>>>> progress on filter menus
 $shpitz-size: 12px;
 
 .bubble-menu {
@@ -33,48 +42,16 @@ $shpitz-size: 12px;
   }
 
   .menu-header {
-    @include pin-top($title-bar-height);
+    @include pin-top($menu-title-bar-height);
   }
 
   .menu-cont {
     position: absolute;
-    top: $title-bar-height;
-    bottom: $action-bar-height;
+    top: $menu-title-bar-height;
     width: 100%;
-
-    &.presets {
-      ul {
-        width: $presets-width;
-        padding-left: 10px;
-        padding-right: 10px;
-
-        li {
-          height: 22px;
-          line-height: 22px;
-          padding-left: 10px;
-          padding-right: 10px;
-          color: $brand;
-          cursor: pointer;
-
-          &:hover {
-            background: $hover;
-          }
-        }
-      }
-
-      .menu-time-series {
-        position: absolute;
-        left: $presets-width;
-        top: 0;
-      }
-    }
 
     .menu-table {
       @include pin-full;
     }
-  }
-
-  .menu-action-bar {
-    @include pin-bottom($action-bar-height);
   }
 }

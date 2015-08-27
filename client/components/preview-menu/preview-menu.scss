@@ -1,0 +1,29 @@
+@import '../../imports';
+
+$action-bar-height: 52px;
+
+.preview-menu {
+  .menu-cont {
+    bottom: $action-bar-height;
+  }
+
+  .menu-action-bar {
+    @include pin-bottom($action-bar-height);
+  }
+
+  .button-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0 0 10px 10px;
+
+    .filter {
+      @extend %button-primary;
+      margin-right: 8px;
+    }
+
+    .cancel {
+      @extend %button-secondary;
+    }
+  }
+}

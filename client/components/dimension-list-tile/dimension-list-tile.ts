@@ -8,11 +8,7 @@ import { TITLE_HEIGHT, CORE_ITEM_HEIGHT } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { moveInList } from '../../utils/general';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
-import { BubbleMenu } from '../bubble-menu/bubble-menu';
-import { MenuHeader } from '../menu-header/menu-header';
-import { MenuTable } from '../menu-table/menu-table';
-import { MenuTimeSeries } from '../menu-time-series/menu-time-series';
-import { MenuActionBar } from '../menu-action-bar/menu-action-bar';
+import { PreviewMenu } from '../preview-menu/preview-menu';
 
 const DIMENSION_CLASS_NAME = 'dimension';
 
@@ -160,31 +156,15 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
-    var menuSize: Stage = null;
-    var menuVisualization: React.ReactElement<any> = null;
-    if (menuDimension.type === 'TIME') {
-      menuSize = Stage.fromSize(350, 300);
-      menuVisualization = React.createElement(MenuTimeSeries, {
-        essence,
-        dimension: menuDimension,
-        stage: menuSize.within({ top: 40, bottom: 52 }) // ToDo: remove magic numbers
-      });
-    } else {
-      menuSize = Stage.fromSize(250, 400);
-      menuVisualization = React.createElement(MenuTable, {
-        essence,
-        dimension: menuDimension,
-        showSearch: true,
-        showCheckboxes: true
-      });
-    }
-
     return JSX(`
-      <BubbleMenu containerStage={menuStage} stage={menuSize} openOn={menuOpenOn} onClose={onClose}>
-        <MenuHeader dimension={menuDimension}/>
-        <div className="menu-cont">{menuVisualization}</div>
-        <MenuActionBar clicker={clicker} essence={essence} dimension={menuDimension} onClose={onClose}/>
-      </BubbleMenu>
+      <PreviewMenu
+        clicker={clicker}
+        essence={essence}
+        containerStage={menuStage}
+        openOn={menuOpenOn}
+        dimension={menuDimension}
+        onClose={onClose}
+      />
     `);
   }
 

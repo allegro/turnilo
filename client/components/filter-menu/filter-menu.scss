@@ -1,0 +1,53 @@
+@import '../../imports';
+
+$presets-width: 200px;
+$action-bar-height: 52px;
+
+.filter-menu {
+  .menu-cont {
+    bottom: $action-bar-height;
+
+    &.presets {
+      ul {
+        width: $presets-width;
+        padding-left: 10px;
+        padding-right: 10px;
+
+        li {
+          height: 22px;
+          line-height: 22px;
+          padding-left: 10px;
+          padding-right: 10px;
+          color: $brand;
+          cursor: pointer;
+
+          &:hover {
+            background: $hover;
+          }
+        }
+      }
+
+      .menu-time-series {
+        position: absolute;
+        left: $presets-width;
+        top: 0;
+      }
+    }
+  }
+
+  .button-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0 0 10px 10px;
+
+    .filter {
+      @extend %button-primary;
+      margin-right: 8px;
+    }
+
+    .cancel {
+      @extend %button-secondary;
+    }
+  }
+}

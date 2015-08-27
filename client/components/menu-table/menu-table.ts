@@ -1,5 +1,6 @@
 'use strict';
 
+import { List } from 'immutable';
 import * as React from 'react/addons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { formatterFromData } from '../../utils/formatter';
@@ -13,12 +14,12 @@ interface MenuTableProps {
   dimension: Dimension;
   showSearch: boolean;
   showCheckboxes: boolean;
-  selectFilter: (newFilter: Filter, source: string) => void;
+  selectedValues: List<string>;
+  onValueClick: Function;
 }
 
 interface MenuTableState {
   dataset?: Dataset;
-  selectedValues?: string[];
 }
 
 export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
@@ -27,8 +28,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   constructor() {
     super();
     this.state = {
-      dataset: null,
-      selectedValues: []
+      dataset: null
     };
   }
 
@@ -53,41 +53,30 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   componentDidMount() {
     this.mounted = true;
     var { essence, dimension } = this.props;
-    this.fetchData(essence.filter, dimension);
+    this.fetchData(essence.filter.remove(dimension.expression), dimension);
   }
 
   componentWillReceiveProps(nextProps: MenuTableProps) {
+    var dimension = this.props.dimension;
+    var nextDimension = nextProps.dimension;
     var essence = this.props.essence;
     var nextEssence = nextProps.essence;
+    var filter = essence.filter.remove(dimension.expression);
+    var nextFilter = nextEssence.filter.remove(nextDimension.expression);
     if (
-      essence.filter.equals(nextEssence.filter) &&
-      this.props.dimension.equals(nextProps.dimension)
+      filter.equals(nextFilter) &&
+      dimension.equals(nextDimension)
     ) return;
-    this.fetchData(nextEssence.filter, nextProps.dimension);
+    this.fetchData(nextFilter, nextDimension);
   }
 
   componentWillUnmount() {
     this.mounted = false;
   }
 
-  onBoxClick(value: any, e: MouseEvent) {
-    e.stopPropagation();
-    var { essence, dimension, selectFilter } = this.props;
-    var { selectedValues } = this.state;
-    if (selectedValues.indexOf(value) > -1) {
-      selectedValues = selectedValues.filter(selectedValue => selectedValue !== value);
-    } else {
-      selectedValues = selectedValues.concat([value]);
-    }
-    this.setState({ selectedValues });
-    if (selectFilter) {
-      selectFilter(essence.filter.setValues(dimension.expression, selectedValues), 'checkbox');
-    }
-  }
-
   render() {
-    var { essence, dimension, showSearch, showCheckboxes } = this.props;
-    var { dataset, selectedValues } = this.state;
+    var { essence, dimension, showSearch, showCheckboxes, onValueClick, selectedValues } = this.props;
+    var { dataset } = this.state;
     var measure = essence.dataSource.getSortMeasure(dimension);
 
     var dimensionName = dimension.name;
@@ -103,19 +92,18 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
         var segmentValue = String(d[dimensionName]);
         var measureValue = d[measureName];
         var measureValueStr = formatter(measureValue);
-        var selected = selectedValues.indexOf(segmentValue) > -1;
+        var selected = selectedValues && selectedValues.includes(segmentValue);
 
         var checkbox: React.ReactElement<any> = null;
         if (showCheckboxes) {
           checkbox = React.createElement(Checkbox, {
-            checked: selected,
-            onClick: <Function>this.onBoxClick.bind(this, segmentValue)
+            checked: selected
           });
         }
 
         return JSX(`
           <div className={'row' + (selected ? ' selected' : '')} key={segmentValue}>
-            <div className="segment-value" onClick={this.onBoxClick.bind(this, segmentValue)}>
+            <div className="segment-value" onClick={onValueClick.bind(this, segmentValue)}>
               {checkbox}
               <div className="label">{segmentValue}</div>
             </div>

@@ -24,18 +24,6 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
 
   }
 
-  componentDidMount() {
-
-  }
-
-  componentWillUnmount() {
-
-  }
-
-  componentWillReceiveProps(nextProps: CheckboxProps) {
-
-  }
-
   render() {
     var { checked, onClick } = this.props;
 

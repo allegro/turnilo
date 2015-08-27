@@ -9,6 +9,7 @@ import { Stage } from '../../models/index';
 import { BodyPortal } from '../body-portal/body-portal';
 
 interface BubbleMenuProps {
+  className: string;
   stage: Stage;
   containerStage: Stage;
   openOn: Element;
@@ -66,7 +67,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   render() {
-    var { stage, containerStage, children } = this.props;
+    var { className, stage, containerStage, children } = this.props;
     var { x, y } = this.state;
 
     var menuWidth = stage.width;
@@ -83,9 +84,11 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
       top: y - top
     };
 
+    var myClass = 'bubble-menu';
+    if (className) myClass += ' ' + className;
     return JSX(`
       <BodyPortal>
-        <div className="bubble-menu" style={style}>
+        <div className={myClass} style={style}>
           {children}
           <div className="shpitz" style={shpitzStyle}></div>
         </div>
