@@ -16,13 +16,14 @@ $button-frame-gap: 7px;
       right: -($button-width + $button-frame-gap);
 
       .button {
+        height: $button-width;
         background: $brand;
         margin-bottom: 5px;
-        padding: 4px;
+        padding: 7px 6px;
         cursor: pointer;
 
         svg {
-          height: 16px;
+          height: 13px;
         }
 
         path {

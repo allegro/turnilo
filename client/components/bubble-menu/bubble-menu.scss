@@ -3,7 +3,7 @@
 $title-bar-height: 40px;
 $action-bar-height: 52px;
 
-$presets-width: 200px;
+$presets-width: 140px;
 
 $shpitz-size: 12px;
 
@@ -46,11 +46,19 @@ $shpitz-size: 12px;
       ul {
         width: $presets-width;
         padding-left: 10px;
+        padding-right: 10px;
 
         li {
-          margin-bottom: 2px;
+          height: 22px;
+          line-height: 22px;
+          padding-left: 10px;
+          padding-right: 10px;
           color: $brand;
           cursor: pointer;
+
+          &:hover {
+            background: $hover;
+          }
         }
       }
 
