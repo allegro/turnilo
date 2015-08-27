@@ -1,5 +1,5 @@
 export * from './header-bar/header-bar';
-export * from '../visualizations/time-series-vis/time-series-vis';
+export * from '../visualizations/time-series/time-series';
 export * from '../visualizations/nested-table/nested-table';
 export * from './menu-table/menu-table';
 export * from './filter-split-panel/filter-split-panel';

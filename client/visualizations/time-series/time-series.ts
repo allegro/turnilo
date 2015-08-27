@@ -46,7 +46,7 @@ function getTimeExtent(dataset: Dataset, splits: List<SplitCombine>): [Date, Dat
   return d3.extent(extentData);
 }
 
-interface TimeSeriesVisProps {
+interface TimeSeriesProps {
   clicker: Clicker;
   dataSource: DataSource;
   filter: Filter;
@@ -55,12 +55,12 @@ interface TimeSeriesVisProps {
   stage: Stage;
 }
 
-interface TimeSeriesVisState {
+interface TimeSeriesState {
   dataset?: Dataset;
   dragStart?: number;
 }
 
-export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSeriesVisState> {
+export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState> {
   public mounted: boolean;
 
   constructor() {
@@ -110,7 +110,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     this.fetchData(filter, splits, measures);
   }
 
-  componentWillReceiveProps(nextProps: TimeSeriesVisProps) {
+  componentWillReceiveProps(nextProps: TimeSeriesProps) {
     var props = this.props;
     if (props.filter !== nextProps.filter || !listsEqual(props.splits, nextProps.splits) || !listsEqual(props.measures, nextProps.measures)) {
       this.fetchData(nextProps.filter, nextProps.splits, nextProps.measures);
@@ -259,7 +259,7 @@ export class TimeSeriesVis extends React.Component<TimeSeriesVisProps, TimeSerie
     };
 
     return JSX(`
-      <div className="time-series-vis">
+      <div className="time-series">
         <div className="measure-graphs" style={measureGraphsStyle}>
           {measureGraphs}
         </div>

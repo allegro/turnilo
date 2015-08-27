@@ -8,7 +8,7 @@ import { Clicker, Filter, Dimension, Measure } from '../../models/index';
 
 var title: Lookup<string> = {
   'nested-table': 'Table',
-  'time-series-vis': 'Lines'
+  'time-series': 'Lines'
 };
 
 interface VisBarProps {

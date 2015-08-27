@@ -14,7 +14,7 @@ import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { SideDrawer } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 
-import { TimeSeriesVis } from '../../visualizations/time-series-vis/time-series-vis';
+import { TimeSeries } from '../../visualizations/time-series/time-series';
 import { NestedTable } from '../../visualizations/nested-table/nested-table';
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
@@ -258,8 +258,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         stage: visualizationStage
       };
 
-      if (visualization === 'time-series-vis') {
-        visElement = React.createElement(TimeSeriesVis, visProps);
+      if (visualization === 'time-series') {
+        visElement = React.createElement(TimeSeries, visProps);
       } else {
         visElement = React.createElement(NestedTable, visProps);
       }

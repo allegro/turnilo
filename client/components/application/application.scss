@@ -35,7 +35,7 @@
         @extend %module;
         @include unpin-top($vis-bar-height + 10);
 
-        .time-series-vis,
+        .time-series,
         .nested-table {
           @include pin-full;
         }

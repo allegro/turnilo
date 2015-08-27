@@ -8,20 +8,20 @@ var { TestUtils } = React.addons;
 var { Simulate } = TestUtils;
 
 import { $, Expression } from 'plywood';
-import { TimeSeriesVis } from './time-series-vis';
+import { TimeSeries } from './time-series';
 
-describe('TimeSeriesVis', () => {
+describe('TimeSeries', () => {
   setupDOM();
 
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       JSX(`
-        <TimeSeriesVis/>
+        <TimeSeries/>
       `)
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('time-series-vis');
+    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('time-series');
   });
 
 });
