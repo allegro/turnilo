@@ -20,6 +20,7 @@ interface SplitTileProps {
 interface SplitTileState {
   menuOpenOn?: Element;
   menuDimension?: Dimension;
+  menuSplit?: SplitCombine;
   dragOver?: boolean;
   dragPosition?: number;
 }
@@ -37,7 +38,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     };
   }
 
-  selectDimension(dimension: Dimension, e: MouseEvent) {
+  selectDimensionSplit(dimension: Dimension, split: SplitCombine, e: MouseEvent) {
     var { menuOpenOn } = this.state;
     var target = findParentWithClass(<Element>e.target, SPLIT_CLASS_NAME);
     if (menuOpenOn === target) {
@@ -46,14 +47,16 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     }
     this.setState({
       menuOpenOn: target,
-      menuDimension: dimension
+      menuDimension: dimension,
+      menuSplit: split
     });
   }
 
   closeMenu() {
     this.setState({
       menuOpenOn: null,
-      menuDimension: null
+      menuDimension: null,
+      menuSplit: null
     });
   }
 
@@ -131,7 +134,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   renderMenu(): React.ReactElement<any> {
     var { essence, clicker, menuStage } = this.props;
-    var { menuOpenOn, menuDimension } = this.state;
+    var { menuOpenOn, menuDimension, menuSplit } = this.state;
     if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
@@ -142,6 +145,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         containerStage={menuStage}
         openOn={menuOpenOn}
         dimension={menuDimension}
+        split={menuSplit}
         onClose={onClose}
       />
     `);
@@ -174,7 +178,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
             className={classNames.join(' ')}
             key={dimension.name}
             draggable="true"
-            onClick={this.selectDimension.bind(this, dimension)}
+            onClick={this.selectDimensionSplit.bind(this, dimension, split)}
             onDragStart={this.dragStart.bind(this, dimension, split)}
             style={style}
           >

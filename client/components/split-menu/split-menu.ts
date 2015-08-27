@@ -3,7 +3,8 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { Timezone, Duration } from 'chronology';
+import { $, Expression, Executor, Dataset, TimeBucketAction } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, SplitCombine, Filter, Dimension, Measure, TimePreset } from '../../models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { MenuHeader } from '../menu-header/menu-header';
@@ -33,24 +34,38 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   onGranClick(gran: string): void {
-
+    var { clicker, essence, split, onClose } = this.props;
+    var bucketAction = split.bucketAction;
+    if (bucketAction instanceof TimeBucketAction) {
+      var newSplit = split.changeBucketAction(new TimeBucketAction({
+        timezone: bucketAction.timezone,
+        duration: Duration.fromJS(gran)
+      }));
+      clicker.changeSplits(<List<SplitCombine>>essence.splits.map(s => s === split ? newSplit : s));
+    }
+    onClose();
   }
 
   render() {
-    var { essence, clicker, containerStage, openOn, dimension, onClose } = this.props;
+    var { essence, clicker, containerStage, openOn, dimension, split, onClose } = this.props;
     if (!dimension) return null;
 
     var menuSize = Stage.fromSize(250, 200);
 
-    var buttons = GRANULARITIES.map(g => {
-      return JSX(`<li key={g} onClick={this.onGranClick.bind(this, g)}>{g}</li>`);
-    });
+    var granCont: React.DOMElement<any> = null;
+    if (split.bucketAction instanceof TimeBucketAction) {
+      var buttons = GRANULARITIES.map(g => {
+        return JSX(`<li key={g} onClick={this.onGranClick.bind(this, g)}>{g}</li>`);
+      });
+
+      granCont = JSX(`<ul className="button-group">{buttons}</ul>`);
+    }
 
     return JSX(`
       <BubbleMenu className="split-menu" containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
         <MenuHeader dimension={dimension}/>
         <div className="menu-cont">
-          <ul className="button-group">{buttons}</ul>
+          {granCont}
         </div>
       </BubbleMenu>
     `);
