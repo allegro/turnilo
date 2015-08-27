@@ -7,8 +7,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
-import { BubbleMenu } from '../bubble-menu/bubble-menu';
-import { MenuHeader } from '../menu-header/menu-header';
+import { SplitMenu } from '../split-menu/split-menu';
 
 const SPLIT_CLASS_NAME = 'split';
 
@@ -136,13 +135,15 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
-    var menuSize = Stage.fromSize(250, 200);
-
     return JSX(`
-      <BubbleMenu containerStage={menuStage} stage={menuSize} openOn={menuOpenOn} onClose={onClose}>
-        <MenuHeader dimension={menuDimension}/>
-        <div className="menu-cont">SPLIT YO</div>
-      </BubbleMenu>
+      <SplitMenu
+        clicker={clicker}
+        essence={essence}
+        containerStage={menuStage}
+        openOn={menuOpenOn}
+        dimension={menuDimension}
+        onClose={onClose}
+      />
     `);
   }
 

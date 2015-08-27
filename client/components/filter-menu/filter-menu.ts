@@ -42,7 +42,7 @@ function getTimePresets(now: Date, tz: Timezone) {
       }
     }),
     TimePreset.fromJS({
-      name: 'Past week',
+      name: 'This week',
       timeRange: {
         start: week.floor(now, tz),
         end: now

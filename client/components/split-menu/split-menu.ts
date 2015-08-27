@@ -1,0 +1,58 @@
+'use strict';
+
+import { List } from 'immutable';
+import * as React from 'react/addons';
+// import * as Icon from 'react-svg-icons';
+import { $, Expression, Executor, Dataset } from 'plywood';
+import { Stage, Clicker, Essence, DataSource, SplitCombine, Filter, Dimension, Measure, TimePreset } from '../../models/index';
+import { BubbleMenu } from '../bubble-menu/bubble-menu';
+import { MenuHeader } from '../menu-header/menu-header';
+
+const GRANULARITIES = ['PT1M', 'PT1H', 'P1D', 'P7D'];
+
+interface SplitMenuProps {
+  clicker: Clicker;
+  essence: Essence;
+  containerStage: Stage;
+  openOn: Element;
+  dimension: Dimension;
+  split: SplitCombine;
+  onClose: Function;
+}
+
+interface SplitMenuState {
+}
+
+export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
+  public mounted: boolean;
+
+  constructor() {
+    super();
+    // this.state = {};
+
+  }
+
+  onGranClick(gran: string): void {
+
+  }
+
+  render() {
+    var { essence, clicker, containerStage, openOn, dimension, onClose } = this.props;
+    if (!dimension) return null;
+
+    var menuSize = Stage.fromSize(250, 200);
+
+    var buttons = GRANULARITIES.map(g => {
+      return JSX(`<li key={g} onClick={this.onGranClick.bind(this, g)}>{g}</li>`);
+    });
+
+    return JSX(`
+      <BubbleMenu className="split-menu" containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
+        <MenuHeader dimension={dimension}/>
+        <div className="menu-cont">
+          <ul className="button-group">{buttons}</ul>
+        </div>
+      </BubbleMenu>
+    `);
+  }
+}
