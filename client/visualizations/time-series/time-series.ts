@@ -6,7 +6,7 @@ import * as d3 from 'd3';
 import * as numeral from 'numeral';
 import { $, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
 import { listsEqual } from '../../utils/general';
-import { Stage, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker } from "../../models/index";
+import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker } from "../../models/index";
 import { ChartLine } from '../../components/chart-line/chart-line';
 import { TimeAxis } from '../../components/time-axis/time-axis';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
@@ -26,8 +26,7 @@ function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
-function getTimeExtent(dataset: Dataset, splits: List<SplitCombine>): [Date, Date] {
-  if (!splits || !splits.size) return null;
+function getTimeExtent(dataset: Dataset): [Date, Date] {
   var extentData: Date[] = [];
   var lastSplitDatasets: Dataset[] = [dataset.data[0]['Split']];
 
@@ -48,10 +47,7 @@ function getTimeExtent(dataset: Dataset, splits: List<SplitCombine>): [Date, Dat
 
 interface TimeSeriesProps {
   clicker: Clicker;
-  dataSource: DataSource;
-  filter: Filter;
-  splits: List<SplitCombine>;
-  measures: List<Measure>;
+  essence: Essence;
   stage: Stage;
 }
 
@@ -71,8 +67,10 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
     };
   }
 
-  fetchData(filter: Filter, splits: List<SplitCombine>, measures: List<Measure>) {
-    var { dataSource } = this.props;
+  fetchData(essence: Essence): void {
+    var { filter, splits, dataSource } = essence;
+    var measures = essence.getMeasures();
+
     var $main = $('main');
 
     var query: any = $()
@@ -82,8 +80,9 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
       query = query.apply(measure.name, measure.expression);
     });
 
+    var splitsSize = splits.length();
     splits.forEach((split, i) => {
-      var isLast = i === splits.size - 1;
+      var isLast = i === splitsSize - 1;
       var subQuery = $main.split(split.toSplitExpression(), 'Segment');
 
       measures.forEach((measure) => {
@@ -106,14 +105,15 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
 
   componentDidMount() {
     this.mounted = true;
-    var { filter, splits, measures } = this.props;
-    this.fetchData(filter, splits, measures);
+    var { essence } = this.props;
+    this.fetchData(essence);
   }
 
   componentWillReceiveProps(nextProps: TimeSeriesProps) {
-    var props = this.props;
-    if (props.filter !== nextProps.filter || !listsEqual(props.splits, nextProps.splits) || !listsEqual(props.measures, nextProps.measures)) {
-      this.fetchData(nextProps.filter, nextProps.splits, nextProps.measures);
+    var { essence } = this.props;
+    var nextEssence = nextProps.essence;
+    if (essence.differentOn(nextEssence, 'filter', 'splits', 'selectedMeasures')) {
+      this.fetchData(nextEssence);
     }
   }
 
@@ -132,16 +132,17 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
   }
 
   render() {
-    var { clicker, filter, splits, measures, stage } = this.props;
+    var { clicker, essence, stage } = this.props;
     var { dataset, dragStart } = this.state;
+    var { splits } = essence;
 
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
 
     var measureGraphs: Array<React.ReactElement<any>> = null;
     var bottomAxes: Array<React.ReactElement<any>> = null;
 
-    if (dataset && splits.size) {
-      var extentX = getTimeExtent(dataset, splits);
+    if (dataset && splits.length()) {
+      var extentX = getTimeExtent(dataset);
       // if (!extentX)
 
       var myDatum: Datum = dataset.data[0];
@@ -166,8 +167,7 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
 
       var xTicks = scaleX.ticks();
 
-      var measuresArray = measures.toArray();
-      measureGraphs = measuresArray.map((measure) => {
+      measureGraphs = essence.getMeasures().toArray().map((measure) => {
         var measureName = measure.name;
         var getY = (d: Datum) => d[measureName];
         var extentY = d3.extent(myDataset.data, getY);

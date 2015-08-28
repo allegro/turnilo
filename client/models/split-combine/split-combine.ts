@@ -8,17 +8,6 @@ import { DataSource } from '../data-source/data-source';
 import { Filter } from '../filter/filter';
 import { Dimension } from '../dimension/dimension';
 
-function getBestGranularity(timeRange: TimeRange): Duration {
-  var len = timeRange.end.valueOf() - timeRange.start.valueOf();
-  if (len > 6 * day.canonicalLength) {
-    return Duration.fromJS('P1D');
-  } else if (len > 12 * hour.canonicalLength) {
-    return Duration.fromJS('PT1H');
-  } else {
-    return Duration.fromJS('PT1M');
-  }
-}
-
 export interface SplitCombineValue {
   expression: Expression;
   bucketAction: Action;
@@ -42,21 +31,6 @@ export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitC
 
   static isSplitCombine(candidate: any): boolean {
     return isInstanceOf(candidate, SplitCombine);
-  }
-
-  static updateWithFilter(splits: List<SplitCombine>, dataSource: DataSource, filter: Filter): List<SplitCombine> {
-    if (splits.size !== 1) return splits;
-    var timeSplit = splits.get(0);
-    var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
-    if (!timeBucketAction) return splits;
-    var timeRange = filter.getTimeRange(dataSource.getDimension('time').expression);
-    if (!timeRange) return splits;
-    var granularity = getBestGranularity(timeRange);
-    if (timeBucketAction.duration.equals(granularity)) return splits;
-    return List([timeSplit.changeBucketAction(new TimeBucketAction({
-      timezone: timeBucketAction.timezone,
-      duration: granularity
-    }))]);
   }
 
   static fromJS(parameters: SplitCombineJS): SplitCombine {

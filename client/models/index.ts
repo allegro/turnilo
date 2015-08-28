@@ -3,6 +3,7 @@ export * from './stage/stage';
 export * from './filter/filter';
 export * from './dimension/dimension';
 export * from './split-combine/split-combine';
+export * from './splits/splits';
 export * from './measure/measure';
 export * from './filter/filter';
 export * from './essence/essence';

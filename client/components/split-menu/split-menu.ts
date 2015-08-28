@@ -41,7 +41,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
         timezone: bucketAction.timezone,
         duration: Duration.fromJS(gran)
       }));
-      clicker.changeSplits(<List<SplitCombine>>essence.splits.map(s => s === split ? newSplit : s));
+      clicker.changeSplits(essence.splits.replace(split, newSplit));
     }
     onClose();
   }

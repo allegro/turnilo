@@ -8,7 +8,8 @@ import { $, Expression, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
-import { SplitCombine, SplitCombineJS } from '../split-combine/split-combine';
+import { Splits, SplitsJS } from '../splits/splits';
+import { SplitCombine } from '../split-combine/split-combine';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
 
@@ -20,7 +21,7 @@ interface EssenceValue {
   dataSource: DataSource;
   timezone: Timezone;
   filter: Filter;
-  splits: List<SplitCombine>;
+  splits: Splits;
   selectedMeasures: OrderedSet<string>;
   pinnedDimensions: OrderedSet<string>;
   visualization: string;
@@ -30,7 +31,7 @@ interface EssenceJS {
   dataSource: string;
   timezone: string;
   filter: FilterJS;
-  splits: SplitCombineJS[];
+  splits: SplitsJS;
   selectedMeasures: string[];
   pinnedDimensions: string[];
   visualization: string;
@@ -42,7 +43,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
   public dataSource: DataSource;
   public timezone: Timezone;
   public filter: Filter;
-  public splits: List<SplitCombine>;
+  public splits: Splits;
   public selectedMeasures: OrderedSet<string>;
   public pinnedDimensions: OrderedSet<string>;
   public visualization: string;
@@ -82,8 +83,8 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       essence = Essence.fromJS({
         dataSource: dataSource,
         visualization: visualization,
-        filter: jsArray[0],
-        timezone: jsArray[1],
+        timezone: jsArray[0],
+        filter: jsArray[1],
         splits: jsArray[2],
         selectedMeasures: jsArray[3],
         pinnedDimensions: jsArray[4]
@@ -100,7 +101,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     var dataSource = dataSources.find((ds) => ds.name === dataSourceName);
     var timezone = Timezone.fromJS(parameters.timezone);
     var filter = Filter.fromJS(parameters.filter);
-    var splits = List(parameters.splits.map((split: SplitCombineJS) => SplitCombine.fromJS(split)));
+    var splits = Splits.fromJS(parameters.splits);
     var selectedMeasures = OrderedSet(parameters.selectedMeasures);
     var pinnedDimensions = OrderedSet(parameters.pinnedDimensions);
     var visualization = parameters.visualization;
@@ -149,7 +150,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       dataSource: this.dataSource.name,
       timezone: this.timezone.toJS(),
       filter: this.filter.toJS(),
-      splits: this.splits.toArray().map(split => split.toJS()),
+      splits: this.splits.toJS(),
       selectedMeasures: this.selectedMeasures.toArray(),
       pinnedDimensions: this.pinnedDimensions.toArray(),
       visualization: this.visualization
@@ -169,6 +170,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       this.dataSource.equals(other.dataSource) &&
       this.timezone.equals(other.timezone) &&
       this.filter.equals(other.filter) &&
+      this.splits.equals(other.splits) &&
       // More
       this.visualization === other.visualization;
   }
@@ -180,8 +182,8 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       js.visualization,
       HASH_VERSION,
       compressToBase64([
-        js.filter,
         js.timezone,
+        js.filter,
         js.splits,
         js.selectedMeasures,
         js.pinnedDimensions
@@ -197,8 +199,8 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     return this.computePossibleVisualizations(this.splits);
   }
 
-  public computePossibleVisualizations(splits: List<SplitCombine>): List<string> {
-    if (!splits.size) return List(['totals']);
+  public computePossibleVisualizations(splits: Splits): List<string> {
+    if (!splits.length()) return List(['totals']);
 
     var { dataSource } = this;
     var visArray: string[] = ['nested-table'];
@@ -210,6 +212,41 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     }
 
     return List(visArray);
+  }
+
+  public getMeasures(): List<Measure> {
+    var dataSource = this.dataSource;
+    return <List<Measure>>this.selectedMeasures.toList().map(measureName => dataSource.getMeasure(measureName));
+  }
+
+  public differentOn(other: Essence, ...things: string[]): boolean {
+    for (var thing of things) {
+      switch (thing) {
+        case 'timezone':
+          if (!this.timezone.equals(other.timezone)) return true;
+          break;
+
+        case 'filter':
+          if (!this.filter.equals(other.filter)) return true;
+          break;
+
+        case 'splits':
+          if (!this.splits.equals(other.splits)) return true;
+          break;
+
+        case 'selectedMeasures':
+          if (!this.selectedMeasures.equals(other.selectedMeasures)) return true;
+          break;
+
+        case 'pinnedDimensions':
+          if (!this.pinnedDimensions.equals(other.pinnedDimensions)) return true;
+          break;
+
+        default:
+          throw new Error('can not diff on ' + thing);
+      }
+    }
+    return false;
   }
 
   // Modification
@@ -233,7 +270,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
   public changeFilter(filter: Filter): Essence {
     var value = this.valueOf();
     value.filter = filter;
-    value.splits = SplitCombine.updateWithFilter(value.splits, value.dataSource, value.filter);
+    value.splits = value.splits.updateWithFilter(value.dataSource, value.filter);
     return new Essence(value);
   }
 
@@ -243,7 +280,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     return this.changeFilter(filter.setTimeRange(timeDimension.expression, timeRange));
   }
 
-  public changeSplits(splits: List<SplitCombine>): Essence {
+  public changeSplits(splits: Splits): Essence {
     var { visualization } = this;
     var visualizations = this.computePossibleVisualizations(splits);
     visualization = visualizations.last();
@@ -254,14 +291,18 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     return new Essence(value);
   }
 
+  public changeSplit(splitCombine: SplitCombine): Essence {
+    return this.changeSplits(Splits.fromSplitCombine(splitCombine));
+  }
+
   public addSplit(split: SplitCombine): Essence {
     var { splits } = this;
-    return this.changeSplits(<List<SplitCombine>>splits.concat(split));
+    return this.changeSplits(splits.addSplit(split));
   }
 
   public removeSplit(split: SplitCombine): Essence {
     var { splits } = this;
-    return this.changeSplits(<List<SplitCombine>>splits.filter(s => s !== split));
+    return this.changeSplits(splits.removeSplit(split));
   }
 
   public selectVisualization(visualization: string): Essence {

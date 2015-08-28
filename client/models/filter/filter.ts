@@ -5,13 +5,8 @@ import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
 import { $, Expression, LiteralExpression, ChainExpression, ExpressionJS, InAction, Set, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
 
-export interface FilterValue {
-  operands: List<ChainExpression>;
-}
-
-export interface FilterJS {
-  operands: ExpressionJS[];
-}
+export type FilterValue = List<ChainExpression>;
+export type FilterJS = ExpressionJS[];
 
 var check: ImmutableClass<FilterValue, FilterJS>;
 export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
@@ -24,25 +19,19 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
   }
 
   static fromJS(parameters: FilterJS): Filter {
-    return new Filter({
-      operands: List(parameters.operands.map(operand => ChainExpression.fromJS(operand)))
-    });
+    return new Filter(List(parameters.map(operand => ChainExpression.fromJS(operand))));
   }
 
   constructor(parameters: FilterValue) {
-    this.operands = parameters.operands;
+    this.operands = parameters;
   }
 
   public valueOf(): FilterValue {
-    return {
-      operands: this.operands
-    };
+    return this.operands;
   }
 
   public toJS(): FilterJS {
-    return {
-      operands: this.operands.toArray().map(operand => operand.toJS())
-    };
+    return this.operands.toArray().map(operand => operand.toJS());
   }
 
   public toJSON(): FilterJS {
@@ -79,9 +68,7 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
     var operands = this.operands;
     var index = this.indexOfOperand(attribute);
     if (index === -1) {
-      return new Filter({
-        operands: <List<ChainExpression>>operands.concat(attribute.in([value]))
-      });
+      return new Filter(<List<ChainExpression>>operands.concat(attribute.in([value])));
     } else {
       var operand = operands.get(index);
       var action = operand.actions[0];
@@ -91,9 +78,7 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
       } else {
         throw new Error('invalid operand');
       }
-      return new Filter({
-        operands: <List<ChainExpression>>operands.splice(index, 1, operand)
-      });
+      return new Filter(<List<ChainExpression>>operands.splice(index, 1, operand));
     }
   }
 
@@ -106,7 +91,7 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
     } else {
       operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
     }
-    return new Filter({ operands });
+    return new Filter(operands);
   }
 
   public getValues(attribute: Expression): any[] {
@@ -125,7 +110,7 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
     } else {
       operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
     }
-    return new Filter({ operands });
+    return new Filter(operands);
   }
 
   public getTimeRange(attribute: Expression): TimeRange {
@@ -139,11 +124,9 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
     var operands = this.operands;
     var index = this.indexOfOperand(attribute);
     if (index === -1) return this;
-    return new Filter({
-      operands: operands.delete(index)
-    });
+    return new Filter(operands.delete(index));
   }
 }
 check = Filter;
 
-Filter.EMPTY = new Filter({ operands: <List<ChainExpression>>List() });
+Filter.EMPTY = new Filter(<List<ChainExpression>>List());

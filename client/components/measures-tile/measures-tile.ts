@@ -5,19 +5,14 @@ import * as React from 'react/addons';
 import * as numeral from 'numeral';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
-import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { hasOwnProperty } from '../../utils/general';
+import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 
-var objectHasOwnProperty = Object.prototype.hasOwnProperty;
-function hasOwnProperty(obj: any, key: string): boolean {
-  return objectHasOwnProperty.call(obj, key);
-}
-
 interface MeasuresTileProps {
   clicker: Clicker;
-  dataSource: DataSource;
-  filter: Filter;
+  essence: Essence;
   selectedMeasures: OrderedSet<string>;
 }
 
@@ -37,9 +32,10 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     };
   }
 
-  fetchData(filter: Filter) {
-    var { dataSource } = this.props;
+  fetchData(essence: Essence): void {
+    var { dataSource, filter } = essence;
     var measures = dataSource.measures;
+
     var $main = $('main');
 
     var query: any = $()
@@ -57,19 +53,20 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
 
   componentDidMount() {
     this.mounted = true;
-    var { filter } = this.props;
-    this.fetchData(filter);
+    var { essence } = this.props;
+    this.fetchData(essence);
+  }
+
+  componentWillReceiveProps(nextProps: MeasuresTileProps) {
+    var { essence } = this.props;
+    var nextEssence = nextProps.essence;
+    if (essence.differentOn(nextEssence, 'filter')) {
+      this.fetchData(nextEssence);
+    }
   }
 
   componentWillUnmount() {
     this.mounted = false;
-  }
-
-  componentWillReceiveProps(nextProps: MeasuresTileProps) {
-    var props = this.props;
-    if (props.filter !== nextProps.filter) {
-      this.fetchData(nextProps.filter);
-    }
   }
 
   toggleSearch() {
@@ -78,8 +75,9 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
   }
 
   render() {
-    var { clicker, dataSource, selectedMeasures } = this.props;
+    var { clicker, essence } = this.props;
     var { dataset, showSearch } = this.state;
+    var { dataSource, selectedMeasures } = essence;
 
     var myDatum = dataset ? dataset.data[0] : null;
 

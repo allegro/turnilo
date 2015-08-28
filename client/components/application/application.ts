@@ -5,7 +5,7 @@ import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration, day } from 'chronology';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
-import { Stage, Essence, Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "../../models/index";
+import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
 import { FilterSplitPanel } from '../filter-split-panel/filter-split-panel';
@@ -58,9 +58,13 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         var { essence } = this.state;
         this.setState({ essence: essence.changeTimeRange(timeRange) });
       },
-      changeSplits: (splits: List<SplitCombine>) => {
+      changeSplits: (splits: Splits | SplitCombine) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeSplits(splits) });
+        if (Splits.isSplits(Splits)) {
+          this.setState({ essence: essence.changeSplits(<Splits>splits) });
+        } else {
+          this.setState({ essence: essence.changeSplit(<SplitCombine>splits) });
+        }
       },
       addSplit: (split: SplitCombine) => {
         var { essence } = this.state;
@@ -129,10 +133,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         dataSources: this.props.dataSources,
         dataSource: dataSource,
         timezone: Timezone.UTC,
-        filter: new Filter({
-          operands: List([dataSource.timeAttribute.in(timeRange)])
-        }),
-        splits: <List<SplitCombine>>List(),
+        filter: new Filter(List([dataSource.timeAttribute.in(timeRange)])),
+        splits: Splits.EMPTY,
         selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
         pinnedDimensions: OrderedSet([dataSource.dimensions.get(1).name, dataSource.dimensions.get(5).name]),
         visualization: null
@@ -220,7 +222,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var dimension = essence.dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
     this.setState({ dragOver: false });
     if (dimension) {
-      this.clicker.changeSplits(List([dimension.getSplitCombine()]));
+      this.clicker.changeSplits(dimension.getSplitCombine());
     }
   }
 
@@ -235,24 +237,15 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   render() {
     var clicker = this.clicker;
     var { essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
-
-    var {
-      dataSources, dataSource, filter, splits,
-      selectedMeasures, pinnedDimensions, timezone, visualization
-    } = essence;
+    var { dataSources, dataSource, visualization } = essence;
 
     var visualizations = essence.getVisualizations();
-
-    var measures = dataSource.measures;
 
     var visElement: React.ReactElement<any> = null;
     if (dataSource.metadataLoaded && visualizationStage) {
       var visProps = {
         clicker,
-        dataSource,
-        filter,
-        splits,
-        measures: selectedMeasures.toList().map(measureName => measures.find((measure) => measure.name === measureName)),
+        essence,
         stage: visualizationStage
       };
 

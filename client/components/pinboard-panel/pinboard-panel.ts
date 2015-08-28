@@ -99,8 +99,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       metricTile = JSX(`
         <MeasuresTile
           clicker={clicker}
-          dataSource={dataSource}
-          filter={filter}
+          essence={essence}
           selectedMeasures={selectedMeasures}
         />
       `);

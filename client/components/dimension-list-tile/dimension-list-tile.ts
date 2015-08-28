@@ -5,9 +5,9 @@ import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, CORE_ITEM_HEIGHT } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { moveInList } from '../../utils/general';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { PreviewMenu } from '../preview-menu/preview-menu';
 
 const DIMENSION_CLASS_NAME = 'dimension';
@@ -72,7 +72,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   dragStart(dimension: Dimension, e: DragEvent) {
     var { essence } = this.props;
 
-    var newUrl = essence.changeSplits(List([dimension.getSplitCombine()])).getURL();
+    var newUrl = essence.changeSplit(dimension.getSplitCombine()).getURL();
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';

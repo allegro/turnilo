@@ -189,7 +189,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
           </div>
         `);
       }, this);
-      if (dragOver && dragPosition === splits.size) itemY += CORE_ITEM_HEIGHT;
+      if (dragOver && dragPosition === splits.length()) itemY += CORE_ITEM_HEIGHT;
     }
 
     return JSX(`

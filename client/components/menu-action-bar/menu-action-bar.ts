@@ -32,7 +32,7 @@ export class MenuActionBar extends React.Component<MenuActionBarProps, MenuActio
 
   onSplit(): void {
     var { clicker, dimension, onClose } = this.props;
-    clicker.changeSplits(List([dimension.getSplitCombine()]));
+    clicker.changeSplits(dimension.getSplitCombine());
     onClose();
   }
 

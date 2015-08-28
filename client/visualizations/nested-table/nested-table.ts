@@ -7,7 +7,7 @@ import * as numeral from 'numeral';
 import { $, Expression, Executor, Dataset, Datum } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
-import { Stage, Filter, SplitCombine, Dimension, Measure, DataSource, Clicker } from '../../models/index';
+import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker } from '../../models/index';
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 200;
@@ -21,10 +21,7 @@ const BODY_PADDING_BOTTOM = 90;
 
 interface NestedTableProps {
   clicker: Clicker;
-  dataSource: DataSource;
-  filter: Filter;
-  splits: List<SplitCombine>;
-  measures: List<Measure>;
+  essence: Essence;
   stage: Stage;
 }
 
@@ -46,8 +43,10 @@ export class NestedTable extends React.Component<NestedTableProps, NestedTableSt
     };
   }
 
-  fetchData(filter: Filter, splits: List<SplitCombine>, measures: List<Measure>) {
-    var { dataSource } = this.props;
+  fetchData(essence: Essence): void {
+    var { filter, splits, dataSource } = essence;
+    var measures = essence.getMeasures();
+
     var $main = $('main');
 
     var query: any = $()
@@ -76,14 +75,15 @@ export class NestedTable extends React.Component<NestedTableProps, NestedTableSt
 
   componentDidMount() {
     this.mounted = true;
-    var { filter, splits, measures } = this.props;
-    this.fetchData(filter, splits, measures);
+    var { essence } = this.props;
+    this.fetchData(essence);
   }
 
   componentWillReceiveProps(nextProps: NestedTableProps) {
-    var props = this.props;
-    if (props.filter !== nextProps.filter || !listsEqual(props.splits, nextProps.splits) || !listsEqual(props.measures, nextProps.measures)) {
-      this.fetchData(nextProps.filter, nextProps.splits, nextProps.measures);
+    var { essence } = this.props;
+    var nextEssence = nextProps.essence;
+    if (essence.differentOn(nextEssence, 'filter', 'splits', 'selectedMeasures')) {
+      this.fetchData(nextEssence);
     }
   }
 
@@ -100,12 +100,12 @@ export class NestedTable extends React.Component<NestedTableProps, NestedTableSt
   }
 
   render() {
-    var { dataSource, measures, splits, stage } = this.props;
+    var { essence, stage } = this.props;
     var { dataset, scrollLeft, scrollTop } = this.state;
 
-    var segmentTitle = splits.map((split) => split.getDimension(dataSource).title).join(', ');
+    var segmentTitle = essence.splits.getTitle(essence.dataSource);
 
-    var measuresArray = measures.toArray();
+    var measuresArray = essence.getMeasures().toArray();
 
     var headerColumns = measuresArray.map((measure, i) => {
       var sortArrow: React.ReactElement<any> = null;
