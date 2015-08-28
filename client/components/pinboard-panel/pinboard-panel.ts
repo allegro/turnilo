@@ -114,8 +114,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
           <DimensionTile
             key={dimension.name}
             clicker={clicker}
-            dataSource={dataSource}
-            filter={filter}
+            essence={essence}
             dimension={dimension}
           />
         `);

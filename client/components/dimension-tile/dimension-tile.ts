@@ -5,7 +5,7 @@ import * as React from 'react/addons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { formatterFromData } from '../../utils/formatter';
-import { Clicker, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
@@ -15,8 +15,7 @@ const TOP_N = 100;
 
 interface DimensionTileProps {
   clicker: Clicker;
-  dataSource: DataSource;
-  filter: Filter;
+  essence: Essence;
   dimension: Dimension;
 }
 
@@ -39,7 +38,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   fetchData(filter: Filter, dimension: Dimension) {
-    var { dataSource } = this.props;
+    var { essence } = this.props;
+    var { dataSource } = essence;
     var measure = dataSource.getSortMeasure(dimension);
 
     var query: any = $('main')
@@ -63,17 +63,19 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   componentDidMount() {
     this.mounted = true;
-    var { filter, dimension } = this.props;
-    this.fetchData(filter, dimension);
+    var { essence, dimension } = this.props;
+    this.fetchData(essence.filter, dimension);
   }
 
   componentWillReceiveProps(nextProps: DimensionTileProps) {
-    var props = this.props;
+    var { essence, dimension } = this.props;
+    var nextEssence = nextProps.essence;
+    var nextDimension = nextProps.dimension;
     if (
-      props.filter !== nextProps.filter ||
-      props.dimension !== nextProps.dimension
+      !essence.filter.equals(nextEssence.filter) ||
+      dimension !== nextDimension
     ) {
-      this.fetchData(nextProps.filter, nextProps.dimension);
+      this.fetchData(nextEssence.filter, nextDimension);
     }
   }
 
@@ -93,22 +95,23 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   onBoxClick(value: any, e: MouseEvent) {
     e.stopPropagation();
-    var { filter, dimension } = this.props;
-    this.selectFilter(filter.add(dimension.expression, value));
+    var { essence, dimension } = this.props;
+    this.selectFilter(essence.filter.add(dimension.expression, value));
   }
 
   onValueClick(value: any) {
-    var { filter, dimension } = this.props;
-    if (filter.filteredOn(dimension.expression)) {
-      this.selectFilter(filter.remove(dimension.expression));
+    var { essence, dimension } = this.props;
+    if (essence.filter.filteredOn(dimension.expression)) {
+      this.selectFilter(essence.filter.remove(dimension.expression));
     } else {
-      this.selectFilter(filter.setValues(dimension.expression, [value]));
+      this.selectFilter(essence.filter.setValues(dimension.expression, [value]));
     }
   }
 
   render() {
-    var { clicker, dataSource, filter, dimension } = this.props;
+    var { clicker, essence, dimension } = this.props;
     var { loading, showSearch, dataset } = this.state;
+    var { dataSource, filter } = essence;
     var measure = dataSource.getSortMeasure(dimension);
 
     var dimensionName = dimension.name;
