@@ -37,13 +37,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     };
   }
 
-  fetchData(filter: Filter, dimension: Dimension) {
-    var { essence } = this.props;
+  fetchData(essence: Essence, dimension: Dimension): void {
     var { dataSource } = essence;
     var measure = dataSource.getSortMeasure(dimension);
 
     var query: any = $('main')
-      .filter(filter.toExpression())
+      .filter(essence.filter.toExpression())
       .split(dimension.expression, dimension.name)
       .apply(measure.name, measure.expression)
       .sort($(measure.name), 'descending')
@@ -64,7 +63,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   componentDidMount() {
     this.mounted = true;
     var { essence, dimension } = this.props;
-    this.fetchData(essence.filter, dimension);
+    this.fetchData(essence, dimension);
   }
 
   componentWillReceiveProps(nextProps: DimensionTileProps) {
@@ -72,10 +71,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var nextEssence = nextProps.essence;
     var nextDimension = nextProps.dimension;
     if (
-      !essence.filter.equals(nextEssence.filter) ||
+      essence.differentOn(nextEssence, 'filter') ||
       dimension !== nextDimension
     ) {
-      this.fetchData(nextEssence.filter, nextDimension);
+      this.fetchData(nextEssence, nextDimension);
     }
   }
 

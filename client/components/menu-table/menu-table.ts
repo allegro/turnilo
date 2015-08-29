@@ -32,7 +32,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     };
   }
 
-  fetchData(filter: Filter, dimension: Dimension) {
+  fetchData(filter: Filter, dimension: Dimension): void {
     var { essence } = this.props;
     var { dataSource } = essence;
     var measure = dataSource.getSortMeasure(dimension);
