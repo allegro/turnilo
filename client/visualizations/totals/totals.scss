@@ -1,5 +1,27 @@
 @import '../../imports';
 
 .totals {
+  text-align: center;
+  padding: 50px;
 
+  .total {
+    display: inline-block;
+    border: 1px solid $border-light;
+    width: 200px;
+    height: 100px;
+    text-align: center;
+    padding: 5px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+
+    .measure-name {
+      padding-top: 15px;
+      font-size: 18px;
+    }
+
+    .measure-value {
+      padding-top: 12px;
+      font-size: 20px;
+    }
+  }
 }
