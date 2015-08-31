@@ -7,7 +7,8 @@ $button-frame-gap: 7px;
   .frame {
     position: absolute;
     height: 100%;
-    border: 2px solid $brand;
+    border: 1px dashed $brand;
+    border-radius: 2px;
     z-index: 1; // Put this above the whiteout
 
     .button-bar {
