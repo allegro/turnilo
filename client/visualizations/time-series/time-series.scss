@@ -4,11 +4,12 @@ $h-padding: 10px;
 
 .time-series {
   display: inline-block;
-  overflow-y: auto;
   padding-left: $h-padding;
+  overflow: hidden;
 
   .measure-graphs {
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     .measure-graph {
       border-bottom: 1px solid $gray;

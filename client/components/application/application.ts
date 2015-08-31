@@ -87,6 +87,18 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       toggleMeasure: (measure: Measure) => {
         var { essence } = this.state;
         this.setState({ essence: essence.toggleMeasure(measure) });
+      },
+      changeHighlight: (highlight: ChainExpression) => {
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeHighlight(highlight) });
+      },
+      acceptHighlight: () => {
+        var { essence } = this.state;
+        this.setState({ essence: essence.acceptHighlight() });
+      },
+      dropHighlight: () => {
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeHighlight(null) });
       }
     };
 

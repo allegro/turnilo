@@ -139,6 +139,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var { dataset, dragStart } = this.state;
     var { splits } = essence;
 
+    var timeDimension = essence.getTimeDimension();
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
 
     var measureGraphs: Array<React.ReactElement<any>> = null;
@@ -243,16 +244,17 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       }
 
       var highlighter: React.ReactElement<any> = null;
-      if (dragStart !== null) {
+      if (dragStart !== null || essence.highlightOn(timeDimension)) {
         var timeSplit = splits.first(); // ToDo: fix this
         var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
         highlighter = React.createElement(Highlighter, {
           clicker,
+          essence,
           scaleX,
           dragStart,
           duration: timeBucketAction.duration,
           timezone: timeBucketAction.timezone,
-          onHighlightEnd: <Function>this.onHighlightEnd.bind(this)
+          onClose: <Function>this.onHighlightEnd.bind(this)
         });
       }
     }

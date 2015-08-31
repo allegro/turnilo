@@ -4,32 +4,32 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { Timezone, Duration } from 'chronology';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
-import { Clicker, Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, Filter, Dimension, Measure } from '../../models/index';
 import { isInside, escapeKey } from '../../utils/dom';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface HighlighterProps {
   clicker: Clicker;
+  essence: Essence;
   scaleX: any;
   dragStart: number;
   duration: Duration;
   timezone: Timezone;
-  onHighlightEnd: Function;
+  onClose: Function;
 }
 
 interface HighlighterState {
-  highlight?: TimeRange;
+  pseudoHighlight?: TimeRange;
   dragging?: boolean;
 }
 
 export class Highlighter extends React.Component<HighlighterProps, HighlighterState> {
-  public mounted: boolean;
 
   constructor() {
     super();
     this.state = {
-      highlight: null,
-      dragging: true
+      pseudoHighlight: null,
+      dragging: false
     };
 
     this.globalMouseMoveListener = this.globalMouseMoveListener.bind(this);
@@ -38,17 +38,28 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
   }
 
   componentDidMount() {
-    this.mounted = true;
-    window.addEventListener('mousemove', this.globalMouseMoveListener);
-    window.addEventListener('mouseup', this.globalMouseUpListener);
+    var { dragStart } = this.props;
     window.addEventListener('keydown', this.globalKeyDownListener);
+    var dragging = (dragStart !== null);
+    if (dragging) {
+      this.addMouseListeners();
+    }
+    this.setState({ dragging });
   }
 
   componentWillUnmount() {
-    this.mounted = false;
+    window.removeEventListener('keydown', this.globalKeyDownListener);
+    this.removeMouseListeners();
+  }
+
+  addMouseListeners() {
+    window.addEventListener('mousemove', this.globalMouseMoveListener);
+    window.addEventListener('mouseup', this.globalMouseUpListener);
+  }
+
+  removeMouseListeners() {
     window.removeEventListener('mousemove', this.globalMouseMoveListener);
     window.removeEventListener('mouseup', this.globalMouseUpListener);
-    window.removeEventListener('keydown', this.globalKeyDownListener);
   }
 
   getHighlight(eventX: number): TimeRange {
@@ -68,53 +79,67 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var { dragging } = this.state;
     if (!dragging) return;
     this.setState({
-      highlight: this.getHighlight(e.clientX)
+      pseudoHighlight: this.getHighlight(e.clientX)
     });
   }
 
   globalMouseUpListener(e: MouseEvent) {
-    var { duration, timezone } = this.props;
-    var { dragging, highlight } = this.state;
+    var { clicker, essence, duration, timezone } = this.props;
+    var { dragging, pseudoHighlight } = this.state;
     if (!dragging) return;
-    if (!highlight) { // There was no mouse move so just quetly cancel out
+    if (!pseudoHighlight) { // There was no mouse move so just quietly cancel out
       this.onCancel();
       return;
     }
 
-    highlight = this.getHighlight(e.clientX);
+    pseudoHighlight = this.getHighlight(e.clientX);
     this.setState({
       dragging: false,
-      highlight: TimeRange.fromJS({
-        start: duration.floor(highlight.start, timezone),
-        end: duration.move(duration.floor(highlight.end, timezone), timezone, 1)
-      })
+      pseudoHighlight: null
     });
+
+    var timeRange = TimeRange.fromJS({
+      start: duration.floor(pseudoHighlight.start, timezone),
+      end: duration.move(duration.floor(pseudoHighlight.end, timezone), timezone, 1)
+    });
+
+    var timeDimension = essence.getTimeDimension();
+    clicker.changeHighlight(timeDimension.expression.in(timeRange));
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
     if (!escapeKey(e)) return;
-    var { onHighlightEnd } = this.props;
-    onHighlightEnd();
+    var { onClose } = this.props;
+    onClose();
   }
 
   onAccept() {
-    var { onHighlightEnd, clicker } = this.props;
-    var { highlight } = this.state;
-    clicker.changeTimeRange(highlight);
-    onHighlightEnd();
+    var { onClose, clicker } = this.props;
+    console.log('accept');
+    clicker.acceptHighlight();
+    onClose();
   }
 
   onCancel() {
-    var { onHighlightEnd } = this.props;
-    onHighlightEnd();
+    var { onClose, clicker } = this.props;
+    clicker.dropHighlight();
+    onClose();
   }
 
   render() {
-    var { scaleX } = this.props;
-    var { highlight, dragging } = this.state;
+    var { essence, scaleX } = this.props;
+    var { pseudoHighlight, dragging } = this.state;
 
-    if (!highlight) {
-      return JSX(`<div className="highlighter"></div>`);
+    var shownTimeRange = pseudoHighlight;
+    if (!shownTimeRange) {
+      var timeDimension = essence.getTimeDimension();
+      if (essence.highlightOn(timeDimension)) {
+        shownTimeRange = essence.getHighlighValue();
+      }
+    }
+
+    if (!shownTimeRange) {
+      return JSX(`<div className='highlighter'></div>`);
     }
 
     var buttonBar: React.DOMElement<any> = null;
@@ -131,8 +156,8 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
       `);
     }
 
-    var startPos = scaleX(highlight.start);
-    var endPos = scaleX(highlight.end);
+    var startPos = scaleX(shownTimeRange.start);
+    var endPos = scaleX(shownTimeRange.end);
 
     var whiteoutLeftStyle = {
       width: startPos

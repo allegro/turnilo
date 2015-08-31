@@ -33,13 +33,13 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
   }
 
   fetchData(essence: Essence): void {
-    var { dataSource, filter } = essence;
+    var { dataSource } = essence;
     var measures = dataSource.measures;
 
     var $main = $('main');
 
     var query: any = $()
-      .apply('main', $main.filter(filter.toExpression()));
+      .apply('main', $main.filter(essence.getFilterHighlightExpression()));
 
     measures.forEach((measure) => {
       query = query.apply(measure.name, measure.expression);
@@ -60,7 +60,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
   componentWillReceiveProps(nextProps: MeasuresTileProps) {
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
-    if (essence.differentOn(nextEssence, 'filter')) {
+    if (essence.differentOn(nextEssence, 'filter', 'highlight')) {
       this.fetchData(nextEssence);
     }
   }

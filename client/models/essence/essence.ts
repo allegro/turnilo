@@ -143,13 +143,18 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     this.visualizations = parameters.visualizations;
 
     this.dataSource = parameters.dataSource;
-    this.visualization = parameters.visualization;
     this.timezone = parameters.timezone;
     this.filter = parameters.filter;
     this.splits = parameters.splits;
     this.selectedMeasures = parameters.selectedMeasures;
     this.pinnedDimensions = parameters.pinnedDimensions;
-    if (!this.visualization) {
+    this.highlight = parameters.highlight;
+
+    // Place vis here because it needs to know about splits (and maybe later other things)
+    var visualization = parameters.visualization;
+    if (visualization) {
+      this.visualization = visualization;
+    } else {
       this.visualization = this.getVisualizations().last();
     }
   }
@@ -236,6 +241,10 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     return <List<Manifest>>visualizations.filter(v => v.handleCircumstance(dataSource, splits).isReady());
   }
 
+  public getTimeDimension(): Dimension {
+    return this.dataSource.getDimension('time');
+  }
+
   public getMeasures(): List<Measure> {
     var dataSource = this.dataSource;
     return <List<Measure>>this.selectedMeasures.toList().map(measureName => dataSource.getMeasure(measureName));
@@ -264,11 +273,41 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
           if (!this.pinnedDimensions.equals(other.pinnedDimensions)) return true;
           break;
 
+        case 'highlight':
+          if (Boolean(this.highlight) !== Boolean(other.highlight)) return true;
+          if (this.highlight && !this.highlight.equals(other.highlight)) return true;
+          break;
+
         default:
           throw new Error('can not diff on ' + thing);
       }
     }
     return false;
+  }
+
+  public highlightOn(dimension: Dimension): boolean {
+    var { highlight } = this;
+    if (!highlight) return false;
+    return highlight.expression.equals(dimension.expression);
+  }
+
+  public getHighlighValue(): any {
+    var { highlight } = this;
+    if (!highlight) return null;
+    return highlight.actions[0].getLiteralValue();
+  }
+
+  public getFilterExpression(): Expression {
+    return this.filter.toExpression();
+  }
+
+  public getFilterHighlightExpression(excludeDimension?: Dimension): Expression {
+    var { filter, highlight } = this;
+    if (highlight && (!excludeDimension || !highlight.expression.equals(excludeDimension.expression))) {
+      return filter.setClause(highlight).toExpression();
+    } else {
+      return filter.toExpression();
+    }
   }
 
   // Modification
@@ -298,7 +337,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
 
   public changeTimeRange(timeRange: TimeRange): Essence {
     var { dataSource, filter } = this;
-    var timeDimension = dataSource.getDimension('time');
+    var timeDimension = this.getTimeDimension();
     return this.changeFilter(filter.setTimeRange(timeDimension.expression, timeRange));
   }
 
@@ -354,6 +393,15 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       selectedMeasures.delete(measureName) :
       selectedMeasures.add(measureName);
 
+    return new Essence(value);
+  }
+
+  public acceptHighlight(): Essence {
+    var { highlight } = this;
+    if (!highlight) return this;
+    var value = this.valueOf();
+    value.filter = value.filter.setClause(highlight);
+    value.highlight = null;
     return new Essence(value);
   }
 

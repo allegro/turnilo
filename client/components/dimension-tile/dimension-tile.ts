@@ -42,7 +42,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var measure = dataSource.getSortMeasure(dimension);
 
     var query: any = $('main')
-      .filter(essence.filter.toExpression())
+      .filter(essence.getFilterHighlightExpression(dimension))
       .split(dimension.expression, dimension.name)
       .apply(measure.name, measure.expression)
       .sort($(measure.name), 'descending')
@@ -71,7 +71,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var nextEssence = nextProps.essence;
     var nextDimension = nextProps.dimension;
     if (
-      essence.differentOn(nextEssence, 'filter') ||
+      essence.differentOn(nextEssence, 'filter', 'highlight') ||
       dimension !== nextDimension
     ) {
       this.fetchData(nextEssence, nextDimension);

@@ -88,7 +88,7 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
     var index = this.indexOfOperand(attribute);
     var newOperand = attribute.in(values);
     if (index === -1) {
-      operands = <List<ChainExpression>>operands.concat(newOperand);
+      operands = <List<ChainExpression>>operands.push(newOperand);
     } else {
       operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
     }
@@ -107,7 +107,7 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
     var index = this.indexOfOperand(attribute);
     var newOperand = attribute.in(timeRange);
     if (index === -1) {
-      operands = <List<ChainExpression>>operands.concat(newOperand);
+      operands = <List<ChainExpression>>operands.push(newOperand);
     } else {
       operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
     }
@@ -126,6 +126,23 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
     var index = this.indexOfOperand(attribute);
     if (index === -1) return this;
     return new Filter(operands.delete(index));
+  }
+
+  public setClause(expression: ChainExpression): Filter {
+    var expressionAttribute = expression.expression;
+    var added = false;
+    var newOperands = <List<ChainExpression>>this.operands.map((operand) => {
+      if (operand.expression.equals(expressionAttribute)) {
+        added = true;
+        return expression;
+      } else {
+        return operand;
+      }
+    });
+    if (!added) {
+      newOperands = newOperands.push(expression);
+    }
+    return new Filter(newOperands);
   }
 }
 check = Filter;
