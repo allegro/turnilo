@@ -83,11 +83,15 @@ export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitC
   }
 
   public equals(other: SplitCombine): boolean {
+    var { expression, bucketAction, sortAction, limitAction } = this;
     return SplitCombine.isSplitCombine(other) &&
-      this.expression.equals(other.expression) &&
-      this.bucketAction.equals(other.bucketAction) &&
-      this.sortAction.equals(other.sortAction) &&
-      this.limitAction.equals(other.limitAction);
+      expression.equals(other.expression) &&
+      Boolean(bucketAction) === Boolean(other.bucketAction) &&
+      (!bucketAction || bucketAction.equals(other.bucketAction)) &&
+      Boolean(sortAction) === Boolean(other.sortAction) &&
+      (!sortAction || sortAction.equals(other.sortAction)) &&
+      Boolean(limitAction) === Boolean(other.limitAction) &&
+      (!limitAction || limitAction.equals(other.limitAction));
   }
 
   public toSplitExpression(): Expression {

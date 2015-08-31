@@ -56,13 +56,13 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         var { essence } = this.state;
         this.setState({ essence: essence.changeTimeRange(timeRange) });
       },
-      changeSplits: (splits: Splits | SplitCombine) => {
+      changeSplits: (splits: Splits) => {
         var { essence } = this.state;
-        if (Splits.isSplits(Splits)) {
-          this.setState({ essence: essence.changeSplits(<Splits>splits) });
-        } else {
-          this.setState({ essence: essence.changeSplit(<SplitCombine>splits) });
-        }
+        this.setState({ essence: essence.changeSplits(splits) });
+      },
+      changeSplit: (split: SplitCombine) => {
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeSplit(split) });
       },
       addSplit: (split: SplitCombine) => {
         var { essence } = this.state;
@@ -235,7 +235,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var dimension = essence.dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
     this.setState({ dragOver: false });
     if (dimension) {
-      this.clicker.changeSplits(dimension.getSplitCombine());
+      this.clicker.changeSplit(dimension.getSplitCombine());
     }
   }
 
