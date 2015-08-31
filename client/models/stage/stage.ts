@@ -18,11 +18,6 @@ export interface StageValue {
 
 // ToDo: make this a higher object
 export class Stage {
-  public x: number;
-  public y: number;
-  public width: number;
-  public height: number;
-
   static fromClientRect(rect: ClientRect): Stage {
     return new Stage({
       x: rect.left,
@@ -40,6 +35,12 @@ export class Stage {
       height
     });
   }
+
+
+  public x: number;
+  public y: number;
+  public width: number;
+  public height: number;
 
   constructor(parameters: StageValue) {
     this.x = parameters.x;

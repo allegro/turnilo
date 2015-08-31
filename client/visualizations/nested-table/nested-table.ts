@@ -7,7 +7,7 @@ import * as numeral from 'numeral';
 import { $, Expression, Executor, Dataset, Datum } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
-import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker } from '../../models/index';
+import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../models/index';
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 200;
@@ -19,19 +19,19 @@ const SPACE_RIGHT = 10;
 const ROW_PADDING_RIGHT = 50;
 const BODY_PADDING_BOTTOM = 90;
 
-interface NestedTableProps {
-  clicker: Clicker;
-  essence: Essence;
-  stage: Stage;
-}
-
 interface NestedTableState {
   dataset?: Dataset;
   scrollLeft?: number;
   scrollTop?: number;
 }
 
-export class NestedTable extends React.Component<NestedTableProps, NestedTableState> {
+export class NestedTable extends React.Component<VisualizationProps, NestedTableState> {
+  static id = 'nested-table';
+  static title = 'Nested Table';
+  static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
+    return splits.length() ? Resolve.READY : Resolve.MANUAL;
+  }
+
   public mounted: boolean;
 
   constructor() {
@@ -79,7 +79,7 @@ export class NestedTable extends React.Component<NestedTableProps, NestedTableSt
     this.fetchData(essence);
   }
 
-  componentWillReceiveProps(nextProps: NestedTableProps) {
+  componentWillReceiveProps(nextProps: VisualizationProps) {
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (essence.differentOn(nextEssence, 'filter', 'splits', 'selectedMeasures')) {

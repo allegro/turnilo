@@ -15,9 +15,6 @@ interface TimePresetJS {
 
 var check: ImmutableClass<TimePresetValue, TimePresetJS>;
 export class TimePreset implements ImmutableInstance<TimePresetValue, TimePresetJS> {
-  public name: string;
-  public timeRange: TimeRange;
-
   static isTimePreset(candidate: any): boolean {
     return isInstanceOf(candidate, TimePreset);
   }
@@ -28,6 +25,10 @@ export class TimePreset implements ImmutableInstance<TimePresetValue, TimePreset
       timeRange: TimeRange.fromJS(parameters.timeRange)
     });
   }
+
+
+  public name: string;
+  public timeRange: TimeRange;
 
   constructor(parameters: TimePresetValue) {
     this.name = parameters.name;

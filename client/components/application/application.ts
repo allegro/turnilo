@@ -5,7 +5,7 @@ import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration, day } from 'chronology';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
-import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource } from "../../models/index";
+import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
 import { FilterSplitPanel } from '../filter-split-panel/filter-split-panel';
@@ -14,9 +14,7 @@ import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { SideDrawer } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 
-import { Totals } from '../../visualizations/totals/totals';
-import { TimeSeries } from '../../visualizations/time-series/time-series';
-import { NestedTable } from '../../visualizations/nested-table/nested-table';
+import { visualizations } from '../../visualizations/index';
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
@@ -74,7 +72,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         var { essence } = this.state;
         this.setState({ essence: essence.removeSplit(split) });
       },
-      selectVisualization: (visualization: string) => {
+      selectVisualization: (visualization: Manifest) => {
         var { essence } = this.state;
         this.setState({ essence: essence.selectVisualization(visualization) });
       },
@@ -131,13 +129,16 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
       essence = new Essence({
         dataSources: this.props.dataSources,
+        visualizations: visualizations,
+
         dataSource: dataSource,
         timezone: Timezone.UTC,
         filter: new Filter(List([dataSource.timeAttribute.in(timeRange)])),
         splits: Splits.EMPTY,
         selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
         pinnedDimensions: OrderedSet([dataSource.dimensions.get(1).name, dataSource.dimensions.get(5).name]),
-        visualization: null
+        visualization: null,
+        highlight: null
       });
     }
 
@@ -162,7 +163,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   getEssenceFromHash(): Essence {
     var hash = window.location.hash;
-    return Essence.fromHash(hash, this.getDataSources());
+    return Essence.fromHash(hash, this.getDataSources(), visualizations);
   }
 
   globalResizeListener() {
@@ -239,23 +240,15 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     var { essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
     var { dataSources, dataSource, visualization } = essence;
 
-    var visualizations = essence.getVisualizations();
-
     var visElement: React.ReactElement<any> = null;
     if (dataSource.metadataLoaded && visualizationStage) {
-      var visProps = {
+      var visProps: VisualizationProps = {
         clicker,
         essence,
         stage: visualizationStage
       };
 
-      if (visualization === 'time-series') {
-        visElement = React.createElement(TimeSeries, visProps);
-      } else if (visualization === 'nested-table') {
-        visElement = React.createElement(NestedTable, visProps);
-      } else {
-        visElement = React.createElement(Totals, visProps);
-      }
+      visElement = React.createElement(<any>visualization, visProps);
     }
 
     var dropIndicator: React.ReactElement<any> = null;
@@ -287,7 +280,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             onDragLeave={this.dragLeave.bind(this)}
             onDrop={this.drop.bind(this)}
           >
-            <VisBar clicker={clicker} visualizations={visualizations} visualization={visualization}/>
+            <VisBar clicker={clicker} essence={essence}/>
             <div className='visualization' ref='visualization'>{visElement}</div>
             {dropIndicator}
           </div>

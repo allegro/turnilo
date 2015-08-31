@@ -3,19 +3,12 @@
 import * as React from 'react/addons';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Clicker, Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, Measure, Manifest } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
-
-var title: Lookup<string> = {
-  'totals': 'Totals',
-  'nested-table': 'Table',
-  'time-series': 'Lines'
-};
 
 interface VisBarProps {
   clicker: Clicker;
-  visualizations: List<string>;
-  visualization: string;
+  essence: Essence;
 }
 
 interface VisBarState {
@@ -29,30 +22,27 @@ export class VisBar extends React.Component<VisBarProps, VisBarState> {
 
   }
 
-  componentDidMount() {
-
-  }
-
-  componentWillReceiveProps(nextProps: VisBarProps) {
-
-  }
-
-  componentWillUnmount() {
-
-  }
-
   render() {
-    var { clicker, visualizations, visualization } = this.props;
+    var { clicker, essence } = this.props;
+    var { visualizations, visualization, dataSource, splits } = essence;
 
     var visItems: Array<React.DOMElement<any>> = null;
     if (visualizations) {
       visItems = visualizations.toArray().map(v => {
+        var state: string;
+
+        if (v.id === visualization.id) {
+          state = 'selected';
+        } else {
+          state = v.handleCircumstance(dataSource, splits).toString();
+        }
+
         return JSX(`
           <div
             key={v}
-            className={'vis-item' + (v === visualization ? ' selected' : '')}
+            className={'vis-item ' + state}
             onClick={clicker.selectVisualization.bind(clicker, v)}
-          >{title[v] || '???'}</div>
+          >{v.title}</div>
         `);
       });
     }

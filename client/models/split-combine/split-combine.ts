@@ -24,11 +24,6 @@ export interface SplitCombineJS {
 
 var check: ImmutableClass<SplitCombineValue, SplitCombineJS>;
 export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitCombineJS> {
-  public expression: Expression;
-  public bucketAction: Action;
-  public sortAction: SortAction;
-  public limitAction: LimitAction;
-
   static isSplitCombine(candidate: any): boolean {
     return isInstanceOf(candidate, SplitCombine);
   }
@@ -46,6 +41,12 @@ export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitC
     if (parameters.limitAction) value.limitAction = LimitAction.fromJS(parameters.limitAction);
     return new SplitCombine(value);
   }
+
+
+  public expression: Expression;
+  public bucketAction: Action;
+  public sortAction: SortAction;
+  public limitAction: LimitAction;
 
   constructor(parameters: SplitCombineValue) {
     this.expression = parameters.expression;

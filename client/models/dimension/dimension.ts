@@ -32,13 +32,6 @@ export interface DimensionJS {
 
 var check: ImmutableClass<DimensionValue, DimensionJS>;
 export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS> {
-  public name: string;
-  public title: string;
-  public expression: Expression;
-  public type: string;
-  public sortOn: string;
-  public className: string;
-
   static isDimension(candidate: any): boolean {
     return isInstanceOf(candidate, Dimension);
   }
@@ -52,6 +45,14 @@ export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS>
       sortOn: parameters.sortOn || null
     });
   }
+
+
+  public name: string;
+  public title: string;
+  public expression: Expression;
+  public type: string;
+  public sortOn: string;
+  public className: string;
 
   constructor(parameters: DimensionValue) {
     var name = parameters.name;

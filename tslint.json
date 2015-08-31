@@ -23,8 +23,7 @@
     "label-undefined": true,
     "max-line-length": [true, 200],
     "member-ordering": [true,
-      "static-before-instance",
-      "variables-before-functions"
+      "static-before-instance"
     ],
     "no-arg": true,
     "no-bitwise": false,

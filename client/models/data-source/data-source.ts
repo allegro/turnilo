@@ -92,7 +92,7 @@ function makeDimensionsMetricsFromAttributes(attributes: Attributes): Dimensions
             name: k,
             title: upperCaseFirst(k),
             expression: $('main').countDistinct($(k)),
-            format: Measure.DEFAULT_FORMAT
+            format: Measure.INTEGER_FORMAT
           }));
         } else {
           dimensionArray.push(new Dimension({
@@ -174,21 +174,6 @@ export interface DataSourceJS {
 
 var check: ImmutableClass<DataSourceValue, DataSourceJS>;
 export class DataSource implements ImmutableInstance<DataSourceValue, DataSourceJS> {
-
-  public name: string;
-  public title: string;
-  public source: string;
-  public metadataLoaded: boolean;
-  public loadError: string;
-
-  public maxTime: Date;
-  public dimensions: List<Dimension>;
-  public measures: List<Measure>;
-  public timeAttribute: Expression;
-  public defaultSortOn: string;
-
-  public executor: Executor;
-
   static isDataSource(candidate: any): boolean {
     return isInstanceOf(candidate, DataSource);
   }
@@ -267,6 +252,21 @@ export class DataSource implements ImmutableInstance<DataSourceValue, DataSource
     }
     return new DataSource(value);
   }
+
+
+  public name: string;
+  public title: string;
+  public source: string;
+  public metadataLoaded: boolean;
+  public loadError: string;
+
+  public maxTime: Date;
+  public dimensions: List<Dimension>;
+  public measures: List<Measure>;
+  public timeAttribute: Expression;
+  public defaultSortOn: string;
+
+  public executor: Executor;
 
   constructor(parameters: DataSourceValue) {
     this.name = parameters.name;

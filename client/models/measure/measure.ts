@@ -20,11 +20,7 @@ export interface MeasureJS {
 var check: ImmutableClass<MeasureValue, MeasureJS>;
 export class Measure implements ImmutableInstance<MeasureValue, MeasureJS> {
   static DEFAULT_FORMAT = '0,0.0 a';
-
-  public name: string;
-  public title: string;
-  public expression: Expression;
-  public format: string;
+  static INTEGER_FORMAT = '0,0 a';
 
   static isMeasure(candidate: any): boolean {
     return isInstanceOf(candidate, Measure);
@@ -38,6 +34,12 @@ export class Measure implements ImmutableInstance<MeasureValue, MeasureJS> {
       format: parameters.format || Measure.DEFAULT_FORMAT
     });
   }
+
+
+  public name: string;
+  public title: string;
+  public expression: Expression;
+  public format: string;
 
   constructor(parameters: MeasureValue) {
     this.name = parameters.name;

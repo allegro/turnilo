@@ -12,8 +12,6 @@ var check: ImmutableClass<FilterValue, FilterJS>;
 export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
   static EMPTY: Filter;
 
-  public operands: List<ChainExpression>;
-
   static isFilter(candidate: any): boolean {
     return isInstanceOf(candidate, Filter);
   }
@@ -21,6 +19,9 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
   static fromJS(parameters: FilterJS): Filter {
     return new Filter(List(parameters.map(operand => ChainExpression.fromJS(operand))));
   }
+
+
+  public operands: List<ChainExpression>;
 
   constructor(parameters: FilterValue) {
     this.operands = parameters;

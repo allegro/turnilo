@@ -8,6 +8,7 @@ import { SplitCombine } from '../split-combine/split-combine';
 import { Splits } from '../splits/splits';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
+import { Manifest } from '../manifest/manifest';
 
 export interface Clicker {
   changeDataSource(dataSource: DataSource): void;
@@ -16,7 +17,7 @@ export interface Clicker {
   changeSplits(splits: Splits | SplitCombine): void;
   addSplit(split: SplitCombine): void;
   removeSplit(split: SplitCombine): void;
-  selectVisualization(visualization: string): void;
+  selectVisualization(visualization: Manifest): void;
   pin(dimension: Dimension): void;
   unpin(dimension: Dimension): void;
   toggleMeasure(measure: Measure): void;

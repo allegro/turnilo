@@ -27,8 +27,6 @@ var check: ImmutableClass<SplitsValue, SplitsJS>;
 export class Splits implements ImmutableInstance<SplitsValue, SplitsJS> {
   static EMPTY: Splits;
 
-  public splitCombines: List<SplitCombine>;
-
   static isSplits(candidate: any): boolean {
     return isInstanceOf(candidate, Splits);
   }
@@ -40,6 +38,9 @@ export class Splits implements ImmutableInstance<SplitsValue, SplitsJS> {
   static fromJS(parameters: SplitsJS): Splits {
     return new Splits(List(parameters.map(splitCombine => SplitCombine.fromJS(splitCombine))));
   }
+
+
+  public splitCombines: List<SplitCombine>;
 
   constructor(parameters: SplitsValue) {
     this.splitCombines = parameters;

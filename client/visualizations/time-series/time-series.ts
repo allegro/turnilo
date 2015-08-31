@@ -6,7 +6,7 @@ import * as d3 from 'd3';
 import * as numeral from 'numeral';
 import { $, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
 import { listsEqual } from '../../utils/general';
-import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker } from "../../models/index";
+import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../models/index";
 import { ChartLine } from '../../components/chart-line/chart-line';
 import { TimeAxis } from '../../components/time-axis/time-axis';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
@@ -45,18 +45,21 @@ function getTimeExtent(dataset: Dataset): [Date, Date] {
   return d3.extent(extentData);
 }
 
-interface TimeSeriesProps {
-  clicker: Clicker;
-  essence: Essence;
-  stage: Stage;
-}
-
 interface TimeSeriesState {
   dataset?: Dataset;
   dragStart?: number;
 }
 
-export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState> {
+export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesState> {
+  static id = 'time-series';
+  static title = 'Time Series';
+  static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
+    if (splits.length() !== 1) return Resolve.MANUAL;
+    var lastSplit = splits.last();
+    var splitDimension = lastSplit.getDimension(dataSource);
+    return splitDimension.type === 'TIME' ? Resolve.READY : Resolve.MANUAL;
+  }
+
   public mounted: boolean;
 
   constructor() {
@@ -109,7 +112,7 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
     this.fetchData(essence);
   }
 
-  componentWillReceiveProps(nextProps: TimeSeriesProps) {
+  componentWillReceiveProps(nextProps: VisualizationProps) {
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (essence.differentOn(nextEssence, 'filter', 'splits', 'selectedMeasures')) {
