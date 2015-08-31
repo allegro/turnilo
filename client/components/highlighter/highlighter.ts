@@ -8,6 +8,10 @@ import { Clicker, Essence, Filter, Dimension, Measure } from '../../models/index
 import { isInside, escapeKey } from '../../utils/dom';
 // import { SomeComp } from '../some-comp/some-comp';
 
+function stopEvent(e: MouseEvent): void {
+  e.stopPropagation();
+}
+
 interface HighlighterProps {
   clicker: Clicker;
   essence: Essence;
@@ -143,10 +147,10 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     if (dragStartPx === null) {
       buttonBar = JSX(`
         <div className="button-bar">
-          <div className="button accept" onClick={this.onAccept.bind(this)}>
+          <div className="button accept" onClick={this.onAccept.bind(this)} onMouseDown={stopEvent}>
             <Icon name="check"/>
           </div>
-          <div className="button cancel" onClick={this.onCancel.bind(this)}>
+          <div className="button cancel" onClick={this.onCancel.bind(this)} onMouseDown={stopEvent}>
             <Icon name="x"/>
           </div>
         </div>
