@@ -24,8 +24,8 @@
       left: $left-panel-width;
       right: $pinboard-width;
 
-      .vis-bar {
-        @include pin-top($vis-bar-height);
+      .vis-selector {
+        @include pin-top($vis-selector-height);
         z-index: 8;
 
         overflow: hidden;
@@ -33,7 +33,7 @@
 
       .visualization {
         @extend %module;
-        @include unpin-top($vis-bar-height + 10);
+        @include unpin-top($vis-selector-height + 10);
 
         .time-series,
         .nested-table {

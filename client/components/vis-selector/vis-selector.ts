@@ -6,15 +6,15 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Clicker, Essence, Measure, Manifest } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-interface VisBarProps {
+interface VisSelectorProps {
   clicker: Clicker;
   essence: Essence;
 }
 
-interface VisBarState {
+interface VisSelectorState {
 }
 
-export class VisBar extends React.Component<VisBarProps, VisBarState> {
+export class VisSelector extends React.Component<VisSelectorProps, VisSelectorState> {
 
   constructor() {
     super();
@@ -48,7 +48,7 @@ export class VisBar extends React.Component<VisBarProps, VisBarState> {
     }
 
     return JSX(`
-      <div className="vis-bar">
+      <div className="vis-selector">
         {visItems}
       </div>
     `);

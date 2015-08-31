@@ -4,7 +4,7 @@ export * from '../visualizations/nested-table/nested-table';
 export * from './menu-table/menu-table';
 export * from './filter-split-panel/filter-split-panel';
 export * from './bubble-menu/bubble-menu';
-export * from './vis-bar/vis-bar';
+export * from './vis-selector/vis-selector';
 export * from './drop-indicator/drop-indicator';
 export * from './side-drawer/side-drawer';
 export * from './pinboard-panel/pinboard-panel';

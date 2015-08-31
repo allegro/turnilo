@@ -9,7 +9,7 @@ import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Click
 
 import { HeaderBar } from '../header-bar/header-bar';
 import { FilterSplitPanel } from '../filter-split-panel/filter-split-panel';
-import { VisBar } from '../vis-bar/vis-bar';
+import { VisSelector } from '../vis-selector/vis-selector';
 import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { SideDrawer } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
@@ -292,7 +292,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
             onDragLeave={this.dragLeave.bind(this)}
             onDrop={this.drop.bind(this)}
           >
-            <VisBar clicker={clicker} essence={essence}/>
+            <VisSelector clicker={clicker} essence={essence}/>
             <div className='visualization' ref='visualization'>{visElement}</div>
             {dropIndicator}
           </div>
