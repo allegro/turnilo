@@ -20,7 +20,7 @@ interface HighlighterProps {
 
 interface HighlighterState {
   pseudoHighlight?: TimeRange;
-  dragging?: boolean;
+  dragStartPx?: number;
 }
 
 export class Highlighter extends React.Component<HighlighterProps, HighlighterState> {
@@ -29,7 +29,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     super();
     this.state = {
       pseudoHighlight: null,
-      dragging: false
+      dragStartPx: null
     };
 
     this.globalMouseMoveListener = this.globalMouseMoveListener.bind(this);
@@ -40,32 +40,22 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
   componentDidMount() {
     var { dragStart } = this.props;
     window.addEventListener('keydown', this.globalKeyDownListener);
-    var dragging = (dragStart !== null);
-    if (dragging) {
-      this.addMouseListeners();
-    }
-    this.setState({ dragging });
+    window.addEventListener('mousemove', this.globalMouseMoveListener);
+    window.addEventListener('mouseup', this.globalMouseUpListener);
+    this.setState({ dragStartPx: dragStart });
   }
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.globalKeyDownListener);
-    this.removeMouseListeners();
-  }
-
-  addMouseListeners() {
-    window.addEventListener('mousemove', this.globalMouseMoveListener);
-    window.addEventListener('mouseup', this.globalMouseUpListener);
-  }
-
-  removeMouseListeners() {
     window.removeEventListener('mousemove', this.globalMouseMoveListener);
     window.removeEventListener('mouseup', this.globalMouseUpListener);
   }
 
   getHighlight(eventX: number): TimeRange {
-    var { dragStart, scaleX } = this.props;
+    var { scaleX } = this.props;
+    var { dragStartPx } = this.state;
     var myDOM = React.findDOMNode(this);
-    var d1 = scaleX.invert(dragStart);
+    var d1 = scaleX.invert(dragStartPx);
     var d2 = scaleX.invert(eventX - myDOM.getBoundingClientRect().left);
 
     if (d1 < d2) {
@@ -75,9 +65,17 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     }
   }
 
+  onMouseDown(e: MouseEvent) {
+    var { dragStartPx } = this.state;
+    if (dragStartPx !== null) return;
+    var myDOM = React.findDOMNode(this);
+    dragStartPx = e.clientX - (myDOM.getBoundingClientRect().left);
+    this.setState({ dragStartPx });
+  }
+
   globalMouseMoveListener(e: MouseEvent) {
-    var { dragging } = this.state;
-    if (!dragging) return;
+    var { dragStartPx } = this.state;
+    if (dragStartPx === null) return;
     this.setState({
       pseudoHighlight: this.getHighlight(e.clientX)
     });
@@ -85,8 +83,8 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
 
   globalMouseUpListener(e: MouseEvent) {
     var { clicker, essence, duration, timezone } = this.props;
-    var { dragging, pseudoHighlight } = this.state;
-    if (!dragging) return;
+    var { dragStartPx, pseudoHighlight } = this.state;
+    if (dragStartPx === null) return;
     if (!pseudoHighlight) { // There was no mouse move so just quietly cancel out
       this.onCancel();
       return;
@@ -94,7 +92,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
 
     pseudoHighlight = this.getHighlight(e.clientX);
     this.setState({
-      dragging: false,
+      dragStartPx: null,
       pseudoHighlight: null
     });
 
@@ -115,7 +113,6 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
 
   onAccept() {
     var { onClose, clicker } = this.props;
-    console.log('accept');
     clicker.acceptHighlight();
     onClose();
   }
@@ -128,7 +125,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
 
   render() {
     var { essence, scaleX } = this.props;
-    var { pseudoHighlight, dragging } = this.state;
+    var { pseudoHighlight, dragStartPx } = this.state;
 
     var shownTimeRange = pseudoHighlight;
     if (!shownTimeRange) {
@@ -143,7 +140,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     }
 
     var buttonBar: React.DOMElement<any> = null;
-    if (!dragging) {
+    if (dragStartPx === null) {
       buttonBar = JSX(`
         <div className="button-bar">
           <div className="button accept" onClick={this.onAccept.bind(this)}>
@@ -173,7 +170,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     };
 
     return JSX(`
-      <div className={'highlighter ' + (dragging ? 'dragging' : 'confirm')}>
+      <div className={'highlighter ' + (dragStartPx !== null ? 'dragging' : 'confirm')} onMouseDown={this.onMouseDown.bind(this)}>
         <div className="whiteout left" style={whiteoutLeftStyle}></div>
         <div className="frame" style={frameStyle}>{buttonBar}</div>
         <div className="whiteout right" style={whiteoutRightStyle}></div>
