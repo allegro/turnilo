@@ -73,6 +73,16 @@
   }
 }
 
+%module-h-title {
+  .title {
+    @include pin-left($title-width);
+    padding: 13px 0 0 $tile-padding-h;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: $text-light;
+  }
+}
+
 %menu-cont {
   background: $white;
   border-radius: 2px;

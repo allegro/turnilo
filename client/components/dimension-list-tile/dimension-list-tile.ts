@@ -4,7 +4,7 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { TITLE_HEIGHT, CORE_ITEM_HEIGHT } from '../../config/constants';
+import { TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
 import { moveInList } from '../../utils/general';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
@@ -65,7 +65,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var offset = e.clientY - rect.top;
 
     this.setState({
-      dragPosition: Math.min(Math.max(0, Math.round(offset / CORE_ITEM_HEIGHT)), numItems)
+      dragPosition: Math.min(Math.max(0, Math.round(offset / DIMENSION_HEIGHT)), numItems)
     });
   }
 
@@ -160,6 +160,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       <PreviewMenu
         clicker={clicker}
         essence={essence}
+        direction="right"
         containerStage={menuStage}
         openOn={menuOpenOn}
         dimension={menuDimension}
@@ -177,9 +178,9 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var dimensionItems: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
-        if (dragOver && dragPosition === i) itemY += CORE_ITEM_HEIGHT;
+        if (dragOver && dragPosition === i) itemY += DIMENSION_HEIGHT;
         var style = { transform: `translate3d(0,${itemY}px,0)` };
-        itemY += CORE_ITEM_HEIGHT;
+        itemY += DIMENSION_HEIGHT;
 
         var classNames = [
           DIMENSION_CLASS_NAME,
@@ -202,7 +203,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
           </div>
         `);
       }, this);
-      if (dragOver && dragPosition === dataSource.dimensions.size) itemY += CORE_ITEM_HEIGHT;
+      if (dragOver && dragPosition === dataSource.dimensions.size) itemY += DIMENSION_HEIGHT;
     }
 
     return JSX(`

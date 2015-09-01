@@ -6,7 +6,6 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
-import { MeasuresTile } from '../measures-tile/measures-tile';
 
 interface PinboardPanelProps {
   clicker: Clicker;
@@ -94,17 +93,6 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var { dragOver } = this.state;
     var { dataSource, filter, selectedMeasures, pinnedDimensions } = essence;
 
-    var metricTile: React.ReactElement<any> = null;
-    if (dataSource.metadataLoaded) {
-      metricTile = JSX(`
-        <MeasuresTile
-          clicker={clicker}
-          essence={essence}
-          selectedMeasures={selectedMeasures}
-        />
-      `);
-    }
-
     var dimensionTiles: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
@@ -133,7 +121,6 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         onDragLeave={this.dragLeave.bind(this)}
         onDrop={this.drop.bind(this)}
       >
-        {metricTile}
         {dimensionTiles}
         {placeholderTile}
       </div>

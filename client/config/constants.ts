@@ -3,7 +3,8 @@
 export const TITLE_HEIGHT = 32;
 
 // Core = filter + split
-export const CORE_ITEM_HEIGHT = 27;
+export const DIMENSION_HEIGHT = 27;
+export const CORE_ITEM_WIDTH = 200;
 export const CORE_ITEM_GAP = 8;
 
 export const PIN_TITLE_HEIGHT = 34;

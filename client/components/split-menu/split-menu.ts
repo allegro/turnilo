@@ -14,6 +14,7 @@ const GRANULARITIES = ['PT1M', 'PT1H', 'P1D', 'P7D'];
 interface SplitMenuProps {
   clicker: Clicker;
   essence: Essence;
+  direction: string;
   containerStage: Stage;
   openOn: Element;
   dimension: Dimension;

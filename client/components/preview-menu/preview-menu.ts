@@ -14,6 +14,7 @@ import { MenuActionBar } from '../menu-action-bar/menu-action-bar';
 interface PreviewMenuProps {
   clicker: Clicker;
   essence: Essence;
+  direction: string;
   containerStage: Stage;
   openOn: Element;
   dimension: Dimension;

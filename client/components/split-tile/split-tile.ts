@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
+import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 import { SplitMenu } from '../split-menu/split-menu';
@@ -142,6 +142,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       <SplitMenu
         clicker={clicker}
         essence={essence}
+        direction="down"
         containerStage={menuStage}
         openOn={menuOpenOn}
         dimension={menuDimension}
@@ -156,17 +157,17 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var { menuDimension, dragOver, dragPosition } = this.state;
     var { dataSource, splits } = essence;
 
-    var itemY = 0;
+    var itemX = 0;
     var splitItems: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       splitItems = splits.toArray().map((split, i) => {
         var dimension = split.getDimension(dataSource);
         if (!dimension) throw new Error('dimension not found');
 
-        if (i) itemY += CORE_ITEM_GAP;
-        if (dragOver && dragPosition === i) itemY += CORE_ITEM_HEIGHT;
-        var style = { transform: `translate3d(0,${itemY}px,0)` };
-        itemY += CORE_ITEM_HEIGHT;
+        if (i) itemX += CORE_ITEM_GAP;
+        if (dragOver && dragPosition === i) itemX += CORE_ITEM_WIDTH;
+        var style = { transform: `translate3d(${itemX}px,0,0)` };
+        itemX += CORE_ITEM_WIDTH;
 
         var classNames = [
           SPLIT_CLASS_NAME,
@@ -189,7 +190,6 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
           </div>
         `);
       }, this);
-      if (dragOver && dragPosition === splits.length()) itemY += CORE_ITEM_HEIGHT;
     }
 
     return JSX(`
@@ -201,7 +201,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         onDrop={this.drop.bind(this)}
       >
         <div className="title">Split</div>
-        <div className="items" ref="splitItems" style={{ height: itemY }}>
+        <div className="items" ref="splitItems">
           {splitItems}
         </div>
         {this.renderMenu()}

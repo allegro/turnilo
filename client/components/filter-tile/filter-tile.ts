@@ -4,7 +4,7 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { Timezone, Duration, hour, day, week } from 'chronology';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
-import { CORE_ITEM_HEIGHT, CORE_ITEM_GAP } from '../../config/constants';
+import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../models/index';
 import { formatStartEnd } from '../../utils/date';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
@@ -136,7 +136,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         if (inAction instanceof InAction) {
           var setLiteral = inAction.getLiteralValue();
           if (!setLiteral) return '?';
-          return setLiteral.elements.join(', ');
+          return `(${setLiteral.elements.length})`;
         } else {
           return '[not in]';
         }
@@ -168,6 +168,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       <FilterMenu
         clicker={clicker}
         essence={essence}
+        direction="down"
         containerStage={menuStage}
         openOn={menuOpenOn}
         dimension={menuDimension}
@@ -181,7 +182,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { menuDimension, dragOver, dragPosition } = this.state;
     var { dataSource, filter, timezone } = essence;
 
-    var itemY = 0;
+    var itemX = 0;
     var filterItems: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       filterItems = filter.operands.toArray().map((operand, i) => {
@@ -189,10 +190,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         var dimension = dataSource.dimensions.find((d) => d.expression.equals(operandExpression));
         if (!dimension) throw new Error('dimension not found');
 
-        if (i) itemY += CORE_ITEM_GAP;
-        if (dragOver && dragPosition === i) itemY += CORE_ITEM_HEIGHT;
-        var style = { transform: `translate3d(0,${itemY}px,0)` };
-        itemY += CORE_ITEM_HEIGHT;
+        if (i) itemX += CORE_ITEM_GAP;
+        if (dragOver && dragPosition === i) itemX += CORE_ITEM_WIDTH;
+        var style = { transform: `translate3d(${itemX}px,0,0)` };
+        itemX += CORE_ITEM_WIDTH;
 
         var removeButton: React.DOMElement<any> = null;
         if (!operandExpression.equals(dataSource.timeAttribute)) {
@@ -217,12 +218,11 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
             onDragStart={this.dragStart.bind(this, dimension, operand)}
             style={style}
           >
-            <div className="reading">{dimension.title + ': ' + this.formatValue(dimension, operand, timezone)}</div>
+            <div className="reading">{dimension.title + ' ' + this.formatValue(dimension, operand, timezone)}</div>
             {removeButton}
           </div>
         `);
       }, this);
-      if (dragOver && dragPosition === filter.operands.size) itemY += CORE_ITEM_HEIGHT;
     }
 
     return JSX(`
@@ -234,7 +234,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onDrop={this.drop.bind(this)}
       >
         <div className="title">Filter</div>
-        <div className="items" ref="filterItems" style={{ height: itemY }}>
+        <div className="items" ref="filterItems">
           {filterItems}
         </div>
         {this.renderMenu()}

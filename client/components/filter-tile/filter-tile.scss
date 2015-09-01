@@ -2,20 +2,19 @@
 
 .filter-tile {
   @extend %module;
-  @extend %module-title;
-  padding-bottom: 10px;
-  min-height: 120px;
+  @extend %module-h-title;
 
   .items {
+    @include unpin-left($title-width);
     transition: height 0.1s ease-in-out;
 
     .filter {
       @extend %dimension-item;
       position: absolute;
-      top: 0; // It gets vertical position from the JS
-      left: $tile-padding-h;
-      right: $tile-padding-h;
-      height: $item-height;
+      left: 0; // It gets horizontal position from the JS
+      top: $tile-padding-v;
+      bottom: $tile-padding-v;
+      width: $item-width;
 
       .remove svg {
         width: 12px;

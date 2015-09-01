@@ -54,6 +54,7 @@ function getTimePresets(now: Date, tz: Timezone) {
 interface FilterMenuProps {
   clicker: Clicker;
   essence: Essence;
+  direction: string;
   containerStage: Stage;
   openOn: Element;
   dimension: Dimension;

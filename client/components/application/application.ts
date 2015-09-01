@@ -8,7 +8,10 @@ import { dataTransferTypesContain } from '../../utils/dom';
 import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
-import { FilterSplitPanel } from '../filter-split-panel/filter-split-panel';
+import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
+import { MeasuresTile } from '../measures-tile/measures-tile';
+import { FilterTile } from '../filter-tile/filter-tile';
+import { SplitTile } from '../split-tile/split-tile';
 import { VisSelector } from '../vis-selector/vis-selector';
 import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { SideDrawer } from '../side-drawer/side-drawer';
@@ -284,16 +287,26 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       <main className='application' id='portal-cont'>
         <HeaderBar essence={essence} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
         <div className='container' ref='container'>
-          <FilterSplitPanel clicker={clicker} essence={essence} menuStage={menuStage}/>
-          <div
-            className='vis-pane'
-            onDragOver={this.dragOver.bind(this)}
-            onDragEnter={this.dragEnter.bind(this)}
-            onDragLeave={this.dragLeave.bind(this)}
-            onDrop={this.drop.bind(this)}
-          >
-            <VisSelector clicker={clicker} essence={essence}/>
-            <div className='visualization' ref='visualization'>{visElement}</div>
+          <div className='dimension-measure-panel'>
+            <DimensionListTile clicker={clicker} essence={essence} menuStage={menuStage}/>
+            <MeasuresTile clicker={clicker} essence={essence}/>
+          </div>
+          <div className='center-panel'>
+            <div className='center-top-bar'>
+              <div className='filter-split-section'>
+                <FilterTile clicker={clicker} essence={essence} menuStage={menuStage}/>
+                <SplitTile clicker={clicker} essence={essence} menuStage={menuStage}/>
+              </div>
+              <VisSelector clicker={clicker} essence={essence}/>
+            </div>
+            <div
+              className='visualization'
+              ref='visualization'
+              onDragOver={this.dragOver.bind(this)}
+              onDragEnter={this.dragEnter.bind(this)}
+              onDragLeave={this.dragLeave.bind(this)}
+              onDrop={this.drop.bind(this)}
+            >{visElement}</div>
             {dropIndicator}
           </div>
           <PinboardPanel clicker={clicker} essence={essence}/>
