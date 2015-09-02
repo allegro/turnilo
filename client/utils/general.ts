@@ -30,3 +30,46 @@ export function listsEqual<T>(listA: List<T>, listB: List<T>): boolean {
   if (!listA || !listB) return false;
   return arraysEqual(listA.toArray(), listB.toArray());
 }
+
+export interface DragPosition {
+  dragInsertPosition: number;
+  dragReplacePosition: number;
+}
+
+export function calculateDragPosition(offset: number, numItems: number, itemWidth: number, itemGap: number): DragPosition {
+  if (!numItems) {
+    return {
+      dragInsertPosition: null,
+      dragReplacePosition: 0
+    };
+  }
+
+  if (offset < 0) {
+    return {
+      dragInsertPosition: 0,
+      dragReplacePosition: null
+    };
+  }
+
+  var sectionWidth = itemWidth + itemGap;
+  var sectionNumber = Math.floor(offset / sectionWidth);
+  if (sectionNumber > numItems) {
+    return {
+      dragInsertPosition: null,
+      dragReplacePosition: numItems
+    };
+  }
+
+  var offsetWithinSection = offset - sectionWidth * sectionNumber;
+  if (offsetWithinSection < itemWidth) {
+    return {
+      dragInsertPosition: null,
+      dragReplacePosition: sectionNumber
+    };
+  } else {
+    return {
+      dragInsertPosition: sectionNumber + 1,
+      dragReplacePosition: null
+    };
+  }
+}

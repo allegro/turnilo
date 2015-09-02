@@ -48,6 +48,10 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
       listsEqual(this.operands, other.operands);
   }
 
+  public length(): number {
+    return this.operands.size;
+  }
+
   public toExpression(): Expression {
     var operands = this.operands;
     switch (operands.size) {

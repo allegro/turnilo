@@ -5,6 +5,7 @@ import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'hi
 import { Timezone, Duration, day, hour } from 'chronology';
 import { $, Expression, TimeRange, TimeBucketAction } from 'plywood';
 import { listsEqual } from '../../utils/general';
+import { Dimension } from '../dimension/dimension';
 import { DataSource } from '../data-source/data-source';
 import { Filter } from '../filter/filter';
 import { SplitCombine, SplitCombineJS } from '../split-combine/split-combine';
@@ -68,7 +69,7 @@ export class Splits implements ImmutableInstance<SplitsValue, SplitsJS> {
   }
 
   public addSplit(split: SplitCombine): Splits {
-    return new Splits(<List<SplitCombine>>this.splitCombines.concat(split));
+    return new Splits(this.splitCombines.push(split));
   }
 
   public removeSplit(split: SplitCombine): Splits {
@@ -95,8 +96,23 @@ export class Splits implements ImmutableInstance<SplitsValue, SplitsJS> {
     return this.splitCombines.last();
   }
 
+  public splitsOnDimension(dimension: Dimension): boolean {
+    var dimensionEx = dimension.expression;
+    return Boolean(this.splitCombines.find((s) => s.expression.equals(dimensionEx)));
+  }
+
   public replace(search: SplitCombine, replace: SplitCombine): Splits {
-    return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s === search ? replace : s));
+    return new Splits(<List<SplitCombine>>this.splitCombines.map((s) => s === search ? replace : s));
+  }
+
+  public replaceByIndex(index: number, replace: SplitCombine): Splits {
+    var { splitCombines } = this;
+    if (splitCombines.size === index) return this.addSplit(replace);
+    return new Splits(<List<SplitCombine>>this.splitCombines.map((s, i) => i === index ? replace : s));
+  }
+
+  public insertByIndex(index: number, insert: SplitCombine): Splits {
+    return new Splits(<List<SplitCombine>>this.splitCombines.splice(index, 0, insert));
   }
 
   public toArray(): SplitCombine[] {

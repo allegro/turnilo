@@ -6,6 +6,7 @@ import { Timezone, Duration, hour, day, week } from 'chronology';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../models/index';
+import { calculateDragPosition, DragPosition } from '../../utils/general';
 import { formatStartEnd } from '../../utils/date';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 import { FilterMenu } from '../filter-menu/filter-menu';
@@ -22,7 +23,8 @@ interface FilterTileState {
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   dragOver?: boolean;
-  dragPosition?: number;
+  dragInsertPosition?: number;
+  dragReplacePosition?: number;
 }
 
 export class FilterTile extends React.Component<FilterTileProps, FilterTileState> {
@@ -34,7 +36,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       menuOpenOn: null,
       menuDimension: null,
       dragOver: false,
-      dragPosition: null
+      dragInsertPosition: null,
+      dragReplacePosition: null
     };
   }
 
@@ -74,8 +77,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     setDragGhost(dataTransfer, dimension.title);
   }
 
-  calculateDragPosition(e: DragEvent) {
-    this.setState({ dragPosition: 0 });
+  calculateDragPosition(e: DragEvent): DragPosition {
+    var { essence } = this.props;
+    var numItems = essence.filter.length();
+    var rect = React.findDOMNode(this.refs['items']).getBoundingClientRect();
+    var offset = e.clientX - rect.left;
+    return calculateDragPosition(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
 
   canDrop(e: DragEvent): boolean {
@@ -86,7 +93,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
-    this.calculateDragPosition(e);
+    this.setState(this.calculateDragPosition(e));
   }
 
   dragEnter(e: DragEvent) {
@@ -94,8 +101,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { dragOver } = this.state;
     if (!dragOver) {
       this.dragCounter = 0;
-      this.setState({ dragOver: true });
-      this.calculateDragPosition(e);
+      var newState: FilterTileState = this.calculateDragPosition(e);
+      newState.dragOver = true;
+      this.setState(newState);
     } else {
       this.dragCounter++;
     }
@@ -108,7 +116,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (this.dragCounter === 0) {
       this.setState({
         dragOver: false,
-        dragPosition: null
+        dragInsertPosition: null,
+        dragReplacePosition: null
       });
     } else {
       this.dragCounter--;
@@ -118,27 +127,33 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
     var { clicker, essence } = this.props;
-    var { dragPosition } = this.state;
+    var { filter } = essence;
 
+    var dimensionName = e.dataTransfer.getData("text/dimension");
+    var dimension = essence.dataSource.getDimension(dimensionName);
+    var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
     console.log('drop into filter');
 
     this.dragCounter = 0;
     this.setState({
       dragOver: false,
-      dragPosition: null
+      dragInsertPosition: null,
+      dragReplacePosition: null
     });
   }
 
-  formatValue(dimension: Dimension, operand: ChainExpression, timezone: Timezone) {
+  formatLabel(dimension: Dimension, operand: ChainExpression, timezone: Timezone): string {
+    var label = dimension.title + ' ';
+
     switch (dimension.type) {
       case 'STRING':
         var inAction = operand.actions[0];
         if (inAction instanceof InAction) {
           var setLiteral = inAction.getLiteralValue();
           if (!setLiteral) return '?';
-          return `(${setLiteral.elements.length})`;
+          label += `(${setLiteral.elements.length})`;
         } else {
-          return '[not in]';
+          label += '[not in]';
         }
         break;
 
@@ -147,15 +162,17 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         if (inAction instanceof InAction) {
           var timeRangeLiteral = inAction.getLiteralValue();
           if (!timeRangeLiteral) return '?';
-          return formatStartEnd(timeRangeLiteral.start, timeRangeLiteral.end, timezone).join(' -> ');
+          label = formatStartEnd(timeRangeLiteral.start, timeRangeLiteral.end, timezone).join(' -> ');
         } else {
-          return '[not in]';
+          label += '[not in]';
         }
         break;
 
       default:
         throw new Error('unknown type ' + dimension.type);
     }
+
+    return label;
   }
 
   renderMenu(): React.ReactElement<any> {
@@ -179,8 +196,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   render() {
     var { essence } = this.props;
-    var { menuDimension, dragOver, dragPosition } = this.state;
+    var { menuDimension, dragOver, dragInsertPosition, dragReplacePosition } = this.state;
     var { dataSource, filter, timezone } = essence;
+
+    var sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 
     var itemX = 0;
     var filterItems: Array<React.ReactElement<any>> = null;
@@ -190,10 +209,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         var dimension = dataSource.dimensions.find((d) => d.expression.equals(operandExpression));
         if (!dimension) throw new Error('dimension not found');
 
-        if (i) itemX += CORE_ITEM_GAP;
-        //if (dragOver && dragPosition === i) itemX += CORE_ITEM_WIDTH;
         var style = { transform: `translate3d(${itemX}px,0,0)` };
-        itemX += CORE_ITEM_WIDTH;
+        itemX += sectionWidth;
 
         var removeButton: React.DOMElement<any> = null;
         if (!operandExpression.equals(dataSource.timeAttribute)) {
@@ -218,11 +235,28 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
             onDragStart={this.dragStart.bind(this, dimension, operand)}
             style={style}
           >
-            <div className="reading">{dimension.title + ' ' + this.formatValue(dimension, operand, timezone)}</div>
+            <div className="reading">{this.formatLabel(dimension, operand, timezone)}</div>
             {removeButton}
           </div>
         `);
       }, this);
+    }
+
+    var dragGhostArrow: React.DOMElement<any> = null;
+    if (dragInsertPosition !== null || dragReplacePosition !== null) {
+      let left: number;
+      if (dragInsertPosition !== null) {
+        left = dragInsertPosition * sectionWidth - CORE_ITEM_GAP / 2;
+      } else {
+        left = dragReplacePosition * sectionWidth + CORE_ITEM_WIDTH / 2;
+      }
+      dragGhostArrow = JSX(`<div className="drag-ghost-arrow" key="ghost-arrow" style={{left: left}}></div>`);
+    }
+
+    var dragGhostElement: React.DOMElement<any> = null;
+    if (dragReplacePosition !== null) {
+      let left = dragReplacePosition * sectionWidth;
+      dragGhostElement = JSX(`<div className="drag-ghost-element" key="ghost-element" style={{left: left}}></div>`);
     }
 
     return JSX(`
@@ -236,6 +270,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         <div className="title">Filter</div>
         <div className="items" ref="items">
           {filterItems}
+          {dragGhostArrow}
+          {dragGhostElement}
         </div>
         {this.renderMenu()}
       </div>

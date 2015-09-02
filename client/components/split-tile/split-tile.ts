@@ -6,6 +6,7 @@ import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
+import { calculateDragPosition, DragPosition } from '../../utils/general';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
 import { SplitMenu } from '../split-menu/split-menu';
 
@@ -78,41 +79,12 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     setDragGhost(dataTransfer, dimension.title);
   }
 
-  calculateDragPosition(e: DragEvent) {
+  calculateDragPosition(e: DragEvent): DragPosition {
     var { essence } = this.props;
     var numItems = essence.splits.length();
     var rect = React.findDOMNode(this.refs['items']).getBoundingClientRect();
     var offset = e.clientX - rect.left;
-    if (offset < 0) {
-      this.setState({
-        dragInsertPosition: 0,
-        dragReplacePosition: null
-      });
-      return;
-    }
-
-    var sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
-    var sectionNumber = Math.floor(offset / sectionWidth);
-    if (sectionNumber > numItems) {
-      this.setState({
-        dragInsertPosition: null,
-        dragReplacePosition: numItems
-      });
-      return;
-    }
-
-    var offsetWithinSection = offset - sectionWidth * sectionNumber;
-    if (offsetWithinSection < CORE_ITEM_WIDTH) {
-      this.setState({
-        dragInsertPosition: null,
-        dragReplacePosition: sectionNumber
-      });
-    } else {
-      this.setState({
-        dragInsertPosition: sectionNumber + 1,
-        dragReplacePosition: null
-      });
-    }
+    return calculateDragPosition(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
 
   canDrop(e: DragEvent): boolean {
@@ -123,7 +95,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
-    this.calculateDragPosition(e);
+    this.setState(this.calculateDragPosition(e));
   }
 
   dragEnter(e: DragEvent) {
@@ -131,8 +103,9 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var { dragOver } = this.state;
     if (!dragOver) {
       this.dragCounter = 0;
-      this.setState({ dragOver: true });
-      this.calculateDragPosition(e);
+      var newState: SplitTileState = this.calculateDragPosition(e);
+      newState.dragOver = true;
+      this.setState(newState);
     } else {
       this.dragCounter++;
     }
@@ -156,10 +129,19 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
     var { clicker, essence } = this.props;
-    var { dragInsertPosition } = this.state;
+    var { splits } = essence;
 
-    var dimension = essence.dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
-    clicker.addSplit(dimension.getSplitCombine());
+    var dimensionName = e.dataTransfer.getData("text/dimension");
+    var dimension = essence.dataSource.getDimension(dimensionName);
+    if (!splits.splitsOnDimension(dimension)) {
+      var newSplitCombine = dimension.getSplitCombine();
+      var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
+      if (dragReplacePosition !== null) {
+        clicker.changeSplits(splits.replaceByIndex(dragReplacePosition, newSplitCombine));
+      } else if (dragInsertPosition !== null) {
+        clicker.changeSplits(splits.insertByIndex(dragInsertPosition, newSplitCombine));
+      }
+    }
 
     this.dragCounter = 0;
     this.setState({
@@ -228,9 +210,6 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         `);
       }, this);
     }
-
-    console.log('dragInsertPosition', dragInsertPosition);
-    console.log('dragReplacePosition', dragReplacePosition);
 
     var dragGhostArrow: React.DOMElement<any> = null;
     if (dragInsertPosition !== null || dragReplacePosition !== null) {
