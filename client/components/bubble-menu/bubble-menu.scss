@@ -13,17 +13,34 @@ $shpitz-size: 12px;
     &:after {
       content: '';
       position: absolute;
-      margin-top: -1 * $shpitz-size;
     }
+  }
 
+  &.right .shpitz {
     &:before {
       @include triangle(left, $shpitz-size, $shpitz-size, $border-light);
       left: -1 * $shpitz-size;
+      margin-top: -1 * $shpitz-size;
     }
 
     &:after {
       @include triangle(left, $shpitz-size, $shpitz-size, $white);
       left: -1 * $shpitz-size + 1;
+      margin-top: -1 * $shpitz-size;
+    }
+  }
+
+  &.down .shpitz {
+    &:before {
+      @include triangle(up, $shpitz-size, $shpitz-size, $border-light);
+      top: -1 * $shpitz-size;
+      margin-left: -1 * $shpitz-size;
+    }
+
+    &:after {
+      @include triangle(up, $shpitz-size, $shpitz-size, $white);
+      top: -1 * $shpitz-size + 1;
+      margin-left: -1 * $shpitz-size;
     }
   }
 

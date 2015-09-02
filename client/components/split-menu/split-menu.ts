@@ -48,7 +48,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   render() {
-    var { essence, clicker, containerStage, openOn, dimension, split, onClose } = this.props;
+    var { essence, clicker, direction, containerStage, openOn, dimension, split, onClose } = this.props;
     if (!dimension) return null;
 
     var menuSize = Stage.fromSize(250, 200);
@@ -63,7 +63,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     }
 
     return JSX(`
-      <BubbleMenu className="split-menu" containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
+      <BubbleMenu className="split-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
         <MenuHeader dimension={dimension}/>
         <div className="menu-cont">
           {granCont}

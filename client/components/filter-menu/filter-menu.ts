@@ -117,7 +117,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   }
 
   render() {
-    var { essence, clicker, containerStage, openOn, dimension, onClose } = this.props;
+    var { essence, clicker, direction, containerStage, openOn, dimension, onClose } = this.props;
     var { selectedValues, showSearch } = this.state;
     if (!dimension) return null;
 
@@ -170,7 +170,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
     }
 
     return JSX(`
-      <BubbleMenu className="filter-menu" containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
+      <BubbleMenu className="filter-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
         <MenuHeader dimension={dimension}/>
         {menuCont}
         {bottomBar}

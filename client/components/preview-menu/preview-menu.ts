@@ -80,7 +80,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
   }
 
   render() {
-    var { essence, clicker, containerStage, openOn, dimension, onClose } = this.props;
+    var { essence, clicker, direction, containerStage, openOn, dimension, onClose } = this.props;
     var { selectedValues, showSearch, filterMode, filteredDimension } = this.state;
     if (!dimension) return null;
 
@@ -128,7 +128,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
     }
 
     return JSX(`
-      <BubbleMenu className="preview-menu" containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
+      <BubbleMenu className="preview-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
         <MenuHeader dimension={dimension} onSearchClick={this.onSearchClick.bind(this)}/>
         <div className="menu-cont">{menuVisualization}</div>
         {bottomBar}

@@ -8,8 +8,12 @@ import { isInside, escapeKey } from '../../utils/dom';
 import { Stage } from '../../models/index';
 import { BodyPortal } from '../body-portal/body-portal';
 
+const OFFSET_H = 10;
+const OFFSET_V = -1;
+
 interface BubbleMenuProps {
   className: string;
+  direction: string;
   stage: Stage;
   containerStage: Stage;
   openOn: Element;
@@ -32,11 +36,26 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   componentWillMount() {
-    var rect = this.props.openOn.getBoundingClientRect();
-    this.setState({
-      x: rect.left + rect.width - 10,
-      y: rect.top + rect.height / 2
-    });
+    var { openOn, direction } = this.props;
+    var rect = openOn.getBoundingClientRect();
+    switch (direction) {
+      case 'right':
+        this.setState({
+          x: rect.left + rect.width - OFFSET_H,
+          y: rect.top + rect.height / 2
+        });
+        break;
+
+      case 'down':
+        this.setState({
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height - OFFSET_V
+        });
+        break;
+
+      default:
+        throw new Error(`unknown direction: '${direction}'`);
+    }
   }
 
   componentDidMount() {
@@ -67,28 +86,45 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   render() {
-    var { className, stage, containerStage, children } = this.props;
+    var { className, direction, stage, containerStage, children } = this.props;
     var { x, y } = this.state;
 
     var menuWidth = stage.width;
     var menuHeight = stage.height;
 
-    var top = Math.min(Math.max(containerStage.y, y - menuHeight / 2), containerStage.y + containerStage.height - menuHeight);
-    var style = {
-      left: x,
-      top: top,
+    var menuStyle: any = {
       width: menuWidth,
       height: menuHeight
     };
-    var shpitzStyle = {
-      top: y - top
+    var shpitzStyle: any = {
+      left: 0,
+      top: 0
     };
 
-    var myClass = 'bubble-menu';
+    switch (direction) {
+      case 'right':
+        var top = Math.min(Math.max(containerStage.y, y - menuHeight / 2), containerStage.y + containerStage.height - menuHeight);
+        menuStyle.left = x;
+        menuStyle.top = top;
+        shpitzStyle.top = y - top;
+        break;
+
+      case 'down':
+        var left = Math.min(Math.max(containerStage.x, x - menuWidth / 2), containerStage.x + containerStage.width - menuWidth);
+        menuStyle.left = left;
+        menuStyle.top = y;
+        shpitzStyle.left = x - left;
+        break;
+
+      default:
+        throw new Error(`unknown direction: '${direction}'`);
+    }
+
+    var myClass = 'bubble-menu ' + direction;
     if (className) myClass += ' ' + className;
     return JSX(`
       <BodyPortal>
-        <div className={myClass} style={style}>
+        <div className={myClass} style={menuStyle}>
           {children}
           <div className="shpitz" style={shpitzStyle}></div>
         </div>

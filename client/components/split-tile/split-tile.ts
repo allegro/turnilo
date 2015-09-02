@@ -22,7 +22,8 @@ interface SplitTileState {
   menuDimension?: Dimension;
   menuSplit?: SplitCombine;
   dragOver?: boolean;
-  dragPosition?: number;
+  dragInsertPosition?: number;
+  dragReplacePosition?: number;
 }
 
 export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
@@ -34,7 +35,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       menuOpenOn: null,
       menuDimension: null,
       dragOver: false,
-      dragPosition: null
+      dragInsertPosition: null,
+      dragReplacePosition: null
     };
   }
 
@@ -66,7 +68,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     e.stopPropagation();
   }
 
-  dragStart(dimension: Dimension, e: DragEvent) {
+  dragStart(dimension: Dimension, split: SplitCombine, e: DragEvent) {
     var dataTransfer = e.dataTransfer;
     // dataTransfer.effectAllowed = 'linkMove'; // Alt: set this to just 'move'
     dataTransfer.setData("text/url-list", 'http://imply.io'); // ToDo: make this generate a real URL
@@ -77,7 +79,40 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   calculateDragPosition(e: DragEvent) {
-    this.setState({ dragPosition: 0 });
+    var { essence } = this.props;
+    var numItems = essence.splits.length();
+    var rect = React.findDOMNode(this.refs['items']).getBoundingClientRect();
+    var offset = e.clientX - rect.left;
+    if (offset < 0) {
+      this.setState({
+        dragInsertPosition: 0,
+        dragReplacePosition: null
+      });
+      return;
+    }
+
+    var sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
+    var sectionNumber = Math.floor(offset / sectionWidth);
+    if (sectionNumber > numItems) {
+      this.setState({
+        dragInsertPosition: null,
+        dragReplacePosition: numItems
+      });
+      return;
+    }
+
+    var offsetWithinSection = offset - sectionWidth * sectionNumber;
+    if (offsetWithinSection < CORE_ITEM_WIDTH) {
+      this.setState({
+        dragInsertPosition: null,
+        dragReplacePosition: sectionNumber
+      });
+    } else {
+      this.setState({
+        dragInsertPosition: sectionNumber + 1,
+        dragReplacePosition: null
+      });
+    }
   }
 
   canDrop(e: DragEvent): boolean {
@@ -110,7 +145,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (this.dragCounter === 0) {
       this.setState({
         dragOver: false,
-        dragPosition: null
+        dragInsertPosition: null,
+        dragReplacePosition: null
       });
     } else {
       this.dragCounter--;
@@ -120,7 +156,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
     var { clicker, essence } = this.props;
-    var { dragPosition } = this.state;
+    var { dragInsertPosition } = this.state;
 
     var dimension = essence.dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
     clicker.addSplit(dimension.getSplitCombine());
@@ -128,7 +164,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     this.dragCounter = 0;
     this.setState({
       dragOver: false,
-      dragPosition: null
+      dragInsertPosition: null,
+      dragReplacePosition: null
     });
   }
 
@@ -154,8 +191,10 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   render() {
     var { essence } = this.props;
-    var { menuDimension, dragOver, dragPosition } = this.state;
+    var { menuDimension, dragOver, dragInsertPosition, dragReplacePosition } = this.state;
     var { dataSource, splits } = essence;
+
+    var sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 
     var itemX = 0;
     var splitItems: Array<React.ReactElement<any>> = null;
@@ -164,10 +203,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         var dimension = split.getDimension(dataSource);
         if (!dimension) throw new Error('dimension not found');
 
-        if (i) itemX += CORE_ITEM_GAP;
-        if (dragOver && dragPosition === i) itemX += CORE_ITEM_WIDTH;
         var style = { transform: `translate3d(${itemX}px,0,0)` };
-        itemX += CORE_ITEM_WIDTH;
+        itemX += sectionWidth;
 
         var classNames = [
           SPLIT_CLASS_NAME,
@@ -192,6 +229,26 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       }, this);
     }
 
+    console.log('dragInsertPosition', dragInsertPosition);
+    console.log('dragReplacePosition', dragReplacePosition);
+
+    var dragGhostArrow: React.DOMElement<any> = null;
+    if (dragInsertPosition !== null || dragReplacePosition !== null) {
+      let left: number;
+      if (dragInsertPosition !== null) {
+        left = dragInsertPosition * sectionWidth - CORE_ITEM_GAP / 2;
+      } else {
+        left = dragReplacePosition * sectionWidth + CORE_ITEM_WIDTH / 2;
+      }
+      dragGhostArrow = JSX(`<div className="drag-ghost-arrow" key="ghost-arrow" style={{left: left}}></div>`);
+    }
+
+    var dragGhostElement: React.DOMElement<any> = null;
+    if (dragReplacePosition !== null) {
+      let left = dragReplacePosition * sectionWidth;
+      dragGhostElement = JSX(`<div className="drag-ghost-element" key="ghost-element" style={{left: left}}></div>`);
+    }
+
     return JSX(`
       <div
         className={'split-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
@@ -201,8 +258,10 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         onDrop={this.drop.bind(this)}
       >
         <div className="title">Split</div>
-        <div className="items" ref="splitItems">
+        <div className="items" ref="items">
           {splitItems}
+          {dragGhostArrow}
+          {dragGhostElement}
         </div>
         {this.renderMenu()}
       </div>

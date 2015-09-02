@@ -294,8 +294,8 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
           <div className='center-panel'>
             <div className='center-top-bar'>
               <div className='filter-split-section'>
-                <FilterTile clicker={clicker} essence={essence} menuStage={menuStage}/>
-                <SplitTile clicker={clicker} essence={essence} menuStage={menuStage}/>
+                <FilterTile clicker={clicker} essence={essence} menuStage={visualizationStage}/>
+                <SplitTile clicker={clicker} essence={essence} menuStage={visualizationStage}/>
               </div>
               <VisSelector clicker={clicker} essence={essence}/>
             </div>

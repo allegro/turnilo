@@ -191,7 +191,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         if (!dimension) throw new Error('dimension not found');
 
         if (i) itemX += CORE_ITEM_GAP;
-        if (dragOver && dragPosition === i) itemX += CORE_ITEM_WIDTH;
+        //if (dragOver && dragPosition === i) itemX += CORE_ITEM_WIDTH;
         var style = { transform: `translate3d(${itemX}px,0,0)` };
         itemX += CORE_ITEM_WIDTH;
 
@@ -234,7 +234,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onDrop={this.drop.bind(this)}
       >
         <div className="title">Filter</div>
-        <div className="items" ref="filterItems">
+        <div className="items" ref="items">
           {filterItems}
         </div>
         {this.renderMenu()}
