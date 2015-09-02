@@ -60,19 +60,23 @@
         }
       }
 
-      .visualization {
-        @extend %module;
+      .center-main {
         @include unpin-top($control-tile-height + 4 + $control-tile-height + 10);
 
-        .time-series,
-        .nested-table {
+        .visualization {
+          @extend %module;
           @include pin-full;
-        }
-      }
 
-      .drop-indicator {
-        @include pin-full;
-        z-index: 9;
+          .time-series,
+          .nested-table {
+            @include pin-full;
+          }
+        }
+
+        .drop-indicator {
+          @include pin-full;
+          z-index: 9;
+        }
       }
     }
 

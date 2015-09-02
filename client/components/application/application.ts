@@ -300,14 +300,15 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
               <VisSelector clicker={clicker} essence={essence}/>
             </div>
             <div
-              className='visualization'
-              ref='visualization'
+              className='center-main'
               onDragOver={this.dragOver.bind(this)}
               onDragEnter={this.dragEnter.bind(this)}
               onDragLeave={this.dragLeave.bind(this)}
               onDrop={this.drop.bind(this)}
-            >{visElement}</div>
-            {dropIndicator}
+            >
+              <div className='visualization' ref='visualization'>{visElement}</div>
+              {dropIndicator}
+            </div>
           </div>
           <PinboardPanel clicker={clicker} essence={essence}/>
         </div>
