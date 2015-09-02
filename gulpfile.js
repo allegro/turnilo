@@ -15,6 +15,7 @@ var concat = require('gulp-concat');
 var tslint = require('gulp-tslint');
 var foreach = require('gulp-foreach');
 var watch = require('gulp-watch');
+var sourcemaps = require('gulp-sourcemaps');
 
 var merge = require('merge-stream');
 var debug = require('gulp-debug');
@@ -80,6 +81,7 @@ gulp.task('client:tsc', function() {
   var typeFiles = gulp.src(['./typings/**/*.d.ts']);
 
   return merge(sourceFiles, typeFiles)
+    .pipe(sourcemaps.init())
     .pipe(tsc(
       {
         typescript: typescript,
@@ -95,6 +97,10 @@ gulp.task('client:tsc', function() {
         onFinish: function() { gr.writeErrors('./webstorm/tsc-client-errors', errorTexts); }
       })
     ))
+    .pipe(sourcemaps.write('.', {
+      includeContent: false,
+      sourceRoot: '../client'
+    }))
     .pipe(gulp.dest('./client_build/'));
 });
 
@@ -113,6 +119,7 @@ gulp.task('server:tsc', function() {
   var typeFiles = gulp.src(['./typings/**/*.d.ts']);
 
   return merge(sourceFiles, typeFiles)
+    .pipe(sourcemaps.init())
     .pipe(tsc(
       {
         typescript: typescript,
@@ -127,6 +134,10 @@ gulp.task('server:tsc', function() {
         onFinish: function() { gr.writeErrors('./webstorm/tsc-server-errors', errorTexts); }
       })
     ))
+    .pipe(sourcemaps.write('.', {
+      includeContent: false,
+      sourceRoot: '../server'
+    }))
     .pipe(gulp.dest('./build/'));
 });
 
@@ -153,6 +164,7 @@ gulp.task('client:bundle', ['client:tsc'], function() {
     .pipe(foreach(function(stream, file) {
       // From: https://github.com/gulpjs/gulp/blob/master/docs/recipes/browserify-uglify-sourcemap.md
       var b = browserify({
+        //debug: true,
         entries: file.path
       });
 
