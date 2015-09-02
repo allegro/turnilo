@@ -1,6 +1,5 @@
 @import '../../imports';
 
-$loader-height: 150px;
 $checkbox-width: 20px;
 $measure-width: 80px;
 
@@ -75,6 +74,6 @@ $measure-width: 80px;
   }
 
   .loader {
-    height: $loader-height;
+    @include pin-full;
   }
 }

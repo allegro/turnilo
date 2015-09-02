@@ -90,11 +90,15 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
   public setValues(attribute: Expression, values: any[]): Filter {
     var operands = this.operands;
     var index = this.indexOfOperand(attribute);
-    var newOperand = attribute.in(values);
-    if (index === -1) {
-      operands = <List<ChainExpression>>operands.push(newOperand);
+    if (values.length) {
+      var newOperand = attribute.in(values);
+      if (index === -1) {
+        operands = <List<ChainExpression>>operands.push(newOperand);
+      } else {
+        operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
+      }
     } else {
-      operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
+      return new Filter(operands.delete(index));
     }
     return new Filter(operands);
   }

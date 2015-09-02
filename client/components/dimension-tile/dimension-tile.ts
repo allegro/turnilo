@@ -10,7 +10,6 @@ import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
 
-const LOADER_HEIGHT = 150;
 const TOP_N = 100;
 
 interface DimensionTileProps {
@@ -154,13 +153,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           </div>
         `);
       });
-      maxHeight += rows.length * PIN_ITEM_HEIGHT;
+      maxHeight += Math.max(2, rows.length) * PIN_ITEM_HEIGHT;
     }
 
     var loader: React.ReactElement<any> = null;
     if (loading) {
       loader = React.createElement(Loader, null);
-      maxHeight += LOADER_HEIGHT;
     }
 
     maxHeight += PIN_PADDING_BOTTOM;
