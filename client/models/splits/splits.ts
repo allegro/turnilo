@@ -96,9 +96,8 @@ export class Splits implements ImmutableInstance<SplitsValue, SplitsJS> {
     return this.splitCombines.last();
   }
 
-  public splitsOnDimension(dimension: Dimension): boolean {
-    var dimensionEx = dimension.expression;
-    return Boolean(this.splitCombines.find((s) => s.expression.equals(dimensionEx)));
+  public hasSplit(split: SplitCombine): boolean {
+    return Boolean(this.splitCombines.find((s) => s.equals(split)));
   }
 
   public replace(search: SplitCombine, replace: SplitCombine): Splits {

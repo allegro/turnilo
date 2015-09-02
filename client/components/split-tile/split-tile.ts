@@ -133,8 +133,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     var dimensionName = e.dataTransfer.getData("text/dimension");
     var dimension = essence.dataSource.getDimension(dimensionName);
-    if (!splits.splitsOnDimension(dimension)) {
-      var newSplitCombine = dimension.getSplitCombine();
+    var newSplitCombine = dimension.getSplitCombine();
+    if (!splits.hasSplit(newSplitCombine)) {
       var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
       if (dragReplacePosition !== null) {
         clicker.changeSplits(splits.replaceByIndex(dragReplacePosition, newSplitCombine));

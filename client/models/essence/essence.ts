@@ -349,6 +349,10 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     var value = this.valueOf();
     value.splits = splits;
     value.visualization = visualization;
+    if (value.highlight) {
+      value.filter = value.filter.setClause(value.highlight);
+      value.highlight = null;
+    }
     return new Essence(value);
   }
 
