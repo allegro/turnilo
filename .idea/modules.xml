@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/explorer.iml" filepath="$PROJECT_DIR$/.idea/explorer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pivot.iml" filepath="$PROJECT_DIR$/.idea/pivot.iml" />
     </modules>
   </component>
 </project>

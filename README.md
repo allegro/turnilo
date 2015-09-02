@@ -1,4 +1,4 @@
-# explorer
+# Imply Pivot
 
 Data explorer
 
@@ -17,7 +17,7 @@ Also make sure you have the SASS lint gem:
 gem install scss_lint
 ```
 
-Next, inside the explorer folder run:
+Next, inside the pivot folder run:
 
 ```
 npm install
@@ -26,7 +26,7 @@ npm install
 Then you are ready to
 
 ```
-open index.html
+./run
 ```
 
 

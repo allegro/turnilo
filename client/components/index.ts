@@ -2,7 +2,6 @@ export * from './header-bar/header-bar';
 export * from '../visualizations/time-series/time-series';
 export * from '../visualizations/nested-table/nested-table';
 export * from './menu-table/menu-table';
-export * from './filter-split-panel/filter-split-panel';
 export * from './bubble-menu/bubble-menu';
 export * from './vis-selector/vis-selector';
 export * from './drop-indicator/drop-indicator';

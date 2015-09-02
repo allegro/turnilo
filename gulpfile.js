@@ -28,7 +28,7 @@ var gr = require('./gulp-reporters');
 // client -> client_build_tmp -> client_build -> public
 // server -> build
 
-var STYLE_NAME = 'explorer.css';
+var STYLE_NAME = 'pivot.css';
 
 gulp.task('style', function() {
   var errorTexts = [];

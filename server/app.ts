@@ -69,9 +69,9 @@ app.use(express.static(path.join(__dirname, '../favicon')));
 app.use(express.static(path.join(__dirname, '../data')));
 
 app.get('/', (req: Request, res: Response, next: Function) => {
-  res.render('explorer', {
+  res.render('pivot', {
     version: VERSION,
-    title: 'Explorer'
+    title: 'Pivot'
   });
 });
 
