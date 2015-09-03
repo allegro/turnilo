@@ -88,6 +88,10 @@ export class Splits implements ImmutableInstance<SplitsValue, SplitsJS> {
     return this.splitCombines.forEach(sideEffect, context);
   }
 
+  public get(index: number): SplitCombine {
+    return this.splitCombines.get(index);
+  }
+
   public first(): SplitCombine {
     return this.splitCombines.first();
   }

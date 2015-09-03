@@ -10,7 +10,8 @@ import { formatterFromData } from '../../utils/formatter';
 import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../models/index';
 
 const HEADER_HEIGHT = 38;
-const SEGMENT_WIDTH = 200;
+const SEGMENT_WIDTH = 300;
+const INDENT_WIDTH = 25;
 const MEASURE_WIDTH = 100;
 const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
@@ -56,16 +57,24 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
       query = query.apply(measure.name, measure.expression);
     });
 
-    splits.forEach((split) => {
-      var subQuery = $main.split(split.toSplitExpression(), 'Split');
+    var limit = splits.length() > 1 ? 10 : 50;
+    function makeQuery(i: number): Expression {
+      var split = splits.get(i);
+      var subQuery = $main.split(split.toSplitExpression(), 'Segment');
 
       measures.forEach((measure) => {
         subQuery = subQuery.apply(measure.name, measure.expression);
       });
-      subQuery = subQuery.sort($(measures.first().name), 'descending').limit(100);
+      subQuery = subQuery.sort($(measures.first().name), 'descending').limit(limit);
 
-      query = query.apply('Split', subQuery);
-    });
+      if (i + 1 < splits.length()) {
+        subQuery = subQuery.apply('Split', makeQuery(i + 1));
+      }
+
+      return subQuery;
+    }
+
+    query = query.apply('Split', makeQuery(0));
 
     dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
@@ -122,7 +131,10 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
     var segments: React.DOMElement<any>[] = [];
     var rows: React.DOMElement<any>[] = [];
     if (dataset) {
-      var rowData = dataset.data[0]['Split'].data;
+      var rowData = dataset.flatten({
+        order: 'preorder',
+        nestingName: '__nest'
+      });
 
       var formatters = measuresArray.map(measure => {
         var measureName = measure.name;
@@ -131,7 +143,11 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
       });
 
       segments = rowData.map((d: Datum, rowIndex: number) => {
-        return JSX(`<div className="segment" key={'_' + rowIndex}>{String(d['Split'])}</div>`);
+        var nest = d['__nest'];
+        var segmentName = nest ? String(d['Segment']) : 'Total';
+        var left = nest * INDENT_WIDTH;
+        var style = { left: left, width: SEGMENT_WIDTH - left };
+        return JSX(`<div className="segment" key={'_' + rowIndex} style={style}>{segmentName}</div>`);
       });
 
       rows = rowData.map((d: Datum, rowIndex: number) => {

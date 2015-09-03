@@ -12,13 +12,16 @@ interface VisSelectorProps {
 }
 
 interface VisSelectorState {
+  menuOpen: boolean;
 }
 
 export class VisSelector extends React.Component<VisSelectorProps, VisSelectorState> {
 
   constructor() {
     super();
-    // this.state = {};
+    this.state = {
+      menuOpen: false
+    };
 
   }
 
