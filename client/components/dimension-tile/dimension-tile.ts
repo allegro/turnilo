@@ -47,9 +47,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       .sort($(measure.name), 'descending')
       .limit(TOP_N + 1);
 
-    this.setState({
-      loading: true
-    });
+    this.setState({ loading: true });
     dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
       this.setState({

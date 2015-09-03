@@ -8,6 +8,7 @@ import { $, Expression, Executor, Dataset, Datum } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
 import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../models/index';
+import { Loader } from '../../components/loader/loader';
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 300;
@@ -21,6 +22,7 @@ const ROW_PADDING_RIGHT = 50;
 const BODY_PADDING_BOTTOM = 90;
 
 interface NestedTableState {
+  loading?: boolean;
   dataset?: Dataset;
   scrollLeft?: number;
   scrollTop?: number;
@@ -38,6 +40,7 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
   constructor() {
     super();
     this.state = {
+      loading: false,
       dataset: null,
       scrollLeft: 0,
       scrollTop: 0
@@ -76,9 +79,13 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
 
     query = query.apply('Split', makeQuery(0));
 
+    this.setState({ loading: true });
     dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
-      this.setState({ dataset });
+      this.setState({
+        loading: false,
+        dataset
+      });
     });
   }
 
@@ -110,7 +117,7 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
 
   render() {
     var { essence, stage } = this.props;
-    var { dataset, scrollLeft, scrollTop } = this.state;
+    var { dataset, scrollLeft, scrollTop, loading } = this.state;
 
     var segmentTitle = essence.splits.getTitle(essence.dataSource);
 
@@ -145,9 +152,9 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
       segments = rowData.map((d: Datum, rowIndex: number) => {
         var nest = d['__nest'];
         var segmentName = nest ? String(d['Segment']) : 'Total';
-        var left = nest * INDENT_WIDTH;
+        var left = Math.max(0, nest - 1) * INDENT_WIDTH;
         var style = { left: left, width: SEGMENT_WIDTH - left };
-        return JSX(`<div className="segment" key={'_' + rowIndex} style={style}>{segmentName}</div>`);
+        return JSX(`<div className={'segment nest' + nest} key={'_' + rowIndex} style={style}>{segmentName}</div>`);
       });
 
       rows = rowData.map((d: Datum, rowIndex: number) => {
@@ -204,6 +211,11 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
       height: HEADER_HEIGHT + ROW_HEIGHT * rows.length + BODY_PADDING_BOTTOM
     };
 
+    var loader: React.ReactElement<any> = null;
+    if (loading) {
+      loader = React.createElement(Loader, null);
+    }
+
     return JSX(`
       <div className="nested-table">
         <div className="corner">{segmentTitle}</div>
@@ -218,6 +230,7 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
         </div>
         <div className="horizontal-scroll-shadow" style={horizontalScrollShadowStyle}></div>
         <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
+        {loader}
         <div className="scroller-cont" onScroll={this.onScroll.bind(this)}>
           <div className="scroller" style={scrollerStyle}></div>
         </div>

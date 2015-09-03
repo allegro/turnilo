@@ -69,6 +69,10 @@ $header-padding-top: 12px;
     }
   }
 
+  .loader {
+    @include pin-full;
+  }
+
   .horizontal-scroll-shadow {
     position: absolute;
     left: $space-left;
