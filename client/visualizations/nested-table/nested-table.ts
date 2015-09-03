@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import * as numeral from 'numeral';
-import { $, Expression, Executor, Dataset, Datum } from 'plywood';
+import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
 import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../models/index';
@@ -21,9 +21,16 @@ const SPACE_RIGHT = 10;
 const ROW_PADDING_RIGHT = 50;
 const BODY_PADDING_BOTTOM = 90;
 
+function formatSegment(value: any): string {
+  if (TimeRange.isTimeRange(value)) {
+    return value.start.toISOString();
+  }
+  return String(value);
+}
+
 interface NestedTableState {
   loading?: boolean;
-  dataset?: Dataset;
+  flatData?: Datum[];
   scrollLeft?: number;
   scrollTop?: number;
 }
@@ -41,7 +48,7 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
     super();
     this.state = {
       loading: false,
-      dataset: null,
+      flatData: null,
       scrollLeft: 0,
       scrollTop: 0
     };
@@ -84,7 +91,10 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
       if (!this.mounted) return;
       this.setState({
         loading: false,
-        dataset
+        flatData: dataset.flatten({
+          order: 'preorder',
+          nestingName: '__nest'
+        })
       });
     });
   }
@@ -117,7 +127,7 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
 
   render() {
     var { essence, stage } = this.props;
-    var { dataset, scrollLeft, scrollTop, loading } = this.state;
+    var { flatData, scrollLeft, scrollTop, loading } = this.state;
 
     var segmentTitle = essence.splits.getTitle(essence.dataSource);
 
@@ -137,27 +147,22 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
 
     var segments: React.DOMElement<any>[] = [];
     var rows: React.DOMElement<any>[] = [];
-    if (dataset) {
-      var rowData = dataset.flatten({
-        order: 'preorder',
-        nestingName: '__nest'
-      });
-
+    if (flatData) {
       var formatters = measuresArray.map(measure => {
         var measureName = measure.name;
-        var measureValues = rowData.map((d: Datum) => d[measureName]);
+        var measureValues = flatData.map((d: Datum) => d[measureName]);
         return formatterFromData(measureValues, measure.format);
       });
 
-      segments = rowData.map((d: Datum, rowIndex: number) => {
+      segments = flatData.map((d: Datum, rowIndex: number) => {
         var nest = d['__nest'];
-        var segmentName = nest ? String(d['Segment']) : 'Total';
+        var segmentName = nest ? formatSegment(d['Segment']) : 'Total';
         var left = Math.max(0, nest - 1) * INDENT_WIDTH;
         var style = { left: left, width: SEGMENT_WIDTH - left };
         return JSX(`<div className={'segment nest' + nest} key={'_' + rowIndex} style={style}>{segmentName}</div>`);
       });
 
-      rows = rowData.map((d: Datum, rowIndex: number) => {
+      rows = flatData.map((d: Datum, rowIndex: number) => {
         var row = measuresArray.map((measure, i) => {
           var measureValue = d[measure.name];
           var measureValueStr = formatters[i](measureValue);
