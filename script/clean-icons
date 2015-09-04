@@ -3,8 +3,13 @@
 replace = require("replace")
 
 replace({
-  regex: /\s+<!--[^>]-->\n/g,
+  regex: "\\s+<!--[^>]+-->",
   replacement: '',
-  paths: ['./icons'],
-  silent: true,
+  paths: ['./icons/']
+})
+
+replace({
+  regex: "\\s+<title>[^<]+</title>",
+  replacement: '',
+  paths: ['./icons/']
 })
