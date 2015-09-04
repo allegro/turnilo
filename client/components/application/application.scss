@@ -55,8 +55,6 @@
         .vis-selector {
           @include pin-right($vis-selector-width);
           z-index: 8;
-
-          overflow: hidden;
         }
       }
 

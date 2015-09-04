@@ -1,10 +1,12 @@
 'use strict';
 
 import * as React from 'react/addons';
+import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
+import { findParentWithClass } from '../../utils/dom';
 import { Clicker, Essence, Measure, Manifest } from '../../models/index';
-// import { SomeComp } from '../some-comp/some-comp';
+import { VisSelectorMenu } from '../vis-selector-menu/vis-selector-menu';
 
 interface VisSelectorProps {
   clicker: Clicker;
@@ -12,7 +14,7 @@ interface VisSelectorProps {
 }
 
 interface VisSelectorState {
-  menuOpen: boolean;
+  menuOpenOn?: Element;
 }
 
 export class VisSelector extends React.Component<VisSelectorProps, VisSelectorState> {
@@ -20,39 +22,51 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
   constructor() {
     super();
     this.state = {
-      menuOpen: false
+      menuOpenOn: null
     };
 
   }
 
+  openMenu(e: MouseEvent) {
+    var { menuOpenOn } = this.state;
+    var target = findParentWithClass(<Element>e.target, 'vis-selector');
+    if (menuOpenOn === target) {
+      this.closeMenu();
+      return;
+    }
+    this.setState({
+      menuOpenOn: target
+    });
+  }
+
+  closeMenu() {
+    this.setState({
+      menuOpenOn: null
+    });
+  }
+
   render() {
     var { clicker, essence } = this.props;
-    var { visualizations, visualization, dataSource, splits } = essence;
+    var { menuOpenOn } = this.state;
+    var { visualization } = essence;
 
-    var visItems: Array<React.DOMElement<any>> = null;
-    if (visualizations) {
-      visItems = visualizations.toArray().map(v => {
-        var state: string;
-
-        if (v.id === visualization.id) {
-          state = 'selected';
-        } else {
-          state = v.handleCircumstance(dataSource, splits).toString();
-        }
-
-        return JSX(`
-          <div
-            key={v}
-            className={'vis-item ' + state}
-            onClick={clicker.selectVisualization.bind(clicker, v)}
-          >{v.title}</div>
-        `);
+    var menu: React.ReactElement<any> = null;
+    if (menuOpenOn) {
+      menu = React.createElement(VisSelectorMenu, {
+        clicker,
+        essence,
+        openOn: menuOpenOn,
+        onClose: this.closeMenu.bind(this)
       });
     }
 
     return JSX(`
-      <div className="vis-selector">
-        {visItems}
+      <div className="vis-selector" onClick={this.openMenu.bind(this)}>
+        <div className="vis-item selected">
+          <Icon name={'vis-' + visualization.id}/>
+          <div className="vis-title">{visualization.title}</div>
+        </div>
+        {menu}
       </div>
     `);
   }

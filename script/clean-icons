@@ -1,0 +1,10 @@
+#!/usr/bin/env coffee
+
+replace = require("replace")
+
+replace({
+  regex: /\s+<!--[^>]-->\n/g,
+  replacement: '',
+  paths: ['./icons'],
+  silent: true,
+})

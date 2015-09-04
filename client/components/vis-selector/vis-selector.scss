@@ -2,25 +2,45 @@
 
 .vis-selector {
   @extend %module;
-  padding: 12px 0 0 $tile-padding-h;
 
   .vis-item {
     display: inline-block;
-    margin-left: 5px;
-    margin-right: 4px;
+    width: $vis-item-width;
+    height: $vis-item-height;
     cursor: pointer;
-    font-size: 12px;
-    text-transform: uppercase;
-    font-weight: 500;
-    color: hsl(0, 0%, 75%);
+
+    .vis-title {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      text-align: center;
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: hsl(0, 0%, 75%);
+    }
+
+    svg {
+      position: absolute;
+      left: 5px;
+      width: 90px;
+      height: 60px;
+    }
 
     &.selected,
-    &.ready {
+    &.ready .vis-label {
       color: $text-standard;
     }
 
-    &.selected {
+    &.selected .vis-label {
       text-decoration: underline;
     }
+  }
+
+  .vis-selector-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
   }
 }

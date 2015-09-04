@@ -1,3 +1,5 @@
+'use strict';
+
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Datum, Dataset } from 'plywood';
