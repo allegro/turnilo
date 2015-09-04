@@ -6,10 +6,37 @@ replace({
   regex: "\\s+<!--[^>]+-->",
   replacement: '',
   paths: ['./icons/']
+  recursive: true
 })
 
 replace({
   regex: "\\s+<title>[^<]+</title>",
   replacement: '',
   paths: ['./icons/']
+  recursive: true
 })
+
+replace({
+  regex: "\\s+<desc>[^<]+</desc>",
+  replacement: '',
+  paths: ['./icons/']
+  recursive: true
+})
+
+replace({
+  regex: "\\s+<defs>\\s*</defs>",
+  replacement: '',
+  paths: ['./icons/']
+  recursive: true
+})
+
+removeAttr = (attr) ->
+  replace({
+    regex: " #{attr}=\"[^\"]+\"",
+    replacement: '',
+    paths: ['./icons/']
+    recursive: true
+  })
+
+removeAttr('id')
+removeAttr('sketch:type')
