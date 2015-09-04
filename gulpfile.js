@@ -81,7 +81,7 @@ gulp.task('client:tsc', function() {
   var typeFiles = gulp.src(['./typings/**/*.d.ts']);
 
   return merge(sourceFiles, typeFiles)
-    .pipe(sourcemaps.init())
+    //.pipe(sourcemaps.init())
     .pipe(tsc(
       {
         typescript: typescript,
@@ -97,10 +97,7 @@ gulp.task('client:tsc', function() {
         onFinish: function() { gr.writeErrors('./webstorm/tsc-client-errors', errorTexts); }
       })
     ))
-    .pipe(sourcemaps.write('.', {
-      includeContent: false,
-      sourceRoot: '../client'
-    }))
+    //.pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: '../client' }))
     .pipe(gulp.dest('./client_build/'));
 });
 

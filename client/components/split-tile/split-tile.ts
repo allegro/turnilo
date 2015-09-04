@@ -43,8 +43,12 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   selectDimensionSplit(dimension: Dimension, split: SplitCombine, e: MouseEvent) {
-    var { menuOpenOn } = this.state;
     var target = findParentWithClass(<Element>e.target, SPLIT_CLASS_NAME);
+    this.openMenu(dimension, split, target);
+  }
+
+  openMenu(dimension: Dimension, split: SplitCombine, target: Element) {
+    var { menuOpenOn } = this.state;
     if (menuOpenOn === target) {
       this.closeMenu();
       return;
