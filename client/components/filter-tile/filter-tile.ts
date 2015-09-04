@@ -9,6 +9,7 @@ import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePr
 import { calculateDragPosition, DragPosition } from '../../utils/general';
 import { formatStartEnd } from '../../utils/date';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { FilterMenu } from '../filter-menu/filter-menu';
 
 const FILTER_CLASS_NAME = 'filter';
@@ -199,7 +200,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { menuDimension, dragOver, dragInsertPosition, dragReplacePosition } = this.state;
     var { dataSource, filter, timezone } = essence;
 
-    var sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
+    const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 
     var itemX = 0;
     var filterItems: Array<React.ReactElement<any>> = null;
@@ -242,27 +243,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       }, this);
     }
 
-    var dragElements: React.DOMElement<any> = null;
+    var fancyDragIndicator: React.ReactElement<any> = null;
     if (dragInsertPosition !== null || dragReplacePosition !== null) {
-      let ghostArrowLeft: number;
-      if (dragInsertPosition !== null) {
-        ghostArrowLeft = dragInsertPosition * sectionWidth - CORE_ITEM_GAP / 2;
-      } else {
-        ghostArrowLeft = dragReplacePosition * sectionWidth + CORE_ITEM_WIDTH / 2;
-      }
-
-      var dragGhostElement: React.DOMElement<any> = null;
-      if (dragReplacePosition !== null) {
-        let left = dragReplacePosition * sectionWidth;
-        dragGhostElement = JSX(`<div className="drag-ghost-element" key="ghost-element" style={{left: left}}></div>`);
-      }
-
-      dragElements = JSX(`
-        <div className="drag-elements">
-          {dragGhostElement}
-          <div className="drag-ghost-arrow" key="ghost-arrow" style={{left: ghostArrowLeft}}></div>
-        </div>
-      `);
+      fancyDragIndicator = React.createElement(FancyDragIndicator, {
+        dragInsertPosition,
+        dragReplacePosition
+      });
     }
 
     return JSX(`
@@ -277,7 +263,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         <div className="items" ref="items">
           {filterItems}
         </div>
-        {dragElements}
+        {fancyDragIndicator}
         {this.renderMenu()}
       </div>
     `);

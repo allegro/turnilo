@@ -8,6 +8,7 @@ import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
 import { calculateDragPosition, DragPosition } from '../../utils/general';
 import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { SplitMenu } from '../split-menu/split-menu';
 
 const SPLIT_CLASS_NAME = 'split';
@@ -224,27 +225,12 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       }, this);
     }
 
-    var dragElements: React.DOMElement<any> = null;
+    var fancyDragIndicator: React.ReactElement<any> = null;
     if (dragInsertPosition !== null || dragReplacePosition !== null) {
-      let ghostArrowLeft: number;
-      if (dragInsertPosition !== null) {
-        ghostArrowLeft = dragInsertPosition * sectionWidth - CORE_ITEM_GAP / 2;
-      } else {
-        ghostArrowLeft = dragReplacePosition * sectionWidth + CORE_ITEM_WIDTH / 2;
-      }
-
-      var dragGhostElement: React.DOMElement<any> = null;
-      if (dragReplacePosition !== null) {
-        let left = dragReplacePosition * sectionWidth;
-        dragGhostElement = JSX(`<div className="drag-ghost-element" key="ghost-element" style={{left: left}}></div>`);
-      }
-
-      dragElements = JSX(`
-        <div className="drag-elements">
-          {dragGhostElement}
-          <div className="drag-ghost-arrow" key="ghost-arrow" style={{left: ghostArrowLeft}}></div>
-        </div>
-      `);
+      fancyDragIndicator = React.createElement(FancyDragIndicator, {
+        dragInsertPosition,
+        dragReplacePosition
+      });
     }
 
     return JSX(`
@@ -259,7 +245,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         <div className="items" ref="items">
           {splitItems}
         </div>
-        {dragElements}
+        {fancyDragIndicator}
         {this.renderMenu()}
       </div>
     `);

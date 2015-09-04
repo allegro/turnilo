@@ -83,32 +83,6 @@
   }
 }
 
-%drag-elements {
-  .drag-elements {
-    @include unpin-left($title-width);
-
-    .drag-ghost-element {
-      position: absolute;
-      // left: 0; It gets left from the JS
-      top: $tile-padding-v;
-      bottom: $tile-padding-v;
-      width: $item-width;
-      border: 1px dashed $black;
-      border-radius: 4px;
-    }
-
-    .drag-ghost-arrow {
-      position: absolute;
-      // left: 0; It gets left from the JS
-      top: -2px;
-      height: 10px;
-      width: 2px;
-      margin-left: -1px;
-      background: $black;
-    }
-  }
-}
-
 %menu-cont {
   background: $white;
   border-radius: 2px;

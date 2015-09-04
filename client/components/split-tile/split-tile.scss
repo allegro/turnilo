@@ -3,7 +3,6 @@
 .split-tile {
   @extend %module;
   @extend %module-h-title;
-  @extend %drag-elements;
 
   .items {
     @include unpin-left($title-width);
@@ -22,5 +21,9 @@
         width: 12px;
       }
     }
+  }
+
+  .fancy-drag-indicator {
+    @include unpin-left($title-width);
   }
 }
