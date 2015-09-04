@@ -154,23 +154,35 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
         return formatterFromData(measureValues, measure.format);
       });
 
-      segments = flatData.map((d: Datum, rowIndex: number) => {
+      const skipNumber = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT));
+      const lastElementToShow = Math.min(flatData.length, Math.ceil((scrollTop + stage.height) / ROW_HEIGHT));
+
+      var rowY = skipNumber * ROW_HEIGHT;
+      for (var i = skipNumber; i < lastElementToShow; i++) {
+        var d = flatData[i];
         var nest = d['__nest'];
         var segmentName = nest ? formatSegment(d['Segment']) : 'Total';
         var left = Math.max(0, nest - 1) * INDENT_WIDTH;
-        var style = { left: left, width: SEGMENT_WIDTH - left };
-        return JSX(`<div className={'segment nest' + nest} key={'_' + rowIndex} style={style}>{segmentName}</div>`);
-      });
+        var segmentStyle = { left: left, width: SEGMENT_WIDTH - left, top: rowY };
+        segments.push(JSX(`
+          <div
+            className={'segment nest' + nest}
+            key={'_' + i}
+            style={segmentStyle}
+          >{segmentName}</div>
+        `));
 
-      rows = flatData.map((d: Datum, rowIndex: number) => {
-        var row = measuresArray.map((measure, i) => {
+        var row = measuresArray.map((measure, j) => {
           var measureValue = d[measure.name];
-          var measureValueStr = formatters[i](measureValue);
+          var measureValueStr = formatters[j](measureValue);
           return JSX(`<div className="measure" key={measure.name}>{measureValueStr}</div>`);
         });
 
-        return JSX(`<div className="row" key={'_' + rowIndex}>{row}</div>`);
-      });
+        var rowStyle = { top: rowY };
+        rows.push(JSX(`<div className="row" key={'_' + i} style={rowStyle}>{row}</div>`));
+
+        rowY += ROW_HEIGHT;
+      }
     }
 
     var rowWidth = MEASURE_WIDTH * measuresArray.length + ROW_PADDING_RIGHT;
@@ -193,10 +205,12 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
       top: -scrollTop
     };
 
+    const bodyHeight = flatData ? flatData.length * ROW_HEIGHT : 0;
     const bodyStyle = {
       left: -scrollLeft,
       top: -scrollTop,
-      width: rowWidthExtended
+      width: rowWidthExtended,
+      height: bodyHeight
     };
 
     var horizontalScrollShadowStyle: any = { display: 'none' };
@@ -213,7 +227,7 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
 
     const scrollerStyle = {
       width: SPACE_LEFT + SEGMENT_WIDTH + rowWidth + SPACE_RIGHT,
-      height: HEADER_HEIGHT + ROW_HEIGHT * rows.length + BODY_PADDING_BOTTOM
+      height: HEADER_HEIGHT + bodyHeight + BODY_PADDING_BOTTOM
     };
 
     var loader: React.ReactElement<any> = null;

@@ -103,8 +103,13 @@ $header-padding-top: 12px;
 
   .segment,
   .row {
+    position: absolute;
     height: $row-height;
     border-bottom: 1px solid $border-extra-light;
+  }
+
+  .row {
+    left: 0;
   }
 
   .measure-name {
