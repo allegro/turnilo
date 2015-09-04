@@ -12,6 +12,10 @@ $loader-size: 30px;
     margin-left: -$loader-size / 2;
     fill: $brand;
 
+    animation-name: loader-appears;
+    animation-duration: .3s;
+    animation-timing-function: linear;
+
     circle {
       animation-name: loader-circle;
       animation-duration: 0.5s;
@@ -19,15 +23,15 @@ $loader-size: 30px;
       animation-iteration-count: infinite;
       animation-direction: alternate;
 
-      &:nth-child(1) { animation-delay: 0s; }
-      &:nth-child(2) { animation-delay: 100ms; }
-      &:nth-child(3) { animation-delay: 300ms; }
-      &:nth-child(4) { animation-delay: 600ms; }
-      &:nth-child(5) { animation-delay: 800ms; }
-      &:nth-child(6) { animation-delay: 400ms; }
-      &:nth-child(7) { animation-delay: 700ms; }
-      &:nth-child(8) { animation-delay: 500ms; }
-      &:nth-child(9) { animation-delay: 200ms; }
+      &:nth-child(1) { animation-delay: -400s; }
+      &:nth-child(2) { animation-delay: -300ms; }
+      &:nth-child(3) { animation-delay: -100ms; }
+      &:nth-child(4) { animation-delay: 200ms; }
+      &:nth-child(5) { animation-delay: 400ms; }
+      &:nth-child(6) { animation-delay: 0ms; }
+      &:nth-child(7) { animation-delay: 300ms; }
+      &:nth-child(8) { animation-delay: 100ms; }
+      &:nth-child(9) { animation-delay: -200ms; }
     }
   }
 }
@@ -35,4 +39,9 @@ $loader-size: 30px;
 @keyframes loader-circle {
   0% { fill-opacity: 1; }
   100% { fill-opacity: 0.2; }
+}
+
+@keyframes loader-appears {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
