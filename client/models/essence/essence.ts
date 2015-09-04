@@ -389,13 +389,22 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
   }
 
   public toggleMeasure(measure: Measure): Essence {
+    var dataSource = this.dataSource;
     var value = this.valueOf();
     var selectedMeasures = value.selectedMeasures;
     var measureName = measure.name;
 
-    value.selectedMeasures = selectedMeasures.has(measureName) ?
-      selectedMeasures.delete(measureName) :
-      selectedMeasures.add(measureName);
+    if (selectedMeasures.has(measureName)) {
+      value.selectedMeasures = selectedMeasures.delete(measureName);
+    } else {
+      // Preserve the order of the measures in the datasource
+      value.selectedMeasures = OrderedSet(
+        dataSource.measures
+          .toArray()
+          .map(m => m.name)
+          .filter((name) => selectedMeasures.has(name) || name === measureName)
+      );
+    }
 
     return new Essence(value);
   }

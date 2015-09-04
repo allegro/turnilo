@@ -101,6 +101,10 @@ export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitC
     return expression.performAction(bucketAction);
   }
 
+  public toKey(): string {
+    return this.toSplitExpression().toString();
+  }
+
   public changeBucketAction(bucketAction: Action): SplitCombine {
     var value = this.valueOf();
     value.bucketAction = bucketAction;

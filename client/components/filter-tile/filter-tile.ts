@@ -242,21 +242,27 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       }, this);
     }
 
-    var dragGhostArrow: React.DOMElement<any> = null;
+    var dragElements: React.DOMElement<any> = null;
     if (dragInsertPosition !== null || dragReplacePosition !== null) {
-      let left: number;
+      let ghostArrowLeft: number;
       if (dragInsertPosition !== null) {
-        left = dragInsertPosition * sectionWidth - CORE_ITEM_GAP / 2;
+        ghostArrowLeft = dragInsertPosition * sectionWidth - CORE_ITEM_GAP / 2;
       } else {
-        left = dragReplacePosition * sectionWidth + CORE_ITEM_WIDTH / 2;
+        ghostArrowLeft = dragReplacePosition * sectionWidth + CORE_ITEM_WIDTH / 2;
       }
-      dragGhostArrow = JSX(`<div className="drag-ghost-arrow" key="ghost-arrow" style={{left: left}}></div>`);
-    }
 
-    var dragGhostElement: React.DOMElement<any> = null;
-    if (dragReplacePosition !== null) {
-      let left = dragReplacePosition * sectionWidth;
-      dragGhostElement = JSX(`<div className="drag-ghost-element" key="ghost-element" style={{left: left}}></div>`);
+      var dragGhostElement: React.DOMElement<any> = null;
+      if (dragReplacePosition !== null) {
+        let left = dragReplacePosition * sectionWidth;
+        dragGhostElement = JSX(`<div className="drag-ghost-element" key="ghost-element" style={{left: left}}></div>`);
+      }
+
+      dragElements = JSX(`
+        <div className="drag-elements">
+          {dragGhostElement}
+          <div className="drag-ghost-arrow" key="ghost-arrow" style={{left: ghostArrowLeft}}></div>
+        </div>
+      `);
     }
 
     return JSX(`
@@ -270,9 +276,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         <div className="title">Filter</div>
         <div className="items" ref="items">
           {filterItems}
-          {dragGhostArrow}
-          {dragGhostElement}
         </div>
+        {dragElements}
         {this.renderMenu()}
       </div>
     `);

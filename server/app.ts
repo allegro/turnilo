@@ -45,7 +45,7 @@ var contexts: Lookup<Datum> = {
 
 var app = express();
 
-const VERSION = 'v1.1';
+const VERSION = 'v0.1.1';
 
 app.disable('x-powered-by');
 

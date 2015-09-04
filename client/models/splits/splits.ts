@@ -21,6 +21,12 @@ function getBestGranularity(timeRange: TimeRange): Duration {
   }
 }
 
+function filterOutSplit(splits: List<SplitCombine>, split: SplitCombine, allowIndex: number): List<SplitCombine> {
+  return <List<SplitCombine>>splits.filter((s, i) => {
+    return i === allowIndex || !s.equals(split);
+  });
+}
+
 export type SplitsValue = List<SplitCombine>;
 export type SplitsJS = SplitCombineJS[];
 
@@ -68,8 +74,24 @@ export class Splits implements ImmutableInstance<SplitsValue, SplitsJS> {
       listsEqual(this.splitCombines, other.splitCombines);
   }
 
+  public replaceByIndex(index: number, replace: SplitCombine): Splits {
+    var { splitCombines } = this;
+    if (splitCombines.size === index) return this.insertByIndex(index, replace);
+    splitCombines = <List<SplitCombine>>splitCombines.map((s, i) => i === index ? replace : s);
+    splitCombines = filterOutSplit(splitCombines, replace, index);
+    return new Splits(splitCombines);
+  }
+
+  public insertByIndex(index: number, insert: SplitCombine): Splits {
+    var { splitCombines } = this;
+    splitCombines = <List<SplitCombine>>this.splitCombines.splice(index, 0, insert);
+    splitCombines = filterOutSplit(splitCombines, insert, index);
+    return new Splits(splitCombines);
+  }
+
   public addSplit(split: SplitCombine): Splits {
-    return new Splits(this.splitCombines.push(split));
+    var { splitCombines } = this;
+    return this.insertByIndex(splitCombines.size, split);
   }
 
   public removeSplit(split: SplitCombine): Splits {
@@ -106,16 +128,6 @@ export class Splits implements ImmutableInstance<SplitsValue, SplitsJS> {
 
   public replace(search: SplitCombine, replace: SplitCombine): Splits {
     return new Splits(<List<SplitCombine>>this.splitCombines.map((s) => s === search ? replace : s));
-  }
-
-  public replaceByIndex(index: number, replace: SplitCombine): Splits {
-    var { splitCombines } = this;
-    if (splitCombines.size === index) return this.addSplit(replace);
-    return new Splits(<List<SplitCombine>>this.splitCombines.map((s, i) => i === index ? replace : s));
-  }
-
-  public insertByIndex(index: number, insert: SplitCombine): Splits {
-    return new Splits(<List<SplitCombine>>this.splitCombines.splice(index, 0, insert));
   }
 
   public toArray(): SplitCombine[] {
