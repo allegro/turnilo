@@ -1,7 +1,7 @@
 'use strict';
 
 import { List } from 'immutable';
-import { $, Expression, ChainExpression, TimeRange } from 'plywood';
+import { TimeRange } from 'plywood';
 import { DataSource } from '../data-source/data-source';
 import { Filter } from '../filter/filter';
 import { SplitCombine } from '../split-combine/split-combine';
@@ -22,7 +22,7 @@ export interface Clicker {
   pin(dimension: Dimension): void;
   unpin(dimension: Dimension): void;
   toggleMeasure(measure: Measure): void;
-  changeHighlight(highlight: ChainExpression): void;
+  changeHighlight(highlight: Filter): void;
   acceptHighlight(): void;
   dropHighlight(): void;
 }

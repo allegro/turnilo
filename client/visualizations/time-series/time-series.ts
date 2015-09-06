@@ -244,7 +244,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       }
 
       var highlighter: React.ReactElement<any> = null;
-      if (dragStart !== null || essence.highlightOn(timeDimension)) {
+      if (dragStart !== null || essence.singleHighlightOn(timeDimension)) {
         var timeSplit = splits.first(); // ToDo: fix this
         var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
         highlighter = React.createElement(Highlighter, {

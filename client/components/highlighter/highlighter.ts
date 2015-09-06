@@ -106,7 +106,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     });
 
     var timeDimension = essence.getTimeDimension();
-    clicker.changeHighlight(timeDimension.expression.in(timeRange));
+    clicker.changeHighlight(Filter.fromClause(timeDimension.expression.in(timeRange)));
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
@@ -134,8 +134,8 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var shownTimeRange = pseudoHighlight;
     if (!shownTimeRange) {
       var timeDimension = essence.getTimeDimension();
-      if (essence.highlightOn(timeDimension)) {
-        shownTimeRange = essence.getHighlighValue();
+      if (essence.singleHighlightOn(timeDimension)) {
+        shownTimeRange = essence.getSingleHighlightValue();
       }
     }
 

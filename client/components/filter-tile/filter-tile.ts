@@ -16,7 +16,7 @@ const FILTER_CLASS_NAME = 'filter';
 
 interface ItemsBlank {
   dimension: Dimension;
-  operand?: ChainExpression;
+  clause?: ChainExpression;
 }
 
 interface FilterTileProps {
@@ -90,11 +90,15 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     e.stopPropagation();
   }
 
-  dragStart(dimension: Dimension, operand: ChainExpression, e: DragEvent) {
+  dragStart(dimension: Dimension, clause: ChainExpression, e: DragEvent) {
+    var { essence } = this.props;
+
+    var newUrl = essence.getURL(); // .changeSplit(dimension.getSplitCombine())
+
     var dataTransfer = e.dataTransfer;
-    // dataTransfer.effectAllowed = 'linkMove'; // Alt: set this to just 'move'
-    dataTransfer.setData("text/url-list", 'http://imply.io'); // ToDo: make this generate a real URL
-    dataTransfer.setData("text/plain", 'http://imply.io');
+    dataTransfer.effectAllowed = 'all';
+    dataTransfer.setData("text/url-list", newUrl);
+    dataTransfer.setData("text/plain", newUrl);
     dataTransfer.setData("text/dimension", dimension.name);
 
     setDragGhost(dataTransfer, dimension.title);
@@ -171,12 +175,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState(newState);
   }
 
-  formatLabel(dimension: Dimension, operand: ChainExpression, timezone: Timezone): string {
+  formatLabel(dimension: Dimension, clause: ChainExpression, timezone: Timezone): string {
     var label = dimension.title + ' ';
 
     switch (dimension.type) {
       case 'STRING':
-        var inAction = operand.actions[0];
+        var inAction = clause.actions[0];
         if (inAction instanceof InAction) {
           var setLiteral = inAction.getLiteralValue();
           if (!setLiteral) return '?';
@@ -187,7 +191,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         break;
 
       case 'TIME':
-        var inAction = operand.actions[0];
+        var inAction = clause.actions[0];
         if (inAction instanceof InAction) {
           var timeRangeLiteral = inAction.getLiteralValue();
           if (!timeRangeLiteral) return '?';
@@ -227,11 +231,11 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     `);
   }
 
-  renderRemoveButton(operand: ChainExpression) {
+  renderRemoveButton(clause: ChainExpression) {
     var dataSource = this.props.essence.dataSource;
-    if (operand.expression.equals(dataSource.timeAttribute)) return null;
+    if (clause.expression.equals(dataSource.timeAttribute)) return null;
     return JSX(`
-      <div className="remove" onClick={this.removeFilter.bind(this, operand.expression)}>
+      <div className="remove" onClick={this.removeFilter.bind(this, clause.expression)}>
         <Icon name="x"/>
       </div>
     `);
@@ -247,25 +251,27 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var itemX = 0;
     var filterItems: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
-      var itemsBlanks = filter.operands.toArray()
-        .map((operand): ItemsBlank => {
-          var dimension = dataSource.getDimensionByExpression(operand.expression);
+      var itemsBlanks = filter.clauses.toArray()
+        .map((clause): ItemsBlank => {
+          var dimension = dataSource.getDimensionByExpression(clause.expression);
           if (!dimension) return null;
           return {
             dimension,
-            operand
+            clause
           };
         })
         .filter(Boolean);
 
       if (possibleDimension) {
-        itemsBlanks.splice(possibleInsertPosition, 0, {
-          dimension: possibleDimension
-        });
+        if (possibleInsertPosition !== null) {
+          itemsBlanks.splice(possibleInsertPosition, 0, {
+            dimension: possibleDimension
+          });
+        }
       }
 
       filterItems = itemsBlanks.map((itemsBlank) => {
-        var { dimension, operand } = itemsBlank;
+        var { dimension, clause } = itemsBlank;
 
         var style = { transform: `translate3d(${itemX}px,0,0)` };
         itemX += sectionWidth;
@@ -276,18 +282,18 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         var className = classNames.join(' ');
         var key = dimension.name;
 
-        if (operand) {
+        if (clause) {
           return JSX(`
             <div
               className={className}
               key={key}
               draggable="true"
               onClick={this.clickDimension.bind(this, dimension)}
-              onDragStart={this.dragStart.bind(this, dimension, operand)}
+              onDragStart={this.dragStart.bind(this, dimension, clause)}
               style={style}
             >
-              <div className="reading">{this.formatLabel(dimension, operand, timezone)}</div>
-              {this.renderRemoveButton(operand)}
+              <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
+              {this.renderRemoveButton(clause)}
             </div>
           `);
         } else {

@@ -16,23 +16,28 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
     return isInstanceOf(candidate, Filter);
   }
 
+  static fromClause(clause: ChainExpression): Filter {
+    if (!clause) throw new Error('must have clause');
+    return new Filter(List([clause]));
+  }
+
   static fromJS(parameters: FilterJS): Filter {
-    return new Filter(List(parameters.map(operand => ChainExpression.fromJS(operand))));
+    return new Filter(List(parameters.map(clause => ChainExpression.fromJS(clause))));
   }
 
 
-  public operands: List<ChainExpression>;
+  public clauses: List<ChainExpression>;
 
   constructor(parameters: FilterValue) {
-    this.operands = parameters;
+    this.clauses = parameters;
   }
 
   public valueOf(): FilterValue {
-    return this.operands;
+    return this.clauses;
   }
 
   public toJS(): FilterJS {
-    return this.operands.toArray().map(operand => operand.toJS());
+    return this.clauses.toArray().map(clause => clause.toJS());
   }
 
   public toJSON(): FilterJS {
@@ -40,29 +45,37 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
   }
 
   public toString() {
-    return this.operands.map(operand => operand.toString()).join(' and ');
+    return this.clauses.map(clause => clause.toString()).join(' and ');
   }
 
   public equals(other: Filter): boolean {
     return Filter.isFilter(other) &&
-      listsEqual(this.operands, other.operands);
+      listsEqual(this.clauses, other.clauses);
+  }
+
+  public empty(): boolean {
+    return this.clauses.size === 0;
+  }
+
+  public single(): boolean {
+    return this.clauses.size === 1;
   }
 
   public length(): number {
-    return this.operands.size;
+    return this.clauses.size;
   }
 
   public toExpression(): Expression {
-    var operands = this.operands;
-    switch (operands.size) {
+    var clauses = this.clauses;
+    switch (clauses.size) {
       case 0:  return Expression.TRUE;
-      case 1:  return operands.first();
-      default: return operands.reduce((red: ChainExpression, next: ChainExpression) => red.and(next));
+      case 1:  return clauses.first();
+      default: return clauses.reduce((red: ChainExpression, next: ChainExpression) => red.and(next));
     }
   }
 
   private indexOfOperand(attribute: Expression): number {
-    return this.operands.findIndex(operand => operand.expression.equals(attribute));
+    return this.clauses.findIndex(clause => clause.expression.equals(attribute));
   }
 
   public filteredOn(attribute: Expression): boolean {
@@ -70,87 +83,103 @@ export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
   }
 
   public add(attribute: Expression, value: any): Filter {
-    var operands = this.operands;
+    var clauses = this.clauses;
     var index = this.indexOfOperand(attribute);
     if (index === -1) {
-      return new Filter(<List<ChainExpression>>operands.concat(attribute.in([value])));
+      return new Filter(<List<ChainExpression>>clauses.concat(attribute.in([value])));
     } else {
-      var operand = operands.get(index);
-      var action = operand.actions[0];
+      var clause = clauses.get(index);
+      var action = clause.actions[0];
       if (action instanceof InAction) {
         var newSet = (<Set>(<LiteralExpression>action.expression).value).add(value);
-        operand = attribute.in(newSet);
+        clause = attribute.in(newSet);
       } else {
-        throw new Error('invalid operand');
+        throw new Error('invalid clause');
       }
-      return new Filter(<List<ChainExpression>>operands.splice(index, 1, operand));
+      return new Filter(<List<ChainExpression>>clauses.splice(index, 1, clause));
     }
   }
 
   public setValues(attribute: Expression, values: any[]): Filter {
-    var operands = this.operands;
+    var clauses = this.clauses;
     var index = this.indexOfOperand(attribute);
     if (values.length) {
       var newOperand = attribute.in(values);
       if (index === -1) {
-        operands = <List<ChainExpression>>operands.push(newOperand);
+        clauses = <List<ChainExpression>>clauses.push(newOperand);
       } else {
-        operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
+        clauses = <List<ChainExpression>>clauses.splice(index, 1, newOperand);
       }
     } else {
-      return new Filter(operands.delete(index));
+      return new Filter(clauses.delete(index));
     }
-    return new Filter(operands);
+    return new Filter(clauses);
   }
 
   public getValues(attribute: Expression): any[] {
-    var operands = this.operands;
+    var clauses = this.clauses;
     var index = this.indexOfOperand(attribute);
     if (index === -1) return null;
-    return operands.get(index).actions[0].getLiteralValue().elements;
+    return clauses.get(index).actions[0].getLiteralValue().elements;
   }
 
   public setTimeRange(attribute: Expression, timeRange: TimeRange): Filter {
-    var operands = this.operands;
+    var clauses = this.clauses;
     var index = this.indexOfOperand(attribute);
     var newOperand = attribute.in(timeRange);
     if (index === -1) {
-      operands = <List<ChainExpression>>operands.push(newOperand);
+      clauses = <List<ChainExpression>>clauses.push(newOperand);
     } else {
-      operands = <List<ChainExpression>>operands.splice(index, 1, newOperand);
+      clauses = <List<ChainExpression>>clauses.splice(index, 1, newOperand);
     }
-    return new Filter(operands);
+    return new Filter(clauses);
   }
 
   public getTimeRange(attribute: Expression): TimeRange {
-    var operands = this.operands;
+    var clauses = this.clauses;
     var index = this.indexOfOperand(attribute);
     if (index === -1) return null;
-    return operands.get(index).actions[0].getLiteralValue();
+    return clauses.get(index).actions[0].getLiteralValue();
   }
 
   public remove(attribute: Expression): Filter {
-    var operands = this.operands;
+    var clauses = this.clauses;
     var index = this.indexOfOperand(attribute);
     if (index === -1) return this;
-    return new Filter(operands.delete(index));
+    return new Filter(clauses.delete(index));
   }
 
   public setClause(expression: ChainExpression): Filter {
     var expressionAttribute = expression.expression;
     var added = false;
-    var newOperands = <List<ChainExpression>>this.operands.map((operand) => {
-      if (operand.expression.equals(expressionAttribute)) {
+    var newOperands = <List<ChainExpression>>this.clauses.map((clause) => {
+      if (clause.expression.equals(expressionAttribute)) {
         added = true;
         return expression;
       } else {
-        return operand;
+        return clause;
       }
     });
     if (!added) {
       newOperands = newOperands.push(expression);
     }
     return new Filter(newOperands);
+  }
+
+  public applyDelta(delta: Filter): Filter {
+    var newFilter = this;
+    var deltaClauses = delta.clauses;
+    deltaClauses.forEach((deltaClause) => {
+      newFilter = newFilter.setClause(deltaClause);
+    });
+    return newFilter;
+  }
+
+  public getSingleValue(): any {
+    var clauses = this.clauses;
+    if (clauses.size !== 1) return null;
+    var expression = clauses.get(0);
+    return expression.actions[0].getLiteralValue();
   }
 }
 check = Filter;

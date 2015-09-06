@@ -91,7 +91,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         var { essence } = this.state;
         this.setState({ essence: essence.toggleMeasure(measure) });
       },
-      changeHighlight: (highlight: ChainExpression) => {
+      changeHighlight: (highlight: Filter) => {
         var { essence } = this.state;
         this.setState({ essence: essence.changeHighlight(highlight) });
       },
@@ -153,6 +153,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
         pinnedDimensions: OrderedSet([dataSource.dimensions.get(1).name, dataSource.dimensions.get(5).name]),
         visualization: null,
+        compare: null,
         highlight: null
       });
     }

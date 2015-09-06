@@ -27,7 +27,8 @@ interface EssenceValue {
   splits: Splits;
   selectedMeasures: OrderedSet<string>;
   pinnedDimensions: OrderedSet<string>;
-  highlight: ChainExpression;
+  compare: Filter;
+  highlight: Filter;
 }
 
 interface EssenceJS {
@@ -38,7 +39,8 @@ interface EssenceJS {
   splits: SplitsJS;
   selectedMeasures: string[];
   pinnedDimensions: string[];
-  highlight?: ExpressionJS;
+  compare?: FilterJS;
+  highlight?: FilterJS;
 }
 
 var check: ImmutableClass<EssenceValue, EssenceJS>;
@@ -71,7 +73,10 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       return null;
     }
 
-    if (!Array.isArray(jsArray) || !(jsArray.length === 5 || jsArray.length === 6)) return null;
+
+    if (!Array.isArray(jsArray)) return null;
+    var jsArrayLength = jsArray.length;
+    if (!(5 <= jsArrayLength && jsArrayLength <= 7)) return null;
 
     var essence: Essence;
     try {
@@ -83,7 +88,8 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
         splits: jsArray[2],
         selectedMeasures: jsArray[3],
         pinnedDimensions: jsArray[4],
-        highlight: jsArray[5] || null
+        compare: jsArray[5] || null,
+        highlight: jsArray[6] || null
       }, dataSources, visualizations);
     } catch (e) {
       return null;
@@ -104,10 +110,16 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     var selectedMeasures = OrderedSet(parameters.selectedMeasures);
     var pinnedDimensions = OrderedSet(parameters.pinnedDimensions);
 
-    var highlight: ChainExpression = null;
+    var compare: Filter = null;
+    var compareJS = parameters.compare;
+    if (compareJS) {
+      compare = Filter.fromJS(compareJS);
+    }
+
+    var highlight: Filter = null;
     var highlightJS = parameters.highlight;
-    if (highlightJS && highlightJS.op === 'chain') {
-      highlight = <ChainExpression>Expression.fromJS(highlightJS);
+    if (highlightJS) {
+      highlight = Filter.fromJS(highlightJS);
     }
 
     return new Essence({
@@ -121,6 +133,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       splits,
       selectedMeasures,
       pinnedDimensions,
+      compare,
       highlight
     });
   }
@@ -136,7 +149,8 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
   public splits: Splits;
   public selectedMeasures: OrderedSet<string>;
   public pinnedDimensions: OrderedSet<string>;
-  public highlight: ChainExpression;
+  public compare: Filter;
+  public highlight: Filter;
 
   constructor(parameters: EssenceValue) {
     this.dataSources = parameters.dataSources;
@@ -148,6 +162,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     this.splits = parameters.splits;
     this.selectedMeasures = parameters.selectedMeasures;
     this.pinnedDimensions = parameters.pinnedDimensions;
+    this.compare = parameters.compare;
     this.highlight = parameters.highlight;
 
     // Place vis here because it needs to know about splits (and maybe later other things)
@@ -171,6 +186,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       splits: this.splits,
       selectedMeasures: this.selectedMeasures,
       pinnedDimensions: this.pinnedDimensions,
+      compare: this.compare,
       highlight: this.highlight
     };
   }
@@ -185,9 +201,8 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       selectedMeasures: this.selectedMeasures.toArray(),
       pinnedDimensions: this.pinnedDimensions.toArray()
     };
-    if (this.highlight) {
-      js.highlight = this.highlight.toJS();
-    }
+    if (this.compare) js.compare = this.compare.toJS();
+    if (this.highlight) js.highlight = this.highlight.toJS();
     return js;
   }
 
@@ -207,7 +222,11 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       this.filter.equals(other.filter) &&
       this.splits.equals(other.splits) &&
       this.selectedMeasures.equals(other.selectedMeasures) &&
-      this.pinnedDimensions.equals(other.pinnedDimensions);
+      this.pinnedDimensions.equals(other.pinnedDimensions) &&
+      Boolean(this.compare) === Boolean(other.compare) &&
+      (!this.compare || this.compare.equals(other.compare)) &&
+      Boolean(this.highlight) === Boolean(other.highlight) &&
+      (!this.highlight || this.highlight.equals(other.highlight));
   }
 
   public toHash(): string {
@@ -219,7 +238,12 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       js.selectedMeasures,
       js.pinnedDimensions
     ];
-    if (js.highlight) compressed.push(js.highlight);
+    if (js.compare || js.highlight) {
+      compressed.push(js.compare || null);
+    }
+    if (js.highlight) {
+      compressed.push(js.highlight || null);
+    }
     return '#' + [
       js.dataSource,
       js.visualization,
@@ -273,6 +297,11 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
           if (!this.pinnedDimensions.equals(other.pinnedDimensions)) return true;
           break;
 
+        case 'compare':
+          if (Boolean(this.compare) !== Boolean(other.compare)) return true;
+          if (this.compare && !this.compare.equals(other.compare)) return true;
+          break;
+
         case 'highlight':
           if (Boolean(this.highlight) !== Boolean(other.highlight)) return true;
           if (this.highlight && !this.highlight.equals(other.highlight)) return true;
@@ -285,16 +314,16 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     return false;
   }
 
-  public highlightOn(dimension: Dimension): boolean {
+  public singleHighlightOn(dimension: Dimension): boolean {
     var { highlight } = this;
     if (!highlight) return false;
-    return highlight.expression.equals(dimension.expression);
+    return highlight.single() && highlight.filteredOn(dimension.expression);
   }
 
-  public getHighlighValue(): any {
+  public getSingleHighlightValue(): any {
     var { highlight } = this;
     if (!highlight) return null;
-    return highlight.actions[0].getLiteralValue();
+    return highlight.getSingleValue();
   }
 
   public getFilterExpression(): Expression {
@@ -303,8 +332,8 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
 
   public getFilterHighlightExpression(excludeDimension?: Dimension): Expression {
     var { filter, highlight } = this;
-    if (highlight && (!excludeDimension || !highlight.expression.equals(excludeDimension.expression))) {
-      return filter.setClause(highlight).toExpression();
+    if (highlight && (!excludeDimension || !highlight.filteredOn(excludeDimension.expression))) {
+      return filter.applyDelta(highlight).toExpression();
     } else {
       return filter.toExpression();
     }
@@ -350,7 +379,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     value.splits = splits;
     value.visualization = visualization;
     if (value.highlight) {
-      value.filter = value.filter.setClause(value.highlight);
+      value.filter = value.filter.applyDelta(value.highlight);
       value.highlight = null;
     }
     return new Essence(value);
@@ -413,12 +442,12 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     var { highlight } = this;
     if (!highlight) return this;
     var value = this.valueOf();
-    value.filter = value.filter.setClause(highlight);
+    value.filter = value.filter.applyDelta(highlight);
     value.highlight = null;
     return new Essence(value);
   }
 
-  public changeHighlight(highlight: ChainExpression): Essence {
+  public changeHighlight(highlight: Filter): Essence {
     var value = this.valueOf();
     value.highlight = highlight;
     return new Essence(value);
