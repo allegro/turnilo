@@ -31,16 +31,16 @@
 
     .center-panel {
       position: absolute;
-      top: 10px;
-      bottom: 10px;
+      top: $page-margin-v;
+      bottom: $page-margin-v;
       left: $left-panel-width;
       right: $pinboard-width;
 
       .center-top-bar {
-        @include pin-top($control-tile-height + 4 + $control-tile-height);
+        @include pin-top($control-tile-height + $small-tile-margin + $control-tile-height);
 
         .filter-split-section {
-          @include unpin-right($vis-selector-width + 4);
+          @include unpin-right($vis-selector-width + $small-tile-margin);
         }
 
         .filter-tile,
@@ -49,7 +49,7 @@
         }
 
         .filter-tile {
-          margin-bottom: 4px;
+          margin-bottom: $small-tile-margin;
         }
 
         .vis-selector {
@@ -59,7 +59,7 @@
       }
 
       .center-main {
-        @include unpin-top($control-tile-height + 4 + $control-tile-height + 10);
+        @include unpin-top($control-tile-height + $small-tile-margin + $control-tile-height + $tile-margin-v);
 
         .visualization {
           @extend %module;

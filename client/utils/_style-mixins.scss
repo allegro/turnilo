@@ -39,7 +39,7 @@
 
   &.active,
   &:active {
-    background: shade($brand, 8%);
+    background: darken($brand, 8%);
     color: darken($white, 18%);
   }
 }
@@ -90,13 +90,15 @@
 }
 
 %dimension-item {
-  padding: 6px 0 0 10px;
+  padding: 0 0 0 10px;
   background: hsl(201, 92%, 85%);
-  border: 1px solid hsl(201, 92%, 85%);
   border-radius: 4px;
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.1s ease-in-out;
+  top: 4px;
+  bottom: 4px;
+  width: $item-width;
 
   .reading {
     white-space: nowrap;
@@ -104,39 +106,39 @@
     overflow-x: hidden;
     text-overflow: ellipsis;
     height: 16px;
+    margin-top: 8px;
   }
 
   .remove {
-    @include pin-right(25px);
+    @include pin-right(27px);
     text-align: center;
-    padding-top: 7px;
+    padding-top: 9px;
     cursor: pointer;
 
     svg {
-      width: 10px;
+      width: 11px;
     }
 
     path {
-      fill: hsla(0, 0, 0, 0.3);
+      fill: hsla(0, 0, 0, 0.2);
     }
 
     &:hover path {
-      fill: hsla(0, 0, 0, 0.65);
+      fill: hsla(0, 0, 0, 0.5);
     }
   }
 
   &:hover,
   &.selected {
-    border: 1px solid hsl(201, 92%, 70%);
+    background-color: hsl(201, 92%, 79%);
   }
 
   &.type-time {
     background: hsl(122, 49%, 84%);
-    border: 1px solid hsl(122, 49%, 84%);
 
     &:hover,
     &.selected {
-      border: 1px solid hsl(122, 49%, 70%);
+      background-color: hsl(122, 49%, 79%);
     }
   }
 }

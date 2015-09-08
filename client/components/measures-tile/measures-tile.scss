@@ -3,6 +3,7 @@
 .measures-tile {
   @extend %module;
   @extend %module-title;
+  min-height: 280px;
 
   .rows {
     position: absolute;

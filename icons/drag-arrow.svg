@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="15px" height="17px" viewBox="0 0 15 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
-    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g fill="#666666">
-            <path d="M5,8 L0,8 L7.5,17 L15,8 L10,8 L10,0 L5,0 L5,8 Z"></path>
+<svg width="17px" height="17px" viewBox="0 0 17 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12072) - http://www.bohemiancoding.com/sketch -->
+    <title>drag-arrow</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="drag-arrow" sketch:type="MSArtboardGroup" fill="#666666">
+            <path d="M6,8 L1,8 L8.5,17 L16,8 L11,8 L11,0 L6,0 L6,8 Z" id="Triangle-1" sketch:type="MSShapeGroup"></path>
         </g>
     </g>
 </svg>

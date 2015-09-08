@@ -1,12 +1,10 @@
 @import '../../imports';
 
-$vis-menu-padding: 8px;
+$vis-menu-padding: 12px;
 
 .vis-selector-menu {
+  @extend %menu-cont;
   width: $vis-item-width * 3 + $vis-menu-padding * 2;
-  background: $white;
-  box-shadow: 0 0 2px 0 hsla(0, 0, 0, 0.13);
-  border-radius: 2px;
   padding: $vis-menu-padding;
 
   .vis-item.selected {
