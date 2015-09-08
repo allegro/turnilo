@@ -175,6 +175,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState(newState);
   }
 
+  possibleDimensionAppend(dimension: Dimension) {
+    var { essence } = this.props;
+    this.setState({
+      possibleDimension: dimension,
+      possibleInsertPosition: essence.filter.length()
+    });
+  }
+
   formatLabel(dimension: Dimension, clause: ChainExpression, timezone: Timezone): string {
     var label = dimension.title + ' ';
 

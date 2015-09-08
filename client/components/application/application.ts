@@ -243,6 +243,11 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     }
   }
 
+  triggerFilterMenu(dimension: Dimension) {
+    if (!dimension) return;
+    (<FilterTile>this.refs['filterTile']).possibleDimensionAppend(dimension);
+  }
+
   sideDrawerOpen(drawerOpen: boolean): void {
     this.setState({ drawerOpen });
   }
@@ -289,13 +294,13 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         <HeaderBar essence={essence} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
         <div className='container' ref='container'>
           <div className='dimension-measure-panel'>
-            <DimensionListTile clicker={clicker} essence={essence} menuStage={menuStage}/>
+            <DimensionListTile clicker={clicker} essence={essence} menuStage={menuStage} onFilter={this.triggerFilterMenu.bind(this)}/>
             <MeasuresTile clicker={clicker} essence={essence}/>
           </div>
           <div className='center-panel'>
             <div className='center-top-bar'>
               <div className='filter-split-section'>
-                <FilterTile clicker={clicker} essence={essence} menuStage={visualizationStage}/>
+                <FilterTile ref="filterTile" clicker={clicker} essence={essence} menuStage={visualizationStage}/>
                 <SplitTile clicker={clicker} essence={essence} menuStage={visualizationStage}/>
               </div>
               <VisSelector clicker={clicker} essence={essence}/>

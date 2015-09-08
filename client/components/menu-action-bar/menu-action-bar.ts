@@ -11,6 +11,7 @@ interface MenuActionBarProps {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;
+  onFilter: Function;
   onClose: Function;
 }
 
@@ -25,8 +26,8 @@ export class MenuActionBar extends React.Component<MenuActionBarProps, MenuActio
   }
 
   onFilter(): void {
-    var { clicker, dimension, onClose } = this.props;
-    console.log('filter');
+    var { dimension, onFilter, onClose } = this.props;
+    onFilter(dimension);
     onClose();
   }
 

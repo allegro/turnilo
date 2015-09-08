@@ -18,6 +18,7 @@ interface PreviewMenuProps {
   containerStage: Stage;
   openOn: Element;
   dimension: Dimension;
+  onFilter: Function;
   onClose: Function;
 }
 
@@ -80,7 +81,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
   }
 
   render() {
-    var { essence, clicker, direction, containerStage, openOn, dimension, onClose } = this.props;
+    var { essence, clicker, direction, containerStage, openOn, dimension, onFilter, onClose } = this.props;
     var { selectedValues, showSearch, filterMode, filteredDimension } = this.state;
     if (!dimension) return null;
 
@@ -94,6 +95,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
           clicker={clicker}
           essence={essence}
           dimension={dimension}
+          onFilter={onFilter}
           onClose={onClose}
         />
       `);

@@ -16,6 +16,7 @@ interface DimensionListTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
+  onFilter: Function;
 }
 
 interface DimensionListTileState {
@@ -151,7 +152,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   renderMenu(): React.ReactElement<any> {
-    var { essence, clicker, menuStage } = this.props;
+    var { essence, clicker, menuStage, onFilter } = this.props;
     var { menuOpenOn, menuDimension } = this.state;
     if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
@@ -164,6 +165,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
         containerStage={menuStage}
         openOn={menuOpenOn}
         dimension={menuDimension}
+        onFilter={onFilter}
         onClose={onClose}
       />
     `);

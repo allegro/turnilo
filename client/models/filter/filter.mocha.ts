@@ -7,7 +7,7 @@ import { Filter } from "./filter";
 import { $, Expression } from 'plywood';
 
 describe('Filter', () => {
-  it('is a higher object', () => {
+  it('is an immutable class', () => {
     testImmutableClass(Filter, [
       [],
       [{

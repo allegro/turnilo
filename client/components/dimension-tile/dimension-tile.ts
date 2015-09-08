@@ -70,9 +70,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var nextEssence = nextProps.essence;
     var nextDimension = nextProps.dimension;
     var highlightId = HIGHLIGHT_ID + nextDimension.name;
-    console.log('highlightId', highlightId);
-    console.log('essence.differentEffectiveFilter(nextEssence, highlightId, nextDimension)', essence.differentEffectiveFilter(nextEssence, highlightId, nextDimension));
-    console.log('!dimension.equals(nextDimension)', !dimension.equals(nextDimension));
     if (
       essence.differentEffectiveFilter(nextEssence, highlightId, nextDimension) ||
       !dimension.equals(nextDimension)
