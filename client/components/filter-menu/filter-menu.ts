@@ -58,6 +58,8 @@ interface FilterMenuProps {
   containerStage: Stage;
   openOn: Element;
   dimension: Dimension;
+  insertPosition: number;
+  replacePosition: number;
   onClose: Function;
 }
 
@@ -105,9 +107,24 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   }
 
   onFilterClick() {
-    var { clicker, essence, dimension, onClose } = this.props;
+    var { clicker, essence, dimension, insertPosition, replacePosition, onClose } = this.props;
     var { selectedValues } = this.state;
-    clicker.changeFilter(essence.filter.setValues(dimension.expression, selectedValues.toArray()));
+    var { filter } = essence;
+    var newFilter: Filter;
+
+    if (selectedValues.size) {
+      var clause = dimension.expression.in(selectedValues.toArray());
+      if (insertPosition !== null) {
+        newFilter = filter.insertByIndex(insertPosition, clause);
+      } else if (replacePosition !== null) {
+        newFilter = filter.replaceByIndex(replacePosition, clause);
+      } else {
+        newFilter = filter.setClause(clause);
+      }
+    } else {
+      newFilter = filter.remove(dimension.expression);
+    }
+    clicker.changeFilter(newFilter);
     onClose();
   }
 
@@ -117,7 +134,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   }
 
   render() {
-    var { essence, clicker, direction, containerStage, openOn, dimension, onClose } = this.props;
+    var { essence, direction, containerStage, openOn, dimension, onClose } = this.props;
     var { selectedValues, showSearch } = this.state;
     if (!dimension) return null;
 

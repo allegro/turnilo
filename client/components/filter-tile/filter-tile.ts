@@ -228,7 +228,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   renderMenu(): React.ReactElement<any> {
     var { essence, clicker, menuStage } = this.props;
-    var { menuOpenOn, menuDimension } = this.state;
+    var { menuOpenOn, menuDimension, possibleInsertPosition, possibleReplacePosition } = this.state;
     if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
@@ -240,6 +240,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         containerStage={menuStage}
         openOn={menuOpenOn}
         dimension={menuDimension}
+        insertPosition={possibleInsertPosition}
+        replacePosition={possibleReplacePosition}
         onClose={onClose}
       />
     `);

@@ -5,6 +5,12 @@ import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, LiteralExpression, ChainExpression, ExpressionJS, InAction, Set, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
 
+function withholdClause(clauses: List<ChainExpression>, clause: ChainExpression, allowIndex: number): List<ChainExpression> {
+  return <List<ChainExpression>>clauses.filter((s, i) => {
+    return i === allowIndex || !s.equals(clause);
+  });
+}
+
 export type FilterValue = List<ChainExpression>;
 export type FilterJS = ExpressionJS[];
 
@@ -51,6 +57,21 @@ export class Filter implements Instance<FilterValue, FilterJS> {
   public equals(other: Filter): boolean {
     return Filter.isFilter(other) &&
       listsEqual(this.clauses, other.clauses);
+  }
+
+  public replaceByIndex(index: number, replace: ChainExpression): Filter {
+    var { clauses } = this;
+    if (clauses.size === index) return this.insertByIndex(index, replace);
+    clauses = <List<ChainExpression>>clauses.map((c, i) => i === index ? replace : c);
+    clauses = withholdClause(clauses, replace, index);
+    return new Filter(clauses);
+  }
+
+  public insertByIndex(index: number, insert: ChainExpression): Filter {
+    var { clauses } = this;
+    clauses = <List<ChainExpression>>clauses.splice(index, 0, insert);
+    clauses = withholdClause(clauses, insert, index);
+    return new Filter(clauses);
   }
 
   public empty(): boolean {

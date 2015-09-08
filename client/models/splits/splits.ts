@@ -21,7 +21,7 @@ function getBestGranularity(timeRange: TimeRange): Duration {
   }
 }
 
-function filterOutSplit(splits: List<SplitCombine>, split: SplitCombine, allowIndex: number): List<SplitCombine> {
+function withholdSplit(splits: List<SplitCombine>, split: SplitCombine, allowIndex: number): List<SplitCombine> {
   return <List<SplitCombine>>splits.filter((s, i) => {
     return i === allowIndex || !s.equals(split);
   });
@@ -78,14 +78,14 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     var { splitCombines } = this;
     if (splitCombines.size === index) return this.insertByIndex(index, replace);
     splitCombines = <List<SplitCombine>>splitCombines.map((s, i) => i === index ? replace : s);
-    splitCombines = filterOutSplit(splitCombines, replace, index);
+    splitCombines = withholdSplit(splitCombines, replace, index);
     return new Splits(splitCombines);
   }
 
   public insertByIndex(index: number, insert: SplitCombine): Splits {
     var { splitCombines } = this;
-    splitCombines = <List<SplitCombine>>this.splitCombines.splice(index, 0, insert);
-    splitCombines = filterOutSplit(splitCombines, insert, index);
+    splitCombines = <List<SplitCombine>>splitCombines.splice(index, 0, insert);
+    splitCombines = withholdSplit(splitCombines, insert, index);
     return new Splits(splitCombines);
   }
 
