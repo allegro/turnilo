@@ -5,8 +5,9 @@
 Imply Pivot is an exploratory web-based visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
 [Imply Plywood](https://github.com/implydata/plywood). 
 
-The project is currently at a very early alpha stage, and is *not suitable for production use*. We will be making periodic updates to the project. 
-We ask that any early alpha users refrain from submitting bug reports and feature requests at this time. 
+The project is currently at a very early alpha stage, and is _not suitable for production use_. 
+
+We will be making periodic updates to the project and ask that any early alpha users refrain from submitting bug reports and feature requests at this time. 
 
 ## License
 
