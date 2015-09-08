@@ -6,7 +6,7 @@ import { Timezone, WallTime } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, AttributeInfo } from 'plywood';
 
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "./models/index";
-import { Application } from "./components/index";
+import { PivotApplication } from "./components/index";
 
 // Init chronoshift
 if (!WallTime.rules) {
@@ -29,7 +29,7 @@ if ((<any>window)['ds']) {
 }
 
 React.render(
-  React.createElement(Application, {
+  React.createElement(PivotApplication, {
     dataSources: dataSources
   }),
   document.body

@@ -175,6 +175,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState(newState);
   }
 
+  // This would be called externally
   possibleDimensionAppend(dimension: Dimension) {
     var { essence } = this.props;
     this.setState({

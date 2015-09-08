@@ -8,20 +8,20 @@ var { TestUtils } = React.addons;
 var { Simulate } = TestUtils;
 
 import { $, Expression } from 'plywood';
-import { NestedTable } from './nested-table';
+import { PivotApplication } from './pivot-application';
 
-describe('NestedTable', () => {
+describe('PivotApplication', () => {
   setupDOM();
 
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       JSX(`
-        <NestedTable/>
+        <PivotApplication/>
       `)
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('nested-table');
+    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('pivot-application');
   });
 
 });

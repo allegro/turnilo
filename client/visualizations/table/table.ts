@@ -28,16 +28,16 @@ function formatSegment(value: any): string {
   return String(value);
 }
 
-interface NestedTableState {
+interface TableState {
   loading?: boolean;
   flatData?: Datum[];
   scrollLeft?: number;
   scrollTop?: number;
 }
 
-export class NestedTable extends React.Component<VisualizationProps, NestedTableState> {
-  static id = 'nested-table';
-  static title = 'Nested Table';
+export class Table extends React.Component<VisualizationProps, TableState> {
+  static id = 'table';
+  static title = 'Table';
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
     return splits.length() ? Resolve.READY : Resolve.MANUAL;
   }
@@ -61,7 +61,7 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
     var $main = $('main');
 
     var query: any = $()
-      .apply('main', $main.filter(essence.getEffectiveFilter(NestedTable.id).toExpression()));
+      .apply('main', $main.filter(essence.getEffectiveFilter(Table.id).toExpression()));
 
     measures.forEach((measure) => {
       query = query.apply(measure.name, measure.expression);
@@ -109,7 +109,7 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
-      essence.differentEffectiveFilter(nextEssence, NestedTable.id) ||
+      essence.differentEffectiveFilter(nextEssence, Table.id) ||
       essence.differentSplits(nextEssence) ||
       essence.differentSelectedMeasures(nextEssence)
     ) {
@@ -240,7 +240,7 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
     }
 
     return JSX(`
-      <div className="nested-table">
+      <div className="table">
         <div className="corner">{segmentTitle}</div>
         <div className="header-cont">
           <div className="header" style={headerStyle}>{headerColumns}</div>

@@ -21,11 +21,11 @@ import { visualizations } from '../../visualizations/index';
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
-interface ApplicationProps {
+interface PivotApplicationProps {
   dataSources: List<DataSource>;
 }
 
-interface ApplicationState {
+interface PivotApplicationState {
   essence?: Essence;
   menuStage?: Stage;
   visualizationStage?: Stage;
@@ -33,7 +33,7 @@ interface ApplicationState {
   drawerOpen?: boolean;
 }
 
-export class Application extends React.Component<ApplicationProps, ApplicationState> {
+export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
   private clicker: Clicker;
   private dragCounter: number;
   private hashUpdating: boolean = false;
@@ -125,7 +125,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     }
   }
 
-  componentWillUpdate(nextProps: ApplicationProps, nextState: ApplicationState): void {
+  componentWillUpdate(nextProps: PivotApplicationProps, nextState: PivotApplicationState): void {
     this.hashUpdating = true;
     window.location.hash = nextState.essence.toHash();
     // delay unflagging the update so that the hashchange event has a chance to fire a blank
@@ -252,7 +252,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     this.setState({ drawerOpen });
   }
 
-  shouldComponentUpdate(nextProps: ApplicationProps, nextState: ApplicationState): boolean {
+  shouldComponentUpdate(nextProps: PivotApplicationProps, nextState: PivotApplicationState): boolean {
     return Boolean(nextState.essence);
   }
 
@@ -290,7 +290,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
     }
 
     return JSX(`
-      <main className='application' id='portal-cont'>
+      <main className='pivot-application' id='portal-cont'>
         <HeaderBar essence={essence} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
         <div className='container' ref='container'>
           <div className='dimension-measure-panel'>

@@ -8,20 +8,20 @@ var { TestUtils } = React.addons;
 var { Simulate } = TestUtils;
 
 import { $, Expression } from 'plywood';
-import { Application } from './application';
+import { Table } from './table';
 
-describe('Application', () => {
+describe('Table', () => {
   setupDOM();
 
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       JSX(`
-        <Application/>
+        <Table/>
       `)
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('application');
+    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('table');
   });
 
 });
