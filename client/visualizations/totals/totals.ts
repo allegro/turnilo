@@ -30,13 +30,13 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   }
 
   fetchData(essence: Essence): void {
-    var { dataSource, filter } = essence;
+    var { dataSource } = essence;
     var measures = essence.getMeasures();
 
     var $main = $('main');
 
     var query: any = $()
-      .apply('main', $main.filter(filter.toExpression()));
+      .apply('main', $main.filter(essence.getEffectiveFilter(Totals.id).toExpression()));
 
     measures.forEach((measure) => {
       query = query.apply(measure.name, measure.expression);

@@ -39,9 +39,14 @@ $measure-width: 80px;
 
   .row {
     height: $pin-item-height;
+    border: 1px solid $white;
 
     &:hover {
       background: $hover;
+    }
+
+    &.selected {
+      border: 1px dashed $brand;
     }
   }
 
@@ -68,9 +73,16 @@ $measure-width: 80px;
     @include pin-right($measure-width);
 
     text-align: right;
-    padding-top: 5px;
+    padding-top: 4px;
     padding-right: $tile-padding-h;
     white-space: nowrap;
+  }
+
+  .highlight-controls {
+    position: absolute;
+    top: 34px;
+    right: 20px;
+    width: $highlight-button-width;
   }
 
   .loader {

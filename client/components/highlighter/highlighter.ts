@@ -1,16 +1,12 @@
 'use strict';
 
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+//import * as Icon from 'react-svg-icons';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../models/index';
 import { isInside, escapeKey } from '../../utils/dom';
-// import { SomeComp } from '../some-comp/some-comp';
-
-function stopEvent(e: MouseEvent): void {
-  e.stopPropagation();
-}
+import { HighlightControls } from '../highlight-controls/highlight-controls';
 
 interface HighlighterProps {
   clicker: Clicker;
@@ -87,11 +83,11 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
   }
 
   globalMouseUpListener(e: MouseEvent) {
-    var { clicker, essence, highlightId, duration, timezone } = this.props;
+    var { clicker, essence, highlightId, duration, timezone, onClose } = this.props;
     var { dragStartPx, pseudoHighlight } = this.state;
     if (dragStartPx === null) return;
     if (!pseudoHighlight) { // There was no mouse move so just quietly cancel out
-      this.onCancel();
+      onClose();
       return;
     }
 
@@ -116,20 +112,8 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     onClose();
   }
 
-  onAccept() {
-    var { onClose, clicker } = this.props;
-    clicker.acceptHighlight();
-    onClose();
-  }
-
-  onCancel() {
-    var { onClose, clicker } = this.props;
-    clicker.dropHighlight();
-    onClose();
-  }
-
   render() {
-    var { essence, highlightId, scaleX } = this.props;
+    var { clicker, essence, highlightId, scaleX, onClose } = this.props;
     var { pseudoHighlight, dragStartPx } = this.state;
 
     var shownTimeRange = pseudoHighlight;
@@ -143,17 +127,10 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
       return JSX(`<div className='highlighter'></div>`);
     }
 
-    var buttonBar: React.DOMElement<any> = null;
+    var highlightControls: React.ReactElement<any> = null;
     if (dragStartPx === null) {
-      buttonBar = JSX(`
-        <div className="button-bar">
-          <div className="button accept" onClick={this.onAccept.bind(this)} onMouseDown={stopEvent}>
-            <Icon name="check"/>
-          </div>
-          <div className="button cancel" onClick={this.onCancel.bind(this)} onMouseDown={stopEvent}>
-            <Icon name="x"/>
-          </div>
-        </div>
+      highlightControls = JSX(`
+        <HighlightControls clicker={clicker} onClose={onClose}/>
       `);
     }
 
@@ -176,7 +153,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     return JSX(`
       <div className={'highlighter ' + (dragStartPx !== null ? 'dragging' : 'confirm')} onMouseDown={this.onMouseDown.bind(this)}>
         <div className="whiteout left" style={whiteoutLeftStyle}></div>
-        <div className="frame" style={frameStyle}>{buttonBar}</div>
+        <div className="frame" style={frameStyle}>{highlightControls}</div>
         <div className="whiteout right" style={whiteoutRightStyle}></div>
       </div>
     `);

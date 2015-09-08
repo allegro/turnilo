@@ -2,12 +2,13 @@
 
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset, Set } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { formatterFromData } from '../../utils/formatter';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
+import { HighlightControls } from '../highlight-controls/highlight-controls';
 import { Loader } from '../loader/loader';
 
 const HIGHLIGHT_ID = 'dim-tile:';
@@ -92,19 +93,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     clicker.changeFilter(filter);
   }
 
-  onBoxClick(value: any, e: MouseEvent) {
-    e.stopPropagation();
-    var { essence, dimension } = this.props;
-    this.selectFilter(essence.filter.add(dimension.expression, value));
-  }
-
-  onValueClick(value: any) {
-    var { essence, dimension } = this.props;
-    if (essence.filter.filteredOn(dimension.expression)) {
-      this.selectFilter(essence.filter.remove(dimension.expression));
-    } else {
-      this.selectFilter(essence.filter.setValues(dimension.expression, [value]));
-    }
+  onRowClick(value: any) {
+    var { clicker, essence, dimension } = this.props;
+    var highlightId = HIGHLIGHT_ID + dimension.name;
+    clicker.changeHighlight(highlightId, Filter.fromClause(dimension.expression.in([value])));
   }
 
   render() {
@@ -125,16 +117,26 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     var rows: Array<React.DOMElement<any>> = [];
+    var highlightControls: React.ReactElement<any> = null;
     var hasMore = false;
     if (dataset) {
+      var highlightId = HIGHLIGHT_ID + dimension.name;
+      var highlightSet: Set = null;
+      if (essence.highlightOn(highlightId)) {
+        highlightSet = essence.getSingleHighlightValue();
+
+        highlightControls = React.createElement(HighlightControls, { clicker });
+      }
+
       hasMore = dataset.data.length > TOP_N;
       var rowData = dataset.data.slice(0, TOP_N);
       var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
       rows = rowData.map((d) => {
-        var segmentValue = String(d[dimensionName]);
+        var segmentValue = d[dimensionName];
+        var segmentValueStr = String(segmentValue);
         var measureValue = d[measureName];
         var measureValueStr = formatter(measureValue);
-        var selected = false; //selectedValues.indexOf(segmentValue) > -1;
+        var selected = highlightSet && highlightSet.contains(segmentValue);
 
         var checkbox: React.ReactElement<any> = null;
         if (false) {
@@ -145,10 +147,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         }
 
         return JSX(`
-          <div className={'row' + (selected ? ' selected' : '')} key={segmentValue}>
-            <div className="segment-value" onClick={this.onValueClick.bind(this, segmentValue)}>
+          <div
+            className={'row' + (selected ? ' selected' : '')}
+            key={segmentValueStr}
+            onClick={this.onRowClick.bind(this, segmentValue)}
+          >
+            <div className="segment-value" title={segmentValue}>
               {checkbox}
-              <div className="label" title={segmentValue}>{segmentValue}</div>
+              <div className="label" title={segmentValueStr}>{segmentValueStr}</div>
             </div>
             <div className="measure-value">{measureValueStr}</div>
           </div>
@@ -182,6 +188,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         />
         {searchBar}
         <div className="rows">{rows}</div>
+        {highlightControls}
         {loader}
       </div>
     `);

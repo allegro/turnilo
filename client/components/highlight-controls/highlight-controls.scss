@@ -1,0 +1,19 @@
+@import '../../imports';
+
+.highlight-controls {
+  .button {
+    height: $highlight-button-width;
+    background: $brand;
+    margin-bottom: 5px;
+    padding: 7px 6px;
+    cursor: pointer;
+
+    svg {
+      height: 13px;
+    }
+
+    path {
+      fill: $white;
+    }
+  }
+}

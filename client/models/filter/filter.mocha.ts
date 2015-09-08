@@ -20,6 +20,28 @@ describe('Filter', () => {
             "type": "TIME_RANGE"
           }
         }]
+      }],
+      [{
+        "op": "chain", "expression": { "op": "ref", "name": "language" },
+        "actions": [{
+          "action": "in",
+          "expression": {
+            "op": "literal",
+            "value": { "setType": "STRING", "elements": ["en"] },
+            "type": "SET"
+          }
+        }]
+      }],
+      [{
+        "op": "chain", "expression": { "op": "ref", "name": "language" },
+        "actions": [{
+          "action": "in",
+          "expression": {
+            "op": "literal",
+            "value": { "setType": "STRING", "elements": ["he"] },
+            "type": "SET"
+          }
+        }]
       }]
     ]);
   });

@@ -440,6 +440,13 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public changeHighlight(owner: string, delta: Filter): Essence {
     var value = this.valueOf();
+
+    // If there is already a highlight from someone else accept it
+    var { highlight } = value;
+    if (highlight && highlight.owner !== owner) {
+      value.filter = highlight.applyToFilter(value.filter);
+    }
+
     value.highlight = new Highlight({
       owner,
       delta

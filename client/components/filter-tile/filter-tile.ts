@@ -14,7 +14,7 @@ import { FilterMenu } from '../filter-menu/filter-menu';
 
 const FILTER_CLASS_NAME = 'filter';
 
-interface ItemsBlank {
+interface ItemBlank {
   dimension: Dimension;
   clause?: ChainExpression;
 }
@@ -33,6 +33,7 @@ interface FilterTileState {
   dragReplacePosition?: number;
   possibleDimension?: Dimension;
   possibleInsertPosition?: number;
+  possibleReplacePosition?: number;
 }
 
 export class FilterTile extends React.Component<FilterTileProps, FilterTileState> {
@@ -47,7 +48,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dragInsertPosition: null,
       dragReplacePosition: null,
       possibleDimension: null,
-      possibleInsertPosition: null
+      possibleInsertPosition: null,
+      possibleReplacePosition: null
     };
   }
 
@@ -80,7 +82,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       menuOpenOn: null,
       menuDimension: null,
       possibleDimension: null,
-      possibleInsertPosition: null
+      possibleInsertPosition: null,
+      possibleReplacePosition: null
     });
   }
 
@@ -166,9 +169,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dragReplacePosition: null
     };
 
-    if (dragInsertPosition !== null) {
+    if (dragInsertPosition !== null || dragReplacePosition !== null) {
       newState.possibleDimension = dimension;
       newState.possibleInsertPosition = dragInsertPosition;
+      newState.possibleReplacePosition = dragReplacePosition;
     }
 
     this.dragCounter = 0;
@@ -180,7 +184,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { essence } = this.props;
     this.setState({
       possibleDimension: dimension,
-      possibleInsertPosition: essence.filter.length()
+      possibleInsertPosition: essence.filter.length(),
+      possibleReplacePosition: null
     });
   }
 
@@ -252,7 +257,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   render() {
     var { essence } = this.props;
-    var { menuDimension, possibleDimension, dragOver, dragInsertPosition, dragReplacePosition, possibleInsertPosition } = this.state;
+    var {
+      menuDimension, dragOver, dragInsertPosition, dragReplacePosition,
+      possibleDimension, possibleInsertPosition, possibleReplacePosition
+    } = this.state;
     var { dataSource, filter, timezone } = essence;
 
     const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
@@ -261,7 +269,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var filterItems: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       var itemsBlanks = filter.clauses.toArray()
-        .map((clause): ItemsBlank => {
+        .map((clause): ItemBlank => {
           var dimension = dataSource.getDimensionByExpression(clause.expression);
           if (!dimension) return null;
           return {
@@ -272,10 +280,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         .filter(Boolean);
 
       if (possibleDimension) {
+        var dummyBlank: ItemBlank = { dimension: possibleDimension };
         if (possibleInsertPosition !== null) {
-          itemsBlanks.splice(possibleInsertPosition, 0, {
-            dimension: possibleDimension
-          });
+          itemsBlanks.splice(possibleInsertPosition, 0, dummyBlank);
+        }
+        if (possibleReplacePosition !== null) {
+          itemsBlanks[possibleReplacePosition] = dummyBlank;
         }
       }
 
