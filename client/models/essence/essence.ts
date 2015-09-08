@@ -267,7 +267,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public getTimeDimension(): Dimension {
-    return this.dataSource.getDimension('time');
+    return this.dataSource.getTimeDimension();
   }
 
   public getEffectiveFilter(highlightId: string = null, unfilterDimension: Dimension = null): Filter {

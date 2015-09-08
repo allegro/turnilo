@@ -157,10 +157,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
     var { clicker, essence } = this.props;
-    var { filter } = essence;
+    var { filter, dataSource } = essence;
 
     var dimensionName = e.dataTransfer.getData("text/dimension");
-    var dimension = essence.dataSource.getDimension(dimensionName);
+    var dimension = dataSource.getDimension(dimensionName);
     var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
 
     var newState: FilterTileState = {
@@ -170,9 +170,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     };
 
     if (dragInsertPosition !== null || dragReplacePosition !== null) {
-      newState.possibleDimension = dimension;
-      newState.possibleInsertPosition = dragInsertPosition;
-      newState.possibleReplacePosition = dragReplacePosition;
+      var tryingToReplaceTime = (dragReplacePosition !== null) &&
+        filter.clauses.get(dragReplacePosition).expression.equals(dataSource.timeAttribute);
+
+      if (!tryingToReplaceTime) {
+        newState.possibleDimension = dimension;
+        newState.possibleInsertPosition = dragInsertPosition;
+        newState.possibleReplacePosition = dragReplacePosition;
+      }
     }
 
     this.dragCounter = 0;

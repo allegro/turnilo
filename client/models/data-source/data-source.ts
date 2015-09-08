@@ -356,6 +356,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return this.dimensions.find(dimension => dimension.expression.equals(expression));
   }
 
+  public getTimeDimension() {
+    return this.getDimensionByExpression(this.timeAttribute);
+  }
+
   public getMeasure(measureName: string): Measure {
     return this.measures.find(measure => measure.name === measureName);
   }
