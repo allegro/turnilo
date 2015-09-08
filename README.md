@@ -2,10 +2,17 @@
 
 ## Introduction
 
-Pivot is an exploratory web-based visualization UI for Druid built on top of Plywood.
-It is in a very early alpha stage, so don’t use it in production. (also the functionality isn’t complete)
+Imply Pivot is an exploratory web-based visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
+[Imply Plywood](https://github.com/implydata/plywood). 
 
-## Interaction Examples
+The project is currently at a very early alpha stage, and is *not suitable for production use*. We will be making periodic updates to the project. 
+We ask that any early alpha users refrain from submitting bug reports and feature requests at this time. 
+
+## License
+
+TODO
+
+## Features
 
 Drag-and-drop UI
 <gif>
@@ -18,20 +25,7 @@ Exploring with context
 
 ## Usage
 
-run this, then blah then point it to your druid cluster
-
-## Roadmap
-
-- schema and configuration management system
-- support being embedded in your app to provide your users with analytics
-
-## Contribution
-
-if you have questions about pivot you can direct them (here)
-we probably won’t accept pull requests at the moment as the code is not ready for that
-
-
-# Run the project
+### Run the project
 
 Make sure you have node (0.12.x)
 
@@ -58,8 +52,7 @@ Then you are ready to
 ./run
 ```
 
-
-# Develop the project
+### Develop the project
 
 Instruction for developers to start developing the project.
 
@@ -70,3 +63,12 @@ npm install -g gulp
 npm install -g coffee-script
 npm install -g browser-sync
 ```
+
+## Roadmap
+
+- schema and configuration management system
+- support being embedded in your app to provide your users with analytics
+
+## Questions & Support
+
+Please direct all questions to our [user groups](https://groups.google.com/forum/#!forum/imply-user-group).
