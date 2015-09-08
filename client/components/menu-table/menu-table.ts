@@ -32,13 +32,12 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     };
   }
 
-  fetchData(filter: Filter, dimension: Dimension): void {
-    var { essence } = this.props;
+  fetchData(essence: Essence, dimension: Dimension): void {
     var { dataSource } = essence;
     var measure = dataSource.getSortMeasure(dimension);
 
     var query: any = $('main')
-      .filter(filter.toExpression())
+      .filter(essence.getEffectiveFilter(null, dimension).toExpression())
       .split(dimension.expression, dimension.name)
       .apply(measure.name, measure.expression)
       .sort($(measure.name), 'descending')
@@ -53,21 +52,20 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   componentDidMount() {
     this.mounted = true;
     var { essence, dimension } = this.props;
-    this.fetchData(essence.filter.remove(dimension.expression), dimension);
+    this.fetchData(essence, dimension);
   }
 
   componentWillReceiveProps(nextProps: MenuTableProps) {
-    var dimension = this.props.dimension;
-    var nextDimension = nextProps.dimension;
-    var essence = this.props.essence;
+    var { essence, dimension } = this.props;
     var nextEssence = nextProps.essence;
-    var filter = essence.filter.remove(dimension.expression);
-    var nextFilter = nextEssence.filter.remove(nextDimension.expression);
+    var nextDimension = nextProps.dimension;
+
     if (
-      filter.equals(nextFilter) &&
-      dimension.equals(nextDimension)
-    ) return;
-    this.fetchData(nextFilter, nextDimension);
+      essence.differentEffectiveFilter(nextEssence, null, nextDimension) ||
+      !dimension.equals(nextDimension)
+    ) {
+      this.fetchData(nextEssence, nextDimension);
+    }
   }
 
   componentWillUnmount() {
