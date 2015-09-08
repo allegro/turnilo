@@ -35,11 +35,11 @@ writeFile(path + name + '.ts', """
 import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
 import { $, Expression } from 'plywood';
 
-interface #{camelName}Value {
+export interface #{camelName}Value {
 
 }
 
-interface #{camelName}JS {
+export interface #{camelName}JS {
 
 }
 

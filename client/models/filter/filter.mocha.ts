@@ -1,15 +1,36 @@
 'use strict';
 
 import { expect } from 'chai';
+import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { Filter } from "./filter";
 import { $, Expression } from 'plywood';
 
 describe('Filter', () => {
+  it('is a higher object', () => {
+    testImmutableClass(Filter, [
+      [],
+      [{
+        "op": "chain", "expression": { "op": "ref", "name": "time" },
+        "actions": [{
+          "action": "in",
+          "expression": {
+            "op": "literal",
+            "value": { "start": new Date("2013-02-26T19:00:00.000Z"), "end": new Date("2013-02-26T22:00:00.000Z") },
+            "type": "TIME_RANGE"
+          }
+        }]
+      }]
+    ]);
+  });
+
   it('works in empty case', () => {
     var filter = Filter.EMPTY;
 
-    expect(filter.toExpression().toString()).to.equal('()');
+    expect(filter.toExpression().toJS()).to.deep.equal({
+      "op": "literal",
+      "value": true
+    });
   });
 
   it('add work', () => {
@@ -17,6 +38,27 @@ describe('Filter', () => {
 
     filter = filter.add($('language'), 'en');
 
-    expect(filter.toExpression().toString()).to.equal('($language in SET_STRING(1))');
+    expect(filter.toExpression().toJS()).to.deep.equal({
+      "actions": [
+        {
+          "action": "in",
+          "expression": {
+            "op": "literal",
+            "type": "SET",
+            "value": {
+              "elements": [
+                "en"
+              ],
+              "setType": "STRING"
+            }
+          }
+        }
+      ],
+      "expression": {
+        "name": "language",
+        "op": "ref"
+      },
+      "op": "chain"
+    });
   });
 });

@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
-import { Timezone, Duration, hour, day, week } from 'chronology';
+import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../models/index';

@@ -1,15 +1,15 @@
 'use strict';
 
 import { List } from 'immutable';
-import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
+import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, LiteralExpression, ChainExpression, ExpressionJS, InAction, Set, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
 
 export type FilterValue = List<ChainExpression>;
 export type FilterJS = ExpressionJS[];
 
-var check: ImmutableClass<FilterValue, FilterJS>;
-export class Filter implements ImmutableInstance<FilterValue, FilterJS> {
+var check: Class<FilterValue, FilterJS>;
+export class Filter implements Instance<FilterValue, FilterJS> {
   static EMPTY: Filter;
 
   static isFilter(candidate: any): boolean {

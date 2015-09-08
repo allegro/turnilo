@@ -10,6 +10,7 @@ import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
 
+const HIGHLIGHT_ID = 'dim-tile:';
 const TOP_N = 100;
 
 interface DimensionTileProps {
@@ -39,9 +40,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   fetchData(essence: Essence, dimension: Dimension): void {
     var { dataSource } = essence;
     var measure = dataSource.getSortMeasure(dimension);
+    var highlightId = HIGHLIGHT_ID + dimension.name;
 
     var query: any = $('main')
-      .filter(essence.getFilterHighlightExpression(dimension))
+      .filter(essence.getEffectiveFilter(highlightId, dimension).toExpression())
       .split(dimension.expression, dimension.name)
       .apply(measure.name, measure.expression)
       .sort($(measure.name), 'descending')
@@ -67,9 +69,13 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var { essence, dimension } = this.props;
     var nextEssence = nextProps.essence;
     var nextDimension = nextProps.dimension;
+    var highlightId = HIGHLIGHT_ID + nextDimension.name;
+    console.log('highlightId', highlightId);
+    console.log('essence.differentEffectiveFilter(nextEssence, highlightId, nextDimension)', essence.differentEffectiveFilter(nextEssence, highlightId, nextDimension));
+    console.log('!dimension.equals(nextDimension)', !dimension.equals(nextDimension));
     if (
-      essence.differentOn(nextEssence, 'filter', 'highlight') ||
-      dimension !== nextDimension
+      essence.differentEffectiveFilter(nextEssence, highlightId, nextDimension) ||
+      !dimension.equals(nextDimension)
     ) {
       this.fetchData(nextEssence, nextDimension);
     }

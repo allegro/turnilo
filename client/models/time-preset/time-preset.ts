@@ -1,6 +1,6 @@
 'use strict';
 
-import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
+import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { $, Expression, TimeRange, TimeRangeJS } from 'plywood';
 
 interface TimePresetValue {
@@ -13,8 +13,8 @@ interface TimePresetJS {
   timeRange: TimeRangeJS;
 }
 
-var check: ImmutableClass<TimePresetValue, TimePresetJS>;
-export class TimePreset implements ImmutableInstance<TimePresetValue, TimePresetJS> {
+var check: Class<TimePresetValue, TimePresetJS>;
+export class TimePreset implements Instance<TimePresetValue, TimePresetJS> {
   static isTimePreset(candidate: any): boolean {
     return isInstanceOf(candidate, TimePreset);
   }

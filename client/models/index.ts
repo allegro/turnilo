@@ -3,6 +3,7 @@
 export * from './clicker/clicker';
 export * from './stage/stage';
 export * from './filter/filter';
+export * from './highlight/highlight';
 export * from './dimension/dimension';
 export * from './split-combine/split-combine';
 export * from './splits/splits';

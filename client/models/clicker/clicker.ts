@@ -22,7 +22,7 @@ export interface Clicker {
   pin(dimension: Dimension): void;
   unpin(dimension: Dimension): void;
   toggleMeasure(measure: Measure): void;
-  changeHighlight(highlight: Filter): void;
+  changeHighlight(owner: string, delta: Filter): void;
   acceptHighlight(): void;
   dropHighlight(): void;
 }

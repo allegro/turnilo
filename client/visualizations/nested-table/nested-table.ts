@@ -55,13 +55,13 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
   }
 
   fetchData(essence: Essence): void {
-    var { filter, splits, dataSource } = essence;
+    var { splits, dataSource } = essence;
     var measures = essence.getMeasures();
 
     var $main = $('main');
 
     var query: any = $()
-      .apply('main', $main.filter(filter.toExpression()));
+      .apply('main', $main.filter(essence.getEffectiveFilter(NestedTable.id).toExpression()));
 
     measures.forEach((measure) => {
       query = query.apply(measure.name, measure.expression);
@@ -108,7 +108,11 @@ export class NestedTable extends React.Component<VisualizationProps, NestedTable
   componentWillReceiveProps(nextProps: VisualizationProps) {
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
-    if (essence.differentOn(nextEssence, 'filter', 'splits', 'selectedMeasures')) {
+    if (
+      essence.differentEffectiveFilter(nextEssence, NestedTable.id) ||
+      essence.differentSplits(nextEssence) ||
+      essence.differentSelectedMeasures(nextEssence)
+    ) {
       this.fetchData(nextEssence);
     }
   }

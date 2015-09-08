@@ -1,8 +1,8 @@
 'use strict';
 
 import { List } from 'immutable';
-import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
-import { Timezone, Duration, day, hour } from 'chronology';
+import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
+import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, TimeRange, TimeBucketAction } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { Dimension } from '../dimension/dimension';
@@ -30,8 +30,8 @@ function filterOutSplit(splits: List<SplitCombine>, split: SplitCombine, allowIn
 export type SplitsValue = List<SplitCombine>;
 export type SplitsJS = SplitCombineJS[];
 
-var check: ImmutableClass<SplitsValue, SplitsJS>;
-export class Splits implements ImmutableInstance<SplitsValue, SplitsJS> {
+var check: Class<SplitsValue, SplitsJS>;
+export class Splits implements Instance<SplitsValue, SplitsJS> {
   static EMPTY: Splits;
 
   static isSplits(candidate: any): boolean {

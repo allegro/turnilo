@@ -3,9 +3,9 @@
 import { expect } from 'chai';
 
 import { $, Expression } from 'plywood';
-import { Formatter } from './formatter';
+import { Highlight } from './highlight';
 
-describe('Formatter', () => {
+describe('Highlight', () => {
   it('works in empty case', () => {
 
   });

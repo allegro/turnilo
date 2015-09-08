@@ -1,6 +1,6 @@
 'use strict';
 
-import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
+import { Class, Instance, isInstanceOf } from 'immutable-class';
 
 export interface MarinParameters {
   left?: number;

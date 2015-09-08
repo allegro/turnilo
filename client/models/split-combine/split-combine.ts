@@ -1,8 +1,8 @@
 'use strict';
 
 import { List } from 'immutable';
-import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
-import { Timezone, Duration, day, hour } from 'chronology';
+import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction, TimeRange } from 'plywood';
 import { DataSource } from '../data-source/data-source';
 import { Filter } from '../filter/filter';
@@ -22,8 +22,8 @@ export interface SplitCombineJS {
   limitAction?: ActionJS;
 }
 
-var check: ImmutableClass<SplitCombineValue, SplitCombineJS>;
-export class SplitCombine implements ImmutableInstance<SplitCombineValue, SplitCombineJS> {
+var check: Class<SplitCombineValue, SplitCombineJS>;
+export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS> {
   static isSplitCombine(candidate: any): boolean {
     return isInstanceOf(candidate, SplitCombine);
   }

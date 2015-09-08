@@ -1,7 +1,7 @@
 'use strict';
 
 import { List } from 'immutable';
-import { arraysEqual } from 'higher-object';
+import { arraysEqual } from 'immutable-class';
 
 var objectHasOwnProperty = Object.prototype.hasOwnProperty;
 export function hasOwnProperty(obj: any, key: string): boolean {

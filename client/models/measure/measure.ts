@@ -1,6 +1,6 @@
 'use strict';
 
-import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
+import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS } from 'plywood';
 
 export interface MeasureValue {
@@ -17,8 +17,8 @@ export interface MeasureJS {
   format?: string;
 }
 
-var check: ImmutableClass<MeasureValue, MeasureJS>;
-export class Measure implements ImmutableInstance<MeasureValue, MeasureJS> {
+var check: Class<MeasureValue, MeasureJS>;
+export class Measure implements Instance<MeasureValue, MeasureJS> {
   static DEFAULT_FORMAT = '0,0.0 a';
   static INTEGER_FORMAT = '0,0 a';
 

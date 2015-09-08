@@ -60,12 +60,8 @@
     "radix": true,
     "semicolon": true,
     "triple-equals": [true, "allow-null-check"],
-    "typedef": [false,
-      "callSignature",
-      "indexSignature",
-      "parameter",
-      "propertySignature",
-      "variableDeclarator"
+    "typedef": [true,
+      "callSignature"
     ],
     "typedef-whitespace": [true,
       ["callSignature", "noSpace"],

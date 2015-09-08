@@ -2,12 +2,13 @@
 
 import { List, OrderedSet } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
-import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
-import { Timezone, Duration } from 'chronology';
+import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
+import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, ChainExpression, ExpressionJS, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
+import { Highlight, HighlightJS } from '../highlight/highlight';
 import { Splits, SplitsJS } from '../splits/splits';
 import { SplitCombine } from '../split-combine/split-combine';
 import { Dimension } from '../dimension/dimension';
@@ -16,7 +17,7 @@ import { Manifest } from '../manifest/manifest';
 
 const HASH_VERSION = 1;
 
-interface EssenceValue {
+export interface EssenceValue {
   dataSources?: List<DataSource>;
   visualizations?: List<Manifest>;
 
@@ -28,10 +29,10 @@ interface EssenceValue {
   selectedMeasures: OrderedSet<string>;
   pinnedDimensions: OrderedSet<string>;
   compare: Filter;
-  highlight: Filter;
+  highlight: Highlight;
 }
 
-interface EssenceJS {
+export interface EssenceJS {
   dataSource: string;
   visualization: string;
   timezone: string;
@@ -40,11 +41,11 @@ interface EssenceJS {
   selectedMeasures: string[];
   pinnedDimensions: string[];
   compare?: FilterJS;
-  highlight?: FilterJS;
+  highlight?: HighlightJS;
 }
 
-var check: ImmutableClass<EssenceValue, EssenceJS>;
-export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
+var check: Class<EssenceValue, EssenceJS>;
+export class Essence implements Instance<EssenceValue, EssenceJS> {
   static isEssence(candidate: any): boolean {
     return isInstanceOf(candidate, Essence);
   }
@@ -116,10 +117,10 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
       compare = Filter.fromJS(compareJS);
     }
 
-    var highlight: Filter = null;
+    var highlight: Highlight = null;
     var highlightJS = parameters.highlight;
     if (highlightJS) {
-      highlight = Filter.fromJS(highlightJS);
+      highlight = Highlight.fromJS(highlightJS);
     }
 
     return new Essence({
@@ -150,7 +151,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
   public selectedMeasures: OrderedSet<string>;
   public pinnedDimensions: OrderedSet<string>;
   public compare: Filter;
-  public highlight: Filter;
+  public highlight: Highlight;
 
   constructor(parameters: EssenceValue) {
     this.dataSources = parameters.dataSources;
@@ -269,74 +270,64 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     return this.dataSource.getDimension('time');
   }
 
+  public getEffectiveFilter(highlightId: string = null, unfilterDimension: Dimension = null): Filter {
+    var { filter, highlight } = this;
+    if (highlight && (highlightId !== highlight.owner)) filter = highlight.applyToFilter(filter);
+    if (unfilterDimension) filter = filter.remove(unfilterDimension.expression);
+    return filter;
+  }
+
   public getMeasures(): List<Measure> {
     var dataSource = this.dataSource;
     return <List<Measure>>this.selectedMeasures.toList().map(measureName => dataSource.getMeasure(measureName));
   }
 
-  public differentOn(other: Essence, ...things: string[]): boolean {
-    for (var thing of things) {
-      switch (thing) {
-        case 'timezone':
-          if (!this.timezone.equals(other.timezone)) return true;
-          break;
-
-        case 'filter':
-          if (!this.filter.equals(other.filter)) return true;
-          break;
-
-        case 'splits':
-          if (!this.splits.equals(other.splits)) return true;
-          break;
-
-        case 'selectedMeasures':
-          if (!this.selectedMeasures.equals(other.selectedMeasures)) return true;
-          break;
-
-        case 'pinnedDimensions':
-          if (!this.pinnedDimensions.equals(other.pinnedDimensions)) return true;
-          break;
-
-        case 'compare':
-          if (Boolean(this.compare) !== Boolean(other.compare)) return true;
-          if (this.compare && !this.compare.equals(other.compare)) return true;
-          break;
-
-        case 'highlight':
-          if (Boolean(this.highlight) !== Boolean(other.highlight)) return true;
-          if (this.highlight && !this.highlight.equals(other.highlight)) return true;
-          break;
-
-        default:
-          throw new Error('can not diff on ' + thing);
-      }
-    }
-    return false;
+  public differentTimezone(other: Essence): boolean {
+    return !this.timezone.equals(other.timezone);
   }
 
-  public singleHighlightOn(dimension: Dimension): boolean {
+  public differentFilter(other: Essence): boolean {
+    return !this.filter.equals(other.filter);
+  }
+
+  public differentSplits(other: Essence): boolean {
+    return !this.splits.equals(other.splits);
+  }
+
+  public differentSelectedMeasures(other: Essence): boolean {
+    return !this.selectedMeasures.equals(other.selectedMeasures);
+  }
+
+  public differentPinnedDimensions(other: Essence): boolean {
+    return !this.pinnedDimensions.equals(other.pinnedDimensions);
+  }
+
+  public differentCompare(other: Essence): boolean {
+    if (Boolean(this.compare) !== Boolean(other.compare)) return true;
+    return Boolean(this.compare && !this.compare.equals(other.compare));
+  }
+
+  public differentHighligh(other: Essence): boolean {
+    if (Boolean(this.highlight) !== Boolean(other.highlight)) return true;
+    return Boolean(this.highlight && !this.highlight.equals(other.highlight));
+  }
+
+  public differentEffectiveFilter(other: Essence, highlightId: string = null, unfilterDimension: Dimension = null): boolean {
+    var myEffectiveFilter = this.getEffectiveFilter(highlightId, unfilterDimension);
+    var otherEffectiveFilter = other.getEffectiveFilter(highlightId, unfilterDimension);
+    return !myEffectiveFilter.equals(otherEffectiveFilter);
+  }
+
+  public highlightOn(owner: string): boolean {
     var { highlight } = this;
     if (!highlight) return false;
-    return highlight.single() && highlight.filteredOn(dimension.expression);
+    return highlight.owner === owner;
   }
 
   public getSingleHighlightValue(): any {
     var { highlight } = this;
     if (!highlight) return null;
-    return highlight.getSingleValue();
-  }
-
-  public getFilterExpression(): Expression {
-    return this.filter.toExpression();
-  }
-
-  public getFilterHighlightExpression(excludeDimension?: Dimension): Expression {
-    var { filter, highlight } = this;
-    if (highlight && (!excludeDimension || !highlight.filteredOn(excludeDimension.expression))) {
-      return filter.applyDelta(highlight).toExpression();
-    } else {
-      return filter.toExpression();
-    }
+    return highlight.delta.getSingleValue();
   }
 
   // Modification
@@ -379,7 +370,7 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     value.splits = splits;
     value.visualization = visualization;
     if (value.highlight) {
-      value.filter = value.filter.applyDelta(value.highlight);
+      value.filter = value.highlight.applyToFilter(value.filter);
       value.highlight = null;
     }
     return new Essence(value);
@@ -442,14 +433,23 @@ export class Essence implements ImmutableInstance<EssenceValue, EssenceJS> {
     var { highlight } = this;
     if (!highlight) return this;
     var value = this.valueOf();
-    value.filter = value.filter.applyDelta(highlight);
+    value.filter = highlight.applyToFilter(value.filter);
     value.highlight = null;
     return new Essence(value);
   }
 
-  public changeHighlight(highlight: Filter): Essence {
+  public changeHighlight(owner: string, delta: Filter): Essence {
     var value = this.valueOf();
-    value.highlight = highlight;
+    value.highlight = new Highlight({
+      owner,
+      delta
+    });
+    return new Essence(value);
+  }
+
+  public dropHighlight(): Essence {
+    var value = this.valueOf();
+    value.highlight = null;
     return new Essence(value);
   }
 

@@ -1,7 +1,7 @@
 'use strict';
 
 import * as d3 from 'd3';
-import { Timezone, WallTime } from 'chronology';
+import { Timezone, WallTime } from 'chronoshift';
 
 var formatWithYear = d3.time.format('%b %-d, %Y');
 var formatWithoutYear = d3.time.format('%b %-d');

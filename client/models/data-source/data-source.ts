@@ -4,8 +4,8 @@ import { List } from 'immutable';
 import * as d3 from 'd3';
 import * as Q from 'q';
 import * as Qajax from 'qajax';
-import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
-import { Timezone, hour } from 'chronology';
+import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
+import { Timezone, hour } from 'chronoshift';
 import { $, Expression, ExpressionJS, Executor, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
 import { upperCaseFirst, listsEqual } from '../../utils/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -172,8 +172,8 @@ export interface DataSourceJS {
   defaultSortOn?: string;
 }
 
-var check: ImmutableClass<DataSourceValue, DataSourceJS>;
-export class DataSource implements ImmutableInstance<DataSourceValue, DataSourceJS> {
+var check: Class<DataSourceValue, DataSourceJS>;
+export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   static isDataSource(candidate: any): boolean {
     return isInstanceOf(candidate, DataSource);
   }

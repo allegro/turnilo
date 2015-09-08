@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
-import { Timezone, Duration, day } from 'chronology';
+import { Timezone, Duration, day } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesContain } from '../../utils/dom';
 import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../models/index";
@@ -91,9 +91,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         var { essence } = this.state;
         this.setState({ essence: essence.toggleMeasure(measure) });
       },
-      changeHighlight: (highlight: Filter) => {
+      changeHighlight: (owner: string, delta: Filter) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(highlight) });
+        this.setState({ essence: essence.changeHighlight(owner, delta) });
       },
       acceptHighlight: () => {
         var { essence } = this.state;
@@ -101,7 +101,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
       },
       dropHighlight: () => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(null) });
+        this.setState({ essence: essence.dropHighlight() });
       }
     };
 

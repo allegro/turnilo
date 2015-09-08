@@ -1,6 +1,6 @@
 'use strict';
 
-import { ImmutableClass, ImmutableInstance, isInstanceOf } from 'higher-object';
+import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS, Action } from 'plywood';
 import { SplitCombine } from '../split-combine/split-combine';
 
@@ -30,8 +30,8 @@ export interface DimensionJS {
   sortOn?: string;
 }
 
-var check: ImmutableClass<DimensionValue, DimensionJS>;
-export class Dimension implements ImmutableInstance<DimensionValue, DimensionJS> {
+var check: Class<DimensionValue, DimensionJS>;
+export class Dimension implements Instance<DimensionValue, DimensionJS> {
   static isDimension(candidate: any): boolean {
     return isInstanceOf(candidate, Dimension);
   }

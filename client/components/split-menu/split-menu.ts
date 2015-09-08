@@ -3,7 +3,7 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
-import { Timezone, Duration } from 'chronology';
+import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeBucketAction } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, SplitCombine, Filter, Dimension, Measure, TimePreset } from '../../models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';

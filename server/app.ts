@@ -11,10 +11,10 @@ import * as compress from 'compression';
 import * as handlebars from 'express-handlebars';
 import { $, Expression, Datum, Dataset } from 'plywood';
 
-import { Timezone, WallTime } from "chronology";
-// Init chronology
+import { Timezone, WallTime } from 'chronoshift';
+// Init chronoshift
 if (!WallTime.rules) {
-  var tzData = require("chronology/lib/walltime/walltime-data.js");
+  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
   WallTime.init(tzData.rules, tzData.zones);
 }
 

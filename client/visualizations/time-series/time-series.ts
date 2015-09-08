@@ -71,13 +71,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   }
 
   fetchData(essence: Essence): void {
-    var { filter, splits, dataSource } = essence;
+    var { splits, dataSource } = essence;
     var measures = essence.getMeasures();
 
     var $main = $('main');
 
     var query: any = $()
-      .apply('main', $main.filter(filter.toExpression()));
+      .apply('main', $main.filter(essence.getEffectiveFilter(TimeSeries.id).toExpression()));
 
     measures.forEach((measure) => {
       query = query.apply(measure.name, measure.expression);
@@ -115,7 +115,11 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   componentWillReceiveProps(nextProps: VisualizationProps) {
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
-    if (essence.differentOn(nextEssence, 'filter', 'splits', 'selectedMeasures')) {
+    if (
+      essence.differentEffectiveFilter(nextEssence, TimeSeries.id) ||
+      essence.differentSplits(nextEssence) ||
+      essence.differentSelectedMeasures(nextEssence)
+    ) {
       this.fetchData(nextEssence);
     }
   }
@@ -139,7 +143,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var { dataset, dragStart } = this.state;
     var { splits } = essence;
 
-    var timeDimension = essence.getTimeDimension();
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
 
     var measureGraphs: Array<React.ReactElement<any>> = null;
@@ -244,12 +247,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       }
 
       var highlighter: React.ReactElement<any> = null;
-      if (dragStart !== null || essence.singleHighlightOn(timeDimension)) {
+      if (dragStart !== null || essence.highlightOn(TimeSeries.id)) {
         var timeSplit = splits.first(); // ToDo: fix this
         var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
         highlighter = React.createElement(Highlighter, {
           clicker,
           essence,
+          highlightId: TimeSeries.id,
           scaleX,
           dragStart,
           duration: timeBucketAction.duration,

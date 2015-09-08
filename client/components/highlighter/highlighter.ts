@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
-import { Timezone, Duration } from 'chronology';
+import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../models/index';
 import { isInside, escapeKey } from '../../utils/dom';
@@ -15,6 +15,7 @@ function stopEvent(e: MouseEvent): void {
 interface HighlighterProps {
   clicker: Clicker;
   essence: Essence;
+  highlightId: string;
   scaleX: any;
   dragStart: number;
   duration: Duration;
@@ -55,7 +56,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     window.removeEventListener('mouseup', this.globalMouseUpListener);
   }
 
-  getHighlight(eventX: number): TimeRange {
+  getPseudoHighlight(eventX: number): TimeRange {
     var { scaleX } = this.props;
     var { dragStartPx } = this.state;
     var myDOM = React.findDOMNode(this);
@@ -81,12 +82,12 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var { dragStartPx } = this.state;
     if (dragStartPx === null) return;
     this.setState({
-      pseudoHighlight: this.getHighlight(e.clientX)
+      pseudoHighlight: this.getPseudoHighlight(e.clientX)
     });
   }
 
   globalMouseUpListener(e: MouseEvent) {
-    var { clicker, essence, duration, timezone } = this.props;
+    var { clicker, essence, highlightId, duration, timezone } = this.props;
     var { dragStartPx, pseudoHighlight } = this.state;
     if (dragStartPx === null) return;
     if (!pseudoHighlight) { // There was no mouse move so just quietly cancel out
@@ -94,7 +95,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
       return;
     }
 
-    pseudoHighlight = this.getHighlight(e.clientX);
+    pseudoHighlight = this.getPseudoHighlight(e.clientX);
     this.setState({
       dragStartPx: null,
       pseudoHighlight: null
@@ -106,7 +107,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     });
 
     var timeDimension = essence.getTimeDimension();
-    clicker.changeHighlight(Filter.fromClause(timeDimension.expression.in(timeRange)));
+    clicker.changeHighlight(highlightId, Filter.fromClause(timeDimension.expression.in(timeRange)));
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
@@ -128,13 +129,12 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
   }
 
   render() {
-    var { essence, scaleX } = this.props;
+    var { essence, highlightId, scaleX } = this.props;
     var { pseudoHighlight, dragStartPx } = this.state;
 
     var shownTimeRange = pseudoHighlight;
     if (!shownTimeRange) {
-      var timeDimension = essence.getTimeDimension();
-      if (essence.singleHighlightOn(timeDimension)) {
+      if (essence.highlightOn(highlightId)) {
         shownTimeRange = essence.getSingleHighlightValue();
       }
     }

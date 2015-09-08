@@ -2,15 +2,15 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-import { Timezone, WallTime } from 'chronology';
+import { Timezone, WallTime } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, AttributeInfo } from 'plywood';
 
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "./models/index";
 import { Application } from "./components/index";
 
-// Init chronology
+// Init chronoshift
 if (!WallTime.rules) {
-  var tzData = require("chronology/lib/walltime/walltime-data.js");
+  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
   WallTime.init(tzData.rules, tzData.zones);
 }
 
