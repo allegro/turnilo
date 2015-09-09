@@ -1,4 +1,4 @@
-# Imply Pivot
+# Pivot
 
 ## Introduction
 
