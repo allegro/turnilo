@@ -129,9 +129,10 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
       }
     }
 
+    //onSearchClick={this.onSearchClick.bind(this)}
     return JSX(`
       <BubbleMenu className="preview-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
-        <MenuHeader dimension={dimension} onSearchClick={this.onSearchClick.bind(this)}/>
+        <MenuHeader dimension={dimension}/>
         <div className="menu-cont">{menuVisualization}</div>
         {bottomBar}
       </BubbleMenu>

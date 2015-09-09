@@ -12,6 +12,7 @@ import { TimeAxis } from '../../components/time-axis/time-axis';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
 import { GridLines } from '../../components/grid-lines/grid-lines';
 import { Highlighter } from '../../components/highlighter/highlighter';
+import { Loader } from '../../components/loader/loader';
 
 const H_PADDING = 10;
 const TITLE_TEXT_LEFT = 6;
@@ -46,6 +47,7 @@ function getTimeExtent(dataset: Dataset): [Date, Date] {
 }
 
 interface TimeSeriesState {
+  loading?: boolean;
   dataset?: Dataset;
   dragStart?: number;
 }
@@ -136,9 +138,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       query = query.apply('Split', subQuery);
     });
 
+    this.setState({ loading: true });
     dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
-      this.setState({ dataset });
+      this.setState({
+        loading: false,
+        dataset
+      });
     });
   }
 
@@ -176,7 +182,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   render() {
     var { clicker, essence, stage } = this.props;
-    var { dataset, dragStart } = this.state;
+    var { loading, dataset, dragStart } = this.state;
     var { splits } = essence;
 
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
@@ -303,12 +309,18 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       maxHeight: stage.height - X_AXIS_HEIGHT
     };
 
+    var loader: React.ReactElement<any> = null;
+    if (loading) {
+      loader = React.createElement(Loader, null);
+    }
+
     return JSX(`
       <div className="time-series">
         <div className="measure-graphs" style={measureGraphsStyle}>
           {measureGraphs}
         </div>
         {bottomAxes}
+        {loader}
         {highlighter}
       </div>
     `);

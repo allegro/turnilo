@@ -30,6 +30,7 @@ function formatSegment(value: any): string {
 
 interface TableState {
   loading?: boolean;
+  dataset?: Dataset;
   flatData?: Datum[];
   scrollLeft?: number;
   scrollTop?: number;
@@ -98,6 +99,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       if (!this.mounted) return;
       this.setState({
         loading: false,
+        dataset,
         flatData: dataset.flatten({
           order: 'preorder',
           nestingName: '__nest'

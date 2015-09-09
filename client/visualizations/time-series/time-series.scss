@@ -23,4 +23,8 @@ $h-padding: 10px;
     right: $h-padding;
     bottom: 0;
   }
+
+  .loader {
+    @include pin-full;
+  }
 }

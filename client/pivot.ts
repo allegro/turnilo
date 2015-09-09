@@ -25,9 +25,7 @@ if (Array.isArray(globalDataSources)) {
     if (d.attributes) {
       return DataSource.fromQueryURL(d.name, d.title, executor, maxTime, AttributeInfo.fromJSs(d.attributes));
     } else {
-      var dt = DataSource.fromJS(d, executor);
-      console.log('dt.toJS()', dt.toJS());
-      return dt;
+      return DataSource.fromJS(d, executor);
     }
   }));
 } else {
