@@ -22,10 +22,12 @@
       .dimension-list-tile {
         flex: 1;
         margin-bottom: 1px;
+        border-radius: $corner $corner 0 0;
       }
 
       .measures-tile {
         flex: 1;
+        border-radius: 0 0 $corner $corner;
       }
     }
 
@@ -50,11 +52,17 @@
 
         .filter-tile {
           margin-bottom: 1px;
+          border-radius: $corner 0 0 0;
+        }
+
+        .split-tile {
+          border-radius: 0 0 0 $corner;
         }
 
         .vis-selector {
           @include pin-right($vis-selector-width);
           z-index: 8;
+          border-radius: 0 $corner $corner 0;
         }
       }
 
@@ -64,6 +72,7 @@
         .visualization {
           @extend %module;
           @include pin-full;
+          border-radius: $corner;
 
           .time-series,
           .table {
@@ -85,6 +94,17 @@
     .pinboard-panel {
       @include pin-right($pinboard-width);
       margin-bottom: $tile-margin-v - 1px;
+
+      .dimension-tile,
+      .placeholder-tile {
+        &:first-child {
+          border-radius: $corner $corner 0 0;
+        }
+
+        &:last-child {
+          border-radius: 0 0 $corner $corner;
+        }
+      }
     }
   }
 

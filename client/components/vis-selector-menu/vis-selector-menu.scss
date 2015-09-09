@@ -1,20 +1,24 @@
 @import '../../imports';
 
-$vis-menu-padding: 12px;
+$vis-menu-padding: 16px;
+$vis-item-margin: 1px;
 
 .vis-selector-menu {
   @extend %menu-cont;
   font-size: 0;
-  width: $vis-item-width * 3 + $vis-menu-padding * 2;
+  width: ($vis-item-width + $vis-item-margin * 2) * 3 + $vis-menu-padding * 2;
   padding: $vis-menu-padding;
 
-  .vis-item.selected {
-    border: 1px solid $border-light;
-    border-radius: 2px;
-  }
+  .vis-item {
+    margin: 1px;
+    border-radius: $corner;
 
-  .vis-item:hover {
-    border: 1px solid $border-extra-light;
-    border-radius: 2px;
+    &:hover {
+      box-shadow: inset 0 0 0 1px $border-extra-light;
+    }
+
+    &.selected {
+      box-shadow: inset 0 0 0 1px $border-light;
+    }
   }
 }

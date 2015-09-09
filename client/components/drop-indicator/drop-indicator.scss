@@ -1,6 +1,6 @@
 @import '../../imports';
 
-$action-padding: 20px;
+$action-padding: 16px;
 $icon-size: 30px;
 
 .drop-indicator {
@@ -16,7 +16,7 @@ $icon-size: 30px;
     bottom: $action-padding;
     left: $action-padding;
     right: $action-padding;
-    border-radius: 0;
+    border-radius: $corner * 3;
     border: 1px dashed $border-darker;
 
     svg {
