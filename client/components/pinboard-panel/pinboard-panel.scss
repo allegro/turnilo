@@ -10,7 +10,7 @@
   .placeholder-tile {
     flex-grow: 1;
     width: $pinboard-width - 2 * $tile-margin-h;
-    margin-bottom: $tile-margin-v;
+    margin-bottom: 1px;
   }
 
   .placeholder-tile {

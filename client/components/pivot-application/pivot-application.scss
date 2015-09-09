@@ -21,7 +21,7 @@
 
       .dimension-list-tile {
         flex: 1;
-        margin-bottom: $tile-margin-v;
+        margin-bottom: 1px;
       }
 
       .measures-tile {
@@ -31,16 +31,16 @@
 
     .center-panel {
       position: absolute;
-      top: $page-margin-v;
-      bottom: $page-margin-v;
+      top: $tile-margin-v;
+      bottom: $tile-margin-v;
       left: $left-panel-width;
       right: $pinboard-width;
 
       .center-top-bar {
-        @include pin-top($control-tile-height + $small-tile-margin + $control-tile-height);
+        @include pin-top($control-tile-height + 1px + $control-tile-height);
 
         .filter-split-section {
-          @include unpin-right($vis-selector-width + $small-tile-margin);
+          @include unpin-right($vis-selector-width + 1px);
         }
 
         .filter-tile,
@@ -49,7 +49,7 @@
         }
 
         .filter-tile {
-          margin-bottom: $small-tile-margin;
+          margin-bottom: 1px;
         }
 
         .vis-selector {
@@ -59,7 +59,7 @@
       }
 
       .center-main {
-        @include unpin-top($control-tile-height + $small-tile-margin + $control-tile-height + $tile-margin-v);
+        @include unpin-top($control-tile-height + 1px + $control-tile-height + $small-tile-margin);
 
         .visualization {
           @extend %module;
@@ -85,6 +85,7 @@
 
     .pinboard-panel {
       @include pin-right($pinboard-width);
+      margin-bottom: $tile-margin-v - 1px;
     }
   }
 

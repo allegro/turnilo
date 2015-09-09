@@ -6,8 +6,8 @@ $arrow-width: 17px;
   .drag-ghost-element {
     position: absolute;
     // left: 0; It gets left from the JS
-    top: $tile-padding-v;
-    bottom: $tile-padding-v;
+    top: $control-padding-v;
+    bottom: $control-padding-v;
     width: $item-width;
     border: 1px dashed $black;
     border-radius: 4px;

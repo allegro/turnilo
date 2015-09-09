@@ -60,7 +60,7 @@
 
 %module {
   background: $white;
-  border-radius: 2px;
+  border-radius: 0;
 }
 
 %module-title {
@@ -85,7 +85,7 @@
 
 %menu-cont {
   background: $white;
-  border-radius: 2px;
+  border-radius: 0;
   box-shadow: 0 3px 10px 0 hsla(0, 0, 0, 0.26), 0 0 3px 0 hsla(0, 0, 0, 0.16);
 }
 
@@ -96,8 +96,8 @@
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.1s ease-in-out;
-  top: 4px;
-  bottom: 4px;
+  top: $control-padding-v;
+  bottom: $control-padding-v;
   width: $item-width;
 
   .reading {
