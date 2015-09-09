@@ -102,17 +102,21 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     }
   }
 
-  private indexOfOperand(attribute: Expression): number {
+  private indexOfClause(attribute: Expression): number {
     return this.clauses.findIndex(clause => clause.expression.equals(attribute));
   }
 
+  public cluaseForExpression(attribute: Expression): ChainExpression {
+    return this.clauses.find(clause => clause.expression.equals(attribute));
+  }
+
   public filteredOn(attribute: Expression): boolean {
-    return this.indexOfOperand(attribute) !== -1;
+    return this.indexOfClause(attribute) !== -1;
   }
 
   public add(attribute: Expression, value: any): Filter {
     var clauses = this.clauses;
-    var index = this.indexOfOperand(attribute);
+    var index = this.indexOfClause(attribute);
     if (index === -1) {
       return new Filter(<List<ChainExpression>>clauses.concat(attribute.in([value])));
     } else {
@@ -130,7 +134,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
 
   public setValues(attribute: Expression, values: any[]): Filter {
     var clauses = this.clauses;
-    var index = this.indexOfOperand(attribute);
+    var index = this.indexOfClause(attribute);
     if (values.length) {
       var newOperand = attribute.in(values);
       if (index === -1) {
@@ -146,14 +150,14 @@ export class Filter implements Instance<FilterValue, FilterJS> {
 
   public getValues(attribute: Expression): any[] {
     var clauses = this.clauses;
-    var index = this.indexOfOperand(attribute);
+    var index = this.indexOfClause(attribute);
     if (index === -1) return null;
     return clauses.get(index).actions[0].getLiteralValue().elements;
   }
 
   public setTimeRange(attribute: Expression, timeRange: TimeRange): Filter {
     var clauses = this.clauses;
-    var index = this.indexOfOperand(attribute);
+    var index = this.indexOfClause(attribute);
     var newOperand = attribute.in(timeRange);
     if (index === -1) {
       clauses = <List<ChainExpression>>clauses.push(newOperand);
@@ -165,14 +169,14 @@ export class Filter implements Instance<FilterValue, FilterJS> {
 
   public getTimeRange(attribute: Expression): TimeRange {
     var clauses = this.clauses;
-    var index = this.indexOfOperand(attribute);
+    var index = this.indexOfClause(attribute);
     if (index === -1) return null;
     return clauses.get(index).actions[0].getLiteralValue();
   }
 
   public remove(attribute: Expression): Filter {
     var clauses = this.clauses;
-    var index = this.indexOfOperand(attribute);
+    var index = this.indexOfClause(attribute);
     if (index === -1) return this;
     return new Filter(clauses.delete(index));
   }

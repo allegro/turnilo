@@ -168,19 +168,30 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
     if (dimensionName) {
       var dimension = dataSource.getDimension(dimensionName);
-      var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
+      if (dimension) {
+        var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
 
-      if (dragInsertPosition !== null || dragReplacePosition !== null) {
         var tryingToReplaceTime = false;
         if (dragReplacePosition !== null) {
-          var potentialReplaceClause = filter.clauses.get(dragReplacePosition);
-          tryingToReplaceTime = potentialReplaceClause && potentialReplaceClause.expression.equals(dataSource.timeAttribute);
+          var targetClause = filter.clauses.get(dragReplacePosition);
+          tryingToReplaceTime = targetClause && targetClause.expression.equals(dataSource.timeAttribute);
         }
 
-        if (!tryingToReplaceTime) {
-          newState.possibleDimension = dimension;
-          newState.possibleInsertPosition = dragInsertPosition;
-          newState.possibleReplacePosition = dragReplacePosition;
+        var existingClause = filter.cluaseForExpression(dimension.expression);
+        if (existingClause) {
+          if (dragReplacePosition !== null) {
+            clicker.changeFilter(filter.replaceByIndex(dragReplacePosition, existingClause));
+          } else if (dragInsertPosition !== null) {
+            clicker.changeFilter(filter.insertByIndex(dragInsertPosition, existingClause));
+          }
+
+        } else {
+          if ((dragInsertPosition !== null || dragReplacePosition !== null) && !tryingToReplaceTime) {
+            newState.possibleDimension = dimension;
+            newState.possibleInsertPosition = dragInsertPosition;
+            newState.possibleReplacePosition = dragReplacePosition;
+          }
+
         }
       }
     }
