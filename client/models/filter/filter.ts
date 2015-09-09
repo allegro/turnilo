@@ -6,8 +6,14 @@ import { $, Expression, LiteralExpression, ChainExpression, ExpressionJS, InActi
 import { listsEqual } from '../../utils/general';
 
 function withholdClause(clauses: List<ChainExpression>, clause: ChainExpression, allowIndex: number): List<ChainExpression> {
-  return <List<ChainExpression>>clauses.filter((s, i) => {
-    return i === allowIndex || !s.equals(clause);
+  return <List<ChainExpression>>clauses.filter((c, i) => {
+    return i === allowIndex || !c.equals(clause);
+  });
+}
+
+function swapClause(clauses: List<ChainExpression>, clause: ChainExpression, other: ChainExpression, allowIndex: number): List<ChainExpression> {
+  return <List<ChainExpression>>clauses.map((c, i) => {
+    return (i === allowIndex || !c.equals(clause)) ? c : other;
   });
 }
 
@@ -62,8 +68,9 @@ export class Filter implements Instance<FilterValue, FilterJS> {
   public replaceByIndex(index: number, replace: ChainExpression): Filter {
     var { clauses } = this;
     if (clauses.size === index) return this.insertByIndex(index, replace);
+    var replacedClause = clauses.get(index);
     clauses = <List<ChainExpression>>clauses.map((c, i) => i === index ? replace : c);
-    clauses = withholdClause(clauses, replace, index);
+    clauses = swapClause(clauses, replace, replacedClause, index);
     return new Filter(clauses);
   }
 

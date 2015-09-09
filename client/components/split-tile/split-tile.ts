@@ -7,7 +7,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
 import { calculateDragPosition, DragPosition } from '../../utils/general';
-import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { SplitMenu } from '../split-menu/split-menu';
 
@@ -74,7 +74,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     e.stopPropagation();
   }
 
-  dragStart(dimension: Dimension, split: SplitCombine, e: DragEvent) {
+  dragStart(dimension: Dimension, split: SplitCombine, splitIndex: number, e: DragEvent) {
     var { essence } = this.props;
 
     var newUrl = essence.changeSplit(dimension.getSplitCombine()).getURL();
@@ -83,8 +83,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", newUrl);
     dataTransfer.setData("text/plain", newUrl);
-    dataTransfer.setData("text/split", JSON.stringify(split));
-    dataTransfer.setData("text/dimension", dimension.name);
+    dataTransfer.setData("split/" + splitIndex, JSON.stringify(split));
+    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
     setDragGhost(dataTransfer, dimension.title);
   }
 
@@ -97,8 +97,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   canDrop(e: DragEvent): boolean {
-    return dataTransferTypesContain(e.dataTransfer.types, "text/split") ||
-      dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
+    return Boolean(dataTransferTypesGet(e.dataTransfer.types, "split") ||
+      dataTransferTypesGet(e.dataTransfer.types, "dimension"));
   }
 
   dragOver(e: DragEvent) {
@@ -142,14 +142,17 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var { splits } = essence;
 
     var newSplitCombine: SplitCombine = null;
-    if (dataTransferTypesContain(e.dataTransfer.types, "text/split")) {
-      try {
-        newSplitCombine = SplitCombine.fromJS(JSON.parse(e.dataTransfer.getData("text/split")));
-      } catch (e) {}
+    var splitIndex = parseInt(dataTransferTypesGet(e.dataTransfer.types, "split"), 10);
+    if (!isNaN(splitIndex)) {
+      newSplitCombine = splits.get(splitIndex);
     } else {
-      var dimensionName = e.dataTransfer.getData("text/dimension");
-      var dimension = essence.dataSource.getDimension(dimensionName);
-      newSplitCombine = dimension.getSplitCombine();
+      var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
+      if (dimensionName) {
+        var dimension = essence.dataSource.getDimension(dimensionName);
+        if (dimension) {
+          newSplitCombine = dimension.getSplitCombine();
+        }
+      }
     }
 
     if (newSplitCombine) {
@@ -217,7 +220,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
             key={split.toKey()}
             draggable="true"
             onClick={this.selectDimensionSplit.bind(this, dimension, split)}
-            onDragStart={this.dragStart.bind(this, dimension, split)}
+            onDragStart={this.dragStart.bind(this, dimension, split, i)}
             style={style}
           >
             <div className="reading">{split.getTitle(dataSource)}</div>

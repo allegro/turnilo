@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { dataTransferTypesContain } from '../../utils/dom';
+import { dataTransferTypesGet } from '../../utils/dom';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
 
@@ -39,8 +39,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   }
 
   canDrop(e: DragEvent): boolean {
-    if (dataTransferTypesContain(e.dataTransfer.types, "text/dimension")) {
-      var dimensionName = e.dataTransfer.getData("text/dimension");
+    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
+    if (dimensionName) {
       var pinnedDimensions = this.props.essence.pinnedDimensions;
       return !pinnedDimensions.has(dimensionName);
     }
@@ -82,9 +82,12 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
     this.dragCounter = 0;
-    var dimensionName = e.dataTransfer.getData("text/dimension");
-    var { clicker, essence } = this.props;
-    clicker.pin(essence.dataSource.getDimension(dimensionName));
+    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
+    if (dimensionName) {
+      var { clicker, essence } = this.props;
+      var dimension = essence.dataSource.getDimension(dimensionName);
+      if (dimension) clicker.pin(dimension);
+    }
     this.setState({ dragOver: false });
   }
 

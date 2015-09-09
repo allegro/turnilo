@@ -6,7 +6,7 @@ import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
 import { moveInList } from '../../utils/general';
-import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { PreviewMenu } from '../preview-menu/preview-menu';
 
@@ -79,7 +79,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", newUrl);
     dataTransfer.setData("text/plain", newUrl);
-    dataTransfer.setData("text/dimension", dimension.name);
+    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
     setDragGhost(dataTransfer, dimension.title);
   }
 
@@ -87,13 +87,13 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     e.stopPropagation();
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'move';
-    dataTransfer.setData("text/dimension", dimension.name);
+    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
     setDragGhost(dataTransfer, dimension.title);
   }
 
   canDrop(e: DragEvent): boolean {
     var { dataTransfer } = e;
-    return dataTransfer.effectAllowed === 'move' && dataTransferTypesContain(dataTransfer.types, "text/dimension");
+    return dataTransfer.effectAllowed === 'move' && Boolean(dataTransferTypesGet(dataTransfer.types, "dimension"));
   }
 
   dragOver(e: DragEvent) {
@@ -135,13 +135,14 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var { dragPosition } = this.state;
     var { dataSource } = essence;
 
-    var dimension = dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
-
-    var dimensions = dataSource.dimensions;
-    var dimensionName = dimension.name;
-    var index = dimensions.findIndex((d) => d.name === dimensionName);
-    if (index !== -1 && index !== dragPosition) {
-      clicker.changeDataSource(dataSource.changeDimensions(moveInList(dimensions, index, dragPosition)));
+    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
+    if (dimensionName) {
+      var dimension = dataSource.getDimension(dimensionName);
+      var dimensions = dataSource.dimensions;
+      var index = dimensions.findIndex((d) => d.name === dimensionName);
+      if (index !== -1 && index !== dragPosition) {
+        clicker.changeDataSource(dataSource.changeDimensions(moveInList(dimensions, index, dragPosition)));
+      }
     }
 
     this.dragCounter = 0;

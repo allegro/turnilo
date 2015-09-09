@@ -2,6 +2,16 @@
 
 import * as d3 from 'd3';
 
+function convertDOMStringListToArray(list: any): any[] {
+  var length = list.length;
+  var array: any[] = [];
+  for (var i = 0; i < length; i++) {
+    array.push(list.item(i));
+  }
+  return array;
+}
+
+
 export function isInside(child: Element, parent: Element): boolean {
   while (child) {
     if (child === parent) return true;
@@ -18,13 +28,14 @@ export function findParentWithClass(child: Element, className: string): Element 
   return null;
 }
 
-export function dataTransferTypesContain(types: any, neededType: string): boolean {
-  if (Array.isArray(types)) {
-    return types.indexOf(neededType) !== -1;
-  } else if (types instanceof DOMStringList) {
-    return types.contains(neededType);
+export function dataTransferTypesGet(types: any, typePrefix: string): string {
+  if (types instanceof DOMStringList) types = convertDOMStringListToArray(types);
+  for (var type of types) {
+    if (type.indexOf(typePrefix) === 0) {
+      return type.substr(typePrefix.length + 1);
+    }
   }
-  return false;
+  return null;
 }
 
 export function setDragGhost(dataTransfer: DataTransfer, text: string): void {

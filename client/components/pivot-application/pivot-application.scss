@@ -73,7 +73,6 @@
 
         .manual-fallback {
           @include pin-full;
-          z-index: 8;
         }
 
         .drop-indicator {

@@ -8,7 +8,7 @@ import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../models/index';
 import { calculateDragPosition, DragPosition } from '../../utils/general';
 import { formatStartEnd } from '../../utils/date';
-import { findParentWithClass, dataTransferTypesContain, setDragGhost } from '../../utils/dom';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { FilterMenu } from '../filter-menu/filter-menu';
 
@@ -102,7 +102,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", newUrl);
     dataTransfer.setData("text/plain", newUrl);
-    dataTransfer.setData("text/dimension", dimension.name);
+    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
 
     setDragGhost(dataTransfer, dimension.title);
   }
@@ -116,7 +116,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   canDrop(e: DragEvent): boolean {
-    return dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
+    return Boolean(dataTransferTypesGet(e.dataTransfer.types, "dimension"));
   }
 
   dragOver(e: DragEvent) {
@@ -159,24 +159,29 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { clicker, essence } = this.props;
     var { filter, dataSource } = essence;
 
-    var dimensionName = e.dataTransfer.getData("text/dimension");
-    var dimension = dataSource.getDimension(dimensionName);
-    var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
-
     var newState: FilterTileState = {
       dragOver: false,
       dragInsertPosition: null,
       dragReplacePosition: null
     };
 
-    if (dragInsertPosition !== null || dragReplacePosition !== null) {
-      var tryingToReplaceTime = (dragReplacePosition !== null) &&
-        filter.clauses.get(dragReplacePosition).expression.equals(dataSource.timeAttribute);
+    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
+    if (dimensionName) {
+      var dimension = dataSource.getDimension(dimensionName);
+      var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
 
-      if (!tryingToReplaceTime) {
-        newState.possibleDimension = dimension;
-        newState.possibleInsertPosition = dragInsertPosition;
-        newState.possibleReplacePosition = dragReplacePosition;
+      if (dragInsertPosition !== null || dragReplacePosition !== null) {
+        var tryingToReplaceTime = false;
+        if (dragReplacePosition !== null) {
+          var potentialReplaceClause = filter.clauses.get(dragReplacePosition);
+          tryingToReplaceTime = potentialReplaceClause && potentialReplaceClause.expression.equals(dataSource.timeAttribute);
+        }
+
+        if (!tryingToReplaceTime) {
+          newState.possibleDimension = dimension;
+          newState.possibleInsertPosition = dragInsertPosition;
+          newState.possibleReplacePosition = dragReplacePosition;
+        }
       }
     }
 

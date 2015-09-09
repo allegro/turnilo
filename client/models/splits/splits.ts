@@ -27,6 +27,12 @@ function withholdSplit(splits: List<SplitCombine>, split: SplitCombine, allowInd
   });
 }
 
+function swapSplit(splits: List<SplitCombine>, split: SplitCombine, other: SplitCombine, allowIndex: number): List<SplitCombine> {
+  return <List<SplitCombine>>splits.map((s, i) => {
+    return (i === allowIndex || !s.equals(split)) ? s : other;
+  });
+}
+
 export type SplitsValue = List<SplitCombine>;
 export type SplitsJS = SplitCombineJS[];
 
@@ -77,8 +83,9 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   public replaceByIndex(index: number, replace: SplitCombine): Splits {
     var { splitCombines } = this;
     if (splitCombines.size === index) return this.insertByIndex(index, replace);
+    var replacedSplit = splitCombines.get(index);
     splitCombines = <List<SplitCombine>>splitCombines.map((s, i) => i === index ? replace : s);
-    splitCombines = withholdSplit(splitCombines, replace, index);
+    splitCombines = swapSplit(splitCombines, replace, replacedSplit, index);
     return new Splits(splitCombines);
   }
 

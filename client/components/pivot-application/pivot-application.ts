@@ -4,7 +4,7 @@ import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration, day } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
-import { dataTransferTypesContain } from '../../utils/dom';
+import { dataTransferTypesGet } from '../../utils/dom';
 import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
@@ -202,7 +202,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   canDrop(e: DragEvent): boolean {
-    return dataTransferTypesContain(e.dataTransfer.types, "text/dimension");
+    return Boolean(dataTransferTypesGet(e.dataTransfer.types, "dimension"));
   }
 
   dragOver(e: DragEvent) {
@@ -237,11 +237,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     if (!this.canDrop(e)) return;
     var { essence } = this.state;
     this.dragCounter = 0;
-    var dimension = essence.dataSource.getDimension(e.dataTransfer.getData("text/dimension"));
-    this.setState({ dragOver: false });
-    if (dimension) {
-      this.clicker.changeSplit(dimension.getSplitCombine());
+    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
+    if (dimensionName) {
+      var dimension = essence.dataSource.getDimension(dimensionName);
+      if (dimension) this.clicker.changeSplit(dimension.getSplitCombine());
     }
+    this.setState({ dragOver: false });
   }
 
   triggerFilterMenu(dimension: Dimension) {
