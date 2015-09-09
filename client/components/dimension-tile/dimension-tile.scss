@@ -8,6 +8,10 @@ $measure-width: 80px;
   user-select: none;
   min-height: 94px;
 
+  .tile-header {
+    height: $pin-title-height;
+  }
+
   .search-box {
     position: absolute;
     top: $pin-title-height;

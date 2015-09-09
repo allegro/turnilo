@@ -8,8 +8,9 @@ import { Filter, Dimension, Measure } from '../../models/index';
 
 interface TileHeaderProps {
   title: string;
-  onSearch: () => void;
-  onClose: () => void;
+  onDragStart: Function;
+  onSearch: Function;
+  onClose: Function;
 }
 
 interface TileHeaderState {
@@ -23,27 +24,22 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
 
   }
 
-  componentDidMount() {
-
-  }
-
-  componentWillUnmount() {
-
-  }
-
-  componentWillReceiveProps(nextProps: TileHeaderProps) {
-
-  }
-
   render() {
-    var { title, onSearch, onClose } = this.props;
+    var { title, onDragStart, onSearch, onClose } = this.props;
 
-    return JSX(`
-      <div className="tile-header">
-        <div className="title">{title}</div>
+    var searchButton: React.DOMElement<any> = null;
+    if (onSearch) {
+      searchButton = JSX(`
         <div className="search" onClick={onSearch}>
           <Icon name="loupe" width={12} height={12}/>
         </div>
+      `);
+    }
+
+    return JSX(`
+      <div className="tile-header" draggable={onDragStart ? true : null} onDragStart={onDragStart}>
+        <div className="title">{title}</div>
+        {searchButton}
         <div className="close" onClick={onClose}>
           <Icon name="x" width={12} height={12}/>
         </div>

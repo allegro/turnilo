@@ -5,6 +5,7 @@ import * as React from 'react/addons';
 import { $, Expression, Executor, Dataset, Set } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { formatterFromData } from '../../utils/formatter';
+import { setDragGhost } from '../../utils/dom';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
@@ -99,6 +100,19 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     clicker.changeHighlight(highlightId, Filter.fromClause(dimension.expression.in([value])));
   }
 
+  onDragStart(e: DragEvent) {
+    var { essence, dimension } = this.props;
+
+    var newUrl = essence.changeSplit(dimension.getSplitCombine()).getURL();
+
+    var dataTransfer = e.dataTransfer;
+    dataTransfer.effectAllowed = 'all';
+    dataTransfer.setData("text/url-list", newUrl);
+    dataTransfer.setData("text/plain", newUrl);
+    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
+    setDragGhost(dataTransfer, dimension.title);
+  }
+
   render() {
     var { clicker, essence, dimension } = this.props;
     var { loading, showSearch, dataset } = this.state;
@@ -179,11 +193,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       maxHeight
     };
 
+    // onSearch={this.toggleSearch.bind(this)}
     return JSX(`
       <div className={className} style={style}>
         <TileHeader
           title={dimension.title}
-          onSearch={this.toggleSearch.bind(this)}
+          onDragStart={this.onDragStart.bind(this)}
           onClose={clicker.unpin.bind(clicker, dimension)}
         />
         {searchBar}
