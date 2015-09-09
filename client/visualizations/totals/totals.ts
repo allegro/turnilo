@@ -17,7 +17,10 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   static id = 'totals';
   static title = 'Totals';
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
-    return splits.length() ? Resolve.AUTOMATIC : Resolve.READY;
+    if (!splits.length()) return Resolve.READY;
+    return Resolve.automatic(() => {
+      return Splits.EMPTY;
+    });
   }
 
   public mounted: boolean;

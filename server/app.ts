@@ -62,11 +62,11 @@ app.set('view engine', '.hbs');
 app.use(compress());
 app.use(logger('dev'));
 
-app.use(bodyParser.json());
-
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.static(path.join(__dirname, '../favicon')));
 app.use(express.static(path.join(__dirname, '../data')));
+
+app.use(bodyParser.json());
 
 app.get('/', (req: Request, res: Response, next: Function) => {
   res.render('pivot', {

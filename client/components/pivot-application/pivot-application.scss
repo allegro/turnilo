@@ -71,6 +71,11 @@
           }
         }
 
+        .manual-fallback {
+          @include pin-full;
+          z-index: 8;
+        }
+
         .drop-indicator {
           @include pin-full;
           z-index: 9;

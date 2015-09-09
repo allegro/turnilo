@@ -1,0 +1,19 @@
+@import '../../imports';
+
+.manual-fallback {
+  text-align: center;
+  padding: 100px 30px;
+
+  .message {
+    font-size: 18px;
+  }
+
+  ul {
+    margin-top: 20px;
+  }
+
+  li {
+    cursor: pointer;
+    color: $brand;
+  }
+}

@@ -39,7 +39,14 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   static id = 'table';
   static title = 'Table';
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
-    return splits.length() ? Resolve.READY : Resolve.MANUAL;
+    if (splits.length()) return Resolve.READY;
+    var someDimension = dataSource.dimensions.get(1);
+    return Resolve.manual('Please add at least one split', [
+      {
+        description: `Add a split on ${someDimension.title}`,
+        adjustment: () => Splits.fromSplitCombine(someDimension.getSplitCombine())
+      }
+    ]);
   }
 
   public mounted: boolean;

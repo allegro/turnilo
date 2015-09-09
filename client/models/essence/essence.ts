@@ -13,7 +13,7 @@ import { Splits, SplitsJS } from '../splits/splits';
 import { SplitCombine } from '../split-combine/split-combine';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
-import { Manifest } from '../manifest/manifest';
+import { Manifest, Resolve } from '../manifest/manifest';
 
 const HASH_VERSION = 1;
 
@@ -153,6 +153,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   public compare: Filter;
   public highlight: Highlight;
 
+  public visResolve: Resolve;
+
   constructor(parameters: EssenceValue) {
     this.dataSources = parameters.dataSources;
     this.visualizations = parameters.visualizations;
@@ -168,11 +170,18 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     // Place vis here because it needs to know about splits (and maybe later other things)
     var visualization = parameters.visualization;
-    if (visualization) {
-      this.visualization = visualization;
-    } else {
-      this.visualization = this.getVisualizations().last();
+    if (!visualization) {
+      visualization = this.getVisualizations().last();
     }
+    this.visualization = visualization;
+
+    var visResolve = visualization.handleCircumstance(this.dataSource, this.splits);
+    if (visResolve.isAutomatic()) {
+      this.splits = visResolve.adjustment();
+      visResolve = visualization.handleCircumstance(this.dataSource, this.splits);
+      if (!visResolve.isReady()) throw new Error('visualization is not ready after automatic adjustment');
+    }
+    this.visResolve = visResolve;
   }
 
   public valueOf(): EssenceValue {
@@ -258,10 +267,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public getVisualizations(): List<Manifest> {
-    return this.computePossibleVisualizations(this.splits);
+    return this.getReadyVisualizations(this.splits);
   }
 
-  public computePossibleVisualizations(splits: Splits): List<Manifest> {
+  public getReadyVisualizations(splits: Splits): List<Manifest> {
     var { visualizations, dataSource } = this;
     return <List<Manifest>>visualizations.filter(v => v.handleCircumstance(dataSource, splits).isReady());
   }
@@ -363,7 +372,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public changeSplits(splits: Splits): Essence {
     var { visualization } = this;
-    var visualizations = this.computePossibleVisualizations(splits);
+    var visualizations = this.getReadyVisualizations(splits);
     visualization = visualizations.last();
 
     var value = this.valueOf();

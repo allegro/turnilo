@@ -54,11 +54,47 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   static id = 'time-series';
   static title = 'Time Series';
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
-    if (splits.length() !== 1) return Resolve.MANUAL;
+    if (splits.length() < 1) {
+      var timeDimension = dataSource.getTimeDimension();
+      return Resolve.manual('Please add at least one time split', [
+        {
+          description: `Add a split on ${timeDimension.title}`,
+          adjustment: () => Splits.fromSplitCombine(timeDimension.getSplitCombine())
+        }
+      ]);
+    }
+    if (splits.length() > 1) {
+      var existingTimeSplit: SplitCombine = null;
+      splits.forEach((split) => {
+        var dimension = split.getDimension(dataSource);
+        if (dimension && dimension.type === 'TIME') {
+          existingTimeSplit = split;
+        }
+      });
+
+      if (existingTimeSplit) {
+        return Resolve.manual('Too many splits', [
+          {
+            description: `Remove all but the time split`,
+            adjustment: () => Splits.fromSplitCombine(existingTimeSplit)
+          }
+        ]);
+      }
+    }
     var lastSplit = splits.last();
     var splitDimension = lastSplit.getDimension(dataSource);
-    return splitDimension.type === 'TIME' ? Resolve.READY : Resolve.MANUAL;
+    if (splitDimension.type !== 'TIME') {
+      return Resolve.manual('Must be a time split', [
+        {
+          description: `Replace ${splitDimension.title} split with time`,
+          adjustment: () => Splits.fromSplitCombine(dataSource.getTimeDimension().getSplitCombine())
+        }
+      ]);
+    }
+
+    return Resolve.READY;
   }
+
 
   public mounted: boolean;
 

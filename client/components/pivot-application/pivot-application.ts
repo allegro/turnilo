@@ -13,6 +13,7 @@ import { MeasuresTile } from '../measures-tile/measures-tile';
 import { FilterTile } from '../filter-tile/filter-tile';
 import { SplitTile } from '../split-tile/split-tile';
 import { VisSelector } from '../vis-selector/vis-selector';
+import { ManualFallback } from '../manual-fallback/manual-fallback';
 import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { SideDrawer } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
@@ -262,7 +263,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var { dataSources, dataSource, visualization } = essence;
 
     var visElement: React.ReactElement<any> = null;
-    if (dataSource.metadataLoaded && visualizationStage) {
+    if (dataSource.metadataLoaded && essence.visResolve.isReady() && visualizationStage) {
       var visProps: VisualizationProps = {
         clicker,
         essence,
@@ -272,9 +273,17 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       visElement = React.createElement(<any>visualization, visProps);
     }
 
+    var manualFallback: React.ReactElement<any> = null;
+    if (essence.visResolve.isManual()) {
+      manualFallback = React.createElement(ManualFallback, {
+        clicker,
+        essence
+      });
+    }
+
     var dropIndicator: React.ReactElement<any> = null;
     if (dragOver) {
-      dropIndicator = JSX(`<DropIndicator/>`);
+      dropIndicator = React.createElement(DropIndicator, null);
     }
 
     var sideDrawer: React.ReactElement<any> = null;
@@ -313,6 +322,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
               onDrop={this.drop.bind(this)}
             >
               <div className='visualization' ref='visualization'>{visElement}</div>
+              {manualFallback}
               {dropIndicator}
             </div>
           </div>

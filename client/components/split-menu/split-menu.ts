@@ -64,9 +64,8 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
     return JSX(`
       <BubbleMenu className="split-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
-        <MenuHeader dimension={dimension}/>
         <div className="menu-cont">
-          {granCont}
+          {granCont || 'Split controls coming soon.'}
         </div>
       </BubbleMenu>
     `);
