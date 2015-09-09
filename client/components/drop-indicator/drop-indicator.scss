@@ -16,8 +16,8 @@ $icon-size: 30px;
     bottom: $action-padding;
     left: $action-padding;
     right: $action-padding;
-    border-radius: 10px;
-    border: 1px dashed $text-medium;
+    border-radius: 0;
+    border: 1px dashed $border-darker;
 
     svg {
       position: absolute;
@@ -29,7 +29,7 @@ $icon-size: 30px;
     }
 
     path {
-      fill: $text-medium;
+      fill: $border-darker;
     }
   }
 }

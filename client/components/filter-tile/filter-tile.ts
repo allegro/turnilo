@@ -230,7 +230,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         if (inAction instanceof InAction) {
           var timeRangeLiteral = inAction.getLiteralValue();
           if (!timeRangeLiteral) return '?';
-          label = formatStartEnd(timeRangeLiteral.start, timeRangeLiteral.end, timezone).join(' -> ');
+          label = formatStartEnd(timeRangeLiteral.start, timeRangeLiteral.end, timezone).join(' - ');
         } else {
           label += '[not in]';
         }
