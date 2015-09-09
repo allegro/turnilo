@@ -20,10 +20,12 @@ body {
 }
 
 .drag-ghost {
+  // Do not change these position things
   position: absolute;
   top: 0;
   left: 0;
   z-index: -10;
+
   padding: 3px 10px;
   border: 1px solid $black;
   background: $white;

@@ -24,4 +24,8 @@
       font-size: 20px;
     }
   }
+
+  .loader {
+    @include pin-full;
+  }
 }

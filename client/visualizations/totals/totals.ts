@@ -7,9 +7,10 @@ import * as numeral from 'numeral';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { hasOwnProperty } from '../../utils/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../models/index";
-// import { SomeComp } from '../some-comp/some-comp';
+import { Loader } from '../../components/loader/loader';
 
 interface TotalsState {
+  loading?: boolean;
   dataset?: Dataset;
 }
 
@@ -45,9 +46,13 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       query = query.apply(measure.name, measure.expression);
     });
 
+    this.setState({ loading: true });
     dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
-      this.setState({ dataset });
+      this.setState({
+        loading: false,
+        dataset
+      });
     });
   }
 
@@ -74,7 +79,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
 
   render() {
     var { essence } = this.props;
-    var { dataset } = this.state;
+    var { loading, dataset } = this.state;
 
     var myDatum = dataset ? dataset.data[0] : null;
 
@@ -94,9 +99,15 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       `);
     });
 
+    var loader: React.ReactElement<any> = null;
+    if (loading) {
+      loader = React.createElement(Loader, null);
+    }
+
     return JSX(`
       <div className="totals">
         {totals}
+        {loader}
       </div>
     `);
   }

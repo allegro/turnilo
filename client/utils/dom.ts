@@ -2,6 +2,9 @@
 
 import * as d3 from 'd3';
 
+const DRAG_GHOST_OFFSET_X = -20;
+const DRAG_GHOST_OFFSET_Y = -20;
+
 function convertDOMStringListToArray(list: any): any[] {
   var length = list.length;
   var array: any[] = [];
@@ -45,7 +48,7 @@ export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
     .text(text);
 
   // remove <any> when DataTransfer interface in lib.d.ts includes setDragImage
-  (<any>dataTransfer).setDragImage(dragGhost.node(), -20, -20);
+  (<any>dataTransfer).setDragImage(dragGhost.node(), DRAG_GHOST_OFFSET_X, DRAG_GHOST_OFFSET_Y);
 
   // Remove the host after a ms because it is no longer needed
   setTimeout(() => {

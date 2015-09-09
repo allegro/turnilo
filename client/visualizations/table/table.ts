@@ -140,7 +140,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
   render() {
     var { essence, stage } = this.props;
-    var { flatData, scrollLeft, scrollTop, loading } = this.state;
+    var { loading, flatData, scrollLeft, scrollTop } = this.state;
 
     var segmentTitle = essence.splits.getTitle(essence.dataSource);
 
