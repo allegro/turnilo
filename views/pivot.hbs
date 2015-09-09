@@ -38,23 +38,24 @@
       name: 'wiki_alt',
       title: 'Wikipedia Alternative',
       maxTime: '2013-02-27T00:00:00Z',
-      attributes: {
-        time: { type: 'TIME' },
-
-        namespace: { type: 'STRING' },
-        language: { type: 'STRING' },
-        page: { type: 'STRING' },
-        user: { type: 'STRING' },
-
-        country: { type: 'STRING' },
-        city: { type: 'STRING' },
-        region: { type: 'STRING' },
-
-        count: { type: 'NUMBER' },
-        added: { type: 'NUMBER' },
-        deleted: { type: 'NUMBER' },
-        delta: { type: 'NUMBER' }
-      }
+      timeAttribute: '$time',
+      dimensions: [
+        { name: 'time', type: 'TIME' },
+        { name: 'namespace' },
+        { name: 'language' },
+        { name: 'page' },
+        { name: 'user' },
+        { name: 'country' },
+        { name: 'city' },
+        { name: 'region' }
+      ],
+      measures: [
+        { name: 'count' },
+        { name: 'added' },
+        { name: 'deleted' },
+        { name: 'diff', expression: '$main.sum($added) + $main.sum($deleted)'  },
+        { name: 'delta' }
+      ]
     }
   ];
 </script>

@@ -37,10 +37,10 @@ function getWikiData(): any[] {
   }
 }
 
+var wikiDataset = Dataset.fromJS(getWikiData()).hide();
 var contexts: Lookup<Datum> = {
-  wiki: {
-    main: Dataset.fromJS(getWikiData()).hide()
-  }
+  wiki: { main: wikiDataset },
+  wiki_alt: { main: wikiDataset }
 };
 
 var app = express();

@@ -261,6 +261,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   render() {
     var clicker = this.clicker;
     var { essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
+
+    if (!essence) return null;
     var { dataSources, dataSource, visualization } = essence;
 
     var visElement: React.ReactElement<any> = null;

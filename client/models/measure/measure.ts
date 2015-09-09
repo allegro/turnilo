@@ -2,6 +2,7 @@
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS } from 'plywood';
+import { makeTitle } from '../../utils/general';
 
 export interface MeasureValue {
   name: string;
@@ -12,8 +13,8 @@ export interface MeasureValue {
 
 export interface MeasureJS {
   name: string;
-  title: string;
-  expression: ExpressionJS;
+  title?: string;
+  expression?: ExpressionJS;
   format?: string;
 }
 
@@ -30,8 +31,8 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return new Measure({
       name: parameters.name,
       title: parameters.title,
-      expression: Expression.fromJS(parameters.expression),
-      format: parameters.format || Measure.DEFAULT_FORMAT
+      expression: parameters.expression ? Expression.fromJSLoose(parameters.expression) : null,
+      format: parameters.format
     });
   }
 
@@ -42,10 +43,11 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
   public format: string;
 
   constructor(parameters: MeasureValue) {
-    this.name = parameters.name;
-    this.title = parameters.title;
-    this.expression = parameters.expression;
-    var format = parameters.format;
+    var name = parameters.name;
+    this.name = name;
+    this.title = parameters.title || makeTitle(name);
+    this.expression = parameters.expression || $('main').sum($(name));
+    var format = parameters.format || Measure.DEFAULT_FORMAT;
     if (format[0] === '(') throw new Error('can not have format that uses ( )');
     this.format = format;
   }

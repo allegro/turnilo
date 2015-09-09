@@ -99,7 +99,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var dimensionTiles: Array<React.ReactElement<any>> = null;
     if (dataSource.metadataLoaded) {
       dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
-        var dimension: Dimension = dataSource.getDimension(dimensionName);
+        var dimension = dataSource.getDimension(dimensionName);
+        if (!dimension) return null;
         return JSX(`
           <DimensionTile
             key={dimension.name}

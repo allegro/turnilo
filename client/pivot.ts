@@ -5,6 +5,7 @@ import * as React from 'react/addons';
 import { Timezone, WallTime } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, AttributeInfo } from 'plywood';
 
+import { queryUrlExecutorFactory } from './utils/executors';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "./models/index";
 import { PivotApplication } from "./components/index";
 
@@ -14,17 +15,25 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
+var globalDataSources: any[] = (<any>window)['ds'];
+
 var dataSources: List<DataSource>;
-if ((<any>window)['ds']) {
-  var ds: any[] = (<any>window)['ds'];
-  dataSources = List(ds.map(d => {
+if (Array.isArray(globalDataSources)) {
+  dataSources = List(globalDataSources.map(d => {
     var maxTime = d.maxTime ? new Date(d.maxTime) : null;
-    return DataSource.fromQueryURL(d.name, d.title, '/query', maxTime, AttributeInfo.fromJSs(d.attributes));
+    var executor = queryUrlExecutorFactory(d.name, '/query');
+    if (d.attributes) {
+      return DataSource.fromQueryURL(d.name, d.title, executor, maxTime, AttributeInfo.fromJSs(d.attributes));
+    } else {
+      var dt = DataSource.fromJS(d, executor);
+      console.log('dt.toJS()', dt.toJS());
+      return dt;
+    }
   }));
 } else {
+  // Assume test / demo
   dataSources = List([
     DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia Edits', '/wikipedia.json', new Date())
-    //DataSource.fromArray('wiki2', 'Wikipedia Edits 2', wikiRawData)
   ]);
 }
 

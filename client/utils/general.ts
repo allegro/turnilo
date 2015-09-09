@@ -21,7 +21,7 @@ export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: num
   return List(newArray);
 }
 
-export function upperCaseFirst(title: string): string {
+export function makeTitle(title: string): string {
   return title[0].toUpperCase() + title.substring(1);
 }
 

@@ -3,41 +3,12 @@
 import { List } from 'immutable';
 import * as d3 from 'd3';
 import * as Q from 'q';
-import * as Qajax from 'qajax';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Timezone, hour } from 'chronoshift';
 import { $, Expression, ExpressionJS, Executor, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
-import { upperCaseFirst, listsEqual } from '../../utils/general';
+import { makeTitle, listsEqual } from '../../utils/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
-
-function getSplitsDescription(ex: Expression): string {
-  var splits: string[] = [];
-  ex.forEach((ex) => {
-    if (ex instanceof ChainExpression) {
-      ex.actions.forEach((action) => {
-        if (action.action === 'split') splits.push(action.expression.toString());
-      });
-    }
-  });
-  return splits.join(';');
-}
-
-function queryUrlExecutorFactory(name: string, url: string): Executor {
-  return (ex: Expression) => {
-    return Qajax({
-      method: "POST",
-      url: url + '?by=' + getSplitsDescription(ex),
-      data: {
-        dataset: name,
-        expression: ex.toJS()
-      }
-    })
-      .then(Qajax.filterSuccess)
-      .then(Qajax.toJSON)
-      .then((dataJS) => Dataset.fromJS(dataJS));
-  };
-}
 
 function dimensionPreference(dimension: Dimension): number {
   if (dimension.type === 'TIME') return 0;
@@ -77,40 +48,30 @@ function makeDimensionsMetricsFromAttributes(attributes: Attributes): Dimensions
     let type = attribute.type;
     switch (type) {
       case 'TIME':
-        dimensionArray.push(new Dimension({
+        dimensionArray.push(Dimension.fromJS({
           name: k,
-          title: upperCaseFirst(k),
-          expression: $(k),
-          type: type,
-          sortOn: null
+          type: type
         }));
         break;
 
       case 'STRING':
         if (attribute.special === 'unique') {
-          measureArray.push(new Measure({
+          measureArray.push(Measure.fromJS({
             name: k,
-            title: upperCaseFirst(k),
-            expression: $('main').countDistinct($(k)),
+            expression: $('main').countDistinct($(k)).toJS(),
             format: Measure.INTEGER_FORMAT
           }));
         } else {
-          dimensionArray.push(new Dimension({
+          dimensionArray.push(Dimension.fromJS({
             name: k,
-            title: upperCaseFirst(k),
-            expression: $(k),
-            type: type,
-            sortOn: null
+            type: type
           }));
         }
         break;
 
       case 'NUMBER':
-        measureArray.push(new Measure({
-          name: k,
-          title: upperCaseFirst(k),
-          expression: $('main').sum($(k)),
-          format: Measure.DEFAULT_FORMAT
+        measureArray.push(Measure.fromJS({
+          name: k
         }));
         break;
 
@@ -178,12 +139,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return isInstanceOf(candidate, DataSource);
   }
 
-  static fromQueryURL(name: string, title: string, source: string, maxTime: Date, attributes: Attributes): DataSource {
+  static fromQueryURL(name: string, title: string, executor: Executor, maxTime: Date, attributes: Attributes): DataSource {
     var dm = makeDimensionsMetricsFromAttributes(attributes);
     return new DataSource({
       name,
       title,
-      source,
+      source: 'query',
       metadataLoaded: true,
       loadError: null,
       maxTime,
@@ -191,7 +152,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       measures: dm.measures,
       timeAttribute: dm.timeAttribute,
       defaultSortOn: dm.defaultSortOn,
-      executor: queryUrlExecutorFactory(name, source)
+      executor
     });
   }
 
@@ -232,13 +193,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     });
   }
 
-  static fromJS(parameters: DataSourceJS): DataSource {
+  static fromJS(parameters: DataSourceJS, executor: Executor = null): DataSource {
     var value: DataSourceValue = {
       executor: null,
       name: parameters.name,
       title: parameters.title,
-      source: parameters.source,
-      metadataLoaded: false,
+      source: parameters.source || 'default-source',
+      metadataLoaded: Boolean(parameters.dimensions && parameters.measures),
       loadError: null
     };
     if (parameters.maxTime) {
@@ -247,8 +208,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (parameters.dimensions) {
       value.dimensions = List(parameters.dimensions.map(Dimension.fromJS));
       value.measures = List(parameters.measures.map(Measure.fromJS));
-      value.timeAttribute = Expression.fromJS(parameters.timeAttribute);
-      value.defaultSortOn = parameters.defaultSortOn;
+      value.timeAttribute = parameters.timeAttribute ? Expression.fromJSLoose(parameters.timeAttribute) : null;
+      value.defaultSortOn = parameters.defaultSortOn || value.measures.get(0).name;
+    }
+    if (executor) {
+      value.executor = executor;
     }
     return new DataSource(value);
   }

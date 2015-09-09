@@ -2,6 +2,7 @@
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS, Action } from 'plywood';
+import { makeTitle } from '../../utils/general';
 import { SplitCombine } from '../split-combine/split-combine';
 
 var geoNames = [
@@ -24,9 +25,9 @@ export interface DimensionValue {
 
 export interface DimensionJS {
   name: string;
-  title: string;
-  expression: ExpressionJS;
-  type: string;
+  title?: string;
+  expression?: ExpressionJS;
+  type?: string;
   sortOn?: string;
 }
 
@@ -40,8 +41,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     return new Dimension({
       name: parameters.name,
       title: parameters.title,
-      expression: Expression.fromJS(parameters.expression),
-      type: parameters.type,
+      expression: parameters.expression ? Expression.fromJSLoose(parameters.expression) : null,
+      type: parameters.type || 'STRING',
       sortOn: parameters.sortOn || null
     });
   }
@@ -57,8 +58,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   constructor(parameters: DimensionValue) {
     var name = parameters.name;
     this.name = name;
-    this.title = parameters.title;
-    this.expression = parameters.expression;
+    this.title = parameters.title || makeTitle(name);
+    this.expression = parameters.expression || $(name);
     var type = parameters.type;
     this.type = type;
     this.sortOn = parameters.sortOn;
