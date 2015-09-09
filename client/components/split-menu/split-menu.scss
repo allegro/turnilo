@@ -6,14 +6,13 @@ $border-radius: 3px;
   text-align: center;
 
   .button-group {
-    padding-left: 10px;
 
     li {
       display: inline-block;
       cursor: pointer;
       width: 45px;
       text-align: center;
-      padding: 4px 1px;
+      padding: 6px 2px;
       border: 1px solid $border-light;
       border-right: 0;
 

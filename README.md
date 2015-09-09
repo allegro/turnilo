@@ -2,12 +2,12 @@
 
 ## Introduction
 
-Imply Pivot is an exploratory web-based visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
-[Imply Plywood](https://github.com/implydata/plywood). 
+Pivot is an web-based exploratory visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
+[Plywood](https://github.com/implydata/plywood). 
 
 The project is currently at a very early alpha stage, and is _not suitable for production use_. 
 
-We will be making periodic updates to the project and ask that any early alpha users refrain from submitting bug reports and feature requests at this time. 
+We will be making periodic updates to the project and we ask that any early alpha users refrain from submitting bug reports at this time. 
 
 ## License
 
@@ -67,8 +67,12 @@ npm install -g browser-sync
 
 ## Roadmap
 
-- schema and configuration management system
-- support being embedded in your app to provide your users with analytics
+We will be working on:
+- Schema and configuration management
+- Additional visualizations
+- Exclusion filters
+- Being able to embed Pivot in your app to provide your users with analytics
+- Various additions, improvements and fixes to make the UI more complete
 
 ## Questions & Support
 

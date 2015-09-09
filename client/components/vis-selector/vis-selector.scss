@@ -8,12 +8,13 @@
     width: $vis-item-width;
     height: $vis-item-height;
     cursor: pointer;
+    border: 1px solid $white;
 
     .vis-title {
       position: absolute;
       left: 0;
       right: 0;
-      bottom: 7px;
+      bottom: 6px;
       text-align: center;
       font-size: 11px;
       font-weight: 400;

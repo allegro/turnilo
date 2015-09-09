@@ -4,11 +4,17 @@ $vis-menu-padding: 12px;
 
 .vis-selector-menu {
   @extend %menu-cont;
+  font-size: 0;
   width: $vis-item-width * 3 + $vis-menu-padding * 2;
   padding: $vis-menu-padding;
 
   .vis-item.selected {
     border: 1px solid $border-light;
+    border-radius: 2px;
+  }
+
+  .vis-item:hover {
+    border: 1px solid $border-extra-light;
     border-radius: 2px;
   }
 }

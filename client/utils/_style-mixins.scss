@@ -112,11 +112,11 @@
   .remove {
     @include pin-right(27px);
     text-align: center;
-    padding-top: 9px;
+    padding-top: 10px;
     cursor: pointer;
 
     svg {
-      width: 11px;
+      width: 10px;
     }
 
     path {

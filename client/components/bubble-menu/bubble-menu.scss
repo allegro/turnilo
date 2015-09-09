@@ -8,6 +8,7 @@ $shpitz-size: 12px;
 
   .shpitz {
     position: absolute;
+    pointer-events: none;
 
     &:before,
     &:after {
@@ -18,7 +19,7 @@ $shpitz-size: 12px;
 
   &.right .shpitz {
     &:before {
-      @include triangle(left, $shpitz-size, $shpitz-size, $border-light);
+      @include triangle(left, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.1));
       left: -1 * $shpitz-size;
       margin-top: -1 * $shpitz-size;
     }
@@ -32,7 +33,7 @@ $shpitz-size: 12px;
 
   &.down .shpitz {
     &:before {
-      @include triangle(up, $shpitz-size, $shpitz-size, $border-light);
+      @include triangle(up, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.1));
       top: -1 * $shpitz-size;
       margin-left: -1 * $shpitz-size;
     }
