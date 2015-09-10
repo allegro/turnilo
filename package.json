@@ -1,18 +1,19 @@
 {
-  "name": "imply-explorer",
-  "version": "0.0.1",
-  "description": "Data explorer",
+  "name": "imply-pivot",
+  "version": "0.1.1",
+  "description": "Imply Pivot is an web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
     "data",
     "explorer",
-    "visualization"
+    "pivot",
+    "visualization",
+    "druid"
   ],
   "author": {
     "name": "Vadim Ogievetsky",
     "url": "http://vadim.ogievetsky.com"
   },
-  "private": true,
   "dependencies": {
     "body-parser": "^1.13.3",
     "chronoshift": "^0.3.x",

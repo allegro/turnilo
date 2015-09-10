@@ -5,7 +5,7 @@ import * as http from 'http';
 
 import * as app from './app';
 
-var debug = debugModule('explorer:www');
+var debug = debugModule('pivot:www');
 
 /**
  * Get port from environment and store in Express.
