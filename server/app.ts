@@ -18,6 +18,8 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
+import { VERSION } from './config';
+
 var countries = ['USA', 'UK', 'Israel'];
 var cities = ['San Francisco', 'London', 'Tel Aviv', 'New York', 'Bristol', 'Kfar Saba'];
 function getWikiData(): any[] {
@@ -37,15 +39,23 @@ function getWikiData(): any[] {
   }
 }
 
-var wikiDataset = Dataset.fromJS(getWikiData()).hide();
+function addAlt(d: Datum): Datum {
+  var newDatum: Datum = {};
+  for (var k in d) {
+    newDatum['alt_' + k] = d[k];
+  }
+  return newDatum;
+}
+
+var wikiDataRaw = getWikiData();
+var wikiDataset = Dataset.fromJS(wikiDataRaw).hide();
+var wikiAltDataset = Dataset.fromJS(wikiDataRaw.map(addAlt)).hide();
 var contexts: Lookup<Datum> = {
   wiki: { main: wikiDataset },
-  wiki_alt: { main: wikiDataset }
+  wiki_alt: { main: wikiAltDataset }
 };
 
 var app = express();
-
-const VERSION = 'v0.1.1';
 
 app.disable('x-powered-by');
 

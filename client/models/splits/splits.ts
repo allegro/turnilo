@@ -149,7 +149,10 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
     if (!timeBucketAction) return this;
 
-    var timeRange = filter.getTimeRange(dataSource.getDimension('time').expression);
+    var timeAttribute = dataSource.timeAttribute;
+    if (!timeAttribute) return this;
+
+    var timeRange = filter.getTimeRange(timeAttribute);
     if (!timeRange) return this;
 
     var granularity = getBestGranularity(timeRange);
@@ -161,6 +164,9 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     })));
   }
 
+  public constrainToDataSource(dataSource: DataSource): Splits {
+    return this; // ToDo: fill me in
+  }
 }
 check = Splits;
 

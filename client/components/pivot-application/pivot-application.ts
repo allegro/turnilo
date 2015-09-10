@@ -143,13 +143,20 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         end: now
       });
 
+      var filter: Filter;
+      if (dataSource.timeAttribute) {
+        filter = Filter.fromClause(dataSource.timeAttribute.in(timeRange));
+      } else {
+        filter = Filter.EMPTY;
+      }
+
       essence = new Essence({
         dataSources: this.props.dataSources,
         visualizations: visualizations,
 
         dataSource: dataSource,
         timezone: Timezone.UTC,
-        filter: new Filter(List([dataSource.timeAttribute.in(timeRange)])),
+        filter,
         splits: Splits.EMPTY,
         selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
         pinnedDimensions: OrderedSet([dataSource.dimensions.get(1).name, dataSource.dimensions.get(5).name]),
@@ -263,7 +270,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var { essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
 
     if (!essence) return null;
-    var { dataSources, dataSource, visualization } = essence;
+    var { dataSource, visualization } = essence;
 
     var visElement: React.ReactElement<any> = null;
     if (dataSource.metadataLoaded && essence.visResolve.isReady() && visualizationStage) {
@@ -295,8 +302,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       sideDrawer = React.createElement(SideDrawer, {
         key: 'drawer',
         clicker,
-        dataSources,
-        selectedDataSource: dataSource.name,
+        essence,
         onClose: closeSideDrawer
       });
     }

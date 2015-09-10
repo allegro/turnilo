@@ -354,6 +354,28 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       // We are actually updating info within the named dataSource
       value.dataSources = <List<DataSource>>dataSources.map((ds) => ds.name === dataSourceName ? dataSource : ds);
     }
+
+    // Make sure that all the elements of state are still valid
+    var oldDataSource = this.dataSource;
+    value.filter = value.filter.constrainToDataSource(dataSource, oldDataSource);
+    value.splits = value.splits.constrainToDataSource(dataSource);
+
+    value.selectedMeasures = <OrderedSet<string>>value.selectedMeasures.filter((measureName) => {
+      return Boolean(dataSource.getMeasure(measureName));
+    });
+
+    value.pinnedDimensions = <OrderedSet<string>>value.pinnedDimensions.filter((dimensionName) => {
+      return Boolean(dataSource.getDimension(dimensionName));
+    });
+
+    if (value.compare) {
+      value.compare = value.compare.constrainToDataSource(dataSource);
+    }
+
+    if (value.highlight) {
+      value.highlight = value.highlight.constrainToDataSource(dataSource);
+    }
+
     return new Essence(value);
   }
 

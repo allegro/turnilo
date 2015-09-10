@@ -38,25 +38,26 @@
       name: 'wiki_alt',
       title: 'Wikipedia Alternative',
       maxTime: '2013-02-27T00:00:00Z',
-      timeAttribute: '$time',
+      timeAttribute: '$alt_time',
       dimensions: [
-        { name: 'time', type: 'TIME' },
-        { name: 'namespace' },
-        { name: 'language' },
-        { name: 'page' },
-        { name: 'user' },
-        { name: 'country' },
-        { name: 'city' },
-        { name: 'region' }
+        { name: 'alt_time', type: 'TIME' },
+
+        { name: 'alt_namespace' },
+        { name: 'alt_language' },
+        { name: 'alt_page' },
+        { name: 'alt_user' },
+        { name: 'alt_country' },
+        { name: 'alt_city' },
+        { name: 'alt_region' }
       ],
       measures: [
-        { name: 'count' },
-        { name: 'added' },
-        { name: 'deleted' },
-        { name: 'diff', expression: '$main.sum($added) + $main.sum($deleted)'  },
-        { name: 'delta' }
+        { name: 'alt_count' },
+        { name: 'alt_added' },
+        { name: 'alt_deleted' },
+        { name: 'alt_diff', expression: '$main.sum($alt_added) + $main.sum($alt_deleted)'  },
+        { name: 'alt_delta' }
       ]
     }
   ];
 </script>
-<script src="/pivot.js"></script>
+<script src="/pivot.js?v={{version}}"></script>

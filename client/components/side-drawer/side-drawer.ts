@@ -5,15 +5,14 @@ import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { isInside } from '../../utils/dom';
-import { DataSource, Clicker } from '../../models/index';
+import { DataSource, Clicker, Essence } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 
 interface SideDrawerProps {
   clicker: Clicker;
-  dataSources: List<DataSource>;
-  selectedDataSource: string;
-  onClose: () => void;
+  essence: Essence;
+  onClose: Function;
 }
 
 interface SideDrawerState {
@@ -52,18 +51,23 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   selectDataSource(dataSource: DataSource) {
-    var { clicker, onClose } = this.props;
-    clicker.changeDataSource(dataSource);
+    var { clicker, essence, onClose } = this.props;
+    if (essence.dataSource === dataSource) {
+      window.location.assign(Essence.getBaseURL());
+    } else {
+      clicker.changeDataSource(dataSource);
+    }
     onClose();
   }
 
   renderDataSourceItems() {
-    var { dataSources, selectedDataSource } = this.props;
+    var { essence } = this.props;
 
-    return dataSources.map((dataSource) => {
+    var selectedDataSource = essence.dataSource;
+    return essence.dataSources.map((dataSource) => {
       return JSX(`
         <li
-          className={dataSource.name === selectedDataSource ? 'selected' : ''}
+          className={dataSource === selectedDataSource ? 'selected' : ''}
           key={dataSource.name}
           onClick={this.selectDataSource.bind(this, dataSource)}
         >{dataSource.title}</li>

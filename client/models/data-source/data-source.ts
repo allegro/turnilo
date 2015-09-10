@@ -302,7 +302,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.source === other.source &&
       listsEqual(this.dimensions, other.dimensions) &&
       listsEqual(this.measures, other.measures) &&
-      this.timeAttribute.equals(other.timeAttribute) &&
+      Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
+      (!this.timeAttribute || this.timeAttribute.equals(other.timeAttribute)) &&
       this.defaultSortOn === other.defaultSortOn;
   }
 
@@ -322,6 +323,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
   public getTimeDimension() {
     return this.getDimensionByExpression(this.timeAttribute);
+  }
+
+  public isTimeAttribute(ex: Expression) {
+    var { timeAttribute } = this;
+    return ex.equals(this.timeAttribute);
   }
 
   public getMeasure(measureName: string): Measure {
@@ -346,6 +352,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       if (err) {
 
       } else {
+        // Temp hack
         var secInHour = 60 * 60;
         json.forEach((d: Datum, i: number) => {
           d['time'] = new Date(Date.parse(d['time']) + (i % secInHour) * 1000);

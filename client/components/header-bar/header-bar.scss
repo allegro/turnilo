@@ -14,6 +14,7 @@
 
     .menu {
       margin-top: 1px;
+      height: 12px;
     }
 
     .dataset-title {
@@ -27,7 +28,16 @@
     top: 0;
     right: 0;
     height: 100%;
-    padding: 9px 18px 0 12px;
-    cursor: pointer;
+
+    .icon-button {
+      display: inline-block;
+      height: 100%;
+      padding: 9px 18px 0 12px;
+      cursor: pointer;
+    }
+
+    .help-icon {
+      height: 24px;
+    }
   }
 }

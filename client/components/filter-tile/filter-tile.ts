@@ -177,7 +177,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           tryingToReplaceTime = targetClause && targetClause.expression.equals(dataSource.timeAttribute);
         }
 
-        var existingClause = filter.cluaseForExpression(dimension.expression);
+        var existingClause = filter.clauseForExpression(dimension.expression);
         if (existingClause) {
           if (dragReplacePosition !== null) {
             clicker.changeFilter(filter.replaceByIndex(dragReplacePosition, existingClause));

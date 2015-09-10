@@ -2,6 +2,7 @@
 
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { $, Expression } from 'plywood';
+import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
 
 export interface HighlightValue {
@@ -71,5 +72,15 @@ export class Highlight implements Instance<HighlightValue, HighlightJS> {
     return filter.applyDelta(this.delta);
   }
 
+  public constrainToDataSource(dataSource: DataSource): Highlight {
+    var { delta } = this;
+    var newDelta = delta.constrainToDataSource(dataSource);
+    if (newDelta === delta) return this;
+    if (newDelta.length() === 0) return null;
+
+    var value = this.valueOf();
+    value.delta = newDelta;
+    return new Highlight(value);
+  }
 }
 check = Highlight;

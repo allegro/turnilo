@@ -4,6 +4,7 @@ import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, LiteralExpression, ChainExpression, ExpressionJS, InAction, Set, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
+import { DataSource } from '../data-source/data-source';
 
 function withholdClause(clauses: List<ChainExpression>, clause: ChainExpression, allowIndex: number): List<ChainExpression> {
   return <List<ChainExpression>>clauses.filter((c, i) => {
@@ -106,7 +107,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return this.clauses.findIndex(clause => clause.expression.equals(attribute));
   }
 
-  public cluaseForExpression(attribute: Expression): ChainExpression {
+  public clauseForExpression(attribute: Expression): ChainExpression {
     return this.clauses.find(clause => clause.expression.equals(attribute));
   }
 
@@ -212,6 +213,28 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     if (clauses.size !== 1) return null;
     var expression = clauses.get(0);
     return expression.actions[0].getLiteralValue();
+  }
+
+  public constrainToDataSource(dataSource: DataSource, oldDataSource: DataSource = null): Filter {
+    var hasChanged = false;
+    var clauses: ChainExpression[] = [];
+    this.clauses.forEach((clause) => {
+      var clauseExpression = clause.expression;
+      if (dataSource.getDimensionByExpression(clauseExpression)) {
+        clauses.push(clause);
+      } else {
+        hasChanged = true;
+        // Special handling for time filter
+        if (oldDataSource && oldDataSource.isTimeAttribute(clauseExpression) && dataSource.timeAttribute) {
+          clauses.push(new ChainExpression({
+            expression: dataSource.timeAttribute,
+            actions: clause.actions
+          }));
+        }
+      }
+    });
+
+    return hasChanged ? new Filter(List(clauses)) : this;
   }
 }
 check = Filter;
