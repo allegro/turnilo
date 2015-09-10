@@ -24,6 +24,7 @@
     "express-handlebars": "^2.0.1",
     "immutable": "^3.7.4",
     "immutable-class": "^0.3.x",
+    "js-yaml": "^3.4.2",
     "lz-string": "^1.4.4",
     "morgan": "^1.6.1",
     "numeral": "^1.5.3",
