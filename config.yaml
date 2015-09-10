@@ -1,0 +1,29 @@
+# "dimensions":["continent","robot","country","city","newPage","unpatrolled","namespace","anonymous","language","page","region","user"],
+# "metrics":["deleted","added","count","delta"]
+
+druidHost: localhost:8082
+dataSources:
+  - name: static-wiki
+    title: Wikipedia Edits
+    maxTime: 2013-02-27T00:00:00Z
+    timeAttribute: $time
+
+    dimensions:
+      - name: time
+        type: TIME
+
+      - name: namespace
+      - name: language
+      - name: page
+      - name: user
+      - name: country
+      - name: city
+      - name: region
+
+    measures:
+      - name: count
+      - name: added
+      - name: deleted
+      - name: diff
+        expression: $main.sum($added) + $main.sum($deleted)
+      - name: delta

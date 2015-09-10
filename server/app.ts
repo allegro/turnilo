@@ -3,7 +3,6 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 
-import { readFileSync } from 'fs';
 import * as path from 'path';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
@@ -18,45 +17,10 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-import { VERSION } from './config';
-
-var countries = ['USA', 'UK', 'Israel'];
-var cities = ['San Francisco', 'London', 'Tel Aviv', 'New York', 'Bristol', 'Kfar Saba'];
-function getWikiData(): any[] {
-  try {
-    var wikiData = JSON.parse(readFileSync(path.join(__dirname, '../data/wikipedia.json'), 'utf-8'));
-    var secInHour = 60 * 60;
-    wikiData.forEach((d: Datum, i: number) => {
-      d['continent'] = 'Oceana';
-      d['country'] = countries[i % countries.length];
-      d['city'] = cities[i % cities.length];
-      d['region'] = 'North';
-      d['time'] = new Date(Date.parse(d['time']) + (i % secInHour) * 1000);
-    });
-    return wikiData;
-  } catch (e) {
-    return [];
-  }
-}
-
-function addAlt(d: Datum): Datum {
-  var newDatum: Datum = {};
-  for (var k in d) {
-    newDatum['alt_' + k] = d[k];
-  }
-  return newDatum;
-}
-
-var wikiDataRaw = getWikiData();
-var wikiDataset = Dataset.fromJS(wikiDataRaw).hide();
-var wikiAltDataset = Dataset.fromJS(wikiDataRaw.map(addAlt)).hide();
-var contexts: Lookup<Datum> = {
-  wiki: { main: wikiDataset },
-  wiki_alt: { main: wikiAltDataset }
-};
+import { VERSION, DATA_SOURCES } from './config';
+import * as queryRoutes from './routes/query/query';
 
 var app = express();
-
 app.disable('x-powered-by');
 
 // view engine setup
@@ -81,47 +45,12 @@ app.use(bodyParser.json());
 app.get('/', (req: Request, res: Response, next: Function) => {
   res.render('pivot', {
     version: VERSION,
+    dataSources: JSON.stringify(DATA_SOURCES),
     title: 'Pivot'
   });
 });
 
-app.post('/query', (req: Request, res: Response, next: Function) => {
-  var { dataset, expression } = req.body;
-
-  if (typeof dataset !== 'string') {
-    res.status(400).send({ error: 'must have a string dataset' });
-    return;
-  }
-
-  var context = contexts[dataset];
-  if (!context) {
-    res.status(400).send({ error: 'unknown dataset' });
-    return;
-  }
-
-  var ex: Expression = null;
-  try {
-    ex = Expression.fromJS(expression);
-  } catch (e) {
-    res.status(400).send({
-      error: 'bad expression',
-      message: e.message
-    });
-    return;
-  }
-
-  ex.compute(context).then(
-    (data: Dataset) => {
-      res.send(data.toJS());
-    },
-    (e: Error) => {
-      res.status(400).send({
-        error: 'could not compute',
-        message: e.message
-      });
-    }
-  );
-});
+app.use('/query', queryRoutes);
 
 //catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: Function) => {

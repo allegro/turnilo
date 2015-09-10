@@ -5,6 +5,10 @@ import * as Icon from 'react-svg-icons';
 import { $, Expression, Datum, Dataset } from 'plywood';
 import { Essence } from "../../models/index";
 
+function panic() {
+  window.location.assign(Essence.getBaseURL());
+}
+
 interface HeaderBarProps {
   essence: Essence;
   onNavClick: Function;
@@ -30,9 +34,9 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
           <div className="dataset-title">{essence.dataSource.title}</div>
         </div>
         <div className="right-bar">
-          <a className="icon-button panic" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
+          <div className="icon-button panic" onClick={panic}>
             <Icon className="panic-icon" name="panic" color="white"/>
-          </a>
+          </div>
           <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
             <Icon className="help-icon" name="help" color="white"/>
           </a>

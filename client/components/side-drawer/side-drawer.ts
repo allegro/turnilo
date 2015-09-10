@@ -4,7 +4,7 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { isInside } from '../../utils/dom';
+import { isInside, escapeKey } from '../../utils/dom';
 import { DataSource, Clicker, Essence } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
@@ -45,18 +45,14 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     this.props.onClose();
   }
 
-  globalKeyDownListener(event: KeyboardEvent) {
-    if (event.which !== 27) return; // 27 = escape
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (!escapeKey(e)) return;
     this.props.onClose();
   }
 
   selectDataSource(dataSource: DataSource) {
-    var { clicker, essence, onClose } = this.props;
-    if (essence.dataSource === dataSource) {
-      window.location.assign(Essence.getBaseURL());
-    } else {
-      clicker.changeDataSource(dataSource);
-    }
+    var { clicker, onClose } = this.props;
+    clicker.changeDataSource(dataSource);
     onClose();
   }
 

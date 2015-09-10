@@ -157,9 +157,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   constructor(parameters: EssenceValue) {
     this.dataSources = parameters.dataSources;
+    if (!this.dataSources.size) throw new Error('can not have empty dataSource list');
     this.visualizations = parameters.visualizations;
 
     this.dataSource = parameters.dataSource;
+    if (!this.dataSource) throw new Error('must have a dataSource');
+
     this.timezone = parameters.timezone;
     this.filter = parameters.filter;
     this.splits = parameters.splits;

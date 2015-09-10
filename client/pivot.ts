@@ -15,7 +15,7 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-var globalDataSources: any[] = (<any>window)['ds'];
+var globalDataSources: any[] = (<any>window)['PIVOT_DATA_SOURCES'];
 
 var dataSources: List<DataSource>;
 if (Array.isArray(globalDataSources)) {
@@ -31,7 +31,7 @@ if (Array.isArray(globalDataSources)) {
 } else {
   // Assume test / demo
   dataSources = List([
-    DataSource.fromDataFileURL('wiki_static', 'Static Wikipedia Edits', '/wikipedia.json', new Date())
+    DataSource.fromDataFileURL('static-wiki-file', 'Static Wikipedia Edits', '/wikipedia.json', new Date())
   ]);
 }
 

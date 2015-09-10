@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { readFileSync } from 'fs';
+import * as yaml from 'js-yaml';
 
 function getVersion(): string {
   try {
@@ -10,4 +11,9 @@ function getVersion(): string {
   }
 }
 
+var env = process.env;
+var config = yaml.safeLoad(readFileSync(path.join(__dirname, '../config.yaml'), 'utf-8'));
+
 export const VERSION = getVersion();
+export const DRUID_HOST = String(config.druidHost || env.PIVOT_DRUID_HOST || 'localhost:8082');
+export const DATA_SOURCES = config.dataSources;

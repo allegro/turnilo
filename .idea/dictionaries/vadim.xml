@@ -11,6 +11,7 @@
       <w>googleapis</w>
       <w>granularities</w>
       <w>hashchange</w>
+      <w>implydata</w>
       <w>jsdom</w>
       <w>keydown</w>
       <w>kfar</w>
@@ -41,6 +42,7 @@
       <w>unmount</w>
       <w>unpatrolled</w>
       <w>webstorm</w>
+      <w>yaml</w>
     </words>
   </dictionary>
 </component>
