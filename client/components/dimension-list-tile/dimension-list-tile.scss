@@ -24,7 +24,7 @@ $icon-width: 35px;
       transition: transform 0.1s ease-in-out;
 
       &.selected {
-        background: darken($hover, 7%);
+        background: $highlight;
       }
 
       .icon {
@@ -67,7 +67,7 @@ $icon-width: 35px;
   }
 
   &.no-drag {
-    .dimension:hover {
+    .dimension:hover:not(.selected) {
       background: $hover;
     }
   }

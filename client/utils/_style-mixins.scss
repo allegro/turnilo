@@ -14,12 +14,12 @@
   border-radius: 2px;
   outline: none;
 
-  transition-property: all;
-  transition-duration: $duration;
+  //transition-property: all;
+  //transition-duration: $duration;
 
   &.active,
   &:active {
-    transition-duration: 0s;
+    //transition-duration: 0s;
   }
 
   &.disabled,
@@ -35,12 +35,14 @@
   background: $brand;
   color: $white;
 
-  // &:hover { ... }
+  &:hover {
+    background: darken($brand, 5%);
+  }
 
   &.active,
   &:active {
-    background: darken($brand, 8%);
-    color: darken($white, 18%);
+    background: darken($brand, 10%);
+    color: darken($white, 12%);
   }
 }
 
@@ -49,12 +51,15 @@
   background: $background-medium;
   color: $text-medium;
 
-  // &:hover { ... }
+  &:hover {
+    background: darken($background-medium, 4%);
+    color: darken($text-medium, 12%);
+  }
 
   &.active,
   &:active {
-    background: shade($background-medium, 8%);
-    color: shade($text-medium, 32%);
+    background: darken($background-medium, 10%);
+    color: darken($text-medium, 12%);
   }
 }
 

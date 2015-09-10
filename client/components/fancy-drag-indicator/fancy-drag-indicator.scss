@@ -1,6 +1,6 @@
 @import '../../imports';
 
-$arrow-width: 17px;
+$arrow-width: 16px;
 
 .fancy-drag-indicator {
   .drag-ghost-element {
@@ -16,7 +16,7 @@ $arrow-width: 17px;
   .drag-ghost-arrow {
     position: absolute;
     // left: 0; It gets left from the JS
-    top: -7px;
+    top: -12px;
     width: $arrow-width;
     margin-left: -$arrow-width / 2;
   }

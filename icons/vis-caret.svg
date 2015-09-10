@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="53px" height="53px" viewBox="0 0 53 53" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12072) - http://www.bohemiancoding.com/sketch -->
+    <title>vis-caret</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="vis-caret" sketch:type="MSArtboardGroup" fill="#666666">
+            <path d="M26.4999998,26.957031 L21.0174202,21.8977948 L19.915215,20.8803747 L17.8803747,23.084785 L18.9825798,24.1022052 L25.4825798,30.1022052 L26.5,31.0413622 L27.5174202,30.1022052 L34.0174202,24.1022052 L35.1196253,23.084785 L33.084785,20.8803747 L31.9825798,21.8977948 L26.4999998,26.957031 Z" id="Shape" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

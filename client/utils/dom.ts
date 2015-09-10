@@ -2,8 +2,8 @@
 
 import * as d3 from 'd3';
 
-const DRAG_GHOST_OFFSET_X = -20;
-const DRAG_GHOST_OFFSET_Y = -20;
+const DRAG_GHOST_OFFSET_X = -12;
+const DRAG_GHOST_OFFSET_Y = -12;
 
 function convertDOMStringListToArray(list: any): any[] {
   var length = list.length;

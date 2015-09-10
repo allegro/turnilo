@@ -19,7 +19,6 @@ $header-padding-top: 12px;
     height: $header-height;
     overflow: hidden;
     padding: $header-padding-top 0 0 6px;
-    font-weight: 600;
     border-bottom: 1px solid $border-medium;
   }
 
@@ -30,7 +29,6 @@ $header-padding-top: 12px;
     right: 0;
     height: $header-height;
     overflow: hidden;
-    font-weight: 600;
 
     .header {
       height: $header-height;
@@ -41,7 +39,6 @@ $header-padding-top: 12px;
     .arrow {
       position: absolute;
       right: -15px;
-      margin-top: 1px;
     }
   }
 
@@ -78,7 +75,7 @@ $header-padding-top: 12px;
     left: $space-left;
     top: 0;
     height: $header-height;
-    box-shadow: 0 4px 4px -3px hsla(0, 0, 0, 0.25);
+    box-shadow: 0 4px 4px -3px hsla(0, 0, 0, 0.2);
   }
 
   .vertical-scroll-shadow {
@@ -87,7 +84,7 @@ $header-padding-top: 12px;
     top: 0;
     bottom: 0;
     width: $segment-width;
-    box-shadow: 4px 0 4px -3px hsla(0, 0, 0, 0.25);
+    box-shadow: 4px 0 4px -3px hsla(0, 0, 0, 0.2);
   }
 
   .scroller-cont {

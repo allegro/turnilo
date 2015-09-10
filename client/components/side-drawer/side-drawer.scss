@@ -9,11 +9,10 @@
 
   .title {
     height: 50px;
-    padding: 10px 0 0 15px;
-    border-bottom: 1px solid $border-light;
+    padding: 5px 0 0 12px;
 
     svg {
-      height: 29px;
+      height: 40px;
 
       path {
         fill: $brand;
@@ -23,25 +22,29 @@
 
   .data-sources {
     li {
-      padding: 12px 15px;
+      padding: 13px 15px;
       cursor: pointer;
-
-      &.selected {
-        background: $highlight;
-      }
+      font-size: 14px;
+      color: $text-medium;
 
       &:hover {
         background: $hover;
+      }
+
+      &.selected {
+        background: $highlight;
       }
     }
   }
 
   .add-data-source {
-    padding: 12px 15px;
+    padding: 13px 15px;
     cursor: pointer;
+    font-size: 14px;
+    color: $text-medium;
 
     &:hover {
-      background: $highlight;
+      background: $hover;
     }
   }
 }

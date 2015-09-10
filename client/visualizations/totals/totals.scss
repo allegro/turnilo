@@ -6,9 +6,9 @@
 
   .total {
     display: inline-block;
-    border: 1px solid $border-light;
-    width: 200px;
-    height: 100px;
+    border: 1px solid $border-extra-light;
+    width: 180px;
+    height: 90px;
     text-align: center;
     padding: 5px;
     margin-right: -1px;
@@ -16,11 +16,12 @@
 
     .measure-name {
       padding-top: 15px;
-      font-size: 18px;
+      font-size: 15px;
+      color: $text-medium;
     }
 
     .measure-value {
-      padding-top: 12px;
+      padding-top: 10px;
       font-size: 20px;
     }
   }

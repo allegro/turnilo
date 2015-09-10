@@ -18,7 +18,18 @@
   .close {
     position: absolute;
     top: 11px;
+    padding: 2px;
     right: $tile-padding-h;
     cursor: pointer;
+
+    path {
+      fill: $text-lighter;
+    }
+
+    &:hover {
+      path {
+        fill: $text-light;
+      }
+    }
   }
 }

@@ -35,7 +35,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
           <div className="dataset-title">{essence.dataSource.title}</div>
         </div>
         <div className="right-bar" onClick={this.onLogoClick}>
-          <Icon className="text-logo" name="text-logo" height={20} color="white"/>
+          <Icon className="help-icon" name="help" height={24} color="white"/>
         </div>
       </header>
     `);
