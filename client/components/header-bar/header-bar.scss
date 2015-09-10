@@ -26,18 +26,45 @@
   .right-bar {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 14px;
     height: 100%;
 
     .icon-button {
       display: inline-block;
       height: 100%;
-      padding: 9px 18px 0 12px;
+      padding: 9px 5px;
       cursor: pointer;
-    }
 
-    .help-icon {
-      height: 24px;
+      &:after {
+        @extend %menu-cont;
+        opacity: 0;
+        position: absolute;
+        display: block;
+        bottom: -24px;
+        right: 0;
+        padding: 5px 6px;
+        color: $text-standard;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      &.panic:after { content: 'Reset (in case of bug)'; }
+      &.help:after { content: 'Google Groups'; }
+      &.github:after { content: 'Project GitHub'; }
+
+      &:hover {
+        svg {
+          opacity: 0.85;
+        }
+
+        &:after {
+          opacity: 1;
+        }
+      }
+
+      svg {
+        height: 24px;
+      }
     }
   }
 }

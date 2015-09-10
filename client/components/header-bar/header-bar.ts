@@ -30,8 +30,14 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
           <div className="dataset-title">{essence.dataSource.title}</div>
         </div>
         <div className="right-bar">
-          <a className="icon-button" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
+          <a className="icon-button panic" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
+            <Icon className="panic-icon" name="panic" color="white"/>
+          </a>
+          <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
             <Icon className="help-icon" name="help" color="white"/>
+          </a>
+          <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
+            <Icon className="github-icon" name="github" color="white"/>
           </a>
         </div>
       </header>
