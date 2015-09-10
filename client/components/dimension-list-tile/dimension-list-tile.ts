@@ -85,10 +85,13 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   iconDragStart(dimension: Dimension, e: DragEvent) {
     e.stopPropagation();
+    // remove icon dragging for now
+    /*
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'move';
     dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
     setDragGhost(dataTransfer, dimension.title);
+    */
   }
 
   canDrop(e: DragEvent): boolean {
