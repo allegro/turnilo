@@ -1,30 +1,35 @@
-// Sizes
-
+// Header
 $header-height: 44px;
+
+// Panels
 $left-panel-width: 240px;
 $side-drawer-width: 255px;
 $pinboard-width: 240px;
 $vis-selector-width: 79px;
 
-$title-width: 80px;
-$control-tile-height: 37px;
-$title-height: 32px;
-$item-width: 192px;
-$pin-title-height: 34px;
-$search-box-height: 30px;
-$pin-item-height: 24px;
-
+// Module spacing
 $tile-margin-v: 10px;
 $tile-margin-h: 10px;
 $small-tile-margin: 5px;
 
-$control-padding-v: 4px;
+// Modules
+$title-height: 36px;
+$pin-title-height: 36px;
+
+$search-box-height: 30px;
 $tile-padding-h: 12px;
 
-$menu-title-bar-height: 40px;
+$pin-item-height: 24px;
+
+$control-tile-height: 37px;
+$item-width: 192px;
+$control-padding-v: 4px;
+$title-width: 66px;
 
 $vis-item-width: 79px;
 $vis-item-height: 70px;
 
+// Other
 $highlight-button-width: 26px;
 $highlight-button-frame-gap: 7px;
+$menu-title-bar-height: 40px;

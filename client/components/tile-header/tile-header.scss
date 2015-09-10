@@ -1,12 +1,11 @@
 @import '../../imports';
 
 .tile-header {
-  padding: 5px 0 0 $tile-padding-h;
+  @extend %module-title;
 
   .title {
-    margin-top: 7px;
-    font-size: 13px;
-    color: $text-light;
+    //font-size: 13px;
+    //text-transform: none;
   }
 
   .search {
