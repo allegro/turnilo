@@ -38,10 +38,6 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     window.removeEventListener('keydown', this.globalKeyDownListener);
   }
 
-  componentWillReceiveProps(nextProps: SideDrawerProps) {
-
-  }
-
   globalMouseDownListener(e: MouseEvent) {
     var myElement = React.findDOMNode(this);
     var target = <Element>e.target;
@@ -61,26 +57,29 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     onClose();
   }
 
-  render() {
-    var { onClose, dataSources, selectedDataSource } = this.props;
+  renderDataSourceItems() {
+    var { dataSources, selectedDataSource } = this.props;
 
-    var dataSourceItems = dataSources.toArray().map((dataSource) => {
+    return dataSources.map((dataSource) => {
       return JSX(`
         <li
-          key={dataSource.name}
           className={dataSource.name === selectedDataSource ? 'selected' : ''}
+          key={dataSource.name}
           onClick={this.selectDataSource.bind(this, dataSource)}
         >{dataSource.title}</li>
       `);
     });
+  }
+
+  render() {
+    var { onClose } = this.props;
 
     return JSX(`
       <div className="side-drawer">
         <div className="title" onClick={onClose}>
           <Icon className="combo-logo" name="combo-logo"/>
         </div>
-        <ul className="data-sources">{dataSourceItems}</ul>
-        <div className="add-data-source">Add dataset</div>
+        <ul className="data-sources">{this.renderDataSourceItems()}</ul>
       </div>
     `);
   }
