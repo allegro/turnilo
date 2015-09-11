@@ -30,7 +30,7 @@ function getTimePresets(now: Date, tz: Timezone) {
     TimePreset.fromJS({
       name: 'Past day',
       timeRange: {
-        start: day.floor(now, tz),
+        start: day.move(now, tz, -1),
         end: now
       }
     }),
