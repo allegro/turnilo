@@ -115,8 +115,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     if (essence.highlightOn(highlightId)) {
       var highlightSet = essence.getSingleHighlightValue();
-      // ToDo: use highlightSet.size() here when possible
-      if (highlightSet.elements.length === 1 && highlightSet.contains(value)) {
+      if (highlightSet.size() === 1 && highlightSet.contains(value)) {
         clicker.dropHighlight();
         return;
       }
