@@ -29,7 +29,7 @@ function getWikiData(): any[] {
     wikiData.forEach((d: Datum, i: number) => {
       d['country'] = countries[i % countries.length];
       d['city'] = cities[i % cities.length];
-      d['time'] = new Date(Date.parse(d['time']) + (i % secInHour) * 1000);
+      d['time'] = new Date(Date.parse(d['time']) + (103 * i % secInHour) * 1000);
     });
     return wikiData;
   } catch (e) {

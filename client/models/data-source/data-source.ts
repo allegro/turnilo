@@ -343,7 +343,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
         // Temp hack
         var secInHour = 60 * 60;
         json.forEach((d: Datum, i: number) => {
-          d['time'] = new Date(Date.parse(d['time']) + (i % secInHour) * 1000);
+          d['time'] = new Date(Date.parse(d['time']) + (103 * i % secInHour) * 1000);
         });
 
         deferred.resolve(DataSource.fromDataArray(this.name, this.title, this.source, this.maxTime, json));
