@@ -5,6 +5,7 @@ $vis-item-margin: 1px;
 
 .vis-selector-menu {
   @extend %menu-cont;
+  z-index: 8;
   font-size: 0;
   width: ($vis-item-width + $vis-item-margin * 2) * 3 + $vis-menu-padding * 2;
   padding: $vis-menu-padding;

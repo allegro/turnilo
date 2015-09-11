@@ -6,7 +6,7 @@
   &:before {
     @include pin-full;
     content: '';
-    z-index: 7;
+    z-index: 6;
     background-color: rgba($white, 0.65);
     pointer-events: none;
     opacity: 0;
@@ -16,7 +16,7 @@
   &:after {
     @include triangle(down, 7px, 9px, $text-medium);
     content: '';
-    z-index: 8;
+    z-index: 7;
     position: absolute;
     top: 50%;
     left: 50%;
