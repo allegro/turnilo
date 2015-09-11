@@ -28,25 +28,6 @@ function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
-function getTimeExtent(dataset: Dataset): [Date, Date] {
-  var extentData: Date[] = [];
-  var lastSplitDatasets: Dataset[] = [dataset.data[0]['Split']];
-
-  // ToDo: flatten / map
-
-  for (var lastSplitDataset of lastSplitDatasets) {
-    var lastSplitData = lastSplitDataset.data;
-    if (!lastSplitData.length) continue;
-    extentData.push(
-      lastSplitData[0]['Segment'].start,
-      lastSplitData[lastSplitData.length - 1]['Segment'].end
-    );
-  }
-
-  if (!extentData.length) return null;
-  return d3.extent(extentData);
-}
-
 interface TimeSeriesState {
   loading?: boolean;
   dataset?: Dataset;
@@ -206,8 +187,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var bottomAxes: Array<React.ReactElement<any>> = null;
 
     if (dataset && splits.length()) {
-      var extentX = getTimeExtent(dataset);
-      // if (!extentX)
+      var timeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
 
       var myDatum: Datum = dataset.data[0];
       var myDataset: Dataset = myDatum['Split'];
@@ -226,7 +206,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var yAxisStage = svgStage.within({ top: TEXT_SPACER, left: lineStage.width });
 
       var scaleX = d3.time.scale()
-        .domain(extentX)
+        .domain([timeRange.start, timeRange.end])
         .range([0, lineStage.width]);
 
       var xTicks = scaleX.ticks();

@@ -3,11 +3,9 @@
 .idea/tasks.xml
 .sass-cache/
 node_modules/
-tmp/
 build/
 client_build_tmp/
 client_build/
 public/
-.tsc-cache
 webstorm/*-errors
-tasks
+

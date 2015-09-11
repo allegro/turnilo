@@ -383,9 +383,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public changeFilter(filter: Filter): Essence {
+    var timeAttribute = this.dataSource.timeAttribute;
+    var timeRange = timeAttribute ? filter.getTimeRange(timeAttribute) : null;
+
     var value = this.valueOf();
     value.filter = filter;
-    value.splits = value.splits.updateWithFilter(value.dataSource, value.filter);
+    value.splits = value.splits.updateWithTimeRange(timeRange);
     return new Essence(value);
   }
 

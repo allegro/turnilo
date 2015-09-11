@@ -36,7 +36,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     var { dataSource } = essence;
     var measure = dataSource.getSortMeasure(dimension);
 
-    var query: any = $('main')
+    var query = $('main')
       .filter(essence.getEffectiveFilter(null, dimension).toExpression())
       .split(dimension.expression, dimension.name)
       .apply(measure.name, measure.expression)

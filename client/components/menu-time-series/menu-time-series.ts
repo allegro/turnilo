@@ -7,9 +7,8 @@ import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
 import { Stage, Essence, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../models/index';
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
-import { VerticalAxis } from '../vertical-axis/vertical-axis';
 
-const Y_AXIS_WIDTH = 60;
+const X_AXIS_HEIGHT = 20;
 
 function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
@@ -35,13 +34,12 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
     };
   }
 
-  fetchData(filter: Filter, dimension: Dimension) {
-    var { essence } = this.props;
+  fetchData(essence: Essence, dimension: Dimension): void {
     var { dataSource } = essence;
     var measure = dataSource.getSortMeasure(dimension);
 
-    var query: any = $('main')
-      .filter(filter.toExpression())
+    var query = $('main')
+      .filter(essence.getEffectiveFilter().toExpression())
       .split(dimension.getSplitCombine().toSplitExpression(), dimension.name)
       .apply(measure.name, measure.expression)
       .sort($(dimension.name), 'ascending');
@@ -55,7 +53,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
   componentDidMount() {
     this.mounted = true;
     var { essence, dimension } = this.props;
-    this.fetchData(essence.filter, dimension);
+    this.fetchData(essence, dimension);
   }
 
   componentWillUnmount() {
@@ -63,13 +61,16 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
   }
 
   componentWillReceiveProps(nextProps: MenuTimeSeriesProps) {
-    var essence = this.props.essence;
+    var { essence, dimension } = this.props;
     var nextEssence = nextProps.essence;
+    var nextDimension = nextProps.dimension;
+
     if (
-      essence.filter.equals(nextEssence.filter) &&
-      this.props.dimension.equals(nextProps.dimension)
-    ) return;
-    this.fetchData(nextEssence.filter, nextProps.dimension);
+      essence.differentEffectiveFilter(nextEssence) ||
+      !dimension.equals(nextDimension)
+    ) {
+      this.fetchData(nextEssence, nextDimension);
+    }
   }
 
   render() {
@@ -81,33 +82,34 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
 
     var svg: React.ReactElement<any> = null;
     if (dataset) {
+      var timeRange = essence.getEffectiveFilter().getTimeRange(essence.dataSource.timeAttribute);
+
       var dimensionName = dimension.name;
       var getX = (d: Datum) => midpoint(d[dimensionName]);
-      var extentX = d3.extent(dataset.data, <any>getX);
 
       var measureName = measure.name;
       var getY = (d: Datum) => d[measureName];
       var extentY = d3.extent(dataset.data, getY);
 
       if (isNaN(extentY[0])) {
-        console.log('isNaN(extentY[0])');
+        return null;
       }
 
       extentY[0] = Math.min(extentY[0] * 1.1, 0);
       extentY[1] = Math.max(extentY[1] * 1.1, 0);
 
-      var lineStage = svgStage.within({ right: Y_AXIS_WIDTH });
-      var yAxisStage = svgStage.within({ left: lineStage.width });
+      var lineStage = svgStage.within({ bottom: X_AXIS_HEIGHT });
+      var xAxisStage = svgStage.within({ top: lineStage.height });
 
       var scaleX = d3.time.scale()
-        .domain(extentX)
+        .domain([timeRange.start, timeRange.end])
         .range([0, lineStage.width]);
+
+      var xTicks = scaleX.ticks(5);
 
       var scaleY = d3.scale.linear()
         .domain(extentY)
         .range([lineStage.height, 0]);
-
-      var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
 
       svg = JSX(`
         <svg className="graph" width={svgStage.width} height={svgStage.height}>
@@ -119,11 +121,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
             scaleY={scaleY}
             stage={lineStage}
           />
-          <VerticalAxis
-            stage={yAxisStage}
-            yTicks={yTicks}
-            scaleY={scaleY}
-          />
+          <TimeAxis stage={xAxisStage} xTicks={xTicks} scaleX={scaleX}/>
         </svg>
       `);
     }

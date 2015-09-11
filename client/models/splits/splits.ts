@@ -7,7 +7,6 @@ import { $, Expression, TimeRange, TimeBucketAction } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { Dimension } from '../dimension/dimension';
 import { DataSource } from '../data-source/data-source';
-import { Filter } from '../filter/filter';
 import { SplitCombine, SplitCombineJS } from '../split-combine/split-combine';
 
 function getBestGranularity(timeRange: TimeRange): Duration {
@@ -141,19 +140,15 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return this.splitCombines.toArray();
   }
 
-  public updateWithFilter(dataSource: DataSource, filter: Filter): Splits {
+  public updateWithTimeRange(timeRange: TimeRange): Splits {
+    if (!timeRange) return this;
+
     var splitCombines = this.splitCombines;
     if (splitCombines.size !== 1) return this;
 
     var timeSplit = splitCombines.get(0);
     var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
     if (!timeBucketAction) return this;
-
-    var timeAttribute = dataSource.timeAttribute;
-    if (!timeAttribute) return this;
-
-    var timeRange = filter.getTimeRange(timeAttribute);
-    if (!timeRange) return this;
 
     var granularity = getBestGranularity(timeRange);
     if (timeBucketAction.duration.equals(granularity)) return this;
