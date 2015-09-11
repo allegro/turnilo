@@ -9,6 +9,7 @@ import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
 import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../models/index';
 import { Loader } from '../../components/loader/loader';
+import { QueryError } from '../../components/query-error/query-error';
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 300;
@@ -31,6 +32,7 @@ function formatSegment(value: any): string {
 interface TableState {
   loading?: boolean;
   dataset?: Dataset;
+  error?: any;
   flatData?: Datum[];
   scrollLeft?: number;
   scrollTop?: number;
@@ -56,6 +58,8 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     super();
     this.state = {
       loading: false,
+      dataset: null,
+      error: null,
       flatData: null,
       scrollLeft: 0,
       scrollTop: 0
@@ -95,17 +99,30 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     query = query.apply('Split', makeQuery(0));
 
     this.setState({ loading: true });
-    dataSource.executor(query).then((dataset) => {
-      if (!this.mounted) return;
-      this.setState({
-        loading: false,
-        dataset,
-        flatData: dataset.flatten({
-          order: 'preorder',
-          nestingName: '__nest'
-        })
-      });
-    });
+    dataSource.executor(query)
+      .then(
+        (dataset) => {
+          if (!this.mounted) return;
+          this.setState({
+            loading: false,
+            dataset,
+            error: null,
+            flatData: dataset.flatten({
+              order: 'preorder',
+              nestingName: '__nest'
+            })
+          });
+        },
+        (error) => {
+          if (!this.mounted) return;
+          this.setState({
+            loading: false,
+            dataset: null,
+            error,
+            flatData: null
+          });
+        }
+      );
   }
 
   componentDidMount() {
@@ -140,7 +157,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
   render() {
     var { essence, stage } = this.props;
-    var { loading, flatData, scrollLeft, scrollTop } = this.state;
+    var { loading, error, flatData, scrollLeft, scrollTop } = this.state;
 
     var segmentTitle = essence.splits.getTitle(essence.dataSource);
 
@@ -248,6 +265,11 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       loader = React.createElement(Loader, null);
     }
 
+    var queryError: React.ReactElement<any> = null;
+    if (error) {
+      queryError = React.createElement(QueryError, { error });
+    }
+
     return JSX(`
       <div className="table">
         <div className="corner">{segmentTitle}</div>
@@ -262,6 +284,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         </div>
         <div className="horizontal-scroll-shadow" style={horizontalScrollShadowStyle}></div>
         <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
+        {queryError}
         {loader}
         <div className="scroller-cont" onScroll={this.onScroll.bind(this)}>
           <div className="scroller" style={scrollerStyle}></div>

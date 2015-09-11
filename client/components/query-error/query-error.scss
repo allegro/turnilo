@@ -1,0 +1,29 @@
+@import '../../imports';
+
+$container-width: 180px;
+$container-height: 50px;
+
+.query-error {
+  text-align: center;
+
+  .whiteout {
+    @include pin-full;
+    background: $white;
+    opacity: 0.5;
+  }
+
+  .container {
+    @include center($container-width, $container-height);
+    color: $red;
+    text-align: left;
+
+    .error {
+      font-size: 14px;
+    }
+
+    .message {
+      margin-top: 5px;
+      font-size: 13px;
+    }
+  }
+}

@@ -71,6 +71,16 @@
   right: $right;
 }
 
+@mixin center($width, $height) {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: $width;
+  height: $height;
+  margin-left: -$width / 2;
+  margin-top: -$height / 2;
+}
+
 // for the shpitz
 @mixin triangle($direction, $base, $altitude, $color) {
   @if $direction == up {

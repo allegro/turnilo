@@ -66,7 +66,8 @@ $header-padding-top: 12px;
     }
   }
 
-  .loader {
+  .loader,
+  .query-error {
     @include pin-full;
   }
 

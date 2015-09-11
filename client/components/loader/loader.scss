@@ -4,12 +4,7 @@ $loader-size: 30px;
 
 .loader {
   svg {
-    position: absolute;
-    height: $loader-size;
-    top: 50%;
-    left: 50%;
-    margin-top: -$loader-size / 2;
-    margin-left: -$loader-size / 2;
+    @include center($loader-size, $loader-size);
     fill: $brand;
 
     animation-name: loader-appears;

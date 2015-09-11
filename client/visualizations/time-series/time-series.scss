@@ -24,7 +24,8 @@ $h-padding: 10px;
     bottom: 0;
   }
 
-  .loader {
+  .loader,
+  .query-error {
     @include pin-full;
   }
 }

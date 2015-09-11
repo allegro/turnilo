@@ -22,7 +22,7 @@ var druidRequester = druidRequesterFactory({
 
 function getWikiData(): any[] {
   var countries = ['USA', 'UK', 'Israel'];
-  var cities = ['San Francisco', 'London', 'Tel Aviv', 'New York', 'Bristol', 'Kfar Saba'];
+  var cities = ['San Francisco', 'London', 'Tel Aviv', 'New York', 'Oxford', 'Kfar Saba'];
   try {
     var wikiData = JSON.parse(readFileSync(path.join(__dirname, '../../../data/wikipedia.json'), 'utf-8'));
     var secInHour = 60 * 60;

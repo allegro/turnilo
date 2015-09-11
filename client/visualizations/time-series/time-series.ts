@@ -13,6 +13,7 @@ import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
 import { GridLines } from '../../components/grid-lines/grid-lines';
 import { Highlighter } from '../../components/highlighter/highlighter';
 import { Loader } from '../../components/loader/loader';
+import { QueryError } from '../../components/query-error/query-error';
 
 const H_PADDING = 10;
 const TITLE_TEXT_LEFT = 6;
@@ -49,6 +50,7 @@ function getTimeExtent(dataset: Dataset): [Date, Date] {
 interface TimeSeriesState {
   loading?: boolean;
   dataset?: Dataset;
+  error?: any;
   dragStart?: number;
 }
 
@@ -104,7 +106,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     super();
     this.state = {
       dataset: null,
-      dragStart: null
+      dragStart: null,
+      error: null
     };
   }
 
@@ -139,13 +142,25 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     });
 
     this.setState({ loading: true });
-    dataSource.executor(query).then((dataset) => {
-      if (!this.mounted) return;
-      this.setState({
-        loading: false,
-        dataset
-      });
-    });
+    dataSource.executor(query)
+      .then(
+        (dataset) => {
+          if (!this.mounted) return;
+          this.setState({
+            loading: false,
+            dataset,
+            error: null
+          });
+        },
+        (error) => {
+          if (!this.mounted) return;
+          this.setState({
+            loading: false,
+            dataset: null,
+            error
+          });
+        }
+      );
   }
 
   componentDidMount() {
@@ -182,7 +197,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   render() {
     var { clicker, essence, stage } = this.props;
-    var { loading, dataset, dragStart } = this.state;
+    var { loading, dataset, error, dragStart } = this.state;
     var { splits } = essence;
 
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
@@ -314,12 +329,18 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       loader = React.createElement(Loader, null);
     }
 
+    var queryError: React.ReactElement<any> = null;
+    if (error) {
+      queryError = React.createElement(QueryError, { error });
+    }
+
     return JSX(`
       <div className="time-series">
         <div className="measure-graphs" style={measureGraphsStyle}>
           {measureGraphs}
         </div>
         {bottomAxes}
+        {queryError}
         {loader}
         {highlighter}
       </div>

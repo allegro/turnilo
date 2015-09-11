@@ -89,7 +89,8 @@ $measure-width: 80px;
     width: $highlight-button-width;
   }
 
-  .loader {
+  .loader,
+  .query-error {
     @include pin-full;
   }
 }

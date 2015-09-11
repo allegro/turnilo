@@ -27,6 +27,13 @@ export function queryUrlExecutorFactory(name: string, url: string): Executor {
     })
       .then(Qajax.filterSuccess)
       .then(Qajax.toJSON)
-      .then((dataJS) => Dataset.fromJS(dataJS));
+      .then(
+        (dataJS) => {
+          return Dataset.fromJS(dataJS);
+        },
+        (xhr: XMLHttpRequest): Dataset => {
+          throw new Error(JSON.parse(xhr.responseText).message);
+        }
+      );
   };
 }

@@ -26,7 +26,8 @@
     }
   }
 
-  .loader {
+  .loader,
+  .query-error {
     @include pin-full;
   }
 }

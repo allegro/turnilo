@@ -8,10 +8,12 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { hasOwnProperty } from '../../utils/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../models/index";
 import { Loader } from '../../components/loader/loader';
+import { QueryError } from '../../components/query-error/query-error';
 
 interface TotalsState {
   loading?: boolean;
   dataset?: Dataset;
+  error?: any;
 }
 
 export class Totals extends React.Component<VisualizationProps, TotalsState> {
@@ -29,7 +31,9 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   constructor() {
     super();
     this.state = {
-      dataset: null
+      loading: false,
+      dataset: null,
+      error: null
     };
   }
 
@@ -47,13 +51,25 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     });
 
     this.setState({ loading: true });
-    dataSource.executor(query).then((dataset) => {
-      if (!this.mounted) return;
-      this.setState({
-        loading: false,
-        dataset
-      });
-    });
+    dataSource.executor(query)
+      .then(
+        (dataset) => {
+          if (!this.mounted) return;
+          this.setState({
+            loading: false,
+            dataset,
+            error: null
+          });
+        },
+        (error) => {
+          if (!this.mounted) return;
+          this.setState({
+            loading: false,
+            dataset: null,
+            error
+          });
+        }
+      );
   }
 
   componentDidMount() {
@@ -79,7 +95,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
 
   render() {
     var { essence } = this.props;
-    var { loading, dataset } = this.state;
+    var { loading, dataset, error } = this.state;
 
     var myDatum = dataset ? dataset.data[0] : null;
 
@@ -104,9 +120,15 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       loader = React.createElement(Loader, null);
     }
 
+    var queryError: React.ReactElement<any> = null;
+    if (error) {
+      queryError = React.createElement(QueryError, { error });
+    }
+
     return JSX(`
       <div className="totals">
         {totals}
+        {queryError}
         {loader}
       </div>
     `);

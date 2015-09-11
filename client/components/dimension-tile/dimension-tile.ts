@@ -11,6 +11,7 @@ import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
 import { Loader } from '../loader/loader';
+import { QueryError } from '../query-error/query-error';
 
 const HIGHLIGHT_ID = 'dim-tile:';
 const TOP_N = 100;
@@ -24,6 +25,7 @@ interface DimensionTileProps {
 interface DimensionTileState {
   loading?: boolean;
   dataset?: Dataset;
+  error?: any;
   showSearch?: boolean;
 }
 
@@ -35,6 +37,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.state = {
       loading: false,
       dataset: null,
+      error: null,
       showSearch: false
     };
   }
@@ -52,13 +55,25 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       .limit(TOP_N + 1);
 
     this.setState({ loading: true });
-    dataSource.executor(query).then((dataset) => {
-      if (!this.mounted) return;
-      this.setState({
-        loading: false,
-        dataset
-      });
-    });
+    dataSource.executor(query)
+      .then(
+        (dataset) => {
+          if (!this.mounted) return;
+          this.setState({
+            loading: false,
+            dataset,
+            error: null
+          });
+        },
+        (error) => {
+          if (!this.mounted) return;
+          this.setState({
+            loading: false,
+            dataset: null,
+            error
+          });
+        }
+      );
   }
 
   componentDidMount() {
@@ -115,7 +130,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   render() {
     var { clicker, essence, dimension } = this.props;
-    var { loading, showSearch, dataset } = this.state;
+    var { loading, dataset, error, showSearch } = this.state;
     var { dataSource, filter } = essence;
     var measure = dataSource.getSortMeasure(dimension);
 
@@ -182,6 +197,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       loader = React.createElement(Loader, null);
     }
 
+    var queryError: React.ReactElement<any> = null;
+    if (error) {
+      queryError = React.createElement(QueryError, { error });
+    }
+
     maxHeight += PIN_PADDING_BOTTOM;
 
     const className = [
@@ -204,6 +224,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         {searchBar}
         <div className="rows">{rows}</div>
         {highlightControls}
+        {queryError}
         {loader}
       </div>
     `);
