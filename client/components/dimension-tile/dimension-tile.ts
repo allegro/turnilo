@@ -112,6 +112,16 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   onRowClick(value: any) {
     var { clicker, essence, dimension } = this.props;
     var highlightId = HIGHLIGHT_ID + dimension.name;
+
+    if (essence.highlightOn(highlightId)) {
+      var highlightSet = essence.getSingleHighlightValue();
+      // ToDo: use highlightSet.size() here when possible
+      if (highlightSet.elements.length === 1 && highlightSet.contains(value)) {
+        clicker.dropHighlight();
+        return;
+      }
+    }
+
     clicker.changeHighlight(highlightId, Filter.fromClause(dimension.expression.in([value])));
   }
 
@@ -153,7 +163,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       var highlightSet: Set = null;
       if (essence.highlightOn(highlightId)) {
         highlightSet = essence.getSingleHighlightValue();
-
         highlightControls = React.createElement(HighlightControls, { clicker });
       }
 
@@ -175,9 +184,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           });
         }
 
-        return JSX(`
+        var className = 'row';
+        if (highlightSet) {
+          className += ' ' + (selected ? 'selected' : 'not-selected');
+        }
+
+        var row = JSX(`
           <div
-            className={'row' + (selected ? ' selected' : '')}
+            className={className}
             key={segmentValueStr}
             onClick={this.onRowClick.bind(this, segmentValue)}
           >
@@ -186,8 +200,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
               <div className="label" title={segmentValueStr}>{segmentValueStr}</div>
             </div>
             <div className="measure-value">{measureValueStr}</div>
+            {selected ? highlightControls : null}
           </div>
         `);
+        if (selected && highlightControls) highlightControls = null; // place only once
+        return row;
       });
       maxHeight += Math.max(2, rows.length) * PIN_ITEM_HEIGHT;
     }
@@ -223,7 +240,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         />
         {searchBar}
         <div className="rows">{rows}</div>
-        {highlightControls}
         {queryError}
         {loader}
       </div>

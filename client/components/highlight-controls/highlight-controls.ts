@@ -28,13 +28,15 @@ export class HighlightControls extends React.Component<HighlightControlsProps, H
 
   }
 
-  onAccept() {
+  onAccept(e: MouseEvent) {
+    e.stopPropagation();
     var { onClose, clicker } = this.props;
     clicker.acceptHighlight();
     if (onClose) onClose();
   }
 
-  onCancel() {
+  onCancel(e: MouseEvent) {
+    e.stopPropagation();
     var { onClose, clicker } = this.props;
     clicker.dropHighlight();
     if (onClose) onClose();

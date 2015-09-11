@@ -10,8 +10,8 @@
 
     .highlight-controls {
       position: absolute;
-      width: $highlight-button-width;
-      right: -($highlight-button-width + $highlight-button-frame-gap);
+      width: $highlight-button-size;
+      right: -($highlight-button-size + $highlight-button-frame-gap);
     }
   }
 

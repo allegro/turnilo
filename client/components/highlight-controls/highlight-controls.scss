@@ -2,9 +2,12 @@
 
 .highlight-controls {
   .button {
-    height: $highlight-button-width;
+    display: inline-block;
+    width: $highlight-button-size;
+    height: $highlight-button-size;
     background: $brand;
-    margin-bottom: 5px;
+    margin-bottom: $highlight-button-spacing;
+    margin-right: $highlight-button-spacing;
     padding: 7px 6px;
     cursor: pointer;
 

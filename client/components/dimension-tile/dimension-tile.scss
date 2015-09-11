@@ -43,14 +43,42 @@ $measure-width: 80px;
 
   .row {
     height: $pin-item-height;
-    border: 1px solid transparent;
 
     &:hover {
       background: $hover;
     }
 
     &.selected {
-      border: 1px dashed $brand;
+      &:after {
+        @include pin-full;
+        border: 1px dashed $brand;
+        content: '';
+      }
+    }
+
+    &.not-selected {
+      &:after {
+        @include pin-full;
+        background: $white;
+        opacity: 0.5;
+        content: '';
+      }
+    }
+
+    .highlight-controls {
+      position: absolute;
+      top: -29px;
+      right: 4px;
+      width: ($highlight-button-size + $highlight-button-spacing) * 2;
+      z-index: 4;
+    }
+
+    &:nth-child(1),
+    &:nth-child(2) {
+      .highlight-controls {
+        top: auto;
+        bottom: -34px;
+      }
     }
   }
 
@@ -77,16 +105,9 @@ $measure-width: 80px;
     @include pin-right($measure-width);
 
     text-align: right;
-    padding-top: 4px;
+    padding-top: 5px;
     padding-right: $tile-padding-h;
     white-space: nowrap;
-  }
-
-  .highlight-controls {
-    position: absolute;
-    top: 34px;
-    right: 20px;
-    width: $highlight-button-width;
   }
 
   .loader,
