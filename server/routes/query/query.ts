@@ -21,16 +21,14 @@ var druidRequester = druidRequesterFactory({
 //});
 
 function getWikiData(): any[] {
-  var countries = ['USA', 'UK', 'Israel'];
-  var cities = ['San Francisco', 'London', 'Tel Aviv', 'New York', 'Oxford', 'Kfar Saba'];
+  var countries = ['Santo Marco', 'Arstotzka', 'Buranda'];
+  var cities = ['Gotham City', 'Metropolis', 'Cabot Cove', 'Sunnydale', 'Quahog', 'Castle Rock'];
   try {
     var wikiData = JSON.parse(readFileSync(path.join(__dirname, '../../../data/wikipedia.json'), 'utf-8'));
     var secInHour = 60 * 60;
     wikiData.forEach((d: Datum, i: number) => {
-      d['continent'] = 'Oceana';
       d['country'] = countries[i % countries.length];
       d['city'] = cities[i % cities.length];
-      d['region'] = 'North';
       d['time'] = new Date(Date.parse(d['time']) + (i % secInHour) * 1000);
     });
     return wikiData;

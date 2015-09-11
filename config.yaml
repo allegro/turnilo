@@ -24,8 +24,6 @@ dataSources:
 
       - name: city
 
-      - name: region
-
     measures:
       - name: count
 
