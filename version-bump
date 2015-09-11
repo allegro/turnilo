@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+echo "Updating version..."
+npm version patch -m "Upgrade version to %s"
+git push
+git push --tags;
