@@ -29,7 +29,6 @@ $icon-width: 35px;
 
       .icon {
         @include pin-left($icon-width);
-        cursor: ns-resize;
 
         svg {
           position: absolute;

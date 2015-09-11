@@ -4,6 +4,7 @@ import * as debugModule from 'debug';
 import * as http from 'http';
 
 import * as app from './app';
+import { PORT } from './config';
 
 var debug = debugModule('pivot:www');
 
@@ -11,8 +12,7 @@ var debug = debugModule('pivot:www');
  * Get port from environment and store in Express.
  */
 
-var port = 9090;
-app.set('port', port);
+app.set('port', PORT);
 
 /**
  * Create HTTP server.
@@ -21,7 +21,7 @@ app.set('port', port);
 var server = http.createServer(app);
 server.on('error', onError);
 server.on('listening', onListening);
-server.listen(port);
+server.listen(PORT);
 
 /**
  * Event listener for HTTP server "error" event.
@@ -34,12 +34,12 @@ function onError(error: any) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error('Port ' + port + ' requires elevated privileges');
+      console.error('Port ' + PORT + ' requires elevated privileges');
       process.exit(1);
       break;
 
     case 'EADDRINUSE':
-      console.error('Port ' + port + ' is already in use');
+      console.error('Port ' + PORT + ' is already in use');
       process.exit(1);
       break;
 
