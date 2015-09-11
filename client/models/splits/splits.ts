@@ -11,9 +11,9 @@ import { SplitCombine, SplitCombineJS } from '../split-combine/split-combine';
 
 function getBestGranularity(timeRange: TimeRange): Duration {
   var len = timeRange.end.valueOf() - timeRange.start.valueOf();
-  if (len > 6 * day.canonicalLength) {
+  if (len > 8 * day.canonicalLength) {
     return Duration.fromJS('P1D');
-  } else if (len > 12 * hour.canonicalLength) {
+  } else if (len > 8 * hour.canonicalLength) {
     return Duration.fromJS('PT1H');
   } else {
     return Duration.fromJS('PT1M');

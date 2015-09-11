@@ -205,7 +205,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         if (selected && highlightControls) highlightControls = null; // place only once
         return row;
       });
-      maxHeight += Math.max(2, rows.length) * PIN_ITEM_HEIGHT;
+      maxHeight += Math.max(3, rows.length) * PIN_ITEM_HEIGHT;
     }
 
     var loader: React.ReactElement<any> = null;
