@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 import * as Q from 'q';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Timezone, hour } from 'chronoshift';
-import { $, Expression, ExpressionJS, Executor, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
+import { $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -23,14 +23,14 @@ function measurePreference(measure: Measure): number {
 interface DimensionsMetrics {
   dimensions: List<Dimension>;
   measures: List<Measure>;
-  timeAttribute: Expression;
+  timeAttribute: RefExpression;
   defaultSortOn: string;
 }
 
 function makeDimensionsMetricsFromAttributes(attributes: Attributes): DimensionsMetrics {
   var dimensionArray: Dimension[] = [];
   var measureArray: Measure[] = [];
-  var timeAttribute = $('time');
+  var timeAttribute = RefExpression.fromJS({ op: 'ref', name: 'time' });
   var defaultSortOn: string = null;
 
   if (!attributes['count']) {
@@ -115,7 +115,7 @@ export interface DataSourceValue {
   maxTime?: Date;
   dimensions?: List<Dimension>;
   measures?: List<Measure>;
-  timeAttribute?: Expression;
+  timeAttribute?: RefExpression;
   defaultSortOn?: string;
 
   executor?: Executor;
@@ -129,7 +129,7 @@ export interface DataSourceJS {
   maxTime?: Date;
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
-  timeAttribute?: ExpressionJS;
+  timeAttribute?: string;
   defaultSortOn?: string;
 }
 
@@ -137,23 +137,6 @@ var check: Class<DataSourceValue, DataSourceJS>;
 export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   static isDataSource(candidate: any): boolean {
     return isInstanceOf(candidate, DataSource);
-  }
-
-  static fromQueryURL(name: string, title: string, executor: Executor, maxTime: Date, attributes: Attributes): DataSource {
-    var dm = makeDimensionsMetricsFromAttributes(attributes);
-    return new DataSource({
-      name,
-      title,
-      source: 'query',
-      metadataLoaded: true,
-      loadError: null,
-      maxTime,
-      dimensions: dm.dimensions,
-      measures: dm.measures,
-      timeAttribute: dm.timeAttribute,
-      defaultSortOn: dm.defaultSortOn,
-      executor
-    });
   }
 
   static fromDataFileURL(name: string, title: string, source: string, maxTime: Date): DataSource {
@@ -208,7 +191,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (parameters.dimensions) {
       value.dimensions = List(parameters.dimensions.map(Dimension.fromJS));
       value.measures = List(parameters.measures.map(Measure.fromJS));
-      value.timeAttribute = parameters.timeAttribute ? Expression.fromJSLoose(parameters.timeAttribute) : null;
+      value.timeAttribute = parameters.timeAttribute ? RefExpression.fromJS({ op: 'ref', name: parameters.timeAttribute }) : null;
       value.defaultSortOn = parameters.defaultSortOn || value.measures.get(0).name;
     }
     if (executor) {
@@ -227,7 +210,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public maxTime: Date;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
-  public timeAttribute: Expression;
+  public timeAttribute: RefExpression;
   public defaultSortOn: string;
 
   public executor: Executor;
@@ -238,7 +221,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.source = parameters.source;
     this.metadataLoaded = parameters.metadataLoaded;
     this.loadError = parameters.loadError;
-    this.maxTime = parameters.maxTime;
+    if (parameters.maxTime) {
+      this.maxTime = parameters.maxTime;
+      if (isNaN(this.maxTime.valueOf())) throw new Error('invalid maxTime date');
+    } else {
+      this.maxTime = null;
+    }
     this.dimensions = parameters.dimensions;
     this.measures = parameters.measures;
     this.timeAttribute = parameters.timeAttribute;
@@ -281,7 +269,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (this.dimensions) {
       js.dimensions = this.dimensions.toArray().map(dimension => dimension.toJS());
       js.measures = this.measures.toArray().map(measure => measure.toJS());
-      js.timeAttribute = this.timeAttribute.toJS();
+      js.timeAttribute = this.timeAttribute.name;
       js.defaultSortOn = this.defaultSortOn;
     }
     return js;

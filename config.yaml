@@ -4,26 +4,82 @@
 druidHost: localhost:8082
 dataSources:
   - name: static-wiki
-    title: Wikipedia Edits
+    title: Static Wikipedia
     maxTime: 2013-02-27T00:00:00Z
-    timeAttribute: $time
+    timeAttribute: time
 
     dimensions:
       - name: time
         type: TIME
 
       - name: namespace
+
       - name: language
+
       - name: page
+
       - name: user
+
       - name: country
+
       - name: city
+
       - name: region
 
     measures:
       - name: count
+
       - name: added
+
+      - name: avg_added
+        expression: $main.sum($added) / $main.sum($count)
+
       - name: deleted
-      - name: diff
-        expression: $main.sum($added) + $main.sum($deleted)
+
+      - name: avg_deleted
+        expression: $main.sum($deleted) / $main.sum($count)
+
       - name: delta
+
+
+  - name: wiki
+    title: Wikipedia Edits
+    source: wikipedia
+    timeAttribute: time
+
+    dimensions:
+      - name: time
+        type: TIME
+
+      - name: namespace
+
+      - name: language
+
+      - name: page
+
+      - name: user
+
+      - name: country
+
+      - name: city
+
+      - name: region
+
+    measures:
+      - name: count
+
+      - name: added
+
+      - name: avg_added
+        expression: $main.sum($added) / $main.sum($count)
+
+      - name: deleted
+
+      - name: avg_deleted
+        expression: $main.sum($deleted) / $main.sum($count)
+
+      - name: delta
+
+      - name: unique_users
+        title: Unique Users
+        expression: $main.countDistinct($user_unique)

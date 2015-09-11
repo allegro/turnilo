@@ -3,11 +3,11 @@
 import * as path from 'path';
 import { readFileSync } from 'fs';
 import { Router, Request, Response } from 'express';
-import { $, Expression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, helper } from 'plywood';
+import { $, Expression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
 import { druidRequesterFactory } from 'plywood-druid-requester';
 import { Timezone, WallTime, Duration } from "chronoshift";
 
-import { DRUID_HOST } from '../../config';
+import { DRUID_HOST, DATA_SOURCES } from '../../config';
 
 var router = Router();
 
@@ -39,12 +39,52 @@ function getWikiData(): any[] {
   }
 }
 
-var wikiDataset = Dataset.fromJS(getWikiData()).hide();
-var executors: Lookup<Executor> = {
-  'static-wiki':  basicExecutorFactory({
-    datasets: { main: wikiDataset }
-  })
-};
+function makeExternal(dataSource: any): External {
+  var attributes: AttributeJSs = {};
+
+  // Right here we have the classic mega hack.
+  for (var dimension of dataSource.dimensions) {
+    attributes[dimension.name] = { type: dimension.type || 'STRING' };
+  }
+
+  for (var measure of dataSource.measures) {
+    var expression = measure.expression ? Expression.fromJSLoose(measure.expression) : $(measure.name);
+    var freeReferences = expression.getFreeReferences();
+    for (var freeReference of freeReferences) {
+      if (freeReference === 'main') continue;
+      if (JSON.stringify(expression).indexOf('countDistinct') !== -1) {
+        attributes[freeReference] = { special: 'unique' };
+      } else {
+        attributes[freeReference] = { type: 'NUMBER' };
+      }
+    }
+  }
+  // Mega hack ends here
+
+  return External.fromJS({
+    engine: 'druid',
+    dataSource: dataSource.source,
+    timeAttribute: dataSource.timeAttribute,
+    context: null,
+    attributes,
+    requester: druidRequester
+  });
+}
+
+var executors: Lookup<Executor> = {};
+
+for (var dataSource of DATA_SOURCES) {
+  if (dataSource.source) {
+    executors[dataSource.name] = basicExecutorFactory({
+      datasets: { main: makeExternal(dataSource) }
+    });
+  } else {
+    var wikiDataset = Dataset.fromJS(getWikiData()).hide();
+    executors[dataSource.name] = basicExecutorFactory({
+      datasets: { main: wikiDataset }
+    });
+  }
+}
 
 router.post('/', (req: Request, res: Response) => {
   var { dataset, expression } = req.body;

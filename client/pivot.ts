@@ -20,13 +20,8 @@ var globalDataSources: any[] = (<any>window)['PIVOT_DATA_SOURCES'];
 var dataSources: List<DataSource>;
 if (Array.isArray(globalDataSources)) {
   dataSources = List(globalDataSources.map(d => {
-    var maxTime = d.maxTime ? new Date(d.maxTime) : null;
     var executor = queryUrlExecutorFactory(d.name, '/query');
-    if (d.attributes) {
-      return DataSource.fromQueryURL(d.name, d.title, executor, maxTime, AttributeInfo.fromJSs(d.attributes));
-    } else {
-      return DataSource.fromJS(d, executor);
-    }
+    return DataSource.fromJS(d, executor);
   }));
 } else {
   // Assume test / demo
