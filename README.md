@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Pivot is an web-based exploratory visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
+Pivot is a web-based exploratory visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
 [Plywood](https://github.com/implydata/plywood). 
 
 The project is currently at a very early alpha stage, and is _not suitable for production use_. 
@@ -18,10 +18,7 @@ TODO
 Drag-and-drop UI
 <gif>
 
-Time-series exploration
-<gif>
-
-Exploring with context
+Contextual exploration
 <gif>
 
 ## Usage
@@ -68,11 +65,12 @@ npm install -g browser-sync
 ## Roadmap
 
 We will be working on:
-- Schema and configuration management
+- Time comparison visualization
 - Additional visualizations
+- Search dimension values
 - Exclusion filters
-- Being able to embed Pivot in your app to provide your users with analytics
-- Various additions, improvements and fixes to make the UI more complete
+- Being able to easily embed Pivot in your app
+- Various additions, improvements and fixes to make the app more complete
 
 ## Questions & Support
 

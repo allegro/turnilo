@@ -1,6 +1,6 @@
 @import '../../imports';
 
-$checkbox-size: 16px;
+$checkbox-size: 15px;
 
 .checkbox {
   display: inline-block;
@@ -13,12 +13,12 @@ $checkbox-size: 16px;
   &:before {
     position: absolute;
     left: 0;
-    top: 2px;
+    top: 3px;
     content: '';
     background: hsla(0, 0, 0, 0.12);
     width: $checkbox-size;
     height: $checkbox-size;
-    border-radius: 1px;
+    border-radius: 2px;
   }
 
   &.checked:before {
@@ -27,9 +27,9 @@ $checkbox-size: 16px;
 
   svg {
     position: absolute;
-    top: 3px;
+    top: 4px;
     left: 2px;
-    width: 12px;
+    width: 11px;
 
     path {
       fill: $white;

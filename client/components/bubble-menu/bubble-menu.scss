@@ -1,6 +1,6 @@
 @import '../../imports';
 
-$shpitz-size: 12px;
+$shpitz-size: 10px;
 
 .bubble-menu {
   @extend %menu-cont;
@@ -19,7 +19,7 @@ $shpitz-size: 12px;
 
   &.right .shpitz {
     &:before {
-      @include triangle(left, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.1));
+      @include triangle(left, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.12));
       left: -1 * $shpitz-size;
       margin-top: -1 * $shpitz-size;
     }
@@ -33,7 +33,7 @@ $shpitz-size: 12px;
 
   &.down .shpitz {
     &:before {
-      @include triangle(up, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.1));
+      @include triangle(up, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.12));
       top: -1 * $shpitz-size;
       margin-left: -1 * $shpitz-size;
     }

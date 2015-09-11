@@ -9,7 +9,7 @@
 
   .title {
     height: 50px;
-    padding: 5px 0 0 12px;
+    padding: 5px 0 0 15px;
 
     svg {
       height: 40px;
@@ -22,17 +22,21 @@
 
   .data-sources {
     li {
-      padding: 13px 15px;
+      margin: 5px;
+      padding: 10px 15px;
       cursor: pointer;
       font-size: 14px;
       color: $text-medium;
+      border-left: 3px solid transparent;
 
       &:hover {
-        background: $hover;
+        background: $background-light;
+        border-color: $border-light;
       }
 
       &.selected {
-        background: $highlight;
+        background: $background-light;
+        border-color: $brand;
       }
     }
   }

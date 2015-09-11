@@ -3,6 +3,36 @@
 .vis-selector {
   @extend %module;
 
+  &:before {
+    @include pin-full;
+    content: '';
+    z-index: 7;
+    background-color: rgba($white, 0.65);
+    pointer-events: none;
+    opacity: 0;
+    //transition: opacity $duration ease;
+  }
+
+  &:after {
+    @include triangle(down, 7px, 9px, $text-medium);
+    content: '';
+    z-index: 8;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -6px;
+    margin-left: -7px;
+    pointer-events: none;
+    opacity: 0;
+    //transition: opacity $duration ease;
+  }
+
+  &:hover {
+    &:after, &:before {
+      opacity: 1;
+    }
+  }
+
   .vis-item {
     display: inline-block;
     width: $vis-item-width;
