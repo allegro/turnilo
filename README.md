@@ -11,7 +11,7 @@ We will be making periodic updates to the project and we ask that any early alph
 
 ## License
 
-TODO
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 ## Features
 

@@ -9,7 +9,7 @@
 
   .title {
     height: 50px;
-    padding: 5px 0 0 15px;
+    padding: 7px 0 2px 15px;
 
     svg {
       height: 40px;
@@ -30,12 +30,12 @@
       border-left: 3px solid transparent;
 
       &:hover {
-        background: $background-light;
+        background: $background-lighter;
         border-color: $border-light;
       }
 
       &.selected {
-        background: $background-light;
+        background: $background-lighter;
         border-color: $brand;
       }
     }
