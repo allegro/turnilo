@@ -21,8 +21,8 @@ export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: num
   return List(newArray);
 }
 
-export function makeTitle(title: string): string {
-  return title[0].toUpperCase() + title.substring(1);
+export function makeTitle(name: string): string {
+  return name.replace(/(^|_+)\w/g, (s) => s.replace(/_+/, ' ').toUpperCase());
 }
 
 export function listsEqual<T>(listA: List<T>, listB: List<T>): boolean {
