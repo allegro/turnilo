@@ -1,7 +1,5 @@
 # Pivot
 
-## Introduction
-
 Pivot is a web-based exploratory visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
 [Plywood](https://github.com/implydata/plywood). 
 
@@ -24,6 +22,13 @@ Contextual exploration
 ## Usage
 
 ### Run the project
+
+Clone the project
+
+```
+git clone git@github.com:implydata/pivot.git
+cd pivot
+```
 
 Make sure you have node (0.12.x)
 
@@ -50,21 +55,10 @@ Then you are ready to
 ./run
 ```
 
-### Develop the project
-
-Instruction for developers to start developing the project.
-
-After completing the "Run the project" steps above you should get yourself these useful global tools:
-
-```
-npm install -g gulp
-npm install -g coffee-script
-npm install -g browser-sync
-```
-
 ## Roadmap
 
 We will be working on:
+- Better time selection
 - Time comparison visualization
 - Additional visualizations
 - Search dimension values
