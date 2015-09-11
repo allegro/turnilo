@@ -1,6 +1,6 @@
 {
   "name": "imply-pivot",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Imply Pivot is an web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
