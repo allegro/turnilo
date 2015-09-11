@@ -3,20 +3,37 @@
 import * as d3 from 'd3';
 import { Timezone, WallTime } from 'chronoshift';
 
+const JOIN = ' - ';
+
 var formatWithYear = d3.time.format('%b %-d, %Y');
 var formatWithoutYear = d3.time.format('%b %-d');
+var formatTimeOfDay = d3.time.format('%-I%p');
 
-export function formatStartEnd(start: Date, end: Date, timezone: Timezone): string[] {
+export function formatStartEnd(start: Date, end: Date, timezone: Timezone): string {
   var startWallTime = WallTime.UTCToWallTime(start, timezone.toString());
-  var endWallTime = WallTime.UTCToWallTime(new Date(end.valueOf() - 1), timezone.toString());
+  var endWallTime = WallTime.UTCToWallTime(end, timezone.toString());
+  var endShiftWallTime = WallTime.UTCToWallTime(new Date(end.valueOf() - 1), timezone.toString());
 
-  if (startWallTime.getFullYear() === endWallTime.getFullYear()) {
-    if (startWallTime.getMonth() === endWallTime.getMonth() && startWallTime.getDate() === endWallTime.getDate()) {
-      return [formatWithYear(startWallTime)];
-    } else {
-      return [formatWithoutYear(startWallTime), formatWithYear(endWallTime)];
-    }
+  var formatted: string;
+  if (startWallTime.getFullYear() !== endShiftWallTime.getFullYear()) {
+    formatted = [formatWithYear(startWallTime), formatWithYear(endShiftWallTime)].join(JOIN);
   } else {
-    return [formatWithYear(startWallTime), formatWithYear(endWallTime)];
+    if (startWallTime.getMonth() !== endShiftWallTime.getMonth() || startWallTime.getDate() !== endShiftWallTime.getDate()) {
+      formatted = [formatWithoutYear(startWallTime), formatWithYear(endShiftWallTime)].join(JOIN);
+    } else {
+      formatted = formatWithYear(startWallTime);
+    }
   }
+
+  if (startWallTime.getHours() || endWallTime.getHours()) {
+    var timeString: string;
+    if (startWallTime.getHours() !== endShiftWallTime.getHours()) {
+      timeString = [formatTimeOfDay(startWallTime), formatTimeOfDay(endShiftWallTime)].join(JOIN);
+    } else {
+      timeString = formatTimeOfDay(startWallTime);
+    }
+    formatted += ' ' + timeString.toLowerCase();
+  }
+
+  return formatted;
 }

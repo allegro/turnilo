@@ -141,8 +141,6 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   }
 
   public updateWithTimeRange(timeRange: TimeRange): Splits {
-    if (!timeRange) return this;
-
     var splitCombines = this.splitCombines;
     if (splitCombines.size !== 1) return this;
 

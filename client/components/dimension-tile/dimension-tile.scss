@@ -43,6 +43,7 @@ $measure-width: 80px;
 
   .row {
     height: $pin-item-height;
+    cursor: pointer;
 
     &:hover {
       background: $hover;
@@ -86,7 +87,6 @@ $measure-width: 80px;
     @include unpin-right($measure-width);
 
     left: $tile-padding-h;
-    cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
 

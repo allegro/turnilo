@@ -278,6 +278,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return <List<Manifest>>visualizations.filter(v => v.handleCircumstance(dataSource, splits).isReady());
   }
 
+  public getTimeAttribute(): Expression {
+    return this.dataSource.timeAttribute;
+  }
+
   public getTimeDimension(): Dimension {
     return this.dataSource.getTimeDimension();
   }
@@ -382,26 +386,40 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return new Essence(value);
   }
 
-  public changeFilter(filter: Filter): Essence {
-    var timeAttribute = this.dataSource.timeAttribute;
-    var timeRange = timeAttribute ? filter.getTimeRange(timeAttribute) : null;
-
+  public changeFilter(filter: Filter, removeHighlight: boolean = false): Essence {
     var value = this.valueOf();
     value.filter = filter;
-    value.splits = value.splits.updateWithTimeRange(timeRange);
+
+    if (removeHighlight) {
+      value.highlight = null;
+    }
+
+    var timeAttribute = this.getTimeAttribute();
+    var oldTimeRange = timeAttribute ? this.filter.getTimeRange(timeAttribute) : null;
+    var newTimeRange = timeAttribute ? filter.getTimeRange(timeAttribute) : null;
+    if (newTimeRange && !newTimeRange.equals(oldTimeRange)) {
+      value.splits = value.splits.updateWithTimeRange(newTimeRange);
+    }
+
     return new Essence(value);
   }
 
   public changeTimeRange(timeRange: TimeRange): Essence {
-    var { dataSource, filter } = this;
-    var timeDimension = this.getTimeDimension();
-    return this.changeFilter(filter.setTimeRange(timeDimension.expression, timeRange));
+    var { filter } = this;
+    var timeAttribute = this.getTimeAttribute();
+    return this.changeFilter(filter.setTimeRange(timeAttribute, timeRange));
   }
 
   public changeSplits(splits: Splits): Essence {
-    var { visualization } = this;
+    var { visualization, filter } = this;
     var visualizations = this.getReadyVisualizations(splits);
     visualization = visualizations.last();
+
+    var timeAttribute = this.getTimeAttribute();
+    var timeRange = timeAttribute ? filter.getTimeRange(timeAttribute) : null;
+    if (timeRange) {
+      splits = splits.updateWithTimeRange(timeRange);
+    }
 
     var value = this.valueOf();
     value.splits = splits;
@@ -469,19 +487,18 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   public acceptHighlight(): Essence {
     var { highlight } = this;
     if (!highlight) return this;
-    var value = this.valueOf();
-    value.filter = highlight.applyToFilter(value.filter);
-    value.highlight = null;
-    return new Essence(value);
+    return this.changeFilter(highlight.applyToFilter(this.filter), true);
   }
 
   public changeHighlight(owner: string, delta: Filter): Essence {
-    var value = this.valueOf();
+    var { highlight } = this;
 
     // If there is already a highlight from someone else accept it
-    var { highlight } = value;
+    var value: EssenceValue;
     if (highlight && highlight.owner !== owner) {
-      value.filter = highlight.applyToFilter(value.filter);
+      value = this.changeFilter(highlight.applyToFilter(this.filter));
+    } else {
+      value = this.valueOf();
     }
 
     value.highlight = new Highlight({
