@@ -87,6 +87,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var { dragStartPx, pseudoHighlight } = this.state;
     if (dragStartPx === null) return;
     if (!pseudoHighlight) { // There was no mouse move so just quietly cancel out
+      clicker.dropHighlight();
       onClose();
       return;
     }
