@@ -4,8 +4,6 @@
 .sass-cache/
 node_modules/
 build/
-client_build_tmp/
-client_build/
 public/
 webstorm/*-errors
-
+config.yaml
