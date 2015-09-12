@@ -7,10 +7,6 @@ The project is currently at a very early alpha stage, and is _not suitable for p
 
 We will be making periodic updates to the project and we ask that any early alpha users refrain from submitting bug reports at this time. 
 
-## License
-
-[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
 ## Features
 
 Drag-and-drop UI
