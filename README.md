@@ -9,11 +9,11 @@ We will be making periodic updates to the project and we ask that any early alph
 
 ## Features
 
-Drag-and-drop UI
+**Drag-and-drop UI**
 
 ![Drag to Split](assets/images/drag-to-split.gif)
 
-Time series exploration
+**Time series exploration**
 
 ![Time Highlight](assets/images/time-highlight.gif)
 
