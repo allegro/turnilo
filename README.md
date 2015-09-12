@@ -11,11 +11,11 @@ We will be making periodic updates to the project and we ask that any early alph
 
 **Drag-and-drop UI**
 
-![Drag to Split](assets/images/drag-to-split.gif)
+<img src="assets/images/drag-to-split.gif" alt="Drag to Split" style="max-width: 656px;"/>
 
 **Time series exploration**
 
-![Time Highlight](assets/images/time-highlight.gif)
+<img src="assets/images/time-highlight.gif" alt="Time Highlight" style="max-width: 656px;"/>
 
 ## Usage
 
