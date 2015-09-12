@@ -21,7 +21,7 @@ if not /^([a-z-])+$/.test(name)
   console.log('must be a hyphen case name')
   process.exit()
 
-path = './client/' + what + 's/' + name + '/'
+path = './src/client/' + what + 's/' + name + '/'
 mkdirp.sync(path)
 console.log('Making path:', path)
 

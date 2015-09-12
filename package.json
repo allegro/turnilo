@@ -72,6 +72,6 @@
     "walltime-js": "0.1.2"
   },
   "react-svg-icons": {
-    "assetPath": "icons"
+    "assetPath": "assets/icons"
   }
 }

@@ -3,4 +3,4 @@
 # Force this to the working directory
 cd "$(dirname "$0")"
 
-exec node build/www.js
+exec node build/server/www.js

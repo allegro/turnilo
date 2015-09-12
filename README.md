@@ -14,10 +14,12 @@ We will be making periodic updates to the project and we ask that any early alph
 ## Features
 
 Drag-and-drop UI
-<gif>
+
+![](assets/images/drag-to-split.gif)
 
 Contextual exploration
-<gif>
+
+![](assets/images/time-highlight.gif)
 
 ## Usage
 

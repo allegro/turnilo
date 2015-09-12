@@ -24,21 +24,22 @@ var app = express();
 app.disable('x-powered-by');
 
 // view engine setup
+const viewsDir = path.join(__dirname, '../../src/views');
 app.engine('.hbs', handlebars({
   defaultLayout: 'main',
   extname: '.hbs',
-  layoutsDir: path.join(__dirname, '../views/layouts/'),
-  partialsDir: path.join(__dirname, '../views/partials/')
+  layoutsDir: path.join(viewsDir, 'layouts'),
+  partialsDir: path.join(viewsDir, 'partials')
 }));
-app.set('views', path.join(__dirname, '../views'));
+app.set('views', viewsDir);
 app.set('view engine', '.hbs');
 
 app.use(compress());
 app.use(logger('dev'));
 
-app.use(express.static(path.join(__dirname, '../public')));
-app.use(express.static(path.join(__dirname, '../favicon')));
-app.use(express.static(path.join(__dirname, '../data')));
+app.use(express.static(path.join(__dirname, '../../build/public')));
+app.use(express.static(path.join(__dirname, '../../assets/favicon')));
+app.use(express.static(path.join(__dirname, '../../assets/data')));
 
 app.use(bodyParser.json());
 

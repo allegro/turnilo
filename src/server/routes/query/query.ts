@@ -23,8 +23,9 @@ var druidRequester = druidRequesterFactory({
 function getWikiData(): any[] {
   var countries = ['Santo Marco', 'Arstotzka', 'Buranda'];
   var cities = ['Gotham City', 'Metropolis', 'Cabot Cove', 'Sunnydale', 'Quahog', 'Castle Rock'];
+  var wikiFile = path.join(__dirname, '../../../../assets/data/wikipedia.json');
   try {
-    var wikiData = JSON.parse(readFileSync(path.join(__dirname, '../../../data/wikipedia.json'), 'utf-8'));
+    var wikiData = JSON.parse(readFileSync(wikiFile, 'utf-8'));
     var secInHour = 60 * 60;
     wikiData.forEach((d: Datum, i: number) => {
       d['country'] = countries[i % countries.length];
@@ -33,6 +34,7 @@ function getWikiData(): any[] {
     });
     return wikiData;
   } catch (e) {
+    console.log('could not find', wikiFile);
     return [];
   }
 }

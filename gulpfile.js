@@ -34,9 +34,9 @@ var STYLE_NAME = 'pivot.css';
 gulp.task('style', function() {
   var errorTexts = [];
 
-  return gulp.src('./client/**/*.scss')
+  return gulp.src('./src/client/**/*.scss')
     .pipe(scsslint({
-      config: 'sass-lint.yml',
+      config: './src/lint/sass-lint.yml',
       customReport: gr.sassLintReporterFactory({
         errorTexts: errorTexts
       })
@@ -51,7 +51,7 @@ gulp.task('style', function() {
       })
     ]))
     .pipe(concat(STYLE_NAME))
-    .pipe(gulp.dest('./public'))
+    .pipe(gulp.dest('./build/public'))
     .on('finish', function() {
       gr.writeErrors('./webstorm/style-errors', errorTexts);
     });
@@ -63,12 +63,12 @@ gulp.task('client:tsc', function() {
   var errorTexts = [];
 
   function fixPath(str) {
-    return str.replace('/client_build_tmp/', '/client/');
+    return str.replace('/build/client_tmp/', '/src/client/');
   }
 
-  var sourceFiles = gulp.src(['./client/**/*.ts'])
+  var sourceFiles = gulp.src(['./src/client/**/*.ts'])
     .pipe(gr.jsxFixerFactory())
-    .pipe(gulp.dest('./client_build_tmp/')) // typescript requires actual files on disk, not just in memory
+    .pipe(gulp.dest('./build/client_tmp/')) // typescript requires actual files on disk, not just in memory
     .pipe(tslint())
     .pipe(tslint.report(
       gr.tscLintReporterFactory({
@@ -98,13 +98,13 @@ gulp.task('client:tsc', function() {
       })
     ))
     //.pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: '../client' }))
-    .pipe(gulp.dest('./client_build/'));
+    .pipe(gulp.dest('./build/client/'));
 });
 
 gulp.task('server:tsc', function() {
   var errorTexts = [];
 
-  var sourceFiles = gulp.src(['./server/**/*.ts'])
+  var sourceFiles = gulp.src(['./src/server/**/*.ts'])
     .pipe(tslint())
     .pipe(tslint.report(
       gr.tscLintReporterFactory({
@@ -133,15 +133,15 @@ gulp.task('server:tsc', function() {
     ))
     .pipe(sourcemaps.write('.', {
       includeContent: false,
-      sourceRoot: '../server'
+      sourceRoot: '../../src/server'
     }))
-    .pipe(gulp.dest('./build/'));
+    .pipe(gulp.dest('./build/server'));
 });
 
 // ----------------------------------------------------------------
 
 gulp.task('client:test', function() {
-  return gulp.src('./client_build/**/*.mocha.js', {read: false})
+  return gulp.src('./build/client/**/*.mocha.js', {read: false})
     // gulp-mocha needs filepaths so you can't have any plugins before it
     .pipe(mocha({
       reporter: 'spec'
@@ -149,7 +149,7 @@ gulp.task('client:test', function() {
 });
 
 gulp.task('server:test', function() {
-  return gulp.src('./build/**/*.mocha.js', {read: false})
+  return gulp.src('./build/server/**/*.mocha.js', {read: false})
     // gulp-mocha needs filepaths so you can't have any plugins before it
     .pipe(mocha({
       reporter: 'spec'
@@ -157,7 +157,7 @@ gulp.task('server:test', function() {
 });
 
 gulp.task('client:bundle', ['client:tsc'], function() {
-  return gulp.src('client_build/*.js')
+  return gulp.src('./build/client/*.js')
     .pipe(foreach(function(stream, file) {
       // From: https://github.com/gulpjs/gulp/blob/master/docs/recipes/browserify-uglify-sourcemap.md
       var b = browserify({
@@ -169,29 +169,25 @@ gulp.task('client:bundle', ['client:tsc'], function() {
         .pipe(source(path.basename(file.path)))
         .pipe(buffer());
     }))
-    .pipe(gulp.dest('public'));
+    .pipe(gulp.dest('./build/public'));
 });
 
 gulp.task('clean', function(cb) {
-  del([
-    './build/**',
-    './client_build/**',
-    './client_build_tmp/**'
-  ], cb);
+  del(['./build/**'], cb);
 });
 
 gulp.task('all', ['style', 'server:tsc', 'client:tsc', 'client:bundle']);
 
 gulp.task('watch', ['all'], function() {
-  watch('./client/**/*.scss', function() {
+  watch('./src/client/**/*.scss', function() {
     gulp.start('style');
   });
 
-  watch(['./client/**/*.ts', './icons/**'], function() {
+  watch(['./src/client/**/*.ts', './assets/icons/**'], function() {
     gulp.start('client:bundle');
   });
 
-  watch('./server/**', function() {
+  watch('./src/server/**', function() {
     gulp.start('server:tsc');
   });
 

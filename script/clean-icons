@@ -2,31 +2,33 @@
 
 replace = require("replace")
 
+iconPaths = ['./assets/icons/']
+
 replace({
   regex: "\\s+<!--[^>]+-->",
   replacement: '',
-  paths: ['./icons/']
+  paths: iconPaths
   recursive: true
 })
 
 replace({
   regex: "\\s+<title>[^<]+</title>",
   replacement: '',
-  paths: ['./icons/']
+  paths: iconPaths
   recursive: true
 })
 
 replace({
   regex: "\\s+<desc>[^<]+</desc>",
   replacement: '',
-  paths: ['./icons/']
+  paths: iconPaths
   recursive: true
 })
 
 replace({
   regex: "\\s+<defs>\\s*</defs>",
   replacement: '',
-  paths: ['./icons/']
+  paths: iconPaths
   recursive: true
 })
 
@@ -34,7 +36,7 @@ removeAttr = (attr) ->
   replace({
     regex: " #{attr}=\"[^\"]+\"",
     replacement: '',
-    paths: ['./icons/']
+    paths: iconPaths
     recursive: true
   })
 

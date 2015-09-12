@@ -24,8 +24,8 @@ if not /^([a-z-])+$/.test(newName)
   console.log('must be a hyphen case new name')
   process.exit()
 
-oldPath = './client/' + what + 's/' + oldName + '/'
-newPath = './client/' + what + 's/' + newName + '/'
+oldPath = './src/client/' + what + 's/' + oldName + '/'
+newPath = './src/client/' + what + 's/' + newName + '/'
 
 camelOldName = oldName.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
 camelNewName = newName.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
@@ -37,7 +37,7 @@ fs.renameSync(newPath + oldName + '.ts', newPath + newName + '.ts')
 fs.renameSync(newPath + oldName + '.scss', newPath + newName + '.scss')
 fs.renameSync(newPath + oldName + '.mocha.ts', newPath + newName + '.mocha.ts')
 
-replacePath = './client/'
+replacePath = './src/client/'
 #replacePath = newPath
 
 replace({
