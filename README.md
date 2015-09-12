@@ -11,11 +11,11 @@ We will be making periodic updates to the project and we ask that any early alph
 
 Drag-and-drop UI
 
-![](assets/images/drag-to-split.gif)
+![Drag to Split](assets/images/drag-to-split.gif)
 
-Contextual exploration
+Time series exploration
 
-![](assets/images/time-highlight.gif)
+![Time Highlight](assets/images/time-highlight.gif)
 
 ## Usage
 
@@ -45,6 +45,12 @@ Next, inside the pivot folder run:
 
 ```
 npm install
+```
+
+Finally you have to create a `config.yaml` file. (or use the sample)
+
+```
+cp config_sample.yaml config.yaml
 ```
 
 Then you are ready to
