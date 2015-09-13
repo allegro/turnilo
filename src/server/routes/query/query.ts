@@ -20,23 +20,46 @@ var druidRequester = druidRequesterFactory({
 //  requester: druidRequester
 //});
 
-function getWikiData(): any[] {
-  var countries = ['Santo Marco', 'Arstotzka', 'Buranda'];
-  var cities = ['Gotham City', 'Metropolis', 'Cabot Cove', 'Sunnydale', 'Quahog', 'Castle Rock'];
-  var wikiFile = path.join(__dirname, '../../../../assets/data/wikipedia.json');
+function getFileData(filename: string): any[] {
+  var filePath = path.join(__dirname, '../../../../', filename);
+  var fileData: string = null;
   try {
-    var wikiData = JSON.parse(readFileSync(wikiFile, 'utf-8'));
-    var secInHour = 60 * 60;
-    wikiData.forEach((d: Datum, i: number) => {
-      d['country'] = countries[i % countries.length];
-      d['city'] = cities[i % cities.length];
-      d['time'] = new Date(Date.parse(d['time']) + (103 * i % secInHour) * 1000);
-    });
-    return wikiData;
+    fileData = readFileSync(filePath, 'utf-8');
   } catch (e) {
-    console.log('could not find', wikiFile);
-    return [];
+    console.log('could not find', filePath);
+    process.exit(1);
   }
+
+  var fileJSON: any[] = null;
+  if (fileData[0] === '[') {
+    try {
+      fileJSON = JSON.parse(fileData);
+    } catch (e) {
+      console.log('error', e.message);
+      console.log('could not parse', filePath);
+      process.exit(1);
+    }
+
+  } else {
+    var fileLines = fileData.split('\n');
+    if (fileLines[fileLines.length - 1] === '') fileLines.pop();
+
+    fileJSON = fileLines.map((line, i) => {
+      try {
+        return JSON.parse(line)
+      } catch (e) {
+        console.log(`problem in line: ${i}: '${line}'`);
+        console.log('could not parse', filePath);
+        process.exit(1);
+      }
+    });
+  }
+
+  fileJSON.forEach((d: Datum, i: number) => {
+    d['time'] = new Date(d['time']);
+  });
+
+  return fileJSON;
 }
 
 function makeExternal(dataSource: any): External {
@@ -74,15 +97,22 @@ function makeExternal(dataSource: any): External {
 var executors: Lookup<Executor> = {};
 
 for (var dataSource of DATA_SOURCES) {
-  if (dataSource.source) {
-    executors[dataSource.name] = basicExecutorFactory({
-      datasets: { main: makeExternal(dataSource) }
-    });
-  } else {
-    var wikiDataset = Dataset.fromJS(getWikiData()).hide();
-    executors[dataSource.name] = basicExecutorFactory({
-      datasets: { main: wikiDataset }
-    });
+  switch (dataSource.engine) {
+    case 'native':
+      executors[dataSource.name] = basicExecutorFactory({
+        datasets: { main: Dataset.fromJS(getFileData(dataSource.source)).hide() }
+      });
+      break;
+
+    case 'druid':
+      executors[dataSource.name] = basicExecutorFactory({
+        datasets: { main: makeExternal(dataSource) }
+      });
+      break;
+
+    default:
+      console.log(`Invalid engine: '${dataSource.engine}' in '${dataSource.name}'`);
+      process.exit(1);
   }
 }
 
@@ -116,6 +146,10 @@ router.post('/', (req: Request, res: Response) => {
       res.send(data.toJS());
     },
     (e: Error) => {
+      console.log('error:', e.message);
+      if (e.hasOwnProperty('stack')) {
+        console.log((<any>e).stack);
+      }
       res.status(500).send({
         error: 'could not compute',
         message: e.message

@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
 import * as numeral from 'numeral';
-import { $, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
+import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../models/index";
 import { ChartLine } from '../../components/chart-line/chart-line';
@@ -98,7 +98,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     var $main = $('main');
 
-    var query: any = $()
+    var query = ply()
       .apply('main', $main.filter(essence.getEffectiveFilter(TimeSeries.id).toExpression()));
 
     measures.forEach((measure) => {

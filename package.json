@@ -28,7 +28,7 @@
     "lz-string": "^1.4.4",
     "morgan": "^1.6.1",
     "numeral": "^1.5.3",
-    "plywood": "^0.1.x",
+    "plywood": "^0.3.x",
     "plywood-druid-requester": "^1.1.x",
     "plywood-mysql-requester": "^1.1.x",
     "q": "^1.1.2",

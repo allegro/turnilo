@@ -159,7 +159,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         filter,
         splits: Splits.EMPTY,
         selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
-        pinnedDimensions: OrderedSet([dataSource.dimensions.get(1).name, dataSource.dimensions.get(5).name]),
+        pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(1, 3).map(d => d.name)),
         visualization: null,
         compare: null,
         highlight: null

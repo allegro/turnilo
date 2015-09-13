@@ -49,6 +49,8 @@ npm install
 
 Finally you have to create a `config.yaml` file. (or use the sample)
 
+For information on what goes into the config please read the comments in the [sample config file](/config_sample.yaml)
+
 ```
 cp config_sample.yaml config.yaml
 ```

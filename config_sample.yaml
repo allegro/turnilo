@@ -1,49 +1,138 @@
-# "dimensions":["continent","robot","country","city","newPage","unpatrolled","namespace","anonymous","language","page","region","user"],
-# "metrics":["deleted","added","count","delta"]
+# This is am example configuration file for Pivot, here you can add data sources as well as configure Pivot settings
+# You can start by using this sample config by running `cp config_sample.yaml config.yaml`
 
+# The port on which the Pivot server will listen on
+port: 9090
+
+# A Druid broker node that can serve data (only used if you have Druid based data source)
 druidHost: localhost:8082
+
+# The data sources that you have configured, these will apear, in order, inside the navigation menu of Pivot
+# In general there can be two types of 'engine':
+#   - native: a JSON file that is crunched within plywood itself (usefull for small datasets and testing)
+#   - druid: a Druid dataSource
 dataSources:
-  - name: static-wiki
+
+  # Here we have a data source based on a single day of Wikipedia
+  - name: static-wiki # This will go into the URL so no fancy charecters allowed
+
+    # This is the title that will grace this data source in the the menus
     title: Static Wikipedia
-    maxTime: 2013-02-27T00:00:00Z
+
+    # Use the native engine, all caluclations will be done in Node.JS. Good for up to 100k rows of data.
+    engine: native
+
+    # The file representing the datasource relative to repo root
+    source: assets/data/wikiticker-2015-09-12-en-trimmed.json
+    # This datasource was scraped using https://github.com/implydata/wikiticker
+    # GitHub does not like large files so only a trimmed down file is checked in
+    # Run `assets/data-raw/process-wikiticker-2015-09-12` to get a larger exmaple file
+
+    # This is the latest time of the data, if not set will default to `now`
+    maxTime: 2015-09-13T00:00:00Z
+
+    # The primary time attribute of the data refers to the attribute that must always be filtred on
+    # This is particularly usefull for Druid data sources as they must always have a time filter.
     timeAttribute: time
 
+    # The list of dimensions defined in the UI. The order here will be reflected in the UI
     dimensions:
+      # A general dimension looks like so:
+      # - name: channel
+      #   ^ the name of the dimension as used in the URL (you should try not to change these)
+      #
+      #   title: The Channel
+      #   ^ (optional) the human readable title. If not set a title is generated from the 'name'
+      #
+      #   type: STRING
+      #   ^ (optional) the Plywood type of the dimension. Defaults to STRING
+      #
+      #   expression: $channel
+      #   ^ (optional) the Plywood bucketing expression for this dimension. Defaults to '$name'
+      #     if, say, channel was called 'cnl' in the data you would put '$cnl' here
+
       - name: time
         type: TIME
 
-      - name: namespace
+      - name: channel
 
-      - name: language
+      - name: cityName
+
+      - name: comment
+
+      - name: countryIso
+        title: Country ISO
+        expression: $countryIsoCode
+
+      - name: countryName
+
+      - name: isMinor
+
+      - name: isNew
+
+      - name: isRobot
+
+      - name: isUnpatrolled
+
+      - name: metroCode
+
+      - name: namespace
 
       - name: page
 
+      - name: regionIso
+        title: Region ISO
+
+      - name: regionName
+
       - name: user
 
-      - name: country
-
-      - name: city
-
+    # The list of meausres defined in the UI. The order here will be reflected in the UI
     measures:
+      # A general meausre looks like so:
+      #
+      # - name: avg_revenue
+      #   ^ the name of the dimension as used in the URL (you should try not to change these)
+      #
+      #   title: Average Revenue
+      #   ^ (optional) the human readable title. If not set a title is generated from the 'name'
+      #
+      #   expression: $main.average($revenue)
+      #   ^ (optional) the Plywood bucketing expression for this dimension. Defaults to '$main.sum($name)'
+      #     this is the pleace to define your fancy formulas
+
       - name: count
+        title: Rows
+        expression: $main.count()
+
+      - name: delta
+
+      - name: avg_delta
+        expression: $main.average($delta)
 
       - name: added
 
       - name: avg_added
-        expression: $main.sum($added) / $main.sum($count)
+        expression: $main.average($added)
 
       - name: deleted
 
       - name: avg_deleted
-        expression: $main.sum($deleted) / $main.sum($count)
+        expression: $main.average($deleted)
 
-      - name: delta
+      - name: unique_users
+        title: Unique Users
+        expression: $main.countDistinct($user)
 
 
+  # Here is an example of a Druid data source, this one is taken from the Druid wikipedia demo
+  # It will work for you if you have setup the demo Wikipedia Edditstream ingestor
   - name: wiki
     title: Wikipedia Edits
-    source: wikipedia
-    timeAttribute: time
+    engine: druid # Set the engine to druid
+    source: wikipedia # The druid dataSource
+
+    timeAttribute: time # The time attribute (this needs to be set for Druid, but could be anything. You should leave it as 'time')
 
     dimensions:
       - name: time
@@ -66,6 +155,11 @@ dataSources:
     measures:
       - name: count
 
+      - name: delta
+
+      - name: avg_delta
+        expression: $main.sum($delta) / $main.sum($count)
+
       - name: added
 
       - name: avg_added
@@ -75,8 +169,6 @@ dataSources:
 
       - name: avg_deleted
         expression: $main.sum($deleted) / $main.sum($count)
-
-      - name: delta
 
       - name: unique_users
         title: Unique Users
