@@ -22,7 +22,11 @@ export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: num
 }
 
 export function makeTitle(name: string): string {
-  return name.replace(/(^|_+)\w/g, (s) => s.replace(/_+/, ' ').toUpperCase());
+  return name.replace(/(^|_+)\w/g, (s) => { // 'hello_world' -> 'Hello World'
+    return s.replace(/_+/, ' ').toUpperCase();
+  }).replace(/[a-z][A-Z]/g, (s) => { // 'HelloWorld' -> 'Hello World'
+    return s[0] + ' ' + s[1];
+  });
 }
 
 export function listsEqual<T>(listA: List<T>, listB: List<T>): boolean {

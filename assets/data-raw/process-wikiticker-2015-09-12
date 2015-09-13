@@ -1,0 +1,39 @@
+#!/bin/bash -eu
+
+# Force this to the working directory
+cd "$(dirname "$0")"
+
+mkdir -p ../data
+
+gzcat wikiticker-2015-09-12.gz \
+  | jq -c '
+    {
+      time: .timestamp,
+      channel,
+      cityName,
+      comment,
+      countryIsoCode,
+      countryName,
+      isMinor,
+      isNew,
+      isRobot,
+      isUnpatrolled,
+      metroCode,
+      namespace,
+      page,
+      regionIsoCode,
+      regionName,
+      user,
+      delta,
+      added: [.delta, 0] | max,
+      deleted: [-.delta, 0] | max
+    }' \
+  > ../data/wikiticker-2015-09-12-large.json
+
+
+cat ../data/wikiticker-2015-09-12-large.json \
+  | jq -c 'select(.channel == "#en.wikipedia")' \
+  > ../data/wikiticker-2015-09-12-en-large.json
+
+head -n 30000 ../data/wikiticker-2015-09-12-en-large.json \
+  > ../data/wikiticker-2015-09-12-en-trimmed.json
