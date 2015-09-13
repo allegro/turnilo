@@ -5,43 +5,74 @@ druidHost: localhost:8082
 dataSources:
   - name: static-wiki
     title: Static Wikipedia
+    engine: native
+    #source: assets/data/wikiticker-2015-09-11.json
+    #maxTime: 2015-09-12T00:00:00Z
+
+    source: assets/data/wikipedia.json
     maxTime: 2013-02-27T00:00:00Z
+
     timeAttribute: time
 
     dimensions:
       - name: time
         type: TIME
 
-      - name: namespace
-
-      - name: language
+#      - name: channel
+#
+#      - name: cityName
+#
+#      - name: comment
+#
+#      - name: countryIsoCode
+#
+#      - name: countryName
+#
+#      - name: delta
+#
+#      - name: flags
+#
+#      - name: isMinor
+#
+#      - name: isNew
+#
+#      - name: isRobot
+#
+#      - name: isUnpatrolled
+#
+#      - name: metroCode
+#
+#      - name: namespace
 
       - name: page
 
+#      - name: regionIsoCode
+#
+#      - name: regionName
+
       - name: user
 
-      - name: country
-
-      - name: city
 
     measures:
       - name: count
+        expression: $main.count()
 
       - name: added
 
       - name: avg_added
-        expression: $main.sum($added) / $main.sum($count)
+        expression: $main.average($added)
 
       - name: deleted
 
       - name: avg_deleted
-        expression: $main.sum($deleted) / $main.sum($count)
+        expression: $main.average($deleted)
 
       - name: delta
 
 
   - name: wiki
     title: Wikipedia Edits
+    engine: druid
     source: wikipedia
     timeAttribute: time
 
