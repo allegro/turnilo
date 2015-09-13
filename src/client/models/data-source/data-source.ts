@@ -30,7 +30,7 @@ interface DimensionsMetrics {
 function makeDimensionsMetricsFromAttributes(attributes: Attributes): DimensionsMetrics {
   var dimensionArray: Dimension[] = [];
   var measureArray: Measure[] = [];
-  var timeAttribute = RefExpression.fromJS({ op: 'ref', name: 'time' });
+  var timeAttribute = $('time');
   var defaultSortOn: string = null;
 
   if (!attributes['count']) {
@@ -191,7 +191,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (parameters.dimensions) {
       value.dimensions = List(parameters.dimensions.map(Dimension.fromJS));
       value.measures = List(parameters.measures.map(Measure.fromJS));
-      value.timeAttribute = parameters.timeAttribute ? RefExpression.fromJS({ op: 'ref', name: parameters.timeAttribute }) : null;
+      value.timeAttribute = parameters.timeAttribute ? $(parameters.timeAttribute) : null;
       value.defaultSortOn = parameters.defaultSortOn || value.measures.get(0).name;
     }
     if (executor) {

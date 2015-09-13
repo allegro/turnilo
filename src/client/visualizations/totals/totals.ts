@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as numeral from 'numeral';
 // import * as Icon from 'react-svg-icons';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { $, ply, Expression, Executor, Dataset } from 'plywood';
 import { hasOwnProperty } from '../../utils/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../models/index";
 import { Loader } from '../../components/loader/loader';
@@ -43,7 +43,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
 
     var $main = $('main');
 
-    var query: any = $()
+    var query = ply()
       .apply('main', $main.filter(essence.getEffectiveFilter(Totals.id).toExpression()));
 
     measures.forEach((measure) => {

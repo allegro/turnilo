@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import * as numeral from 'numeral';
-import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
+import { $, ply, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
 import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../models/index';
@@ -72,7 +72,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     var $main = $('main');
 
-    var query: any = $()
+    var query = ply()
       .apply('main', $main.filter(essence.getEffectiveFilter(Table.id).toExpression()));
 
     measures.forEach((measure) => {
