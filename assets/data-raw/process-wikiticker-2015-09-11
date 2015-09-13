@@ -1,0 +1,9 @@
+#!/bin/bash -eu
+
+# Force this to the working directory
+cd "$(dirname "$0")"
+
+gzcat wikiticker-2015-09-11.gz \
+  | head -n 30000 \
+  | jq -c '{time: .timestamp, channel, cityName, comment, countryIsoCode, countryName, delta, flags, isMinor, isNew, isRobot, isUnpatrolled, metroCode, namespace, page, regionIsoCode, regionName, user}' \
+  > ../data/wikiticker-2015-09-11.json
