@@ -5,7 +5,8 @@ Pivot is a web-based exploratory visualization UI for [Druid](https://github.com
 
 The project is currently at a very early alpha stage, and is _not suitable for production use_. 
 
-We will be making periodic updates to the project and we ask that any early alpha users refrain from submitting bug reports at this time. 
+We will be making periodic updates to the project and we ask that any early alpha users stay up to date on the
+latest version and refrain from submitting bug reports for outdated versions. 
 
 ## Features
 
@@ -45,6 +46,7 @@ Next, inside the pivot folder run:
 
 ```
 npm install
+gulp all
 ```
 
 Finally you have to create a `config.yaml` file. (or use the sample)

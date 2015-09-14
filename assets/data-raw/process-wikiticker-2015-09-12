@@ -30,10 +30,4 @@ gzcat wikiticker-2015-09-12.gz \
     }' \
   > ../data/wikiticker-2015-09-12-large.json
 
-
-cat ../data/wikiticker-2015-09-12-large.json \
-  | jq -c 'select(.channel == "#en.wikipedia")' \
-  > ../data/wikiticker-2015-09-12-en-large.json
-
-head -n 30000 ../data/wikiticker-2015-09-12-en-large.json \
-  > ../data/wikiticker-2015-09-12-en-trimmed.json
+perl -ne'print if $. % 10 == 0' ../data/wikiticker-2015-09-12-large.json > ../data/wikiticker-2015-09-12-sampled.json
