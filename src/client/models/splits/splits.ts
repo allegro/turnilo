@@ -158,7 +158,19 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   }
 
   public constrainToDataSource(dataSource: DataSource): Splits {
-    return this; // ToDo: fill me in
+    var hasChanged = false;
+    var splitCombines: SplitCombine[] = [];
+    this.splitCombines.forEach((split) => {
+      var splitExpression = split.expression;
+      if (dataSource.getDimensionByExpression(splitExpression)) {
+        splitCombines.push(split);
+      } else {
+        hasChanged = true;
+        // Potential special handling for time split would go here
+      }
+    });
+
+    return hasChanged ? new Splits(List(splitCombines)) : this;
   }
 }
 check = Splits;

@@ -17,6 +17,15 @@ import { Manifest, Resolve } from '../manifest/manifest';
 
 const HASH_VERSION = 1;
 
+function constrainDimensions(dimensions: OrderedSet<string>, dataSource: DataSource): OrderedSet<string> {
+  return <OrderedSet<string>>dimensions.filter((dimensionName) => Boolean(dataSource.getDimension(dimensionName)));
+}
+
+function constrainMeasures(measures: OrderedSet<string>, dataSource: DataSource): OrderedSet<string> {
+  return <OrderedSet<string>>measures.filter((measureName) => Boolean(dataSource.getMeasure(measureName)));
+}
+
+
 export interface EssenceValue {
   dataSources?: List<DataSource>;
   visualizations?: List<Manifest>;
@@ -106,21 +115,21 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var dataSource = dataSources.find((ds) => ds.name === dataSourceName);
     var timezone = Timezone.fromJS(parameters.timezone);
-    var filter = Filter.fromJS(parameters.filter);
-    var splits = Splits.fromJS(parameters.splits);
-    var selectedMeasures = OrderedSet(parameters.selectedMeasures);
-    var pinnedDimensions = OrderedSet(parameters.pinnedDimensions);
+    var filter = Filter.fromJS(parameters.filter).constrainToDataSource(dataSource);
+    var splits = Splits.fromJS(parameters.splits).constrainToDataSource(dataSource);
+    var selectedMeasures = constrainMeasures(OrderedSet(parameters.selectedMeasures), dataSource);
+    var pinnedDimensions = constrainDimensions(OrderedSet(parameters.pinnedDimensions), dataSource);
 
     var compare: Filter = null;
     var compareJS = parameters.compare;
     if (compareJS) {
-      compare = Filter.fromJS(compareJS);
+      compare = Filter.fromJS(compareJS).constrainToDataSource(dataSource);
     }
 
     var highlight: Highlight = null;
     var highlightJS = parameters.highlight;
     if (highlightJS) {
-      highlight = Highlight.fromJS(highlightJS);
+      highlight = Highlight.fromJS(highlightJS).constrainToDataSource(dataSource);
     }
 
     return new Essence({
@@ -366,14 +375,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var oldDataSource = this.dataSource;
     value.filter = value.filter.constrainToDataSource(dataSource, oldDataSource);
     value.splits = value.splits.constrainToDataSource(dataSource);
-
-    value.selectedMeasures = <OrderedSet<string>>value.selectedMeasures.filter((measureName) => {
-      return Boolean(dataSource.getMeasure(measureName));
-    });
-
-    value.pinnedDimensions = <OrderedSet<string>>value.pinnedDimensions.filter((dimensionName) => {
-      return Boolean(dataSource.getDimension(dimensionName));
-    });
+    value.selectedMeasures = constrainMeasures(value.selectedMeasures, dataSource);
+    value.pinnedDimensions = constrainDimensions(value.pinnedDimensions, dataSource);
 
     if (value.compare) {
       value.compare = value.compare.constrainToDataSource(dataSource);

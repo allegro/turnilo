@@ -68,6 +68,8 @@ dataSources:
 
       - name: countryName
 
+      - name: isAnonymous
+
       - name: isMinor
 
       - name: isNew
