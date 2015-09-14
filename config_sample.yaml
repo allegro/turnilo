@@ -25,8 +25,10 @@ dataSources:
     # The file representing the datasource relative to repo root
     source: assets/data/wikiticker-2015-09-12-sampled.json
     # This datasource was scraped using https://github.com/implydata/wikiticker
-    # GitHub does not like large files so only a trimmed down file is checked in
-    # Run `assets/data-raw/process-wikiticker-2015-09-12` to get the full exmaple file without the sample
+    # GitHub does not like large files so only a sampled file is checked in
+    # There is also a nonsampled file with the filter: isAnonymous == true applied, to use it set:
+    # source: assets/data/wikiticker-2015-09-12-anonymous.json
+    # Run `assets/data-raw/process-wikiticker-2015-09-12` to get the full exmaple file
 
     # This is the latest time of the data, if not set will default to `now`
     maxTime: 2015-09-13T00:00:00Z

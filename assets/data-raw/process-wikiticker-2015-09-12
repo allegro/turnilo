@@ -7,6 +7,7 @@ mkdir -p ../data
 
 gzcat wikiticker-2015-09-12.gz \
   | jq -c '
+    select("2015-09-12" < .timestamp and .timestamp < "2015-09-13") |
     {
       time: .timestamp,
       channel,
@@ -14,6 +15,7 @@ gzcat wikiticker-2015-09-12.gz \
       comment,
       countryIsoCode,
       countryName,
+      isAnonymous: (.countryName != null),
       isMinor,
       isNew,
       isRobot,
@@ -30,4 +32,9 @@ gzcat wikiticker-2015-09-12.gz \
     }' \
   > ../data/wikiticker-2015-09-12-large.json
 
-perl -ne'print if $. % 10 == 0' ../data/wikiticker-2015-09-12-large.json > ../data/wikiticker-2015-09-12-sampled.json
+perl -ne'print if $. % 10 == 0' ../data/wikiticker-2015-09-12-large.json \
+  > ../data/wikiticker-2015-09-12-sampled.json
+
+cat ../data/wikiticker-2015-09-12-large.json \
+  | jq -c 'select(.isAnonymous)' \
+  > ../data/wikiticker-2015-09-12-anonymous.json
