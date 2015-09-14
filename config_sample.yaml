@@ -84,6 +84,7 @@ dataSources:
 
       - name: regionIso
         title: Region ISO
+        expression: $regionIsoCode
 
       - name: regionName
 
