@@ -14,6 +14,11 @@
     "name": "Vadim Ogievetsky",
     "url": "http://vadim.ogievetsky.com"
   },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/implydata/pivot.git"
+  },
   "dependencies": {
     "body-parser": "^1.13.3",
     "chronoshift": "^0.3.x",
