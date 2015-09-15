@@ -46,7 +46,7 @@ function getFileData(filename: string): any[] {
 
     fileJSON = fileLines.map((line, i) => {
       try {
-        return JSON.parse(line)
+        return JSON.parse(line);
       } catch (e) {
         console.log(`problem in line: ${i}: '${line}'`);
         console.log('could not parse', filePath);

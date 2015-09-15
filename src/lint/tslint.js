@@ -1,4 +1,4 @@
-{
+module.exports = {
   "rules": {
     "align": [true,
       "parameters",

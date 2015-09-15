@@ -24,6 +24,7 @@ var typescript = require('typescript');
 
 var mocha = require('gulp-mocha');
 
+var tsLintConfig = require('./src/lint/tslint');
 var gr = require('./gulp-reporters');
 
 // client -> client_build_tmp -> client_build -> public
@@ -69,7 +70,9 @@ gulp.task('client:tsc', function() {
   var sourceFiles = gulp.src(['./src/client/**/*.ts'])
     .pipe(gr.jsxFixerFactory())
     .pipe(gulp.dest('./build/client_tmp/')) // typescript requires actual files on disk, not just in memory
-    .pipe(tslint())
+    .pipe(tslint({
+      configuration: tsLintConfig
+    }))
     .pipe(tslint.report(
       gr.tscLintReporterFactory({
         errorTexts: errorTexts,
@@ -105,7 +108,9 @@ gulp.task('server:tsc', function() {
   var errorTexts = [];
 
   var sourceFiles = gulp.src(['./src/server/**/*.ts'])
-    .pipe(tslint())
+    .pipe(tslint({
+      configuration: tsLintConfig
+    }))
     .pipe(tslint.report(
       gr.tscLintReporterFactory({
         errorTexts: errorTexts

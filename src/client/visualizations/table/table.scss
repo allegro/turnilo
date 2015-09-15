@@ -96,6 +96,7 @@ $header-padding-top: 12px;
     .scroller {
       background: $white;
       opacity: 0.001; // must be > 0 for it to get mouse events
+      cursor: pointer;
     }
   }
 
@@ -104,6 +105,10 @@ $header-padding-top: 12px;
     position: absolute;
     height: $row-height;
     border-bottom: 1px solid $border-extra-light;
+
+    &.hover {
+      background: $hover;
+    }
   }
 
   .row {
@@ -112,6 +117,10 @@ $header-padding-top: 12px;
 
   .measure-name {
     padding-top: $header-padding-top;
+
+    &.hover {
+      background: $hover;
+    }
   }
 
   .segment,

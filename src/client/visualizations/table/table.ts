@@ -30,6 +30,12 @@ function formatSegment(value: any): string {
   return String(value);
 }
 
+interface PositionHover {
+  what: string;
+  measure?: Measure;
+  row?: Datum;
+}
+
 interface TableState {
   loading?: boolean;
   dataset?: Dataset;
@@ -37,6 +43,8 @@ interface TableState {
   flatData?: Datum[];
   scrollLeft?: number;
   scrollTop?: number;
+  hoverMeasure?: Measure;
+  hoverRow?: Datum;
 }
 
 export class Table extends React.Component<VisualizationProps, TableState> {
@@ -63,7 +71,9 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       error: null,
       flatData: null,
       scrollLeft: 0,
-      scrollTop: 0
+      scrollTop: 0,
+      hoverMeasure: null,
+      hoverRow: null
     };
   }
 
@@ -156,9 +166,77 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     });
   }
 
+  calculateMousePosition(e: MouseEvent): PositionHover {
+    var { essence } = this.props;
+    var { flatData, scrollLeft, scrollTop } = this.state;
+    var rect = React.findDOMNode(this.refs['base']).getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
+
+    if (x <= SPACE_LEFT) return { what: 'space-left' };
+    x -= SPACE_LEFT;
+
+    if (y <= HEADER_HEIGHT) {
+      if (x <= SEGMENT_WIDTH) return { what: 'corner' };
+
+      x = x - SEGMENT_WIDTH + scrollLeft;
+      var measureIndex = Math.floor(x / MEASURE_WIDTH);
+      var measure = essence.getMeasures().get(measureIndex);
+      if (!measure) return { what: 'whitespace' };
+      return { what: 'header', measure };
+    }
+
+    y = y - HEADER_HEIGHT + scrollTop;
+    var rowIndex = Math.floor(y / ROW_HEIGHT);
+    var datum = flatData ? flatData[rowIndex] : null;
+    if (!datum) return { what: 'whitespace' };
+    return { what: 'row', row: datum };
+  }
+
+  onMouseLeave() {
+    this.setState({
+      hoverMeasure: null,
+      hoverRow: null
+    });
+  }
+
+  onMouseMove(e: MouseEvent) {
+    var pos = this.calculateMousePosition(e);
+    this.setState({
+      hoverMeasure: pos.measure,
+      hoverRow: pos.row
+    });
+  }
+
+  onClick(e: MouseEvent) {
+    var { clicker, essence } = this.props;
+    var pos = this.calculateMousePosition(e);
+
+    if (pos.what === 'header') {
+      console.log('header click', pos.measure);
+
+    } else if (pos.what === 'row') {
+      var ex = essence.splits.first().expression;
+      var value = pos.row['Segment'];
+
+      console.log('ex', ex);
+      console.log('value', value);
+
+      if (essence.highlightOn(Table.id)) {
+        var highlightSet = essence.getSingleHighlightValue();
+        if (highlightSet.size() === 1 && highlightSet.contains(value)) {
+          clicker.dropHighlight();
+          return;
+        }
+      }
+
+      clicker.changeHighlight(Table.id, Filter.fromClause(ex.in([value])));
+    }
+  }
+
   render() {
     var { clicker, essence, stage } = this.props;
-    var { loading, error, flatData, scrollLeft, scrollTop } = this.state;
+    var { loading, error, flatData, scrollLeft, scrollTop, hoverMeasure, hoverRow } = this.state;
 
     var segmentTitle = essence.splits.getTitle(essence.dataSource);
 
@@ -173,7 +251,12 @@ export class Table extends React.Component<VisualizationProps, TableState> {
           width: 8
         });
       }
-      return JSX(`<div className="measure-name" key={measure.name}>{measure.title}{sortArrow}</div>`);
+      return JSX(`
+        <div
+          className={'measure-name' + (measure === hoverMeasure ? ' hover' : '')}
+          key={measure.name}
+        >{measure.title}{sortArrow}</div>
+      `);
     });
 
     var segments: React.DOMElement<any>[] = [];
@@ -206,9 +289,10 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         var segmentName = nest ? formatSegment(segmentValue) : 'Total';
         var left = Math.max(0, nest - 1) * INDENT_WIDTH;
         var segmentStyle = { left: left, width: SEGMENT_WIDTH - left, top: rowY };
+        var hoverClass = d === hoverRow ? ' hover' : '';
         segments.push(JSX(`
           <div
-            className={'segment nest' + nest}
+            className={'segment nest' + nest + hoverClass}
             key={'_' + i}
             style={segmentStyle}
           >{segmentName}</div>
@@ -223,7 +307,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         });
 
         var rowStyle = { top: rowY };
-        var className = 'row';
+        var className = 'row' + hoverClass;
         if (highlightSet) className += ' ' + (selected ? 'selected' : 'not-selected');
         rows.push(JSX(`<div className={className} key={'_' + i} style={rowStyle}>{row}</div>`));
 
@@ -302,7 +386,14 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
         {queryError}
         {loader}
-        <div className="scroller-cont" onScroll={this.onScroll.bind(this)}>
+        <div
+          className="scroller-cont"
+          ref="base"
+          onScroll={this.onScroll.bind(this)}
+          onMouseLeave={this.onMouseLeave.bind(this)}
+          onMouseMove={this.onMouseMove.bind(this)}
+          onClick={this.onClick.bind(this)}
+        >
           <div className="scroller" style={scrollerStyle}></div>
         </div>
       </div>
