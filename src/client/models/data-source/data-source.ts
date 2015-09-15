@@ -20,6 +20,26 @@ function measurePreference(measure: Measure): number {
   return 1;
 }
 
+function makeUniqueDimensionList(dimensions: Dimension[]): List<Dimension> {
+  var seen: Lookup<number> = {};
+  return List(dimensions.filter((dimension) => {
+    var dimensionName = dimension.name.toLowerCase();
+    if (seen[dimensionName]) return false;
+    seen[dimensionName] = 1;
+    return true;
+  }));
+}
+
+function makeUniqueMeasureList(measures: Measure[]): List<Measure> {
+  var seen: Lookup<number> = {};
+  return List(measures.filter((measure) => {
+    var measureName = measure.name.toLowerCase();
+    if (seen[measureName]) return false;
+    seen[measureName] = 1;
+    return true;
+  }));
+}
+
 interface DimensionsMetrics {
   dimensions: List<Dimension>;
   measures: List<Measure>;
@@ -189,8 +209,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       value.maxTime = new Date(<any>parameters.maxTime);
     }
     if (parameters.dimensions) {
-      value.dimensions = List(parameters.dimensions.map(Dimension.fromJS));
-      value.measures = List(parameters.measures.map(Measure.fromJS));
+      value.dimensions = makeUniqueDimensionList(parameters.dimensions.map(Dimension.fromJS));
+      value.measures = makeUniqueMeasureList(parameters.measures.map(Measure.fromJS));
       value.timeAttribute = parameters.timeAttribute ? $(parameters.timeAttribute) : null;
       value.defaultSortOn = parameters.defaultSortOn || value.measures.get(0).name;
     }
@@ -302,7 +322,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public getDimension(dimensionName: string): Dimension {
-    return this.dimensions.find(dimension => dimension.name === dimensionName);
+    dimensionName = dimensionName.toLowerCase(); // Case insensitive
+    return this.dimensions.find(dimension => dimension.name.toLowerCase() === dimensionName);
   }
 
   public getDimensionByExpression(expression: Expression): Dimension {
@@ -319,7 +340,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public getMeasure(measureName: string): Measure {
-    return this.measures.find(measure => measure.name === measureName);
+    measureName = measureName.toLowerCase(); // Case insensitive
+    return this.measures.find(measure => measure.name.toLowerCase() === measureName);
   }
 
   public getSortMeasure(dimension: Dimension): Measure {
