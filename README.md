@@ -20,14 +20,7 @@ latest version and refrain from submitting bug reports for outdated versions.
 
 ## Usage
 
-### Run the project
-
-Clone the project
-
-```
-git clone git@github.com:implydata/pivot.git
-cd pivot
-```
+### Prerequisites
 
 Make sure you have node (0.12.x)
 
@@ -40,6 +33,16 @@ And gulp:
 
 ```
 npm install gulp -g
+```
+
+
+### Run the project
+
+Clone the project
+
+```
+git clone git@github.com:implydata/pivot.git
+cd pivot
 ```
 
 Also make sure you have the SASS lint gem:
@@ -68,6 +71,7 @@ Then you are ready to
 ```
 ./run
 ```
+
 
 ## Roadmap
 
