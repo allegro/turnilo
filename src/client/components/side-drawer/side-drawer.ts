@@ -13,6 +13,8 @@ interface SideDrawerProps {
   clicker: Clicker;
   essence: Essence;
   onClose: Function;
+
+  key?: string;
 }
 
 interface SideDrawerState {

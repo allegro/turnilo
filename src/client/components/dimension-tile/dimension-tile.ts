@@ -20,6 +20,8 @@ interface DimensionTileProps {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;
+
+  key?: string;
 }
 
 interface DimensionTileState {

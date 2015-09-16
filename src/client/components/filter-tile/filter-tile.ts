@@ -23,6 +23,8 @@ interface FilterTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
+
+  ref?: any;
 }
 
 interface FilterTileState {

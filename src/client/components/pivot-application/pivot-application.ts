@@ -307,6 +307,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       });
     }
 
+    var sideDrawerTransition = React.createElement(<any>ReactCSSTransitionGroup, {
+      component: "div",
+      className: "side-drawer-container",
+      transitionName: "side-drawer"
+    }, sideDrawer);
+
     return JSX(`
       <main className='pivot-application' id='portal-cont'>
         <HeaderBar essence={essence} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
@@ -337,9 +343,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           </div>
           <PinboardPanel clicker={clicker} essence={essence}/>
         </div>
-        <ReactCSSTransitionGroup component="div" className="side-drawer-container" transitionName="side-drawer">
-          {sideDrawer}
-        </ReactCSSTransitionGroup>
+        {sideDrawerTransition}
       </main>
     `);
   }

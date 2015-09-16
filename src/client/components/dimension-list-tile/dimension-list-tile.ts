@@ -139,7 +139,6 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
     this.dragCounter = 0;
     this.setState({
-      dragSection: null,
       dragPosition: null
     });
   }
