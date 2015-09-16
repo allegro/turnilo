@@ -131,7 +131,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var highlightControls: React.ReactElement<any> = null;
     if (dragStartPx === null) {
       highlightControls = JSX(`
-        <HighlightControls clicker={clicker} onClose={onClose}/>
+        <HighlightControls clicker={clicker} orientation="vertical" onClose={onClose}/>
       `);
     }
 

@@ -4,10 +4,11 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import * as numeral from 'numeral';
-import { $, ply, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
+import { $, ply, Expression, Executor, Dataset, Datum, TimeRange, Set } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
 import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../models/index';
+import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
@@ -156,7 +157,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   }
 
   render() {
-    var { essence, stage } = this.props;
+    var { clicker, essence, stage } = this.props;
     var { loading, error, flatData, scrollLeft, scrollTop } = this.state;
 
     var segmentTitle = essence.splits.getTitle(essence.dataSource);
@@ -177,12 +178,22 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     var segments: React.DOMElement<any>[] = [];
     var rows: React.DOMElement<any>[] = [];
+    var highlightControls: React.ReactElement<any> = null;
     if (flatData) {
       var formatters = measuresArray.map(measure => {
         var measureName = measure.name;
         var measureValues = flatData.map((d: Datum) => d[measureName]);
         return formatterFromData(measureValues, measure.format);
       });
+
+      var highlightSet: Set = null;
+      if (essence.highlightOn(Table.id)) {
+        highlightSet = essence.getSingleHighlightValue();
+        highlightControls = React.createElement(HighlightControls, {
+          clicker,
+          orientation: 'horizontal'
+        });
+      }
 
       const skipNumber = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT));
       const lastElementToShow = Math.min(flatData.length, Math.ceil((scrollTop + stage.height) / ROW_HEIGHT));
@@ -191,7 +202,8 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       for (var i = skipNumber; i < lastElementToShow; i++) {
         var d = flatData[i];
         var nest = d['__nest'];
-        var segmentName = nest ? formatSegment(d['Segment']) : 'Total';
+        var segmentValue = d['Segment'];
+        var segmentName = nest ? formatSegment(segmentValue) : 'Total';
         var left = Math.max(0, nest - 1) * INDENT_WIDTH;
         var segmentStyle = { left: left, width: SEGMENT_WIDTH - left, top: rowY };
         segments.push(JSX(`
@@ -202,6 +214,8 @@ export class Table extends React.Component<VisualizationProps, TableState> {
           >{segmentName}</div>
         `));
 
+        var selected = highlightSet && highlightSet.contains(segmentValue);
+
         var row = measuresArray.map((measure, j) => {
           var measureValue = d[measure.name];
           var measureValueStr = formatters[j](measureValue);
@@ -209,7 +223,9 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         });
 
         var rowStyle = { top: rowY };
-        rows.push(JSX(`<div className="row" key={'_' + i} style={rowStyle}>{row}</div>`));
+        var className = 'row';
+        if (highlightSet) className += ' ' + (selected ? 'selected' : 'not-selected');
+        rows.push(JSX(`<div className={className} key={'_' + i} style={rowStyle}>{row}</div>`));
 
         rowY += ROW_HEIGHT;
       }

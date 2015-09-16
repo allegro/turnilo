@@ -162,7 +162,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       var highlightSet: Set = null;
       if (essence.highlightOn(highlightId)) {
         highlightSet = essence.getSingleHighlightValue();
-        highlightControls = React.createElement(HighlightControls, { clicker });
+        highlightControls = React.createElement(HighlightControls, {
+          clicker,
+          orientation: 'horizontal'
+        });
       }
 
       hasMore = dataset.data.length > TOP_N;
@@ -184,10 +187,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         }
 
         var className = 'row';
-        if (highlightSet) {
-          className += ' ' + (selected ? 'selected' : 'not-selected');
-        }
-
+        if (highlightSet) className += ' ' + (selected ? 'selected' : 'not-selected');
         var row = JSX(`
           <div
             className={className}

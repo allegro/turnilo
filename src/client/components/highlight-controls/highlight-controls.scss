@@ -1,13 +1,29 @@
 @import '../../imports';
 
 .highlight-controls {
+  &.horizontal {
+    width: $highlight-button-size * 2 + $highlight-button-spacing;
+    height: $highlight-button-size;
+
+    .button:first-child {
+      margin-right: $highlight-button-spacing;
+    }
+  }
+
+  &.vertical {
+    width: $highlight-button-size;
+    height: $highlight-button-size * 2 + $highlight-button-spacing;
+
+    .button:first-child {
+      margin-bottom: $highlight-button-spacing;
+    }
+  }
+
   .button {
     display: inline-block;
     width: $highlight-button-size;
     height: $highlight-button-size;
     background: $brand;
-    margin-bottom: $highlight-button-spacing;
-    margin-right: $highlight-button-spacing;
     padding: 7px 6px;
     cursor: pointer;
 

@@ -69,8 +69,7 @@ $measure-width: 80px;
     .highlight-controls {
       position: absolute;
       top: -29px;
-      right: 4px;
-      width: ($highlight-button-size + $highlight-button-spacing) * 2;
+      right: 1px;
       z-index: 4;
     }
 
