@@ -7,7 +7,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
 import { moveInList } from '../../utils/general';
 import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../models/index';
 import { PreviewMenu } from '../preview-menu/preview-menu';
 
 const DIMENSION_CLASS_NAME = 'dimension';
@@ -73,7 +73,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   dragStart(dimension: Dimension, e: DragEvent) {
     var { essence } = this.props;
 
-    var newUrl = essence.changeSplit(dimension.getSplitCombine()).getURL();
+    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression)).getURL();
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';

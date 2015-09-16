@@ -6,7 +6,7 @@ import { $, Expression, Executor, Dataset, Set } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { formatterFromData } from '../../utils/formatter';
 import { setDragGhost } from '../../utils/dom';
-import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
@@ -127,7 +127,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   onDragStart(e: DragEvent) {
     var { essence, dimension } = this.props;
 
-    var newUrl = essence.changeSplit(dimension.getSplitCombine()).getURL();
+    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression)).getURL();
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';

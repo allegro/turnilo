@@ -44,7 +44,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       return Resolve.manual('Please add at least one time split', [
         {
           description: `Add a split on ${timeDimension.title}`,
-          adjustment: () => Splits.fromSplitCombine(timeDimension.getSplitCombine())
+          adjustment: () => Splits.fromSplitCombine(SplitCombine.fromExpression(timeDimension.expression))
         }
       ]);
     }
@@ -72,7 +72,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       return Resolve.manual('Must be a time split', [
         {
           description: `Replace ${splitDimension.title} split with time`,
-          adjustment: () => Splits.fromSplitCombine(dataSource.getTimeDimension().getSplitCombine())
+          adjustment: () => Splits.fromSplitCombine(SplitCombine.fromExpression(dataSource.timeAttribute))
         }
       ]);
     }

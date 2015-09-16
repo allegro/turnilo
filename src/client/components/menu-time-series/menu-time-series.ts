@@ -38,9 +38,11 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
     var { dataSource } = essence;
     var measure = dataSource.getSortMeasure(dimension);
 
+    var newEssence = essence.changeSplit(SplitCombine.fromExpression(dimension.expression));
+
     var query = $('main')
       .filter(essence.getEffectiveFilter().toExpression())
-      .split(dimension.getSplitCombine().toSplitExpression(), dimension.name)
+      .split(newEssence.splits.get(0).toSplitExpression(), dimension.name)
       .apply(measure.name, measure.expression)
       .sort($(dimension.name), 'ascending');
 

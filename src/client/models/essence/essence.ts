@@ -4,7 +4,7 @@ import { List, OrderedSet } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Timezone, Duration } from 'chronoshift';
-import { $, Expression, ChainExpression, ExpressionJS, TimeRange } from 'plywood';
+import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
@@ -287,7 +287,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return <List<Manifest>>visualizations.filter(v => v.handleCircumstance(dataSource, splits).isReady());
   }
 
-  public getTimeAttribute(): Expression {
+  public getTimeAttribute(): RefExpression {
     return this.dataSource.timeAttribute;
   }
 
@@ -401,7 +401,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var oldTimeRange = timeAttribute ? this.filter.getTimeRange(timeAttribute) : null;
     var newTimeRange = timeAttribute ? filter.getTimeRange(timeAttribute) : null;
     if (newTimeRange && !newTimeRange.equals(oldTimeRange)) {
-      value.splits = value.splits.updateWithTimeRange(newTimeRange);
+      value.splits = value.splits.updateWithTimeRange(timeAttribute, newTimeRange, true);
     }
 
     return new Essence(value);
@@ -419,9 +419,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     visualization = visualizations.last();
 
     var timeAttribute = this.getTimeAttribute();
-    var timeRange = timeAttribute ? filter.getTimeRange(timeAttribute) : null;
-    if (timeRange) {
-      splits = splits.updateWithTimeRange(timeRange);
+    if (timeAttribute) {
+      splits = splits.updateWithTimeRange(timeAttribute, filter.getTimeRange(timeAttribute));
     }
 
     var value = this.valueOf();

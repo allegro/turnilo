@@ -27,6 +27,15 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     return isInstanceOf(candidate, SplitCombine);
   }
 
+  static fromExpression(expression: Expression): SplitCombine {
+    return new SplitCombine({
+      expression,
+      bucketAction: null,
+      sortAction: null,
+      limitAction: null
+    });
+  }
+
   static fromJS(parameters: SplitCombineJS): SplitCombine {
     var value: SplitCombineValue = {
       expression: Expression.fromJS(parameters.expression),
@@ -94,8 +103,7 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
   }
 
   public toSplitExpression(): Expression {
-    var expression = this.expression;
-    var bucketAction = this.bucketAction;
+    var { expression, bucketAction } = this;
     if (!bucketAction) return expression;
     return expression.performAction(bucketAction);
   }

@@ -247,7 +247,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
     if (dimensionName) {
       var dimension = essence.dataSource.getDimension(dimensionName);
-      if (dimension) this.clicker.changeSplit(dimension.getSplitCombine());
+      if (dimension) this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression));
     }
     this.setState({ dragOver: false });
   }

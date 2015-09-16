@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Clicker, Essence, Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, Filter, Dimension, Measure, SplitCombine } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface MenuActionBarProps {
@@ -33,13 +33,13 @@ export class MenuActionBar extends React.Component<MenuActionBarProps, MenuActio
 
   onSplit(): void {
     var { clicker, dimension, onClose } = this.props;
-    clicker.changeSplit(dimension.getSplitCombine());
+    clicker.changeSplit(SplitCombine.fromExpression(dimension.expression));
     onClose();
   }
 
   onSubsplit(): void {
     var { clicker, dimension, onClose } = this.props;
-    clicker.addSplit(dimension.getSplitCombine());
+    clicker.addSplit(SplitCombine.fromExpression(dimension.expression));
     onClose();
   }
 

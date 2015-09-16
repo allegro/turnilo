@@ -3,7 +3,6 @@
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS, Action } from 'plywood';
 import { makeTitle } from '../../utils/general';
-import { SplitCombine } from '../split-combine/split-combine';
 
 var geoNames = [
   'continent',
@@ -107,26 +106,6 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.expression.equals(other.expression) &&
       this.type === other.type &&
       this.sortOn === other.sortOn;
-  }
-
-  public getBucketAction(): Action {
-    if (this.type === 'TIME') {
-      return Action.fromJS({
-        action: 'timeBucket',
-        duration: 'PT1H',
-        timezone: 'Etc/UTC'
-      });
-    }
-    return null;
-  }
-
-  public getSplitCombine(): SplitCombine {
-    return new SplitCombine({
-      expression: this.expression,
-      bucketAction: this.getBucketAction(),
-      sortAction: null,
-      limitAction: null
-    });
   }
 }
 check = Dimension;

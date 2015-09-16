@@ -96,7 +96,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   dragStart(dimension: Dimension, clause: ChainExpression, e: DragEvent) {
     var { essence } = this.props;
 
-    var newUrl = essence.getURL(); // .changeSplit(dimension.getSplitCombine())
+    var newUrl = essence.getURL(); // .changeSplit(SplitCombine.fromExpression(dimension.expression))
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';

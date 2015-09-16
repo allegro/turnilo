@@ -77,7 +77,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   dragStart(dimension: Dimension, split: SplitCombine, splitIndex: number, e: DragEvent) {
     var { essence } = this.props;
 
-    var newUrl = essence.changeSplit(dimension.getSplitCombine()).getURL();
+    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression)).getURL();
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
@@ -150,7 +150,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       if (dimensionName) {
         var dimension = essence.dataSource.getDimension(dimensionName);
         if (dimension) {
-          newSplitCombine = dimension.getSplitCombine();
+          newSplitCombine = SplitCombine.fromExpression(dimension.expression);
         }
       }
     }

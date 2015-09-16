@@ -3,11 +3,13 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
-import { $, Expression, TimeRange, TimeBucketAction } from 'plywood';
+import { $, Expression, RefExpression, TimeRange, TimeBucketAction } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { Dimension } from '../dimension/dimension';
 import { DataSource } from '../data-source/data-source';
 import { SplitCombine, SplitCombineJS } from '../split-combine/split-combine';
+
+const DEFAULT_GRANULARITY = Duration.fromJS('P1D');
 
 function getBestGranularity(timeRange: TimeRange): Duration {
   var len = timeRange.end.valueOf() - timeRange.start.valueOf();
@@ -133,28 +135,44 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   }
 
   public replace(search: SplitCombine, replace: SplitCombine): Splits {
-    return new Splits(<List<SplitCombine>>this.splitCombines.map((s) => s === search ? replace : s));
+    return new Splits(<List<SplitCombine>>this.splitCombines.map((s) => s.equals(search) ? replace : s));
   }
 
   public toArray(): SplitCombine[] {
     return this.splitCombines.toArray();
   }
 
-  public updateWithTimeRange(timeRange: TimeRange): Splits {
-    var splitCombines = this.splitCombines;
-    if (splitCombines.size !== 1) return this;
+  public updateWithTimeRange(timeAttribute: RefExpression, timeRange: TimeRange, force?: boolean): Splits {
+    var changed = false;
 
-    var timeSplit = splitCombines.get(0);
-    var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
-    if (!timeBucketAction) return this;
+    var granularity = timeRange ? getBestGranularity(timeRange) : DEFAULT_GRANULARITY;
 
-    var granularity = getBestGranularity(timeRange);
-    if (timeBucketAction.duration.equals(granularity)) return this;
+    var newSplitCombines = <List<SplitCombine>>this.splitCombines.map((splitCombine) => {
+      if (!splitCombine.expression.equals(timeAttribute)) return splitCombine;
+      var { bucketAction } = splitCombine;
+      if (bucketAction) {
+        if (!force) return splitCombine;
+        if (bucketAction instanceof TimeBucketAction) {
+          if (!bucketAction.duration.equals(granularity)) {
+            changed = true;
+            return splitCombine.changeBucketAction(new TimeBucketAction({
+              timezone: bucketAction.timezone,
+              duration: granularity
+            }));
+          }
+        } else {
+          return splitCombine;
+        }
+      } else {
+        changed = true;
+        return splitCombine.changeBucketAction(new TimeBucketAction({
+          timezone: Timezone.UTC,
+          duration: granularity
+        }));
+      }
+    });
 
-    return Splits.fromSplitCombine(timeSplit.changeBucketAction(new TimeBucketAction({
-      timezone: timeBucketAction.timezone,
-      duration: granularity
-    })));
+    return changed ? new Splits(newSplitCombines) : this;
   }
 
   public constrainToDataSource(dataSource: DataSource): Splits {
