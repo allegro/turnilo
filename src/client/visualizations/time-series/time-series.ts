@@ -17,7 +17,7 @@ import { QueryError } from '../../components/query-error/query-error';
 
 const H_PADDING = 10;
 const TITLE_TEXT_LEFT = 6;
-const TITLE_TEXT_TOP = 23;
+const TITLE_TEXT_TOP = 25;
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
 const Y_AXIS_WIDTH = 60;
@@ -266,8 +266,10 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
               yTicks={yTicks}
               scaleY={scaleY}
             />
-            <text x={TITLE_TEXT_LEFT} y={TITLE_TEXT_TOP}>
-              {measure.title + ': ' + numeral(myDatum[measureName]).format(measure.format)}
+            <text className="measure-label" x={TITLE_TEXT_LEFT} y={TITLE_TEXT_TOP}>
+              <tspan className="measure-title">{measure.title}</tspan>
+              <tspan className="colon">: </tspan>
+              <tspan className="measure-value">{numeral(myDatum[measureName]).format(measure.format)}</tspan>
             </text>
           </svg>
         `);

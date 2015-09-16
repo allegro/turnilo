@@ -209,18 +209,24 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   }
 
   onMouseLeave() {
-    this.setState({
-      hoverMeasure: null,
-      hoverRow: null
-    });
+    var { hoverMeasure, hoverRow } = this.state;
+    if (hoverMeasure || hoverRow) {
+      this.setState({
+        hoverMeasure: null,
+        hoverRow: null
+      });
+    }
   }
 
   onMouseMove(e: MouseEvent) {
+    var { hoverMeasure, hoverRow } = this.state;
     var pos = this.calculateMousePosition(e);
-    this.setState({
-      hoverMeasure: pos.measure,
-      hoverRow: pos.row
-    });
+    if (hoverMeasure !== pos.measure || hoverRow !== pos.row) {
+      this.setState({
+        hoverMeasure: pos.measure,
+        hoverRow: pos.row
+      });
+    }
   }
 
   onClick(e: MouseEvent) {
@@ -315,9 +321,13 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         });
 
         var rowStyle = { top: rowY };
-        var className = 'row' + hoverClass;
-        if (highlightDelta) className += ' ' + (selected ? 'selected' : 'not-selected');
-        rows.push(JSX(`<div className={className} key={'_' + i} style={rowStyle}>{row}</div>`));
+        rows.push(JSX(`
+          <div
+            className={'row nest' + nest + ' ' + (selected ? 'selected' : 'not-selected') + hoverClass}
+            key={'_' + i}
+            style={rowStyle}
+          >{row}</div>
+        `));
 
         if (!highlighter && selected) {
           highlighterStyle = {
