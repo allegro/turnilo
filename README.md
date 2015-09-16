@@ -36,6 +36,12 @@ brew update
 brew install node
 ```
 
+And gulp:
+
+```
+npm install gulp -g
+```
+
 Also make sure you have the SASS lint gem:
 
 ```
