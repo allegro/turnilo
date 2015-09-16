@@ -12,11 +12,11 @@ latest version and refrain from submitting bug reports for outdated versions.
 
 **Drag-and-drop UI**
 
-![Drag to Split](assets/images/drag-to-split.gif)
+![Drag to Split](https://github.com/implydata/pivot/raw/master/assets/images/drag-to-split.gif)
 
 **Time series exploration**
 
-![Time Highlight](assets/images/time-highlight.gif)
+![Time Highlight](https://github.com/implydata/pivot/raw/master/assets/images/time-highlight.gif)
 
 ## Usage
 
