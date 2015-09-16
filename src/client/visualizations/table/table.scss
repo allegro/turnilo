@@ -57,12 +57,26 @@ $header-padding-top: 12px;
     right: 0;
     top: $header-height;
     bottom: 0;
-    //overflow: auto;
     overflow: hidden;
 
     .row {
       white-space: nowrap;
       width: 100%;
+    }
+  }
+
+  .highlight-cont {
+    position: absolute;
+    left: $space-left;
+    right: 0;
+    top: $header-height;
+    bottom: 0;
+    overflow: hidden;
+
+    .highlighter {
+      right: 0;
+      height: $row-height - 1;
+      border: 1px dashed $brand;
     }
   }
 
@@ -100,6 +114,11 @@ $header-padding-top: 12px;
     }
   }
 
+  .highlight-controls {
+    position: absolute;
+    right: 20px;
+  }
+
   .segment,
   .row {
     position: absolute;
@@ -118,9 +137,9 @@ $header-padding-top: 12px;
   .measure-name {
     padding-top: $header-padding-top;
 
-    &.hover {
-      background: $hover;
-    }
+    //&.hover {
+    //  background: $hover;
+    //}
   }
 
   .segment,

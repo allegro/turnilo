@@ -23,11 +23,25 @@ const SPACE_RIGHT = 10;
 const ROW_PADDING_RIGHT = 50;
 const BODY_PADDING_BOTTOM = 90;
 
+const HIGHLIGHT_CONTROLS_TOP = -34;
+
 function formatSegment(value: any): string {
   if (TimeRange.isTimeRange(value)) {
     return value.start.toISOString();
   }
   return String(value);
+}
+
+function getFilterFromDatum(splits: Splits, flatDatum: Datum): Filter {
+  if (flatDatum['__nest'] === 0) return null;
+  var segments: any[] = [];
+  while (flatDatum['__nest'] > 0) {
+    segments.unshift(flatDatum['Segment']);
+    flatDatum = flatDatum['__parent'];
+  }
+  return new Filter(List(segments.map((segment, i) => {
+    return splits.get(i).expression.in([segment]);
+  })));
 }
 
 interface PositionHover {
@@ -120,7 +134,8 @@ export class Table extends React.Component<VisualizationProps, TableState> {
             error: null,
             flatData: dataset.flatten({
               order: 'preorder',
-              nestingName: '__nest'
+              nestingName: '__nest',
+              parentName: '__parent'
             })
           });
         },
@@ -216,29 +231,25 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       console.log('header click', pos.measure);
 
     } else if (pos.what === 'row') {
-      var ex = essence.splits.first().expression;
-      var value = pos.row['Segment'];
-
-      console.log('ex', ex);
-      console.log('value', value);
+      var rowHighlight = getFilterFromDatum(essence.splits, pos.row);
 
       if (essence.highlightOn(Table.id)) {
-        var highlightSet = essence.getSingleHighlightValue();
-        if (highlightSet.size() === 1 && highlightSet.contains(value)) {
+        if (rowHighlight.equals(essence.highlight.delta)) {
           clicker.dropHighlight();
           return;
         }
       }
 
-      clicker.changeHighlight(Table.id, Filter.fromClause(ex.in([value])));
+      clicker.changeHighlight(Table.id, rowHighlight);
     }
   }
 
   render() {
     var { clicker, essence, stage } = this.props;
     var { loading, error, flatData, scrollLeft, scrollTop, hoverMeasure, hoverRow } = this.state;
+    var { splits } = essence;
 
-    var segmentTitle = essence.splits.getTitle(essence.dataSource);
+    var segmentTitle = splits.getTitle(essence.dataSource);
 
     var measuresArray = essence.getMeasures().toArray();
 
@@ -261,7 +272,8 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     var segments: React.DOMElement<any>[] = [];
     var rows: React.DOMElement<any>[] = [];
-    var highlightControls: React.ReactElement<any> = null;
+    var highlighter: React.DOMElement<any> = null;
+    var highlighterStyle: any = null;
     if (flatData) {
       var formatters = measuresArray.map(measure => {
         var measureName = measure.name;
@@ -269,13 +281,9 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         return formatterFromData(measureValues, measure.format);
       });
 
-      var highlightSet: Set = null;
+      var highlightDelta: Filter = null;
       if (essence.highlightOn(Table.id)) {
-        highlightSet = essence.getSingleHighlightValue();
-        highlightControls = React.createElement(HighlightControls, {
-          clicker,
-          orientation: 'horizontal'
-        });
+        highlightDelta = essence.highlight.delta;
       }
 
       const skipNumber = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT));
@@ -298,7 +306,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
           >{segmentName}</div>
         `));
 
-        var selected = highlightSet && highlightSet.contains(segmentValue);
+        var selected = highlightDelta && highlightDelta.equals(getFilterFromDatum(splits, d));
 
         var row = measuresArray.map((measure, j) => {
           var measureValue = d[measure.name];
@@ -308,8 +316,16 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
         var rowStyle = { top: rowY };
         var className = 'row' + hoverClass;
-        if (highlightSet) className += ' ' + (selected ? 'selected' : 'not-selected');
+        if (highlightDelta) className += ' ' + (selected ? 'selected' : 'not-selected');
         rows.push(JSX(`<div className={className} key={'_' + i} style={rowStyle}>{row}</div>`));
+
+        if (!highlighter && selected) {
+          highlighterStyle = {
+            top: rowY,
+            left
+          };
+          highlighter = JSX(`<div className='highlighter' key='highlight' style={highlighterStyle}></div>`);
+        }
 
         rowY += ROW_HEIGHT;
       }
@@ -343,6 +359,10 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       height: bodyHeight
     };
 
+    const highlightStyle = {
+      top: -scrollTop
+    };
+
     var horizontalScrollShadowStyle: any = { display: 'none' };
     if (scrollTop) {
       horizontalScrollShadowStyle = {
@@ -359,6 +379,17 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       width: SPACE_LEFT + SEGMENT_WIDTH + rowWidth + SPACE_RIGHT,
       height: HEADER_HEIGHT + bodyHeight + BODY_PADDING_BOTTOM
     };
+
+    var highlightControls: React.ReactElement<any> = null;
+    if (highlighter) {
+      highlightControls = React.createElement(HighlightControls, {
+        clicker,
+        orientation: 'horizontal',
+        style: {
+          top: HEADER_HEIGHT + highlighterStyle.top - scrollTop + HIGHLIGHT_CONTROLS_TOP
+        }
+      });
+    }
 
     var loader: React.ReactElement<any> = null;
     if (loading) {
@@ -382,6 +413,9 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         <div className="body-cont">
           <div className="body" style={bodyStyle}>{rows}</div>
         </div>
+        <div className="highlight-cont">
+          <div className="highlight" style={highlightStyle}>{highlighter}</div>
+        </div>
         <div className="horizontal-scroll-shadow" style={horizontalScrollShadowStyle}></div>
         <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
         {queryError}
@@ -396,6 +430,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         >
           <div className="scroller" style={scrollerStyle}></div>
         </div>
+        {highlightControls}
       </div>
     `);
   }

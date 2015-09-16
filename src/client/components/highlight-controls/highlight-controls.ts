@@ -16,6 +16,7 @@ interface HighlightControlsProps {
   clicker: Clicker;
   orientation: string;
   onClose?: Function;
+  style?: any;
 }
 
 interface HighlightControlsState {
@@ -44,11 +45,11 @@ export class HighlightControls extends React.Component<HighlightControlsProps, H
   }
 
   render() {
-    var { orientation } = this.props;
+    var { orientation, style } = this.props;
 
     var orientationClass = orientation === 'horizontal' ? 'horizontal' : 'vertical';
     return JSX(`
-      <div className={'highlight-controls ' + orientationClass} onMouseDown={stopEvent}>
+      <div className={'highlight-controls ' + orientationClass} onMouseDown={stopEvent} style={style}>
         <div className="button accept" onClick={this.onAccept.bind(this)} >
           <Icon name="check"/>
         </div>
