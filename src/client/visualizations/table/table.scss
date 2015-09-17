@@ -36,9 +36,13 @@ $header-padding-top: 12px;
       white-space: nowrap;
     }
 
-    .arrow {
+    .sort-arrow {
       position: absolute;
       right: -15px;
+
+      &.ascending {
+        transform: rotate(180deg);
+      }
     }
   }
 

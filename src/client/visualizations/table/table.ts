@@ -237,9 +237,12 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var pos = this.calculateMousePosition(e);
 
     if (pos.what === 'header') {
+      var sortExpression = $(pos.measure.name);
+      var commonSort = essence.getCommonSort();
+      var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === 'descending');
       clicker.changeSplits(essence.splits.changeSort(new SortAction({
-        expression: $(pos.measure.name),
-        direction: 'descending'
+        expression: sortExpression,
+        direction: myDescending ? 'ascending' : 'descending'
       })));
 
     } else if (pos.what === 'row') {
@@ -271,7 +274,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       if (commonSort && (<RefExpression>commonSort.expression).name === measure.name) {
         sortArrow = React.createElement(Icon, {
           name: 'sort-arrow',
-          className: 'arrow ' + commonSort.direction,
+          className: 'sort-arrow ' + commonSort.direction,
           width: 8
         });
       }
