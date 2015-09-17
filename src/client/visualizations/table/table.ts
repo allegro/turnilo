@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import * as numeral from 'numeral';
-import { $, ply, Expression, Executor, Dataset, Datum, TimeRange, Set } from 'plywood';
+import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, SortAction } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { formatterFromData } from '../../utils/formatter';
 import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../models/index';
@@ -115,7 +115,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       measures.forEach((measure) => {
         subQuery = subQuery.apply(measure.name, measure.expression);
       });
-      subQuery = subQuery.sort($(measures.first().name), 'descending').limit(limit);
+      subQuery = subQuery.performAction(essence.getSortForSplit(i)).limit(limit);
 
       if (i + 1 < splits.length()) {
         subQuery = subQuery.apply('Split', makeQuery(i + 1));
@@ -237,7 +237,10 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var pos = this.calculateMousePosition(e);
 
     if (pos.what === 'header') {
-      console.log('header click', pos.measure);
+      clicker.changeSplits(essence.splits.changeSort(new SortAction({
+        expression: $(pos.measure.name),
+        direction: 'descending'
+      })));
 
     } else if (pos.what === 'row') {
       var rowHighlight = getFilterFromDatum(essence.splits, pos.row);
@@ -259,15 +262,16 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var { splits } = essence;
 
     var segmentTitle = splits.getTitle(essence.dataSource);
+    var commonSort = essence.getCommonSort();
 
     var measuresArray = essence.getMeasures().toArray();
 
     var headerColumns = measuresArray.map((measure, i) => {
       var sortArrow: React.ReactElement<any> = null;
-      if (i === 0) {
+      if (commonSort && (<RefExpression>commonSort.expression).name === measure.name) {
         sortArrow = React.createElement(Icon, {
           name: 'sort-arrow',
-          className: 'arrow',
+          className: 'arrow ' + commonSort.direction,
           width: 8
         });
       }

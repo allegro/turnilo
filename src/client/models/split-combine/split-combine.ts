@@ -118,6 +118,12 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     return new SplitCombine(value);
   }
 
+  public changeSort(sortAction: SortAction): SplitCombine {
+    var value = this.valueOf();
+    value.sortAction = sortAction;
+    return new SplitCombine(value);
+  }
+
   public getDimension(dataSource: DataSource): Dimension {
     return dataSource.getDimensionByExpression(this.expression);
   }

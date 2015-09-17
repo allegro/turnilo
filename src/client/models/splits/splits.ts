@@ -3,7 +3,7 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
-import { $, Expression, RefExpression, TimeRange, TimeBucketAction } from 'plywood';
+import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction } from 'plywood';
 import { listsEqual } from '../../utils/general';
 import { Dimension } from '../dimension/dimension';
 import { DataSource } from '../data-source/data-source';
@@ -104,6 +104,10 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
 
   public removeSplit(split: SplitCombine): Splits {
     return new Splits(<List<SplitCombine>>this.splitCombines.filter(s => s !== split));
+  }
+
+  public changeSort(sort: SortAction): Splits {
+    return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSort(sort)));
   }
 
   public getTitle(dataSource: DataSource): string {
