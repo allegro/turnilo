@@ -2,7 +2,7 @@
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS, Action } from 'plywood';
-import { makeTitle } from '../../utils/general';
+import { makeTitle } from '../../utils/general/general';
 
 var geoNames = [
   'continent',

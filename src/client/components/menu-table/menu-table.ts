@@ -3,7 +3,7 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { formatterFromData } from '../../utils/formatter';
+import { formatterFromData } from '../../utils/formatter/formatter';
 import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
 import { Checkbox } from '../checkbox/checkbox';
 

@@ -5,7 +5,7 @@ import * as React from 'react/addons';
 import * as numeral from 'numeral';
 // import * as Icon from 'react-svg-icons';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';
-import { hasOwnProperty } from '../../utils/general';
+import { hasOwnProperty } from '../../utils/general/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../models/index";
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';

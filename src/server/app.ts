@@ -46,7 +46,9 @@ app.use(bodyParser.json());
 app.get('/', (req: Request, res: Response, next: Function) => {
   res.render('pivot', {
     version: VERSION,
-    dataSources: JSON.stringify(DATA_SOURCES),
+    config: JSON.stringify({
+      dataSources: DATA_SOURCES
+    }),
     title: 'Pivot'
   });
 });

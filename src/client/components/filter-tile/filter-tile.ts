@@ -6,9 +6,9 @@ import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../models/index';
-import { calculateDragPosition, DragPosition } from '../../utils/general';
-import { formatStartEnd } from '../../utils/date';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom';
+import { calculateDragPosition, DragPosition } from '../../utils/general/general';
+import { formatStartEnd } from '../../utils/date/date';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom/dom';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { FilterMenu } from '../filter-menu/filter-menu';
 

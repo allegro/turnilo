@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction } from 'plywood';
-import { listsEqual } from '../../utils/general';
+import { listsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
 import { DataSource } from '../data-source/data-source';
 import { SplitCombine, SplitCombineJS } from '../split-combine/split-combine';

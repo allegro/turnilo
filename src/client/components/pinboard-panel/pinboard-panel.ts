@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { dataTransferTypesGet } from '../../utils/dom';
+import { dataTransferTypesGet } from '../../utils/dom/dom';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
 

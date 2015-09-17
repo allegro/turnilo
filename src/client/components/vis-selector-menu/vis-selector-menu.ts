@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { isInside, escapeKey } from '../../utils/dom';
+import { isInside, escapeKey } from '../../utils/dom/dom';
 import { Clicker, Essence, Measure, Manifest } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 

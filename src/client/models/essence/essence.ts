@@ -5,7 +5,7 @@ import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange, SortAction } from 'plywood';
-import { listsEqual } from '../../utils/general';
+import { listsEqual } from '../../utils/general/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
 import { Highlight, HighlightJS } from '../highlight/highlight';

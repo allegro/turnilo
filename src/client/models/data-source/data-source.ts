@@ -1,12 +1,10 @@
 'use strict';
 
 import { List } from 'immutable';
-import * as d3 from 'd3';
-import * as Q from 'q';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Timezone, hour } from 'chronoshift';
 import { $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
-import { makeTitle, listsEqual } from '../../utils/general';
+import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 
@@ -170,32 +168,6 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     });
   }
 
-  static fromDataArray(name: string, title: string, source: string, maxTime: Date, rawData: any[]): DataSource {
-    var mainDataset = Dataset.fromJS(rawData);
-    mainDataset.introspect();
-
-    var executor = basicExecutorFactory({
-      datasets: {
-        main: mainDataset
-      }
-    });
-
-    var dm = makeDimensionsMetricsFromAttributes(mainDataset.attributes);
-    return new DataSource({
-      name,
-      title,
-      source,
-      metadataLoaded: true,
-      loadError: null,
-      maxTime,
-      dimensions: dm.dimensions,
-      measures: dm.measures,
-      timeAttribute: dm.timeAttribute,
-      defaultSortOn: dm.defaultSortOn,
-      executor
-    });
-  }
-
   static fromJS(parameters: DataSourceJS, executor: Executor = null): DataSource {
     var value: DataSourceValue = {
       executor: null,
@@ -355,23 +327,25 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return new DataSource(value);
   }
 
-  public loadSource(): Q.Promise<DataSource> {
-    var deferred = <Q.Deferred<DataSource>>Q.defer();
-    if (this.metadataLoaded) throw new Error('already loaded');
-    d3.json(this.source, (err, json) => {
-      if (err) {
+  public loadDataArray(rawData: any[]): DataSource {
+    var mainDataset = Dataset.fromJS(rawData);
+    mainDataset.introspect();
 
-      } else {
-        // Temp hack
-        var secInHour = 60 * 60;
-        json.forEach((d: Datum, i: number) => {
-          d['time'] = new Date(Date.parse(d['time']) + (103 * i % secInHour) * 1000);
-        });
-
-        deferred.resolve(DataSource.fromDataArray(this.name, this.title, this.source, this.maxTime, json));
+    var dm = makeDimensionsMetricsFromAttributes(mainDataset.attributes);
+    var value = this.valueOf();
+    value.metadataLoaded = true;
+    value.loadError = null;
+    value.dimensions = dm.dimensions;
+    value.measures = dm.measures;
+    value.timeAttribute = dm.timeAttribute;
+    value.defaultSortOn = dm.defaultSortOn;
+    value.executor = basicExecutorFactory({
+      datasets: {
+        main: mainDataset
       }
     });
-    return deferred.promise;
+
+    return new DataSource(value);
   }
 }
 check = DataSource;

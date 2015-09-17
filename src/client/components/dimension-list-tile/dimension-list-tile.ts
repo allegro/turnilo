@@ -5,8 +5,8 @@ import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
-import { moveInList } from '../../utils/general';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom';
+import { moveInList } from '../../utils/general/general';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom/dom';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../models/index';
 import { PreviewMenu } from '../preview-menu/preview-menu';
 

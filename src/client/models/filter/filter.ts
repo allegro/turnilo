@@ -3,7 +3,7 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, LiteralExpression, ChainExpression, ExpressionJS, InAction, Set, TimeRange } from 'plywood';
-import { listsEqual } from '../../utils/general';
+import { listsEqual } from '../../utils/general/general';
 import { DataSource } from '../data-source/data-source';
 
 function withholdClause(clauses: List<ChainExpression>, clause: ChainExpression, allowIndex: number): List<ChainExpression> {

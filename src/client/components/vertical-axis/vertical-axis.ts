@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import * as d3 from 'd3';
-import { formatterFromData } from '../../utils/formatter';
+import { formatterFromData } from '../../utils/formatter/formatter';
 import { Stage, Measure } from '../../models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 

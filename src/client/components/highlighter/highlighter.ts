@@ -5,7 +5,7 @@ import * as React from 'react/addons';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../models/index';
-import { isInside, escapeKey } from '../../utils/dom';
+import { isInside, escapeKey } from '../../utils/dom/dom';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
 
 interface HighlighterProps {

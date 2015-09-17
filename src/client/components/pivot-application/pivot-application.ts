@@ -4,7 +4,8 @@ import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration, day } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
-import { dataTransferTypesGet } from '../../utils/dom';
+import { dataTransferTypesGet } from '../../utils/dom/dom';
+import { loadDataSource } from '../../utils/ajax/ajax';
 import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
@@ -119,7 +120,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     if (dataSource.metadataLoaded) {
       this.fillInDetails(dataSource);
     } else {
-      dataSource.loadSource().then((newDataSource) => {
+      loadDataSource(dataSource).then((newDataSource) => {
         this.clicker.changeDataSource(newDataSource);
         this.fillInDetails(newDataSource);
       }).done();

@@ -5,8 +5,8 @@ import * as React from 'react/addons';
 import { Timezone, WallTime } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, AttributeInfo } from 'plywood';
 
-import { queryUrlExecutorFactory } from './utils/executors';
-import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource } from "./models/index";
+import { queryUrlExecutorFactory } from './utils/ajax/ajax';
+import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource, DataSourceJS } from "./models/index";
 import { PivotApplication } from "./components/index";
 
 // Init chronoshift
@@ -15,13 +15,13 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-var globalDataSources: any[] = (<any>window)['PIVOT_DATA_SOURCES'];
+var config: any = (<any>window)['PIVOT_CONFIG'];
 
 var dataSources: List<DataSource>;
-if (Array.isArray(globalDataSources)) {
-  dataSources = List(globalDataSources.map(d => {
-    var executor = queryUrlExecutorFactory(d.name, '/query');
-    return DataSource.fromJS(d, executor);
+if (config && Array.isArray(config.dataSources)) {
+  dataSources = <List<DataSource>>List(config.dataSources.map((dataSourceJS: DataSourceJS) => {
+    var executor = queryUrlExecutorFactory(dataSourceJS.name, '/query');
+    return DataSource.fromJS(dataSourceJS, executor);
   }));
 } else {
   // Assume test / demo

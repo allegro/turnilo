@@ -5,7 +5,7 @@ import * as React from 'react/addons';
 import * as d3 from 'd3';
 import * as numeral from 'numeral';
 import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
-import { listsEqual } from '../../utils/general';
+import { listsEqual } from '../../utils/general/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../models/index";
 import { ChartLine } from '../../components/chart-line/chart-line';
 import { TimeAxis } from '../../components/time-axis/time-axis';
