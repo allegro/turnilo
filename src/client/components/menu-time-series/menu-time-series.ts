@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
-import { Stage, Essence, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../models/index';
+import { Stage, Essence, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../../common/models/index';
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
 

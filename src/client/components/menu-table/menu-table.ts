@@ -3,8 +3,8 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { formatterFromData } from '../../utils/formatter/formatter';
-import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../models/index";
+import { formatterFromData } from '../../../common/utils/formatter/formatter';
+import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../../common/models/index";
 import { Checkbox } from '../checkbox/checkbox';
 
 const TOP_N = 100;

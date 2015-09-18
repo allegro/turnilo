@@ -4,8 +4,8 @@ import { List, OrderedSet } from 'immutable';
 import * as React from 'react/addons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
-import { hasOwnProperty } from '../../utils/general/general';
-import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { hasOwnProperty } from '../../../common/utils/general/general';
+import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 

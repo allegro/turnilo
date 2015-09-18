@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import { $, Expression, Executor, Dataset, Datum } from 'plywood';
-import { Stage, Filter, Dimension, Measure } from '../../models/index';
+import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface ChartLineProps {

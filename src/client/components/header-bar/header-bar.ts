@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Datum, Dataset } from 'plywood';
-import { Essence } from "../../models/index";
+import { Essence } from "../../../common/models/index";
 
 function panic() {
   window.location.assign(Essence.getBaseURL());

@@ -4,7 +4,7 @@ import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { dataTransferTypesGet } from '../../utils/dom/dom';
-import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
 
 interface PinboardPanelProps {
@@ -97,20 +97,18 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var { dataSource, filter, selectedMeasures, pinnedDimensions } = essence;
 
     var dimensionTiles: Array<React.ReactElement<any>> = null;
-    if (dataSource.metadataLoaded) {
-      dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
-        var dimension = dataSource.getDimension(dimensionName);
-        if (!dimension) return null;
-        return JSX(`
-          <DimensionTile
-            key={dimension.name}
-            clicker={clicker}
-            essence={essence}
-            dimension={dimension}
-          />
-        `);
-      });
-    }
+    dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
+      var dimension = dataSource.getDimension(dimensionName);
+      if (!dimension) return null;
+      return JSX(`
+        <DimensionTile
+          key={dimension.name}
+          clicker={clicker}
+          essence={essence}
+          dimension={dimension}
+        />
+      `);
+    });
 
     var placeholderTile: React.DOMElement<any> = null;
     if (dragOver) {

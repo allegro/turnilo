@@ -5,8 +5,8 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../models/index';
-import { calculateDragPosition, DragPosition } from '../../utils/general/general';
+import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../../common/models/index';
+import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom/dom';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { SplitMenu } from '../split-menu/split-menu';
@@ -201,36 +201,34 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     var itemX = 0;
     var splitItems: Array<React.ReactElement<any>> = null;
-    if (dataSource.metadataLoaded) {
-      splitItems = splits.toArray().map((split, i) => {
-        var dimension = split.getDimension(dataSource);
-        if (!dimension) throw new Error('dimension not found');
+    splitItems = splits.toArray().map((split, i) => {
+      var dimension = split.getDimension(dataSource);
+      if (!dimension) throw new Error('dimension not found');
 
-        var style = { transform: `translate3d(${itemX}px,0,0)` };
-        itemX += sectionWidth;
+      var style = { transform: `translate3d(${itemX}px,0,0)` };
+      itemX += sectionWidth;
 
-        var classNames = [
-          SPLIT_CLASS_NAME,
-          dimension.className
-        ];
-        if (dimension === menuDimension) classNames.push('selected');
-        return JSX(`
-          <div
-            className={classNames.join(' ')}
-            key={split.toKey()}
-            draggable="true"
-            onClick={this.selectDimensionSplit.bind(this, dimension, split)}
-            onDragStart={this.dragStart.bind(this, dimension, split, i)}
-            style={style}
-          >
-            <div className="reading">{split.getTitle(dataSource)}</div>
-            <div className="remove" onClick={this.removeSplit.bind(this, split)}>
-              <Icon name="x" width={12} height={12}/>
-            </div>
+      var classNames = [
+        SPLIT_CLASS_NAME,
+        dimension.className
+      ];
+      if (dimension === menuDimension) classNames.push('selected');
+      return JSX(`
+        <div
+          className={classNames.join(' ')}
+          key={split.toKey()}
+          draggable="true"
+          onClick={this.selectDimensionSplit.bind(this, dimension, split)}
+          onDragStart={this.dragStart.bind(this, dimension, split, i)}
+          style={style}
+        >
+          <div className="reading">{split.getTitle(dataSource)}</div>
+          <div className="remove" onClick={this.removeSplit.bind(this, split)}>
+            <Icon name="x" width={12} height={12}/>
           </div>
-        `);
-      }, this);
-    }
+        </div>
+      `);
+    }, this);
 
     var fancyDragIndicator: React.ReactElement<any> = null;
     if (dragInsertPosition !== null || dragReplacePosition !== null) {

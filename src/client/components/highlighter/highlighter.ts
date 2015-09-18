@@ -4,7 +4,7 @@ import * as React from 'react/addons';
 //import * as Icon from 'react-svg-icons';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
-import { Clicker, Essence, Filter, Dimension, Measure } from '../../models/index';
+import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';
 import { isInside, escapeKey } from '../../utils/dom/dom';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
 

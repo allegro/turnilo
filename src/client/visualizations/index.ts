@@ -1,7 +1,7 @@
 'use strict';
 
 import { List } from 'immutable';
-import { Manifest } from '../models/index';
+import { Manifest } from '../../common/models/index';
 
 import { Totals } from './totals/totals';
 import { Table } from './table/table';

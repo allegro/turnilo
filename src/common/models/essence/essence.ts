@@ -361,7 +361,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (splitCombine.sortAction) return splitCombine.sortAction;
     var dataSource = this.dataSource;
     return new SortAction({
-      expression: $(dataSource.defaultSortOn),
+      expression: $(dataSource.defaultSortMeasure),
       direction: 'descending'
     });
   }

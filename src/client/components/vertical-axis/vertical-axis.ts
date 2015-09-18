@@ -3,8 +3,8 @@
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import * as d3 from 'd3';
-import { formatterFromData } from '../../utils/formatter/formatter';
-import { Stage, Measure } from '../../models/index';
+import { formatterFromData } from '../../../common/utils/formatter/formatter';
+import { Stage, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 const TICK_WIDTH = 5;

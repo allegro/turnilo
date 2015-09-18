@@ -4,8 +4,8 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Executor } from 'plywood';
+import { Stage } from '../../../common/models/index';
 import { isInside, escapeKey } from '../../utils/dom/dom';
-import { Stage } from '../../models/index';
 import { BodyPortal } from '../body-portal/body-portal';
 
 const OFFSET_H = 10;

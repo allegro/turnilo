@@ -5,8 +5,8 @@ import * as Icon from 'react-svg-icons';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../models/index';
-import { calculateDragPosition, DragPosition } from '../../utils/general/general';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
+import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { formatStartEnd } from '../../utils/date/date';
 import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom/dom';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
@@ -292,68 +292,66 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     var itemX = 0;
     var filterItems: Array<React.ReactElement<any>> = null;
-    if (dataSource.metadataLoaded) {
-      var itemsBlanks = filter.clauses.toArray()
-        .map((clause): ItemBlank => {
-          var dimension = dataSource.getDimensionByExpression(clause.expression);
-          if (!dimension) return null;
-          return {
-            dimension,
-            clause
-          };
-        })
-        .filter(Boolean);
+    var itemsBlanks = filter.clauses.toArray()
+      .map((clause): ItemBlank => {
+        var dimension = dataSource.getDimensionByExpression(clause.expression);
+        if (!dimension) return null;
+        return {
+          dimension,
+          clause
+        };
+      })
+      .filter(Boolean);
 
-      if (possibleDimension) {
-        var dummyBlank: ItemBlank = { dimension: possibleDimension };
-        if (possibleInsertPosition !== null) {
-          itemsBlanks.splice(possibleInsertPosition, 0, dummyBlank);
-        }
-        if (possibleReplacePosition !== null) {
-          itemsBlanks[possibleReplacePosition] = dummyBlank;
-        }
+    if (possibleDimension) {
+      var dummyBlank: ItemBlank = { dimension: possibleDimension };
+      if (possibleInsertPosition !== null) {
+        itemsBlanks.splice(possibleInsertPosition, 0, dummyBlank);
       }
-
-      filterItems = itemsBlanks.map((itemsBlank) => {
-        var { dimension, clause } = itemsBlank;
-
-        var style = { transform: `translate3d(${itemX}px,0,0)` };
-        itemX += sectionWidth;
-
-        var classNames = [FILTER_CLASS_NAME, dimension.className];
-        if (dimension === menuDimension) classNames.push('selected');
-
-        var className = classNames.join(' ');
-        var key = dimension.name;
-
-        if (clause) {
-          return JSX(`
-            <div
-              className={className}
-              key={key}
-              draggable="true"
-              onClick={this.clickDimension.bind(this, dimension)}
-              onDragStart={this.dragStart.bind(this, dimension, clause)}
-              style={style}
-            >
-              <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
-              {this.renderRemoveButton(clause)}
-            </div>
-          `);
-        } else {
-          return JSX(`
-            <div
-              className={className}
-              key={key}
-              ref={this.dummyMount.bind(this, dimension)}
-              style={style}
-            >
-              <div className="reading">{this.formatLabelDummy(dimension)}</div>
-            </div>
-          `);
-        }
-      });
+      if (possibleReplacePosition !== null) {
+        itemsBlanks[possibleReplacePosition] = dummyBlank;
+      }
     }
+
+    filterItems = itemsBlanks.map((itemsBlank) => {
+      var { dimension, clause } = itemsBlank;
+
+      var style = { transform: `translate3d(${itemX}px,0,0)` };
+      itemX += sectionWidth;
+
+      var classNames = [FILTER_CLASS_NAME, dimension.className];
+      if (dimension === menuDimension) classNames.push('selected');
+
+      var className = classNames.join(' ');
+      var key = dimension.name;
+
+      if (clause) {
+        return JSX(`
+          <div
+            className={className}
+            key={key}
+            draggable="true"
+            onClick={this.clickDimension.bind(this, dimension)}
+            onDragStart={this.dragStart.bind(this, dimension, clause)}
+            style={style}
+          >
+            <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
+            {this.renderRemoveButton(clause)}
+          </div>
+        `);
+      } else {
+        return JSX(`
+          <div
+            className={className}
+            key={key}
+            ref={this.dummyMount.bind(this, dimension)}
+            style={style}
+          >
+            <div className="reading">{this.formatLabelDummy(dimension)}</div>
+          </div>
+        `);
+      }
+    });
 
     var fancyDragIndicator: React.ReactElement<any> = null;
     if (dragInsertPosition !== null || dragReplacePosition !== null) {

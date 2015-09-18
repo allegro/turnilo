@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import * as d3 from 'd3';
-import { Stage, Filter, Dimension, Measure } from '../../models/index';
+import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 const TICK_HEIGHT = 5;

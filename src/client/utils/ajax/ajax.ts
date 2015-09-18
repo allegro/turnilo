@@ -2,7 +2,7 @@
 
 import * as Qajax from 'qajax';
 import { $, Expression, Executor, Dataset, Datum, ChainExpression } from 'plywood';
-import { DataSource } from '../../models/index';
+import { DataSource } from '../../../common/models/index';
 
 function getSplitsDescription(ex: Expression): string {
   var splits: string[] = [];
@@ -37,26 +37,4 @@ export function queryUrlExecutorFactory(name: string, url: string): Executor {
         }
       );
   };
-}
-
-export function loadDataSource(unloadedDataSource: DataSource): Q.Promise<DataSource> {
-  if (unloadedDataSource.metadataLoaded) return Q(unloadedDataSource);
-
-  return Qajax({
-    method: "GET",
-    url: this.source
-  })
-    .then(Qajax.filterSuccess)
-    .then(Qajax.toJSON)
-    .then(
-      (dataJS) => {
-        dataJS.forEach((d: Datum) => {
-          d['time'] = new Date(d['time']);
-        });
-        return unloadedDataSource.loadDataArray(dataJS);
-      },
-      (xhr: XMLHttpRequest): DataSource => {
-        throw new Error(JSON.parse(xhr.responseText).message);
-      }
-    );
 }

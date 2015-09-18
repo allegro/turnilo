@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
-import { Stage } from '../../models/index';
+import { Stage } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface GridLinesProps {

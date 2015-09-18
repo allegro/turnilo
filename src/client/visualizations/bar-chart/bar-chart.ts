@@ -5,7 +5,7 @@ import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 // import { ... } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, Splits, Dimension, Measure, VisualizationProps, Resolve } from '../../models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Splits, Dimension, Measure, VisualizationProps, Resolve } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface BarChartState {

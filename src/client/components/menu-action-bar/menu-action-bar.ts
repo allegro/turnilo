@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Clicker, Essence, Filter, Dimension, Measure, SplitCombine } from '../../models/index';
+import { Clicker, Essence, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface MenuActionBarProps {

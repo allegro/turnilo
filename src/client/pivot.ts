@@ -6,7 +6,7 @@ import { Timezone, WallTime } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, AttributeInfo } from 'plywood';
 
 import { queryUrlExecutorFactory } from './utils/ajax/ajax';
-import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource, DataSourceJS } from "./models/index";
+import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource, DataSourceJS } from '../common/models/index';
 import { PivotApplication } from "./components/index";
 
 // Init chronoshift
@@ -24,10 +24,7 @@ if (config && Array.isArray(config.dataSources)) {
     return DataSource.fromJS(dataSourceJS, executor);
   }));
 } else {
-  // Assume test / demo
-  dataSources = List([
-    DataSource.fromDataFileURL('static-wiki-file', 'Static Wikipedia Edits', '/wikipedia.json', new Date())
-  ]);
+  throw new Error('config not found');
 }
 
 React.render(

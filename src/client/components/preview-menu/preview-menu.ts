@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { MenuHeader } from '../menu-header/menu-header';
 import { MenuTable } from '../menu-table/menu-table';

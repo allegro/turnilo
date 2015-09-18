@@ -6,6 +6,7 @@ import { Router, Request, Response } from 'express';
 import { $, Expression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
 import { druidRequesterFactory } from 'plywood-druid-requester';
 import { Timezone, WallTime, Duration } from "chronoshift";
+import { DataSource } from '../../../common/models/index';
 
 import { DRUID_HOST, DATA_SOURCES } from '../../config';
 
@@ -62,16 +63,16 @@ function getFileData(filename: string): any[] {
   return fileJSON;
 }
 
-function makeExternal(dataSource: any): External {
+function makeExternal(dataSource: DataSource): External {
   var attributes: AttributeJSs = {};
 
   // Right here we have the classic mega hack.
-  for (var dimension of dataSource.dimensions) {
-    attributes[dimension.name] = { type: dimension.type || 'STRING' };
-  }
+  dataSource.dimensions.forEach((dimension) => {
+    attributes[dimension.name] = { type: dimension.type };
+  });
 
-  for (var measure of dataSource.measures) {
-    var expression = measure.expression ? Expression.fromJSLoose(measure.expression) : $(measure.name);
+  dataSource.measures.forEach((measure) => {
+    var expression = measure.expression;
     var freeReferences = expression.getFreeReferences();
     for (var freeReference of freeReferences) {
       if (freeReference === 'main') continue;
@@ -81,13 +82,13 @@ function makeExternal(dataSource: any): External {
         attributes[freeReference] = { type: 'NUMBER' };
       }
     }
-  }
+  });
   // Mega hack ends here
 
   return External.fromJS({
     engine: 'druid',
     dataSource: dataSource.source,
-    timeAttribute: dataSource.timeAttribute,
+    timeAttribute: dataSource.timeAttribute.name,
     context: null,
     attributes,
     requester: druidRequester

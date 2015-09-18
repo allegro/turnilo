@@ -3,7 +3,7 @@
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Filter, Dimension, Measure } from '../../models/index';
+import { Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 interface TileHeaderProps {

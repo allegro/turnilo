@@ -5,8 +5,7 @@ import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration, day } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesGet } from '../../utils/dom/dom';
-import { loadDataSource } from '../../utils/ajax/ajax';
-import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../models/index";
+import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../../common/models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
@@ -117,14 +116,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     if (!dataSources.size) throw new Error('must have data sources');
     var dataSource = dataSources.first();
 
-    if (dataSource.metadataLoaded) {
-      this.fillInDetails(dataSource);
-    } else {
-      loadDataSource(dataSource).then((newDataSource) => {
-        this.clicker.changeDataSource(newDataSource);
-        this.fillInDetails(newDataSource);
-      }).done();
-    }
+    this.fillInDetails(dataSource);
   }
 
   componentWillUpdate(nextProps: PivotApplicationProps, nextState: PivotApplicationState): void {
@@ -274,7 +266,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var { dataSource, visualization } = essence;
 
     var visElement: React.ReactElement<any> = null;
-    if (dataSource.metadataLoaded && essence.visResolve.isReady() && visualizationStage) {
+    if (essence.visResolve.isReady() && visualizationStage) {
       var visProps: VisualizationProps = {
         clicker,
         essence,

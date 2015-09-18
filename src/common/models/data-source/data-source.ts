@@ -42,14 +42,14 @@ interface DimensionsMetrics {
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
-  defaultSortOn: string;
+  defaultSortMeasure: string;
 }
 
 function makeDimensionsMetricsFromAttributes(attributes: Attributes): DimensionsMetrics {
   var dimensionArray: Dimension[] = [];
   var measureArray: Measure[] = [];
   var timeAttribute = $('time');
-  var defaultSortOn: string = null;
+  var defaultSortMeasure: string = null;
 
   if (!attributes['count']) {
     measureArray.push(new Measure({
@@ -58,7 +58,7 @@ function makeDimensionsMetricsFromAttributes(attributes: Attributes): Dimensions
       expression: $('main').count(),
       format: Measure.DEFAULT_FORMAT
     }));
-    defaultSortOn = 'count';
+    defaultSortMeasure = 'count';
   }
 
   for (let k in attributes) {
@@ -110,15 +110,15 @@ function makeDimensionsMetricsFromAttributes(attributes: Attributes): Dimensions
     return a.title.localeCompare(b.title);
   });
 
-  if (!defaultSortOn && measureArray.length) {
-    defaultSortOn = measureArray[0].name;
+  if (!defaultSortMeasure && measureArray.length) {
+    defaultSortMeasure = measureArray[0].name;
   }
 
   return {
     dimensions: List(dimensionArray),
     measures: List(measureArray),
     timeAttribute,
-    defaultSortOn
+    defaultSortMeasure
   };
 }
 
@@ -126,15 +126,13 @@ function makeDimensionsMetricsFromAttributes(attributes: Attributes): Dimensions
 export interface DataSourceValue {
   name: string;
   title: string;
+  engine: string;
   source: string;
-  metadataLoaded: boolean;
-  loadError: string;
-
+  dimensions: List<Dimension>;
+  measures: List<Measure>;
+  timeAttribute: RefExpression;
+  defaultSortMeasure: string;
   maxTime?: Date;
-  dimensions?: List<Dimension>;
-  measures?: List<Measure>;
-  timeAttribute?: RefExpression;
-  defaultSortOn?: string;
 
   executor?: Executor;
 }
@@ -142,13 +140,13 @@ export interface DataSourceValue {
 export interface DataSourceJS {
   name: string;
   title: string;
+  engine: string;
   source: string;
-
+  dimensions: DimensionJS[];
+  measures: MeasureJS[];
+  timeAttribute: string;
+  defaultSortMeasure: string;
   maxTime?: Date;
-  dimensions?: DimensionJS[];
-  measures?: MeasureJS[];
-  timeAttribute?: string;
-  defaultSortOn?: string;
 }
 
 var check: Class<DataSourceValue, DataSourceJS>;
@@ -157,34 +155,23 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return isInstanceOf(candidate, DataSource);
   }
 
-  static fromDataFileURL(name: string, title: string, source: string, maxTime: Date): DataSource {
-    return new DataSource({
-      name,
-      title,
-      source,
-      metadataLoaded: false,
-      loadError: null,
-      maxTime
-    });
-  }
-
   static fromJS(parameters: DataSourceJS, executor: Executor = null): DataSource {
+    var dimensions = makeUniqueDimensionList(parameters.dimensions.map(Dimension.fromJS));
+    var measures = makeUniqueMeasureList(parameters.measures.map(Measure.fromJS));
+
     var value: DataSourceValue = {
       executor: null,
       name: parameters.name,
       title: parameters.title,
-      source: parameters.source || 'default-source',
-      metadataLoaded: Boolean(parameters.dimensions && parameters.measures),
-      loadError: null
+      engine: parameters.engine,
+      source: parameters.source,
+      dimensions,
+      measures,
+      timeAttribute: parameters.timeAttribute ? $(parameters.timeAttribute) : null,
+      defaultSortMeasure: parameters.defaultSortMeasure || measures.get(0).name
     };
     if (parameters.maxTime) {
       value.maxTime = new Date(<any>parameters.maxTime);
-    }
-    if (parameters.dimensions) {
-      value.dimensions = makeUniqueDimensionList(parameters.dimensions.map(Dimension.fromJS));
-      value.measures = makeUniqueMeasureList(parameters.measures.map(Measure.fromJS));
-      value.timeAttribute = parameters.timeAttribute ? $(parameters.timeAttribute) : null;
-      value.defaultSortOn = parameters.defaultSortOn || value.measures.get(0).name;
     }
     if (executor) {
       value.executor = executor;
@@ -195,34 +182,33 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
   public name: string;
   public title: string;
+  public engine: string;
   public source: string;
-  public metadataLoaded: boolean;
-  public loadError: string;
-
-  public maxTime: Date;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
-  public defaultSortOn: string;
+  public defaultSortMeasure: string;
+  public maxTime: Date;
 
   public executor: Executor;
 
   constructor(parameters: DataSourceValue) {
     this.name = parameters.name;
     this.title = parameters.title;
+    this.engine = parameters.engine;
     this.source = parameters.source;
-    this.metadataLoaded = parameters.metadataLoaded;
-    this.loadError = parameters.loadError;
+    this.dimensions = parameters.dimensions;
+    this.measures = parameters.measures;
+    this.timeAttribute = parameters.timeAttribute;
+    this.defaultSortMeasure = parameters.defaultSortMeasure;
+
     if (parameters.maxTime) {
       this.maxTime = parameters.maxTime;
       if (isNaN(this.maxTime.valueOf())) throw new Error('invalid maxTime date');
     } else {
       this.maxTime = null;
     }
-    this.dimensions = parameters.dimensions;
-    this.measures = parameters.measures;
-    this.timeAttribute = parameters.timeAttribute;
-    this.defaultSortOn = parameters.defaultSortOn;
+
     this.executor = parameters.executor;
   }
 
@@ -230,18 +216,15 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     var value: DataSourceValue = {
       name: this.name,
       title: this.title,
+      engine: this.engine,
       source: this.source,
-      metadataLoaded: this.metadataLoaded,
-      loadError: this.loadError
+      dimensions: this.dimensions,
+      measures: this.measures,
+      timeAttribute: this.timeAttribute,
+      defaultSortMeasure: this.defaultSortMeasure
     };
     if (this.maxTime) {
       value.maxTime = this.maxTime;
-    }
-    if (this.dimensions) {
-      value.dimensions = this.dimensions;
-      value.measures = this.measures;
-      value.timeAttribute = this.timeAttribute;
-      value.defaultSortOn = this.defaultSortOn;
     }
     if (this.executor) {
       value.executor = this.executor;
@@ -253,16 +236,15 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     var js: DataSourceJS = {
       name: this.name,
       title: this.title,
-      source: this.source
+      engine: this.engine,
+      source: this.source,
+      dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
+      measures: this.measures.toArray().map(measure => measure.toJS()),
+      timeAttribute: this.timeAttribute.name,
+      defaultSortMeasure: this.defaultSortMeasure
     };
     if (this.maxTime) {
       js.maxTime = this.maxTime;
-    }
-    if (this.dimensions) {
-      js.dimensions = this.dimensions.toArray().map(dimension => dimension.toJS());
-      js.measures = this.measures.toArray().map(measure => measure.toJS());
-      js.timeAttribute = this.timeAttribute.name;
-      js.defaultSortOn = this.defaultSortOn;
     }
     return js;
   }
@@ -279,12 +261,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return DataSource.isDataSource(other) &&
       this.name === other.name &&
       this.title === other.title &&
+      this.engine === other.engine &&
       this.source === other.source &&
       listsEqual(this.dimensions, other.dimensions) &&
       listsEqual(this.measures, other.measures) &&
       Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
       (!this.timeAttribute || this.timeAttribute.equals(other.timeAttribute)) &&
-      this.defaultSortOn === other.defaultSortOn;
+      this.defaultSortMeasure === other.defaultSortMeasure;
   }
 
   public getMaxTime(): Date {
@@ -317,7 +300,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public getSortMeasure(dimension: Dimension): Measure {
-    var sortOn = dimension.sortOn || this.defaultSortOn;
+    var sortOn = dimension.sortOn || this.defaultSortMeasure;
     return this.getMeasure(sortOn);
   }
 
@@ -327,25 +310,5 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return new DataSource(value);
   }
 
-  public loadDataArray(rawData: any[]): DataSource {
-    var mainDataset = Dataset.fromJS(rawData);
-    mainDataset.introspect();
-
-    var dm = makeDimensionsMetricsFromAttributes(mainDataset.attributes);
-    var value = this.valueOf();
-    value.metadataLoaded = true;
-    value.loadError = null;
-    value.dimensions = dm.dimensions;
-    value.measures = dm.measures;
-    value.timeAttribute = dm.timeAttribute;
-    value.defaultSortOn = dm.defaultSortOn;
-    value.executor = basicExecutorFactory({
-      datasets: {
-        main: mainDataset
-      }
-    });
-
-    return new DataSource(value);
-  }
 }
 check = DataSource;

@@ -5,9 +5,9 @@ import * as Icon from 'react-svg-icons';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
-import { moveInList } from '../../utils/general/general';
+import { moveInList } from '../../../common/utils/general/general';
 import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom/dom';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
 import { PreviewMenu } from '../preview-menu/preview-menu';
 
 const DIMENSION_CLASS_NAME = 'dimension';
@@ -170,35 +170,33 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
     var itemY = 0;
     var dimensionItems: Array<React.ReactElement<any>> = null;
-    if (dataSource.metadataLoaded) {
-      dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
-        if (dragOver && dragPosition === i) itemY += DIMENSION_HEIGHT;
-        var style = { transform: `translate3d(0,${itemY}px,0)` };
-        itemY += DIMENSION_HEIGHT;
+    dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
+      if (dragOver && dragPosition === i) itemY += DIMENSION_HEIGHT;
+      var style = { transform: `translate3d(0,${itemY}px,0)` };
+      itemY += DIMENSION_HEIGHT;
 
-        var classNames = [
-          DIMENSION_CLASS_NAME,
-          dimension.className
-        ];
-        if (dimension === menuDimension) classNames.push('selected');
-        return JSX(`
-          <div
-            className={classNames.join(' ')}
-            key={dimension.name}
-            onClick={this.clickDimension.bind(this, dimension)}
-            draggable="true"
-            onDragStart={this.dragStart.bind(this, dimension)}
-            style={style}
-          >
-            <div className="icon">
-              <Icon name={dimension.className}/>
-            </div>
-            <div className="item-title">{dimension.title}</div>
+      var classNames = [
+        DIMENSION_CLASS_NAME,
+        dimension.className
+      ];
+      if (dimension === menuDimension) classNames.push('selected');
+      return JSX(`
+        <div
+          className={classNames.join(' ')}
+          key={dimension.name}
+          onClick={this.clickDimension.bind(this, dimension)}
+          draggable="true"
+          onDragStart={this.dragStart.bind(this, dimension)}
+          style={style}
+        >
+          <div className="icon">
+            <Icon name={dimension.className}/>
           </div>
-        `);
-      }, this);
-      if (dragOver && dragPosition === dataSource.dimensions.size) itemY += DIMENSION_HEIGHT;
-    }
+          <div className="item-title">{dimension.title}</div>
+        </div>
+      `);
+    }, this);
+    if (dragOver && dragPosition === dataSource.dimensions.size) itemY += DIMENSION_HEIGHT;
 
     return JSX(`
       <div
