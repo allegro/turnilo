@@ -282,6 +282,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.title === other.title &&
       this.engine === other.engine &&
       this.source === other.source &&
+      JSON.stringify(this.options) === JSON.stringify(other.options) &&
       listsEqual(this.dimensions, other.dimensions) &&
       listsEqual(this.measures, other.measures) &&
       Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&

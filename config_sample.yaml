@@ -190,3 +190,59 @@ dataSources:
       - name: unique_users
         title: Unique Users
         expression: $main.countDistinct($user_unique)
+
+  # Here is an example of a Druid data source with cool crazy things in it for education
+  - name: wiki-crazy
+    title: Wikipedia Crazy
+    engine: druid
+    source: wikipedia
+
+    timeAttribute: time # The time attribute (this needs to be set for Druid, but could be anything. You should leave it as 'time')
+
+    options:
+      customAggregations:
+        boring:
+          #accessType  <-- this is how this aggregate will be accesed from a postAgg (default is fieldAccess)
+          aggregation:
+            type: longSum
+            fieldName: added
+
+        mod1337:
+          aggregation:
+            type: javascript
+            fieldNames: ['added']
+            fnAggregate: "function(current, added) { return (current + added) % 1337 }"
+            fnCombine: "function(partialA, partialB) { return (partialA + partialB) % 1337 }"
+            fnReset: "function() { return 0; }"
+
+    dimensions:
+      - name: time
+        type: TIME
+
+      - name: namespace
+
+      - name: language
+
+      - name: page
+
+      - name: user
+
+      - name: country
+
+      - name: city
+
+      - name: region
+
+    measures:
+      - name: count
+
+      - name: added
+
+      - name: boring_added
+        expression: $main.custom(boring)
+
+      - name: added1337
+        expression: $main.custom(mod1337)
+
+      - name: combined
+        expression: ($main.custom(boring) - $main.custom(mod1337)) / 1337

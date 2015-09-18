@@ -99,6 +99,7 @@ function makeExternal(dataSource: DataSource): External {
     engine: 'druid',
     dataSource: dataSource.source,
     timeAttribute: dataSource.timeAttribute.name,
+    customAggregations: dataSource.options['customAggregations'],
     context: null,
     attributes,
     requester: druidRequester
