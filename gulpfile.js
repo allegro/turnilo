@@ -14,7 +14,7 @@ gulp.task('server:tsc', laborer.taskServerTypeScript());
 gulp.task('client:test', laborer.taskClientTest());
 gulp.task('server:test', laborer.taskServerTest());
 
-gulp.task('client:bundle', ['client:tsc'], laborer.taskClientBundle());
+gulp.task('client:bundle', laborer.taskClientBundle());
 
 gulp.task('clean', laborer.taskClean());
 
@@ -35,7 +35,7 @@ gulp.task('watch', ['all'], function() {
   });
 
   watch(['./src/common/**/*.ts', './src/client/**/*.ts', './assets/icons/**'], function() {
-    gulp.start('client:bundle');
+    runSequence('client:tsc', 'client:bundle');
   });
 
   watch(['./src/common/**/*.ts', './src/server/**'], function() {
