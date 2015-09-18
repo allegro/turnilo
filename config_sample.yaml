@@ -30,12 +30,24 @@ dataSources:
     # source: assets/data/wikiticker-2015-09-12-anonymous.json
     # Run `assets/data-raw/process-wikiticker-2015-09-12` to get the full exmaple file
 
-    # This is the latest time of the data, if not set will default to `now`
-    maxTime: 2015-09-13T00:00:00Z
-
     # The primary time attribute of the data refers to the attribute that must always be filtred on
     # This is particularly usefull for Druid data sources as they must always have a time filter.
     timeAttribute: time
+
+    # The latest time of the data, (if not set will default to Date.now())
+    maxTime: 2015-09-13T00:00:00Z
+
+    # The default duration for the time filter (if not set P3D is used)
+    defaultDuration: P1D
+
+    # The default sort measure name (if not set the first measure name is used)
+    defaultSortMeasure: delta
+
+    # The names of dimensions that are pinned by default (in order that they will appear in the pin bar
+    defaultPinnedDimensions:
+      - channel
+      - namespace
+      - isRobot
 
     # The list of dimensions defined in the UI. The order here will be reflected in the UI
     dimensions:
