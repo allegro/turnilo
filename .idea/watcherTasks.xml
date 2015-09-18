@@ -2,13 +2,13 @@
 <project version="4">
   <component name="ProjectTasksOptions" suppressed-tasks="SCSS;CoffeeScript">
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="tsc-client-errors" />
+      <option name="arguments" value="errors" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" value="Compiles .ts files into .js files" />
       <option name="exitCodeBehavior" value="ERROR" />
       <option name="fileExtension" value="ts" />
       <option name="immediateSync" value="false" />
-      <option name="name" value="TypeScript Client (gulp)" />
+      <option name="name" value="TypeScript (gulp)" />
       <option name="output" value="" />
       <option name="outputFilters">
         <array>
@@ -22,39 +22,13 @@
       <option name="outputFromStdout" value="false" />
       <option name="passParentEnvs" value="true" />
       <option name="program" value="$ProjectFileDir$/webstorm/lookfor.js" />
-      <option name="scopeName" value="Client Source Files" />
+      <option name="scopeName" value="All Source Files" />
       <option name="trackOnlyRoot" value="true" />
       <option name="workingDir" value="$ProjectFileDir$" />
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="tsc-server-errors" />
-      <option name="checkSyntaxErrors" value="true" />
-      <option name="description" value="Compiles .ts files into .js files" />
-      <option name="exitCodeBehavior" value="ERROR" />
-      <option name="fileExtension" value="ts" />
-      <option name="immediateSync" value="false" />
-      <option name="name" value="TypeScript Server (gulp)" />
-      <option name="output" value="" />
-      <option name="outputFilters">
-        <array>
-          <FilterInfo>
-            <option name="description" value="tsc error format" />
-            <option name="name" value="tsc" />
-            <option name="regExp" value="$FILE_PATH$\($LINE$,$COLUMN$\): $MESSAGE$$" />
-          </FilterInfo>
-        </array>
-      </option>
-      <option name="outputFromStdout" value="false" />
-      <option name="passParentEnvs" value="true" />
-      <option name="program" value="$ProjectFileDir$/webstorm/lookfor.js" />
-      <option name="scopeName" value="Server Source Files" />
-      <option name="trackOnlyRoot" value="true" />
-      <option name="workingDir" value="$ProjectFileDir$" />
-      <envs />
-    </TaskOptions>
-    <TaskOptions isEnabled="true">
-      <option name="arguments" value="style-errors" />
+      <option name="arguments" value="errors" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" value="Compiles .scss files into .css files using compass" />
       <option name="exitCodeBehavior" value="ERROR" />

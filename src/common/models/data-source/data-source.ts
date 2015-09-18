@@ -1,8 +1,8 @@
 'use strict';
 
-import { List } from 'immutable';
+import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
-import { Timezone, hour } from 'chronoshift';
+import { Duration, Timezone, hour } from 'chronoshift';
 import { $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -131,8 +131,10 @@ export interface DataSourceValue {
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
-  defaultSortMeasure: string;
   maxTime?: Date;
+  defaultDuration: Duration;
+  defaultSortMeasure: string;
+  defaultPinnedDimensions?: OrderedSet<string>;
 
   executor?: Executor;
 }
@@ -145,8 +147,10 @@ export interface DataSourceJS {
   dimensions: DimensionJS[];
   measures: MeasureJS[];
   timeAttribute: string;
-  defaultSortMeasure: string;
   maxTime?: Date;
+  defaultDuration: string;
+  defaultSortMeasure: string;
+  defaultPinnedDimensions?: string[];
 }
 
 var check: Class<DataSourceValue, DataSourceJS>;
@@ -168,11 +172,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       dimensions,
       measures,
       timeAttribute: parameters.timeAttribute ? $(parameters.timeAttribute) : null,
-      defaultSortMeasure: parameters.defaultSortMeasure || measures.get(0).name
+      maxTime: parameters.maxTime ? new Date(<any>parameters.maxTime) : null,
+      defaultDuration: Duration.fromJS(parameters.defaultDuration || 'P3D'),
+      defaultSortMeasure: parameters.defaultSortMeasure || measures.get(0).name,
+      defaultPinnedDimensions: OrderedSet(parameters.defaultPinnedDimensions || dimensions.toArray().slice(1, 4).map((d) => d.name))
     };
-    if (parameters.maxTime) {
-      value.maxTime = new Date(<any>parameters.maxTime);
-    }
     if (executor) {
       value.executor = executor;
     }
@@ -187,7 +191,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
+  public defaultDuration: Duration;
   public defaultSortMeasure: string;
+  public defaultPinnedDimensions: OrderedSet<string>;
   public maxTime: Date;
 
   public executor: Executor;
@@ -200,7 +206,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.dimensions = parameters.dimensions;
     this.measures = parameters.measures;
     this.timeAttribute = parameters.timeAttribute;
+    this.defaultDuration = parameters.defaultDuration;
     this.defaultSortMeasure = parameters.defaultSortMeasure;
+    this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
 
     if (parameters.maxTime) {
       this.maxTime = parameters.maxTime;
@@ -221,11 +229,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       dimensions: this.dimensions,
       measures: this.measures,
       timeAttribute: this.timeAttribute,
-      defaultSortMeasure: this.defaultSortMeasure
+      maxTime: this.maxTime,
+      defaultDuration: this.defaultDuration,
+      defaultSortMeasure: this.defaultSortMeasure,
+      defaultPinnedDimensions: this.defaultPinnedDimensions
     };
-    if (this.maxTime) {
-      value.maxTime = this.maxTime;
-    }
     if (this.executor) {
       value.executor = this.executor;
     }
@@ -241,7 +249,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
       measures: this.measures.toArray().map(measure => measure.toJS()),
       timeAttribute: this.timeAttribute.name,
-      defaultSortMeasure: this.defaultSortMeasure
+      defaultDuration: this.defaultDuration.toJS(),
+      defaultSortMeasure: this.defaultSortMeasure,
+      defaultPinnedDimensions: this.defaultPinnedDimensions.toArray()
     };
     if (this.maxTime) {
       js.maxTime = this.maxTime;
@@ -267,7 +277,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       listsEqual(this.measures, other.measures) &&
       Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
       (!this.timeAttribute || this.timeAttribute.equals(other.timeAttribute)) &&
-      this.defaultSortMeasure === other.defaultSortMeasure;
+      this.defaultDuration.equals(other.defaultDuration) &&
+      this.defaultSortMeasure === other.defaultSortMeasure &&
+      this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions);
   }
 
   public getMaxTime(): Date {

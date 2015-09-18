@@ -6,5 +6,5 @@ node_modules/
 build/
 public/
 assets/data/*-large.*
-webstorm/*-errors
+webstorm/errors
 config.yaml

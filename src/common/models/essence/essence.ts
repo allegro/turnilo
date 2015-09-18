@@ -108,6 +108,35 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return essence;
   }
 
+  static fromDataSource(dataSources: List<DataSource>, visualizations: List<Manifest>, dataSource: DataSource): Essence {
+    var filter: Filter;
+    if (dataSource.timeAttribute) {
+      var now = dataSource.getMaxTime();
+      var timeRange = TimeRange.fromJS({
+        start: dataSource.defaultDuration.move(now, Timezone.UTC, -1),
+        end: now
+      });
+      filter = Filter.fromClause(dataSource.timeAttribute.in(timeRange));
+    } else {
+      filter = Filter.EMPTY;
+    }
+
+    return new Essence({
+      dataSources: dataSources,
+      visualizations: visualizations,
+
+      dataSource: dataSource,
+      timezone: Timezone.UTC,
+      filter,
+      splits: Splits.EMPTY,
+      selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
+      pinnedDimensions: dataSource.defaultPinnedDimensions,
+      visualization: null,
+      compare: null,
+      highlight: null
+    });
+  }
+
   static fromJS(parameters: EssenceJS, dataSources?: List<DataSource>, visualizations?: List<Manifest>): Essence {
     var dataSourceName = parameters.dataSource;
     var visualizationID = parameters.visualization;

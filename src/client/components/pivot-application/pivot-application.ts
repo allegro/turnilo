@@ -116,7 +116,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     if (!dataSources.size) throw new Error('must have data sources');
     var dataSource = dataSources.first();
 
-    this.fillInDetails(dataSource);
+    var essence = this.getEssenceFromHash() || Essence.fromDataSource(dataSources, visualizations, dataSource);
+    this.setState({ essence });
   }
 
   componentWillUpdate(nextProps: PivotApplicationProps, nextState: PivotApplicationState): void {
@@ -124,42 +125,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     window.location.hash = nextState.essence.toHash();
     // delay unflagging the update so that the hashchange event has a chance to fire a blank
     setTimeout(() => { this.hashUpdating = false; }, 10);
-  }
-
-  fillInDetails(dataSource: DataSource) {
-    var essence = this.getEssenceFromHash();
-
-    if (!essence) {
-      var now = dataSource.getMaxTime();
-      var timeRange = TimeRange.fromJS({
-        start: day.move(now, Timezone.UTC, -3),
-        end: now
-      });
-
-      var filter: Filter;
-      if (dataSource.timeAttribute) {
-        filter = Filter.fromClause(dataSource.timeAttribute.in(timeRange));
-      } else {
-        filter = Filter.EMPTY;
-      }
-
-      essence = new Essence({
-        dataSources: this.props.dataSources,
-        visualizations: visualizations,
-
-        dataSource: dataSource,
-        timezone: Timezone.UTC,
-        filter,
-        splits: Splits.EMPTY,
-        selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
-        pinnedDimensions: OrderedSet(dataSource.dimensions.toArray().slice(1, 3).map(d => d.name)),
-        visualization: null,
-        compare: null,
-        highlight: null
-      });
-    }
-
-    this.setState({ essence });
   }
 
   componentDidMount() {
