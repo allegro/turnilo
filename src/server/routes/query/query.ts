@@ -3,7 +3,7 @@
 import * as path from 'path';
 import { readFileSync } from 'fs';
 import { Router, Request, Response } from 'express';
-import { $, Expression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
+import { $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
 import { druidRequesterFactory } from 'plywood-druid-requester';
 import { Timezone, WallTime, Duration } from "chronoshift";
 import { DataSource } from '../../../common/models/index';
@@ -63,6 +63,16 @@ function getFileData(filename: string): any[] {
   return fileJSON;
 }
 
+function getReferences(ex: Expression): string[] {
+  var references: string[] = [];
+  ex.forEach((ex: Expression) => {
+    if (ex instanceof RefExpression) {
+      references.push(ex.name);
+    }
+  });
+  return references;
+}
+
 function makeExternal(dataSource: DataSource): External {
   var attributes: AttributeJSs = {};
 
@@ -73,13 +83,13 @@ function makeExternal(dataSource: DataSource): External {
 
   dataSource.measures.forEach((measure) => {
     var expression = measure.expression;
-    var freeReferences = expression.getFreeReferences();
-    for (var freeReference of freeReferences) {
-      if (freeReference === 'main') continue;
+    var references = getReferences(expression);
+    for (var reference of references) {
+      if (reference === 'main') continue;
       if (JSON.stringify(expression).indexOf('countDistinct') !== -1) {
-        attributes[freeReference] = { special: 'unique' };
+        attributes[reference] = { special: 'unique' };
       } else {
-        attributes[freeReference] = { type: 'NUMBER' };
+        attributes[reference] = { type: 'NUMBER' };
       }
     }
   });

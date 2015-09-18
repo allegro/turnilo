@@ -128,6 +128,7 @@ export interface DataSourceValue {
   title: string;
   engine: string;
   source: string;
+  options: Lookup<any>;
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
@@ -144,12 +145,13 @@ export interface DataSourceJS {
   title: string;
   engine: string;
   source: string;
+  options?: Lookup<any>;
   dimensions: DimensionJS[];
   measures: MeasureJS[];
-  timeAttribute: string;
+  timeAttribute?: string;
   maxTime?: Date;
-  defaultDuration: string;
-  defaultSortMeasure: string;
+  defaultDuration?: string;
+  defaultSortMeasure?: string;
   defaultPinnedDimensions?: string[];
 }
 
@@ -169,6 +171,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       title: parameters.title,
       engine: parameters.engine,
       source: parameters.source,
+      options: parameters.options || {},
       dimensions,
       measures,
       timeAttribute: parameters.timeAttribute ? $(parameters.timeAttribute) : null,
@@ -188,6 +191,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public title: string;
   public engine: string;
   public source: string;
+  public options: Lookup<any>;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
@@ -203,6 +207,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.title = parameters.title;
     this.engine = parameters.engine;
     this.source = parameters.source;
+    this.options = parameters.options;
     this.dimensions = parameters.dimensions;
     this.measures = parameters.measures;
     this.timeAttribute = parameters.timeAttribute;
@@ -226,6 +231,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       title: this.title,
       engine: this.engine,
       source: this.source,
+      options: this.options,
       dimensions: this.dimensions,
       measures: this.measures,
       timeAttribute: this.timeAttribute,
@@ -253,6 +259,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultSortMeasure: this.defaultSortMeasure,
       defaultPinnedDimensions: this.defaultPinnedDimensions.toArray()
     };
+    if (Object.keys(this.options).length) {
+      js.options = this.options;
+    }
     if (this.maxTime) {
       js.maxTime = this.maxTime;
     }
