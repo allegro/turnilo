@@ -192,6 +192,10 @@ dataSources:
         expression: $main.countDistinct($user_unique)
 
   # Here is an example of a Druid data source with cool crazy things in it for education
+  # in this example custom aggregations are passed directly into Druid, this is usefull if
+  # you have custom sketches or trying to do something that Plywood does not (yet) support.
+  # If you use this for something other than a custom sketch I would apreciate it if you could
+  # file an issue in Plywood (https://github.com/implydata/plywood).
   - name: wiki-crazy
     title: Wikipedia Crazy
     engine: druid
@@ -202,7 +206,7 @@ dataSources:
     options:
       customAggregations:
         boring:
-          #accessType  <-- this is how this aggregate will be accesed from a postAgg (default is fieldAccess)
+          #accessType  <-- this is how this aggregate will be accesed from a postAgg (default is 'fieldAccess')
           aggregation:
             type: longSum
             fieldName: added
@@ -239,10 +243,12 @@ dataSources:
       - name: added
 
       - name: boring_added
+        # Using the custom stuff defined above here
         expression: $main.custom(boring)
 
       - name: added1337
         expression: $main.custom(mod1337)
 
       - name: combined
+        # Custom aggregates can be used in mathematical expressions
         expression: ($main.custom(boring) - $main.custom(mod1337)) / 1337
