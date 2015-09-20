@@ -109,6 +109,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.clicker = clicker;
     this.globalResizeListener = this.globalResizeListener.bind(this);
     this.globalHashChangeListener = this.globalHashChangeListener.bind(this);
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentWillMount() {
@@ -130,12 +131,14 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   componentDidMount() {
     window.addEventListener('resize', this.globalResizeListener);
     window.addEventListener('hashchange', this.globalHashChangeListener);
+    window.addEventListener('keydown', this.globalKeyDownListener);
     this.globalResizeListener();
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.globalResizeListener);
     window.removeEventListener('hashchange', this.globalHashChangeListener);
+    window.removeEventListener('keydown', this.globalKeyDownListener);
   }
 
   getDataSources(): List<DataSource> {
@@ -164,6 +167,11 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var essence = this.getEssenceFromHash();
     if (!essence) return;
     this.setState({ essence });
+  }
+
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (e.which !== 76) return; // 'l' for latest
+    (<any>window)['latest'] = true;
   }
 
   canDrop(e: DragEvent): boolean {
