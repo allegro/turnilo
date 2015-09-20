@@ -14,7 +14,7 @@
       position: absolute;
       left: 0; // It gets horizontal position from the JS
 
-      &.highlight {
+      &.from-highlight {
         border: 1px dashed $brand;
       }
     }

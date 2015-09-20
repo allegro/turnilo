@@ -297,7 +297,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         if (!dimension) return null;
         return {
           dimension,
-          source: 'filter',
+          source: 'from-filter',
           clause
         };
       })
@@ -311,7 +311,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
             added = true;
             return {
               dimension: blank.dimension,
-              source: 'highlight',
+              source: 'from-highlight',
               clause
             };
           } else {
@@ -323,7 +323,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           if (dimension) {
             itemBlanks.push({
               dimension,
-              source: 'highlight',
+              source: 'from-highlight',
               clause
             });
           }
@@ -334,7 +334,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (possibleDimension) {
       var dummyBlank: ItemBlank = {
         dimension: possibleDimension,
-        source: 'drag'
+        source: 'from-drag'
       };
       if (possibleInsertPosition !== null) {
         itemBlanks.splice(possibleInsertPosition, 0, dummyBlank);
