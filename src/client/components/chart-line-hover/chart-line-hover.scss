@@ -1,0 +1,13 @@
+@import '../../imports';
+
+.chart-line-hover {
+  circle {
+    fill: $white;
+    stroke: $brand;
+    stroke-width: 2;
+  }
+
+  text {
+    text-anchor: middle;
+  }
+}

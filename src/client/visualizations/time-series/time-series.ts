@@ -8,6 +8,7 @@ import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketActi
 import { listsEqual } from '../../../common/utils/general/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
 import { ChartLine } from '../../components/chart-line/chart-line';
+import { ChartLineHover } from '../../components/chart-line-hover/chart-line-hover';
 import { TimeAxis } from '../../components/time-axis/time-axis';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
 import { GridLines } from '../../components/grid-lines/grid-lines';
@@ -33,6 +34,7 @@ interface TimeSeriesState {
   dataset?: Dataset;
   error?: any;
   dragStart?: number;
+  hoverDatum?: Datum;
 }
 
 export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesState> {
@@ -168,8 +170,37 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   onMouseDown(e: MouseEvent) {
     var myDOM = React.findDOMNode(this);
-    var dragStart = e.clientX - (myDOM.getBoundingClientRect().left + H_PADDING);
+    var rect = myDOM.getBoundingClientRect();
+    var dragStart = e.clientX - (rect.left + H_PADDING);
     this.setState({ dragStart });
+  }
+
+  onMouseMove(scaleX: any, e: MouseEvent) {
+    var { dataset, hoverDatum } = this.state;
+    if (!dataset) return;
+
+    var myDOM = React.findDOMNode(this);
+    var rect = myDOM.getBoundingClientRect();
+    var dragDate = scaleX.invert(e.clientX - (rect.left + H_PADDING));
+
+    var thisHoverDatum: Datum = null;
+    var datums = dataset.data[0]['Split'].data;
+    for (var datum of datums) {
+      if (datum['Segment'].contains(dragDate)) {
+        thisHoverDatum = datum;
+        break;
+      }
+    }
+
+    if (hoverDatum !== thisHoverDatum) {
+      this.setState({ hoverDatum: thisHoverDatum });
+    }
+  }
+
+  onMouseLeave(e: MouseEvent) {
+    if (this.state.hoverDatum) {
+      this.setState({ hoverDatum: null });
+    }
   }
 
   onHighlightEnd() {
@@ -178,7 +209,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   render() {
     var { clicker, essence, stage } = this.props;
-    var { loading, dataset, error, dragStart } = this.state;
+    var { loading, dataset, error, dragStart, hoverDatum } = this.state;
     var { splits } = essence;
 
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
@@ -233,6 +264,19 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
         var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
 
+        var chartHoverLine: React.ReactElement<any> = null;
+        if (hoverDatum && (<any>window)['latest']) {
+          chartHoverLine = React.createElement(ChartLineHover, {
+            datum: hoverDatum,
+            getX,
+            getY,
+            scaleX,
+            scaleY,
+            stage: lineStage,
+            measure
+          });
+        }
+
         return JSX(`
           <svg
             className="measure-graph"
@@ -240,6 +284,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
             width={svgStage.width}
             height={svgStage.height}
             onMouseDown={this.onMouseDown.bind(this)}
+            onMouseMove={this.onMouseMove.bind(this, scaleX)}
+            onMouseLeave={this.onMouseLeave.bind(this)}
           >
             <GridLines
               orientation="horizontal"
@@ -261,6 +307,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
               scaleY={scaleY}
               stage={lineStage}
             />
+            {chartHoverLine}
             <VerticalAxis
               stage={yAxisStage}
               yTicks={yTicks}
