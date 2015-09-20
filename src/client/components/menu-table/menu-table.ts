@@ -34,7 +34,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
   fetchData(essence: Essence, dimension: Dimension): void {
     var { dataSource } = essence;
-    var measure = dataSource.getSortMeasure(dimension);
+    var measure = essence.getPreviewSortMeasure();
 
     var query = $('main')
       .filter(essence.getEffectiveFilter(null, dimension).toExpression())
@@ -75,7 +75,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   render() {
     var { essence, dimension, showSearch, showCheckboxes, onValueClick, selectedValues } = this.props;
     var { dataset } = this.state;
-    var measure = essence.dataSource.getSortMeasure(dimension);
+    var measure = essence.getPreviewSortMeasure();
 
     var dimensionName = dimension.name;
     var measureName = measure.name;

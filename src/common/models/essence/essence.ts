@@ -37,6 +37,8 @@ export interface EssenceValue {
   splits: Splits;
   selectedMeasures: OrderedSet<string>;
   pinnedDimensions: OrderedSet<string>;
+  previewSort: string;
+  pinnedSort: string;
   compare: Filter;
   highlight: Highlight;
 }
@@ -49,6 +51,8 @@ export interface EssenceJS {
   splits: SplitsJS;
   selectedMeasures: string[];
   pinnedDimensions: string[];
+  previewSort?: string;
+  pinnedSort?: string;
   compare?: FilterJS;
   highlight?: HighlightJS;
 }
@@ -86,7 +90,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     if (!Array.isArray(jsArray)) return null;
     var jsArrayLength = jsArray.length;
-    if (!(5 <= jsArrayLength && jsArrayLength <= 7)) return null;
+    if (!(5 <= jsArrayLength && jsArrayLength <= 9)) return null;
 
     var essence: Essence;
     try {
@@ -98,8 +102,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
         splits: jsArray[2],
         selectedMeasures: jsArray[3],
         pinnedDimensions: jsArray[4],
-        compare: jsArray[5] || null,
-        highlight: jsArray[6] || null
+        previewSort: jsArray[5] || null,
+        pinnedSort: jsArray[6] || null,
+        compare: jsArray[7] || null,
+        highlight: jsArray[8] || null
       }, dataSources, visualizations);
     } catch (e) {
       return null;
@@ -126,12 +132,14 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       visualizations: visualizations,
 
       dataSource: dataSource,
+      visualization: null,
       timezone: Timezone.UTC,
       filter,
       splits: Splits.EMPTY,
       selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
       pinnedDimensions: dataSource.defaultPinnedDimensions,
-      visualization: null,
+      previewSort: dataSource.defaultSortMeasure,
+      pinnedSort: dataSource.defaultSortMeasure,
       compare: null,
       highlight: null
     });
@@ -148,6 +156,14 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var splits = Splits.fromJS(parameters.splits).constrainToDataSource(dataSource);
     var selectedMeasures = constrainMeasures(OrderedSet(parameters.selectedMeasures), dataSource);
     var pinnedDimensions = constrainDimensions(OrderedSet(parameters.pinnedDimensions), dataSource);
+
+    var defaultSortMeasureName = dataSource.defaultSortMeasure;
+
+    var previewSort = parameters.previewSort || defaultSortMeasureName;
+    if (!dataSource.getMeasure(previewSort)) previewSort = defaultSortMeasureName;
+
+    var pinnedSort = parameters.pinnedSort || defaultSortMeasureName;
+    if (!dataSource.getMeasure(pinnedSort)) pinnedSort = defaultSortMeasureName;
 
     var compare: Filter = null;
     var compareJS = parameters.compare;
@@ -172,6 +188,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       splits,
       selectedMeasures,
       pinnedDimensions,
+      previewSort,
+      pinnedSort,
       compare,
       highlight
     });
@@ -188,6 +206,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   public splits: Splits;
   public selectedMeasures: OrderedSet<string>;
   public pinnedDimensions: OrderedSet<string>;
+  public previewSort: string;
+  public pinnedSort: string;
   public compare: Filter;
   public highlight: Highlight;
 
@@ -206,6 +226,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     this.splits = parameters.splits;
     this.selectedMeasures = parameters.selectedMeasures;
     this.pinnedDimensions = parameters.pinnedDimensions;
+    this.previewSort = parameters.previewSort;
+    this.pinnedSort = parameters.pinnedSort;
     this.compare = parameters.compare;
     this.highlight = parameters.highlight;
 
@@ -237,21 +259,28 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       splits: this.splits,
       selectedMeasures: this.selectedMeasures,
       pinnedDimensions: this.pinnedDimensions,
+      previewSort: this.previewSort,
+      pinnedSort: this.pinnedSort,
       compare: this.compare,
       highlight: this.highlight
     };
   }
 
   public toJS(): EssenceJS {
+    var selectedMeasures = this.selectedMeasures.toArray();
+    var pinnedDimensions = this.pinnedDimensions.toArray();
     var js: EssenceJS = {
       dataSource: this.dataSource.name,
       visualization: this.visualization.id,
       timezone: this.timezone.toJS(),
       filter: this.filter.toJS(),
       splits: this.splits.toJS(),
-      selectedMeasures: this.selectedMeasures.toArray(),
-      pinnedDimensions: this.pinnedDimensions.toArray()
+      selectedMeasures,
+      pinnedDimensions
     };
+    var defaultSortMeasure = this.dataSource.defaultSortMeasure;
+    if (js.previewSort !== defaultSortMeasure) js.previewSort = this.previewSort;
+    if (js.pinnedSort !== defaultSortMeasure) js.pinnedSort = this.pinnedSort;
     if (this.compare) js.compare = this.compare.toJS();
     if (this.highlight) js.highlight = this.highlight.toJS();
     return js;
@@ -274,6 +303,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       this.splits.equals(other.splits) &&
       this.selectedMeasures.equals(other.selectedMeasures) &&
       this.pinnedDimensions.equals(other.pinnedDimensions) &&
+      this.previewSort === other.previewSort &&
+      this.pinnedSort === other.pinnedSort &&
       Boolean(this.compare) === Boolean(other.compare) &&
       (!this.compare || this.compare.equals(other.compare)) &&
       Boolean(this.highlight) === Boolean(other.highlight) &&
@@ -283,18 +314,17 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   public toHash(): string {
     var js: any = this.toJS();
     var compressed: any[] = [
-      js.timezone,
-      js.filter,
-      js.splits,
-      js.selectedMeasures,
-      js.pinnedDimensions
+      js.timezone,         // 0
+      js.filter,           // 1
+      js.splits,           // 2
+      js.selectedMeasures, // 3
+      js.pinnedDimensions  // 4
     ];
-    if (js.compare || js.highlight) {
-      compressed.push(js.compare || null);
-    }
-    if (js.highlight) {
-      compressed.push(js.highlight || null);
-    }
+    if (js.previewSort) compressed[5] = js.previewSort;
+    if (js.pinnedSort)  compressed[6] = js.pinnedSort;
+    if (js.compare)     compressed[7] = js.compare;
+    if (js.highlight)   compressed[8] = js.highlight;
+
     return '#' + [
       js.dataSource,
       js.visualization,
@@ -432,6 +462,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     value.selectedMeasures = constrainMeasures(value.selectedMeasures, dataSource);
     value.pinnedDimensions = constrainDimensions(value.pinnedDimensions, dataSource);
 
+    var defaultSortMeasureName = dataSource.defaultSortMeasure;
+    if (!dataSource.getMeasure(value.previewSort)) value.previewSort = defaultSortMeasureName;
+    if (!dataSource.getMeasure(value.pinnedSort)) value.pinnedSort = defaultSortMeasureName;
+
     if (value.compare) {
       value.compare = value.compare.constrainToDataSource(dataSource);
     }
@@ -519,6 +553,14 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var value = this.valueOf();
     value.pinnedDimensions = value.pinnedDimensions.remove(dimension.name);
     return new Essence(value);
+  }
+
+  public getPreviewSortMeasure(): Measure {
+    return this.dataSource.getMeasure(this.previewSort);
+  }
+
+  public getPinnedSortMeasure(): Measure {
+    return this.dataSource.getMeasure(this.pinnedSort);
   }
 
   public toggleMeasure(measure: Measure): Essence {

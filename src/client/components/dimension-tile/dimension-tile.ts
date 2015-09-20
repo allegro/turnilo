@@ -46,7 +46,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   fetchData(essence: Essence, dimension: Dimension): void {
     var { dataSource } = essence;
-    var measure = dataSource.getSortMeasure(dimension);
+    var measure = essence.getPinnedSortMeasure();
     var highlightId = HIGHLIGHT_ID + dimension.name;
 
     var query: any = $('main')
@@ -142,8 +142,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   render() {
     var { clicker, essence, dimension } = this.props;
     var { loading, dataset, error, showSearch } = this.state;
-    var { dataSource, filter } = essence;
-    var measure = dataSource.getSortMeasure(dimension);
+    var measure = essence.getPinnedSortMeasure();
 
     var dimensionName = dimension.name;
     var measureName = measure.name;
