@@ -40,7 +40,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: Datum): Filter {
     flatDatum = flatDatum['__parent'];
   }
   return new Filter(List(segments.map((segment, i) => {
-    return splits.get(i).expression.in([segment]);
+    return splits.get(i).expression.in(TimeRange.isTimeRange(segment) ? segment : [segment]);
   })));
 }
 
