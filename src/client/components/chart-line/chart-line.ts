@@ -25,18 +25,6 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
 
   }
 
-  componentDidMount() {
-
-  }
-
-  componentWillUnmount() {
-
-  }
-
-  componentWillReceiveProps(nextProps: ChartLineProps) {
-
-  }
-
   render() {
     var { stage, dataset, getX, getY, scaleX, scaleY } = this.props;
 
