@@ -43,7 +43,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
 
   componentDidMount() {
     var { essence, dimension } = this.props;
-    var selectedValues = essence.filter.getValues(dimension.expression);
+    var selectedValues = essence.getEffectiveFilter().getValues(dimension.expression);
     this.setState({
       selectedValues: List(selectedValues || []),
       filteredDimension: Boolean(selectedValues)

@@ -16,6 +16,7 @@ const FILTER_CLASS_NAME = 'filter';
 
 interface ItemBlank {
   dimension: Dimension;
+  source: string;
   clause?: ChainExpression;
 }
 
@@ -286,40 +287,71 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       menuDimension, dragOver, dragInsertPosition, dragReplacePosition,
       possibleDimension, possibleInsertPosition, possibleReplacePosition
     } = this.state;
-    var { dataSource, filter, timezone } = essence;
+    var { dataSource, filter, highlight, timezone } = essence;
 
     const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 
-    var itemX = 0;
-    var filterItems: Array<React.ReactElement<any>> = null;
-    var itemsBlanks = filter.clauses.toArray()
+    var itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
         var dimension = dataSource.getDimensionByExpression(clause.expression);
         if (!dimension) return null;
         return {
           dimension,
+          source: 'filter',
           clause
         };
       })
       .filter(Boolean);
 
+    if (highlight) {
+      highlight.delta.clauses.forEach((clause) => {
+        var added = false;
+        itemBlanks = itemBlanks.map((blank) => {
+          if (clause.expression.equals(blank.clause.expression)) {
+            added = true;
+            return {
+              dimension: blank.dimension,
+              source: 'highlight',
+              clause
+            };
+          } else {
+            return blank;
+          }
+        });
+        if (!added) {
+          var dimension = dataSource.getDimensionByExpression(clause.expression);
+          if (dimension) {
+            itemBlanks.push({
+              dimension,
+              source: 'highlight',
+              clause
+            });
+          }
+        }
+      });
+    }
+
     if (possibleDimension) {
-      var dummyBlank: ItemBlank = { dimension: possibleDimension };
+      var dummyBlank: ItemBlank = {
+        dimension: possibleDimension,
+        source: 'drag'
+      };
       if (possibleInsertPosition !== null) {
-        itemsBlanks.splice(possibleInsertPosition, 0, dummyBlank);
+        itemBlanks.splice(possibleInsertPosition, 0, dummyBlank);
       }
       if (possibleReplacePosition !== null) {
-        itemsBlanks[possibleReplacePosition] = dummyBlank;
+        itemBlanks[possibleReplacePosition] = dummyBlank;
       }
     }
 
-    filterItems = itemsBlanks.map((itemsBlank) => {
-      var { dimension, clause } = itemsBlank;
+    var itemX = 0;
+    var filterItems = itemBlanks.map((itemBlank) => {
+      var { dimension, clause } = itemBlank;
 
       var style = { transform: `translate3d(${itemX}px,0,0)` };
       itemX += sectionWidth;
 
-      var classNames = [FILTER_CLASS_NAME, dimension.className];
+      var classNames = [FILTER_CLASS_NAME, dimension.className, itemBlank.source];
       if (dimension === menuDimension) classNames.push('selected');
 
       var className = classNames.join(' ');

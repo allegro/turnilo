@@ -169,8 +169,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var { dataSource } = essence;
 
     var itemY = 0;
-    var dimensionItems: Array<React.ReactElement<any>> = null;
-    dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
+    var dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
       if (dragOver && dragPosition === i) itemY += DIMENSION_HEIGHT;
       var style = { transform: `translate3d(0,${itemY}px,0)` };
       itemY += DIMENSION_HEIGHT;

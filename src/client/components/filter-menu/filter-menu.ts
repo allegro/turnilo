@@ -81,7 +81,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   componentDidMount() {
     var { essence, dimension } = this.props;
     this.setState({
-      selectedValues: List(essence.filter.getValues(dimension.expression) || [])
+      selectedValues: List(essence.getEffectiveFilter().getValues(dimension.expression) || [])
     });
   }
 
