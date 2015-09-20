@@ -467,10 +467,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.changeFilter(filter.setTimeRange(timeAttribute, timeRange));
   }
 
-  public changeSplits(splits: Splits): Essence {
+  public changeSplits(splits: Splits, fitVis: boolean): Essence {
     var { visualization, filter } = this;
-    var visualizations = this.getReadyVisualizations(splits);
-    visualization = visualizations.last();
+    if (fitVis) {
+      var visualizations = this.getReadyVisualizations(splits);
+      visualization = visualizations.last();
+    }
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
@@ -488,17 +490,17 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public changeSplit(splitCombine: SplitCombine): Essence {
-    return this.changeSplits(Splits.fromSplitCombine(splitCombine));
+    return this.changeSplits(Splits.fromSplitCombine(splitCombine), true);
   }
 
   public addSplit(split: SplitCombine): Essence {
     var { splits } = this;
-    return this.changeSplits(splits.addSplit(split));
+    return this.changeSplits(splits.addSplit(split), true);
   }
 
   public removeSplit(split: SplitCombine): Essence {
     var { splits } = this;
-    return this.changeSplits(splits.removeSplit(split));
+    return this.changeSplits(splits.removeSplit(split), true);
   }
 
   public selectVisualization(visualization: Manifest): Essence {

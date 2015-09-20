@@ -243,7 +243,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       clicker.changeSplits(essence.splits.changeSort(new SortAction({
         expression: sortExpression,
         direction: myDescending ? 'ascending' : 'descending'
-      })));
+      })), false);
 
     } else if (pos.what === 'row') {
       var rowHighlight = getFilterFromDatum(essence.splits, pos.row);

@@ -60,9 +60,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         var { essence } = this.state;
         this.setState({ essence: essence.changeTimeRange(timeRange) });
       },
-      changeSplits: (splits: Splits) => {
+      changeSplits: (splits: Splits, fitVis: boolean) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeSplits(splits) });
+        this.setState({ essence: essence.changeSplits(splits, fitVis) });
       },
       changeSplit: (split: SplitCombine) => {
         var { essence } = this.state;

@@ -158,9 +158,9 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (newSplitCombine) {
       var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
       if (dragReplacePosition !== null) {
-        clicker.changeSplits(splits.replaceByIndex(dragReplacePosition, newSplitCombine));
+        clicker.changeSplits(splits.replaceByIndex(dragReplacePosition, newSplitCombine), true);
       } else if (dragInsertPosition !== null) {
-        clicker.changeSplits(splits.insertByIndex(dragInsertPosition, newSplitCombine));
+        clicker.changeSplits(splits.insertByIndex(dragInsertPosition, newSplitCombine), true);
       }
     }
 

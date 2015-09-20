@@ -14,7 +14,7 @@ export interface Clicker {
   changeDataSource(dataSource: DataSource): void;
   changeTimeRange(timeRange: TimeRange): void;
   changeFilter(filter: Filter): void;
-  changeSplits(splits: Splits): void;
+  changeSplits(splits: Splits, fitVis: boolean): void;
   changeSplit(split: SplitCombine): void;
   addSplit(split: SplitCombine): void;
   removeSplit(split: SplitCombine): void;
