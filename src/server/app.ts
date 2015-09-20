@@ -39,6 +39,7 @@ app.use(logger('dev'));
 
 app.use(express.static(path.join(__dirname, '../../build/public')));
 app.use(express.static(path.join(__dirname, '../../assets/favicon')));
+app.use(express.static(path.join(__dirname, '../../assets/fonts')));
 app.use(express.static(path.join(__dirname, '../../assets/data')));
 
 app.use(bodyParser.json());
