@@ -1,2 +1,4 @@
 .idea
-client_build_tmp/
+build/tmp
+assets/data/*-large.*
+assets/data-raw
