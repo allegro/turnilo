@@ -114,7 +114,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return essence;
   }
 
-  static fromDataSource(dataSources: List<DataSource>, visualizations: List<Manifest>, dataSource: DataSource): Essence {
+  static fromDataSource(dataSource: DataSource, dataSources: List<DataSource>, visualizations: List<Manifest>): Essence {
     var filter: Filter;
     if (dataSource.timeAttribute) {
       var now = dataSource.getMaxTime();
@@ -446,18 +446,22 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   // Modification
 
   public changeDataSource(dataSource: DataSource): Essence {
-    var value = this.valueOf();
-
-    var { dataSources } = this;
+    var { dataSources, visualizations } = this;
     var dataSourceName = dataSource.name;
     var existingDataSource = dataSources.find((ds) => ds.name === dataSourceName);
     if (!existingDataSource) throw new Error(`unknown DataSource changed: ${dataSourceName}`);
 
-    value.dataSource = dataSource;
-    if (!existingDataSource.equals(dataSource)) {
-      // We are actually updating info within the named dataSource
-      value.dataSources = <List<DataSource>>dataSources.map((ds) => ds.name === dataSourceName ? dataSource : ds);
+    if (existingDataSource.equals(dataSource)) {
+      // Just changing DataSource, nothing to see here.
+      return Essence.fromDataSource(dataSource, dataSources, visualizations);
     }
+
+    // We are actually updating info within the named dataSource
+    if (this.dataSource.name !== dataSource.name) throw new Error('can not change non-selected dataSource');
+
+    var value = this.valueOf();
+    value.dataSource = dataSource;
+    value.dataSources = <List<DataSource>>dataSources.map((ds) => ds.name === dataSourceName ? dataSource : ds);
 
     // Make sure that all the elements of state are still valid
     var oldDataSource = this.dataSource;
