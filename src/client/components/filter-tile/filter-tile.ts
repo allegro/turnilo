@@ -222,7 +222,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         if (inAction instanceof InAction) {
           var setLiteral = inAction.getLiteralValue();
           if (!setLiteral) return '?';
-          label += `(${setLiteral.elements.length})`;
+          var setElements = setLiteral.elements;
+          label += setElements.length > 1 ? `(${setElements.length})` : setElements[0];
         } else {
           label += '[not in]';
         }
