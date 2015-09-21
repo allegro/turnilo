@@ -35,6 +35,7 @@ interface TimeSeriesState {
   error?: any;
   dragStart?: number;
   hoverDatum?: Datum;
+  hoverMeasure?: Measure;
 }
 
 export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesState> {
@@ -88,9 +89,12 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   constructor() {
     super();
     this.state = {
+      loading: false,
       dataset: null,
       dragStart: null,
-      error: null
+      error: null,
+      hoverDatum: null,
+      hoverMeasure: null
     };
   }
 
@@ -176,8 +180,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     this.setState({ dragStart });
   }
 
-  onMouseMove(scaleX: any, e: MouseEvent) {
-    var { dataset, hoverDatum } = this.state;
+  onMouseMove(scaleX: any, measure: Measure, e: MouseEvent) {
+    var { dataset, hoverDatum, hoverMeasure } = this.state;
     if (!dataset) return;
 
     var myDOM = React.findDOMNode(this);
@@ -193,14 +197,21 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       }
     }
 
-    if (hoverDatum !== thisHoverDatum) {
-      this.setState({ hoverDatum: thisHoverDatum });
+    if (hoverDatum !== thisHoverDatum || measure !== hoverMeasure) {
+      this.setState({
+        hoverDatum: thisHoverDatum,
+        hoverMeasure: measure
+      });
     }
   }
 
-  onMouseLeave(e: MouseEvent) {
-    if (this.state.hoverDatum) {
-      this.setState({ hoverDatum: null });
+  onMouseLeave(measure: Measure, e: MouseEvent) {
+    var { hoverDatum, hoverMeasure } = this.state;
+    if (hoverDatum && hoverMeasure === measure) {
+      this.setState({
+        hoverDatum: null,
+        hoverMeasure: null
+      });
     }
   }
 
@@ -210,7 +221,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   render() {
     var { clicker, essence, stage } = this.props;
-    var { loading, dataset, error, dragStart, hoverDatum } = this.state;
+    var { loading, dataset, error, dragStart, hoverDatum, hoverMeasure } = this.state;
     var { splits } = essence;
 
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
@@ -266,7 +277,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
 
         var chartHoverLine: React.ReactElement<any> = null;
-        if (hoverDatum && (<any>window)['latest']) {
+        if (hoverDatum && hoverMeasure === measure) {
           chartHoverLine = React.createElement(ChartLineHover, {
             datum: hoverDatum,
             getX,
@@ -285,8 +296,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
             width={svgStage.width}
             height={svgStage.height}
             onMouseDown={this.onMouseDown.bind(this)}
-            onMouseMove={this.onMouseMove.bind(this, scaleX)}
-            onMouseLeave={this.onMouseLeave.bind(this)}
+            onMouseMove={this.onMouseMove.bind(this, scaleX, measure)}
+            onMouseLeave={this.onMouseLeave.bind(this, measure)}
           >
             <GridLines
               orientation="horizontal"
