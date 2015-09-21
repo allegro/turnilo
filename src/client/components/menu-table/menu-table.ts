@@ -61,6 +61,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     var nextDimension = nextProps.dimension;
 
     if (
+      essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, null, nextDimension) ||
       !dimension.equals(nextDimension)
     ) {

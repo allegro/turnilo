@@ -164,6 +164,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
+      essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, Table.id) ||
       essence.differentSplits(nextEssence) ||
       essence.differentSelectedMeasures(nextEssence)

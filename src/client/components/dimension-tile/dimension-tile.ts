@@ -90,6 +90,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var nextDimension = nextProps.dimension;
     var highlightId = HIGHLIGHT_ID + nextDimension.name;
     if (
+      essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, highlightId) ||
       !dimension.equals(nextDimension)
     ) {

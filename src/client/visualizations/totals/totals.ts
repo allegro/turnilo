@@ -82,6 +82,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
+      essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, Totals.id) ||
       essence.differentSelectedMeasures(nextEssence)
     ) {

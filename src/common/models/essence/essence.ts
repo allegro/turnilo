@@ -366,6 +366,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return <List<Measure>>this.selectedMeasures.toList().map(measureName => dataSource.getMeasure(measureName));
   }
 
+  public differentDataSource(other: Essence): boolean {
+    return this.dataSource !== other.dataSource;
+  }
+
   public differentTimezone(other: Essence): boolean {
     return !this.timezone.equals(other.timezone);
   }

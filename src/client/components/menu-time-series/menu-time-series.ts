@@ -68,6 +68,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
     var nextDimension = nextProps.dimension;
 
     if (
+      essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence) ||
       !dimension.equals(nextDimension)
     ) {
