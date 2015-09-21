@@ -90,9 +90,13 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     });
   }
 
-  removeFilter(expression: ChainExpression, e: MouseEvent) {
+  removeFilter(itemBlank: ItemBlank, e: MouseEvent) {
     var { essence, clicker } = this.props;
-    clicker.changeFilter(essence.filter.remove(expression));
+    if (itemBlank.source === 'from-highlight') {
+      clicker.dropHighlight();
+    } else {
+      clicker.changeFilter(essence.filter.remove(itemBlank.clause.expression));
+    }
     e.stopPropagation();
   }
 
@@ -214,7 +218,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   formatLabel(dimension: Dimension, clause: ChainExpression, timezone: Timezone): string {
-    var label = dimension.title + ' ';
+    var label = dimension.title;
 
     switch (dimension.type) {
       case 'STRING':
@@ -223,9 +227,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           var setLiteral = inAction.getLiteralValue();
           if (!setLiteral) return '?';
           var setElements = setLiteral.elements;
-          label += setElements.length > 1 ? `(${setElements.length})` : setElements[0];
+          label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
         } else {
-          label += '[not in]';
+          label += ' : [not in]';
         }
         break;
 
@@ -236,7 +240,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           if (!timeRangeLiteral) return '?';
           label = formatStartEnd(timeRangeLiteral.start, timeRangeLiteral.end, timezone);
         } else {
-          label += '[not in]';
+          label += ' : [not in]';
         }
         break;
 
@@ -272,18 +276,19 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     `);
   }
 
-  renderRemoveButton(clause: ChainExpression) {
-    var dataSource = this.props.essence.dataSource;
-    if (clause.expression.equals(dataSource.timeAttribute)) return null;
+  renderRemoveButton(itemBlank: ItemBlank) {
+    var { essence } = this.props;
+    var dataSource = essence.dataSource;
+    if (itemBlank.clause.expression.equals(dataSource.timeAttribute)) return null;
     return JSX(`
-      <div className="remove" onClick={this.removeFilter.bind(this, clause.expression)}>
+      <div className="remove" onClick={this.removeFilter.bind(this, itemBlank)}>
         <Icon name="x"/>
       </div>
     `);
   }
 
   render() {
-    var { essence } = this.props;
+    var { essence, clicker } = this.props;
     var {
       menuDimension, dragOver, dragInsertPosition, dragReplacePosition,
       possibleDimension, possibleInsertPosition, possibleReplacePosition
@@ -347,16 +352,30 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     var itemX = 0;
     var filterItems = itemBlanks.map((itemBlank) => {
-      var { dimension, clause } = itemBlank;
+      var { dimension, clause, source } = itemBlank;
 
       var style = { transform: `translate3d(${itemX}px,0,0)` };
       itemX += sectionWidth;
 
-      var classNames = [FILTER_CLASS_NAME, dimension.className, itemBlank.source];
+      var classNames = [FILTER_CLASS_NAME, dimension.className, source];
       if (dimension === menuDimension) classNames.push('selected');
 
       var className = classNames.join(' ');
       var key = dimension.name;
+
+      if (source === 'from-highlight') {
+        return JSX(`
+          <div
+            className={className}
+            key={key}
+            onClick={clicker.acceptHighlight.bind(clicker)}
+            style={style}
+          >
+            <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
+            {this.renderRemoveButton(itemBlank)}
+          </div>
+        `);
+      }
 
       if (clause) {
         return JSX(`
@@ -369,7 +388,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
             style={style}
           >
             <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
-            {this.renderRemoveButton(clause)}
+            {this.renderRemoveButton(itemBlank)}
           </div>
         `);
       } else {
