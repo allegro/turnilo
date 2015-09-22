@@ -7,12 +7,12 @@ import { dataTransferTypesGet } from '../../utils/dom/dom';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
 
-interface PinboardPanelProps {
+export interface PinboardPanelProps {
   clicker: Clicker;
   essence: Essence;
 }
 
-interface PinboardPanelState {
+export interface PinboardPanelState {
   dragOver?: boolean;
 }
 

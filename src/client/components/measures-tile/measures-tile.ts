@@ -9,12 +9,12 @@ import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 
-interface MeasuresTileProps {
+export interface MeasuresTileProps {
   clicker: Clicker;
   essence: Essence;
 }
 
-interface MeasuresTileState {
+export interface MeasuresTileState {
   showSearch?: boolean;
 }
 

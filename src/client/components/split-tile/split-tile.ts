@@ -13,13 +13,13 @@ import { SplitMenu } from '../split-menu/split-menu';
 
 const SPLIT_CLASS_NAME = 'split';
 
-interface SplitTileProps {
+export interface SplitTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
 }
 
-interface SplitTileState {
+export interface SplitTileState {
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   menuSplit?: SplitCombine;

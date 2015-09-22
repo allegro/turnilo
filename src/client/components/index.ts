@@ -1,6 +1,5 @@
 export * from './header-bar/header-bar';
 export * from './menu-table/menu-table';
-export * from './bubble-menu/bubble-menu';
 export * from './vis-selector/vis-selector';
 export * from './drop-indicator/drop-indicator';
 export * from './side-drawer/side-drawer';

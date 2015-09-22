@@ -8,12 +8,12 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, Resolution } from '../../../common/models/index';
 
 
-interface ManualFallbackProps {
+export interface ManualFallbackProps {
   clicker: Clicker;
   essence: Essence;
 }
 
-interface ManualFallbackState {
+export interface ManualFallbackState {
 }
 
 export class ManualFallback extends React.Component<ManualFallbackProps, ManualFallbackState> {

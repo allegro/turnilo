@@ -9,12 +9,12 @@ function panic() {
   window.location.assign(Essence.getBaseURL());
 }
 
-interface HeaderBarProps {
+export interface HeaderBarProps {
   essence: Essence;
   onNavClick: Function;
 }
 
-interface HeaderBarState {
+export interface HeaderBarState {
 }
 
 export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {

@@ -14,13 +14,13 @@ function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
-interface MenuTimeSeriesProps {
+export interface MenuTimeSeriesProps {
   essence: Essence;
   dimension: Dimension;
   stage: Stage;
 }
 
-interface MenuTimeSeriesState {
+export interface MenuTimeSeriesState {
   dataset: Dataset;
 }
 

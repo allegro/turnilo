@@ -9,7 +9,7 @@ import { DataSource, Clicker, Essence } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 
-interface SideDrawerProps {
+export interface SideDrawerProps {
   clicker: Clicker;
   essence: Essence;
   onClose: Function;
@@ -17,7 +17,7 @@ interface SideDrawerProps {
   key?: string;
 }
 
-interface SideDrawerState {
+export interface SideDrawerState {
 }
 
 export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {

@@ -3,10 +3,10 @@
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 
-interface LoaderProps {
+export interface LoaderProps {
 }
 
-interface LoaderState {
+export interface LoaderState {
 }
 
 export class Loader extends React.Component<LoaderProps, LoaderState> {

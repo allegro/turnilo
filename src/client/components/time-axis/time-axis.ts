@@ -8,13 +8,13 @@ import { Stage, Filter, Dimension, Measure } from '../../../common/models/index'
 const TICK_HEIGHT = 5;
 const TEXT_OFFSET = 12;
 
-interface TimeAxisProps {
+export interface TimeAxisProps {
   stage: Stage;
   xTicks: Date[];
   scaleX: any;
 }
 
-interface TimeAxisState {
+export interface TimeAxisState {
 }
 
 export class TimeAxis extends React.Component<TimeAxisProps, TimeAxisState> {

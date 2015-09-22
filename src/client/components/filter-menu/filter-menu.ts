@@ -51,7 +51,7 @@ function getTimePresets(now: Date, tz: Timezone) {
   ];
 }
 
-interface FilterMenuProps {
+export interface FilterMenuProps {
   clicker: Clicker;
   essence: Essence;
   direction: string;
@@ -63,7 +63,7 @@ interface FilterMenuProps {
   onClose: Function;
 }
 
-interface FilterMenuState {
+export interface FilterMenuState {
   selectedValues?: List<any>;
   showSearch?: boolean;
 }

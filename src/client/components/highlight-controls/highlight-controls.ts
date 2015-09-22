@@ -12,14 +12,14 @@ function stopEvent(e: MouseEvent): void {
   e.stopPropagation();
 }
 
-interface HighlightControlsProps {
+export interface HighlightControlsProps {
   clicker: Clicker;
   orientation: string;
   onClose?: Function;
   style?: any;
 }
 
-interface HighlightControlsState {
+export interface HighlightControlsState {
 }
 
 export class HighlightControls extends React.Component<HighlightControlsProps, HighlightControlsState> {

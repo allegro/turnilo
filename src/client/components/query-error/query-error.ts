@@ -7,11 +7,11 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 // import { ... } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 
-interface QueryErrorProps {
+export interface QueryErrorProps {
   error: any;
 }
 
-interface QueryErrorState {
+export interface QueryErrorState {
 }
 
 export class QueryError extends React.Component<QueryErrorProps, QueryErrorState> {

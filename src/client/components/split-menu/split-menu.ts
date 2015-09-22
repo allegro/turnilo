@@ -11,7 +11,7 @@ import { MenuHeader } from '../menu-header/menu-header';
 
 const GRANULARITIES = ['PT1M', 'PT1H', 'P1D', 'P7D'];
 
-interface SplitMenuProps {
+export interface SplitMenuProps {
   clicker: Clicker;
   essence: Essence;
   direction: string;
@@ -22,7 +22,7 @@ interface SplitMenuProps {
   onClose: Function;
 }
 
-interface SplitMenuState {
+export interface SplitMenuState {
 }
 
 export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {

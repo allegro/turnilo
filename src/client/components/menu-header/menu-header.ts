@@ -5,13 +5,13 @@ import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';
 
-interface MenuHeaderProps {
+export interface MenuHeaderProps {
   //clicker: Clicker;
   dimension: Dimension;
   onSearchClick: Function;
 }
 
-interface MenuHeaderState {
+export interface MenuHeaderState {
 }
 
 export class MenuHeader extends React.Component<MenuHeaderProps, MenuHeaderState> {

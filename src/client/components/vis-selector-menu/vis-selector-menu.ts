@@ -8,14 +8,14 @@ import { isInside, escapeKey } from '../../utils/dom/dom';
 import { Clicker, Essence, Measure, Manifest } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-interface VisSelectorMenuProps {
+export interface VisSelectorMenuProps {
   clicker: Clicker;
   essence: Essence;
   openOn: Element;
   onClose: Function;
 }
 
-interface VisSelectorMenuState {
+export interface VisSelectorMenuState {
 }
 
 export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSelectorMenuState> {

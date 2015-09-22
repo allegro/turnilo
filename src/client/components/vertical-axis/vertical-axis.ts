@@ -10,13 +10,13 @@ import { Stage, Measure } from '../../../common/models/index';
 const TICK_WIDTH = 5;
 const TEXT_OFFSET = 2;
 
-interface VerticalAxisProps {
+export interface VerticalAxisProps {
   stage: Stage;
   yTicks: number[];
   scaleY: any;
 }
 
-interface VerticalAxisState {
+export interface VerticalAxisState {
 }
 
 export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxisState> {

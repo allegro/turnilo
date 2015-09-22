@@ -8,12 +8,12 @@ import { findParentWithClass } from '../../utils/dom/dom';
 import { Clicker, Essence, Measure, Manifest } from '../../../common/models/index';
 import { VisSelectorMenu } from '../vis-selector-menu/vis-selector-menu';
 
-interface VisSelectorProps {
+export interface VisSelectorProps {
   clicker: Clicker;
   essence: Essence;
 }
 
-interface VisSelectorState {
+export interface VisSelectorState {
   menuOpenOn?: Element;
 }
 

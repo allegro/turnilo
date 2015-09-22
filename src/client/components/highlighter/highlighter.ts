@@ -8,7 +8,7 @@ import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/mo
 import { isInside, escapeKey } from '../../utils/dom/dom';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
 
-interface HighlighterProps {
+export interface HighlighterProps {
   clicker: Clicker;
   essence: Essence;
   highlightId: string;
@@ -19,7 +19,7 @@ interface HighlighterProps {
   onClose: Function;
 }
 
-interface HighlighterState {
+export interface HighlighterState {
   pseudoHighlight?: TimeRange;
   dragStartPx?: number;
 }

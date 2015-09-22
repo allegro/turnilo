@@ -12,14 +12,14 @@ import { PreviewMenu } from '../preview-menu/preview-menu';
 
 const DIMENSION_CLASS_NAME = 'dimension';
 
-interface DimensionListTileProps {
+export interface DimensionListTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
   onFilter: Function;
 }
 
-interface DimensionListTileState {
+export interface DimensionListTileState {
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   dragOver?: boolean;

@@ -11,7 +11,7 @@ import { BodyPortal } from '../body-portal/body-portal';
 const OFFSET_H = 10;
 const OFFSET_V = -1;
 
-interface BubbleMenuProps {
+export interface BubbleMenuProps {
   className: string;
   direction: string;
   stage: Stage;
@@ -21,7 +21,7 @@ interface BubbleMenuProps {
   children: any;
 }
 
-interface BubbleMenuState {
+export interface BubbleMenuState {
   x: number;
   y: number;
 }
@@ -85,7 +85,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     onClose();
   }
 
-  render() {
+  render(): any {
     var { className, direction, stage, containerStage, children } = this.props;
     var { x, y } = this.state;
 

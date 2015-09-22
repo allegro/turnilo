@@ -16,7 +16,7 @@ import { QueryError } from '../query-error/query-error';
 const HIGHLIGHT_ID = 'dim-tile:';
 const TOP_N = 100;
 
-interface DimensionTileProps {
+export interface DimensionTileProps {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;
@@ -24,7 +24,7 @@ interface DimensionTileProps {
   key?: string;
 }
 
-interface DimensionTileState {
+export interface DimensionTileState {
   loading?: boolean;
   dataset?: Dataset;
   error?: any;

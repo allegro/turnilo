@@ -8,7 +8,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Splits, Dimension, Measure, VisualizationProps, Resolve } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-interface BarChartState {
+export interface BarChartState {
 }
 
 export class BarChart extends React.Component<VisualizationProps, BarChartState> {

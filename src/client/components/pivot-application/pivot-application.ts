@@ -22,11 +22,11 @@ import { visualizations } from '../../visualizations/index';
 
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
-interface PivotApplicationProps {
+export interface PivotApplicationProps {
   dataSources: List<DataSource>;
 }
 
-interface PivotApplicationState {
+export interface PivotApplicationState {
   essence?: Essence;
   menuStage?: Stage;
   visualizationStage?: Stage;

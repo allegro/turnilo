@@ -6,11 +6,11 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-interface BodyPortalProps {
+export interface BodyPortalProps {
   children: any;
 }
 
-interface BodyPortalState {
+export interface BodyPortalState {
 }
 
 export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
@@ -38,7 +38,7 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     document.body.removeChild(this.target);
   }
 
-  render(): any {
+  render(): React.ReactElement<BodyPortalProps> {
     return null;
   }
 }

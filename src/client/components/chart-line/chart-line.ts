@@ -5,7 +5,7 @@ import { $, Expression, Executor, Dataset, Datum } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-interface ChartLineProps {
+export interface ChartLineProps {
   stage: Stage;
   dataset: Dataset;
   getX: (d: Datum) => any;
@@ -14,7 +14,7 @@ interface ChartLineProps {
   scaleY: (v: any) => number;
 }
 
-interface ChartLineState {
+export interface ChartLineState {
 }
 
 export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {

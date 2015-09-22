@@ -6,10 +6,10 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-interface DropIndicatorProps {
+export interface DropIndicatorProps {
 }
 
-interface DropIndicatorState {
+export interface DropIndicatorState {
 }
 
 export class DropIndicator extends React.Component<DropIndicatorProps, DropIndicatorState> {

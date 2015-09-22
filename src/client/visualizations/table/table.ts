@@ -44,13 +44,13 @@ function getFilterFromDatum(splits: Splits, flatDatum: Datum): Filter {
   })));
 }
 
-interface PositionHover {
+export interface PositionHover {
   what: string;
   measure?: Measure;
   row?: Datum;
 }
 
-interface TableState {
+export interface TableState {
   loading?: boolean;
   dataset?: Dataset;
   error?: any;

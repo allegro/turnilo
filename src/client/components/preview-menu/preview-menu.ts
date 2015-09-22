@@ -11,7 +11,7 @@ import { MenuTable } from '../menu-table/menu-table';
 import { MenuTimeSeries } from '../menu-time-series/menu-time-series';
 import { MenuActionBar } from '../menu-action-bar/menu-action-bar';
 
-interface PreviewMenuProps {
+export interface PreviewMenuProps {
   clicker: Clicker;
   essence: Essence;
   direction: string;
@@ -22,7 +22,7 @@ interface PreviewMenuProps {
   onClose: Function;
 }
 
-interface PreviewMenuState {
+export interface PreviewMenuState {
   selectedValues?: List<any>;
   showSearch?: boolean;
   filterMode?: boolean;

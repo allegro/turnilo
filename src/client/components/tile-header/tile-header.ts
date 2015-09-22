@@ -6,14 +6,14 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-interface TileHeaderProps {
+export interface TileHeaderProps {
   title: string;
   onDragStart: Function;
   onSearch: Function;
   onClose: Function;
 }
 
-interface TileHeaderState {
+export interface TileHeaderState {
 }
 
 export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState> {

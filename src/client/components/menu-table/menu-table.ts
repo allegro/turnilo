@@ -9,7 +9,7 @@ import { Checkbox } from '../checkbox/checkbox';
 
 const TOP_N = 100;
 
-interface MenuTableProps {
+export interface MenuTableProps {
   essence: Essence;
   dimension: Dimension;
   showSearch: boolean;
@@ -18,7 +18,7 @@ interface MenuTableProps {
   onValueClick: Function;
 }
 
-interface MenuTableState {
+export interface MenuTableState {
   dataset?: Dataset;
 }
 

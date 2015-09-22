@@ -8,12 +8,12 @@ import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-interface FancyDragIndicatorProps {
+export interface FancyDragIndicatorProps {
   dragInsertPosition: number;
   dragReplacePosition: number;
 }
 
-interface FancyDragIndicatorState {
+export interface FancyDragIndicatorState {
 }
 
 export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps, FancyDragIndicatorState> {

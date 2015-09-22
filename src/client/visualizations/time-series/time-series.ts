@@ -29,7 +29,7 @@ function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
-interface TimeSeriesState {
+export interface TimeSeriesState {
   loading?: boolean;
   dataset?: Dataset;
   error?: any;

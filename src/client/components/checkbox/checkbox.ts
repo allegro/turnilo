@@ -8,12 +8,12 @@ import { Filter, Dimension, Measure } from '../../../common/models/index';
 
 const CHECKBOX_SIZE = 14;
 
-interface CheckboxProps {
+export interface CheckboxProps {
   checked: Boolean;
   onClick?: Function;
 }
 
-interface CheckboxState {
+export interface CheckboxState {
 }
 
 export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {

@@ -14,13 +14,13 @@ import { FilterMenu } from '../filter-menu/filter-menu';
 
 const FILTER_CLASS_NAME = 'filter';
 
-interface ItemBlank {
+export interface ItemBlank {
   dimension: Dimension;
   source: string;
   clause?: ChainExpression;
 }
 
-interface FilterTileProps {
+export interface FilterTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
@@ -28,7 +28,7 @@ interface FilterTileProps {
   ref?: any;
 }
 
-interface FilterTileState {
+export interface FilterTileState {
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   dragOver?: boolean;

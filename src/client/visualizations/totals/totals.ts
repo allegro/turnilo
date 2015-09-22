@@ -10,7 +10,7 @@ import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataS
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
-interface TotalsState {
+export interface TotalsState {
   loading?: boolean;
   dataset?: Dataset;
   error?: any;

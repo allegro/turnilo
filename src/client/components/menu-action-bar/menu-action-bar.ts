@@ -7,7 +7,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-interface MenuActionBarProps {
+export interface MenuActionBarProps {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;
@@ -15,7 +15,7 @@ interface MenuActionBarProps {
   onClose: Function;
 }
 
-interface MenuActionBarState {
+export interface MenuActionBarState {
 }
 
 export class MenuActionBar extends React.Component<MenuActionBarProps, MenuActionBarState> {

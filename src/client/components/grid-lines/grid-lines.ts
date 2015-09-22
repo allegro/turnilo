@@ -5,14 +5,14 @@ import * as React from 'react/addons';
 import { Stage } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-interface GridLinesProps {
+export interface GridLinesProps {
   orientation: string;
   stage: Stage;
   ticks: any[];
   scale: any;
 }
 
-interface GridLinesState {
+export interface GridLinesState {
 }
 
 export class GridLines extends React.Component<GridLinesProps, GridLinesState> {
