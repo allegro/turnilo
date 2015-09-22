@@ -50,10 +50,10 @@ import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePr
 
 // I am: import { #{camelName} } from '../#{name}/#{name}';
 
-interface #{camelName}Props {
+export interface #{camelName}Props {
 }
 
-interface #{camelName}State {
+export interface #{camelName}State {
 }
 
 export class #{camelName} extends React.Component<#{camelName}Props, #{camelName}State> {

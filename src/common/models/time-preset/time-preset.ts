@@ -3,12 +3,12 @@
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { $, Expression, TimeRange, TimeRangeJS } from 'plywood';
 
-interface TimePresetValue {
+export interface TimePresetValue {
   name: string;
   timeRange: TimeRange;
 }
 
-interface TimePresetJS {
+export interface TimePresetJS {
   name: string;
   timeRange: TimeRangeJS;
 }

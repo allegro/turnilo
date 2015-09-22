@@ -8,8 +8,8 @@ var laborer = require('laborer');
 
 gulp.task('style', laborer.taskStyle('pivot.css'));
 
-gulp.task('client:tsc', laborer.taskClientTypeScript());
-gulp.task('server:tsc', laborer.taskServerTypeScript());
+gulp.task('client:tsc', laborer.taskClientTypeScript({ declaration: true }));
+gulp.task('server:tsc', laborer.taskServerTypeScript({ declaration: true }));
 
 gulp.task('client:test', laborer.taskClientTest());
 gulp.task('server:test', laborer.taskServerTest());
