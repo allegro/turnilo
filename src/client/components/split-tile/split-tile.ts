@@ -138,6 +138,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
+    e.preventDefault();
     var { clicker, essence } = this.props;
     var { splits } = essence;
 

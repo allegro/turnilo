@@ -163,6 +163,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
+    e.preventDefault();
     var { clicker, essence } = this.props;
     var { filter, dataSource } = essence;
 

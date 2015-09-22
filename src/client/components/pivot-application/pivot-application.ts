@@ -208,6 +208,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
+    e.preventDefault();
     var { essence } = this.state;
     this.dragCounter = 0;
     var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");

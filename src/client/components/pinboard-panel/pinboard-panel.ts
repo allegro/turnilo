@@ -26,18 +26,6 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     };
   }
 
-  componentDidMount() {
-
-  }
-
-  componentWillUnmount() {
-
-  }
-
-  componentWillReceiveProps(nextProps: PinboardPanelProps) {
-
-  }
-
   canDrop(e: DragEvent): boolean {
     var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
     if (dimensionName) {
@@ -81,6 +69,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
+    e.preventDefault();
     this.dragCounter = 0;
     var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
     if (dimensionName) {
