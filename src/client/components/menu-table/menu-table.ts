@@ -88,7 +88,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
       var rowData = dataset.data.slice(0, TOP_N);
       var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
       rows = rowData.map((d) => {
-        var segmentValue = String(d[dimensionName]);
+        var segmentValue = d[dimensionName];
+        var segmentValueStr = String(segmentValue);
         var measureValue = d[measureName];
         var measureValueStr = formatter(measureValue);
         var selected = selectedValues && selectedValues.includes(segmentValue);
@@ -101,10 +102,10 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
         }
 
         return JSX(`
-          <div className={'row' + (selected ? ' selected' : '')} key={segmentValue}>
+          <div className={'row' + (selected ? ' selected' : '')} key={segmentValueStr}>
             <div className="segment-value" onClick={onValueClick.bind(this, segmentValue)}>
               {checkbox}
-              <div className="label">{segmentValue}</div>
+              <div className="label">{segmentValueStr}</div>
             </div>
             <div className="measure-value">{measureValueStr}</div>
           </div>
