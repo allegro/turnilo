@@ -2,6 +2,7 @@
 
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, LiteralExpression, ChainExpression, ExpressionJS, InAction, Set, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general/general';
 import { DataSource } from '../data-source/data-source';
@@ -235,6 +236,24 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     });
 
     return hasChanged ? new Filter(List(clauses)) : this;
+  }
+
+  public overQuery(duration: Duration, timezone: Timezone, dataSource: DataSource): Filter {
+    var timeAttribute = dataSource.timeAttribute;
+    if (!timeAttribute) return this;
+
+    return new Filter(<List<ChainExpression>>this.clauses.map((clause) => {
+      if (clause.expression.equals(timeAttribute)) {
+        var timeRange: TimeRange = clause.actions[0].getLiteralValue();
+        var newTimeRange = new TimeRange({
+          start: duration.move(timeRange.start, timezone, -1),
+          end: duration.move(timeRange.end, timezone, 1)
+        });
+        return clause.expression.in(newTimeRange);
+      } else {
+        return clause;
+      }
+    }));
   }
 }
 check = Filter;

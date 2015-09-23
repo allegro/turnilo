@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';
-import { Timezone, Duration, day } from 'chronoshift';
+import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesGet } from '../../utils/dom/dom';
 import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../../common/models/index";
@@ -170,8 +170,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
-    if (e.which !== 76) return; // 'l' for latest
-    (<any>window)['latest'] = true;
+    // Shortcuts will go here one day
   }
 
   canDrop(e: DragEvent): boolean {

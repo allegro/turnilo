@@ -102,6 +102,10 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var { splits, dataSource } = essence;
     var measures = essence.getMeasures();
 
+    // var timeSplit = splits.last();
+    // var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
+    //   .overQuery(timeBucketAction.duration, timeBucketAction.timezone, dataSource)
+
     var $main = $('main');
 
     var query = ply()
