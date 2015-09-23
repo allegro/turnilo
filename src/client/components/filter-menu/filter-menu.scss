@@ -5,9 +5,12 @@ $action-bar-height: 52px;
 
 .filter-menu {
   .menu-cont {
+    position: absolute;
+    width: 100%;
+    top: 10px;
     bottom: $action-bar-height;
 
-    &.presets {
+    &.time-filter {
       ul {
         width: $presets-width;
         padding-left: 10px;
@@ -18,8 +21,11 @@ $action-bar-height: 52px;
           line-height: 22px;
           padding-left: 10px;
           padding-right: 10px;
-          color: $brand;
           cursor: pointer;
+
+          &.selected {
+            background: $hover;
+          }
 
           &:hover {
             background: $hover;
@@ -27,11 +33,32 @@ $action-bar-height: 52px;
         }
       }
 
-      .menu-time-series {
+      .time-inputs {
         position: absolute;
         left: $presets-width;
         top: 0;
+
+        .time-input {
+          width: 135px;
+        }
+
+        .arrow {
+          width: 14px;
+          display: inline-block;
+          margin: 0 8px;
+          padding-top: 8px;
+        }
       }
+
+      .menu-time-series {
+        position: absolute;
+        left: $presets-width;
+        top: 40px;
+      }
+    }
+
+    .menu-table {
+      @include pin-full;
     }
   }
 

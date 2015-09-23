@@ -1,5 +1,8 @@
 @import '../../imports';
 
 .menu-time-series {
-
+  .frame {
+    stroke: $gray;
+    fill: none;
+  }
 }

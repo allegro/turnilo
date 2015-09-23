@@ -48,14 +48,4 @@ $shpitz-size: 10px;
   .menu-header {
     @include pin-top($menu-title-bar-height);
   }
-
-  .menu-cont {
-    position: absolute;
-    top: $menu-title-bar-height;
-    width: 100%;
-
-    .menu-table {
-      @include pin-full;
-    }
-  }
 }

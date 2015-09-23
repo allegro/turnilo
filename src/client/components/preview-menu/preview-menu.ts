@@ -122,8 +122,8 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
       if (filterMode) {
         bottomBar = JSX(`
           <div className="button-bar">
-            <div className="button filter" onClick={this.onFilterClick.bind(this)}>Filter</div>
-            <div className="button cancel" onClick={this.onCancelClick.bind(this)}>Cancel</div>
+            <button className="filter" onClick={this.onFilterClick.bind(this)}>Filter</button>
+            <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
           </div>
         `);
       }

@@ -3,7 +3,7 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
-import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
+import { $, Expression, Executor, Dataset, Datum, TimeRange, TimeBucketAction } from 'plywood';
 import { Stage, Essence, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../../common/models/index';
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
@@ -39,10 +39,12 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
     var measure = dataSource.getSortMeasure(dimension);
 
     var newEssence = essence.changeSplit(SplitCombine.fromExpression(dimension.expression));
+    var timeSplit = newEssence.splits.last();
+    var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
 
     var query = $('main')
-      .filter(essence.getEffectiveFilter().toExpression())
-      .split(newEssence.splits.get(0).toSplitExpression(), dimension.name)
+      .filter(essence.getEffectiveFilter().overQuery(timeBucketAction.duration, timeBucketAction.timezone, dataSource).toExpression())
+      .split(timeSplit.toSplitExpression(), dimension.name)
       .apply(measure.name, measure.expression)
       .sort($(dimension.name), 'ascending');
 
@@ -82,8 +84,12 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
     var measure = essence.dataSource.getSortMeasure(dimension);
 
     var svgStage = stage;
+    var lineStage = svgStage.within({ bottom: X_AXIS_HEIGHT });
+    var xAxisStage = svgStage.within({ top: lineStage.height });
 
-    var svg: React.ReactElement<any> = null;
+    var chartLine: React.ReactElement<any> = null;
+    var timeAxis: React.ReactElement<any> = null;
+
     if (dataset) {
       var timeRange = essence.getEffectiveFilter().getTimeRange(essence.dataSource.timeAttribute);
 
@@ -101,9 +107,6 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
       extentY[0] = Math.min(extentY[0] * 1.1, 0);
       extentY[1] = Math.max(extentY[1] * 1.1, 0);
 
-      var lineStage = svgStage.within({ bottom: X_AXIS_HEIGHT });
-      var xAxisStage = svgStage.within({ top: lineStage.height });
-
       var scaleX = d3.time.scale()
         .domain([timeRange.start, timeRange.end])
         .range([0, lineStage.width]);
@@ -114,24 +117,29 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
         .domain(extentY)
         .range([lineStage.height, 0]);
 
-      svg = JSX(`
-        <svg className="graph" width={svgStage.width} height={svgStage.height}>
-          <ChartLine
-            dataset={dataset}
-            getX={getX}
-            getY={getY}
-            scaleX={scaleX}
-            scaleY={scaleY}
-            stage={lineStage}
-          />
-          <TimeAxis stage={xAxisStage} xTicks={xTicks} scaleX={scaleX}/>
-        </svg>
+      chartLine = JSX(`
+        <ChartLine
+          dataset={dataset}
+          getX={getX}
+          getY={getY}
+          scaleX={scaleX}
+          scaleY={scaleY}
+          stage={lineStage}
+        />
+      `);
+
+      timeAxis = JSX(`
+        <TimeAxis stage={xAxisStage} xTicks={xTicks} scaleX={scaleX}/>
       `);
     }
 
     return JSX(`
       <div className="menu-time-series">
-        {svg}
+        <svg className="graph" width={svgStage.width} height={svgStage.height}>
+          {chartLine}
+          <rect className="frame" width={lineStage.width} height={lineStage.height}/>
+          {timeAxis}
+        </svg>
       </div>
     `);
   }

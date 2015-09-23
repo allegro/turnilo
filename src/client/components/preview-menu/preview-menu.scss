@@ -4,7 +4,14 @@ $action-bar-height: 52px;
 
 .preview-menu {
   .menu-cont {
+    position: absolute;
+    width: 100%;
+    top: $menu-title-bar-height;
     bottom: $action-bar-height;
+
+    .menu-table {
+      @include pin-full;
+    }
   }
 
   .menu-action-bar {
