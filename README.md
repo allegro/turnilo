@@ -60,10 +60,10 @@ gulp all
 
 Finally you have to create a `config.yaml` file. (or use the sample)
 
-For information on what goes into the config please read the comments in the [sample config file](/config_sample.yaml)
+For information on what goes into the config please read the comments in the [sample config file](/config.yaml.sample)
 
 ```
-cp config_sample.yaml config.yaml
+cp config.yaml.sample config.yaml
 ```
 
 Then you are ready to

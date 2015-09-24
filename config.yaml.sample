@@ -7,31 +7,31 @@ port: 9090
 # A Druid broker node that can serve data (only used if you have Druid based data source)
 druidHost: localhost:8082
 
-# The data sources that you have configured, these will apear, in order, inside the navigation menu of Pivot
+# The data sources that you have configured, these will appear, in order, inside the navigation menu of Pivot
 # In general there can be two types of 'engine':
-#   - native: a JSON file that is crunched within plywood itself (usefull for small datasets and testing)
+#   - native: a JSON file that is crunched within plywood itself (useful for small datasets and testing)
 #   - druid: a Druid dataSource
 dataSources:
 
   # Here we have a data source based on a single day of Wikipedia
-  - name: static-wiki # This will go into the URL so no fancy charecters allowed
+  - name: static-wiki # This will go into the URL so no fancy characters allowed
 
     # This is the title that will grace this data source in the the menus
     title: Static Wikipedia
 
-    # Use the native engine, all caluclations will be done in Node.JS. Good for up to 100k rows of data.
+    # Use the native engine, all calculations will be done in Node.JS. Good for up to 100k rows of data.
     engine: native
 
     # The file representing the datasource relative to repo root
     source: assets/data/wikiticker-2015-09-12-sampled.json
     # This datasource was scraped using https://github.com/implydata/wikiticker
     # GitHub does not like large files so only a sampled file is checked in
-    # There is also a nonsampled file with the filter: isAnonymous == true applied, to use it set:
+    # There is also a non-sampled file with the filter: isAnonymous == true applied, to use it set:
     # source: assets/data/wikiticker-2015-09-12-anonymous.json
-    # Run `assets/data-raw/process-wikiticker-2015-09-12` to get the full exmaple file
+    # Run `assets/data-raw/process-wikiticker-2015-09-12` to get the full example file
 
-    # The primary time attribute of the data refers to the attribute that must always be filtred on
-    # This is particularly usefull for Druid data sources as they must always have a time filter.
+    # The primary time attribute of the data refers to the attribute that must always be filtered on
+    # This is particularly useful for Druid data sources as they must always have a time filter.
     timeAttribute: time
 
     # The latest time of the data, (if not set will default to Date.now())
@@ -104,9 +104,9 @@ dataSources:
 
       - name: user
 
-    # The list of meausres defined in the UI. The order here will be reflected in the UI
+    # The list of measures defined in the UI. The order here will be reflected in the UI
     measures:
-      # A general meausre looks like so:
+      # A general measure looks like so:
       #
       # - name: avg_revenue
       #   ^ the name of the dimension as used in the URL (you should try not to change these)
@@ -116,7 +116,7 @@ dataSources:
       #
       #   expression: $main.average($revenue)
       #   ^ (optional) the Plywood bucketing expression for this dimension. Defaults to '$main.sum($name)'
-      #     this is the pleace to define your fancy formulas
+      #     this is the place to define your fancy formulas
 
       - name: count
         title: Rows
@@ -143,7 +143,7 @@ dataSources:
 
 
   # Here is an example of a Druid data source, this one is taken from the Druid wikipedia demo
-  # It will work for you if you have setup the demo Wikipedia Edditstream ingestor
+  # It will work for you if you have setup the demo Wikipedia Editstream scraper
   - name: wiki
     title: Wikipedia Edits
     engine: druid # Set the engine to druid
@@ -191,10 +191,11 @@ dataSources:
         title: Unique Users
         expression: $main.countDistinct($user_unique)
 
+
   # Here is an example of a Druid data source with cool crazy things in it for education
-  # in this example custom aggregations are passed directly into Druid, this is usefull if
+  # in this example custom aggregations are passed directly into Druid, this is useful if
   # you have custom sketches or trying to do something that Plywood does not (yet) support.
-  # If you use this for something other than a custom sketch I would apreciate it if you could
+  # If you use this for something other than a custom sketch I would appreciate it if you could
   # file an issue in Plywood (https://github.com/implydata/plywood).
   - name: wiki-crazy
     title: Wikipedia Crazy
@@ -206,7 +207,7 @@ dataSources:
     options:
       customAggregations:
         boring:
-          #accessType  <-- this is how this aggregate will be accesed from a postAgg (default is 'fieldAccess')
+          #accessType  <-- this is how this aggregate will be accessed from a postAgg (default is 'fieldAccess')
           aggregation:
             type: longSum
             fieldName: added
