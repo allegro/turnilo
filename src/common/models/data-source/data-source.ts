@@ -38,90 +38,22 @@ function makeUniqueMeasureList(measures: Measure[]): List<Measure> {
   }));
 }
 
+function getDefaultPinnedDimensions(dimensions: List<Dimension>): OrderedSet<string> {
+  return OrderedSet(
+    dimensions
+      .toArray()
+      .filter((d) => d.type === 'STRING')
+      .slice(0, 3)
+      .map((d) => d.name)
+  );
+}
+
 interface DimensionsMetrics {
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
   defaultSortMeasure: string;
 }
-
-function makeDimensionsMetricsFromAttributes(attributes: Attributes): DimensionsMetrics {
-  var dimensionArray: Dimension[] = [];
-  var measureArray: Measure[] = [];
-  var timeAttribute = $('time');
-  var defaultSortMeasure: string = null;
-
-  if (!attributes['count']) {
-    measureArray.push(new Measure({
-      name: 'count',
-      title: 'Count',
-      expression: $('main').count(),
-      format: Measure.DEFAULT_FORMAT
-    }));
-    defaultSortMeasure = 'count';
-  }
-
-  for (let k in attributes) {
-    let attribute = attributes[k];
-    let type = attribute.type;
-    switch (type) {
-      case 'TIME':
-        dimensionArray.push(Dimension.fromJS({
-          name: k,
-          type: type
-        }));
-        break;
-
-      case 'STRING':
-        if (attribute.special === 'unique') {
-          measureArray.push(Measure.fromJS({
-            name: k,
-            expression: $('main').countDistinct($(k)).toJS(),
-            format: Measure.INTEGER_FORMAT
-          }));
-        } else {
-          dimensionArray.push(Dimension.fromJS({
-            name: k,
-            type: type
-          }));
-        }
-        break;
-
-      case 'NUMBER':
-        measureArray.push(Measure.fromJS({
-          name: k
-        }));
-        break;
-
-      default:
-        throw new Error('bad type ' + type);
-    }
-  }
-
-  dimensionArray.sort((a, b) => {
-    var prefDiff = dimensionPreference(a) - dimensionPreference(b);
-    if (prefDiff) return prefDiff;
-    return a.title.localeCompare(b.title);
-  });
-
-  measureArray.sort((a, b) => {
-    var prefDiff = measurePreference(a) - measurePreference(b);
-    if (prefDiff) return prefDiff;
-    return a.title.localeCompare(b.title);
-  });
-
-  if (!defaultSortMeasure && measureArray.length) {
-    defaultSortMeasure = measureArray[0].name;
-  }
-
-  return {
-    dimensions: List(dimensionArray),
-    measures: List(measureArray),
-    timeAttribute,
-    defaultSortMeasure
-  };
-}
-
 
 export interface DataSourceValue {
   name: string;
@@ -178,7 +110,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       maxTime: parameters.maxTime ? new Date(<any>parameters.maxTime) : null,
       defaultDuration: Duration.fromJS(parameters.defaultDuration || 'P3D'),
       defaultSortMeasure: parameters.defaultSortMeasure || measures.get(0).name,
-      defaultPinnedDimensions: OrderedSet(parameters.defaultPinnedDimensions || dimensions.toArray().slice(1, 4).map((d) => d.name))
+      defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : getDefaultPinnedDimensions(dimensions)
     };
     if (executor) {
       value.executor = executor;
@@ -203,8 +135,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public executor: Executor;
 
   constructor(parameters: DataSourceValue) {
-    this.name = parameters.name;
-    this.title = parameters.title;
+    var name = parameters.name;
+    this.name = name;
+    this.title = parameters.title || makeTitle(name);
     this.engine = parameters.engine;
     this.source = parameters.source;
     this.options = parameters.options;
@@ -292,6 +225,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions);
   }
 
+  public attachExecutor(executor: Executor): DataSource {
+    var value = this.valueOf();
+    value.executor = executor;
+    return new DataSource(value);
+  }
+
   public getMaxTime(): Date {
     var maxTime = this.maxTime;
     if (maxTime) return maxTime;
@@ -321,9 +260,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return this.measures.find(measure => measure.name.toLowerCase() === measureName);
   }
 
-  public getSortMeasure(dimension: Dimension): Measure {
-    var sortOn = dimension.sortOn || this.defaultSortMeasure;
-    return this.getMeasure(sortOn);
+  public getMeasureByExpression(expression: Expression): Measure {
+    return this.measures.find(measure => measure.expression.equals(expression));
   }
 
   public changeDimensions(dimensions: List<Dimension>): DataSource {
@@ -332,5 +270,64 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return new DataSource(value);
   }
 
+  public addAttributes(attributes: Attributes): DataSource {
+    var { dimensions, measures } = this;
+
+    for (var attribute of attributes) {
+      var { name, type } = attribute;
+      var expression: Expression;
+      switch (type) {
+        case 'TIME':
+          expression = $(name);
+          if (this.getDimensionByExpression(expression)) continue;
+          dimensions = dimensions.unshift(new Dimension({
+            name,
+            type: type
+          }));
+          break;
+
+        case 'STRING':
+          var newDataSource: DataSource;
+          if (attribute.special === 'unique') {
+            expression = $('main').countDistinct($(name));
+            if (this.getMeasureByExpression(expression)) continue;
+            measures = measures.push(new Measure({
+              name,
+              expression,
+              format: Measure.INTEGER_FORMAT
+            }));
+          } else {
+            expression = $(name);
+            if (this.getDimensionByExpression(expression)) continue;
+            dimensions = dimensions.push(new Dimension({
+              name,
+              type: type
+            }));
+          }
+          break;
+
+        case 'NUMBER':
+          expression = $('main').sum($(name));
+          if (this.getMeasureByExpression(expression)) continue;
+          measures = measures.push(new Measure({
+            name
+          }));
+          break;
+
+        default:
+          throw new Error('unsupported type ' + type);
+      }
+    }
+
+    if (this.measures === measures && this.dimensions === dimensions) return this;
+
+    var value = this.valueOf();
+    value.dimensions = dimensions;
+    value.measures = measures;
+    if (!value.defaultPinnedDimensions.size) {
+      value.defaultPinnedDimensions = getDefaultPinnedDimensions(dimensions);
+    }
+    return new DataSource(value);
+  }
 }
 check = DataSource;

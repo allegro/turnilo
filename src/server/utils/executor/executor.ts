@@ -1,9 +1,10 @@
 'use strict';
 
 import * as path from 'path';
-import { readFileSync } from 'fs';
-import { $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
-import { DataSource } from '../../../common/models/index';
+import * as fs from 'fs-promise';
+import * as Q from 'q';
+import { $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, Attributes, helper } from 'plywood';
+import { DataSource, Dimension } from '../../../common/models/index';
 
 
 function getReferences(ex: Expression): string[] {
@@ -16,50 +17,8 @@ function getReferences(ex: Expression): string[] {
   return references;
 }
 
-export function getFileData(filePath: string): any[] {
-  var fileData: string = null;
-  try {
-    fileData = readFileSync(filePath, 'utf-8');
-  } catch (e) {
-    console.log('could not find', filePath);
-    process.exit(1);
-  }
-
-  var fileJSON: any[] = null;
-  if (fileData[0] === '[') {
-    try {
-      fileJSON = JSON.parse(fileData);
-    } catch (e) {
-      console.log('error', e.message);
-      console.log('could not parse', filePath);
-      process.exit(1);
-    }
-
-  } else {
-    var fileLines = fileData.split('\n');
-    if (fileLines[fileLines.length - 1] === '') fileLines.pop();
-
-    fileJSON = fileLines.map((line, i) => {
-      try {
-        return JSON.parse(line);
-      } catch (e) {
-        console.log(`problem in line: ${i}: '${line}'`);
-        console.log('could not parse', filePath);
-        process.exit(1);
-      }
-    });
-  }
-
-  fileJSON.forEach((d: Datum, i: number) => {
-    d['time'] = new Date(d['time']);
-  });
-
-  return fileJSON;
-}
-
-export function makeExternal(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>): External {
-  var attributes: AttributeJSs = {};
-
+function deduceAttributes(): void {
+  /*
   // Right here we have the classic mega hack.
   dataSource.dimensions.forEach((dimension) => {
     attributes[dimension.name] = { type: dimension.type };
@@ -78,40 +37,74 @@ export function makeExternal(dataSource: DataSource, druidRequester: Requester.P
     }
   });
   // Mega hack ends here
+  */
+}
 
+export function getFileData(filePath: string): Q.Promise<any[]> {
+  return fs.readFile(filePath, 'utf-8').then((fileData) => {
+    if (fileData[0] === '[') {
+      try {
+        return JSON.parse(fileData);
+      } catch (e) {
+        throw new Error('could not parse ' + filePath);
+      }
+
+    } else {
+      var fileLines = fileData.split('\n');
+      if (fileLines[fileLines.length - 1] === '') fileLines.pop();
+
+      return fileLines.map((line, i) => {
+        try {
+          return JSON.parse(line);
+        } catch (e) {
+          console.log(`problem in line: ${i}: '${line}' of file ${filePath}`);
+        }
+      });
+    }
+  }).then((fileJSON) => {
+    fileJSON.forEach((d: Datum, i: number) => {
+      d['time'] = new Date(d['time']);
+    });
+    return fileJSON;
+  });
+}
+
+export function makeExternalPromise(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>): Q.Promise<External> {
   return External.fromJS({
     engine: 'druid',
     dataSource: dataSource.source,
     timeAttribute: dataSource.timeAttribute.name,
     customAggregations: dataSource.options['customAggregations'],
     context: null,
-    attributes,
     requester: druidRequester
-  });
+  }).introspect();
 }
 
-export function makeExecutorsFromDataSources(dataSources: DataSource[], druidRequester: Requester.PlywoodRequester<any>): Lookup<Executor> {
-  var executors: Lookup<Executor> = Object.create(null);
+export function fillInDataSource(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>): Q.Promise<DataSource> {
+  switch (dataSource.engine) {
+    case 'native':
+      var filePath = path.join(__dirname, '../../../../', dataSource.source);
+      return getFileData(filePath).then((rawData) => {
+        var dataset = Dataset.fromJS(rawData).hide();
+        dataset.introspect();
 
-  for (var dataSource of dataSources) {
-    switch (dataSource.engine) {
-      case 'native':
-        var filePath = path.join(__dirname, '../../../../', dataSource.source);
-        executors[dataSource.name] = basicExecutorFactory({
-          datasets: { main: Dataset.fromJS(getFileData(filePath)).hide() }
+        var executor = basicExecutorFactory({
+          datasets: { main: dataset }
         });
-        break;
 
-      case 'druid':
-        executors[dataSource.name] = basicExecutorFactory({
-          datasets: { main: makeExternal(dataSource, druidRequester) }
+        return dataSource.addAttributes(dataset.attributes).attachExecutor(executor);
+      });
+
+    case 'druid':
+      return makeExternalPromise(dataSource, druidRequester).then((external) => {
+        var executor = basicExecutorFactory({
+          datasets: { main: external }
         });
-        break;
 
-      default:
-        throw new Error(`Invalid engine: '${dataSource.engine}' in '${dataSource.name}'`);
-    }
+        return dataSource.addAttributes(external.attributes).attachExecutor(executor);
+      });
+
+    default:
+      throw new Error(`Invalid engine: '${dataSource.engine}' in '${dataSource.name}'`);
   }
-
-  return executors;
 }

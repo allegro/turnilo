@@ -36,7 +36,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
 
   fetchData(essence: Essence, dimension: Dimension): void {
     var { dataSource } = essence;
-    var measure = dataSource.getSortMeasure(dimension);
+    var measure = essence.getPreviewSortMeasure();
 
     var newEssence = essence.changeSplit(SplitCombine.fromExpression(dimension.expression));
     var timeSplit = newEssence.splits.last();
@@ -81,7 +81,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
   render() {
     var { stage, essence, dimension } = this.props;
     var { dataset } = this.state;
-    var measure = essence.dataSource.getSortMeasure(dimension);
+    var measure = essence.getPreviewSortMeasure();
 
     var svgStage = stage;
     var lineStage = svgStage.within({ bottom: X_AXIS_HEIGHT });

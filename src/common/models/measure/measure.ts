@@ -6,9 +6,9 @@ import { makeTitle } from '../../utils/general/general';
 
 export interface MeasureValue {
   name: string;
-  title: string;
-  expression: Expression;
-  format: string;
+  title?: string;
+  expression?: Expression;
+  format?: string;
 }
 
 export interface MeasureJS {
