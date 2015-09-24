@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+echo "Trying to publish..."
+
+gulp all
+script/version-bump
+npm publish
+
+echo "Published"

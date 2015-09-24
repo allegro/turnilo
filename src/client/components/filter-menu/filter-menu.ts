@@ -3,7 +3,7 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
-import { Timezone, Duration, hour, day, week } from 'chronoshift';
+import { Timezone, Duration, minute, hour, day, week } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
@@ -24,14 +24,21 @@ function getTimePresets(now: Date, tz: Timezone) {
     TimePreset.fromJS({
       name: 'Past 6 hours',
       timeRange: {
-        start: hour.move(hour.floor(now, tz), tz, -5),
+        start: hour.move(minute.ceil(now, tz), tz, -6),
         end: now
       }
     }),
     TimePreset.fromJS({
-      name: 'Past day',
+      name: 'Past 24 hours',
       timeRange: {
-        start: day.move(now, tz, -1),
+        start: hour.move(minute.ceil(now, tz), tz, -24),
+        end: now
+      }
+    }),
+    TimePreset.fromJS({
+      name: 'Current day',
+      timeRange: {
+        start: day.move(day.ceil(now, tz), tz, -1),
         end: now
       }
     }),
@@ -45,7 +52,7 @@ function getTimePresets(now: Date, tz: Timezone) {
     TimePreset.fromJS({
       name: 'This week',
       timeRange: {
-        start: week.floor(now, tz),
+        start: week.floor(day.ceil(now, tz), tz),
         end: now
       }
     })
