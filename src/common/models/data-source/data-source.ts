@@ -94,8 +94,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   static fromJS(parameters: DataSourceJS, executor: Executor = null): DataSource {
-    var dimensions = makeUniqueDimensionList(parameters.dimensions.map(Dimension.fromJS));
-    var measures = makeUniqueMeasureList(parameters.measures.map(Measure.fromJS));
+    var dimensions = makeUniqueDimensionList((parameters.dimensions || []).map((d) => Dimension.fromJS(d)));
+    var measures = makeUniqueMeasureList((parameters.measures || []).map((m) => Measure.fromJS(m)));
 
     var value: DataSourceValue = {
       executor: null,
@@ -306,7 +306,17 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           }
           break;
 
+        case 'BOOLEAN':
+          expression = $(name);
+          if (this.getDimensionByExpression(expression)) continue;
+          dimensions = dimensions.push(new Dimension({
+            name,
+            type: type
+          }));
+          break;
+
         case 'NUMBER':
+          if (attribute.special === 'histogram') continue;
           expression = $('main').sum($(name));
           if (this.getMeasureByExpression(expression)) continue;
           measures = measures.push(new Measure({

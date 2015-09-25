@@ -151,45 +151,20 @@ dataSources:
 
     timeAttribute: time # The time attribute (this needs to be set for Druid, but could be anything. You should leave it as 'time')
 
-    dimensions:
-      - name: time
-        type: TIME
-
-      - name: namespace
-
-      - name: language
-
-      - name: page
-
-      - name: user
-
-      - name: country
-
-      - name: city
-
-      - name: region
+    # All the dimensions will be automatically filled in from the data source
+    #dimensions:
 
     measures:
       - name: count
 
-      - name: delta
-
       - name: avg_delta
         expression: $main.sum($delta) / $main.sum($count)
-
-      - name: added
 
       - name: avg_added
         expression: $main.sum($added) / $main.sum($count)
 
-      - name: deleted
-
       - name: avg_deleted
         expression: $main.sum($deleted) / $main.sum($count)
-
-      - name: unique_users
-        title: Unique Users
-        expression: $main.countDistinct($user_unique)
 
 
   # Here is an example of a Druid data source with cool crazy things in it for education
@@ -205,6 +180,9 @@ dataSources:
     timeAttribute: time # The time attribute (this needs to be set for Druid, but could be anything. You should leave it as 'time')
 
     options:
+      # Avoid creating automatic dimensions from the data
+      disableAutofill: true
+
       customAggregations:
         boring:
           #accessType  <-- this is how this aggregate will be accessed from a postAgg (default is 'fieldAccess')
@@ -232,11 +210,6 @@ dataSources:
 
       - name: user
 
-      - name: country
-
-      - name: city
-
-      - name: region
 
     measures:
       - name: count

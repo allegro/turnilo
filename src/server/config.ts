@@ -11,8 +11,9 @@ var env = process.env;
 var packageObj = JSON.parse(readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
 var config = yaml.safeLoad(readFileSync(path.join(__dirname, '../../config.yaml'), 'utf-8'));
 
-function errorExit(message: string): void {
-  console.error(message);
+function errorExit(e: Error): void {
+  console.error(e.message);
+  console.error((<any>e).stack);
   process.exit(1);
 }
 
@@ -30,18 +31,18 @@ var druidRequester = druidRequesterFactory({
 //});
 
 var dataSourcePromises = config.dataSources.map((dataSourceJS: DataSourceJS, i: number) => {
-  if (typeof dataSourceJS !== 'object') errorExit(`DataSource ${i} is not valid`);
+  if (typeof dataSourceJS !== 'object') errorExit(new Error(`DataSource ${i} is not valid`));
   var dataSourceName = dataSourceJS.name;
-  if (typeof dataSourceName !== 'string') errorExit(`DataSource ${i} must have a name`);
+  if (typeof dataSourceName !== 'string') errorExit(new Error(`DataSource ${i} must have a name`));
 
   try {
     return fillInDataSource(DataSource.fromJS(dataSourceJS), druidRequester);
   } catch (e) {
-    errorExit(e.message);
+    errorExit(e);
   }
 });
 
 export const DATA_SOURCES: Q.Promise<DataSource[]> = Q.all(dataSourcePromises).catch((e): DataSource[] => {
-  errorExit(e.message);
+  errorExit(e);
   return null;
 });

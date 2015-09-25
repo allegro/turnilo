@@ -81,6 +81,8 @@ export function makeExternalPromise(dataSource: DataSource, druidRequester: Requ
 }
 
 export function fillInDataSource(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>): Q.Promise<DataSource> {
+  var disableAutofill = Boolean(dataSource.options['disableAutofill']);
+
   switch (dataSource.engine) {
     case 'native':
       var filePath = path.join(__dirname, '../../../../', dataSource.source);
@@ -92,7 +94,11 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
           datasets: { main: dataset }
         });
 
-        return dataSource.addAttributes(dataset.attributes).attachExecutor(executor);
+        if (!disableAutofill) {
+          dataSource = dataSource.addAttributes(dataset.attributes);
+        }
+
+        return dataSource.attachExecutor(executor);
       });
 
     case 'druid':
@@ -101,7 +107,11 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
           datasets: { main: external }
         });
 
-        return dataSource.addAttributes(external.attributes).attachExecutor(executor);
+        if (!disableAutofill) {
+          dataSource = dataSource.addAttributes(external.attributes);
+        }
+
+        return dataSource.attachExecutor(executor);
       });
 
     default:
