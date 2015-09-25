@@ -19,6 +19,9 @@
     "type": "git",
     "url": "http://github.com/implydata/pivot.git"
   },
+  "scripts": {
+    "prepublish": "script/prepublish"
+  },
   "dependencies": {
     "body-parser": "1.14.0",
     "chronoshift": "0.3.3",
