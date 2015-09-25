@@ -1,7 +1,6 @@
 'use strict';
 
 import * as React from 'react/addons';
-import * as numeral from 'numeral';
 import { $, Expression, Executor, Dataset, Datum } from 'plywood';
 // import { ... } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
@@ -36,7 +35,6 @@ export class ChartLineHover extends React.Component<ChartLineHoverProps, ChartLi
     return JSX(`
       <g className="chart-line-hover" transform={stage.getTransform()}>
         <circle cx={x} cy={y} r="2.5"/>
-        <text x={x} y={10}>{numeral(getY(datum)).format(measure.format)}</text>
       </g>
     `);
   }

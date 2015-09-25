@@ -45,6 +45,11 @@ $icon-width: 35px;
         width: 17px;
       }
 
+      &.type-boolean .icon svg {
+        top: 11px;
+        width: 17px;
+      }
+
       &.type-time .icon svg {
         top: 7px;
         margin-left: 1px;

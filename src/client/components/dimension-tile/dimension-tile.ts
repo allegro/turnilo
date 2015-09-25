@@ -234,15 +234,15 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     // onSearch={this.toggleSearch.bind(this)}
     return JSX(`
       <div className={className} style={style}>
+        {searchBar}
+        <div className="rows">{rows}</div>
+        {queryError}
+        {loader}
         <TileHeader
           title={dimension.title}
           onDragStart={this.onDragStart.bind(this)}
           onClose={clicker.unpin.bind(clicker, dimension)}
         />
-        {searchBar}
-        <div className="rows">{rows}</div>
-        {queryError}
-        {loader}
       </div>
     `);
   }

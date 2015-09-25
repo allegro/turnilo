@@ -1,22 +1,71 @@
 @import '../../imports';
 
+$shpitz-size: 7px;
 $h-padding: 10px;
 
 .time-series {
   display: inline-block;
-  padding-left: $h-padding;
   overflow: hidden;
 
   .measure-graphs {
     overflow-x: hidden;
     overflow-y: auto;
+    padding-left: $h-padding;
+  }
 
-    .measure-graph {
-      border-bottom: 1px solid $gray;
-    }
+  .measure-graph {
+    border-bottom: 1px solid $gray;
 
     .measure-label {
-      font-size: 15px;
+      position: absolute;
+      left: 4px;
+      top: 10px;
+      font-size: 14px;
+    }
+
+    .hover-bubble-cont {
+      position: absolute;
+      top: 20px;
+      width: 100px;
+      margin-left: -50px;
+      pointer-events: none;
+      text-align: center;
+
+      .hover-bubble {
+        display: inline-block;
+        background: $white;
+        border: 1px solid $gray;
+        border-radius: 4px;
+
+        .text {
+          display: inline-block;
+          padding: 5px;
+        }
+      }
+
+      .shpitz {
+        position: absolute;
+        left: 50%;
+        margin-left: -$shpitz-size;
+
+        &:before,
+        &:after {
+          content: '';
+          position: absolute;
+        }
+
+        &:before {
+          @include triangle(down, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.12));
+          bottom: -1 * $shpitz-size;
+          margin-top: -1 * $shpitz-size;
+        }
+
+        &:after {
+          @include triangle(down, $shpitz-size, $shpitz-size, $white);
+          bottom: -1 * $shpitz-size + 1;
+          margin-top: -1 * $shpitz-size;
+        }
+      }
     }
   }
 

@@ -8,6 +8,8 @@ $shpitz-size: 10px;
 
   .shpitz {
     position: absolute;
+    left: 50%;
+    margin-left: -5px;
     pointer-events: none;
 
     &:before,

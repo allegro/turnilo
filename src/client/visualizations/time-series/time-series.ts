@@ -17,8 +17,6 @@ import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
 const H_PADDING = 10;
-const TITLE_TEXT_LEFT = 6;
-const TITLE_TEXT_TOP = 25;
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
 const Y_AXIS_WIDTH = 60;
@@ -244,7 +242,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var parentWidth = stage.width - H_PADDING * 2;
       var svgStage = new Stage({
         x: H_PADDING,
-        y: 0,
         width: Math.floor(parentWidth / numberOfColumns),
         height: TEXT_SPACER + GRAPH_HEIGHT
       });
@@ -265,9 +262,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
         if (isNaN(extentY[0])) {
           return JSX(`
-            <svg className="measure-graph" key={measure.name} width={svgStage.width} height={svgStage.height}>
-              <text x={TITLE_TEXT_LEFT} y={TITLE_TEXT_TOP}>{measure.title + ': Loading'}</text>
-            </svg>
+            <div className="measure-graph" key={measureName}>
+              <div className="measure-label">
+                <span className="measure-title">{measure.title}</span>
+                <span className="colon">: </span>
+                <span className="measure-value">Loading</span>
+              </div>
+            </div>
           `);
         }
 
@@ -280,9 +281,10 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
         var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
 
-        var chartHoverLine: React.ReactElement<any> = null;
+        var chartLineHover: React.ReactElement<any> = null;
+        var chartHoverBubble: React.DOMElement<any> = null;
         if (hoverDatum && hoverMeasure === measure) {
-          chartHoverLine = React.createElement(ChartLineHover, {
+          chartLineHover = React.createElement(ChartLineHover, {
             datum: hoverDatum,
             getX,
             getY,
@@ -291,50 +293,61 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
             stage: lineStage,
             measure
           });
+
+          var chartHoverBubbleStyle = { left: scaleX(getX(hoverDatum)) };
+          chartHoverBubble = JSX(`
+            <div className="hover-bubble-cont" style={chartHoverBubbleStyle}>
+              <div className="hover-bubble">
+                <div className="text">{numeral(getY(hoverDatum)).format(measure.format)}</div>
+                <div className="shpitz"></div>
+              </div>
+            </div>
+          `);
         }
 
         return JSX(`
-          <svg
-            className="measure-graph"
-            key={measureName}
-            width={svgStage.width}
-            height={svgStage.height}
-            onMouseDown={this.onMouseDown.bind(this)}
-            onMouseMove={this.onMouseMove.bind(this, scaleX, measure)}
-            onMouseLeave={this.onMouseLeave.bind(this, measure)}
-          >
-            <GridLines
-              orientation="horizontal"
-              scale={scaleY}
-              ticks={yTicks}
-              stage={lineStage}
-            />
-            <GridLines
-              orientation="vertical"
-              scale={scaleX}
-              ticks={xTicks}
-              stage={lineStage}
-            />
-            <ChartLine
-              dataset={myDataset}
-              getX={getX}
-              getY={getY}
-              scaleX={scaleX}
-              scaleY={scaleY}
-              stage={lineStage}
-            />
-            {chartHoverLine}
-            <VerticalAxis
-              stage={yAxisStage}
-              yTicks={yTicks}
-              scaleY={scaleY}
-            />
-            <text className="measure-label" x={TITLE_TEXT_LEFT} y={TITLE_TEXT_TOP}>
-              <tspan className="measure-title">{measure.title}</tspan>
-              <tspan className="colon">: </tspan>
-              <tspan className="measure-value">{numeral(myDatum[measureName]).format(measure.format)}</tspan>
-            </text>
-          </svg>
+          <div className="measure-graph" key={measureName}>
+            <svg
+              width={svgStage.width}
+              height={svgStage.height}
+              onMouseDown={this.onMouseDown.bind(this)}
+              onMouseMove={this.onMouseMove.bind(this, scaleX, measure)}
+              onMouseLeave={this.onMouseLeave.bind(this, measure)}
+            >
+              <GridLines
+                orientation="horizontal"
+                scale={scaleY}
+                ticks={yTicks}
+                stage={lineStage}
+              />
+              <GridLines
+                orientation="vertical"
+                scale={scaleX}
+                ticks={xTicks}
+                stage={lineStage}
+              />
+              <ChartLine
+                dataset={myDataset}
+                getX={getX}
+                getY={getY}
+                scaleX={scaleX}
+                scaleY={scaleY}
+                stage={lineStage}
+              />
+              {chartLineHover}
+              <VerticalAxis
+                stage={yAxisStage}
+                yTicks={yTicks}
+                scaleY={scaleY}
+              />
+            </svg>
+            <div className="measure-label">
+              <span className="measure-title">{measure.title}</span>
+              <span className="colon">: </span>
+              <span className="measure-value">{numeral(myDatum[measureName]).format(measure.format)}</span>
+            </div>
+            {chartHoverBubble}
+          </div>
         `);
       });
 
