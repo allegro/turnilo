@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+ERROR_FILE="./webstorm/errors"
+
+if [ -s "$ERROR_FILE" ]
+then
+  cat "$ERROR_FILE" >&2
+  exit 1
+fi

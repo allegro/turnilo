@@ -45,13 +45,13 @@ app.use(express.static(path.join(__dirname, '../../assets/data')));
 app.use(bodyParser.json());
 
 app.get('/', (req: Request, res: Response, next: Function) => {
-  res.render('pivot', {
-    version: VERSION,
-    config: JSON.stringify({
-      dataSources: DATA_SOURCES
-    }),
-    title: 'Pivot'
-  });
+  DATA_SOURCES.then((dataSources) => {
+    res.render('pivot', {
+      version: VERSION,
+      config: JSON.stringify({ dataSources }),
+      title: 'Pivot'
+    });
+  }).done();
 });
 
 app.use('/query', queryRoutes);
