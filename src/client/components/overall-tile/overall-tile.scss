@@ -1,0 +1,7 @@
+@import '../../imports';
+
+.overall-tile {
+  @extend %module;
+  height: 60px;
+  margin-bottom: 1px;
+}

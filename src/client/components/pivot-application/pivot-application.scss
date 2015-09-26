@@ -95,6 +95,7 @@
       @include pin-right($pinboard-width);
       margin-bottom: $tile-margin-v - 1px;
 
+      .overall-tile,
       .dimension-tile,
       .placeholder-tile {
         &:first-child {
