@@ -242,6 +242,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var parentWidth = stage.width - H_PADDING * 2;
       var svgStage = new Stage({
         x: H_PADDING,
+        y: 0,
         width: Math.floor(parentWidth / numberOfColumns),
         height: TEXT_SPACER + GRAPH_HEIGHT
       });
