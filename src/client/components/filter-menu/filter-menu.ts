@@ -13,47 +13,50 @@ import { MenuTimeSeries } from '../menu-time-series/menu-time-series';
 import { TimeInput } from '../time-input/time-input';
 
 function getTimePresets(now: Date, tz: Timezone) {
+  var nowDayCeil = day.ceil(now, tz);
+  var nowDayFloor = day.floor(now, tz);
+  var nowMinuteCeil = minute.ceil(now, tz);
   return [
     TimePreset.fromJS({
       name: 'Past hour',
       timeRange: {
-        start: hour.move(now, tz, -1),
-        end: now
+        start: hour.move(nowMinuteCeil, tz, -1),
+        end: nowMinuteCeil
       }
     }),
     TimePreset.fromJS({
       name: 'Past 6 hours',
       timeRange: {
-        start: hour.move(minute.ceil(now, tz), tz, -6),
-        end: now
+        start: hour.move(nowMinuteCeil, tz, -6),
+        end: nowMinuteCeil
       }
     }),
     TimePreset.fromJS({
       name: 'Past 24 hours',
       timeRange: {
-        start: hour.move(minute.ceil(now, tz), tz, -24),
-        end: now
+        start: hour.move(nowMinuteCeil, tz, -24),
+        end: nowMinuteCeil
       }
     }),
     TimePreset.fromJS({
       name: 'Current day',
       timeRange: {
-        start: day.move(day.ceil(now, tz), tz, -1),
-        end: now
+        start: day.move(nowDayCeil, tz, -1),
+        end: nowDayCeil
       }
     }),
     TimePreset.fromJS({
       name: 'Past 7 days',
       timeRange: {
-        start: day.move(day.floor(now, tz), tz, -6),
-        end: now
+        start: day.move(nowDayFloor, tz, -7),
+        end: nowDayFloor
       }
     }),
     TimePreset.fromJS({
       name: 'This week',
       timeRange: {
-        start: week.floor(day.ceil(now, tz), tz),
-        end: now
+        start: week.floor(nowDayFloor, tz),
+        end: nowDayFloor
       }
     })
   ];
