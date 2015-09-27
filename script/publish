@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+if [ "$(git status --porcelain)" != "" ]
+then
+  echo "pivot git status not clean!" >&2
+  exit 1
+fi
+
+echo "Trying to publish..."
+
+script/version-bump
+npm publish

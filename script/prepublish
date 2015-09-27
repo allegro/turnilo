@@ -3,4 +3,3 @@
 echo "Trying to publish..."
 
 gulp all
-script/version-bump
