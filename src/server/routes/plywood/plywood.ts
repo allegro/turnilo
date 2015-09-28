@@ -4,8 +4,7 @@ import { Router, Request, Response } from 'express';
 import { $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
 import { Timezone, WallTime, Duration } from 'chronoshift';
 
-import { DRUID_HOST } from '../../config';
-import { getDataSources } from '../../data-source-manager';
+import { DATA_SOURCE_MANAGER } from '../../config';
 import { DataSource } from '../../../common/models/index';
 
 var router = Router();
@@ -29,15 +28,7 @@ router.post('/', (req: Request, res: Response) => {
     return;
   }
 
-  getDataSources().then((dataSources) => {
-    var myDataSource: DataSource = null;
-    for (var dataSource of dataSources) {
-      if (dataSource.name === dataset) {
-        myDataSource = dataSource;
-        break;
-      }
-    }
-
+  DATA_SOURCE_MANAGER.getDataSource(dataset).then((myDataSource) => {
     if (!myDataSource) {
       res.status(400).send({ error: 'unknown dataset' });
       return;

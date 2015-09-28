@@ -6,6 +6,7 @@ import * as Q from 'q';
 import * as yaml from 'js-yaml';
 
 import { DataSource, DataSourceJS } from '../common/models/index';
+import { DataSourceManager, dataSourceManagerFactory } from './utils/data-source-manager/data-source-manager';
 
 var env = process.env;
 var packageObj = JSON.parse(readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
@@ -44,4 +45,11 @@ export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSo
   } catch (e) {
     errorExit(e);
   }
+});
+
+export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
+  dataSources: DATA_SOURCES,
+  druidHost: DRUID_HOST,
+  useSegmentMetadata: USE_SEGMENT_METADATA,
+  sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL
 });

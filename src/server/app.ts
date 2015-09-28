@@ -17,8 +17,7 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-import { VERSION } from './config';
-import { getDataSources } from './data-source-manager';
+import { VERSION, DATA_SOURCE_MANAGER } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
 
 var app = express();
@@ -46,7 +45,7 @@ app.use(express.static(path.join(__dirname, '../../assets/data')));
 app.use(bodyParser.json());
 
 app.get('/', (req: Request, res: Response, next: Function) => {
-  getDataSources().then((dataSources) => {
+  DATA_SOURCE_MANAGER.getDataSources().then((dataSources) => {
     if (dataSources.length) {
       res.render('pivot', {
         version: VERSION,
