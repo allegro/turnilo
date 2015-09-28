@@ -48,19 +48,12 @@ function getDefaultPinnedDimensions(dimensions: List<Dimension>): OrderedSet<str
   );
 }
 
-interface DimensionsMetrics {
-  dimensions: List<Dimension>;
-  measures: List<Measure>;
-  timeAttribute: RefExpression;
-  defaultSortMeasure: string;
-}
-
 export interface DataSourceValue {
   name: string;
-  title: string;
+  title?: string;
   engine: string;
   source: string;
-  options: Lookup<any>;
+  options?: Lookup<any>;
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
@@ -74,12 +67,12 @@ export interface DataSourceValue {
 
 export interface DataSourceJS {
   name: string;
-  title: string;
+  title?: string;
   engine: string;
   source: string;
   options?: Lookup<any>;
-  dimensions: DimensionJS[];
-  measures: MeasureJS[];
+  dimensions?: DimensionJS[];
+  measures?: MeasureJS[];
   timeAttribute?: string;
   maxTime?: Date;
   defaultDuration?: string;
@@ -103,13 +96,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       title: parameters.title,
       engine: parameters.engine,
       source: parameters.source,
-      options: parameters.options || {},
+      options: parameters.options,
       dimensions,
       measures,
       timeAttribute: parameters.timeAttribute ? $(parameters.timeAttribute) : null,
       maxTime: parameters.maxTime ? new Date(<any>parameters.maxTime) : null,
       defaultDuration: Duration.fromJS(parameters.defaultDuration || 'P3D'),
-      defaultSortMeasure: parameters.defaultSortMeasure || measures.get(0).name,
+      defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : getDefaultPinnedDimensions(dimensions)
     };
     if (executor) {
@@ -140,9 +133,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.title = parameters.title || makeTitle(name);
     this.engine = parameters.engine;
     this.source = parameters.source;
-    this.options = parameters.options;
-    this.dimensions = parameters.dimensions;
-    this.measures = parameters.measures;
+    this.options = parameters.options || {};
+    this.dimensions = parameters.dimensions || List([]);
+    this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
     this.defaultDuration = parameters.defaultDuration;
     this.defaultSortMeasure = parameters.defaultSortMeasure;
@@ -337,6 +330,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (!value.defaultPinnedDimensions.size) {
       value.defaultPinnedDimensions = getDefaultPinnedDimensions(dimensions);
     }
+    return new DataSource(value);
+  }
+
+  public setMaxTime(maxTime: Date) {
+    var value = this.valueOf();
+    value.maxTime = maxTime;
     return new DataSource(value);
   }
 }

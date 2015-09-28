@@ -3,7 +3,7 @@
 import * as path from 'path';
 import * as fs from 'fs-promise';
 import * as Q from 'q';
-import { $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, Attributes, helper } from 'plywood';
+import { ply, $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, Attributes, helper } from 'plywood';
 import { DataSource, Dimension } from '../../../common/models/index';
 
 
@@ -69,22 +69,26 @@ export function getFileData(filePath: string): Q.Promise<any[]> {
   });
 }
 
-export function makeExternalPromise(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>): Q.Promise<External> {
+export function externalFactory(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, useSegmentMetadata: boolean): Q.Promise<External> {
   return External.fromJS({
     engine: 'druid',
     dataSource: dataSource.source,
     timeAttribute: dataSource.timeAttribute.name,
     customAggregations: dataSource.options['customAggregations'],
+    useSegmentMetadata,
     context: null,
     requester: druidRequester
   }).introspect();
 }
 
-export function fillInDataSource(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>): Q.Promise<DataSource> {
+export function fillInDataSource(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, useSegmentMetadata: boolean): Q.Promise<DataSource> {
   var disableAutofill = Boolean(dataSource.options['disableAutofill']);
 
   switch (dataSource.engine) {
     case 'native':
+      // Do not do anything if the file was already loaded
+      if (dataSource.executor) return Q(dataSource);
+
       var filePath = path.join(__dirname, '../../../../', dataSource.source);
       return getFileData(filePath).then((rawData) => {
         var dataset = Dataset.fromJS(rawData).hide();
@@ -102,7 +106,7 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
       });
 
     case 'druid':
-      return makeExternalPromise(dataSource, druidRequester).then((external) => {
+      return externalFactory(dataSource, druidRequester, useSegmentMetadata).then((external) => {
         var executor = basicExecutorFactory({
           datasets: { main: external }
         });
@@ -112,6 +116,16 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
         }
 
         return dataSource.attachExecutor(executor);
+      }).then((dataSource) => {
+        var ex = ply().apply('maxTime', $('main').max(dataSource.timeAttribute));
+
+        return dataSource.executor(ex).then((dataset: Dataset) => {
+          var maxTime = dataset.data[0]['maxTime'];
+          if (!isNaN(maxTime)) {
+            return dataSource.setMaxTime(maxTime);
+          }
+          return dataSource;
+        });
       });
 
     default:

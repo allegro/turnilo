@@ -19,7 +19,7 @@ var config: any = (<any>window)['PIVOT_CONFIG'];
 var dataSources: List<DataSource>;
 if (config && Array.isArray(config.dataSources)) {
   dataSources = <List<DataSource>>List(config.dataSources.map((dataSourceJS: DataSourceJS) => {
-    var executor = queryUrlExecutorFactory(dataSourceJS.name, '/query');
+    var executor = queryUrlExecutorFactory(dataSourceJS.name, '/plywood');
     return DataSource.fromJS(dataSourceJS, executor);
   }));
 } else {

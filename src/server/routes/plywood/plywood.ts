@@ -4,7 +4,8 @@ import { Router, Request, Response } from 'express';
 import { $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
 import { Timezone, WallTime, Duration } from 'chronoshift';
 
-import { DRUID_HOST, DATA_SOURCES } from '../../config';
+import { DRUID_HOST } from '../../config';
+import { getDataSources } from '../../data-source-manager';
 import { DataSource } from '../../../common/models/index';
 
 var router = Router();
@@ -28,7 +29,7 @@ router.post('/', (req: Request, res: Response) => {
     return;
   }
 
-  DATA_SOURCES.then((dataSources) => {
+  getDataSources().then((dataSources) => {
     var myDataSource: DataSource = null;
     for (var dataSource of dataSources) {
       if (dataSource.name === dataset) {

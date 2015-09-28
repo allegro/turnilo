@@ -17,8 +17,9 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-import { VERSION, DATA_SOURCES } from './config';
-import * as queryRoutes from './routes/query/query';
+import { VERSION } from './config';
+import { getDataSources } from './data-source-manager';
+import * as plywoodRoutes from './routes/plywood/plywood';
 
 var app = express();
 app.disable('x-powered-by');
@@ -45,16 +46,23 @@ app.use(express.static(path.join(__dirname, '../../assets/data')));
 app.use(bodyParser.json());
 
 app.get('/', (req: Request, res: Response, next: Function) => {
-  DATA_SOURCES.then((dataSources) => {
-    res.render('pivot', {
-      version: VERSION,
-      config: JSON.stringify({ dataSources }),
-      title: 'Pivot'
-    });
+  getDataSources().then((dataSources) => {
+    if (dataSources.length) {
+      res.render('pivot', {
+        version: VERSION,
+        config: JSON.stringify({ dataSources }),
+        title: 'Pivot'
+      });
+    } else {
+      res.render('no-data-sources', {
+        version: VERSION,
+        title: 'No Data Sources'
+      });
+    }
   }).done();
 });
 
-app.use('/query', queryRoutes);
+app.use('/plywood', plywoodRoutes);
 
 //catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: Function) => {
@@ -75,7 +83,7 @@ if (app.get('env') === 'development') { // NODE_ENV
       message: err.message,
       error: err,
       version: VERSION,
-      title: 'Explorer Error'
+      title: 'Error'
     });
   });
 }
@@ -88,7 +96,7 @@ app.use((err: any, req: Request, res: Response, next: Function) => {
     message: err.message,
     error: {},
     version: VERSION,
-    title: 'Explorer Error'
+    title: 'Error'
   });
 });
 
