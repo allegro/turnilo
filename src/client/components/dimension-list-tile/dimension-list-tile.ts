@@ -6,7 +6,7 @@ import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
 import { moveInList } from '../../../common/utils/general/general';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom/dom';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle } from '../../utils/dom/dom';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
 import { PreviewMenu } from '../preview-menu/preview-menu';
 
@@ -172,7 +172,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var itemY = 0;
     var dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
       if (dragOver && dragPosition === i) itemY += DIMENSION_HEIGHT;
-      var style = { transform: `translate3d(0,${itemY}px,0)` };
+      var style = transformStyle(0, itemY);
       itemY += DIMENSION_HEIGHT;
 
       var classNames = [

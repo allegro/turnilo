@@ -7,7 +7,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom/dom';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle } from '../../utils/dom/dom';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { SplitMenu } from '../split-menu/split-menu';
 
@@ -205,7 +205,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       var dimension = split.getDimension(dataSource);
       if (!dimension) throw new Error('dimension not found');
 
-      var style = { transform: `translate3d(${itemX}px,0,0)` };
+      var style = transformStyle(itemX, 0);
       itemX += sectionWidth;
 
       var classNames = [

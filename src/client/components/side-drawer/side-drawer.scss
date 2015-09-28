@@ -43,19 +43,19 @@
 }
 
 .side-drawer-enter {
-  transform: translate3d(-$side-drawer-width - 1, 0, 0);
+  transform: translate(-$side-drawer-width - 1, 0);
 
   &.side-drawer-enter-active {
-    transform: translate3d(0, 0, 0);
+    transform: translate(0, 0);
     transition: transform .2s cubic-bezier(.4, 0, .2, 1) .1s;
   }
 }
 
 .side-drawer-leave {
-  transform: translate3d(0, 0, 0);
+  transform: translate(0, 0);
 
   &.side-drawer-leave-active {
-    transform: translate3d(-$side-drawer-width - 1, 0, 0);
+    transform: translate(-$side-drawer-width - 1, 0);
     transition: transform .2s cubic-bezier(.4, 0, .2, 1) .1s;
   }
 }

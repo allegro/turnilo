@@ -6,7 +6,7 @@ import * as Q from 'q';
 import * as yaml from 'js-yaml';
 
 import { DataSource, DataSourceJS } from '../common/models/index';
-import { DataSourceManager, dataSourceManagerFactory } from './utils/data-source-manager/data-source-manager';
+import { DataSourceManager, dataSourceManagerFactory } from './utils/index';
 
 var env = process.env;
 var packageObj = JSON.parse(readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));

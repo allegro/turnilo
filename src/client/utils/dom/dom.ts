@@ -59,3 +59,16 @@ export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
 export function escapeKey(e: KeyboardEvent): boolean {
   return e.which === 27; // 27 is the code for escape
 }
+
+export function transformStyle(x: number, y: number): any {
+  var xStr = String(x);
+  var yStr = String(y);
+  if (xStr !== '0') xStr += 'px';
+  if (yStr !== '0') yStr += 'px';
+  var transform = `translate(${xStr},${yStr})`;
+  return {
+    transform,
+    WebkitTransform: transform,
+    MsTransform: transform
+  };
+}

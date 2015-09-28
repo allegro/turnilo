@@ -8,7 +8,7 @@ import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { formatStartEnd } from '../../utils/date/date';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost } from '../../utils/dom/dom';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle } from '../../utils/dom/dom';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { FilterMenu } from '../filter-menu/filter-menu';
 
@@ -223,6 +223,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     switch (dimension.type) {
       case 'STRING':
+      case 'BOOLEAN':
         var inAction = clause.actions[0];
         if (inAction instanceof InAction) {
           var setLiteral = inAction.getLiteralValue();
@@ -355,7 +356,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var filterItems = itemBlanks.map((itemBlank) => {
       var { dimension, clause, source } = itemBlank;
 
-      var style = { transform: `translate3d(${itemX}px,0,0)` };
+      var style = transformStyle(itemX, 0);
       itemX += sectionWidth;
 
       var classNames = [FILTER_CLASS_NAME, dimension.className, source];
