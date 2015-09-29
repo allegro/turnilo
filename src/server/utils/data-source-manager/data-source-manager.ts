@@ -174,14 +174,14 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
 
           return introspectDataSource(myDataSource).then(() => {
             var queryableDataSource = findDataSource(name);
-            return queryableDataSource.isQueryable() ? queryableDataSource : null;
+            return (queryableDataSource && queryableDataSource.isQueryable()) ? queryableDataSource : null;
           });
         }
 
         // There are no data sources... lets try to load some:
         return loadDruidDataSources().then(() => {
           var queryableDataSource = findDataSource(name);
-          return queryableDataSource.isQueryable() ? queryableDataSource : null;
+          return (queryableDataSource && queryableDataSource.isQueryable()) ? queryableDataSource : null;
         });
       });
     }
