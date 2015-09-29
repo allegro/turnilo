@@ -62,6 +62,6 @@
     "walltime-js": "0.1.2"
   },
   "react-svg-icons": {
-    "assetPath": "assets/icons"
+    "assetPath": "resources/pivot-icons"
   }
 }
