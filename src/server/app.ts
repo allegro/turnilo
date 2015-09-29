@@ -43,7 +43,7 @@ app.use(express.static(path.join(__dirname, '../../assets')));
 app.use(bodyParser.json());
 
 app.get('/', (req: Request, res: Response, next: Function) => {
-  DATA_SOURCE_MANAGER.getDataSources().then((dataSources) => {
+  DATA_SOURCE_MANAGER.getQueryableDataSources().then((dataSources) => {
     if (dataSources.length) {
       res.render('pivot', {
         version: VERSION,

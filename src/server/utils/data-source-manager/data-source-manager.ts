@@ -15,6 +15,7 @@ export interface DataSourceManagerOptions {
 
 export interface DataSourceManager {
   getDataSources: () => Q.Promise<DataSource[]>;
+  getQueryableDataSources: () => Q.Promise<DataSource[]>;
   getQueryableDataSource: (name: string) => Q.Promise<DataSource>;
 }
 
@@ -33,6 +34,10 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
       if (myDataSource.name === name) return myDataSource;
     }
     return null;
+  }
+
+  function getQueryable(): DataSource[] {
+    return myDataSources.filter((dataSource) => dataSource.isQueryable());
   }
 
   // Updates the correct datasource (by name) in myDataSources
@@ -77,24 +82,39 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     }).then((ds: string[]) => {
       if (!Array.isArray(ds)) throw new Error('invalid result from data source list');
 
-      var unknownDataSourceNames = ds.filter((d: string) => {
+      var unknownDataSourceNames: string[] = [];
+      var nonQueryableDataSources: DataSource[] = [];
+      ds.forEach((d: string) => {
         var existingDataSources = myDataSources.filter((dataSource) => {
           return dataSource.engine === 'druid' && dataSource.source === d;
         });
 
-        return existingDataSources.length === 0;
+        if (existingDataSources.length === 0) {
+          unknownDataSourceNames.push(d);
+        } else {
+          nonQueryableDataSources = nonQueryableDataSources.concat(existingDataSources.filter((dataSource) => {
+            return !dataSource.isQueryable();
+          }));
+        }
       });
 
-      if (!unknownDataSourceNames) return Q(null);
-
-      return Q.allSettled(unknownDataSourceNames.map((name) => {
-        console.log('Adding Druid data source: ' + name);
-        return introspectDataSource(DataSource.fromJS({
+      nonQueryableDataSources = nonQueryableDataSources.concat(unknownDataSourceNames.map((name) => {
+        var newDataSource = DataSource.fromJS({
           name,
           engine: 'druid',
           source: name,
           timeAttribute: 'time'
-        }));
+        });
+        console.log('Adding Druid data source: ' + name);
+        updateDataSource(newDataSource);
+        return newDataSource;
+      }));
+
+      // Nothing to do
+      if (!nonQueryableDataSources.length) return Q(null);
+
+      return Q.allSettled(nonQueryableDataSources.map((dataSource) => {
+        return introspectDataSource(dataSource);
       }));
     }).catch((e: Error) => {
       console.log(`Could not get druid source list: '${e.message}'`);
@@ -113,7 +133,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   var initialLoad: Q.Promise<any> = Q.allSettled(initialTasks);
 
   initialLoad.then(() => {
-    var queryableDataSources = myDataSources.filter((dataSource) => dataSource.isQueryable());
+    var queryableDataSources = getQueryable();
     console.log(`Initial introspection complete. Got ${myDataSources.length} data sources, ${queryableDataSources.length} queryable`);
   });
 
@@ -130,6 +150,18 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
         // There are no data sources... lets try to load some:
         return loadDruidDataSources().then(() => {
           return myDataSources; // we tried
+        });
+      });
+    },
+
+    getQueryableDataSources: () => {
+      return initialLoad.then(() => {
+        var queryableDataSources = getQueryable();
+        if (queryableDataSources.length) return queryableDataSources;
+
+        // There are no data sources... lets try to load some:
+        return loadDruidDataSources().then(() => {
+          return getQueryable(); // we tried
         });
       });
     },
