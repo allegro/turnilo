@@ -224,6 +224,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return new DataSource(value);
   }
 
+  public isQueryable(): boolean {
+    return Boolean(this.executor);
+  }
+
   public getMaxTime(): Date {
     var maxTime = this.maxTime;
     if (maxTime) return maxTime;

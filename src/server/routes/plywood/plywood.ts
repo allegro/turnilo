@@ -28,7 +28,7 @@ router.post('/', (req: Request, res: Response) => {
     return;
   }
 
-  DATA_SOURCE_MANAGER.getDataSource(dataset).then((myDataSource) => {
+  DATA_SOURCE_MANAGER.getQueryableDataSource(dataset).then((myDataSource) => {
     if (!myDataSource) {
       res.status(400).send({ error: 'unknown dataset' });
       return;

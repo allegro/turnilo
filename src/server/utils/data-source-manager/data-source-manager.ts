@@ -15,7 +15,7 @@ export interface DataSourceManagerOptions {
 
 export interface DataSourceManager {
   getDataSources: () => Q.Promise<DataSource[]>;
-  getDataSource: (name: string) => Q.Promise<DataSource>;
+  getQueryableDataSource: (name: string) => Q.Promise<DataSource>;
 }
 
 export function dataSourceManagerFactory(options: DataSourceManagerOptions): DataSourceManager {
@@ -113,7 +113,8 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   var initialLoad: Q.Promise<any> = Q.allSettled(initialTasks);
 
   initialLoad.then(() => {
-    console.log(`Initial introspection complete. Got ${myDataSources.length} data sources`);
+    var queryableDataSources = myDataSources.filter((dataSource) => dataSource.isQueryable());
+    console.log(`Initial introspection complete. Got ${myDataSources.length} data sources, ${queryableDataSources.length} queryable`);
   });
 
   if (sourceListRefreshInterval) {
@@ -133,14 +134,22 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
       });
     },
 
-    getDataSource: (name: string) => {
+    getQueryableDataSource: (name: string) => {
       return initialLoad.then(() => {
         var myDataSource = findDataSource(name);
-        if (myDataSource) return myDataSource;
+        if (myDataSource) {
+          if (myDataSource.isQueryable()) return myDataSource;
+
+          return introspectDataSource(myDataSource).then(() => {
+            var queryableDataSource = findDataSource(name);
+            return queryableDataSource.isQueryable() ? queryableDataSource : null;
+          });
+        }
 
         // There are no data sources... lets try to load some:
         return loadDruidDataSources().then(() => {
-          return findDataSource(name);
+          var queryableDataSource = findDataSource(name);
+          return queryableDataSource.isQueryable() ? queryableDataSource : null;
         });
       });
     }

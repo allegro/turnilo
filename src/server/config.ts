@@ -11,12 +11,12 @@ import { DataSourceManager, dataSourceManagerFactory } from './utils/index';
 var env = process.env;
 var packageObj = JSON.parse(readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
 
-var configPath = path.join(__dirname, '../../config.yaml');
+var configFilePath = path.join(__dirname, '../../config.yaml');
 var config: any = {};
 try {
-  config = yaml.safeLoad(readFileSync(configPath, 'utf-8'));
+  config = yaml.safeLoad(readFileSync(configFilePath, 'utf-8'));
 } catch (e) {
-  console.log(`Could not load config from '${configPath}'`);
+  console.log(`Could not load config from '${configFilePath}'`);
 }
 
 function errorExit(e: Error): void {
