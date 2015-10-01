@@ -2,14 +2,15 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-// import * as Icon from 'react-svg-icons';
+import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset, SplitCombine } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
-import { MenuHeader } from '../menu-header/menu-header';
-import { MenuTable } from '../menu-table/menu-table';
-import { MenuTimeSeries } from '../menu-time-series/menu-time-series';
-import { MenuActionBar } from '../menu-action-bar/menu-action-bar';
+//import { MenuHeader } from '../menu-header/menu-header';
+//import { MenuTable } from '../menu-table/menu-table';
+//import { MenuTimeSeries } from '../menu-time-series/menu-time-series';
+
+const ACTION_SIZE = 60;
 
 export interface PreviewMenuProps {
   clicker: Clicker;
@@ -23,118 +24,63 @@ export interface PreviewMenuProps {
 }
 
 export interface PreviewMenuState {
-  selectedValues?: List<any>;
-  showSearch?: boolean;
-  filterMode?: boolean;
-  filteredDimension?: boolean;
 }
 
 export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuState> {
 
   constructor() {
     super();
-    this.state = {
-      selectedValues: <List<string>>List(),
-      showSearch: false,
-      filterMode: false,
-      filteredDimension: false
-    };
+    //this.state = {
+    //};
   }
 
-  componentDidMount() {
-    var { essence, dimension } = this.props;
-    var selectedValues = essence.getEffectiveFilter().getValues(dimension.expression);
-    this.setState({
-      selectedValues: List(selectedValues || []),
-      filteredDimension: Boolean(selectedValues)
-    });
-  }
-
-  onSearchClick() {
-    var { showSearch } = this.state;
-    this.setState({ showSearch: !showSearch });
-  }
-
-  onValueClick(value: any) {
-    var { selectedValues } = this.state;
-    if (selectedValues.includes(value)) {
-      selectedValues = <List<any>>selectedValues.filter(sv => sv !== value);
-    } else {
-      selectedValues = selectedValues.push(value);
-    }
-    this.setState({
-      selectedValues,
-      filterMode: true
-    });
-  }
-
-  onFilterClick() {
-    var { clicker, essence, dimension, onClose } = this.props;
-    var { selectedValues } = this.state;
-    clicker.changeFilter(essence.filter.setValues(dimension.expression, selectedValues.toArray()));
+  onFilter(): void {
+    var { dimension, onFilter, onClose } = this.props;
+    onFilter(dimension);
     onClose();
   }
 
-  onCancelClick() {
-    var { onClose } = this.props;
+  onSplit(): void {
+    var { clicker, dimension, onClose } = this.props;
+    clicker.changeSplit(SplitCombine.fromExpression(dimension.expression));
+    onClose();
+  }
+
+  onSubsplit(): void {
+    var { clicker, dimension, onClose } = this.props;
+    clicker.addSplit(SplitCombine.fromExpression(dimension.expression));
+    onClose();
+  }
+
+  onPin(): void {
+    var { clicker, dimension, onClose } = this.props;
+    clicker.pin(dimension);
     onClose();
   }
 
   render() {
-    var { essence, clicker, direction, containerStage, openOn, dimension, onFilter, onClose } = this.props;
-    var { selectedValues, showSearch, filterMode, filteredDimension } = this.state;
+    var { direction, containerStage, openOn, dimension, onClose } = this.props;
     if (!dimension) return null;
 
-    var menuSize: Stage = null;
-    var menuVisualization: React.ReactElement<any> = null;
-    var bottomBar: any = null;
-
-    if (!filterMode) {
-      bottomBar = JSX(`
-        <MenuActionBar
-          clicker={clicker}
-          essence={essence}
-          dimension={dimension}
-          onFilter={onFilter}
-          onClose={onClose}
-        />
-      `);
-    }
-
-    if (dimension.type === 'TIME') {
-      menuSize = Stage.fromSize(350, 300);
-      menuVisualization = React.createElement(MenuTimeSeries, {
-        essence,
-        dimension: dimension,
-        stage: menuSize.within({ top: 40, bottom: 52 }) // ToDo: remove magic numbers
-      });
-    } else {
-      menuSize = Stage.fromSize(250, 400);
-      menuVisualization = React.createElement(MenuTable, {
-        essence,
-        dimension: dimension,
-        showSearch,
-        showCheckboxes: filteredDimension || filterMode,
-        selectedValues,
-        onValueClick: this.onValueClick.bind(this)
-      });
-
-      if (filterMode) {
-        bottomBar = JSX(`
-          <div className="button-bar">
-            <button className="filter" onClick={this.onFilterClick.bind(this)}>Filter</button>
-            <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
-          </div>
-        `);
-      }
-    }
-
-    //onSearchClick={this.onSearchClick.bind(this)}
+    var menuSize: Stage = Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2);
     return JSX(`
       <BubbleMenu className="preview-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
-        <MenuHeader dimension={dimension}/>
-        <div className="menu-cont">{menuVisualization}</div>
-        {bottomBar}
+        <div className="filter action" onClick={this.onFilter.bind(this)}>
+          <Icon name="preview-filter"/>
+          <div className="action-label">Filter</div>
+        </div>
+        <div className="split action" onClick={this.onSplit.bind(this)}>
+          <Icon name="preview-split"/>
+          <div className="action-label">Split</div>
+        </div>
+        <div className="subsplit action" onClick={this.onSubsplit.bind(this)}>
+          <Icon name="preview-subsplit"/>
+          <div className="action-label">Subsplit</div>
+        </div>
+        <div className="pin action"  onClick={this.onPin.bind(this)}>
+          <Icon name="preview-pin"/>
+          <div className="action-label">Pin</div>
+        </div>
       </BubbleMenu>
     `);
   }

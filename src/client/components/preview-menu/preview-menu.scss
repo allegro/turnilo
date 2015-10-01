@@ -1,36 +1,37 @@
 @import '../../imports';
 
-$action-bar-height: 52px;
+$action-size: 60px;
 
 .preview-menu {
-  .menu-cont {
-    position: absolute;
-    width: 100%;
-    top: $menu-title-bar-height;
-    bottom: $action-bar-height;
+  .action {
+    display: inline-block;
+    width: $action-size;
+    height: $action-size;
+    cursor: pointer;
+    text-align: center;
+    color: $brand;
+    font-size: 12px;
 
-    .menu-table {
-      @include pin-full;
-    }
-  }
+    svg {
+      width: 18px;
+      padding-top: 10px;
+      padding-bottom: 4px;
 
-  .menu-action-bar {
-    @include pin-bottom($action-bar-height);
-  }
-
-  .button-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    padding: 0 0 10px 10px;
-
-    .filter {
-      @extend %button-primary;
-      margin-right: 8px;
+      path {
+        fill: $brand;
+      }
     }
 
-    .cancel {
-      @extend %button-secondary;
+    &:hover {
+      &:before {
+        content: '';
+        position: absolute;
+        top: 3px;
+        bottom: 3px;
+        left: 3px;
+        right: 3px;
+        background: $hover;
+      }
     }
   }
 }
