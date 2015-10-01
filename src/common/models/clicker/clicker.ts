@@ -21,6 +21,7 @@ export interface Clicker {
   selectVisualization(visualization: Manifest): void;
   pin(dimension: Dimension): void;
   unpin(dimension: Dimension): void;
+  changePinnedSortMeasure(measure: Measure): void;
   toggleMeasure(measure: Measure): void;
   changeHighlight(owner: string, delta: Filter): void;
   acceptHighlight(): void;

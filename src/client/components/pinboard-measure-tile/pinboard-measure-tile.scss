@@ -1,0 +1,11 @@
+@import '../../imports';
+
+.pinboard-measure-tile {
+  @extend %module;
+  height: 40px;
+  padding: 10px;
+
+  .dropdown-label {
+    color: $gray;
+  }
+}

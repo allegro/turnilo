@@ -1,5 +1,50 @@
 @import '../../imports';
 
 .dropdown {
+  cursor: pointer;
+  white-space: nowrap;
 
+  .dropdown-label {
+    display: inline-block;
+    margin-right: 4px;
+  }
+
+  .selected-item {
+    display: inline-block;
+  }
+
+  .caret-icon {
+    display: inline-block;
+    width: 11px;
+    margin: 2px;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    z-index: 800;
+    background: $white;
+    border: 1px solid $gray;
+    padding: 3px;
+  }
+
+  &.down .dropdown-menu {
+    top: 100%;
+  }
+
+  &.up .dropdown-menu {
+    bottom: 100%;
+  }
+
+  .dropdown-item {
+    padding: 2px;
+    cursor: pointer;
+
+    &.selected {
+      background: $background-light;
+    }
+
+    &:hover {
+      background: $hover;
+    }
+  }
 }

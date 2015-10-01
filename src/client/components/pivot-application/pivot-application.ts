@@ -89,6 +89,10 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         var { essence } = this.state;
         this.setState({ essence: essence.unpin(dimension) });
       },
+      changePinnedSortMeasure: (measure: Measure) => {
+        var { essence } = this.state;
+        this.setState({ essence: essence.changePinnedSortMeasure(measure) });
+      },
       toggleMeasure: (measure: Measure) => {
         var { essence } = this.state;
         this.setState({ essence: essence.toggleMeasure(measure) });

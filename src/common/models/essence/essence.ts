@@ -395,6 +395,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return !this.pinnedDimensions.equals(other.pinnedDimensions);
   }
 
+  public differentPinnedSort(other: Essence): boolean {
+    return this.pinnedSort !== other.pinnedSort;
+  }
+
   public differentCompare(other: Essence): boolean {
     if (Boolean(this.compare) !== Boolean(other.compare)) return true;
     return Boolean(this.compare && !this.compare.equals(other.compare));
@@ -587,6 +591,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public getPinnedSortMeasure(): Measure {
     return this.dataSource.getMeasure(this.pinnedSort);
+  }
+
+  public changePinnedSortMeasure(measure: Measure): Essence {
+    var value = this.valueOf();
+    value.pinnedSort = measure.name;
+    return new Essence(value);
   }
 
   public toggleMeasure(measure: Measure): Essence {

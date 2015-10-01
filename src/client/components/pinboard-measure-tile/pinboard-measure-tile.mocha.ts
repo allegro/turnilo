@@ -8,20 +8,20 @@ var { TestUtils } = React.addons;
 var { Simulate } = TestUtils;
 
 import { $, Expression } from 'plywood';
-import { OverallTile } from './overall-tile';
+import { PinboardMeasureTile } from './pinboard-measure-tile';
 
-describe('OverallTile', () => {
+describe('PinboardMeasureTile', () => {
   setupDOM();
 
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       JSX(`
-        <OverallTile/>
+        <PinboardMeasureTile/>
       `)
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('overall-tile');
+    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('pinboard-measure-tile');
   });
 
 });

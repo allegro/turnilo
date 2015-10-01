@@ -92,6 +92,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (
       essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, highlightId) ||
+      essence.differentPinnedSort(nextEssence) ||
       !dimension.equals(nextDimension)
     ) {
       this.fetchData(nextEssence, nextDimension);

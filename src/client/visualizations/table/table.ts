@@ -285,7 +285,10 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         <div
           className={'measure-name' + (measure === hoverMeasure ? ' hover' : '')}
           key={measure.name}
-        >{measure.title}{sortArrow}</div>
+        >
+          <div className="title-wrap">{measure.title}</div>
+          {sortArrow}
+        </div>
       `);
     });
 

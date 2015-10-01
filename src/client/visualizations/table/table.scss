@@ -145,9 +145,13 @@ $header-padding-top: 12px;
   .measure-name {
     padding-top: $header-padding-top;
 
-    //&.hover {
-    //  background: $hover;
-    //}
+    .title-wrap {
+      display: inline-block;
+      width: 100%;
+      overflow-x: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
   }
 
   .segment,
