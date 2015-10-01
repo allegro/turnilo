@@ -47,7 +47,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       .apply('main', $main.filter(essence.getEffectiveFilter(Totals.id).toExpression()));
 
     measures.forEach((measure) => {
-      query = query.apply(measure.name, measure.expression);
+      query = query.performAction(measure.toApplyAction());
     });
 
     this.setState({ loading: true });

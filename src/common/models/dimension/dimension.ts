@@ -4,14 +4,9 @@ import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS, Action } from 'plywood';
 import { makeTitle } from '../../utils/general/general';
 
-var geoNames = [
-  'continent',
-  'country',
-  'city',
-  'region'
-];
+var geoName = /continent|country|city|region/;
 function isGeo(name: string): boolean {
-  return geoNames.indexOf(name) !== -1;
+  return geoName.test(name);
 }
 
 export interface DimensionValue {

@@ -45,7 +45,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
     var query = $('main')
       .filter(essence.getEffectiveFilter().overQuery(timeBucketAction.duration, timeBucketAction.timezone, dataSource).toExpression())
       .split(timeSplit.toSplitExpression(), dimension.name)
-      .apply(measure.name, measure.expression)
+      .performAction(measure.toApplyAction())
       .sort($(dimension.name), 'ascending');
 
     dataSource.executor(query).then((dataset) => {

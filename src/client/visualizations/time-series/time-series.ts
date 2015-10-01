@@ -110,7 +110,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       .apply('main', $main.filter(essence.getEffectiveFilter(TimeSeries.id).toExpression()));
 
     measures.forEach((measure) => {
-      query = query.apply(measure.name, measure.expression);
+      query = query.performAction(measure.toApplyAction());
     });
 
     var splitsSize = splits.length();
@@ -119,7 +119,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var subQuery = $main.split(split.toSplitExpression(), 'Segment');
 
       measures.forEach((measure) => {
-        subQuery = subQuery.apply(measure.name, measure.expression);
+        subQuery = subQuery.performAction(measure.toApplyAction());
       });
       if (isLast) {
         subQuery = subQuery.sort($('Segment'), 'ascending');

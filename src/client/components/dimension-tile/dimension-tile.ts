@@ -52,7 +52,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var query: any = $('main')
       .filter(essence.getEffectiveFilter(highlightId).toExpression())
       .split(dimension.expression, dimension.name)
-      .apply(measure.name, measure.expression)
+      .performAction(measure.toApplyAction())
       .sort($(measure.name), 'descending')
       .limit(TOP_N + 1);
 

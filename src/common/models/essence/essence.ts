@@ -4,7 +4,7 @@ import { List, OrderedSet } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Timezone, Duration } from 'chronoshift';
-import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange, SortAction } from 'plywood';
+import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange, ApplyAction, SortAction } from 'plywood';
 import { listsEqual } from '../../utils/general/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
@@ -25,6 +25,11 @@ function constrainMeasures(measures: OrderedSet<string>, dataSource: DataSource)
   return <OrderedSet<string>>measures.filter((measureName) => Boolean(dataSource.getMeasure(measureName)));
 }
 
+
+export interface ApplySort {
+  apply: ApplyAction;
+  sort: SortAction;
+}
 
 export interface EssenceValue {
   dataSources?: List<DataSource>;
@@ -418,22 +423,35 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return highlight.delta.getSingleValue();
   }
 
-  public getSortForSplit(splitIndex: number): SortAction {
-    var splitCombine = this.splits.get(splitIndex);
+  public getApplySortForSplit(splitIndex: number): ApplySort {
+    var { dataSource, splits } = this;
+    var splitCombine = splits.get(splitIndex);
     if (!splitCombine) return null;
-    if (splitCombine.sortAction) return splitCombine.sortAction;
-    var dataSource = this.dataSource;
-    return new SortAction({
-      expression: $(dataSource.defaultSortMeasure),
-      direction: 'descending'
-    });
+    var { sortAction } = splitCombine;
+
+    var sortMeasure: Measure;
+    if (sortAction) {
+      var sortOn = (<RefExpression>sortAction.expression).name;
+      sortMeasure = dataSource.getMeasure(sortOn);
+    } else {
+      sortMeasure = dataSource.getMeasure(dataSource.defaultSortMeasure);
+      sortAction = new SortAction({
+        expression: $(dataSource.defaultSortMeasure),
+        direction: 'descending'
+      });
+    }
+
+    return {
+      apply: sortMeasure ? sortMeasure.toApplyAction() : null,
+      sort: sortAction
+    };
   }
 
   public getCommonSort(): SortAction {
     var commonSort: SortAction = null;
     var n = this.splits.length();
     for (var i = 0; i < n; i++) {
-      var sort = this.getSortForSplit(i);
+      var { sort } = this.getApplySortForSplit(i);
       if (commonSort) {
         if (!commonSort.equals(sort)) return null;
       } else {

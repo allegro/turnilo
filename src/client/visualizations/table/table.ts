@@ -104,7 +104,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       .apply('main', $main.filter(essence.getEffectiveFilter(Table.id).toExpression()));
 
     measures.forEach((measure) => {
-      query = query.apply(measure.name, measure.expression);
+      query = query.performAction(measure.toApplyAction());
     });
 
     var limit = splits.length() > 1 ? 10 : 50;
@@ -113,9 +113,11 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       var subQuery = $main.split(split.toSplitExpression(), 'Segment');
 
       measures.forEach((measure) => {
-        subQuery = subQuery.apply(measure.name, measure.expression);
+        subQuery = subQuery.performAction(measure.toApplyAction());
       });
-      subQuery = subQuery.performAction(essence.getSortForSplit(i)).limit(limit);
+      var { apply, sort } = essence.getApplySortForSplit(i);
+      if (apply) subQuery = subQuery.performAction(apply);
+      subQuery = subQuery.performAction(sort).limit(limit);
 
       if (i + 1 < splits.length()) {
         subQuery = subQuery.apply('Split', makeQuery(i + 1));

@@ -39,7 +39,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     var query = $('main')
       .filter(essence.getEffectiveFilter(null, dimension).toExpression())
       .split(dimension.expression, dimension.name)
-      .apply(measure.name, measure.expression)
+      .performAction(measure.toApplyAction())
       .sort($(measure.name), 'descending')
       .limit(TOP_N + 1);
 
