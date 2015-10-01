@@ -34,20 +34,35 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
       open: false
     };
 
+    this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentDidMount() {
+    window.addEventListener('mousedown', this.globalMouseDownListener);
     window.addEventListener('keydown', this.globalKeyDownListener);
   }
 
   componentWillUnmount() {
+    window.removeEventListener('mousedown', this.globalMouseDownListener);
     window.removeEventListener('keydown', this.globalKeyDownListener);
   }
 
   onClick() {
     var { open } = this.state;
     this.setState({ open: !open });
+  }
+
+  globalMouseDownListener(e: MouseEvent) {
+    var { open } = this.state;
+    if (!open) return;
+
+    var myElement = React.findDOMNode(this);
+    if (!myElement) return;
+    var target = <Element>e.target;
+
+    if (isInside(target, myElement)) return;
+    this.setState({ open: false });
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
