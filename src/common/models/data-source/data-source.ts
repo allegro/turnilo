@@ -284,7 +284,6 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           break;
 
         case 'STRING':
-          var newDataSource: DataSource;
           if (attribute.special === 'unique') {
             expression = $('main').countDistinct($(name));
             if (this.getMeasureByExpression(expression)) continue;

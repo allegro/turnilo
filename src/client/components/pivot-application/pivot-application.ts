@@ -23,6 +23,7 @@ import { visualizations } from '../../visualizations/index';
 var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 export interface PivotApplicationProps {
+  version: string;
   dataSources: List<DataSource>;
 }
 

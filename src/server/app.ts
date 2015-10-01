@@ -47,7 +47,10 @@ app.get('/', (req: Request, res: Response, next: Function) => {
     if (dataSources.length) {
       res.render('pivot', {
         version: VERSION,
-        config: JSON.stringify({ dataSources }),
+        config: JSON.stringify({
+          version: VERSION,
+          dataSources
+        }),
         title: 'Pivot'
       });
     } else {

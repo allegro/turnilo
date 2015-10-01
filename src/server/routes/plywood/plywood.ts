@@ -4,16 +4,33 @@ import { Router, Request, Response } from 'express';
 import { $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
 import { Timezone, WallTime, Duration } from 'chronoshift';
 
-import { DATA_SOURCE_MANAGER } from '../../config';
+import { VERSION, DATA_SOURCE_MANAGER } from '../../config';
 import { DataSource } from '../../../common/models/index';
 
 var router = Router();
 
 router.post('/', (req: Request, res: Response) => {
-  var { dataset, expression } = req.body;
+  var { version, dataSource, expression } = req.body;
 
-  if (typeof dataset !== 'string') {
-    res.status(400).send({ error: 'must have a string dataset' });
+  if (typeof version !== 'string') {
+    res.status(400).send({
+      error: 'must have a version'
+    });
+    return;
+  }
+
+  if (version !== VERSION) {
+    res.status(400).send({
+      error: 'incorrect version',
+      action: 'reload'
+    });
+    return;
+  }
+
+  if (typeof dataSource !== 'string') {
+    res.status(400).send({
+      error: 'must have a dataSource'
+    });
     return;
   }
 
@@ -28,7 +45,7 @@ router.post('/', (req: Request, res: Response) => {
     return;
   }
 
-  DATA_SOURCE_MANAGER.getQueryableDataSource(dataset).then((myDataSource) => {
+  DATA_SOURCE_MANAGER.getQueryableDataSource(dataSource).then((myDataSource) => {
     if (!myDataSource) {
       res.status(400).send({ error: 'unknown dataset' });
       return;

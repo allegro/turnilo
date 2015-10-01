@@ -2,7 +2,7 @@
 
 replace = require("replace")
 
-iconPaths = ['./assets/icons/']
+iconPaths = ['./resources/icons/']
 
 replace({
   regex: "\\s+<!--[^>]+-->",

@@ -16,13 +16,21 @@ function getSplitsDescription(ex: Expression): string {
   return splits.join(';');
 }
 
-export function queryUrlExecutorFactory(name: string, url: string): Executor {
+var reloadRequested = false;
+function reload() {
+  if (reloadRequested) return;
+  reloadRequested = true;
+  window.location.reload(true);
+}
+
+export function queryUrlExecutorFactory(name: string, url: string, version: string): Executor {
   return (ex: Expression) => {
     return Qajax({
       method: "POST",
       url: url + '?by=' + getSplitsDescription(ex),
       data: {
-        dataset: name,
+        version: version,
+        dataSource: name,
         expression: ex.toJS()
       }
     })
@@ -33,7 +41,10 @@ export function queryUrlExecutorFactory(name: string, url: string): Executor {
           return Dataset.fromJS(dataJS);
         },
         (xhr: XMLHttpRequest): Dataset => {
-          throw new Error(JSON.parse(xhr.responseText).message);
+          if (!xhr) return null; // This is only here to stop TS complaining
+          var jsonError = JSON.parse(xhr.responseText);
+          if (jsonError.action === 'reload') reload();
+          throw new Error(jsonError.message);
         }
       );
   };
