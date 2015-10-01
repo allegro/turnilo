@@ -5,8 +5,7 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
-// import { ... } from '../../config/constants';
-// import { SomeComp } from '../some-comp/some-comp';
+import { isInside, escapeKey } from '../../utils/dom/dom';
 
 function simpleEqual(item1: any, item2: any): boolean {
   return item1 === item2;
@@ -35,13 +34,27 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
       open: false
     };
 
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.globalKeyDownListener);
   }
 
   onClick() {
     var { open } = this.state;
-    this.setState({
-      open: !open
-    });
+    this.setState({ open: !open });
+  }
+
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (!escapeKey(e)) return;
+    var { open } = this.state;
+    if (!open) return;
+    this.setState({ open: false });
   }
 
   selectItem(item: T) {
