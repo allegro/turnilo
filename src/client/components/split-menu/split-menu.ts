@@ -47,7 +47,6 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     this.state = {
       split: null
     };
-
   }
 
   componentWillMount() {
@@ -195,11 +194,13 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       menuControls = this.renderStringControls();
     }
 
+    var actionDisabled = split.equals(this.props.split);
+
     return JSX(`
       <BubbleMenu className="split-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
         {menuControls || 'Split controls coming soon.'}
         <div className="button-bar">
-          <button className="ok" onClick={this.onOkClick.bind(this)}>OK</button>
+          <button className="ok" onClick={this.onOkClick.bind(this)} disabled={actionDisabled}>OK</button>
           <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
         </div>
       </BubbleMenu>
