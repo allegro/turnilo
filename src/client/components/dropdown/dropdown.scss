@@ -9,17 +9,18 @@
   }
 
   .caret-icon {
-    display: inline-block;
+    position: absolute;
     width: 11px;
-    margin: 2px;
+    height: 9px;
   }
 
   .dropdown-menu {
+    @extend %menu-cont;
     position: absolute;
     z-index: 800;
-    background: $white;
-    border: 1px solid $gray;
-    padding: 3px;
+    padding: 6px;
+    width: 100%;
+    line-height: 24px;
   }
 
   &.down .dropdown-menu {
@@ -31,7 +32,7 @@
   }
 
   .dropdown-item {
-    padding: 2px;
+    padding: 0 4px;
     cursor: pointer;
 
     &.selected {

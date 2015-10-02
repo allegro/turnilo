@@ -3,7 +3,7 @@
 $border-radius: 3px;
 
 .split-menu {
-  padding: 10px;
+  padding: 18px 10px 10px 10px;
 
   .button-group {
     .button-group-title {
@@ -43,27 +43,38 @@ $border-radius: 3px;
   }
 
   .dropdown {
+    margin-bottom: 12px;
+    pointer-events: none;
+
     .dropdown-label {
       text-transform: uppercase;
       font-size: 12px;
+      color: $text-light;
       margin-bottom: 5px;
     }
 
     .selected-item {
       display: block;
-      padding: 6px 2px;
+      padding: 7px 6px;
       border: 1px solid $border-light;
+      border-radius: $corner;
+      box-shadow: 0 1px 1px 0 hsla(0, 0, 0, 0.12);
+      pointer-events: auto;
+
+      &:hover {
+        border-color: $border-medium;
+      }
     }
 
     .caret-icon {
       position: absolute;
-      right: 6px;
-      bottom: 7px;
+      right: 9px;
+      bottom: 9px;
     }
 
     .dropdown-menu {
-      margin-top: -1px;
       width: 100%;
+      pointer-events: auto;
     }
   }
 
@@ -75,6 +86,7 @@ $border-radius: 3px;
 
     .ok {
       @extend %button-primary;
+      min-width: 60px;
       margin-right: 8px;
     }
 
