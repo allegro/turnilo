@@ -5,15 +5,22 @@
   padding: 100px 30px;
 
   .message {
-    font-size: 18px;
+    font-size: 20px;
+    color: $text-medium;
   }
 
   ul {
-    margin-top: 20px;
+    margin-top: 24px;
   }
 
   li {
+    font-size: 14px;
     cursor: pointer;
     color: $brand;
+    margin-bottom: 8px;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
