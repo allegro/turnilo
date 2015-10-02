@@ -1,49 +1,50 @@
 @import '../../imports';
 
-$border-radius: 3px;
+$bottom-margin: 12px;
 
 .split-menu {
   padding: 18px 10px 10px 10px;
 
   .button-group {
+    margin-bottom: $bottom-margin;
+
     .button-group-title {
       text-transform: uppercase;
       font-size: 12px;
       margin-bottom: 5px;
+      color: $text-light;
     }
 
     li {
+      @extend %input-cont;
+      border-radius: 0;
       display: inline-block;
       cursor: pointer;
-      width: 45px;
+      width: 25%;
       text-align: center;
       padding: 6px 2px;
-      border: 1px solid $border-light;
       border-right: 0;
 
       &:first-child {
-        border-top-left-radius: $border-radius;
-        border-bottom-left-radius: $border-radius;
+        border-top-left-radius: $corner;
+        border-bottom-left-radius: $corner;
       }
 
       &:last-child {
         border-right: 1px solid $border-light;
-        border-top-right-radius: $border-radius;
-        border-bottom-right-radius: $border-radius;
+        border-top-right-radius: $corner;
+        border-bottom-right-radius: $corner;
       }
 
       &.selected {
+        box-shadow: inset 0 1px 1px 0 hsla(0, 0, 0, 0.1);
         background: $background-light;
-      }
-
-      &:hover {
-        background: $background-lighter;
       }
     }
   }
 
   .dropdown {
-    margin-bottom: 12px;
+    margin-bottom: $bottom-margin;
     pointer-events: none;
 
     .dropdown-label {
@@ -54,16 +55,10 @@ $border-radius: 3px;
     }
 
     .selected-item {
+      @extend %input-cont;
       display: block;
       padding: 7px 6px;
-      border: 1px solid $border-light;
-      border-radius: $corner;
-      box-shadow: 0 1px 1px 0 hsla(0, 0, 0, 0.12);
       pointer-events: auto;
-
-      &:hover {
-        border-color: $border-medium;
-      }
     }
 
     .caret-icon {

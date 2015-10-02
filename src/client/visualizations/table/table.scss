@@ -29,7 +29,7 @@ $header-padding-top: 12px;
     height: $header-height;
     overflow: hidden;
     padding: $header-padding-top 0 0 6px;
-    border-bottom: 1px solid $border-medium;
+    border-bottom: 1px solid $border-extra-light;
 
     .sort-arrow {
       right: 2px;
@@ -46,7 +46,7 @@ $header-padding-top: 12px;
 
     .header {
       height: $header-height;
-      border-bottom: 1px solid $border-medium;
+      border-bottom: 1px solid $border-extra-light;
       white-space: nowrap;
     }
 
