@@ -122,7 +122,6 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   timeRangeStartChange(start: Date) {
     if (!start) return;
     var { selectedTimeRange } = this.state;
-    console.log('set start', start.toISOString());
     this.setState({
       selectedTimeRange: new TimeRange({
         start,
@@ -134,7 +133,6 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   timeRangeEndChange(end: Date) {
     if (!end) return;
     var { selectedTimeRange } = this.state;
-    console.log('set end', end.toISOString());
     this.setState({
       selectedTimeRange: new TimeRange({
         start: selectedTimeRange.start,

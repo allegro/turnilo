@@ -6,6 +6,8 @@
   padding: 10px;
 
   .dropdown-label {
+    display: inline-block;
+    margin-right: 4px;
     color: $gray;
   }
 }

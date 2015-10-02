@@ -58,6 +58,7 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
 
   constructor(parameters: SplitCombineValue) {
     this.expression = parameters.expression;
+    if (!this.expression) throw new Error('must have expression');
     this.bucketAction = parameters.bucketAction;
     this.sortAction = parameters.sortAction;
     this.limitAction = parameters.limitAction;
@@ -118,10 +119,20 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     return new SplitCombine(value);
   }
 
-  public changeSort(sortAction: SortAction): SplitCombine {
+  public changeSortAction(sortAction: SortAction): SplitCombine {
     var value = this.valueOf();
     value.sortAction = sortAction;
     return new SplitCombine(value);
+  }
+
+  public changeLimitAction(limitAction: LimitAction): SplitCombine {
+    var value = this.valueOf();
+    value.limitAction = limitAction;
+    return new SplitCombine(value);
+  }
+
+  public changeLimit(limit: number): SplitCombine {
+    return this.changeLimitAction(new LimitAction({ limit }));
   }
 
   public getDimension(dataSource: DataSource): Dimension {

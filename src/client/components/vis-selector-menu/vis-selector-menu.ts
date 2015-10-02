@@ -56,7 +56,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
 
   onVisSelect(v: Manifest) {
     var { clicker, essence } = this.props;
-    clicker.selectVisualization(v);
+    clicker.changeVisualization(v);
     this.setState({
       menuOpen: false
     });

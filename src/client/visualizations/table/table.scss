@@ -11,6 +11,16 @@ $header-padding-top: 12px;
 .table {
   overflow: hidden;
 
+  .sort-arrow {
+    position: absolute;
+    top: 12px;
+    width: 8px;
+
+    &.ascending {
+      transform: rotate(180deg);
+    }
+  }
+
   .corner {
     position: absolute;
     left: $space-left;
@@ -20,6 +30,10 @@ $header-padding-top: 12px;
     overflow: hidden;
     padding: $header-padding-top 0 0 6px;
     border-bottom: 1px solid $border-medium;
+
+    .sort-arrow {
+      right: 2px;
+    }
   }
 
   .header-cont {
@@ -37,12 +51,7 @@ $header-padding-top: 12px;
     }
 
     .sort-arrow {
-      position: absolute;
       right: -15px;
-
-      &.ascending {
-        transform: rotate(180deg);
-      }
     }
   }
 
@@ -148,7 +157,7 @@ $header-padding-top: 12px;
     .title-wrap {
       display: inline-block;
       width: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
     }

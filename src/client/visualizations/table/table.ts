@@ -65,17 +65,41 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   static id = 'table';
   static title = 'Table';
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
-    if (splits.length()) return Resolve.READY;
-    var someDimension = dataSource.dimensions.slice(0, 2);
-    return Resolve.manual(
-      'Please add at least one split',
-      dataSource.dimensions.toArray().slice(0, 2).map((someDimension) => {
-        return {
-          description: `Add a split on ${someDimension.title}`,
-          adjustment: () => Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
-        };
-      })
-    );
+    // Must have at least one dimension
+    if (splits.length() < 1) {
+      var someDimensions = dataSource.dimensions.toArray().filter(d => d.type !== 'TIME').slice(0, 2);
+      return Resolve.manual(
+        'Please add at least one split',
+        someDimensions.map((someDimension) => {
+          return {
+            description: `Add a split on ${someDimension.title}`,
+            adjustment: () => Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
+          };
+        })
+      );
+    }
+
+    // Auto adjustment
+    var changed = false;
+    var newSplits = splits.map((split, i) => {
+      if (!split.sortAction) {
+        split = split.changeSortAction(dataSource.getDefaultSortAction());
+        changed = true;
+      }
+
+      if (!split.limitAction) {
+        split = split.changeLimit(i ? 5 : 50);
+        changed = true;
+      }
+
+      return split;
+    });
+
+    if (changed) {
+      return Resolve.automatic(() => newSplits);
+    }
+
+    return Resolve.READY;
   }
 
   public mounted: boolean;
@@ -110,14 +134,24 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var limit = splits.length() > 1 ? 10 : 50;
     function makeQuery(i: number): Expression {
       var split = splits.get(i);
+      var { sortAction, limitAction } = split;
+      if (!sortAction) throw new Error('something went wrong in table query generation');
+
       var subQuery = $main.split(split.toSplitExpression(), 'Segment');
 
       measures.forEach((measure) => {
         subQuery = subQuery.performAction(measure.toApplyAction());
       });
-      var { apply, sort } = essence.getApplySortForSplit(i);
-      if (apply) subQuery = subQuery.performAction(apply);
-      subQuery = subQuery.performAction(sort).limit(limit);
+
+      var applyForSort = essence.getApplyForSort(sortAction);
+      if (applyForSort) {
+        subQuery = subQuery.performAction(applyForSort);
+      }
+      subQuery = subQuery.performAction(sortAction);
+
+      if (limitAction) {
+        subQuery = subQuery.performAction(limitAction);
+      }
 
       if (i + 1 < splits.length()) {
         subQuery = subQuery.apply('Split', makeQuery(i + 1));
@@ -239,11 +273,11 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var { clicker, essence } = this.props;
     var pos = this.calculateMousePosition(e);
 
-    if (pos.what === 'header') {
-      var sortExpression = $(pos.measure.name);
+    if (pos.what === 'corner' || pos.what === 'header') {
+      var sortExpression = $(pos.what === 'corner' ? 'Segment' : pos.measure.name);
       var commonSort = essence.getCommonSort();
       var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === 'descending');
-      clicker.changeSplits(essence.splits.changeSort(new SortAction({
+      clicker.changeSplits(essence.splits.changeSortAction(new SortAction({
         expression: sortExpression,
         direction: myDescending ? 'ascending' : 'descending'
       })), false);
@@ -269,16 +303,24 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     var segmentTitle = splits.getTitle(essence.dataSource);
     var commonSort = essence.getCommonSort();
+    var commonSortName = commonSort ? (<RefExpression>commonSort.expression).name : null;
+
+    var cornerSortArrow: React.ReactElement<any> = null;
+    if (commonSortName === 'Segment') {
+      cornerSortArrow = React.createElement(Icon, {
+        name: 'sort-arrow',
+        className: 'sort-arrow ' + commonSort.direction
+      });
+    }
 
     var measuresArray = essence.getMeasures().toArray();
 
     var headerColumns = measuresArray.map((measure, i) => {
       var sortArrow: React.ReactElement<any> = null;
-      if (commonSort && (<RefExpression>commonSort.expression).name === measure.name) {
+      if (commonSortName === measure.name) {
         sortArrow = React.createElement(Icon, {
           name: 'sort-arrow',
-          className: 'sort-arrow ' + commonSort.direction,
-          width: 8
+          className: 'sort-arrow ' + commonSort.direction
         });
       }
       return JSX(`
@@ -429,7 +471,10 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     return JSX(`
       <div className="table">
-        <div className="corner">{segmentTitle}</div>
+        <div className="corner">
+          <div className="corner-wrap">{segmentTitle}</div>
+          {cornerSortArrow}
+        </div>
         <div className="header-cont">
           <div className="header" style={headerStyle}>{headerColumns}</div>
         </div>

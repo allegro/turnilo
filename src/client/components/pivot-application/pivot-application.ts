@@ -77,9 +77,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         var { essence } = this.state;
         this.setState({ essence: essence.removeSplit(split) });
       },
-      selectVisualization: (visualization: Manifest) => {
+      changeVisualization: (visualization: Manifest) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.selectVisualization(visualization) });
+        this.setState({ essence: essence.changeVisualization(visualization) });
       },
       pin: (dimension: Dimension) => {
         var { essence } = this.state;

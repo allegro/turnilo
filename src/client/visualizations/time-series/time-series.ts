@@ -40,15 +40,18 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   static id = 'time-series';
   static title = 'Time Series';
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
+    // Has no splits
     if (splits.length() < 1) {
       var timeDimension = dataSource.getTimeDimension();
-      return Resolve.manual('Please add at least one time split', [
+      return Resolve.manual('Please add a time split', [
         {
           description: `Add a split on ${timeDimension.title}`,
           adjustment: () => Splits.fromSplitCombine(SplitCombine.fromExpression(timeDimension.expression))
         }
       ]);
     }
+
+    // Has a time split and other splits
     if (splits.length() > 1) {
       var existingTimeSplit: SplitCombine = null;
       splits.forEach((split) => {
@@ -67,6 +70,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         ]);
       }
     }
+
+    // Last split is not a time split
     var lastSplit = splits.last();
     var splitDimension = lastSplit.getDimension(dataSource);
     if (splitDimension.type !== 'TIME') {

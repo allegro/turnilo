@@ -26,10 +26,7 @@ function constrainMeasures(measures: OrderedSet<string>, dataSource: DataSource)
 }
 
 
-export interface ApplySort {
-  apply: ApplyAction;
-  sort: SortAction;
-}
+export type DimensionOrMeasure = Dimension | Measure;
 
 export interface EssenceValue {
   dataSources?: List<DataSource>;
@@ -247,7 +244,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (visResolve.isAutomatic()) {
       this.splits = visResolve.adjustment();
       visResolve = visualization.handleCircumstance(this.dataSource, this.splits);
-      if (!visResolve.isReady()) throw new Error('visualization is not ready after automatic adjustment');
+      if (!visResolve.isReady()) throw new Error('visualization must be ready after automatic adjustment');
     }
     this.visResolve = visResolve;
   }
@@ -348,7 +345,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public getReadyVisualizations(splits: Splits): List<Manifest> {
     var { visualizations, dataSource } = this;
-    return <List<Manifest>>visualizations.filter(v => v.handleCircumstance(dataSource, splits).isReady());
+    return <List<Manifest>>visualizations.filter(v => {
+      var resolve = v.handleCircumstance(dataSource, splits);
+      return resolve.isReady() || resolve.isAutomatic();
+    });
   }
 
   public getTimeAttribute(): RefExpression {
@@ -427,35 +427,18 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return highlight.delta.getSingleValue();
   }
 
-  public getApplySortForSplit(splitIndex: number): ApplySort {
-    var { dataSource, splits } = this;
-    var splitCombine = splits.get(splitIndex);
-    if (!splitCombine) return null;
-    var { sortAction } = splitCombine;
-
-    var sortMeasure: Measure;
-    if (sortAction) {
-      var sortOn = (<RefExpression>sortAction.expression).name;
-      sortMeasure = dataSource.getMeasure(sortOn);
-    } else {
-      sortMeasure = dataSource.getMeasure(dataSource.defaultSortMeasure);
-      sortAction = new SortAction({
-        expression: $(dataSource.defaultSortMeasure),
-        direction: 'descending'
-      });
-    }
-
-    return {
-      apply: sortMeasure ? sortMeasure.toApplyAction() : null,
-      sort: sortAction
-    };
+  public getApplyForSort(sort: SortAction): ApplyAction {
+    var sortOn = (<RefExpression>sort.expression).name;
+    var sortMeasure = this.dataSource.getMeasure(sortOn);
+    if (!sortMeasure) return null;
+    return sortMeasure.toApplyAction();
   }
 
   public getCommonSort(): SortAction {
+    var splits = this.splits.toArray();
     var commonSort: SortAction = null;
-    var n = this.splits.length();
-    for (var i = 0; i < n; i++) {
-      var { sort } = this.getApplySortForSplit(i);
+    for (var split of splits) {
+      var sort = split.sortAction;
       if (commonSort) {
         if (!commonSort.equals(sort)) return null;
       } else {
@@ -567,7 +550,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.changeSplits(splits.removeSplit(split), true);
   }
 
-  public selectVisualization(visualization: Manifest): Essence {
+  public changeVisualization(visualization: Manifest): Essence {
     var value = this.valueOf();
     value.visualization = visualization;
     return new Essence(value);

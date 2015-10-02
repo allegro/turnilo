@@ -18,7 +18,7 @@ export interface Clicker {
   changeSplit(split: SplitCombine): void;
   addSplit(split: SplitCombine): void;
   removeSplit(split: SplitCombine): void;
-  selectVisualization(visualization: Manifest): void;
+  changeVisualization(visualization: Manifest): void;
   pin(dimension: Dimension): void;
   unpin(dimension: Dimension): void;
   changePinnedSortMeasure(measure: Measure): void;
