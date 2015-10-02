@@ -152,30 +152,33 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     });
   }
 
-  renderTimeControls() {
-    return JSX(`
-      <div>
-        {this.renderGranularityPicker()}
-        {this.renderSortDropdown()}
-      </div>
-    `);
-  }
-
-  renderStringControls() {
+  renderLimitDropdown(includeNone: boolean) {
     var { split } = this.state;
 
     var { limitAction } = split;
-    var limitDropdown = React.createElement(Dropdown, <DropdownProps<number>>{
+    return React.createElement(Dropdown, <DropdownProps<number>>{
       label: "Limit",
       items: [5, 10, 25, 50, 100],
       selectedItem: limitAction ? limitAction.limit : null,
       onSelect: this.onSelectLimit.bind(this)
     });
+  }
 
+  renderTimeControls() {
+    return JSX(`
+      <div>
+        {this.renderGranularityPicker()}
+        {this.renderSortDropdown()}
+        {this.renderLimitDropdown(true)}
+      </div>
+    `);
+  }
+
+  renderStringControls() {
     return JSX(`
       <div>
         {this.renderSortDropdown()}
-        {limitDropdown}
+        {this.renderLimitDropdown(false)}
       </div>
     `);
   }
@@ -185,7 +188,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var { split } = this.state;
     if (!dimension) return null;
 
-    var menuSize = Stage.fromSize(250, 200);
+    var menuSize = Stage.fromSize(250, 240);
 
     var menuControls: React.DOMElement<any> = null;
     if (split.bucketAction instanceof TimeBucketAction) {
@@ -198,7 +201,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
     return JSX(`
       <BubbleMenu className="split-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
-        {menuControls || 'Split controls coming soon.'}
+        {menuControls}
         <div className="button-bar">
           <button className="ok" onClick={this.onOkClick.bind(this)} disabled={actionDisabled}>OK</button>
           <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
