@@ -30,7 +30,6 @@ $header-padding-top: 12px;
     overflow: hidden;
     padding: $header-padding-top 0 0 6px;
     border-bottom: 1px solid $border-extra-light;
-    font-weight: 600;
 
     .sort-arrow {
       right: 2px;
@@ -44,7 +43,6 @@ $header-padding-top: 12px;
     right: 0;
     height: $header-height;
     overflow: hidden;
-    font-weight: 600;
 
     .header {
       height: $header-height;
@@ -145,7 +143,7 @@ $header-padding-top: 12px;
     }
 
     &.nest0 {
-      font-weight: $bold;
+      background: $background-lightest;
     }
   }
 
