@@ -151,6 +151,15 @@ $header-padding-top: 12px;
     left: 0;
   }
 
+  .not-selected {
+    &:after {
+      @include pin-full;
+      background: $white;
+      opacity: 0.5;
+      content: '';
+    }
+  }
+
   .measure-name {
     padding-top: $header-padding-top;
 

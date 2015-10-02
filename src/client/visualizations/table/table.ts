@@ -365,15 +365,21 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         var left = Math.max(0, nest - 1) * INDENT_WIDTH;
         var segmentStyle = { left: left, width: SEGMENT_WIDTH - left, top: rowY };
         var hoverClass = d === hoverRow ? ' hover' : '';
+
+        var selected = false;
+        var selectedClass = '';
+        if (highlightDelta) {
+          selected = highlightDelta && highlightDelta.equals(getFilterFromDatum(splits, d));
+          selectedClass = selected ? 'selected' : 'not-selected';
+        }
+
         segments.push(JSX(`
           <div
-            className={'segment nest' + nest + hoverClass}
+            className={'segment nest' + nest + ' ' + selectedClass + hoverClass}
             key={'_' + i}
             style={segmentStyle}
           >{segmentName}</div>
         `));
-
-        var selected = highlightDelta && highlightDelta.equals(getFilterFromDatum(splits, d));
 
         var row = measuresArray.map((measure, j) => {
           var measureValue = d[measure.name];
@@ -384,7 +390,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         var rowStyle = { top: rowY };
         rows.push(JSX(`
           <div
-            className={'row nest' + nest + ' ' + (selected ? 'selected' : 'not-selected') + hoverClass}
+            className={'row nest' + nest + ' ' + selectedClass + hoverClass}
             key={'_' + i}
             style={rowStyle}
           >{row}</div>
