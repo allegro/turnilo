@@ -37,7 +37,7 @@ $action-bar-height: 52px;
       .time-inputs {
         position: absolute;
         left: $presets-width;
-        top: 0;
+        top: 4px;
 
         .time-input {
           @extend %input-cont-inset;

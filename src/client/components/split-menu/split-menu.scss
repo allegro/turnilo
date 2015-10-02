@@ -1,9 +1,10 @@
 @import '../../imports';
 
-$bottom-margin: 12px;
+$bottom-margin: 14px;
+$title-margin: 6px;
 
 .split-menu {
-  padding: 18px 10px 10px 10px;
+  padding: 16px 10px 10px 10px;
 
   .button-group {
     margin-bottom: $bottom-margin;
@@ -11,7 +12,7 @@ $bottom-margin: 12px;
     .button-group-title {
       text-transform: uppercase;
       font-size: 12px;
-      margin-bottom: 5px;
+      margin-bottom: $title-margin;
       color: $text-light;
     }
 
@@ -51,7 +52,7 @@ $bottom-margin: 12px;
       text-transform: uppercase;
       font-size: 12px;
       color: $text-light;
-      margin-bottom: 5px;
+      margin-bottom: $title-margin;
     }
 
     .selected-item {

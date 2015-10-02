@@ -69,6 +69,10 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
           <Icon name="preview-filter"/>
           <div className="action-label">Filter</div>
         </div>
+        <div className="pin action"  onClick={this.onPin.bind(this)}>
+          <Icon name="preview-pin"/>
+          <div className="action-label">Pin</div>
+        </div>
         <div className="split action" onClick={this.onSplit.bind(this)}>
           <Icon name="preview-split"/>
           <div className="action-label">Split</div>
@@ -76,10 +80,6 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
         <div className="subsplit action" onClick={this.onSubsplit.bind(this)}>
           <Icon name="preview-subsplit"/>
           <div className="action-label">Subsplit</div>
-        </div>
-        <div className="pin action"  onClick={this.onPin.bind(this)}>
-          <Icon name="preview-pin"/>
-          <div className="action-label">Pin</div>
         </div>
       </BubbleMenu>
     `);
