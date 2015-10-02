@@ -5,7 +5,7 @@ import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../../common/models/index';
+import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle } from '../../utils/dom/dom';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
@@ -70,14 +70,14 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   removeSplit(split: SplitCombine, e: MouseEvent) {
     var { clicker } = this.props;
-    clicker.removeSplit(split);
+    clicker.removeSplit(split, VisStrategy.FairGame);
     e.stopPropagation();
   }
 
   dragStart(dimension: Dimension, split: SplitCombine, splitIndex: number, e: DragEvent) {
     var { essence } = this.props;
 
-    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression)).getURL();
+    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame).getURL();
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
@@ -159,9 +159,9 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (newSplitCombine) {
       var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
       if (dragReplacePosition !== null) {
-        clicker.changeSplits(splits.replaceByIndex(dragReplacePosition, newSplitCombine), true);
+        clicker.changeSplits(splits.replaceByIndex(dragReplacePosition, newSplitCombine), VisStrategy.FairGame);
       } else if (dragInsertPosition !== null) {
-        clicker.changeSplits(splits.insertByIndex(dragInsertPosition, newSplitCombine), true);
+        clicker.changeSplits(splits.insertByIndex(dragInsertPosition, newSplitCombine), VisStrategy.FairGame);
       }
     }
 

@@ -9,15 +9,16 @@ import { Splits } from '../splits/splits';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
 import { Manifest } from '../manifest/manifest';
+import { VisStrategy } from '../essence/essence';
 
 export interface Clicker {
   changeDataSource(dataSource: DataSource): void;
   changeTimeRange(timeRange: TimeRange): void;
   changeFilter(filter: Filter): void;
-  changeSplits(splits: Splits, fitVis: boolean): void;
-  changeSplit(split: SplitCombine): void;
-  addSplit(split: SplitCombine): void;
-  removeSplit(split: SplitCombine): void;
+  changeSplits(splits: Splits, strategy: VisStrategy): void;
+  changeSplit(split: SplitCombine, strategy: VisStrategy): void;
+  addSplit(split: SplitCombine, strategy: VisStrategy): void;
+  removeSplit(split: SplitCombine, strategy: VisStrategy): void;
   changeVisualization(visualization: Manifest): void;
   pin(dimension: Dimension): void;
   unpin(dimension: Dimension): void;

@@ -28,6 +28,18 @@ function constrainMeasures(measures: OrderedSet<string>, dataSource: DataSource)
 
 export type DimensionOrMeasure = Dimension | Measure;
 
+export interface VisualizationAndResolve {
+  visualization: Manifest;
+  resolve: Resolve;
+}
+
+export enum VisStrategy {
+  FairGame,
+  KeepIfReadyOrAutomatic,
+  KeepIfReady,
+  KeepAlways
+}
+
 export interface EssenceValue {
   dataSources?: List<DataSource>;
   visualizations?: List<Manifest>;
@@ -236,7 +248,9 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     // Place vis here because it needs to know about splits (and maybe later other things)
     var visualization = parameters.visualization;
     if (!visualization) {
-      visualization = this.getVisualizations().last();
+      var visAndResolve = this.getBestVisualization(this.splits);
+      if (!visAndResolve) throw new Error('could not find suitable vis, something is misconstrued');
+      visualization = visAndResolve.visualization;
     }
     this.visualization = visualization;
 
@@ -339,16 +353,34 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return Essence.getBaseURL() + this.toHash();
   }
 
-  public getVisualizations(): List<Manifest> {
-    return this.getReadyVisualizations(this.splits);
-  }
-
-  public getReadyVisualizations(splits: Splits): List<Manifest> {
+  public getBestVisualization(splits: Splits): VisualizationAndResolve {
     var { visualizations, dataSource } = this;
-    return <List<Manifest>>visualizations.filter(v => {
-      var resolve = v.handleCircumstance(dataSource, splits);
-      return resolve.isReady() || resolve.isAutomatic();
+    var visAndResolves = visualizations.toArray().map((visualization) => {
+      return {
+        visualization,
+        resolve: visualization.handleCircumstance(dataSource, splits)
+      };
     });
+
+    // the vis are sorted least impressive -> most impressive so reverse the list
+    visAndResolves.reverse();
+
+    // Try to find a ready vis
+    for (var visAndResolve of visAndResolves) {
+      if (visAndResolve.resolve.isReady()) return visAndResolve;
+    }
+
+    // Try to find an automatic vis
+    for (var visAndResolve of visAndResolves) {
+      if (visAndResolve.resolve.isAutomatic()) return visAndResolve;
+    }
+
+    // Try to find a manual vis
+    for (var visAndResolve of visAndResolves) {
+      if (visAndResolve.resolve.isManual()) return visAndResolve;
+    }
+
+    return null; // give up
   }
 
   public getTimeAttribute(): RefExpression {
@@ -514,16 +546,43 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.changeFilter(filter.setTimeRange(timeAttribute, timeRange));
   }
 
-  public changeSplits(splits: Splits, fitVis: boolean): Essence {
-    var { visualization, filter } = this;
-    if (fitVis) {
-      var visualizations = this.getReadyVisualizations(splits);
-      visualization = visualizations.last();
-    }
+  public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
+    var { dataSource, visualization, filter } = this;
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
       splits = splits.updateWithTimeRange(timeAttribute, filter.getTimeRange(timeAttribute));
+    }
+
+    //console.log('VisStrategy:', VisStrategy[strategy]);
+
+    var keepVis: boolean;
+    switch (strategy) {
+      case VisStrategy.FairGame:
+        keepVis = false;
+        break;
+
+      case VisStrategy.KeepIfReadyOrAutomatic:
+        var newResolve = visualization.handleCircumstance(dataSource, splits);
+        keepVis = newResolve.isReady() || newResolve.isAutomatic();
+        break;
+
+      case VisStrategy.KeepIfReady:
+        var newResolve = visualization.handleCircumstance(dataSource, splits);
+        keepVis = newResolve.isReady();
+        break;
+
+      case VisStrategy.KeepAlways:
+        keepVis = true;
+        break;
+
+      default:
+        throw new Error('unknown vis strategy');
+    }
+
+    if (!keepVis) {
+      var visAndResolve = this.getBestVisualization(splits);
+      visualization = visAndResolve.visualization;
     }
 
     var value = this.valueOf();
@@ -536,18 +595,18 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return new Essence(value);
   }
 
-  public changeSplit(splitCombine: SplitCombine): Essence {
-    return this.changeSplits(Splits.fromSplitCombine(splitCombine), true);
+  public changeSplit(splitCombine: SplitCombine, strategy: VisStrategy): Essence {
+    return this.changeSplits(Splits.fromSplitCombine(splitCombine), strategy);
   }
 
-  public addSplit(split: SplitCombine): Essence {
+  public addSplit(split: SplitCombine, strategy: VisStrategy): Essence {
     var { splits } = this;
-    return this.changeSplits(splits.addSplit(split), true);
+    return this.changeSplits(splits.addSplit(split), strategy);
   }
 
-  public removeSplit(split: SplitCombine): Essence {
+  public removeSplit(split: SplitCombine, strategy: VisStrategy): Essence {
     var { splits } = this;
-    return this.changeSplits(splits.removeSplit(split), true);
+    return this.changeSplits(splits.removeSplit(split), strategy);
   }
 
   public changeVisualization(visualization: Manifest): Essence {

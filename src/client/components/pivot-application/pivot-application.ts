@@ -5,7 +5,7 @@ import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesGet } from '../../utils/dom/dom';
-import { Stage, Essence, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../../common/models/index";
+import { Stage, Essence, VisStrategy, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../../common/models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
@@ -61,21 +61,21 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         var { essence } = this.state;
         this.setState({ essence: essence.changeTimeRange(timeRange) });
       },
-      changeSplits: (splits: Splits, fitVis: boolean) => {
+      changeSplits: (splits: Splits, strategy: VisStrategy) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeSplits(splits, fitVis) });
+        this.setState({ essence: essence.changeSplits(splits, strategy) });
       },
-      changeSplit: (split: SplitCombine) => {
+      changeSplit: (split: SplitCombine, strategy: VisStrategy) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeSplit(split) });
+        this.setState({ essence: essence.changeSplit(split, strategy) });
       },
-      addSplit: (split: SplitCombine) => {
+      addSplit: (split: SplitCombine, strategy: VisStrategy) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.addSplit(split) });
+        this.setState({ essence: essence.addSplit(split, strategy) });
       },
-      removeSplit: (split: SplitCombine) => {
+      removeSplit: (split: SplitCombine, strategy: VisStrategy) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.removeSplit(split) });
+        this.setState({ essence: essence.removeSplit(split, strategy) });
       },
       changeVisualization: (visualization: Manifest) => {
         var { essence } = this.state;
@@ -218,7 +218,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
     if (dimensionName) {
       var dimension = essence.dataSource.getDimension(dimensionName);
-      if (dimension) this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression));
+      if (dimension) this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
     }
     this.setState({ dragOver: false });
   }

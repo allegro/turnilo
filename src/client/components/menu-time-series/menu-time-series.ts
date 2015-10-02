@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset, Datum, TimeRange, TimeBucketAction } from 'plywood';
-import { Stage, Essence, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../../common/models/index';
+import { Stage, Essence, VisStrategy, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../../common/models/index';
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
 
@@ -38,7 +38,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
     var { dataSource } = essence;
     var measure = essence.getPreviewSortMeasure();
 
-    var newEssence = essence.changeSplit(SplitCombine.fromExpression(dimension.expression));
+    var newEssence = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepAlways);
     var timeSplit = newEssence.splits.last();
     var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
 

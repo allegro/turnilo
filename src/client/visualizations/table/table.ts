@@ -7,7 +7,7 @@ import * as numeral from 'numeral';
 import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, SortAction } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
-import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
+import { Stage, Filter, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SEGMENT } from '../../config/constants';
 import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
 import { Loader } from '../../components/loader/loader';
@@ -83,12 +83,14 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     // Auto adjustment
     var changed = false;
     var newSplits = splits.map((split, i) => {
+      var splitDimension = dataSource.getDimensionByExpression(split.expression);
+
       if (!split.sortAction) {
         split = split.changeSortAction(dataSource.getDefaultSortAction());
         changed = true;
       }
 
-      if (!split.limitAction) {
+      if (!split.limitAction && splitDimension.type !== 'TIME') {
         split = split.changeLimit(i ? 5 : 50);
         changed = true;
       }
@@ -281,7 +283,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       clicker.changeSplits(essence.splits.changeSortAction(new SortAction({
         expression: sortExpression,
         direction: myDescending ? 'ascending' : 'descending'
-      })), false);
+      })), VisStrategy.KeepAlways);
 
     } else if (pos.what === 'row') {
       var rowHighlight = getFilterFromDatum(essence.splits, pos.row);

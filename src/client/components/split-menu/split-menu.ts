@@ -5,7 +5,7 @@ import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, RefExpression, Executor, Dataset, TimeBucketAction, SortAction, LimitAction } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, SplitCombine, Filter, Dimension, Measure, DimensionOrMeasure } from '../../../common/models/index';
+import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Dimension, Measure, DimensionOrMeasure } from '../../../common/models/index';
 import { SEGMENT } from '../../config/constants';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
@@ -93,7 +93,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var originalSplit = this.props.split;
     var newSplit = this.state.split;
     if (!originalSplit.equals(newSplit)) {
-      clicker.changeSplits(essence.splits.replace(originalSplit, newSplit), false);
+      clicker.changeSplits(essence.splits.replace(originalSplit, newSplit), VisStrategy.KeepIfReady);
     }
     onClose();
   }

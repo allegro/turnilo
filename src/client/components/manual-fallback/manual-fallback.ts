@@ -5,7 +5,7 @@ import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 // import { ... } from '../../config/constants';
-import { Stage, Clicker, Essence, Resolution } from '../../../common/models/index';
+import { Stage, Clicker, Essence, Resolution, VisStrategy } from '../../../common/models/index';
 
 
 export interface ManualFallbackProps {
@@ -26,7 +26,7 @@ export class ManualFallback extends React.Component<ManualFallbackProps, ManualF
 
   onResolutionClick(resolution: Resolution): void {
     var { clicker } = this.props;
-    clicker.changeSplits(resolution.adjustment, true);
+    clicker.changeSplits(resolution.adjustment, VisStrategy.KeepAlways);
   }
 
   render() {

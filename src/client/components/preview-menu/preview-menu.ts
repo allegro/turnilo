@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset, SplitCombine } from '../../../common/models/index';
+import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, TimePreset, SplitCombine } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 //import { MenuHeader } from '../menu-header/menu-header';
 //import { MenuTable } from '../menu-table/menu-table';
@@ -42,13 +42,13 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
 
   onSplit(): void {
     var { clicker, dimension, onClose } = this.props;
-    clicker.changeSplit(SplitCombine.fromExpression(dimension.expression));
+    clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepIfReady);
     onClose();
   }
 
   onSubsplit(): void {
     var { clicker, dimension, onClose } = this.props;
-    clicker.addSplit(SplitCombine.fromExpression(dimension.expression));
+    clicker.addSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepIfReady);
     onClose();
   }
 
