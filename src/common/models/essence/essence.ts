@@ -104,7 +104,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     if (!Array.isArray(jsArray)) return null;
     var jsArrayLength = jsArray.length;
-    if (!(5 <= jsArrayLength && jsArrayLength <= 9)) return null;
+    if (!(7 <= jsArrayLength && jsArrayLength <= 9)) return null;
 
     var essence: Essence;
     try {
@@ -116,8 +116,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
         splits: jsArray[2],
         selectedMeasures: jsArray[3],
         pinnedDimensions: jsArray[4],
-        previewSort: jsArray[5] || null,
-        pinnedSort: jsArray[6] || null,
+        previewSort: jsArray[5],
+        pinnedSort: jsArray[6],
         compare: jsArray[7] || null,
         highlight: jsArray[8] || null
       }, dataSources, visualizations);
@@ -334,18 +334,23 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       js.filter,           // 1
       js.splits,           // 2
       js.selectedMeasures, // 3
-      js.pinnedDimensions  // 4
+      js.pinnedDimensions, // 4
+      js.previewSort,      // 5
+      js.pinnedSort        // 6
     ];
-    if (js.previewSort) compressed[5] = js.previewSort;
-    if (js.pinnedSort)  compressed[6] = js.pinnedSort;
     if (js.compare)     compressed[7] = js.compare;
     if (js.highlight)   compressed[8] = js.highlight;
+
+    var restJSON: string[] = [];
+    for (var i = 0; i < compressed.length; i++) {
+      restJSON.push(JSON.stringify(compressed[i] || null));
+    }
 
     return '#' + [
       js.dataSource,
       js.visualization,
       HASH_VERSION,
-      compressToBase64(compressed.map(p => JSON.stringify(p)).join(','))
+      compressToBase64(restJSON.join(','))
     ].join('/');
   }
 
