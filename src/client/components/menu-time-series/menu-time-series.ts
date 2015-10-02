@@ -38,7 +38,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
     var { dataSource } = essence;
     var measure = essence.getPreviewSortMeasure();
 
-    var newEssence = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepAlways);
+    var newEssence = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
     var timeSplit = newEssence.splits.last();
     var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
 

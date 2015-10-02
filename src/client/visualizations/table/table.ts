@@ -90,7 +90,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         changed = true;
       }
 
-      if (!split.limitAction && splitDimension.type !== 'TIME') {
+      if (!split.limitAction && (changed || splitDimension.type !== 'TIME')) {
         split = split.changeLimit(i ? 5 : 50);
         changed = true;
       }
