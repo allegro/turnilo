@@ -7,6 +7,7 @@ import * as numeral from 'numeral';
 import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
+import { SEGMENT, TIME_SORT_ACTION } from '../../config/constants';
 import { ChartLine } from '../../components/chart-line/chart-line';
 import { ChartLineHover } from '../../components/chart-line-hover/chart-line-hover';
 import { TimeAxis } from '../../components/time-axis/time-axis';
@@ -46,44 +47,61 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       return Resolve.manual('Please add a time split', [
         {
           description: `Add a split on ${timeDimension.title}`,
-          adjustment: () => Splits.fromSplitCombine(SplitCombine.fromExpression(timeDimension.expression))
+          adjustment: Splits.fromSplitCombine(SplitCombine.fromExpression(timeDimension.expression))
         }
       ]);
     }
 
-    // Has a time split and other splits
-    if (splits.length() > 1) {
-      var existingTimeSplit: SplitCombine = null;
-      splits.forEach((split) => {
-        var dimension = split.getDimension(dataSource);
-        if (dimension && dimension.type === 'TIME') {
-          existingTimeSplit = split;
-        }
-      });
-
-      if (existingTimeSplit) {
-        return Resolve.manual('Too many splits', [
-          {
-            description: `Remove all but the time split`,
-            adjustment: () => Splits.fromSplitCombine(existingTimeSplit)
-          }
-        ]);
+    // Find the time split (if exists)
+    var existingTimeSplit: SplitCombine = null;
+    splits.forEach((split) => {
+      var dimension = split.getDimension(dataSource);
+      if (dimension && dimension.type === 'TIME') {
+        existingTimeSplit = split;
       }
+    });
+
+    // Has a time split and other splits
+    if (splits.length() > 1 && existingTimeSplit) {
+      return Resolve.manual('Too many splits', [
+        {
+          description: `Remove all but the time split`,
+          adjustment: Splits.fromSplitCombine(existingTimeSplit)
+        }
+      ]);
     }
 
     // Last split is not a time split
     var lastSplit = splits.last();
-    var splitDimension = lastSplit.getDimension(dataSource);
-    if (splitDimension.type !== 'TIME') {
+    if (existingTimeSplit !== lastSplit) {
+      var lastSplitDimension = lastSplit.getDimension(dataSource);
       return Resolve.manual('Must be a time split', [
         {
-          description: `Replace ${splitDimension.title} split with time`,
-          adjustment: () => Splits.fromSplitCombine(SplitCombine.fromExpression(dataSource.timeAttribute))
+          description: `Replace ${lastSplitDimension.title} split with time`,
+          adjustment: Splits.fromSplitCombine(SplitCombine.fromExpression(dataSource.timeAttribute))
         }
       ]);
     }
 
-    return Resolve.READY;
+    var autoChanged = false;
+    splits = splits.map((split) => {
+      if (split !== existingTimeSplit) return split;
+      var { sortAction, limitAction } = split;
+
+      if (limitAction) {
+        split = split.changeLimitAction(null);
+        autoChanged = true;
+      }
+
+      if (!TIME_SORT_ACTION.equals(sortAction)) {
+        split = split.changeSortAction(TIME_SORT_ACTION);
+        autoChanged = true;
+      }
+
+      return split;
+    });
+
+    return autoChanged ? Resolve.automatic(splits) : Resolve.READY;
   }
 
 
@@ -121,13 +139,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var splitsSize = splits.length();
     splits.forEach((split, i) => {
       var isLast = i === splitsSize - 1;
-      var subQuery = $main.split(split.toSplitExpression(), 'Segment');
+      var subQuery = $main.split(split.toSplitExpression(), SEGMENT);
 
       measures.forEach((measure) => {
         subQuery = subQuery.performAction(measure.toApplyAction());
       });
       if (isLast) {
-        subQuery = subQuery.sort($('Segment'), 'ascending');
+        subQuery = subQuery.performAction(TIME_SORT_ACTION);
       } else {
         subQuery = subQuery.sort($(measures.first().name), 'descending').limit(5);
       }
@@ -198,7 +216,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var thisHoverDatum: Datum = null;
     var datums = dataset.data[0]['Split'].data;
     for (var datum of datums) {
-      if (datum['Segment'].contains(dragDate)) {
+      if (datum[SEGMENT].contains(dragDate)) {
         thisHoverDatum = datum;
         break;
       }
@@ -242,7 +260,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var myDatum: Datum = dataset.data[0];
       var myDataset: Dataset = myDatum['Split'];
 
-      var getX = (d: Datum) => midpoint(d['Segment']);
+      var getX = (d: Datum) => midpoint(d[SEGMENT]);
 
       var parentWidth = stage.width - H_PADDING * 2;
       var svgStage = new Stage({

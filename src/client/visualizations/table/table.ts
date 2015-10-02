@@ -8,6 +8,7 @@ import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange,
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
+import { SEGMENT } from '../../config/constants';
 import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
@@ -36,7 +37,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: Datum): Filter {
   if (flatDatum['__nest'] === 0) return null;
   var segments: any[] = [];
   while (flatDatum['__nest'] > 0) {
-    segments.unshift(flatDatum['Segment']);
+    segments.unshift(flatDatum[SEGMENT]);
     flatDatum = flatDatum['__parent'];
   }
   return new Filter(List(segments.map((segment, i) => {
@@ -73,7 +74,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         someDimensions.map((someDimension) => {
           return {
             description: `Add a split on ${someDimension.title}`,
-            adjustment: () => Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
+            adjustment: Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
           };
         })
       );
@@ -96,7 +97,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     });
 
     if (changed) {
-      return Resolve.automatic(() => newSplits);
+      return Resolve.automatic(newSplits);
     }
 
     return Resolve.READY;
@@ -137,7 +138,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       var { sortAction, limitAction } = split;
       if (!sortAction) throw new Error('something went wrong in table query generation');
 
-      var subQuery = $main.split(split.toSplitExpression(), 'Segment');
+      var subQuery = $main.split(split.toSplitExpression(), SEGMENT);
 
       measures.forEach((measure) => {
         subQuery = subQuery.performAction(measure.toApplyAction());
@@ -274,7 +275,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var pos = this.calculateMousePosition(e);
 
     if (pos.what === 'corner' || pos.what === 'header') {
-      var sortExpression = $(pos.what === 'corner' ? 'Segment' : pos.measure.name);
+      var sortExpression = $(pos.what === 'corner' ? SEGMENT : pos.measure.name);
       var commonSort = essence.getCommonSort();
       var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === 'descending');
       clicker.changeSplits(essence.splits.changeSortAction(new SortAction({
@@ -306,7 +307,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var commonSortName = commonSort ? (<RefExpression>commonSort.expression).name : null;
 
     var cornerSortArrow: React.ReactElement<any> = null;
-    if (commonSortName === 'Segment') {
+    if (commonSortName === SEGMENT) {
       cornerSortArrow = React.createElement(Icon, {
         name: 'sort-arrow',
         className: 'sort-arrow ' + commonSort.direction
@@ -357,7 +358,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       for (var i = skipNumber; i < lastElementToShow; i++) {
         var d = flatData[i];
         var nest = d['__nest'];
-        var segmentValue = d['Segment'];
+        var segmentValue = d[SEGMENT];
         var segmentName = nest ? formatSegment(segmentValue) : 'Total';
         var left = Math.max(0, nest - 1) * INDENT_WIDTH;
         var segmentStyle = { left: left, width: SEGMENT_WIDTH - left, top: rowY };

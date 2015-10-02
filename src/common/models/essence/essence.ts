@@ -242,7 +242,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var visResolve = visualization.handleCircumstance(this.dataSource, this.splits);
     if (visResolve.isAutomatic()) {
-      this.splits = visResolve.adjustment();
+      this.splits = visResolve.adjustment;
       visResolve = visualization.handleCircumstance(this.dataSource, this.splits);
       if (!visResolve.isReady()) throw new Error('visualization must be ready after automatic adjustment');
     }
