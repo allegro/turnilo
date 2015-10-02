@@ -16,6 +16,12 @@
 
       &.from-highlight {
         border: 1px dashed $brand;
+        background: hsl(201, 92%, 92%);
+
+        &.type-time {
+          border: 1px dashed hsl(130, 39%, 49%);
+          background: hsl(122, 49%, 91%);
+        }
       }
     }
   }
