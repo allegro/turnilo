@@ -24,6 +24,10 @@ function mdTitle(measure: DimensionOrMeasure): string {
   return measure.title;
 }
 
+function formatLimit(limit: number): string {
+  return limit === null ? 'None' : String(limit);
+}
+
 export interface SplitMenuProps {
   clicker: Clicker;
   essence: Essence;
@@ -154,12 +158,16 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   renderLimitDropdown(includeNone: boolean) {
     var { split } = this.state;
-
     var { limitAction } = split;
+
+    var items = [5, 10, 25, 50, 100];
+    if (includeNone) items.unshift(null);
+
     return React.createElement(Dropdown, <DropdownProps<number>>{
       label: "Limit",
-      items: [5, 10, 25, 50, 100],
+      items,
       selectedItem: limitAction ? limitAction.limit : null,
+      renderItem: formatLimit,
       onSelect: this.onSelectLimit.bind(this)
     });
   }
