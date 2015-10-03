@@ -52,7 +52,7 @@ $measure-width: 80px;
     &.selected {
       &:after {
         @include pin-full;
-        border: 1px dashed $brand;
+        border: 1px dashed $highlight-border;
         content: '';
       }
     }

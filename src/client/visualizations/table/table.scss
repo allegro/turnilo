@@ -88,8 +88,15 @@ $header-padding-top: 12px;
 
     .highlighter {
       right: 0;
-      height: $row-height - 1;
-      border: 1px dashed $brand;
+      height: $row-height + 1;
+      margin-top: -1px;
+      border: 1px solid $white;
+
+      &:after {
+        @include unpin-full(-1px);
+        content: '';
+        border: 1px dashed $highlight-border;
+      }
     }
   }
 

@@ -26,6 +26,11 @@
     background: $brand;
     padding: 7px 6px;
     cursor: pointer;
+    border-radius: $corner;
+
+    &:hover {
+      background: darken($brand, 7%);
+    }
 
     svg {
       height: 13px;
