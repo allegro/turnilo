@@ -71,6 +71,10 @@ $h-padding: 10px;
     }
   }
 
+  .bottom-axis {
+    padding-left: $h-padding;
+  }
+
   .highlighter {
     position: absolute;
     top: 0;
