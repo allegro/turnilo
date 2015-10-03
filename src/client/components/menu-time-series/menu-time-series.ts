@@ -5,6 +5,7 @@ import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset, Datum, TimeRange, TimeBucketAction } from 'plywood';
 import { Stage, Essence, VisStrategy, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../../common/models/index';
+import { SEGMENT, TIME_SORT_ACTION } from '../../config/constants';
 import { ChartLine } from '../chart-line/chart-line';
 import { TimeAxis } from '../time-axis/time-axis';
 
@@ -44,9 +45,9 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
 
     var query = $('main')
       .filter(essence.getEffectiveFilter().overQuery(timeBucketAction.duration, timeBucketAction.timezone, dataSource).toExpression())
-      .split(timeSplit.toSplitExpression(), dimension.name)
+      .split(timeSplit.toSplitExpression(), SEGMENT)
       .performAction(measure.toApplyAction())
-      .sort($(dimension.name), 'ascending');
+      .performAction(TIME_SORT_ACTION);
 
     dataSource.executor(query).then((dataset) => {
       if (!this.mounted) return;
@@ -93,8 +94,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
     if (dataset) {
       var timeRange = essence.getEffectiveFilter().getTimeRange(essence.dataSource.timeAttribute);
 
-      var dimensionName = dimension.name;
-      var getX = (d: Datum) => midpoint(d[dimensionName]);
+      var getX = (d: Datum) => midpoint(d[SEGMENT]);
 
       var measureName = measure.name;
       var getY = (d: Datum) => d[measureName];

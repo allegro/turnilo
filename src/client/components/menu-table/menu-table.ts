@@ -2,7 +2,7 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset, SortAction } from 'plywood';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../../common/models/index";
 import { Checkbox } from '../checkbox/checkbox';
@@ -40,7 +40,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
       .filter(essence.getEffectiveFilter(null, dimension).toExpression())
       .split(dimension.expression, dimension.name)
       .performAction(measure.toApplyAction())
-      .sort($(measure.name), 'descending')
+      .sort($(measure.name), SortAction.DESCENDING)
       .limit(TOP_N + 1);
 
     dataSource.executor(query).then((dataset) => {

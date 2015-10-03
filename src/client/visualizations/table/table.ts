@@ -279,10 +279,10 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     if (pos.what === 'corner' || pos.what === 'header') {
       var sortExpression = $(pos.what === 'corner' ? SEGMENT : pos.measure.name);
       var commonSort = essence.getCommonSort();
-      var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === 'descending');
+      var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === SortAction.DESCENDING);
       clicker.changeSplits(essence.splits.changeSortAction(new SortAction({
         expression: sortExpression,
-        direction: myDescending ? 'ascending' : 'descending'
+        direction: myDescending ? SortAction.ASCENDING : SortAction.DESCENDING
       })), VisStrategy.KeepAlways);
 
     } else if (pos.what === 'row') {

@@ -84,7 +84,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   onSelectSortDimensionOrMeasure(dimensionOrMeasure: DimensionOrMeasure): void {
     var { split } = this.state;
     var sortAction = split.sortAction;
-    var direction = sortAction ? sortAction.direction : 'descending';
+    var direction = sortAction ? sortAction.direction : SortAction.DESCENDING;
     var sortOn = Measure.isMeasure(dimensionOrMeasure) ? dimensionOrMeasure.name : SEGMENT;
     this.setState({
       split: split.changeSortAction(new SortAction({
@@ -98,10 +98,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var { split } = this.state;
     var { sortAction } = split;
     this.setState({
-      split: split.changeSortAction(new SortAction({
-        expression: sortAction.expression,
-        direction: sortAction.direction === 'ascending' ? 'descending' : 'ascending'
-      }))
+      split: split.changeSortAction(sortAction.toggleDirection())
     });
   }
 

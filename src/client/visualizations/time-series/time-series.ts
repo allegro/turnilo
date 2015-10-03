@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
 import * as numeral from 'numeral';
-import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, ChainExpression } from 'plywood';
+import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, SortAction, ChainExpression } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
 import { SEGMENT, TIME_SORT_ACTION } from '../../config/constants';
@@ -147,7 +147,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       if (isLast) {
         subQuery = subQuery.performAction(TIME_SORT_ACTION);
       } else {
-        subQuery = subQuery.sort($(measures.first().name), 'descending').limit(5);
+        subQuery = subQuery.sort($(measures.first().name), SortAction.DESCENDING).limit(5);
       }
 
       query = query.apply('Split', subQuery);

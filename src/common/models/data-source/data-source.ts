@@ -345,7 +345,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public getDefaultSortAction(): SortAction {
     return new SortAction({
       expression: $(this.defaultSortMeasure),
-      direction: 'descending'
+      direction: SortAction.DESCENDING
     });
   }
 }

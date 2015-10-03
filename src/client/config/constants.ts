@@ -17,5 +17,5 @@ export const PIN_PADDING_BOTTOM = 10;
 export const SEGMENT = 'SEGMENT';
 export const TIME_SORT_ACTION = new SortAction({
   expression: $(SEGMENT),
-  direction: 'ascending'
+  direction: SortAction.ASCENDING
 });

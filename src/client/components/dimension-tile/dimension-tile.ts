@@ -2,7 +2,7 @@
 
 import * as React from 'react/addons';
 // import * as Icon from 'react-svg-icons';
-import { $, Expression, Executor, Dataset, Set } from 'plywood';
+import { $, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { setDragGhost } from '../../utils/dom/dom';
@@ -53,7 +53,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       .filter(essence.getEffectiveFilter(highlightId).toExpression())
       .split(dimension.expression, dimension.name)
       .performAction(measure.toApplyAction())
-      .sort($(measure.name), 'descending')
+      .sort($(measure.name), SortAction.DESCENDING)
       .limit(TOP_N + 1);
 
     this.setState({ loading: true });
