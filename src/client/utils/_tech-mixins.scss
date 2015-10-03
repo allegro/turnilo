@@ -39,6 +39,14 @@
   width: $width;
 }
 
+@mixin unpin-full($distance, $right: $distance, $bottom: $distance, $left: $distance) {
+  position: absolute;
+  top: $distance;
+  bottom: $bottom;
+  left: $left;
+  right: $right;
+}
+
 @mixin unpin-top($top) {
   position: absolute;
   top: $top;

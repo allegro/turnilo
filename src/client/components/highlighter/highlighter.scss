@@ -4,7 +4,7 @@
   .frame {
     position: absolute;
     height: 100%;
-    border: 1px dashed $brand;
+    border: 1px dashed $highlight-border;
     border-radius: 2px;
     z-index: 1; // Put this above the whiteout
 

@@ -1,6 +1,6 @@
 @import '../../imports';
 
-$bottom-margin: 14px;
+$bottom-margin: 12px;
 $title-margin: 6px;
 
 .split-menu {
@@ -10,10 +10,8 @@ $title-margin: 6px;
     margin-bottom: $bottom-margin;
 
     .button-group-title {
-      text-transform: uppercase;
-      font-size: 12px;
+      @extend %input-top-label;
       margin-bottom: $title-margin;
-      color: $text-light;
     }
 
     li {
@@ -49,9 +47,7 @@ $title-margin: 6px;
     pointer-events: none;
 
     .dropdown-label {
-      text-transform: uppercase;
-      font-size: 12px;
-      color: $text-light;
+      @extend %input-top-label;
       margin-bottom: $title-margin;
     }
 

@@ -3,7 +3,7 @@
 import * as path from 'path';
 import * as fs from 'fs-promise';
 import * as Q from 'q';
-import { ply, $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, Attributes, helper } from 'plywood';
+import { ply, $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes, helper } from 'plywood';
 import { DataSource, Dimension } from '../../../common/models/index';
 
 
@@ -17,11 +17,17 @@ function getReferences(ex: Expression): string[] {
   return references;
 }
 
-function deduceAttributes(): void {
-  /*
-  // Right here we have the classic mega hack.
+/**
+ * This function tries to deduce the structure of the dataSource based on the dimensions and measures defined within.
+ * It should only be used when for some reason introspection if not available.
+ * @param dataSource
+ * @returns {Attributes}
+ */
+function deduceAttributes(dataSource: DataSource): Attributes {
+  var attributeJSs: AttributeJSs = [];
+
   dataSource.dimensions.forEach((dimension) => {
-    attributes[dimension.name] = { type: dimension.type };
+    attributeJSs.push({ name: dimension.name, type: dimension.type });
   });
 
   dataSource.measures.forEach((measure) => {
@@ -30,14 +36,14 @@ function deduceAttributes(): void {
     for (var reference of references) {
       if (reference === 'main') continue;
       if (JSON.stringify(expression).indexOf('countDistinct') !== -1) {
-        attributes[reference] = { special: 'unique' };
+        attributeJSs.push({ name: reference, special: 'unique' });
       } else {
-        attributes[reference] = { type: 'NUMBER' };
+        attributeJSs.push({ name: reference, type: 'NUMBER' });
       }
     }
   });
-  // Mega hack ends here
-  */
+
+  return AttributeInfo.fromJSs(attributeJSs);
 }
 
 export function getFileData(filePath: string): Q.Promise<any[]> {
@@ -70,18 +76,34 @@ export function getFileData(filePath: string): Q.Promise<any[]> {
 }
 
 export function externalFactory(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, useSegmentMetadata: boolean): Q.Promise<External> {
-  return External.fromJS({
-    engine: 'druid',
-    dataSource: dataSource.source,
-    timeAttribute: dataSource.timeAttribute.name,
-    customAggregations: dataSource.options['customAggregations'],
-    useSegmentMetadata,
-    context: null,
-    requester: druidRequester
-  }).introspect();
+  var skipIntrospection = Boolean(dataSource.options['skipIntrospection']);
+
+  if (skipIntrospection) {
+    return Q(External.fromJS({
+      engine: 'druid',
+      dataSource: dataSource.source,
+      timeAttribute: dataSource.timeAttribute.name,
+      customAggregations: dataSource.options['customAggregations'],
+      attributes: deduceAttributes(dataSource),
+      useSegmentMetadata,
+      context: null,
+      requester: druidRequester
+    }));
+  } else {
+    return External.fromJS({
+      engine: 'druid',
+      dataSource: dataSource.source,
+      timeAttribute: dataSource.timeAttribute.name,
+      customAggregations: dataSource.options['customAggregations'],
+      useSegmentMetadata,
+      context: null,
+      requester: druidRequester
+    }).introspect();
+  }
 }
 
 export function fillInDataSource(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, useSegmentMetadata: boolean): Q.Promise<DataSource> {
+  var skipIntrospection = Boolean(dataSource.options['skipIntrospection']);
   var disableAutofill = Boolean(dataSource.options['disableAutofill']);
 
   switch (dataSource.engine) {
@@ -98,7 +120,7 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
           datasets: { main: dataset }
         });
 
-        if (!disableAutofill) {
+        if (!skipIntrospection && !disableAutofill) {
           dataSource = dataSource.addAttributes(dataset.attributes);
         }
 
@@ -111,12 +133,14 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
           datasets: { main: external }
         });
 
-        if (!disableAutofill) {
+        if (!skipIntrospection && !disableAutofill) {
           dataSource = dataSource.addAttributes(external.attributes);
         }
 
         return dataSource.attachExecutor(executor);
       }).then((dataSource) => {
+        if (dataSource.maxTime) return dataSource;
+
         var ex = ply().apply('maxTime', $('main').max(dataSource.timeAttribute));
 
         return dataSource.executor(ex).then((dataset: Dataset) => {

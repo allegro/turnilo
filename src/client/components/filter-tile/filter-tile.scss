@@ -15,12 +15,12 @@
       left: 0; // It gets horizontal position from the JS
 
       &.from-highlight {
-        border: 1px dashed $brand;
-        background: hsl(201, 92%, 92%);
+        border: 1px dashed $highlight-border;
+        background: rgba($item-categorical, 0.5);
 
         &.type-time {
-          border: 1px dashed hsl(130, 39%, 49%);
-          background: hsl(122, 49%, 91%);
+          border: 1px dashed hsl(130, 39%, 44%);
+          background: rgba($item-continuous, 0.5);
         }
       }
     }
