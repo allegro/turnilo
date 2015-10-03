@@ -249,7 +249,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var visualization = parameters.visualization;
     if (!visualization) {
       var visAndResolve = this.getBestVisualization(this.splits);
-      if (!visAndResolve) throw new Error('could not find suitable vis, something is misconstrued');
       visualization = visAndResolve.visualization;
     }
     this.visualization = visualization;
@@ -380,12 +379,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       if (visAndResolve.resolve.isAutomatic()) return visAndResolve;
     }
 
-    // Try to find a manual vis
-    for (var visAndResolve of visAndResolves) {
-      if (visAndResolve.resolve.isManual()) return visAndResolve;
-    }
-
-    return null; // give up
+    // Should never get here because totals / table should always be able to be applied
+    throw new Error('could not find ready or automatic vis, something is misconstrued');
   }
 
   public getTimeAttribute(): RefExpression {
@@ -552,11 +547,16 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
-    var { dataSource, visualization, filter } = this;
+    var { dataSource, visualization, visResolve, filter } = this;
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
       splits = splits.updateWithTimeRange(timeAttribute, filter.getTimeRange(timeAttribute));
+    }
+
+    // If in manual mode stay there, keep the vis regardless of suggested strategy
+    if (visResolve.isManual()) {
+      strategy = VisStrategy.KeepAlways;
     }
 
     //console.log('VisStrategy:', VisStrategy[strategy]);
