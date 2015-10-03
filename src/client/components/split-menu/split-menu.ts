@@ -2,7 +2,7 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-// import * as Icon from 'react-svg-icons';
+import * as Icon from 'react-svg-icons';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, RefExpression, Executor, Dataset, TimeBucketAction, SortAction, LimitAction } from 'plywood';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Dimension, Measure, DimensionOrMeasure } from '../../../common/models/index';
@@ -84,6 +84,17 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     });
   }
 
+  onToggleDirection(): void {
+    var { split } = this.state;
+    var { sortAction } = split;
+    this.setState({
+      split: split.changeSortAction(new SortAction({
+        expression: sortAction.expression,
+        direction: sortAction.direction === 'ascending' ? 'descending' : 'ascending'
+      }))
+    });
+  }
+
   onSelectLimit(limit: number): void {
     var { split } = this.state;
     this.setState({
@@ -156,6 +167,20 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     });
   }
 
+  renderSortDirection() {
+    var { split } = this.state;
+    var direction = split.sortAction.direction;
+
+    return JSX(`
+      <div className="sort-direction">
+        {this.renderSortDropdown()}
+        <div className={'direction ' + direction} onClick={this.onToggleDirection.bind(this)}>
+          <Icon name="sort-arrow"/>
+        </div>
+      </div>
+    `);
+  }
+
   renderLimitDropdown(includeNone: boolean) {
     var { split } = this.state;
     var { limitAction } = split;
@@ -176,7 +201,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     return JSX(`
       <div>
         {this.renderGranularityPicker()}
-        {this.renderSortDropdown()}
+        {this.renderSortDirection()}
         {this.renderLimitDropdown(true)}
       </div>
     `);
@@ -185,7 +210,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   renderStringControls() {
     return JSX(`
       <div>
-        {this.renderSortDropdown()}
+        {this.renderSortDirection()}
         {this.renderLimitDropdown(false)}
       </div>
     `);

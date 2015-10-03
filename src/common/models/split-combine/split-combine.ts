@@ -103,6 +103,11 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
       (!limitAction || limitAction.equals(other.limitAction));
   }
 
+  public equalsByExpression(other: SplitCombine): boolean {
+    var { expression } = this;
+    return SplitCombine.isSplitCombine(other) && expression.equals(other.expression);
+  }
+
   public toSplitExpression(): Expression {
     var { expression, bucketAction } = this;
     if (!bucketAction) return expression;

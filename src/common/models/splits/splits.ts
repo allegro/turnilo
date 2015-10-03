@@ -24,13 +24,13 @@ function getBestGranularity(timeRange: TimeRange): Duration {
 
 function withholdSplit(splits: List<SplitCombine>, split: SplitCombine, allowIndex: number): List<SplitCombine> {
   return <List<SplitCombine>>splits.filter((s, i) => {
-    return i === allowIndex || !s.equals(split);
+    return i === allowIndex || !s.equalsByExpression(split);
   });
 }
 
 function swapSplit(splits: List<SplitCombine>, split: SplitCombine, other: SplitCombine, allowIndex: number): List<SplitCombine> {
   return <List<SplitCombine>>splits.map((s, i) => {
-    return (i === allowIndex || !s.equals(split)) ? s : other;
+    return (i === allowIndex || !s.equalsByExpression(split)) ? s : other;
   });
 }
 

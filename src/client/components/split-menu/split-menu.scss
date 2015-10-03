@@ -74,6 +74,32 @@ $title-margin: 6px;
     }
   }
 
+  .sort-direction {
+    .dropdown {
+      margin-right: 40px;
+    }
+
+    .direction {
+      @extend %input-cont;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 30px;
+      height: 29px;
+
+      svg {
+        position: absolute;
+        height: 18px;
+        top: 4px;
+        left: 8px;
+      }
+
+      &.ascending svg {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
   .button-bar {
     position: absolute;
     bottom: 0;
