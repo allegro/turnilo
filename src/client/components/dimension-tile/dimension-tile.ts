@@ -6,7 +6,7 @@ import { $, Expression, Executor, Dataset, Set } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { setDragGhost } from '../../utils/dom/dom';
-import { Clicker, Essence, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
+import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
@@ -52,7 +52,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var query: any = $('main')
       .filter(essence.getEffectiveFilter(highlightId).toExpression())
       .split(dimension.expression, dimension.name)
-      .apply(measure.name, measure.expression)
+      .performAction(measure.toApplyAction())
       .sort($(measure.name), 'descending')
       .limit(TOP_N + 1);
 
@@ -92,6 +92,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (
       essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, highlightId) ||
+      essence.differentPinnedSort(nextEssence) ||
       !dimension.equals(nextDimension)
     ) {
       this.fetchData(nextEssence, nextDimension);
@@ -130,7 +131,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   onDragStart(e: DragEvent) {
     var { essence, dimension } = this.props;
 
-    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression)).getURL();
+    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame).getURL();
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';

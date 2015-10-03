@@ -1,0 +1,46 @@
+@import '../../imports';
+
+.dropdown {
+  cursor: pointer;
+  white-space: nowrap;
+
+  .selected-item {
+    display: inline-block;
+  }
+
+  .caret-icon {
+    position: absolute;
+    width: 11px;
+    height: 9px;
+  }
+
+  .dropdown-menu {
+    @extend %menu-cont;
+    position: absolute;
+    z-index: 800;
+    padding: 6px;
+    width: 100%;
+    line-height: 24px;
+  }
+
+  &.down .dropdown-menu {
+    top: 100%;
+  }
+
+  &.up .dropdown-menu {
+    bottom: 100%;
+  }
+
+  .dropdown-item {
+    padding: 0 4px;
+    cursor: pointer;
+
+    &.selected {
+      background: $background-light;
+    }
+
+    &:hover {
+      background: $hover;
+    }
+  }
+}

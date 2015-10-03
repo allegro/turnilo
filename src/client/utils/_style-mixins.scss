@@ -24,7 +24,7 @@
 
   &.disabled,
   &[disabled] {
-    opacity: .30;
+    opacity: .40;
     cursor: default;
     pointer-events: none;
   }
@@ -93,9 +93,26 @@
   box-shadow: 0 3px 10px 0 hsla(0, 0, 0, 0.26), 0 0 3px 0 hsla(0, 0, 0, 0.16);
 }
 
+%input-cont {
+  background: $white;
+  border: 1px solid $border-light;
+  border-radius: $corner;
+  box-shadow: 0 1px 1px 0 hsla(0, 0, 0, 0.1);
+
+  &:hover {
+    border-color: $border-medium;
+  }
+}
+
+%input-cont-inset {
+  @extend %input-cont;
+  box-shadow: inset 0 1px 1px 0 hsla(0, 0, 0, 0.1);
+}
+
 %dimension-item {
-  padding: 0 0 0 10px;
+  padding: 0 0 0 9px;
   background: hsl(201, 92%, 85%);
+  border: 1px solid transparent;
   border-radius: 4px;
   cursor: pointer;
   overflow: hidden;
@@ -110,13 +127,13 @@
     overflow-x: hidden;
     text-overflow: ellipsis;
     height: 16px;
-    margin-top: 8px;
+    margin-top: 7px;
   }
 
   .remove {
     @include pin-right(27px);
     text-align: center;
-    padding-top: 10px;
+    padding-top: 9px;
     cursor: pointer;
 
     svg {

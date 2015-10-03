@@ -1,0 +1,29 @@
+@import '../../imports';
+
+.pinboard-measure-tile {
+  @extend %module;
+  padding: 6px 10px;
+
+  .dropdown {
+    height: 30px;
+
+    .selected-item {
+      line-height: 30px;
+    }
+
+    .dropdown-label {
+      display: inline-block;
+      margin-right: 4px;
+      margin-left: 2px;
+      color: $text-lighterish;
+      line-height: 30px;
+    }
+
+    .caret-icon {
+      position: absolute;
+      top: 50%;
+      right: 6px;
+      margin-top: -5px;
+    }
+  }
+}

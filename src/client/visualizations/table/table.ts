@@ -7,7 +7,8 @@ import * as numeral from 'numeral';
 import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, SortAction } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
-import { Stage, Filter, Essence, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
+import { Stage, Filter, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
+import { SEGMENT } from '../../config/constants';
 import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
@@ -36,7 +37,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: Datum): Filter {
   if (flatDatum['__nest'] === 0) return null;
   var segments: any[] = [];
   while (flatDatum['__nest'] > 0) {
-    segments.unshift(flatDatum['Segment']);
+    segments.unshift(flatDatum[SEGMENT]);
     flatDatum = flatDatum['__parent'];
   }
   return new Filter(List(segments.map((segment, i) => {
@@ -65,17 +66,43 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   static id = 'table';
   static title = 'Table';
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
-    if (splits.length()) return Resolve.READY;
-    var someDimension = dataSource.dimensions.slice(0, 2);
-    return Resolve.manual(
-      'Please add at least one split',
-      dataSource.dimensions.toArray().slice(0, 2).map((someDimension) => {
-        return {
-          description: `Add a split on ${someDimension.title}`,
-          adjustment: () => Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
-        };
-      })
-    );
+    // Must have at least one dimension
+    if (splits.length() < 1) {
+      var someDimensions = dataSource.dimensions.toArray().filter(d => d.type !== 'TIME').slice(0, 2);
+      return Resolve.manual(
+        'Please add at least one split',
+        someDimensions.map((someDimension) => {
+          return {
+            description: `Add a split on ${someDimension.title}`,
+            adjustment: Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
+          };
+        })
+      );
+    }
+
+    // Auto adjustment
+    var changed = false;
+    var newSplits = splits.map((split, i) => {
+      var splitDimension = dataSource.getDimensionByExpression(split.expression);
+
+      if (!split.sortAction) {
+        split = split.changeSortAction(dataSource.getDefaultSortAction());
+        changed = true;
+      }
+
+      if (!split.limitAction && (changed || splitDimension.type !== 'TIME')) {
+        split = split.changeLimit(i ? 5 : 50);
+        changed = true;
+      }
+
+      return split;
+    });
+
+    if (changed) {
+      return Resolve.automatic(newSplits);
+    }
+
+    return Resolve.READY;
   }
 
   public mounted: boolean;
@@ -104,18 +131,30 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       .apply('main', $main.filter(essence.getEffectiveFilter(Table.id).toExpression()));
 
     measures.forEach((measure) => {
-      query = query.apply(measure.name, measure.expression);
+      query = query.performAction(measure.toApplyAction());
     });
 
     var limit = splits.length() > 1 ? 10 : 50;
     function makeQuery(i: number): Expression {
       var split = splits.get(i);
-      var subQuery = $main.split(split.toSplitExpression(), 'Segment');
+      var { sortAction, limitAction } = split;
+      if (!sortAction) throw new Error('something went wrong in table query generation');
+
+      var subQuery = $main.split(split.toSplitExpression(), SEGMENT);
 
       measures.forEach((measure) => {
-        subQuery = subQuery.apply(measure.name, measure.expression);
+        subQuery = subQuery.performAction(measure.toApplyAction());
       });
-      subQuery = subQuery.performAction(essence.getSortForSplit(i)).limit(limit);
+
+      var applyForSort = essence.getApplyForSort(sortAction);
+      if (applyForSort) {
+        subQuery = subQuery.performAction(applyForSort);
+      }
+      subQuery = subQuery.performAction(sortAction);
+
+      if (limitAction) {
+        subQuery = subQuery.performAction(limitAction);
+      }
 
       if (i + 1 < splits.length()) {
         subQuery = subQuery.apply('Split', makeQuery(i + 1));
@@ -237,14 +276,14 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var { clicker, essence } = this.props;
     var pos = this.calculateMousePosition(e);
 
-    if (pos.what === 'header') {
-      var sortExpression = $(pos.measure.name);
+    if (pos.what === 'corner' || pos.what === 'header') {
+      var sortExpression = $(pos.what === 'corner' ? SEGMENT : pos.measure.name);
       var commonSort = essence.getCommonSort();
       var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === 'descending');
-      clicker.changeSplits(essence.splits.changeSort(new SortAction({
+      clicker.changeSplits(essence.splits.changeSortAction(new SortAction({
         expression: sortExpression,
         direction: myDescending ? 'ascending' : 'descending'
-      })), false);
+      })), VisStrategy.KeepAlways);
 
     } else if (pos.what === 'row') {
       var rowHighlight = getFilterFromDatum(essence.splits, pos.row);
@@ -267,23 +306,34 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     var segmentTitle = splits.getTitle(essence.dataSource);
     var commonSort = essence.getCommonSort();
+    var commonSortName = commonSort ? (<RefExpression>commonSort.expression).name : null;
+
+    var cornerSortArrow: React.ReactElement<any> = null;
+    if (commonSortName === SEGMENT) {
+      cornerSortArrow = React.createElement(Icon, {
+        name: 'sort-arrow',
+        className: 'sort-arrow ' + commonSort.direction
+      });
+    }
 
     var measuresArray = essence.getMeasures().toArray();
 
     var headerColumns = measuresArray.map((measure, i) => {
       var sortArrow: React.ReactElement<any> = null;
-      if (commonSort && (<RefExpression>commonSort.expression).name === measure.name) {
+      if (commonSortName === measure.name) {
         sortArrow = React.createElement(Icon, {
           name: 'sort-arrow',
-          className: 'sort-arrow ' + commonSort.direction,
-          width: 8
+          className: 'sort-arrow ' + commonSort.direction
         });
       }
       return JSX(`
         <div
           className={'measure-name' + (measure === hoverMeasure ? ' hover' : '')}
           key={measure.name}
-        >{measure.title}{sortArrow}</div>
+        >
+          <div className="title-wrap">{measure.title}</div>
+          {sortArrow}
+        </div>
       `);
     });
 
@@ -310,20 +360,26 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       for (var i = skipNumber; i < lastElementToShow; i++) {
         var d = flatData[i];
         var nest = d['__nest'];
-        var segmentValue = d['Segment'];
+        var segmentValue = d[SEGMENT];
         var segmentName = nest ? formatSegment(segmentValue) : 'Total';
         var left = Math.max(0, nest - 1) * INDENT_WIDTH;
         var segmentStyle = { left: left, width: SEGMENT_WIDTH - left, top: rowY };
         var hoverClass = d === hoverRow ? ' hover' : '';
+
+        var selected = false;
+        var selectedClass = '';
+        if (highlightDelta) {
+          selected = highlightDelta && highlightDelta.equals(getFilterFromDatum(splits, d));
+          selectedClass = selected ? 'selected' : 'not-selected';
+        }
+
         segments.push(JSX(`
           <div
-            className={'segment nest' + nest + hoverClass}
+            className={'segment nest' + nest + ' ' + selectedClass + hoverClass}
             key={'_' + i}
             style={segmentStyle}
           >{segmentName}</div>
         `));
-
-        var selected = highlightDelta && highlightDelta.equals(getFilterFromDatum(splits, d));
 
         var row = measuresArray.map((measure, j) => {
           var measureValue = d[measure.name];
@@ -334,7 +390,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         var rowStyle = { top: rowY };
         rows.push(JSX(`
           <div
-            className={'row nest' + nest + ' ' + (selected ? 'selected' : 'not-selected') + hoverClass}
+            className={'row nest' + nest + ' ' + selectedClass + hoverClass}
             key={'_' + i}
             style={rowStyle}
           >{row}</div>
@@ -424,7 +480,10 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     return JSX(`
       <div className="table">
-        <div className="corner">{segmentTitle}</div>
+        <div className="corner">
+          <div className="corner-wrap">{segmentTitle}</div>
+          {cornerSortArrow}
+        </div>
         <div className="header-cont">
           <div className="header" style={headerStyle}>{headerColumns}</div>
         </div>

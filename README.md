@@ -55,7 +55,7 @@ Next, inside the pivot folder run:
 
 ```
 npm install
-gulp all
+gulp
 ```
 
 Finally you have to create a `config.yaml` file. (or use the sample)

@@ -22,8 +22,7 @@ gulp.task('all', function(cb) {
   runSequence(
     'clean' ,
     'style',
-    'server:tsc',
-    'client:tsc',
+    ['server:tsc', 'client:tsc'],
     'client:bundle',
     cb
   );
@@ -42,3 +41,5 @@ gulp.task('watch', ['all'], function() {
     gulp.start('server:tsc');
   });
 });
+
+gulp.task('default', ['all']);

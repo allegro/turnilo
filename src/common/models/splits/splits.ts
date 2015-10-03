@@ -24,13 +24,13 @@ function getBestGranularity(timeRange: TimeRange): Duration {
 
 function withholdSplit(splits: List<SplitCombine>, split: SplitCombine, allowIndex: number): List<SplitCombine> {
   return <List<SplitCombine>>splits.filter((s, i) => {
-    return i === allowIndex || !s.equals(split);
+    return i === allowIndex || !s.equalsByExpression(split);
   });
 }
 
 function swapSplit(splits: List<SplitCombine>, split: SplitCombine, other: SplitCombine, allowIndex: number): List<SplitCombine> {
   return <List<SplitCombine>>splits.map((s, i) => {
-    return (i === allowIndex || !s.equals(split)) ? s : other;
+    return (i === allowIndex || !s.equalsByExpression(split)) ? s : other;
   });
 }
 
@@ -106,8 +106,8 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return new Splits(<List<SplitCombine>>this.splitCombines.filter(s => s !== split));
   }
 
-  public changeSort(sort: SortAction): Splits {
-    return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSort(sort)));
+  public changeSortAction(sort: SortAction): Splits {
+    return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSortAction(sort)));
   }
 
   public getTitle(dataSource: DataSource): string {
@@ -140,6 +140,10 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
 
   public replace(search: SplitCombine, replace: SplitCombine): Splits {
     return new Splits(<List<SplitCombine>>this.splitCombines.map((s) => s.equals(search) ? replace : s));
+  }
+
+  public map(mapper: (value?: SplitCombine, key?: number) => SplitCombine, context?: any): Splits {
+    return new Splits(<List<SplitCombine>>this.splitCombines.map(mapper, context));
   }
 
   public toArray(): SplitCombine[] {

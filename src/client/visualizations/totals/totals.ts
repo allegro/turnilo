@@ -21,9 +21,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   static title = 'Totals';
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
     if (!splits.length()) return Resolve.READY;
-    return Resolve.automatic(() => {
-      return Splits.EMPTY;
-    });
+    return Resolve.automatic(Splits.EMPTY);
   }
 
   public mounted: boolean;
@@ -47,7 +45,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       .apply('main', $main.filter(essence.getEffectiveFilter(Totals.id).toExpression()));
 
     measures.forEach((measure) => {
-      query = query.apply(measure.name, measure.expression);
+      query = query.performAction(measure.toApplyAction());
     });
 
     this.setState({ loading: true });

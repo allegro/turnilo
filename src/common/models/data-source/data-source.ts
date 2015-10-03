@@ -3,7 +3,7 @@
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Duration, Timezone, hour } from 'chronoshift';
-import { $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression } from 'plywood';
+import { $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression, SortAction } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -340,6 +340,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     var value = this.valueOf();
     value.maxTime = maxTime;
     return new DataSource(value);
+  }
+
+  public getDefaultSortAction(): SortAction {
+    return new SortAction({
+      expression: $(this.defaultSortMeasure),
+      direction: 'descending'
+    });
   }
 }
 check = DataSource;

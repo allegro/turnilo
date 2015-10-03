@@ -4,7 +4,7 @@ import { List, OrderedSet } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Timezone, Duration } from 'chronoshift';
-import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange, SortAction } from 'plywood';
+import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange, ApplyAction, SortAction } from 'plywood';
 import { listsEqual } from '../../utils/general/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
@@ -25,6 +25,20 @@ function constrainMeasures(measures: OrderedSet<string>, dataSource: DataSource)
   return <OrderedSet<string>>measures.filter((measureName) => Boolean(dataSource.getMeasure(measureName)));
 }
 
+
+export type DimensionOrMeasure = Dimension | Measure;
+
+export interface VisualizationAndResolve {
+  visualization: Manifest;
+  resolve: Resolve;
+}
+
+export enum VisStrategy {
+  FairGame,
+  KeepIfReadyOrAutomatic,
+  KeepIfReady,
+  KeepAlways
+}
 
 export interface EssenceValue {
   dataSources?: List<DataSource>;
@@ -90,7 +104,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     if (!Array.isArray(jsArray)) return null;
     var jsArrayLength = jsArray.length;
-    if (!(5 <= jsArrayLength && jsArrayLength <= 9)) return null;
+    if (!(7 <= jsArrayLength && jsArrayLength <= 9)) return null;
 
     var essence: Essence;
     try {
@@ -102,8 +116,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
         splits: jsArray[2],
         selectedMeasures: jsArray[3],
         pinnedDimensions: jsArray[4],
-        previewSort: jsArray[5] || null,
-        pinnedSort: jsArray[6] || null,
+        previewSort: jsArray[5],
+        pinnedSort: jsArray[6],
         compare: jsArray[7] || null,
         highlight: jsArray[8] || null
       }, dataSources, visualizations);
@@ -234,15 +248,17 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     // Place vis here because it needs to know about splits (and maybe later other things)
     var visualization = parameters.visualization;
     if (!visualization) {
-      visualization = this.getVisualizations().last();
+      var visAndResolve = this.getBestVisualization(this.splits);
+      if (!visAndResolve) throw new Error('could not find suitable vis, something is misconstrued');
+      visualization = visAndResolve.visualization;
     }
     this.visualization = visualization;
 
     var visResolve = visualization.handleCircumstance(this.dataSource, this.splits);
     if (visResolve.isAutomatic()) {
-      this.splits = visResolve.adjustment();
+      this.splits = visResolve.adjustment;
       visResolve = visualization.handleCircumstance(this.dataSource, this.splits);
-      if (!visResolve.isReady()) throw new Error('visualization is not ready after automatic adjustment');
+      if (!visResolve.isReady()) throw new Error('visualization must be ready after automatic adjustment');
     }
     this.visResolve = visResolve;
   }
@@ -318,18 +334,23 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       js.filter,           // 1
       js.splits,           // 2
       js.selectedMeasures, // 3
-      js.pinnedDimensions  // 4
+      js.pinnedDimensions, // 4
+      js.previewSort,      // 5
+      js.pinnedSort        // 6
     ];
-    if (js.previewSort) compressed[5] = js.previewSort;
-    if (js.pinnedSort)  compressed[6] = js.pinnedSort;
     if (js.compare)     compressed[7] = js.compare;
     if (js.highlight)   compressed[8] = js.highlight;
+
+    var restJSON: string[] = [];
+    for (var i = 0; i < compressed.length; i++) {
+      restJSON.push(JSON.stringify(compressed[i] || null));
+    }
 
     return '#' + [
       js.dataSource,
       js.visualization,
       HASH_VERSION,
-      compressToBase64(compressed.map(p => JSON.stringify(p)).join(','))
+      compressToBase64(restJSON.join(','))
     ].join('/');
   }
 
@@ -337,13 +358,34 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return Essence.getBaseURL() + this.toHash();
   }
 
-  public getVisualizations(): List<Manifest> {
-    return this.getReadyVisualizations(this.splits);
-  }
-
-  public getReadyVisualizations(splits: Splits): List<Manifest> {
+  public getBestVisualization(splits: Splits): VisualizationAndResolve {
     var { visualizations, dataSource } = this;
-    return <List<Manifest>>visualizations.filter(v => v.handleCircumstance(dataSource, splits).isReady());
+    var visAndResolves = visualizations.toArray().map((visualization) => {
+      return {
+        visualization,
+        resolve: visualization.handleCircumstance(dataSource, splits)
+      };
+    });
+
+    // the vis are sorted least impressive -> most impressive so reverse the list
+    visAndResolves.reverse();
+
+    // Try to find a ready vis
+    for (var visAndResolve of visAndResolves) {
+      if (visAndResolve.resolve.isReady()) return visAndResolve;
+    }
+
+    // Try to find an automatic vis
+    for (var visAndResolve of visAndResolves) {
+      if (visAndResolve.resolve.isAutomatic()) return visAndResolve;
+    }
+
+    // Try to find a manual vis
+    for (var visAndResolve of visAndResolves) {
+      if (visAndResolve.resolve.isManual()) return visAndResolve;
+    }
+
+    return null; // give up
   }
 
   public getTimeAttribute(): RefExpression {
@@ -390,6 +432,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return !this.pinnedDimensions.equals(other.pinnedDimensions);
   }
 
+  public differentPinnedSort(other: Essence): boolean {
+    return this.pinnedSort !== other.pinnedSort;
+  }
+
   public differentCompare(other: Essence): boolean {
     if (Boolean(this.compare) !== Boolean(other.compare)) return true;
     return Boolean(this.compare && !this.compare.equals(other.compare));
@@ -418,22 +464,18 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return highlight.delta.getSingleValue();
   }
 
-  public getSortForSplit(splitIndex: number): SortAction {
-    var splitCombine = this.splits.get(splitIndex);
-    if (!splitCombine) return null;
-    if (splitCombine.sortAction) return splitCombine.sortAction;
-    var dataSource = this.dataSource;
-    return new SortAction({
-      expression: $(dataSource.defaultSortMeasure),
-      direction: 'descending'
-    });
+  public getApplyForSort(sort: SortAction): ApplyAction {
+    var sortOn = (<RefExpression>sort.expression).name;
+    var sortMeasure = this.dataSource.getMeasure(sortOn);
+    if (!sortMeasure) return null;
+    return sortMeasure.toApplyAction();
   }
 
   public getCommonSort(): SortAction {
+    var splits = this.splits.toArray();
     var commonSort: SortAction = null;
-    var n = this.splits.length();
-    for (var i = 0; i < n; i++) {
-      var sort = this.getSortForSplit(i);
+    for (var split of splits) {
+      var sort = split.sortAction;
       if (commonSort) {
         if (!commonSort.equals(sort)) return null;
       } else {
@@ -509,16 +551,43 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.changeFilter(filter.setTimeRange(timeAttribute, timeRange));
   }
 
-  public changeSplits(splits: Splits, fitVis: boolean): Essence {
-    var { visualization, filter } = this;
-    if (fitVis) {
-      var visualizations = this.getReadyVisualizations(splits);
-      visualization = visualizations.last();
-    }
+  public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
+    var { dataSource, visualization, filter } = this;
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
       splits = splits.updateWithTimeRange(timeAttribute, filter.getTimeRange(timeAttribute));
+    }
+
+    //console.log('VisStrategy:', VisStrategy[strategy]);
+
+    var keepVis: boolean;
+    switch (strategy) {
+      case VisStrategy.FairGame:
+        keepVis = false;
+        break;
+
+      case VisStrategy.KeepIfReadyOrAutomatic:
+        var newResolve = visualization.handleCircumstance(dataSource, splits);
+        keepVis = newResolve.isReady() || newResolve.isAutomatic();
+        break;
+
+      case VisStrategy.KeepIfReady:
+        var newResolve = visualization.handleCircumstance(dataSource, splits);
+        keepVis = newResolve.isReady();
+        break;
+
+      case VisStrategy.KeepAlways:
+        keepVis = true;
+        break;
+
+      default:
+        throw new Error('unknown vis strategy');
+    }
+
+    if (!keepVis) {
+      var visAndResolve = this.getBestVisualization(splits);
+      visualization = visAndResolve.visualization;
     }
 
     var value = this.valueOf();
@@ -531,21 +600,21 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return new Essence(value);
   }
 
-  public changeSplit(splitCombine: SplitCombine): Essence {
-    return this.changeSplits(Splits.fromSplitCombine(splitCombine), true);
+  public changeSplit(splitCombine: SplitCombine, strategy: VisStrategy): Essence {
+    return this.changeSplits(Splits.fromSplitCombine(splitCombine), strategy);
   }
 
-  public addSplit(split: SplitCombine): Essence {
+  public addSplit(split: SplitCombine, strategy: VisStrategy): Essence {
     var { splits } = this;
-    return this.changeSplits(splits.addSplit(split), true);
+    return this.changeSplits(splits.addSplit(split), strategy);
   }
 
-  public removeSplit(split: SplitCombine): Essence {
+  public removeSplit(split: SplitCombine, strategy: VisStrategy): Essence {
     var { splits } = this;
-    return this.changeSplits(splits.removeSplit(split), true);
+    return this.changeSplits(splits.removeSplit(split), strategy);
   }
 
-  public selectVisualization(visualization: Manifest): Essence {
+  public changeVisualization(visualization: Manifest): Essence {
     var value = this.valueOf();
     value.visualization = visualization;
     return new Essence(value);
@@ -569,6 +638,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public getPinnedSortMeasure(): Measure {
     return this.dataSource.getMeasure(this.pinnedSort);
+  }
+
+  public changePinnedSortMeasure(measure: Measure): Essence {
+    var value = this.valueOf();
+    value.pinnedSort = measure.name;
+    return new Essence(value);
   }
 
   public toggleMeasure(measure: Measure): Essence {

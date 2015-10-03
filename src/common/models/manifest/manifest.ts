@@ -4,19 +4,15 @@ import * as React from 'react/addons';
 import { DataSource } from '../data-source/data-source';
 import { Splits } from '../splits/splits';
 
-export interface AdjustmentFn {
-  (): Splits;
-}
-
 export interface Resolution {
   description: string;
-  adjustment: AdjustmentFn;
+  adjustment: Splits;
 }
 
 export class Resolve {
   static READY: Resolve;
 
-  static automatic(adjustment: AdjustmentFn) {
+  static automatic(adjustment: Splits) {
     return new Resolve('automatic', adjustment, null, null);
   }
 
@@ -26,11 +22,11 @@ export class Resolve {
 
 
   public state: string;
-  public adjustment: AdjustmentFn;
+  public adjustment: Splits;
   public message: string;
   public resolutions: Resolution[];
 
-  constructor(state: string, adjustment: AdjustmentFn, message: string, resolutions: Resolution[]) {
+  constructor(state: string, adjustment: Splits, message: string, resolutions: Resolution[]) {
     this.state = state;
     this.adjustment = adjustment;
     this.message = message;

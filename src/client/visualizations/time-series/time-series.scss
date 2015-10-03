@@ -20,22 +20,24 @@ $h-padding: 10px;
       position: absolute;
       left: 4px;
       top: 10px;
-      font-size: 14px;
+
+      /*span.measure-title,
+      span.colon {
+        color: $text-light;
+      }*/
     }
 
     .hover-bubble-cont {
       position: absolute;
-      top: 20px;
+      top: 6px;
       width: 100px;
       margin-left: -50px;
       pointer-events: none;
       text-align: center;
 
       .hover-bubble {
+        @extend %menu-cont;
         display: inline-block;
-        background: $white;
-        border: 1px solid $gray;
-        border-radius: 4px;
 
         .text {
           display: inline-block;
@@ -67,6 +69,10 @@ $h-padding: 10px;
         }
       }
     }
+  }
+
+  .bottom-axis {
+    padding-left: $h-padding;
   }
 
   .highlighter {

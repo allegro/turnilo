@@ -5,6 +5,7 @@ import { List, OrderedSet } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { dataTransferTypesGet } from '../../utils/dom/dom';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { PinboardMeasureTile } from '../pinboard-measure-tile/pinboard-measure-tile';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
 
 export interface PinboardPanelProps {
@@ -114,6 +115,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       >
         {dimensionTiles}
         {placeholderTile}
+        <PinboardMeasureTile clicker={clicker} essence={essence}/>
       </div>
     `);
   }

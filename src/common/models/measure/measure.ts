@@ -1,7 +1,7 @@
 'use strict';
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { $, Expression, ExpressionJS } from 'plywood';
+import { $, Expression, ExpressionJS, ApplyAction } from 'plywood';
 import { makeTitle } from '../../utils/general/general';
 
 export interface MeasureValue {
@@ -85,6 +85,14 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
       this.title === other.title &&
       this.expression.equals(other.expression) &&
       this.format === other.format;
+  }
+
+  public toApplyAction(): ApplyAction {
+    var { name, expression } = this;
+    return new ApplyAction({
+      name: name,
+      expression: expression
+    });
   }
 }
 check = Measure;

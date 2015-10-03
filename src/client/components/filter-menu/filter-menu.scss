@@ -15,6 +15,7 @@ $action-bar-height: 52px;
         width: $presets-width;
         padding-left: 10px;
         padding-right: 10px;
+        padding-top: 4px;
 
         li {
           height: 22px;
@@ -36,17 +37,24 @@ $action-bar-height: 52px;
       .time-inputs {
         position: absolute;
         left: $presets-width;
-        top: 0;
+        top: 4px;
 
         .time-input {
+          @extend %input-cont-inset;
           width: 135px;
+          height: 32px;
+
+          input {
+            background: none;
+            padding-left: 4px;
+          }
         }
 
         .arrow {
-          width: 14px;
+          width: 12px;
           display: inline-block;
-          margin: 0 8px;
-          padding-top: 8px;
+          margin: 0 9px;
+          padding-top: 10px;
         }
       }
 

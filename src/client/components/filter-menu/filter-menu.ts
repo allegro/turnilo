@@ -91,8 +91,9 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     var { essence, dimension } = this.props;
+    var { filter } = essence;
 
     var newState: FilterMenuState = {
       selectedTimeRange: null,
@@ -100,9 +101,9 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
     };
 
     if (dimension.type === 'TIME') {
-      newState.selectedTimeRange = essence.getEffectiveFilter().getTimeRange(dimension.expression);
+      newState.selectedTimeRange = filter.getTimeRange(dimension.expression);
     } else {
-      newState.selectedValues = List(essence.getEffectiveFilter().getValues(dimension.expression) || []);
+      newState.selectedValues = List(filter.getValues(dimension.expression) || []);
     }
 
     this.setState(newState);
@@ -122,7 +123,6 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   timeRangeStartChange(start: Date) {
     if (!start) return;
     var { selectedTimeRange } = this.state;
-    console.log('set start', start.toISOString());
     this.setState({
       selectedTimeRange: new TimeRange({
         start,
@@ -134,7 +134,6 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   timeRangeEndChange(end: Date) {
     if (!end) return;
     var { selectedTimeRange } = this.state;
-    console.log('set end', end.toISOString());
     this.setState({
       selectedTimeRange: new TimeRange({
         start: selectedTimeRange.start,
@@ -153,29 +152,32 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
     this.setState({ selectedValues });
   }
 
-  onFilterClick() {
-    var { clicker, essence, dimension, insertPosition, replacePosition, onClose } = this.props;
+  constructFilter(): Filter {
+    var { essence, dimension, insertPosition, replacePosition } = this.props;
     var { selectedTimeRange, selectedValues } = this.state;
     var { filter } = essence;
-    var newFilter: Filter;
 
     if (dimension.type === 'TIME') {
-      newFilter = filter.setTimeRange(dimension.expression, selectedTimeRange);
+      return filter.setTimeRange(dimension.expression, selectedTimeRange);
     } else {
       if (selectedValues.size) {
         var clause = dimension.expression.in(selectedValues.toArray());
         if (insertPosition !== null) {
-          newFilter = filter.insertByIndex(insertPosition, clause);
+          return filter.insertByIndex(insertPosition, clause);
         } else if (replacePosition !== null) {
-          newFilter = filter.replaceByIndex(replacePosition, clause);
+          return filter.replaceByIndex(replacePosition, clause);
         } else {
-          newFilter = filter.setClause(clause);
+          return filter.setClause(clause);
         }
       } else {
-        newFilter = filter.remove(dimension.expression);
+        return filter.remove(dimension.expression);
       }
     }
-    clicker.changeFilter(newFilter);
+  }
+
+  onFilterClick() {
+    var { clicker, onClose } = this.props;
+    clicker.changeFilter(this.constructFilter());
     onClose();
   }
 
@@ -240,11 +242,13 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
       `);
     }
 
+    var actionDisabled = essence.filter.equals(this.constructFilter());
+
     return JSX(`
       <BubbleMenu className="filter-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
         {menuCont}
         <div className="button-bar">
-          <button className="filter" onClick={this.onFilterClick.bind(this)}>Filter</button>
+          <button className="filter" onClick={this.onFilterClick.bind(this)} disabled={actionDisabled}>Filter</button>
           <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
         </div>
       </BubbleMenu>
