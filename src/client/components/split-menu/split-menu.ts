@@ -28,6 +28,16 @@ function formatLimit(limit: number): string {
   return limit === null ? 'None' : String(limit);
 }
 
+function formatGranularity(gran: string): string {
+  switch (gran) {
+    case 'PT1M': return '1m';
+    case 'PT1H': return '1h';
+    case 'P1D': return '1d';
+    case 'P7D': return '7d';
+    default: return gran;
+  }
+}
+
 export interface SplitMenuProps {
   clicker: Clicker;
   essence: Essence;
@@ -137,7 +147,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
           className={'granularity' + (g === selectedGran ? ' selected' : '')}
           key={g}
           onClick={this.onSelectGran.bind(this, g)}
-        >{g}</li>
+        >{formatGranularity(g)}</li>
       `);
     });
 
