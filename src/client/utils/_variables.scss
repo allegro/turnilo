@@ -33,11 +33,16 @@ $text-lighterish:         hsl(0, 0%, 65%);
 $text-lighter:            hsl(0, 0%, 75%);
 $text-link:               $brand;
 
-/// other
+// other
 
 $hover:                   hsl(202, 79%, 92%);
 $highlight:               darken($hover, 7%);
 $highlight-border:        darken($brand, 8%);
+
+// dimension items
+
+$item-categorical:        hsl(201, 92%, 85%);
+$item-continuous:         hsl(122, 49%, 84%);
 
 // Vis
 

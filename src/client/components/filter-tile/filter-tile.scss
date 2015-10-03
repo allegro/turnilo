@@ -16,11 +16,11 @@
 
       &.from-highlight {
         border: 1px dashed $highlight-border;
-        background: hsl(201, 92%, 94%);
+        background: rgba($item-categorical, 0.5);
 
         &.type-time {
-          border: 1px dashed hsl(130, 39%, 42%);
-          background: hsl(122, 49%, 93%);
+          border: 1px dashed hsl(130, 39%, 44%);
+          background: rgba($item-continuous, 0.5);
         }
       }
     }
