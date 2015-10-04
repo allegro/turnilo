@@ -290,8 +290,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var getX = (d: Datum) => midpoint(d[SEGMENT]);
 
       var parentWidth = stage.width - H_PADDING * 2;
-      // -1 for border
-      var graphHeight = Math.max(MIN_GRAPH_HEIGHT, (stage.height - X_AXIS_HEIGHT) / measures.length);
+      var graphHeight = Math.max(MIN_GRAPH_HEIGHT, Math.floor((stage.height - X_AXIS_HEIGHT) / measures.length));
       var svgStage = new Stage({
         x: H_PADDING,
         y: 0,
