@@ -21,7 +21,7 @@ const H_PADDING = 10;
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
 const Y_AXIS_WIDTH = 60;
-const GRAPH_HEIGHT = 120;
+const MIN_GRAPH_HEIGHT = 150;
 const MAX_GRAPH_WIDTH = 2000;
 
 function midpoint(timeRange: TimeRange): Date {
@@ -282,6 +282,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     if (dataset && splits.length()) {
       var timeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
+      var measures = essence.getMeasures().toArray();
 
       var myDatum: Datum = dataset.data[0];
       var myDataset: Dataset = myDatum[SPLIT];
@@ -289,11 +290,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var getX = (d: Datum) => midpoint(d[SEGMENT]);
 
       var parentWidth = stage.width - H_PADDING * 2;
+      // -1 for border
+      var graphHeight = Math.max(MIN_GRAPH_HEIGHT, (stage.height - X_AXIS_HEIGHT) / measures.length);
       var svgStage = new Stage({
         x: H_PADDING,
         y: 0,
         width: Math.floor(parentWidth / numberOfColumns),
-        height: TEXT_SPACER + GRAPH_HEIGHT
+        height: graphHeight - 1 // -1 for border
       });
 
       var lineStage = svgStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH });
@@ -305,7 +308,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
       var xTicks = scaleX.ticks();
 
-      measureGraphs = essence.getMeasures().toArray().map((measure) => {
+      measureGraphs = measures.map((measure) => {
         var measureName = measure.name;
         var getY = (d: Datum) => d[measureName];
         var extentY: number[] = null;
