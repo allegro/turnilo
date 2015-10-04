@@ -7,8 +7,8 @@ import * as numeral from 'numeral';
 import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, SortAction, ChainExpression } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
-import { SEGMENT, TIME_SORT_ACTION } from '../../config/constants';
-import { ChartLine } from '../../components/chart-line/chart-line';
+import { SPLIT, SEGMENT, TIME_SORT_ACTION } from '../../config/constants';
+import { ChartLine, ChartLineProps } from '../../components/chart-line/chart-line';
 import { ChartLineHover } from '../../components/chart-line-hover/chart-line-hover';
 import { TimeAxis } from '../../components/time-axis/time-axis';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
@@ -85,17 +85,29 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     var autoChanged = false;
     splits = splits.map((split) => {
-      if (split !== existingTimeSplit) return split;
-      var { sortAction, limitAction } = split;
+      if (split === existingTimeSplit) {
+        var { sortAction, limitAction } = split;
 
-      if (limitAction) {
-        split = split.changeLimitAction(null);
-        autoChanged = true;
-      }
+        if (limitAction) {
+          split = split.changeLimitAction(null);
+          autoChanged = true;
+        }
 
-      if (!TIME_SORT_ACTION.equals(sortAction)) {
-        split = split.changeSortAction(TIME_SORT_ACTION);
-        autoChanged = true;
+        if (!TIME_SORT_ACTION.equals(sortAction)) {
+          split = split.changeSortAction(TIME_SORT_ACTION);
+          autoChanged = true;
+        }
+
+      } else {
+        if (!split.sortAction) {
+          split = split.changeSortAction(dataSource.getDefaultSortAction());
+          autoChanged = true;
+        }
+
+        if (!split.limitAction) {
+          split = split.changeLimit(5);
+          autoChanged = true;
+        }
       }
 
       return split;
@@ -136,22 +148,35 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       query = query.performAction(measure.toApplyAction());
     });
 
-    var splitsSize = splits.length();
-    splits.forEach((split, i) => {
-      var isLast = i === splitsSize - 1;
+    function makeQuery(i: number): Expression {
+      var split = splits.get(i);
+      var { sortAction, limitAction } = split;
+      if (!sortAction) throw new Error('something went wrong in time series query generation');
+
       var subQuery = $main.split(split.toSplitExpression(), SEGMENT);
 
       measures.forEach((measure) => {
         subQuery = subQuery.performAction(measure.toApplyAction());
       });
-      if (isLast) {
-        subQuery = subQuery.performAction(TIME_SORT_ACTION);
-      } else {
-        subQuery = subQuery.sort($(measures.first().name), SortAction.DESCENDING).limit(5);
+
+      var applyForSort = essence.getApplyForSort(sortAction);
+      if (applyForSort) {
+        subQuery = subQuery.performAction(applyForSort);
+      }
+      subQuery = subQuery.performAction(sortAction);
+
+      if (limitAction) {
+        subQuery = subQuery.performAction(limitAction);
       }
 
-      query = query.apply('Split', subQuery);
-    });
+      if (i + 1 < splits.length()) {
+        subQuery = subQuery.apply(SPLIT, makeQuery(i + 1));
+      }
+
+      return subQuery;
+    }
+
+    query = query.apply(SPLIT, makeQuery(0));
 
     this.setState({ loading: true });
     dataSource.executor(query)
@@ -206,15 +231,16 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   }
 
   onMouseMove(scaleX: any, measure: Measure, e: MouseEvent) {
+    var { essence } = this.props;
     var { dataset, hoverDatum, hoverMeasure } = this.state;
-    if (!dataset) return;
+    if (!dataset || essence.splits.length() > 1) return;
 
     var myDOM = React.findDOMNode(this);
     var rect = myDOM.getBoundingClientRect();
     var dragDate = scaleX.invert(e.clientX - (rect.left + H_PADDING));
 
     var thisHoverDatum: Datum = null;
-    var datums = dataset.data[0]['Split'].data;
+    var datums = dataset.data[0][SPLIT].data;
     for (var datum of datums) {
       if (datum[SEGMENT].contains(dragDate)) {
         thisHoverDatum = datum;
@@ -258,7 +284,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var timeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
 
       var myDatum: Datum = dataset.data[0];
-      var myDataset: Dataset = myDatum['Split'];
+      var myDataset: Dataset = myDatum[SPLIT];
 
       var getX = (d: Datum) => midpoint(d[SEGMENT]);
 
@@ -282,18 +308,19 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       measureGraphs = essence.getMeasures().toArray().map((measure) => {
         var measureName = measure.name;
         var getY = (d: Datum) => d[measureName];
-        var extentY = d3.extent(myDataset.data, getY);
+        var extentY: number[] = null;
+        if (splits.length() === 1) {
+          extentY = d3.extent(myDataset.data, getY);
+        } else {
+          if (myDataset.data[0][SPLIT]) {
+            extentY = d3.extent(myDataset.data[0][SPLIT].data, getY);
+          } else {
+            extentY = [];
+          }
+        }
 
         if (isNaN(extentY[0])) {
-          return JSX(`
-            <div className="measure-graph" key={measureName}>
-              <div className="measure-label">
-                <span className="measure-title">{measure.title}</span>
-                <span className="colon">: </span>
-                <span className="measure-value">Loading</span>
-              </div>
-            </div>
-          `);
+          return null;
         }
 
         extentY[0] = Math.min(extentY[0] * 1.1, 0);
@@ -304,6 +331,36 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           .range([lineStage.height, 0]);
 
         var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
+
+        var chartLines: Array<React.ReactElement<any>> = null;
+        if (splits.length() === 1) {
+          chartLines = [
+            React.createElement(ChartLine, <ChartLineProps>{
+              key: 'single',
+              dataset: myDataset,
+              getX: getX,
+              getY: getY,
+              scaleX: scaleX,
+              scaleY: scaleY,
+              stage: lineStage,
+              showArea: true
+            })
+          ];
+        } else {
+          chartLines = myDataset.data.map((datum, i) => {
+            return React.createElement(ChartLine, <ChartLineProps>{
+              key: 'single' + i,
+              dataset: datum[SPLIT],
+              getX: getX,
+              getY: getY,
+              scaleX: scaleX,
+              scaleY: scaleY,
+              stage: lineStage,
+              showArea: false,
+              color: i
+            });
+          });
+        }
 
         var chartLineHover: React.ReactElement<any> = null;
         var chartHoverBubble: React.DOMElement<any> = null;
@@ -350,14 +407,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
                 ticks={xTicks}
                 stage={lineStage}
               />
-              <ChartLine
-                dataset={myDataset}
-                getX={getX}
-                getY={getY}
-                scaleX={scaleX}
-                scaleY={scaleY}
-                stage={lineStage}
-              />
+              {chartLines}
               {chartLineHover}
               <VerticalAxis
                 stage={yAxisStage}
@@ -387,7 +437,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
       var highlighter: React.ReactElement<any> = null;
       if (dragStart !== null || essence.highlightOn(TimeSeries.id)) {
-        var timeSplit = splits.first(); // ToDo: fix this
+        var timeSplit = splits.last();
         var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
         highlighter = React.createElement(Highlighter, {
           clicker,

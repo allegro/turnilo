@@ -8,7 +8,7 @@ import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange,
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
-import { SEGMENT } from '../../config/constants';
+import { SPLIT, SEGMENT } from '../../config/constants';
 import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
@@ -81,28 +81,24 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     }
 
     // Auto adjustment
-    var changed = false;
-    var newSplits = splits.map((split, i) => {
+    var autoChanged = false;
+    splits = splits.map((split, i) => {
       var splitDimension = dataSource.getDimensionByExpression(split.expression);
 
       if (!split.sortAction) {
         split = split.changeSortAction(dataSource.getDefaultSortAction());
-        changed = true;
+        autoChanged = true;
       }
 
-      if (!split.limitAction && (changed || splitDimension.type !== 'TIME')) {
+      if (!split.limitAction && (autoChanged || splitDimension.type !== 'TIME')) {
         split = split.changeLimit(i ? 5 : 50);
-        changed = true;
+        autoChanged = true;
       }
 
       return split;
     });
 
-    if (changed) {
-      return Resolve.automatic(newSplits);
-    }
-
-    return Resolve.READY;
+    return autoChanged ? Resolve.automatic(splits) : Resolve.READY;
   }
 
   public mounted: boolean;
@@ -134,7 +130,6 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       query = query.performAction(measure.toApplyAction());
     });
 
-    var limit = splits.length() > 1 ? 10 : 50;
     function makeQuery(i: number): Expression {
       var split = splits.get(i);
       var { sortAction, limitAction } = split;
@@ -157,13 +152,13 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       }
 
       if (i + 1 < splits.length()) {
-        subQuery = subQuery.apply('Split', makeQuery(i + 1));
+        subQuery = subQuery.apply(SPLIT, makeQuery(i + 1));
       }
 
       return subQuery;
     }
 
-    query = query.apply('Split', makeQuery(0));
+    query = query.apply(SPLIT, makeQuery(0));
 
     this.setState({ loading: true });
     dataSource.executor(query)
