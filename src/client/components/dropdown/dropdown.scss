@@ -4,6 +4,14 @@
   cursor: pointer;
   white-space: nowrap;
 
+  &:hover {
+    .caret-icon {
+      path {
+        fill: $text-light;
+      }
+    }
+  }
+
   .selected-item {
     display: inline-block;
   }
