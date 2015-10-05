@@ -423,6 +423,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return !this.selectedMeasures.equals(other.selectedMeasures);
   }
 
+  public newSelectedMeasures(other: Essence): boolean {
+    return !this.selectedMeasures.isSubset(other.selectedMeasures);
+  }
+
   public differentPinnedDimensions(other: Essence): boolean {
     return !this.pinnedDimensions.equals(other.pinnedDimensions);
   }

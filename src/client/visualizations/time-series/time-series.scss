@@ -18,8 +18,8 @@ $h-padding: 10px;
 
     .measure-label {
       position: absolute;
-      left: 4px;
-      top: 10px;
+      left: 6px;
+      top: 12px;
 
       /*span.measure-title,
       span.colon {
@@ -29,7 +29,7 @@ $h-padding: 10px;
 
     .hover-bubble-cont {
       position: absolute;
-      top: 6px;
+      top: 7px;
       width: 100px;
       margin-left: -50px;
       pointer-events: none;
@@ -57,7 +57,7 @@ $h-padding: 10px;
         }
 
         &:before {
-          @include triangle(down, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.12));
+          @include triangle(down, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.15));
           bottom: -1 * $shpitz-size;
           margin-top: -1 * $shpitz-size;
         }

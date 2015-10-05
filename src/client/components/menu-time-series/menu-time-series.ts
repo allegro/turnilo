@@ -125,6 +125,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
           scaleX={scaleX}
           scaleY={scaleY}
           stage={lineStage}
+          showArea={true}
         />
       `);
 
