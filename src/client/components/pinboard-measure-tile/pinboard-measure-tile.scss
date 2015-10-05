@@ -2,36 +2,45 @@
 
 .pinboard-measure-tile {
   @extend %module;
-  padding: 0;
+  padding: 5px;
 
   .dropdown {
     display: inline-block;
     width: 100%;
-    border: 5px solid $white;
-    border-radius: 0 0 2px 2px;
+    padding: 6px 7px 6px 7px;
+    margin-bottom: 1px;
 
     &:hover {
-      background: $hover;
+      &:after {
+        @include pin-full;
+        content: '';
+        position: absolute;
+        border-radius: 2px;
+        border: 1px solid $border-medium;
+        pointer-events: none;
+      }
     }
 
     .selected-item {
-      z-index: 2;
-      padding: 9px 5px;
+      line-height: 19px;
     }
 
     .dropdown-label {
       display: inline-block;
-      margin-right: 0;
-      margin-left: 7px;
+      margin-right: 4px;
       color: $text-light;
-      z-index: 2;
+      line-height: 19px;
     }
 
     .caret-icon {
       position: absolute;
       top: 11px;
       right: 11px;
-      z-index: 2;
+    }
+
+    .dropdown-menu {
+      left: 0;
+      right: 0;
     }
   }
 }
