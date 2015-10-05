@@ -17,6 +17,8 @@ export interface SplitTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
+
+  ref?: any;
 }
 
 export interface SplitTileState {
@@ -173,6 +175,18 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     });
   }
 
+  // This will be called externally
+  splitMenuRequest(dimension: Dimension) {
+    var { splits } = this.props.essence;
+    var split = splits.findSplitForDimension(dimension);
+    if (!split) return;
+    var targetRef = this.refs[dimension.name];
+    if (!targetRef) return;
+    var target = React.findDOMNode(targetRef);
+    if (!target) return;
+    this.openMenu(dimension, split, target);
+  }
+
   renderMenu(): React.ReactElement<any> {
     var { essence, clicker, menuStage } = this.props;
     var { menuOpenOn, menuDimension, menuSplit } = this.state;
@@ -204,6 +218,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var splitItems = splits.toArray().map((split, i) => {
       var dimension = split.getDimension(dataSource);
       if (!dimension) throw new Error('dimension not found');
+      var dimensionName = dimension.name;
 
       var style = transformStyle(itemX, 0);
       itemX += sectionWidth;
@@ -217,6 +232,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         <div
           className={classNames.join(' ')}
           key={split.toKey()}
+          ref={dimensionName}
           draggable="true"
           onClick={this.selectDimensionSplit.bind(this, dimension, split)}
           onDragStart={this.dragStart.bind(this, dimension, split, i)}

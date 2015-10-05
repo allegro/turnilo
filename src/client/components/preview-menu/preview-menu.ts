@@ -19,7 +19,8 @@ export interface PreviewMenuProps {
   containerStage: Stage;
   openOn: Element;
   dimension: Dimension;
-  onFilter: Function;
+  triggerFilterMenu: Function;
+  triggerSplitMenu: Function;
   onClose: Function;
 }
 
@@ -35,20 +36,28 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
   }
 
   onFilter(): void {
-    var { dimension, onFilter, onClose } = this.props;
-    onFilter(dimension);
+    var { dimension, triggerFilterMenu, onClose } = this.props;
+    triggerFilterMenu(dimension);
     onClose();
   }
 
   onSplit(): void {
-    var { clicker, dimension, onClose } = this.props;
-    clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepIfReady);
+    var { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
+    if (essence.splits.hasSplitOn(dimension)) {
+      triggerSplitMenu(dimension);
+    } else {
+      clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepIfReady);
+    }
     onClose();
   }
 
   onSubsplit(): void {
-    var { clicker, dimension, onClose } = this.props;
-    clicker.addSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepIfReady);
+    var { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
+    if (essence.splits.hasSplitOn(dimension)) {
+      triggerSplitMenu(dimension);
+    } else {
+      clicker.addSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepIfReady);
+    }
     onClose();
   }
 

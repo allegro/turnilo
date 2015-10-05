@@ -225,7 +225,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   triggerFilterMenu(dimension: Dimension) {
     if (!dimension) return;
-    (<FilterTile>this.refs['filterTile']).possibleDimensionAppend(dimension);
+    (<FilterTile>this.refs['filterTile']).filterMenuRequest(dimension);
+  }
+
+  triggerSplitMenu(dimension: Dimension) {
+    if (!dimension) return;
+    (<SplitTile>this.refs['splitTile']).splitMenuRequest(dimension);
   }
 
   sideDrawerOpen(drawerOpen: boolean): void {
@@ -289,14 +294,20 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         <HeaderBar essence={essence} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
         <div className='container' ref='container'>
           <div className='dimension-measure-panel'>
-            <DimensionListTile clicker={clicker} essence={essence} menuStage={menuStage} onFilter={this.triggerFilterMenu.bind(this)}/>
+            <DimensionListTile
+              clicker={clicker}
+              essence={essence}
+              menuStage={menuStage}
+              triggerFilterMenu={this.triggerFilterMenu.bind(this)}
+              triggerSplitMenu={this.triggerSplitMenu.bind(this)}
+            />
             <MeasuresTile clicker={clicker} essence={essence}/>
           </div>
           <div className='center-panel'>
             <div className='center-top-bar'>
               <div className='filter-split-section'>
                 <FilterTile ref="filterTile" clicker={clicker} essence={essence} menuStage={visualizationStage}/>
-                <SplitTile clicker={clicker} essence={essence} menuStage={visualizationStage}/>
+                <SplitTile ref="splitTile" clicker={clicker} essence={essence} menuStage={visualizationStage}/>
               </div>
               <VisSelector clicker={clicker} essence={essence}/>
             </div>

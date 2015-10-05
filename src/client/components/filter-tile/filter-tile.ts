@@ -208,14 +208,22 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState(newState);
   }
 
-  // This would be called externally
-  possibleDimensionAppend(dimension: Dimension) {
-    var { essence } = this.props;
-    this.setState({
-      possibleDimension: dimension,
-      possibleInsertPosition: essence.filter.length(),
-      possibleReplacePosition: null
-    });
+  // This will be called externally
+  filterMenuRequest(dimension: Dimension) {
+    var { filter } = this.props.essence;
+    if (filter.filteredOn(dimension.expression)) {
+      var targetRef = this.refs[dimension.name];
+      if (!targetRef) return;
+      var target = React.findDOMNode(targetRef);
+      if (!target) return;
+      this.openMenu(dimension, target);
+    } else {
+      this.setState({
+        possibleDimension: dimension,
+        possibleInsertPosition: filter.length(),
+        possibleReplacePosition: null
+      });
+    }
   }
 
   formatLabel(dimension: Dimension, clause: ChainExpression, timezone: Timezone): string {
@@ -355,6 +363,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var itemX = 0;
     var filterItems = itemBlanks.map((itemBlank) => {
       var { dimension, clause, source } = itemBlank;
+      var dimensionName = dimension.name;
 
       var style = transformStyle(itemX, 0);
       itemX += sectionWidth;
@@ -363,13 +372,13 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       if (dimension === menuDimension) classNames.push('selected');
 
       var className = classNames.join(' ');
-      var key = dimension.name;
 
       if (source === 'from-highlight') {
         return JSX(`
           <div
             className={className}
-            key={key}
+            key={dimensionName}
+            ref={dimensionName}
             onClick={clicker.acceptHighlight.bind(clicker)}
             style={style}
           >
@@ -383,7 +392,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         return JSX(`
           <div
             className={className}
-            key={key}
+            key={dimensionName}
+            ref={dimensionName}
             draggable="true"
             onClick={this.clickDimension.bind(this, dimension)}
             onDragStart={this.dragStart.bind(this, dimension, clause)}
@@ -397,7 +407,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         return JSX(`
           <div
             className={className}
-            key={key}
+            key={dimensionName}
             ref={this.dummyMount.bind(this, dimension)}
             style={style}
           >

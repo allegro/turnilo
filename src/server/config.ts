@@ -7,7 +7,7 @@ import { DataSource, DataSourceJS } from '../common/models/index';
 import { DataSourceManager, dataSourceManagerFactory, loadFileSync } from './utils/index';
 
 var env = process.env;
-var packageObj = loadFileSync(path.join(__dirname, '../../package.json'), 'json');
+var packageObj = loadFileSync(path.join(__dirname, '../../package.json'), 'json') || {};
 
 var configFilePath = path.join(__dirname, '../../config.yaml');
 var config: any = loadFileSync(configFilePath, 'yaml');

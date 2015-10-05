@@ -134,8 +134,13 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return this.splitCombines.last();
   }
 
-  public hasSplit(split: SplitCombine): boolean {
-    return Boolean(this.splitCombines.find((s) => s.equals(split)));
+  public findSplitForDimension(dimension: Dimension): SplitCombine {
+    var dimensionExpression = dimension.expression;
+    return this.splitCombines.find((s) => s.expression.equals(dimensionExpression));
+  }
+
+  public hasSplitOn(dimension: Dimension): boolean {
+    return Boolean(this.findSplitForDimension(dimension));
   }
 
   public replace(search: SplitCombine, replace: SplitCombine): Splits {
