@@ -1,21 +1,18 @@
 'use strict';
 
 import * as path from 'path';
-import { readFileSync } from 'fs';
 import * as Q from 'q';
-import * as yaml from 'js-yaml';
 
 import { DataSource, DataSourceJS } from '../common/models/index';
-import { DataSourceManager, dataSourceManagerFactory } from './utils/index';
+import { DataSourceManager, dataSourceManagerFactory, loadFileSync } from './utils/index';
 
 var env = process.env;
-var packageObj = JSON.parse(readFileSync(path.join(__dirname, '../../package.json'), 'utf-8'));
+var packageObj = loadFileSync(path.join(__dirname, '../../package.json'), 'json');
 
 var configFilePath = path.join(__dirname, '../../config.yaml');
-var config: any = {};
-try {
-  config = yaml.safeLoad(readFileSync(configFilePath, 'utf-8'));
-} catch (e) {
+var config: any = loadFileSync(configFilePath, 'yaml');
+if (!config) {
+  config = {};
   console.log(`Could not load config from '${configFilePath}'`);
 }
 
@@ -51,5 +48,6 @@ export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
   dataSources: DATA_SOURCES,
   druidHost: DRUID_HOST,
   useSegmentMetadata: USE_SEGMENT_METADATA,
-  sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL
+  sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL,
+  log: (line: string) => console.log(line)
 });

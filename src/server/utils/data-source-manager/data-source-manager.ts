@@ -11,6 +11,7 @@ export interface DataSourceManagerOptions {
   druidHost: string;
   useSegmentMetadata: boolean;
   sourceListRefreshInterval: number;
+  log?: Function;
 }
 
 export interface DataSourceManager {
@@ -24,8 +25,11 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     dataSources,
     druidHost,
     useSegmentMetadata,
-    sourceListRefreshInterval
+    sourceListRefreshInterval,
+    log
   } = options;
+
+  if (!log) log = function() {};
 
   var myDataSources: DataSource[] = dataSources;
 
@@ -70,7 +74,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     return fillInDataSource(dataSource, druidRequester, useSegmentMetadata).then((filledDataSource) => {
       updateDataSource(filledDataSource);
     }).catch((e) => {
-      console.log(`Failed to introspect data source: '${dataSource.name}' because ${e.message}`);
+      log(`Failed to introspect data source: '${dataSource.name}' because ${e.message}`);
     });
   }
 
@@ -105,7 +109,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
           source: name,
           timeAttribute: 'time'
         });
-        console.log('Adding Druid data source: ' + name);
+        log(`Adding Druid data source: '${name}'`);
         updateDataSource(newDataSource);
         return newDataSource;
       }));
@@ -117,7 +121,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
         return introspectDataSource(dataSource);
       }));
     }).catch((e: Error) => {
-      console.log(`Could not get druid source list: '${e.message}'`);
+      log(`Could not get druid source list: '${e.message}'`);
     });
   }
 
@@ -134,11 +138,11 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
 
   initialLoad.then(() => {
     var queryableDataSources = getQueryable();
-    console.log(`Initial introspection complete. Got ${myDataSources.length} data sources, ${queryableDataSources.length} queryable`);
+    log(`Initial introspection complete. Got ${myDataSources.length} data sources, ${queryableDataSources.length} queryable`);
   });
 
   if (sourceListRefreshInterval) {
-    console.log(`Will refresh data sources every ${sourceListRefreshInterval}ms`);
+    log(`Will refresh data sources every ${sourceListRefreshInterval}ms`);
     setInterval(loadDruidDataSources, sourceListRefreshInterval);
   }
 
