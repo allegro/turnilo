@@ -210,10 +210,10 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
-      essence.differentDataSource(nextEssence) ||
-      essence.differentEffectiveFilter(nextEssence, TimeSeries.id) ||
-      essence.differentSplits(nextEssence) ||
-      essence.differentSelectedMeasures(nextEssence)
+      nextEssence.differentDataSource(essence) ||
+      nextEssence.differentEffectiveFilter(essence, TimeSeries.id) ||
+      nextEssence.differentSplits(essence) ||
+      nextEssence.newSelectedMeasures(essence)
     ) {
       this.fetchData(nextEssence);
     }
