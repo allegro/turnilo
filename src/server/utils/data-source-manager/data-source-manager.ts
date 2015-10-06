@@ -9,8 +9,9 @@ import { druidRequesterFactory } from 'plywood-druid-requester';
 export interface DataSourceManagerOptions {
   dataSources: DataSource[];
   druidHost: string;
-  useSegmentMetadata: boolean;
+  useSegmentMetadata?: boolean;
   sourceListRefreshInterval?: number;
+  sourceListRefreshOnLoad?: boolean;
   log?: Function;
 }
 
@@ -26,9 +27,11 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     druidHost,
     useSegmentMetadata,
     sourceListRefreshInterval,
+    sourceListRefreshOnLoad,
     log
   } = options;
 
+  useSegmentMetadata = Boolean(useSegmentMetadata);
   if (!log) log = function() {};
 
   var myDataSources: DataSource[] = dataSources;
@@ -149,7 +152,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   return {
     getDataSources: () => {
       return initialLoad.then(() => {
-        if (myDataSources.length) return myDataSources;
+        if (myDataSources.length && !sourceListRefreshOnLoad) return myDataSources;
 
         // There are no data sources... lets try to load some:
         return loadDruidDataSources().then(() => {
@@ -161,7 +164,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     getQueryableDataSources: () => {
       return initialLoad.then(() => {
         var queryableDataSources = getQueryable();
-        if (queryableDataSources.length) return queryableDataSources;
+        if (queryableDataSources.length && !sourceListRefreshOnLoad) return queryableDataSources;
 
         // There are no data sources... lets try to load some:
         return loadDruidDataSources().then(() => {
