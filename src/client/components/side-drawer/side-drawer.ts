@@ -13,6 +13,7 @@ export interface SideDrawerProps {
   clicker: Clicker;
   essence: Essence;
   onClose: Function;
+  homeLink?: string;
 
   key?: string;
 }
@@ -74,14 +75,27 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   render() {
-    var { onClose } = this.props;
+    var { onClose, homeLink } = this.props;
+
+    var homeLinkElement: React.DOMElement<any> = null;
+    if (homeLink) {
+      homeLinkElement = JSX(`
+        <a className="home-link" href="http://www.google.com">
+          <Icon name="home"/>
+          Home
+        </a>
+      `);
+    }
 
     return JSX(`
       <div className="side-drawer">
         <div className="title" onClick={onClose}>
           <Icon className="combo-logo" name="combo-logo"/>
         </div>
-        <ul className="data-sources">{this.renderDataSourceItems()}</ul>
+        <ul className="data-sources">
+          {this.renderDataSourceItems()}
+        </ul>
+        {homeLinkElement}
       </div>
     `);
   }

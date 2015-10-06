@@ -40,6 +40,26 @@
       }
     }
   }
+
+  .home-link {
+    display: block;
+    margin: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    color: $text-medium;
+    border-left: 3px solid transparent;
+
+    &:hover {
+      background: $background-lighter;
+    }
+
+    svg {
+      width: 20px;
+      margin-top: -5px;
+      margin-right: 5px;
+    }
+  }
 }
 
 .side-drawer-enter {

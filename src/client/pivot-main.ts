@@ -18,17 +18,20 @@ var config: any = (<any>window)['PIVOT_CONFIG'];
 
 var version: string = null;
 var dataSources: List<DataSource>;
+var homeLink: string = null;
 if (config && Array.isArray(config.dataSources)) {
   version = config.version || '0.0.0';
   dataSources = <List<DataSource>>List(config.dataSources.map((dataSourceJS: DataSourceJS) => {
     var executor = queryUrlExecutorFactory(dataSourceJS.name, '/plywood', version);
     return DataSource.fromJS(dataSourceJS, executor);
   }));
+  homeLink = config.homeLink;
 } else {
   throw new Error('config not found');
 }
 
 pivot(document.body, {
   version,
-  dataSources
+  dataSources,
+  homeLink
 });

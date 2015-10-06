@@ -10,7 +10,7 @@ export interface DataSourceManagerOptions {
   dataSources: DataSource[];
   druidHost: string;
   useSegmentMetadata: boolean;
-  sourceListRefreshInterval: number;
+  sourceListRefreshInterval?: number;
   log?: Function;
 }
 

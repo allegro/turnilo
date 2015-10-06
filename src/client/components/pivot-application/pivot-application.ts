@@ -15,7 +15,7 @@ import { SplitTile } from '../split-tile/split-tile';
 import { VisSelector } from '../vis-selector/vis-selector';
 import { ManualFallback } from '../manual-fallback/manual-fallback';
 import { DropIndicator } from '../drop-indicator/drop-indicator';
-import { SideDrawer } from '../side-drawer/side-drawer';
+import { SideDrawer, SideDrawerProps } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 
 import { visualizations } from '../../visualizations/index';
@@ -25,6 +25,7 @@ var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 export interface PivotApplicationProps {
   version: string;
   dataSources: List<DataSource>;
+  homeLink?: string;
 }
 
 export interface PivotApplicationState {
@@ -243,6 +244,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   render() {
     var clicker = this.clicker;
+    var { homeLink } = this.props;
     var { essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
 
     if (!essence) return null;
@@ -275,11 +277,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var sideDrawer: React.ReactElement<any> = null;
     if (drawerOpen) {
       var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
-      sideDrawer = React.createElement(SideDrawer, {
+      sideDrawer = React.createElement(SideDrawer, <SideDrawerProps>{
         key: 'drawer',
         clicker,
         essence,
-        onClose: closeSideDrawer
+        onClose: closeSideDrawer,
+        homeLink
       });
     }
 
