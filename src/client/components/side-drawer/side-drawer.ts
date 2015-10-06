@@ -80,7 +80,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     var homeLinkElement: React.DOMElement<any> = null;
     if (homeLink) {
       homeLinkElement = JSX(`
-        <a className="home-link" href="http://www.google.com">
+        <a className="home-link" href={homeLink}>
           <Icon name="home"/>
           Home
         </a>
