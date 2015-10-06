@@ -50,6 +50,7 @@ app.get('/', (req: Request, res: Response, next: Function) => {
         config: JSON.stringify({
           version: VERSION,
           dataSources
+          //homeLink: '/'
         }),
         title: 'Pivot'
       });
