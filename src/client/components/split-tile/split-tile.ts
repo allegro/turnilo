@@ -63,6 +63,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   closeMenu() {
+    if (!this.state.menuOpenOn) return;
     this.setState({
       menuOpenOn: null,
       menuDimension: null,
@@ -73,6 +74,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   removeSplit(split: SplitCombine, e: MouseEvent) {
     var { clicker } = this.props;
     clicker.removeSplit(split, VisStrategy.FairGame);
+    this.closeMenu();
     e.stopPropagation();
   }
 

@@ -81,6 +81,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   closeMenu() {
+    if (!this.state.menuOpenOn) return;
     this.setState({
       menuOpenOn: null,
       menuDimension: null,
@@ -92,11 +93,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   removeFilter(itemBlank: ItemBlank, e: MouseEvent) {
     var { essence, clicker } = this.props;
-    if (itemBlank.source === 'from-highlight') {
-      clicker.dropHighlight();
-    } else {
-      clicker.changeFilter(essence.filter.remove(itemBlank.clause.expression));
+    if (itemBlank.clause) {
+      if (itemBlank.source === 'from-highlight') {
+        clicker.dropHighlight();
+      } else {
+        clicker.changeFilter(essence.filter.remove(itemBlank.clause.expression));
+      }
     }
+    this.closeMenu();
     e.stopPropagation();
   }
 
@@ -289,7 +293,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   renderRemoveButton(itemBlank: ItemBlank) {
     var { essence } = this.props;
     var dataSource = essence.dataSource;
-    if (itemBlank.clause.expression.equals(dataSource.timeAttribute)) return null;
+    if (itemBlank.dimension.expression.equals(dataSource.timeAttribute)) return null;
     return JSX(`
       <div className="remove" onClick={this.removeFilter.bind(this, itemBlank)}>
         <Icon name="x"/>
@@ -412,6 +416,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
             style={style}
           >
             <div className="reading">{this.formatLabelDummy(dimension)}</div>
+            {this.renderRemoveButton(itemBlank)}
           </div>
         `);
       }

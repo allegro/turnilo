@@ -43,7 +43,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
 
   onSplit(): void {
     var { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
-    if (essence.splits.hasSplitOn(dimension)) {
+    if (essence.splits.hasSplitOn(dimension) && essence.splits.length() === 1) {
       triggerSplitMenu(dimension);
     } else {
       clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepIfReady);
