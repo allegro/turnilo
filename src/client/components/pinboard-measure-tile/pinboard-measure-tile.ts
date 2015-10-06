@@ -50,7 +50,7 @@ export class PinboardMeasureTile extends React.Component<PinboardMeasureTileProp
     var measure = essence.getPinnedSortMeasure();
 
     var dropdown = React.createElement(Dropdown, <DropdownProps<Measure>>{
-      label: "By",
+      label: "Sort by",
       items: measures,
       selectedItem: measure,
       equal: measureEqual,

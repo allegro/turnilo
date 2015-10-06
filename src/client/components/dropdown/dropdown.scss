@@ -20,6 +20,10 @@
     position: absolute;
     width: 11px;
     height: 9px;
+
+    path {
+      fill: $text-lighterish;
+    }
   }
 
   .dropdown-menu {
