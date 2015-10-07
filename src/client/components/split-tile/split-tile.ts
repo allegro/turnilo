@@ -242,7 +242,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         >
           <div className="reading">{split.getTitle(dataSource)}</div>
           <div className="remove" onClick={this.removeSplit.bind(this, split)}>
-            <SvgIcon name="x" width={12} height={12}/>
+            <SvgIcon name="x"/>
           </div>
         </div>
       `);
