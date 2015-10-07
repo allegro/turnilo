@@ -1,4 +1,5 @@
 'use strict';
+require('./pivot-application.css');
 
 import * as React from 'react/addons';
 import { List, OrderedSet } from 'immutable';

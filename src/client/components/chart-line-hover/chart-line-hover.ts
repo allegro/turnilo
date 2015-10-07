@@ -1,4 +1,5 @@
 'use strict';
+require('./chart-line-hover.css');
 
 import * as React from 'react/addons';
 import { $, Expression, Executor, Dataset, Datum } from 'plywood';
@@ -12,7 +13,6 @@ export interface ChartLineHoverProps {
   getY: (d: Datum) => any;
   scaleX: (v: any) => number;
   scaleY: (v: any) => number;
-  measure: Measure;
 }
 
 export interface ChartLineHoverState {
@@ -27,7 +27,7 @@ export class ChartLineHover extends React.Component<ChartLineHoverProps, ChartLi
   }
 
   render() {
-    var { stage, datum, getX, getY, scaleX, scaleY, measure } = this.props;
+    var { stage, datum, getX, getY, scaleX, scaleY } = this.props;
 
     var x = scaleX(getX(datum));
     var y = scaleY(getY(datum));

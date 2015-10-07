@@ -1,4 +1,5 @@
 'use strict';
+require('./svg-icon.css');
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
@@ -31,7 +32,7 @@ export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
     var { name } = this.props;
 
     var viewBox: string = null;
-    var svg = require('../../../../resources/icons/' + name + '.svg');
+    var svg = require('../../../../assets/icons/' + name + '.svg');
     svg = svg.replace(/^<svg [^>]+>\s*/i, (svgDec: string) => {
       var vbMatch = svgDec.match(/viewBox="([\d ]+)"/);
       if (vbMatch) viewBox = vbMatch[1];

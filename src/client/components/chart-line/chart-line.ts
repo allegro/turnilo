@@ -1,4 +1,5 @@
 'use strict';
+require('./chart-line.css');
 
 import * as React from 'react/addons';
 import { $, Expression, Executor, Dataset, Datum } from 'plywood';

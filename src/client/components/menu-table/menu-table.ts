@@ -1,4 +1,5 @@
 'use strict';
+require('./menu-table.css');
 
 import { List } from 'immutable';
 import * as React from 'react/addons';

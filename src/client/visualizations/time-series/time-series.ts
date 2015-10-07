@@ -1,4 +1,5 @@
 'use strict';
+require('./time-series.css');
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
@@ -373,8 +374,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
             getY,
             scaleX,
             scaleY,
-            stage: lineStage,
-            measure
+            stage: lineStage
           });
 
           var chartHoverBubbleStyle = { left: scaleX(getX(hoverDatum)) };

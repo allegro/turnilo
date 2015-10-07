@@ -1,4 +1,5 @@
 'use strict';
+require('./time-axis.css');
 
 import * as React from 'react/addons';
 import * as d3 from 'd3';

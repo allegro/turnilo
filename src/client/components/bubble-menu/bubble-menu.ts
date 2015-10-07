@@ -1,4 +1,5 @@
 'use strict';
+require('./bubble-menu.css');
 
 import * as React from 'react/addons';
 import { SvgIcon } from '../svg-icon/svg-icon';

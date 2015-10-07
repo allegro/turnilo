@@ -1,4 +1,5 @@
 'use strict';
+require('./preview-menu.css');
 
 import { List } from 'immutable';
 import * as React from 'react/addons';

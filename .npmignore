@@ -1,4 +1,5 @@
 .idea
 build/tmp
 assets/data/*-large.*
-assets/data-raw
+webstorm
+resources/data

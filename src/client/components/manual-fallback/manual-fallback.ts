@@ -1,4 +1,5 @@
 'use strict';
+require('./manual-fallback.css');
 
 import { List } from 'immutable';
 import * as React from 'react/addons';

@@ -1,4 +1,5 @@
 'use strict';
+require('./vis-selector.css');
 
 import * as React from 'react/addons';
 import { SvgIcon } from '../svg-icon/svg-icon';

@@ -1,4 +1,5 @@
 'use strict';
+require('./pinboard-measure-tile.css');
 
 import { List } from 'immutable';
 import * as React from 'react/addons';

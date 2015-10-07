@@ -1,4 +1,5 @@
 'use strict';
+require('./measures-tile.css');
 
 import { List, OrderedSet } from 'immutable';
 import * as React from 'react/addons';
