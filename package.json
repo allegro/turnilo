@@ -58,8 +58,7 @@
     "replace": "0.3.0",
     "run-sequence": "1.1.4",
     "sinon": "1.17.1",
-    "underscore": "1.8.3",
-    "walltime-js": "0.1.2"
+    "underscore": "1.8.3"
   },
   "react-svg-icons": {
     "assetPath": "resources/icons"
