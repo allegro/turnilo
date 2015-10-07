@@ -3,7 +3,7 @@
 Pivot is a web-based exploratory visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
 [Plywood](https://github.com/implydata/plywood). 
 
-The project is currently at a very early alpha stage, and is _not suitable for production use_. 
+The project is currently in the alpha stage.
 
 We will be making periodic updates to the project and we ask that any early alpha users stay up to date on the
 latest version and refrain from submitting bug reports for outdated versions. 
