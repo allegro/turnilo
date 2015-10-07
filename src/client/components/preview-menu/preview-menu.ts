@@ -2,7 +2,7 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, TimePreset, SplitCombine } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
@@ -75,19 +75,19 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
     return JSX(`
       <BubbleMenu className="preview-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
         <div className="filter action" onClick={this.onFilter.bind(this)}>
-          <Icon name="preview-filter"/>
+          <SvgIcon name="preview-filter"/>
           <div className="action-label">Filter</div>
         </div>
         <div className="pin action"  onClick={this.onPin.bind(this)}>
-          <Icon name="preview-pin"/>
+          <SvgIcon name="preview-pin"/>
           <div className="action-label">Pin</div>
         </div>
         <div className="split action" onClick={this.onSplit.bind(this)}>
-          <Icon name="preview-split"/>
+          <SvgIcon name="preview-split"/>
           <div className="action-label">Split</div>
         </div>
         <div className="subsplit action" onClick={this.onSubsplit.bind(this)}>
-          <Icon name="preview-subsplit"/>
+          <SvgIcon name="preview-subsplit"/>
           <div className="action-label">Subsplit</div>
         </div>
       </BubbleMenu>

@@ -3,7 +3,7 @@
 import { List } from 'immutable';
 import * as React from 'react/addons';
 import * as d3 from 'd3';
-// import * as Icon from 'react-svg-icons';
+// import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, WallTime } from 'chronoshift';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';

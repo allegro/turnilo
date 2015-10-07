@@ -2,13 +2,13 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
 import * as numeral from 'numeral';
 import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, SortAction } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT } from '../../config/constants';
+import { SvgIcon } from '../../components/svg-icon/svg-icon';
 import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
@@ -305,7 +305,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     var cornerSortArrow: React.ReactElement<any> = null;
     if (commonSortName === SEGMENT) {
-      cornerSortArrow = React.createElement(Icon, {
+      cornerSortArrow = React.createElement(SvgIcon, {
         name: 'sort-arrow',
         className: 'sort-arrow ' + commonSort.direction
       });
@@ -316,7 +316,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var headerColumns = measuresArray.map((measure, i) => {
       var sortArrow: React.ReactElement<any> = null;
       if (commonSortName === measure.name) {
-        sortArrow = React.createElement(Icon, {
+        sortArrow = React.createElement(SvgIcon, {
           name: 'sort-arrow',
           className: 'sort-arrow ' + commonSort.direction
         });

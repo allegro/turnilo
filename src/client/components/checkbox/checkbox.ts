@@ -1,12 +1,10 @@
 'use strict';
 
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
-
-const CHECKBOX_SIZE = 14;
 
 export interface CheckboxProps {
   checked: Boolean;
@@ -29,9 +27,8 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
 
     var check: React.ReactElement<any> = null;
     if (checked) {
-      check = React.createElement(Icon, {
-        name: "check",
-        height: CHECKBOX_SIZE
+      check = React.createElement(SvgIcon, {
+        name: "check"
       });
     }
 

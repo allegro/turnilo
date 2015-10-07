@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-// import * as Icon from 'react-svg-icons';
+// import { SvgIcon } from '../svg-icon/svg-icon';
 import * as d3 from 'd3';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Measure } from '../../../common/models/index';

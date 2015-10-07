@@ -2,7 +2,7 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, RefExpression, Executor, Dataset, TimeBucketAction, SortAction, LimitAction } from 'plywood';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Dimension, Measure, DimensionOrMeasure } from '../../../common/models/index';
@@ -182,7 +182,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       <div className="sort-direction">
         {this.renderSortDropdown()}
         <div className={'direction ' + direction} onClick={this.onToggleDirection.bind(this)}>
-          <Icon name="sort-arrow"/>
+          <SvgIcon name="sort-arrow"/>
         </div>
       </div>
     `);

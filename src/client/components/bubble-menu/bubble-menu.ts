@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor } from 'plywood';
 import { Stage } from '../../../common/models/index';

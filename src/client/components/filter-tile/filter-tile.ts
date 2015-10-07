@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
@@ -296,7 +296,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (itemBlank.dimension.expression.equals(dataSource.timeAttribute)) return null;
     return JSX(`
       <div className="remove" onClick={this.removeFilter.bind(this, itemBlank)}>
-        <Icon name="x"/>
+        <SvgIcon name="x"/>
       </div>
     `);
   }

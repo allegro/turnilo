@@ -2,7 +2,7 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-// import * as Icon from 'react-svg-icons';
+// import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 // import { ... } from '../../config/constants';
 import { Stage, Clicker, Essence, Resolution, VisStrategy } from '../../../common/models/index';

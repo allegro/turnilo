@@ -2,7 +2,7 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../../common/models/index';
@@ -242,7 +242,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         >
           <div className="reading">{split.getTitle(dataSource)}</div>
           <div className="remove" onClick={this.removeSplit.bind(this, split)}>
-            <Icon name="x" width={12} height={12}/>
+            <SvgIcon name="x" width={12} height={12}/>
           </div>
         </div>
       `);

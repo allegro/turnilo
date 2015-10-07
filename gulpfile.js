@@ -14,7 +14,7 @@ gulp.task('server:tsc', laborer.taskServerTypeScript({ declaration: true }));
 gulp.task('client:test', laborer.taskClientTest());
 gulp.task('server:test', laborer.taskServerTest());
 
-gulp.task('client:bundle', laborer.taskClientBundle());
+gulp.task('client:bundle', laborer.taskClientPack());
 
 gulp.task('clean', laborer.taskClean());
 

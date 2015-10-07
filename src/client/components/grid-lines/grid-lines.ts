@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-// import * as Icon from 'react-svg-icons';
+// import { SvgIcon } from '../svg-icon/svg-icon';
 import { Stage } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 

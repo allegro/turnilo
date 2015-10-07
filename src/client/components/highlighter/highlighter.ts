@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-//import * as Icon from 'react-svg-icons';
+//import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';

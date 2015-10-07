@@ -2,7 +2,7 @@
 
 import { List } from 'immutable';
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { isInside, escapeKey } from '../../utils/dom/dom';
@@ -117,7 +117,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
       <div className={'dropdown ' + direction} onClick={this.onClick.bind(this)}>
         {labelElement}
         <div className="selected-item">{renderItem(selectedItem)}</div>
-        <Icon className="caret-icon" name="dropdown-caret"/>
+        <SvgIcon className="caret-icon" name="dropdown-caret"/>
         { open ? this.renderMenu() : null }
       </div>
     `);

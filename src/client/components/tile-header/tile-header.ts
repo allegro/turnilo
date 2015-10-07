@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
@@ -31,7 +31,7 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
     if (onSearch) {
       searchButton = JSX(`
         <div className="search" onClick={onSearch}>
-          <Icon name="loupe" width={12} height={12}/>
+          <SvgIcon name="loupe" width={12} height={12}/>
         </div>
       `);
     }
@@ -41,7 +41,7 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
         <div className="title">{title}</div>
         {searchButton}
         <div className="close" onClick={onClose}>
-          <Icon name="x" width={12} height={12}/>
+          <SvgIcon name="x" width={12} height={12}/>
         </div>
       </div>
     `);

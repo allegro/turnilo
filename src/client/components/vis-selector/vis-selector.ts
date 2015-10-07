@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { findParentWithClass } from '../../utils/dom/dom';
@@ -63,7 +63,7 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
     return JSX(`
       <div className="vis-selector" onClick={this.openMenu.bind(this)}>
         <div className="vis-item selected">
-          <Icon name={'vis-' + visualization.id}/>
+          <SvgIcon name={'vis-' + visualization.id}/>
           <div className="vis-title">{visualization.title}</div>
         </div>
         {menu}

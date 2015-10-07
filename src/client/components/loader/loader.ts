@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 
 export interface LoaderProps {
 }
@@ -19,7 +19,7 @@ export class Loader extends React.Component<LoaderProps, LoaderState> {
   render() {
     return JSX(`
       <div className="loader">
-        <Icon name="grid-loader"/>
+        <SvgIcon name="grid-loader"/>
       </div>
     `);
   }

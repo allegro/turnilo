@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { isInside, escapeKey } from '../../utils/dom/dom';
@@ -81,7 +81,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     if (homeLink) {
       homeLinkElement = JSX(`
         <a className="home-link" href={homeLink}>
-          <Icon name="home"/>
+          <SvgIcon name="home"/>
           Home
         </a>
       `);
@@ -90,7 +90,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     return JSX(`
       <div className="side-drawer">
         <div className="title" onClick={onClose}>
-          <Icon className="combo-logo" name="combo-logo"/>
+          <SvgIcon className="combo-logo" name="combo-logo"/>
         </div>
         <ul className="data-sources">
           {this.renderDataSourceItems()}

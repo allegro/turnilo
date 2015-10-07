@@ -1,7 +1,7 @@
 'use strict';
 
 import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
@@ -192,7 +192,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
           style={style}
         >
           <div className="icon">
-            <Icon name={dimension.className}/>
+            <SvgIcon name={dimension.className}/>
           </div>
           <div className="item-title">{dimension.title}</div>
         </div>
