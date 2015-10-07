@@ -56,12 +56,12 @@ export class PinboardMeasureTile extends React.Component<PinboardMeasureTileProp
       equal: measureEqual,
       renderItem: measureTitle,
       keyItem: measureName,
-      onSelect: this.onSelect.bind(this),
-      direction: 'up'
+      onSelect: this.onSelect.bind(this)
     });
 
     return JSX(`
       <div className="pinboard-measure-tile">
+        <div className="title">Pinboard</div>
         {dropdown}
       </div>
     `);
