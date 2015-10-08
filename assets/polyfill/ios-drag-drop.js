@@ -142,6 +142,10 @@
       var y = touch[coordinateSystemForElementFromPoint + 'Y'];
       dropEvt.offsetX = x - target.x;
       dropEvt.offsetY = y - target.y;
+      dropEvt.clientX = touch.clientX;
+      dropEvt.clientY = touch.clientY;
+      dropEvt.pageX = touch.pageX;
+      dropEvt.pageY = touch.pageY;
 
       dropEvt.dataTransfer = {
         types: this.dragDataTypes,
@@ -171,6 +175,8 @@
       };
 
       var touch = event.changedTouches[0];
+      enterEvt.clientX = touch.clientX;
+      enterEvt.clientY = touch.clientY;
       enterEvt.pageX = touch.pageX;
       enterEvt.pageY = touch.pageY;
 
@@ -188,6 +194,8 @@
       };
 
       var touch = event.changedTouches[0];
+      overEvt.clientX = touch.clientX;
+      overEvt.clientY = touch.clientY;
       overEvt.pageX = touch.pageX;
       overEvt.pageY = touch.pageY;
 
@@ -205,6 +213,8 @@
       };
 
       var touch = event.changedTouches[0];
+      leaveEvt.clientX = touch.clientX;
+      leaveEvt.clientY = touch.clientY;
       leaveEvt.pageX = touch.pageX;
       leaveEvt.pageY = touch.pageY;
 
@@ -265,25 +275,44 @@
   };
 
   // event listeners
+  var waitingForDrag = false;
   function touchstart(evt) {
-    var el = evt.target;
-    do {
-      if (el.draggable === true) {
-        // If draggable isn't explicitly set for anchors, then simulate a click event.
-        // Otherwise plain old vanilla links will stop working.
-        // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Touch_events#Handling_clicks
-        if (!el.hasAttribute("draggable") && el.tagName.toLowerCase() == "a") {
-          var clickEvt = document.createEvent("MouseEvents");
-          clickEvt.initMouseEvent("click", true, true, el.ownerDocument.defaultView, 1,
-            evt.screenX, evt.screenY, evt.clientX, evt.clientY,
-            evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, 0, null);
-          el.dispatchEvent(clickEvt);
-          log("Simulating click to anchor");
+    waitingForDrag = true;
+    doc.addEventListener("touchmove", touchmove);
+    doc.addEventListener("touchend", stopWaiting);
+    doc.addEventListener("touchcancel", stopWaiting);
+  }
+
+  function touchmove(evt) {
+    if (waitingForDrag) {
+      var el = evt.target;
+      do {
+        if (el.draggable === true) {
+          // If draggable isn't explicitly set for anchors, then simulate a click event.
+          // Otherwise plain old vanilla links will stop working.
+          // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Touch_events#Handling_clicks
+          if (!el.hasAttribute("draggable") && el.tagName.toLowerCase() == "a") {
+            var clickEvt = document.createEvent("MouseEvents");
+            clickEvt.initMouseEvent("click", true, true, el.ownerDocument.defaultView, 1,
+              evt.screenX, evt.screenY, evt.clientX, evt.clientY,
+              evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, 0, null);
+            el.dispatchEvent(clickEvt);
+            log("Simulating click to anchor");
+          }
+          evt.preventDefault();
+          new DragDrop(evt, el);
         }
-        evt.preventDefault();
-        new DragDrop(evt,el);
-      }
-    } while((el = el.parentNode) && el !== doc.body);
+      } while ((el = el.parentNode) && el !== doc.body);
+    }
+
+    stopWaiting();
+  }
+
+  function stopWaiting() {
+    waitingForDrag = false;
+    doc.removeEventListener("touchmove", touchmove);
+    doc.removeEventListener("touchend", stopWaiting);
+    doc.removeEventListener("touchcancel", stopWaiting)
   }
 
   // DOM helpers
@@ -362,7 +391,7 @@
 
   function noop() {}
 
-  main(window.iosDragDropShim);
+  main({ enableEnterLeave: true });
 
 
 })(document);

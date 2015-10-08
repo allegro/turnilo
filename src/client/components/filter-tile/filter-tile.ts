@@ -134,7 +134,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { essence } = this.props;
     var numItems = essence.filter.length();
     var rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
-    var offset = e.clientX - rect.left;
+    var x = e.clientX || e.pageX;
+    var offset = x - rect.left;
     return calculateDragPosition(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
 
