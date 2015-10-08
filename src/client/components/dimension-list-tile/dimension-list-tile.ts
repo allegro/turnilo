@@ -23,6 +23,7 @@ export interface DimensionListTileProps {
 }
 
 export interface DimensionListTileState {
+  PreviewMenuAsync?: typeof PreviewMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   dragOver?: boolean;
@@ -35,11 +36,20 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   constructor() {
     super();
     this.state = {
+      PreviewMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
       dragOver: false,
       dragPosition: null
     };
+  }
+
+  componentDidMount() {
+    require.ensure(['../preview-menu/preview-menu'], (require) => {
+      this.setState({
+        PreviewMenuAsync: require('../preview-menu/preview-menu').PreviewMenu
+      });
+    }, 'preview-menu');
   }
 
   clickDimension(dimension: Dimension, e: MouseEvent) {
@@ -149,12 +159,12 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   renderMenu(): React.ReactElement<any> {
     var { essence, clicker, menuStage, triggerFilterMenu, triggerSplitMenu } = this.props;
-    var { menuOpenOn, menuDimension } = this.state;
-    if (!menuDimension) return null;
+    var { PreviewMenuAsync, menuOpenOn, menuDimension } = this.state;
+    if (!PreviewMenuAsync || !menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
     return JSX(`
-      <PreviewMenu
+      <PreviewMenuAsync
         clicker={clicker}
         essence={essence}
         direction="right"
