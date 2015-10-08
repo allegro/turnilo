@@ -1,7 +1,8 @@
 'use strict';
 require('./loader.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
 export interface LoaderProps {

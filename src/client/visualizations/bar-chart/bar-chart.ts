@@ -2,7 +2,8 @@
 require('./bar-chart.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 // import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 // import { ... } from '../../config/constants';

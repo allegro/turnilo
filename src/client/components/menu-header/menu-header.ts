@@ -1,7 +1,8 @@
 'use strict';
 require('./menu-header.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';

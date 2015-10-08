@@ -2,7 +2,8 @@
 require('./menu-time-series.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 // import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset, Datum, TimeRange, TimeBucketAction } from 'plywood';
 import { Stage, Essence, VisStrategy, SplitCombine, Filter, Dimension, Measure, DataSource } from '../../../common/models/index';

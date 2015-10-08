@@ -1,7 +1,8 @@
 'use strict';
 require('./bubble-menu.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor } from 'plywood';
@@ -71,7 +72,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
   globalMouseDownListener(e: MouseEvent) {
     var { onClose, openOn } = this.props;
-    // can not use React.findDOMNode(this) because portal?
+    // can not use ReactDOM.findDOMNode(this) because portal?
     var myElement = <Element>document.getElementsByClassName('bubble-menu')[0];
     if (!myElement) return;
     var target = <Element>e.target;

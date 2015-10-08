@@ -1,7 +1,8 @@
 'use strict';
 require('./filter-tile.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
@@ -30,6 +31,7 @@ export interface FilterTileProps {
 }
 
 export interface FilterTileState {
+  FilterMenuAsync?: typeof FilterMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   dragOver?: boolean;
@@ -46,6 +48,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   constructor() {
     super();
     this.state = {
+      FilterMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
       dragOver: false,
@@ -57,6 +60,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     };
   }
 
+  componentDidMount() {
+    require.ensure(['../filter-menu/filter-menu'], (require) => {
+      this.setState({
+        FilterMenuAsync: require('../filter-menu/filter-menu').FilterMenu
+      });
+    }, 'filter-menu');
+  }
+
   clickDimension(dimension: Dimension, e: MouseEvent) {
     var target = findParentWithClass(<Element>e.target, FILTER_CLASS_NAME);
     this.openMenu(dimension, target);
@@ -65,7 +76,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   dummyMount(dimension: Dimension, dummy: React.Component<any, any>) {
     var { menuOpenOn } = this.state;
     if (menuOpenOn || !dummy) return;
-    var target = React.findDOMNode(dummy);
+    var target = ReactDOM.findDOMNode(dummy);
     this.openMenu(dimension, target);
   }
 
@@ -122,7 +133,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   calculateDragPosition(e: DragEvent): DragPosition {
     var { essence } = this.props;
     var numItems = essence.filter.length();
-    var rect = React.findDOMNode(this.refs['items']).getBoundingClientRect();
+    var rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
     var offset = e.clientX - rect.left;
     return calculateDragPosition(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
@@ -219,7 +230,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (filter.filteredOn(dimension.expression)) {
       var targetRef = this.refs[dimension.name];
       if (!targetRef) return;
-      var target = React.findDOMNode(targetRef);
+      var target = ReactDOM.findDOMNode(targetRef);
       if (!target) return;
       this.openMenu(dimension, target);
     } else {
@@ -272,12 +283,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   renderMenu(): React.ReactElement<any> {
     var { essence, clicker, menuStage } = this.props;
-    var { menuOpenOn, menuDimension, possibleInsertPosition, possibleReplacePosition } = this.state;
-    if (!menuDimension) return null;
+    var { FilterMenuAsync, menuOpenOn, menuDimension, possibleInsertPosition, possibleReplacePosition } = this.state;
+    if (!FilterMenuAsync || !menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
     return JSX(`
-      <FilterMenu
+      <FilterMenuAsync
         clicker={clicker}
         essence={essence}
         direction="down"

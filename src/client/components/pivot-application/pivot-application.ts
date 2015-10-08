@@ -1,7 +1,9 @@
 'use strict';
 require('./pivot-application.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
@@ -20,8 +22,6 @@ import { SideDrawer, SideDrawerProps } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 
 import { visualizations } from '../../visualizations/index';
-
-var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 export interface PivotApplicationProps {
   version: string;
@@ -160,8 +160,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   globalResizeListener() {
     var { container, visualization } = this.refs;
-    var containerDOM = React.findDOMNode(container);
-    var visualizationDOM = React.findDOMNode(visualization);
+    var containerDOM = ReactDOM.findDOMNode(container);
+    var visualizationDOM = ReactDOM.findDOMNode(visualization);
     if (!containerDOM || !visualizationDOM) return;
     this.setState({
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
@@ -290,7 +290,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var sideDrawerTransition = React.createElement(<any>ReactCSSTransitionGroup, {
       component: "div",
       className: "side-drawer-container",
-      transitionName: "side-drawer"
+      transitionName: "side-drawer",
+      transitionEnterTimeout: 500,
+      transitionLeaveTimeout: 300
     }, sideDrawer);
 
     return JSX(`

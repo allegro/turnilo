@@ -2,7 +2,8 @@
 require('./preview-menu.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, TimePreset, SplitCombine } from '../../../common/models/index';

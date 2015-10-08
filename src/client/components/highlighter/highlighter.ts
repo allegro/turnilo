@@ -1,7 +1,8 @@
 'use strict';
 require('./highlighter.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 //import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
@@ -56,7 +57,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
   getPseudoHighlight(eventX: number): TimeRange {
     var { scaleX } = this.props;
     var { dragStartPx } = this.state;
-    var myDOM = React.findDOMNode(this);
+    var myDOM = ReactDOM.findDOMNode(this);
     var d1 = scaleX.invert(dragStartPx);
     var d2 = scaleX.invert(eventX - myDOM.getBoundingClientRect().left);
 
@@ -70,7 +71,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
   onMouseDown(e: MouseEvent) {
     var { dragStartPx } = this.state;
     if (dragStartPx !== null) return;
-    var myDOM = React.findDOMNode(this);
+    var myDOM = ReactDOM.findDOMNode(this);
     dragStartPx = e.clientX - (myDOM.getBoundingClientRect().left);
     this.setState({ dragStartPx });
   }

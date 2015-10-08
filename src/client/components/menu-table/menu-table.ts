@@ -2,7 +2,8 @@
 require('./menu-table.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset, SortAction } from 'plywood';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../../common/models/index";

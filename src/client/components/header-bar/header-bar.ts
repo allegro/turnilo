@@ -1,7 +1,8 @@
 'use strict';
 require('./header-bar.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Datum, Dataset } from 'plywood';
 import { Essence } from "../../../common/models/index";

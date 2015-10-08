@@ -2,7 +2,8 @@
 require('./table.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import * as numeral from 'numeral';
 import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, SortAction } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
@@ -223,7 +224,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   calculateMousePosition(e: MouseEvent): PositionHover {
     var { essence } = this.props;
     var { flatData, scrollLeft, scrollTop } = this.state;
-    var rect = React.findDOMNode(this.refs['base']).getBoundingClientRect();
+    var rect = ReactDOM.findDOMNode(this.refs['base']).getBoundingClientRect();
     var x = e.clientX - rect.left;
     var y = e.clientY - rect.top;
 

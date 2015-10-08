@@ -1,7 +1,8 @@
 'use strict';
 require('./dimension-list-tile.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
@@ -64,7 +65,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   calculateDragPosition(e: DragEvent) {
     var { essence } = this.props;
     var numItems = essence.dataSource.dimensions.size;
-    var rect = React.findDOMNode(this.refs['items']).getBoundingClientRect();
+    var rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
     var offset = e.clientY - rect.top;
 
     this.setState({

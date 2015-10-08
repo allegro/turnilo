@@ -2,7 +2,8 @@
 require('./time-series.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import * as numeral from 'numeral';
 import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, SortAction, ChainExpression } from 'plywood';
@@ -225,7 +226,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   }
 
   onMouseDown(e: MouseEvent) {
-    var myDOM = React.findDOMNode(this);
+    var myDOM = ReactDOM.findDOMNode(this);
     var rect = myDOM.getBoundingClientRect();
     var dragStart = e.clientX - (rect.left + H_PADDING);
     this.setState({ dragStart });
@@ -236,7 +237,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var { dataset, hoverDatum, hoverMeasure } = this.state;
     if (!dataset || essence.splits.length() > 1) return;
 
-    var myDOM = React.findDOMNode(this);
+    var myDOM = ReactDOM.findDOMNode(this);
     var rect = myDOM.getBoundingClientRect();
     var dragDate = scaleX.invert(e.clientX - (rect.left + H_PADDING));
 

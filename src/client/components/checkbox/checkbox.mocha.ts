@@ -3,9 +3,10 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { setupDOM } from '../../utils/jsdom-setup';
-import * as React from 'react/addons';
-var { TestUtils } = React.addons;
-var { Simulate } = TestUtils;
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+
+import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
 import { Checkbox } from './checkbox';
@@ -21,7 +22,7 @@ describe('Checkbox', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('checkbox');
+    expect((<any>ReactDOM.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('checkbox');
   });
 
   it('not checked + check', () => {
@@ -37,7 +38,7 @@ describe('Checkbox', () => {
     expect(svgs.length).to.equal(0);
 
     expect(onClick.callCount).to.equal(0);
-    Simulate.click(React.findDOMNode(renderedComponent));
+    TestUtils.Simulate.click(ReactDOM.findDOMNode(renderedComponent));
     expect(onClick.callCount).to.equal(1);
   });
 });

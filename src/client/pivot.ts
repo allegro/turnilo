@@ -2,7 +2,8 @@
 require('./pivot.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { Timezone, WallTime } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, AttributeInfo } from 'plywood';
 
@@ -11,8 +12,7 @@ import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource, DataSour
 import { PivotApplication, PivotApplicationProps } from "./components/index";
 
 export function pivot(container: Element, options: PivotApplicationProps) {
-  React.render(
-    React.createElement(PivotApplication, options),
-    container
-  );
+  var cont = document.getElementsByClassName('pivot-container')[0];
+  if (!cont) return;
+  ReactDOM.render(React.createElement(PivotApplication, options), cont);
 }

@@ -1,7 +1,8 @@
 'use strict';
 require('./side-drawer.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
@@ -42,7 +43,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   globalMouseDownListener(e: MouseEvent) {
-    var myElement = React.findDOMNode(this);
+    var myElement = ReactDOM.findDOMNode(this);
     var target = <Element>e.target;
 
     if (isInside(target, myElement)) return;
