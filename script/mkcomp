@@ -39,14 +39,14 @@ writeFile = (path, data) ->
 # Make the TypeScript file
 writeFile(path + name + '.ts', """
 'use strict';
+require('./#{name}.css');
 
-import { List } from 'immutable';
-import * as React from 'react/addons';
-// import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
-// import { SomeComp } from '../some-comp/some-comp';
+import { SvgIcon } from '../svg-icon/svg-icon';
 
 // I am: import { #{camelName} } from '../#{name}/#{name}';
 
@@ -94,9 +94,9 @@ writeFile(path + name + '.mocha.ts', """
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { setupDOM } from '../../utils/jsdom-setup';
-import * as React from 'react/addons';
-var { TestUtils } = React.addons;
-var { Simulate } = TestUtils;
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
 import { #{camelName} } from './#{name}';
@@ -112,7 +112,7 @@ describe('#{camelName}', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('#{name}');
+    expect((<any>ReactDOM.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('#{name}');
   });
 
 });
