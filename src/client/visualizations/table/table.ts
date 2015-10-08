@@ -1,14 +1,16 @@
 'use strict';
+require('./table.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import * as numeral from 'numeral';
 import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, SortAction } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT } from '../../config/constants';
+import { SvgIcon } from '../../components/svg-icon/svg-icon';
 import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
@@ -222,7 +224,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   calculateMousePosition(e: MouseEvent): PositionHover {
     var { essence } = this.props;
     var { flatData, scrollLeft, scrollTop } = this.state;
-    var rect = React.findDOMNode(this.refs['base']).getBoundingClientRect();
+    var rect = ReactDOM.findDOMNode(this.refs['base']).getBoundingClientRect();
     var x = e.clientX - rect.left;
     var y = e.clientY - rect.top;
 
@@ -303,31 +305,26 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var commonSort = essence.getCommonSort();
     var commonSortName = commonSort ? (<RefExpression>commonSort.expression).name : null;
 
+    var sortArrowIcon = commonSort ? React.createElement(SvgIcon, {
+      svg: require('../../icons/sort-arrow.svg'),
+      className: 'sort-arrow ' + commonSort.direction
+    }) : null;
+
     var cornerSortArrow: React.ReactElement<any> = null;
     if (commonSortName === SEGMENT) {
-      cornerSortArrow = React.createElement(Icon, {
-        name: 'sort-arrow',
-        className: 'sort-arrow ' + commonSort.direction
-      });
+      cornerSortArrow = sortArrowIcon;
     }
 
     var measuresArray = essence.getMeasures().toArray();
 
     var headerColumns = measuresArray.map((measure, i) => {
-      var sortArrow: React.ReactElement<any> = null;
-      if (commonSortName === measure.name) {
-        sortArrow = React.createElement(Icon, {
-          name: 'sort-arrow',
-          className: 'sort-arrow ' + commonSort.direction
-        });
-      }
       return JSX(`
         <div
           className={'measure-name' + (measure === hoverMeasure ? ' hover' : '')}
           key={measure.name}
         >
           <div className="title-wrap">{measure.title}</div>
-          {sortArrow}
+          {commonSortName === measure.name ? sortArrowIcon : null}
         </div>
       `);
     });

@@ -1,7 +1,9 @@
 'use strict';
+require('./dimension-tile.css');
 
-import * as React from 'react/addons';
-// import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+// import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';

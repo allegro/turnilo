@@ -1,7 +1,9 @@
 'use strict';
+require('./totals.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import * as numeral from 'numeral';
 // import * as Icon from 'react-svg-icons';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';

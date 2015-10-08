@@ -9,20 +9,20 @@ import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { HighlightControls } from './highlight-controls';
+import { SvgIcon } from './svg-icon';
 
-describe('HighlightControls', () => {
+describe('SvgIcon', () => {
   setupDOM();
 
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       JSX(`
-        <HighlightControls/>
+        <SvgIcon/>
       `)
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>ReactDOM.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('highlight-controls');
+    expect((<any>ReactDOM.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('svg-icon');
   });
 
 });

@@ -1,8 +1,10 @@
 'use strict';
+require('./split-tile.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../../common/models/index';
@@ -22,6 +24,7 @@ export interface SplitTileProps {
 }
 
 export interface SplitTileState {
+  SplitMenuAsync?: typeof SplitMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   menuSplit?: SplitCombine;
@@ -36,12 +39,21 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   constructor() {
     super();
     this.state = {
+      SplitMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
       dragOver: false,
       dragInsertPosition: null,
       dragReplacePosition: null
     };
+  }
+
+  componentDidMount() {
+    require.ensure(['../split-menu/split-menu'], (require) => {
+      this.setState({
+        SplitMenuAsync: require('../split-menu/split-menu').SplitMenu
+      });
+    }, 'split-menu');
   }
 
   selectDimensionSplit(dimension: Dimension, split: SplitCombine, e: MouseEvent) {
@@ -95,7 +107,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   calculateDragPosition(e: DragEvent): DragPosition {
     var { essence } = this.props;
     var numItems = essence.splits.length();
-    var rect = React.findDOMNode(this.refs['items']).getBoundingClientRect();
+    var rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
     var offset = e.clientX - rect.left;
     return calculateDragPosition(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
@@ -184,19 +196,19 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (!split) return;
     var targetRef = this.refs[dimension.name];
     if (!targetRef) return;
-    var target = React.findDOMNode(targetRef);
+    var target = ReactDOM.findDOMNode(targetRef);
     if (!target) return;
     this.openMenu(dimension, split, target);
   }
 
   renderMenu(): React.ReactElement<any> {
     var { essence, clicker, menuStage } = this.props;
-    var { menuOpenOn, menuDimension, menuSplit } = this.state;
-    if (!menuDimension) return null;
+    var { SplitMenuAsync, menuOpenOn, menuDimension, menuSplit } = this.state;
+    if (!SplitMenuAsync || !menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
     return JSX(`
-      <SplitMenu
+      <SplitMenuAsync
         clicker={clicker}
         essence={essence}
         direction="down"
@@ -227,7 +239,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
       var classNames = [
         SPLIT_CLASS_NAME,
-        dimension.className
+        'type-' + dimension.className
       ];
       if (dimension === menuDimension) classNames.push('selected');
       return JSX(`
@@ -242,7 +254,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         >
           <div className="reading">{split.getTitle(dataSource)}</div>
           <div className="remove" onClick={this.removeSplit.bind(this, split)}>
-            <Icon name="x" width={12} height={12}/>
+            <SvgIcon svg={require('../../icons/x.svg')}/>
           </div>
         </div>
       `);

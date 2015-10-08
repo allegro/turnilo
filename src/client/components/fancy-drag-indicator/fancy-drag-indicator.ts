@@ -1,8 +1,10 @@
 'use strict';
+require('./fancy-drag-indicator.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
@@ -45,7 +47,7 @@ export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps,
     return JSX(`
       <div className="fancy-drag-indicator">
         {dragGhostElement}
-        <Icon className="drag-ghost-arrow" name="drag-arrow" style={{left: ghostArrowLeft}}/>
+        <SvgIcon className="drag-ghost-arrow" svg={require('../../icons/drag-arrow.svg')} style={{left: ghostArrowLeft}}/>
       </div>
     `);
   }

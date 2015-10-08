@@ -1,7 +1,9 @@
 'use strict';
+require('./header-bar.css');
 
-import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Datum, Dataset } from 'plywood';
 import { Essence } from "../../../common/models/index";
 
@@ -30,18 +32,18 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
     return JSX(`
       <header className="header-bar">
         <div className="burger-bar" onClick={onNavClick}>
-          <Icon className="menu" name="menu" color="white"/>
+          <SvgIcon className="menu" svg={require('../../icons/menu.svg')} color="white"/>
           <div className="dataset-title">{essence.dataSource.title}</div>
         </div>
         <div className="right-bar">
           <div className="icon-button panic" onClick={panic}>
-            <Icon className="panic-icon" name="panic" color="white"/>
+            <SvgIcon className="panic-icon" svg={require('../../icons/panic.svg')} color="white"/>
           </div>
           <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
-            <Icon className="help-icon" name="help" color="white"/>
+            <SvgIcon className="help-icon" svg={require('../../icons/help.svg')} color="white"/>
           </a>
           <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
-            <Icon className="github-icon" name="github" color="white"/>
+            <SvgIcon className="github-icon" svg={require('../../icons/github.svg')} color="white"/>
           </a>
         </div>
       </header>

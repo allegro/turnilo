@@ -3,9 +3,10 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { setupDOM } from '../../utils/jsdom-setup';
-import * as React from 'react/addons';
-var { TestUtils } = React.addons;
-var { Simulate } = TestUtils;
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+
+import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
 import { Highlighter } from './highlighter';
@@ -21,7 +22,7 @@ describe('Highlighter', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>React.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('highlighter');
+    expect((<any>ReactDOM.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('highlighter');
   });
 
 });

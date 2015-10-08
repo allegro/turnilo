@@ -1,7 +1,9 @@
 'use strict';
+require('./body-portal.css');
 
-import * as React from 'react/addons';
-// import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+// import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
@@ -26,15 +28,15 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     var newDiv = document.createElement('div');
     newDiv.className = 'body-portal';
     this.target = document.body.appendChild(newDiv);
-    this.component = React.render(this.props.children, this.target);
+    this.component = ReactDOM.render(this.props.children, this.target);
   }
 
   componentDidUpdate() {
-    this.component = React.render(this.props.children, this.target);
+    this.component = ReactDOM.render(this.props.children, this.target);
   }
 
   componentWillUnmount() {
-    React.unmountComponentAtNode(this.target);
+    ReactDOM.unmountComponentAtNode(this.target);
     document.body.removeChild(this.target);
   }
 

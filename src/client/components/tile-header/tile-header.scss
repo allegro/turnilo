@@ -13,6 +13,10 @@
     top: 11px;
     right: 30px;
     cursor: pointer;
+
+    svg {
+      width: 12px;
+    }
   }
 
   .close {
@@ -21,6 +25,10 @@
     padding: 2px;
     right: $tile-padding-h;
     cursor: pointer;
+
+    svg {
+      width: 12px;
+    }
 
     path {
       fill: $text-lighter;

@@ -1,7 +1,9 @@
 'use strict';
+require('./measures-tile.css');
 
 import { List, OrderedSet } from 'immutable';
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { hasOwnProperty } from '../../../common/utils/general/general';

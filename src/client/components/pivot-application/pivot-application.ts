@@ -1,6 +1,9 @@
 'use strict';
+require('./pivot-application.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
@@ -15,12 +18,10 @@ import { SplitTile } from '../split-tile/split-tile';
 import { VisSelector } from '../vis-selector/vis-selector';
 import { ManualFallback } from '../manual-fallback/manual-fallback';
 import { DropIndicator } from '../drop-indicator/drop-indicator';
-import { SideDrawer, SideDrawerProps } from '../side-drawer/side-drawer';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
+import { SideDrawer, SideDrawerProps } from '../side-drawer/side-drawer';
 
 import { visualizations } from '../../visualizations/index';
-
-var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 export interface PivotApplicationProps {
   version: string;
@@ -29,6 +30,8 @@ export interface PivotApplicationProps {
 }
 
 export interface PivotApplicationState {
+  ReactCSSTransitionGroupAsync?: typeof ReactCSSTransitionGroup;
+  SideDrawerAsync?: typeof SideDrawer;
   essence?: Essence;
   menuStage?: Stage;
   visualizationStage?: Stage;
@@ -44,6 +47,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   constructor() {
     super();
     this.state = {
+      ReactCSSTransitionGroupAsync: null,
+      SideDrawerAsync: null,
       essence: null,
       dragOver: false,
       drawerOpen: false
@@ -127,18 +132,28 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.setState({ essence });
   }
 
-  componentWillUpdate(nextProps: PivotApplicationProps, nextState: PivotApplicationState): void {
-    this.hashUpdating = true;
-    window.location.hash = nextState.essence.toHash();
-    // delay unflagging the update so that the hashchange event has a chance to fire a blank
-    setTimeout(() => { this.hashUpdating = false; }, 10);
-  }
-
   componentDidMount() {
     window.addEventListener('resize', this.globalResizeListener);
     window.addEventListener('hashchange', this.globalHashChangeListener);
     window.addEventListener('keydown', this.globalKeyDownListener);
     this.globalResizeListener();
+
+    require.ensure([
+      'react-addons-css-transition-group',
+      '../side-drawer/side-drawer'
+    ], (require) => {
+      this.setState({
+        ReactCSSTransitionGroupAsync: require('react-addons-css-transition-group'),
+        SideDrawerAsync: require('../side-drawer/side-drawer').SideDrawer
+      });
+    }, 'side-drawer');
+  }
+
+  componentWillUpdate(nextProps: PivotApplicationProps, nextState: PivotApplicationState): void {
+    this.hashUpdating = true;
+    window.location.hash = nextState.essence.toHash();
+    // delay unflagging the update so that the hashchange event has a chance to fire a blank
+    setTimeout(() => { this.hashUpdating = false; }, 10);
   }
 
   componentWillUnmount() {
@@ -159,8 +174,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   globalResizeListener() {
     var { container, visualization } = this.refs;
-    var containerDOM = React.findDOMNode(container);
-    var visualizationDOM = React.findDOMNode(visualization);
+    var containerDOM = ReactDOM.findDOMNode(container);
+    var visualizationDOM = ReactDOM.findDOMNode(visualization);
     if (!containerDOM || !visualizationDOM) return;
     this.setState({
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
@@ -245,7 +260,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   render() {
     var clicker = this.clicker;
     var { homeLink } = this.props;
-    var { essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
+    var { ReactCSSTransitionGroupAsync, SideDrawerAsync, essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
 
     if (!essence) return null;
     var { dataSource, visualization } = essence;
@@ -275,9 +290,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     }
 
     var sideDrawer: React.ReactElement<any> = null;
-    if (drawerOpen) {
+    if (drawerOpen && SideDrawerAsync) {
       var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
-      sideDrawer = React.createElement(SideDrawer, <SideDrawerProps>{
+      sideDrawer = React.createElement(SideDrawerAsync, <SideDrawerProps>{
         key: 'drawer',
         clicker,
         essence,
@@ -286,11 +301,15 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       });
     }
 
-    var sideDrawerTransition = React.createElement(<any>ReactCSSTransitionGroup, {
-      component: "div",
-      className: "side-drawer-container",
-      transitionName: "side-drawer"
-    }, sideDrawer);
+    if (ReactCSSTransitionGroupAsync) {
+      var sideDrawerTransition = React.createElement(<any>ReactCSSTransitionGroupAsync, {
+        component: "div",
+        className: "side-drawer-container",
+        transitionName: "side-drawer",
+        transitionEnterTimeout: 500,
+        transitionLeaveTimeout: 300
+      }, sideDrawer);
+    }
 
     return JSX(`
       <main className='pivot-application' id='portal-cont'>

@@ -1,7 +1,9 @@
 'use strict';
+require('./dimension-list-tile.css');
 
-import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
@@ -21,6 +23,7 @@ export interface DimensionListTileProps {
 }
 
 export interface DimensionListTileState {
+  PreviewMenuAsync?: typeof PreviewMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   dragOver?: boolean;
@@ -33,11 +36,20 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   constructor() {
     super();
     this.state = {
+      PreviewMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
       dragOver: false,
       dragPosition: null
     };
+  }
+
+  componentDidMount() {
+    require.ensure(['../preview-menu/preview-menu'], (require) => {
+      this.setState({
+        PreviewMenuAsync: require('../preview-menu/preview-menu').PreviewMenu
+      });
+    }, 'preview-menu');
   }
 
   clickDimension(dimension: Dimension, e: MouseEvent) {
@@ -63,7 +75,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   calculateDragPosition(e: DragEvent) {
     var { essence } = this.props;
     var numItems = essence.dataSource.dimensions.size;
-    var rect = React.findDOMNode(this.refs['items']).getBoundingClientRect();
+    var rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
     var offset = e.clientY - rect.top;
 
     this.setState({
@@ -147,12 +159,12 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   renderMenu(): React.ReactElement<any> {
     var { essence, clicker, menuStage, triggerFilterMenu, triggerSplitMenu } = this.props;
-    var { menuOpenOn, menuDimension } = this.state;
-    if (!menuDimension) return null;
+    var { PreviewMenuAsync, menuOpenOn, menuDimension } = this.state;
+    if (!PreviewMenuAsync || !menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
     return JSX(`
-      <PreviewMenu
+      <PreviewMenuAsync
         clicker={clicker}
         essence={essence}
         direction="right"
@@ -179,7 +191,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
       var classNames = [
         DIMENSION_CLASS_NAME,
-        dimension.className
+        'type-' + dimension.className
       ];
       if (dimension === menuDimension) classNames.push('selected');
       return JSX(`
@@ -192,7 +204,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
           style={style}
         >
           <div className="icon">
-            <Icon name={dimension.className}/>
+            <SvgIcon svg={require('../../icons/type-' + dimension.className + '.svg')}/>
           </div>
           <div className="item-title">{dimension.title}</div>
         </div>

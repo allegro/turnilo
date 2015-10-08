@@ -54,9 +54,9 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     this.type = type;
 
     if (type === 'STRING' && isGeo(name)) {
-      this.className = 'type-string-geo';
+      this.className = 'string-geo';
     } else {
-      this.className = 'type-' + type.toLowerCase().replace(/_/g, '-');
+      this.className = type.toLowerCase().replace(/_/g, '-');
     }
   }
 

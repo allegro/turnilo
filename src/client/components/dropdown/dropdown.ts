@@ -1,8 +1,10 @@
 'use strict';
+require('./dropdown.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { isInside, escapeKey } from '../../utils/dom/dom';
@@ -57,7 +59,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
     var { open } = this.state;
     if (!open) return;
 
-    var myElement = React.findDOMNode(this);
+    var myElement = ReactDOM.findDOMNode(this);
     if (!myElement) return;
     var target = <Element>e.target;
 
@@ -117,7 +119,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
       <div className={'dropdown ' + direction} onClick={this.onClick.bind(this)}>
         {labelElement}
         <div className="selected-item">{renderItem(selectedItem)}</div>
-        <Icon className="caret-icon" name="dropdown-caret"/>
+        <SvgIcon className="caret-icon" svg={require('../../icons/dropdown-caret.svg')}/>
         { open ? this.renderMenu() : null }
       </div>
     `);

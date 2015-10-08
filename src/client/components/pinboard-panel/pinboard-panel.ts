@@ -1,6 +1,8 @@
 'use strict';
+require('./pinboard-panel.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { dataTransferTypesGet } from '../../utils/dom/dom';

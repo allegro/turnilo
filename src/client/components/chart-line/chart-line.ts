@@ -1,6 +1,8 @@
 'use strict';
+require('./chart-line.css');
 
-import * as React from 'react/addons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset, Datum } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';

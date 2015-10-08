@@ -1,11 +1,13 @@
 'use strict';
+require('./filter-menu.css');
 
 import { List } from 'immutable';
-import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { Timezone, Duration, minute, hour, day, week } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { MenuHeader } from '../menu-header/menu-header';
 import { MenuTable } from '../menu-table/menu-table';
@@ -216,7 +218,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
           <ul>{presetList}</ul>
           <div className="time-inputs">
             <TimeInput time={selectedTimeRange.start} timezone={timezone} onChange={this.timeRangeStartChange.bind(this)}/>
-            <Icon className="arrow" name="to-arrow"/>
+            <SvgIcon className="arrow" svg={require('../../icons/to-arrow.svg')}/>
             <TimeInput time={selectedTimeRange.end} timezone={timezone} onChange={this.timeRangeEndChange.bind(this)}/>
           </div>
           <MenuTimeSeries

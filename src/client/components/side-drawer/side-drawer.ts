@@ -1,7 +1,9 @@
 'use strict';
+require('./side-drawer.css');
 
-import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { isInside, escapeKey } from '../../utils/dom/dom';
@@ -41,7 +43,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   globalMouseDownListener(e: MouseEvent) {
-    var myElement = React.findDOMNode(this);
+    var myElement = ReactDOM.findDOMNode(this);
     var target = <Element>e.target;
 
     if (isInside(target, myElement)) return;
@@ -81,7 +83,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     if (homeLink) {
       homeLinkElement = JSX(`
         <a className="home-link" href={homeLink}>
-          <Icon name="home"/>
+          <SvgIcon svg={require('../../icons/home.svg')}/>
           Home
         </a>
       `);
@@ -90,7 +92,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     return JSX(`
       <div className="side-drawer">
         <div className="title" onClick={onClose}>
-          <Icon className="combo-logo" name="combo-logo"/>
+          <SvgIcon className="combo-logo" svg={require('../../icons/combo-logo.svg')}/>
         </div>
         <ul className="data-sources">
           {this.renderDataSourceItems()}

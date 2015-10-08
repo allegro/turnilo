@@ -1,7 +1,9 @@
 'use strict';
+require('./loader.css');
 
-import * as React from 'react/addons';
-import * as Icon from 'react-svg-icons';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { SvgIcon } from '../svg-icon/svg-icon';
 
 export interface LoaderProps {
 }
@@ -19,7 +21,7 @@ export class Loader extends React.Component<LoaderProps, LoaderState> {
   render() {
     return JSX(`
       <div className="loader">
-        <Icon name="grid-loader"/>
+        <SvgIcon svg={require('../../icons/grid-loader.svg')}/>
       </div>
     `);
   }

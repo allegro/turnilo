@@ -16,6 +16,10 @@
 
       .remove {
         padding-top: 8px; //for some reason it does not align with the one in filters
+
+        svg {
+          width: 12px;
+        }
       }
     }
   }

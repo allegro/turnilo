@@ -3,7 +3,7 @@
 # Force this to the working directory
 cd "$(dirname "$0")"
 
-mkdir -p ../data
+mkdir -p ../../assets/data
 
 gzcat wikiticker-2015-09-12.gz \
   | jq -c '
