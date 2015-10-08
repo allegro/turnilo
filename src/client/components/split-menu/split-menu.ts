@@ -184,7 +184,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       <div className="sort-direction">
         {this.renderSortDropdown()}
         <div className={'direction ' + direction} onClick={this.onToggleDirection.bind(this)}>
-          <SvgIcon name="sort-arrow"/>
+          <SvgIcon svg={require('../../icons/sort-arrow.svg')}/>
         </div>
       </div>
     `);

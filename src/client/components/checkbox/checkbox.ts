@@ -30,7 +30,7 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
     var check: React.ReactElement<any> = null;
     if (checked) {
       check = React.createElement(SvgIcon, {
-        name: "check"
+        svg: require('../../icons/check.svg')
       });
     }
 

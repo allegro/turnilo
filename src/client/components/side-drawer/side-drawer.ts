@@ -83,7 +83,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     if (homeLink) {
       homeLinkElement = JSX(`
         <a className="home-link" href={homeLink}>
-          <SvgIcon name="home"/>
+          <SvgIcon svg={require('../../icons/home.svg')}/>
           Home
         </a>
       `);
@@ -92,7 +92,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     return JSX(`
       <div className="side-drawer">
         <div className="title" onClick={onClose}>
-          <SvgIcon className="combo-logo" name="combo-logo"/>
+          <SvgIcon className="combo-logo" svg={require('../../icons/combo-logo.svg')}/>
         </div>
         <ul className="data-sources">
           {this.renderDataSourceItems()}

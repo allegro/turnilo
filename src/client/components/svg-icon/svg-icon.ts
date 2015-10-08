@@ -8,10 +8,9 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 
 export interface SvgIconProps {
+  svg: string;
   className?: string;
-  name?: string;
   style?: any;
-  color?: string;
 }
 
 export interface SvgIconState {
@@ -30,31 +29,39 @@ export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
   }
 
   componentWillMount() {
-    var { name } = this.props;
+    var { svg } = this.props;
 
     var viewBox: string = null;
-    var svg = require('../../../../assets/icons/' + name + '.svg');
-    svg = svg.replace(/^<svg [^>]+>\s*/i, (svgDec: string) => {
-      var vbMatch = svgDec.match(/viewBox="([\d ]+)"/);
-      if (vbMatch) viewBox = vbMatch[1];
-      return '';
-    });
-    svg = svg.substr(0, svg.length - 6); // remove trailing "</svg>"
+    var svgInsides: string = null;
+    if (typeof svg === 'string') {
+      svgInsides = svg
+        .substr(0, svg.length - 6) // remove trailing "</svg>"
+        .replace(/^<svg [^>]+>\s*/i, (svgDec: string) => {
+          var vbMatch = svgDec.match(/viewBox="([\d ]+)"/);
+          if (vbMatch) viewBox = vbMatch[1];
+          return '';
+        });
+    } else {
+      console.warn('missing icon');
+      viewBox = '0 0 16 16';
+      svgInsides = "<rect width=16 height=16 fill='red'></rect>";
+    }
 
     this.setState({
       viewBox,
-      svgInsides: svg
+      svgInsides
     });
   }
 
   render() {
-    var { className } = this.props;
+    var { className, style } = this.props;
     var { viewBox, svgInsides } = this.state;
 
     return React.createElement('svg', {
-      className: "svg-icon " + className,
+      className: "svg-icon " + (className || ''),
       viewBox: viewBox,
       preserveAspectRatio: "xMidYMid meet",
+      style,
       dangerouslySetInnerHTML: {
         __html: svgInsides
       }

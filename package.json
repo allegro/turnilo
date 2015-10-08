@@ -50,7 +50,7 @@
     "gulp": "3.9.0",
     "gulp-watch": "4.3.5",
     "jsdom": "6.5.1",
-    "laborer": "2.0.1",
+    "laborer": "2.1.1",
     "merge-stream": "1.0.0",
     "mkdirp": "0.5.1",
     "mocha": "2.3.3",

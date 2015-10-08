@@ -33,7 +33,7 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
     if (onSearch) {
       searchButton = JSX(`
         <div className="search" onClick={onSearch}>
-          <SvgIcon name="loupe"/>
+          <SvgIcon svg={require('../../icons/loupe.svg')}/>
         </div>
       `);
     }
@@ -43,7 +43,7 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
         <div className="title">{title}</div>
         {searchButton}
         <div className="close" onClick={onClose}>
-          <SvgIcon name="x"/>
+          <SvgIcon svg={require('../../icons/x.svg')}/>
         </div>
       </div>
     `);

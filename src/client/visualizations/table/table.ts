@@ -305,31 +305,26 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var commonSort = essence.getCommonSort();
     var commonSortName = commonSort ? (<RefExpression>commonSort.expression).name : null;
 
+    var sortArrowIcon = commonSort ? React.createElement(SvgIcon, {
+      svg: require('../../icons/sort-arrow.svg'),
+      className: 'sort-arrow ' + commonSort.direction
+    }) : null;
+
     var cornerSortArrow: React.ReactElement<any> = null;
     if (commonSortName === SEGMENT) {
-      cornerSortArrow = React.createElement(SvgIcon, {
-        name: 'sort-arrow',
-        className: 'sort-arrow ' + commonSort.direction
-      });
+      cornerSortArrow = sortArrowIcon;
     }
 
     var measuresArray = essence.getMeasures().toArray();
 
     var headerColumns = measuresArray.map((measure, i) => {
-      var sortArrow: React.ReactElement<any> = null;
-      if (commonSortName === measure.name) {
-        sortArrow = React.createElement(SvgIcon, {
-          name: 'sort-arrow',
-          className: 'sort-arrow ' + commonSort.direction
-        });
-      }
       return JSX(`
         <div
           className={'measure-name' + (measure === hoverMeasure ? ' hover' : '')}
           key={measure.name}
         >
           <div className="title-wrap">{measure.title}</div>
-          {sortArrow}
+          {commonSortName === measure.name ? sortArrowIcon : null}
         </div>
       `);
     });

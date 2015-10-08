@@ -53,10 +53,10 @@ export class HighlightControls extends React.Component<HighlightControlsProps, H
     return JSX(`
       <div className={'highlight-controls ' + orientationClass} onMouseDown={stopEvent} style={style}>
         <div className="button accept" onClick={this.onAccept.bind(this)} >
-          <SvgIcon name="check"/>
+          <SvgIcon svg={require('../../icons/check.svg')}/>
         </div>
         <div className="button cancel" onClick={this.onCancel.bind(this)}>
-          <SvgIcon name="x"/>
+          <SvgIcon svg={require('../../icons/x.svg')}/>
         </div>
       </div>
     `);

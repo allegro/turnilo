@@ -47,7 +47,7 @@ export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps,
     return JSX(`
       <div className="fancy-drag-indicator">
         {dragGhostElement}
-        <SvgIcon className="drag-ghost-arrow" name="drag-arrow" style={{left: ghostArrowLeft}}/>
+        <SvgIcon className="drag-ghost-arrow" svg={require('../../icons/drag-arrow.svg')} style={{left: ghostArrowLeft}}/>
       </div>
     `);
   }

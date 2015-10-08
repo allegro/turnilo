@@ -31,7 +31,7 @@ export class MenuHeader extends React.Component<MenuHeaderProps, MenuHeaderState
     if (onSearchClick) {
       searchBar = JSX(`
         <div className="search" onClick={onSearchClick}>
-          <SvgIcon name="loupe"/>
+          <SvgIcon svg={require('../../icons/loupe.svg')}/>
         </div>
       `);
     }

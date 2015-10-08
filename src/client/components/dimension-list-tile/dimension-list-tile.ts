@@ -181,7 +181,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
       var classNames = [
         DIMENSION_CLASS_NAME,
-        dimension.className
+        'type-' + dimension.className
       ];
       if (dimension === menuDimension) classNames.push('selected');
       return JSX(`
@@ -194,7 +194,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
           style={style}
         >
           <div className="icon">
-            <SvgIcon name={dimension.className}/>
+            <SvgIcon svg={require('../../icons/type-' + dimension.className + '.svg')}/>
           </div>
           <div className="item-title">{dimension.title}</div>
         </div>

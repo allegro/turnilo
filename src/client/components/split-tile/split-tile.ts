@@ -239,7 +239,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
       var classNames = [
         SPLIT_CLASS_NAME,
-        dimension.className
+        'type-' + dimension.className
       ];
       if (dimension === menuDimension) classNames.push('selected');
       return JSX(`
@@ -254,7 +254,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         >
           <div className="reading">{split.getTitle(dataSource)}</div>
           <div className="remove" onClick={this.removeSplit.bind(this, split)}>
-            <SvgIcon name="x"/>
+            <SvgIcon svg={require('../../icons/x.svg')}/>
           </div>
         </div>
       `);

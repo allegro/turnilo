@@ -77,19 +77,19 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
     return JSX(`
       <BubbleMenu className="preview-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
         <div className="filter action" onClick={this.onFilter.bind(this)}>
-          <SvgIcon name="preview-filter"/>
+          <SvgIcon svg={require('../../icons/preview-filter.svg')}/>
           <div className="action-label">Filter</div>
         </div>
         <div className="pin action"  onClick={this.onPin.bind(this)}>
-          <SvgIcon name="preview-pin"/>
+          <SvgIcon svg={require('../../icons/preview-pin.svg')}/>
           <div className="action-label">Pin</div>
         </div>
         <div className="split action" onClick={this.onSplit.bind(this)}>
-          <SvgIcon name="preview-split"/>
+          <SvgIcon svg={require('../../icons/preview-split.svg')}/>
           <div className="action-label">Split</div>
         </div>
         <div className="subsplit action" onClick={this.onSubsplit.bind(this)}>
-          <SvgIcon name="preview-subsplit"/>
+          <SvgIcon svg={require('../../icons/preview-subsplit.svg')}/>
           <div className="action-label">Subsplit</div>
         </div>
       </BubbleMenu>

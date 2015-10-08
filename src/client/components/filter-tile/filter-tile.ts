@@ -308,7 +308,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (itemBlank.dimension.expression.equals(dataSource.timeAttribute)) return null;
     return JSX(`
       <div className="remove" onClick={this.removeFilter.bind(this, itemBlank)}>
-        <SvgIcon name="x"/>
+        <SvgIcon svg={require('../../icons/x.svg')}/>
       </div>
     `);
   }
@@ -384,7 +384,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       var style = transformStyle(itemX, 0);
       itemX += sectionWidth;
 
-      var classNames = [FILTER_CLASS_NAME, dimension.className, source];
+      var classNames = [FILTER_CLASS_NAME, 'type-' + dimension.className, source];
       if (dimension === menuDimension) classNames.push('selected');
 
       var className = classNames.join(' ');

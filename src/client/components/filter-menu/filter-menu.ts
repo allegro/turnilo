@@ -218,7 +218,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
           <ul>{presetList}</ul>
           <div className="time-inputs">
             <TimeInput time={selectedTimeRange.start} timezone={timezone} onChange={this.timeRangeStartChange.bind(this)}/>
-            <SvgIcon className="arrow" name="to-arrow"/>
+            <SvgIcon className="arrow" svg={require('../../icons/to-arrow.svg')}/>
             <TimeInput time={selectedTimeRange.end} timezone={timezone} onChange={this.timeRangeEndChange.bind(this)}/>
           </div>
           <MenuTimeSeries
