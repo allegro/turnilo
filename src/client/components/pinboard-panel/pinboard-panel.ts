@@ -54,6 +54,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       });
     } else {
       this.dragCounter++;
+
     }
   }
 
@@ -86,10 +87,9 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   render() {
     var { clicker, essence } = this.props;
     var { dragOver } = this.state;
-    var { dataSource, filter, selectedMeasures, pinnedDimensions } = essence;
+    var { dataSource, pinnedDimensions } = essence;
 
-    var dimensionTiles: Array<React.ReactElement<any>> = null;
-    dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
+    var dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
       var dimension = dataSource.getDimension(dimensionName);
       if (!dimension) return null;
       return JSX(`
@@ -102,9 +102,18 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       `);
     });
 
-    var placeholderTile: React.DOMElement<any> = null;
+    var dropIndicatorTile: React.DOMElement<any> = null;
     if (dragOver) {
-      placeholderTile = JSX(`<div className="placeholder-tile"></div>`);
+      dropIndicatorTile = JSX(`<div className="drop-indicator-tile"></div>`);
+    }
+
+    var placeholder: React.DOMElement<any> = null;
+    if (!dragOver && !pinnedDimensions.size) {
+      placeholder = JSX(`
+        <div className="placeholder">
+          <div className="placeholder-message">Drag dimensions here to pin</div>
+        </div>
+      `);
     }
 
     return JSX(`
@@ -117,7 +126,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       >
         <PinboardMeasureTile clicker={clicker} essence={essence}/>
         {dimensionTiles}
-        {placeholderTile}
+        {dropIndicatorTile}
+        {placeholder}
       </div>
     `);
   }

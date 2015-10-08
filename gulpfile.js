@@ -29,7 +29,16 @@ gulp.task('all', function(cb) {
   );
 });
 
-gulp.task('watch', ['all'], function() {
+gulp.task('all-bundle', function(cb) {
+  runSequence(
+    'clean' ,
+    ['style', 'icons'],
+    ['server:tsc', 'client:tsc'],
+    cb
+  );
+});
+
+gulp.task('watch', ['all-bundle'], function() {
   watch('./src/client/**/*.scss', function() {
     gulp.start('style');
   });
@@ -39,12 +48,14 @@ gulp.task('watch', ['all'], function() {
   });
 
   watch(['./src/common/**/*.ts', './src/client/**/*.ts', './assets/icons/**'], function() {
-    runSequence('client:tsc', 'client:bundle');
+    runSequence('client:tsc');
   });
 
   watch(['./src/common/**/*.ts', './src/server/**'], function() {
     gulp.start('server:tsc');
   });
+
+  laborer.clientPackWatch({ showStats: true })
 });
 
 gulp.task('default', ['all']);

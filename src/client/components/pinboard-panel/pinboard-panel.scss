@@ -7,13 +7,30 @@
   padding: $tile-margin-v $tile-margin-h 0 $tile-margin-h;
 
   .dimension-tile,
-  .placeholder-tile {
+  .drop-indicator-tile {
     flex-grow: 1;
     width: $pinboard-width - 2 * $tile-margin-h;
     margin-bottom: 1px;
   }
 
-  .placeholder-tile {
+  .drop-indicator-tile {
     border: 1px dashed $border-darker;
+    pointer-events: none;
+  }
+
+  .placeholder {
+    flex-grow: 1;
+    width: $pinboard-width - 2 * $tile-margin-h;
+    border: 1px dashed $border-darker;
+    pointer-events: none;
+
+    .placeholder-message {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      height: 16px;
+      margin-top: -8px;
+      text-align: center;
+    }
   }
 }
