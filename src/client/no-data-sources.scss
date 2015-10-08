@@ -3,6 +3,16 @@
 @import 'utils/fonts';
 @import 'imports';
 
+html,
+body,
+input {
+  height: 100%;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;
+  overflow: hidden;
+  user-select: none;
+}
+
 .no-data-sources {
   margin-top: 280px;
   text-align: center;
