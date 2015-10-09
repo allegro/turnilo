@@ -72,7 +72,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     if (splits.length() < 1) {
       var someDimensions = dataSource.dimensions.toArray().filter(d => d.type !== 'TIME').slice(0, 2);
       return Resolve.manual(
-        'Please add at least one split',
+        'This visualization requires at least one split',
         someDimensions.map((someDimension) => {
           return {
             description: `Add a split on ${someDimension.title}`,
