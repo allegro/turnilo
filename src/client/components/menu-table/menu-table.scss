@@ -21,16 +21,12 @@ $measure-width: 80px;
 
   .rows {
     position: absolute;
-    top: 0;
+    top: 30px;
     bottom: 0;
     left: 0;
     right: 0;
 
     overflow: auto;
-  }
-
-  &.with-search .rows {
-    top: 30px;
   }
 
   .row {
@@ -54,6 +50,10 @@ $measure-width: 80px;
       display: inline-block;
       vertical-align: top;
       padding-top: 4px;
+
+      .bold {
+        font-weight: $bold;
+      }
     }
   }
 
@@ -64,5 +64,9 @@ $measure-width: 80px;
     padding-top: 4px;
     padding-right: 10px;
     white-space: nowrap;
+  }
+
+  .loader {
+    height: 40px;
   }
 }
