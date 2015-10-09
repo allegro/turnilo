@@ -3,3 +3,4 @@ build/tmp
 assets/data/*-large.*
 webstorm
 resources/data
+config.yaml
