@@ -2,19 +2,14 @@
 
 import * as path from 'path';
 import * as Q from 'q';
+import * as nopt from 'nopt';
 
 import { DataSource, DataSourceJS } from '../common/models/index';
 import { DataSourceManager, dataSourceManagerFactory, loadFileSync } from './utils/index';
 
 var env = process.env;
 var packageObj = loadFileSync(path.join(__dirname, '../../package.json'), 'json') || {};
-
-var configFilePath = path.join(__dirname, '../../config.yaml');
-var config: any = loadFileSync(configFilePath, 'yaml');
-if (!config) {
-  config = {};
-  console.log(`Could not load config from '${configFilePath}'`);
-}
+export const VERSION = packageObj.version;
 
 function errorExit(e: Error): void {
   console.error(e.message);
@@ -22,10 +17,69 @@ function errorExit(e: Error): void {
   process.exit(1);
 }
 
-export const VERSION = packageObj.version;
-export const PORT = parseInt(config.port || env.PIVOT_PORT, 10) || 9090;
-export const DRUID_HOST = config.druidHost || env.PIVOT_DRUID_HOST;
-export const USE_SEGMENT_METADATA = Boolean(config.useSegmentMetadata);
+function printUsage() {
+  console.log(`
+Usage: pivot [options]
+
+Example: pivot --druid broker.host:8082
+
+       --help              Print this help message
+       --version           Display the version number
+  -p,  --port              The port pivot will run on
+  -c,  --config            The configuration YAML files to use
+  -d,  --druid             The Druid broker node to connect to
+       --use-segment-metadata Should the segment metadata be used for introspection
+`
+  );
+}
+
+function parseArgs() {
+  return nopt(
+    {
+      "help": Boolean,
+      "version": Boolean,
+      "port": Number,
+      "config": String,
+      "druid": String,
+      "use-segment-metadata": Boolean
+    },
+    {
+      "p": ["--port"],
+      "c": ["--config"],
+      "d": ["--druid"]
+    },
+    process.argv
+  );
+}
+
+var parsedArgs = parseArgs();
+//console.log(parsedArgs);
+
+if (parsedArgs['help']) {
+  printUsage();
+  process.exit();
+}
+
+if (parsedArgs['version']) {
+  console.log(packageObj.version);
+  process.exit();
+}
+
+var configFilePath = parsedArgs['config'] ||  path.join(__dirname, '../../config.yaml');
+var config: any = loadFileSync(configFilePath, 'yaml');
+if (!config) {
+  config = {};
+  console.log(`Could not load config from '${configFilePath}'`);
+}
+
+export const PORT = parseInt(parsedArgs['port'] || config.port || env.PIVOT_PORT, 10) || 9090;
+export const DRUID_HOST = parsedArgs['druid'] || config.druidHost || env.PIVOT_DRUID_HOST;
+
+if (!DRUID_HOST) {
+  errorExit(new Error('must have a druid host defined on the CLI or in the config'));
+}
+
+export const USE_SEGMENT_METADATA = Boolean(parsedArgs["use-segment-metadata"] || config.useSegmentMetadata);
 export const SOURCE_LIST_REFRESH_INTERVAL = parseInt(config.sourceListRefreshInterval, 10) || 0;
 
 if (SOURCE_LIST_REFRESH_INTERVAL && SOURCE_LIST_REFRESH_INTERVAL < 1000) {

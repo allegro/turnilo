@@ -1,0 +1,3 @@
+#!/bin/bash -eu
+
+node "$(dirname "$0")/../build/server/www.js" $@
