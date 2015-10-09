@@ -20,7 +20,7 @@
     "url": "http://github.com/implydata/pivot.git"
   },
   "bin": {
-    "pivot": ""
+    "pivot": "bin/pivot"
   },
   "scripts": {
     "prepublish": "script/prepublish"
