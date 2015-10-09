@@ -5,6 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { dataTransferTypesGet } from '../../utils/dom/dom';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { PinboardMeasureTile } from '../pinboard-measure-tile/pinboard-measure-tile';
@@ -111,7 +112,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     if (!dragOver && !pinnedDimensions.size) {
       placeholder = JSX(`
         <div className="placeholder">
-          <div className="placeholder-message">Drag dimensions here to pin</div>
+          <SvgIcon svg={require('../../icons/preview-pin.svg')}/>
+          <div className="placeholder-message">Drag dimensions here to pin them</div>
         </div>
       `);
     }
