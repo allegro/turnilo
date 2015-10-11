@@ -2,7 +2,6 @@
 
 import * as Qajax from 'qajax';
 import { $, Expression, Executor, Dataset, Datum, ChainExpression } from 'plywood';
-import { DataSource } from '../../../common/models/index';
 
 function getSplitsDescription(ex: Expression): string {
   var splits: string[] = [];

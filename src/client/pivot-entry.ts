@@ -1,4 +1,5 @@
 'use strict';
+require('./pivot-entry.css');
 
 import { List } from 'immutable';
 import { Timezone, WallTime } from 'chronoshift';
