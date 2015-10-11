@@ -46,7 +46,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     // Has no splits
     if (splits.length() < 1) {
       var timeDimension = dataSource.getTimeDimension();
-      return Resolve.manual('Please add a time split', [
+      return Resolve.manual('This visualization requires a time split', [
         {
           description: `Add a split on ${timeDimension.title}`,
           adjustment: Splits.fromSplitCombine(SplitCombine.fromExpression(timeDimension.expression))
@@ -65,7 +65,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     // Has a time split and other splits
     if (splits.length() > 1 && existingTimeSplit) {
-      return Resolve.manual('Too many splits', [
+      return Resolve.manual('This visualization does not yet support additional splits', [
         {
           description: `Remove all but the time split`,
           adjustment: Splits.fromSplitCombine(existingTimeSplit)
@@ -77,7 +77,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var lastSplit = splits.last();
     if (existingTimeSplit !== lastSplit) {
       var lastSplitDimension = lastSplit.getDimension(dataSource);
-      return Resolve.manual('Must be a time split', [
+      return Resolve.manual('This visualization requires a time split', [
         {
           description: `Replace ${lastSplitDimension.title} split with time`,
           adjustment: Splits.fromSplitCombine(SplitCombine.fromExpression(dataSource.timeAttribute))
