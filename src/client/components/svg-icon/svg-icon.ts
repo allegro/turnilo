@@ -14,22 +14,17 @@ export interface SvgIconProps {
 }
 
 export interface SvgIconState {
-  viewBox: string;
-  svgInsides: string;
 }
 
 export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
 
   constructor() {
     super();
-    this.state = {
-      viewBox: null,
-      svgInsides: null
-    };
+    //this.state = {};
   }
 
-  componentWillMount() {
-    var { svg } = this.props;
+  render() {
+    var { className, style, svg } = this.props;
 
     var viewBox: string = null;
     var svgInsides: string = null;
@@ -47,24 +42,12 @@ export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
       svgInsides = "<rect width=16 height=16 fill='red'></rect>";
     }
 
-    this.setState({
-      viewBox,
-      svgInsides
-    });
-  }
-
-  render() {
-    var { className, style } = this.props;
-    var { viewBox, svgInsides } = this.state;
-
     return React.createElement('svg', {
       className: "svg-icon " + (className || ''),
       viewBox: viewBox,
       preserveAspectRatio: "xMidYMid meet",
       style,
-      dangerouslySetInnerHTML: {
-        __html: svgInsides
-      }
+      dangerouslySetInnerHTML: { __html: svgInsides }
     });
   }
 }
