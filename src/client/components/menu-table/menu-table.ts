@@ -46,6 +46,7 @@ export interface MenuTableState {
   loading?: boolean;
   dataset?: Dataset;
   error?: any;
+  fetchQueued?: boolean;
   searchText?: string;
 }
 
@@ -59,6 +60,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
       loading: false,
       dataset: null,
       error: null,
+      fetchQueued: false,
       searchText: ''
     };
 
@@ -87,7 +89,10 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
       .sort($(measure.name), SortAction.DESCENDING)
       .limit(TOP_N + 1);
 
-    this.setState({ loading: true });
+    this.setState({
+      loading: true,
+      fetchQueued: false
+    });
     dataSource.executor(query)
       .then(
         (dataset) => {
@@ -134,8 +139,20 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   }
 
   onSearchChange(text: string) {
+    var { searchText, dataset, fetchQueued, loading } = this.state;
+    var newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
+
+    // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
+    if (newSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
+      this.setState({
+        searchText: newSearchText
+      });
+      return;
+    }
+
     this.setState({
-      searchText: text.substr(0, MAX_SEARCH_LENGTH)
+      searchText: newSearchText,
+      fetchQueued: true
     });
     this.collectTriggerSearch();
   }
@@ -155,7 +172,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
   render() {
     var { essence, showCheckboxes, onValueClick, selectedValues } = this.props;
-    var { loading, dataset, searchText } = this.state;
+    var { loading, dataset, fetchQueued, searchText } = this.state;
     var measure = essence.getPreviewSortMeasure();
 
     var measureName = measure.name;
@@ -204,7 +221,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     var message: React.DOMElement<any> = null;
     if (loading) {
       loader = React.createElement(Loader, null);
-    } else if (dataset && searchText && !rows.length) {
+    } else if (dataset && !fetchQueued && searchText && !rows.length) {
       message = JSX(`<div className="message">{'No results for "' + searchText + '"'}</div>`);
     }
 
