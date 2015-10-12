@@ -13,7 +13,7 @@ $measure-width: 80px;
     top: 2px;
     padding: 0 10px;
 
-    input {
+    .clearable-input {
       @extend %input-cont-inset;
       width: 100%;
       height: 31px;
@@ -71,5 +71,9 @@ $measure-width: 80px;
 
   .loader {
     height: 40px;
+  }
+
+  .message {
+    padding: 4px 10px;
   }
 }

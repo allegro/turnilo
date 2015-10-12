@@ -8,6 +8,7 @@ import { $, r, Expression, Executor, Dataset, SortAction } from 'plywood';
 import { SEGMENT } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../../common/models/index";
+import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
 
@@ -132,9 +133,9 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     this.mounted = false;
   }
 
-  onSearchChange(e: KeyboardEvent) {
+  onSearchChange(text: string) {
     this.setState({
-      searchText: (<HTMLInputElement>e.target).value.substr(0, MAX_SEARCH_LENGTH)
+      searchText: text.substr(0, MAX_SEARCH_LENGTH)
     });
     this.collectTriggerSearch();
   }
@@ -200,8 +201,11 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     }
 
     var loader: React.ReactElement<any> = null;
+    var message: React.DOMElement<any> = null;
     if (loading) {
       loader = React.createElement(Loader, null);
+    } else if (dataset && searchText && !rows.length) {
+      message = JSX(`<div className="message">{'No results for "' + searchText + '"'}</div>`);
     }
 
     var className = [
@@ -212,17 +216,17 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     return JSX(`
       <div className={className}>
         <div className="search">
-          <input
-            type="text"
+          <ClearableInput
             placeholder="Search"
+            focusOnMount={true}
             value={searchText}
             onChange={this.onSearchChange.bind(this)}
-            ref={focusOnInput}
           />
         </div>
         <div className="rows">
           {rows}
           {loader}
+          {message}
         </div>
       </div>
     `);

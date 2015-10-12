@@ -1,0 +1,21 @@
+@import '../../imports';
+
+.clearable-input {
+  padding-right: 20px;
+
+  input {
+    width: 100%;
+    height: 100%;
+  }
+
+  .clear {
+    @include pin-right(30px);
+    cursor: pointer;
+
+    svg {
+      width: 16px;
+      margin-top: 8px;
+      margin-left: 8px;
+    }
+  }
+}
