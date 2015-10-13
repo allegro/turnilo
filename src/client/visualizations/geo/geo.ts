@@ -4,7 +4,6 @@ require('./geo.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-// import * as Icon from 'react-svg-icons';
 import { $, Expression, Executor, Dataset } from 'plywood';
 // import { ... } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Splits, Dimension, Measure, VisualizationProps, Resolve } from '../../../common/models/index';

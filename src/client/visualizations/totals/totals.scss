@@ -1,13 +1,19 @@
 @import '../../imports';
 
+$padding: 50px;
+$total-width: 180px;
+
 .totals {
-  text-align: center;
-  padding: 50px;
+  .total-container {
+    position: absolute;
+    left: 50%;
+    top: $padding;
+  }
 
   .total {
     display: inline-block;
     border: 1px solid $border-extra-light;
-    width: 180px;
+    width: $total-width;
     height: 90px;
     text-align: center;
     padding: 5px;

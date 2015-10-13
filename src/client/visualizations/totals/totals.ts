@@ -5,12 +5,14 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as numeral from 'numeral';
-// import * as Icon from 'react-svg-icons';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
+
+const PADDING = 50;
+const TOTAL_WIDTH = 180;
 
 export interface TotalsState {
   loading?: boolean;
@@ -95,7 +97,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   }
 
   render() {
-    var { essence } = this.props;
+    var { essence, stage } = this.props;
     var { loading, dataset, error } = this.state;
 
     var myDatum = dataset ? dataset.data[0] : null;
@@ -126,9 +128,16 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       queryError = React.createElement(QueryError, { error });
     }
 
+    var numColumns = Math.max(1, Math.floor((stage.width - 2 * PADDING) / TOTAL_WIDTH));
+    var containerWidth = numColumns * TOTAL_WIDTH;
+    var totalContainerStyle = {
+      width: containerWidth,
+      marginLeft: -containerWidth / 2
+    };
+
     return JSX(`
       <div className="totals">
-        {totals}
+        <div className="total-container" style={totalContainerStyle}>{totals}</div>
         {queryError}
         {loader}
       </div>
