@@ -14,8 +14,14 @@
   }
 
   .drop-indicator-tile {
-    border: 1px dashed $border-darker;
     pointer-events: none;
+
+    &:after {
+      @include unpin-full(4px, 0, 4px, 0);
+      content: '';
+      border: 1px dashed $border-darker;
+      border-radius: $corner;
+    }
   }
 
   .placeholder {
