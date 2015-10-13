@@ -128,7 +128,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       queryError = React.createElement(QueryError, { error });
     }
 
-    var numColumns = Math.max(1, Math.floor((stage.width - 2 * PADDING) / TOTAL_WIDTH));
+    var numColumns = Math.min(totals.size, Math.max(1, Math.floor((stage.width - 2 * PADDING) / TOTAL_WIDTH)));
     var containerWidth = numColumns * TOTAL_WIDTH;
     var totalContainerStyle = {
       width: containerWidth,
