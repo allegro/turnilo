@@ -39,12 +39,10 @@
     }
 
     .selected-item {
+      @include ellipsis;
       line-height: 19px;
       color: $text-light;
       max-width: 104px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .dropdown-label {

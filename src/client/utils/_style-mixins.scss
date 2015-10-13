@@ -128,10 +128,9 @@
   width: $item-width;
 
   .reading {
+    @include ellipsis;
     white-space: nowrap;
     margin-right: 20px;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
     height: 16px;
     margin-top: 7px;
   }

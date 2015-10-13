@@ -23,15 +23,13 @@ $total-width: 180px;
     margin-bottom: -1px;
 
     .measure-name {
+      @include ellipsis;
       margin-top: 15px;
       padding-left: 3px;
       padding-right: 3px;
       font-size: 15px;
       height: 20px;
       color: $text-medium;
-      white-space: nowrap;
-      overflow-x: hidden;
-      text-overflow: ellipsis;
     }
 
     .measure-value {

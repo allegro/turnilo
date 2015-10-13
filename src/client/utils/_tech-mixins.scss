@@ -89,6 +89,12 @@
   margin-top: -$height / 2;
 }
 
+@mixin ellipsis {
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
 // for the shpitz
 @mixin triangle($direction, $base, $altitude, $color) {
   @if $direction == up {

@@ -8,7 +8,7 @@
   .rows {
     position: absolute;
     top: $pin-title-height;
-    bottom: 0;
+    bottom: 12px;
     left: 0;
     right: 0;
 
@@ -17,15 +17,18 @@
 
   .row {
     padding-left: $tile-padding-h;
-    height: $pin-item-height;
+    height: 30px;
     cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
 
     .label {
-      display: inline-block;
-      vertical-align: top;
-      padding-top: 5px;
+      @include ellipsis;
+      position: absolute;
+      top: 8px;
+      bottom: 0;
+      left: 35px;
+      right: 10px;
     }
 
     &:hover {
@@ -34,6 +37,6 @@
   }
 
   .checkbox {
-    margin-top: 1px;
+    margin-top: 4px;
   }
 }

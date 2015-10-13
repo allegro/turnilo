@@ -9,7 +9,7 @@ $icon-width: 35px;
   .items {
     position: absolute;
     top: $title-height;
-    bottom: 0;
+    bottom: 12px;
     width: 100%;
     overflow: auto;
     color: $text-standard;
@@ -63,9 +63,12 @@ $icon-width: 35px;
       }
 
       .item-title {
+        @include ellipsis;
         position: absolute;
         top: 8px;
+        bottom: 0;
         left: $icon-width;
+        right: 10px;
       }
     }
   }
