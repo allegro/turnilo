@@ -5,6 +5,7 @@ $icon-width: 35px;
 .dimension-list-tile {
   @extend %module;
   @extend %module-title;
+  @extend %white-shadow;
 
   .items {
     position: absolute;
@@ -17,11 +18,15 @@ $icon-width: 35px;
 
     .dimension {
       @include pin-top(30px);
-
       background: $white;
       cursor: pointer;
       overflow: hidden;
       transition: transform 0.1s ease-in-out;
+
+      &:last-child {
+        margin-bottom: 12px;
+      }
+
 
       &.selected {
         background: $highlight;
@@ -63,8 +68,11 @@ $icon-width: 35px;
       }
 
       .item-title {
+        @include ellipsis;
         position: absolute;
         top: 8px;
+        bottom: 0;
+        right: 10px;
         left: $icon-width;
       }
     }

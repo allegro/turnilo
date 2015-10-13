@@ -12,7 +12,7 @@ export const CORE_ITEM_GAP = 8;
 export const PIN_TITLE_HEIGHT = 36;
 export const SEARCH_BOX_HEIGHT = 30;
 export const PIN_ITEM_HEIGHT = 24;
-export const PIN_PADDING_BOTTOM = 10;
+export const PIN_PADDING_BOTTOM = 12;
 
 export const SPLIT = 'SPLIT';
 export const SEGMENT = 'SEGMENT';

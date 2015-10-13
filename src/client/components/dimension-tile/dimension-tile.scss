@@ -5,6 +5,7 @@ $measure-width: 80px;
 
 .dimension-tile {
   @extend %module;
+  @extend %white-shadow;
   user-select: none;
   min-height: 94px;
 
@@ -30,7 +31,7 @@ $measure-width: 80px;
   .rows {
     position: absolute;
     top: $pin-title-height;
-    bottom: 12px;
+    bottom: 0;
     left: 0;
     right: 0;
 
@@ -47,6 +48,10 @@ $measure-width: 80px;
 
     &:hover {
       background: $hover;
+    }
+
+    &:last-child {
+      margin-bottom: 12px;
     }
 
     &.selected {
