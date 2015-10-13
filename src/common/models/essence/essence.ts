@@ -683,7 +683,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     // If there is already a highlight from someone else accept it
     var value: EssenceValue;
     if (highlight && highlight.owner !== owner) {
-      value = this.changeFilter(highlight.applyToFilter(this.filter));
+      value = this.changeFilter(highlight.applyToFilter(this.filter)).valueOf();
     } else {
       value = this.valueOf();
     }

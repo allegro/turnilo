@@ -110,11 +110,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.setState({ showSearch: !showSearch });
   }
 
-  selectFilter(filter: Filter) {
-    var { clicker } = this.props;
-    clicker.changeFilter(filter);
-  }
-
   onRowClick(value: any) {
     var { clicker, essence, dimension } = this.props;
     var highlightId = HIGHLIGHT_ID + dimension.name;

@@ -21,11 +21,15 @@ function printUsage() {
   console.log(`
 Usage: pivot [options]
 
-Example: pivot --druid broker.host:8082
+Possible usage:
+
+  pivot --example wiki
+  pivot --druid your.broker.host:8082
 
        --help              Print this help message
        --version           Display the version number
   -p,  --port              The port pivot will run on
+       --example           Start pivot with some example data (overrides all other options)
   -c,  --config            The configuration YAML files to use
   -d,  --druid             The Druid broker node to connect to
        --use-segment-metadata Should the segment metadata be used for introspection
@@ -39,6 +43,7 @@ function parseArgs() {
       "help": Boolean,
       "version": Boolean,
       "port": Number,
+      "example": String,
       "config": String,
       "druid": String,
       "use-segment-metadata": Boolean
@@ -65,6 +70,22 @@ if (parsedArgs['version']) {
   process.exit();
 }
 
+if (parsedArgs['example']) {
+  delete parsedArgs['druid'];
+  var example = parsedArgs['example'];
+  if (example === 'wiki') {
+    parsedArgs['config'] = path.join(__dirname, `../../config-example-${example}.yaml`);
+  } else {
+    console.log(`Unknown example '${example}'. Possible examples are: wiki`);
+    process.exit();
+  }
+}
+
+if (!parsedArgs['config'] && !parsedArgs['druid']) {
+  printUsage();
+  process.exit();
+}
+
 var configFilePath = parsedArgs['config'] ||  path.join(__dirname, '../../config.yaml');
 var config: any = loadFileSync(configFilePath, 'yaml');
 if (!config) {
@@ -74,10 +95,6 @@ if (!config) {
 
 export const PORT = parseInt(parsedArgs['port'] || config.port || env.PIVOT_PORT, 10) || 9090;
 export const DRUID_HOST = parsedArgs['druid'] || config.druidHost || env.PIVOT_DRUID_HOST;
-
-if (!DRUID_HOST) {
-  errorExit(new Error('must have a druid host defined on the CLI or in the config'));
-}
 
 export const USE_SEGMENT_METADATA = Boolean(parsedArgs["use-segment-metadata"] || config.useSegmentMetadata);
 export const SOURCE_LIST_REFRESH_INTERVAL = parseInt(config.sourceListRefreshInterval, 10) || 0;
