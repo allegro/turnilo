@@ -15,7 +15,7 @@ $action-bar-height: 52px;
         width: $presets-width;
         padding-left: 10px;
         padding-right: 10px;
-        padding-top: 6px;
+        padding-top: 8px;
 
         li {
           height: 22px;
@@ -23,13 +23,14 @@ $action-bar-height: 52px;
           padding-left: 10px;
           padding-right: 10px;
           cursor: pointer;
-
-          &.selected {
-            background: $hover;
-          }
+          border-radius: 2px;
 
           &:hover {
             background: $hover;
+          }
+
+          &.selected {
+            background: darken($hover, 4%);
           }
         }
       }
@@ -37,12 +38,12 @@ $action-bar-height: 52px;
       .time-inputs {
         position: absolute;
         left: $presets-width;
-        top: 4px;
+        top: 2px;
 
         .time-input {
           @extend %input-cont-inset;
           width: 135px;
-          height: 32px;
+          height: 31px;
 
           input {
             background: none;
@@ -54,14 +55,14 @@ $action-bar-height: 52px;
           width: 12px;
           display: inline-block;
           margin: 0 9px;
-          padding-top: 10px;
+          padding-top: 11px;
         }
       }
 
       .menu-time-series {
         position: absolute;
         left: $presets-width;
-        top: 42px;
+        top: 40px;
       }
     }
 

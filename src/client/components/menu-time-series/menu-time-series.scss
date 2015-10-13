@@ -2,7 +2,8 @@
 
 .menu-time-series {
   .frame {
-    stroke: $gray;
+    stroke: $border-light;
+    stroke-width: 2px;
     fill: none;
   }
 }

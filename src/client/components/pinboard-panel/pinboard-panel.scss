@@ -14,12 +14,18 @@
   }
 
   .drop-indicator-tile {
-    border: 1px dashed $border-darker;
     pointer-events: none;
+
+    &:after {
+      @include unpin-full(4px, 0, 4px, 0);
+      content: '';
+      border: 1px dashed $border-darker;
+      border-radius: $corner;
+    }
   }
 
   .placeholder {
-    height: 300px;
+    height: 280px;
     width: $pinboard-width - 2 * $tile-margin-h;
     pointer-events: none;
     background: $white;
@@ -27,7 +33,7 @@
     &:after {
       @include unpin-full(10px);
       content: '';
-      border: 2px dashed $border-light;
+      border: 1px dashed $border-medium;
       border-radius: 5px;
     }
 
@@ -40,7 +46,7 @@
       margin-top: -63px;
 
       path {
-        fill: darken($background-base, 6%);
+        fill: darken($background-base, 5%);
       }
     }
 
@@ -53,7 +59,6 @@
       padding-left: 30px;
       padding-right: 30px;
       font-style: italic;
-      font-size: 14px;
       line-height: 20px;
       color: $text-lighterish;
       text-align: center;
