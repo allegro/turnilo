@@ -32,4 +32,8 @@
       }
     }
   }
+
+  &.empty .clear {
+    display: none;
+  }
 }

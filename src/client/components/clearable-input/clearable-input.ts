@@ -46,12 +46,16 @@ export class ClearableInput extends React.Component<ClearableInputProps, Clearab
 
     var ref = focusOnMount ? focusOnInput : null;
 
+    var classNames = ['clearable-input'];
+    if (className) classNames.push(className);
+    if (!value) classNames.push('empty');
+
     return JSX(`
-      <div className={'clearable-input ' + (className || '')}>
+      <div className={classNames.join(' ')}>
         <input
           type={type || 'text'}
           placeholder={placeholder}
-          value={value}
+          value={value || ''}
           onChange={this.onChange.bind(this)}
           ref={ref}
         />
