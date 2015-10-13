@@ -18,7 +18,6 @@ $measure-width: 80px;
       width: 100%;
       height: 31px;
       padding-left: 6px;
-      padding-right: 6px;
     }
   }
 
@@ -75,5 +74,7 @@ $measure-width: 80px;
 
   .message {
     padding: 4px 10px;
+    color: $text-light;
+    font-style: italic;
   }
 }
