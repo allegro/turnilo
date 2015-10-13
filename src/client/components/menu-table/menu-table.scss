@@ -54,7 +54,7 @@ $measure-width: 80px;
       padding-top: 4px;
 
       .bold {
-        text-decoration: underline;
+        border-bottom: 1px solid $border-medium;
       }
     }
   }
