@@ -3,12 +3,13 @@
 .measures-tile {
   @extend %module;
   @extend %module-title;
+  @extend %white-shadow;
   min-height: 280px;
 
   .rows {
     position: absolute;
     top: $pin-title-height;
-    bottom: 12px;
+    bottom: 0;
     left: 0;
     right: 0;
 
@@ -17,15 +18,19 @@
 
   .row {
     padding-left: $tile-padding-h;
-    height: 30px;
+    height: $pin-item-height;
     cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
 
+    &:last-child {
+      margin-bottom: 12px;
+    }
+
     .label {
       @include ellipsis;
       position: absolute;
-      top: 8px;
+      top: 5px;
       bottom: 0;
       left: 35px;
       right: 10px;
@@ -37,6 +42,6 @@
   }
 
   .checkbox {
-    margin-top: 4px;
+    margin-top: 1px;
   }
 }

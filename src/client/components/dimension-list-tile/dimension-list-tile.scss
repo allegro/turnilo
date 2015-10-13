@@ -5,11 +5,12 @@ $icon-width: 35px;
 .dimension-list-tile {
   @extend %module;
   @extend %module-title;
+  @extend %white-shadow;
 
   .items {
     position: absolute;
     top: $title-height;
-    bottom: 12px;
+    bottom: 0;
     width: 100%;
     overflow: auto;
     color: $text-standard;
@@ -17,11 +18,15 @@ $icon-width: 35px;
 
     .dimension {
       @include pin-top(30px);
-
       background: $white;
       cursor: pointer;
       overflow: hidden;
       transition: transform 0.1s ease-in-out;
+
+      &:last-child {
+        margin-bottom: 12px;
+      }
+
 
       &.selected {
         background: $highlight;
@@ -67,8 +72,8 @@ $icon-width: 35px;
         position: absolute;
         top: 8px;
         bottom: 0;
-        left: $icon-width;
         right: 10px;
+        left: $icon-width;
       }
     }
   }
