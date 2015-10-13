@@ -79,7 +79,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     var filterExpression = essence.getEffectiveFilter(null, dimension).toExpression();
 
     if (searchText) {
-      filterExpression = filterExpression.and(dimension.expression.contains(r(searchText)));
+      filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), 'ignoreCase'));
     }
 
     var query = $('main')
