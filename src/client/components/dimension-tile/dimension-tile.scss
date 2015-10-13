@@ -30,7 +30,7 @@ $measure-width: 80px;
   .rows {
     position: absolute;
     top: $pin-title-height;
-    bottom: 12px;
+    bottom: $pin-padding-bottom;
     left: 0;
     right: 0;
 
