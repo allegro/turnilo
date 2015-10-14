@@ -381,7 +381,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           chartHoverBubble = JSX(`
             <div className="hover-bubble-cont" style={chartHoverBubbleStyle}>
               <div className="hover-bubble">
-                <div className="text">{numeral(getY(hoverDatum)).format(measure.format)}</div>
+                <div className="text">{measure.formatFn(getY(hoverDatum))}</div>
                 <div className="shpitz"></div>
               </div>
             </div>
@@ -420,7 +420,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
             <div className="measure-label">
               <span className="measure-title">{measure.title}</span>
               <span className="colon">: </span>
-              <span className="measure-value">{numeral(myDatum[measureName]).format(measure.format)}</span>
+              <span className="measure-value">{measure.formatFn(myDatum[measureName])}</span>
             </div>
             {chartHoverBubble}
           </div>
