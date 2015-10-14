@@ -1,3 +1,4 @@
+# Only the dataSources key will be used from the exmaple config
 dataSources:
 
   - name: wiki

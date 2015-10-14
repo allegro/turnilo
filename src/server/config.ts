@@ -26,13 +26,13 @@ Possible usage:
   pivot --example wiki
   pivot --druid your.broker.host:8082
 
-       --help              Print this help message
-       --version           Display the version number
-  -p,  --port              The port pivot will run on
-       --example           Start pivot with some example data (overrides all other options)
-  -c,  --config            The configuration YAML files to use
-  -d,  --druid             The Druid broker node to connect to
-       --use-segment-metadata Should the segment metadata be used for introspection
+       --help                  Print this help message
+       --version               Display the version number
+  -p,  --port                  The port pivot will run on
+       --example               Start pivot with some example data (overrides all other options)
+  -c,  --config                The configuration YAML files to use
+  -d,  --druid                 The Druid broker node to connect to
+       --use-segment-metadata  Should the segmentMetadata query be used for introspection
 `
   );
 }
@@ -70,27 +70,36 @@ if (parsedArgs['version']) {
   process.exit();
 }
 
+var exampleConfig: any = null;
 if (parsedArgs['example']) {
   delete parsedArgs['druid'];
   var example = parsedArgs['example'];
   if (example === 'wiki') {
-    parsedArgs['config'] = path.join(__dirname, `../../config-example-${example}.yaml`);
+    exampleConfig = loadFileSync(path.join(__dirname, `../../config-example-${example}.yaml`), 'yaml');
   } else {
     console.log(`Unknown example '${example}'. Possible examples are: wiki`);
     process.exit();
   }
 }
 
-if (!parsedArgs['config'] && !parsedArgs['druid']) {
+if (!parsedArgs['example'] && !parsedArgs['config'] && !parsedArgs['druid']) {
   printUsage();
   process.exit();
 }
 
-var configFilePath = parsedArgs['config'] ||  path.join(__dirname, '../../config.yaml');
-var config: any = loadFileSync(configFilePath, 'yaml');
-if (!config) {
-  config = {};
-  console.log(`Could not load config from '${configFilePath}'`);
+var configFilePath = parsedArgs['config'];
+var config: any = {};
+if (configFilePath) {
+  config = loadFileSync(configFilePath, 'yaml');
+  if (!config) {
+    config = {};
+    console.log(`Could not load config from '${configFilePath}'`);
+  }
+}
+
+// If there is an example config take its dataSources
+if (exampleConfig && Array.isArray(exampleConfig.dataSources)) {
+  config.dataSources = exampleConfig.dataSources;
 }
 
 export const PORT = parseInt(parsedArgs['port'] || config.port || env.PIVOT_PORT, 10) || 9090;

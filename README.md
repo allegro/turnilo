@@ -95,7 +95,7 @@ cp config.yaml.sample config.yaml
 Then you are ready to
 
 ```
-./run
+./bin/pivot --config config.yaml
 ```
 
 
