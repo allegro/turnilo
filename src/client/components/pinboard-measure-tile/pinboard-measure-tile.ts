@@ -4,8 +4,6 @@ require('./pinboard-measure-tile.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-// import { SvgIcon } from '../svg-icon/svg-icon';
-import * as numeral from 'numeral';
 import { ply, $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 // import { ... } from '../../config/constants';

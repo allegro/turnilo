@@ -5,7 +5,6 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
-import * as numeral from 'numeral';
 import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, SortAction, ChainExpression } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";

@@ -4,7 +4,6 @@ require('./totals.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as numeral from 'numeral';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
@@ -106,8 +105,8 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       var measureName = measure.name;
 
       var measureValueStr = '-';
-      if (myDatum && hasOwnProperty(myDatum, measureName)) {
-        measureValueStr = numeral(myDatum[measureName]).format(measure.format);
+      if (myDatum) {
+        measureValueStr = measure.formatFn(myDatum[measureName]);
       }
 
       return JSX(`

@@ -1,8 +1,16 @@
 'use strict';
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
+import * as numeral from 'numeral';
 import { $, Expression, ExpressionJS, ApplyAction } from 'plywood';
 import { makeTitle } from '../../utils/general/general';
+
+function formatFnFactory(format: string): (n: number) => string {
+  return (n: number) => {
+    if (isNaN(n) || typeof n === 'undefined') return '-';
+    return numeral(n).format(format);
+  };
+}
 
 export interface MeasureValue {
   name: string;
@@ -41,6 +49,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
   public title: string;
   public expression: Expression;
   public format: string;
+  public formatFn: (n: number) => string;
 
   constructor(parameters: MeasureValue) {
     var name = parameters.name;
@@ -50,6 +59,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     var format = parameters.format || Measure.DEFAULT_FORMAT;
     if (format[0] === '(') throw new Error('can not have format that uses ( )');
     this.format = format;
+    this.formatFn = formatFnFactory(format);
   }
 
   public valueOf(): MeasureValue {
