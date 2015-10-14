@@ -20,23 +20,49 @@ latest version and refrain from submitting bug reports for outdated versions.
 
 ## Usage
 
-### Prerequisites
-
-Make sure you have node (0.12.x)
+Make sure you have node (4.x.x) installed. On MacOS with [homebrew](http://brew.sh/) you can do:
 
 ```
 brew update
 brew install node
 ```
 
-And gulp:
+Next simply run:
 
 ```
-npm install gulp -g
+npm i -g imply-pivot
 ```
 
+**That's it.** You are ready to Pivot.
 
-### Run the project
+Start of by running an example (static) dataset:
+
+```
+pivot --example wiki
+```
+
+Next connect Pivot to your broker by simply pointing it to your broker host
+
+```
+pivot --druid your.druid.broker.host:8082
+```
+
+Pivot will automatically introspect your Druid cluster and figure out your dimensions and measures.
+
+But Pivot will never know your schema as well as you do so to get a better experience you might want to define a config file and pass it along.
+Have a look at a the [sample config file](/config.yaml.sample) included in this repo to learn what properties are supported. 
+
+```
+pivot --druid your.druid.broker.host:8082 --config /path/to/your/config/file.yaml
+```
+
+### Run the project as a developer
+
+Firstly make sure you have gulp installed globally:
+
+```
+npm i -g gulp
+```
 
 Clone the project
 
@@ -79,7 +105,6 @@ We will be working on:
 - Better time selection
 - Time comparison visualization
 - Additional visualizations
-- Search dimension values
 - Exclusion filters
 - Being able to easily embed Pivot in your app
 - Various additions, improvements and fixes to make the app more complete
