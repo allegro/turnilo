@@ -391,7 +391,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
               <div className="hover-bubble">
                 <div className="text">
                   <span className="bucket">{formatTimeRange(hoverDatum[SEGMENT], timezone, true)}</span>
-                  <span className="colon">: </span>
                   <span className="measure-value">{measure.formatFn(getY(hoverDatum))}</span>
                 </div>
                 <div className="shpitz"></div>

@@ -30,7 +30,7 @@ $hover-bubble-max-width: 300px;
 
     .hover-bubble-cont {
       position: absolute;
-      top: 7px;
+      top: -5px;
       width: $hover-bubble-max-width;
       margin-left: -$hover-bubble-max-width / 2;
       pointer-events: none;
@@ -43,10 +43,13 @@ $hover-bubble-max-width: 300px;
         .text {
           display: inline-block;
           padding: 5px;
+          font-size: 12px;
 
-          .bucket { color: gray }
-          .colon { color: gray }
-          //.measure-value
+          .bucket {
+            color: $text-lighterish;
+            display: block;
+            margin-bottom: 3px;
+          }
         }
       }
 
