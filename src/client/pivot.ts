@@ -31,5 +31,5 @@ if (needsPatch) {
 export function pivot(container: Element, options: PivotApplicationProps) {
   var cont = document.getElementsByClassName('pivot-container')[0];
   if (!cont) return;
-  ReactDOM.render(React.createElement(PivotApplication, options), cont);
+  return ReactDOM.render(React.createElement(PivotApplication, options), cont);
 }

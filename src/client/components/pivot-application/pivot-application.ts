@@ -11,8 +11,7 @@ import { dataTransferTypesGet } from '../../utils/dom/dom';
 import { Stage, Essence, VisStrategy, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../../common/models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
-import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
-import { MeasuresTile } from '../measures-tile/measures-tile';
+import { DimensionMeasurePanel } from '../dimension-measure-panel/dimension-measure-panel';
 import { FilterTile } from '../filter-tile/filter-tile';
 import { SplitTile } from '../split-tile/split-tile';
 import { VisSelector } from '../vis-selector/vis-selector';
@@ -315,16 +314,13 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       <main className='pivot-application' id='portal-cont'>
         <HeaderBar essence={essence} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
         <div className='container' ref='container'>
-          <div className='dimension-measure-panel'>
-            <DimensionListTile
-              clicker={clicker}
-              essence={essence}
-              menuStage={menuStage}
-              triggerFilterMenu={this.triggerFilterMenu.bind(this)}
-              triggerSplitMenu={this.triggerSplitMenu.bind(this)}
-            />
-            <MeasuresTile clicker={clicker} essence={essence}/>
-          </div>
+          <DimensionMeasurePanel
+            clicker={clicker}
+            essence={essence}
+            menuStage={menuStage}
+            triggerFilterMenu={this.triggerFilterMenu.bind(this)}
+            triggerSplitMenu={this.triggerSplitMenu.bind(this)}
+          />
           <div className='center-panel'>
             <div className='center-top-bar'>
               <div className='filter-split-section'>
