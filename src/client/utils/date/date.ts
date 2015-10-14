@@ -10,7 +10,7 @@ var formatWithYear = d3.time.format('%b %-d, %Y');
 var formatWithoutYear = d3.time.format('%b %-d');
 var formatTimeOfDay = d3.time.format('%-I%p');
 
-export function formatTimeRange(timeRange: TimeRange, timezone: Timezone): string {
+export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, suppressYear: boolean): string {
   var { start, end } = timeRange;
   var startWallTime = WallTime.UTCToWallTime(start, timezone.toString());
   var endWallTime = WallTime.UTCToWallTime(end, timezone.toString());
@@ -20,10 +20,11 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone): strin
   if (startWallTime.getFullYear() !== endShiftWallTime.getFullYear()) {
     formatted = [formatWithYear(startWallTime), formatWithYear(endShiftWallTime)].join(JOIN);
   } else {
+    var fmt = suppressYear ? formatWithoutYear : formatWithYear;
     if (startWallTime.getMonth() !== endShiftWallTime.getMonth() || startWallTime.getDate() !== endShiftWallTime.getDate()) {
-      formatted = [formatWithoutYear(startWallTime), formatWithYear(endShiftWallTime)].join(JOIN);
+      formatted = [formatWithoutYear(startWallTime), fmt(endShiftWallTime)].join(JOIN);
     } else {
-      formatted = formatWithYear(startWallTime);
+      formatted = fmt(startWallTime);
     }
   }
 
