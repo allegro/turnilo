@@ -1,19 +1,14 @@
 @import 'imports';
 
-html,
-body,
-input {
-  height: 100%;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 13px;
-  overflow: hidden;
-  user-select: none;
-}
-
-.pivot-container {
+.drag-ghost {
+  // Do not change these position things
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  z-index: -10;
+
+  padding: 3px 10px;
+  border: 1px solid $black;
+  background: $white;
+  border-radius: 5px;
 }
