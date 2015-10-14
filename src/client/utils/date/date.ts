@@ -2,6 +2,7 @@
 
 import * as d3 from 'd3';
 import { Timezone, WallTime } from 'chronoshift';
+import { TimeRange } from 'plywood';
 
 const JOIN = ' - ';
 
@@ -9,7 +10,8 @@ var formatWithYear = d3.time.format('%b %-d, %Y');
 var formatWithoutYear = d3.time.format('%b %-d');
 var formatTimeOfDay = d3.time.format('%-I%p');
 
-export function formatStartEnd(start: Date, end: Date, timezone: Timezone): string {
+export function formatTimeRange(timeRange: TimeRange, timezone: Timezone): string {
+  var { start, end } = timeRange;
   var startWallTime = WallTime.UTCToWallTime(start, timezone.toString());
   var endWallTime = WallTime.UTCToWallTime(end, timezone.toString());
   var endShiftWallTime = WallTime.UTCToWallTime(new Date(end.valueOf() - 1), timezone.toString());

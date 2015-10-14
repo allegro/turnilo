@@ -17,6 +17,7 @@ import { GridLines } from '../../components/grid-lines/grid-lines';
 import { Highlighter } from '../../components/highlighter/highlighter';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
+import { formatTimeRange } from '../../utils/date/date';
 
 const H_PADDING = 10;
 const TEXT_SPACER = 36;
@@ -27,6 +28,19 @@ const MAX_GRAPH_WIDTH = 2000;
 
 function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
+}
+
+function findClosest(data: Datum[], dragDate: Date) {
+  var closestDatum: Datum = null;
+  var minDist = Infinity;
+  for (var datum of data) {
+    var dist = Math.abs(midpoint(datum[SEGMENT]).valueOf() - dragDate.valueOf());
+    if (!closestDatum || dist < minDist) {
+      closestDatum = datum;
+      minDist = dist;
+    }
+  }
+  return closestDatum;
 }
 
 export interface TimeSeriesState {
@@ -240,14 +254,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var rect = myDOM.getBoundingClientRect();
     var dragDate = scaleX.invert(e.clientX - (rect.left + H_PADDING));
 
-    var thisHoverDatum: Datum = null;
-    var datums = dataset.data[0][SPLIT].data;
-    for (var datum of datums) {
-      if (datum[SEGMENT].contains(dragDate)) {
-        thisHoverDatum = datum;
-        break;
-      }
-    }
+    var thisHoverDatum = findClosest(dataset.data[0][SPLIT].data, dragDate);
 
     if (hoverDatum !== thisHoverDatum || measure !== hoverMeasure) {
       this.setState({
@@ -377,11 +384,16 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
             stage: lineStage
           });
 
+          var timezone = essence.timezone;
           var chartHoverBubbleStyle = { left: scaleX(getX(hoverDatum)) };
           chartHoverBubble = JSX(`
             <div className="hover-bubble-cont" style={chartHoverBubbleStyle}>
               <div className="hover-bubble">
-                <div className="text">{measure.formatFn(getY(hoverDatum))}</div>
+                <div className="text">
+                  <span className="bucket">{formatTimeRange(hoverDatum[SEGMENT], timezone)}</span>
+                  <span className="colon">: </span>
+                  <span className="measure-value">{measure.formatFn(getY(hoverDatum))}</span>
+                </div>
                 <div className="shpitz"></div>
               </div>
             </div>

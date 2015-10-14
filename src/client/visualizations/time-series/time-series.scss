@@ -2,6 +2,7 @@
 
 $shpitz-size: 7px;
 $h-padding: 10px;
+$hover-bubble-max-width: 300px;
 
 .time-series {
   display: inline-block;
@@ -30,8 +31,8 @@ $h-padding: 10px;
     .hover-bubble-cont {
       position: absolute;
       top: 7px;
-      width: 100px;
-      margin-left: -50px;
+      width: $hover-bubble-max-width;
+      margin-left: -$hover-bubble-max-width / 2;
       pointer-events: none;
       text-align: center;
 
@@ -42,6 +43,10 @@ $h-padding: 10px;
         .text {
           display: inline-block;
           padding: 5px;
+
+          .bucket { color: gray }
+          .colon { color: gray }
+          //.measure-value
         }
       }
 
