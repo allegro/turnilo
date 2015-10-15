@@ -4,6 +4,7 @@ $checkbox-width: 20px;
 $measure-width: 80px;
 
 .menu-table {
+  @extend %white-shadow;
   background: $white;
   color: $text-standard;
   user-select: none;
@@ -36,6 +37,10 @@ $measure-width: 80px;
 
     &:hover {
       background: $hover;
+    }
+
+    &:last-child {
+      margin-bottom: 12px;
     }
   }
 

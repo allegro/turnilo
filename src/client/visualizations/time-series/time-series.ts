@@ -26,7 +26,7 @@ const X_AXIS_HEIGHT = 30;
 const Y_AXIS_WIDTH = 60;
 const MIN_GRAPH_HEIGHT = 150;
 const MAX_GRAPH_WIDTH = 2000;
-const HOVER_BUBBLE_V_OFFSET = -10;
+const HOVER_BUBBLE_V_OFFSET = -6;
 const HOVER_BUBBLE_HEIGHT = 50;
 
 function midpoint(timeRange: TimeRange): Date {
