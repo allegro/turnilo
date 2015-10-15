@@ -19,7 +19,7 @@ $icon-width: 35px;
     transition: height 0.1s ease-in-out;
 
     .dimension {
-      @include pin-top(30px);
+      @include pin-top(27px);
       background: $white;
       cursor: pointer;
       overflow: hidden;
@@ -48,23 +48,23 @@ $icon-width: 35px;
       }
 
       &.type-string .icon svg {
-        top: 11px;
+        top: 10px;
         width: 17px;
       }
 
       &.type-boolean .icon svg {
-        top: 7px;
+        top: 6px;
         width: 15px;
       }
 
       &.type-time .icon svg {
-        top: 7px;
+        top: 6px;
         margin-left: 1px;
         width: 15px;
       }
 
       &.type-string-geo .icon svg {
-        top: 7px;
+        top: 6px;
         margin-left: 1px;
         width: 15px;
       }
@@ -72,7 +72,7 @@ $icon-width: 35px;
       .item-title {
         @include ellipsis;
         position: absolute;
-        top: 8px;
+        top: 7px;
         bottom: 0;
         right: 10px;
         left: $icon-width;

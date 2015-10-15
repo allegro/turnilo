@@ -17,7 +17,7 @@
 
   .row {
     padding-left: $tile-padding-h;
-    height: $pin-item-height;
+    height: 27px;
     cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
@@ -29,7 +29,7 @@
     .label {
       @include ellipsis;
       position: absolute;
-      top: 5px;
+      top: 7px;
       bottom: 0;
       left: 35px;
       right: 10px;
@@ -41,6 +41,6 @@
   }
 
   .checkbox {
-    margin-top: 1px;
+    margin-top: 3px;
   }
 }
