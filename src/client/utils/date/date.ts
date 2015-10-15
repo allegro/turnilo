@@ -20,10 +20,12 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, suppre
   var endWallTime = WallTime.UTCToWallTime(end, timezone.toString());
   var endShiftWallTime = WallTime.UTCToWallTime(new Date(end.valueOf() - 1), timezone.toString());
 
+  var showingYear = true;
   var formatted: string;
   if (startWallTime.getFullYear() !== endShiftWallTime.getFullYear()) {
     formatted = [formatWithYear(startWallTime), formatWithYear(endShiftWallTime)].join(' - ');
   } else {
+    showingYear = !suppressYear;
     var fmt = suppressYear ? formatWithoutYear : formatWithYear;
     if (startWallTime.getMonth() !== endShiftWallTime.getMonth() || startWallTime.getDate() !== endShiftWallTime.getDate()) {
       formatted = [formatWithoutYear(startWallTime), fmt(endShiftWallTime)].join(' - ');
@@ -40,7 +42,7 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, suppre
       startTimeStr = startTimeStr.substr(0, startTimeStr.length - 2);
     }
 
-    formatted += ', ' + [startTimeStr, endTimeStr].join('-').toLowerCase();
+    formatted += (showingYear ? ' ' : ', ') + [startTimeStr, endTimeStr].join('-').toLowerCase();
   }
 
   return formatted;

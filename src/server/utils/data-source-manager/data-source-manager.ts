@@ -42,7 +42,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
         timeAttribute: 'time',
         refreshRule: {
           rule: 'query',
-          refresh: 'PT1M'
+          refresh: 'PT5M'
         }
       });
     };
