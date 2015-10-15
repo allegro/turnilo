@@ -52,9 +52,10 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
         </div>
       `);
     });
-    maxHeight += rows.size * MEASURE_HEIGHT + PIN_PADDING_BOTTOM;
+    maxHeight += (rows.size + 2) * MEASURE_HEIGHT + PIN_PADDING_BOTTOM;
 
     const style = {
+      flex: rows.size + 2,
       maxHeight
     };
 

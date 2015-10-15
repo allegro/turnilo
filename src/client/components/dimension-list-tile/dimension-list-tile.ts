@@ -212,6 +212,10 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     }, this);
     if (dragOver && dragPosition === dataSource.dimensions.size) itemY += DIMENSION_HEIGHT;
 
+    const style = {
+      flex: dimensionItems.length + 2
+    };
+
     return JSX(`
       <div
         className={'dimension-list-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
@@ -219,6 +223,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
         onDragEnter={this.dragEnter.bind(this)}
         onDragLeave={this.dragLeave.bind(this)}
         onDrop={this.drop.bind(this)}
+        style={style}
       >
         <div className="title">Dimensions</div>
         <div className="items" ref="items">
