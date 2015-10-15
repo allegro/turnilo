@@ -19,7 +19,7 @@ $icon-width: 35px;
     transition: height 0.1s ease-in-out;
 
     .dimension {
-      @include pin-top(27px);
+      @include pin-top($dimension-height);
       background: $white;
       cursor: pointer;
       overflow: hidden;

@@ -6,7 +6,7 @@ export const TITLE_HEIGHT = 36;
 
 // Core = filter + split
 export const DIMENSION_HEIGHT = 27;
-export const MEASURE_HEIGHT = 24;
+export const MEASURE_HEIGHT = 27;
 export const CORE_ITEM_WIDTH = 192;
 export const CORE_ITEM_GAP = 8;
 

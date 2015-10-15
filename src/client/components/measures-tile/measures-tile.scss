@@ -17,7 +17,7 @@
 
   .row {
     padding-left: $tile-padding-h;
-    height: 27px;
+    height: $measure-height;
     cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
