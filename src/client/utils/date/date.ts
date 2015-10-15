@@ -4,12 +4,11 @@ import * as d3 from 'd3';
 import { Timezone, WallTime } from 'chronoshift';
 import { TimeRange } from 'plywood';
 
-const JOIN = ' - ';
+const formatWithYear = d3.time.format('%b %-d, %Y');
+const formatWithoutYear = d3.time.format('%b %-d');
 
-var formatWithYear = d3.time.format('%b %-d, %Y');
-var formatWithoutYear = d3.time.format('%b %-d');
-var formatTimeOfDayWithoutMinutes = d3.time.format('%-I%p');
-var formatTimeOfDayWithMinutes = d3.time.format('%-I:%M%p');
+const formatTimeOfDayWithoutMinutes = d3.time.format('%-I%p');
+const formatTimeOfDayWithMinutes = d3.time.format('%-I:%M%p');
 
 function formatTimeOfDay(d: Date): string {
   return d.getMinutes() ? formatTimeOfDayWithMinutes(d) : formatTimeOfDayWithoutMinutes(d);
@@ -23,24 +22,25 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, suppre
 
   var formatted: string;
   if (startWallTime.getFullYear() !== endShiftWallTime.getFullYear()) {
-    formatted = [formatWithYear(startWallTime), formatWithYear(endShiftWallTime)].join(JOIN);
+    formatted = [formatWithYear(startWallTime), formatWithYear(endShiftWallTime)].join(' - ');
   } else {
     var fmt = suppressYear ? formatWithoutYear : formatWithYear;
     if (startWallTime.getMonth() !== endShiftWallTime.getMonth() || startWallTime.getDate() !== endShiftWallTime.getDate()) {
-      formatted = [formatWithoutYear(startWallTime), fmt(endShiftWallTime)].join(JOIN);
+      formatted = [formatWithoutYear(startWallTime), fmt(endShiftWallTime)].join(' - ');
     } else {
       formatted = fmt(startWallTime);
     }
   }
 
   if (startWallTime.getHours() || endWallTime.getHours()) {
-    var timeString: string;
-    if (startWallTime.getHours() !== endShiftWallTime.getHours()) {
-      timeString = [formatTimeOfDay(startWallTime), formatTimeOfDay(endShiftWallTime)].join(JOIN);
-    } else {
-      timeString = formatTimeOfDay(startWallTime);
+    var startTimeStr = formatTimeOfDay(startWallTime);
+    var endTimeStr = formatTimeOfDay(endWallTime);
+
+    if (startTimeStr.substr(-2) === endTimeStr.substr(-2)) {
+      startTimeStr = startTimeStr.substr(0, startTimeStr.length - 2);
     }
-    formatted += ' ' + timeString.toLowerCase();
+
+    formatted += ', ' + [startTimeStr, endTimeStr].join('-').toLowerCase();
   }
 
   return formatted;
