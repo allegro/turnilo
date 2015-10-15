@@ -9,6 +9,7 @@ import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketActi
 import { listsEqual } from '../../../common/utils/general/general';
 import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
 import { SPLIT, SEGMENT, TIME_SORT_ACTION } from '../../config/constants';
+import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { ChartLine, ChartLineProps } from '../../components/chart-line/chart-line';
 import { ChartLineHover } from '../../components/chart-line-hover/chart-line-hover';
 import { TimeAxis } from '../../components/time-axis/time-axis';
@@ -17,6 +18,7 @@ import { GridLines } from '../../components/grid-lines/grid-lines';
 import { Highlighter } from '../../components/highlighter/highlighter';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
+import { HoverBubble } from '../../components/hover-bubble/hover-bubble';
 
 const H_PADDING = 10;
 const TEXT_SPACER = 36;
@@ -24,9 +26,24 @@ const X_AXIS_HEIGHT = 30;
 const Y_AXIS_WIDTH = 60;
 const MIN_GRAPH_HEIGHT = 150;
 const MAX_GRAPH_WIDTH = 2000;
+const HOVER_BUBBLE_V_OFFSET = -10;
+const HOVER_BUBBLE_HEIGHT = 50;
 
 function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
+}
+
+function findClosest(data: Datum[], dragDate: Date) {
+  var closestDatum: Datum = null;
+  var minDist = Infinity;
+  for (var datum of data) {
+    var dist = Math.abs(midpoint(datum[SEGMENT]).valueOf() - dragDate.valueOf());
+    if (!closestDatum || dist < minDist) {
+      closestDatum = datum;
+      minDist = dist;
+    }
+  }
+  return closestDatum;
 }
 
 export interface TimeSeriesState {
@@ -34,6 +51,8 @@ export interface TimeSeriesState {
   dataset?: Dataset;
   error?: any;
   dragStart?: number;
+  scrollLeft?: number;
+  scrollTop?: number;
   hoverDatum?: Datum;
   hoverMeasure?: Measure;
 }
@@ -127,6 +146,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       dataset: null,
       dragStart: null,
       error: null,
+      scrollLeft: 0,
+      scrollTop: 0,
       hoverDatum: null,
       hoverMeasure: null
     };
@@ -224,10 +245,18 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     this.mounted = false;
   }
 
+  onScroll(e: UIEvent) {
+    var target = <Element>e.target;
+    this.setState({
+      scrollLeft: target.scrollLeft,
+      scrollTop: target.scrollTop
+    });
+  }
+
   onMouseDown(e: MouseEvent) {
     var myDOM = ReactDOM.findDOMNode(this);
     var rect = myDOM.getBoundingClientRect();
-    var dragStart = e.clientX - (rect.left + H_PADDING);
+    var dragStart = getXFromEvent(e) - (rect.left + H_PADDING);
     this.setState({ dragStart });
   }
 
@@ -238,16 +267,9 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     var myDOM = ReactDOM.findDOMNode(this);
     var rect = myDOM.getBoundingClientRect();
-    var dragDate = scaleX.invert(e.clientX - (rect.left + H_PADDING));
+    var dragDate = scaleX.invert(getXFromEvent(e) - (rect.left + H_PADDING));
 
-    var thisHoverDatum: Datum = null;
-    var datums = dataset.data[0][SPLIT].data;
-    for (var datum of datums) {
-      if (datum[SEGMENT].contains(dragDate)) {
-        thisHoverDatum = datum;
-        break;
-      }
-    }
+    var thisHoverDatum = findClosest(dataset.data[0][SPLIT].data, dragDate);
 
     if (hoverDatum !== thisHoverDatum || measure !== hoverMeasure) {
       this.setState({
@@ -273,7 +295,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   render() {
     var { clicker, essence, stage } = this.props;
-    var { loading, dataset, error, dragStart, hoverDatum, hoverMeasure } = this.state;
+    var { loading, dataset, error, dragStart, scrollTop, hoverDatum, hoverMeasure } = this.state;
     var { splits } = essence;
 
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
@@ -308,7 +330,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
       var xTicks = scaleX.ticks();
 
-      measureGraphs = measures.map((measure) => {
+      measureGraphs = measures.map((measure, graphIndex) => {
         var measureName = measure.name;
         var getY = (d: Datum) => d[measureName];
         var extentY: number[] = null;
@@ -366,7 +388,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         }
 
         var chartLineHover: React.ReactElement<any> = null;
-        var chartHoverBubble: React.DOMElement<any> = null;
+        var chartHoverBubble: React.ReactElement<any> = null;
         if (hoverDatum && hoverMeasure === measure) {
           chartLineHover = React.createElement(ChartLineHover, {
             datum: hoverDatum,
@@ -377,26 +399,33 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
             stage: lineStage
           });
 
-          var chartHoverBubbleStyle = { left: scaleX(getX(hoverDatum)) };
-          chartHoverBubble = JSX(`
-            <div className="hover-bubble-cont" style={chartHoverBubbleStyle}>
-              <div className="hover-bubble">
-                <div className="text">{measure.formatFn(getY(hoverDatum))}</div>
-                <div className="shpitz"></div>
-              </div>
-            </div>
-          `);
+          var topOffset = graphHeight * graphIndex + HOVER_BUBBLE_V_OFFSET - scrollTop;
+          if (topOffset > -HOVER_BUBBLE_HEIGHT) {
+            var chartHoverBubbleStyle = {
+              left: stage.x + H_PADDING + scaleX(getX(hoverDatum)),
+              top: stage.y + topOffset
+            };
+            chartHoverBubble = JSX(`
+              <HoverBubble
+                essence={essence}
+                datum={hoverDatum}
+                measure={measure}
+                getY={getY}
+                style={chartHoverBubbleStyle}
+              />
+            `);
+          }
         }
 
         return JSX(`
-          <div className="measure-graph" key={measureName}>
-            <svg
-              width={svgStage.width}
-              height={svgStage.height}
-              onMouseDown={this.onMouseDown.bind(this)}
-              onMouseMove={this.onMouseMove.bind(this, scaleX, measure)}
-              onMouseLeave={this.onMouseLeave.bind(this, measure)}
-            >
+          <div
+            className="measure-graph"
+            key={measureName}
+            onMouseDown={this.onMouseDown.bind(this)}
+            onMouseMove={this.onMouseMove.bind(this, scaleX, measure)}
+            onMouseLeave={this.onMouseLeave.bind(this, measure)}
+          >
+            <svg width={svgStage.width} height={svgStage.height}>
               <GridLines
                 orientation="horizontal"
                 scale={scaleY}
@@ -470,7 +499,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     return JSX(`
       <div className="time-series">
-        <div className="measure-graphs" style={measureGraphsStyle}>
+        <div className="measure-graphs" style={measureGraphsStyle} onScroll={this.onScroll.bind(this)}>
           {measureGraphs}
         </div>
         {bottomAxes}

@@ -72,3 +72,11 @@ export function transformStyle(x: number, y: number): any {
     MsTransform: transform
   };
 }
+
+export function getXFromEvent(e: MouseEvent | DragEvent): number {
+  return e.clientX || e.pageX;
+}
+
+export function getYFromEvent(e: MouseEvent | DragEvent): number {
+  return e.clientY || e.pageY;
+}

@@ -8,8 +8,8 @@ import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'ply
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
-import { formatStartEnd } from '../../utils/date/date';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle } from '../../utils/dom/dom';
+import { formatTimeRange } from '../../utils/date/date';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle, getXFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { FilterMenu } from '../filter-menu/filter-menu';
@@ -134,8 +134,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { essence } = this.props;
     var numItems = essence.filter.length();
     var rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
-    var x = e.clientX || e.pageX;
-    var offset = x - rect.left;
+    var offset = getXFromEvent(e) - rect.left;
     return calculateDragPosition(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
 
@@ -265,7 +264,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         if (inAction instanceof InAction) {
           var timeRangeLiteral = inAction.getLiteralValue();
           if (!timeRangeLiteral) return '?';
-          label = formatStartEnd(timeRangeLiteral.start, timeRangeLiteral.end, timezone);
+          label = formatTimeRange(timeRangeLiteral, timezone, false);
         } else {
           label += ' : [not in]';
         }

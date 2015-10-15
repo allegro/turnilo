@@ -1,6 +1,5 @@
 @import '../../imports';
 
-$shpitz-size: 7px;
 $h-padding: 10px;
 
 .time-series {
@@ -25,49 +24,6 @@ $h-padding: 10px;
       span.colon {
         color: $text-light;
       }*/
-    }
-
-    .hover-bubble-cont {
-      position: absolute;
-      top: 7px;
-      width: 100px;
-      margin-left: -50px;
-      pointer-events: none;
-      text-align: center;
-
-      .hover-bubble {
-        @extend %menu-cont;
-        display: inline-block;
-
-        .text {
-          display: inline-block;
-          padding: 5px;
-        }
-      }
-
-      .shpitz {
-        position: absolute;
-        left: 50%;
-        margin-left: -$shpitz-size;
-
-        &:before,
-        &:after {
-          content: '';
-          position: absolute;
-        }
-
-        &:before {
-          @include triangle(down, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.15));
-          bottom: -1 * $shpitz-size;
-          margin-top: -1 * $shpitz-size;
-        }
-
-        &:after {
-          @include triangle(down, $shpitz-size, $shpitz-size, $white);
-          bottom: -1 * $shpitz-size + 1;
-          margin-top: -1 * $shpitz-size;
-        }
-      }
     }
   }
 

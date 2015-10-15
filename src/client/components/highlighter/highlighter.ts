@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';
-import { isInside, escapeKey } from '../../utils/dom/dom';
+import { isInside, escapeKey, getXFromEvent } from '../../utils/dom/dom';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
 
 export interface HighlighterProps {
@@ -72,7 +72,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var { dragStartPx } = this.state;
     if (dragStartPx !== null) return;
     var myDOM = ReactDOM.findDOMNode(this);
-    dragStartPx = e.clientX - (myDOM.getBoundingClientRect().left);
+    dragStartPx = getXFromEvent(e) - (myDOM.getBoundingClientRect().left);
     this.setState({ dragStartPx });
   }
 
@@ -80,7 +80,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var { dragStartPx } = this.state;
     if (dragStartPx === null) return;
     this.setState({
-      pseudoHighlight: this.getPseudoHighlight(e.clientX)
+      pseudoHighlight: this.getPseudoHighlight(getXFromEvent(e))
     });
   }
 
@@ -94,7 +94,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
       return;
     }
 
-    pseudoHighlight = this.getPseudoHighlight(e.clientX);
+    pseudoHighlight = this.getPseudoHighlight(getXFromEvent(e));
     this.setState({
       dragStartPx: null,
       pseudoHighlight: null
