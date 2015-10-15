@@ -33,7 +33,7 @@ export class HoverBubble extends React.Component<HoverBubbleProps, HoverBubbleSt
     const { essence, datum, measure, getY, style } = this.props;
 
     return JSX(`
-      <BodyPortal>
+      <BodyPortal disablePointerEvents={true}>
         <div className="hover-bubble" style={style}>
           <div className="hover-bubble-inner">
             <div className="text">

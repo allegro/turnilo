@@ -5,7 +5,7 @@
   z-index: 200;
   pointer-events: none;
 
-  > * {
+  &.pointer-events > * {
     pointer-events: auto;
   }
 }

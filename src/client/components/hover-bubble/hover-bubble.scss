@@ -9,7 +9,6 @@ $hover-bubble-max-width: 300px;
   width: $hover-bubble-max-width;
   margin-left: -$hover-bubble-max-width / 2;
   text-align: center;
-  pointer-events: none !important;
 
   .hover-bubble-inner {
     @extend %menu-cont;

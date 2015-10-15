@@ -7,6 +7,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';
 
 export interface BodyPortalProps {
+  disablePointerEvents?: boolean;
   children: any;
 }
 
@@ -23,8 +24,9 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
   }
 
   componentDidMount() {
+    var { disablePointerEvents } = this.props;
     var newDiv = document.createElement('div');
-    newDiv.className = 'body-portal';
+    newDiv.className = 'body-portal ' + (disablePointerEvents ? '' : 'pointer-events');
     this.target = document.body.appendChild(newDiv);
     this.component = ReactDOM.render(this.props.children, this.target);
   }
