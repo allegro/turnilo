@@ -7,6 +7,8 @@ $icon-width: 35px;
   @extend %module-title;
   @extend %white-shadow;
 
+  overflow: hidden;
+
   .items {
     position: absolute;
     top: $title-height;
