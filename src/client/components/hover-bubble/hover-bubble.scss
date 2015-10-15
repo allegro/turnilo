@@ -1,0 +1,53 @@
+@import '../../imports';
+
+$shpitz-size: 7px;
+$hover-bubble-max-width: 300px;
+
+.hover-bubble {
+  position: absolute;
+  top: -5px;
+  width: $hover-bubble-max-width;
+  margin-left: -$hover-bubble-max-width / 2;
+  text-align: center;
+  pointer-events: none !important;
+
+  .hover-bubble-inner {
+    @extend %menu-cont;
+    display: inline-block;
+
+    .text {
+      display: inline-block;
+      padding: 5px;
+
+      .bucket {
+        color: $text-lighterish;
+        display: block;
+        margin-bottom: 3px;
+      }
+    }
+  }
+
+  .shpitz {
+    position: absolute;
+    left: 50%;
+    margin-left: -$shpitz-size;
+
+    &:before,
+    &:after {
+      content: '';
+      position: absolute;
+    }
+
+    &:before {
+      @include triangle(down, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.15));
+      bottom: -1 * $shpitz-size;
+      margin-top: -1 * $shpitz-size;
+    }
+
+    &:after {
+      @include triangle(down, $shpitz-size, $shpitz-size, $white);
+      bottom: -1 * $shpitz-size + 1;
+      margin-top: -1 * $shpitz-size;
+    }
+  }
+}

@@ -9,7 +9,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle } from '../../utils/dom/dom';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle, getXFromEvent } from '../../utils/dom/dom';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { SplitMenu } from '../split-menu/split-menu';
 
@@ -108,7 +108,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var { essence } = this.props;
     var numItems = essence.splits.length();
     var rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
-    var x = e.clientX || e.pageX;
+    var x = getXFromEvent(e);
     var offset = x - rect.left;
     return calculateDragPosition(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }

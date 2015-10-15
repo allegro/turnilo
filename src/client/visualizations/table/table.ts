@@ -9,6 +9,7 @@ import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT } from '../../config/constants';
+import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
 import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
 import { Loader } from '../../components/loader/loader';
@@ -224,8 +225,8 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var { essence } = this.props;
     var { flatData, scrollLeft, scrollTop } = this.state;
     var rect = ReactDOM.findDOMNode(this.refs['base']).getBoundingClientRect();
-    var x = e.clientX - rect.left;
-    var y = e.clientY - rect.top;
+    var x = getXFromEvent(e) - rect.left;
+    var y = getYFromEvent(e) - rect.top;
 
     if (x <= SPACE_LEFT) return { what: 'space-left' };
     x -= SPACE_LEFT;

@@ -8,7 +8,12 @@ const JOIN = ' - ';
 
 var formatWithYear = d3.time.format('%b %-d, %Y');
 var formatWithoutYear = d3.time.format('%b %-d');
-var formatTimeOfDay = d3.time.format('%-I%p');
+var formatTimeOfDayWithoutMinutes = d3.time.format('%-I%p');
+var formatTimeOfDayWithMinutes = d3.time.format('%-I:%M%p');
+
+function formatTimeOfDay(d: Date): string {
+  return d.getMinutes() ? formatTimeOfDayWithMinutes(d) : formatTimeOfDayWithoutMinutes(d);
+}
 
 export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, suppressYear: boolean): string {
   var { start, end } = timeRange;
