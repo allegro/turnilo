@@ -21,7 +21,6 @@ export interface MeasuresTileState {
 }
 
 export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTileState> {
-  public mounted: boolean;
 
   constructor() {
     super();
