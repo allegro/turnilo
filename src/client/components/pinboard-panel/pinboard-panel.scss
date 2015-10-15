@@ -25,10 +25,11 @@
   }
 
   .placeholder {
+    @extend %module;
+    border-radius: 0 0 2px 2px;
     height: 280px;
     width: $pinboard-width - 2 * $tile-margin-h;
     pointer-events: none;
-    background: $white;
 
     &:after {
       @include unpin-full(10px);

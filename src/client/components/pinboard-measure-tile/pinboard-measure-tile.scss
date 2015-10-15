@@ -2,8 +2,8 @@
 
 .pinboard-measure-tile {
   @extend %module;
-  height: 38px;
-  border-bottom: 1px solid $background-base;
+  height: 37px;
+  margin-bottom: 1px;
 
   .title {
     margin-left: 12px;
