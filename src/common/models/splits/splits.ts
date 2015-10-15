@@ -155,7 +155,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return this.splitCombines.toArray();
   }
 
-  public updateWithTimeRange(timeAttribute: RefExpression, timeRange: TimeRange, force?: boolean): Splits {
+  public updateWithTimeRange(timeAttribute: RefExpression, timeRange: TimeRange, timezone: Timezone, force?: boolean): Splits {
     var changed = false;
 
     var granularity = timeRange ? getBestGranularity(timeRange) : DEFAULT_GRANULARITY;
@@ -179,7 +179,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
       } else {
         changed = true;
         return splitCombine.changeBucketAction(new TimeBucketAction({
-          timezone: Timezone.UTC,
+          timezone,
           duration: granularity
         }));
       }

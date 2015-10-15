@@ -199,7 +199,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
       if (!selectedTimeRange) return null;
       var { timezone } = essence;
 
-      var presets = getTimePresets(essence.dataSource.getMaxTime(), timezone);
+      var presets = getTimePresets(essence.dataSource.getMaxTimeDate(), timezone);
       var presetList = presets.map((preset) => {
         var selected = selectedTimeRange.equals(preset.timeRange);
         return JSX(`

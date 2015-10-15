@@ -138,19 +138,7 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
         }
 
         return dataSource.attachExecutor(executor);
-      }).then((dataSource) => {
-        if (dataSource.maxTime) return dataSource;
-
-        var ex = ply().apply('maxTime', $('main').max(dataSource.timeAttribute));
-
-        return dataSource.executor(ex).then((dataset: Dataset) => {
-          var maxTime = dataset.data[0]['maxTime'];
-          if (!isNaN(maxTime)) {
-            return dataSource.setMaxTime(maxTime);
-          }
-          return dataSource;
-        });
-      });
+      }).then(DataSource.updateMaxTime);
 
     default:
       throw new Error(`Invalid engine: '${dataSource.engine}' in '${dataSource.name}'`);

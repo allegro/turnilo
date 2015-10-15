@@ -32,7 +32,7 @@ writeFile = (path, data) ->
 writeFile(path + name + '.ts', """
 'use strict';
 
-import { ImmutableClass, ImmutableInstance, isInstanceOf, arraysEqual } from 'higher-object';
+import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression } from 'plywood';
 
 export interface #{camelName}Value {
@@ -43,15 +43,18 @@ export interface #{camelName}JS {
 
 }
 
-var check: ImmutableClass<#{camelName}Value, #{camelName}JS>;
-export class #{camelName} implements ImmutableInstance<#{camelName}Value, #{camelName}JS> {
+var check: Class<#{camelName}Value, #{camelName}JS>;
+export class #{camelName} implements Instance<#{camelName}Value, #{camelName}JS> {
 
   static is#{camelName}(candidate: any): boolean {
     return isInstanceOf(candidate, #{camelName});
   }
 
   static fromJS(parameters: #{camelName}JS): #{camelName} {
-    return new #{camelName}(/* */);
+    var value: RefreshRuleValue = {
+      /* */
+    };
+    return new #{camelName}(value);
   }
 
   constructor(parameters: #{camelName}Value) {
@@ -85,7 +88,6 @@ export class #{camelName} implements ImmutableInstance<#{camelName}Value, #{came
 }
 check = #{camelName};
 
-
 """)
 
 
@@ -94,14 +96,18 @@ writeFile(path + name + '.mocha.ts', """
 'use strict';
 
 import { expect } from 'chai';
+import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
 import { #{camelName} } from './#{name}';
 
 describe('#{camelName}', () => {
-  it('works in empty case', () => {
+  it('is an immutable class', () => {
+    testImmutableClass(#{camelName}, [
 
+    ]);
   });
+
 });
 
 """)

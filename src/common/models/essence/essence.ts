@@ -129,11 +129,13 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   static fromDataSource(dataSource: DataSource, dataSources: List<DataSource>, visualizations: List<Manifest>): Essence {
+    var defaultTimezone = dataSource.defaultTimezone;
+
     var filter: Filter;
     if (dataSource.timeAttribute) {
-      var now = dataSource.getMaxTime();
+      var now = dataSource.getMaxTimeDate();
       var timeRange = TimeRange.fromJS({
-        start: dataSource.defaultDuration.move(now, Timezone.UTC, -1),
+        start: dataSource.defaultDuration.move(now, defaultTimezone, -1),
         end: now
       });
       filter = Filter.fromClause(dataSource.timeAttribute.in(timeRange));
@@ -147,7 +149,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
       dataSource: dataSource,
       visualization: null,
-      timezone: Timezone.UTC,
+      timezone: defaultTimezone,
       filter,
       splits: Splits.EMPTY,
       selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
@@ -538,7 +540,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var oldTimeRange = timeAttribute ? this.filter.getTimeRange(timeAttribute) : null;
     var newTimeRange = timeAttribute ? filter.getTimeRange(timeAttribute) : null;
     if (newTimeRange && !newTimeRange.equals(oldTimeRange)) {
-      value.splits = value.splits.updateWithTimeRange(timeAttribute, newTimeRange, true);
+      value.splits = value.splits.updateWithTimeRange(timeAttribute, newTimeRange, this.timezone, true);
     }
 
     return new Essence(value);
@@ -555,7 +557,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
-      splits = splits.updateWithTimeRange(timeAttribute, filter.getTimeRange(timeAttribute));
+      splits = splits.updateWithTimeRange(timeAttribute, filter.getTimeRange(timeAttribute), this.timezone);
     }
 
     // If in manual mode stay there, keep the vis regardless of suggested strategy

@@ -1,22 +1,15 @@
 'use strict';
 
+import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Duration, Timezone, hour } from 'chronoshift';
-import { $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression, SortAction } from 'plywood';
+import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression, SortAction } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
-
-function dimensionPreference(dimension: Dimension): number {
-  if (dimension.type === 'TIME') return 0;
-  return 1;
-}
-
-function measurePreference(measure: Measure): number {
-  if (measure.name === 'count') return 0;
-  return 1;
-}
+import { MaxTime, MaxTimeJS } from '../max-time/max-time';
+import { RefreshRule, RefreshRuleJS } from '../refresh-rule/refresh-rule';
 
 function makeUniqueDimensionList(dimensions: Dimension[]): List<Dimension> {
   var seen: Lookup<number> = {};
@@ -48,6 +41,7 @@ function getDefaultPinnedDimensions(dimensions: List<Dimension>): OrderedSet<str
   );
 }
 
+
 export interface DataSourceValue {
   name: string;
   title?: string;
@@ -57,10 +51,12 @@ export interface DataSourceValue {
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
-  maxTime?: Date;
+  defaultTimezone: Timezone;
   defaultDuration: Duration;
   defaultSortMeasure: string;
   defaultPinnedDimensions?: OrderedSet<string>;
+  refreshRule: RefreshRule;
+  maxTime?: MaxTime;
 
   executor?: Executor;
 }
@@ -74,16 +70,32 @@ export interface DataSourceJS {
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
   timeAttribute?: string;
-  maxTime?: Date;
+  defaultTimezone?: string;
   defaultDuration?: string;
   defaultSortMeasure?: string;
   defaultPinnedDimensions?: string[];
+  refreshRule?: RefreshRuleJS;
+  maxTime?: MaxTimeJS;
 }
 
 var check: Class<DataSourceValue, DataSourceJS>;
 export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   static isDataSource(candidate: any): boolean {
     return isInstanceOf(candidate, DataSource);
+  }
+
+  static updateMaxTime(dataSource: DataSource): Q.Promise<DataSource> {
+    if (!dataSource.shouldQueryMaxTime()) return Q(dataSource);
+
+    var ex = ply().apply('maxTime', $('main').max(dataSource.timeAttribute));
+
+    return dataSource.executor(ex).then((dataset: Dataset) => {
+      var maxTimeDate = dataset.data[0]['maxTime'];
+      if (!isNaN(maxTimeDate)) {
+        return dataSource.changeMaxTime(MaxTime.fromDate(maxTimeDate));
+      }
+      return dataSource;
+    });
   }
 
   static fromJS(parameters: DataSourceJS, executor: Executor = null): DataSource {
@@ -100,10 +112,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       dimensions,
       measures,
       timeAttribute: parameters.timeAttribute ? $(parameters.timeAttribute) : null,
-      maxTime: parameters.maxTime ? new Date(<any>parameters.maxTime) : null,
+      defaultTimezone: Timezone.fromJS(parameters.defaultTimezone || 'Etc/UTC'),
       defaultDuration: Duration.fromJS(parameters.defaultDuration || 'P3D'),
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
-      defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : getDefaultPinnedDimensions(dimensions)
+      defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : getDefaultPinnedDimensions(dimensions),
+      refreshRule: parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : RefreshRule.REALTIME,
+      maxTime: parameters.maxTime ? MaxTime.fromJS(parameters.maxTime) : null
     };
     if (executor) {
       value.executor = executor;
@@ -120,10 +134,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
+  public defaultTimezone: Timezone;
   public defaultDuration: Duration;
   public defaultSortMeasure: string;
   public defaultPinnedDimensions: OrderedSet<string>;
-  public maxTime: Date;
+  public refreshRule: RefreshRule;
+  public maxTime: MaxTime;
 
   public executor: Executor;
 
@@ -137,16 +153,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.dimensions = parameters.dimensions || List([]);
     this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
+    this.defaultTimezone = parameters.defaultTimezone;
     this.defaultDuration = parameters.defaultDuration;
     this.defaultSortMeasure = parameters.defaultSortMeasure;
     this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
-
-    if (parameters.maxTime) {
-      this.maxTime = parameters.maxTime;
-      if (isNaN(this.maxTime.valueOf())) throw new Error('invalid maxTime date');
-    } else {
-      this.maxTime = null;
-    }
+    this.refreshRule = parameters.refreshRule;
+    this.maxTime = parameters.maxTime;
 
     this.executor = parameters.executor;
   }
@@ -161,10 +173,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       dimensions: this.dimensions,
       measures: this.measures,
       timeAttribute: this.timeAttribute,
-      maxTime: this.maxTime,
+      defaultTimezone: this.defaultTimezone,
       defaultDuration: this.defaultDuration,
       defaultSortMeasure: this.defaultSortMeasure,
-      defaultPinnedDimensions: this.defaultPinnedDimensions
+      defaultPinnedDimensions: this.defaultPinnedDimensions,
+      refreshRule: this.refreshRule,
+      maxTime: this.maxTime
     };
     if (this.executor) {
       value.executor = this.executor;
@@ -181,15 +195,17 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
       measures: this.measures.toArray().map(measure => measure.toJS()),
       timeAttribute: this.timeAttribute.name,
+      defaultTimezone: this.defaultTimezone.toJS(),
       defaultDuration: this.defaultDuration.toJS(),
       defaultSortMeasure: this.defaultSortMeasure,
-      defaultPinnedDimensions: this.defaultPinnedDimensions.toArray()
+      defaultPinnedDimensions: this.defaultPinnedDimensions.toArray(),
+      refreshRule: this.refreshRule.toJS()
     };
     if (Object.keys(this.options).length) {
       js.options = this.options;
     }
     if (this.maxTime) {
-      js.maxTime = this.maxTime;
+      js.maxTime = this.maxTime.toJS();
     }
     return js;
   }
@@ -213,9 +229,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       listsEqual(this.measures, other.measures) &&
       Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
       (!this.timeAttribute || this.timeAttribute.equals(other.timeAttribute)) &&
+      this.defaultTimezone.equals(other.defaultTimezone) &&
       this.defaultDuration.equals(other.defaultDuration) &&
       this.defaultSortMeasure === other.defaultSortMeasure &&
-      this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions);
+      this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions) &&
+      this.refreshRule.equals(other.refreshRule);
   }
 
   public attachExecutor(executor: Executor): DataSource {
@@ -228,10 +246,22 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return Boolean(this.executor);
   }
 
-  public getMaxTime(): Date {
-    var maxTime = this.maxTime;
-    if (maxTime) return maxTime;
-    return hour.ceil(new Date(), Timezone.UTC);
+  public getMaxTimeDate(): Date {
+    var { refreshRule } = this;
+    if (refreshRule.rule === 'realtime') {
+      return hour.ceil(new Date(), Timezone.UTC);
+    } else if (refreshRule.rule === 'fixed') {
+      return refreshRule.time;
+    } else { //refreshRule.rule === 'query'
+      var { maxTime } = this;
+      if (!maxTime) return null;
+      return maxTime.time;
+    }
+  }
+
+  public shouldQueryMaxTime(): boolean {
+    if (!this.executor) return false;
+    return this.refreshRule.shouldQuery(this.maxTime);
   }
 
   public getDimension(dimensionName: string): Dimension {
@@ -277,6 +307,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
         case 'TIME':
           expression = $(name);
           if (this.getDimensionByExpression(expression)) continue;
+          // Add to the start
           dimensions = dimensions.unshift(new Dimension({
             name,
             type: type
@@ -315,9 +346,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           if (attribute.special === 'histogram') continue;
           expression = $('main').sum($(name));
           if (this.getMeasureByExpression(expression)) continue;
-          measures = measures.push(new Measure({
-            name
-          }));
+          var newMeasure = new Measure({ name });
+          measures = (name === 'count') ? measures.unshift(newMeasure) : measures.push(newMeasure);
           break;
 
         default:
@@ -336,7 +366,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return new DataSource(value);
   }
 
-  public setMaxTime(maxTime: Date) {
+  public changeMaxTime(maxTime: MaxTime) {
     var value = this.valueOf();
     value.maxTime = maxTime;
     return new DataSource(value);

@@ -1,14 +1,15 @@
 'use strict';
 
 import * as Q from 'q';
-
-import { DataSource, DataSourceJS } from '../../../common/models/index';
+import { Duration, Timezone } from 'chronoshift';
+import { DataSource, DataSourceJS, RefreshRule } from '../../../common/models/index';
 import { fillInDataSource } from '../executor/executor';
 import { druidRequesterFactory } from 'plywood-druid-requester';
 
 export interface DataSourceManagerOptions {
   dataSources: DataSource[];
   druidHost: string;
+  dataSourceStubFactory?: (name: string) => DataSource;
   useSegmentMetadata?: boolean;
   sourceListRefreshInterval?: number;
   sourceListRefreshOnLoad?: boolean;
@@ -25,11 +26,27 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   var {
     dataSources,
     druidHost,
+    dataSourceStubFactory,
     useSegmentMetadata,
     sourceListRefreshInterval,
     sourceListRefreshOnLoad,
     log
   } = options;
+
+  if (!dataSourceStubFactory) {
+    dataSourceStubFactory = (name: string) => {
+      return DataSource.fromJS({
+        name,
+        engine: 'druid',
+        source: name,
+        timeAttribute: 'time',
+        refreshRule: {
+          rule: 'query',
+          refresh: 'PT1M'
+        }
+      });
+    };
+  }
 
   useSegmentMetadata = Boolean(useSegmentMetadata);
   if (!log) log = function() {};
@@ -48,7 +65,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   }
 
   // Updates the correct datasource (by name) in myDataSources
-  function updateDataSource(dataSource: DataSource): void {
+  function addOrUpdateDataSource(dataSource: DataSource): void {
     var updated = false;
     myDataSources = myDataSources.map((myDataSource) => {
       if (myDataSource.name === dataSource.name) {
@@ -58,7 +75,9 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
         return myDataSource;
       }
     });
-    if (!updated) myDataSources.push(dataSource);
+    if (!updated) {
+      myDataSources.push(dataSource);
+    }
   }
 
   var druidRequester: Requester.PlywoodRequester<any> = null;
@@ -75,7 +94,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
 
   function introspectDataSource(dataSource: DataSource): Q.Promise<any> {
     return fillInDataSource(dataSource, druidRequester, useSegmentMetadata).then((filledDataSource) => {
-      updateDataSource(filledDataSource);
+      addOrUpdateDataSource(filledDataSource);
     }).catch((e) => {
       log(`Failed to introspect data source: '${dataSource.name}' because ${e.message}`);
     });
@@ -106,14 +125,9 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
       });
 
       nonQueryableDataSources = nonQueryableDataSources.concat(unknownDataSourceNames.map((name) => {
-        var newDataSource = DataSource.fromJS({
-          name,
-          engine: 'druid',
-          source: name,
-          timeAttribute: 'time'
-        });
+        var newDataSource = dataSourceStubFactory(name);
         log(`Adding Druid data source: '${name}'`);
-        updateDataSource(newDataSource);
+        addOrUpdateDataSource(newDataSource);
         return newDataSource;
       }));
 
@@ -148,6 +162,18 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     log(`Will refresh data sources every ${sourceListRefreshInterval}ms`);
     setInterval(loadDruidDataSources, sourceListRefreshInterval);
   }
+
+  // Periodically check if max time needs to be updated
+  setInterval(() => {
+    myDataSources.forEach((dataSource) => {
+      if (dataSource.shouldQueryMaxTime()) {
+        DataSource.updateMaxTime(dataSource).then((updatedDataSource) => {
+          log(`Getting the latest MaxTime for '${updatedDataSource.name}'`);
+          addOrUpdateDataSource(updatedDataSource);
+        });
+      }
+    });
+  }, 1000);
 
   return {
     getDataSources: () => {

@@ -117,6 +117,13 @@ export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSo
   var dataSourceName = dataSourceJS.name;
   if (typeof dataSourceName !== 'string') errorExit(new Error(`DataSource ${i} must have a name`));
 
+  // Convert maxTime into refreshRule if a maxTime exists
+  if (dataSourceJS.maxTime && (typeof dataSourceJS.maxTime === 'string' || (<any>dataSourceJS.maxTime).toISOString)) {
+    dataSourceJS.refreshRule = { rule: 'fixed', time: <any>dataSourceJS.maxTime };
+    console.warn('maxTime found in config, this is deprecated please convert it to a refreshRule like so:', dataSourceJS.refreshRule);
+    delete dataSourceJS.maxTime;
+  }
+
   try {
     return DataSource.fromJS(dataSourceJS);
   } catch (e) {
