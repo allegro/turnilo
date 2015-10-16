@@ -206,8 +206,13 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
         }
 
         return JSX(`
-          <div className={'row' + (selected ? ' selected' : '')} key={segmentValueStr} title={segmentValueStr}>
-            <div className="segment-value" onClick={onValueClick.bind(this, segmentValue)}>
+          <div
+            className={'row' + (selected ? ' selected' : '')}
+            key={segmentValueStr}
+            title={segmentValueStr}
+            onClick={onValueClick.bind(this, segmentValue)}
+          >
+            <div className="segment-value">
               {checkbox}
               <div className="label">{this.highlightInString(segmentValueStr, searchText)}</div>
             </div>

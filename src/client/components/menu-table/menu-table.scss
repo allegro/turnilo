@@ -7,7 +7,6 @@ $measure-width: 80px;
   @extend %white-shadow;
   background: $white;
   color: $text-standard;
-  user-select: none;
 
   .search {
     @include pin-top(30px);
@@ -34,6 +33,7 @@ $measure-width: 80px;
 
   .row {
     height: 24px;
+    cursor: pointer;
 
     &:hover {
       background: $hover;
@@ -47,7 +47,6 @@ $measure-width: 80px;
   .segment-value {
     @include unpin-right($measure-width);
 
-    cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
     padding-left: 10px;
@@ -59,7 +58,7 @@ $measure-width: 80px;
       padding-top: 4px;
 
       .bold {
-        border-bottom: 1px dotted $border-dark;
+        border-bottom: 1px solid $text-standard;
       }
     }
   }
@@ -68,7 +67,7 @@ $measure-width: 80px;
     @include pin-right($measure-width);
 
     text-align: right;
-    padding-top: 4px;
+    padding-top: 6px;
     padding-right: 10px;
     white-space: nowrap;
   }

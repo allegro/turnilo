@@ -6,7 +6,6 @@ $measure-width: 80px;
 .dimension-tile {
   @extend %module;
   @extend %white-shadow;
-  user-select: none;
   min-height: 94px;
 
   .tile-header {
