@@ -20,12 +20,16 @@ latest version and refrain from submitting bug reports for outdated versions.
 
 ## Usage
 
+### Ensure that you have an up-to-date node
+
 Make sure you have node (4.x.x) installed. On MacOS with [homebrew](http://brew.sh/) you can do:
 
 ```
 brew update
 brew install node
 ```
+
+### Install
 
 Next simply run:
 
@@ -35,11 +39,16 @@ npm i -g imply-pivot
 
 **That's it.** You are ready to Pivot.
 
+
+### Example
+
 Start of by running an example (static) dataset:
 
 ```
 pivot --example wiki
 ```
+
+### Run with Druid
 
 Next connect Pivot to your broker by simply pointing it to your broker host
 
@@ -54,7 +63,9 @@ You probably have some *hyperUnique* column that Pivot is trying to SUM over. Yo
 your choice is ether to write a [full config](/config.yaml.sample) or to make a [tiny config](/hyper-unique-patch-config.yaml)
 that simply tells Pivot about the hyperUnique measures.   
 
-But Pivot will never know your schema as well as you do so to get a better experience you might want to define a config file and pass it along.
+### Write a config
+
+In general Pivot will never know your schema as well as you do so to get a better experience you might want to define a config file and pass it along.
 Have a look at a the [sample config file](/config.yaml.sample) included in this repo to learn what properties are supported. 
 
 ```
