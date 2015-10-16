@@ -345,7 +345,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         }
 
         if (isNaN(extentY[0])) {
-          return null;
+          extentY = [0, 1];
         }
 
         extentY[0] = Math.min(extentY[0] * 1.1, 0);

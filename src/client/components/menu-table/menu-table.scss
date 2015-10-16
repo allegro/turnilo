@@ -73,13 +73,13 @@ $measure-width: 80px;
     white-space: nowrap;
   }
 
-  .loader {
-    height: 40px;
-  }
-
   .message {
     padding: 4px 10px;
     color: $text-light;
     font-style: italic;
+  }
+
+  .loader {
+    @include pin-full;
   }
 }
