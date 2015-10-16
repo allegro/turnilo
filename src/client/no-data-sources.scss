@@ -4,12 +4,14 @@
 @import 'imports';
 
 html,
-body,
-input {
+body {
   height: 100%;
   font-family: 'Open Sans', sans-serif;
   font-size: 13px;
   overflow: hidden;
+}
+
+* {
   user-select: none;
 }
 

@@ -24,17 +24,21 @@ $total-width: 180px;
 
     .measure-name {
       @include ellipsis;
+      cursor: default;
       margin-top: 15px;
       padding-left: 3px;
       padding-right: 3px;
       font-size: 15px;
       height: 20px;
       color: $text-medium;
+      user-select: text;
     }
 
     .measure-value {
+      cursor: default;
       margin-top: 5px;
       font-size: 20px;
+      user-select: text;
     }
   }
 
