@@ -4,6 +4,7 @@ import * as Q from 'q';
 import { Duration, Timezone } from 'chronoshift';
 import { DataSource, DataSourceJS, RefreshRule } from '../../../common/models/index';
 import { fillInDataSource } from '../executor/executor';
+import { helper } from 'plywood';
 import { druidRequesterFactory } from 'plywood-druid-requester';
 
 export interface DataSourceManagerOptions {
@@ -109,8 +110,8 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     }
 
     if (concurrentLimit) {
-      requester = helper.concurrentLimitRequesterFactory({
-        requester: requester,
+      druidRequester = helper.concurrentLimitRequesterFactory({
+        requester: druidRequester,
         concurrentLimit: concurrentLimit
       });
     }
