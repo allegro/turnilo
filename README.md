@@ -49,6 +49,11 @@ pivot --druid your.druid.broker.host:8082
 
 Pivot will automatically introspect your Druid cluster and figure out your dimensions and measures.
 
+**Note:** if Pivot starts up and gives you a query error it is most likely because it could not determine your schema.
+You probably have some *hyperUnique* column that Pivot is trying to SUM over. You will have to provide Pivot with a config
+your choice is ether to write a [full config](/config.yaml.sample) or to make a [tiny config](/hyper-unique-patch-config.yaml)
+that simply tells Pivot about the hyperUnique measures.   
+
 But Pivot will never know your schema as well as you do so to get a better experience you might want to define a config file and pass it along.
 Have a look at a the [sample config file](/config.yaml.sample) included in this repo to learn what properties are supported. 
 

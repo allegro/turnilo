@@ -156,6 +156,9 @@ dataSources:
 
     timeAttribute: time # The time attribute (this needs to be set for Druid, but could be anything. You should leave it as 'time')
 
+    refreshRule:
+      rule: query # ask druid for a maxTime
+
     # All the dimensions will be automatically filled in from the data source
     #dimensions:
 

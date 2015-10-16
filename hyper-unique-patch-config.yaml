@@ -1,0 +1,25 @@
+# This is a super minimalistic config to get around the problem that Pivot can not currently deduce if a certain
+# measure is hyperUnique from the druid metadata alone
+# If you are running Druid 0.8.2 you can use the `--use-segment-metadata` flag instead to get better introspection
+# in Pivot out of the box.
+
+dataSources:
+
+  - name: whatever # <- the name can be whatever you want
+    engine: druid
+    source: twitterstream # <- fill in the name of your dataSource in druid
+
+    timeAttribute: time
+
+    measures:
+      # Define your hyperUnique measures here. Once a measure is defined here Pivot will not try to add it.
+      - name: your_hyper_unique_metric
+        expression: $main.countDistinct($your_hyper_unique_metric) # <- this is what is missing fill in your metric
+
+      # Do this as many times as it takes
+      - name: your_other_hyper_unique_metric
+        expression: $main.countDistinct($your_other_hyper_unique_metric)
+
+      # While you are here you might want to define some cool formulas
+      - name: some_ratio
+        expression: $main.sum($total_retweet_count) / $main.sum($total_statuses_count) * 50
