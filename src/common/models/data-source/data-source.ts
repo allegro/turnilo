@@ -3,7 +3,7 @@
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
-import { Duration, Timezone, hour } from 'chronoshift';
+import { Duration, Timezone, minute } from 'chronoshift';
 import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression, SortAction } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -249,7 +249,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public getMaxTimeDate(): Date {
     var { refreshRule } = this;
     if (refreshRule.rule === 'realtime') {
-      return hour.ceil(new Date(), Timezone.UTC);
+      return minute.ceil(new Date(), Timezone.UTC);
     } else if (refreshRule.rule === 'fixed') {
       return refreshRule.time;
     } else { //refreshRule.rule === 'query'

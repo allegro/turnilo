@@ -7,8 +7,11 @@ import { fillInDataSource } from '../executor/executor';
 import { druidRequesterFactory } from 'plywood-druid-requester';
 
 export interface DataSourceManagerOptions {
-  dataSources: DataSource[];
-  druidHost: string;
+  dataSources?: DataSource[];
+  druidHost?: string;
+  retry?: number;
+  verbose?: boolean;
+  concurrentLimit?: number;
   dataSourceStubFactory?: (name: string) => DataSource;
   useSegmentMetadata?: boolean;
   sourceListRefreshInterval?: number;
@@ -26,6 +29,9 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   var {
     dataSources,
     druidHost,
+    retry,
+    verbose,
+    concurrentLimit,
     dataSourceStubFactory,
     useSegmentMetadata,
     sourceListRefreshInterval,
@@ -51,7 +57,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   useSegmentMetadata = Boolean(useSegmentMetadata);
   if (!log) log = function() {};
 
-  var myDataSources: DataSource[] = dataSources;
+  var myDataSources: DataSource[] = dataSources || [];
 
   function findDataSource(name: string): DataSource {
     for (var myDataSource of myDataSources) {
@@ -87,9 +93,27 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
       timeout: 30000
     });
 
-    //druidRequester = helper.verboseRequesterFactory({
-    //  requester: druidRequester
-    //});
+    if (retry) {
+      druidRequester = helper.retryRequesterFactory({
+        requester: druidRequester,
+        retry: retry,
+        delay: 500,
+        retryOnTimeout: false
+      });
+    }
+
+    if (verbose) {
+      druidRequester = helper.verboseRequesterFactory({
+        requester: druidRequester
+      });
+    }
+
+    if (concurrentLimit) {
+      requester = helper.concurrentLimitRequesterFactory({
+        requester: requester,
+        concurrentLimit: concurrentLimit
+      });
+    }
   }
 
   function introspectDataSource(dataSource: DataSource): Q.Promise<any> {
