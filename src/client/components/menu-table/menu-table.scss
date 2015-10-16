@@ -59,7 +59,12 @@ $measure-width: 80px;
       padding-top: 4px;
 
       .bold {
-        border-bottom: 1px dotted $border-dark;
+        //border-bottom: 1px dotted $border-dark;
+        //border-bottom: 1px solid $text-standard;
+        text-decoration: underline;
+        //border-bottom: 2px solid $border-light;
+        //border-bottom: 2px solid $border-medium;
+        //border-bottom: 2px solid rgba($brand, 0.5);
       }
     }
   }
