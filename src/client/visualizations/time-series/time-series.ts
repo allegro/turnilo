@@ -28,17 +28,20 @@ const MIN_GRAPH_HEIGHT = 150;
 const MAX_GRAPH_WIDTH = 2000;
 const HOVER_BUBBLE_V_OFFSET = -6;
 const HOVER_BUBBLE_HEIGHT = 50;
+const MAX_HOVER_DIST = 50;
 
 function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
-function findClosest(data: Datum[], dragDate: Date) {
+function findClosest(data: Datum[], dragDate: Date, scaleX: Function) {
   var closestDatum: Datum = null;
   var minDist = Infinity;
   for (var datum of data) {
-    var dist = Math.abs(midpoint(datum[SEGMENT]).valueOf() - dragDate.valueOf());
-    if (!closestDatum || dist < minDist) {
+    var mid: Date = midpoint(datum[SEGMENT]);
+    var dist = Math.abs(mid.valueOf() - dragDate.valueOf());
+    var distPx = Math.abs(scaleX(mid) - scaleX(dragDate));
+    if ((!closestDatum || dist < minDist) && distPx < MAX_HOVER_DIST) { // Make sure it is not too far way
       closestDatum = datum;
       minDist = dist;
     }
@@ -269,7 +272,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var rect = myDOM.getBoundingClientRect();
     var dragDate = scaleX.invert(getXFromEvent(e) - (rect.left + H_PADDING));
 
-    var thisHoverDatum = findClosest(dataset.data[0][SPLIT].data, dragDate);
+    var thisHoverDatum = findClosest(dataset.data[0][SPLIT].data, dragDate, scaleX);
 
     if (hoverDatum !== thisHoverDatum || measure !== hoverMeasure) {
       this.setState({
