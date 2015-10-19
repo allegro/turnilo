@@ -34,7 +34,8 @@ dataSources:
     # This is particularly useful for Druid data sources as they must always have a time filter.
     timeAttribute: time
 
-    # The refresh rule describes how often the data source looks for new data, it has to be fixed here since this data source is static
+    # The refresh rule describes how often the data source looks for new data. Default: 'query'/PT1M (every minute)
+    # In this case it has to be fixed since this data source is static
     refreshRule:
       rule: fixed # also possible: 'query' and 'realtime'
       time: 2015-09-13T00:00:00Z
@@ -156,8 +157,10 @@ dataSources:
 
     timeAttribute: time # The time attribute (this needs to be set for Druid, but could be anything. You should leave it as 'time')
 
+    # This is a real time data source so always assume it is up to date
+    # if this assumption is not true, better use 'query' instead
     refreshRule:
-      rule: query # ask druid for a maxTime
+      rule: realtime
 
     # All the dimensions will be automatically filled in from the data source
     #dimensions:

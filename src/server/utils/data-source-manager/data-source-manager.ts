@@ -47,10 +47,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
         engine: 'druid',
         source: name,
         timeAttribute: 'time',
-        refreshRule: {
-          rule: 'query',
-          refresh: 'PT5M'
-        }
+        refreshRule: RefreshRule.query().toJS()
       });
     };
   }

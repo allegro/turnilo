@@ -20,10 +20,18 @@ export interface RefreshRuleJS {
 var check: Class<RefreshRuleValue, RefreshRuleJS>;
 export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
+  static DEFAULT_QUERY_REFRESH = Duration.fromJS('PT1M');
   static REALTIME: RefreshRule;
 
   static isRefreshRule(candidate: any): boolean {
     return isInstanceOf(candidate, RefreshRule);
+  }
+
+  static query(refresh?: Duration): RefreshRule {
+    return new RefreshRule({
+      rule: 'query',
+      refresh
+    });
   }
 
   static fromJS(parameters: RefreshRuleJS): RefreshRule {
@@ -51,6 +59,9 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
     }
     this.rule = rule;
     this.refresh = parameters.refresh;
+    if (this.rule === 'query' && !this.refresh) {
+      this.refresh = RefreshRule.DEFAULT_QUERY_REFRESH;
+    }
     this.time = parameters.time;
   }
 

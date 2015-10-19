@@ -116,7 +116,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultDuration: Duration.fromJS(parameters.defaultDuration || 'P3D'),
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : getDefaultPinnedDimensions(dimensions),
-      refreshRule: parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : RefreshRule.REALTIME,
+      refreshRule: parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : RefreshRule.query(),
       maxTime: parameters.maxTime ? MaxTime.fromJS(parameters.maxTime) : null
     };
     if (executor) {

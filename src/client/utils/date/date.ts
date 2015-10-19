@@ -34,7 +34,7 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, suppre
     }
   }
 
-  if (startWallTime.getHours() || endWallTime.getHours()) {
+  if (startWallTime.getHours() || startWallTime.getMinutes() || endWallTime.getHours() || endWallTime.getMinutes()) {
     var startTimeStr = formatTimeOfDay(startWallTime);
     var endTimeStr = formatTimeOfDay(endWallTime);
 

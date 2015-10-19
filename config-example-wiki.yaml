@@ -21,8 +21,11 @@ dataSources:
     # This is particularly useful for Druid data sources as they must always have a time filter.
     timeAttribute: time
 
-    # The latest time of the data, (if not set will default to Date.now())
-    maxTime: 2015-09-13T00:00:00Z
+    # The refresh rule describes how often the data source looks for new data. Default: 'query'/PT1M (every minute)
+    # In this case it has to be fixed since this data source is static
+    refreshRule:
+      rule: fixed # also possible: 'query' and 'realtime'
+      time: 2015-09-13T00:00:00Z
 
     # The default duration for the time filter (if not set P3D is used)
     defaultDuration: P1D
