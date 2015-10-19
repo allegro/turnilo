@@ -229,7 +229,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
         </div>
       `);
     } else {
-      menuSize = Stage.fromSize(250, 400);
+      menuSize = Stage.fromSize(250, 410);
       menuCont = JSX(`
         <div className="menu-cont">
           <MenuTable

@@ -30,7 +30,7 @@ var scales: Lookup<Lookup<number>> = {
 export function getMiddleNumber(values: number[]): number {
   var filteredAbsData: number[] = [];
   for (var v of values) {
-    if (v === 0 || isNaN(v)) continue;
+    if (v === 0 || isNaN(v) || !isFinite(v)) continue;
     filteredAbsData.push(Math.abs(v));
   }
 
@@ -56,12 +56,12 @@ export function formatterFromData(values: number[], format: string): Formatter {
     var append = unit ? space + unit : '';
 
     return (n: number) => {
-      if (isNaN(n)) return '';
+      if (isNaN(n) || !isFinite(n)) return '-';
       return numeral(n / scale).format(numberFormat) + append;
     };
   } else {
     return (n: number) => {
-      if (isNaN(n)) return '';
+      if (isNaN(n) || !isFinite(n)) return '-';
       return numeral(n).format(format);
     };
   }

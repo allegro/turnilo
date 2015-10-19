@@ -7,7 +7,7 @@ import { makeTitle } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
   return (n: number) => {
-    if (typeof n === 'undefined' || isNaN(n) || !isFinite(n)) return '-';
+    if (isNaN(n) || !isFinite(n)) return '-';
     return numeral(n).format(format);
   };
 }
