@@ -102,7 +102,7 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
   }
 }
 
-export function fillInDataSource(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, useSegmentMetadata: boolean): Q.Promise<DataSource> {
+export function fillInDataSource(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, fileDirectory: string, useSegmentMetadata: boolean): Q.Promise<DataSource> {
   var skipIntrospection = Boolean(dataSource.options['skipIntrospection']);
   var disableAutofill = Boolean(dataSource.options['disableAutofill']);
 
@@ -111,7 +111,11 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
       // Do not do anything if the file was already loaded
       if (dataSource.executor) return Q(dataSource);
 
-      var filePath = path.join(__dirname, '../../../../', dataSource.source);
+      if (!fileDirectory) {
+        throw new Error('Must have a file directory');
+      }
+
+      var filePath = path.join(fileDirectory, dataSource.source);
       return getFileData(filePath).then((rawData) => {
         var dataset = Dataset.fromJS(rawData).hide();
         dataset.introspect();

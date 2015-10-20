@@ -14,6 +14,7 @@ export interface DataSourceManagerOptions {
   verbose?: boolean;
   concurrentLimit?: number;
   dataSourceStubFactory?: (name: string) => DataSource;
+  fileDirectory?: string;
   useSegmentMetadata?: boolean;
   sourceListRefreshInterval?: number;
   sourceListRefreshOnLoad?: boolean;
@@ -34,6 +35,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     verbose,
     concurrentLimit,
     dataSourceStubFactory,
+    fileDirectory,
     useSegmentMetadata,
     sourceListRefreshInterval,
     sourceListRefreshOnLoad,
@@ -115,7 +117,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   }
 
   function introspectDataSource(dataSource: DataSource): Q.Promise<any> {
-    return fillInDataSource(dataSource, druidRequester, useSegmentMetadata).then((filledDataSource) => {
+    return fillInDataSource(dataSource, druidRequester, fileDirectory, useSegmentMetadata).then((filledDataSource) => {
       addOrUpdateDataSource(filledDataSource);
     }).catch((e) => {
       log(`Failed to introspect data source: '${dataSource.name}' because ${e.message}`);

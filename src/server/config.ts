@@ -135,6 +135,7 @@ export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
   dataSources: DATA_SOURCES,
   druidHost: DRUID_HOST,
   concurrentLimit: 5,
+  fileDirectory: path.join(__dirname, '../..'),
   useSegmentMetadata: USE_SEGMENT_METADATA,
   sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL,
   log: (line: string) => console.log(line)
