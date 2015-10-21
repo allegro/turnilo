@@ -19,7 +19,7 @@ export interface DimensionValue {
 export interface DimensionJS {
   name: string;
   title?: string;
-  expression?: ExpressionJS;
+  expression?: ExpressionJS | string;
   type?: string;
 }
 

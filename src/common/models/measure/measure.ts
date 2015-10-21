@@ -22,7 +22,7 @@ export interface MeasureValue {
 export interface MeasureJS {
   name: string;
   title?: string;
-  expression?: ExpressionJS;
+  expression?: ExpressionJS | string;
   format?: string;
 }
 
