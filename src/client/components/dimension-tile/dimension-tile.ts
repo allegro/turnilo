@@ -120,7 +120,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var { clicker, essence, dimension } = this.props;
     var { filter } = essence;
 
-    clicker.changeFilter(filter.remove(dimension.expression).addValue(dimension.expression, value));
+    if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).length === 1) {
+      filter = filter.remove(dimension.expression);
+    } else {
+      filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
+    }
+    clicker.changeFilter(filter);
   }
 
   onBoxClick(value: any, e: MouseEvent) {
