@@ -12,6 +12,7 @@ export interface TileHeaderProps {
   title: string;
   onDragStart: Function;
   onSearch: Function;
+  onCollapse: Function;
   onClose: Function;
 }
 
@@ -27,7 +28,7 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
   }
 
   render() {
-    var { title, onDragStart, onSearch, onClose } = this.props;
+    var { title, onDragStart, onSearch, onCollapse, onClose } = this.props;
 
     var searchButton: React.DOMElement<any> = null;
     if (onSearch) {
@@ -38,10 +39,21 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
       `);
     }
 
+    var collapseButton: React.DOMElement<any> = null;
+    if (onCollapse) {
+      collapseButton = JSX(`
+        <div className="collapse" onClick={onCollapse}>
+          <SvgIcon svg={require('../../icons/loupe.svg')}/>
+        </div>
+      `);
+    }
+
+
     return JSX(`
       <div className="tile-header" draggable={onDragStart ? true : null} onDragStart={onDragStart}>
         <div className="title">{title}</div>
         {searchButton}
+        {collapseButton}
         <div className="close" onClick={onClose}>
           <SvgIcon svg={require('../../icons/x.svg')}/>
         </div>

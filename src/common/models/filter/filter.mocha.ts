@@ -58,7 +58,7 @@ describe('Filter', () => {
   it('add work', () => {
     var filter = Filter.EMPTY;
 
-    filter = filter.add($('language'), 'en');
+    filter = filter.addValue($('language'), 'en');
 
     expect(filter.toExpression().toJS()).to.deep.equal({
       "actions": [

@@ -116,7 +116,21 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return this.indexOfClause(attribute) !== -1;
   }
 
-  public add(attribute: Expression, value: any): Filter {
+  public filteredOnValue(attribute: Expression, value: any): boolean {
+    var clauses = this.clauses;
+    var index = this.indexOfClause(attribute);
+    if (index === -1) return false;
+    var clause = clauses.get(index);
+    var action = clause.actions[0];
+    if (action instanceof InAction) {
+      var mySet = <Set>(<LiteralExpression>action.expression).value;
+      return mySet.contains(value);
+    } else {
+      throw new Error('invalid clause');
+    }
+  }
+
+  public addValue(attribute: Expression, value: any): Filter {
     var clauses = this.clauses;
     var index = this.indexOfClause(attribute);
     if (index === -1) {
@@ -132,6 +146,37 @@ export class Filter implements Instance<FilterValue, FilterJS> {
       }
       return new Filter(<List<ChainExpression>>clauses.splice(index, 1, clause));
     }
+  }
+
+  public remove(attribute: Expression): Filter {
+    var clauses = this.clauses;
+    var index = this.indexOfClause(attribute);
+    if (index === -1) return this;
+    return new Filter(clauses.delete(index));
+  }
+
+  public removeValue(attribute: Expression, value: any): Filter {
+    var clauses = this.clauses;
+    var index = this.indexOfClause(attribute);
+    if (index === -1) return this;
+    var clause = clauses.get(index);
+    var action = clause.actions[0];
+    if (action instanceof InAction) {
+      var newSet = (<Set>(<LiteralExpression>action.expression).value).remove(value);
+      if (newSet.empty()) {
+        return new Filter(clauses.delete(index));
+      } else {
+        var newOperand = attribute.in(newSet);
+        clauses = <List<ChainExpression>>clauses.splice(index, 1, newOperand);
+        return new Filter(clauses);
+      }
+    } else {
+      throw new Error('invalid clause');
+    }
+  }
+
+  public toggleValue(attribute: Expression, value: any): Filter {
+    return this.filteredOnValue(attribute, value) ? this.removeValue(attribute, value) : this.addValue(attribute, value);
   }
 
   public setValues(attribute: Expression, values: any[]): Filter {
@@ -174,13 +219,6 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     var index = this.indexOfClause(attribute);
     if (index === -1) return null;
     return clauses.get(index).actions[0].getLiteralValue();
-  }
-
-  public remove(attribute: Expression): Filter {
-    var clauses = this.clauses;
-    var index = this.indexOfClause(attribute);
-    if (index === -1) return this;
-    return new Filter(clauses.delete(index));
   }
 
   public setClause(expression: ChainExpression): Filter {

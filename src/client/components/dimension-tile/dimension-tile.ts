@@ -15,7 +15,6 @@ import { HighlightControls } from '../highlight-controls/highlight-controls';
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
 
-const HIGHLIGHT_ID = 'dim-tile:';
 const TOP_N = 100;
 
 export interface DimensionTileProps {
@@ -30,6 +29,7 @@ export interface DimensionTileState {
   loading?: boolean;
   dataset?: Dataset;
   error?: any;
+  unfilter?: boolean;
   showSearch?: boolean;
 }
 
@@ -42,17 +42,22 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       loading: false,
       dataset: null,
       error: null,
+      unfilter: false,
       showSearch: false
     };
   }
 
-  fetchData(essence: Essence, dimension: Dimension): void {
+  fetchData(essence: Essence, dimension: Dimension, unfilter: boolean): void {
     var { dataSource } = essence;
     var measure = essence.getPinnedSortMeasure();
-    var highlightId = HIGHLIGHT_ID + dimension.name;
+
+    var filter = essence.getEffectiveFilter();
+    if (unfilter) {
+      filter = filter.remove(dimension.expression);
+    }
 
     var query: any = $('main')
-      .filter(essence.getEffectiveFilter(highlightId).toExpression())
+      .filter(filter.toExpression())
       .split(dimension.expression, dimension.name)
       .performAction(measure.toApplyAction())
       .sort($(measure.name), SortAction.DESCENDING)
@@ -83,21 +88,22 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   componentDidMount() {
     this.mounted = true;
     var { essence, dimension } = this.props;
-    this.fetchData(essence, dimension);
+    var { unfilter } = this.state;
+    this.fetchData(essence, dimension, unfilter);
   }
 
   componentWillReceiveProps(nextProps: DimensionTileProps) {
     var { essence, dimension } = this.props;
+    var { unfilter } = this.state;
     var nextEssence = nextProps.essence;
     var nextDimension = nextProps.dimension;
-    var highlightId = HIGHLIGHT_ID + nextDimension.name;
     if (
       essence.differentDataSource(nextEssence) ||
-      essence.differentEffectiveFilter(nextEssence, highlightId) ||
+      essence.differentEffectiveFilter(nextEssence, null, unfilter ? dimension : null) ||
       essence.differentPinnedSort(nextEssence) ||
       !dimension.equals(nextDimension)
     ) {
-      this.fetchData(nextEssence, nextDimension);
+      this.fetchData(nextEssence, nextDimension, unfilter);
     }
   }
 
@@ -112,17 +118,25 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   onRowClick(value: any) {
     var { clicker, essence, dimension } = this.props;
-    var highlightId = HIGHLIGHT_ID + dimension.name;
+    var { filter } = essence;
 
-    if (essence.highlightOn(highlightId)) {
-      var highlightSet = essence.getSingleHighlightValue();
-      if (highlightSet.size() === 1 && highlightSet.contains(value)) {
-        clicker.dropHighlight();
-        return;
-      }
-    }
+    clicker.changeFilter(filter.remove(dimension.expression).addValue(dimension.expression, value));
+  }
 
-    clicker.changeHighlight(highlightId, Filter.fromClause(dimension.expression.in([value])));
+  onBoxClick(value: any, e: MouseEvent) {
+    e.stopPropagation();
+    var { clicker, essence, dimension } = this.props;
+    var { filter } = essence;
+
+    clicker.changeFilter(filter.toggleValue(dimension.expression, value));
+  }
+
+  onCollapse() {
+    var { essence, dimension } = this.props;
+    var { unfilter } = this.state;
+    unfilter = !unfilter;
+    this.setState({ unfilter });
+    this.fetchData(essence, dimension, unfilter);
   }
 
   onDragStart(e: DragEvent) {
@@ -158,16 +172,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var highlightControls: React.ReactElement<any> = null;
     var hasMore = false;
     if (dataset) {
-      var highlightId = HIGHLIGHT_ID + dimension.name;
-      var highlightSet: Set = null;
-      if (essence.highlightOn(highlightId)) {
-        highlightSet = essence.getSingleHighlightValue();
-        highlightControls = React.createElement(HighlightControls, {
-          clicker,
-          orientation: 'horizontal'
-        });
-      }
-
       hasMore = dataset.data.length > TOP_N;
       var rowData = dataset.data.slice(0, TOP_N);
       var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
@@ -176,18 +180,18 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         var segmentValueStr = String(segmentValue);
         var measureValue = d[measureName];
         var measureValueStr = formatter(measureValue);
-        var selected = highlightSet && highlightSet.contains(segmentValue);
-
-        var checkbox: React.ReactElement<any> = null;
-        if (false) {
-          checkbox = React.createElement(Checkbox, {
-            checked: selected
-            //onClick: this.onBoxClick.bind(this, segmentValue)
-          });
-        }
 
         var className = 'row';
-        if (highlightSet) className += ' ' + (selected ? 'selected' : 'not-selected');
+        var checkbox: React.ReactElement<any> = null;
+        if (essence.filter.filteredOn(dimension.expression)) {
+          var selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
+          checkbox = React.createElement(Checkbox, {
+            checked: selected,
+            onClick: this.onBoxClick.bind(this, segmentValue)
+          });
+          className += ' ' + (selected ? 'selected' : 'not-selected');
+        }
+
         var row = JSX(`
           <div
             className={className}
@@ -239,6 +243,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         <TileHeader
           title={dimension.title}
           onDragStart={this.onDragStart.bind(this)}
+          onCollapse={this.onCollapse.bind(this)}
           onClose={clicker.unpin.bind(clicker, dimension)}
         />
       </div>
