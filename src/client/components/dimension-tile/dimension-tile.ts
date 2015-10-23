@@ -42,7 +42,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       loading: false,
       dataset: null,
       error: null,
-      unfilter: false,
+      unfilter: true,
       showSearch: false
     };
   }
@@ -116,24 +116,20 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.setState({ showSearch: !showSearch });
   }
 
-  onRowClick(value: any) {
+  onRowClick(value: any, e: MouseEvent) {
     var { clicker, essence, dimension } = this.props;
     var { filter } = essence;
 
-    if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).length === 1) {
-      filter = filter.remove(dimension.expression);
+    if (e.shiftKey) {
+      filter = filter.toggleValue(dimension.expression, value);
     } else {
-      filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
+      if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).length === 1) {
+        filter = filter.remove(dimension.expression);
+      } else {
+        filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
+      }
     }
     clicker.changeFilter(filter);
-  }
-
-  onBoxClick(value: any, e: MouseEvent) {
-    e.stopPropagation();
-    var { clicker, essence, dimension } = this.props;
-    var { filter } = essence;
-
-    clicker.changeFilter(filter.toggleValue(dimension.expression, value));
   }
 
   onCollapse() {
@@ -187,13 +183,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         var measureValueStr = formatter(measureValue);
 
         var className = 'row';
-        var checkbox: React.ReactElement<any> = null;
         if (essence.filter.filteredOn(dimension.expression)) {
           var selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
-          checkbox = React.createElement(Checkbox, {
-            checked: selected,
-            onClick: this.onBoxClick.bind(this, segmentValue)
-          });
           className += ' ' + (selected ? 'selected' : 'not-selected');
         }
 
@@ -203,9 +194,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
             key={segmentValueStr}
             onClick={this.onRowClick.bind(this, segmentValue)}
           >
-            <div className="segment-value" title={segmentValue}>
-              {checkbox}
-              <div className="label" title={segmentValueStr}>{segmentValueStr}</div>
+            <div className="segment-value" title={segmentValueStr}>
+              <div className="label">{segmentValueStr}</div>
             </div>
             <div className="measure-value">{measureValueStr}</div>
             {selected ? highlightControls : null}

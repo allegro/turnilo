@@ -53,22 +53,18 @@ $measure-width: 80px;
       margin-bottom: 12px;
     }
 
-    //&.selected {
-    //  &:after {
-    //    @include pin-full;
-    //    border: 1px dashed $highlight-border;
-    //    content: '';
-    //  }
-    //}
+    &.selected {
+      background: $hover;
+    }
 
-    //&.not-selected {
-    //  &:after {
-    //    @include pin-full;
-    //    background: $white;
-    //    opacity: 0.5;
-    //    content: '';
-    //  }
-    //}
+    &.not-selected {
+      &:after {
+        @include pin-full;
+        background: $white;
+        opacity: 0.5;
+        content: '';
+      }
+    }
 
     .highlight-controls {
       position: absolute;
