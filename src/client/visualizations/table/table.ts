@@ -301,7 +301,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var { loading, error, flatData, scrollLeft, scrollTop, hoverMeasure, hoverRow } = this.state;
     var { splits } = essence;
 
-    var segmentTitle = splits.getTitle(essence.dataSource);
+    var segmentTitle = splits.getTitle(essence.dataSource.dimensions);
     var commonSort = essence.getCommonSort();
     var commonSortName = commonSort ? (<RefExpression>commonSort.expression).name : null;
 

@@ -5,7 +5,7 @@ import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, LiteralExpression, ChainExpression, ExpressionJS, InAction, Set, TimeRange } from 'plywood';
 import { listsEqual } from '../../utils/general/general';
-import { DataSource } from '../data-source/data-source';
+import { Dimension } from '../dimension/dimension';
 
 function withholdClause(clauses: List<ChainExpression>, clause: ChainExpression, allowIndex: number): List<ChainExpression> {
   return <List<ChainExpression>>clauses.filter((c, i) => {
@@ -254,19 +254,19 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return expression.actions[0].getLiteralValue();
   }
 
-  public constrainToDataSource(dataSource: DataSource, oldDataSource: DataSource = null): Filter {
+  public constrainToDimensions(dimensions: List<Dimension>, timeAttribute: Expression, oldTimeAttribute: Expression = null): Filter {
     var hasChanged = false;
     var clauses: ChainExpression[] = [];
     this.clauses.forEach((clause) => {
       var clauseExpression = clause.expression;
-      if (dataSource.getDimensionByExpression(clauseExpression)) {
+      if (Dimension.getDimensionByExpression(dimensions, clauseExpression)) {
         clauses.push(clause);
       } else {
         hasChanged = true;
         // Special handling for time filter
-        if (oldDataSource && oldDataSource.isTimeAttribute(clauseExpression) && dataSource.timeAttribute) {
+        if (timeAttribute && oldTimeAttribute && oldTimeAttribute.equals(clauseExpression)) {
           clauses.push(new ChainExpression({
-            expression: dataSource.timeAttribute,
+            expression: timeAttribute,
             actions: clause.actions
           }));
         }
@@ -276,8 +276,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return hasChanged ? new Filter(List(clauses)) : this;
   }
 
-  public overQuery(duration: Duration, timezone: Timezone, dataSource: DataSource): Filter {
-    var timeAttribute = dataSource.timeAttribute;
+  public overQuery(duration: Duration, timezone: Timezone, timeAttribute: Expression): Filter {
     if (!timeAttribute) return this;
 
     return new Filter(<List<ChainExpression>>this.clauses.map((clause) => {

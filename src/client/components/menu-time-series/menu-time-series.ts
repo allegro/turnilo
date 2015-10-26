@@ -46,7 +46,7 @@ export class MenuTimeSeries extends React.Component<MenuTimeSeriesProps, MenuTim
     var timeBucketAction = <TimeBucketAction>timeSplit.bucketAction;
 
     var query = $('main')
-      .filter(essence.getEffectiveFilter().overQuery(timeBucketAction.duration, timeBucketAction.timezone, dataSource).toExpression())
+      .filter(essence.getEffectiveFilter().overQuery(timeBucketAction.duration, timeBucketAction.timezone, dataSource.timeAttribute).toExpression())
       .split(timeSplit.toSplitExpression(), SEGMENT)
       .performAction(measure.toApplyAction())
       .performAction(TIME_SORT_ACTION);

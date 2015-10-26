@@ -14,7 +14,16 @@ function formatTimeOfDay(d: Date): string {
   return d.getMinutes() ? formatTimeOfDayWithMinutes(d) : formatTimeOfDayWithoutMinutes(d);
 }
 
-export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, suppressYear: boolean): string {
+function sameYear(year: number, timezone: Timezone): boolean {
+  var nowWallTime = WallTime.UTCToWallTime(new Date(), timezone.toString());
+  return nowWallTime.getFullYear() === year;
+}
+
+export enum DisplayYear {
+  ALWAYS, NEVER, IF_DIFF
+}
+
+export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displayYear: DisplayYear): string {
   var { start, end } = timeRange;
   var startWallTime = WallTime.UTCToWallTime(start, timezone.toString());
   var endWallTime = WallTime.UTCToWallTime(end, timezone.toString());
@@ -25,8 +34,8 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, suppre
   if (startWallTime.getFullYear() !== endShiftWallTime.getFullYear()) {
     formatted = [formatWithYear(startWallTime), formatWithYear(endShiftWallTime)].join(' - ');
   } else {
-    showingYear = !suppressYear;
-    var fmt = suppressYear ? formatWithoutYear : formatWithYear;
+    showingYear = displayYear === DisplayYear.ALWAYS || (displayYear === DisplayYear.IF_DIFF && !sameYear(endShiftWallTime.getFullYear(), timezone));
+    var fmt = displayYear ? formatWithoutYear : formatWithYear;
     if (startWallTime.getMonth() !== endShiftWallTime.getMonth() || startWallTime.getDate() !== endShiftWallTime.getDate()) {
       formatted = [formatWithoutYear(startWallTime), fmt(endShiftWallTime)].join(' - ');
     } else {

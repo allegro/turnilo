@@ -1,8 +1,9 @@
 'use strict';
 
+import { List } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { $, Expression } from 'plywood';
-import { DataSource } from '../data-source/data-source';
+import { Dimension } from '../dimension/dimension';
 import { Filter, FilterJS } from '../filter/filter';
 
 export interface HighlightValue {
@@ -72,9 +73,9 @@ export class Highlight implements Instance<HighlightValue, HighlightJS> {
     return filter.applyDelta(this.delta);
   }
 
-  public constrainToDataSource(dataSource: DataSource): Highlight {
+  public constrainToDimensions(dimensions: List<Dimension>, timeAttribute: Expression): Highlight {
     var { delta } = this;
-    var newDelta = delta.constrainToDataSource(dataSource);
+    var newDelta = delta.constrainToDimensions(dimensions, timeAttribute);
     if (newDelta === delta) return this;
     if (newDelta.length() === 0) return null;
 

@@ -265,12 +265,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public getDimension(dimensionName: string): Dimension {
-    dimensionName = dimensionName.toLowerCase(); // Case insensitive
-    return this.dimensions.find(dimension => dimension.name.toLowerCase() === dimensionName);
+    return Dimension.getDimension(this.dimensions, dimensionName);
   }
 
   public getDimensionByExpression(expression: Expression): Dimension {
-    return this.dimensions.find(dimension => dimension.expression.equals(expression));
+    return Dimension.getDimensionByExpression(this.dimensions, expression);
   }
 
   public getTimeDimension() {

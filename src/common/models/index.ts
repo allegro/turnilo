@@ -9,12 +9,11 @@ export * from './refresh-rule/refresh-rule';
 
 export * from './dimension/dimension';
 export * from './measure/measure';
-export * from './data-source/data-source';
+export * from './filter/filter';
 export * from './split-combine/split-combine';
 export * from './splits/splits';
-export * from './filter/filter';
 export * from './highlight/highlight';
-export * from './filter/filter';
+export * from './data-source/data-source';
 export * from './essence/essence';
 export * from './visualization-props/visualization-props';
 export * from './manifest/manifest';
