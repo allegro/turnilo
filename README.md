@@ -120,6 +120,7 @@ We will be working on:
 - Time comparison visualization
 - Additional visualizations
 - Exclusion filters
+- Subset filters
 - Being able to easily embed Pivot in your app
 - Various additions, improvements and fixes to make the app more complete
 
