@@ -40,7 +40,7 @@ npm i -g imply-pivot
 
 ### Example
 
-Start of by running an example (static) dataset:
+Start off by running an example (static) dataset:
 
 ```
 pivot --example wiki
