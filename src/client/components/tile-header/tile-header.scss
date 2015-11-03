@@ -8,36 +8,34 @@
     //text-transform: none;
   }
 
-  .search {
-    position: absolute;
-    top: 11px;
-    right: 30px;
-    cursor: pointer;
-
-    svg {
-      width: 12px;
-    }
-  }
-
+  .search,
   .close {
+    cursor: pointer;
     position: absolute;
     top: 11px;
-    padding: 2px;
-    right: $tile-padding-h;
-    cursor: pointer;
 
     svg {
       width: 12px;
-    }
 
-    path {
-      fill: $text-lighter;
+      path {
+        fill: $text-lighter;
+      }
     }
 
     &:hover {
-      path {
+      svg path {
         fill: $text-light;
       }
     }
+  }
+
+  .search {
+    padding: 1px;
+    right: 34px;
+  }
+
+  .close {
+    padding: 2px;
+    right: $tile-padding-h;
   }
 }

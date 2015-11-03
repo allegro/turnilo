@@ -2,6 +2,7 @@
 
 $checkbox-width: 20px;
 $measure-width: 80px;
+$search-box-height: 26px;
 
 .dimension-tile {
   @extend %module;
@@ -19,12 +20,17 @@ $measure-width: 80px;
     right: 0;
     height: $search-box-height;
     padding: 0 $tile-padding-h;
+    margin-bottom: 4px;
 
     .clearable-input {
       @extend %input-cont-inset;
       width: 100%;
-      height: 31px;
+      height: $search-box-height;
       padding-left: 6px;
+
+      .clear {
+        top: 3px;
+      }
     }
   }
 
@@ -39,7 +45,7 @@ $measure-width: 80px;
   }
 
   &.with-search .rows {
-    top: $pin-title-height + $search-box-height;
+    top: $pin-title-height + $search-box-height + 3px;
   }
 
   .row {
@@ -55,12 +61,7 @@ $measure-width: 80px;
     }
 
     &.not-selected {
-      &:after {
-        @include pin-full;
-        background: $white;
-        opacity: 0.5;
-        content: '';
-      }
+      color: $text-lighterish;
     }
 
     .highlight-controls {
