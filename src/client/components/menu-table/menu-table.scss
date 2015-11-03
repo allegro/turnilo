@@ -7,7 +7,7 @@ $checkbox-width: 20px;
   background: $white;
   color: $text-standard;
 
-  .search {
+  .search-box {
     @include pin-top(30px);
     top: 2px;
     padding: 0 10px;
@@ -43,10 +43,6 @@ $checkbox-width: 20px;
       display: inline-block;
       vertical-align: top;
       padding-top: 4px;
-
-      .bold {
-        border-bottom: 1px solid $text-standard;
-      }
     }
 
     &:hover {

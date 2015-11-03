@@ -4,16 +4,19 @@ require('./dimension-tile.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 // import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
-import { PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
+import { $, r, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
+import { SEGMENT, PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
-import { setDragGhost } from '../../utils/dom/dom';
+import { setDragGhost, escapeKey } from '../../utils/dom/dom';
 import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
+import { collect } from '../../../common/utils/general/general';
 import { TileHeader } from '../tile-header/tile-header';
+import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
+import { HighlightString } from '../highlight-string/highlight-string';
 
 const TOP_N = 100;
 
@@ -29,12 +32,15 @@ export interface DimensionTileState {
   loading?: boolean;
   dataset?: Dataset;
   error?: any;
+  fetchQueued?: boolean;
   unfilter?: boolean;
   showSearch?: boolean;
+  searchText?: string;
 }
 
 export class DimensionTile extends React.Component<DimensionTileProps, DimensionTileState> {
   public mounted: boolean;
+  public collectTriggerSearch: Function;
 
   constructor() {
     super();
@@ -42,12 +48,24 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       loading: false,
       dataset: null,
       error: null,
+      fetchQueued: false,
       unfilter: true,
-      showSearch: false
+      showSearch: false,
+      searchText: ''
     };
+
+    this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
+      if (!this.mounted) return;
+      var { essence, dimension } = this.props;
+      var { unfilter } = this.state;
+      this.fetchData(essence, dimension, unfilter);
+    });
+
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   fetchData(essence: Essence, dimension: Dimension, unfilter: boolean): void {
+    var { searchText } = this.state;
     var { dataSource } = essence;
     var measure = essence.getPinnedSortMeasure();
 
@@ -56,14 +74,22 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       filter = filter.remove(dimension.expression);
     }
 
+    var filterExpression = filter.toExpression();
+    if (searchText) {
+      filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), 'ignoreCase'));
+    }
+
     var query: any = $('main')
-      .filter(filter.toExpression())
-      .split(dimension.expression, dimension.name)
+      .filter(filterExpression)
+      .split(dimension.expression, SEGMENT)
       .performAction(measure.toApplyAction())
       .sort($(measure.name), SortAction.DESCENDING)
       .limit(TOP_N + 1);
 
-    this.setState({ loading: true });
+    this.setState({
+      loading: true,
+      fetchQueued: false
+    });
     dataSource.executor(query)
       .then(
         (dataset) => {
@@ -87,6 +113,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   componentDidMount() {
     this.mounted = true;
+    window.addEventListener('keydown', this.globalKeyDownListener);
     var { essence, dimension } = this.props;
     var { unfilter } = this.state;
     this.fetchData(essence, dimension, unfilter);
@@ -109,6 +136,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   componentWillUnmount() {
     this.mounted = false;
+    window.removeEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (!escapeKey(e)) return;
+    var { showSearch } = this.state;
+    if (!showSearch) return;
+    this.setState({ showSearch: false });
   }
 
   toggleSearch() {
@@ -120,14 +155,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var { clicker, essence, dimension } = this.props;
     var { filter } = essence;
 
-    if (e.shiftKey) {
-      filter = filter.toggleValue(dimension.expression, value);
-    } else {
+    if (e.altKey) {
       if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).length === 1) {
         filter = filter.remove(dimension.expression);
       } else {
         filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
       }
+    } else {
+      filter = filter.toggleValue(dimension.expression, value);
     }
     clicker.changeFilter(filter);
   }
@@ -153,19 +188,46 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     setDragGhost(dataTransfer, dimension.title);
   }
 
+  onSearchChange(text: string) {
+    var { searchText, dataset, fetchQueued, loading } = this.state;
+    var newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
+
+    // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
+    if (newSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
+      this.setState({
+        searchText: newSearchText
+      });
+      return;
+    }
+
+    this.setState({
+      searchText: newSearchText,
+      fetchQueued: true
+    });
+    this.collectTriggerSearch();
+  }
+
   render() {
     var { clicker, essence, dimension } = this.props;
-    var { loading, dataset, error, showSearch } = this.state;
+    var { loading, dataset, error, showSearch, searchText } = this.state;
     var measure = essence.getPinnedSortMeasure();
 
-    var dimensionName = dimension.name;
     var measureName = measure.name;
 
     var maxHeight = PIN_TITLE_HEIGHT;
 
     var searchBar: React.DOMElement<any> = null;
     if (showSearch) {
-      searchBar = JSX(`<div className="search-box"><input type="text" placeholder="Search"/></div>`);
+      searchBar = JSX(`
+        <div className="search-box">
+          <ClearableInput
+            placeholder="Search"
+            focusOnMount={true}
+            value={searchText}
+            onChange={this.onSearchChange.bind(this)}
+          />
+        </div>
+      `);
       maxHeight += SEARCH_BOX_HEIGHT;
     }
 
@@ -175,17 +237,30 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (dataset) {
       hasMore = dataset.data.length > TOP_N;
       var rowData = dataset.data.slice(0, TOP_N);
+
+      if (searchText) {
+        var searchTextLower = searchText.toLowerCase();
+        rowData = rowData.filter((d) => {
+          return String(d[SEGMENT]).toLowerCase().indexOf(searchTextLower) !== -1;
+        });
+      }
+
       var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
+      var hasFilter = essence.filter.filteredOn(dimension.expression);
       rows = rowData.map((d) => {
-        var segmentValue = d[dimensionName];
+        var segmentValue = d[SEGMENT];
         var segmentValueStr = String(segmentValue);
         var measureValue = d[measureName];
         var measureValueStr = formatter(measureValue);
 
         var className = 'row';
-        if (essence.filter.filteredOn(dimension.expression)) {
+        var checkbox: React.ReactElement<any> = null;
+        if (hasFilter) {
           var selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
           className += ' ' + (selected ? 'selected' : 'not-selected');
+          checkbox = React.createElement(Checkbox, {
+            checked: selected
+          });
         }
 
         var row = JSX(`
@@ -195,7 +270,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
             onClick={this.onRowClick.bind(this, segmentValue)}
           >
             <div className="segment-value" title={segmentValueStr}>
-              <div className="label">{segmentValueStr}</div>
+              {checkbox}
+              <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
             </div>
             <div className="measure-value">{measureValueStr}</div>
             {selected ? highlightControls : null}
@@ -228,19 +304,18 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       maxHeight
     };
 
-    // onSearch={this.toggleSearch.bind(this)}
     return JSX(`
       <div className={className} style={style}>
+        <TileHeader
+          title={dimension.title}
+          onDragStart={this.onDragStart.bind(this)}
+          onSearch={this.toggleSearch.bind(this)}
+          onClose={clicker.unpin.bind(clicker, dimension)}
+        />
         {searchBar}
         <div className="rows">{rows}</div>
         {queryError}
         {loader}
-        <TileHeader
-          title={dimension.title}
-          onDragStart={this.onDragStart.bind(this)}
-          onCollapse={this.onCollapse.bind(this)}
-          onClose={clicker.unpin.bind(clicker, dimension)}
-        />
       </div>
     `);
   }

@@ -20,10 +20,11 @@ $measure-width: 80px;
     height: $search-box-height;
     padding: 0 $tile-padding-h;
 
-    input {
-      border: 1px solid $border-light;
+    .clearable-input {
+      @extend %input-cont-inset;
       width: 100%;
-      height: 23px;
+      height: 31px;
+      padding-left: 6px;
     }
   }
 
@@ -51,10 +52,6 @@ $measure-width: 80px;
 
     &:last-child {
       margin-bottom: 12px;
-    }
-
-    &.selected {
-      background: $hover;
     }
 
     &.not-selected {

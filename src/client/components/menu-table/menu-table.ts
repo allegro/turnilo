@@ -5,33 +5,15 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, r, Expression, Executor, Dataset, SortAction } from 'plywood';
-import { SEGMENT } from '../../config/constants';
+import { SEGMENT, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../../common/models/index";
+import { collect } from '../../../common/utils/general/general';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
+import { HighlightString } from '../highlight-string/highlight-string';
 
 const TOP_N = 100;
-const MAX_SEARCH_LENGTH = 300;
-const SEARCH_WAIT = 900;
-
-function focusOnInput(input: HTMLInputElement): void {
-  if (!input) return;
-  input.focus();
-}
-
-function collect(wait: number, func: Function): Function {
-  var timeout: any;
-  var later = function() {
-    timeout = null;
-    func();
-  };
-  return function() {
-    if (!timeout) {
-      timeout = setTimeout(later, wait);
-    }
-  };
-}
 
 export interface MenuTableProps {
   essence: Essence;
@@ -157,19 +139,6 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     this.collectTriggerSearch();
   }
 
-  highlightInString(str: string, searchText: string): any {
-    if (!searchText) return str;
-    var strLower = str.toLowerCase();
-    var startIndex = strLower.indexOf(searchText.toLowerCase());
-    if (startIndex === -1) return str;
-    var endIndex = startIndex + searchText.length;
-    return [
-      JSX(`<span className="pre"  key="pre" >{str.substring(0, startIndex)}</span>`),
-      JSX(`<span className="bold" key="bold">{str.substring(startIndex, endIndex)}</span>`),
-      JSX(`<span className="post" key="post">{str.substring(endIndex)}</span>`)
-    ];
-  }
-
   render() {
     var { essence, showCheckboxes, onValueClick, selectedValues } = this.props;
     var { loading, dataset, fetchQueued, searchText } = this.state;
@@ -207,7 +176,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
             onClick={onValueClick.bind(this, segmentValue)}
           >
             {checkbox}
-            <div className="label">{this.highlightInString(segmentValueStr, searchText)}</div>
+            <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
           </div>
         `);
       });
@@ -228,7 +197,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
     return JSX(`
       <div className={className}>
-        <div className="search">
+        <div className="search-box">
           <ClearableInput
             placeholder="Search"
             focusOnMount={true}

@@ -77,3 +77,16 @@ export function calculateDragPosition(offset: number, numItems: number, itemWidt
     };
   }
 }
+
+export function collect(wait: number, func: Function): Function {
+  var timeout: any;
+  var later = function() {
+    timeout = null;
+    func();
+  };
+  return function() {
+    if (!timeout) {
+      timeout = setTimeout(later, wait);
+    }
+  };
+}
