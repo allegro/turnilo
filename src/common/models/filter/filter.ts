@@ -213,11 +213,11 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return new Filter(clauses);
   }
 
-  public getValues(attribute: Expression): any[] {
+  public getValues(attribute: Expression): Set {
     var clauses = this.clauses;
     var index = this.indexOfClause(attribute);
     if (index === -1) return null;
-    return clauses.get(index).actions[0].getLiteralValue().elements;
+    return clauses.get(index).actions[0].getLiteralValue();
   }
 
   public setTimeRange(attribute: Expression, timeRange: TimeRange): Filter {

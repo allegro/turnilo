@@ -160,7 +160,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var { filter } = essence;
 
     if (e.altKey) {
-      if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).length === 1) {
+      if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).size() === 1) {
         filter = filter.remove(dimension.expression);
       } else {
         filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
@@ -168,6 +168,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     } else {
       filter = filter.toggleValue(dimension.expression, value);
     }
+
+    var { unfilter } = this.state;
+    if (!unfilter && !filter.filteredOn(dimension.expression)) {
+      this.setState({ unfilter: true });
+    }
+
     clicker.changeFilter(filter);
   }
 
@@ -213,13 +219,20 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.collectTriggerSearch();
   }
 
+  onSearchBlur() {
+    var { searchText } = this.state;
+    // Remove search if it looses focus while empty
+    if (searchText !== '') return;
+    this.toggleSearch();
+  }
+
   render() {
     var { clicker, essence, dimension } = this.props;
     var { loading, dataset, error, showSearch, unfilter, searchText } = this.state;
     var measure = essence.getPinnedSortMeasure();
 
     var measureName = measure.name;
-    var hasFilter = essence.filter.filteredOn(dimension.expression);
+    var filterSet = essence.filter.getValues(dimension.expression);
 
     var maxHeight = PIN_TITLE_HEIGHT;
 
@@ -232,6 +245,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
             focusOnMount={true}
             value={searchText}
             onChange={this.onSearchChange.bind(this)}
+            onBlur={this.onSearchBlur.bind(this)}
           />
         </div>
       `);
@@ -245,6 +259,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (dataset) {
       hasMore = dataset.data.length > TOP_N;
       var rowData = dataset.data.slice(0, TOP_N);
+
+      if (!unfilter && filterSet) {
+        rowData = rowData.filter((d) => {
+          return filterSet.contains(d[SEGMENT]);
+        });
+      }
 
       if (searchText) {
         var searchTextLower = searchText.toLowerCase();
@@ -262,7 +282,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
         var className = 'row';
         var checkbox: React.ReactElement<any> = null;
-        if (hasFilter) {
+        if (filterSet) {
           var selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
           className += ' ' + (selected ? 'selected' : 'not-selected');
           checkbox = React.createElement(Checkbox, {
@@ -287,9 +307,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         if (selected && highlightControls) highlightControls = null; // place only once
         return row;
       });
-      maxHeight += Math.max(3, rows.length) * PIN_ITEM_HEIGHT;
+      maxHeight += Math.max(2, rows.length) * PIN_ITEM_HEIGHT;
 
-      if (hasFilter) {
+      if (filterSet) {
         foldUnfold = JSX(`
           <div
             className={'folder ' + (unfilter ? 'folded' : 'unfolded')}
@@ -303,6 +323,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       }
     }
 
+    if (!filterSet) {
+      maxHeight += PIN_PADDING_BOTTOM;
+    }
+
     var loader: React.ReactElement<any> = null;
     if (loading) {
       loader = React.createElement(Loader, null);
@@ -313,12 +337,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       queryError = React.createElement(QueryError, { error });
     }
 
-    maxHeight += PIN_PADDING_BOTTOM;
-
     const className = [
       'dimension-tile',
       (showSearch ? 'has-search' : 'no-search'),
-      (hasFilter ? 'has-filter' : 'no-filter')
+      (filterSet ? 'has-filter' : 'no-filter')
     ].join(' ');
 
     const style = {
