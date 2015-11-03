@@ -6,7 +6,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, r, Expression, Executor, Dataset, SortAction } from 'plywood';
 import { SEGMENT } from '../../config/constants';
-import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../../common/models/index";
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
@@ -74,7 +73,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   fetchData(essence: Essence, dimension: Dimension): void {
     var { searchText } = this.state;
     var { dataSource } = essence;
-    var measure = essence.getPreviewSortMeasure();
+    var nativeCount = dataSource.getMeasure('count');
+    var measureExpression = nativeCount ? nativeCount.expression : $('main').count();
 
     var filterExpression = essence.getEffectiveFilter(null, dimension).toExpression();
 
@@ -85,8 +85,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     var query = $('main')
       .filter(filterExpression)
       .split(dimension.expression, SEGMENT)
-      .performAction(measure.toApplyAction())
-      .sort($(measure.name), SortAction.DESCENDING)
+      .apply('MEASURE', measureExpression)
+      .sort($('MEASURE'), SortAction.DESCENDING)
       .limit(TOP_N + 1);
 
     this.setState({
@@ -173,9 +173,6 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   render() {
     var { essence, showCheckboxes, onValueClick, selectedValues } = this.props;
     var { loading, dataset, fetchQueued, searchText } = this.state;
-    var measure = essence.getPreviewSortMeasure();
-
-    var measureName = measure.name;
 
     var rows: Array<React.DOMElement<any>> = [];
     var hasMore = false;
@@ -190,12 +187,9 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
         });
       }
 
-      var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
       rows = rowData.map((d) => {
         var segmentValue = d[SEGMENT];
         var segmentValueStr = String(segmentValue);
-        var measureValue = d[measureName];
-        var measureValueStr = formatter(measureValue);
         var selected = selectedValues && selectedValues.includes(segmentValue);
 
         var checkbox: React.ReactElement<any> = null;
@@ -212,11 +206,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
             title={segmentValueStr}
             onClick={onValueClick.bind(this, segmentValue)}
           >
-            <div className="segment-value">
-              {checkbox}
-              <div className="label">{this.highlightInString(segmentValueStr, searchText)}</div>
-            </div>
-            <div className="measure-value">{measureValueStr}</div>
+            {checkbox}
+            <div className="label">{this.highlightInString(segmentValueStr, searchText)}</div>
           </div>
         `);
       });

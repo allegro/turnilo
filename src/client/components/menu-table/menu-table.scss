@@ -1,7 +1,6 @@
 @import '../../imports';
 
 $checkbox-width: 20px;
-$measure-width: 80px;
 
 .menu-table {
   @extend %white-shadow;
@@ -35,18 +34,6 @@ $measure-width: 80px;
     height: 24px;
     cursor: pointer;
 
-    &:hover {
-      background: $hover;
-    }
-
-    &:last-child {
-      margin-bottom: 12px;
-    }
-  }
-
-  .segment-value {
-    @include unpin-right($measure-width);
-
     overflow: hidden;
     white-space: nowrap;
     padding-left: 10px;
@@ -61,15 +48,14 @@ $measure-width: 80px;
         border-bottom: 1px solid $text-standard;
       }
     }
-  }
 
-  .measure-value {
-    @include pin-right($measure-width);
+    &:hover {
+      background: $hover;
+    }
 
-    text-align: right;
-    padding-top: 6px;
-    padding-right: 10px;
-    white-space: nowrap;
+    &:last-child {
+      margin-bottom: 12px;
+    }
   }
 
   .message {
