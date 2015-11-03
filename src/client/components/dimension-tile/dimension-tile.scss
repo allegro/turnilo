@@ -3,6 +3,8 @@
 $checkbox-width: 20px;
 $measure-width: 80px;
 $search-box-height: 26px;
+$search-box-gap: 3px;
+$folder-box-height: 30px;
 
 .dimension-tile {
   @extend %module;
@@ -44,8 +46,28 @@ $search-box-height: 26px;
     overflow: auto;
   }
 
-  &.with-search .rows {
-    top: $pin-title-height + $search-box-height + 3px;
+  &.has-search .rows {
+    top: $pin-title-height + $search-box-height + $search-box-gap;
+  }
+
+  &.has-filter .rows {
+    bottom: $folder-box-height;
+  }
+
+  .folder {
+    @include pin-bottom($folder-box-height);
+    cursor: pointer;
+    color: $brand;
+    padding-left: 10px;
+
+    svg {
+      width: 12px;
+      fill: $brand;
+    }
+
+    &.folded svg {
+      transform: rotate(180deg);
+    }
   }
 
   .row {

@@ -3,9 +3,9 @@ require('./dimension-tile.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-// import { SvgIcon } from '../svg-icon/svg-icon';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, r, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
-import { SEGMENT, PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
+import { SEGMENT, PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { setDragGhost, escapeKey } from '../../utils/dom/dom';
 import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
@@ -19,6 +19,9 @@ import { QueryError } from '../query-error/query-error';
 import { HighlightString } from '../highlight-string/highlight-string';
 
 const TOP_N = 100;
+const SEARCH_BOX_HEIGHT = 26;
+const SEARCH_BOX_GAP = 3;
+const FOLDER_BOX_HEIGHT = 30;
 
 export interface DimensionTileProps {
   clicker: Clicker;
@@ -143,12 +146,13 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (!escapeKey(e)) return;
     var { showSearch } = this.state;
     if (!showSearch) return;
-    this.setState({ showSearch: false });
+    this.toggleSearch();
   }
 
   toggleSearch() {
     var { showSearch } = this.state;
     this.setState({ showSearch: !showSearch });
+    this.onSearchChange('');
   }
 
   onRowClick(value: any, e: MouseEvent) {
@@ -167,7 +171,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     clicker.changeFilter(filter);
   }
 
-  onCollapse() {
+  toggleFold() {
     var { essence, dimension } = this.props;
     var { unfilter } = this.state;
     unfilter = !unfilter;
@@ -192,6 +196,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var { searchText, dataset, fetchQueued, loading } = this.state;
     var newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
 
+    if (searchText === newSearchText) return; // nothing to do;
+
     // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
     if (newSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
       this.setState({
@@ -209,10 +215,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   render() {
     var { clicker, essence, dimension } = this.props;
-    var { loading, dataset, error, showSearch, searchText } = this.state;
+    var { loading, dataset, error, showSearch, unfilter, searchText } = this.state;
     var measure = essence.getPinnedSortMeasure();
 
     var measureName = measure.name;
+    var hasFilter = essence.filter.filteredOn(dimension.expression);
 
     var maxHeight = PIN_TITLE_HEIGHT;
 
@@ -228,10 +235,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           />
         </div>
       `);
-      maxHeight += SEARCH_BOX_HEIGHT;
+      maxHeight += SEARCH_BOX_HEIGHT + SEARCH_BOX_GAP;
     }
 
     var rows: Array<React.DOMElement<any>> = [];
+    var foldUnfold: React.DOMElement<any> = null;
     var highlightControls: React.ReactElement<any> = null;
     var hasMore = false;
     if (dataset) {
@@ -246,7 +254,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       }
 
       var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
-      var hasFilter = essence.filter.filteredOn(dimension.expression);
       rows = rowData.map((d) => {
         var segmentValue = d[SEGMENT];
         var segmentValueStr = String(segmentValue);
@@ -281,6 +288,19 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         return row;
       });
       maxHeight += Math.max(3, rows.length) * PIN_ITEM_HEIGHT;
+
+      if (hasFilter) {
+        foldUnfold = JSX(`
+          <div
+            className={'folder ' + (unfilter ? 'folded' : 'unfolded')}
+            onClick={this.toggleFold.bind(this)}
+          >
+            <SvgIcon svg={require('../../icons/caret.svg')}/>
+            {unfilter ? 'Fold' : 'Unfold'}
+          </div>
+        `);
+        maxHeight += FOLDER_BOX_HEIGHT;
+      }
     }
 
     var loader: React.ReactElement<any> = null;
@@ -297,7 +317,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const className = [
       'dimension-tile',
-      (showSearch ? 'with-search' : 'no-search')
+      (showSearch ? 'has-search' : 'no-search'),
+      (hasFilter ? 'has-filter' : 'no-filter')
     ].join(' ');
 
     const style = {
@@ -314,6 +335,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         />
         {searchBar}
         <div className="rows">{rows}</div>
+        {foldUnfold}
         {queryError}
         {loader}
       </div>
