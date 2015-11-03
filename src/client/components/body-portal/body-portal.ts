@@ -7,6 +7,8 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';
 
 export interface BodyPortalProps {
+  left?: number;
+  top?: number;
   disablePointerEvents?: boolean;
   children: any;
 }
@@ -23,15 +25,27 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     // this.state = {};
   }
 
+  position() {
+    var { left, top } = this.props;
+    if (typeof left === 'number') {
+      this.target.style.left = Math.round(left) + 'px';
+    }
+    if (typeof top === 'number') {
+      this.target.style.top = Math.round(top) + 'px';
+    }
+  }
+
   componentDidMount() {
     var { disablePointerEvents } = this.props;
     var newDiv = document.createElement('div');
     newDiv.className = 'body-portal ' + (disablePointerEvents ? '' : 'pointer-events');
     this.target = document.body.appendChild(newDiv);
+    this.position();
     this.component = ReactDOM.render(this.props.children, this.target);
   }
 
   componentDidUpdate() {
+    this.position();
     this.component = ReactDOM.render(this.props.children, this.target);
   }
 

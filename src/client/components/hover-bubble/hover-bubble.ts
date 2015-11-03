@@ -15,7 +15,8 @@ export interface HoverBubbleProps {
   datum: Datum;
   measure: Measure;
   getY: Function;
-  style: any;
+  left: number;
+  top: number;
 }
 
 export interface HoverBubbleState {
@@ -30,11 +31,11 @@ export class HoverBubble extends React.Component<HoverBubbleProps, HoverBubbleSt
   }
 
   render() {
-    const { essence, datum, measure, getY, style } = this.props;
+    const { essence, datum, measure, getY, left, top } = this.props;
 
     return JSX(`
-      <BodyPortal disablePointerEvents={true}>
-        <div className="hover-bubble" style={style}>
+      <BodyPortal left={left} top={top} disablePointerEvents={true}>
+        <div className="hover-bubble">
           <div className="hover-bubble-inner">
             <div className="text">
               <span className="bucket">{formatTimeRange(datum[SEGMENT], essence.timezone, DisplayYear.NEVER)}</span>

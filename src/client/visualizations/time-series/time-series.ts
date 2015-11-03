@@ -404,17 +404,14 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
           var topOffset = graphHeight * graphIndex + HOVER_BUBBLE_V_OFFSET - scrollTop;
           if (topOffset > -HOVER_BUBBLE_HEIGHT) {
-            var chartHoverBubbleStyle = {
-              left: stage.x + H_PADDING + scaleX(getX(hoverDatum)),
-              top: stage.y + topOffset
-            };
             chartHoverBubble = JSX(`
               <HoverBubble
                 essence={essence}
                 datum={hoverDatum}
                 measure={measure}
                 getY={getY}
-                style={chartHoverBubbleStyle}
+                top={stage.y + topOffset}
+                left={stage.x + H_PADDING + scaleX(getX(hoverDatum))}
               />
             `);
           }
