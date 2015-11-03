@@ -26,13 +26,14 @@ Possible usage:
   pivot --example wiki
   pivot --druid your.broker.host:8082
 
-       --help                  Print this help message
-       --version               Display the version number
-  -p,  --port                  The port pivot will run on
-       --example               Start pivot with some example data (overrides all other options)
-  -c,  --config                The configuration YAML files to use
-  -d,  --druid                 The Druid broker node to connect to
-       --use-segment-metadata  Should the segmentMetadata query be used for introspection
+      --help                  Print this help message
+      --version               Display the version number
+  -v, --verbose               Display the DB queries that are being made
+  -p, --port                  The port pivot will run on
+      --example               Start pivot with some example data (overrides all other options)
+  -c, --config                The configuration YAML files to use
+  -d, --druid                 The Druid broker node to connect to
+      --use-segment-metadata  Should the segmentMetadata query be used for introspection
 `
   );
 }
@@ -42,6 +43,7 @@ function parseArgs() {
     {
       "help": Boolean,
       "version": Boolean,
+      "verbose": Boolean,
       "port": Number,
       "example": String,
       "config": String,
@@ -49,6 +51,7 @@ function parseArgs() {
       "use-segment-metadata": Boolean
     },
     {
+      "v": ["--verbose"],
       "p": ["--port"],
       "c": ["--config"],
       "d": ["--druid"]
@@ -102,6 +105,8 @@ if (exampleConfig && Array.isArray(exampleConfig.dataSources)) {
   config.dataSources = exampleConfig.dataSources;
 }
 
+export const VERBOSE = Boolean(parsedArgs['verbose'] || config.verbose);
+
 export const PORT = parseInt(parsedArgs['port'] || config.port || env.PIVOT_PORT, 10) || 9090;
 export const DRUID_HOST = parsedArgs['druid'] || config.druidHost || env.PIVOT_DRUID_HOST;
 
@@ -132,6 +137,7 @@ export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSo
 });
 
 export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
+  verbose: VERBOSE,
   dataSources: DATA_SOURCES,
   druidHost: DRUID_HOST,
   concurrentLimit: 5,

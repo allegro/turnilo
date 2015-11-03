@@ -20,7 +20,7 @@ function swapClause(clauses: List<ChainExpression>, clause: ChainExpression, oth
 }
 
 export type FilterValue = List<ChainExpression>;
-export type FilterJS = ExpressionJS[];
+export type FilterJS = ExpressionJS | string;
 
 var check: Class<FilterValue, FilterJS>;
 export class Filter implements Instance<FilterValue, FilterJS> {
@@ -36,7 +36,25 @@ export class Filter implements Instance<FilterValue, FilterJS> {
   }
 
   static fromJS(parameters: FilterJS): Filter {
-    return new Filter(List(parameters.map(clause => ChainExpression.fromJS(clause))));
+    // Back compatibility
+    var expression = Array.isArray(parameters)
+      ? Expression.and((<any>parameters).map((clause: ExpressionJS) => ChainExpression.fromJS(clause)))
+      : Expression.fromJSLoose(parameters);
+
+    var clauses: Expression[] = null;
+    if (expression.equals(Expression.TRUE)) {
+      clauses = [];
+    } else {
+      clauses = expression.getExpressionPattern('and') || [expression];
+      for (var clause of clauses) {
+        if (!clause.isOp('chain')) {
+          console.log('parameters', parameters);
+          throw new Error('must be a chain');
+        }
+      }
+    }
+
+    return new Filter(<List<ChainExpression>>List(clauses));
   }
 
 
@@ -51,7 +69,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
   }
 
   public toJS(): FilterJS {
-    return this.clauses.toArray().map(clause => clause.toJS());
+    return this.toExpression().toJS();
   }
 
   public toJSON(): FilterJS {
@@ -100,7 +118,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     switch (clauses.size) {
       case 0:  return Expression.TRUE;
       case 1:  return clauses.first();
-      default: return clauses.reduce((red: ChainExpression, next: ChainExpression) => red.and(next));
+      default: return Expression.and(clauses.toArray());
     }
   }
 

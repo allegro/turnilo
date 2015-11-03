@@ -131,16 +131,14 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   static fromDataSource(dataSource: DataSource, dataSources: List<DataSource>, visualizations: List<Manifest>): Essence {
     var defaultTimezone = dataSource.defaultTimezone;
 
-    var filter: Filter;
+    var filter = dataSource.defaultFilter;
     if (dataSource.timeAttribute) {
       var now = dataSource.getMaxTimeDate();
       var timeRange = TimeRange.fromJS({
         start: dataSource.defaultDuration.move(now, defaultTimezone, -1),
         end: now
       });
-      filter = Filter.fromClause(dataSource.timeAttribute.in(timeRange));
-    } else {
-      filter = Filter.EMPTY;
+      filter = filter.setTimeRange(dataSource.timeAttribute, timeRange);
     }
 
     return new Essence({

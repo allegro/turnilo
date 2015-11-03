@@ -49,7 +49,7 @@ app.get('/', (req: Request, res: Response, next: Function) => {
         version: VERSION,
         config: JSON.stringify({
           version: VERSION,
-          dataSources
+          dataSources: dataSources.map((ds) => ds.toClientDataSource())
           //homeLink: '/'
         }),
         title: 'Pivot'

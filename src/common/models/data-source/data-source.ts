@@ -8,6 +8,7 @@ import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecuto
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
+import { Filter, FilterJS } from '../filter/filter';
 import { MaxTime, MaxTimeJS } from '../max-time/max-time';
 import { RefreshRule, RefreshRuleJS } from '../refresh-rule/refresh-rule';
 
@@ -47,11 +48,13 @@ export interface DataSourceValue {
   title?: string;
   engine: string;
   source: string;
+  subsetFilter?: Filter;
   options?: Lookup<any>;
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
   defaultTimezone: Timezone;
+  defaultFilter: Filter;
   defaultDuration: Duration;
   defaultSortMeasure: string;
   defaultPinnedDimensions?: OrderedSet<string>;
@@ -66,11 +69,13 @@ export interface DataSourceJS {
   title?: string;
   engine: string;
   source: string;
+  subsetFilter?: FilterJS;
   options?: Lookup<any>;
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
   timeAttribute?: string;
   defaultTimezone?: string;
+  defaultFilter?: FilterJS;
   defaultDuration?: string;
   defaultSortMeasure?: string;
   defaultPinnedDimensions?: string[];
@@ -108,11 +113,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       title: parameters.title,
       engine: parameters.engine,
       source: parameters.source,
+      subsetFilter: parameters.subsetFilter ? Filter.fromJS(parameters.subsetFilter) : null,
       options: parameters.options,
       dimensions,
       measures,
       timeAttribute: parameters.timeAttribute ? $(parameters.timeAttribute) : null,
       defaultTimezone: Timezone.fromJS(parameters.defaultTimezone || 'Etc/UTC'),
+      defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : Filter.EMPTY,
       defaultDuration: Duration.fromJS(parameters.defaultDuration || 'P3D'),
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : getDefaultPinnedDimensions(dimensions),
@@ -130,11 +137,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public title: string;
   public engine: string;
   public source: string;
+  public subsetFilter: Filter;
   public options: Lookup<any>;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
   public defaultTimezone: Timezone;
+  public defaultFilter: Filter;
   public defaultDuration: Duration;
   public defaultSortMeasure: string;
   public defaultPinnedDimensions: OrderedSet<string>;
@@ -149,11 +158,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.title = parameters.title || makeTitle(name);
     this.engine = parameters.engine;
     this.source = parameters.source;
+    this.subsetFilter = parameters.subsetFilter;
     this.options = parameters.options || {};
     this.dimensions = parameters.dimensions || List([]);
     this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
     this.defaultTimezone = parameters.defaultTimezone;
+    this.defaultFilter = parameters.defaultFilter;
     this.defaultDuration = parameters.defaultDuration;
     this.defaultSortMeasure = parameters.defaultSortMeasure;
     this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
@@ -169,11 +180,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       title: this.title,
       engine: this.engine,
       source: this.source,
+      subsetFilter: this.subsetFilter,
       options: this.options,
       dimensions: this.dimensions,
       measures: this.measures,
       timeAttribute: this.timeAttribute,
       defaultTimezone: this.defaultTimezone,
+      defaultFilter: this.defaultFilter,
       defaultDuration: this.defaultDuration,
       defaultSortMeasure: this.defaultSortMeasure,
       defaultPinnedDimensions: this.defaultPinnedDimensions,
@@ -192,10 +205,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       title: this.title,
       engine: this.engine,
       source: this.source,
+      subsetFilter: this.subsetFilter ? this.subsetFilter.toJS() : null,
       dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
       measures: this.measures.toArray().map(measure => measure.toJS()),
       timeAttribute: this.timeAttribute.name,
       defaultTimezone: this.defaultTimezone.toJS(),
+      defaultFilter: this.defaultFilter.toJS(),
       defaultDuration: this.defaultDuration.toJS(),
       defaultSortMeasure: this.defaultSortMeasure,
       defaultPinnedDimensions: this.defaultPinnedDimensions.toArray(),
@@ -224,12 +239,15 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.title === other.title &&
       this.engine === other.engine &&
       this.source === other.source &&
+      Boolean(this.subsetFilter) === Boolean(other.subsetFilter) &&
+      (!this.subsetFilter || this.subsetFilter.equals(other.subsetFilter)) &&
       JSON.stringify(this.options) === JSON.stringify(other.options) &&
       listsEqual(this.dimensions, other.dimensions) &&
       listsEqual(this.measures, other.measures) &&
       Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
       (!this.timeAttribute || this.timeAttribute.equals(other.timeAttribute)) &&
       this.defaultTimezone.equals(other.defaultTimezone) &&
+      this.defaultFilter.equals(other.defaultFilter) &&
       this.defaultDuration.equals(other.defaultDuration) &&
       this.defaultSortMeasure === other.defaultSortMeasure &&
       this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions) &&
@@ -239,6 +257,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public attachExecutor(executor: Executor): DataSource {
     var value = this.valueOf();
     value.executor = executor;
+    return new DataSource(value);
+  }
+
+  public toClientDataSource(): DataSource {
+    var value = this.valueOf();
+    value.subsetFilter = null;
     return new DataSource(value);
   }
 

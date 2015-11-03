@@ -3,7 +3,7 @@
 import * as path from 'path';
 import * as fs from 'fs-promise';
 import * as Q from 'q';
-import { ply, $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes, helper } from 'plywood';
+import { ply, $, Expression, ExpressionJS, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes, helper } from 'plywood';
 import { DataSource, Dimension } from '../../../common/models/index';
 
 
@@ -78,6 +78,11 @@ export function getFileData(filePath: string): Q.Promise<any[]> {
 export function externalFactory(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, useSegmentMetadata: boolean): Q.Promise<External> {
   var skipIntrospection = Boolean(dataSource.options['skipIntrospection']);
 
+  var filter: ExpressionJS = null;
+  if (dataSource.subsetFilter) {
+    filter = dataSource.subsetFilter.toExpression().toJS();
+  }
+
   if (skipIntrospection) {
     return Q(External.fromJS({
       engine: 'druid',
@@ -86,6 +91,7 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
       customAggregations: dataSource.options['customAggregations'],
       attributes: deduceAttributes(dataSource),
       useSegmentMetadata,
+      filter,
       context: null,
       requester: druidRequester
     }));
@@ -96,6 +102,7 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
       timeAttribute: dataSource.timeAttribute.name,
       customAggregations: dataSource.options['customAggregations'],
       useSegmentMetadata,
+      filter,
       context: null,
       requester: druidRequester
     }).introspect();
@@ -119,6 +126,10 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
       return getFileData(filePath).then((rawData) => {
         var dataset = Dataset.fromJS(rawData).hide();
         dataset.introspect();
+
+        if (dataSource.subsetFilter) {
+          dataset = dataset.filter(dataSource.subsetFilter.toExpression().getFn(), {});
+        }
 
         var executor = basicExecutorFactory({
           datasets: { main: dataset }
