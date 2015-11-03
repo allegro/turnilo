@@ -4,7 +4,7 @@ $checkbox-width: 20px;
 $measure-width: 80px;
 $search-box-height: 26px;
 $search-box-gap: 3px;
-$folder-box-height: 30px;
+$folder-box-height: 32px;
 
 .dimension-tile {
   @extend %module;
@@ -58,15 +58,28 @@ $folder-box-height: 30px;
     @include pin-bottom($folder-box-height);
     cursor: pointer;
     color: $brand;
-    padding-left: 10px;
+    font-weight: 600;
+    padding-left: 12px;
+    padding-top: 9px;
+    z-index: 2;
+    border-top: 1px solid $border-super-light;
 
     svg {
       width: 12px;
-      fill: $brand;
+      margin-right: 5px;
+
+      path {
+        fill: $brand;
+      }
     }
 
     &.folded svg {
+      margin-top: 1px;
       transform: rotate(180deg);
+    }
+
+    &:hover {
+      background: $background-lightest;
     }
   }
 
