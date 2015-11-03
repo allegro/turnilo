@@ -66,7 +66,8 @@ $folder-box-height: 32px;
 
     svg {
       width: 12px;
-      margin-right: 5px;
+      margin-right: 6px;
+      margin-top: 1px;
 
       path {
         fill: $brand;
@@ -74,7 +75,7 @@ $folder-box-height: 32px;
     }
 
     &.folded svg {
-      margin-top: 1px;
+      margin-top: 0;
       transform: rotate(180deg);
     }
 
