@@ -7,7 +7,7 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, r, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
 import { SEGMENT, PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
-import { setDragGhost, escapeKey } from '../../utils/dom/dom';
+import { setDragGhost, isInside, escapeKey } from '../../utils/dom/dom';
 import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
 import { TileHeader } from '../tile-header/tile-header';
@@ -64,6 +64,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       this.fetchData(essence, dimension, unfilter);
     });
 
+    this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
@@ -116,6 +117,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   componentDidMount() {
     this.mounted = true;
+    window.addEventListener('mousedown', this.globalMouseDownListener);
     window.addEventListener('keydown', this.globalKeyDownListener);
     var { essence, dimension } = this.props;
     var { unfilter } = this.state;
@@ -139,7 +141,32 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   componentWillUnmount() {
     this.mounted = false;
+    window.removeEventListener('mousedown', this.globalMouseDownListener);
     window.removeEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  globalMouseDownListener(e: MouseEvent) {
+    // can not use ReactDOM.findDOMNode(this) because portal?
+    var searchBoxRef = this.refs['search-box'];
+    if (!searchBoxRef) return;
+    var searchBoxElement = ReactDOM.findDOMNode(searchBoxRef);
+    if (!searchBoxElement) return;
+
+    var headerRef = this.refs['header'];
+    if (!headerRef) return;
+    var searchButtonRef = headerRef.refs['searchButton'];
+    if (!searchButtonRef) return;
+    var searchButtonElement = ReactDOM.findDOMNode(searchButtonRef);
+    if (!searchButtonElement) return;
+
+    var target = <Element>e.target;
+
+    if (isInside(target, searchBoxElement) || isInside(target, searchButtonElement)) return;
+
+    var { searchText } = this.state;
+    // Remove search if it looses focus while empty
+    if (searchText !== '') return;
+    this.toggleSearch();
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
@@ -219,13 +246,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.collectTriggerSearch();
   }
 
-  onSearchBlur() {
-    var { searchText } = this.state;
-    // Remove search if it looses focus while empty
-    if (searchText !== '') return;
-    this.toggleSearch();
-  }
-
   render() {
     var { clicker, essence, dimension } = this.props;
     var { loading, dataset, error, showSearch, unfilter, searchText } = this.state;
@@ -239,13 +259,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var searchBar: React.DOMElement<any> = null;
     if (showSearch) {
       searchBar = JSX(`
-        <div className="search-box">
+        <div className="search-box" ref="search-box">
           <ClearableInput
             placeholder="Search"
             focusOnMount={true}
             value={searchText}
             onChange={this.onSearchChange.bind(this)}
-            onBlur={this.onSearchBlur.bind(this)}
           />
         </div>
       `);
@@ -323,9 +342,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       }
     }
 
-    if (!filterSet) {
-      maxHeight += PIN_PADDING_BOTTOM;
-    }
+    maxHeight += PIN_PADDING_BOTTOM;
 
     var loader: React.ReactElement<any> = null;
     if (loading) {
@@ -354,6 +371,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           onDragStart={this.onDragStart.bind(this)}
           onSearch={this.toggleSearch.bind(this)}
           onClose={clicker.unpin.bind(clicker, dimension)}
+          ref="header"
         />
         {searchBar}
         <div className="rows">{rows}</div>
