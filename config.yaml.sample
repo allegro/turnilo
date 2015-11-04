@@ -30,6 +30,10 @@ dataSources:
     # source: assets/data/wikiticker-2015-09-12-anonymous.json
     # Run `assets/data-raw/process-wikiticker-2015-09-12` to get the full example file
 
+    # The subset filter that is applied to the data. This essentially restricts the data to only the rows that match the filter
+    # This is useful if you are providing Pivot to people who should have restricted access. Must be an AND of INs (or just a single IN)
+    #subsetFilter: $channel.in(["#en.wikipedia", "#de.wikipedia"])
+
     # The primary time attribute of the data refers to the attribute that must always be filtered on
     # This is particularly useful for Druid data sources as they must always have a time filter.
     timeAttribute: time
@@ -45,6 +49,9 @@ dataSources:
 
     # The default duration for the time filter (if not set P3D is used)
     defaultDuration: P1D
+
+    # The default filter in the UI, must be an AND of INs (or just a single IN)
+    #defaultFilter: $channel.in(["#en.wikipedia", "#de.wikipedia"])
 
     # The default sort measure name (if not set the first measure name is used)
     defaultSortMeasure: delta

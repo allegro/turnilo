@@ -33,6 +33,9 @@ dataSources:
     # The default sort measure name (if not set the first measure name is used)
     defaultSortMeasure: delta
 
+    # The default filter in the UI, must be an AND of INs (or just a single IN)
+    #defaultFilter: $channel.in(["#en.wikipedia", "#de.wikipedia"])
+
     # The names of dimensions that are pinned by default (in order that they will appear in the pin bar
     defaultPinnedDimensions:
       - channel
