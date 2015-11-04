@@ -1,14 +1,13 @@
 @import '../../imports';
 
 $checkbox-width: 20px;
-$measure-width: 80px;
 
 .menu-table {
   @extend %white-shadow;
   background: $white;
   color: $text-standard;
 
-  .search {
+  .search-box {
     @include pin-top(30px);
     top: 2px;
     padding: 0 10px;
@@ -35,6 +34,18 @@ $measure-width: 80px;
     height: 24px;
     cursor: pointer;
 
+    overflow: hidden;
+    white-space: nowrap;
+    padding-left: 10px;
+    margin-right: 10px;
+    padding-top: 2px;
+
+    .label {
+      display: inline-block;
+      vertical-align: top;
+      padding-top: 4px;
+    }
+
     &:hover {
       background: $hover;
     }
@@ -42,34 +53,6 @@ $measure-width: 80px;
     &:last-child {
       margin-bottom: 12px;
     }
-  }
-
-  .segment-value {
-    @include unpin-right($measure-width);
-
-    overflow: hidden;
-    white-space: nowrap;
-    padding-left: 10px;
-    padding-top: 2px;
-
-    .label {
-      display: inline-block;
-      vertical-align: top;
-      padding-top: 4px;
-
-      .bold {
-        border-bottom: 1px solid $text-standard;
-      }
-    }
-  }
-
-  .measure-value {
-    @include pin-right($measure-width);
-
-    text-align: right;
-    padding-top: 6px;
-    padding-right: 10px;
-    white-space: nowrap;
   }
 
   .message {

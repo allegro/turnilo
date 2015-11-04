@@ -1,10 +1,11 @@
 'use strict';
 
+import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS, Action } from 'plywood';
 import { makeTitle } from '../../utils/general/general';
 
-var geoName = /continent|country|city|region/;
+var geoName = /continent|country|city|region/i;
 function isGeo(name: string): boolean {
   return geoName.test(name);
 }
@@ -27,6 +28,15 @@ var check: Class<DimensionValue, DimensionJS>;
 export class Dimension implements Instance<DimensionValue, DimensionJS> {
   static isDimension(candidate: any): boolean {
     return isInstanceOf(candidate, Dimension);
+  }
+
+  static getDimension(dimensions: List<Dimension>, dimensionName: string): Dimension {
+    dimensionName = dimensionName.toLowerCase(); // Case insensitive
+    return dimensions.find(dimension => dimension.name.toLowerCase() === dimensionName);
+  }
+
+  static getDimensionByExpression(dimensions: List<Dimension>, expression: Expression): Dimension {
+    return dimensions.find(dimension => dimension.expression.equals(expression));
   }
 
   static fromJS(parameters: DimensionJS): Dimension {

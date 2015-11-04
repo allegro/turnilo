@@ -32,7 +32,7 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
     var searchButton: React.DOMElement<any> = null;
     if (onSearch) {
       searchButton = JSX(`
-        <div className="search" onClick={onSearch}>
+        <div className="search" onClick={onSearch} ref="searchButton">
           <SvgIcon svg={require('../../icons/loupe.svg')}/>
         </div>
       `);

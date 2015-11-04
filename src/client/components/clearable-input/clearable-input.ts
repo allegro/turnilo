@@ -20,6 +20,7 @@ export interface ClearableInputProps {
   focusOnMount?: boolean;
   value: string;
   onChange: Function;
+  onBlur?: Function;
 }
 
 export interface ClearableInputState {
@@ -42,7 +43,7 @@ export class ClearableInput extends React.Component<ClearableInputProps, Clearab
   }
 
   render() {
-    const { className, type, placeholder, focusOnMount, value } = this.props;
+    const { className, type, placeholder, focusOnMount, value, onBlur } = this.props;
 
     var ref = focusOnMount ? focusOnInput : null;
 
@@ -57,6 +58,7 @@ export class ClearableInput extends React.Component<ClearableInputProps, Clearab
           placeholder={placeholder}
           value={value || ''}
           onChange={this.onChange.bind(this)}
+          onBlur={onBlur}
           ref={ref}
         />
         <div className="clear" onClick={this.onClear.bind(this)}>

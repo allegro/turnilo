@@ -131,16 +131,14 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   static fromDataSource(dataSource: DataSource, dataSources: List<DataSource>, visualizations: List<Manifest>): Essence {
     var defaultTimezone = dataSource.defaultTimezone;
 
-    var filter: Filter;
+    var filter = dataSource.defaultFilter;
     if (dataSource.timeAttribute) {
       var now = dataSource.getMaxTimeDate();
       var timeRange = TimeRange.fromJS({
         start: dataSource.defaultDuration.move(now, defaultTimezone, -1),
         end: now
       });
-      filter = Filter.fromClause(dataSource.timeAttribute.in(timeRange));
-    } else {
-      filter = Filter.EMPTY;
+      filter = filter.setTimeRange(dataSource.timeAttribute, timeRange);
     }
 
     return new Essence({
@@ -168,8 +166,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var dataSource = dataSources.find((ds) => ds.name === dataSourceName);
     var timezone = Timezone.fromJS(parameters.timezone);
-    var filter = Filter.fromJS(parameters.filter).constrainToDataSource(dataSource);
-    var splits = Splits.fromJS(parameters.splits).constrainToDataSource(dataSource);
+    var filter = Filter.fromJS(parameters.filter).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute);
+    var splits = Splits.fromJS(parameters.splits).constrainToDimensions(dataSource.dimensions);
     var selectedMeasures = constrainMeasures(OrderedSet(parameters.selectedMeasures), dataSource);
     var pinnedDimensions = constrainDimensions(OrderedSet(parameters.pinnedDimensions), dataSource);
 
@@ -184,13 +182,13 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var compare: Filter = null;
     var compareJS = parameters.compare;
     if (compareJS) {
-      compare = Filter.fromJS(compareJS).constrainToDataSource(dataSource);
+      compare = Filter.fromJS(compareJS).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute);
     }
 
     var highlight: Highlight = null;
     var highlightJS = parameters.highlight;
     if (highlightJS) {
-      highlight = Highlight.fromJS(highlightJS).constrainToDataSource(dataSource);
+      highlight = Highlight.fromJS(highlightJS).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute);
     }
 
     return new Essence({
@@ -508,8 +506,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     // Make sure that all the elements of state are still valid
     var oldDataSource = this.dataSource;
-    value.filter = value.filter.constrainToDataSource(dataSource, oldDataSource);
-    value.splits = value.splits.constrainToDataSource(dataSource);
+    value.filter = value.filter.constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute, oldDataSource.timeAttribute);
+    value.splits = value.splits.constrainToDimensions(dataSource.dimensions);
     value.selectedMeasures = constrainMeasures(value.selectedMeasures, dataSource);
     value.pinnedDimensions = constrainDimensions(value.pinnedDimensions, dataSource);
 
@@ -518,11 +516,11 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (!dataSource.getMeasure(value.pinnedSort)) value.pinnedSort = defaultSortMeasureName;
 
     if (value.compare) {
-      value.compare = value.compare.constrainToDataSource(dataSource);
+      value.compare = value.compare.constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute);
     }
 
     if (value.highlight) {
-      value.highlight = value.highlight.constrainToDataSource(dataSource);
+      value.highlight = value.highlight.constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute);
     }
 
     return new Essence(value);

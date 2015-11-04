@@ -8,7 +8,7 @@ import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'ply
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
-import { formatTimeRange } from '../../utils/date/date';
+import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle, getXFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
@@ -264,7 +264,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         if (inAction instanceof InAction) {
           var timeRangeLiteral = inAction.getLiteralValue();
           if (!timeRangeLiteral) return '?';
-          label = formatTimeRange(timeRangeLiteral, timezone, false);
+          label = formatTimeRange(timeRangeLiteral, timezone, DisplayYear.IF_DIFF);
         } else {
           label += ' : [not in]';
         }

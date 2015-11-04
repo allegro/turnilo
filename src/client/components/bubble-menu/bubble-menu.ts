@@ -94,6 +94,8 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     var menuWidth = stage.width;
     var menuHeight = stage.height;
 
+    var menuLeft: number = 0;
+    var menuTop: number = 0;
     var menuStyle: any = {
       width: menuWidth,
       height: menuHeight
@@ -106,15 +108,15 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     switch (direction) {
       case 'right':
         var top = Math.min(Math.max(containerStage.y, y - menuHeight / 2), containerStage.y + containerStage.height - menuHeight);
-        menuStyle.left = x;
-        menuStyle.top = top;
+        menuLeft = x;
+        menuTop = top;
         shpitzStyle.top = y - top;
         break;
 
       case 'down':
         var left = Math.min(Math.max(containerStage.x, x - menuWidth / 2), containerStage.x + containerStage.width - menuWidth);
-        menuStyle.left = left;
-        menuStyle.top = y;
+        menuLeft = left;
+        menuTop = y;
         shpitzStyle.left = x - left;
         break;
 
@@ -125,7 +127,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     var myClass = 'bubble-menu ' + direction;
     if (className) myClass += ' ' + className;
     return JSX(`
-      <BodyPortal>
+      <BodyPortal left={menuLeft} top={menuTop}>
         <div className={myClass} style={menuStyle}>
           {children}
           <div className="shpitz" style={shpitzStyle}></div>

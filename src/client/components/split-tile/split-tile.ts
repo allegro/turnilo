@@ -231,7 +231,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     var itemX = 0;
     var splitItems = splits.toArray().map((split, i) => {
-      var dimension = split.getDimension(dataSource);
+      var dimension = split.getDimension(dataSource.dimensions);
       if (!dimension) throw new Error('dimension not found');
       var dimensionName = dimension.name;
 
@@ -253,7 +253,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
           onDragStart={this.dragStart.bind(this, dimension, split, i)}
           style={style}
         >
-          <div className="reading">{split.getTitle(dataSource)}</div>
+          <div className="reading">{split.getTitle(dataSource.dimensions)}</div>
           <div className="remove" onClick={this.removeSplit.bind(this, split)}>
             <SvgIcon svg={require('../../icons/x.svg')}/>
           </div>

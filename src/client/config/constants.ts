@@ -21,3 +21,6 @@ export const TIME_SORT_ACTION = new SortAction({
   expression: $(SEGMENT),
   direction: SortAction.ASCENDING
 });
+
+export const MAX_SEARCH_LENGTH = 300;
+export const SEARCH_WAIT = 900;

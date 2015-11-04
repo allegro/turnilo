@@ -5,34 +5,15 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, r, Expression, Executor, Dataset, SortAction } from 'plywood';
-import { SEGMENT } from '../../config/constants';
-import { formatterFromData } from '../../../common/utils/formatter/formatter';
+import { SEGMENT, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../../common/models/index";
+import { collect } from '../../../common/utils/general/general';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
+import { HighlightString } from '../highlight-string/highlight-string';
 
 const TOP_N = 100;
-const MAX_SEARCH_LENGTH = 300;
-const SEARCH_WAIT = 900;
-
-function focusOnInput(input: HTMLInputElement): void {
-  if (!input) return;
-  input.focus();
-}
-
-function collect(wait: number, func: Function): Function {
-  var timeout: any;
-  var later = function() {
-    timeout = null;
-    func();
-  };
-  return function() {
-    if (!timeout) {
-      timeout = setTimeout(later, wait);
-    }
-  };
-}
 
 export interface MenuTableProps {
   essence: Essence;
@@ -74,7 +55,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   fetchData(essence: Essence, dimension: Dimension): void {
     var { searchText } = this.state;
     var { dataSource } = essence;
-    var measure = essence.getPreviewSortMeasure();
+    var nativeCount = dataSource.getMeasure('count');
+    var measureExpression = nativeCount ? nativeCount.expression : $('main').count();
 
     var filterExpression = essence.getEffectiveFilter(null, dimension).toExpression();
 
@@ -85,8 +67,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     var query = $('main')
       .filter(filterExpression)
       .split(dimension.expression, SEGMENT)
-      .performAction(measure.toApplyAction())
-      .sort($(measure.name), SortAction.DESCENDING)
+      .apply('MEASURE', measureExpression)
+      .sort($('MEASURE'), SortAction.DESCENDING)
       .limit(TOP_N + 1);
 
     this.setState({
@@ -157,25 +139,9 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     this.collectTriggerSearch();
   }
 
-  highlightInString(str: string, searchText: string): any {
-    if (!searchText) return str;
-    var strLower = str.toLowerCase();
-    var startIndex = strLower.indexOf(searchText.toLowerCase());
-    if (startIndex === -1) return str;
-    var endIndex = startIndex + searchText.length;
-    return [
-      JSX(`<span className="pre"  key="pre" >{str.substring(0, startIndex)}</span>`),
-      JSX(`<span className="bold" key="bold">{str.substring(startIndex, endIndex)}</span>`),
-      JSX(`<span className="post" key="post">{str.substring(endIndex)}</span>`)
-    ];
-  }
-
   render() {
     var { essence, showCheckboxes, onValueClick, selectedValues } = this.props;
     var { loading, dataset, fetchQueued, searchText } = this.state;
-    var measure = essence.getPreviewSortMeasure();
-
-    var measureName = measure.name;
 
     var rows: Array<React.DOMElement<any>> = [];
     var hasMore = false;
@@ -190,12 +156,9 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
         });
       }
 
-      var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
       rows = rowData.map((d) => {
         var segmentValue = d[SEGMENT];
         var segmentValueStr = String(segmentValue);
-        var measureValue = d[measureName];
-        var measureValueStr = formatter(measureValue);
         var selected = selectedValues && selectedValues.includes(segmentValue);
 
         var checkbox: React.ReactElement<any> = null;
@@ -212,11 +175,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
             title={segmentValueStr}
             onClick={onValueClick.bind(this, segmentValue)}
           >
-            <div className="segment-value">
-              {checkbox}
-              <div className="label">{this.highlightInString(segmentValueStr, searchText)}</div>
-            </div>
-            <div className="measure-value">{measureValueStr}</div>
+            {checkbox}
+            <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
           </div>
         `);
       });
@@ -237,7 +197,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
     return JSX(`
       <div className={className}>
-        <div className="search">
+        <div className="search-box">
           <ClearableInput
             placeholder="Search"
             focusOnMount={true}
@@ -248,8 +208,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
         <div className="rows">
           {rows}
           {message}
-          {loader}
         </div>
+        {loader}
       </div>
     `);
   }

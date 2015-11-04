@@ -4,7 +4,6 @@ import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction, TimeRange } from 'plywood';
-import { DataSource } from '../data-source/data-source';
 import { Dimension } from '../dimension/dimension';
 
 export interface SplitCombineValue {
@@ -141,8 +140,13 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     return this.changeLimitAction(limitAction);
   }
 
-  public getDimension(dataSource: DataSource): Dimension {
-    return dataSource.getDimensionByExpression(this.expression);
+  public getDimension(dimensions: List<Dimension>): Dimension {
+    return Dimension.getDimensionByExpression(dimensions, this.expression);
+  }
+
+  public getTitle(dimensions: List<Dimension>): string {
+    var dimension = this.getDimension(dimensions);
+    return (dimension ? dimension.title : '?') + this.getBucketTitle();
   }
 
   public getBucketTitle(): string {
@@ -159,8 +163,4 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     return '';
   }
 
-  public getTitle(dataSource: DataSource): string {
-    var dimension = this.getDimension(dataSource);
-    return (dimension ? dimension.title : '?') + this.getBucketTitle();
-  }
 }

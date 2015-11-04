@@ -6,7 +6,6 @@ import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction } from 'plywood';
 import { listsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
-import { DataSource } from '../data-source/data-source';
 import { SplitCombine, SplitCombineJS } from '../split-combine/split-combine';
 
 const DEFAULT_GRANULARITY = Duration.fromJS('P1D');
@@ -110,8 +109,8 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSortAction(sort)));
   }
 
-  public getTitle(dataSource: DataSource): string {
-    return this.splitCombines.map(s => s.getDimension(dataSource).title).join(', ');
+  public getTitle(dimensions: List<Dimension>): string {
+    return this.splitCombines.map(s => s.getDimension(dimensions).title).join(', ');
   }
 
   public length(): number {
@@ -188,12 +187,11 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return changed ? new Splits(newSplitCombines) : this;
   }
 
-  public constrainToDataSource(dataSource: DataSource): Splits {
+  public constrainToDimensions(dimensions: List<Dimension>): Splits {
     var hasChanged = false;
     var splitCombines: SplitCombine[] = [];
     this.splitCombines.forEach((split) => {
-      var splitExpression = split.expression;
-      if (dataSource.getDimensionByExpression(splitExpression)) {
+      if (split.getDimension(dimensions)) {
         splitCombines.push(split);
       } else {
         hasChanged = true;

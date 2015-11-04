@@ -1,14 +1,16 @@
 'use strict';
 
 import * as Qajax from 'qajax';
-import { $, Expression, Executor, Dataset, Datum, ChainExpression } from 'plywood';
+import { $, Expression, Executor, Dataset, Datum, ChainExpression, SplitAction } from 'plywood';
 
 function getSplitsDescription(ex: Expression): string {
   var splits: string[] = [];
   ex.forEach((ex) => {
     if (ex instanceof ChainExpression) {
       ex.actions.forEach((action) => {
-        if (action.action === 'split') splits.push(action.expression.toString());
+        if (action instanceof SplitAction) {
+          splits.push(action.firstSplitExpression().toString());
+        }
       });
     }
   });

@@ -78,7 +78,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     // Find the time split (if exists)
     var existingTimeSplit: SplitCombine = null;
     splits.forEach((split) => {
-      var dimension = split.getDimension(dataSource);
+      var dimension = split.getDimension(dataSource.dimensions);
       if (dimension && dimension.type === 'TIME') {
         existingTimeSplit = split;
       }
@@ -97,7 +97,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     // Last split is not a time split
     var lastSplit = splits.last();
     if (existingTimeSplit !== lastSplit) {
-      var lastSplitDimension = lastSplit.getDimension(dataSource);
+      var lastSplitDimension = lastSplit.getDimension(dataSource.dimensions);
       return Resolve.manual('This visualization requires a time split', [
         {
           description: `Replace ${lastSplitDimension.title} split with time`,
@@ -404,17 +404,14 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
           var topOffset = graphHeight * graphIndex + HOVER_BUBBLE_V_OFFSET - scrollTop;
           if (topOffset > -HOVER_BUBBLE_HEIGHT) {
-            var chartHoverBubbleStyle = {
-              left: stage.x + H_PADDING + scaleX(getX(hoverDatum)),
-              top: stage.y + topOffset
-            };
             chartHoverBubble = JSX(`
               <HoverBubble
                 essence={essence}
                 datum={hoverDatum}
                 measure={measure}
                 getY={getY}
-                style={chartHoverBubbleStyle}
+                top={stage.y + topOffset}
+                left={stage.x + H_PADDING + scaleX(getX(hoverDatum))}
               />
             `);
           }

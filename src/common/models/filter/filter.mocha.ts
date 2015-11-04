@@ -9,40 +9,68 @@ import { Filter } from "./filter";
 describe('Filter', () => {
   it('is an immutable class', () => {
     testImmutableClass(Filter, [
-      [],
-      [{
+      { op: 'literal', value: true },
+      {
         "op": "chain", "expression": { "op": "ref", "name": "time" },
-        "actions": [{
+        "action": {
           "action": "in",
           "expression": {
             "op": "literal",
             "value": { "start": new Date("2013-02-26T19:00:00.000Z"), "end": new Date("2013-02-26T22:00:00.000Z") },
             "type": "TIME_RANGE"
           }
-        }]
-      }],
-      [{
+        }
+      },
+      {
         "op": "chain", "expression": { "op": "ref", "name": "language" },
-        "actions": [{
+        "action": {
           "action": "in",
           "expression": {
             "op": "literal",
             "value": { "setType": "STRING", "elements": ["en"] },
             "type": "SET"
           }
-        }]
-      }],
-      [{
+        }
+      },
+      {
         "op": "chain", "expression": { "op": "ref", "name": "language" },
-        "actions": [{
+        "action": {
           "action": "in",
           "expression": {
             "op": "literal",
             "value": { "setType": "STRING", "elements": ["he"] },
             "type": "SET"
           }
-        }]
-      }]
+        }
+      },
+      {
+        "op": "chain",
+        "expression": { "op": "ref", "name": "language" },
+        "actions": [
+          {
+            "action": "in",
+            "expression": {
+              "op": "literal",
+              "value": { "setType": "STRING", "elements": ["he"] },
+              "type": "SET"
+            }
+          },
+          {
+            "action": "and",
+            "expression": {
+              "op": "chain", "expression": { "op": "ref", "name": "namespace" },
+              "action": {
+                "action": "in",
+                "expression": {
+                  "op": "literal",
+                  "value": { "setType": "STRING", "elements": ["wikipedia"] },
+                  "type": "SET"
+                }
+              }
+            }
+          }
+        ]
+      }
     ]);
   });
 
@@ -58,24 +86,22 @@ describe('Filter', () => {
   it('add work', () => {
     var filter = Filter.EMPTY;
 
-    filter = filter.add($('language'), 'en');
+    filter = filter.addValue($('language'), 'en');
 
     expect(filter.toExpression().toJS()).to.deep.equal({
-      "actions": [
-        {
-          "action": "in",
-          "expression": {
-            "op": "literal",
-            "type": "SET",
-            "value": {
-              "elements": [
-                "en"
-              ],
-              "setType": "STRING"
-            }
+      "action": {
+        "action": "in",
+        "expression": {
+          "op": "literal",
+          "type": "SET",
+          "value": {
+            "elements": [
+              "en"
+            ],
+            "setType": "STRING"
           }
         }
-      ],
+      },
       "expression": {
         "name": "language",
         "op": "ref"

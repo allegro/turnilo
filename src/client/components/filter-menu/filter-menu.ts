@@ -105,7 +105,8 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
     if (dimension.type === 'TIME') {
       newState.selectedTimeRange = filter.getTimeRange(dimension.expression);
     } else {
-      newState.selectedValues = List(filter.getValues(dimension.expression) || []);
+      var valueSet = filter.getValues(dimension.expression);
+      newState.selectedValues = List(valueSet ? valueSet.elements : []);
     }
 
     this.setState(newState);

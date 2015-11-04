@@ -1,15 +1,12 @@
 @import '../../imports';
 
 .body-portal {
-  @include pin-full;
+  position: absolute;
   z-index: 200;
   pointer-events: none;
 
   &.pointer-events {
     z-index: 201;
-
-    > * {
-      pointer-events: auto;
-    }
+    pointer-events: auto;
   }
 }
