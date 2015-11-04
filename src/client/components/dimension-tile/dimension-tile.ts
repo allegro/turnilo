@@ -248,7 +248,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   render() {
     var { clicker, essence, dimension } = this.props;
-    var { loading, dataset, error, showSearch, unfilter, searchText } = this.state;
+    var { loading, dataset, error, showSearch, unfilter, fetchQueued, searchText } = this.state;
     var measure = essence.getPinnedSortMeasure();
 
     var measureName = measure.name;
@@ -345,8 +345,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     maxHeight += PIN_PADDING_BOTTOM;
 
     var loader: React.ReactElement<any> = null;
+    var message: React.DOMElement<any> = null;
     if (loading) {
       loader = React.createElement(Loader, null);
+    } else if (dataset && !fetchQueued && searchText && !rows.length) {
+      message = JSX(`<div className="message">{'No results for "' + searchText + '"'}</div>`);
     }
 
     var queryError: React.ReactElement<any> = null;
@@ -374,7 +377,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           ref="header"
         />
         {searchBar}
-        <div className="rows">{rows}</div>
+        <div className="rows">
+          {rows}
+          {message}
+        </div>
         {foldUnfold}
         {queryError}
         {loader}

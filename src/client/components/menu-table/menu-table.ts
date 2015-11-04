@@ -208,8 +208,8 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
         <div className="rows">
           {rows}
           {message}
-          {loader}
         </div>
+        {loader}
       </div>
     `);
   }
