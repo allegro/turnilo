@@ -113,7 +113,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       placeholder = JSX(`
         <div className="placeholder">
           <SvgIcon svg={require('../../icons/preview-pin.svg')}/>
-          <div className="placeholder-message">Drag dimensions here to pin them</div>
+          <div className="placeholder-message">Click or drag dimensions to pin them</div>
         </div>
       `);
     }
