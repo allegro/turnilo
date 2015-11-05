@@ -32,16 +32,6 @@ function makeUniqueMeasureList(measures: Measure[]): List<Measure> {
   }));
 }
 
-function getDefaultPinnedDimensions(dimensions: List<Dimension>): OrderedSet<string> {
-  return OrderedSet(
-    dimensions
-      .toArray()
-      .filter((d) => d.type === 'STRING')
-      .slice(0, 3)
-      .map((d) => d.name)
-  );
-}
-
 
 export interface DataSourceValue {
   name: string;
@@ -50,6 +40,7 @@ export interface DataSourceValue {
   source: string;
   subsetFilter?: Filter;
   options?: Lookup<any>;
+  introspection: string;
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
@@ -71,6 +62,7 @@ export interface DataSourceJS {
   source: string;
   subsetFilter?: FilterJS;
   options?: Lookup<any>;
+  introspection?: string;
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
   timeAttribute?: string;
@@ -85,6 +77,11 @@ export interface DataSourceJS {
 
 var check: Class<DataSourceValue, DataSourceJS>;
 export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
+  static DEFAULT_INTROSPECTION = 'autofill-all';
+  static INTROSPECTION_VALUES = ['none', 'no-autofill', 'autofill-dimensions-only', 'autofill-measures-only', 'autofill-all'];
+  static DEFAULT_TIMEZONE = Timezone.UTC;
+  static DEFAULT_DURATION = Duration.fromJS('P3D');
+
   static isDataSource(candidate: any): boolean {
     return isInstanceOf(candidate, DataSource);
   }
@@ -107,22 +104,47 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     var dimensions = makeUniqueDimensionList((parameters.dimensions || []).map((d) => Dimension.fromJS(d)));
     var measures = makeUniqueMeasureList((parameters.measures || []).map((m) => Measure.fromJS(m)));
 
+    var engine = parameters.engine;
+    var timeAttribute = parameters.timeAttribute;
+    if (engine === 'druid' && !timeAttribute) {
+      timeAttribute = 'time';
+    }
+
+    var introspection = parameters.introspection;
+
+    // Back compat.
+    var options = parameters.options || {};
+    if (options['skipIntrospection']) {
+      if (!introspection) introspection = 'none';
+      delete options['skipIntrospection'];
+    }
+    if (options['disableAutofill']) {
+      if (!introspection) introspection = 'no-autofill';
+      delete options['disableAutofill'];
+    }
+
+    introspection = introspection || DataSource.DEFAULT_INTROSPECTION;
+    if (DataSource.INTROSPECTION_VALUES.indexOf(introspection) === -1) {
+      throw new Error(`invalid introspection value ${introspection}, must be one of ${DataSource.INTROSPECTION_VALUES.join(', ')}`);
+    }
+
     var value: DataSourceValue = {
       executor: null,
       name: parameters.name,
       title: parameters.title,
-      engine: parameters.engine,
+      engine,
       source: parameters.source,
       subsetFilter: parameters.subsetFilter ? Filter.fromJS(parameters.subsetFilter) : null,
-      options: parameters.options,
+      options,
+      introspection,
       dimensions,
       measures,
-      timeAttribute: parameters.timeAttribute ? $(parameters.timeAttribute) : null,
-      defaultTimezone: Timezone.fromJS(parameters.defaultTimezone || 'Etc/UTC'),
+      timeAttribute: timeAttribute ? $(timeAttribute) : null,
+      defaultTimezone: parameters.defaultTimezone ? Timezone.fromJS(parameters.defaultTimezone) : DataSource.DEFAULT_TIMEZONE,
       defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : Filter.EMPTY,
-      defaultDuration: Duration.fromJS(parameters.defaultDuration || 'P3D'),
+      defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : DataSource.DEFAULT_DURATION,
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
-      defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : getDefaultPinnedDimensions(dimensions),
+      defaultPinnedDimensions: OrderedSet(parameters.defaultPinnedDimensions || []),
       refreshRule: parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : RefreshRule.query(),
       maxTime: parameters.maxTime ? MaxTime.fromJS(parameters.maxTime) : null
     };
@@ -139,6 +161,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public source: string;
   public subsetFilter: Filter;
   public options: Lookup<any>;
+  public introspection: string;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
@@ -160,6 +183,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.source = parameters.source;
     this.subsetFilter = parameters.subsetFilter;
     this.options = parameters.options || {};
+    this.introspection = parameters.introspection || DataSource.DEFAULT_INTROSPECTION;
     this.dimensions = parameters.dimensions || List([]);
     this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
@@ -182,6 +206,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       source: this.source,
       subsetFilter: this.subsetFilter,
       options: this.options,
+      introspection: this.introspection,
       dimensions: this.dimensions,
       measures: this.measures,
       timeAttribute: this.timeAttribute,
@@ -206,9 +231,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       engine: this.engine,
       source: this.source,
       subsetFilter: this.subsetFilter ? this.subsetFilter.toJS() : null,
+      introspection: this.introspection,
       dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
       measures: this.measures.toArray().map(measure => measure.toJS()),
-      timeAttribute: this.timeAttribute.name,
       defaultTimezone: this.defaultTimezone.toJS(),
       defaultFilter: this.defaultFilter.toJS(),
       defaultDuration: this.defaultDuration.toJS(),
@@ -216,6 +241,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultPinnedDimensions: this.defaultPinnedDimensions.toArray(),
       refreshRule: this.refreshRule.toJS()
     };
+    if (this.timeAttribute) {
+      js.timeAttribute = this.timeAttribute.name;
+    }
     if (Object.keys(this.options).length) {
       js.options = this.options;
     }
@@ -242,6 +270,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       Boolean(this.subsetFilter) === Boolean(other.subsetFilter) &&
       (!this.subsetFilter || this.subsetFilter.equals(other.subsetFilter)) &&
       JSON.stringify(this.options) === JSON.stringify(other.options) &&
+      this.introspection === other.introspection &&
       listsEqual(this.dimensions, other.dimensions) &&
       listsEqual(this.measures, other.measures) &&
       Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
@@ -263,6 +292,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public toClientDataSource(): DataSource {
     var value = this.valueOf();
     value.subsetFilter = null;
+    value.introspection = 'none';
     return new DataSource(value);
   }
 
@@ -321,13 +351,19 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public addAttributes(attributes: Attributes): DataSource {
-    var { dimensions, measures } = this;
+    var { introspection, dimensions, measures } = this;
+    if (introspection === 'none' || introspection === 'no-autofill') return this;
+    var autofillDimensions = introspection === 'autofill-dimensions-only' || introspection === 'autofill-all';
+    var autofillMeasures = introspection === 'autofill-measures-only' || introspection === 'autofill-all';
+
+    var $main = $('main');
 
     for (var attribute of attributes) {
       var { name, type } = attribute;
       var expression: Expression;
       switch (type) {
         case 'TIME':
+          if (!autofillDimensions) continue;
           expression = $(name);
           if (this.getDimensionByExpression(expression)) continue;
           // Add to the start
@@ -339,7 +375,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
         case 'STRING':
           if (attribute.special === 'unique') {
-            expression = $('main').countDistinct($(name));
+            if (!autofillMeasures) continue;
+            expression = $main.countDistinct($(name));
             if (this.getMeasureByExpression(expression)) continue;
             measures = measures.push(new Measure({
               name,
@@ -347,6 +384,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
               format: Measure.INTEGER_FORMAT
             }));
           } else {
+            if (!autofillDimensions) continue;
             expression = $(name);
             if (this.getDimensionByExpression(expression)) continue;
             dimensions = dimensions.push(new Dimension({
@@ -357,6 +395,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           break;
 
         case 'BOOLEAN':
+          if (!autofillDimensions) continue;
           expression = $(name);
           if (this.getDimensionByExpression(expression)) continue;
           dimensions = dimensions.push(new Dimension({
@@ -367,9 +406,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
         case 'NUMBER':
           if (attribute.special === 'histogram') continue;
-          expression = $('main').sum($(name));
+          if (!autofillMeasures) continue;
+
+          expression = Measure.getExpressionForName(name);
+
           if (this.getMeasureByExpression(expression)) continue;
-          var newMeasure = new Measure({ name });
+          var newMeasure = new Measure({ name, expression });
           measures = (name === 'count') ? measures.unshift(newMeasure) : measures.push(newMeasure);
           break;
 
@@ -378,14 +420,22 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       }
     }
 
-    if (this.measures === measures && this.dimensions === dimensions) return this;
+    if (!measures.find(m => m.name === 'count')) {
+      measures = measures.unshift(new Measure({
+        name: 'count',
+        expression: $main.count()
+      }));
+    }
 
     var value = this.valueOf();
+    value.introspection = 'no-autofill';
     value.dimensions = dimensions;
     value.measures = measures;
-    if (!value.defaultPinnedDimensions.size) {
-      value.defaultPinnedDimensions = getDefaultPinnedDimensions(dimensions);
+
+    if (!value.defaultSortMeasure) {
+      value.defaultSortMeasure = measures.size ? measures.first().name : null;
     }
+
     return new DataSource(value);
   }
 

@@ -35,6 +35,19 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return isInstanceOf(candidate, Measure);
   }
 
+  static getExpressionForName(name: string): Expression {
+    var $main = $('main');
+    var ref = $(name);
+    var nameWithoutUnderscores = name.replace(/_/g, ' ');
+    if (/\bmin\b/.test(nameWithoutUnderscores)) {
+      return $main.min(ref);
+    } else if (/\bmax\b/.test(nameWithoutUnderscores)) {
+      return $main.max(ref);
+    } else {
+      return $main.sum(ref);
+    }
+  }
+
   static fromJS(parameters: MeasureJS): Measure {
     return new Measure({
       name: parameters.name,
@@ -55,7 +68,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     var name = parameters.name;
     this.name = name;
     this.title = parameters.title || makeTitle(name);
-    this.expression = parameters.expression || $('main').sum($(name));
+    this.expression = parameters.expression || Measure.getExpressionForName(name);
     var format = parameters.format || Measure.DEFAULT_FORMAT;
     if (format[0] === '(') throw new Error('can not have format that uses ( )');
     this.format = format;

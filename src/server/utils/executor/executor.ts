@@ -5,6 +5,7 @@ import * as fs from 'fs-promise';
 import * as Q from 'q';
 import { ply, $, Expression, ExpressionJS, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes, helper } from 'plywood';
 import { DataSource, Dimension } from '../../../common/models/index';
+import { parseData } from '../../../common/utils/parser/parser';
 
 
 function getReferences(ex: Expression): string[] {
@@ -48,24 +49,10 @@ function deduceAttributes(dataSource: DataSource): Attributes {
 
 export function getFileData(filePath: string): Q.Promise<any[]> {
   return fs.readFile(filePath, 'utf-8').then((fileData) => {
-    if (fileData[0] === '[') {
-      try {
-        return JSON.parse(fileData);
-      } catch (e) {
-        throw new Error('could not parse ' + filePath);
-      }
-
-    } else {
-      var fileLines = fileData.split('\n');
-      if (fileLines[fileLines.length - 1] === '') fileLines.pop();
-
-      return fileLines.map((line, i) => {
-        try {
-          return JSON.parse(line);
-        } catch (e) {
-          console.log(`problem in line: ${i}: '${line}' of file ${filePath}`);
-        }
-      });
+    try {
+      return parseData(fileData, path.extname(filePath));
+    } catch (e) {
+      throw new Error(`could not parse '${filePath}': ${e.message}`);
     }
   }).then((fileJSON) => {
     fileJSON.forEach((d: Datum, i: number) => {

@@ -56,21 +56,31 @@ pivot --druid your.druid.broker.host:8082
 
 Pivot will automatically introspect your Druid cluster and figure out your dimensions and measures.
 
-**Note:** if Pivot starts up and gives you a query error it is most likely because it could not determine your schema.
-You probably have some *hyperUnique* column that Pivot is trying to SUM over. You will have to provide Pivot with a config
-your choice is ether to write a [full config](/config.yaml.sample) or to make a [tiny config](/hyper-unique-patch-config.yaml)
-that simply tells Pivot about the hyperUnique measures.   
+**Note:** if Pivot starts up and gives you a query error it is most likely because it could not properly introspect your schema.
+You probably have some *hyperUnique* column that Pivot is trying to SUM over.
+You will have to provide Pivot with a config file as in the nest section.   
 
-### Write a config
+### Create a config
 
-In general Pivot will never know your schema as well as you do so to get a better experience you might want to define a config file and pass it along.
-Have a look at a the [sample config file](/config.yaml.sample) included in this repo to learn what properties are supported. 
+In general Pivot will never know your schema as well as you so to get a better experience you should define a config file and provide it to Pivot.
+The fastest way to generate a config is to have Pivot do it for you.
 
 ```
-pivot --druid your.druid.broker.host:8082 --config /path/to/your/config/file.yaml
+pivot --druid your.druid.broker.host:8082 --print-config --with-comments > config.yaml
 ```
 
-### Run the project as a developer
+The `--print-config` option will make Pivot run through its regular introspection and then, instead of spinning up a server, dump the YAML onto the stdout.  
+
+```
+pivot --config config.yaml
+```
+
+The next step is to examine and tweak the config using your favorite editor `nano config.yaml`.
+
+
+## Development
+
+Here are the steps to clone Pivot and run it as a developer. 
 
 Firstly make sure you have gulp installed globally:
 
@@ -100,18 +110,18 @@ gulp
 
 Finally you have to create a `config.yaml` file. (or use the sample)
 
-For information on what goes into the config please read the comments in the [sample config file](/config.yaml.sample)
+```
+./bin/pivot --druid your.druid.broker.host:8082 --print-config --with-comments > config.yaml
+```
 
-```
-cp config.yaml.sample config.yaml
-```
+The `--with-comments` flag adds docs about what goes into the config.
+Alternatively you can read the comments in the [sample config file](/config.yaml.sample).
 
 Then you are ready to
 
 ```
 ./bin/pivot --config config.yaml
 ```
-
 
 ## Roadmap
 
@@ -120,7 +130,6 @@ We will be working on:
 - Time comparison visualization
 - Additional visualizations
 - Exclusion filters
-- Subset filters
 - Being able to easily embed Pivot in your app
 - Various additions, improvements and fixes to make the app more complete
 

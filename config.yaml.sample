@@ -57,10 +57,16 @@ dataSources:
     defaultSortMeasure: delta
 
     # The names of dimensions that are pinned by default (in order that they will appear in the pin bar
-    defaultPinnedDimensions:
-      - channel
-      - namespace
-      - isRobot
+    defaultPinnedDimensions: ["channel", "namespace", "isRobot"]
+
+    # How the dataset should be introspected
+    # possible options are:
+    # * none - Do not do any introspection, take what is written in the config as the rule of law.
+    # * no-autofill - Introspect the datasource but do not automatically generate dimensions or measures
+    # * autofill-dimensions-only - Introspect the datasource, automatically generate dimensions only
+    # * autofill-measures-only - Introspect the datasource, automatically generate measures only
+    # * autofill-all - (default) Introspect the datasource, automatically generate dimensions and measures
+    introspection: autofill-dimensions-only
 
     # The list of dimensions defined in the UI. The order here will be reflected in the UI
     dimensions:
@@ -197,10 +203,10 @@ dataSources:
 
     timeAttribute: time # The time attribute (this needs to be set for Druid, but could be anything. You should leave it as 'time')
 
-    options:
-      # Avoid creating automatic dimensions from the data
-      disableAutofill: true
+    # Avoid creating automatic dimensions from the data
+    introspection: no-autofill
 
+    options:
       customAggregations:
         boring:
           #accessType  <-- this is how this aggregate will be accessed from a postAgg (default is 'fieldAccess')
