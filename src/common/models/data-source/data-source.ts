@@ -105,9 +105,18 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     var measures = makeUniqueMeasureList((parameters.measures || []).map((m) => Measure.fromJS(m)));
 
     var engine = parameters.engine;
-    var timeAttribute = parameters.timeAttribute;
-    if (engine === 'druid' && !timeAttribute) {
-      timeAttribute = 'time';
+    var timeAttributeName = parameters.timeAttribute;
+    if (engine === 'druid' && !timeAttributeName) {
+      timeAttributeName = 'time';
+    }
+    var timeAttribute = timeAttributeName ? $(timeAttributeName) : null;
+
+    if (timeAttribute && !Dimension.getDimensionByExpression(dimensions, timeAttribute)) {
+      dimensions = dimensions.unshift(new Dimension({
+        name: timeAttributeName,
+        expression: timeAttribute,
+        type: 'TIME'
+      }));
     }
 
     var introspection = parameters.introspection;
@@ -139,7 +148,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       introspection,
       dimensions,
       measures,
-      timeAttribute: timeAttribute ? $(timeAttribute) : null,
+      timeAttribute,
       defaultTimezone: parameters.defaultTimezone ? Timezone.fromJS(parameters.defaultTimezone) : DataSource.DEFAULT_TIMEZONE,
       defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : Filter.EMPTY,
       defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : DataSource.DEFAULT_DURATION,

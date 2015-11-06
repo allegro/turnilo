@@ -83,30 +83,18 @@ describe('Filter', () => {
     });
   });
 
-  it('add work', () => {
+  it('add works', () => {
     var filter = Filter.EMPTY;
+    var $language = $('language');
 
-    filter = filter.addValue($('language'), 'en');
+    filter = filter.addValue($language, 'en');
 
-    expect(filter.toExpression().toJS()).to.deep.equal({
-      "action": {
-        "action": "in",
-        "expression": {
-          "op": "literal",
-          "type": "SET",
-          "value": {
-            "elements": [
-              "en"
-            ],
-            "setType": "STRING"
-          }
-        }
-      },
-      "expression": {
-        "name": "language",
-        "op": "ref"
-      },
-      "op": "chain"
-    });
+    var ex = $language.in(['en']);
+    expect(filter.toExpression().toJS()).to.deep.equal(ex.toJS());
+
+    filter = filter.addValue($language, null);
+
+    var ex = $language.in(['en', null]);
+    expect(filter.toExpression().toJS()).to.deep.equal(ex.toJS());
   });
 });
