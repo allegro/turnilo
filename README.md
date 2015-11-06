@@ -62,14 +62,15 @@ You will have to provide Pivot with a config file as in the nest section.
 
 ### Create a config
 
-In general Pivot will never know your schema as well as you so to get a better experience you should define a config file and provide it to Pivot.
-The fastest way to generate a config is to have Pivot do it for you.
+In general Pivot will never know your schema as well as you.
+To get a better experience you should create a config and provide it to Pivot.
+The fastest way to create a config is to have Pivot do it for you.
 
 ```
 pivot --druid your.druid.broker.host:8082 --print-config --with-comments > config.yaml
 ```
 
-The `--print-config` option will make Pivot run through its regular introspection and then, instead of spinning up a server, dump the YAML onto the stdout.  
+The `--print-config` option will make Pivot run through its regular introspection and then, instead of spinning up a server, dump the YAML onto the stdout and exit.  
 
 ```
 pivot --config config.yaml
