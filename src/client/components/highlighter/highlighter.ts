@@ -141,12 +141,12 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var endPos = scaleX(shownTimeRange.end);
 
     var whiteoutLeftStyle = {
-      width: startPos
+      width: Math.max(startPos, 0)
     };
 
     var frameStyle = {
       left: startPos,
-      width: endPos - startPos
+      width: Math.max(endPos - startPos, 0)
     };
 
     var whiteoutRightStyle = {
