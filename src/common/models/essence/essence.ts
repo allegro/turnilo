@@ -150,7 +150,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       timezone: defaultTimezone,
       filter,
       splits: Splits.EMPTY,
-      selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 6).map(m => m.name)),
+      selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
       pinnedDimensions: dataSource.defaultPinnedDimensions,
       previewSort: dataSource.defaultSortMeasure,
       pinnedSort: dataSource.defaultSortMeasure,
