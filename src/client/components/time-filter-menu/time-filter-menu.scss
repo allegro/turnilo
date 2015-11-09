@@ -1,0 +1,81 @@
+@import '../../imports';
+
+.time-filter-menu {
+  .tabs {
+    @include pin-top(30px);
+
+    .tab {
+      display: inline-block;
+      width: 50%;
+      text-align: center;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 3px 0;
+
+      &.selected {
+        border-bottom: 2px solid $brand;
+      }
+    }
+  }
+
+  .cont {
+    @include unpin-top(30px);
+    padding: 0 10px;
+
+    .type {
+      text-transform: uppercase;
+      color: $gray;
+      cursor: default;
+      margin-bottom: 6px;
+    }
+
+    .buttons {
+      margin-bottom: 6px;
+
+      button {
+        @extend %button-secondary;
+
+        width: 42px;
+
+        &.hover {
+          background: $hover;
+        }
+
+        &.selected {
+          background: darken($hover, 4%);
+        }
+      }
+    }
+
+    .preview {
+      border-top: 1px solid $gray;
+    }
+
+    .time-input {
+      @extend %input-cont-inset;
+      width: 135px;
+      height: 31px;
+
+      input {
+        background: none;
+        padding-left: 6px;
+      }
+    }
+  }
+
+  .button-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0 0 10px 10px;
+
+    .ok {
+      @extend %button-primary;
+      margin-right: 8px;
+    }
+
+    .cancel {
+      @extend %button-secondary;
+    }
+  }
+}

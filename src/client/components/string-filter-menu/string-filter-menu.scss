@@ -1,0 +1,28 @@
+@import '../../imports';
+
+$action-bar-height: 52px;
+
+.string-filter-menu {
+  .menu-table {
+    position: absolute;
+    width: 100%;
+    top: 10px;
+    bottom: $action-bar-height;
+  }
+
+  .button-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0 0 10px 10px;
+
+    .ok {
+      @extend %button-primary;
+      margin-right: 8px;
+    }
+
+    .cancel {
+      @extend %button-secondary;
+    }
+  }
+}
