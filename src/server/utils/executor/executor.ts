@@ -63,14 +63,12 @@ export function getFileData(filePath: string): Q.Promise<any[]> {
 }
 
 export function externalFactory(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, useSegmentMetadata: boolean): Q.Promise<External> {
-  var skipIntrospection = Boolean(dataSource.options['skipIntrospection']);
-
   var filter: ExpressionJS = null;
   if (dataSource.subsetFilter) {
     filter = dataSource.subsetFilter.toExpression().toJS();
   }
 
-  if (skipIntrospection) {
+  if (dataSource.introspection === 'none') {
     return Q(External.fromJS({
       engine: 'druid',
       dataSource: dataSource.source,
@@ -97,9 +95,6 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
 }
 
 export function fillInDataSource(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, fileDirectory: string, useSegmentMetadata: boolean): Q.Promise<DataSource> {
-  var skipIntrospection = Boolean(dataSource.options['skipIntrospection']);
-  var disableAutofill = Boolean(dataSource.options['disableAutofill']);
-
   switch (dataSource.engine) {
     case 'native':
       // Do not do anything if the file was already loaded
@@ -122,11 +117,7 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
           datasets: { main: dataset }
         });
 
-        if (!skipIntrospection && !disableAutofill) {
-          dataSource = dataSource.addAttributes(dataset.attributes);
-        }
-
-        return dataSource.attachExecutor(executor);
+        return dataSource.addAttributes(dataset.attributes).attachExecutor(executor);
       });
 
     case 'druid':
@@ -135,11 +126,7 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
           datasets: { main: external }
         });
 
-        if (!skipIntrospection && !disableAutofill) {
-          dataSource = dataSource.addAttributes(external.attributes);
-        }
-
-        return dataSource.attachExecutor(executor);
+        return dataSource.addAttributes(external.attributes).attachExecutor(executor);
       }).then(DataSource.updateMaxTime);
 
     default:
