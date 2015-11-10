@@ -20,6 +20,7 @@
         </array>
       </option>
       <option name="outputFromStdout" value="false" />
+      <option name="passParentEnvs" value="true" />
       <option name="program" value="$ProjectFileDir$/webstorm/lookfor.js" />
       <option name="scopeName" value="All Source Files" />
       <option name="trackOnlyRoot" value="true" />
@@ -45,6 +46,7 @@
         </array>
       </option>
       <option name="outputFromStdout" value="false" />
+      <option name="passParentEnvs" value="true" />
       <option name="program" value="$ProjectFileDir$/webstorm/lookfor.js" />
       <option name="scopeName" value="Client Source Files" />
       <option name="trackOnlyRoot" value="true" />
