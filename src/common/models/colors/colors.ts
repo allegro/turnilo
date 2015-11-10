@@ -23,6 +23,7 @@ export interface ColorsValue {
   dimension: string;
   values: Set;
   limit: number;
+  sameAsLimit: boolean;
 }
 
 export interface ColorsJS {
