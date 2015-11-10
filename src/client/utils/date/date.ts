@@ -14,7 +14,7 @@ function formatTimeOfDay(d: Date): string {
   return d.getMinutes() ? formatTimeOfDayWithMinutes(d) : formatTimeOfDayWithoutMinutes(d);
 }
 
-function sameYear(year: number, timezone: Timezone): boolean {
+function isCurrentYear(year: number, timezone: Timezone): boolean {
   var nowWallTime = WallTime.UTCToWallTime(new Date(), timezone.toString());
   return nowWallTime.getFullYear() === year;
 }
@@ -34,8 +34,8 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displa
   if (startWallTime.getFullYear() !== endShiftWallTime.getFullYear()) {
     formatted = [formatWithYear(startWallTime), formatWithYear(endShiftWallTime)].join(' - ');
   } else {
-    showingYear = displayYear === DisplayYear.ALWAYS || (displayYear === DisplayYear.IF_DIFF && !sameYear(endShiftWallTime.getFullYear(), timezone));
-    var fmt = displayYear ? formatWithoutYear : formatWithYear;
+    showingYear = displayYear === DisplayYear.ALWAYS || (displayYear === DisplayYear.IF_DIFF && !isCurrentYear(endShiftWallTime.getFullYear(), timezone));
+    var fmt = showingYear ? formatWithYear : formatWithoutYear;
     if (startWallTime.getMonth() !== endShiftWallTime.getMonth() || startWallTime.getDate() !== endShiftWallTime.getDate()) {
       formatted = [formatWithoutYear(startWallTime), fmt(endShiftWallTime)].join(' - ');
     } else {
