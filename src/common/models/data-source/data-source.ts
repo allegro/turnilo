@@ -335,6 +335,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return Dimension.getDimensionByExpression(this.dimensions, expression);
   }
 
+  public getDimensionByType(type: string): List<Dimension> {
+    return <List<Dimension>>this.dimensions.filter((d) => d.type === type);
+  }
+
   public getTimeDimension() {
     return this.getDimensionByExpression(this.timeAttribute);
   }
@@ -443,6 +447,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     if (!value.defaultSortMeasure) {
       value.defaultSortMeasure = measures.size ? measures.first().name : null;
+    }
+
+    // ToDo: remove this when Pivot can handle it
+    if (!value.timeAttribute && dimensions.first().type === 'TIME') {
+      value.timeAttribute = <RefExpression>dimensions.first().expression;
     }
 
     return new DataSource(value);

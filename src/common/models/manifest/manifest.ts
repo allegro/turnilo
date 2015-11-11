@@ -10,6 +10,7 @@ export interface Resolution {
 }
 
 export class Resolve {
+  static NEVER: Resolve;
   static READY: Resolve;
 
   static automatic(adjustment: Splits) {
@@ -54,6 +55,7 @@ export class Resolve {
   }
 }
 
+Resolve.NEVER = new Resolve('never', null, null, null);
 Resolve.READY = new Resolve('ready', null, null, null);
 
 export interface Manifest {

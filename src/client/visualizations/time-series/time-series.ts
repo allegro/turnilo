@@ -64,9 +64,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   static id = 'time-series';
   static title = 'Time Series';
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
+    var timeDimensions = dataSource.getDimensionByType('TIME');
+    if (!timeDimensions.size) return Resolve.NEVER;
+
+    var timeDimension = timeDimensions.first();
+
     // Has no splits
     if (splits.length() < 1) {
-      var timeDimension = dataSource.getTimeDimension();
       return Resolve.manual('This visualization requires a time split', [
         {
           description: `Add a split on ${timeDimension.title}`,

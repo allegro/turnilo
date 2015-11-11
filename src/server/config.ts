@@ -45,6 +45,8 @@ Possible usage:
       --with-comments         Adds comments when printing the auto generated config
       --data-sources-only     Only print the data sources in the auto generated config
 
+  -f, --file                  Start pivot on top of this file based data source (must be JSON, CSV, or TSV)
+
   -d, --druid                 The Druid broker node to connect to
       --use-segment-metadata  Should the segmentMetadata query be used for introspection
 `
@@ -65,6 +67,8 @@ function parseArgs() {
       "with-comments": Boolean,
       "data-sources-only": Boolean,
 
+      "file": String,
+
       "druid": String,
       "use-segment-metadata": Boolean
     },
@@ -72,6 +76,7 @@ function parseArgs() {
       "v": ["--verbose"],
       "p": ["--port"],
       "c": ["--config"],
+      "f": ["--file"],
       "d": ["--druid"]
     },
     process.argv
@@ -109,7 +114,7 @@ if (parsedArgs['example']) {
   }
 }
 
-if (!parsedArgs['example'] && !parsedArgs['config'] && !parsedArgs['druid']) {
+if (!parsedArgs['example'] && !parsedArgs['config'] && !parsedArgs['druid'] && !parsedArgs['file']) {
   printUsage();
   process.exit();
 }
@@ -129,6 +134,16 @@ if (configFilePath) {
 // If there is an example config take its dataSources
 if (exampleConfig && Array.isArray(exampleConfig.dataSources)) {
   config.dataSources = exampleConfig.dataSources;
+}
+
+// If a file is specified add it as a dataSource
+var file = parsedArgs['file'];
+if (file) {
+  config.dataSources.push({
+    name: path.basename(file, path.extname(file)),
+    engine: 'native',
+    source: file
+  });
 }
 
 export const PRINT_CONFIG = Boolean(parsedArgs['print-config']);
