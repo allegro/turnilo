@@ -175,6 +175,13 @@ dataSources:
     refreshRule:
       rule: realtime
 
+    options:
+      # Pivot currently has trouble auto detecting hyperLogLog columns in Druid, help it out by explicitly overriding the
+      # type of HLL metrics as follows:
+      attributeOverrides:
+        - name: user_unique
+          special: unique
+
     # All the dimensions will be automatically filled in from the data source
     #dimensions:
 
@@ -189,6 +196,9 @@ dataSources:
 
       - name: avg_deleted
         expression: $main.sum($deleted) / $main.sum($count)
+
+      - name: distinct_users
+        expression: $main.countDistinct($user_unique)
 
 
   # Here is an example of a Druid data source with cool crazy things in it for education

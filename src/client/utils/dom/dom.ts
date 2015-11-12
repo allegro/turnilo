@@ -56,6 +56,10 @@ export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
   }, 1);
 }
 
+export function enterKey(e: KeyboardEvent): boolean {
+  return e.which === 13; // 13 is the code for enter
+}
+
 export function escapeKey(e: KeyboardEvent): boolean {
   return e.which === 27; // 27 is the code for escape
 }

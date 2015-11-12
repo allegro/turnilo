@@ -25,7 +25,7 @@ function getReferences(ex: Expression): string[] {
  * @returns {Attributes}
  */
 function deduceAttributes(dataSource: DataSource): Attributes {
-  var attributeJSs: AttributeJSs = [];
+  var attributeJSs: AttributeJSs = dataSource.options['attributeOverrides'] ? dataSource.options['attributeOverrides'].slice() : [];
 
   dataSource.dimensions.forEach((dimension) => {
     attributeJSs.push({ name: dimension.name, type: dimension.type });
@@ -85,6 +85,7 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
       engine: 'druid',
       dataSource: dataSource.source,
       timeAttribute: dataSource.timeAttribute.name,
+      attributeOverrides: dataSource.options['attributeOverrides'],
       customAggregations: dataSource.options['customAggregations'],
       useSegmentMetadata,
       filter,
