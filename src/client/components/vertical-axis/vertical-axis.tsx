@@ -47,9 +47,9 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
     });
 
     return <g className="vertical-axis" transform={stage.getTransform()}>
-        <line className="border" x1={0} x2={0} y1={0} y2={stage.height}/>
-        {lines}
-        {labels}
-      </g>;
+      <line className="border" x1={0} x2={0} y1={0} y2={stage.height}/>
+      {lines}
+      {labels}
+    </g>;
   }
 }

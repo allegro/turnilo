@@ -28,11 +28,11 @@ export class QueryError extends React.Component<QueryErrorProps, QueryErrorState
     var { error } = this.props;
 
     return <div className="query-error">
-        <div className="whiteout"></div>
-        <div className="container">
-          <div className="error">Query Error</div>
-          <div className="message">{error.message}</div>
-        </div>
-      </div>;
+      <div className="whiteout"></div>
+      <div className="container">
+        <div className="error">Query Error</div>
+        <div className="message">{error.message}</div>
+      </div>
+    </div>;
   }
 }

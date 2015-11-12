@@ -63,11 +63,11 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
     }
 
     return <div className="vis-selector" onClick={this.openMenu.bind(this)}>
-        <div className="vis-item selected">
-          <SvgIcon svg={require('../../icons/vis-' + visualization.id + '.svg')}/>
-          <div className="vis-title">{visualization.title}</div>
-        </div>
-        {menu}
-      </div>;
+      <div className="vis-item selected">
+        <SvgIcon svg={require('../../icons/vis-' + visualization.id + '.svg')}/>
+        <div className="vis-title">{visualization.title}</div>
+      </div>
+      {menu}
+    </div>;
   }
 }

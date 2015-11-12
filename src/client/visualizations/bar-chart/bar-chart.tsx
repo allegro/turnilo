@@ -15,6 +15,7 @@ export interface BarChartState {
 export class BarChart extends React.Component<VisualizationProps, BarChartState> {
   static id = 'bar-chart';
   static title = 'Bar Chart';
+
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
     return Resolve.manual('The Bar Chart visualization is not ready, please select another visualization.', []);
   }

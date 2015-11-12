@@ -76,13 +76,13 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     }
 
     return <div
-        className={'vis-item ' + state}
-        key={v.id}
-        onClick={onClick.bind(this, v)}
-      >
-        <SvgIcon svg={require('../../icons/vis-' + v.id + '.svg')}/>
-        <div className="vis-title">{v.title}</div>
-      </div>;
+      className={'vis-item ' + state}
+      key={v.id}
+      onClick={onClick.bind(this, v)}
+    >
+      <SvgIcon svg={require('../../icons/vis-' + v.id + '.svg')}/>
+      <div className="vis-title">{v.title}</div>
+    </div>;
   }
 
   render() {
@@ -97,7 +97,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     }
 
     return <div className="vis-selector-menu">
-        {visItems}
-      </div>;
+      {visItems}
+    </div>;
   }
 }

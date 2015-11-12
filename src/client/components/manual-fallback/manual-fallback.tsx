@@ -42,8 +42,8 @@ export class ManualFallback extends React.Component<ManualFallbackProps, ManualF
     });
 
     return <div className="manual-fallback">
-        <div className="message">{visResolve.message}</div>
-        <ul>{resolutionItems}</ul>
-      </div>;
+      <div className="message">{visResolve.message}</div>
+      <ul>{resolutionItems}</ul>
+    </div>;
   }
 }

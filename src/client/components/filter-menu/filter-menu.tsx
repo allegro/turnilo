@@ -13,7 +13,6 @@ import { StringFilterMenu } from '../string-filter-menu/string-filter-menu';
 import { TimeFilterMenu } from '../time-filter-menu/time-filter-menu';
 
 
-
 export interface FilterMenuProps {
   clicker: Clicker;
   essence: Essence;
@@ -45,25 +44,26 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
     if (dimension.type === 'TIME') {
       menuSize = Stage.fromSize(250, 274);
       menuCont = <TimeFilterMenu
-          clicker={clicker}
-          dimension={dimension}
-          essence={essence}
-          onClose={onClose}
-        />;
+        clicker={clicker}
+        dimension={dimension}
+        essence={essence}
+        onClose={onClose}
+      />;
     } else {
       menuSize = Stage.fromSize(250, 410);
       menuCont = <StringFilterMenu
-          clicker={clicker}
-          dimension={dimension}
-          essence={essence}
-          insertPosition={insertPosition}
-          replacePosition={replacePosition}
-          onClose={onClose}
-        />;
+        clicker={clicker}
+        dimension={dimension}
+        essence={essence}
+        insertPosition={insertPosition}
+        replacePosition={replacePosition}
+        onClose={onClose}
+      />;
     }
 
-    return <BubbleMenu className="filter-menu" direction={direction} containerStage={containerStage} stage={menuSize} openOn={openOn} onClose={onClose}>
-        {menuCont}
-      </BubbleMenu>;
+    return <BubbleMenu className="filter-menu" direction={direction} containerStage={containerStage} stage={menuSize}
+                       openOn={openOn} onClose={onClose}>
+      {menuCont}
+    </BubbleMenu>;
   }
 }

@@ -45,10 +45,11 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       var measureName = measure.name;
       var selected = selectedMeasures.has(measureName);
 
-      return <div className={'row' + (selected ? ' selected' : '')} key={measureName} onClick={clicker.toggleMeasure.bind(clicker, measure)}>
-          <Checkbox checked={selected}/>
-          <div className="label">{measure.title}</div>
-        </div>;
+      return <div className={'row' + (selected ? ' selected' : '')} key={measureName}
+                  onClick={clicker.toggleMeasure.bind(clicker, measure)}>
+        <Checkbox checked={selected}/>
+        <div className="label">{measure.title}</div>
+      </div>;
     });
     maxHeight += (rows.size + 2) * MEASURE_HEIGHT + PIN_PADDING_BOTTOM;
 
@@ -58,8 +59,8 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     };
 
     return <div className="measures-tile" style={style}>
-        <div className="title">Measures</div>
-        <div className="rows">{rows}</div>
-      </div>;
+      <div className="title">Measures</div>
+      <div className="rows">{rows}</div>
+    </div>;
   }
 }

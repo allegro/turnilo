@@ -235,25 +235,25 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       if (selectedTimeRange.equals(preset.timeRange)) classNames.push('selected');
       if (preset === hoverPreset) classNames.push('hover');
       return <button
-          key={preset.name}
-          className={classNames.join(' ')}
-          onClick={this.onPresetClick.bind(this, preset)}
-          onMouseEnter={this.onPresetMouseEnter.bind(this, preset)}
-          onMouseLeave={this.onPresetMouseLeave.bind(this, preset)}
-        >{preset.name}</button>;
+        key={preset.name}
+        className={classNames.join(' ')}
+        onClick={this.onPresetClick.bind(this, preset)}
+        onMouseEnter={this.onPresetMouseEnter.bind(this, preset)}
+        onMouseLeave={this.onPresetMouseLeave.bind(this, preset)}
+      >{preset.name}</button>;
     };
 
     var previewText = formatTimeRange(hoverPreset ? hoverPreset.timeRange : selectedTimeRange, timezone, DisplayYear.IF_DIFF);
 
     return <div className="cont">
-        <div className="type">latest</div>
-        <div className="buttons">{latestPresets.map(presetToButton)}</div>
-        <div className="type">current</div>
-        <div className="buttons">{currentPresets.map(presetToButton)}</div>
-        <div className="type">previous</div>
-        <div className="buttons">{previousPresets.map(presetToButton)}</div>
-        <div className="preview">{previewText}</div>
-      </div>;
+      <div className="type">latest</div>
+      <div className="buttons">{latestPresets.map(presetToButton)}</div>
+      <div className="type">current</div>
+      <div className="buttons">{currentPresets.map(presetToButton)}</div>
+      <div className="type">previous</div>
+      <div className="buttons">{previousPresets.map(presetToButton)}</div>
+      <div className="preview">{previewText}</div>
+    </div>;
   }
 
   renderCustom() {
@@ -267,15 +267,15 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     var actionDisabled = filter.equals(this.constructFilter());
 
     return <div className="cont">
-        <div className="type">start</div>
-        <TimeInput time={selectedTimeRange.start} timezone={timezone} onChange={this.timeRangeStartChange.bind(this)}/>
-        <div className="type">end</div>
-        <TimeInput time={selectedTimeRange.end} timezone={timezone} onChange={this.timeRangeEndChange.bind(this)}/>
-        <div className="button-bar">
-          <button className="ok" onClick={this.onOkClick.bind(this)} disabled={actionDisabled}>OK</button>
-          <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
-        </div>
-      </div>;
+      <div className="type">start</div>
+      <TimeInput time={selectedTimeRange.start} timezone={timezone} onChange={this.timeRangeStartChange.bind(this)}/>
+      <div className="type">end</div>
+      <TimeInput time={selectedTimeRange.end} timezone={timezone} onChange={this.timeRangeEndChange.bind(this)}/>
+      <div className="button-bar">
+        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={actionDisabled}>OK</button>
+        <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
+      </div>
+    </div>;
   }
 
   render() {
@@ -285,15 +285,15 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
     var tabs = ['presets', 'custom'].map((name) => {
       return <div
-          className={'tab ' + (tab === name ? 'selected' : '')}
-          key={name}
-          onClick={this.selectTab.bind(this, name)}
-        >{name}</div>;
+        className={'tab ' + (tab === name ? 'selected' : '')}
+        key={name}
+        onClick={this.selectTab.bind(this, name)}
+      >{name}</div>;
     });
 
     return <div className="time-filter-menu">
-        <div className="tabs">{tabs}</div>
-        {tab === 'presets' ? this.renderPresets() : this.renderCustom()}
-      </div>;
+      <div className="tabs">{tabs}</div>
+      {tab === 'presets' ? this.renderPresets() : this.renderCustom()}
+    </div>;
   }
 }

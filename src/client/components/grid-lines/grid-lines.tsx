@@ -51,7 +51,7 @@ export class GridLines extends React.Component<GridLinesProps, GridLinesState> {
     });
 
     return <g className={'grid-lines ' + orientation} transform={stage.getTransform()}>
-        {lines}
-      </g>;
+      {lines}
+    </g>;
   }
 }

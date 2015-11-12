@@ -164,16 +164,16 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var onClose = this.closeMenu.bind(this);
 
     return <PreviewMenuAsync
-        clicker={clicker}
-        essence={essence}
-        direction="right"
-        containerStage={menuStage}
-        openOn={menuOpenOn}
-        dimension={menuDimension}
-        triggerFilterMenu={triggerFilterMenu}
-        triggerSplitMenu={triggerSplitMenu}
-        onClose={onClose}
-      />;
+      clicker={clicker}
+      essence={essence}
+      direction="right"
+      containerStage={menuStage}
+      openOn={menuOpenOn}
+      dimension={menuDimension}
+      triggerFilterMenu={triggerFilterMenu}
+      triggerSplitMenu={triggerSplitMenu}
+      onClose={onClose}
+    />;
   }
 
   render() {
@@ -193,18 +193,18 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       ];
       if (dimension === menuDimension) classNames.push('selected');
       return <div
-          className={classNames.join(' ')}
-          key={dimension.name}
-          onClick={this.clickDimension.bind(this, dimension)}
-          draggable={true}
-          onDragStart={this.dragStart.bind(this, dimension)}
-          style={style}
-        >
-          <div className="icon">
-            <SvgIcon svg={require('../../icons/type-' + dimension.className + '.svg')}/>
-          </div>
-          <div className="item-title">{dimension.title}</div>
-        </div>;
+        className={classNames.join(' ')}
+        key={dimension.name}
+        onClick={this.clickDimension.bind(this, dimension)}
+        draggable={true}
+        onDragStart={this.dragStart.bind(this, dimension)}
+        style={style}
+      >
+        <div className="icon">
+          <SvgIcon svg={require('../../icons/type-' + dimension.className + '.svg')}/>
+        </div>
+        <div className="item-title">{dimension.title}</div>
+      </div>;
     }, this);
     if (dragOver && dragPosition === dataSource.dimensions.size) itemY += DIMENSION_HEIGHT;
 
@@ -213,18 +213,18 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     };
 
     return <div
-        className={'dimension-list-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
-        onDragOver={this.dragOver.bind(this)}
-        onDragEnter={this.dragEnter.bind(this)}
-        onDragLeave={this.dragLeave.bind(this)}
-        onDrop={this.drop.bind(this)}
-        style={style}
-      >
-        <div className="title">Dimensions</div>
-        <div className="items" ref="items">
-          {dimensionItems}
-        </div>
-        {this.renderMenu()}
-      </div>;
+      className={'dimension-list-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
+      onDragOver={this.dragOver.bind(this)}
+      onDragEnter={this.dragEnter.bind(this)}
+      onDragLeave={this.dragLeave.bind(this)}
+      onDrop={this.drop.bind(this)}
+      style={style}
+    >
+      <div className="title">Dimensions</div>
+      <div className="items" ref="items">
+        {dimensionItems}
+      </div>
+      {this.renderMenu()}
+    </div>;
   }
 }

@@ -33,17 +33,17 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
     const { clicker, essence, menuStage, triggerFilterMenu, triggerSplitMenu } = this.props;
 
     return <div className="dimension-measure-panel">
-        <DimensionListTile
-          clicker={clicker}
-          essence={essence}
-          menuStage={menuStage}
-          triggerFilterMenu={triggerFilterMenu}
-          triggerSplitMenu={triggerSplitMenu}
-        />
-        <MeasuresTile
-          clicker={clicker}
-          essence={essence}
-        />
-      </div>;
+      <DimensionListTile
+        clicker={clicker}
+        essence={essence}
+        menuStage={menuStage}
+        triggerFilterMenu={triggerFilterMenu}
+        triggerSplitMenu={triggerSplitMenu}
+      />
+      <MeasuresTile
+        clicker={clicker}
+        essence={essence}
+      />
+    </div>;
   }
 }

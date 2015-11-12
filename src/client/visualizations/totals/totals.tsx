@@ -22,6 +22,7 @@ export interface TotalsState {
 export class Totals extends React.Component<VisualizationProps, TotalsState> {
   static id = 'totals';
   static title = 'Totals';
+
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
     if (!splits.length()) return Resolve.READY;
     return Resolve.automatic(Splits.EMPTY);
@@ -110,9 +111,9 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       }
 
       return <div className="total" key={measure.name}>
-          <div className="measure-name">{measure.title}</div>
-          <div className="measure-value">{measureValueStr}</div>
-        </div>;
+        <div className="measure-name">{measure.title}</div>
+        <div className="measure-value">{measureValueStr}</div>
+      </div>;
     });
 
     var loader: JSX.Element = null;
@@ -133,9 +134,9 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     };
 
     return <div className="totals">
-        <div className="total-container" style={totalContainerStyle}>{totals}</div>
-        {queryError}
-        {loader}
-      </div>;
+      <div className="total-container" style={totalContainerStyle}>{totals}</div>
+      {queryError}
+      {loader}
+    </div>;
   }
 }

@@ -16,15 +16,15 @@ describe('BubbleMenu', () => {
 
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-       <BubbleMenu
-         children={null}
-         className={null}
-         containerStage={null}
-         direction={null}
-         onClose={null}
-         openOn={null}
-         stage={null}
-       />
+      <BubbleMenu
+        children={null}
+        className={null}
+        containerStage={null}
+        direction={null}
+        onClose={null}
+        openOn={null}
+        stage={null}
+      />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);

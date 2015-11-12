@@ -29,7 +29,7 @@ export class HighlightString extends React.Component<HighlightStringProps, Highl
     if (startIndex === -1) return text;
     var endIndex = startIndex + highlightText.length;
     return [
-      <span className="pre"  key="pre" >{text.substring(0, startIndex)}</span>,
+      <span className="pre" key="pre">{text.substring(0, startIndex)}</span>,
       <span className="bold" key="bold">{text.substring(startIndex, endIndex)}</span>,
       <span className="post" key="post">{text.substring(endIndex)}</span>
     ];

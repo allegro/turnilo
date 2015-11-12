@@ -67,6 +67,7 @@ export interface TableState {
 export class Table extends React.Component<VisualizationProps, TableState> {
   static id = 'table';
   static title = 'Table';
+
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
     // Must have at least one dimension
     if (splits.length() < 1) {
@@ -319,12 +320,12 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     var headerColumns = measuresArray.map((measure, i) => {
       return <div
-          className={'measure-name' + (measure === hoverMeasure ? ' hover' : '')}
-          key={measure.name}
-        >
-          <div className="title-wrap">{measure.title}</div>
-          {commonSortName === measure.name ? sortArrowIcon : null}
-        </div>;
+        className={'measure-name' + (measure === hoverMeasure ? ' hover' : '')}
+        key={measure.name}
+      >
+        <div className="title-wrap">{measure.title}</div>
+        {commonSortName === measure.name ? sortArrowIcon : null}
+      </div>;
     });
 
     var segments: JSX.Element[] = [];
@@ -364,10 +365,10 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         }
 
         segments.push(<div
-            className={'segment nest' + nest + ' ' + selectedClass + hoverClass}
-            key={'_' + i}
-            style={segmentStyle}
-          >{segmentName}</div>);
+          className={'segment nest' + nest + ' ' + selectedClass + hoverClass}
+          key={'_' + i}
+          style={segmentStyle}
+        >{segmentName}</div>);
 
         var row = measuresArray.map((measure, j) => {
           var measureValue = d[measure.name];
@@ -377,10 +378,10 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
         var rowStyle = { top: rowY };
         rows.push(<div
-            className={'row nest' + nest + ' ' + selectedClass + hoverClass}
-            key={'_' + i}
-            style={rowStyle}
-          >{row}</div>);
+          className={'row nest' + nest + ' ' + selectedClass + hoverClass}
+          key={'_' + i}
+          style={rowStyle}
+        >{row}</div>);
 
         if (!highlighter && selected) {
           highlighterStyle = {
@@ -465,37 +466,37 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     }
 
     return <div className="table">
-        <div className="corner">
-          <div className="corner-wrap">{segmentTitle}</div>
-          {cornerSortArrow}
-        </div>
-        <div className="header-cont">
-          <div className="header" style={headerStyle}>{headerColumns}</div>
-        </div>
-        <div className="segments-cont">
-          <div className="segments" style={segmentsStyle}>{segments}</div>
-        </div>
-        <div className="body-cont">
-          <div className="body" style={bodyStyle}>{rows}</div>
-        </div>
-        <div className="highlight-cont">
-          <div className="highlight" style={highlightStyle}>{highlighter}</div>
-        </div>
-        <div className="horizontal-scroll-shadow" style={horizontalScrollShadowStyle}></div>
-        <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
-        {queryError}
-        {loader}
-        <div
-          className="scroller-cont"
-          ref="base"
-          onScroll={this.onScroll.bind(this)}
-          onMouseLeave={this.onMouseLeave.bind(this)}
-          onMouseMove={this.onMouseMove.bind(this)}
-          onClick={this.onClick.bind(this)}
-        >
-          <div className="scroller" style={scrollerStyle}></div>
-        </div>
-        {highlightControls}
-      </div>;
+      <div className="corner">
+        <div className="corner-wrap">{segmentTitle}</div>
+        {cornerSortArrow}
+      </div>
+      <div className="header-cont">
+        <div className="header" style={headerStyle}>{headerColumns}</div>
+      </div>
+      <div className="segments-cont">
+        <div className="segments" style={segmentsStyle}>{segments}</div>
+      </div>
+      <div className="body-cont">
+        <div className="body" style={bodyStyle}>{rows}</div>
+      </div>
+      <div className="highlight-cont">
+        <div className="highlight" style={highlightStyle}>{highlighter}</div>
+      </div>
+      <div className="horizontal-scroll-shadow" style={horizontalScrollShadowStyle}></div>
+      <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
+      {queryError}
+      {loader}
+      <div
+        className="scroller-cont"
+        ref="base"
+        onScroll={this.onScroll.bind(this)}
+        onMouseLeave={this.onMouseLeave.bind(this)}
+        onMouseMove={this.onMouseMove.bind(this)}
+        onClick={this.onClick.bind(this)}
+      >
+        <div className="scroller" style={scrollerStyle}></div>
+      </div>
+      {highlightControls}
+    </div>;
   }
 }

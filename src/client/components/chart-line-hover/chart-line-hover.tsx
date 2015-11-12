@@ -34,7 +34,7 @@ export class ChartLineHover extends React.Component<ChartLineHoverProps, ChartLi
     var y = scaleY(getY(datum));
 
     return <g className="chart-line-hover" transform={stage.getTransform()}>
-        <circle cx={x} cy={y} r="2.5"/>
-      </g>;
+      <circle cx={x} cy={y} r="2.5"/>
+    </g>;
   }
 }

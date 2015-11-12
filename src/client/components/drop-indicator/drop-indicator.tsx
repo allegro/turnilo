@@ -24,10 +24,10 @@ export class DropIndicator extends React.Component<DropIndicatorProps, DropIndic
 
   render() {
     return <div className="drop-indicator">
-        <div className="white-out"></div>
-        <div className="action">
-          <SvgIcon svg={require('../../icons/split-replace.svg')}/>
-        </div>
-      </div>;
+      <div className="white-out"></div>
+      <div className="action">
+        <SvgIcon svg={require('../../icons/split-replace.svg')}/>
+      </div>
+    </div>;
   }
 }

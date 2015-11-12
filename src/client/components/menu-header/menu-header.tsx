@@ -31,13 +31,13 @@ export class MenuHeader extends React.Component<MenuHeaderProps, MenuHeaderState
     var searchBar: JSX.Element = null;
     if (onSearchClick) {
       searchBar = <div className="search" onClick={onSearchClick}>
-          <SvgIcon svg={require('../../icons/loupe.svg')}/>
-        </div>;
+        <SvgIcon svg={require('../../icons/loupe.svg')}/>
+      </div>;
     }
 
     return <div className="menu-header">
-        <div className="menu-title">{dimension.title}</div>
-        {searchBar}
-      </div>;
+      <div className="menu-title">{dimension.title}</div>
+      {searchBar}
+    </div>;
   }
 }

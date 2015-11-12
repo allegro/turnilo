@@ -34,15 +34,15 @@ export class HoverBubble extends React.Component<HoverBubbleProps, HoverBubbleSt
     const { essence, datum, measure, getY, left, top } = this.props;
 
     return <BodyPortal left={left} top={top} disablePointerEvents={true}>
-        <div className="hover-bubble">
-          <div className="hover-bubble-inner">
-            <div className="text">
-              <span className="bucket">{formatTimeRange(datum[SEGMENT], essence.timezone, DisplayYear.NEVER)}</span>
-              <span className="measure-value">{measure.formatFn(getY(datum))}</span>
-            </div>
-            <div className="shpitz"></div>
+      <div className="hover-bubble">
+        <div className="hover-bubble-inner">
+          <div className="text">
+            <span className="bucket">{formatTimeRange(datum[SEGMENT], essence.timezone, DisplayYear.NEVER)}</span>
+            <span className="measure-value">{measure.formatFn(getY(datum))}</span>
           </div>
+          <div className="shpitz"></div>
         </div>
-      </BodyPortal>;
+      </div>
+    </BodyPortal>;
   }
 }

@@ -15,6 +15,7 @@ export interface GeoState {
 export class Geo extends React.Component<VisualizationProps, GeoState> {
   static id = 'geo';
   static title = 'Geo';
+
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
     return Resolve.manual('The Geo visualization is not ready, please select another visualization.', []);
   }

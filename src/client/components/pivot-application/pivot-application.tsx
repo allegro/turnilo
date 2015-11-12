@@ -152,7 +152,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.hashUpdating = true;
     window.location.hash = nextState.essence.toHash();
     // delay unflagging the update so that the hashchange event has a chance to fire a blank
-    setTimeout(() => { this.hashUpdating = false; }, 10);
+    setTimeout(() => {
+      this.hashUpdating = false;
+    }, 10);
   }
 
   componentWillUnmount() {

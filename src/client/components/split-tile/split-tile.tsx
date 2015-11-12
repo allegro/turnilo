@@ -209,15 +209,15 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var onClose = this.closeMenu.bind(this);
 
     return <SplitMenuAsync
-        clicker={clicker}
-        essence={essence}
-        direction="down"
-        containerStage={menuStage}
-        openOn={menuOpenOn}
-        dimension={menuDimension}
-        split={menuSplit}
-        onClose={onClose}
-      />;
+      clicker={clicker}
+      essence={essence}
+      direction="down"
+      containerStage={menuStage}
+      openOn={menuOpenOn}
+      dimension={menuDimension}
+      split={menuSplit}
+      onClose={onClose}
+    />;
   }
 
   render() {
@@ -242,19 +242,19 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       ];
       if (dimension === menuDimension) classNames.push('selected');
       return <div
-          className={classNames.join(' ')}
-          key={split.toKey()}
-          ref={dimensionName}
-          draggable={true}
-          onClick={this.selectDimensionSplit.bind(this, dimension, split)}
-          onDragStart={this.dragStart.bind(this, dimension, split, i)}
-          style={style}
-        >
-          <div className="reading">{split.getTitle(dataSource.dimensions)}</div>
-          <div className="remove" onClick={this.removeSplit.bind(this, split)}>
-            <SvgIcon svg={require('../../icons/x.svg')}/>
-          </div>
-        </div>;
+        className={classNames.join(' ')}
+        key={split.toKey()}
+        ref={dimensionName}
+        draggable={true}
+        onClick={this.selectDimensionSplit.bind(this, dimension, split)}
+        onDragStart={this.dragStart.bind(this, dimension, split, i)}
+        style={style}
+      >
+        <div className="reading">{split.getTitle(dataSource.dimensions)}</div>
+        <div className="remove" onClick={this.removeSplit.bind(this, split)}>
+          <SvgIcon svg={require('../../icons/x.svg')}/>
+        </div>
+      </div>;
     }, this);
 
     var fancyDragIndicator: JSX.Element = null;
@@ -266,18 +266,18 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     }
 
     return <div
-        className={'split-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
-        onDragOver={this.dragOver.bind(this)}
-        onDragEnter={this.dragEnter.bind(this)}
-        onDragLeave={this.dragLeave.bind(this)}
-        onDrop={this.drop.bind(this)}
-      >
-        <div className="title">Split</div>
-        <div className="items" ref="items">
-          {splitItems}
-        </div>
-        {fancyDragIndicator}
-        {this.renderMenu()}
-      </div>;
+      className={'split-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
+      onDragOver={this.dragOver.bind(this)}
+      onDragEnter={this.dragEnter.bind(this)}
+      onDragLeave={this.dragLeave.bind(this)}
+      onDrop={this.drop.bind(this)}
+    >
+      <div className="title">Split</div>
+      <div className="items" ref="items">
+        {splitItems}
+      </div>
+      {fancyDragIndicator}
+      {this.renderMenu()}
+    </div>;
   }
 }

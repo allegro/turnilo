@@ -87,17 +87,17 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
     if (!equal) equal = simpleEqual;
     var itemElements = items.map((item) => {
       return <div
-          className={'dropdown-item' + (equal(item, selectedItem) ? ' selected' : '')}
-          key={keyItem(item)}
-          onClick={this.selectItem.bind(this, item)}
-        >
-          {renderItem(item)}
-        </div>;
+        className={'dropdown-item' + (equal(item, selectedItem) ? ' selected' : '')}
+        key={keyItem(item)}
+        onClick={this.selectItem.bind(this, item)}
+      >
+        {renderItem(item)}
+      </div>;
     });
 
     return <div className="dropdown-menu">
-        {itemElements}
-      </div>;
+      {itemElements}
+    </div>;
   }
 
   render() {
@@ -112,10 +112,10 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
     }
 
     return <div className={'dropdown ' + direction} onClick={this.onClick.bind(this)}>
-        {labelElement}
-        <div className="selected-item">{renderItem(selectedItem)}</div>
-        <SvgIcon className="caret-icon" svg={require('../../icons/dropdown-caret.svg')}/>
-        { open ? this.renderMenu() : null }
-      </div>;
+      {labelElement}
+      <div className="selected-item">{renderItem(selectedItem)}</div>
+      <SvgIcon className="caret-icon" svg={require('../../icons/dropdown-caret.svg')}/>
+      { open ? this.renderMenu() : null }
+    </div>;
   }
 }

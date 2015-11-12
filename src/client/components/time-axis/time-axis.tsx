@@ -44,8 +44,8 @@ export class TimeAxis extends React.Component<TimeAxisProps, TimeAxisState> {
     });
 
     return <g className="time-axis" transform={stage.getTransform()}>
-        {lines}
-        {labels}
-      </g>;
+      {lines}
+      {labels}
+    </g>;
   }
 }

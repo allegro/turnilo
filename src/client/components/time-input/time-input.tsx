@@ -108,8 +108,8 @@ export class TimeInput extends React.Component<TimeInputProps, TimeInputState> {
     var { dateString, timeString } = this.state;
 
     return <div className="time-input">
-        <input className="date" value={dateString} onChange={this.dateChange.bind(this)}/>
-        <input className="time" value={timeString} onChange={this.timeChange.bind(this)}/>
-      </div>;
+      <input className="date" value={dateString} onChange={this.dateChange.bind(this)}/>
+      <input className="time" value={timeString} onChange={this.timeChange.bind(this)}/>
+    </div>;
   }
 }

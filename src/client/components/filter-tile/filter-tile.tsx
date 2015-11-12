@@ -288,16 +288,16 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var onClose = this.closeMenu.bind(this);
 
     return <FilterMenuAsync
-        clicker={clicker}
-        essence={essence}
-        direction="down"
-        containerStage={menuStage}
-        openOn={menuOpenOn}
-        dimension={menuDimension}
-        insertPosition={possibleInsertPosition}
-        replacePosition={possibleReplacePosition}
-        onClose={onClose}
-      />;
+      clicker={clicker}
+      essence={essence}
+      direction="down"
+      containerStage={menuStage}
+      openOn={menuOpenOn}
+      dimension={menuDimension}
+      insertPosition={possibleInsertPosition}
+      replacePosition={possibleReplacePosition}
+      onClose={onClose}
+    />;
   }
 
   renderRemoveButton(itemBlank: ItemBlank) {
@@ -305,8 +305,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var dataSource = essence.dataSource;
     if (itemBlank.dimension.expression.equals(dataSource.timeAttribute)) return null;
     return <div className="remove" onClick={this.removeFilter.bind(this, itemBlank)}>
-        <SvgIcon svg={require('../../icons/x.svg')}/>
-      </div>;
+      <SvgIcon svg={require('../../icons/x.svg')}/>
+    </div>;
   }
 
   render() {
@@ -314,7 +314,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var {
       menuDimension, dragOver, dragInsertPosition, dragReplacePosition,
       possibleDimension, possibleInsertPosition, possibleReplacePosition
-    } = this.state;
+      } = this.state;
     var { dataSource, filter, highlight, timezone } = essence;
 
     const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
@@ -387,40 +387,40 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
       if (source === 'from-highlight') {
         return <div
-            className={className}
-            key={dimensionName}
-            ref={dimensionName}
-            onClick={clicker.acceptHighlight.bind(clicker)}
-            style={style}
-          >
-            <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
-            {this.renderRemoveButton(itemBlank)}
-          </div>;
+          className={className}
+          key={dimensionName}
+          ref={dimensionName}
+          onClick={clicker.acceptHighlight.bind(clicker)}
+          style={style}
+        >
+          <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
+          {this.renderRemoveButton(itemBlank)}
+        </div>;
       }
 
       if (clause) {
         return <div
-            className={className}
-            key={dimensionName}
-            ref={dimensionName}
-            draggable={true}
-            onClick={this.clickDimension.bind(this, dimension)}
-            onDragStart={this.dragStart.bind(this, dimension, clause)}
-            style={style}
-          >
-            <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
-            {this.renderRemoveButton(itemBlank)}
-          </div>;
+          className={className}
+          key={dimensionName}
+          ref={dimensionName}
+          draggable={true}
+          onClick={this.clickDimension.bind(this, dimension)}
+          onDragStart={this.dragStart.bind(this, dimension, clause)}
+          style={style}
+        >
+          <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
+          {this.renderRemoveButton(itemBlank)}
+        </div>;
       } else {
         return <div
-            className={className}
-            key={dimensionName}
-            ref={this.dummyMount.bind(this, dimension)}
-            style={style}
-          >
-            <div className="reading">{this.formatLabelDummy(dimension)}</div>
-            {this.renderRemoveButton(itemBlank)}
-          </div>;
+          className={className}
+          key={dimensionName}
+          ref={this.dummyMount.bind(this, dimension)}
+          style={style}
+        >
+          <div className="reading">{this.formatLabelDummy(dimension)}</div>
+          {this.renderRemoveButton(itemBlank)}
+        </div>;
       }
     });
 
@@ -433,18 +433,18 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
 
     return <div
-        className={'filter-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
-        onDragOver={this.dragOver.bind(this)}
-        onDragEnter={this.dragEnter.bind(this)}
-        onDragLeave={this.dragLeave.bind(this)}
-        onDrop={this.drop.bind(this)}
-      >
-        <div className="title">Filter</div>
-        <div className="items" ref="items">
-          {filterItems}
-        </div>
-        {fancyDragIndicator}
-        {this.renderMenu()}
-      </div>;
+      className={'filter-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
+      onDragOver={this.dragOver.bind(this)}
+      onDragEnter={this.dragEnter.bind(this)}
+      onDragLeave={this.dragLeave.bind(this)}
+      onDrop={this.drop.bind(this)}
+    >
+      <div className="title">Filter</div>
+      <div className="items" ref="items">
+        {filterItems}
+      </div>
+      {fancyDragIndicator}
+      {this.renderMenu()}
+    </div>;
   }
 }

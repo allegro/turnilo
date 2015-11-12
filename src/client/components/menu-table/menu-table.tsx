@@ -109,8 +109,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
     if (
       essence.differentDataSource(nextEssence) ||
-      essence.differentEffectiveFilter(nextEssence, null, nextDimension) ||
-      !dimension.equals(nextDimension)
+      essence.differentEffectiveFilter(nextEssence, null, nextDimension) || !dimension.equals(nextDimension)
     ) {
       this.fetchData(nextEssence, nextDimension);
     }
@@ -169,14 +168,14 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
         }
 
         return <div
-            className={'row' + (selected ? ' selected' : '')}
-            key={segmentValueStr}
-            title={segmentValueStr}
-            onClick={onValueClick.bind(this, segmentValue)}
-          >
-            {checkbox}
-            <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
-          </div>;
+          className={'row' + (selected ? ' selected' : '')}
+          key={segmentValueStr}
+          title={segmentValueStr}
+          onClick={onValueClick.bind(this, segmentValue)}
+        >
+          {checkbox}
+          <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
+        </div>;
       });
     }
 
@@ -194,19 +193,19 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     ].join(' ');
 
     return <div className={className}>
-        <div className="search-box">
-          <ClearableInput
-            placeholder="Search"
-            focusOnMount={true}
-            value={searchText}
-            onChange={this.onSearchChange.bind(this)}
-          />
-        </div>
-        <div className="rows">
-          {rows}
-          {message}
-        </div>
-        {loader}
-      </div>;
+      <div className="search-box">
+        <ClearableInput
+          placeholder="Search"
+          focusOnMount={true}
+          value={searchText}
+          onChange={this.onSearchChange.bind(this)}
+        />
+      </div>
+      <div className="rows">
+        {rows}
+        {message}
+      </div>
+      {loader}
+    </div>;
   }
 }

@@ -94,11 +94,11 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       var dimension = dataSource.getDimension(dimensionName);
       if (!dimension) return null;
       return <DimensionTile
-          key={dimension.name}
-          clicker={clicker}
-          essence={essence}
-          dimension={dimension}
-        />;
+        key={dimension.name}
+        clicker={clicker}
+        essence={essence}
+        dimension={dimension}
+      />;
     });
 
     var dropIndicatorTile: JSX.Element = null;
@@ -109,22 +109,22 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var placeholder: JSX.Element = null;
     if (!dragOver && !pinnedDimensions.size) {
       placeholder = <div className="placeholder">
-          <SvgIcon svg={require('../../icons/preview-pin.svg')}/>
-          <div className="placeholder-message">Click or drag dimensions to pin them</div>
-        </div>;
+        <SvgIcon svg={require('../../icons/preview-pin.svg')}/>
+        <div className="placeholder-message">Click or drag dimensions to pin them</div>
+      </div>;
     }
 
     return <div
-        className="pinboard-panel"
-        onDragOver={this.dragOver.bind(this)}
-        onDragEnter={this.dragEnter.bind(this)}
-        onDragLeave={this.dragLeave.bind(this)}
-        onDrop={this.drop.bind(this)}
-      >
-        <PinboardMeasureTile clicker={clicker} essence={essence}/>
-        {dimensionTiles}
-        {dropIndicatorTile}
-        {placeholder}
-      </div>;
+      className="pinboard-panel"
+      onDragOver={this.dragOver.bind(this)}
+      onDragEnter={this.dragEnter.bind(this)}
+      onDragLeave={this.dragLeave.bind(this)}
+      onDrop={this.drop.bind(this)}
+    >
+      <PinboardMeasureTile clicker={clicker} essence={essence}/>
+      {dimensionTiles}
+      {dropIndicatorTile}
+      {placeholder}
+    </div>;
   }
 }

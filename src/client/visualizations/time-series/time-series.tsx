@@ -63,6 +63,7 @@ export interface TimeSeriesState {
 export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesState> {
   static id = 'time-series';
   static title = 'Time Series';
+
   static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
     var timeDimensions = dataSource.getDimensionByType('TIME');
     if (!timeDimensions.size) return Resolve.NEVER;
@@ -412,59 +413,60 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           var topOffset = graphHeight * graphIndex + HOVER_BUBBLE_V_OFFSET - scrollTop;
           if (topOffset > -HOVER_BUBBLE_HEIGHT) {
             chartHoverBubble = <HoverBubble
-                essence={essence}
-                datum={hoverDatum}
-                measure={measure}
-                getY={getY}
-                top={stage.y + topOffset}
-                left={stage.x + H_PADDING + scaleX(getX(hoverDatum))}
-              />;
+              essence={essence}
+              datum={hoverDatum}
+              measure={measure}
+              getY={getY}
+              top={stage.y + topOffset}
+              left={stage.x + H_PADDING + scaleX(getX(hoverDatum))}
+            />;
           }
         }
 
         return <div
-            className="measure-graph"
-            key={measureName}
-            onMouseDown={this.onMouseDown.bind(this)}
-            onMouseMove={this.onMouseMove.bind(this, scaleX, measure)}
-            onMouseLeave={this.onMouseLeave.bind(this, measure)}
-          >
-            <svg width={svgStage.width} height={svgStage.height}>
-              <GridLines
-                orientation="horizontal"
-                scale={scaleY}
-                ticks={yTicks}
-                stage={lineStage}
-              />
-              <GridLines
-                orientation="vertical"
-                scale={scaleX}
-                ticks={xTicks}
-                stage={lineStage}
-              />
-              {chartLines}
-              {chartLineHover}
-              <VerticalAxis
-                stage={yAxisStage}
-                yTicks={yTicks}
-                scaleY={scaleY}
-              />
-            </svg>
-            <div className="measure-label">
-              <span className="measure-title">{measure.title}</span>
-              <span className="colon">: </span>
-              <span className="measure-value">{measure.formatFn(myDatum[measureName])}</span>
-            </div>
-            {chartHoverBubble}
-          </div>;
+          className="measure-graph"
+          key={measureName}
+          onMouseDown={this.onMouseDown.bind(this)}
+          onMouseMove={this.onMouseMove.bind(this, scaleX, measure)}
+          onMouseLeave={this.onMouseLeave.bind(this, measure)}
+        >
+          <svg width={svgStage.width} height={svgStage.height}>
+            <GridLines
+              orientation="horizontal"
+              scale={scaleY}
+              ticks={yTicks}
+              stage={lineStage}
+            />
+            <GridLines
+              orientation="vertical"
+              scale={scaleX}
+              ticks={xTicks}
+              stage={lineStage}
+            />
+            {chartLines}
+            {chartLineHover}
+            <VerticalAxis
+              stage={yAxisStage}
+              yTicks={yTicks}
+              scaleY={scaleY}
+            />
+          </svg>
+          <div className="measure-label">
+            <span className="measure-title">{measure.title}</span>
+            <span className="colon">:</span>
+            <span className="measure-value">{measure.formatFn(myDatum[measureName])}</span>
+          </div>
+          {chartHoverBubble}
+        </div>;
       });
 
       var xAxisStage = Stage.fromSize(svgStage.width, X_AXIS_HEIGHT);
       bottomAxes = [];
       for (var i = 0; i < numberOfColumns; i++) {
-        bottomAxes.push(<svg className="bottom-axis" key={'bottom-axis-' + i} width={xAxisStage.width} height={xAxisStage.height}>
-            <TimeAxis stage={xAxisStage} xTicks={xTicks} scaleX={scaleX}/>
-          </svg>);
+        bottomAxes.push(<svg className="bottom-axis" key={'bottom-axis-' + i} width={xAxisStage.width}
+                             height={xAxisStage.height}>
+          <TimeAxis stage={xAxisStage} xTicks={xTicks} scaleX={scaleX}/>
+        </svg>);
       }
 
       var highlighter: JSX.Element = null;
