@@ -47,7 +47,7 @@ gulp.task('watch', ['all-bundle'], function() {
     gulp.start('icons');
   });
 
-  watch(['./src/common/**/*.ts', './src/client/**/*.ts', './assets/icons/**'], function() {
+  watch(['./src/common/**/*.ts', './src/client/**/*.{ts,tsx}', './assets/icons/**'], function() {
     runSequence('client:tsc');
   });
 

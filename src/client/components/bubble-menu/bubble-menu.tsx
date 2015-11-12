@@ -126,13 +126,11 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
     var myClass = 'bubble-menu ' + direction;
     if (className) myClass += ' ' + className;
-    return `
-      <BodyPortal left={menuLeft} top={menuTop}>
-        <div className={myClass} style={menuStyle}>
-          {children}
-          <div className="shpitz" style={shpitzStyle}></div>
-        </div>
-      </BodyPortal>
-    `;
+    return <BodyPortal left={menuLeft} top={menuTop}>
+      <div className={myClass} style={menuStyle}>
+        {children}
+        <div className="shpitz" style={shpitzStyle}></div>
+      </div>
+    </BodyPortal>;
   }
 }

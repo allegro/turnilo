@@ -3,7 +3,8 @@
 import * as path from 'path';
 import * as fs from 'fs-promise';
 import * as Q from 'q';
-import { ply, $, Expression, ExpressionJS, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes, helper } from 'plywood';
+import { ply, $, Expression, ExpressionJS, RefExpression, ChainExpression, External, Datum, Dataset, TimeRange,
+         basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes, helper } from 'plywood';
 import { DataSource, Dimension } from '../../../common/models/index';
 import { parseData } from '../../../common/utils/parser/parser';
 
@@ -19,13 +20,34 @@ function getReferences(ex: Expression): string[] {
 }
 
 /**
+ * Look for all instances of countDistinct($blah) and return the blahs
+ * @param ex
+ * @returns {string[]}
+ */
+function getCountDistinctReferences(ex: Expression): string[] {
+  var references: string[] = [];
+  ex.forEach((ex: Expression) => {
+    if (ex instanceof ChainExpression) {
+      var actions = ex.actions;
+      for (var action of actions) {
+        if (action.action === 'countDistinct') {
+          var refExpression = action.expression;
+          if (refExpression instanceof RefExpression) references.push(refExpression.name);
+        }
+      }
+    }
+  });
+  return references;
+}
+
+/**
  * This function tries to deduce the structure of the dataSource based on the dimensions and measures defined within.
  * It should only be used when for some reason introspection if not available.
  * @param dataSource
  * @returns {Attributes}
  */
 function deduceAttributes(dataSource: DataSource): Attributes {
-  var attributeJSs: AttributeJSs = dataSource.options['attributeOverrides'] ? dataSource.options['attributeOverrides'].slice() : [];
+  var attributeJSs: AttributeJSs = [];
 
   dataSource.dimensions.forEach((dimension) => {
     attributeJSs.push({ name: dimension.name, type: dimension.type });
@@ -34,9 +56,10 @@ function deduceAttributes(dataSource: DataSource): Attributes {
   dataSource.measures.forEach((measure) => {
     var expression = measure.expression;
     var references = getReferences(expression);
+    var countDistinctReferences = getCountDistinctReferences(expression);
     for (var reference of references) {
       if (reference === 'main') continue;
-      if (JSON.stringify(expression).indexOf('countDistinct') !== -1) {
+      if (countDistinctReferences.indexOf(reference) !== -1) {
         attributeJSs.push({ name: reference, special: 'unique' });
       } else {
         attributeJSs.push({ name: reference, type: 'NUMBER' });
@@ -44,7 +67,12 @@ function deduceAttributes(dataSource: DataSource): Attributes {
     }
   });
 
-  return AttributeInfo.fromJSs(attributeJSs);
+  var attributes = AttributeInfo.fromJSs(attributeJSs);
+  if (dataSource.options['attributeOverrides']) {
+    attributes = AttributeInfo.applyOverrides(attributes, dataSource.options['attributeOverrides']);
+  }
+
+  return attributes;
 }
 
 export function getFileData(filePath: string): Q.Promise<any[]> {
@@ -68,6 +96,13 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
     filter = dataSource.subsetFilter.toExpression().toJS();
   }
 
+  var countDistinctReferences: string[] = [];
+  if (dataSource.measures) {
+    countDistinctReferences = [].concat.apply([], dataSource.measures.toArray().map((measure) => {
+      return getCountDistinctReferences(measure.expression);
+    }));
+  }
+
   if (dataSource.introspection === 'none') {
     return Q(External.fromJS({
       engine: 'druid',
@@ -81,7 +116,7 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
       requester: druidRequester
     }));
   } else {
-    return External.fromJS({
+    var introspectedExternalPromise = External.fromJS({
       engine: 'druid',
       dataSource: dataSource.source,
       timeAttribute: dataSource.timeAttribute.name,
@@ -92,6 +127,24 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
       context: null,
       requester: druidRequester
     }).introspect();
+
+    if (!countDistinctReferences) {
+      return introspectedExternalPromise;
+    }
+
+    return introspectedExternalPromise.then((introspectedExternal) => {
+      var attributes = introspectedExternal.attributes;
+      for (var attribute of attributes) {
+        // This is a metric that should really be a HLL
+        if (attribute.type === 'NUMBER' && countDistinctReferences.indexOf(attribute.name) !== -1) {
+          introspectedExternal = introspectedExternal.updateAttribute(AttributeInfo.fromJS({
+            name: attribute.name,
+            special: 'unique'
+          }));
+        }
+      }
+      return introspectedExternal;
+    });
   }
 }
 

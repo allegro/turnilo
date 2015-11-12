@@ -175,13 +175,6 @@ dataSources:
     refreshRule:
       rule: realtime
 
-    options:
-      # Pivot currently has trouble auto detecting hyperLogLog columns in Druid, help it out by explicitly overriding the
-      # type of HLL metrics as follows:
-      attributeOverrides:
-        - name: user_unique # whatever the name of the HLL metric in Druid is
-          special: unique
-
     # All the dimensions will be automatically filled in from the data source
     #dimensions:
 
