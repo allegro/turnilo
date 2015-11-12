@@ -128,7 +128,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     if (!druidRequester) return Q(null);
 
     return druidRequester({
-      query: <any>{ queryType: 'sourceList' }
+      query: { queryType: 'sourceList' } as any
     }).then((ds: string[]) => {
       if (!Array.isArray(ds)) throw new Error('invalid result from data source list');
 

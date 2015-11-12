@@ -42,7 +42,7 @@ function tryFile() {
   // Retry
   tries++;
   if (tries < 40) {
-    setTimeout(tryFile, 250);
+    setTimeout(tryFile, 1000);
   } else {
     console.log('timeout. make sure that gulp watch is running');
     if (stat) {

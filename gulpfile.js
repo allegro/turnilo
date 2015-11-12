@@ -9,7 +9,7 @@ var laborer = require('laborer');
 gulp.task('style', laborer.taskStyle());
 gulp.task('icons', laborer.taskIcons());
 
-gulp.task('client:tsc', laborer.taskClientTypeScript({ declaration: true }));
+gulp.task('client:tsc', laborer.taskClientTypeScriptX({ declaration: true }));
 gulp.task('server:tsc', laborer.taskServerTypeScript({ declaration: true }));
 
 gulp.task('client:test', laborer.taskClientTest());

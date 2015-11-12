@@ -37,7 +37,7 @@ writeFile = (path, data) ->
     console.log("Skipping #{path}")
 
 # Make the TypeScript file
-writeFile(path + name + '.ts', """
+writeFile(path + name + '.tsx', """
 'use strict';
 require('./#{name}.css');
 
@@ -78,9 +78,7 @@ export class #{camelName} extends React.Component<#{camelName}Props, #{camelName
   }
 
   render() {
-    return JSX(`
-      <div className="#{name}"></div>
-    `);
+    return <div className="#{name}"></div>;
   }
 }
 
@@ -88,7 +86,7 @@ export class #{camelName} extends React.Component<#{camelName}Props, #{camelName
 
 
 # Make the TypeScript test file
-writeFile(path + name + '.mocha.ts', """
+writeFile(path + name + '.mocha.tsx', """
 'use strict';
 
 import { expect } from 'chai';
@@ -106,13 +104,11 @@ describe('#{camelName}', () => {
 
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      JSX(`
-        <#{camelName}/>
-      `)
+      <#{camelName}/>
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((<any>ReactDOM.findDOMNode(renderedComponent)).className, 'should contain class').to.contain('#{name}');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('#{name}');
   });
 
 });
