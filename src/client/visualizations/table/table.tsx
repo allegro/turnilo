@@ -77,7 +77,9 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         someDimensions.map((someDimension) => {
           return {
             description: `Add a split on ${someDimension.title}`,
-            adjustment: Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
+            adjustment: {
+              splits: Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
+            }
           };
         })
       );
@@ -101,7 +103,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       return split;
     });
 
-    return autoChanged ? Resolve.automatic(splits) : Resolve.READY;
+    return autoChanged ? Resolve.automatic({ splits }) : Resolve.READY;
   }
 
   public mounted: boolean;

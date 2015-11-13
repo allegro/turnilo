@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, SortAction, ChainExpression } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
-import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
+import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve, Colors } from "../../../common/models/index";
 import { SPLIT, SEGMENT, TIME_SORT_ACTION } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { ChartLine, ChartLineProps } from '../../components/chart-line/chart-line';
@@ -68,8 +68,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var timeDimensions = dataSource.getDimensionByType('TIME');
     if (!timeDimensions.size) return Resolve.NEVER;
 
-    var timeDimension = timeDimensions.first();
-
     // Has no splits
     if (splits.length() < 1) {
       return Resolve.manual(
@@ -77,7 +75,9 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         timeDimensions.toArray().map((timeDimension) => {
           return {
             description: `Add a split on ${timeDimension.title}`,
-            adjustment: Splits.fromSplitCombine(SplitCombine.fromExpression(timeDimension.expression))
+            adjustment: {
+              splits: Splits.fromSplitCombine(SplitCombine.fromExpression(timeDimension.expression))
+            }
           };
         })
       );
@@ -93,11 +93,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     });
 
     // Has a time split and other splits
-    if (splits.length() > 1 && existingTimeSplit) {
-      return Resolve.manual('This visualization does not yet support additional splits', [
+    if (splits.length() > 2 && existingTimeSplit) {
+      return Resolve.manual('Too many splits', [
         {
           description: `Remove all but the time split`,
-          adjustment: Splits.fromSplitCombine(existingTimeSplit)
+          adjustment: {
+            splits: Splits.fromSplitCombine(existingTimeSplit)
+          }
         }
       ]);
     }
@@ -109,11 +111,14 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       return Resolve.manual('This visualization requires a time split', [
         {
           description: `Replace ${lastSplitDimension.title} split with time`,
-          adjustment: Splits.fromSplitCombine(SplitCombine.fromExpression(dataSource.timeAttribute))
+          adjustment: {
+            splits: Splits.fromSplitCombine(SplitCombine.fromExpression(dataSource.timeAttribute))
+          }
         }
       ]);
     }
 
+    var colors: Colors = null;
     var autoChanged = false;
     splits = splits.map((split) => {
       if (split === existingTimeSplit) {
@@ -139,12 +144,20 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           split = split.changeLimit(5);
           autoChanged = true;
         }
+
+        var splitDimension = dataSource.getDimensionByExpression(split.expression);
+        if (splitDimension) {
+          colors = Colors.fromJS({
+            dimension: splitDimension.name,
+            limit: 5
+          });
+        }
       }
 
       return split;
     });
 
-    return autoChanged ? Resolve.automatic(splits) : Resolve.READY;
+    return autoChanged ? Resolve.automatic({ splits, colors }) : Resolve.READY;
   }
 
 
@@ -165,7 +178,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   }
 
   fetchData(essence: Essence): void {
-    var { splits, dataSource } = essence;
+    var { splits, colors, dataSource } = essence;
     var measures = essence.getMeasures();
 
     // var timeSplit = splits.last();
@@ -183,10 +196,11 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     function makeQuery(i: number): Expression {
       var split = splits.get(i);
+      var splitDimension = dataSource.getDimensionByExpression(split.expression);
       var { sortAction, limitAction } = split;
       if (!sortAction) throw new Error('something went wrong in time series query generation');
 
-      var subQuery = $main.split(split.toSplitExpression(), SEGMENT);
+      var subQuery: Expression = $main.split(split.toSplitExpression(), SEGMENT);
 
       measures.forEach((measure) => {
         subQuery = subQuery.performAction(measure.toApplyAction());
@@ -198,7 +212,10 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       }
       subQuery = subQuery.performAction(sortAction);
 
-      if (limitAction) {
+      if (colors && colors.dimension === splitDimension.name) {
+        console.log('colors', colors);
+        subQuery = colors.addToExpression(subQuery, dataSource);
+      } else if (limitAction) {
         subQuery = subQuery.performAction(limitAction);
       }
 
@@ -348,11 +365,19 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         if (splits.length() === 1) {
           extentY = d3.extent(myDataset.data, getY);
         } else {
-          if (myDataset.data[0][SPLIT]) {
-            extentY = d3.extent(myDataset.data[0][SPLIT].data, getY);
-          } else {
-            extentY = [];
-          }
+          var minY: number = 0;
+          var maxY: number = 0;
+
+          myDataset.data.forEach(datum => {
+            var dataset = datum[SPLIT];
+            if (dataset) {
+              var tempExtentY = d3.extent(dataset.data, getY);
+              minY = Math.min(tempExtentY[0], minY);
+              maxY = Math.max(tempExtentY[1], maxY);
+            }
+          });
+
+          extentY = [minY, maxY];
         }
 
         if (isNaN(extentY[0])) {
@@ -384,6 +409,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           ];
         } else {
           chartLines = myDataset.data.map((datum, i) => {
+            if (!datum[SPLIT]) return null;
             return React.createElement(ChartLine, {
               key: 'single' + i,
               dataset: datum[SPLIT],
@@ -463,8 +489,12 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var xAxisStage = Stage.fromSize(svgStage.width, X_AXIS_HEIGHT);
       bottomAxes = [];
       for (var i = 0; i < numberOfColumns; i++) {
-        bottomAxes.push(<svg className="bottom-axis" key={'bottom-axis-' + i} width={xAxisStage.width}
-                             height={xAxisStage.height}>
+        bottomAxes.push(<svg
+          className="bottom-axis"
+          key={'bottom-axis-' + i}
+          width={xAxisStage.width}
+          height={xAxisStage.height}
+        >
           <TimeAxis stage={xAxisStage} xTicks={xTicks} scaleX={scaleX}/>
         </svg>);
       }

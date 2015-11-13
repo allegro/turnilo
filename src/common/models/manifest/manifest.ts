@@ -3,17 +3,23 @@
 import * as React from 'react';
 import { DataSource } from '../data-source/data-source';
 import { Splits } from '../splits/splits';
+import { Colors } from '../colors/colors';
+
+export interface Adjustment {
+  splits: Splits;
+  colors?: Colors;
+}
 
 export interface Resolution {
   description: string;
-  adjustment: Splits;
+  adjustment: Adjustment;
 }
 
 export class Resolve {
   static NEVER: Resolve;
   static READY: Resolve;
 
-  static automatic(adjustment: Splits) {
+  static automatic(adjustment: Adjustment) {
     return new Resolve('automatic', adjustment, null, null);
   }
 
@@ -23,11 +29,11 @@ export class Resolve {
 
 
   public state: string;
-  public adjustment: Splits;
+  public adjustment: Adjustment;
   public message: string;
   public resolutions: Resolution[];
 
-  constructor(state: string, adjustment: Splits, message: string, resolutions: Resolution[]) {
+  constructor(state: string, adjustment: Adjustment, message: string, resolutions: Resolution[]) {
     this.state = state;
     this.adjustment = adjustment;
     this.message = message;
@@ -61,5 +67,5 @@ Resolve.READY = new Resolve('ready', null, null, null);
 export interface Manifest {
   id: string;
   title: string;
-  handleCircumstance: (dataSource: DataSource, splits: Splits) => Resolve;
+  handleCircumstance: (dataSource: DataSource, splits: Splits, colors: Colors) => Resolve;
 }

@@ -22,12 +22,10 @@ export interface ItemBlank {
   clause?: ChainExpression;
 }
 
-export interface FilterTileProps {
+export interface FilterTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-
-  ref?: any;
 }
 
 export interface FilterTileState {

@@ -28,7 +28,7 @@ export class ManualFallback extends React.Component<ManualFallbackProps, ManualF
 
   onResolutionClick(resolution: Resolution): void {
     var { clicker } = this.props;
-    clicker.changeSplits(resolution.adjustment, VisStrategy.KeepAlways);
+    clicker.changeSplits(resolution.adjustment.splits, VisStrategy.KeepAlways);
   }
 
   render() {

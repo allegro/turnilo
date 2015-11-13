@@ -66,13 +66,13 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
 
   renderVisItem(v: Manifest, onClick: Function): JSX.Element {
     var { essence } = this.props;
-    var { visualizations } = essence;
+    var { visualization } = essence;
 
     var state: string;
-    if (v.id === essence.visualization.id) {
+    if (v.id === visualization.id) {
       state = 'selected';
     } else {
-      state = v.handleCircumstance(essence.dataSource, essence.splits).toString();
+      state = v.handleCircumstance(essence.dataSource, essence.splits, essence.colors).toString();
     }
 
     return <div
