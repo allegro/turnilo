@@ -1,3 +1,4 @@
+import {Colors} from "../../../common/models/colors/colors";
 'use strict';
 require('./pinboard-panel.css');
 
@@ -88,18 +89,42 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   render() {
     var { clicker, essence } = this.props;
     var { dragOver } = this.state;
-    var { dataSource, pinnedDimensions } = essence;
+    var { dataSource, pinnedDimensions, colors } = essence;
+
+    var colorDimension = colors ? colors.dimension : null;
+    var legendAdded = false;
 
     var dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
       var dimension = dataSource.getDimension(dimensionName);
       if (!dimension) return null;
+
+      var myColors: Colors = null;
+      if (dimensionName === colorDimension) {
+        legendAdded = true;
+        myColors = colors;
+      }
+
       return <DimensionTile
         key={dimension.name}
         clicker={clicker}
         essence={essence}
         dimension={dimension}
+        colors={myColors}
       />;
     });
+
+    if (colors && !legendAdded) {
+      var dimension = dataSource.getDimension(colorDimension);
+      if (dimension) {
+        dimensionTiles.push(<DimensionTile
+          key={dimension.name}
+          clicker={clicker}
+          essence={essence}
+          dimension={dimension}
+          colors={colors}
+        />);
+      }
+    }
 
     var dropIndicatorTile: JSX.Element = null;
     if (dragOver) {
@@ -107,7 +132,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     }
 
     var placeholder: JSX.Element = null;
-    if (!dragOver && !pinnedDimensions.size) {
+    if (!dragOver && !dimensionTiles.length) {
       placeholder = <div className="placeholder">
         <SvgIcon svg={require('../../icons/preview-pin.svg')}/>
         <div className="placeholder-message">Click or drag dimensions to pin them</div>

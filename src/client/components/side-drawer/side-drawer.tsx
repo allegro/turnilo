@@ -17,8 +17,6 @@ export interface SideDrawerProps extends React.Props<any> {
   essence: Essence;
   onClose: Function;
   homeLink?: string;
-
-  key?: string;
 }
 
 export interface SideDrawerState {

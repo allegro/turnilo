@@ -294,23 +294,25 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var sideDrawer: JSX.Element = null;
     if (drawerOpen && SideDrawerAsync) {
       var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
-      sideDrawer = React.createElement(SideDrawerAsync, {
-        key: 'drawer',
-        clicker,
-        essence,
-        onClose: closeSideDrawer,
-        homeLink
-      } as SideDrawerProps);
+      sideDrawer = <SideDrawerAsync
+        key='drawer'
+        clicker={clicker}
+        essence={essence}
+        onClose={closeSideDrawer}
+        homeLink={homeLink}
+      />;
     }
 
     if (ReactCSSTransitionGroupAsync) {
-      var sideDrawerTransition = React.createElement(ReactCSSTransitionGroupAsync as any, {
-        component: "div",
-        className: "side-drawer-container",
-        transitionName: "side-drawer",
-        transitionEnterTimeout: 500,
-        transitionLeaveTimeout: 300
-      }, sideDrawer);
+      var sideDrawerTransition = <ReactCSSTransitionGroupAsync
+        component="div"
+        className="side-drawer-container"
+        transitionName="side-drawer"
+        transitionEnterTimeout={500}
+        transitionLeaveTimeout={300}
+      >
+        {sideDrawer}
+      </ReactCSSTransitionGroupAsync>;
     }
 
     return <main className='pivot-application' id='portal-cont'>

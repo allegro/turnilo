@@ -40,12 +40,12 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     newDiv.className = 'body-portal ' + (disablePointerEvents ? '' : 'pointer-events');
     this.target = document.body.appendChild(newDiv);
     this.position();
-    this.component = ReactDOM.render(this.props.children, this.target);
+    this.component = ReactDOM.render(this.props.children as any, this.target);
   }
 
   componentDidUpdate() {
     this.position();
-    this.component = ReactDOM.render(this.props.children, this.target);
+    this.component = ReactDOM.render(this.props.children as any, this.target);
   }
 
   componentWillUnmount() {

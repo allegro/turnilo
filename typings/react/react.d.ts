@@ -581,6 +581,7 @@ declare namespace __React {
         strokeMiterlimit?: string;
         strokeOpacity?: number | string;
         strokeWidth?: number | string;
+        style?: CSSProperties;
         textAnchor?: string;
         transform?: string;
         version?: string;

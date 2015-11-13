@@ -213,7 +213,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       subQuery = subQuery.performAction(sortAction);
 
       if (colors && colors.dimension === splitDimension.name) {
-        console.log('colors', colors);
         subQuery = colors.addToExpression(subQuery, dataSource);
       } else if (limitAction) {
         subQuery = subQuery.performAction(limitAction);
@@ -324,7 +323,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   render() {
     var { clicker, essence, stage } = this.props;
     var { loading, dataset, error, dragStart, scrollTop, hoverDatum, hoverMeasure } = this.state;
-    var { splits } = essence;
+    var { splits, colors } = essence;
 
     var numberOfColumns = Math.ceil(stage.width / MAX_GRAPH_WIDTH);
 
@@ -395,32 +394,32 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
         var chartLines: Array<JSX.Element> = null;
         if (splits.length() === 1) {
-          chartLines = [
-            React.createElement(ChartLine, {
-              key: 'single',
-              dataset: myDataset,
-              getX: getX,
-              getY: getY,
-              scaleX: scaleX,
-              scaleY: scaleY,
-              stage: lineStage,
-              showArea: true
-            } as ChartLineProps)
-          ];
+          chartLines = [];
+          chartLines.push(<ChartLine
+            key='single'
+            dataset={myDataset}
+            getX={getX}
+            getY={getY}
+            scaleX={scaleX}
+            scaleY={scaleY}
+            stage={lineStage}
+            showArea={true}
+          />);
         } else {
           chartLines = myDataset.data.map((datum, i) => {
             if (!datum[SPLIT]) return null;
-            return React.createElement(ChartLine, {
-              key: 'single' + i,
-              dataset: datum[SPLIT],
-              getX: getX,
-              getY: getY,
-              scaleX: scaleX,
-              scaleY: scaleY,
-              stage: lineStage,
-              showArea: false,
-              color: i
-            } as ChartLineProps);
+            return <ChartLine
+              key={'single' + i}
+              dataset={datum[SPLIT]}
+              getX={getX}
+              getY={getY}
+              scaleX={scaleX}
+              scaleY={scaleY}
+              stage={lineStage}
+              showArea={false}
+              colors={colors}
+              colorIndex={i}
+            />;
           });
         }
 

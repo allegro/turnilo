@@ -8,7 +8,7 @@ import { $, r, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
 import { SEGMENT, PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { setDragGhost, isInside, escapeKey } from '../../utils/dom/dom';
-import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
+import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine, Colors } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
 import { TileHeader } from '../tile-header/tile-header';
 import { ClearableInput } from '../clearable-input/clearable-input';
@@ -27,8 +27,7 @@ export interface DimensionTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;
-
-  key?: string;
+  colors?: Colors;
 }
 
 export interface DimensionTileState {

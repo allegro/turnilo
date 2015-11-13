@@ -6,7 +6,7 @@
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" value="Compiles .ts files into .js files" />
       <option name="exitCodeBehavior" value="ERROR" />
-      <option name="fileExtension" value="ts" />
+      <option name="fileExtension" value="*" />
       <option name="immediateSync" value="false" />
       <option name="name" value="TypeScript (gulp)" />
       <option name="output" value="" />
@@ -21,7 +21,7 @@
       </option>
       <option name="outputFromStdout" value="false" />
       <option name="program" value="$ProjectFileDir$/webstorm/lookfor.js" />
-      <option name="scopeName" value="All Source Files" />
+      <option name="scopeName" value="TypeScript Files" />
       <option name="trackOnlyRoot" value="true" />
       <option name="workingDir" value="$ProjectFileDir$" />
       <envs />

@@ -105,7 +105,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     if (!Array.isArray(jsArray)) return null;
     var jsArrayLength = jsArray.length;
-    if (!(7 <= jsArrayLength && jsArrayLength <= 9)) return null;
+    if (!(6 <= jsArrayLength && jsArrayLength <= 9)) return null;
 
     var essence: Essence;
     try {
@@ -117,8 +117,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
         splits: jsArray[2],
         selectedMeasures: jsArray[3],
         pinnedDimensions: jsArray[4],
-        colors: jsArray[5],
-        pinnedSort: jsArray[6],
+        pinnedSort: jsArray[5],
+        colors: jsArray[6] || null,
         compare: jsArray[7] || null,
         highlight: jsArray[8] || null
       }, dataSources, visualizations);
@@ -296,8 +296,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       pinnedDimensions
     };
     var defaultSortMeasure = this.dataSource.defaultSortMeasure;
-    if (js.colors) js.colors = this.colors.toJS();
-    if (js.pinnedSort !== defaultSortMeasure) js.pinnedSort = this.pinnedSort;
+    if (this.colors) js.colors = this.colors.toJS();
+    if (this.pinnedSort !== defaultSortMeasure) js.pinnedSort = this.pinnedSort;
     if (this.compare) js.compare = this.compare.toJS();
     if (this.highlight) js.highlight = this.highlight.toJS();
     return js;
@@ -337,9 +337,9 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       js.splits,           // 2
       js.selectedMeasures, // 3
       js.pinnedDimensions, // 4
-      js.colors,           // 5
-      js.pinnedSort        // 6
+      js.pinnedSort        // 5
     ];
+    if (js.colors)      compressed[6] = js.colors;
     if (js.compare)     compressed[7] = js.compare;
     if (js.highlight)   compressed[8] = js.highlight;
 
@@ -568,8 +568,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (visResolve.isManual()) {
       strategy = VisStrategy.KeepAlways;
     }
-
-    //console.log('VisStrategy:', VisStrategy[strategy]);
 
     var keepVis: boolean;
     switch (strategy) {

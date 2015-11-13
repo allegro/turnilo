@@ -5,6 +5,20 @@ import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, Set, SetJS } from 'plywood';
 import { DataSource } from '../data-source/data-source';
 
+const BLANK = '#000000';
+const COLORS = [
+  '#1f77b4',
+  '#ff7f0e',
+  '#2ca02c',
+  '#d62728',
+  '#9467bd',
+  '#8c564b',
+  '#e377c2',
+  '#7f7f7f',
+  '#bcbd22',
+  '#17becf'
+];
+
 export interface ColorsValue {
   dimension: string;
   values: Set;
@@ -91,6 +105,17 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     }
 
     return ex;
+  }
+
+  public getColor(value: any, index: number): string {
+    var { values } = this;
+    if (values) {
+      var elements = values.elements;
+      var colorIdx = elements.indexOf(value);
+      return colorIdx === -1 ? BLANK : elements[colorIdx];
+    } else {
+      return COLORS[index % COLORS.length];
+    }
   }
 }
 check = Colors;
