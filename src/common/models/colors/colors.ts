@@ -1,11 +1,11 @@
 import Collection = Immutable.Collection;
+import Color = d3.Color;
 'use strict';
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, Set, SetJS } from 'plywood';
 import { DataSource } from '../data-source/data-source';
 
-const BLANK = '#000000';
 const COLORS = [
   '#1f77b4',
   '#ff7f0e',
@@ -91,13 +91,11 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
       (!this.limit || this.limit === other.limit);
   }
 
-  public addToExpression(ex: Expression, dataSource: DataSource): Expression {
+  public addToExpression(ex: Expression, segmentName: string): Expression {
     var { dimension, values, limit } = this;
-    var myDimension = dataSource.getDimension(dimension);
-    if (!myDimension) return ex;
 
     if (values) {
-      ex = ex.filter(myDimension.expression.in(values));
+      ex = ex.filter($(segmentName).in(values));
     }
 
     if (limit) {
@@ -107,13 +105,21 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return ex;
   }
 
+  public toggleValue(v: any): Colors {
+    var value = this.valueOf();
+    if (!value.values) value.values = Set.EMPTY;
+    value.values = value.values.add(v);
+    return new Colors(value);
+  }
+
   public getColor(value: any, index: number): string {
-    var { values } = this;
+    var { values, limit } = this;
     if (values) {
       var elements = values.elements;
       var colorIdx = elements.indexOf(value);
-      return colorIdx === -1 ? BLANK : elements[colorIdx];
+      return colorIdx === -1 ? null : COLORS[colorIdx];
     } else {
+      if (limit && limit <= index) return null;
       return COLORS[index % COLORS.length];
     }
   }

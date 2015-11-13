@@ -181,25 +181,33 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   onRowClick(value: any, e: MouseEvent) {
-    var { clicker, essence, dimension } = this.props;
+    var { clicker, essence, dimension, colors } = this.props;
     var { filter } = essence;
 
-    if (e.altKey) {
-      if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).size() === 1) {
-        filter = filter.remove(dimension.expression);
-      } else {
-        filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
-      }
+    if (colors) {
+      colors = colors.toggleValue(value);
+      console.log('colors', colors);
+      clicker.changeColors(colors);
+
     } else {
-      filter = filter.toggleValue(dimension.expression, value);
-    }
+      if (e.altKey) {
+        if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).size() === 1) {
+          filter = filter.remove(dimension.expression);
+        } else {
+          filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
+        }
+      } else {
+        filter = filter.toggleValue(dimension.expression, value);
+      }
 
-    var { unfilter } = this.state;
-    if (!unfilter && !filter.filteredOn(dimension.expression)) {
-      this.setState({ unfilter: true });
-    }
+      // If no longer filtered switch unfilter to true for later
+      var { unfilter } = this.state;
+      if (!unfilter && !filter.filteredOn(dimension.expression)) {
+        this.setState({ unfilter: true });
+      }
 
-    clicker.changeFilter(filter);
+      clicker.changeFilter(filter);
+    }
   }
 
   toggleFold() {
@@ -245,7 +253,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   render() {
-    var { clicker, essence, dimension } = this.props;
+    var { clicker, essence, dimension, colors } = this.props;
     var { loading, dataset, error, showSearch, unfilter, fetchQueued, searchText } = this.state;
     var measure = essence.getPinnedSortMeasure();
 
@@ -289,7 +297,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       }
 
       var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
-      rows = rowData.map((d) => {
+      rows = rowData.map((d, i) => {
         var segmentValue = d[SEGMENT];
         var segmentValueStr = String(segmentValue);
         var measureValue = d[measureName];
@@ -297,12 +305,13 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
         var className = 'row';
         var checkbox: JSX.Element = null;
-        if (filterSet) {
+        if (filterSet || colors) {
           var selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
           className += ' ' + (selected ? 'selected' : 'not-selected');
-          checkbox = React.createElement(Checkbox, {
-            checked: selected
-          });
+          checkbox = <Checkbox
+            checked={selected}
+            color={colors ? colors.getColor(segmentValue, i) : null}
+          />;
         }
 
         var row = <div

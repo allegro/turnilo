@@ -9,6 +9,7 @@ import { Splits } from '../splits/splits';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
 import { Manifest } from '../manifest/manifest';
+import { Colors } from '../colors/colors';
 import { VisStrategy } from '../essence/essence';
 
 export interface Clicker {
@@ -19,6 +20,7 @@ export interface Clicker {
   changeSplit(split: SplitCombine, strategy: VisStrategy): void;
   addSplit(split: SplitCombine, strategy: VisStrategy): void;
   removeSplit(split: SplitCombine, strategy: VisStrategy): void;
+  changeColors(colors: Colors): void;
   changeVisualization(visualization: Manifest): void;
   pin(dimension: Dimension): void;
   unpin(dimension: Dimension): void;

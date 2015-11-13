@@ -213,7 +213,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       subQuery = subQuery.performAction(sortAction);
 
       if (colors && colors.dimension === splitDimension.name) {
-        subQuery = colors.addToExpression(subQuery, dataSource);
+        subQuery = colors.addToExpression(subQuery, SEGMENT);
       } else if (limitAction) {
         subQuery = subQuery.performAction(limitAction);
       }

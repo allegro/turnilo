@@ -8,7 +8,8 @@ import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesGet } from '../../utils/dom/dom';
-import { Stage, Essence, VisStrategy, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../../common/models/index";
+import { Stage, Essence, VisStrategy, Filter, Dimension, Measure, Splits,
+         SplitCombine, Clicker, DataSource, Manifest, Colors, VisualizationProps } from "../../../common/models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
 import { DimensionMeasurePanel } from '../dimension-measure-panel/dimension-measure-panel';
@@ -82,6 +83,10 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       removeSplit: (split: SplitCombine, strategy: VisStrategy) => {
         var { essence } = this.state;
         this.setState({ essence: essence.removeSplit(split, strategy) });
+      },
+      changeColors: (colors: Colors) => {
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeColors(colors) });
       },
       changeVisualization: (visualization: Manifest) => {
         var { essence } = this.state;

@@ -622,6 +622,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.changeSplits(splits.removeSplit(split), strategy);
   }
 
+  public changeColors(colors: Colors): Essence {
+    var value = this.valueOf();
+    value.colors = colors;
+    return new Essence(value);
+  }
+
   public changeVisualization(visualization: Manifest): Essence {
     var value = this.valueOf();
     value.visualization = visualization;

@@ -96,13 +96,7 @@ git clone git@github.com:implydata/pivot.git
 cd pivot
 ```
 
-Also make sure you have the SASS lint gem:
-
-```
-gem install scss_lint
-```
-
-Next, inside the pivot folder run:
+Inside the pivot folder run:
 
 ```
 npm install

@@ -10,18 +10,17 @@ $checkbox-size: 15px;
   cursor: pointer;
   margin-right: 3px;
 
-  &:before {
+  .checkbox-body {
     position: absolute;
     left: 0;
     top: 3px;
-    content: '';
     background: hsla(0, 0, 0, 0.12);
     width: $checkbox-size;
     height: $checkbox-size;
     border-radius: 2px;
   }
 
-  &.checked:before {
+  &.checked .checkbox-body {
     background: hsla(0, 0, 0, 0.45);
   }
 

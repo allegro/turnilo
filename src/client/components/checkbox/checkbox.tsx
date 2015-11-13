@@ -12,6 +12,7 @@ import { Filter, Dimension, Measure } from '../../../common/models/index';
 export interface CheckboxProps extends React.Props<any> {
   checked: Boolean;
   onClick?: MouseEventHandler;
+  color?: string;
 }
 
 export interface CheckboxState {
@@ -26,15 +27,19 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
   }
 
   render() {
-    var { checked, onClick } = this.props;
+    var { checked, onClick, color } = this.props;
 
+    var style: React.CSSProperties = null;
     var check: JSX.Element = null;
-    if (checked) {
-      check = React.createElement(SvgIcon, {
-        svg: require('../../icons/check.svg')
-      });
+    if (color) {
+      style = { background: color };
+    } else if (checked) {
+      check = <SvgIcon svg={require('../../icons/check.svg')}/>;
     }
 
-    return <div className={'checkbox' + (checked ? ' checked' : '')} onClick={onClick}>{check}</div>;
+    return <div className={'checkbox' + (checked ? ' checked' : '')} onClick={onClick}>
+      <div className="checkbox-body" style={style}></div>
+      {check}
+    </div>;
   }
 }
