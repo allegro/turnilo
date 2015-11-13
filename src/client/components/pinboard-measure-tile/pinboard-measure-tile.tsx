@@ -21,7 +21,7 @@ function measureTitle(measure: Measure): string {
   return measure.title;
 }
 
-export interface PinboardMeasureTileProps {
+export interface PinboardMeasureTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
 }

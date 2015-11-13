@@ -9,7 +9,7 @@ import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePr
 // import { ... } from '../../config/constants';
 import { MenuTable } from '../menu-table/menu-table';
 
-export interface StringFilterMenuProps {
+export interface StringFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   dimension: Dimension;
   essence: Essence;

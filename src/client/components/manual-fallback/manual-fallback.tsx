@@ -10,7 +10,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, Resolution, VisStrategy } from '../../../common/models/index';
 
 
-export interface ManualFallbackProps {
+export interface ManualFallbackProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
 }

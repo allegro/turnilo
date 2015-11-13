@@ -8,7 +8,7 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';
 
-export interface MenuHeaderProps {
+export interface MenuHeaderProps extends React.Props<any> {
   //clicker: Clicker;
   dimension: Dimension;
   onSearchClick: MouseEventHandler;

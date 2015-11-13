@@ -10,7 +10,7 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, Measure, Manifest } from '../../../common/models/index';
 import { VisSelectorMenu } from '../vis-selector-menu/vis-selector-menu';
 
-export interface VisSelectorProps {
+export interface VisSelectorProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
 }

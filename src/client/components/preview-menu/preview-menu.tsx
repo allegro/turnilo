@@ -14,7 +14,7 @@ import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 const ACTION_SIZE = 60;
 
-export interface PreviewMenuProps {
+export interface PreviewMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   direction: string;

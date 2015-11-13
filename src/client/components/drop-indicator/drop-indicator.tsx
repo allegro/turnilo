@@ -8,7 +8,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-export interface DropIndicatorProps {
+export interface DropIndicatorProps extends React.Props<any> {
 }
 
 export interface DropIndicatorState {

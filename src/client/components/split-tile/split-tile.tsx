@@ -15,12 +15,10 @@ import { SplitMenu } from '../split-menu/split-menu';
 
 const SPLIT_CLASS_NAME = 'split';
 
-export interface SplitTileProps {
+export interface SplitTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-
-  ref?: any;
 }
 
 export interface SplitTileState {

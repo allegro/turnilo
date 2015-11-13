@@ -20,7 +20,7 @@ const COLORS = [
   '#17becf'
 ];
 
-export interface ChartLineProps {
+export interface ChartLineProps extends React.Props<any> {
   stage: Stage;
   dataset: Dataset;
   getX: (d: Datum) => any;

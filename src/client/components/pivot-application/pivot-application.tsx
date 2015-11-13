@@ -22,7 +22,7 @@ import { SideDrawer, SideDrawerProps } from '../side-drawer/side-drawer';
 
 import { visualizations } from '../../visualizations/index';
 
-export interface PivotApplicationProps {
+export interface PivotApplicationProps extends React.Props<any> {
   version: string;
   dataSources: List<DataSource>;
   homeLink?: string;

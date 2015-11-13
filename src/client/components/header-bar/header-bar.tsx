@@ -12,7 +12,7 @@ function panic() {
   window.location.assign(Essence.getBaseURL());
 }
 
-export interface HeaderBarProps {
+export interface HeaderBarProps extends React.Props<any> {
   essence: Essence;
   onNavClick: MouseEventHandler;
   showLastUpdated?: boolean;

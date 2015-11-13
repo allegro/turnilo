@@ -23,7 +23,7 @@ const SEARCH_BOX_HEIGHT = 26;
 const SEARCH_BOX_GAP = 3;
 const FOLDER_BOX_HEIGHT = 30;
 
-export interface DimensionTileProps {
+export interface DimensionTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;

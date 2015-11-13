@@ -7,7 +7,7 @@ import { $, Expression, Executor, Dataset, Datum } from 'plywood';
 // import { ... } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 
-export interface ChartLineHoverProps {
+export interface ChartLineHoverProps extends React.Props<any> {
   stage: Stage;
   datum: Datum;
   getX: (d: Datum) => any;

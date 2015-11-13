@@ -45,7 +45,7 @@ function formatGranularity(gran: string): string {
   }
 }
 
-export interface SplitMenuProps {
+export interface SplitMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   direction: string;

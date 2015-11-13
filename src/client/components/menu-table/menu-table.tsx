@@ -15,7 +15,7 @@ import { HighlightString } from '../highlight-string/highlight-string';
 
 const TOP_N = 100;
 
-export interface MenuTableProps {
+export interface MenuTableProps extends React.Props<any> {
   essence: Essence;
   dimension: Dimension;
   showCheckboxes: boolean;

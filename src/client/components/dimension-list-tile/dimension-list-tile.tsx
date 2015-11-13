@@ -14,7 +14,7 @@ import { PreviewMenu } from '../preview-menu/preview-menu';
 
 const DIMENSION_CLASS_NAME = 'dimension';
 
-export interface DimensionListTileProps {
+export interface DimensionListTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;

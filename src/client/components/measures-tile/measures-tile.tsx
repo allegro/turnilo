@@ -11,7 +11,7 @@ import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../
 import { TileHeader } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 
-export interface MeasuresTileProps {
+export interface MeasuresTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
 }

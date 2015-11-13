@@ -11,7 +11,7 @@ import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../
 import { PinboardMeasureTile } from '../pinboard-measure-tile/pinboard-measure-tile';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
 
-export interface PinboardPanelProps {
+export interface PinboardPanelProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
 }

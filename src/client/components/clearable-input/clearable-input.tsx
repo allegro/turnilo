@@ -18,7 +18,7 @@ function focusOnInput(component: DOMComponent<HTMLAttributes>): void {
   (component as any).focus();
 }
 
-export interface ClearableInputProps {
+export interface ClearableInputProps extends React.Props<any> {
   className?: string;
   type?: string;
   placeholder?: string;

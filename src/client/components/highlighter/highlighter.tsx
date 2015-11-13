@@ -10,7 +10,7 @@ import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/mo
 import { isInside, escapeKey, getXFromEvent } from '../../utils/dom/dom';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
 
-export interface HighlighterProps {
+export interface HighlighterProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   highlightId: string;

@@ -10,7 +10,7 @@ import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { BodyPortal } from '../body-portal/body-portal';
 // import { SvgIcon } from '../svg-icon/svg-icon';
 
-export interface HoverBubbleProps {
+export interface HoverBubbleProps extends React.Props<any> {
   essence: Essence;
   datum: Datum;
   measure: Measure;
