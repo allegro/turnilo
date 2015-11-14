@@ -4,7 +4,8 @@ import { List } from 'immutable';
 import { arraysEqual } from 'immutable-class';
 
 var objectHasOwnProperty = Object.prototype.hasOwnProperty;
-export function hasOwnProperty(obj: any, key: string): boolean {
+export function hasOwnProperty(obj: any, key: string | number): boolean {
+  if (!obj) return false;
   return objectHasOwnProperty.call(obj, key);
 }
 
