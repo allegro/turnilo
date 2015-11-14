@@ -5,7 +5,7 @@ require('./chart-line.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset, Datum } from 'plywood';
-import { Stage, Filter, Dimension, Measure, Colors } from '../../../common/models/index';
+import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 export interface ChartLineProps extends React.Props<any> {
@@ -16,9 +16,7 @@ export interface ChartLineProps extends React.Props<any> {
   scaleX: (v: any) => number;
   scaleY: (v: any) => number;
   showArea: boolean;
-  colors?: Colors;
-  colorValue?: any;
-  colorIndex?: number;
+  color?: string;
 }
 
 export interface ChartLineState {
@@ -33,7 +31,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
   }
 
   render() {
-    var { stage, dataset, getX, getY, scaleX, scaleY, showArea, colors, colorValue, colorIndex } = this.props;
+    var { stage, dataset, getX, getY, scaleX, scaleY, showArea, color } = this.props;
 
     var xFn = (d: Datum) => scaleX(getX(d));
     var yFn = (d: Datum) => scaleY(getY(d));
@@ -46,11 +44,9 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
       areaPath = <path className="area" d={areaFn(dataset.data)}/>;
     }
 
-    var pathStyle: any = null;
-    if (colors) {
-      pathStyle = {
-        stroke: colors.getColor(colorValue, colorIndex)
-      };
+    var pathStyle: React.CSSProperties = null;
+    if (color) {
+      pathStyle = { stroke: color };
     }
 
     return <g className="chart-line" transform={stage.getTransform()}>

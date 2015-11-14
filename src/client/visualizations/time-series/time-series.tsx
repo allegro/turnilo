@@ -185,6 +185,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     // var timeBucketAction = timeSplit.bucketAction as TimeBucketAction;
     //   .overQuery(timeBucketAction.duration, timeBucketAction.timezone, dataSource)
 
+    var colorsNeedValues = false;
+
     var $main = $('main');
 
     var query = ply()
@@ -214,6 +216,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
       if (colors && colors.dimension === splitDimension.name) {
         subQuery = colors.addToExpression(subQuery, SEGMENT);
+        colorsNeedValues = !colors.values;
       } else if (limitAction) {
         subQuery = subQuery.performAction(limitAction);
       }
@@ -232,6 +235,14 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       .then(
         (dataset) => {
           if (!this.mounted) return;
+
+          console.log('here');
+          if (colorsNeedValues) {
+            var values = dataset.data[0][SPLIT].data.map((d: Datum) => d[SEGMENT]);
+            console.log('set to values', values);
+            this.props.clicker.changeColors(colors.setValueEquivalent(values));
+          }
+
           this.setState({
             loading: false,
             dataset,
@@ -262,6 +273,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       nextEssence.differentDataSource(essence) ||
       nextEssence.differentEffectiveFilter(essence, TimeSeries.id) ||
       nextEssence.differentSplits(essence) ||
+      nextEssence.differentColors(essence, true) ||
       nextEssence.newSelectedMeasures(essence)
     ) {
       this.fetchData(nextEssence);
@@ -417,8 +429,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
               scaleY={scaleY}
               stage={lineStage}
               showArea={false}
-              colors={colors}
-              colorIndex={i}
+              color={colors.getColor(datum[SEGMENT], i)}
             />;
           });
         }
@@ -502,16 +513,16 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       if (dragStart !== null || essence.highlightOn(TimeSeries.id)) {
         var timeSplit = splits.last();
         var timeBucketAction = timeSplit.bucketAction as TimeBucketAction;
-        highlighter = React.createElement(Highlighter, {
-          clicker,
-          essence,
-          highlightId: TimeSeries.id,
-          scaleX,
-          dragStart,
-          duration: timeBucketAction.duration,
-          timezone: timeBucketAction.timezone,
-          onClose: this.onHighlightEnd.bind(this) as Function
-        });
+        highlighter = <Highlighter
+          clicker={clicker}
+          essence={essence}
+          highlightId={TimeSeries.id}
+          scaleX={scaleX}
+          dragStart={dragStart}
+          duration={timeBucketAction.duration}
+          timezone={timeBucketAction.timezone}
+          onClose={this.onHighlightEnd.bind(this)}
+        />;
       }
     }
 
@@ -526,7 +537,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     var queryError: JSX.Element = null;
     if (error) {
-      queryError = React.createElement(QueryError, { error });
+      queryError = <QueryError error={error}/>;
     }
 
     return <div className="time-series">

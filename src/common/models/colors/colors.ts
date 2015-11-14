@@ -206,7 +206,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   }
 
   public toggleValue(v: any): Colors {
-    return this.hasValue(v) ? this.addValue(v) : this.removeValue(v);
+    return this.hasValue(v) ? this.removeValue(v) : this.addValue(v);
   }
 
   public valueIndex(v: any): number {

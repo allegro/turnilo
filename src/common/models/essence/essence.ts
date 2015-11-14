@@ -422,6 +422,16 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return !this.splits.equals(other.splits);
   }
 
+  public differentColors(other: Essence, equivalenceOnly: boolean): boolean {
+    if (Boolean(this.colors) !== Boolean(other.colors)) return true;
+    if (!this.colors) return false;
+    if (equivalenceOnly) {
+      return !this.colors.equivalent(other.colors);
+    } else {
+      return !this.colors.equals(other.colors);
+    }
+  }
+
   public differentSelectedMeasures(other: Essence): boolean {
     return !this.selectedMeasures.equals(other.selectedMeasures);
   }
