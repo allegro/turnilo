@@ -116,7 +116,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     if (colors && !legendAdded) {
       var dimension = dataSource.getDimension(colorDimension);
       if (dimension) {
-        dimensionTiles.push(<DimensionTile
+        dimensionTiles.unshift(<DimensionTile
           key={dimension.name}
           clicker={clicker}
           essence={essence}
