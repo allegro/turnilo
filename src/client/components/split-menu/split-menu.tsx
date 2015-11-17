@@ -121,7 +121,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var originalSplit = this.props.split;
     var newSplit = this.state.split;
     if (!originalSplit.equals(newSplit)) {
-      clicker.changeSplits(essence.splits.replace(originalSplit, newSplit), VisStrategy.KeepIfReady);
+      clicker.changeSplits(essence.splits.replace(originalSplit, newSplit), VisStrategy.UnfairGame);
     }
     onClose();
   }

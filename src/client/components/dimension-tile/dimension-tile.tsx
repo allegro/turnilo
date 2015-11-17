@@ -186,7 +186,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     if (colors) {
       colors = colors.toggleValue(value);
-      console.log('colors', colors);
       clicker.changeColors(colors);
 
     } else {
@@ -307,7 +306,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         var checkbox: JSX.Element = null;
         if (filterSet || colors) {
           var selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
-          className += ' ' + (selected ? 'selected' : 'not-selected');
+          if (colors) {
+            selected = false;
+            className += ' color';
+          } else {
+            className += ' ' + (selected ? 'selected' : 'not-selected');
+          }
           checkbox = <Checkbox
             checked={selected}
             color={colors ? colors.getColor(segmentValue, i) : null}
@@ -348,14 +352,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var loader: JSX.Element = null;
     var message: JSX.Element = null;
     if (loading) {
-      loader = React.createElement(Loader, null);
+      loader = <Loader/>;
     } else if (dataset && !fetchQueued && searchText && !rows.length) {
       message = <div className="message">{'No results for "' + searchText + '"'}</div>;
     }
 
     var queryError: JSX.Element = null;
     if (error) {
-      queryError = React.createElement(QueryError, { error });
+      queryError = <QueryError error={error}/>;
     }
 
     const className = [

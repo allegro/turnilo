@@ -15,8 +15,8 @@ export interface ChartLineProps extends React.Props<any> {
   getY: (d: Datum) => any;
   scaleX: (v: any) => number;
   scaleY: (v: any) => number;
+  color: string;
   showArea: boolean;
-  color?: string;
 }
 
 export interface ChartLineState {
@@ -31,7 +31,8 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
   }
 
   render() {
-    var { stage, dataset, getX, getY, scaleX, scaleY, showArea, color } = this.props;
+    var { stage, dataset, getX, getY, scaleX, scaleY, color, showArea } = this.props;
+    if (!color) return null;
 
     var xFn = (d: Datum) => scaleX(getX(d));
     var yFn = (d: Datum) => scaleY(getY(d));
@@ -45,7 +46,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
     }
 
     var pathStyle: React.CSSProperties = null;
-    if (color) {
+    if (color !== 'default') {
       pathStyle = { stroke: color };
     }
 

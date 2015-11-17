@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom';
 import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, SortAction } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
-import { Stage, Filter, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
+import { Stage, Filter, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, Colors, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
@@ -68,12 +68,11 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   static id = 'table';
   static title = 'Table';
 
-  static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
+  static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
     // Must have at least one dimension
-    if (splits.length() < 1) {
+    if (splits.length() === 0) {
       var someDimensions = dataSource.dimensions.toArray().filter(d => d.type !== 'TIME').slice(0, 2);
-      return Resolve.manual(
-        'This visualization requires at least one split',
+      return Resolve.manual(4, 'This visualization requires at least one split',
         someDimensions.map((someDimension) => {
           return {
             description: `Add a split on ${someDimension.title}`,
@@ -95,6 +94,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         autoChanged = true;
       }
 
+      // ToDo: review this
       if (!split.limitAction && (autoChanged || splitDimension.type !== 'TIME')) {
         split = split.changeLimit(i ? 5 : 50);
         autoChanged = true;
@@ -103,7 +103,12 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       return split;
     });
 
-    return autoChanged ? Resolve.automatic({ splits }) : Resolve.READY;
+    if (colors) {
+      colors = null;
+      autoChanged = true;
+    }
+
+    return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(10);
   }
 
   public mounted: boolean;
@@ -459,12 +464,12 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     var loader: JSX.Element = null;
     if (loading) {
-      loader = React.createElement(Loader, null);
+      loader = <Loader/>;
     }
 
     var queryError: JSX.Element = null;
     if (error) {
-      queryError = React.createElement(QueryError, { error });
+      queryError = <QueryError error={error}/>;
     }
 
     return <div className="table">

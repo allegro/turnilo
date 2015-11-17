@@ -34,10 +34,14 @@ export interface VisualizationAndResolve {
   resolve: Resolve;
 }
 
+/**
+ * FairGame   - Run all visualizations pretending that there is no current
+ * UnfairGame - Run all visualizations but mark current vis as current
+ * KeepAlways - Just keep the current one
+ */
 export enum VisStrategy {
   FairGame,
-  KeepIfReadyOrAutomatic,
-  KeepIfReady,
+  UnfairGame,
   KeepAlways
 }
 
@@ -245,21 +249,24 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     this.compare = parameters.compare;
     this.highlight = parameters.highlight;
 
-    // Place vis here because it needs to know about splits (and maybe later other things)
+    // Place vis here because it needs to know about splits and colors (and maybe later other things)
     var visualization = parameters.visualization;
     if (!visualization) {
-      var visAndResolve = this.getBestVisualization(this.splits);
+      var visAndResolve = this.getBestVisualization(this.splits, this.colors, null);
       visualization = visAndResolve.visualization;
     }
     this.visualization = visualization;
 
-    var visResolve = visualization.handleCircumstance(this.dataSource, this.splits, this.colors);
+    var visResolve = visualization.handleCircumstance(this.dataSource, this.splits, this.colors, true);
     if (visResolve.isAutomatic()) {
       var adjustment = visResolve.adjustment;
       this.splits = adjustment.splits;
       this.colors = adjustment.colors || null;
-      visResolve = visualization.handleCircumstance(this.dataSource, this.splits, this.colors);
-      if (!visResolve.isReady()) throw new Error('visualization must be ready after automatic adjustment');
+      visResolve = visualization.handleCircumstance(this.dataSource, this.splits, this.colors, true);
+      if (!visResolve.isReady()) {
+        console.log(visResolve);
+        throw new Error('visualization must be ready after automatic adjustment');
+      }
     }
     this.visResolve = visResolve;
   }
@@ -360,30 +367,16 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return Essence.getBaseURL() + this.toHash();
   }
 
-  public getBestVisualization(splits: Splits): VisualizationAndResolve {
+  public getBestVisualization(splits: Splits, colors: Colors, currentVisualization: Manifest): VisualizationAndResolve {
     var { visualizations, dataSource } = this;
     var visAndResolves = visualizations.toArray().map((visualization) => {
       return {
         visualization,
-        resolve: visualization.handleCircumstance(dataSource, splits, null)
+        resolve: visualization.handleCircumstance(dataSource, splits, colors, visualization === currentVisualization)
       };
     });
 
-    // the vis are sorted least impressive -> most impressive so reverse the list
-    visAndResolves.reverse();
-
-    // Try to find a ready vis
-    for (var visAndResolve of visAndResolves) {
-      if (visAndResolve.resolve.isReady()) return visAndResolve;
-    }
-
-    // Try to find an automatic vis
-    for (var visAndResolve of visAndResolves) {
-      if (visAndResolve.resolve.isAutomatic()) return visAndResolve;
-    }
-
-    // Should never get here because totals / table should always be able to be applied
-    throw new Error('could not find ready or automatic vis, something is misconstrued');
+    return visAndResolves.sort((vr1, vr2) => Resolve.compare(vr1.resolve, vr2.resolve))[0];
   }
 
   public getTimeAttribute(): RefExpression {
@@ -579,32 +572,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       strategy = VisStrategy.KeepAlways;
     }
 
-    var keepVis: boolean;
-    switch (strategy) {
-      case VisStrategy.FairGame:
-        keepVis = false;
-        break;
-
-      case VisStrategy.KeepIfReadyOrAutomatic:
-        var newResolve = visualization.handleCircumstance(dataSource, splits, colors);
-        keepVis = newResolve.isReady() || newResolve.isAutomatic();
-        break;
-
-      case VisStrategy.KeepIfReady:
-        var newResolve = visualization.handleCircumstance(dataSource, splits, colors);
-        keepVis = newResolve.isReady();
-        break;
-
-      case VisStrategy.KeepAlways:
-        keepVis = true;
-        break;
-
-      default:
-        throw new Error('unknown vis strategy');
-    }
-
-    if (!keepVis) {
-      var visAndResolve = this.getBestVisualization(splits);
+    if (strategy !== VisStrategy.KeepAlways) {
+      var visAndResolve = this.getBestVisualization(splits, colors, (strategy === VisStrategy.FairGame ? null : visualization));
       visualization = visAndResolve.visualization;
     }
 

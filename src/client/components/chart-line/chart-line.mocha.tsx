@@ -22,8 +22,9 @@ describe('ChartLine', () => {
         getY={null}
         scaleX={null}
         scaleY={null}
-        showArea={null}
         stage={null}
+        color={null}
+        showArea={null}
       />
     );
 

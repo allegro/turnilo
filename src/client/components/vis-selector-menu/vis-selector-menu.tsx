@@ -72,7 +72,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     if (v.id === visualization.id) {
       state = 'selected';
     } else {
-      state = v.handleCircumstance(essence.dataSource, essence.splits, essence.colors).toString();
+      state = 'not-selected'; // v.handleCircumstance(essence.dataSource, essence.splits, essence.colors, false).toString();
     }
 
     return <div

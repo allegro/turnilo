@@ -162,9 +162,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
         var checkbox: JSX.Element = null;
         if (showCheckboxes) {
-          checkbox = React.createElement(Checkbox, {
-            checked: selected
-          });
+          checkbox = <Checkbox checked={selected}/>;
         }
 
         return <div
@@ -182,7 +180,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
     var loader: JSX.Element = null;
     var message: JSX.Element = null;
     if (loading) {
-      loader = React.createElement(Loader, null);
+      loader = <Loader/>;
     } else if (dataset && !fetchQueued && searchText && !rows.length) {
       message = <div className="message">{'No results for "' + searchText + '"'}</div>;
     }

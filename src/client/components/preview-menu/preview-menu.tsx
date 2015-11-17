@@ -48,7 +48,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
     if (essence.splits.hasSplitOn(dimension) && essence.splits.length() === 1) {
       triggerSplitMenu(dimension);
     } else {
-      clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepIfReady);
+      clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.UnfairGame);
     }
     onClose();
   }
@@ -58,7 +58,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
     if (essence.splits.hasSplitOn(dimension)) {
       triggerSplitMenu(dimension);
     } else {
-      clicker.addSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.KeepIfReady);
+      clicker.addSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.UnfairGame);
     }
     onClose();
   }

@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset, Datum } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
-import { SEGMENT } from '../../config/constants';
+import { TIME_SEGMENT } from '../../config/constants';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { BodyPortal } from '../body-portal/body-portal';
 // import { SvgIcon } from '../svg-icon/svg-icon';
@@ -37,7 +37,7 @@ export class HoverBubble extends React.Component<HoverBubbleProps, HoverBubbleSt
       <div className="hover-bubble">
         <div className="hover-bubble-inner">
           <div className="text">
-            <span className="bucket">{formatTimeRange(datum[SEGMENT], essence.timezone, DisplayYear.NEVER)}</span>
+            <span className="bucket">{formatTimeRange(datum[TIME_SEGMENT], essence.timezone, DisplayYear.NEVER)}</span>
             <span className="measure-value">{measure.formatFn(getY(datum))}</span>
           </div>
           <div className="shpitz"></div>

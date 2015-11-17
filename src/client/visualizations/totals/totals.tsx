@@ -6,7 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
-import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
+import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Colors, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
@@ -23,9 +23,9 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   static id = 'totals';
   static title = 'Totals';
 
-  static handleCircumstance(dataSource: DataSource, splits: Splits): Resolve {
-    if (!splits.length()) return Resolve.READY;
-    return Resolve.automatic({ splits: Splits.EMPTY });
+  static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
+    if (!splits.length()) return Resolve.ready(10);
+    return Resolve.automatic(3, { splits: Splits.EMPTY });
   }
 
   public mounted: boolean;
@@ -118,12 +118,12 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
 
     var loader: JSX.Element = null;
     if (loading) {
-      loader = React.createElement(Loader, null);
+      loader = <Loader/>;
     }
 
     var queryError: JSX.Element = null;
     if (error) {
-      queryError = React.createElement(QueryError, { error });
+      queryError = <QueryError error={error}/>;
     }
 
     var numColumns = Math.min(totals.size, Math.max(1, Math.floor((stage.width - 2 * PADDING) / TOTAL_WIDTH)));

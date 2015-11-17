@@ -19,21 +19,31 @@ export class Resolve {
   static NEVER: Resolve;
   static READY: Resolve;
 
-  static automatic(adjustment: Adjustment) {
-    return new Resolve('automatic', adjustment, null, null);
+  static compare(r1: Resolve, r2: Resolve): number {
+    return r2.score - r1.score;
   }
 
-  static manual(message: string, resolutions: Resolution[]) {
-    return new Resolve('manual', null, message, resolutions);
+  static automatic(score: number, adjustment: Adjustment) {
+    return new Resolve(score, 'automatic', adjustment, null, null);
+  }
+
+  static manual(score: number, message: string, resolutions: Resolution[]) {
+    return new Resolve(score, 'manual', null, message, resolutions);
+  }
+
+  static ready(score: number) {
+    return new Resolve(score, 'ready', null, null, null);
   }
 
 
+  public score: number;
   public state: string;
   public adjustment: Adjustment;
   public message: string;
   public resolutions: Resolution[];
 
-  constructor(state: string, adjustment: Adjustment, message: string, resolutions: Resolution[]) {
+  constructor(score: number, state: string, adjustment: Adjustment, message: string, resolutions: Resolution[]) {
+    this.score = score;
     this.state = state;
     this.adjustment = adjustment;
     this.message = message;
@@ -61,11 +71,10 @@ export class Resolve {
   }
 }
 
-Resolve.NEVER = new Resolve('never', null, null, null);
-Resolve.READY = new Resolve('ready', null, null, null);
+Resolve.NEVER = new Resolve(-1, 'never', null, null, null);
 
 export interface Manifest {
   id: string;
   title: string;
-  handleCircumstance: (dataSource: DataSource, splits: Splits, colors: Colors) => Resolve;
+  handleCircumstance: (dataSource: DataSource, splits: Splits, colors: Colors, selected: boolean) => Resolve;
 }

@@ -38,7 +38,8 @@ function valuesToJS(values: Lookup<any>): Lookup<any> {
 
 function valueEquals(v1: any, v2: any): boolean {
   if (v1 === v2) return true;
-  if (v1.toISOString) return v1.valueOf() === v2.valueOf();
+  if (!v1 !== !v2) return false;
+  if (v1.toISOString && v2.toISOString) return v1.valueOf() === v2.valueOf();
   if (isImmutableClass(v1)) return v1.equals(v2);
   return false;
 }
@@ -49,8 +50,7 @@ function valuesEqual(values1: Lookup<any>, values2: Lookup<any>): boolean {
   for (var i = 0; i < COLORS.length; i++) {
     var v1 = values1[i];
     var v2 = values2[i];
-    if (v1 === v2) continue;
-    if (!v1 !== !v2) return false;
+    if (hasOwnProperty(values1, i) !== hasOwnProperty(values2, i)) return false;
     if (!valueEquals(v1, v2)) return false;
   }
   return true;
@@ -182,14 +182,19 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return vs;
   }
 
-  public addToExpression(ex: Expression, segmentName: string): Expression {
-    var { values } = this;
+  public addToExpression(ex: Expression, segmentName?: string): Expression {
+    var { dimension, values } = this;
+    if (!segmentName) segmentName = dimension;
 
     if (values) {
       ex = ex.filter($(segmentName).in(Set.fromJS(this.valuesToArray())));
     }
 
     return ex.limit(this.numColors());
+  }
+
+  public needsValues(): boolean {
+    return !this.values;
   }
 
   public setValueEquivalent(v: any[]): Colors {

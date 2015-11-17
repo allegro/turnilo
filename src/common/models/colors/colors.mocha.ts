@@ -19,6 +19,14 @@ describe('Colors', () => {
       },
       {
         dimension: 'country',
+        values: { '1': null, '3': 'UK', '7': 'India' }
+      },
+      {
+        dimension: 'country',
+        values: { '1': null, '3': 100, '7': 200 }
+      },
+      {
+        dimension: 'country',
         values: { '1': 'USA', '3': 'UK', '8': 'India' }
       },
       {
@@ -43,13 +51,13 @@ describe('Colors', () => {
         limit: 5
       });
 
-      colors = colors.setValueEquivalent(['USA', 'UK', 'India', 'Russia', 'Madagascar']);
+      colors = colors.setValueEquivalent([null, 'UK', 'India', 'Russia', 'Madagascar']);
 
       expect(colors.toJS()).to.deep.equal({
         "dimension": "country",
         "sameAsLimit": true,
         "values": {
-          "0": "USA",
+          "0": null,
           "1": "UK",
           "2": "India",
           "3": "Russia",
@@ -60,7 +68,9 @@ describe('Colors', () => {
       expect(colors.equivalent(initColors)).to.equal(true);
       expect(initColors.equivalent(colors)).to.equal(true);
 
-      expect(colors.hasValue('South Africa')).to.equal(false);
+      expect(colors.hasValue(null), 'has null').to.equal(true);
+
+      expect(colors.hasValue('South Africa'), 'no SA').to.equal(false);
 
       colors = colors.addValue('South Africa');
 
@@ -69,7 +79,7 @@ describe('Colors', () => {
       expect(colors.toJS()).to.deep.equal({
         "dimension": "country",
         "values": {
-          "0": "USA",
+          "0": null,
           "1": "UK",
           "2": "India",
           "3": "Russia",
@@ -83,7 +93,7 @@ describe('Colors', () => {
       expect(colors.toJS()).to.deep.equal({
         "dimension": "country",
         "values": {
-          "0": "USA",
+          "0": null,
           "2": "India",
           "3": "Russia",
           "4": "Madagascar",
@@ -96,7 +106,7 @@ describe('Colors', () => {
       expect(colors.toJS()).to.deep.equal({
         "dimension": "country",
         "values": {
-          "0": "USA",
+          "0": null,
           "1": "Australia",
           "2": "India",
           "3": "Russia",
@@ -104,6 +114,10 @@ describe('Colors', () => {
           "5": "South Africa"
         }
       });
+
+      var colorsWithGap = colors.removeValue("Australia");
+      expect(colors.equivalent(colorsWithGap)).to.equal(false);
+      expect(colorsWithGap.equivalent(colors)).to.equal(false);
     });
   });
 
