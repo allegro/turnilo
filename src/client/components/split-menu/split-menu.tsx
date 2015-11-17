@@ -33,13 +33,13 @@ function formatLimit(limit: number): string {
 function formatGranularity(gran: string): string {
   switch (gran) {
     case 'PT1M':
-      return '1m';
+      return '1M';
     case 'PT1H':
-      return '1h';
+      return '1H';
     case 'P1D':
-      return '1d';
+      return '1D';
     case 'P7D':
-      return '7d';
+      return '7D';
     default:
       return gran;
   }
@@ -137,8 +137,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var { sortAction} = split;
     if (!sortAction) return dimension;
     var sortOn = (sortAction.expression as RefExpression).name;
-    if (sortOn === SEGMENT) return dimension;
-    return essence.dataSource.getMeasure(sortOn);
+    return essence.dataSource.getMeasure(sortOn) || dimension;
   }
 
   renderGranularityPicker() {

@@ -6,16 +6,16 @@ import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataSource } from '../data-source/data-source';
 
 const COLORS = [
-  '#1f77b4',
-  '#ff7f0e',
-  '#2ca02c',
-  '#d62728',
-  '#9467bd',
-  '#8c564b',
-  '#e377c2',
-  '#7f7f7f',
-  '#bcbd22',
-  '#17becf'
+  '#2D9ED6',
+  '#F4AC54',
+  '#50C06E',
+  '#E96464',
+  '#53C6CC',
+  '#A884BE',
+  '#E5C019',
+  '#727272',
+  '#FB97D3',
+  '#B7D456'
 ];
 
 function valuesFromJS(valuesJS: Lookup<any>): Lookup<any> {
@@ -261,14 +261,13 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return new Colors(value);
   }
 
-  public getColor(value: any, index: number): string {
+  public getColor(value: any): string {
     var { values, limit } = this;
     if (values) {
       var colorIdx = this.valueIndex(value);
       return colorIdx === -1 ? null : COLORS[colorIdx];
     } else {
-      if (limit && limit <= index) return null;
-      return COLORS[index % COLORS.length];
+      return null;
     }
   }
 }

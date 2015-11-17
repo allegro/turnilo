@@ -314,7 +314,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           }
           checkbox = <Checkbox
             checked={selected}
-            color={colors ? colors.getColor(segmentValue, i) : null}
+            color={colors ? colors.getColor(segmentValue) : null}
           />;
         }
 

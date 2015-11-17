@@ -16,7 +16,8 @@ export interface ChartLineProps extends React.Props<any> {
   scaleX: (v: any) => number;
   scaleY: (v: any) => number;
   color: string;
-  showArea: boolean;
+  showArea?: boolean;
+  hoverDatum?: Datum;
 }
 
 export interface ChartLineState {
@@ -31,7 +32,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
   }
 
   render() {
-    var { stage, dataset, getX, getY, scaleX, scaleY, color, showArea } = this.props;
+    var { stage, dataset, getX, getY, scaleX, scaleY, color, showArea, hoverDatum } = this.props;
     if (!color) return null;
 
     var xFn = (d: Datum) => scaleX(getX(d));
@@ -50,9 +51,21 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
       pathStyle = { stroke: color };
     }
 
+    var hoverElement: JSX.Element = null;
+    if (hoverDatum) {
+      hoverElement = <circle
+        className="hover"
+        cx={xFn(hoverDatum)}
+        cy={yFn(hoverDatum)}
+        r="2.5"
+        style={pathStyle}
+      />;
+    }
+
     return <g className="chart-line" transform={stage.getTransform()}>
       {areaPath}
       <path className="line" d={lineFn(dataset.data)} style={pathStyle}/>
+      {hoverElement}
     </g>;
   }
 }
