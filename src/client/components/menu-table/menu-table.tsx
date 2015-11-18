@@ -4,7 +4,7 @@ require('./menu-table.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, r, Expression, Executor, Dataset, SortAction } from 'plywood';
+import { $, r, Expression, Executor, Dataset, SortAction, Set } from 'plywood';
 import { SEGMENT, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../../common/models/index";
 import { collect } from '../../../common/utils/general/general';
@@ -19,7 +19,7 @@ export interface MenuTableProps extends React.Props<any> {
   essence: Essence;
   dimension: Dimension;
   showCheckboxes: boolean;
-  selectedValues: List<string>;
+  selectedValues: Set;
   onValueClick: Function;
 }
 
@@ -158,7 +158,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
       rows = rowData.map((d) => {
         var segmentValue = d[SEGMENT];
         var segmentValueStr = String(segmentValue);
-        var selected = selectedValues && selectedValues.includes(segmentValue);
+        var selected = selectedValues && selectedValues.contains(segmentValue);
 
         var checkbox: JSX.Element = null;
         if (showCheckboxes) {

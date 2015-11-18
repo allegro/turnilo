@@ -18,6 +18,7 @@ import { Highlighter } from '../../components/highlighter/highlighter';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 import { HoverBubble } from '../../components/hover-bubble/hover-bubble';
+import { HoverMultiBubble } from '../../components/hover-multi-bubble/hover-multi-bubble';
 
 const H_PADDING = 10;
 const TEXT_SPACER = 36;
@@ -240,6 +241,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
       var subQuery: Expression = $main.split(split.toSplitExpression(), segmentName);
 
+      if (colors && colors.dimension === splitDimension.name) {
+        var havingFilter = colors.toHavingFilter(segmentName);
+        if (havingFilter) {
+          subQuery = subQuery.performAction(havingFilter);
+        }
+      }
+
       measures.forEach((measure) => {
         subQuery = subQuery.performAction(measure.toApplyAction());
       });
@@ -251,7 +259,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       subQuery = subQuery.performAction(sortAction);
 
       if (colors && colors.dimension === splitDimension.name) {
-        subQuery = colors.addToExpression(subQuery, segmentName);
+        subQuery = subQuery.performAction(colors.toLimitAction());
         colorsNeedValues = colors.needsValues();
       } else if (limitAction) {
         subQuery = subQuery.performAction(limitAction);
@@ -344,8 +352,18 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var rect = myDOM.getBoundingClientRect();
     var dragDate = scaleX.invert(getXFromEvent(e) - (rect.left + H_PADDING));
 
-    var datasets = splitLength > 1 ? dataset.data.map(datum => datum[SPLIT]) : [dataset];
-    var thisHoverDatums: Datum[] = datasets.map(dataset => findClosest(dataset.data, dragDate, scaleX));
+    var thisHoverDatums: Datum[] = [];
+    if (splitLength > 1) {
+      var flatData = dataset.flatten();
+      var closest = findClosest(flatData, dragDate, scaleX);
+      var closestTime = closest ? closest[TIME_SEGMENT] : null;
+
+      if (closestTime) {
+        thisHoverDatums = flatData.filter(d => closestTime.equals(d[TIME_SEGMENT]));
+      }
+    } else {
+      thisHoverDatums.push(findClosest(dataset.data, dragDate, scaleX));
+    }
 
     if (!hoverDatums || hoverDatums[0] !== thisHoverDatums[0] || measure !== hoverMeasure) {
       this.setState({
@@ -428,6 +446,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         scaleY={scaleY}
         stage={lineStage}
         showArea={true}
+        hoverDatum={hoverDatums && hoverMeasure === measure ? hoverDatums[0] : null}
         color="default"
       />);
     } else {
@@ -449,17 +468,29 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     }
 
     var chartHoverBubble: JSX.Element = null;
-    if (hoverDatums && hoverMeasure === measure) {
+    if (hoverDatums && hoverDatums[0] && hoverMeasure === measure) {
+      var leftOffset = stage.x + H_PADDING + scaleX(getX(hoverDatums[0]));
       var topOffset = (svgStage.height + 1) * graphIndex + HOVER_BUBBLE_V_OFFSET - scrollTop;
-      if (hoverDatums[0] && topOffset > -HOVER_BUBBLE_HEIGHT) {
-        chartHoverBubble = <HoverBubble
+      if (colors) {
+        chartHoverBubble = <HoverMultiBubble
           essence={essence}
-          datum={hoverDatums[0]}
+          datums={hoverDatums}
           measure={measure}
           getY={getY}
-          top={stage.y + topOffset}
-          left={stage.x + H_PADDING + scaleX(getX(hoverDatums[0]))}
+          top={stage.y + topOffset + 30}
+          left={leftOffset}
         />;
+      } else {
+        if (topOffset > -HOVER_BUBBLE_HEIGHT) {
+          chartHoverBubble = <HoverBubble
+            essence={essence}
+            datum={hoverDatums[0]}
+            measure={measure}
+            getY={getY}
+            top={stage.y + topOffset}
+            left={leftOffset}
+          />;
+        }
       }
     }
 
@@ -492,7 +523,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       </svg>
       <div className="measure-label">
         <span className="measure-title">{measure.title}</span>
-        <span className="colon">:</span>
+        <span className="colon">: </span>
         <span className="measure-value">{measure.formatFn(myDatum[measureName])}</span>
       </div>
       {chartHoverBubble}

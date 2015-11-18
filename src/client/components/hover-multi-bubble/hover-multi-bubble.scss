@@ -1,0 +1,24 @@
+@import '../../imports';
+
+.hover-multi-bubble {
+  @extend %menu-cont;
+  position: absolute;
+  width: 200px;
+
+  .color {
+    .color-swab {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+    }
+
+    .color-name {
+      display: inline-block;
+      color: $gray;
+    }
+
+    .color-value {
+      @include pin-right(60px);
+    }
+  }
+}

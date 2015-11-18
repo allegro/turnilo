@@ -1,7 +1,7 @@
 'use strict';
 
 import { Class, Instance, isInstanceOf, isImmutableClass } from 'immutable-class';
-import { $, Expression, Set, valueFromJS, valueToJS } from 'plywood';
+import { $, Expression, Set, valueFromJS, valueToJS, FilterAction, LimitAction } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataSource } from '../data-source/data-source';
 
@@ -169,7 +169,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return limit;
   }
 
-  public valuesToArray(): any[] {
+  public toArray(): any[] {
     var { values } = this;
     if (!values) return null;
 
@@ -182,15 +182,25 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return vs;
   }
 
-  public addToExpression(ex: Expression, segmentName?: string): Expression {
+  public toSet(): Set {
+    if (!this.values) return null;
+    return Set.fromJS(this.toArray());
+  }
+
+  public toHavingFilter(segmentName?: string): FilterAction {
     var { dimension, values } = this;
     if (!segmentName) segmentName = dimension;
 
-    if (values) {
-      ex = ex.filter($(segmentName).in(Set.fromJS(this.valuesToArray())));
-    }
+    if (!values) return null;
+    return new FilterAction({
+      expression: $(segmentName).in(this.toSet())
+    });
+  }
 
-    return ex.limit(this.numColors());
+  public toLimitAction(): LimitAction {
+    return new LimitAction({
+      limit: this.numColors()
+    });
   }
 
   public needsValues(): boolean {

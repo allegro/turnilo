@@ -4,7 +4,7 @@ require('./string-filter-menu.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset, Set } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 import { MenuTable } from '../menu-table/menu-table';
@@ -19,7 +19,7 @@ export interface StringFilterMenuProps extends React.Props<any> {
 }
 
 export interface StringFilterMenuState {
-  selectedValues?: List<any>;
+  selectedValues?: Set;
 }
 
 export class StringFilterMenu extends React.Component<StringFilterMenuProps, StringFilterMenuState> {
@@ -38,7 +38,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
 
     var valueSet = filter.getValues(dimension.expression);
     this.setState({
-      selectedValues: List(valueSet ? valueSet.elements : [])
+      selectedValues: valueSet || Set.EMPTY
     });
   }
 
@@ -47,8 +47,8 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     var { selectedValues } = this.state;
     var { filter } = essence;
 
-    if (selectedValues.size) {
-      var clause = dimension.expression.in(selectedValues.toArray());
+    if (selectedValues.size()) {
+      var clause = dimension.expression.in(selectedValues);
       if (insertPosition !== null) {
         return filter.insertByIndex(insertPosition, clause);
       } else if (replacePosition !== null) {
@@ -63,11 +63,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
 
   onValueClick(value: any) {
     var { selectedValues } = this.state;
-    if (selectedValues.includes(value)) {
-      selectedValues = selectedValues.filter(sv => sv !== value) as List<any>;
-    } else {
-      selectedValues = selectedValues.push(value);
-    }
+    selectedValues = selectedValues.toggle(value);
     this.setState({ selectedValues });
   }
 
