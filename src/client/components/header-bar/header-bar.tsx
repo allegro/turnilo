@@ -15,6 +15,7 @@ function panic() {
 export interface HeaderBarProps {
   essence: Essence;
   onNavClick: MouseEventHandler;
+  showLastUpdated?: boolean;
 }
 
 export interface HeaderBarState {
@@ -28,14 +29,24 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
   }
 
   render() {
-    var { essence, onNavClick } = this.props;
+    var { essence, onNavClick, showLastUpdated } = this.props;
+    var { dataSource } = essence;
+
+    var updated: JSX.Element = null;
+    if (showLastUpdated) {
+      var updatedText = dataSource.updatedText();
+      if (updatedText) {
+        updated = <div className="last-updated">{updatedText}</div>;
+      }
+    }
 
     return <header className="header-bar">
       <div className="burger-bar" onClick={onNavClick}>
         <SvgIcon className="menu" svg={require('../../icons/menu.svg')}/>
-        <div className="dataset-title">{essence.dataSource.title}</div>
+        <div className="dataset-title">{dataSource.title}</div>
       </div>
       <div className="right-bar">
+        {updated}
         <div className="icon-button panic" onClick={panic}>
           <SvgIcon className="panic-icon" svg={require('../../icons/panic.svg')}/>
         </div>

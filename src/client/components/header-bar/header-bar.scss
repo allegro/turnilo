@@ -29,8 +29,18 @@
     right: 14px;
     height: 100%;
 
+    .last-updated {
+      display: inline-block;
+      vertical-align: top;
+      height: 100%;
+      padding: 14px 8px;
+      font-size: 13px;
+      cursor: default;
+    }
+
     .icon-button {
       display: inline-block;
+      vertical-align: top;
       height: 100%;
       padding: 10px 6px;
       cursor: pointer;

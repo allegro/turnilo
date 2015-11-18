@@ -73,7 +73,6 @@ export class MaxTime implements Instance<MaxTimeValue, MaxTimeJS> {
     return MaxTime.isMaxTime(other) &&
       this.time.valueOf() === other.time.valueOf();
   }
-
 }
 check = MaxTime;
 

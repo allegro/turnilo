@@ -26,6 +26,7 @@ export interface PivotApplicationProps {
   version: string;
   dataSources: List<DataSource>;
   homeLink?: string;
+  showLastUpdated?: boolean;
 }
 
 export interface PivotApplicationState {
@@ -260,7 +261,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   render() {
     var clicker = this.clicker;
-    var { homeLink } = this.props;
+    var { homeLink, showLastUpdated } = this.props;
     var { ReactCSSTransitionGroupAsync, SideDrawerAsync, essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
 
     if (!essence) return null;
@@ -313,7 +314,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     }
 
     return <main className='pivot-application' id='portal-cont'>
-      <HeaderBar essence={essence} onNavClick={this.sideDrawerOpen.bind(this, true)}/>
+      <HeaderBar essence={essence} onNavClick={this.sideDrawerOpen.bind(this, true)} showLastUpdated={showLastUpdated}/>
       <div className='container' ref='container'>
         <DimensionMeasurePanel
           clicker={clicker}

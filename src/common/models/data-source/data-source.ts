@@ -12,6 +12,22 @@ import { Filter, FilterJS } from '../filter/filter';
 import { MaxTime, MaxTimeJS } from '../max-time/max-time';
 import { RefreshRule, RefreshRuleJS } from '../refresh-rule/refresh-rule';
 
+function formatTimeDiff(diff: number): string {
+  diff = Math.round(Math.abs(diff) / 1000); // turn to seconds
+  if (diff < 60) return 'less than 1 minute';
+
+  diff = Math.floor(diff / 60); // turn to minutes
+  if (diff === 1) return '1 minute';
+  if (diff < 60) return diff + ' minutes';
+
+  diff = Math.floor(diff / 60); // turn to hours
+  if (diff === 1) return '1 hour';
+  if (diff <= 24) return diff + ' hours';
+
+  diff = Math.floor(diff / 24); // turn to days
+  return diff + ' days';
+}
+
 function makeUniqueDimensionList(dimensions: Dimension[]): List<Dimension> {
   var seen: Lookup<number> = {};
   return List(dimensions.filter((dimension) => {
@@ -319,6 +335,22 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       var { maxTime } = this;
       if (!maxTime) return null;
       return maxTime.time;
+    }
+  }
+
+  public updatedText(): string {
+    var { refreshRule } = this;
+    if (refreshRule.rule === 'realtime') {
+      return 'Updated: ~1 second ago';
+    } else if (refreshRule.rule === 'fixed') {
+      return `Fixed to: ${formatTimeDiff(Date.now() - refreshRule.time.valueOf())}`;
+    } else { //refreshRule.rule === 'query'
+      var { maxTime } = this;
+      if (maxTime) {
+        return `Updated: ${formatTimeDiff(Date.now() - maxTime.time.valueOf())} ago`;
+      } else {
+        return null;
+      }
     }
   }
 
