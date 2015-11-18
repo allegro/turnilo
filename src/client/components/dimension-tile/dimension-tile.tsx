@@ -280,7 +280,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     var rows: Array<JSX.Element> = [];
-    var foldUnfold: JSX.Element = null;
+    var folder: JSX.Element = null;
     var highlightControls: JSX.Element = null;
     var hasMore = false;
     if (dataset) {
@@ -341,7 +341,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       maxHeight += Math.max(2, rows.length) * PIN_ITEM_HEIGHT;
 
       if (filterSet || colors) {
-        foldUnfold = <div
+        folder = <div
           className={'folder ' + (unfolded ? 'folded' : 'unfolded')}
           onClick={this.toggleFold.bind(this)}
         >
@@ -369,8 +369,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const className = [
       'dimension-tile',
-      (showSearch ? 'has-search' : 'no-search'),
-      (filterSet ? 'has-filter' : 'no-filter')
+      (searchBar ? 'has-search' : 'no-search'),
+      (folder ? 'has-folder' : 'no-folder')
     ].join(' ');
 
     const style = {
@@ -390,7 +390,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         {rows}
         {message}
       </div>
-      {foldUnfold}
+      {folder}
       {queryError}
       {loader}
     </div>;

@@ -50,7 +50,7 @@ $folder-box-height: 32px;
     top: $pin-title-height + $search-box-height + $search-box-gap;
   }
 
-  &.has-filter .rows {
+  &.has-folder .rows {
     bottom: $folder-box-height;
   }
 

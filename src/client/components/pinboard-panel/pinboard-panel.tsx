@@ -91,32 +91,13 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var { dragOver } = this.state;
     var { dataSource, pinnedDimensions, colors } = essence;
 
+    var dimensionTiles: JSX.Element[] = [];
+
     var colorDimension = colors ? colors.dimension : null;
-    var legendAdded = false;
-
-    var dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
-      var dimension = dataSource.getDimension(dimensionName);
-      if (!dimension) return null;
-
-      var myColors: Colors = null;
-      if (dimensionName === colorDimension) {
-        legendAdded = true;
-        myColors = colors;
-      }
-
-      return <DimensionTile
-        key={dimension.name}
-        clicker={clicker}
-        essence={essence}
-        dimension={dimension}
-        colors={myColors}
-      />;
-    });
-
-    if (colors && !legendAdded) {
+    if (colorDimension) {
       var dimension = dataSource.getDimension(colorDimension);
       if (dimension) {
-        dimensionTiles.unshift(<DimensionTile
+        dimensionTiles.push(<DimensionTile
           key={dimension.name}
           clicker={clicker}
           essence={essence}
@@ -125,6 +106,20 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         />);
       }
     }
+
+    pinnedDimensions.forEach((dimensionName) => {
+      if (dimensionName === colorDimension) return;
+
+      var dimension = dataSource.getDimension(dimensionName);
+      if (!dimension) return null;
+
+      dimensionTiles.push(<DimensionTile
+        key={dimension.name}
+        clicker={clicker}
+        essence={essence}
+        dimension={dimension}
+      />);
+    });
 
     var dropIndicatorTile: JSX.Element = null;
     if (dragOver) {

@@ -15,6 +15,7 @@ import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator
 import { FilterMenu } from '../filter-menu/filter-menu';
 
 const FILTER_CLASS_NAME = 'filter';
+const ANIMATION_DURATION = 400;
 
 export interface ItemBlank {
   dimension: Dimension;
@@ -201,10 +202,19 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
         var existingClause = filter.clauseForExpression(dimension.expression);
         if (existingClause) {
+          var newFilter: Filter;
           if (dragReplacePosition !== null) {
-            clicker.changeFilter(filter.replaceByIndex(dragReplacePosition, existingClause));
+            newFilter = filter.replaceByIndex(dragReplacePosition, existingClause);
           } else if (dragInsertPosition !== null) {
-            clicker.changeFilter(filter.insertByIndex(dragInsertPosition, existingClause));
+            newFilter = filter.insertByIndex(dragInsertPosition, existingClause);
+          }
+          if (filter.equals(newFilter)) {
+            this.filterMenuRequest(dimension);
+          } else {
+            clicker.changeFilter(newFilter);
+            setTimeout(() => {
+              this.filterMenuRequest(dimension);
+            }, ANIMATION_DURATION + 50); // Wait for the animation to finish to know where to open the menu;
           }
 
         } else {
