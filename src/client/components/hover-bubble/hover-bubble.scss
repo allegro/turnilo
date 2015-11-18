@@ -11,6 +11,7 @@ $hover-bubble-max-width: 300px;
 
   .hover-bubble-inner {
     @extend %menu-cont;
+    background: rgba($white, 0.9);
     display: inline-block;
 
     .text {

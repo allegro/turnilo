@@ -9,7 +9,7 @@ import { SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { BodyPortal } from '../body-portal/body-portal';
 
-const LEFT_OFFSET = 10;
+const LEFT_OFFSET = 22;
 
 export interface HoverMultiBubbleProps extends React.Props<any> {
   essence: Essence;
