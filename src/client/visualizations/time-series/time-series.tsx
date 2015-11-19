@@ -59,6 +59,7 @@ export interface TimeSeriesState {
   dragStart?: number;
   scrollLeft?: number;
   scrollTop?: number;
+  hoverTimeRange?: TimeRange;
   hoverDatums?: Datum[];
   hoverMeasure?: Measure;
 }
@@ -207,6 +208,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       error: null,
       scrollLeft: 0,
       scrollTop: 0,
+      hoverTimeRange: null,
       hoverDatums: null,
       hoverMeasure: null
     };
@@ -343,7 +345,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   onMouseMove(dataset: Dataset, measure: Measure, scaleX: any, e: MouseEvent) {
     var { essence } = this.props;
-    var { hoverDatums, hoverMeasure } = this.state;
+    var { hoverTimeRange, hoverMeasure } = this.state;
     if (!dataset) return;
 
     var splitLength = essence.splits.length();
@@ -352,21 +354,25 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var rect = myDOM.getBoundingClientRect();
     var dragDate = scaleX.invert(getXFromEvent(e) - (rect.left + H_PADDING));
 
+    var thisHoverTimeRange: TimeRange = null;
     var thisHoverDatums: Datum[] = [];
     if (splitLength > 1) {
       var flatData = dataset.flatten();
       var closest = findClosest(flatData, dragDate, scaleX);
-      var closestTime = closest ? closest[TIME_SEGMENT] : null;
 
-      if (closestTime) {
-        thisHoverDatums = flatData.filter(d => closestTime.equals(d[TIME_SEGMENT]));
+      if (closest) {
+        thisHoverTimeRange = closest[TIME_SEGMENT];
+        thisHoverDatums = flatData.filter(d => thisHoverTimeRange.equals(d[TIME_SEGMENT]));
       }
     } else {
-      thisHoverDatums.push(findClosest(dataset.data, dragDate, scaleX));
+      var closestDatum = findClosest(dataset.data, dragDate, scaleX);
+      thisHoverTimeRange = closestDatum[TIME_SEGMENT];
+      thisHoverDatums.push(closestDatum);
     }
 
-    if (!hoverDatums || hoverDatums[0] !== thisHoverDatums[0] || measure !== hoverMeasure) {
+    if (!hoverTimeRange || !hoverTimeRange.equals(thisHoverTimeRange) || measure !== hoverMeasure) {
       this.setState({
+        hoverTimeRange: thisHoverTimeRange,
         hoverDatums: thisHoverDatums,
         hoverMeasure: measure
       });
@@ -377,6 +383,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var { hoverMeasure } = this.state;
     if (hoverMeasure === measure) {
       this.setState({
+        hoverTimeRange: null,
         hoverDatums: null,
         hoverMeasure: null
       });
@@ -389,7 +396,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   renderChart(dataset: Dataset, measure: Measure, graphIndex: number, stage: Stage, svgStage: Stage, getX: any, scaleX: any, xTicks: Date[]): JSX.Element {
     var { essence } = this.props;
-    var { scrollTop, hoverDatums, hoverMeasure } = this.state;
+    var { scrollTop, hoverTimeRange, hoverDatums, hoverMeasure } = this.state;
     var { splits, colors } = essence;
     var splitLength = splits.length();
 
@@ -446,7 +453,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         scaleY={scaleY}
         stage={lineStage}
         showArea={true}
-        hoverDatum={hoverDatums && hoverMeasure === measure ? hoverDatums[0] : null}
+        hoverTimeRange={hoverMeasure === measure ? hoverTimeRange : null}
         color="default"
       />);
     } else {
@@ -461,7 +468,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           scaleY={scaleY}
           stage={lineStage}
           showArea={false}
-          hoverDatum={hoverDatums && hoverMeasure === measure ? hoverDatums[i] : null}
+          hoverTimeRange={hoverMeasure === measure ? hoverTimeRange : null}
           color={colors.getColor(datum[SEGMENT])}
         />;
       });

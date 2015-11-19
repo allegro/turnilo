@@ -4,9 +4,11 @@ require('./chart-line.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset, Datum } from 'plywood';
+import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
+
+const lineFn = d3.svg.line();
 
 export interface ChartLineProps extends React.Props<any> {
   stage: Stage;
@@ -17,7 +19,7 @@ export interface ChartLineProps extends React.Props<any> {
   scaleY: (v: any) => number;
   color: string;
   showArea?: boolean;
-  hoverDatum?: Datum;
+  hoverTimeRange?: TimeRange;
 }
 
 export interface ChartLineState {
@@ -32,18 +34,28 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
   }
 
   render() {
-    var { stage, dataset, getX, getY, scaleX, scaleY, color, showArea, hoverDatum } = this.props;
-    if (!color) return null;
+    var { stage, dataset, getX, getY, scaleX, scaleY, color, showArea, hoverTimeRange } = this.props;
+    if (!dataset || !color) return null;
 
-    var xFn = (d: Datum) => scaleX(getX(d));
-    var yFn = (d: Datum) => scaleY(getY(d));
+    var dataPoints: Array<[number, number]> = [];
+    var hoverDataPoint: [number, number] = null;
 
-    var lineFn = d3.svg.line<Datum>().x(xFn).y(yFn);
+    var ds = dataset.data;
+    for (var i = 0; i < ds.length; i++) {
+      var datum = ds[i];
+      var timeRange = getX(datum);
+      var measureValue = getY(datum);
+      var dataPoint: [number, number] = [scaleX(timeRange), scaleY(measureValue)];
+      dataPoints.push(dataPoint);
+      if (hoverTimeRange && hoverTimeRange.equals(timeRange)) {
+        hoverDataPoint = dataPoint;
+      }
+    }
 
     var areaPath: JSX.Element = null;
     if (showArea) {
-      var areaFn = d3.svg.area<Datum>().x(xFn).y(yFn).y0(scaleY(0));
-      areaPath = <path className="area" d={areaFn(dataset.data)}/>;
+      var areaFn = d3.svg.area().y0(scaleY(0));
+      areaPath = <path className="area" d={areaFn(dataPoints)}/>;
     }
 
     var pathStyle: React.CSSProperties = null;
@@ -52,11 +64,11 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
     }
 
     var hoverElement: JSX.Element = null;
-    if (hoverDatum) {
+    if (hoverDataPoint) {
       hoverElement = <circle
         className="hover"
-        cx={xFn(hoverDatum)}
-        cy={yFn(hoverDatum)}
+        cx={hoverDataPoint[0]}
+        cy={hoverDataPoint[1]}
         r="2.5"
         style={pathStyle}
       />;
@@ -64,7 +76,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
 
     return <g className="chart-line" transform={stage.getTransform()}>
       {areaPath}
-      <path className="line" d={lineFn(dataset.data)} style={pathStyle}/>
+      <path className="line" d={lineFn(dataPoints)} style={pathStyle}/>
       {hoverElement}
     </g>;
   }

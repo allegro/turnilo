@@ -40,13 +40,14 @@ export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, Hov
 
     var colorSwabs = datums.map((datum) => {
       var segmentValue = datum[SEGMENT];
+      var segmentValueString = String(segmentValue);
       var segmentMeasure = getY(datum);
       var swabStyle = { background: colors.getColor(segmentValue) };
       return {
         segmentMeasure,
-        swab: <div className="color" key={segmentValue}>
+        swab: <div className="color" key={segmentValueString}>
           <div className="color-swab" style={swabStyle}></div>
-          <div className="color-name">{segmentValue}</div>
+          <div className="color-name">{segmentValueString}</div>
           <div className="color-value">{measure.formatFn(segmentMeasure)}</div>
         </div>
       };
