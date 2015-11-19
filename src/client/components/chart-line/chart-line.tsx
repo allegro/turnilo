@@ -43,9 +43,12 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
     for (var i = 0; i < ds.length; i++) {
       var datum = ds[i];
       var timeRange: TimeRange = datum[TIME_SEGMENT];
+      if (!timeRange) return null; // Incorrect data loaded
+
       var timeRangeMidPoint = timeRange.midpoint();
       var measureValue = getY(datum);
 
+      // Add potential pre zero point
       var prevDatum = ds[i - 1];
       if (prevDatum && prevDatum[TIME_SEGMENT].end.valueOf() !== timeRange.start.valueOf()) {
         dataPoints.push([
@@ -54,12 +57,14 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
         ]);
       }
 
+      // Add the point itself
       var dataPoint: [number, number] = [scaleX(timeRangeMidPoint), scaleY(measureValue)];
       dataPoints.push(dataPoint);
       if (hoverTimeRange && hoverTimeRange.equals(timeRange)) {
         hoverDataPoint = dataPoint;
       }
 
+      // Add potential post zero point
       var nextDatum = ds[i + 1];
       if (nextDatum && timeRange.end.valueOf() !== nextDatum[TIME_SEGMENT].start.valueOf()) {
         dataPoints.push([

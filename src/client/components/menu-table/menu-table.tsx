@@ -6,7 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, r, Expression, Executor, Dataset, SortAction, Set } from 'plywood';
 import { SEGMENT, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
-import { Essence, DataSource, Filter, Dimension, Measure, Clicker } from "../../../common/models/index";
+import { Essence, DataSource, Filter, Dimension, Measure, Clicker, Colors } from "../../../common/models/index";
 import { collect } from '../../../common/utils/general/general';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
@@ -18,8 +18,8 @@ const TOP_N = 100;
 export interface MenuTableProps extends React.Props<any> {
   essence: Essence;
   dimension: Dimension;
-  showCheckboxes: boolean;
   selectedValues: Set;
+  colors?: Colors;
   onValueClick: Function;
 }
 
@@ -139,7 +139,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   }
 
   render() {
-    var { essence, showCheckboxes, onValueClick, selectedValues } = this.props;
+    var { essence, onValueClick, selectedValues, colors } = this.props;
     var { loading, dataset, fetchQueued, searchText } = this.state;
 
     var rows: Array<JSX.Element> = [];
@@ -160,18 +160,13 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
         var segmentValueStr = String(segmentValue);
         var selected = selectedValues && selectedValues.contains(segmentValue);
 
-        var checkbox: JSX.Element = null;
-        if (showCheckboxes) {
-          checkbox = <Checkbox selected={selected}/>;
-        }
-
         return <div
           className={'row' + (selected ? ' selected' : '')}
           key={segmentValueStr}
           title={segmentValueStr}
           onClick={onValueClick.bind(this, segmentValue)}
         >
-          {checkbox}
+          <Checkbox selected={selected} color={colors ? colors.getColor(segmentValue) : null}/>
           <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
         </div>;
       });

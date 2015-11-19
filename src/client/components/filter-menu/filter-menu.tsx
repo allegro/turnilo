@@ -61,8 +61,14 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
       />;
     }
 
-    return <BubbleMenu className="filter-menu" direction={direction} containerStage={containerStage} stage={menuSize}
-                       openOn={openOn} onClose={onClose}>
+    return <BubbleMenu
+      className="filter-menu"
+      direction={direction}
+      containerStage={containerStage}
+      stage={menuSize}
+      openOn={openOn}
+      onClose={onClose}
+    >
       {menuCont}
     </BubbleMenu>;
   }

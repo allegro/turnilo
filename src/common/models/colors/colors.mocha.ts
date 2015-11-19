@@ -68,13 +68,13 @@ describe('Colors', () => {
       expect(colors.equivalent(initColors)).to.equal(true);
       expect(initColors.equivalent(colors)).to.equal(true);
 
-      expect(colors.hasValue(null), 'has null').to.equal(true);
+      expect(colors.has(null), 'has null').to.equal(true);
 
-      expect(colors.hasValue('South Africa'), 'no SA').to.equal(false);
+      expect(colors.has('South Africa'), 'no SA').to.equal(false);
 
-      colors = colors.addValue('South Africa');
+      colors = colors.add('South Africa');
 
-      expect(colors.hasValue('South Africa')).to.equal(true);
+      expect(colors.has('South Africa')).to.equal(true);
 
       expect(colors.toJS()).to.deep.equal({
         "dimension": "country",
@@ -88,7 +88,7 @@ describe('Colors', () => {
         }
       });
 
-      colors = colors.removeValue('UK');
+      colors = colors.remove('UK');
 
       expect(colors.toJS()).to.deep.equal({
         "dimension": "country",
@@ -101,7 +101,7 @@ describe('Colors', () => {
         }
       });
 
-      colors = colors.addValue('Australia');
+      colors = colors.add('Australia');
 
       expect(colors.toJS()).to.deep.equal({
         "dimension": "country",
@@ -115,7 +115,7 @@ describe('Colors', () => {
         }
       });
 
-      var colorsWithGap = colors.removeValue("Australia");
+      var colorsWithGap = colors.remove("Australia");
       expect(colors.equivalent(colorsWithGap)).to.equal(false);
       expect(colorsWithGap.equivalent(colors)).to.equal(false);
     });

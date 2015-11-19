@@ -220,8 +220,8 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     });
   }
 
-  public toggleValue(v: any): Colors {
-    return this.hasValue(v) ? this.removeValue(v) : this.addValue(v);
+  public toggle(v: any): Colors {
+    return this.has(v) ? this.remove(v) : this.add(v);
   }
 
   public valueIndex(v: any): number {
@@ -244,12 +244,12 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return -1;
   }
 
-  public hasValue(v: any): boolean {
+  public has(v: any): boolean {
     return this.valueIndex(v) !== -1;
   }
 
-  public addValue(v: any): Colors {
-    if (this.hasValue(v)) return this;
+  public add(v: any): Colors {
+    if (this.has(v)) return this;
     var idx = this.nextIndex();
     if (idx === -1) return this;
 
@@ -260,7 +260,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return new Colors(value);
   }
 
-  public removeValue(v: any): Colors {
+  public remove(v: any): Colors {
     var idx = this.valueIndex(v);
     if (idx === -1) return this;
 

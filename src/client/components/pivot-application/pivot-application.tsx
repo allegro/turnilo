@@ -60,9 +60,13 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         var { essence } = this.state;
         this.setState({ essence: essence.changeDataSource(dataSource) });
       },
-      changeFilter: (filter: Filter) => {
+      changeFilter: (filter: Filter, colors?: Colors) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeFilter(filter) });
+        essence = essence.changeFilter(filter);
+        if (colors) {
+          essence = essence.changeColors(colors);
+        }
+        this.setState({ essence });
       },
       changeTimeRange: (timeRange: TimeRange) => {
         var { essence } = this.state;
