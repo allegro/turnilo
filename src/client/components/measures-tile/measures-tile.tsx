@@ -45,9 +45,12 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       var measureName = measure.name;
       var selected = selectedMeasures.has(measureName);
 
-      return <div className={'row' + (selected ? ' selected' : '')} key={measureName}
-                  onClick={clicker.toggleMeasure.bind(clicker, measure)}>
-        <Checkbox checked={selected}/>
+      return <div
+        className={'row' + (selected ? ' selected' : '')}
+        key={measureName}
+        onClick={clicker.toggleMeasure.bind(clicker, measure)}
+      >
+        <Checkbox selected={selected}/>
         <div className="label">{measure.title}</div>
       </div>;
     });

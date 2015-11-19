@@ -10,8 +10,9 @@ import { Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 export interface CheckboxProps extends React.Props<any> {
-  checked: Boolean;
+  selected: Boolean;
   onClick?: MouseEventHandler;
+  cross?: Boolean;
   color?: string;
 }
 
@@ -27,17 +28,29 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
   }
 
   render() {
-    var { checked, onClick, color } = this.props;
+    var { selected, onClick, cross, color } = this.props;
+
+    var className = 'checkbox';
 
     var style: React.CSSProperties = null;
-    var check: JSX.Element = null;
     if (color) {
+      className += ' color';
       style = { background: color };
-    } else if (checked) {
-      check = <SvgIcon svg={require('../../icons/check.svg')}/>;
     }
 
-    return <div className={'checkbox' + (checked ? ' checked' : '')} onClick={onClick}>
+    var check: JSX.Element = null;
+
+    if (selected) {
+      if (cross) {
+        className += ' cross';
+        check = <SvgIcon svg={require('../../icons/x.svg')}/>;
+      } else {
+        className += ' check';
+        check = <SvgIcon svg={require('../../icons/check.svg')}/>;
+      }
+    }
+
+    return <div className={className} onClick={onClick}>
       <div className="checkbox-body" style={style}></div>
       {check}
     </div>;

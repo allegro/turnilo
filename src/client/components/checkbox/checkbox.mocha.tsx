@@ -17,7 +17,7 @@ describe('Checkbox', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <Checkbox
-        checked={null}
+        selected={true}
       />
     );
 
@@ -29,7 +29,7 @@ describe('Checkbox', () => {
     var onClick = sinon.spy();
 
     var renderedComponent = TestUtils.renderIntoDocument(
-      <Checkbox checked={false} onClick={onClick}/>
+      <Checkbox selected={false} onClick={onClick}/>
     );
 
     var svgs = TestUtils.scryRenderedDOMComponentsWithTag(renderedComponent, 'svg');

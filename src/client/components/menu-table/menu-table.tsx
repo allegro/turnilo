@@ -162,7 +162,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
 
         var checkbox: JSX.Element = null;
         if (showCheckboxes) {
-          checkbox = <Checkbox checked={selected}/>;
+          checkbox = <Checkbox selected={selected}/>;
         }
 
         return <div

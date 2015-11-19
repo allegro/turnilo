@@ -136,7 +136,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (
       essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, null, unfolded ? dimension : null) ||
-      essence.differentPinnedSort(nextEssence) || !dimension.equals(nextDimension)
+      essence.differentPinnedSort(nextEssence) ||
+      essence.differentColors(nextEssence, false) ||
+      !dimension.equals(nextDimension)
     ) {
       this.fetchData(nextEssence, nextDimension, unfolded);
     }
@@ -310,15 +312,16 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         var className = 'row';
         var checkbox: JSX.Element = null;
         if (filterSet || colors) {
-          var selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
+          var selected: boolean;
           if (colors) {
             selected = false;
             className += ' color';
           } else {
+            selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
             className += ' ' + (selected ? 'selected' : 'not-selected');
           }
           checkbox = <Checkbox
-            checked={selected}
+            selected={selected}
             color={colors ? colors.getColor(segmentValue) : null}
           />;
         }
