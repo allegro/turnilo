@@ -43,20 +43,17 @@ export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, Hov
       var segmentValueString = String(segmentValue);
       var segmentMeasure = getY(datum);
       var swabStyle = { background: colors.getColor(segmentValue) };
-      return {
-        segmentMeasure,
-        swab: <div className="color" key={segmentValueString}>
-          <div className="color-swab" style={swabStyle}></div>
-          <div className="color-name">{segmentValueString}</div>
-          <div className="color-value">{measure.formatFn(segmentMeasure)}</div>
-        </div>
-      };
-    }).sort((s1, s2) => s2.segmentMeasure - s1.segmentMeasure);
+      return <div className="color" key={segmentValueString}>
+        <div className="color-swab" style={swabStyle}></div>
+        <div className="color-name">{segmentValueString}</div>
+        <div className="color-value">{measure.formatFn(segmentMeasure)}</div>
+      </div>;
+    });
 
     return <BodyPortal left={left + LEFT_OFFSET} top={top} disablePointerEvents={true}>
       <div className="hover-multi-bubble">
         <div className="bucket">{formatTimeRange(datums[0][TIME_SEGMENT], essence.timezone, DisplayYear.NEVER)}</div>
-        <div className="colors">{colorSwabs.map(d => d.swab)}</div>
+        <div className="colors">{colorSwabs}</div>
       </div>
     </BodyPortal>;
   }

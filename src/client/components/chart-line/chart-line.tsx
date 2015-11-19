@@ -6,14 +6,13 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
-// import { SomeComp } from '../some-comp/some-comp';
+import { TIME_SEGMENT } from '../../config/constants';
 
 const lineFn = d3.svg.line();
 
 export interface ChartLineProps extends React.Props<any> {
   stage: Stage;
   dataset: Dataset;
-  getX: (d: Datum) => any;
   getY: (d: Datum) => any;
   scaleX: (v: any) => number;
   scaleY: (v: any) => number;
@@ -34,7 +33,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
   }
 
   render() {
-    var { stage, dataset, getX, getY, scaleX, scaleY, color, showArea, hoverTimeRange } = this.props;
+    var { stage, dataset, getY, scaleX, scaleY, color, showArea, hoverTimeRange } = this.props;
     if (!dataset || !color) return null;
 
     var dataPoints: Array<[number, number]> = [];
@@ -43,12 +42,30 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
     var ds = dataset.data;
     for (var i = 0; i < ds.length; i++) {
       var datum = ds[i];
-      var timeRange = getX(datum);
+      var timeRange: TimeRange = datum[TIME_SEGMENT];
+      var timeRangeMidPoint = timeRange.midpoint();
       var measureValue = getY(datum);
-      var dataPoint: [number, number] = [scaleX(timeRange), scaleY(measureValue)];
+
+      var prevDatum = ds[i - 1];
+      if (prevDatum && prevDatum[TIME_SEGMENT].end.valueOf() !== timeRange.start.valueOf()) {
+        dataPoints.push([
+          scaleX(timeRangeMidPoint.valueOf() - (timeRange.end.valueOf() - timeRange.start.valueOf())),
+          scaleY(0)
+        ]);
+      }
+
+      var dataPoint: [number, number] = [scaleX(timeRangeMidPoint), scaleY(measureValue)];
       dataPoints.push(dataPoint);
       if (hoverTimeRange && hoverTimeRange.equals(timeRange)) {
         hoverDataPoint = dataPoint;
+      }
+
+      var nextDatum = ds[i + 1];
+      if (nextDatum && timeRange.end.valueOf() !== nextDatum[TIME_SEGMENT].start.valueOf()) {
+        dataPoints.push([
+          scaleX(timeRangeMidPoint.valueOf() + (timeRange.end.valueOf() - timeRange.start.valueOf())),
+          scaleY(0)
+        ]);
       }
     }
 

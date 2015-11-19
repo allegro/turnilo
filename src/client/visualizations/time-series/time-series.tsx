@@ -366,8 +366,10 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       }
     } else {
       var closestDatum = findClosest(dataset.data, dragDate, scaleX);
-      thisHoverTimeRange = closestDatum[TIME_SEGMENT];
-      thisHoverDatums.push(closestDatum);
+      if (closestDatum) {
+        thisHoverTimeRange = closestDatum[TIME_SEGMENT];
+        thisHoverDatums.push(closestDatum);
+      }
     }
 
     if (!hoverTimeRange || !hoverTimeRange.equals(thisHoverTimeRange) || measure !== hoverMeasure) {
@@ -447,7 +449,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       chartLines.push(<ChartLine
         key='single'
         dataset={myDataset}
-        getX={getX}
         getY={getY}
         scaleX={scaleX}
         scaleY={scaleY}
@@ -462,7 +463,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         return <ChartLine
           key={'single' + i}
           dataset={datum[SPLIT]}
-          getX={getX}
           getY={getY}
           scaleX={scaleX}
           scaleY={scaleY}
@@ -475,8 +475,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     }
 
     var chartHoverBubble: JSX.Element = null;
-    if (hoverDatums && hoverDatums[0] && hoverMeasure === measure) {
-      var leftOffset = stage.x + H_PADDING + scaleX(getX(hoverDatums[0]));
+    if (hoverTimeRange && hoverDatums && hoverMeasure === measure) {
+      var leftOffset = stage.x + H_PADDING + scaleX(hoverTimeRange.midpoint());
       var topOffset = (svgStage.height + 1) * graphIndex + HOVER_BUBBLE_V_OFFSET - scrollTop;
       if (colors) {
         chartHoverBubble = <HoverMultiBubble
