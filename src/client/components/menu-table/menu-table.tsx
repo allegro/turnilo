@@ -139,7 +139,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
   }
 
   render() {
-    var { essence, onValueClick, selectedValues, colors } = this.props;
+    var { essence, onValueClick, selectedValues } = this.props;
     var { loading, dataset, fetchQueued, searchText } = this.state;
 
     var rows: Array<JSX.Element> = [];
@@ -166,7 +166,7 @@ export class MenuTable extends React.Component<MenuTableProps, MenuTableState> {
           title={segmentValueStr}
           onClick={onValueClick.bind(this, segmentValue)}
         >
-          <Checkbox selected={selected} color={colors ? colors.getColor(segmentValue) : null}/>
+          <Checkbox selected={selected}/>
           <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
         </div>;
       });

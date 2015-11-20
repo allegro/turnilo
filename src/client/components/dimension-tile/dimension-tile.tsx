@@ -191,9 +191,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var { clicker, essence, dimension, colors } = this.props;
     var { filter } = essence;
 
-    if (colors) {
+    if (colors && colors.dimension === dimension.name) {
       colors = colors.toggle(value);
-      clicker.changeColors(colors);
+      if (filter.filteredOn(dimension.expression)) {
+        filter = filter.toggleValue(dimension.expression, value);
+        clicker.changeFilter(filter, colors);
+      } else {
+        clicker.changeColors(colors);
+      }
 
     } else {
       if (e.altKey) {

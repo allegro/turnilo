@@ -8,7 +8,7 @@ import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange,
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, Colors, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
-import { SPLIT, SEGMENT } from '../../config/constants';
+import { SPLIT, SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
 import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
@@ -91,6 +91,12 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
       if (!split.sortAction) {
         split = split.changeSortAction(dataSource.getDefaultSortAction());
+        autoChanged = true;
+      } else if (split.sortAction.refName() === TIME_SEGMENT) {
+        split = split.changeSortAction(new SortAction({
+          expression: $(SEGMENT),
+          direction: split.sortAction.direction
+        }));
         autoChanged = true;
       }
 

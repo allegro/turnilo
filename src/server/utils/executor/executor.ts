@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs-promise';
 import * as Q from 'q';
 import { ply, $, Expression, ExpressionJS, RefExpression, ChainExpression, External, Datum, Dataset, TimeRange,
-         basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes, helper } from 'plywood';
+         basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes } from 'plywood';
 import { DataSource, Dimension } from '../../../common/models/index';
 import { parseData } from '../../../common/utils/parser/parser';
 

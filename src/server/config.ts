@@ -21,7 +21,7 @@ export const VERSION = packageObj.version;
 
 function errorExit(e: Error): void {
   console.error(e.message);
-  console.error((<any>e).stack);
+  console.error((e as any).stack);
   process.exit(1);
 }
 
