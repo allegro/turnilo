@@ -78,20 +78,6 @@ pivot --config config.yaml
 
 The next step is to examine and tweak the config using your favorite editor `nano config.yaml`.
 
-## Roadmap
-
-**Recent improvements:**
-- Comparing multiple dimension values on a time series
-- Multiple selections from pinned dimensions
-- More options for quick time selection
-- Introspection writes a config file
-
-**We will be working on:**
-- Additional visualizations (bar chart and geo)
-- Exclusion filters
-- Better time selection
-- Various additions, improvements and fixes to make the app more complete
-
 ## Development
 
 Here are the steps to clone Pivot and run it as a developer. 
@@ -130,6 +116,20 @@ Then you are ready to
 ```
 ./bin/pivot --config config.yaml
 ```
+
+## Roadmap
+
+**Recent improvements:**
+- Comparing multiple dimension values on a time series
+- Multiple selections from pinned dimensions
+- More options for quick time selection
+- Introspection writes a config file
+
+**We will be working on:**
+- Additional visualizations (bar chart and geo)
+- Exclusion filters
+- Better time selection
+- Various additions, improvements and fixes to make the app more complete
 
 ## Questions & Support
 
