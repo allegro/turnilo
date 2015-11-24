@@ -145,11 +145,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var { clicker, essence, onClose } = this.props;
     var { split, colors } = this.state;
 
-    if (colors) {
-      clicker.changeColors(colors);
-    } else {
-      clicker.changeSplits(essence.splits.replace(this.props.split, split), VisStrategy.UnfairGame);
-    }
+    clicker.changeSplits(essence.splits.replace(this.props.split, split), VisStrategy.UnfairGame, colors);
     onClose();
   }
 
