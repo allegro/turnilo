@@ -6,16 +6,16 @@ import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataSource } from '../data-source/data-source';
 
 const COLORS = [
-  '#2D9ED6',
-  '#F4AC54',
-  '#50C06E',
-  '#E96464',
-  '#53C6CC',
-  '#A884BE',
-  '#E5C019',
-  '#727272',
-  '#FB97D3',
-  '#B7D456'
+  '#2D95CA',
+  '#E4A83A',
+  '#D36FA4',
+  '#66CC86',
+  '#8476B2',
+  '#E48353',
+  '#E09BDB',
+  '#45A860',
+  '#B7BB53',
+  '#B8698C'
 ];
 
 function valuesFromJS(valuesJS: Lookup<any>): Lookup<any> {
