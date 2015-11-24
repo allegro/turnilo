@@ -10,7 +10,7 @@ import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePr
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
 import { MeasuresTile } from '../measures-tile/measures-tile';
 
-export interface DimensionMeasurePanelProps {
+export interface DimensionMeasurePanelProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;

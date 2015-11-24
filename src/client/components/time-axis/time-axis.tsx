@@ -10,7 +10,7 @@ import { Stage, Filter, Dimension, Measure } from '../../../common/models/index'
 const TICK_HEIGHT = 5;
 const TEXT_OFFSET = 12;
 
-export interface TimeAxisProps {
+export interface TimeAxisProps extends React.Props<any> {
   stage: Stage;
   xTicks: Date[];
   scaleX: any;

@@ -8,7 +8,7 @@ import { $, r, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
 import { SEGMENT, PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { setDragGhost, isInside, escapeKey } from '../../utils/dom/dom';
-import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
+import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine, Colors } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
 import { TileHeader } from '../tile-header/tile-header';
 import { ClearableInput } from '../clearable-input/clearable-input';
@@ -23,12 +23,11 @@ const SEARCH_BOX_HEIGHT = 26;
 const SEARCH_BOX_GAP = 3;
 const FOLDER_BOX_HEIGHT = 30;
 
-export interface DimensionTileProps {
+export interface DimensionTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;
-
-  key?: string;
+  colors?: Colors;
 }
 
 export interface DimensionTileState {
@@ -36,7 +35,7 @@ export interface DimensionTileState {
   dataset?: Dataset;
   error?: any;
   fetchQueued?: boolean;
-  unfilter?: boolean;
+  unfolded?: boolean;
   showSearch?: boolean;
   searchText?: string;
 }
@@ -52,7 +51,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       dataset: null,
       error: null,
       fetchQueued: false,
-      unfilter: true,
+      unfolded: true,
       showSearch: false,
       searchText: ''
     };
@@ -60,25 +59,30 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
       if (!this.mounted) return;
       var { essence, dimension } = this.props;
-      var { unfilter } = this.state;
-      this.fetchData(essence, dimension, unfilter);
+      var { unfolded } = this.state;
+      this.fetchData(essence, dimension, unfolded);
     });
 
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
-  fetchData(essence: Essence, dimension: Dimension, unfilter: boolean): void {
+  fetchData(essence: Essence, dimension: Dimension, unfolded: boolean): void {
     var { searchText } = this.state;
-    var { dataSource } = essence;
+    var { dataSource, colors } = essence;
     var measure = essence.getPinnedSortMeasure();
 
     var filter = essence.getEffectiveFilter();
-    if (unfilter) {
+    if (unfolded) {
       filter = filter.remove(dimension.expression);
     }
 
     var filterExpression = filter.toExpression();
+
+    if (colors && !unfolded) {
+      filterExpression = filterExpression.and(dimension.expression.in(colors.toSet()));
+    }
+
     if (searchText) {
       filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), 'ignoreCase'));
     }
@@ -120,21 +124,23 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     window.addEventListener('mousedown', this.globalMouseDownListener);
     window.addEventListener('keydown', this.globalKeyDownListener);
     var { essence, dimension } = this.props;
-    var { unfilter } = this.state;
-    this.fetchData(essence, dimension, unfilter);
+    var { unfolded } = this.state;
+    this.fetchData(essence, dimension, unfolded);
   }
 
   componentWillReceiveProps(nextProps: DimensionTileProps) {
     var { essence, dimension } = this.props;
-    var { unfilter } = this.state;
+    var { unfolded } = this.state;
     var nextEssence = nextProps.essence;
     var nextDimension = nextProps.dimension;
     if (
       essence.differentDataSource(nextEssence) ||
-      essence.differentEffectiveFilter(nextEssence, null, unfilter ? dimension : null) ||
-      essence.differentPinnedSort(nextEssence) || !dimension.equals(nextDimension)
+      essence.differentEffectiveFilter(nextEssence, null, unfolded ? dimension : null) ||
+      essence.differentPinnedSort(nextEssence) ||
+      essence.differentColors(nextEssence, false) ||
+      !dimension.equals(nextDimension)
     ) {
-      this.fetchData(nextEssence, nextDimension, unfilter);
+      this.fetchData(nextEssence, nextDimension, unfolded);
     }
   }
 
@@ -182,33 +188,45 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   onRowClick(value: any, e: MouseEvent) {
-    var { clicker, essence, dimension } = this.props;
+    var { clicker, essence, dimension, colors } = this.props;
     var { filter } = essence;
 
-    if (e.altKey) {
-      if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).size() === 1) {
-        filter = filter.remove(dimension.expression);
+    if (colors && colors.dimension === dimension.name) {
+      colors = colors.toggle(value);
+      if (filter.filteredOn(dimension.expression)) {
+        filter = filter.toggleValue(dimension.expression, value);
+        clicker.changeFilter(filter, colors);
       } else {
-        filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
+        clicker.changeColors(colors);
       }
+
     } else {
-      filter = filter.toggleValue(dimension.expression, value);
-    }
+      if (e.altKey) {
+        if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).size() === 1) {
+          filter = filter.remove(dimension.expression);
+        } else {
+          filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
+        }
+      } else {
+        filter = filter.toggleValue(dimension.expression, value);
+      }
 
-    var { unfilter } = this.state;
-    if (!unfilter && !filter.filteredOn(dimension.expression)) {
-      this.setState({ unfilter: true });
-    }
+      // If no longer filtered switch unfolded to true for later
+      var { unfolded } = this.state;
+      if (!unfolded && !filter.filteredOn(dimension.expression)) {
+        this.setState({ unfolded: true });
+      }
 
-    clicker.changeFilter(filter);
+      clicker.changeFilter(filter);
+    }
   }
 
   toggleFold() {
     var { essence, dimension } = this.props;
-    var { unfilter } = this.state;
-    unfilter = !unfilter;
-    this.setState({ unfilter });
-    this.fetchData(essence, dimension, unfilter);
+    var { unfolded } = this.state;
+    unfolded = !unfolded;
+    this.setState({ unfolded });
+    this.fetchData(essence, dimension, unfolded);
   }
 
   onDragStart(e: DragEvent) {
@@ -246,8 +264,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   render() {
-    var { clicker, essence, dimension } = this.props;
-    var { loading, dataset, error, showSearch, unfilter, fetchQueued, searchText } = this.state;
+    var { clicker, essence, dimension, colors } = this.props;
+    var { loading, dataset, error, showSearch, unfolded, fetchQueued, searchText } = this.state;
     var measure = essence.getPinnedSortMeasure();
 
     var measureName = measure.name;
@@ -269,14 +287,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     var rows: Array<JSX.Element> = [];
-    var foldUnfold: JSX.Element = null;
+    var folder: JSX.Element = null;
     var highlightControls: JSX.Element = null;
     var hasMore = false;
     if (dataset) {
       hasMore = dataset.data.length > TOP_N;
       var rowData = dataset.data.slice(0, TOP_N);
 
-      if (!unfilter && filterSet) {
+      if (!unfolded && filterSet) {
         rowData = rowData.filter((d) => {
           return filterSet.contains(d[SEGMENT]);
         });
@@ -290,7 +308,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       }
 
       var formatter = formatterFromData(rowData.map(d => d[measureName]), measure.format);
-      rows = rowData.map((d) => {
+      rows = rowData.map((d, i) => {
         var segmentValue = d[SEGMENT];
         var segmentValueStr = String(segmentValue);
         var measureValue = d[measureName];
@@ -298,12 +316,19 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
         var className = 'row';
         var checkbox: JSX.Element = null;
-        if (filterSet) {
-          var selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
-          className += ' ' + (selected ? 'selected' : 'not-selected');
-          checkbox = React.createElement(Checkbox, {
-            checked: selected
-          });
+        if (filterSet || colors) {
+          var selected: boolean;
+          if (colors) {
+            selected = false;
+            className += ' color';
+          } else {
+            selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
+            className += ' ' + (selected ? 'selected' : 'not-selected');
+          }
+          checkbox = <Checkbox
+            selected={selected}
+            color={colors ? colors.getColor(segmentValue) : null}
+          />;
         }
 
         var row = <div
@@ -323,13 +348,13 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       });
       maxHeight += Math.max(2, rows.length) * PIN_ITEM_HEIGHT;
 
-      if (filterSet) {
-        foldUnfold = <div
-          className={'folder ' + (unfilter ? 'folded' : 'unfolded')}
+      if (filterSet || colors) {
+        folder = <div
+          className={'folder ' + (unfolded ? 'folded' : 'unfolded')}
           onClick={this.toggleFold.bind(this)}
         >
           <SvgIcon svg={require('../../icons/caret.svg')}/>
-          {unfilter ? 'Fold' : 'Unfold'}
+          {unfolded ? 'Fold' : 'Unfold'}
         </div>;
         maxHeight += FOLDER_BOX_HEIGHT;
       }
@@ -340,20 +365,20 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var loader: JSX.Element = null;
     var message: JSX.Element = null;
     if (loading) {
-      loader = React.createElement(Loader, null);
+      loader = <Loader/>;
     } else if (dataset && !fetchQueued && searchText && !rows.length) {
       message = <div className="message">{'No results for "' + searchText + '"'}</div>;
     }
 
     var queryError: JSX.Element = null;
     if (error) {
-      queryError = React.createElement(QueryError, { error });
+      queryError = <QueryError error={error}/>;
     }
 
     const className = [
       'dimension-tile',
-      (showSearch ? 'has-search' : 'no-search'),
-      (filterSet ? 'has-filter' : 'no-filter')
+      (searchBar ? 'has-search' : 'no-search'),
+      (folder ? 'has-folder' : 'no-folder')
     ].join(' ');
 
     const style = {
@@ -373,7 +398,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         {rows}
         {message}
       </div>
-      {foldUnfold}
+      {folder}
       {queryError}
       {loader}
     </div>;

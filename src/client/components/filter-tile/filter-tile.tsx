@@ -15,6 +15,7 @@ import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator
 import { FilterMenu } from '../filter-menu/filter-menu';
 
 const FILTER_CLASS_NAME = 'filter';
+const ANIMATION_DURATION = 400;
 
 export interface ItemBlank {
   dimension: Dimension;
@@ -22,12 +23,10 @@ export interface ItemBlank {
   clause?: ChainExpression;
 }
 
-export interface FilterTileProps {
+export interface FilterTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-
-  ref?: any;
 }
 
 export interface FilterTileState {
@@ -93,7 +92,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   closeMenu() {
-    if (!this.state.menuOpenOn) return;
+    var { menuOpenOn } = this.state;
+    if (!menuOpenOn) return;
     this.setState({
       menuOpenOn: null,
       menuDimension: null,
@@ -128,6 +128,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
 
     setDragGhost(dataTransfer, dimension.title);
+
+    this.closeMenu();
   }
 
   calculateDragPosition(e: DragEvent): DragPosition {
@@ -203,10 +205,19 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
         var existingClause = filter.clauseForExpression(dimension.expression);
         if (existingClause) {
+          var newFilter: Filter;
           if (dragReplacePosition !== null) {
-            clicker.changeFilter(filter.replaceByIndex(dragReplacePosition, existingClause));
+            newFilter = filter.replaceByIndex(dragReplacePosition, existingClause);
           } else if (dragInsertPosition !== null) {
-            clicker.changeFilter(filter.insertByIndex(dragInsertPosition, existingClause));
+            newFilter = filter.insertByIndex(dragInsertPosition, existingClause);
+          }
+          if (filter.equals(newFilter)) {
+            this.filterMenuRequest(dimension);
+          } else {
+            clicker.changeFilter(newFilter);
+            setTimeout(() => {
+              this.filterMenuRequest(dimension);
+            }, ANIMATION_DURATION + 50); // Wait for the animation to finish to know where to open the menu;
           }
 
         } else {

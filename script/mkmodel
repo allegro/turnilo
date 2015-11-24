@@ -51,7 +51,7 @@ export class #{camelName} implements Instance<#{camelName}Value, #{camelName}JS>
   }
 
   static fromJS(parameters: #{camelName}JS): #{camelName} {
-    var value: RefreshRuleValue = {
+    var value: #{camelName}Value = {
       /* */
     };
     return new #{camelName}(value);

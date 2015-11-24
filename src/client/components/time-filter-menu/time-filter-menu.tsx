@@ -107,7 +107,7 @@ function getCurrentOrPrevious(now: Date, previous: boolean, tz: Timezone): TimeP
   ];
 }
 
-export interface TimeFilterMenuProps {
+export interface TimeFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;

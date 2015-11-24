@@ -13,7 +13,7 @@ import { StringFilterMenu } from '../string-filter-menu/string-filter-menu';
 import { TimeFilterMenu } from '../time-filter-menu/time-filter-menu';
 
 
-export interface FilterMenuProps {
+export interface FilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   direction: string;
@@ -61,8 +61,14 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
       />;
     }
 
-    return <BubbleMenu className="filter-menu" direction={direction} containerStage={containerStage} stage={menuSize}
-                       openOn={openOn} onClose={onClose}>
+    return <BubbleMenu
+      className="filter-menu"
+      direction={direction}
+      containerStage={containerStage}
+      stage={menuSize}
+      openOn={openOn}
+      onClose={onClose}
+    >
       {menuCont}
     </BubbleMenu>;
   }

@@ -78,7 +78,6 @@ pivot --config config.yaml
 
 The next step is to examine and tweak the config using your favorite editor `nano config.yaml`.
 
-
 ## Development
 
 Here are the steps to clone Pivot and run it as a developer. 
@@ -96,13 +95,7 @@ git clone git@github.com:implydata/pivot.git
 cd pivot
 ```
 
-Also make sure you have the SASS lint gem:
-
-```
-gem install scss_lint
-```
-
-Next, inside the pivot folder run:
+Inside the pivot folder run:
 
 ```
 npm install
@@ -126,12 +119,18 @@ Then you are ready to
 
 ## Roadmap
 
-We will be working on:
-- Better time selection
-- Time comparison visualization
-- Additional visualizations
+**Recent improvements:**
+
+- Comparing multiple dimension values on a time series
+- Multiple selections from pinned dimensions
+- More options for quick time selection
+- Introspection writes a config file
+
+**We will be working on:**
+
+- Additional visualizations (bar chart and geo)
 - Exclusion filters
-- Being able to easily embed Pivot in your app
+- Better time selection
 - Various additions, improvements and fixes to make the app more complete
 
 ## Questions & Support

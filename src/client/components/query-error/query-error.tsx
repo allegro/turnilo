@@ -9,7 +9,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 // import { ... } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 
-export interface QueryErrorProps {
+export interface QueryErrorProps extends React.Props<any> {
   error: any;
 }
 

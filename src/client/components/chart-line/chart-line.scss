@@ -3,15 +3,21 @@
 .chart-line {
   pointer-events: none;
 
+  .area {
+    stroke: none;
+    fill: $main-time-area;
+    fill-opacity: .9;
+  }
+
   .line {
     fill: none;
     stroke: $main-time-line;
     stroke-width: 1.6px;
   }
 
-  .area {
-    stroke: none;
-    fill: $main-time-area;
-    fill-opacity: .9;
+  .hover {
+    fill: $white;
+    stroke: $main-time-line;
+    stroke-width: 2;
   }
 }

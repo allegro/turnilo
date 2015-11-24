@@ -9,9 +9,11 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-export interface CheckboxProps {
-  checked: Boolean;
+export interface CheckboxProps extends React.Props<any> {
+  selected: Boolean;
   onClick?: MouseEventHandler;
+  cross?: Boolean;
+  color?: string;
 }
 
 export interface CheckboxState {
@@ -26,15 +28,31 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
   }
 
   render() {
-    var { checked, onClick } = this.props;
+    var { selected, onClick, cross, color } = this.props;
 
-    var check: JSX.Element = null;
-    if (checked) {
-      check = React.createElement(SvgIcon, {
-        svg: require('../../icons/check.svg')
-      });
+    var className = 'checkbox';
+
+    var style: React.CSSProperties = null;
+    if (color) {
+      className += ' color';
+      style = { background: color };
     }
 
-    return <div className={'checkbox' + (checked ? ' checked' : '')} onClick={onClick}>{check}</div>;
+    var check: JSX.Element = null;
+
+    if (selected) {
+      if (cross) {
+        className += ' cross';
+        check = <SvgIcon svg={require('../../icons/x.svg')}/>;
+      } else {
+        className += ' check';
+        check = <SvgIcon svg={require('../../icons/check.svg')}/>;
+      }
+    }
+
+    return <div className={className} onClick={onClick}>
+      <div className="checkbox-body" style={style}></div>
+      {check}
+    </div>;
   }
 }

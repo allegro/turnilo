@@ -8,7 +8,8 @@ import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
 import { dataTransferTypesGet } from '../../utils/dom/dom';
-import { Stage, Essence, VisStrategy, Filter, Dimension, Measure, Splits, SplitCombine, Clicker, DataSource, Manifest, VisualizationProps } from "../../../common/models/index";
+import { Stage, Essence, VisStrategy, Filter, Dimension, Measure, Splits,
+         SplitCombine, Clicker, DataSource, Manifest, Colors, VisualizationProps } from "../../../common/models/index";
 
 import { HeaderBar } from '../header-bar/header-bar';
 import { DimensionMeasurePanel } from '../dimension-measure-panel/dimension-measure-panel';
@@ -22,10 +23,12 @@ import { SideDrawer, SideDrawerProps } from '../side-drawer/side-drawer';
 
 import { visualizations } from '../../visualizations/index';
 
-export interface PivotApplicationProps {
+export interface PivotApplicationProps extends React.Props<any> {
   version: string;
   dataSources: List<DataSource>;
   homeLink?: string;
+  maxFilters?: number;
+  maxSplits?: number;
   showLastUpdated?: boolean;
 }
 
@@ -40,6 +43,11 @@ export interface PivotApplicationState {
 }
 
 export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
+  static defaultProps = {
+    maxFilters: 20,
+    maxSplits: 3
+  };
+
   private clicker: Clicker;
   private dragCounter: number;
   private hashUpdating: boolean = false;
@@ -59,16 +67,19 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         var { essence } = this.state;
         this.setState({ essence: essence.changeDataSource(dataSource) });
       },
-      changeFilter: (filter: Filter) => {
+      changeFilter: (filter: Filter, colors?: Colors) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeFilter(filter) });
+        essence = essence.changeFilter(filter);
+        if (colors) essence = essence.changeColors(colors);
+        this.setState({ essence });
       },
       changeTimeRange: (timeRange: TimeRange) => {
         var { essence } = this.state;
         this.setState({ essence: essence.changeTimeRange(timeRange) });
       },
-      changeSplits: (splits: Splits, strategy: VisStrategy) => {
+      changeSplits: (splits: Splits, strategy: VisStrategy, colors?: Colors) => {
         var { essence } = this.state;
+        if (colors) essence = essence.changeColors(colors);
         this.setState({ essence: essence.changeSplits(splits, strategy) });
       },
       changeSplit: (split: SplitCombine, strategy: VisStrategy) => {
@@ -82,6 +93,10 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       removeSplit: (split: SplitCombine, strategy: VisStrategy) => {
         var { essence } = this.state;
         this.setState({ essence: essence.removeSplit(split, strategy) });
+      },
+      changeColors: (colors: Colors) => {
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeColors(colors) });
       },
       changeVisualization: (visualization: Manifest) => {
         var { essence } = this.state;
@@ -261,7 +276,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   render() {
     var clicker = this.clicker;
-    var { homeLink, showLastUpdated } = this.props;
+    var { homeLink, maxFilters, maxSplits, showLastUpdated } = this.props;
     var { ReactCSSTransitionGroupAsync, SideDrawerAsync, essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
 
     if (!essence) return null;
@@ -294,23 +309,25 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var sideDrawer: JSX.Element = null;
     if (drawerOpen && SideDrawerAsync) {
       var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
-      sideDrawer = React.createElement(SideDrawerAsync, {
-        key: 'drawer',
-        clicker,
-        essence,
-        onClose: closeSideDrawer,
-        homeLink
-      } as SideDrawerProps);
+      sideDrawer = <SideDrawerAsync
+        key='drawer'
+        clicker={clicker}
+        essence={essence}
+        onClose={closeSideDrawer}
+        homeLink={homeLink}
+      />;
     }
 
     if (ReactCSSTransitionGroupAsync) {
-      var sideDrawerTransition = React.createElement(ReactCSSTransitionGroupAsync as any, {
-        component: "div",
-        className: "side-drawer-container",
-        transitionName: "side-drawer",
-        transitionEnterTimeout: 500,
-        transitionLeaveTimeout: 300
-      }, sideDrawer);
+      var sideDrawerTransition = <ReactCSSTransitionGroupAsync
+        component="div"
+        className="side-drawer-container"
+        transitionName="side-drawer"
+        transitionEnterTimeout={500}
+        transitionLeaveTimeout={300}
+      >
+        {sideDrawer}
+      </ReactCSSTransitionGroupAsync>;
     }
 
     return <main className='pivot-application' id='portal-cont'>

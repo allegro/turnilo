@@ -13,14 +13,13 @@ import { BodyPortal } from '../body-portal/body-portal';
 const OFFSET_H = 10;
 const OFFSET_V = -1;
 
-export interface BubbleMenuProps {
+export interface BubbleMenuProps extends React.Props<any> {
   className: string;
   direction: string;
   stage: Stage;
   containerStage: Stage;
   openOn: Element;
   onClose: Function;
-  children?: any;
 }
 
 export interface BubbleMenuState {

@@ -10,7 +10,7 @@ import { isInside, escapeKey } from '../../utils/dom/dom';
 import { Clicker, Essence, Measure, Manifest } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-export interface VisSelectorMenuProps {
+export interface VisSelectorMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   openOn: Element;
@@ -66,13 +66,13 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
 
   renderVisItem(v: Manifest, onClick: Function): JSX.Element {
     var { essence } = this.props;
-    var { visualizations } = essence;
+    var { visualization } = essence;
 
     var state: string;
-    if (v.id === essence.visualization.id) {
+    if (v.id === visualization.id) {
       state = 'selected';
     } else {
-      state = v.handleCircumstance(essence.dataSource, essence.splits).toString();
+      state = 'not-selected'; // v.handleCircumstance(essence.dataSource, essence.splits, essence.colors, false).toString();
     }
 
     return <div

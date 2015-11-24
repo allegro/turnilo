@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, RefExpression, Executor, Dataset, TimeBucketAction, SortAction, LimitAction } from 'plywood';
-import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Dimension, Measure, DimensionOrMeasure } from '../../../common/models/index';
+import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Colors, Dimension, Measure, DimensionOrMeasure } from '../../../common/models/index';
 import { SEGMENT } from '../../config/constants';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
@@ -26,26 +26,27 @@ function mdTitle(measure: DimensionOrMeasure): string {
   return measure.title;
 }
 
-function formatLimit(limit: number): string {
+function formatLimit(limit: number | string): string {
+  if (limit === 'custom') return 'Custom';
   return limit === null ? 'None' : String(limit);
 }
 
 function formatGranularity(gran: string): string {
   switch (gran) {
     case 'PT1M':
-      return '1m';
+      return '1M';
     case 'PT1H':
-      return '1h';
+      return '1H';
     case 'P1D':
-      return '1d';
+      return '1D';
     case 'P7D':
-      return '7d';
+      return '7D';
     default:
       return gran;
   }
 }
 
-export interface SplitMenuProps {
+export interface SplitMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   direction: string;
@@ -58,6 +59,7 @@ export interface SplitMenuProps {
 
 export interface SplitMenuState {
   split?: SplitCombine;
+  colors?: Colors;
 }
 
 export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
@@ -66,13 +68,27 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   constructor() {
     super();
     this.state = {
-      split: null
+      split: null,
+      colors: null
     };
   }
 
   componentWillMount() {
-    var { split } = this.props;
-    this.setState({ split });
+    var { essence, split } = this.props;
+    var { dataSource, colors } = essence;
+
+    var myColors: Colors = null;
+    if (colors) {
+      var colorDimension = dataSource.getDimension(colors.dimension);
+      if (colorDimension.expression.equals(split.expression)) {
+        myColors = colors;
+      }
+    }
+
+    this.setState({
+      split,
+      colors: myColors
+    });
   }
 
   onSelectGran(gran: string): void {
@@ -110,19 +126,26 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   onSelectLimit(limit: number): void {
+    var { essence } = this.props;
     var { split } = this.state;
+    var { dataSource, colors } = essence;
+
+    if (colors) {
+      colors = colors.setAsLimit(limit);
+    }
+
     this.setState({
-      split: split.changeLimit(limit)
+      split: split.changeLimit(limit),
+      colors
     });
   }
 
   onOkClick() {
+    if (!this.actionEnabled()) return;
     var { clicker, essence, onClose } = this.props;
-    var originalSplit = this.props.split;
-    var newSplit = this.state.split;
-    if (!originalSplit.equals(newSplit)) {
-      clicker.changeSplits(essence.splits.replace(originalSplit, newSplit), VisStrategy.KeepIfReady);
-    }
+    var { split, colors } = this.state;
+
+    clicker.changeSplits(essence.splits.replace(this.props.split, split), VisStrategy.UnfairGame, colors);
     onClose();
   }
 
@@ -137,8 +160,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var { sortAction} = split;
     if (!sortAction) return dimension;
     var sortOn = (sortAction.expression as RefExpression).name;
-    if (sortOn === SEGMENT) return dimension;
-    return essence.dataSource.getMeasure(sortOn);
+    return essence.dataSource.getMeasure(sortOn) || dimension;
   }
 
   renderGranularityPicker() {
@@ -161,7 +183,6 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   renderSortDropdown() {
     var { essence, dimension } = this.props;
-    var { split } = this.state;
 
     var mds = [(dimension as DimensionOrMeasure)].concat(essence.dataSource.measures.toArray());
     var md = this.getSortDimensionOrMeasure();
@@ -190,19 +211,25 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   renderLimitDropdown(includeNone: boolean) {
-    var { split } = this.state;
+    var { essence } = this.props;
+    var { split, colors } = this.state;
     var { limitAction } = split;
 
-    var items = [5, 10, 25, 50, 100];
-    if (includeNone) items.unshift(null);
+    var items: Array<number | string> = [5, 10, 25, 50, 100];
+    var selectedItem: number | string = limitAction ? limitAction.limit : null;
+    if (colors) {
+      items = [3, 5, 7, 9, 10];
+      selectedItem = colors.values ? 'custom' : colors.limit;
+    }
 
+    if (includeNone) items.unshift(null);
     return React.createElement(Dropdown, {
       label: "Limit",
       items,
-      selectedItem: limitAction ? limitAction.limit : null,
+      selectedItem,
       renderItem: formatLimit,
       onSelect: this.onSelectLimit.bind(this)
-    } as DropdownProps<number>);
+    } as DropdownProps<number | string>);
   }
 
   renderTimeControls() {
@@ -220,6 +247,15 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     </div>;
   }
 
+  actionEnabled() {
+    var originalSplit = this.props.split;
+    var originalColors = this.props.essence.colors;
+    var newSplit = this.state.split;
+    var newColors = this.state.colors;
+
+    return !originalSplit.equals(newSplit) || (originalColors && !originalColors.equals(newColors));
+  }
+
   render() {
     var { direction, containerStage, openOn, dimension, onClose } = this.props;
     var { split } = this.state;
@@ -234,8 +270,6 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       menuControls = this.renderStringControls();
     }
 
-    var actionDisabled = split.equals(this.props.split);
-
     return <BubbleMenu
       className="split-menu"
       direction={direction}
@@ -246,7 +280,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     >
       {menuControls}
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={actionDisabled}>OK</button>
+        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>OK</button>
         <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
       </div>
     </BubbleMenu>;

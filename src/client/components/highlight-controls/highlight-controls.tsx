@@ -14,7 +14,7 @@ function stopEvent(e: React.MouseEvent): void {
   e.stopPropagation();
 }
 
-export interface HighlightControlsProps {
+export interface HighlightControlsProps extends React.Props<any> {
   clicker: Clicker;
   orientation: string;
   onClose?: Function;

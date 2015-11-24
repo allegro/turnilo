@@ -12,13 +12,11 @@ import { DataSource, Clicker, Essence } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 
-export interface SideDrawerProps {
+export interface SideDrawerProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   onClose: Function;
   homeLink?: string;
-
-  key?: string;
 }
 
 export interface SideDrawerState {

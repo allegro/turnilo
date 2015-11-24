@@ -9,7 +9,7 @@ import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePr
 
 // Inspired by: https://gist.github.com/MoOx/1eb30eac43b2114de73a
 
-export interface SvgIconProps {
+export interface SvgIconProps extends React.Props<any> {
   svg: string;
   className?: string;
   style?: any;

@@ -36,6 +36,8 @@ writeFile = (path, data) ->
   catch
     console.log("Skipping #{path}")
 
+any = 'any'
+
 # Make the TypeScript file
 writeFile(path + name + '.tsx', """
 'use strict';
@@ -50,7 +52,7 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 
 // I am: import { #{camelName} } from '../#{name}/#{name}';
 
-export interface #{camelName}Props {
+export interface #{camelName}Props extends React.Props<#{any}> {
 }
 
 export interface #{camelName}State {
@@ -104,7 +106,9 @@ describe('#{camelName}', () => {
 
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <#{camelName}/>
+      <#{camelName}
+
+      />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);

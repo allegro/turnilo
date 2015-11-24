@@ -1,36 +1,24 @@
+import Color = d3.Color;
 'use strict';
 require('./chart-line.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset, Datum } from 'plywood';
+import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
-// import { SomeComp } from '../some-comp/some-comp';
+import { TIME_SEGMENT } from '../../config/constants';
 
-const COLORS = [
-  '#1f77b4',
-  '#ff7f0e',
-  '#2ca02c',
-  '#d62728',
-  '#9467bd',
-  '#8c564b',
-  '#e377c2',
-  '#7f7f7f',
-  '#bcbd22',
-  '#17becf'
-];
+const lineFn = d3.svg.line();
 
-export interface ChartLineProps {
+export interface ChartLineProps extends React.Props<any> {
   stage: Stage;
   dataset: Dataset;
-  getX: (d: Datum) => any;
   getY: (d: Datum) => any;
   scaleX: (v: any) => number;
   scaleY: (v: any) => number;
-  showArea: boolean;
-  color?: number;
-
-  key?: string;
+  color: string;
+  showArea?: boolean;
+  hoverTimeRange?: TimeRange;
 }
 
 export interface ChartLineState {
@@ -45,22 +33,73 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
   }
 
   render() {
-    var { stage, dataset, getX, getY, scaleX, scaleY, showArea, color } = this.props;
+    var { stage, dataset, getY, scaleX, scaleY, color, showArea, hoverTimeRange } = this.props;
+    if (!dataset || !color) return null;
 
-    var xFn = (d: Datum) => scaleX(getX(d));
-    var yFn = (d: Datum) => scaleY(getY(d));
+    var dataPoints: Array<[number, number]> = [];
+    var hoverDataPoint: [number, number] = null;
 
-    var lineFn = d3.svg.line<Datum>().x(xFn).y(yFn);
+    var ds = dataset.data;
+    for (var i = 0; i < ds.length; i++) {
+      var datum = ds[i];
+      var timeRange: TimeRange = datum[TIME_SEGMENT];
+      if (!timeRange) return null; // Incorrect data loaded
+
+      var timeRangeMidPoint = timeRange.midpoint();
+      var measureValue = getY(datum);
+
+      // Add potential pre zero point
+      var prevDatum = ds[i - 1];
+      if (prevDatum && prevDatum[TIME_SEGMENT].end.valueOf() !== timeRange.start.valueOf()) {
+        dataPoints.push([
+          scaleX(timeRangeMidPoint.valueOf() - (timeRange.end.valueOf() - timeRange.start.valueOf())),
+          scaleY(0)
+        ]);
+      }
+
+      // Add the point itself
+      var dataPoint: [number, number] = [scaleX(timeRangeMidPoint), scaleY(measureValue)];
+      dataPoints.push(dataPoint);
+      if (hoverTimeRange && hoverTimeRange.equals(timeRange)) {
+        hoverDataPoint = dataPoint;
+      }
+
+      // Add potential post zero point
+      var nextDatum = ds[i + 1];
+      if (nextDatum && timeRange.end.valueOf() !== nextDatum[TIME_SEGMENT].start.valueOf()) {
+        dataPoints.push([
+          scaleX(timeRangeMidPoint.valueOf() + (timeRange.end.valueOf() - timeRange.start.valueOf())),
+          scaleY(0)
+        ]);
+      }
+    }
 
     var areaPath: JSX.Element = null;
     if (showArea) {
-      var areaFn = d3.svg.area<Datum>().x(xFn).y(yFn).y0(scaleY(0));
-      areaPath = <path className="area" d={areaFn(dataset.data)}/>;
+      var areaFn = d3.svg.area().y0(scaleY(0));
+      areaPath = <path className="area" d={areaFn(dataPoints)}/>;
+    }
+
+    var pathStyle: React.CSSProperties = null;
+    if (color !== 'default') {
+      pathStyle = { stroke: color };
+    }
+
+    var hoverElement: JSX.Element = null;
+    if (hoverDataPoint) {
+      hoverElement = <circle
+        className="hover"
+        cx={hoverDataPoint[0]}
+        cy={hoverDataPoint[1]}
+        r="2.5"
+        style={pathStyle}
+      />;
     }
 
     return <g className="chart-line" transform={stage.getTransform()}>
       {areaPath}
-      <path className="line" d={lineFn(dataset.data)} stroke={color ? COLORS[color] : null}/>
+      <path className="line" d={lineFn(dataPoints)} style={pathStyle}/>
+      {hoverElement}
     </g>;
   }
 }

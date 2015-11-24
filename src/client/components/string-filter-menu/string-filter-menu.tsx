@@ -4,12 +4,12 @@ require('./string-filter-menu.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
+import { $, Expression, Executor, Dataset, Set } from 'plywood';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, Colors } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 import { MenuTable } from '../menu-table/menu-table';
 
-export interface StringFilterMenuProps {
+export interface StringFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   dimension: Dimension;
   essence: Essence;
@@ -19,7 +19,8 @@ export interface StringFilterMenuProps {
 }
 
 export interface StringFilterMenuState {
-  selectedValues?: List<any>;
+  selectedValues?: Set;
+  colors?: Colors;
 }
 
 export class StringFilterMenu extends React.Component<StringFilterMenuProps, StringFilterMenuState> {
@@ -27,18 +28,22 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   constructor() {
     super();
     this.state = {
-      selectedValues: null
+      selectedValues: null,
+      colors: null
     };
 
   }
 
   componentWillMount() {
     var { essence, dimension } = this.props;
-    var { filter } = essence;
+    var { filter, colors } = essence;
+
+    var myColors = (colors && colors.dimension === dimension.name ? colors : null);
 
     var valueSet = filter.getValues(dimension.expression);
     this.setState({
-      selectedValues: List(valueSet ? valueSet.elements : [])
+      selectedValues: valueSet || (myColors ? myColors.toSet() : Set.EMPTY),
+      colors: myColors
     });
   }
 
@@ -47,8 +52,8 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     var { selectedValues } = this.state;
     var { filter } = essence;
 
-    if (selectedValues.size) {
-      var clause = dimension.expression.in(selectedValues.toArray());
+    if (selectedValues.size()) {
+      var clause = dimension.expression.in(selectedValues);
       if (insertPosition !== null) {
         return filter.insertByIndex(insertPosition, clause);
       } else if (replacePosition !== null) {
@@ -62,18 +67,21 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   onValueClick(value: any) {
-    var { selectedValues } = this.state;
-    if (selectedValues.includes(value)) {
-      selectedValues = selectedValues.filter(sv => sv !== value) as List<any>;
-    } else {
-      selectedValues = selectedValues.push(value);
+    var { selectedValues, colors } = this.state;
+    selectedValues = selectedValues.toggle(value);
+    if (colors) {
+      colors = colors.toggle(value);
     }
-    this.setState({ selectedValues });
+    this.setState({
+      selectedValues,
+      colors
+    });
   }
 
   onOkClick() {
     var { clicker, onClose } = this.props;
-    clicker.changeFilter(this.constructFilter());
+    var { colors } = this.state;
+    clicker.changeFilter(this.constructFilter(), colors);
     onClose();
   }
 
@@ -84,7 +92,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
 
   render() {
     var { essence, dimension } = this.props;
-    var { selectedValues } = this.state;
+    var { selectedValues, colors } = this.state;
     if (!dimension) return null;
 
     var actionDisabled = essence.filter.equals(this.constructFilter());
@@ -93,8 +101,8 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       <MenuTable
         essence={essence}
         dimension={dimension}
-        showCheckboxes={true}
         selectedValues={selectedValues}
+        colors={colors}
         onValueClick={this.onValueClick.bind(this)}
       />
       <div className="button-bar">

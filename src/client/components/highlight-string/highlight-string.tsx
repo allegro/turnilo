@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 // import { ... } from '../../config/constants';
 
-export interface HighlightStringProps {
+export interface HighlightStringProps extends React.Props<any> {
   className?: string;
   text: string;
   highlightText: string;

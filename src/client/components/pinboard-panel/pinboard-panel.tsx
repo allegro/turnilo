@@ -1,3 +1,4 @@
+import {Colors} from "../../../common/models/colors/colors";
 'use strict';
 require('./pinboard-panel.css');
 
@@ -11,7 +12,7 @@ import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../
 import { PinboardMeasureTile } from '../pinboard-measure-tile/pinboard-measure-tile';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
 
-export interface PinboardPanelProps {
+export interface PinboardPanelProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
 }
@@ -88,17 +89,36 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   render() {
     var { clicker, essence } = this.props;
     var { dragOver } = this.state;
-    var { dataSource, pinnedDimensions } = essence;
+    var { dataSource, pinnedDimensions, colors } = essence;
 
-    var dimensionTiles = pinnedDimensions.toArray().map((dimensionName) => {
+    var dimensionTiles: JSX.Element[] = [];
+
+    var colorDimension = colors ? colors.dimension : null;
+    if (colorDimension) {
+      var dimension = dataSource.getDimension(colorDimension);
+      if (dimension) {
+        dimensionTiles.push(<DimensionTile
+          key={dimension.name}
+          clicker={clicker}
+          essence={essence}
+          dimension={dimension}
+          colors={colors}
+        />);
+      }
+    }
+
+    pinnedDimensions.forEach((dimensionName) => {
+      if (dimensionName === colorDimension) return;
+
       var dimension = dataSource.getDimension(dimensionName);
       if (!dimension) return null;
-      return <DimensionTile
+
+      dimensionTiles.push(<DimensionTile
         key={dimension.name}
         clicker={clicker}
         essence={essence}
         dimension={dimension}
-      />;
+      />);
     });
 
     var dropIndicatorTile: JSX.Element = null;
@@ -107,7 +127,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     }
 
     var placeholder: JSX.Element = null;
-    if (!dragOver && !pinnedDimensions.size) {
+    if (!dragOver && !dimensionTiles.length) {
       placeholder = <div className="placeholder">
         <SvgIcon svg={require('../../icons/preview-pin.svg')}/>
         <div className="placeholder-message">Click or drag dimensions to pin them</div>

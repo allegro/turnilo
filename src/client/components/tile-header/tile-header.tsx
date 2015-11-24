@@ -10,13 +10,11 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Filter, Dimension, Measure } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-export interface TileHeaderProps {
+export interface TileHeaderProps extends React.Props<any> {
   title: string;
   onDragStart: DragEventHandler;
   onSearch: MouseEventHandler;
   onClose: MouseEventHandler;
-
-  ref?: string;
 }
 
 export interface TileHeaderState {

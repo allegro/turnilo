@@ -12,7 +12,7 @@ import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePr
 // import { ... } from '../../config/constants';
 // import { SomeComp } from '../some-comp/some-comp';
 
-export interface TimeInputProps {
+export interface TimeInputProps extends React.Props<any> {
   time: Date;
   timezone: Timezone;
   onChange: Function;

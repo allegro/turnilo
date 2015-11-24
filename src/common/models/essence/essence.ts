@@ -13,6 +13,7 @@ import { Splits, SplitsJS } from '../splits/splits';
 import { SplitCombine } from '../split-combine/split-combine';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
+import { Colors, ColorsJS } from '../colors/colors';
 import { Manifest, Resolve } from '../manifest/manifest';
 
 const HASH_VERSION = 1;
@@ -33,10 +34,14 @@ export interface VisualizationAndResolve {
   resolve: Resolve;
 }
 
+/**
+ * FairGame   - Run all visualizations pretending that there is no current
+ * UnfairGame - Run all visualizations but mark current vis as current
+ * KeepAlways - Just keep the current one
+ */
 export enum VisStrategy {
   FairGame,
-  KeepIfReadyOrAutomatic,
-  KeepIfReady,
+  UnfairGame,
   KeepAlways
 }
 
@@ -51,7 +56,7 @@ export interface EssenceValue {
   splits: Splits;
   selectedMeasures: OrderedSet<string>;
   pinnedDimensions: OrderedSet<string>;
-  previewSort: string;
+  colors: Colors;
   pinnedSort: string;
   compare: Filter;
   highlight: Highlight;
@@ -65,7 +70,7 @@ export interface EssenceJS {
   splits: SplitsJS;
   selectedMeasures: string[];
   pinnedDimensions: string[];
-  previewSort?: string;
+  colors?: ColorsJS;
   pinnedSort?: string;
   compare?: FilterJS;
   highlight?: HighlightJS;
@@ -104,7 +109,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     if (!Array.isArray(jsArray)) return null;
     var jsArrayLength = jsArray.length;
-    if (!(7 <= jsArrayLength && jsArrayLength <= 9)) return null;
+    if (!(6 <= jsArrayLength && jsArrayLength <= 9)) return null;
 
     var essence: Essence;
     try {
@@ -116,8 +121,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
         splits: jsArray[2],
         selectedMeasures: jsArray[3],
         pinnedDimensions: jsArray[4],
-        previewSort: jsArray[5],
-        pinnedSort: jsArray[6],
+        pinnedSort: jsArray[5],
+        colors: jsArray[6] || null,
         compare: jsArray[7] || null,
         highlight: jsArray[8] || null
       }, dataSources, visualizations);
@@ -129,30 +134,42 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   static fromDataSource(dataSource: DataSource, dataSources: List<DataSource>, visualizations: List<Manifest>): Essence {
-    var defaultTimezone = dataSource.defaultTimezone;
+    var timezone = dataSource.defaultTimezone;
 
     var filter = dataSource.defaultFilter;
     if (dataSource.timeAttribute) {
       var now = dataSource.getMaxTimeDate();
       var timeRange = TimeRange.fromJS({
-        start: dataSource.defaultDuration.move(now, defaultTimezone, -1),
+        start: dataSource.defaultDuration.move(now, timezone, -1),
         end: now
       });
       filter = filter.setTimeRange(dataSource.timeAttribute, timeRange);
+    }
+
+    var splits = Splits.EMPTY;
+    if (typeof dataSource.options['defaultSplitDimension'] === 'string') {
+      var defaultSplitDimension = dataSource.getDimension(dataSource.options['defaultSplitDimension']);
+      if (defaultSplitDimension) {
+        splits = Splits.fromSplitCombine(SplitCombine.fromExpression(defaultSplitDimension.expression));
+      }
+      var timeAttribute = dataSource.timeAttribute;
+      if (timeAttribute) {
+        splits = splits.updateWithTimeRange(timeAttribute, filter.getTimeRange(timeAttribute), timezone);
+      }
     }
 
     return new Essence({
       dataSources: dataSources,
       visualizations: visualizations,
 
-      dataSource: dataSource,
+      dataSource,
       visualization: null,
-      timezone: defaultTimezone,
+      timezone,
       filter,
-      splits: Splits.EMPTY,
+      splits,
       selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
       pinnedDimensions: dataSource.defaultPinnedDimensions,
-      previewSort: dataSource.defaultSortMeasure,
+      colors: null,
       pinnedSort: dataSource.defaultSortMeasure,
       compare: null,
       highlight: null
@@ -173,8 +190,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var defaultSortMeasureName = dataSource.defaultSortMeasure;
 
-    var previewSort = parameters.previewSort || defaultSortMeasureName;
-    if (!dataSource.getMeasure(previewSort)) previewSort = defaultSortMeasureName;
+    var colors = parameters.colors ? Colors.fromJS(parameters.colors) : null;
 
     var pinnedSort = parameters.pinnedSort || defaultSortMeasureName;
     if (!dataSource.getMeasure(pinnedSort)) pinnedSort = defaultSortMeasureName;
@@ -202,7 +218,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       splits,
       selectedMeasures,
       pinnedDimensions,
-      previewSort,
+      colors,
       pinnedSort,
       compare,
       highlight
@@ -220,7 +236,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   public splits: Splits;
   public selectedMeasures: OrderedSet<string>;
   public pinnedDimensions: OrderedSet<string>;
-  public previewSort: string;
+  public colors: Colors;
   public pinnedSort: string;
   public compare: Filter;
   public highlight: Highlight;
@@ -240,24 +256,29 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     this.splits = parameters.splits;
     this.selectedMeasures = parameters.selectedMeasures;
     this.pinnedDimensions = parameters.pinnedDimensions;
-    this.previewSort = parameters.previewSort;
+    this.colors = parameters.colors;
     this.pinnedSort = parameters.pinnedSort;
     this.compare = parameters.compare;
     this.highlight = parameters.highlight;
 
-    // Place vis here because it needs to know about splits (and maybe later other things)
+    // Place vis here because it needs to know about splits and colors (and maybe later other things)
     var visualization = parameters.visualization;
     if (!visualization) {
-      var visAndResolve = this.getBestVisualization(this.splits);
+      var visAndResolve = this.getBestVisualization(this.splits, this.colors, null);
       visualization = visAndResolve.visualization;
     }
     this.visualization = visualization;
 
-    var visResolve = visualization.handleCircumstance(this.dataSource, this.splits);
+    var visResolve = visualization.handleCircumstance(this.dataSource, this.splits, this.colors, true);
     if (visResolve.isAutomatic()) {
-      this.splits = visResolve.adjustment;
-      visResolve = visualization.handleCircumstance(this.dataSource, this.splits);
-      if (!visResolve.isReady()) throw new Error('visualization must be ready after automatic adjustment');
+      var adjustment = visResolve.adjustment;
+      this.splits = adjustment.splits;
+      this.colors = adjustment.colors || null;
+      visResolve = visualization.handleCircumstance(this.dataSource, this.splits, this.colors, true);
+      if (!visResolve.isReady()) {
+        console.log(visResolve);
+        throw new Error('visualization must be ready after automatic adjustment');
+      }
     }
     this.visResolve = visResolve;
   }
@@ -274,7 +295,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       splits: this.splits,
       selectedMeasures: this.selectedMeasures,
       pinnedDimensions: this.pinnedDimensions,
-      previewSort: this.previewSort,
+      colors: this.colors,
       pinnedSort: this.pinnedSort,
       compare: this.compare,
       highlight: this.highlight
@@ -294,8 +315,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       pinnedDimensions
     };
     var defaultSortMeasure = this.dataSource.defaultSortMeasure;
-    if (js.previewSort !== defaultSortMeasure) js.previewSort = this.previewSort;
-    if (js.pinnedSort !== defaultSortMeasure) js.pinnedSort = this.pinnedSort;
+    if (this.colors) js.colors = this.colors.toJS();
+    if (this.pinnedSort !== defaultSortMeasure) js.pinnedSort = this.pinnedSort;
     if (this.compare) js.compare = this.compare.toJS();
     if (this.highlight) js.highlight = this.highlight.toJS();
     return js;
@@ -318,7 +339,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       this.splits.equals(other.splits) &&
       this.selectedMeasures.equals(other.selectedMeasures) &&
       this.pinnedDimensions.equals(other.pinnedDimensions) &&
-      this.previewSort === other.previewSort &&
+      Boolean(this.colors) === Boolean(other.colors) &&
+      (!this.colors || this.colors.equals(other.colors)) &&
       this.pinnedSort === other.pinnedSort &&
       Boolean(this.compare) === Boolean(other.compare) &&
       (!this.compare || this.compare.equals(other.compare)) &&
@@ -334,9 +356,9 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       js.splits,           // 2
       js.selectedMeasures, // 3
       js.pinnedDimensions, // 4
-      js.previewSort,      // 5
-      js.pinnedSort        // 6
+      js.pinnedSort        // 5
     ];
+    if (js.colors)      compressed[6] = js.colors;
     if (js.compare)     compressed[7] = js.compare;
     if (js.highlight)   compressed[8] = js.highlight;
 
@@ -357,30 +379,16 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return Essence.getBaseURL() + this.toHash();
   }
 
-  public getBestVisualization(splits: Splits): VisualizationAndResolve {
+  public getBestVisualization(splits: Splits, colors: Colors, currentVisualization: Manifest): VisualizationAndResolve {
     var { visualizations, dataSource } = this;
     var visAndResolves = visualizations.toArray().map((visualization) => {
       return {
         visualization,
-        resolve: visualization.handleCircumstance(dataSource, splits)
+        resolve: visualization.handleCircumstance(dataSource, splits, colors, visualization === currentVisualization)
       };
     });
 
-    // the vis are sorted least impressive -> most impressive so reverse the list
-    visAndResolves.reverse();
-
-    // Try to find a ready vis
-    for (var visAndResolve of visAndResolves) {
-      if (visAndResolve.resolve.isReady()) return visAndResolve;
-    }
-
-    // Try to find an automatic vis
-    for (var visAndResolve of visAndResolves) {
-      if (visAndResolve.resolve.isAutomatic()) return visAndResolve;
-    }
-
-    // Should never get here because totals / table should always be able to be applied
-    throw new Error('could not find ready or automatic vis, something is misconstrued');
+    return visAndResolves.sort((vr1, vr2) => Resolve.compare(vr1.resolve, vr2.resolve))[0];
   }
 
   public getTimeAttribute(): RefExpression {
@@ -417,6 +425,16 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public differentSplits(other: Essence): boolean {
     return !this.splits.equals(other.splits);
+  }
+
+  public differentColors(other: Essence, equivalenceOnly: boolean): boolean {
+    if (Boolean(this.colors) !== Boolean(other.colors)) return true;
+    if (!this.colors) return false;
+    if (equivalenceOnly) {
+      return !this.colors.equivalentToLimit(other.colors);
+    } else {
+      return !this.colors.equals(other.colors);
+    }
   }
 
   public differentSelectedMeasures(other: Essence): boolean {
@@ -511,8 +529,11 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     value.selectedMeasures = constrainMeasures(value.selectedMeasures, dataSource);
     value.pinnedDimensions = constrainDimensions(value.pinnedDimensions, dataSource);
 
+    if (value.colors && !dataSource.getDimension(value.colors.dimension)) {
+      value.colors = null;
+    }
+
     var defaultSortMeasureName = dataSource.defaultSortMeasure;
-    if (!dataSource.getMeasure(value.previewSort)) value.previewSort = defaultSortMeasureName;
     if (!dataSource.getMeasure(value.pinnedSort)) value.pinnedSort = defaultSortMeasureName;
 
     if (value.compare) {
@@ -551,7 +572,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
-    var { dataSource, visualization, visResolve, filter } = this;
+    var { dataSource, visualization, visResolve, filter, colors } = this;
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
@@ -563,34 +584,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       strategy = VisStrategy.KeepAlways;
     }
 
-    //console.log('VisStrategy:', VisStrategy[strategy]);
-
-    var keepVis: boolean;
-    switch (strategy) {
-      case VisStrategy.FairGame:
-        keepVis = false;
-        break;
-
-      case VisStrategy.KeepIfReadyOrAutomatic:
-        var newResolve = visualization.handleCircumstance(dataSource, splits);
-        keepVis = newResolve.isReady() || newResolve.isAutomatic();
-        break;
-
-      case VisStrategy.KeepIfReady:
-        var newResolve = visualization.handleCircumstance(dataSource, splits);
-        keepVis = newResolve.isReady();
-        break;
-
-      case VisStrategy.KeepAlways:
-        keepVis = true;
-        break;
-
-      default:
-        throw new Error('unknown vis strategy');
-    }
-
-    if (!keepVis) {
-      var visAndResolve = this.getBestVisualization(splits);
+    if (strategy !== VisStrategy.KeepAlways) {
+      var visAndResolve = this.getBestVisualization(splits, colors, (strategy === VisStrategy.FairGame ? null : visualization));
       visualization = visAndResolve.visualization;
     }
 
@@ -618,6 +613,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.changeSplits(splits.removeSplit(split), strategy);
   }
 
+  public changeColors(colors: Colors): Essence {
+    var value = this.valueOf();
+    value.colors = colors;
+    return new Essence(value);
+  }
+
   public changeVisualization(visualization: Manifest): Essence {
     var value = this.valueOf();
     value.visualization = visualization;
@@ -634,10 +635,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var value = this.valueOf();
     value.pinnedDimensions = value.pinnedDimensions.remove(dimension.name);
     return new Essence(value);
-  }
-
-  public getPreviewSortMeasure(): Measure {
-    return this.dataSource.getMeasure(this.previewSort);
   }
 
   public getPinnedSortMeasure(): Measure {

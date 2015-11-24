@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom';
 import { Stage } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
-export interface GridLinesProps {
+export interface GridLinesProps extends React.Props<any> {
   orientation: string;
   stage: Stage;
   ticks: any[];

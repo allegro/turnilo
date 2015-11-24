@@ -18,12 +18,12 @@ describe('ChartLine', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <ChartLine
         dataset={null}
-        getX={null}
         getY={null}
         scaleX={null}
         scaleY={null}
-        showArea={null}
         stage={null}
+        color={null}
+        showArea={null}
       />
     );
 
