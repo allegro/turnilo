@@ -73,7 +73,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   closeMenu() {
-    if (!this.state.menuOpenOn) return;
+    var { menuOpenOn } = this.state;
+    if (!menuOpenOn) return;
     this.setState({
       menuOpenOn: null,
       menuDimension: null,
@@ -100,6 +101,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     dataTransfer.setData("split/" + splitIndex, JSON.stringify(split));
     dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
     setDragGhost(dataTransfer, dimension.title);
+
+    this.closeMenu();
   }
 
   calculateDragPosition(e: DragEvent): DragPosition {

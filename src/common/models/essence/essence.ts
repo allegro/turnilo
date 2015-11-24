@@ -134,27 +134,39 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   static fromDataSource(dataSource: DataSource, dataSources: List<DataSource>, visualizations: List<Manifest>): Essence {
-    var defaultTimezone = dataSource.defaultTimezone;
+    var timezone = dataSource.defaultTimezone;
 
     var filter = dataSource.defaultFilter;
     if (dataSource.timeAttribute) {
       var now = dataSource.getMaxTimeDate();
       var timeRange = TimeRange.fromJS({
-        start: dataSource.defaultDuration.move(now, defaultTimezone, -1),
+        start: dataSource.defaultDuration.move(now, timezone, -1),
         end: now
       });
       filter = filter.setTimeRange(dataSource.timeAttribute, timeRange);
+    }
+
+    var splits = Splits.EMPTY;
+    if (typeof dataSource.options['defaultSplitDimension'] === 'string') {
+      var defaultSplitDimension = dataSource.getDimension(dataSource.options['defaultSplitDimension']);
+      if (defaultSplitDimension) {
+        splits = Splits.fromSplitCombine(SplitCombine.fromExpression(defaultSplitDimension.expression));
+      }
+      var timeAttribute = dataSource.timeAttribute;
+      if (timeAttribute) {
+        splits = splits.updateWithTimeRange(timeAttribute, filter.getTimeRange(timeAttribute), timezone);
+      }
     }
 
     return new Essence({
       dataSources: dataSources,
       visualizations: visualizations,
 
-      dataSource: dataSource,
+      dataSource,
       visualization: null,
-      timezone: defaultTimezone,
+      timezone,
       filter,
-      splits: Splits.EMPTY,
+      splits,
       selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
       pinnedDimensions: dataSource.defaultPinnedDimensions,
       colors: null,

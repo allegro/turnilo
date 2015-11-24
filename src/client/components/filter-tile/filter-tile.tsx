@@ -92,7 +92,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   closeMenu() {
-    if (!this.state.menuOpenOn) return;
+    var { menuOpenOn } = this.state;
+    if (!menuOpenOn) return;
     this.setState({
       menuOpenOn: null,
       menuDimension: null,
@@ -127,6 +128,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
 
     setDragGhost(dataTransfer, dimension.title);
+
+    this.closeMenu();
   }
 
   calculateDragPosition(e: DragEvent): DragPosition {

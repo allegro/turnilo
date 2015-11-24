@@ -66,6 +66,8 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   closeMenu() {
+    var { menuOpenOn } = this.state;
+    if (!menuOpenOn) return;
     this.setState({
       menuOpenOn: null,
       menuDimension: null
@@ -94,6 +96,8 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     dataTransfer.setData("text/plain", newUrl);
     dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
     setDragGhost(dataTransfer, dimension.title);
+
+    this.closeMenu();
   }
 
   canDrop(e: DragEvent): boolean {

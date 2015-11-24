@@ -27,6 +27,8 @@ export interface PivotApplicationProps extends React.Props<any> {
   version: string;
   dataSources: List<DataSource>;
   homeLink?: string;
+  maxFilters?: number;
+  maxSplits?: number;
   showLastUpdated?: boolean;
 }
 
@@ -41,6 +43,11 @@ export interface PivotApplicationState {
 }
 
 export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
+  static defaultProps = {
+    maxFilters: 20,
+    maxSplits: 3
+  };
+
   private clicker: Clicker;
   private dragCounter: number;
   private hashUpdating: boolean = false;
@@ -270,7 +277,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   render() {
     var clicker = this.clicker;
-    var { homeLink, showLastUpdated } = this.props;
+    var { homeLink, maxFilters, maxSplits, showLastUpdated } = this.props;
     var { ReactCSSTransitionGroupAsync, SideDrawerAsync, essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
 
     if (!essence) return null;

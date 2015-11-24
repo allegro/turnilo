@@ -16,6 +16,7 @@ export interface DataSourceManagerOptions {
   dataSourceStubFactory?: (name: string) => DataSource;
   fileDirectory?: string;
   useSegmentMetadata?: boolean;
+  sourceListScan?: string;
   sourceListRefreshInterval?: number;
   sourceListRefreshOnLoad?: boolean;
   log?: Function;
@@ -37,10 +38,16 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     dataSourceStubFactory,
     fileDirectory,
     useSegmentMetadata,
+    sourceListScan,
     sourceListRefreshInterval,
     sourceListRefreshOnLoad,
     log
   } = options;
+
+  if (!sourceListScan) sourceListScan = 'auto';
+  if (sourceListScan !== 'disable' && sourceListScan !== 'auto') {
+    throw new Error(`sourceListScan must be disabled or auto is ('${sourceListScan}')`);
+  }
 
   if (!dataSourceStubFactory) {
     dataSourceStubFactory = (name: string) => {
@@ -171,7 +178,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   myDataSources.forEach((dataSource) => {
     initialTasks.push(introspectDataSource(dataSource));
   });
-  if (druidRequester) {
+  if (sourceListScan === 'auto' && druidRequester) {
     initialTasks.push(loadDruidDataSources());
   }
 
@@ -182,7 +189,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     log(`Initial introspection complete. Got ${myDataSources.length} data sources, ${queryableDataSources.length} queryable`);
   });
 
-  if (sourceListRefreshInterval) {
+  if (sourceListScan === 'auto' && sourceListRefreshInterval) {
     log(`Will refresh data sources every ${sourceListRefreshInterval}ms`);
     setInterval(loadDruidDataSources, sourceListRefreshInterval).unref();
   }

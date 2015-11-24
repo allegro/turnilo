@@ -12,6 +12,7 @@ export interface PivotConfig {
   verbose?: boolean;
   druidHost?: string;
   useSegmentMetadata?: string;
+  sourceListScan?: string;
   sourceListRefreshInterval?: number;
   dataSources?: DataSourceJS[];
 }
@@ -98,6 +99,7 @@ if (parsedArgs['version']) {
 
 const DEFAULT_CONFIG: PivotConfig = {
   port: 9090,
+  sourceListScan: 'auto',
   sourceListRefreshInterval: 10000,
   dataSources: []
 };
@@ -154,6 +156,7 @@ export const PORT = parseInt(parsedArgs['port'] || config.port, 10);
 export const DRUID_HOST = parsedArgs['druid'] || config.druidHost;
 
 export const USE_SEGMENT_METADATA = Boolean(parsedArgs["use-segment-metadata"] || config.useSegmentMetadata);
+export const SOURCE_LIST_SCAN = START_SERVER ? config.sourceListScan : 'disable';
 export const SOURCE_LIST_REFRESH_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceListRefreshInterval, 10) || 10000) : 0;
 
 if (SOURCE_LIST_REFRESH_INTERVAL && SOURCE_LIST_REFRESH_INTERVAL < 1000) {
@@ -186,6 +189,7 @@ export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
   concurrentLimit: 5,
   fileDirectory: path.join(__dirname, '../..'),
   useSegmentMetadata: USE_SEGMENT_METADATA,
+  sourceListScan: SOURCE_LIST_SCAN,
   sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL,
   log: PRINT_CONFIG ? null : (line: string) => console.log(line)
 });
@@ -226,6 +230,9 @@ if (PRINT_CONFIG) {
         }
         lines.push(`useSegmentMetadata: true`, '');
       }
+
+      lines.push("# Should new datasources automatically be added");
+      lines.push(`sourceListScan: disable`, '');
     }
 
     if (dataSources.length) {
