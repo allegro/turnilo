@@ -80,7 +80,7 @@ The next step is to examine and tweak the config using your favorite editor `nan
 
 ## Roadmap
 
-**Recently improvements:**
+**Recent improvements:**
 - Comparing multiple dimension values on a time series
 - Multiple selections from pinned dimensions
 - More options for quick time selection
