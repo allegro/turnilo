@@ -10,6 +10,7 @@ $folder-box-height: 32px;
   @extend %module;
   @extend %white-shadow;
   min-height: 94px;
+  overflow-y: hidden;
 
   .tile-header {
     height: $pin-title-height;
@@ -65,9 +66,9 @@ $folder-box-height: 32px;
     border-top: 1px solid $border-super-light;
 
     svg {
-      width: 12px;
+      width: 11px;
       margin-right: 6px;
-      margin-top: 1px;
+      margin-top: 2px;
 
       path {
         fill: $brand;
@@ -75,7 +76,7 @@ $folder-box-height: 32px;
     }
 
     &.folded svg {
-      margin-top: 0;
+      margin-top: 1px;
       transform: rotate(180deg);
     }
 
