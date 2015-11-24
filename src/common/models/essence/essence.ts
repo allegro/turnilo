@@ -431,7 +431,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (Boolean(this.colors) !== Boolean(other.colors)) return true;
     if (!this.colors) return false;
     if (equivalenceOnly) {
-      return !this.colors.equivalent(other.colors);
+      return !this.colors.equivalentToLimit(other.colors);
     } else {
       return !this.colors.equals(other.colors);
     }

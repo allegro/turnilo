@@ -149,16 +149,10 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
       this.sameAsLimit === other.sameAsLimit;
   }
 
-  public equivalent(other: Colors): boolean {
-    if (this.equals(other)) return true;
+  public equivalentToLimit(other: Colors): boolean {
     if (!Colors.isColors(other)) return false;
-    if (this.values && this.sameAsLimit && other.limit) {
-      return true;
-    }
-    if (other.values && other.sameAsLimit && this.limit) {
-      return true;
-    }
-    return false;
+    if (this.equals(other)) return true;
+    return Boolean(this.values && this.sameAsLimit && other.limit);
   }
 
   public numColors(): number {
@@ -205,6 +199,14 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
 
   public needsValues(): boolean {
     return !this.values;
+  }
+
+  public setAsLimit(limit: number): Colors {
+    return new Colors({
+      dimension: this.dimension,
+      limit,
+      values: null
+    });
   }
 
   public setValueEquivalent(v: any[]): Colors {

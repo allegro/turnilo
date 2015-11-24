@@ -65,8 +65,8 @@ describe('Colors', () => {
         }
       });
 
-      expect(colors.equivalent(initColors)).to.equal(true);
-      expect(initColors.equivalent(colors)).to.equal(true);
+      expect(colors.equivalentToLimit(initColors)).to.equal(true);
+      expect(initColors.equivalentToLimit(colors)).to.equal(false);
 
       expect(colors.has(null), 'has null').to.equal(true);
 
@@ -116,8 +116,8 @@ describe('Colors', () => {
       });
 
       var colorsWithGap = colors.remove("Australia");
-      expect(colors.equivalent(colorsWithGap)).to.equal(false);
-      expect(colorsWithGap.equivalent(colors)).to.equal(false);
+      expect(colors.equals(colorsWithGap)).to.equal(false);
+      expect(colorsWithGap.equals(colors)).to.equal(false);
     });
   });
 
