@@ -120,12 +120,14 @@ Then you are ready to
 ## Roadmap
 
 **Recent improvements:**
+
 - Comparing multiple dimension values on a time series
 - Multiple selections from pinned dimensions
 - More options for quick time selection
 - Introspection writes a config file
 
 **We will be working on:**
+
 - Additional visualizations (bar chart and geo)
 - Exclusion filters
 - Better time selection
