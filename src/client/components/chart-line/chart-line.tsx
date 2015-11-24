@@ -58,7 +58,8 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
       }
 
       // Add the point itself
-      var dataPoint: [number, number] = [scaleX(timeRangeMidPoint), scaleY(measureValue)];
+      var y = scaleY(measureValue);
+      var dataPoint: [number, number] = [scaleX(timeRangeMidPoint), isNaN(y) ? 0 : y];
       dataPoints.push(dataPoint);
       if (hoverTimeRange && hoverTimeRange.equals(timeRange)) {
         hoverDataPoint = dataPoint;
