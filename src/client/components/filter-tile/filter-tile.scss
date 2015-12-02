@@ -13,6 +13,7 @@ $overflow-width: 40px;
 
     .filter {
       @extend %dimension-item;
+      @extend %dimension-item-h;
       position: absolute;
       left: 0; // It gets horizontal position from the JS
 
@@ -44,5 +45,23 @@ $overflow-width: 40px;
 
   .fancy-drag-indicator {
     @include unpin-left($bar-title-width);
+  }
+}
+
+.overflow-menu {
+  .filter {
+    @extend %dimension-item;
+    position: absolute;
+    top: 0; // It gets vertical position from the JS
+
+    &.from-highlight {
+      border: 1px dashed $highlight-border;
+      background: rgba($item-categorical, 0.5);
+
+      &.type-time {
+        border: 1px dashed hsl(130, 39%, 44%);
+        background: rgba($item-continuous, 0.5);
+      }
+    }
   }
 }

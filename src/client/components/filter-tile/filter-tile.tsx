@@ -75,11 +75,24 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.openMenu(dimension, target);
   }
 
-  dummyMount(dimension: Dimension, dummy: React.Component<any, any>) {
+  dummyMount(dimension: Dimension) {
     var { menuOpenOn } = this.state;
-    if (menuOpenOn || !dummy) return;
-    var target = ReactDOM.findDOMNode(dummy);
-    this.openMenu(dimension, target);
+    if (menuOpenOn) return;
+    this.openMenuOnDimension(dimension);
+  }
+
+  openMenuOnDimension(dimension: Dimension, overflowScan: boolean = false) {
+    var targetRef = this.refs[dimension.name];
+    if (targetRef) {
+      var target = ReactDOM.findDOMNode(targetRef);
+      if (!target) return;
+      this.openMenu(dimension, target);
+    } else if (!overflowScan) {
+      this.openOverflowMenu();
+      setTimeout(() => {
+        this.openMenuOnDimension(dimension, true);
+      }, 100);
+    }
   }
 
   openMenu(dimension: Dimension, target: Element) {
@@ -106,8 +119,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     });
   }
 
-  openOverflowMenu(target: Element) {
+  openOverflowMenu() {
     var { overflowMenuOpenOn } = this.state;
+
+    var target: Element = ReactDOM.findDOMNode(this.refs['overflow']);
+    if (!target) return;
+
     if (overflowMenuOpenOn === target) {
       this.closeOverflowMenu();
       return;
@@ -261,11 +278,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   filterMenuRequest(dimension: Dimension) {
     var { filter } = this.props.essence;
     if (filter.filteredOn(dimension.expression)) {
-      var targetRef = this.refs[dimension.name];
-      if (!targetRef) return;
-      var target = ReactDOM.findDOMNode(targetRef);
-      if (!target) return;
-      this.openMenu(dimension, target);
+      this.openMenuOnDimension(dimension);
     } else {
       this.setState({
         possibleDimension: dimension,
@@ -338,6 +351,15 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     var bubbleMenu: JSX.Element = null;
     if (overflowMenuOpenOn) {
+      var segmentHeight = 29 + CORE_ITEM_GAP;
+
+      var itemY = 0;
+      var filterItems = overflowItemBlanks.map((itemBlank) => {
+        var style = transformStyle(0, itemY);
+        itemY += segmentHeight;
+        return this.renderItemBlank(itemBlank, style);
+      });
+
       bubbleMenu = <BubbleMenu
         className="overflow-menu"
         direction="down"
@@ -346,15 +368,19 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         openOn={overflowMenuOpenOn}
         onClose={this.closeOverflowMenu.bind(this)}
       >
-        Hello
+        {filterItems}
       </BubbleMenu>;
     }
 
     var onClick = (e: React.MouseEvent) => {
-      this.openOverflowMenu(e.target as Element);
+      this.openOverflowMenu();
     };
 
-    return <div className="overflow" onClick={onClick}>
+    return <div
+      className="overflow"
+      ref="overflow"
+      onClick={onClick}
+    >
       {'+' + overflowItemBlanks.length}
       {bubbleMenu}
     </div>;
@@ -369,13 +395,65 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     </div>;
   }
 
+  renderItemBlank(itemBlank: ItemBlank, style: any): JSX.Element {
+    var { essence, clicker } = this.props;
+    var { menuDimension } = this.state;
+    var { timezone } = essence;
+
+    var { dimension, clause, source } = itemBlank;
+    var dimensionName = dimension.name;
+
+    var classNames = [FILTER_CLASS_NAME, 'type-' + dimension.className, source];
+    if (dimension === menuDimension) classNames.push('selected');
+
+    var className = classNames.join(' ');
+
+    if (source === 'from-highlight') {
+      return <div
+        className={className}
+        key={dimensionName}
+        ref={dimensionName}
+        onClick={clicker.acceptHighlight.bind(clicker)}
+        style={style}
+      >
+        <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
+        {this.renderRemoveButton(itemBlank)}
+      </div>;
+    }
+
+    if (clause) {
+      return <div
+        className={className}
+        key={dimensionName}
+        ref={dimensionName}
+        draggable={true}
+        onClick={this.clickDimension.bind(this, dimension)}
+        onDragStart={this.dragStart.bind(this, dimension, clause)}
+        style={style}
+      >
+        <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
+        {this.renderRemoveButton(itemBlank)}
+      </div>;
+    } else {
+      return <div
+        className={className}
+        key={dimensionName}
+        ref={dimensionName}
+        style={style}
+      >
+        <div className="reading" ref={this.dummyMount.bind(this, dimension)}>{this.formatLabelDummy(dimension)}</div>
+        {this.renderRemoveButton(itemBlank)}
+      </div>;
+    }
+  }
+
   render() {
-    var { essence, clicker, menuStage } = this.props;
+    var { essence, menuStage } = this.props;
     var {
-      menuDimension, dragOver, dragInsertPosition, dragReplacePosition,
+      dragOver, dragInsertPosition, dragReplacePosition,
       possibleDimension, possibleInsertPosition, possibleReplacePosition
-      } = this.state;
-    var { dataSource, filter, highlight, timezone } = essence;
+    } = this.state;
+    var { dataSource, filter, highlight } = essence;
 
     const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 
@@ -449,54 +527,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     var itemX = 0;
     var filterItems = itemBlanks.map((itemBlank) => {
-      var { dimension, clause, source } = itemBlank;
-      var dimensionName = dimension.name;
-
       var style = transformStyle(itemX, 0);
       itemX += sectionWidth;
-
-      var classNames = [FILTER_CLASS_NAME, 'type-' + dimension.className, source];
-      if (dimension === menuDimension) classNames.push('selected');
-
-      var className = classNames.join(' ');
-
-      if (source === 'from-highlight') {
-        return <div
-          className={className}
-          key={dimensionName}
-          ref={dimensionName}
-          onClick={clicker.acceptHighlight.bind(clicker)}
-          style={style}
-        >
-          <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
-          {this.renderRemoveButton(itemBlank)}
-        </div>;
-      }
-
-      if (clause) {
-        return <div
-          className={className}
-          key={dimensionName}
-          ref={dimensionName}
-          draggable={true}
-          onClick={this.clickDimension.bind(this, dimension)}
-          onDragStart={this.dragStart.bind(this, dimension, clause)}
-          style={style}
-        >
-          <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
-          {this.renderRemoveButton(itemBlank)}
-        </div>;
-      } else {
-        return <div
-          className={className}
-          key={dimensionName}
-          ref={this.dummyMount.bind(this, dimension)}
-          style={style}
-        >
-          <div className="reading">{this.formatLabelDummy(dimension)}</div>
-          {this.renderRemoveButton(itemBlank)}
-        </div>;
-      }
+      return this.renderItemBlank(itemBlank, style);
     });
 
     var overflowIndicator: JSX.Element = null;
