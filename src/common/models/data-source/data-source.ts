@@ -3,7 +3,7 @@
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
-import { Duration, Timezone, minute } from 'chronoshift';
+import { Duration, Timezone, minute, second } from 'chronoshift';
 import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression, SortAction } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -334,7 +334,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     } else { //refreshRule.rule === 'query'
       var { maxTime } = this;
       if (!maxTime) return null;
-      return maxTime.time;
+      return second.ceil(maxTime.time, Timezone.UTC);
     }
   }
 

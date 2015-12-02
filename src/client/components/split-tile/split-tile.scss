@@ -5,7 +5,7 @@
   @extend %module-h-title;
 
   .items {
-    @include unpin-left($title-width);
+    @include unpin-left($bar-title-width);
     transition: height 0.1s ease-in-out;
     overflow: hidden;
 
@@ -17,6 +17,6 @@
   }
 
   .fancy-drag-indicator {
-    @include unpin-left($title-width);
+    @include unpin-left($bar-title-width);
   }
 }

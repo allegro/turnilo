@@ -1,11 +1,13 @@
 @import '../../imports';
 
+$overflow-width: 40px;
+
 .filter-tile {
   @extend %module;
   @extend %module-h-title;
 
   .items {
-    @include unpin-left($title-width);
+    @include unpin-left($bar-title-width);
     transition: height 0.1s ease-in-out;
     overflow: hidden;
 
@@ -26,7 +28,21 @@
     }
   }
 
+  &.has-overflow {
+    .items {
+      right: $overflow-width;
+    }
+  }
+
+  .overflow {
+    @include pin-right($overflow-width);
+    cursor: pointer;
+    border-left: 1px solid $gray;
+    padding-top: 11px;
+    text-align: center;
+  }
+
   .fancy-drag-indicator {
-    @include unpin-left($title-width);
+    @include unpin-left($bar-title-width);
   }
 }

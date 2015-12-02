@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
-import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
+import { BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
@@ -13,6 +13,7 @@ import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { FilterMenu } from '../filter-menu/filter-menu';
+import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 const FILTER_CLASS_NAME = 'filter';
 const ANIMATION_DURATION = 400;
@@ -33,6 +34,7 @@ export interface FilterTileState {
   FilterMenuAsync?: typeof FilterMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
+  overflowMenuOpenOn?: Element;
   dragOver?: boolean;
   dragInsertPosition?: number;
   dragReplacePosition?: number;
@@ -50,6 +52,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       FilterMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
+      overflowMenuOpenOn: null,
       dragOver: false,
       dragInsertPosition: null,
       dragReplacePosition: null,
@@ -100,6 +103,25 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       possibleDimension: null,
       possibleInsertPosition: null,
       possibleReplacePosition: null
+    });
+  }
+
+  openOverflowMenu(target: Element) {
+    var { overflowMenuOpenOn } = this.state;
+    if (overflowMenuOpenOn === target) {
+      this.closeOverflowMenu();
+      return;
+    }
+    this.setState({
+      overflowMenuOpenOn: target
+    });
+  }
+
+  closeOverflowMenu() {
+    var { overflowMenuOpenOn } = this.state;
+    if (!overflowMenuOpenOn) return;
+    this.setState({
+      overflowMenuOpenOn: null
     });
   }
 
@@ -296,7 +318,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { essence, clicker, menuStage } = this.props;
     var { FilterMenuAsync, menuOpenOn, menuDimension, possibleInsertPosition, possibleReplacePosition } = this.state;
     if (!FilterMenuAsync || !menuDimension) return null;
-    var onClose = this.closeMenu.bind(this);
 
     return <FilterMenuAsync
       clicker={clicker}
@@ -307,8 +328,36 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dimension={menuDimension}
       insertPosition={possibleInsertPosition}
       replacePosition={possibleReplacePosition}
-      onClose={onClose}
+      onClose={this.closeMenu.bind(this)}
     />;
+  }
+
+  renderOverflow(overflowItemBlanks: ItemBlank[]): JSX.Element {
+    var { essence, clicker, menuStage } = this.props;
+    var { overflowMenuOpenOn } = this.state;
+
+    var bubbleMenu: JSX.Element = null;
+    if (overflowMenuOpenOn) {
+      bubbleMenu = <BubbleMenu
+        className="overflow-menu"
+        direction="down"
+        containerStage={menuStage}
+        stage={Stage.fromSize(200, 200)}
+        openOn={overflowMenuOpenOn}
+        onClose={this.closeOverflowMenu.bind(this)}
+      >
+        Hello
+      </BubbleMenu>;
+    }
+
+    var onClick = (e: MouseEvent) => {
+      this.openOverflowMenu(e.target as Element);
+    };
+
+    return <div className="overflow" onClick={onClick}>
+      {'+' + overflowItemBlanks.length}
+      {bubbleMenu}
+    </div>;
   }
 
   renderRemoveButton(itemBlank: ItemBlank) {
@@ -321,7 +370,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   render() {
-    var { essence, clicker } = this.props;
+    var { essence, clicker, menuStage } = this.props;
     var {
       menuDimension, dragOver, dragInsertPosition, dragReplacePosition,
       possibleDimension, possibleInsertPosition, possibleReplacePosition
@@ -329,6 +378,13 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { dataSource, filter, highlight, timezone } = essence;
 
     const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
+
+    var maxItems: number;
+    if (menuStage) {
+      maxItems = Math.floor((menuStage.width - BAR_TITLE_WIDTH + CORE_ITEM_GAP) / sectionWidth);
+    } else {
+      maxItems = 20;
+    }
 
     var itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
@@ -383,6 +439,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       }
     }
 
+    var overflowItemBlanks: ItemBlank[];
+    if (maxItems < itemBlanks.length) {
+      overflowItemBlanks = itemBlanks.slice(maxItems);
+      itemBlanks = itemBlanks.slice(0, maxItems);
+    } else {
+      overflowItemBlanks = [];
+    }
+
     var itemX = 0;
     var filterItems = itemBlanks.map((itemBlank) => {
       var { dimension, clause, source } = itemBlank;
@@ -435,6 +499,11 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       }
     });
 
+    var overflowIndicator: JSX.Element = null;
+    if (overflowItemBlanks.length) {
+      overflowIndicator = this.renderOverflow(overflowItemBlanks);
+    }
+
     var fancyDragIndicator: JSX.Element = null;
     if (dragInsertPosition !== null || dragReplacePosition !== null) {
       fancyDragIndicator = React.createElement(FancyDragIndicator, {
@@ -443,8 +512,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       });
     }
 
+    var className = [
+      'filter-tile',
+      overflowIndicator ? 'has-overflow' : 'no-overflow',
+      (dragOver ? 'drag-over' : 'no-drag')
+    ].join(' ');
+
     return <div
-      className={'filter-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
+      className={className}
       onDragOver={this.dragOver.bind(this)}
       onDragEnter={this.dragEnter.bind(this)}
       onDragLeave={this.dragLeave.bind(this)}
@@ -454,6 +529,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       <div className="items" ref="items">
         {filterItems}
       </div>
+      {overflowIndicator}
       {fancyDragIndicator}
       {this.renderMenu()}
     </div>;
