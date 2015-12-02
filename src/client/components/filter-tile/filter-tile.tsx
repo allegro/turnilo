@@ -70,7 +70,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }, 'filter-menu');
   }
 
-  clickDimension(dimension: Dimension, e: MouseEvent) {
+  clickDimension(dimension: Dimension, e: React.MouseEvent) {
     var target = findParentWithClass(e.target as Element, FILTER_CLASS_NAME);
     this.openMenu(dimension, target);
   }
@@ -350,7 +350,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       </BubbleMenu>;
     }
 
-    var onClick = (e: MouseEvent) => {
+    var onClick = (e: React.MouseEvent) => {
       this.openOverflowMenu(e.target as Element);
     };
 
