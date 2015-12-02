@@ -354,7 +354,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           onClick={this.toggleFold.bind(this)}
         >
           <SvgIcon svg={require('../../icons/caret.svg')}/>
-          {unfolded ? 'Fold' : 'Unfold'}
+          {unfolded ? 'Show selection' : 'Show all'}
         </div>;
         maxHeight += FOLDER_BOX_HEIGHT;
       }
