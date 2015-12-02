@@ -257,7 +257,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
   }
 
   public applyDelta(delta: Filter): Filter {
-    var newFilter = this;
+    var newFilter: Filter = this;
     var deltaClauses = delta.clauses;
     deltaClauses.forEach((deltaClause) => {
       newFilter = newFilter.setClause(deltaClause);
