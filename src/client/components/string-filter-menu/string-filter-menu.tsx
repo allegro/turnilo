@@ -5,7 +5,7 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset, Set } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, Colors } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 import { MenuTable } from '../menu-table/menu-table';
 
@@ -53,7 +53,10 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     var { filter } = essence;
 
     if (selectedValues.size()) {
-      var clause = dimension.expression.in(selectedValues);
+      var clause = new FilterClause({
+        expression: dimension.expression,
+        values: selectedValues
+      });
       if (insertPosition !== null) {
         return filter.insertByIndex(insertPosition, clause);
       } else if (replacePosition !== null) {

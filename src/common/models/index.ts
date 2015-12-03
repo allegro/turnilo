@@ -9,6 +9,7 @@ export * from './refresh-rule/refresh-rule';
 
 export * from './dimension/dimension';
 export * from './measure/measure';
+export * from './filter-clause/filter-clause';
 export * from './filter/filter';
 export * from './split-combine/split-combine';
 export * from './splits/splits';

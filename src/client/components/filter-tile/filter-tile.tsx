@@ -4,9 +4,9 @@ require('./filter-tile.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
-import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
+import { $, Expression, InAction, Executor, Dataset } from 'plywood';
 import { BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle, getXFromEvent } from '../../utils/dom/dom';
@@ -21,7 +21,7 @@ const ANIMATION_DURATION = 400;
 export interface ItemBlank {
   dimension: Dimension;
   source: string;
-  clause?: ChainExpression;
+  clause?: FilterClause;
 }
 
 export interface FilterTileProps extends React.Props<any> {
@@ -41,6 +41,7 @@ export interface FilterTileState {
   possibleDimension?: Dimension;
   possibleInsertPosition?: number;
   possibleReplacePosition?: number;
+  maxItems?: number;
 }
 
 export class FilterTile extends React.Component<FilterTileProps, FilterTileState> {
@@ -58,7 +59,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dragReplacePosition: null,
       possibleDimension: null,
       possibleInsertPosition: null,
-      possibleReplacePosition: null
+      possibleReplacePosition: null,
+      maxItems: 20,
     };
   }
 
@@ -68,6 +70,26 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         FilterMenuAsync: require('../filter-menu/filter-menu').FilterMenu
       });
     }, 'filter-menu');
+  }
+
+  componentWillReceiveProps(nextProps: FilterTileProps) {
+    const { menuStage } = nextProps;
+    const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
+
+    if (menuStage) {
+      var newMaxItems = Math.floor((menuStage.width - BAR_TITLE_WIDTH - 79 + CORE_ITEM_GAP) / sectionWidth); // 79 = vis selector width
+      if (newMaxItems !== this.state.maxItems) {
+        this.setState({
+          menuOpenOn: null,
+          menuDimension: null,
+          possibleDimension: null,
+          possibleInsertPosition: null,
+          possibleReplacePosition: null,
+          overflowMenuOpenOn: null,
+          maxItems: newMaxItems
+        });
+      }
+    }
   }
 
   clickDimension(dimension: Dimension, e: React.MouseEvent) {
@@ -155,7 +177,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     e.stopPropagation();
   }
 
-  dragStart(dimension: Dimension, clause: ChainExpression, e: DragEvent) {
+  dragStart(dimension: Dimension, clause: FilterClause, e: DragEvent) {
     var { essence } = this.props;
 
     var newUrl = essence.getURL(); // .changeSplit(SplitCombine.fromExpression(dimension.expression))
@@ -288,32 +310,20 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
   }
 
-  formatLabel(dimension: Dimension, clause: ChainExpression, timezone: Timezone): string {
+  formatLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
     var label = dimension.title;
 
     switch (dimension.type) {
       case 'STRING':
       case 'BOOLEAN':
-        var inAction = clause.actions[0];
-        if (inAction instanceof InAction) {
-          var setLiteral = inAction.getLiteralValue();
-          if (!setLiteral) return '?';
-          var setElements = setLiteral.elements;
-          label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
-        } else {
-          label += ' : [not in]';
-        }
+        var setElements = clause.values.elements;
+        label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
         break;
 
       case 'TIME':
-        var inAction = clause.actions[0];
-        if (inAction instanceof InAction) {
-          var timeRangeLiteral = inAction.getLiteralValue();
-          if (!timeRangeLiteral) return '?';
-          label = formatTimeRange(timeRangeLiteral, timezone, DisplayYear.IF_DIFF);
-        } else {
-          label += ' : [not in]';
-        }
+        var timeRangeLiteral = clause.values.elements[0];
+        if (!timeRangeLiteral) return '?';
+        label = formatTimeRange(timeRangeLiteral, timezone, DisplayYear.IF_DIFF);
         break;
 
       default:
@@ -451,18 +461,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { essence, menuStage } = this.props;
     var {
       dragOver, dragInsertPosition, dragReplacePosition,
-      possibleDimension, possibleInsertPosition, possibleReplacePosition
+      possibleDimension, possibleInsertPosition, possibleReplacePosition,
+      maxItems
     } = this.state;
     var { dataSource, filter, highlight } = essence;
 
     const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
-
-    var maxItems: number;
-    if (menuStage) {
-      maxItems = Math.floor((menuStage.width - BAR_TITLE_WIDTH + CORE_ITEM_GAP) / sectionWidth);
-    } else {
-      maxItems = 20;
-    }
 
     var itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
