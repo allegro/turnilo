@@ -198,7 +198,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       }
 
     } else {
-      if (e.altKey) {
+      if (e.altKey || e.ctrlKey || e.metaKey) {
         if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).size() === 1) {
           filter = filter.remove(dimension.expression);
         } else {
@@ -364,7 +364,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (loading) {
       loader = <Loader/>;
     } else if (dataset && !fetchQueued && searchText && !rows.length) {
-      message = <div className="message">{'No results for "' + searchText + '"'}</div>;
+      message = <div className="message">{`No results for "${searchText}"`}</div>;
     }
 
     var queryError: JSX.Element = null;
