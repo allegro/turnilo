@@ -10,11 +10,15 @@ Internal and external APIs may change with little notice.
 
 **Drag-and-drop UI**
 
-![Drag to Split](https://github.com/implydata/pivot/raw/master/assets/images/drag-to-split.gif)
+![Drag to Split](https://github.com/implydata/pivot/raw/master/assets/images/drag-and-drop.gif)
 
-**Time series exploration**
+**Contextual exploration**
 
-![Time Highlight](https://github.com/implydata/pivot/raw/master/assets/images/time-highlight.gif)
+![Time Highlight](https://github.com/implydata/pivot/raw/master/assets/images/explore.gif)
+
+**Comparisons**
+
+![Time Highlight](https://github.com/implydata/pivot/raw/master/assets/images/compare.gif)
 
 ## Usage
 
