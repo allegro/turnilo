@@ -27,6 +27,7 @@ export interface DimensionListTileState {
   PreviewMenuAsync?: typeof PreviewMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
+  highlightDimension?: Dimension;
   dragOver?: boolean;
   dragPosition?: number;
 }
@@ -40,6 +41,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       PreviewMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
+      highlightDimension: null,
       dragOver: false,
       dragPosition: null
     };
@@ -161,6 +163,22 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     });
   }
 
+  onMouseOver(dimension: Dimension) {
+    var { highlightDimension } = this.state;
+    if (highlightDimension === dimension) return;
+    this.setState({
+      highlightDimension: dimension
+    });
+  }
+
+  onMouseLeave(dimension: Dimension) {
+    var { highlightDimension } = this.state;
+    if (highlightDimension !== dimension) return;
+    this.setState({
+      highlightDimension: null
+    });
+  }
+
   renderMenu(): JSX.Element {
     var { essence, clicker, menuStage, triggerFilterMenu, triggerSplitMenu } = this.props;
     var { PreviewMenuAsync, menuOpenOn, menuDimension } = this.state;
@@ -182,7 +200,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   render() {
     var { essence } = this.props;
-    var { menuDimension, dragOver, dragPosition } = this.state;
+    var { menuDimension, highlightDimension, dragOver, dragPosition } = this.state;
     var { dataSource } = essence;
 
     var itemY = 0;
@@ -195,11 +213,14 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
         DIMENSION_CLASS_NAME,
         'type-' + dimension.className
       ];
+      if (!dragOver && dimension === highlightDimension) classNames.push('highlight');
       if (dimension === menuDimension) classNames.push('selected');
       return <div
         className={classNames.join(' ')}
         key={dimension.name}
         onClick={this.clickDimension.bind(this, dimension)}
+        onMouseOver={this.onMouseOver.bind(this, dimension)}
+        onMouseLeave={this.onMouseLeave.bind(this, dimension)}
         draggable={true}
         onDragStart={this.dragStart.bind(this, dimension)}
         style={style}

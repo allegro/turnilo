@@ -93,7 +93,7 @@ export function getFileData(filePath: string): Q.Promise<any[]> {
 export function externalFactory(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, useSegmentMetadata: boolean): Q.Promise<External> {
   var filter: ExpressionJS = null;
   if (dataSource.subsetFilter) {
-    filter = dataSource.subsetFilter.toExpression().toJS();
+    filter = dataSource.subsetFilter.toJS();
   }
 
   var countDistinctReferences: string[] = [];
@@ -164,7 +164,7 @@ export function fillInDataSource(dataSource: DataSource, druidRequester: Request
         dataset.introspect();
 
         if (dataSource.subsetFilter) {
-          dataset = dataset.filter(dataSource.subsetFilter.toExpression().getFn(), {});
+          dataset = dataset.filter(dataSource.subsetFilter.getFn(), {});
         }
 
         var executor = basicExecutorFactory({

@@ -54,7 +54,7 @@ export interface DataSourceValue {
   title?: string;
   engine: string;
   source: string;
-  subsetFilter?: Filter;
+  subsetFilter?: Expression;
   options?: Lookup<any>;
   introspection: string;
   dimensions: List<Dimension>;
@@ -76,7 +76,7 @@ export interface DataSourceJS {
   title?: string;
   engine: string;
   source: string;
-  subsetFilter?: FilterJS;
+  subsetFilter?: ExpressionJS;
   options?: Lookup<any>;
   introspection?: string;
   dimensions?: DimensionJS[];
@@ -159,7 +159,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       title: parameters.title,
       engine,
       source: parameters.source,
-      subsetFilter: parameters.subsetFilter ? Filter.fromJS(parameters.subsetFilter) : null,
+      subsetFilter: parameters.subsetFilter ? Expression.fromJSLoose(parameters.subsetFilter) : null,
       options,
       introspection,
       dimensions,
@@ -184,7 +184,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public title: string;
   public engine: string;
   public source: string;
-  public subsetFilter: Filter;
+  public subsetFilter: Expression;
   public options: Lookup<any>;
   public introspection: string;
   public dimensions: List<Dimension>;
