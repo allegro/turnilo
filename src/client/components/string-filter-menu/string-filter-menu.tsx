@@ -6,6 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset, Set } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors } from '../../../common/models/index';
+import { enterKey } from '../../utils/dom/dom';
 // import { ... } from '../../config/constants';
 import { MenuTable } from '../menu-table/menu-table';
 
@@ -31,7 +32,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       selectedValues: null,
       colors: null
     };
-
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentWillMount() {
@@ -45,6 +46,20 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       selectedValues: valueSet || (myColors ? myColors.toSet() : Set.EMPTY),
       colors: myColors
     });
+  }
+
+  componentDidMount() {
+    window.addEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (enterKey(e)) {
+      this.onOkClick();
+    }
   }
 
   constructFilter(): Filter {
