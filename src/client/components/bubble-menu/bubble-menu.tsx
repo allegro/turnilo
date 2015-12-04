@@ -18,7 +18,7 @@ export interface BubbleMenuProps extends React.Props<any> {
   id?: string;
   direction: string;
   stage: Stage;
-  containerStage: Stage;
+  containerStage?: Stage;
   openOn: Element;
   onClose: Function;
   inside?: Element;
@@ -115,14 +115,20 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
     switch (direction) {
       case 'right':
-        var top = Math.min(Math.max(containerStage.y, y - menuHeight / 2), containerStage.y + containerStage.height - menuHeight);
+        var top = y - menuHeight / 2;
+        if (containerStage) {
+          top = Math.min(Math.max(top, containerStage.y), containerStage.y + containerStage.height - menuHeight);
+        }
         menuLeft = x;
         menuTop = top;
         shpitzStyle.top = y - top;
         break;
 
       case 'down':
-        var left = Math.min(Math.max(containerStage.x, x - menuWidth / 2), containerStage.x + containerStage.width - menuWidth);
+        var left = x - menuWidth / 2;
+        if (containerStage) {
+          left = Math.min(Math.max(left, containerStage.x), containerStage.x + containerStage.width - menuWidth);
+        }
         menuLeft = left;
         menuTop = y;
         shpitzStyle.left = x - left;

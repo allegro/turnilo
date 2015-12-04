@@ -17,7 +17,7 @@ export interface FilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   direction: string;
-  containerStage: Stage;
+  containerStage?: Stage;
   openOn: Element;
   dimension: Dimension;
   insertPosition: number;

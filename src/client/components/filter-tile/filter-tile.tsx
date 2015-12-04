@@ -378,7 +378,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   renderMenu(): JSX.Element {
     var { essence, clicker, menuStage } = this.props;
-    var { FilterMenuAsync, menuOpenOn, menuDimension, menuInside, possibleInsertPosition, possibleReplacePosition, maxItems } = this.state;
+    var { FilterMenuAsync, menuOpenOn, menuDimension, menuInside, possibleInsertPosition, possibleReplacePosition, maxItems, overflowMenuOpenOn } = this.state;
     if (!FilterMenuAsync || !menuDimension) return null;
 
     if (possibleReplacePosition === maxItems) {
@@ -390,7 +390,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       clicker={clicker}
       essence={essence}
       direction="down"
-      containerStage={menuStage}
+      containerStage={overflowMenuOpenOn ? null : menuStage}
       openOn={menuOpenOn}
       dimension={menuDimension}
       insertPosition={possibleInsertPosition}
@@ -419,7 +419,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         className="overflow-menu"
         id={this.overflowMenuId}
         direction="down"
-        containerStage={menuStage}
         stage={Stage.fromSize(200, itemY)}
         openOn={overflowMenuOpenOn}
         onClose={this.closeOverflowMenu.bind(this)}
