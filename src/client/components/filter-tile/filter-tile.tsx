@@ -28,6 +28,33 @@ export interface ItemBlank {
   clause?: FilterClause;
 }
 
+function formatLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
+  var label = dimension.title;
+
+  switch (dimension.type) {
+    case 'STRING':
+    case 'BOOLEAN':
+      var setElements = clause.values.elements;
+      label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
+      break;
+
+    case 'TIME':
+      var timeRangeLiteral = clause.values.elements[0];
+      if (!timeRangeLiteral) return '?';
+      label = formatTimeRange(timeRangeLiteral, timezone, DisplayYear.IF_DIFF);
+      break;
+
+    default:
+      throw new Error('unknown type ' + dimension.type);
+  }
+
+  return label;
+}
+
+function formatLabelDummy(dimension: Dimension): string {
+  return dimension.title;
+}
+
 export interface FilterTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
@@ -210,6 +237,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       }
     }
     this.closeMenu();
+    this.closeOverflowMenu();
     e.stopPropagation();
   }
 
@@ -227,6 +255,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
+    this.closeOverflowMenu();
   }
 
   calculateDragPosition(e: DragEvent): DragPosition {
@@ -349,32 +378,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
   }
 
-  formatLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
-    var label = dimension.title;
-
-    switch (dimension.type) {
-      case 'STRING':
-      case 'BOOLEAN':
-        var setElements = clause.values.elements;
-        label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
-        break;
-
-      case 'TIME':
-        var timeRangeLiteral = clause.values.elements[0];
-        if (!timeRangeLiteral) return '?';
-        label = formatTimeRange(timeRangeLiteral, timezone, DisplayYear.IF_DIFF);
-        break;
-
-      default:
-        throw new Error('unknown type ' + dimension.type);
-    }
-
-    return label;
-  }
-
-  formatLabelDummy(dimension: Dimension): string {
-    return dimension.title;
-  }
+  overflowButtonClick() {
+    this.openOverflowMenu(this.overflowButtonTarget());
+  };
 
   renderMenu(): JSX.Element {
     var { essence, clicker, menuStage } = this.props;
@@ -400,44 +406,39 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     />;
   }
 
-  renderOverflow(overflowItemBlanks: ItemBlank[]): JSX.Element {
-    var { essence, clicker, menuStage } = this.props;
+  renderOverflowMenu(overflowItemBlanks: ItemBlank[]): JSX.Element {
     var { overflowMenuOpenOn } = this.state;
+    if (!overflowMenuOpenOn) return null;
 
-    var bubbleMenu: JSX.Element = null;
-    if (overflowMenuOpenOn) {
-      var segmentHeight = 29 + CORE_ITEM_GAP;
+    var segmentHeight = 29 + CORE_ITEM_GAP;
 
-      var itemY = CORE_ITEM_GAP;
-      var filterItems = overflowItemBlanks.map((itemBlank) => {
-        var style = transformStyle(0, itemY);
-        itemY += segmentHeight;
-        return this.renderItemBlank(itemBlank, style);
-      });
+    var itemY = CORE_ITEM_GAP;
+    var filterItems = overflowItemBlanks.map((itemBlank) => {
+      var style = transformStyle(0, itemY);
+      itemY += segmentHeight;
+      return this.renderItemBlank(itemBlank, style);
+    });
 
-      bubbleMenu = <BubbleMenu
-        className="overflow-menu"
-        id={this.overflowMenuId}
-        direction="down"
-        stage={Stage.fromSize(208, itemY)}
-        openOn={overflowMenuOpenOn}
-        onClose={this.closeOverflowMenu.bind(this)}
-      >
-        {filterItems}
-      </BubbleMenu>;
-    }
+    return <BubbleMenu
+      className="overflow-menu"
+      id={this.overflowMenuId}
+      direction="down"
+      stage={Stage.fromSize(208, itemY)}
+      openOn={overflowMenuOpenOn}
+      onClose={this.closeOverflowMenu.bind(this)}
+    >
+      {filterItems}
+    </BubbleMenu>;
+  }
 
-    var onClick = (e: React.MouseEvent) => {
-      this.openOverflowMenu(this.overflowButtonTarget());
-    };
-
+  renderOverflow(overflowItemBlanks: ItemBlank[]): JSX.Element {
     return <div
       className="overflow"
       ref="overflow"
-      onClick={onClick}
+      onClick={this.overflowButtonClick.bind(this)}
     >
       {'+' + overflowItemBlanks.length}
-      {bubbleMenu}
+      {this.renderOverflowMenu(overflowItemBlanks)}
     </div>;
   }
 
@@ -471,7 +472,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onClick={clicker.acceptHighlight.bind(clicker)}
         style={style}
       >
-        <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
+        <div className="reading">{formatLabel(dimension, clause, timezone)}</div>
         {this.renderRemoveButton(itemBlank)}
       </div>;
     }
@@ -486,7 +487,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onDragStart={this.dragStart.bind(this, dimension, clause)}
         style={style}
       >
-        <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
+        <div className="reading">{formatLabel(dimension, clause, timezone)}</div>
         {this.renderRemoveButton(itemBlank)}
       </div>;
     } else {
@@ -496,14 +497,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         ref={dimensionName}
         style={style}
       >
-        <div className="reading">{this.formatLabelDummy(dimension)}</div>
+        <div className="reading">{formatLabelDummy(dimension)}</div>
         {this.renderRemoveButton(itemBlank)}
       </div>;
     }
   }
 
   render() {
-    var { essence, menuStage } = this.props;
+    var { essence } = this.props;
     var {
       dragOver, dragInsertPosition, dragReplacePosition,
       possibleDimension, possibleInsertPosition, possibleReplacePosition,
