@@ -39,7 +39,7 @@ $overflow-width: 40px;
     @include pin-right($overflow-width);
     cursor: pointer;
     border-left: 1px solid $gray;
-    padding-top: 13px;
+    padding-top: 12px;
     text-align: center;
     font-weight: 600;
   }
