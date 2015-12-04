@@ -39,7 +39,7 @@ $overflow-width: 40px;
     @include pin-right($overflow-width);
     cursor: pointer;
     border-left: 1px solid $gray;
-    padding-top: 11px;
+    padding-top: 13px;
     text-align: center;
     font-weight: 600;
   }
@@ -53,7 +53,7 @@ $overflow-width: 40px;
   .filter {
     @extend %dimension-item;
     position: absolute;
-    left: 4px;
+    left: 8px;
     top: 0; // It gets vertical position from the JS
     height: 29px;
 

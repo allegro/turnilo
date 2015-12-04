@@ -418,7 +418,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         className="overflow-menu"
         id={this.overflowMenuId}
         direction="down"
-        stage={Stage.fromSize(200, itemY)}
+        stage={Stage.fromSize(208, itemY)}
         openOn={overflowMenuOpenOn}
         onClose={this.closeOverflowMenu.bind(this)}
       >
