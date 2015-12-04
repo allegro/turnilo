@@ -6,8 +6,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset, Set } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors } from '../../../common/models/index';
-import { enterKey } from '../../utils/dom/dom';
 // import { ... } from '../../config/constants';
+import { enterKey } from '../../utils/dom/dom';
 import { MenuTable } from '../menu-table/menu-table';
 
 export interface StringFilterMenuProps extends React.Props<any> {
