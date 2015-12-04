@@ -20,6 +20,7 @@ import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 const FILTER_CLASS_NAME = 'filter';
 const ANIMATION_DURATION = 400;
+const OVERFLOW_WIDTH = 40;
 
 export interface ItemBlank {
   dimension: Dimension;
@@ -86,7 +87,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 
     if (menuStage) {
-      var newMaxItems = Math.floor((menuStage.width - BAR_TITLE_WIDTH - 79 + CORE_ITEM_GAP) / sectionWidth); // 79 = vis selector width
+      var newMaxItems = Math.floor((menuStage.width - BAR_TITLE_WIDTH - OVERFLOW_WIDTH - 79 + CORE_ITEM_GAP) / sectionWidth); // 79 = vis selector width
       if (newMaxItems !== this.state.maxItems) {
         this.setState({
           menuOpenOn: null,
