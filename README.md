@@ -126,14 +126,15 @@ Then you are ready to
 **Recent improvements:**
 
 - Comparing multiple dimension values on a time series
-- Multiple selections from pinned dimensions
-- More options for quick time selection
+- Multiple selections and search from pinned dimensions
 - Introspection writes a config file
+- Fixed issue where adding too many filters made some of them inaccessible
 
 **We will be working on:**
 
 - Additional visualizations (bar chart and geo)
 - Exclusion filters
+- Better comparison behavior and legend interaction
 - Better time selection
 - Various additions, improvements and fixes to make the app more complete
 
