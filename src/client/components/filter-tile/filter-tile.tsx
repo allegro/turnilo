@@ -3,13 +3,14 @@ require('./filter-tile.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { $, Expression, InAction, Executor, Dataset } from 'plywood';
 import { BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle, getXFromEvent } from '../../utils/dom/dom';
+import { findParentWithClass, dataTransferTypesGet, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { FilterMenu } from '../filter-menu/filter-menu';
@@ -34,6 +35,7 @@ export interface FilterTileState {
   FilterMenuAsync?: typeof FilterMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
+  menuInside?: Element;
   overflowMenuOpenOn?: Element;
   dragOver?: boolean;
   dragInsertPosition?: number;
@@ -46,13 +48,18 @@ export interface FilterTileState {
 
 export class FilterTile extends React.Component<FilterTileProps, FilterTileState> {
   private dragCounter: number;
+  private overflowMenuId: string;
+  private dummyDeferred: Q.Deferred<any>;
+  private overflowMenuDeferred: Q.Deferred<Element>;
 
   constructor() {
     super();
+    this.overflowMenuId = uniqueId('overflow-menu-');
     this.state = {
       FilterMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
+      menuInside: null,
       overflowMenuOpenOn: null,
       dragOver: false,
       dragInsertPosition: null,
@@ -82,6 +89,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         this.setState({
           menuOpenOn: null,
           menuDimension: null,
+          menuInside: null,
           possibleDimension: null,
           possibleInsertPosition: null,
           possibleReplacePosition: null,
@@ -92,28 +100,47 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
   }
 
+  componentDidUpdate() {
+    var { possibleDimension, overflowMenuOpenOn } = this.state;
+
+    if (possibleDimension) {
+      this.dummyDeferred.resolve(null);
+    }
+
+    if (overflowMenuOpenOn) {
+      var overflowMenu = this.getOverflowMenu();
+      if (overflowMenu) this.overflowMenuDeferred.resolve(overflowMenu);
+    }
+  }
+
+  overflowButtonTarget(): Element {
+    return ReactDOM.findDOMNode(this.refs['overflow']);
+  }
+
+  getOverflowMenu(): Element {
+    return document.getElementById(this.overflowMenuId);
+  }
+
   clickDimension(dimension: Dimension, e: React.MouseEvent) {
     var target = findParentWithClass(e.target as Element, FILTER_CLASS_NAME);
     this.openMenu(dimension, target);
   }
 
-  dummyMount(dimension: Dimension) {
-    var { menuOpenOn } = this.state;
-    if (menuOpenOn) return;
-    this.openMenuOnDimension(dimension);
-  }
-
-  openMenuOnDimension(dimension: Dimension, overflowScan: boolean = false) {
+  openMenuOnDimension(dimension: Dimension) {
     var targetRef = this.refs[dimension.name];
     if (targetRef) {
       var target = ReactDOM.findDOMNode(targetRef);
       if (!target) return;
       this.openMenu(dimension, target);
-    } else if (!overflowScan) {
-      this.openOverflowMenu();
-      setTimeout(() => {
-        this.openMenuOnDimension(dimension, true);
-      }, 100);
+    } else {
+      var overflowButtonTarget = this.overflowButtonTarget();
+      if (overflowButtonTarget) {
+        this.openOverflowMenu(overflowButtonTarget).then(() => {
+          var target = ReactDOM.findDOMNode(this.refs[dimension.name]);
+          if (!target) return;
+          this.openMenu(dimension, target);
+        });
+      }
     }
   }
 
@@ -123,9 +150,15 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       this.closeMenu();
       return;
     }
+    var overflowMenu = this.getOverflowMenu();
+    var menuInside: Element = null;
+    if (overflowMenu && isInside(target, overflowMenu)) {
+      menuInside = overflowMenu;
+    }
     this.setState({
       menuOpenOn: target,
-      menuDimension: dimension
+      menuDimension: dimension,
+      menuInside
     });
   }
 
@@ -135,25 +168,25 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState({
       menuOpenOn: null,
       menuDimension: null,
+      menuInside: null,
       possibleDimension: null,
       possibleInsertPosition: null,
       possibleReplacePosition: null
     });
   }
 
-  openOverflowMenu() {
-    var { overflowMenuOpenOn } = this.state;
-
-    var target: Element = ReactDOM.findDOMNode(this.refs['overflow']);
+  openOverflowMenu(target: Element): Q.Promise<any> {
     if (!target) return;
+    var { overflowMenuOpenOn } = this.state;
 
     if (overflowMenuOpenOn === target) {
       this.closeOverflowMenu();
       return;
     }
-    this.setState({
-      overflowMenuOpenOn: target
-    });
+
+    this.overflowMenuDeferred = Q.defer() as Q.Deferred<Element>;
+    this.setState({ overflowMenuOpenOn: target });
+    return this.overflowMenuDeferred.promise;
   }
 
   closeOverflowMenu() {
@@ -283,9 +316,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
         } else {
           if ((dragInsertPosition !== null || dragReplacePosition !== null) && !tryingToReplaceTime) {
-            newState.possibleDimension = dimension;
-            newState.possibleInsertPosition = dragInsertPosition;
-            newState.possibleReplacePosition = dragReplacePosition;
+            this.addDummy(dimension, dragInsertPosition, dragReplacePosition);
           }
 
         }
@@ -296,17 +327,25 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState(newState);
   }
 
+  addDummy(dimension: Dimension, possibleInsertPosition: number, possibleReplacePosition: number) {
+    this.dummyDeferred = Q.defer() as Q.Deferred<Element>;
+    this.setState({
+      possibleDimension: dimension,
+      possibleInsertPosition,
+      possibleReplacePosition
+    });
+    this.dummyDeferred.promise.then(() => {
+      this.openMenuOnDimension(dimension);
+    });
+  }
+
   // This will be called externally
   filterMenuRequest(dimension: Dimension) {
     var { filter } = this.props.essence;
     if (filter.filteredOn(dimension.expression)) {
       this.openMenuOnDimension(dimension);
     } else {
-      this.setState({
-        possibleDimension: dimension,
-        possibleInsertPosition: filter.length(),
-        possibleReplacePosition: null
-      });
+      this.addDummy(dimension, filter.length(), null);
     }
   }
 
@@ -339,8 +378,13 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   renderMenu(): JSX.Element {
     var { essence, clicker, menuStage } = this.props;
-    var { FilterMenuAsync, menuOpenOn, menuDimension, possibleInsertPosition, possibleReplacePosition } = this.state;
+    var { FilterMenuAsync, menuOpenOn, menuDimension, menuInside, possibleInsertPosition, possibleReplacePosition, maxItems } = this.state;
     if (!FilterMenuAsync || !menuDimension) return null;
+
+    if (possibleReplacePosition === maxItems) {
+      possibleInsertPosition = possibleReplacePosition;
+      possibleReplacePosition = null;
+    }
 
     return <FilterMenuAsync
       clicker={clicker}
@@ -352,6 +396,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       insertPosition={possibleInsertPosition}
       replacePosition={possibleReplacePosition}
       onClose={this.closeMenu.bind(this)}
+      inside={menuInside}
     />;
   }
 
@@ -363,7 +408,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (overflowMenuOpenOn) {
       var segmentHeight = 29 + CORE_ITEM_GAP;
 
-      var itemY = 0;
+      var itemY = CORE_ITEM_GAP;
       var filterItems = overflowItemBlanks.map((itemBlank) => {
         var style = transformStyle(0, itemY);
         itemY += segmentHeight;
@@ -372,9 +417,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
       bubbleMenu = <BubbleMenu
         className="overflow-menu"
+        id={this.overflowMenuId}
         direction="down"
         containerStage={menuStage}
-        stage={Stage.fromSize(200, 200)}
+        stage={Stage.fromSize(200, itemY)}
         openOn={overflowMenuOpenOn}
         onClose={this.closeOverflowMenu.bind(this)}
       >
@@ -383,7 +429,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
 
     var onClick = (e: React.MouseEvent) => {
-      this.openOverflowMenu();
+      this.openOverflowMenu(this.overflowButtonTarget());
     };
 
     return <div
@@ -451,7 +497,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         ref={dimensionName}
         style={style}
       >
-        <div className="reading" ref={this.dummyMount.bind(this, dimension)}>{this.formatLabelDummy(dimension)}</div>
+        <div className="reading">{this.formatLabelDummy(dimension)}</div>
         {this.renderRemoveButton(itemBlank)}
       </div>;
     }
@@ -513,6 +559,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         dimension: possibleDimension,
         source: 'from-drag'
       };
+      if (possibleReplacePosition === maxItems) {
+        possibleInsertPosition = possibleReplacePosition;
+        possibleReplacePosition = null;
+      }
       if (possibleInsertPosition !== null) {
         itemBlanks.splice(possibleInsertPosition, 0, dummyBlank);
       }
@@ -543,10 +593,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     var fancyDragIndicator: JSX.Element = null;
     if (dragInsertPosition !== null || dragReplacePosition !== null) {
-      fancyDragIndicator = React.createElement(FancyDragIndicator, {
-        dragInsertPosition,
-        dragReplacePosition
-      });
+      fancyDragIndicator = <FancyDragIndicator
+        dragInsertPosition={dragInsertPosition}
+        dragReplacePosition={dragReplacePosition}
+      />;
     }
 
     var className = [

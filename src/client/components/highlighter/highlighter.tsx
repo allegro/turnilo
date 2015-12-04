@@ -3,7 +3,6 @@ require('./highlighter.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-//import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Executor, Dataset, TimeRange, Set } from 'plywood';
 import { Clicker, Essence, Filter, FilterClause, Dimension, Measure } from '../../../common/models/index';

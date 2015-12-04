@@ -151,17 +151,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   globalMouseDownListener(e: MouseEvent) {
-    // can not use ReactDOM.findDOMNode(this) because portal?
-    var searchBoxRef = this.refs['search-box'];
-    if (!searchBoxRef) return;
-    var searchBoxElement = ReactDOM.findDOMNode(searchBoxRef);
+    var searchBoxElement = ReactDOM.findDOMNode(this.refs['search-box']);
     if (!searchBoxElement) return;
 
     var headerRef = this.refs['header'];
     if (!headerRef) return;
-    var searchButtonRef = headerRef.refs['searchButton'];
-    if (!searchButtonRef) return;
-    var searchButtonElement = ReactDOM.findDOMNode(searchButtonRef);
+    var searchButtonElement = ReactDOM.findDOMNode(headerRef.refs['searchButton']);
     if (!searchButtonElement) return;
 
     var target = e.target as Element;

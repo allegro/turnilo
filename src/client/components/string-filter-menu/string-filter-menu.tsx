@@ -82,6 +82,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   onOkClick() {
+    if (!this.actionEnabled()) return;
     var { clicker, onClose } = this.props;
     var { colors } = this.state;
     clicker.changeFilter(this.constructFilter(), colors);
@@ -93,12 +94,15 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     onClose();
   }
 
+  actionEnabled() {
+    var { essence } = this.props;
+    return !essence.filter.equals(this.constructFilter());
+  }
+
   render() {
     var { essence, dimension } = this.props;
     var { selectedValues, colors } = this.state;
     if (!dimension) return null;
-
-    var actionDisabled = essence.filter.equals(this.constructFilter());
 
     return <div className="string-filter-menu">
       <MenuTable
@@ -109,7 +113,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         onValueClick={this.onValueClick.bind(this)}
       />
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={actionDisabled}>OK</button>
+        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>OK</button>
         <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
       </div>
     </div>;

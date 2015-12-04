@@ -16,9 +16,16 @@ function convertDOMStringListToArray(list: any): any[] {
 
 
 export function isInside(child: Element, parent: Element): boolean {
+  var altParent: Element;
   while (child) {
     if (child === parent) return true;
-    child = child.parentElement;
+
+    var dataset = (child as HTMLElement).dataset;
+    if (dataset && dataset['inside'] && (altParent = document.getElementById(dataset['inside']))) {
+      child = altParent;
+    } else {
+      child = child.parentElement;
+    }
   }
   return false;
 }
@@ -62,6 +69,12 @@ export function enterKey(e: KeyboardEvent): boolean {
 
 export function escapeKey(e: KeyboardEvent): boolean {
   return e.which === 27; // 27 is the code for escape
+}
+
+var lastID = 0;
+export function uniqueId(prefix: string): string {
+  lastID++;
+  return prefix + lastID;
 }
 
 export function transformStyle(x: number, y: number): any {

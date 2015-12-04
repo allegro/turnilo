@@ -52,7 +52,9 @@ $overflow-width: 40px;
   .filter {
     @extend %dimension-item;
     position: absolute;
+    left: 4px;
     top: 0; // It gets vertical position from the JS
+    height: 29px;
 
     &.from-highlight {
       border: 1px dashed $highlight-border;
