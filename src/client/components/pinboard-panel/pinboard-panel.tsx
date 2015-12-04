@@ -1,4 +1,3 @@
-import {Colors} from "../../../common/models/colors/colors";
 'use strict';
 require('./pinboard-panel.css');
 
@@ -7,8 +6,8 @@ import * as ReactDOM from 'react-dom';
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { dataTransferTypesGet } from '../../utils/dom/dom';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { PinboardMeasureTile } from '../pinboard-measure-tile/pinboard-measure-tile';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
 
@@ -32,10 +31,10 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   }
 
   canDrop(e: DragEvent): boolean {
-    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
-    if (dimensionName) {
+    var dimension = DragManager.getDragDimension();
+    if (dimension) {
       var pinnedDimensions = this.props.essence.pinnedDimensions;
-      return !pinnedDimensions.has(dimensionName);
+      return !pinnedDimensions.has(dimension.name);
     }
     return false;
   }
@@ -77,11 +76,9 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     if (!this.canDrop(e)) return;
     e.preventDefault();
     this.dragCounter = 0;
-    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
-    if (dimensionName) {
-      var { clicker, essence } = this.props;
-      var dimension = essence.dataSource.getDimension(dimensionName);
-      if (dimension) clicker.pin(dimension);
+    var dimension = DragManager.getDragDimension();
+    if (dimension) {
+      this.props.clicker.pin(dimension);
     }
     this.setState({ dragOver: false });
   }

@@ -7,10 +7,12 @@ import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { $, Expression, InAction, Executor, Dataset } from 'plywood';
 import { BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, TimePreset } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, TimePreset} from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent } from '../../utils/dom/dom';
+import { findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent } from '../../utils/dom/dom';
+import { DragManager } from '../../utils/drag-manager/drag-manager';
+
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { FilterMenu } from '../filter-menu/filter-menu';
@@ -219,7 +221,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", newUrl);
     dataTransfer.setData("text/plain", newUrl);
-    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
+    DragManager.setDragDimension(dimension);
 
     setDragGhost(dataTransfer, dimension.title);
 
@@ -235,7 +237,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   canDrop(e: DragEvent): boolean {
-    return Boolean(dataTransferTypesGet(e.dataTransfer.types, "dimension"));
+    return Boolean(DragManager.getDragDimension());
   }
 
   dragOver(e: DragEvent) {
@@ -285,41 +287,38 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dragReplacePosition: null
     };
 
-    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
-    if (dimensionName) {
-      var dimension = dataSource.getDimension(dimensionName);
-      if (dimension) {
-        var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
+    var dimension = DragManager.getDragDimension();
+    if (dimension) {
+      var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
 
-        var tryingToReplaceTime = false;
+      var tryingToReplaceTime = false;
+      if (dragReplacePosition !== null) {
+        var targetClause = filter.clauses.get(dragReplacePosition);
+        tryingToReplaceTime = targetClause && targetClause.expression.equals(dataSource.timeAttribute);
+      }
+
+      var existingClause = filter.clauseForExpression(dimension.expression);
+      if (existingClause) {
+        var newFilter: Filter;
         if (dragReplacePosition !== null) {
-          var targetClause = filter.clauses.get(dragReplacePosition);
-          tryingToReplaceTime = targetClause && targetClause.expression.equals(dataSource.timeAttribute);
+          newFilter = filter.replaceByIndex(dragReplacePosition, existingClause);
+        } else if (dragInsertPosition !== null) {
+          newFilter = filter.insertByIndex(dragInsertPosition, existingClause);
         }
-
-        var existingClause = filter.clauseForExpression(dimension.expression);
-        if (existingClause) {
-          var newFilter: Filter;
-          if (dragReplacePosition !== null) {
-            newFilter = filter.replaceByIndex(dragReplacePosition, existingClause);
-          } else if (dragInsertPosition !== null) {
-            newFilter = filter.insertByIndex(dragInsertPosition, existingClause);
-          }
-          if (filter.equals(newFilter)) {
-            this.filterMenuRequest(dimension);
-          } else {
-            clicker.changeFilter(newFilter);
-            setTimeout(() => {
-              this.filterMenuRequest(dimension);
-            }, ANIMATION_DURATION + 50); // Wait for the animation to finish to know where to open the menu;
-          }
-
+        if (filter.equals(newFilter)) {
+          this.filterMenuRequest(dimension);
         } else {
-          if ((dragInsertPosition !== null || dragReplacePosition !== null) && !tryingToReplaceTime) {
-            this.addDummy(dimension, dragInsertPosition, dragReplacePosition);
-          }
-
+          clicker.changeFilter(newFilter);
+          setTimeout(() => {
+            this.filterMenuRequest(dimension);
+          }, ANIMATION_DURATION + 50); // Wait for the animation to finish to know where to open the menu;
         }
+
+      } else {
+        if ((dragInsertPosition !== null || dragReplacePosition !== null) && !tryingToReplaceTime) {
+          this.addDummy(dimension, dragInsertPosition, dragReplacePosition);
+        }
+
       }
     }
 

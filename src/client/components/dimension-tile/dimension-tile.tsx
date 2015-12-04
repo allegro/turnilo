@@ -10,6 +10,8 @@ import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { setDragGhost, isInside, escapeKey } from '../../utils/dom/dom';
 import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine, Colors } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
+import { DragManager } from '../../utils/drag-manager/drag-manager';
+
 import { TileHeader } from '../tile-header/tile-header';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
@@ -233,7 +235,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", newUrl);
     dataTransfer.setData("text/plain", newUrl);
-    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
+    DragManager.setDragDimension(dimension);
     setDragGhost(dataTransfer, dimension.title);
   }
 

@@ -7,9 +7,10 @@ import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension, Measure } from '../../../common/models/index';
+import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension, Measure} from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle, getXFromEvent } from '../../utils/dom/dom';
+import { findParentWithClass, setDragGhost, transformStyle, getXFromEvent } from '../../utils/dom/dom';
+import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { SplitMenu } from '../split-menu/split-menu';
 
@@ -98,8 +99,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", newUrl);
     dataTransfer.setData("text/plain", newUrl);
-    dataTransfer.setData("split/" + splitIndex, JSON.stringify(split));
-    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
+    DragManager.setDragSplit(split);
+    DragManager.setDragDimension(dimension);
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
@@ -115,8 +116,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   canDrop(e: DragEvent): boolean {
-    return Boolean(dataTransferTypesGet(e.dataTransfer.types, "split") ||
-      dataTransferTypesGet(e.dataTransfer.types, "dimension"));
+    return Boolean(DragManager.getDragSplit() || DragManager.getDragDimension());
   }
 
   dragOver(e: DragEvent) {
@@ -161,17 +161,10 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var { splits } = essence;
 
     var newSplitCombine: SplitCombine = null;
-    var splitIndex = parseInt(dataTransferTypesGet(e.dataTransfer.types, "split"), 10);
-    if (!isNaN(splitIndex)) {
-      newSplitCombine = splits.get(splitIndex);
-    } else {
-      var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
-      if (dimensionName) {
-        var dimension = essence.dataSource.getDimension(dimensionName);
-        if (dimension) {
-          newSplitCombine = SplitCombine.fromExpression(dimension.expression);
-        }
-      }
+    if (DragManager.getDragSplit()) {
+      newSplitCombine = DragManager.getDragSplit();
+    } else if (DragManager.getDragDimension()) {
+      newSplitCombine = SplitCombine.fromExpression(DragManager.getDragDimension().expression);
     }
 
     if (newSplitCombine) {

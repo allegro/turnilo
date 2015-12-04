@@ -38,16 +38,6 @@ export function findParentWithClass(child: Element, className: string): Element 
   return null;
 }
 
-export function dataTransferTypesGet(types: any, typePrefix: string): string {
-  if (types instanceof DOMStringList) types = convertDOMStringListToArray(types);
-  for (var type of types) {
-    if (type.indexOf(typePrefix) === 0) {
-      return type.substr(typePrefix.length + 1);
-    }
-  }
-  return null;
-}
-
 export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
   // Thanks to http://www.kryogenix.org/code/browser/custom-drag-image.html
   var dragGhost = d3.select(document.body).append('div')
