@@ -9,6 +9,7 @@ export const DIMENSION_HEIGHT = 27;
 export const MEASURE_HEIGHT = 27;
 export const CORE_ITEM_WIDTH = 192;
 export const CORE_ITEM_GAP = 8;
+export const BAR_TITLE_WIDTH = 66;
 
 export const PIN_TITLE_HEIGHT = 36;
 export const SEARCH_BOX_HEIGHT = 30;

@@ -5,18 +5,19 @@
   @extend %module-h-title;
 
   .items {
-    @include unpin-left($title-width);
+    @include unpin-left($bar-title-width);
     transition: height 0.1s ease-in-out;
     overflow: hidden;
 
     .split {
       @extend %dimension-item;
+      @extend %dimension-item-h;
       position: absolute;
       left: 0; // It gets horizontal position from the JS
     }
   }
 
   .fancy-drag-indicator {
-    @include unpin-left($title-width);
+    @include unpin-left($bar-title-width);
   }
 }

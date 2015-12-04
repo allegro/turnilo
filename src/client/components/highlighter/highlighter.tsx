@@ -3,10 +3,9 @@ require('./highlighter.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-//import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration } from 'chronoshift';
-import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
-import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';
+import { $, Expression, Executor, Dataset, TimeRange, Set } from 'plywood';
+import { Clicker, Essence, Filter, FilterClause, Dimension, Measure } from '../../../common/models/index';
 import { isInside, escapeKey, getXFromEvent } from '../../utils/dom/dom';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
 
@@ -106,7 +105,13 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     });
 
     var timeDimension = essence.getTimeDimension();
-    clicker.changeHighlight(highlightId, Filter.fromClause(timeDimension.expression.in(timeRange)));
+    clicker.changeHighlight(
+      highlightId,
+      Filter.fromClause(new FilterClause({
+        expression: timeDimension.expression,
+        values: Set.fromJS([timeRange])
+      }))
+    );
   }
 
   globalKeyDownListener(e: KeyboardEvent) {

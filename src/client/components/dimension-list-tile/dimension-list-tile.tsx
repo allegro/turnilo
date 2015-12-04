@@ -8,8 +8,9 @@ import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
 import { moveInList } from '../../../common/utils/general/general';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle } from '../../utils/dom/dom';
-import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
+import { DragManager } from '../../utils/drag-manager/drag-manager';
+import { findParentWithClass, setDragGhost, transformStyle } from '../../utils/dom/dom';
+import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine} from '../../../common/models/index';
 import { PreviewMenu } from '../preview-menu/preview-menu';
 
 const DIMENSION_CLASS_NAME = 'dimension';
@@ -26,6 +27,7 @@ export interface DimensionListTileState {
   PreviewMenuAsync?: typeof PreviewMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
+  highlightDimension?: Dimension;
   dragOver?: boolean;
   dragPosition?: number;
 }
@@ -39,6 +41,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       PreviewMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
+      highlightDimension: null,
       dragOver: false,
       dragPosition: null
     };
@@ -94,7 +97,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", newUrl);
     dataTransfer.setData("text/plain", newUrl);
-    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
+    DragManager.setDragDimension(dimension);
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
@@ -102,7 +105,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   canDrop(e: DragEvent): boolean {
     var { dataTransfer } = e;
-    return dataTransfer.effectAllowed === 'move' && Boolean(dataTransferTypesGet(dataTransfer.types, "dimension"));
+    return dataTransfer.effectAllowed === 'move' && Boolean(DragManager.getDragDimension());
   }
 
   dragOver(e: DragEvent) {
@@ -145,11 +148,10 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var { dragPosition } = this.state;
     var { dataSource } = essence;
 
-    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
-    if (dimensionName) {
-      var dimension = dataSource.getDimension(dimensionName);
+    var dimension = DragManager.getDragDimension();
+    if (dimension) {
       var dimensions = dataSource.dimensions;
-      var index = dimensions.findIndex((d) => d.name === dimensionName);
+      var index = dimensions.findIndex((d) => d.name === dimension.name);
       if (index !== -1 && index !== dragPosition) {
         clicker.changeDataSource(dataSource.changeDimensions(moveInList(dimensions, index, dragPosition)));
       }
@@ -158,6 +160,22 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     this.dragCounter = 0;
     this.setState({
       dragPosition: null
+    });
+  }
+
+  onMouseOver(dimension: Dimension) {
+    var { highlightDimension } = this.state;
+    if (highlightDimension === dimension) return;
+    this.setState({
+      highlightDimension: dimension
+    });
+  }
+
+  onMouseLeave(dimension: Dimension) {
+    var { highlightDimension } = this.state;
+    if (highlightDimension !== dimension) return;
+    this.setState({
+      highlightDimension: null
     });
   }
 
@@ -182,7 +200,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   render() {
     var { essence } = this.props;
-    var { menuDimension, dragOver, dragPosition } = this.state;
+    var { menuDimension, highlightDimension, dragOver, dragPosition } = this.state;
     var { dataSource } = essence;
 
     var itemY = 0;
@@ -195,11 +213,14 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
         DIMENSION_CLASS_NAME,
         'type-' + dimension.className
       ];
+      if (!dragOver && dimension === highlightDimension) classNames.push('highlight');
       if (dimension === menuDimension) classNames.push('selected');
       return <div
         className={classNames.join(' ')}
         key={dimension.name}
         onClick={this.clickDimension.bind(this, dimension)}
+        onMouseOver={this.onMouseOver.bind(this, dimension)}
+        onMouseLeave={this.onMouseLeave.bind(this, dimension)}
         draggable={true}
         onDragStart={this.dragStart.bind(this, dimension)}
         style={style}

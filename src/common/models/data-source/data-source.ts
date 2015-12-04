@@ -3,7 +3,7 @@
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
-import { Duration, Timezone, minute } from 'chronoshift';
+import { Duration, Timezone, minute, second } from 'chronoshift';
 import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression, SortAction } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -54,7 +54,7 @@ export interface DataSourceValue {
   title?: string;
   engine: string;
   source: string;
-  subsetFilter?: Filter;
+  subsetFilter?: Expression;
   options?: Lookup<any>;
   introspection: string;
   dimensions: List<Dimension>;
@@ -76,7 +76,7 @@ export interface DataSourceJS {
   title?: string;
   engine: string;
   source: string;
-  subsetFilter?: FilterJS;
+  subsetFilter?: ExpressionJS;
   options?: Lookup<any>;
   introspection?: string;
   dimensions?: DimensionJS[];
@@ -159,7 +159,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       title: parameters.title,
       engine,
       source: parameters.source,
-      subsetFilter: parameters.subsetFilter ? Filter.fromJS(parameters.subsetFilter) : null,
+      subsetFilter: parameters.subsetFilter ? Expression.fromJSLoose(parameters.subsetFilter) : null,
       options,
       introspection,
       dimensions,
@@ -184,7 +184,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public title: string;
   public engine: string;
   public source: string;
-  public subsetFilter: Filter;
+  public subsetFilter: Expression;
   public options: Lookup<any>;
   public introspection: string;
   public dimensions: List<Dimension>;
@@ -334,7 +334,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     } else { //refreshRule.rule === 'query'
       var { maxTime } = this;
       if (!maxTime) return null;
-      return maxTime.time;
+      return second.ceil(maxTime.time, Timezone.UTC);
     }
   }
 

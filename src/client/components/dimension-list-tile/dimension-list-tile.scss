@@ -29,6 +29,9 @@ $icon-width: 35px;
         margin-bottom: 12px;
       }
 
+      &.highlight {
+        background: $hover;
+      }
 
       &.selected {
         background: $highlight;
@@ -77,12 +80,6 @@ $icon-width: 35px;
         right: 10px;
         left: $icon-width;
       }
-    }
-  }
-
-  &.no-drag {
-    .dimension:hover:not(.selected) {
-      background: $hover;
     }
   }
 }

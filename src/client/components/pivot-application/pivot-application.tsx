@@ -7,7 +7,7 @@ import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { List, OrderedSet } from 'immutable';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, Executor, ChainExpression } from 'plywood';
-import { dataTransferTypesGet } from '../../utils/dom/dom';
+import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { Stage, Essence, VisStrategy, Filter, Dimension, Measure, Splits,
          SplitCombine, Clicker, DataSource, Manifest, Colors, VisualizationProps } from "../../../common/models/index";
 
@@ -148,6 +148,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   componentDidMount() {
+    DragManager.init();
     window.addEventListener('resize', this.globalResizeListener);
     window.addEventListener('hashchange', this.globalHashChangeListener);
     window.addEventListener('keydown', this.globalKeyDownListener);
@@ -212,7 +213,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   canDrop(e: DragEvent): boolean {
-    return Boolean(dataTransferTypesGet(e.dataTransfer.types, "dimension"));
+    return Boolean(DragManager.getDragDimension());
   }
 
   dragOver(e: DragEvent) {
@@ -248,10 +249,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     e.preventDefault();
     var { essence } = this.state;
     this.dragCounter = 0;
-    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
-    if (dimensionName) {
-      var dimension = essence.dataSource.getDimension(dimensionName);
-      if (dimension) this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
+    var dimension = DragManager.getDragDimension();
+    if (dimension) {
+      this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
     }
     this.setState({ dragOver: false });
   }

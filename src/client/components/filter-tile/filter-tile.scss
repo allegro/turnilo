@@ -1,16 +1,19 @@
 @import '../../imports';
 
+$overflow-width: 40px;
+
 .filter-tile {
   @extend %module;
   @extend %module-h-title;
 
   .items {
-    @include unpin-left($title-width);
+    @include unpin-left($bar-title-width);
     transition: height 0.1s ease-in-out;
     overflow: hidden;
 
     .filter {
       @extend %dimension-item;
+      @extend %dimension-item-h;
       position: absolute;
       left: 0; // It gets horizontal position from the JS
 
@@ -26,7 +29,42 @@
     }
   }
 
+  &.has-overflow {
+    .items {
+      right: $overflow-width;
+    }
+  }
+
+  .overflow {
+    @include pin-right($overflow-width);
+    cursor: pointer;
+    border-left: 1px solid $gray;
+    padding-top: 12px;
+    text-align: center;
+    font-weight: 600;
+  }
+
   .fancy-drag-indicator {
-    @include unpin-left($title-width);
+    @include unpin-left($bar-title-width);
+  }
+}
+
+.overflow-menu {
+  .filter {
+    @extend %dimension-item;
+    position: absolute;
+    left: 8px;
+    top: 0; // It gets vertical position from the JS
+    height: 29px;
+
+    &.from-highlight {
+      border: 1px dashed $highlight-border;
+      background: rgba($item-categorical, 0.5);
+
+      &.type-time {
+        border: 1px dashed hsl(130, 39%, 44%);
+        background: rgba($item-continuous, 0.5);
+      }
+    }
   }
 }

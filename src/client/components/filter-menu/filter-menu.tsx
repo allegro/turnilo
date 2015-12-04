@@ -17,12 +17,13 @@ export interface FilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   direction: string;
-  containerStage: Stage;
+  containerStage?: Stage;
   openOn: Element;
   dimension: Dimension;
   insertPosition: number;
   replacePosition: number;
   onClose: Function;
+  inside?: Element;
 }
 
 export interface FilterMenuState {
@@ -36,7 +37,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   }
 
   render() {
-    var { clicker, essence, insertPosition, replacePosition, direction, containerStage, openOn, dimension, onClose } = this.props;
+    var { clicker, essence, insertPosition, replacePosition, direction, containerStage, openOn, dimension, onClose, inside } = this.props;
     if (!dimension) return null;
 
     var menuSize: Stage = null;
@@ -68,6 +69,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
       stage={menuSize}
       openOn={openOn}
       onClose={onClose}
+      inside={inside}
     >
       {menuCont}
     </BubbleMenu>;

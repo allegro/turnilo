@@ -11,17 +11,6 @@ describe('Filter', () => {
     testImmutableClass(Filter, [
       { op: 'literal', value: true },
       {
-        "op": "chain", "expression": { "op": "ref", "name": "time" },
-        "action": {
-          "action": "in",
-          "expression": {
-            "op": "literal",
-            "value": { "start": new Date("2013-02-26T19:00:00.000Z"), "end": new Date("2013-02-26T22:00:00.000Z") },
-            "type": "TIME_RANGE"
-          }
-        }
-      },
-      {
         "op": "chain", "expression": { "op": "ref", "name": "language" },
         "action": {
           "action": "in",
@@ -29,6 +18,17 @@ describe('Filter', () => {
             "op": "literal",
             "value": { "setType": "STRING", "elements": ["en"] },
             "type": "SET"
+          }
+        }
+      },
+      {
+        "op": "chain", "expression": { "op": "ref", "name": "time" },
+        "action": {
+          "action": "in",
+          "expression": {
+            "op": "literal",
+            "value": { "start": new Date("2013-02-26T19:00:00.000Z"), "end": new Date("2013-02-26T22:00:00.000Z") },
+            "type": "TIME_RANGE"
           }
         }
       },

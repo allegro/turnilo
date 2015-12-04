@@ -3,24 +3,56 @@ require('./filter-tile.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
-import { $, Expression, ChainExpression, InAction, Executor, Dataset } from 'plywood';
-import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
+import { $, Expression, InAction, Executor, Dataset } from 'plywood';
+import { BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
+import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, TimePreset} from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
-import { findParentWithClass, dataTransferTypesGet, setDragGhost, transformStyle, getXFromEvent } from '../../utils/dom/dom';
+import { findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent } from '../../utils/dom/dom';
+import { DragManager } from '../../utils/drag-manager/drag-manager';
+
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { FilterMenu } from '../filter-menu/filter-menu';
+import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 const FILTER_CLASS_NAME = 'filter';
 const ANIMATION_DURATION = 400;
+const OVERFLOW_WIDTH = 40;
 
 export interface ItemBlank {
   dimension: Dimension;
   source: string;
-  clause?: ChainExpression;
+  clause?: FilterClause;
+}
+
+function formatLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
+  var label = dimension.title;
+
+  switch (dimension.type) {
+    case 'STRING':
+    case 'BOOLEAN':
+      var setElements = clause.values.elements;
+      label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
+      break;
+
+    case 'TIME':
+      var timeRangeLiteral = clause.values.elements[0];
+      if (!timeRangeLiteral) return '?';
+      label = formatTimeRange(timeRangeLiteral, timezone, DisplayYear.IF_DIFF);
+      break;
+
+    default:
+      throw new Error('unknown type ' + dimension.type);
+  }
+
+  return label;
+}
+
+function formatLabelDummy(dimension: Dimension): string {
+  return dimension.title;
 }
 
 export interface FilterTileProps extends React.Props<any> {
@@ -33,29 +65,39 @@ export interface FilterTileState {
   FilterMenuAsync?: typeof FilterMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
+  menuInside?: Element;
+  overflowMenuOpenOn?: Element;
   dragOver?: boolean;
   dragInsertPosition?: number;
   dragReplacePosition?: number;
   possibleDimension?: Dimension;
   possibleInsertPosition?: number;
   possibleReplacePosition?: number;
+  maxItems?: number;
 }
 
 export class FilterTile extends React.Component<FilterTileProps, FilterTileState> {
   private dragCounter: number;
+  private overflowMenuId: string;
+  private dummyDeferred: Q.Deferred<any>;
+  private overflowMenuDeferred: Q.Deferred<Element>;
 
   constructor() {
     super();
+    this.overflowMenuId = uniqueId('overflow-menu-');
     this.state = {
       FilterMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
+      menuInside: null,
+      overflowMenuOpenOn: null,
       dragOver: false,
       dragInsertPosition: null,
       dragReplacePosition: null,
       possibleDimension: null,
       possibleInsertPosition: null,
-      possibleReplacePosition: null
+      possibleReplacePosition: null,
+      maxItems: 20,
     };
   }
 
@@ -67,16 +109,69 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }, 'filter-menu');
   }
 
-  clickDimension(dimension: Dimension, e: MouseEvent) {
+  componentWillReceiveProps(nextProps: FilterTileProps) {
+    const { menuStage } = nextProps;
+    const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
+
+    if (menuStage) {
+      var newMaxItems = Math.floor((menuStage.width - BAR_TITLE_WIDTH - OVERFLOW_WIDTH - 79 + CORE_ITEM_GAP) / sectionWidth); // 79 = vis selector width
+      if (newMaxItems !== this.state.maxItems) {
+        this.setState({
+          menuOpenOn: null,
+          menuDimension: null,
+          menuInside: null,
+          possibleDimension: null,
+          possibleInsertPosition: null,
+          possibleReplacePosition: null,
+          overflowMenuOpenOn: null,
+          maxItems: newMaxItems
+        });
+      }
+    }
+  }
+
+  componentDidUpdate() {
+    var { possibleDimension, overflowMenuOpenOn } = this.state;
+
+    if (possibleDimension) {
+      this.dummyDeferred.resolve(null);
+    }
+
+    if (overflowMenuOpenOn) {
+      var overflowMenu = this.getOverflowMenu();
+      if (overflowMenu) this.overflowMenuDeferred.resolve(overflowMenu);
+    }
+  }
+
+  overflowButtonTarget(): Element {
+    return ReactDOM.findDOMNode(this.refs['overflow']);
+  }
+
+  getOverflowMenu(): Element {
+    return document.getElementById(this.overflowMenuId);
+  }
+
+  clickDimension(dimension: Dimension, e: React.MouseEvent) {
     var target = findParentWithClass(e.target as Element, FILTER_CLASS_NAME);
     this.openMenu(dimension, target);
   }
 
-  dummyMount(dimension: Dimension, dummy: React.Component<any, any>) {
-    var { menuOpenOn } = this.state;
-    if (menuOpenOn || !dummy) return;
-    var target = ReactDOM.findDOMNode(dummy);
-    this.openMenu(dimension, target);
+  openMenuOnDimension(dimension: Dimension) {
+    var targetRef = this.refs[dimension.name];
+    if (targetRef) {
+      var target = ReactDOM.findDOMNode(targetRef);
+      if (!target) return;
+      this.openMenu(dimension, target);
+    } else {
+      var overflowButtonTarget = this.overflowButtonTarget();
+      if (overflowButtonTarget) {
+        this.openOverflowMenu(overflowButtonTarget).then(() => {
+          var target = ReactDOM.findDOMNode(this.refs[dimension.name]);
+          if (!target) return;
+          this.openMenu(dimension, target);
+        });
+      }
+    }
   }
 
   openMenu(dimension: Dimension, target: Element) {
@@ -85,9 +180,15 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       this.closeMenu();
       return;
     }
+    var overflowMenu = this.getOverflowMenu();
+    var menuInside: Element = null;
+    if (overflowMenu && isInside(target, overflowMenu)) {
+      menuInside = overflowMenu;
+    }
     this.setState({
       menuOpenOn: target,
-      menuDimension: dimension
+      menuDimension: dimension,
+      menuInside
     });
   }
 
@@ -97,9 +198,32 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState({
       menuOpenOn: null,
       menuDimension: null,
+      menuInside: null,
       possibleDimension: null,
       possibleInsertPosition: null,
       possibleReplacePosition: null
+    });
+  }
+
+  openOverflowMenu(target: Element): Q.Promise<any> {
+    if (!target) return;
+    var { overflowMenuOpenOn } = this.state;
+
+    if (overflowMenuOpenOn === target) {
+      this.closeOverflowMenu();
+      return;
+    }
+
+    this.overflowMenuDeferred = Q.defer() as Q.Deferred<Element>;
+    this.setState({ overflowMenuOpenOn: target });
+    return this.overflowMenuDeferred.promise;
+  }
+
+  closeOverflowMenu() {
+    var { overflowMenuOpenOn } = this.state;
+    if (!overflowMenuOpenOn) return;
+    this.setState({
+      overflowMenuOpenOn: null
     });
   }
 
@@ -113,10 +237,11 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       }
     }
     this.closeMenu();
+    this.closeOverflowMenu();
     e.stopPropagation();
   }
 
-  dragStart(dimension: Dimension, clause: ChainExpression, e: DragEvent) {
+  dragStart(dimension: Dimension, clause: FilterClause, e: DragEvent) {
     var { essence } = this.props;
 
     var newUrl = essence.getURL(); // .changeSplit(SplitCombine.fromExpression(dimension.expression))
@@ -125,11 +250,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", newUrl);
     dataTransfer.setData("text/plain", newUrl);
-    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
+    DragManager.setDragDimension(dimension);
 
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
+    this.closeOverflowMenu();
   }
 
   calculateDragPosition(e: DragEvent): DragPosition {
@@ -141,7 +267,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   canDrop(e: DragEvent): boolean {
-    return Boolean(dataTransferTypesGet(e.dataTransfer.types, "dimension"));
+    return Boolean(DragManager.getDragDimension());
   }
 
   dragOver(e: DragEvent) {
@@ -191,43 +317,38 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dragReplacePosition: null
     };
 
-    var dimensionName = dataTransferTypesGet(e.dataTransfer.types, "dimension");
-    if (dimensionName) {
-      var dimension = dataSource.getDimension(dimensionName);
-      if (dimension) {
-        var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
+    var dimension = DragManager.getDragDimension();
+    if (dimension) {
+      var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
 
-        var tryingToReplaceTime = false;
+      var tryingToReplaceTime = false;
+      if (dragReplacePosition !== null) {
+        var targetClause = filter.clauses.get(dragReplacePosition);
+        tryingToReplaceTime = targetClause && targetClause.expression.equals(dataSource.timeAttribute);
+      }
+
+      var existingClause = filter.clauseForExpression(dimension.expression);
+      if (existingClause) {
+        var newFilter: Filter;
         if (dragReplacePosition !== null) {
-          var targetClause = filter.clauses.get(dragReplacePosition);
-          tryingToReplaceTime = targetClause && targetClause.expression.equals(dataSource.timeAttribute);
+          newFilter = filter.replaceByIndex(dragReplacePosition, existingClause);
+        } else if (dragInsertPosition !== null) {
+          newFilter = filter.insertByIndex(dragInsertPosition, existingClause);
         }
-
-        var existingClause = filter.clauseForExpression(dimension.expression);
-        if (existingClause) {
-          var newFilter: Filter;
-          if (dragReplacePosition !== null) {
-            newFilter = filter.replaceByIndex(dragReplacePosition, existingClause);
-          } else if (dragInsertPosition !== null) {
-            newFilter = filter.insertByIndex(dragInsertPosition, existingClause);
-          }
-          if (filter.equals(newFilter)) {
-            this.filterMenuRequest(dimension);
-          } else {
-            clicker.changeFilter(newFilter);
-            setTimeout(() => {
-              this.filterMenuRequest(dimension);
-            }, ANIMATION_DURATION + 50); // Wait for the animation to finish to know where to open the menu;
-          }
-
+        if (filter.equals(newFilter)) {
+          this.filterMenuRequest(dimension);
         } else {
-          if ((dragInsertPosition !== null || dragReplacePosition !== null) && !tryingToReplaceTime) {
-            newState.possibleDimension = dimension;
-            newState.possibleInsertPosition = dragInsertPosition;
-            newState.possibleReplacePosition = dragReplacePosition;
-          }
-
+          clicker.changeFilter(newFilter);
+          setTimeout(() => {
+            this.filterMenuRequest(dimension);
+          }, ANIMATION_DURATION + 50); // Wait for the animation to finish to know where to open the menu;
         }
+
+      } else {
+        if ((dragInsertPosition !== null || dragReplacePosition !== null) && !tryingToReplaceTime) {
+          this.addDummy(dimension, dragInsertPosition, dragReplacePosition);
+        }
+
       }
     }
 
@@ -235,80 +356,90 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState(newState);
   }
 
+  addDummy(dimension: Dimension, possibleInsertPosition: number, possibleReplacePosition: number) {
+    this.dummyDeferred = Q.defer() as Q.Deferred<Element>;
+    this.setState({
+      possibleDimension: dimension,
+      possibleInsertPosition,
+      possibleReplacePosition
+    });
+    this.dummyDeferred.promise.then(() => {
+      this.openMenuOnDimension(dimension);
+    });
+  }
+
   // This will be called externally
   filterMenuRequest(dimension: Dimension) {
     var { filter } = this.props.essence;
     if (filter.filteredOn(dimension.expression)) {
-      var targetRef = this.refs[dimension.name];
-      if (!targetRef) return;
-      var target = ReactDOM.findDOMNode(targetRef);
-      if (!target) return;
-      this.openMenu(dimension, target);
+      this.openMenuOnDimension(dimension);
     } else {
-      this.setState({
-        possibleDimension: dimension,
-        possibleInsertPosition: filter.length(),
-        possibleReplacePosition: null
-      });
+      this.addDummy(dimension, filter.length(), null);
     }
   }
 
-  formatLabel(dimension: Dimension, clause: ChainExpression, timezone: Timezone): string {
-    var label = dimension.title;
-
-    switch (dimension.type) {
-      case 'STRING':
-      case 'BOOLEAN':
-        var inAction = clause.actions[0];
-        if (inAction instanceof InAction) {
-          var setLiteral = inAction.getLiteralValue();
-          if (!setLiteral) return '?';
-          var setElements = setLiteral.elements;
-          label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
-        } else {
-          label += ' : [not in]';
-        }
-        break;
-
-      case 'TIME':
-        var inAction = clause.actions[0];
-        if (inAction instanceof InAction) {
-          var timeRangeLiteral = inAction.getLiteralValue();
-          if (!timeRangeLiteral) return '?';
-          label = formatTimeRange(timeRangeLiteral, timezone, DisplayYear.IF_DIFF);
-        } else {
-          label += ' : [not in]';
-        }
-        break;
-
-      default:
-        throw new Error('unknown type ' + dimension.type);
-    }
-
-    return label;
-  }
-
-  formatLabelDummy(dimension: Dimension): string {
-    return dimension.title;
-  }
+  overflowButtonClick() {
+    this.openOverflowMenu(this.overflowButtonTarget());
+  };
 
   renderMenu(): JSX.Element {
     var { essence, clicker, menuStage } = this.props;
-    var { FilterMenuAsync, menuOpenOn, menuDimension, possibleInsertPosition, possibleReplacePosition } = this.state;
+    var { FilterMenuAsync, menuOpenOn, menuDimension, menuInside, possibleInsertPosition, possibleReplacePosition, maxItems, overflowMenuOpenOn } = this.state;
     if (!FilterMenuAsync || !menuDimension) return null;
-    var onClose = this.closeMenu.bind(this);
+
+    if (possibleReplacePosition === maxItems) {
+      possibleInsertPosition = possibleReplacePosition;
+      possibleReplacePosition = null;
+    }
 
     return <FilterMenuAsync
       clicker={clicker}
       essence={essence}
       direction="down"
-      containerStage={menuStage}
+      containerStage={overflowMenuOpenOn ? null : menuStage}
       openOn={menuOpenOn}
       dimension={menuDimension}
       insertPosition={possibleInsertPosition}
       replacePosition={possibleReplacePosition}
-      onClose={onClose}
+      onClose={this.closeMenu.bind(this)}
+      inside={menuInside}
     />;
+  }
+
+  renderOverflowMenu(overflowItemBlanks: ItemBlank[]): JSX.Element {
+    var { overflowMenuOpenOn } = this.state;
+    if (!overflowMenuOpenOn) return null;
+
+    var segmentHeight = 29 + CORE_ITEM_GAP;
+
+    var itemY = CORE_ITEM_GAP;
+    var filterItems = overflowItemBlanks.map((itemBlank) => {
+      var style = transformStyle(0, itemY);
+      itemY += segmentHeight;
+      return this.renderItemBlank(itemBlank, style);
+    });
+
+    return <BubbleMenu
+      className="overflow-menu"
+      id={this.overflowMenuId}
+      direction="down"
+      stage={Stage.fromSize(208, itemY)}
+      openOn={overflowMenuOpenOn}
+      onClose={this.closeOverflowMenu.bind(this)}
+    >
+      {filterItems}
+    </BubbleMenu>;
+  }
+
+  renderOverflow(overflowItemBlanks: ItemBlank[]): JSX.Element {
+    return <div
+      className="overflow"
+      ref="overflow"
+      onClick={this.overflowButtonClick.bind(this)}
+    >
+      {'+' + overflowItemBlanks.length}
+      {this.renderOverflowMenu(overflowItemBlanks)}
+    </div>;
   }
 
   renderRemoveButton(itemBlank: ItemBlank) {
@@ -320,13 +451,66 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     </div>;
   }
 
-  render() {
+  renderItemBlank(itemBlank: ItemBlank, style: any): JSX.Element {
     var { essence, clicker } = this.props;
+    var { menuDimension } = this.state;
+    var { timezone } = essence;
+
+    var { dimension, clause, source } = itemBlank;
+    var dimensionName = dimension.name;
+
+    var classNames = [FILTER_CLASS_NAME, 'type-' + dimension.className, source];
+    if (dimension === menuDimension) classNames.push('selected');
+
+    var className = classNames.join(' ');
+
+    if (source === 'from-highlight') {
+      return <div
+        className={className}
+        key={dimensionName}
+        ref={dimensionName}
+        onClick={clicker.acceptHighlight.bind(clicker)}
+        style={style}
+      >
+        <div className="reading">{formatLabel(dimension, clause, timezone)}</div>
+        {this.renderRemoveButton(itemBlank)}
+      </div>;
+    }
+
+    if (clause) {
+      return <div
+        className={className}
+        key={dimensionName}
+        ref={dimensionName}
+        draggable={true}
+        onClick={this.clickDimension.bind(this, dimension)}
+        onDragStart={this.dragStart.bind(this, dimension, clause)}
+        style={style}
+      >
+        <div className="reading">{formatLabel(dimension, clause, timezone)}</div>
+        {this.renderRemoveButton(itemBlank)}
+      </div>;
+    } else {
+      return <div
+        className={className}
+        key={dimensionName}
+        ref={dimensionName}
+        style={style}
+      >
+        <div className="reading">{formatLabelDummy(dimension)}</div>
+        {this.renderRemoveButton(itemBlank)}
+      </div>;
+    }
+  }
+
+  render() {
+    var { essence } = this.props;
     var {
-      menuDimension, dragOver, dragInsertPosition, dragReplacePosition,
-      possibleDimension, possibleInsertPosition, possibleReplacePosition
-      } = this.state;
-    var { dataSource, filter, highlight, timezone } = essence;
+      dragOver, dragInsertPosition, dragReplacePosition,
+      possibleDimension, possibleInsertPosition, possibleReplacePosition,
+      maxItems
+    } = this.state;
+    var { dataSource, filter, highlight } = essence;
 
     const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 
@@ -375,6 +559,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         dimension: possibleDimension,
         source: 'from-drag'
       };
+      if (possibleReplacePosition === maxItems) {
+        possibleInsertPosition = possibleReplacePosition;
+        possibleReplacePosition = null;
+      }
       if (possibleInsertPosition !== null) {
         itemBlanks.splice(possibleInsertPosition, 0, dummyBlank);
       }
@@ -383,68 +571,42 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       }
     }
 
+    var overflowItemBlanks: ItemBlank[];
+    if (maxItems < itemBlanks.length) {
+      overflowItemBlanks = itemBlanks.slice(maxItems);
+      itemBlanks = itemBlanks.slice(0, maxItems);
+    } else {
+      overflowItemBlanks = [];
+    }
+
     var itemX = 0;
     var filterItems = itemBlanks.map((itemBlank) => {
-      var { dimension, clause, source } = itemBlank;
-      var dimensionName = dimension.name;
-
       var style = transformStyle(itemX, 0);
       itemX += sectionWidth;
-
-      var classNames = [FILTER_CLASS_NAME, 'type-' + dimension.className, source];
-      if (dimension === menuDimension) classNames.push('selected');
-
-      var className = classNames.join(' ');
-
-      if (source === 'from-highlight') {
-        return <div
-          className={className}
-          key={dimensionName}
-          ref={dimensionName}
-          onClick={clicker.acceptHighlight.bind(clicker)}
-          style={style}
-        >
-          <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
-          {this.renderRemoveButton(itemBlank)}
-        </div>;
-      }
-
-      if (clause) {
-        return <div
-          className={className}
-          key={dimensionName}
-          ref={dimensionName}
-          draggable={true}
-          onClick={this.clickDimension.bind(this, dimension)}
-          onDragStart={this.dragStart.bind(this, dimension, clause)}
-          style={style}
-        >
-          <div className="reading">{this.formatLabel(dimension, clause, timezone)}</div>
-          {this.renderRemoveButton(itemBlank)}
-        </div>;
-      } else {
-        return <div
-          className={className}
-          key={dimensionName}
-          ref={this.dummyMount.bind(this, dimension)}
-          style={style}
-        >
-          <div className="reading">{this.formatLabelDummy(dimension)}</div>
-          {this.renderRemoveButton(itemBlank)}
-        </div>;
-      }
+      return this.renderItemBlank(itemBlank, style);
     });
+
+    var overflowIndicator: JSX.Element = null;
+    if (overflowItemBlanks.length) {
+      overflowIndicator = this.renderOverflow(overflowItemBlanks);
+    }
 
     var fancyDragIndicator: JSX.Element = null;
     if (dragInsertPosition !== null || dragReplacePosition !== null) {
-      fancyDragIndicator = React.createElement(FancyDragIndicator, {
-        dragInsertPosition,
-        dragReplacePosition
-      });
+      fancyDragIndicator = <FancyDragIndicator
+        dragInsertPosition={dragInsertPosition}
+        dragReplacePosition={dragReplacePosition}
+      />;
     }
 
+    var className = [
+      'filter-tile',
+      overflowIndicator ? 'has-overflow' : 'no-overflow',
+      (dragOver ? 'drag-over' : 'no-drag')
+    ].join(' ');
+
     return <div
-      className={'filter-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
+      className={className}
       onDragOver={this.dragOver.bind(this)}
       onDragEnter={this.dragEnter.bind(this)}
       onDragLeave={this.dragLeave.bind(this)}
@@ -454,6 +616,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       <div className="items" ref="items">
         {filterItems}
       </div>
+      {overflowIndicator}
       {fancyDragIndicator}
       {this.renderMenu()}
     </div>;

@@ -80,7 +80,7 @@
 
 %module-h-title {
   .title {
-    @include pin-left($title-width);
+    @include pin-left($bar-title-width);
     padding: 13px 0 0 $tile-padding-h;
     font-size: 12px;
     text-transform: uppercase;
@@ -132,8 +132,6 @@
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.1s ease-in-out;
-  top: $control-padding-v;
-  bottom: $control-padding-v;
   width: $item-width;
 
   .reading {
@@ -176,6 +174,11 @@
       background-color: darken($item-continuous, 6%);
     }
   }
+}
+
+%dimension-item-h {
+  top: $control-padding-v;
+  bottom: $control-padding-v;
 }
 
 %white-shadow {

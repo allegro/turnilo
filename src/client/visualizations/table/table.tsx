@@ -4,10 +4,10 @@ require('./table.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, SortAction } from 'plywood';
+import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, Set, SortAction } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
-import { Stage, Filter, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, Colors, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
+import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, Colors, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
@@ -43,7 +43,10 @@ function getFilterFromDatum(splits: Splits, flatDatum: Datum): Filter {
     flatDatum = flatDatum['__parent'];
   }
   return new Filter(List(segments.map((segment, i) => {
-    return splits.get(i).expression.in(TimeRange.isTimeRange(segment) ? segment : [segment]);
+    return new FilterClause({
+      expression: splits.get(i).expression,
+      values: Set.fromJS([segment])
+    });
   })));
 }
 

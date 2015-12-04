@@ -5,8 +5,9 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset, Set } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, Colors } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
+import { enterKey } from '../../utils/dom/dom';
 import { MenuTable } from '../menu-table/menu-table';
 
 export interface StringFilterMenuProps extends React.Props<any> {
@@ -31,7 +32,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       selectedValues: null,
       colors: null
     };
-
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentWillMount() {
@@ -47,13 +48,30 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     });
   }
 
+  componentDidMount() {
+    window.addEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (enterKey(e)) {
+      this.onOkClick();
+    }
+  }
+
   constructFilter(): Filter {
     var { essence, dimension, insertPosition, replacePosition } = this.props;
     var { selectedValues } = this.state;
     var { filter } = essence;
 
     if (selectedValues.size()) {
-      var clause = dimension.expression.in(selectedValues);
+      var clause = new FilterClause({
+        expression: dimension.expression,
+        values: selectedValues
+      });
       if (insertPosition !== null) {
         return filter.insertByIndex(insertPosition, clause);
       } else if (replacePosition !== null) {
@@ -79,6 +97,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   onOkClick() {
+    if (!this.actionEnabled()) return;
     var { clicker, onClose } = this.props;
     var { colors } = this.state;
     clicker.changeFilter(this.constructFilter(), colors);
@@ -90,12 +109,15 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     onClose();
   }
 
+  actionEnabled() {
+    var { essence } = this.props;
+    return !essence.filter.equals(this.constructFilter());
+  }
+
   render() {
     var { essence, dimension } = this.props;
     var { selectedValues, colors } = this.state;
     if (!dimension) return null;
-
-    var actionDisabled = essence.filter.equals(this.constructFilter());
 
     return <div className="string-filter-menu">
       <MenuTable
@@ -106,7 +128,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         onValueClick={this.onValueClick.bind(this)}
       />
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={actionDisabled}>OK</button>
+        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>OK</button>
         <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
       </div>
     </div>;

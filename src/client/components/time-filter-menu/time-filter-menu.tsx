@@ -7,6 +7,7 @@ import { Timezone, Duration, minute, hour, day, week, month, year } from 'chrono
 import { $, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
+import { enterKey } from '../../utils/dom/dom';
 // import { ... } from '../../config/constants';
 import { TimeInput } from '../time-input/time-input';
 
@@ -136,7 +137,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       currentPresets: null,
       previousPresets: null
     };
-
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentWillMount() {
@@ -152,6 +153,20 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       currentPresets: getCurrentOrPrevious(now, false, timezone),
       previousPresets: getCurrentOrPrevious(now, true, timezone)
     });
+  }
+
+  componentDidMount() {
+    window.addEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (enterKey(e)) {
+      this.onOkClick();
+    }
   }
 
   constructFilter(): Filter {
@@ -211,6 +226,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   }
 
   onOkClick() {
+    if (!this.actionEnabled()) return;
     var { clicker, onClose } = this.props;
     clicker.changeFilter(this.constructFilter());
     onClose();
@@ -256,15 +272,19 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     </div>;
   }
 
+  actionEnabled() {
+    var { essence } = this.props;
+    var { tab } = this.state;
+    return tab === 'custom' && !essence.filter.equals(this.constructFilter());
+  }
+
   renderCustom() {
     var { essence, dimension } = this.props;
     var { selectedTimeRange } = this.state;
     if (!dimension) return null;
 
     if (!selectedTimeRange) return null;
-    var { timezone, filter } = essence;
-
-    var actionDisabled = filter.equals(this.constructFilter());
+    var { timezone } = essence;
 
     return <div className="cont">
       <div className="type">start</div>
@@ -272,7 +292,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       <div className="type">end</div>
       <TimeInput time={selectedTimeRange.end} timezone={timezone} onChange={this.timeRangeEndChange.bind(this)}/>
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={actionDisabled}>OK</button>
+        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>OK</button>
         <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
       </div>
     </div>;

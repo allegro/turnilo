@@ -9,6 +9,7 @@ import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, RefExpression, Executor, Dataset, TimeBucketAction, SortAction, LimitAction } from 'plywood';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Colors, Dimension, Measure, DimensionOrMeasure } from '../../../common/models/index';
 import { SEGMENT } from '../../config/constants';
+import { enterKey } from '../../utils/dom/dom';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
 
@@ -71,6 +72,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       split: null,
       colors: null
     };
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentWillMount() {
@@ -89,6 +91,20 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       split,
       colors: myColors
     });
+  }
+
+  componentDidMount() {
+    window.addEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (enterKey(e)) {
+      this.onOkClick();
+    }
   }
 
   onSelectGran(gran: string): void {

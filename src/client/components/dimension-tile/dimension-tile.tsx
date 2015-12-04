@@ -10,6 +10,8 @@ import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { setDragGhost, isInside, escapeKey } from '../../utils/dom/dom';
 import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine, Colors } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
+import { DragManager } from '../../utils/drag-manager/drag-manager';
+
 import { TileHeader } from '../tile-header/tile-header';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
@@ -151,17 +153,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   globalMouseDownListener(e: MouseEvent) {
-    // can not use ReactDOM.findDOMNode(this) because portal?
-    var searchBoxRef = this.refs['search-box'];
-    if (!searchBoxRef) return;
-    var searchBoxElement = ReactDOM.findDOMNode(searchBoxRef);
+    var searchBoxElement = ReactDOM.findDOMNode(this.refs['search-box']);
     if (!searchBoxElement) return;
 
     var headerRef = this.refs['header'];
     if (!headerRef) return;
-    var searchButtonRef = headerRef.refs['searchButton'];
-    if (!searchButtonRef) return;
-    var searchButtonElement = ReactDOM.findDOMNode(searchButtonRef);
+    var searchButtonElement = ReactDOM.findDOMNode(headerRef.refs['searchButton']);
     if (!searchButtonElement) return;
 
     var target = e.target as Element;
@@ -201,7 +198,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       }
 
     } else {
-      if (e.altKey) {
+      if (e.altKey || e.ctrlKey || e.metaKey) {
         if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).size() === 1) {
           filter = filter.remove(dimension.expression);
         } else {
@@ -238,7 +235,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", newUrl);
     dataTransfer.setData("text/plain", newUrl);
-    dataTransfer.setData("dimension/" + dimension.name, JSON.stringify(dimension));
+    DragManager.setDragDimension(dimension);
     setDragGhost(dataTransfer, dimension.title);
   }
 
@@ -367,7 +364,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (loading) {
       loader = <Loader/>;
     } else if (dataset && !fetchQueued && searchText && !rows.length) {
-      message = <div className="message">{'No results for "' + searchText + '"'}</div>;
+      message = <div className="message">{`No results for "${searchText}"`}</div>;
     }
 
     var queryError: JSX.Element = null;

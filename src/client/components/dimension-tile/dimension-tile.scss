@@ -59,7 +59,6 @@ $folder-box-height: 32px;
     @include pin-bottom($folder-box-height);
     cursor: pointer;
     color: $brand;
-    font-weight: 600;
     padding-left: 12px;
     padding-top: 9px;
     z-index: 2;
