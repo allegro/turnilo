@@ -11,6 +11,7 @@ export interface DataSourceManagerOptions {
   dataSources?: DataSource[];
   druidHost?: string;
   retry?: number;
+  timeout?: number;
   verbose?: boolean;
   concurrentLimit?: number;
   dataSourceStubFactory?: (name: string) => DataSource;
@@ -33,6 +34,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     dataSources,
     druidHost,
     retry,
+    timeout,
     verbose,
     concurrentLimit,
     dataSourceStubFactory,
@@ -97,7 +99,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   if (druidHost) {
     druidRequester = druidRequesterFactory({
       host: druidHost,
-      timeout: 30000
+      timeout: timeout || 30000
     });
 
     if (retry) {

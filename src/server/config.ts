@@ -11,6 +11,7 @@ export interface PivotConfig {
   port?: number;
   verbose?: boolean;
   druidHost?: string;
+  timeout?: number;
   useSegmentMetadata?: string;
   sourceListScan?: string;
   sourceListRefreshInterval?: number;
@@ -154,6 +155,7 @@ export const VERBOSE = Boolean(parsedArgs['verbose'] || config.verbose);
 
 export const PORT = parseInt(parsedArgs['port'] || config.port, 10);
 export const DRUID_HOST = parsedArgs['druid'] || config.druidHost;
+export const TIMEOUT = parseInt(<any>config.timeout, 10) || 30000;
 
 export const USE_SEGMENT_METADATA = Boolean(parsedArgs["use-segment-metadata"] || config.useSegmentMetadata);
 export const SOURCE_LIST_SCAN = START_SERVER ? config.sourceListScan : 'disable';
@@ -186,6 +188,7 @@ export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
   verbose: VERBOSE,
   dataSources: DATA_SOURCES,
   druidHost: DRUID_HOST,
+  timeout: TIMEOUT,
   concurrentLimit: 5,
   fileDirectory: path.join(__dirname, '../..'),
   useSegmentMetadata: USE_SEGMENT_METADATA,
@@ -222,6 +225,11 @@ if (PRINT_CONFIG) {
           lines.push("# A Druid broker node that can serve data (only used if you have Druid based data source)");
         }
         lines.push(`druidHost: ${DRUID_HOST}`, '');
+
+        if (withComments) {
+          lines.push("# A timeout for the Druid queries in ms (default: 30000)");
+          lines.push("#timeout: 30000", '');
+        }
       }
 
       if (USE_SEGMENT_METADATA) {
