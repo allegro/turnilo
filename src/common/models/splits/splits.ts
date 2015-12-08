@@ -16,6 +16,8 @@ function getBestGranularity(timeRange: TimeRange): Duration {
     return Duration.fromJS('P1D');
   } else if (len > 8 * hour.canonicalLength) {
     return Duration.fromJS('PT1H');
+  } else if (len > 3 * hour.canonicalLength) {
+    return Duration.fromJS('PT5M');
   } else {
     return Duration.fromJS('PT1M');
   }

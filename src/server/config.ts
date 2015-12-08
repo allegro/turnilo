@@ -49,7 +49,7 @@ Possible usage:
   -f, --file                  Start pivot on top of this file based data source (must be JSON, CSV, or TSV)
 
   -d, --druid                 The Druid broker node to connect to
-      --use-segment-metadata  Should the segmentMetadata query be used for introspection
+      --use-segment-metadata  Use the segmentMetadata query for introspection instead of GET /druid/v2/datasources/...
 `
   );
 }

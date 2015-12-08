@@ -250,7 +250,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return newFilter;
   }
 
-  public getSingleValue(): any {
+  public getSingleValue(): Set {
     var clauses = this.clauses;
     if (clauses.size !== 1) return null;
     return clauses.get(0).values;

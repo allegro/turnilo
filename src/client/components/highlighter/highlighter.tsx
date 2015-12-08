@@ -127,7 +127,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var shownTimeRange = pseudoHighlight;
     if (!shownTimeRange) {
       if (essence.highlightOn(highlightId)) {
-        shownTimeRange = essence.getSingleHighlightValue();
+        shownTimeRange = essence.getSingleHighlightValue().elements[0];
       }
     }
 

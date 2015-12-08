@@ -154,9 +154,11 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     if (bucketAction instanceof TimeBucketAction) {
       var duration = bucketAction.duration.toString();
       switch (duration) {
-        case 'P1D': return ' (Day)';
-        case 'PT1H': return ' (Hour)';
         case 'PT1M': return ' (Minute)';
+        case 'PT5M': return ' (5 Minutes)';
+        case 'PT1H': return ' (Hour)';
+        case 'P1D': return ' (Day)';
+        case 'P7D': return ' (7 Days)';
         default: return '';
       }
     }

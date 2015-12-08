@@ -13,7 +13,7 @@ import { enterKey } from '../../utils/dom/dom';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
 
-const GRANULARITIES = ['PT1M', 'PT1H', 'P1D', 'P7D'];
+const GRANULARITIES = ['PT1M', 'PT5M', 'PT1H', 'P1D', 'P7D'];
 
 function mdEqual(m1: DimensionOrMeasure, m2: DimensionOrMeasure): boolean {
   return m1 === m2 || (m1 as any).equals(m2);
@@ -33,18 +33,7 @@ function formatLimit(limit: number | string): string {
 }
 
 function formatGranularity(gran: string): string {
-  switch (gran) {
-    case 'PT1M':
-      return '1M';
-    case 'PT1H':
-      return '1H';
-    case 'P1D':
-      return '1D';
-    case 'P7D':
-      return '7D';
-    default:
-      return gran;
-  }
+  return gran.replace(/^PT?/, '');
 }
 
 export interface SplitMenuProps extends React.Props<any> {
