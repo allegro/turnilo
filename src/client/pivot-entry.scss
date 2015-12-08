@@ -1,6 +1,7 @@
-@import 'utils/reset';
-@import 'utils/sanity';
-@import 'utils/fonts';
+@import '../../node_modules/laborer/common/style/reset';
+@import '../../node_modules/laborer/common/style/sanity';
+@import '../../node_modules/laborer/common/style/open-sans-regular';
+@import '../../node_modules/laborer/common/style/open-sans-600';
 
 html,
 body {
