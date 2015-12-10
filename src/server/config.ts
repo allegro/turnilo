@@ -5,7 +5,7 @@ import * as Q from 'q';
 import * as nopt from 'nopt';
 
 import { DataSource, DataSourceJS, Dimension, Measure } from '../common/models/index';
-import { DataSourceManager, dataSourceManagerFactory, loadFileSync, dataSourceToYAML } from './utils/index';
+import { DataSourceManager, dataSourceManagerFactory, loadFileSync, dataSourceToYAML, properDruidRequesterFactory, dataSourceFillerFactory } from './utils/index';
 
 export interface PivotConfig {
   port?: number;
@@ -184,14 +184,19 @@ export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSo
   }
 });
 
-export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
-  verbose: VERBOSE,
-  dataSources: DATA_SOURCES,
+var druidRequester = properDruidRequesterFactory({
   druidHost: DRUID_HOST,
   timeout: TIMEOUT,
-  concurrentLimit: 5,
-  fileDirectory: path.join(__dirname, '../..'),
-  useSegmentMetadata: USE_SEGMENT_METADATA,
+  verbose: VERBOSE,
+  concurrentLimit: 5
+});
+
+var fileDirectory = path.join(__dirname, '../..');
+
+export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
+  dataSources: DATA_SOURCES,
+  druidRequester,
+  dataSourceFiller: dataSourceFillerFactory(druidRequester, fileDirectory, USE_SEGMENT_METADATA),
   sourceListScan: SOURCE_LIST_SCAN,
   sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL,
   log: PRINT_CONFIG ? null : (line: string) => console.log(line)

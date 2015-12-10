@@ -42,8 +42,7 @@ dataSources:
       - namespace
       - isRobot
 
-    options:
-      disableAutofill: true
+    introspection: no-autofill
 
     dimensions:
       - name: time

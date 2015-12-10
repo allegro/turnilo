@@ -7,7 +7,6 @@ import * as ReactDOM from 'react-dom';
 import { Timezone, WallTime } from 'chronoshift';
 import { $, Expression, Datum, Dataset, TimeRange, AttributeInfo } from 'plywood';
 
-import { queryUrlExecutorFactory } from './utils/ajax/ajax';
 import { Filter, Dimension, Measure, SplitCombine, Clicker, DataSource, DataSourceJS } from '../common/models/index';
 import { PivotApplication, PivotApplicationProps } from "./components/pivot-application/pivot-application";
 

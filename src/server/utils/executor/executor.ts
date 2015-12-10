@@ -148,42 +148,44 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
   }
 }
 
-export function fillInDataSource(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, fileDirectory: string, useSegmentMetadata: boolean): Q.Promise<DataSource> {
-  switch (dataSource.engine) {
-    case 'native':
-      // Do not do anything if the file was already loaded
-      if (dataSource.executor) return Q(dataSource);
+export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequester<any>, fileDirectory: string, useSegmentMetadata: boolean) {
+  return function(dataSource: DataSource): Q.Promise<DataSource> {
+    switch (dataSource.engine) {
+      case 'native':
+        // Do not do anything if the file was already loaded
+        if (dataSource.executor) return Q(dataSource);
 
-      if (!fileDirectory) {
-        throw new Error('Must have a file directory');
-      }
-
-      var filePath = path.join(fileDirectory, dataSource.source);
-      return getFileData(filePath).then((rawData) => {
-        var dataset = Dataset.fromJS(rawData).hide();
-        dataset.introspect();
-
-        if (dataSource.subsetFilter) {
-          dataset = dataset.filter(dataSource.subsetFilter.getFn(), {});
+        if (!fileDirectory) {
+          throw new Error('Must have a file directory');
         }
 
-        var executor = basicExecutorFactory({
-          datasets: { main: dataset }
+        var filePath = path.join(fileDirectory, dataSource.source);
+        return getFileData(filePath).then((rawData) => {
+          var dataset = Dataset.fromJS(rawData).hide();
+          dataset.introspect();
+
+          if (dataSource.subsetFilter) {
+            dataset = dataset.filter(dataSource.subsetFilter.getFn(), {});
+          }
+
+          var executor = basicExecutorFactory({
+            datasets: { main: dataset }
+          });
+
+          return dataSource.addAttributes(dataset.attributes).attachExecutor(executor);
         });
 
-        return dataSource.addAttributes(dataset.attributes).attachExecutor(executor);
-      });
+      case 'druid':
+        return externalFactory(dataSource, druidRequester, useSegmentMetadata).then((external) => {
+          var executor = basicExecutorFactory({
+            datasets: { main: external }
+          });
 
-    case 'druid':
-      return externalFactory(dataSource, druidRequester, useSegmentMetadata).then((external) => {
-        var executor = basicExecutorFactory({
-          datasets: { main: external }
-        });
+          return dataSource.addAttributes(external.attributes).attachExecutor(executor);
+        }).then(DataSource.updateMaxTime);
 
-        return dataSource.addAttributes(external.attributes).attachExecutor(executor);
-      }).then(DataSource.updateMaxTime);
-
-    default:
-      throw new Error(`Invalid engine: '${dataSource.engine}' in '${dataSource.name}'`);
-  }
+      default:
+        throw new Error(`Invalid engine: '${dataSource.engine}' in '${dataSource.name}'`);
+    }
+  };
 }

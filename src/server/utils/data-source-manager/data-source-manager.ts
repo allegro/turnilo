@@ -2,21 +2,18 @@
 
 import * as Q from 'q';
 import { Duration, Timezone } from 'chronoshift';
+import { $ } from 'plywood';
 import { DataSource, DataSourceJS, RefreshRule, Dimension, Measure } from '../../../common/models/index';
-import { fillInDataSource } from '../executor/executor';
-import { $, helper } from 'plywood';
-import { druidRequesterFactory } from 'plywood-druid-requester';
+
+export interface DataSourceFiller {
+  (dataSource: DataSource): Q.Promise<DataSource>;
+}
 
 export interface DataSourceManagerOptions {
   dataSources?: DataSource[];
-  druidHost?: string;
-  retry?: number;
-  timeout?: number;
-  verbose?: boolean;
-  concurrentLimit?: number;
   dataSourceStubFactory?: (name: string) => DataSource;
-  fileDirectory?: string;
-  useSegmentMetadata?: boolean;
+  druidRequester?: Requester.PlywoodRequester<any>;
+  dataSourceFiller?: DataSourceFiller;
   sourceListScan?: string;
   sourceListRefreshInterval?: number;
   sourceListRefreshOnLoad?: boolean;
@@ -32,14 +29,9 @@ export interface DataSourceManager {
 export function dataSourceManagerFactory(options: DataSourceManagerOptions): DataSourceManager {
   var {
     dataSources,
-    druidHost,
-    retry,
-    timeout,
-    verbose,
-    concurrentLimit,
     dataSourceStubFactory,
-    fileDirectory,
-    useSegmentMetadata,
+    druidRequester,
+    dataSourceFiller,
     sourceListScan,
     sourceListRefreshInterval,
     sourceListRefreshOnLoad,
@@ -63,7 +55,6 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     };
   }
 
-  useSegmentMetadata = Boolean(useSegmentMetadata);
   if (!log) log = function() {};
 
   var myDataSources: DataSource[] = dataSources || [];
@@ -95,38 +86,8 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     }
   }
 
-  var druidRequester: Requester.PlywoodRequester<any> = null;
-  if (druidHost) {
-    druidRequester = druidRequesterFactory({
-      host: druidHost,
-      timeout: timeout || 30000
-    });
-
-    if (retry) {
-      druidRequester = helper.retryRequesterFactory({
-        requester: druidRequester,
-        retry: retry,
-        delay: 500,
-        retryOnTimeout: false
-      });
-    }
-
-    if (verbose) {
-      druidRequester = helper.verboseRequesterFactory({
-        requester: druidRequester
-      });
-    }
-
-    if (concurrentLimit) {
-      druidRequester = helper.concurrentLimitRequesterFactory({
-        requester: druidRequester,
-        concurrentLimit: concurrentLimit
-      });
-    }
-  }
-
   function introspectDataSource(dataSource: DataSource): Q.Promise<any> {
-    return fillInDataSource(dataSource, druidRequester, fileDirectory, useSegmentMetadata).then((filledDataSource) => {
+    return dataSourceFiller(dataSource).then((filledDataSource) => {
       addOrUpdateDataSource(filledDataSource);
     }).catch((e) => {
       log(`Failed to introspect data source: '${dataSource.name}' because ${e.message}`);
@@ -191,7 +152,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     log(`Initial introspection complete. Got ${myDataSources.length} data sources, ${queryableDataSources.length} queryable`);
   });
 
-  if (sourceListScan === 'auto' && sourceListRefreshInterval) {
+  if (sourceListScan === 'auto' && druidRequester && sourceListRefreshInterval) {
     log(`Will refresh data sources every ${sourceListRefreshInterval}ms`);
     setInterval(loadDruidDataSources, sourceListRefreshInterval).unref();
   }

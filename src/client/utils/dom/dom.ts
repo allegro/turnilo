@@ -21,7 +21,7 @@ export function isInside(child: Element, parent: Element): boolean {
     if (child === parent) return true;
 
     var dataset = (child as HTMLElement).dataset;
-    if (dataset && dataset['inside'] && (altParent = document.getElementById(dataset['inside']))) {
+    if (dataset && dataset['parent'] && (altParent = document.getElementById(dataset['parent']))) {
       child = altParent;
     } else {
       child = child.parentElement;
