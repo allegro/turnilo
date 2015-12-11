@@ -90,7 +90,7 @@ export function getFileData(filePath: string): Q.Promise<any[]> {
   });
 }
 
-export function externalFactory(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, useSegmentMetadata: boolean): Q.Promise<External> {
+export function externalFactory(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, timeout: number, useSegmentMetadata: boolean): Q.Promise<External> {
   var filter: ExpressionJS = null;
   if (dataSource.subsetFilter) {
     filter = dataSource.subsetFilter.toJS();
@@ -103,6 +103,10 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
     }));
   }
 
+  var context = {
+    timeout
+  };
+
   if (dataSource.introspection === 'none') {
     return Q(External.fromJS({
       engine: 'druid',
@@ -112,7 +116,7 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
       attributes: deduceAttributes(dataSource),
       useSegmentMetadata,
       filter,
-      context: null,
+      context,
       requester: druidRequester
     }));
   } else {
@@ -124,7 +128,7 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
       customAggregations: dataSource.options['customAggregations'],
       useSegmentMetadata,
       filter,
-      context: null,
+      context,
       requester: druidRequester
     }).introspect();
 
@@ -148,7 +152,7 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
   }
 }
 
-export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequester<any>, fileDirectory: string, useSegmentMetadata: boolean) {
+export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequester<any>, fileDirectory: string, timeout: number, useSegmentMetadata: boolean) {
   return function(dataSource: DataSource): Q.Promise<DataSource> {
     switch (dataSource.engine) {
       case 'native':
@@ -176,7 +180,7 @@ export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequest
         });
 
       case 'druid':
-        return externalFactory(dataSource, druidRequester, useSegmentMetadata).then((external) => {
+        return externalFactory(dataSource, druidRequester, timeout, useSegmentMetadata).then((external) => {
           var executor = basicExecutorFactory({
             datasets: { main: external }
           });

@@ -196,7 +196,7 @@ var fileDirectory = path.join(__dirname, '../..');
 export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
   dataSources: DATA_SOURCES,
   druidRequester,
-  dataSourceFiller: dataSourceFillerFactory(druidRequester, fileDirectory, USE_SEGMENT_METADATA),
+  dataSourceFiller: dataSourceFillerFactory(druidRequester, fileDirectory, TIMEOUT, USE_SEGMENT_METADATA),
   sourceListScan: SOURCE_LIST_SCAN,
   sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL,
   log: PRINT_CONFIG ? null : (line: string) => console.log(line)
@@ -232,7 +232,7 @@ if (PRINT_CONFIG) {
         lines.push(`druidHost: ${DRUID_HOST}`, '');
 
         if (withComments) {
-          lines.push("# A timeout for the Druid queries in ms (default: 30000)");
+          lines.push("# A timeout for the Druid queries in ms (default: 30000 = 30 seconds)");
           lines.push("#timeout: 30000", '');
         }
       }
