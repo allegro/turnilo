@@ -125,6 +125,8 @@ Then you are ready to
 
 **Recent improvements:**
 
+- Support for the extract function `resourceVersion: $resource.extract("(\d+\.\d+\.\d+)")`
+- Custom dimensions like `$user.substr(0,1)`
 - Comparing multiple dimension values on a time series
 - Multiple selections and search from pinned dimensions
 - Introspection writes a config file
@@ -132,6 +134,7 @@ Then you are ready to
 
 **We will be working on:**
 
+- Support for lookup dimensions
 - Additional visualizations (bar chart and geo)
 - Exclusion filters
 - Better comparison behavior and legend interaction
