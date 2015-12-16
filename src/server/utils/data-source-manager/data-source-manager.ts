@@ -367,6 +367,7 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
       "      # expression: $channel",
       "      # ^ (optional) the Plywood bucketing expression for this dimension. Defaults to '$name'",
       "      #   if, say, channel was called 'cnl' in the data you would put '$cnl' here",
+      "      #   See also the expressions API reference: https://github.com/implydata/plywood/blob/master/docs/expressions.md",
       ""
     );
   }

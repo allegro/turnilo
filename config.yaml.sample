@@ -89,6 +89,7 @@ dataSources:
       #   expression: $channel
       #   ^ (optional) the Plywood bucketing expression for this dimension. Defaults to '$name'
       #     if, say, channel was called 'cnl' in the data you would put '$cnl' here
+      #     See also the expressions API reference: https://github.com/implydata/plywood/blob/master/docs/expressions.md
 
       - name: time
         type: TIME
@@ -242,6 +243,15 @@ dataSources:
       - name: page
 
       - name: user
+
+      - name: is-english
+        expression: $language == 'en'
+
+      - name: user-number
+        expression: $user.extract("(\d+)")
+
+      - name: user-first-letter
+        expression: $user.substr(0, 1)
 
 
     measures:
