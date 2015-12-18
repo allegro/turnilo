@@ -22,8 +22,9 @@ function measureTitle(measure: Measure): string {
 }
 
 export interface PinboardMeasureTileProps extends React.Props<any> {
-  clicker: Clicker;
   essence: Essence;
+  title: string;
+  onSelect: Function;
 }
 
 export interface PinboardMeasureTileState {
@@ -38,13 +39,8 @@ export class PinboardMeasureTile extends React.Component<PinboardMeasureTileProp
     //};
   }
 
-  onSelect(measure: Measure) {
-    var { clicker } = this.props;
-    clicker.changePinnedSortMeasure(measure);
-  }
-
   render() {
-    var { clicker, essence } = this.props;
+    var { essence, title, onSelect } = this.props;
 
     var measures = essence.dataSource.measures.toArray();
     var measure = essence.getPinnedSortMeasure();
@@ -55,11 +51,11 @@ export class PinboardMeasureTile extends React.Component<PinboardMeasureTileProp
       equal: measureEqual,
       renderItem: measureTitle,
       keyItem: measureName,
-      onSelect: this.onSelect.bind(this)
+      onSelect: onSelect
     } as DropdownProps<Measure>);
 
     return <div className="pinboard-measure-tile">
-      <div className="title">Pinboard</div>
+      <div className="title">{title}</div>
       {dropdown}
     </div>;
   }

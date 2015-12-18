@@ -17,8 +17,9 @@ describe('PinboardMeasureTile', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <PinboardMeasureTile
-        clicker={null}
         essence={null}
+        title="Pinboard"
+        onSelect={null}
       />
     );
 

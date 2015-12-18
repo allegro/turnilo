@@ -83,6 +83,11 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     this.setState({ dragOver: false });
   }
 
+  onPinboardMeasureSelect(measure: Measure) {
+    var { clicker } = this.props;
+    clicker.changePinnedSortMeasure(measure);
+  }
+
   render() {
     var { clicker, essence } = this.props;
     var { dragOver } = this.state;
@@ -138,7 +143,11 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       onDragLeave={this.dragLeave.bind(this)}
       onDrop={this.drop.bind(this)}
     >
-      <PinboardMeasureTile clicker={clicker} essence={essence}/>
+      <PinboardMeasureTile
+        essence={essence}
+        title="Pinboard"
+        onSelect={this.onPinboardMeasureSelect.bind(this)}
+      />
       {dimensionTiles}
       {dropIndicatorTile}
       {placeholder}
