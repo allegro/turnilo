@@ -183,7 +183,25 @@ dataSources:
       rule: realtime
 
     # All the dimensions will be automatically filled in from the data source
-    #dimensions:
+    dimensions:
+      # Here are some cool derived dimension examples that you might want to experimant with
+
+      # Create a boolean predicate dimension
+      - name: is-english
+        expression: $language == 'en'
+
+      # Extract a RegExp from a dimension, here we look for the first number in the user attribute
+      - name: user-number
+        expression: $user.extract("(\d+)")
+
+      # Get a substring, there we take the first letter of the user's name
+      - name: user-first-letter
+        expression: $user.substr(0, 1)
+
+      # Use a Druid query time lookup to transform a dimension with a lookup
+      # Read more about Druid QTLs here: http://druid.io/docs/latest/querying/lookups.html
+      - name: language
+        expression: $language.lookup('wikipedia-language-lookup')
 
     measures:
       - name: count
