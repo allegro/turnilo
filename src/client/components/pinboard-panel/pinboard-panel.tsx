@@ -140,6 +140,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         legendMeasureSelector = <PinboardMeasureTile
           essence={essence}
           title="Legend"
+          dimension={dimension}
           sortOn={colorsSortOn}
           onSelect={this.onLegendSortOnSelect.bind(this)}
         />;
