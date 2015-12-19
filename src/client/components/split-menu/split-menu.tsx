@@ -7,25 +7,13 @@ import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, RefExpression, Executor, Dataset, TimeBucketAction, SortAction, LimitAction } from 'plywood';
-import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Colors, Dimension, Measure, DimensionOrMeasure } from '../../../common/models/index';
+import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Colors, Dimension, Measure, SortOn } from '../../../common/models/index';
 import { SEGMENT } from '../../config/constants';
 import { enterKey } from '../../utils/dom/dom';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
 
 const GRANULARITIES = ['PT1M', 'PT5M', 'PT1H', 'P1D', 'P7D'];
-
-function mdEqual(m1: DimensionOrMeasure, m2: DimensionOrMeasure): boolean {
-  return m1 === m2 || (m1 as any).equals(m2);
-}
-
-function mdName(measure: DimensionOrMeasure): string {
-  return measure.name;
-}
-
-function mdTitle(measure: DimensionOrMeasure): string {
-  return measure.title;
-}
 
 function formatLimit(limit: number | string): string {
   if (limit === 'custom') return 'Custom';
@@ -109,14 +97,13 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     }
   }
 
-  onSelectSortDimensionOrMeasure(dimensionOrMeasure: DimensionOrMeasure): void {
+  onSelectSortOn(sortOn: SortOn): void {
     var { split } = this.state;
     var sortAction = split.sortAction;
     var direction = sortAction ? sortAction.direction : SortAction.DESCENDING;
-    var sortOn = Measure.isMeasure(dimensionOrMeasure) ? dimensionOrMeasure.name : SEGMENT;
     this.setState({
       split: split.changeSortAction(new SortAction({
-        expression: $(sortOn),
+        expression: sortOn.getExpression(),
         direction
       }))
     });
@@ -159,13 +146,10 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     onClose();
   }
 
-  getSortDimensionOrMeasure(): DimensionOrMeasure {
+  getSortOn(): SortOn {
     var { essence, dimension } = this.props;
     var { split } = this.state;
-    var { sortAction} = split;
-    if (!sortAction) return dimension;
-    var sortOn = (sortAction.expression as RefExpression).name;
-    return essence.dataSource.getMeasure(sortOn) || dimension;
+    return SortOn.fromSortAction(split.sortAction, essence.dataSource, dimension);
   }
 
   renderGranularityPicker() {
@@ -189,18 +173,18 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   renderSortDropdown() {
     var { essence, dimension } = this.props;
 
-    var mds = [(dimension as DimensionOrMeasure)].concat(essence.dataSource.measures.toArray());
-    var md = this.getSortDimensionOrMeasure();
+    var mds = [SortOn.fromDimension(dimension)].concat(essence.dataSource.measures.toArray().map(SortOn.fromMeasure));
+    var md = this.getSortOn();
 
     return React.createElement(Dropdown, {
       label: "Sort by",
       items: mds,
       selectedItem: md,
-      equal: mdEqual,
-      renderItem: mdTitle,
-      keyItem: mdName,
-      onSelect: this.onSelectSortDimensionOrMeasure.bind(this)
-    } as DropdownProps<DimensionOrMeasure>);
+      equal: SortOn.equal,
+      renderItem: SortOn.getTitle,
+      keyItem: SortOn.getName,
+      onSelect: this.onSelectSortOn.bind(this)
+    } as DropdownProps<SortOn>);
   }
 
   renderSortDirection() {

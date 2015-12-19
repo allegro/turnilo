@@ -26,9 +26,6 @@ function constrainMeasures(measures: OrderedSet<string>, dataSource: DataSource)
   return <OrderedSet<string>>measures.filter((measureName) => Boolean(dataSource.getMeasure(measureName)));
 }
 
-
-export type DimensionOrMeasure = Dimension | Measure;
-
 export interface VisualizationAndResolve {
   visualization: Manifest;
   resolve: Resolve;

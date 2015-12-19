@@ -19,6 +19,7 @@ describe('DimensionTile', () => {
       <DimensionTile
         clicker={null}
         dimension={null}
+        sortOn={null}
         essence={null}
       />
     );
