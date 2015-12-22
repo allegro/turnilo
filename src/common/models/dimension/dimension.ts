@@ -60,7 +60,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     this.name = name;
     this.title = parameters.title || makeTitle(name);
     this.expression = parameters.expression || $(name);
-    var type = parameters.type || 'STRING';
+    var type = parameters.type || this.expression.type || 'STRING';
     this.type = type;
 
     if (type === 'STRING' && isGeo(name)) {
