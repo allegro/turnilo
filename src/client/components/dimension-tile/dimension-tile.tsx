@@ -31,6 +31,7 @@ export interface DimensionTileProps extends React.Props<any> {
   dimension: Dimension;
   sortOn: SortOn;
   colors?: Colors;
+  onClose?: any;
 }
 
 export interface DimensionTileState {
@@ -271,7 +272,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   render() {
-    var { clicker, essence, dimension, sortOn, colors } = this.props;
+    var { clicker, essence, dimension, sortOn, colors, onClose } = this.props;
     var { loading, dataset, error, showSearch, unfolded, fetchQueued, searchText } = this.state;
 
     var measure = sortOn.measure;
@@ -410,7 +411,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         title={dimension.title}
         onDragStart={this.onDragStart.bind(this)}
         onSearch={this.toggleSearch.bind(this)}
-        onClose={clicker.unpin.bind(clicker, dimension)}
+        onClose={onClose}
         ref="header"
       />
       {searchBar}

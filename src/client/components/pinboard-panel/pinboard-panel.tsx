@@ -124,6 +124,21 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     clicker.changePinnedSortMeasure(sortOn.measure);
   }
 
+  onRemoveLegend() {
+    var { clicker, essence } = this.props;
+    var { dataSource, splits, colors } = essence;
+
+    if (colors) {
+      var dimension = dataSource.getDimension(colors.dimension);
+      if (dimension) {
+        var split = splits.findSplitForDimension(dimension);
+        if (split) {
+          clicker.changeSplits(splits.removeSplit(split), VisStrategy.UnfairGame, null);
+        }
+      }
+    }
+  }
+
   render() {
     var { clicker, essence } = this.props;
     var { dragOver } = this.state;
@@ -151,6 +166,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
           dimension={dimension}
           sortOn={colorsSortOn}
           colors={colors}
+          onClose={this.onRemoveLegend.bind(this)}
         />;
       }
     }
@@ -167,6 +183,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         essence={essence}
         dimension={dimension}
         sortOn={pinnedSortSortOn}
+        onClose={clicker.unpin.bind(clicker, dimension)}
       />);
     });
 
