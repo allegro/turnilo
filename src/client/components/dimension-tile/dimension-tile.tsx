@@ -81,7 +81,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     var filterExpression = filter.toExpression();
 
-    if (colors && !unfolded) {
+    if (!unfolded && colors && colors.values) {
       filterExpression = filterExpression.and(dimension.expression.in(colors.toSet()));
     }
 
@@ -142,7 +142,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (
       essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, null, unfolded ? dimension : null) ||
-      essence.differentColors(nextEssence, false) ||
+      essence.differentColors(nextEssence) ||
       !dimension.equals(nextDimension) ||
       !sortOn.equals(nextSortOn)
   ) {
@@ -190,9 +190,15 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   onRowClick(value: any, e: MouseEvent) {
     var { clicker, essence, dimension, colors } = this.props;
+    var { dataset } = this.state;
     var { filter } = essence;
 
     if (colors && colors.dimension === dimension.name) {
+      if (colors.limit) {
+        if (!dataset) return;
+        var values = dataset.data.slice(0, colors.limit).map((d) => d[SEGMENT]);
+        colors = Colors.fromValues(colors.dimension, values);
+      }
       colors = colors.toggle(value);
       if (filter.filteredOn(dimension.expression)) {
         filter = filter.toggleValue(dimension.expression, value);
@@ -295,10 +301,19 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       hasMore = dataset.data.length > TOP_N;
       var rowData = dataset.data.slice(0, TOP_N);
 
-      if (!unfolded && filterSet) {
-        rowData = rowData.filter((d) => {
-          return filterSet.contains(d[SEGMENT]);
-        });
+      if (!unfolded) {
+        if (filterSet) {
+          rowData = rowData.filter((d) => filterSet.contains(d[SEGMENT]));
+        }
+
+        if (colors) {
+          if (colors.values) {
+            var colorsSet = colors.toSet();
+            rowData = rowData.filter((d) => colorsSet.contains(d[SEGMENT]));
+          } else {
+            rowData = rowData.slice(0, colors.limit);
+          }
+        }
       }
 
       if (searchText) {

@@ -120,10 +120,10 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   onSelectLimit(limit: number): void {
     var { essence } = this.props;
     var { split } = this.state;
-    var { dataSource, colors } = essence;
+    var { colors } = essence;
 
     if (colors) {
-      colors = colors.setAsLimit(limit);
+      colors = Colors.fromLimit(colors.dimension, limit);
     }
 
     this.setState({
