@@ -6,7 +6,7 @@ import * as ReactDOM from 'react-dom';
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Executor, Dataset, RefExpression, SortAction } from 'plywood';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { Clicker, Essence, DataSource, Filter, Dimension, Measure, SortOn, VisStrategy } from '../../../common/models/index';
+import { Clicker, Essence, DataSource, Filter, Dimension, Measure, SortOn, VisStrategy, Colors } from '../../../common/models/index';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { PinboardMeasureTile } from '../pinboard-measure-tile/pinboard-measure-tile';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
@@ -112,7 +112,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
             expression: sortOn.getExpression(),
             direction
           }));
-          clicker.changeSplits(splits.replace(split, newSplit), VisStrategy.UnfairGame); // colors
+          var newColors = Colors.fromLimit(colors.dimension, 5);
+          clicker.changeSplits(splits.replace(split, newSplit), VisStrategy.UnfairGame, newColors);
         }
       }
     }
