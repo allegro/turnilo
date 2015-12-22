@@ -69,14 +69,12 @@ export interface ColorsValue {
   dimension: string;
   values: Lookup<any>;
   limit?: number;
-  sameAsLimit?: boolean;
 }
 
 export interface ColorsJS {
   dimension: string;
   values?: Lookup<any>;
   limit?: number;
-  sameAsLimit?: boolean;
 }
 
 var check: Class<ColorsValue, ColorsJS>;
@@ -94,8 +92,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     var value: ColorsValue = {
       dimension: parameters.dimension,
       values: parameters.values ? valuesFromJS(parameters.values) : null,
-      limit: parameters.limit,
-      sameAsLimit: parameters.sameAsLimit
+      limit: parameters.limit
     };
     return new Colors(value);
   }
@@ -104,22 +101,19 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   public dimension: string;
   public values: Lookup<any>;
   public limit: number;
-  public sameAsLimit: boolean;
 
   constructor(parameters: ColorsValue) {
     this.dimension = parameters.dimension;
     if (!this.dimension) throw new Error('must have a dimension');
     this.values = parameters.values;
     this.limit = parameters.limit;
-    this.sameAsLimit = parameters.sameAsLimit;
   }
 
   public valueOf(): ColorsValue {
     return {
       dimension: this.dimension,
       values: this.values,
-      limit: this.limit,
-      sameAsLimit: this.sameAsLimit
+      limit: this.limit
     };
   }
 
@@ -129,7 +123,6 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     };
     if (this.values) js.values = valuesToJS(this.values);
     if (this.limit) js.limit = this.limit;
-    if (this.sameAsLimit) js.sameAsLimit = true;
     return js;
   }
 
@@ -145,14 +138,13 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return Colors.isColors(other) &&
       valuesEqual(this.values, other.values) &&
       Boolean(this.limit) === Boolean(other.limit) &&
-      (!this.limit || this.limit === other.limit) &&
-      this.sameAsLimit === other.sameAsLimit;
+      (!this.limit || this.limit === other.limit);
   }
 
   public equivalentToLimit(other: Colors): boolean {
     if (!Colors.isColors(other)) return false;
     if (this.equals(other)) return true;
-    return Boolean(this.values && this.sameAsLimit && other.limit);
+    return Boolean(this.values && other.limit);
   }
 
   public numColors(): number {
@@ -210,6 +202,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   }
 
   public setValueEquivalent(v: any[]): Colors {
+    if (!this.limit) throw new Error('must have limit already');
     var values: Lookup<any> = {};
     var n = Math.min(v.length, COLORS.length);
     for (var i = 0; i < n; i++) {
@@ -218,7 +211,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return new Colors({
       dimension: this.dimension,
       values,
-      sameAsLimit: true
+      limit: this.limit
     });
   }
 
@@ -258,7 +251,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     var value = this.valueOf();
     value.values = value.values ? cloneValues(value.values) : {};
     value.values[idx] = v;
-    delete value.sameAsLimit;
+    delete value.limit;
     return new Colors(value);
   }
 
@@ -269,16 +262,16 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     var value = this.valueOf();
     value.values = cloneValues(value.values);
     delete value.values[idx];
-    delete value.sameAsLimit;
+    delete value.limit;
     return new Colors(value);
   }
 
-  public getColor(value: any): string {
+  public getColor(value: any, index: number): string {
     var { values, limit } = this;
     if (values) {
       var colorIdx = this.valueIndex(value);
       return colorIdx === -1 ? null : COLORS[colorIdx];
-    } else {
+    } else if (limit) {
       return null;
     }
   }

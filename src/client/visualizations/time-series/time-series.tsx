@@ -469,7 +469,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           stage={lineStage}
           showArea={false}
           hoverTimeRange={hoverMeasure === measure ? hoverTimeRange : null}
-          color={colors.getColor(datum[SEGMENT])}
+          color={colors.getColor(datum[SEGMENT], i)}
         />;
       });
     }
