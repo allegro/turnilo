@@ -15,6 +15,7 @@ export * from './split-combine/split-combine';
 export * from './splits/splits';
 export * from './highlight/highlight';
 export * from './data-source/data-source';
+export * from './sort-on/sort-on';
 export * from './colors/colors';
 export * from './visualization-props/visualization-props';
 export * from './manifest/manifest';

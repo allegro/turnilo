@@ -173,10 +173,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
       var colorSplitDimension = dataSource.getDimensionByExpression(colorSplit.expression);
       if (!colors || colors.dimension !== colorSplitDimension.name) {
-        colors = Colors.fromJS({
-          dimension: colorSplitDimension.name,
-          limit: 5
-        });
+        colors = Colors.fromLimit(colorSplitDimension.name, 5);
         autoChanged = true;
       }
 
@@ -222,8 +219,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     // var timeBucketAction = timeSplit.bucketAction as TimeBucketAction;
     //   .overQuery(timeBucketAction.duration, timeBucketAction.timezone, dataSource)
 
-    var colorsNeedValues = false;
-
     var $main = $('main');
 
     var query = ply()
@@ -262,7 +257,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
       if (colors && colors.dimension === splitDimension.name) {
         subQuery = subQuery.performAction(colors.toLimitAction());
-        colorsNeedValues = colors.needsValues();
       } else if (limitAction) {
         subQuery = subQuery.performAction(limitAction);
       }
@@ -281,11 +275,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       .then(
         (dataset) => {
           if (!this.mounted) return;
-
-          if (colorsNeedValues) {
-            var values = dataset.data[0][SPLIT].data.map((d: Datum) => d[SEGMENT]);
-            this.props.clicker.changeColors(colors.setValueEquivalent(values));
-          }
 
           this.setState({
             loading: false,
@@ -317,7 +306,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       nextEssence.differentDataSource(essence) ||
       nextEssence.differentEffectiveFilter(essence, TimeSeries.id) ||
       nextEssence.differentSplits(essence) ||
-      nextEssence.differentColors(essence, true) ||
+      nextEssence.differentColors(essence) ||
       nextEssence.newSelectedMeasures(essence)
     ) {
       this.fetchData(nextEssence);
@@ -469,7 +458,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           stage={lineStage}
           showArea={false}
           hoverTimeRange={hoverMeasure === measure ? hoverTimeRange : null}
-          color={colors.getColor(datum[SEGMENT])}
+          color={colors.getColor(datum[SEGMENT], i)}
         />;
       });
     }

@@ -19,6 +19,7 @@ describe('PinboardMeasureTile', () => {
       <PinboardMeasureTile
         essence={null}
         title="Pinboard"
+        sortOn={null}
         onSelect={null}
       />
     );

@@ -26,9 +26,6 @@ function constrainMeasures(measures: OrderedSet<string>, dataSource: DataSource)
   return <OrderedSet<string>>measures.filter((measureName) => Boolean(dataSource.getMeasure(measureName)));
 }
 
-
-export type DimensionOrMeasure = Dimension | Measure;
-
 export interface VisualizationAndResolve {
   visualization: Manifest;
   resolve: Resolve;
@@ -427,14 +424,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return !this.splits.equals(other.splits);
   }
 
-  public differentColors(other: Essence, equivalenceOnly: boolean): boolean {
+  public differentColors(other: Essence): boolean {
     if (Boolean(this.colors) !== Boolean(other.colors)) return true;
     if (!this.colors) return false;
-    if (equivalenceOnly) {
-      return !this.colors.equivalentToLimit(other.colors);
-    } else {
-      return !this.colors.equals(other.colors);
-    }
+    return !this.colors.equals(other.colors);
   }
 
   public differentSelectedMeasures(other: Essence): boolean {

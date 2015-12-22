@@ -4,9 +4,9 @@ require('./pinboard-panel.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List, OrderedSet } from 'immutable';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset, RefExpression, SortAction } from 'plywood';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Clicker, Essence, DataSource, Filter, Dimension, Measure, SortOn, VisStrategy, Colors } from '../../../common/models/index';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { PinboardMeasureTile } from '../pinboard-measure-tile/pinboard-measure-tile';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
@@ -83,9 +83,61 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     this.setState({ dragOver: false });
   }
 
-  onPinboardMeasureSelect(measure: Measure) {
+  getColorsSortOn(): SortOn {
+    var { essence } = this.props;
+    var { dataSource, splits, colors } = essence;
+    if (colors) {
+      var dimension = dataSource.getDimension(colors.dimension);
+      if (dimension) {
+        var split = splits.findSplitForDimension(dimension);
+        if (split) {
+          return SortOn.fromSortAction(split.sortAction, dataSource, dimension);
+        }
+      }
+    }
+    return null;
+  }
+
+  onLegendSortOnSelect(sortOn: SortOn) {
+    var { clicker, essence } = this.props;
+    var { dataSource, splits, colors } = essence;
+    if (colors) {
+      var dimension = dataSource.getDimension(colors.dimension);
+      if (dimension) {
+        var split = splits.findSplitForDimension(dimension);
+        if (split) {
+          var sortAction = split.sortAction;
+          var direction = sortAction ? sortAction.direction : SortAction.DESCENDING;
+          var newSplit = split.changeSortAction(new SortAction({
+            expression: sortOn.getExpression(),
+            direction
+          }));
+          var newColors = Colors.fromLimit(colors.dimension, 5);
+          clicker.changeSplits(splits.replace(split, newSplit), VisStrategy.UnfairGame, newColors);
+        }
+      }
+    }
+  }
+
+  onPinboardSortOnSelect(sortOn: SortOn) {
+    if (!sortOn.measure) return;
     var { clicker } = this.props;
-    clicker.changePinnedSortMeasure(measure);
+    clicker.changePinnedSortMeasure(sortOn.measure);
+  }
+
+  onRemoveLegend() {
+    var { clicker, essence } = this.props;
+    var { dataSource, splits, colors } = essence;
+
+    if (colors) {
+      var dimension = dataSource.getDimension(colors.dimension);
+      if (dimension) {
+        var split = splits.findSplitForDimension(dimension);
+        if (split) {
+          clicker.changeSplits(splits.removeSplit(split), VisStrategy.UnfairGame, null);
+        }
+      }
+    }
   }
 
   render() {
@@ -93,25 +145,36 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var { dragOver } = this.state;
     var { dataSource, pinnedDimensions, colors } = essence;
 
-    var dimensionTiles: JSX.Element[] = [];
-
+    var legendMeasureSelector: JSX.Element = null;
+    var legendDimensionTile: JSX.Element = null;
     var colorDimension = colors ? colors.dimension : null;
     if (colorDimension) {
       var dimension = dataSource.getDimension(colorDimension);
       if (dimension) {
-        dimensionTiles.push(<DimensionTile
-          key={dimension.name}
+        var colorsSortOn = this.getColorsSortOn();
+
+        legendMeasureSelector = <PinboardMeasureTile
+          essence={essence}
+          title="Legend"
+          dimension={dimension}
+          sortOn={colorsSortOn}
+          onSelect={this.onLegendSortOnSelect.bind(this)}
+        />;
+
+        legendDimensionTile = <DimensionTile
           clicker={clicker}
           essence={essence}
           dimension={dimension}
+          sortOn={colorsSortOn}
           colors={colors}
-        />);
+          onClose={this.onRemoveLegend.bind(this)}
+        />;
       }
     }
 
+    var pinnedSortSortOn = SortOn.fromMeasure(essence.getPinnedSortMeasure());
+    var dimensionTiles: JSX.Element[] = [];
     pinnedDimensions.forEach((dimensionName) => {
-      if (dimensionName === colorDimension) return;
-
       var dimension = dataSource.getDimension(dimensionName);
       if (!dimension) return null;
 
@@ -120,6 +183,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         clicker={clicker}
         essence={essence}
         dimension={dimension}
+        sortOn={pinnedSortSortOn}
+        onClose={clicker.unpin.bind(clicker, dimension)}
       />);
     });
 
@@ -143,10 +208,13 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       onDragLeave={this.dragLeave.bind(this)}
       onDrop={this.drop.bind(this)}
     >
+      {legendMeasureSelector}
+      {legendDimensionTile}
       <PinboardMeasureTile
         essence={essence}
         title="Pinboard"
-        onSelect={this.onPinboardMeasureSelect.bind(this)}
+        sortOn={pinnedSortSortOn}
+        onSelect={this.onPinboardSortOnSelect.bind(this)}
       />
       {dimensionTiles}
       {dropIndicatorTile}

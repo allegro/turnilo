@@ -184,12 +184,15 @@ export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSo
   }
 });
 
-var druidRequester = properDruidRequesterFactory({
-  druidHost: DRUID_HOST,
-  timeout: TIMEOUT,
-  verbose: VERBOSE,
-  concurrentLimit: 5
-});
+var druidRequester: Requester.PlywoodRequester<any> = null;
+if (DRUID_HOST) {
+  druidRequester = properDruidRequesterFactory({
+    druidHost: DRUID_HOST,
+    timeout: TIMEOUT,
+    verbose: VERBOSE,
+    concurrentLimit: 5
+  });
+}
 
 var fileDirectory = path.join(__dirname, '../..');
 

@@ -41,21 +41,19 @@ describe('Colors', () => {
     ]);
   });
 
-  describe('workflow', () => {
-    it('start, set values, add, remove, toggle', () => {
-      var initColors = Colors.init('country', 5);
-      var colors = initColors;
-
+  describe('methods', () => {
+    it('#fromLimit', () => {
+      var colors = Colors.fromLimit('country', 5);
       expect(colors.toJS()).to.deep.equal({
         dimension: 'country',
         limit: 5
       });
+    });
 
-      colors = colors.setValueEquivalent([null, 'UK', 'India', 'Russia', 'Madagascar']);
-
+    it('#fromValues', () => {
+      var colors = Colors.fromValues('country', [null, 'UK', 'India', 'Russia', 'Madagascar']);
       expect(colors.toJS()).to.deep.equal({
         "dimension": "country",
-        "sameAsLimit": true,
         "values": {
           "0": null,
           "1": "UK",
@@ -64,9 +62,6 @@ describe('Colors', () => {
           "4": "Madagascar"
         }
       });
-
-      expect(colors.equivalentToLimit(initColors)).to.equal(true);
-      expect(initColors.equivalentToLimit(colors)).to.equal(false);
 
       expect(colors.has(null), 'has null').to.equal(true);
 
