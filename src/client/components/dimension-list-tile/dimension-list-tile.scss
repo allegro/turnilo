@@ -55,6 +55,11 @@ $icon-width: 35px;
         width: 17px;
       }
 
+      &.type-number .icon svg {
+        top: 6px;
+        width: 16px;
+      }
+
       &.type-boolean .icon svg {
         top: 6px;
         width: 15px;

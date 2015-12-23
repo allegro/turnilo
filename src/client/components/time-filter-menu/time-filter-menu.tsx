@@ -118,6 +118,8 @@ export interface TimeFilterMenuProps extends React.Props<any> {
 export interface TimeFilterMenuState {
   tab?: string;
   selectedTimeRange?: TimeRange;
+  startTime?: Date;
+  endTime?: Date;
   hoverPreset?: TimePreset;
   latestPresets?: TimePreset[];
   currentPresets?: TimePreset[];
@@ -132,6 +134,8 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     this.state = {
       tab: 'presets',
       selectedTimeRange: null,
+      startTime: null,
+      endTime: null,
       hoverPreset: null,
       latestPresets: null,
       currentPresets: null,
@@ -146,10 +150,13 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
     var now = new Date();
     var maxTime = dataSource.getMaxTimeDate();
+    var selectedTimeRange = filter.getTimeRange(dimension.expression);
 
     this.setState({
-      selectedTimeRange: filter.getTimeRange(dimension.expression),
       latestPresets: getLatest(maxTime, timezone),
+      selectedTimeRange,
+      startTime: selectedTimeRange.start,
+      endTime: selectedTimeRange.end,
       currentPresets: getCurrentOrPrevious(now, false, timezone),
       previousPresets: getCurrentOrPrevious(now, true, timezone)
     });
@@ -171,9 +178,18 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
   constructFilter(): Filter {
     var { essence, dimension } = this.props;
-    var { selectedTimeRange } = this.state;
+    var { tab, selectedTimeRange, startTime, endTime } = this.state;
     var { filter } = essence;
 
+    if (tab === 'custom') {
+      if (startTime && endTime && startTime < endTime) {
+        selectedTimeRange = TimeRange.fromJS({ start: startTime, end: endTime });
+      } else {
+        selectedTimeRange = null;
+      }
+    }
+
+    if (!selectedTimeRange) return null;
     return filter.setTimeRange(dimension.expression, selectedTimeRange);
   }
 
@@ -199,25 +215,15 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     });
   }
 
-  timeRangeStartChange(start: Date) {
-    if (!start) return;
-    var { selectedTimeRange } = this.state;
+  onStartChange(start: Date) {
     this.setState({
-      selectedTimeRange: new TimeRange({
-        start,
-        end: selectedTimeRange.end
-      })
+      startTime: start
     });
   }
 
-  timeRangeEndChange(end: Date) {
-    if (!end) return;
-    var { selectedTimeRange } = this.state;
+  onEndChange(end: Date) {
     this.setState({
-      selectedTimeRange: new TimeRange({
-        start: selectedTimeRange.start,
-        end
-      })
+      endTime: end
     });
   }
 
@@ -228,7 +234,9 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   onOkClick() {
     if (!this.actionEnabled()) return;
     var { clicker, onClose } = this.props;
-    clicker.changeFilter(this.constructFilter());
+    var newFilter = this.constructFilter();
+    if (!newFilter) return;
+    clicker.changeFilter(newFilter);
     onClose();
   }
 
@@ -243,12 +251,10 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     if (!dimension) return null;
 
     var { timezone } = essence;
-    var now = new Date();
-    var maxTime = essence.dataSource.getMaxTimeDate();
 
     var presetToButton = (preset: TimePreset) => {
       var classNames = ['preset'];
-      if (selectedTimeRange.equals(preset.timeRange)) classNames.push('selected');
+      if (preset.timeRange.equals(selectedTimeRange)) classNames.push('selected');
       if (preset === hoverPreset) classNames.push('hover');
       return <button
         key={preset.name}
@@ -275,12 +281,14 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   actionEnabled() {
     var { essence } = this.props;
     var { tab } = this.state;
-    return tab === 'custom' && !essence.filter.equals(this.constructFilter());
+    if (tab !== 'custom') return false;
+    var newFilter = this.constructFilter();
+    return newFilter && !essence.filter.equals(newFilter);
   }
 
   renderCustom() {
     var { essence, dimension } = this.props;
-    var { selectedTimeRange } = this.state;
+    var { selectedTimeRange, startTime, endTime } = this.state;
     if (!dimension) return null;
 
     if (!selectedTimeRange) return null;
@@ -288,9 +296,9 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
     return <div className="cont">
       <div className="type">start</div>
-      <TimeInput time={selectedTimeRange.start} timezone={timezone} onChange={this.timeRangeStartChange.bind(this)}/>
+      <TimeInput time={startTime} timezone={timezone} onChange={this.onStartChange.bind(this)}/>
       <div className="type">end</div>
-      <TimeInput time={selectedTimeRange.end} timezone={timezone} onChange={this.timeRangeEndChange.bind(this)}/>
+      <TimeInput time={endTime} timezone={timezone} onChange={this.onEndChange.bind(this)}/>
       <div className="button-bar">
         <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>OK</button>
         <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>

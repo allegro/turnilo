@@ -48,6 +48,7 @@ export class TimeInput extends React.Component<TimeInputProps, TimeInputState> {
   }
 
   updateStateFromTime(time: Date, timezone: Timezone) {
+    if (!time) return;
     if (isNaN(time.valueOf())) {
       this.setState({
         dateString: '',
