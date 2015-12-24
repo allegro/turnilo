@@ -128,16 +128,12 @@ Then you are ready to
 - Support for query time lookups (ex. `$language.lookup('wikipedia-language-lookup')`)
 - Support for the extract function (ex. `resourceVersion: $resource.extract("(\d+\.\d+\.\d+)")`)
 - Custom dimensions (ex. `$user.substr(0,1)`)
-- Comparing multiple dimension values on a time series
-- Multiple selections and search from pinned dimensions
-- Introspection writes a config file
-- Fixed issue where adding too many filters made some of them inaccessible
+- Better legend for time series comparison
 
 **We will be working on:**
 
-- Additional visualizations (bar chart and geo)
+- Additional visualizations (bar chart, geo, heatmap)
 - Exclusion filters
-- Better comparison behavior and legend interaction
 - Better time selection
 - Various additions, improvements and fixes to make the app more complete
 
