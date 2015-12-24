@@ -1,5 +1,7 @@
 @import '../../imports';
 
 .bar-chart {
-
+  rect {
+    fill: $brand;
+  }
 }

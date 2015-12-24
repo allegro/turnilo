@@ -1,4 +1,3 @@
-import Color = d3.Color;
 'use strict';
 require('./chart-line.css');
 
