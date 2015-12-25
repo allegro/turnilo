@@ -16,6 +16,9 @@ export interface PivotConfig {
   sourceListScan?: string;
   sourceListRefreshInterval?: number;
   dataSources?: DataSourceJS[];
+
+  hideGitHubIcon?: boolean;
+  headerColor?: string;
 }
 
 var packageObj = loadFileSync(path.join(__dirname, '../../package.json'), 'json') || {};
@@ -160,6 +163,9 @@ export const TIMEOUT = parseInt(<any>config.timeout, 10) || 30000;
 export const USE_SEGMENT_METADATA = Boolean(parsedArgs["use-segment-metadata"] || config.useSegmentMetadata);
 export const SOURCE_LIST_SCAN = START_SERVER ? config.sourceListScan : 'disable';
 export const SOURCE_LIST_REFRESH_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceListRefreshInterval, 10) || 10000) : 0;
+
+export const HIDE_GITHUB_ICON = Boolean(config.hideGitHubIcon);
+export const HEADER_COLOR: string = config.headerColor || null;
 
 if (SOURCE_LIST_REFRESH_INTERVAL && SOURCE_LIST_REFRESH_INTERVAL < 1000) {
   errorExit(new Error('can not refresh more often than once per second'));

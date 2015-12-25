@@ -125,6 +125,7 @@ Then you are ready to
 
 **Recent improvements:**
 
+- Better comparison behavior and legend interaction
 - Support for query time lookups (ex. `$language.lookup('wikipedia-language-lookup')`)
 - Support for the extract function (ex. `resourceVersion: $resource.extract("(\d+\.\d+\.\d+)")`)
 - Custom dimensions (ex. `$user.substr(0,1)`)
@@ -135,6 +136,8 @@ Then you are ready to
 - Additional visualizations (bar chart, geo, heatmap)
 - Exclusion filters
 - Better time selection
+- String / RegExp filters
+- Better time selection with date picker
 - Various additions, improvements and fixes to make the app more complete
 
 ## Questions & Support

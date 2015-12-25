@@ -31,7 +31,9 @@ if (config && Array.isArray(config.dataSources)) {
     version,
     dataSources,
     homeLink: config.homeLink,
-    showLastUpdated: config.showLastUpdated
+    showLastUpdated: config.showLastUpdated,
+    hideGitHubIcon: config.hideGitHubIcon,
+    headerColor: config.headerColor
   });
 
 } else {

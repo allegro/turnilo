@@ -37,8 +37,8 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       );
     }
 
-    return Resolve.ready(8);
-    //return Resolve.manual(0, 'The Bar Chart visualization is not ready, please select another visualization.', []);
+    //return Resolve.ready(8);
+    return Resolve.manual(0, 'The Bar Chart visualization is not ready, please select another visualization.', []);
   }
 
   public mounted: boolean;

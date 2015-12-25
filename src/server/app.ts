@@ -17,7 +17,7 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-import { VERSION, DATA_SOURCE_MANAGER } from './config';
+import { VERSION, DATA_SOURCE_MANAGER, HIDE_GITHUB_ICON, HEADER_COLOR } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
 
 var app = express();
@@ -45,13 +45,18 @@ app.use(bodyParser.json());
 app.get('/', (req: Request, res: Response, next: Function) => {
   DATA_SOURCE_MANAGER.getQueryableDataSources().then((dataSources) => {
     if (dataSources.length) {
+      var config: any = {
+        version: VERSION,
+        dataSources: dataSources.map((ds) => ds.toClientDataSource()),
+        //homeLink: '/',
+      };
+
+      if (HIDE_GITHUB_ICON) config.hideGitHubIcon = HIDE_GITHUB_ICON;
+      if (HEADER_COLOR) config.headerColor = HEADER_COLOR;
+
       res.render('pivot', {
         version: VERSION,
-        config: JSON.stringify({
-          version: VERSION,
-          dataSources: dataSources.map((ds) => ds.toClientDataSource())
-          //homeLink: '/'
-        }),
+        config: JSON.stringify(config),
         title: 'Pivot'
       });
     } else {
