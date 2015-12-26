@@ -73,7 +73,11 @@ export class TimeInput extends React.Component<TimeInputProps, TimeInputState> {
       dateString
     });
 
-    this.changeDate(dateString + 'T' + timeString + 'Z');
+    if (dateString.length === 10) {
+      this.changeDate(dateString + 'T' + timeString + 'Z');
+    } else {
+      this.changeDate('blah');
+    }
   }
 
   timeChange(e: KeyboardEvent) {

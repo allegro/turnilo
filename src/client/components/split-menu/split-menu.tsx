@@ -13,7 +13,7 @@ import { enterKey } from '../../utils/dom/dom';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
 
-const GRANULARITIES = ['PT1M', 'PT5M', 'PT1H', 'P1D', 'P7D'];
+const GRANULARITIES = ['PT1M', 'PT5M', 'PT1H', 'P1D', 'P1W'];
 
 function formatLimit(limit: number | string): string {
   if (limit === 'custom') return 'Custom';

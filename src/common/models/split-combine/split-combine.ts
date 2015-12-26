@@ -158,7 +158,7 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
         case 'PT5M': return ' (5 Minutes)';
         case 'PT1H': return ' (Hour)';
         case 'P1D': return ' (Day)';
-        case 'P7D': return ' (7 Days)';
+        case 'P1W': return ' (Week)';
         default: return '';
       }
     }

@@ -351,7 +351,11 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
       if (closest) {
         thisHoverTimeRange = closest[TIME_SEGMENT];
-        thisHoverDatums = flatData.filter(d => thisHoverTimeRange.equals(d[TIME_SEGMENT]));
+        var preFilter = flatData.filter(d => thisHoverTimeRange.equals(d[TIME_SEGMENT]));
+        thisHoverDatums = dataset.data.map((myDatum: Datum) => {
+          var seg = myDatum[SEGMENT];
+          return preFilter.filter(d => d[SEGMENT] === seg)[0] || null;
+        });
       }
     } else {
       var closestDatum = findClosest(dataset.data, dragDate, scaleX);

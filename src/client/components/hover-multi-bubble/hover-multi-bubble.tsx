@@ -39,6 +39,7 @@ export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, Hov
     if (!datums || !datums[0] || !colors) return null;
 
     var colorSwabs = datums.map((datum, i) => {
+      if (!datum) return null;
       var segmentValue = datum[SEGMENT];
       var segmentValueString = String(segmentValue);
       var segmentMeasure = getY(datum);
