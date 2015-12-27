@@ -17,7 +17,7 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-import { VERSION, DATA_SOURCE_MANAGER, HIDE_GITHUB_ICON, HEADER_COLOR } from './config';
+import { VERSION, DATA_SOURCE_MANAGER, HIDE_GITHUB_ICON, HEADER_BACKGROUND } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
 
 var app = express();
@@ -52,7 +52,7 @@ app.get('/', (req: Request, res: Response, next: Function) => {
       };
 
       if (HIDE_GITHUB_ICON) config.hideGitHubIcon = HIDE_GITHUB_ICON;
-      if (HEADER_COLOR) config.headerColor = HEADER_COLOR;
+      if (HEADER_BACKGROUND) config.headerBackground = HEADER_BACKGROUND;
 
       res.render('pivot', {
         version: VERSION,

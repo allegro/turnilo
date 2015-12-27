@@ -33,7 +33,7 @@ if (config && Array.isArray(config.dataSources)) {
     homeLink: config.homeLink,
     showLastUpdated: config.showLastUpdated,
     hideGitHubIcon: config.hideGitHubIcon,
-    headerColor: config.headerColor
+    headerBackground: config.headerBackground
   });
 
 } else {

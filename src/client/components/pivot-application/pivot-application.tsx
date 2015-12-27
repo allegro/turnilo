@@ -31,7 +31,7 @@ export interface PivotApplicationProps extends React.Props<any> {
   maxSplits?: number;
   showLastUpdated?: boolean;
   hideGitHubIcon?: boolean;
-  headerColor?: string;
+  headerBackground?: string;
 }
 
 export interface PivotApplicationState {
@@ -278,7 +278,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   render() {
     var clicker = this.clicker;
-    var { homeLink, maxFilters, maxSplits, showLastUpdated, hideGitHubIcon, headerColor } = this.props;
+    var { homeLink, maxFilters, maxSplits, showLastUpdated, hideGitHubIcon, headerBackground } = this.props;
     var { ReactCSSTransitionGroupAsync, SideDrawerAsync, essence, menuStage, visualizationStage, dragOver, drawerOpen } = this.state;
 
     if (!essence) return null;
@@ -338,7 +338,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         onNavClick={this.sideDrawerOpen.bind(this, true)}
         showLastUpdated={showLastUpdated}
         hideGitHubIcon={hideGitHubIcon}
-        color={headerColor}
+        color={headerBackground}
       />
       <div className='container' ref='container'>
         <DimensionMeasurePanel

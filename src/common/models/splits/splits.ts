@@ -12,7 +12,9 @@ const DEFAULT_GRANULARITY = Duration.fromJS('P1D');
 
 function getBestGranularity(timeRange: TimeRange): Duration {
   var len = timeRange.end.valueOf() - timeRange.start.valueOf();
-  if (len > 8 * day.canonicalLength) {
+  if (len > 95 * day.canonicalLength) {
+    return Duration.fromJS('P1W');
+  } else if (len > 8 * day.canonicalLength) {
     return Duration.fromJS('P1D');
   } else if (len > 8 * hour.canonicalLength) {
     return Duration.fromJS('PT1H');

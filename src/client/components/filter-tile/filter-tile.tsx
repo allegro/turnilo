@@ -193,16 +193,22 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   closeMenu() {
-    var { menuOpenOn } = this.state;
+    var { menuOpenOn, possibleDimension } = this.state;
     if (!menuOpenOn) return;
-    this.setState({
+    var newState: FilterTileState = {
       menuOpenOn: null,
       menuDimension: null,
       menuInside: null,
       possibleDimension: null,
       possibleInsertPosition: null,
       possibleReplacePosition: null
-    });
+    };
+    if (possibleDimension) {
+      // If we are adding a ghost dimension also close the overflow menu
+      // This is so it does not remain phantom open with nothing inside
+      newState.overflowMenuOpenOn = null;
+    }
+    this.setState(newState);
   }
 
   openOverflowMenu(target: Element): Q.Promise<any> {
