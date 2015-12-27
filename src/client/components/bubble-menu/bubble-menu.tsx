@@ -18,6 +18,7 @@ export interface BubbleMenuProps extends React.Props<any> {
   id?: string;
   direction: string;
   stage: Stage;
+  fixedSize?: boolean;
   containerStage?: Stage;
   openOn: Element;
   onClose: Function;
@@ -96,7 +97,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   render(): any {
-    var { className, direction, stage, containerStage, inside, children } = this.props;
+    var { className, direction, stage, fixedSize, containerStage, inside, children } = this.props;
     var { id, x, y } = this.state;
 
     var menuWidth = stage.width;
@@ -104,10 +105,11 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
     var menuLeft: number = 0;
     var menuTop: number = 0;
-    var menuStyle: any = {
-      width: menuWidth,
-      height: menuHeight
-    };
+    var menuStyle: any = {};
+    if (fixedSize) {
+      menuStyle.width = menuWidth;
+      menuStyle.height = menuHeight;
+    }
     var shpitzStyle: any = {
       left: 0,
       top: 0
@@ -122,6 +124,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
         menuLeft = x;
         menuTop = top;
         shpitzStyle.top = y - top;
+        menuStyle.height = menuHeight;
         break;
 
       case 'down':
@@ -132,6 +135,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
         menuLeft = left;
         menuTop = y;
         shpitzStyle.left = x - left;
+        menuStyle.width = menuWidth;
         break;
 
       default:

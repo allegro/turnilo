@@ -74,8 +74,15 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
     if (!dimension) return null;
 
     var menuSize: Stage = Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2);
-    return <BubbleMenu className="preview-menu" direction={direction} containerStage={containerStage} stage={menuSize}
-                       openOn={openOn} onClose={onClose}>
+    return <BubbleMenu
+      className="preview-menu"
+      direction={direction}
+      containerStage={containerStage}
+      stage={menuSize}
+      fixedSize={true}
+      openOn={openOn}
+      onClose={onClose}
+    >
       <div className="filter action" onClick={this.onFilter.bind(this)}>
         <SvgIcon svg={require('../../icons/preview-filter.svg')}/>
         <div className="action-label">Filter</div>

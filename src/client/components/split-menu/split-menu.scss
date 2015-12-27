@@ -96,11 +96,6 @@ $title-margin: 6px;
   }
 
   .button-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    padding: 0 0 10px 10px;
-
     .ok {
       @extend %button-primary;
       min-width: 60px;

@@ -1,21 +1,16 @@
 @import '../../imports';
 
-$action-bar-height: 52px;
 $checkbox-width: 20px;
 
 .string-filter-menu {
   .menu-table {
     @extend %white-shadow;
-    position: absolute;
-    width: 100%;
-    top: 10px;
-    bottom: $action-bar-height;
+    padding-top: 12px;
     background: $white;
     color: $text-standard;
 
     .search-box {
-      @include pin-top(30px);
-      top: 2px;
+      height: 30px;
       padding: 0 10px;
 
       .clearable-input {
@@ -27,11 +22,8 @@ $checkbox-width: 20px;
     }
 
     .rows {
-      position: absolute;
-      top: 40px;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      height: 280px;
+      margin-top: 10px;
 
       overflow: auto;
     }
@@ -73,9 +65,6 @@ $checkbox-width: 20px;
   }
 
   .button-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
     padding: 0 0 10px 10px;
 
     .ok {
