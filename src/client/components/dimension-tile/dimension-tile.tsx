@@ -40,6 +40,7 @@ export interface DimensionTileState {
   error?: any;
   fetchQueued?: boolean;
   unfolded?: boolean;
+  foldability?: boolean;
   showSearch?: boolean;
   searchText?: string;
 }
@@ -56,6 +57,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       error: null,
       fetchQueued: false,
       unfolded: true,
+      foldability: false,
       showSearch: false,
       searchText: ''
     };
@@ -82,7 +84,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     var filterExpression = filter.toExpression();
 
-    if (!unfolded && colors && colors.values) {
+    if (!unfolded && colors && colors.dimension === dimension.name && colors.values) {
       filterExpression = filterExpression.and(dimension.expression.in(colors.toSet()));
     }
 
@@ -125,21 +127,38 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       );
   }
 
-  componentDidMount() {
-    this.mounted = true;
-    window.addEventListener('mousedown', this.globalMouseDownListener);
-    window.addEventListener('keydown', this.globalKeyDownListener);
-    var { essence, dimension, sortOn } = this.props;
+  updateFoldability(essence: Essence, dimension: Dimension, colors: Colors): boolean {
     var { unfolded } = this.state;
+    var foldability = true;
+    if (essence.filter.filteredOn(dimension.expression)) { // has filter
+      if (colors) {
+        foldability = false;
+        unfolded = false;
+      }
+    } else {
+      if (!colors) {
+        foldability = false;
+        unfolded = true;
+      }
+    }
+
+    this.setState({ foldability, unfolded });
+    return unfolded;
+  }
+
+  componentWillMount() {
+    var { essence, dimension, colors, sortOn } = this.props;
+    var unfolded = this.updateFoldability(essence, dimension, colors);
     this.fetchData(essence, dimension, sortOn, unfolded);
   }
 
   componentWillReceiveProps(nextProps: DimensionTileProps) {
     var { essence, dimension, sortOn } = this.props;
-    var { unfolded } = this.state;
     var nextEssence = nextProps.essence;
     var nextDimension = nextProps.dimension;
+    var nextColors = nextProps.colors;
     var nextSortOn = nextProps.sortOn;
+    var unfolded = this.updateFoldability(nextEssence, nextDimension, nextColors);
     if (
       essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, null, unfolded ? dimension : null) ||
@@ -149,6 +168,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   ) {
       this.fetchData(nextEssence, nextDimension, nextSortOn, unfolded);
     }
+  }
+
+  componentDidMount() {
+    this.mounted = true;
+    window.addEventListener('mousedown', this.globalMouseDownListener);
+    window.addEventListener('keydown', this.globalKeyDownListener);
   }
 
   componentWillUnmount() {
@@ -273,7 +298,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   render() {
     var { clicker, essence, dimension, sortOn, colors, onClose } = this.props;
-    var { loading, dataset, error, showSearch, unfolded, fetchQueued, searchText } = this.state;
+    var { loading, dataset, error, showSearch, unfolded, foldability, fetchQueued, searchText } = this.state;
 
     var measure = sortOn.measure;
     var measureName = measure ? measure.name : null;
@@ -368,7 +393,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       });
       maxHeight += Math.max(2, rows.length) * PIN_ITEM_HEIGHT;
 
-      if (filterSet || colors) {
+      if (foldability) {
         folder = <div
           className={'folder ' + (unfolded ? 'folded' : 'unfolded')}
           onClick={this.toggleFold.bind(this)}

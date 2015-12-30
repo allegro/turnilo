@@ -105,7 +105,6 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   componentWillMount() {
-    this.mounted = true;
     var { essence, dimension } = this.props;
     var { filter, colors } = essence;
 
@@ -134,6 +133,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   componentDidMount() {
+    this.mounted = true;
     window.addEventListener('keydown', this.globalKeyDownListener);
   }
 

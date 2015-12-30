@@ -36,7 +36,9 @@ export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, Hov
     const { essence, datums, measure, getY, left, top } = this.props;
     const { colors } = essence;
 
-    if (!datums || !datums[0] || !colors) return null;
+    var existingDatum = datums.filter(Boolean)[0];
+
+    if (!datums || !existingDatum || !colors) return null;
 
     var colorSwabs = datums.map((datum, i) => {
       if (!datum) return null;
@@ -53,7 +55,7 @@ export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, Hov
 
     return <BodyPortal left={left + LEFT_OFFSET} top={top} disablePointerEvents={true}>
       <div className="hover-multi-bubble">
-        <div className="bucket">{formatTimeRange(datums[0][TIME_SEGMENT], essence.timezone, DisplayYear.NEVER)}</div>
+        <div className="bucket">{formatTimeRange(existingDatum[TIME_SEGMENT], essence.timezone, DisplayYear.NEVER)}</div>
         <div className="colors">{colorSwabs}</div>
       </div>
     </BodyPortal>;

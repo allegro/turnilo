@@ -9,6 +9,7 @@
       <w>clearable</w>
       <w>compat</w>
       <w>doctype</w>
+      <w>foldability</w>
       <w>fontcustom</w>
       <w>formatters</w>
       <w>googleapis</w>
@@ -45,6 +46,7 @@
       <w>svgs</w>
       <w>uglify</w>
       <w>unfilter</w>
+      <w>unfoldable</w>
       <w>unmount</w>
       <w>unpatrolled</w>
       <w>webstorm</w>
