@@ -24,7 +24,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
   static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
     // Must have at least one dimension
     if (splits.length() === 0) {
-      var someDimensions = dataSource.dimensions.toArray().filter(d => d.type !== 'TIME').slice(0, 2);
+      var someDimensions = dataSource.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
       return Resolve.manual(4, 'This visualization requires at least one split',
         someDimensions.map((someDimension) => {
           return {

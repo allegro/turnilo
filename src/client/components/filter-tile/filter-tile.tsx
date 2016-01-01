@@ -31,21 +31,21 @@ export interface ItemBlank {
 function formatLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
   var label = dimension.title;
 
-  switch (dimension.type) {
-    case 'STRING':
-    case 'BOOLEAN':
+  switch (dimension.kind) {
+    case 'string':
+    case 'boolean':
       var setElements = clause.values.elements;
       label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
       break;
 
-    case 'TIME':
+    case 'time':
       var timeRangeLiteral = clause.values.elements[0];
       if (!timeRangeLiteral) return '?';
       label = formatTimeRange(timeRangeLiteral, timezone, DisplayYear.IF_DIFF);
       break;
 
     default:
-      throw new Error('unknown type ' + dimension.type);
+      throw new Error('unknown kind ' + dimension.kind);
   }
 
   return label;

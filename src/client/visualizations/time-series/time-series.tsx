@@ -69,7 +69,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   static title = 'Time Series';
 
   static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
-    var timeDimensions = dataSource.getDimensionByType('TIME');
+    var timeDimensions = dataSource.getDimensionByKind('time');
     if (!timeDimensions.size) return Resolve.NEVER;
 
     // Has no splits
@@ -92,7 +92,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     splits.forEach((split) => {
       var dimension = split.getDimension(dataSource.dimensions);
       if (!dimension) return;
-      if (dimension.type === 'TIME') {
+      if (dimension.kind === 'time') {
         timeSplit = split;
       } else {
         if (timeSplit) {
@@ -234,7 +234,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var { sortAction, limitAction } = split;
       if (!sortAction) throw new Error('something went wrong in time series query generation');
 
-      var segmentName = splitDimension.type === 'TIME' ? TIME_SEGMENT : SEGMENT;
+      var segmentName = splitDimension.kind === 'time' ? TIME_SEGMENT : SEGMENT;
 
       var subQuery: Expression = $main.split(split.toSplitExpression(), segmentName);
 

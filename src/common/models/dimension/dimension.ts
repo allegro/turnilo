@@ -10,18 +10,23 @@ function isGeo(name: string): boolean {
   return geoName.test(name);
 }
 
+function typeToKind(type: string): string {
+  if (!type) return type;
+  return type.toLowerCase().replace(/_/g, '-').replace(/-range$/, '');
+}
+
 export interface DimensionValue {
   name: string;
   title?: string;
   expression?: Expression;
-  type?: string;
+  kind?: string;
 }
 
 export interface DimensionJS {
   name: string;
   title?: string;
   expression?: ExpressionJS | string;
-  type?: string;
+  kind?: string;
 }
 
 var check: Class<DimensionValue, DimensionJS>;
@@ -44,7 +49,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       name: parameters.name,
       title: parameters.title,
       expression: parameters.expression ? Expression.fromJSLoose(parameters.expression) : null,
-      type: parameters.type
+      kind: parameters.kind || typeToKind((parameters as any).type)
     });
   }
 
@@ -52,7 +57,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public name: string;
   public title: string;
   public expression: Expression;
-  public type: string;
+  public kind: string;
   public className: string;
 
   constructor(parameters: DimensionValue) {
@@ -60,13 +65,13 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     this.name = name;
     this.title = parameters.title || makeTitle(name);
     this.expression = parameters.expression || $(name);
-    var type = parameters.type || this.expression.type || 'STRING';
-    this.type = type;
+    var kind = parameters.kind || typeToKind(this.expression.type) || 'string';
+    this.kind = kind;
 
-    if (type === 'STRING' && isGeo(name)) {
+    if (kind === 'string' && isGeo(name)) {
       this.className = 'string-geo';
     } else {
-      this.className = type.toLowerCase().replace(/_/g, '-');
+      this.className = kind;
     }
   }
 
@@ -75,7 +80,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       name: this.name,
       title: this.title,
       expression: this.expression,
-      type: this.type
+      kind: this.kind
     };
   }
 
@@ -84,7 +89,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       name: this.name,
       title: this.title,
       expression: this.expression.toJS(),
-      type: this.type
+      kind: this.kind
     };
   }
 
@@ -101,7 +106,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.name === other.name &&
       this.title === other.title &&
       this.expression.equals(other.expression) &&
-      this.type === other.type;
+      this.kind === other.kind;
   }
 }
 check = Dimension;

@@ -222,8 +222,8 @@ function dimensionToYAML(dimension: Dimension): string[] {
     `        title: ${dimension.title}`
   ];
 
-  if (dimension.type !== 'STRING') {
-    lines.push(`        type: ${dimension.type}`);
+  if (dimension.kind !== 'string') {
+    lines.push(`        kind: ${dimension.kind}`);
   }
 
   if (!dimension.expression.equals($(dimension.name))) {
@@ -361,8 +361,8 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
       "      # title: The Channel",
       "      # ^ (optional) the human readable title. If not set a title is generated from the 'name'",
       "      #",
-      "      # type: STRING",
-      "      # ^ (optional) the Plywood type of the dimension. Defaults to STRING",
+      "      # kind: string",
+      "      # ^ (optional) the kind of the dimension. Can be 'string', 'time', 'number', or 'boolean'. Defaults to 'string'",
       "      #",
       "      # expression: $channel",
       "      # ^ (optional) the Plywood bucketing expression for this dimension. Defaults to '$name'",

@@ -42,7 +42,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
 
     var menuSize: Stage = null;
     var menuCont: JSX.Element = null;
-    if (dimension.type === 'TIME') {
+    if (dimension.kind === 'time') {
       menuSize = Stage.fromSize(250, 274);
       menuCont = <TimeFilterMenu
         clicker={clicker}

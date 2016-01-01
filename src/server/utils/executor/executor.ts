@@ -50,7 +50,8 @@ function deduceAttributes(dataSource: DataSource): Attributes {
   var attributeJSs: AttributeJSs = [];
 
   dataSource.dimensions.forEach((dimension) => {
-    attributeJSs.push({ name: dimension.name, type: dimension.type });
+    // ToDo: fix this.
+    attributeJSs.push({ name: dimension.name, type: 'string' });
   });
 
   dataSource.measures.forEach((measure) => {

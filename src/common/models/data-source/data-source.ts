@@ -60,6 +60,7 @@ export interface DataSourceValue {
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
+  minGranularity: Duration;
   defaultTimezone: Timezone;
   defaultFilter: Filter;
   defaultDuration: Duration;
@@ -82,6 +83,7 @@ export interface DataSourceJS {
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
   timeAttribute?: string;
+  minGranularity?: string;
   defaultTimezone?: string;
   defaultFilter?: FilterJS;
   defaultDuration?: string;
@@ -131,7 +133,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       dimensions = dimensions.unshift(new Dimension({
         name: timeAttributeName,
         expression: timeAttribute,
-        type: 'TIME'
+        kind: 'time'
       }));
     }
 
@@ -165,6 +167,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       dimensions,
       measures,
       timeAttribute,
+      minGranularity: parameters.minGranularity ? Duration.fromJS(parameters.minGranularity) : null,
       defaultTimezone: parameters.defaultTimezone ? Timezone.fromJS(parameters.defaultTimezone) : DataSource.DEFAULT_TIMEZONE,
       defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : Filter.EMPTY,
       defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : DataSource.DEFAULT_DURATION,
@@ -190,6 +193,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
+  public minGranularity: Duration;
   public defaultTimezone: Timezone;
   public defaultFilter: Filter;
   public defaultDuration: Duration;
@@ -212,6 +216,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.dimensions = parameters.dimensions || List([]);
     this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
+    this.minGranularity = parameters.minGranularity;
     this.defaultTimezone = parameters.defaultTimezone;
     this.defaultFilter = parameters.defaultFilter;
     this.defaultDuration = parameters.defaultDuration;
@@ -235,6 +240,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       dimensions: this.dimensions,
       measures: this.measures,
       timeAttribute: this.timeAttribute,
+      minGranularity: this.minGranularity,
       defaultTimezone: this.defaultTimezone,
       defaultFilter: this.defaultFilter,
       defaultDuration: this.defaultDuration,
@@ -269,6 +275,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (this.timeAttribute) {
       js.timeAttribute = this.timeAttribute.name;
     }
+    if (this.minGranularity) {
+      js.minGranularity = this.minGranularity.toJS();
+    }
     if (Object.keys(this.options).length) {
       js.options = this.options;
     }
@@ -300,6 +309,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       listsEqual(this.measures, other.measures) &&
       Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
       (!this.timeAttribute || this.timeAttribute.equals(other.timeAttribute)) &&
+      Boolean(this.minGranularity) === Boolean(other.minGranularity) &&
+      (!this.minGranularity || this.minGranularity.equals(other.minGranularity)) &&
       this.defaultTimezone.equals(other.defaultTimezone) &&
       this.defaultFilter.equals(other.defaultFilter) &&
       this.defaultDuration.equals(other.defaultDuration) &&
@@ -367,8 +378,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return Dimension.getDimensionByExpression(this.dimensions, expression);
   }
 
-  public getDimensionByType(type: string): List<Dimension> {
-    return <List<Dimension>>this.dimensions.filter((d) => d.type === type);
+  public getDimensionByKind(kind: string): List<Dimension> {
+    return <List<Dimension>>this.dimensions.filter((d) => d.kind === kind);
   }
 
   public getTimeDimension() {
@@ -414,7 +425,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           // Add to the start
           dimensions = dimensions.unshift(new Dimension({
             name,
-            type: type
+            kind: 'time'
           }));
           break;
 
@@ -433,8 +444,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
             expression = $(name);
             if (this.getDimensionByExpression(expression)) continue;
             dimensions = dimensions.push(new Dimension({
-              name,
-              type: type
+              name
             }));
           }
           break;
@@ -445,7 +455,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           if (this.getDimensionByExpression(expression)) continue;
           dimensions = dimensions.push(new Dimension({
             name,
-            type: type
+            kind: 'boolean'
           }));
           break;
 
@@ -482,7 +492,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     }
 
     // ToDo: remove this when Pivot can handle it
-    if (!value.timeAttribute && dimensions.first().type === 'TIME') {
+    if (!value.timeAttribute && dimensions.first().kind === 'time') {
       value.timeAttribute = <RefExpression>dimensions.first().expression;
     }
 

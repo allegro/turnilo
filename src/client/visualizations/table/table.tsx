@@ -74,7 +74,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
     // Must have at least one dimension
     if (splits.length() === 0) {
-      var someDimensions = dataSource.dimensions.toArray().filter(d => d.type !== 'TIME').slice(0, 2);
+      var someDimensions = dataSource.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
       return Resolve.manual(4, 'This visualization requires at least one split',
         someDimensions.map((someDimension) => {
           return {
@@ -104,7 +104,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       }
 
       // ToDo: review this
-      if (!split.limitAction && (autoChanged || splitDimension.type !== 'TIME')) {
+      if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
         split = split.changeLimit(i ? 5 : 50);
         autoChanged = true;
       }
@@ -289,6 +289,14 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   onClick(e: MouseEvent) {
     var { clicker, essence } = this.props;
     var pos = this.calculateMousePosition(e);
+
+    // Hack
+    if (pos.what === 'corner' && e.altKey && e.shiftKey) {
+      var { dataset } = this.state;
+      // Data "download" LOL
+      console.log(dataset ? dataset.toTSV() : '[no dataset]');
+      return;
+    }
 
     if (pos.what === 'corner' || pos.what === 'header') {
       var sortExpression = $(pos.what === 'corner' ? SEGMENT : pos.measure.name);

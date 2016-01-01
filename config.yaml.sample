@@ -83,8 +83,8 @@ dataSources:
       #   title: The Channel
       #   ^ (optional) the human readable title. If not set a title is generated from the 'name'
       #
-      #   type: STRING
-      #   ^ (optional) the Plywood type of the dimension. Defaults to STRING
+      #   kind: string
+      #   ^ (optional) the kind of the dimension. Can be 'string', 'time', 'number', or 'boolean'. Defaults to 'string'
       #
       #   expression: $channel
       #   ^ (optional) the Plywood bucketing expression for this dimension. Defaults to '$name'
@@ -92,7 +92,7 @@ dataSources:
       #     See also the expressions API reference: https://github.com/implydata/plywood/blob/master/docs/expressions.md
 
       - name: time
-        type: TIME
+        kind: time
 
       - name: channel
 
@@ -252,7 +252,7 @@ dataSources:
 
     dimensions:
       - name: time
-        type: TIME
+        kind: time
 
       - name: namespace
 
