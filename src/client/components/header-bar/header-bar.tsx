@@ -7,6 +7,8 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Datum, Dataset } from 'plywood';
 import { Essence } from "../../../common/models/index";
 
+import { Modal } from '../modal/modal';
+
 export interface HeaderBarProps extends React.Props<any> {
   essence: Essence;
   onNavClick: React.MouseEventHandler;
@@ -16,21 +18,51 @@ export interface HeaderBarProps extends React.Props<any> {
 }
 
 export interface HeaderBarState {
+  showTestMenu?: boolean;
 }
 
 export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
 
   constructor() {
     super();
-    //this.state = {}
+    this.state = {
+      showTestMenu: false
+    };
   }
 
   onPanicClick(e: MouseEvent) {
     if (e.altKey) {
-      console.log(this.props.essence.dataSource.toJS());
+      var { essence } = this.props;
+      console.log('Filter:', essence.filter.toJS());
+      console.log('DataSource:', essence.dataSource.toJS());
+      return;
+    }
+    if (e.shiftKey) {
+      this.setState({
+        showTestMenu: true
+      });
       return;
     }
     window.location.assign(Essence.getBaseURL());
+  }
+
+  onModalClose() {
+    this.setState({
+      showTestMenu: false
+    });
+  }
+
+  renderTestModal() {
+    if (!this.state.showTestMenu) return null;
+    return <Modal
+      className="test-modal"
+      title="Test Modal"
+      onClose={this.onModalClose.bind(this)}
+    >
+      <div>Hello 1</div>
+      <div>Hello 2</div>
+      <div>Hello 3</div>
+    </Modal>;
   }
 
   render() {
@@ -72,6 +104,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         </a>
         {gitHubIcon}
       </div>
+      {this.renderTestModal()}
     </header>;
   }
 }

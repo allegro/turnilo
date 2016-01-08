@@ -26,16 +26,18 @@ export interface BubbleMenuProps extends React.Props<any> {
 }
 
 export interface BubbleMenuState {
-  id: string;
-  x: number;
-  y: number;
+  id?: string;
+  x?: number;
+  y?: number;
 }
 
 export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState> {
 
   constructor() {
     super();
-    //this.state = {};
+    this.state = {
+      id: null
+    };
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }

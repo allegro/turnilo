@@ -9,6 +9,7 @@ import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/mo
 export interface BodyPortalProps extends React.Props<any> {
   left?: number;
   top?: number;
+  fullSize?: boolean;
   disablePointerEvents?: boolean;
 }
 
@@ -35,9 +36,9 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
   }
 
   componentDidMount() {
-    var { disablePointerEvents } = this.props;
+    var { fullSize, disablePointerEvents } = this.props;
     var newDiv = document.createElement('div');
-    newDiv.className = 'body-portal ' + (disablePointerEvents ? '' : 'pointer-events');
+    newDiv.className = 'body-portal' + (fullSize ? ' full-size' : '') + (disablePointerEvents ? '' : ' pointer-events');
     this.target = document.body.appendChild(newDiv);
     this.position();
     this.component = ReactDOM.render(this.props.children as any, this.target);

@@ -1,0 +1,22 @@
+@import '../../imports';
+
+.modal {
+  @include pin-full;
+
+  .backdrop {
+    @include pin-full;
+    background: $black;
+    opacity: 0.2;
+  }
+
+  .modal-window {
+    width: 300px;
+    margin: auto;
+    background: $white;
+
+    .modal-title {
+      height: 25px;
+      padding: 4px;
+    }
+  }
+}
