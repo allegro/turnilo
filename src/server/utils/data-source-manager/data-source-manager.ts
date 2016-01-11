@@ -33,8 +33,8 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     druidRequester,
     dataSourceFiller,
     sourceListScan,
-    sourceListRefreshInterval,
     sourceListRefreshOnLoad,
+    sourceListRefreshInterval,
     log
   } = options;
 

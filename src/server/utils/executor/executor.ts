@@ -51,7 +51,7 @@ function deduceAttributes(dataSource: DataSource): Attributes {
 
   dataSource.dimensions.forEach((dimension) => {
     // ToDo: fix this.
-    attributeJSs.push({ name: dimension.name, type: 'string' });
+    attributeJSs.push({ name: dimension.name, type: 'STRING' });
   });
 
   dataSource.measures.forEach((measure) => {
