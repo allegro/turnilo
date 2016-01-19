@@ -1,115 +1,117 @@
-#!/usr/bin/env coffee
+#!/usr/bin/env node
 
-fs = require('fs')
-mkdirp = require('mkdirp')
+var fs = require('fs');
+var mkdirp = require('mkdirp');
 
-if process.argv.length isnt 3
-  console.log('Usage: mkmodel <model-name>')
-  process.exit()
+if (process.argv.length !== 3) {
+  console.log('Usage: mkmodel <model-name>');
+  process.exit();
+}
 
-name = process.argv[2]
+var name = process.argv[2];
 
-if not /^([a-z-])+$/.test(name)
-  console.log('must be a hyphen case name')
-  process.exit()
+if (!/^([a-z-])+$/.test(name)) {
+  console.log('must be a hyphen case name');
+  process.exit();
+}
 
-path = './src/common/models/' + name + '/'
-mkdirp.sync(path)
-console.log('Making path:', path)
+var path = './src/common/models/' + name + '/';
+mkdirp.sync(path);
+console.log('Making path:', path);
 
-camelName = name.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
+var camelName = name.replace(/(^|-)[a-z]/g, (s) => s.replace('-', '').toUpperCase());
 
-writeFile = (path, data) ->
-  try
-    fs.writeFileSync(path, data, {
-      flag: 'wx' # x = fail if file exists
+function writeFile(path, data) {
+  try {
+    return fs.writeFileSync(path, data, {
+      flag: 'wx', // x = fail if file exists
       encoding: 'utf8'
-    })
-  catch
-    console.log("Skipping #{path}")
+    });
+  } catch (error) {
+    return console.log("Skipping " + path);
+  }
+}
 
-# Make the TypeScript file
-writeFile(path + name + '.ts', """
-'use strict';
+// Make the TypeScript file
+writeFile(path + name + '.ts',
+`'use strict';
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression } from 'plywood';
 
-// I am: import { #{camelName} } from '../#{name}/#{name}';
+// I am: import { ${camelName} } from '../${name}/${name}';
 
-export interface #{camelName}Value {
-
-}
-
-export interface #{camelName}JS {
+export interface ${camelName}Value {
 
 }
 
-var check: Class<#{camelName}Value, #{camelName}JS>;
-export class #{camelName} implements Instance<#{camelName}Value, #{camelName}JS> {
+export interface ${camelName}JS {
 
-  static is#{camelName}(candidate: any): boolean {
-    return isInstanceOf(candidate, #{camelName});
+}
+
+var check: Class<${camelName}Value, ${camelName}JS>;
+export class ${camelName} implements Instance<${camelName}Value, ${camelName}JS> {
+
+  static is${camelName}(candidate: any): boolean {
+    return isInstanceOf(candidate, ${camelName});
   }
 
-  static fromJS(parameters: #{camelName}JS): #{camelName} {
-    var value: #{camelName}Value = {
+  static fromJS(parameters: ${camelName}JS): ${camelName} {
+    var value: ${camelName}Value = {
       /* */
     };
-    return new #{camelName}(value);
+    return new ${camelName}(value);
   }
 
-  constructor(parameters: #{camelName}Value) {
+  constructor(parameters: ${camelName}Value) {
 
   }
 
-  public valueOf(): #{camelName}Value {
+  public valueOf(): ${camelName}Value {
     return {
 
     };
   }
 
-  public toJS(): #{camelName}JS {
+  public toJS(): ${camelName}JS {
     return {
 
     };
   }
 
-  public toJSON(): #{camelName}JS {
+  public toJSON(): ${camelName}JS {
     return this.toJS();
   }
 
   public toString(): string {
-    return `[#{camelName}: ${this.name}]`;
+    return '[' + ${camelName} + ']';
   }
 
-  public equals(other: #{camelName}): boolean {
-    return #{camelName}.is#{camelName}(other); // && more...
+  public equals(other: ${camelName}): boolean {
+    return ${camelName}.is${camelName}(other); // && more...
   }
 
 }
-check = #{camelName};
+check = ${camelName};
+`);
 
-""")
 
-
-# Make the TypeScript test file
-writeFile(path + name + '.mocha.ts', """
-'use strict';
+// Make the TypeScript test file
+writeFile(path + name + '.mocha.ts',
+`'use strict';
 
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { #{camelName} } from './#{name}';
+import { ${camelName} } from './${name}';
 
-describe('#{camelName}', () => {
+describe('${camelName}', () => {
   it('is an immutable class', () => {
-    testImmutableClass(#{camelName}, [
+    testImmutableClass(${camelName}, [
 
     ]);
   });
 
 });
-
-""")
+`);

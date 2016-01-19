@@ -1,47 +1,52 @@
-#!/usr/bin/env coffee
+#!/usr/bin/env node
 
-fs = require('fs')
-mkdirp = require('mkdirp')
+var fs = require('fs');
+var mkdirp = require('mkdirp');
 
-if not (process.argv.length in [3, 4])
-  console.log('Usage: mkcomp <what?> <component-name>')
-  process.exit()
+if (!(process.argv.length === 3 || process.argv.length === 4)) {
+  console.log('Usage: mkcomp <what?> <component-name>');
+  process.exit();
+}
 
-if process.argv.length is 4
-  what = process.argv[2]
-  name = process.argv[3]
-  if not (what in ['component', 'visualization'])
-    console.log('bad what')
-    process.exit()
-else
-  what = 'component'
-  name = process.argv[2]
+var name, what;
+if (process.argv.length === 4) {
+  what = process.argv[2];
+  name = process.argv[3];
+  if (!(what === 'component' || what === 'visualization')) {
+    console.log('bad what');
+    process.exit();
+  }
+} else {
+  what = 'component';
+  name = process.argv[2];
+}
 
-if not /^([a-z-])+$/.test(name)
-  console.log('must be a hyphen case name')
-  process.exit()
+if (!/^([a-z-])+$/.test(name)) {
+  console.log('must be a hyphen case name');
+  process.exit();
+}
 
-path = './src/client/' + what + 's/' + name + '/'
-mkdirp.sync(path)
-console.log('Making path:', path)
+var path = './src/client/' + what + 's/' + name + '/';
+mkdirp.sync(path);
+console.log('Making path:', path);
 
-camelName = name.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
+var camelName = name.replace(/(^|-)[a-z]/g, (s) => s.replace('-', '').toUpperCase());
 
-writeFile = (path, data) ->
-  try
-    fs.writeFileSync(path, data, {
-      flag: 'wx' # x = fail if file exists
+function writeFile(path, data) {
+  try {
+    return fs.writeFileSync(path, data, {
+      flag: 'wx', // x = fail if file exists
       encoding: 'utf8'
-    })
-  catch
-    console.log("Skipping #{path}")
+    });
+  } catch (error) {
+    return console.log("Skipping " + path);
+  }
+}
 
-any = 'any'
-
-# Make the TypeScript file
-writeFile(path + name + '.tsx', """
-'use strict';
-require('./#{name}.css');
+// Make the TypeScript file
+writeFile(path + name + '.tsx',
+`'use strict';
+require('./${name}.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -50,15 +55,15 @@ import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePr
 // import { ... } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
-// I am: import { #{camelName} } from '../#{name}/#{name}';
+// I am: import { ${camelName} } from '../${name}/${name}';
 
-export interface #{camelName}Props extends React.Props<#{any}> {
+export interface ${camelName}Props extends React.Props<any> {
 }
 
-export interface #{camelName}State {
+export interface ${camelName}State {
 }
 
-export class #{camelName} extends React.Component<#{camelName}Props, #{camelName}State> {
+export class ${camelName} extends React.Component< ${camelName}Props, ${camelName}State> {
   public mounted: boolean;
 
   constructor() {
@@ -75,21 +80,20 @@ export class #{camelName} extends React.Component<#{camelName}Props, #{camelName
     this.mounted = false;
   }
 
-  componentWillReceiveProps(nextProps: #{camelName}Props) {
+  componentWillReceiveProps(nextProps: ${camelName}Props) {
 
   }
 
   render() {
-    return <div className="#{name}"></div>;
+    return <div className="${name}"></div>;
   }
 }
+`);
 
-""")
 
-
-# Make the TypeScript test file
-writeFile(path + name + '.mocha.tsx', """
-'use strict';
+// Make the TypeScript test file
+writeFile(path + name + '.mocha.tsx',
+`'use strict';
 
 import { expect } from 'chai';
 import * as sinon from 'sinon';
@@ -99,33 +103,31 @@ import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { #{camelName} } from './#{name}';
+import { ${camelName} } from './${name}';
 
-describe('#{camelName}', () => {
+describe('${camelName}', () => {
   setupDOM();
 
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <#{camelName}
+      <${camelName}
 
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('#{name}');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('${name}');
   });
 
 });
+`);
 
-""")
 
+// Make the SASS file
+writeFile(path + name + '.scss',
+`@import '../../imports';
 
-# Make the SASS file
-writeFile(path + name + '.scss', """
-@import '../../imports';
-
-.#{name} {
+.${name} {
 
 }
-
-""");
+`);

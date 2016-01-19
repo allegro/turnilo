@@ -1,57 +1,61 @@
-#!/usr/bin/env coffee
+#!/usr/bin/env node
 
-fs = require('fs-extra')
-mkdirp = require('mkdirp')
-replace = require("replace")
+var fs = require('fs-extra');
+var mkdirp = require('mkdirp');
+var replace = require("replace");
 
-if process.argv.length isnt 5
-  console.log('Usage: mv <what> <old-component-name> <new-component-name>')
-  process.exit()
+if (process.argv.length !== 5) {
+  console.log('Usage: mv <what> <old-component-name> <new-component-name>');
+  process.exit();
+}
 
-what = process.argv[2]
-oldName = process.argv[3]
-newName = process.argv[4]
+var what = process.argv[2];
+var oldName = process.argv[3];
+var newName = process.argv[4];
 
-if not (what in ['component', 'model', 'visualization'])
-  console.log('bad what')
-  process.exit()
+if (!(what === 'component' || what === 'model' || what === 'visualization')) {
+  console.log('bad what');
+  process.exit();
+}
 
-if not /^([a-z-])+$/.test(oldName)
-  console.log('must be a hyphen case old name')
-  process.exit()
+if (!/^([a-z-])+$/.test(oldName)) {
+  console.log('must be a hyphen case old name');
+  process.exit();
+}
 
-if not /^([a-z-])+$/.test(newName)
-  console.log('must be a hyphen case new name')
-  process.exit()
+if (!/^([a-z-])+$/.test(newName)) {
+  console.log('must be a hyphen case new name');
+  process.exit();
+}
 
-oldPath = './src/client/' + what + 's/' + oldName + '/'
-newPath = './src/client/' + what + 's/' + newName + '/'
+var oldPath = './src/client/' + what + 's/' + oldName + '/';
+var newPath = './src/client/' + what + 's/' + newName + '/';
 
-camelOldName = oldName.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
-camelNewName = newName.replace(/(^|-)[a-z]/g, (s) -> s.replace('-', '').toUpperCase())
+var camelOldName = oldName.replace(/(^|-)[a-z]/g, (s) => s.replace('-', '').toUpperCase());
+var camelNewName = newName.replace(/(^|-)[a-z]/g, (s) => s.replace('-', '').toUpperCase());
 
-console.log('Making path:', newPath)
-fs.copySync(oldPath, newPath)
-fs.removeSync(oldPath)
-fs.renameSync(newPath + oldName + '.ts', newPath + newName + '.ts')
-fs.renameSync(newPath + oldName + '.scss', newPath + newName + '.scss')
-fs.renameSync(newPath + oldName + '.mocha.ts', newPath + newName + '.mocha.ts')
+console.log('Making path:', newPath);
 
-replacePath = './src/client/'
-#replacePath = newPath
+fs.copySync(oldPath, newPath);
+fs.removeSync(oldPath);
+fs.renameSync(newPath + oldName + '.ts', newPath + newName + '.ts');
+fs.renameSync(newPath + oldName + '.scss', newPath + newName + '.scss');
+fs.renameSync(newPath + oldName + '.mocha.ts', newPath + newName + '.mocha.ts');
+
+var replacePath = './src/client/';
 
 replace({
   regex: oldName,
   replacement: newName,
   paths: [replacePath],
   recursive: true,
-  silent: true,
-})
+  silent: true
+});
 
 replace({
   regex: camelOldName,
   replacement: camelNewName,
   paths: [replacePath],
   recursive: true,
-  silent: true,
-})
+  silent: true
+});
