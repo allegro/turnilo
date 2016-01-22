@@ -9,15 +9,13 @@ import { Essence } from './essence';
 import { DataSource } from "../data-source/data-source";
 
 describe('Essence', () => {
-  var isAutomatic = function(): boolean { return false; };
-  var testFunction = function(): any { return {'isAutomatic' : isAutomatic}; };
-  var dataSourceJS =  {
+  var dataSourceJS = {
     name: 'twitter',
     title: 'Twitter',
     engine: 'druid',
     source: 'twitter',
     introspection: 'none',
-    dimensions: [ {
+    dimensions: [{
       expression: {
         name: 'time',
         op: 'ref'
@@ -49,7 +47,7 @@ describe('Essence', () => {
     ],
     timeAttribute: 'time',
     defaultTimezone: 'Etc/UTC',
-    defaultFilter: {op: 'literal', value: true},
+    defaultFilter: { op: 'literal', value: true },
     defaultDuration: 'P3D',
     defaultSortMeasure: 'rows',
     defaultPinnedDimensions: ['tweet'],
@@ -58,14 +56,20 @@ describe('Essence', () => {
       rule: "fixed"
     }
   };
+
   var dataSource = DataSource.fromJS(dataSourceJS);
   var dataSources: any[] = [];
   dataSources.push(dataSource);
 
   var visualizationsArray = [
-    { id: 'viz1', title: 'viz1', handleCircumstance: testFunction }
+    {
+      id: 'viz1',
+      title: 'viz1',
+      handleCircumstance(): any {
+        return { 'isAutomatic': () => false };
+      }
+    }
   ];
-
   it('is an immutable class', () => {
     testImmutableClass(Essence, [
       {
@@ -81,11 +85,10 @@ describe('Essence', () => {
         selectedMeasures: [],
         splits: []
       }], {
-        context:
-          {
-            dataSources: List(<any> dataSources),
-            visualizations: List(<any> visualizationsArray)
-          }
-      });
+      context: {
+        dataSources: List(<any> dataSources),
+        visualizations: List(<any> visualizationsArray)
+      }
+    });
   });
 });

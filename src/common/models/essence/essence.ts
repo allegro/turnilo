@@ -73,10 +73,11 @@ export interface EssenceJS {
   highlight?: HighlightJS;
 }
 
-export interface Context {
+export interface EssenceContext {
   dataSources: List<DataSource>;
   visualizations: List<Manifest>;
 }
+
 var check: Class<EssenceValue, EssenceJS>;
 export class Essence implements Instance<EssenceValue, EssenceJS> {
   static isEssence(candidate: any): boolean {
@@ -88,7 +89,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return url.origin + url.pathname;
   }
 
-  static fromHash(hash: string, context: Context): Essence {
+  static fromHash(hash: string, context: EssenceContext): Essence {
     // trim a potential leading #
     if (hash[0] === '#') hash = hash.substr(1);
 
@@ -134,7 +135,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return essence;
   }
 
-  static fromDataSource(dataSource: DataSource, context: Context): Essence {
+  static fromDataSource(dataSource: DataSource, context: EssenceContext): Essence {
     var timezone = dataSource.defaultTimezone;
 
 
@@ -178,7 +179,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     });
   }
 
-  static fromJS(parameters: EssenceJS, context?: Context): Essence {
+  static fromJS(parameters: EssenceJS, context?: EssenceContext): Essence {
     var dataSourceName = parameters.dataSource;
     var visualizationID = parameters.visualization;
     var visualizations = context.visualizations;
@@ -372,11 +373,11 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     }
 
     return '#' + [
-      js.dataSource,
-      js.visualization,
-      HASH_VERSION,
-      compressToBase64(restJSON.join(','))
-    ].join('/');
+        js.dataSource,
+        js.visualization,
+        HASH_VERSION,
+        compressToBase64(restJSON.join(','))
+      ].join('/');
   }
 
   public getURL(): string {
@@ -512,7 +513,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     if (existingDataSource.equals(dataSource)) {
       // Just changing DataSource, nothing to see here.
-      return Essence.fromDataSource(dataSource, {dataSources: dataSources, visualizations: visualizations});
+      return Essence.fromDataSource(dataSource, { dataSources: dataSources, visualizations: visualizations });
     }
 
     // We are actually updating info within the named dataSource

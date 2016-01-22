@@ -37,7 +37,8 @@ describe('Highlight', () => {
                 }
               }
             }
-          ]}
+          ]
+        }
       },
       {
         owner: 'Dole',

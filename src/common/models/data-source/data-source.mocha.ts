@@ -17,15 +17,15 @@ describe('DataSource', () => {
         source: 'twitter',
         subsetFilter: null,
         introspection: 'none',
-        dimensions: [ {
-            expression: {
-              name: 'time',
-              op: 'ref'
-            },
-            kind: 'time',
+        dimensions: [{
+          expression: {
             name: 'time',
-            title: 'Time'
+            op: 'ref'
           },
+          kind: 'time',
+          name: 'time',
+          title: 'Time'
+        },
           {
             expression: {
               name: 'twitterHandle',
@@ -49,7 +49,7 @@ describe('DataSource', () => {
         ],
         timeAttribute: 'time',
         defaultTimezone: 'Etc/UTC',
-        defaultFilter: {op: 'literal', value: true},
+        defaultFilter: { op: 'literal', value: true },
         defaultDuration: 'P3D',
         defaultSortMeasure: 'rows',
         defaultPinnedDimensions: ['tweet'],
@@ -98,7 +98,7 @@ describe('DataSource', () => {
         ],
         timeAttribute: 'time',
         defaultTimezone: 'Etc/UTC',
-        defaultFilter: {op: 'literal', value: true},
+        defaultFilter: { op: 'literal', value: true },
         defaultDuration: 'P3D',
         defaultSortMeasure: 'rows',
         defaultPinnedDimensions: ['tweet'],

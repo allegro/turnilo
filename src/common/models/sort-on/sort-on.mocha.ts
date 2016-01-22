@@ -36,7 +36,20 @@ describe('SortOn', () => {
           name: 'price',
           title: 'Price'
         }
+      },
+      {
+        dimension: {
+          name: 'country',
+          title: 'important countries',
+          'expression': {
+            'op': 'literal',
+            'value': { 'setType': 'STRING', 'elements': ['en'] },
+            'type': 'SET'
+          },
+          kind: 'string'
+        }
       }
+
     ]);
   });
 

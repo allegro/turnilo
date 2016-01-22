@@ -22,13 +22,14 @@ export interface StageJS {
   width: number;
   height: number;
 }
+
 var check: Class<StageValue, StageJS>;
 export class Stage implements Instance<StageValue, StageJS> {
-  static isStage(candidate: any) : boolean {
+  static isStage(candidate: any): boolean {
     return isInstanceOf(candidate, Stage);
   }
 
-  static fromJS(parameters: StageJS) : Stage {
+  static fromJS(parameters: StageJS): Stage {
     return new Stage({
       x: parameters.x,
       y: parameters.y,
@@ -87,7 +88,7 @@ export class Stage implements Instance<StageValue, StageJS> {
     };
   }
 
-  public toJSON() : StageJS {
+  public toJSON(): StageJS {
     return this.toJS();
   }
 
