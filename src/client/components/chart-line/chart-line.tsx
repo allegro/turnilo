@@ -3,6 +3,7 @@ require('./chart-line.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import * as d3 from 'd3';
 import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
 import { TIME_SEGMENT } from '../../config/constants';
