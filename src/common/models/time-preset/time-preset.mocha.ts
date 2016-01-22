@@ -12,15 +12,15 @@ describe('TimePreset', () => {
 
     testImmutableClass(TimePreset, [
       {
+        name: 'range1',
         timeRange: {
-          name: 'range1',
           start: new Date('2013-02-26T19:00:00.000Z'),
           end: new Date('2013-02-27T19:00:00.000Z')
         }
       },
       {
+        name: 'range2',
         timeRange: {
-          name: 'range2',
           start: new Date('2013-02-26T19:00:00.000Z'),
           end: new Date('2013-02-27T19:00:00.000Z')
         }
