@@ -1,6 +1,6 @@
 {
   "name": "imply-pivot",
-  "version": "0.7.14",
+  "version": "0.7.16",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
@@ -28,8 +28,8 @@
   "dependencies": {
     "body-parser": "1.14.2",
     "chronoshift": "0.3.7",
-    "compression": "1.6.0",
-    "d3": "3.5.12",
+    "compression": "1.6.1",
+    "d3": "3.5.13",
     "debug": "2.2.0",
     "express": "4.13.3",
     "express-handlebars": "2.0.1",
@@ -41,7 +41,7 @@
     "morgan": "1.6.1",
     "nopt": "3.0.6",
     "numeral": "1.5.3",
-    "plywood": "0.7.29",
+    "plywood": "0.8.1",
     "plywood-druid-requester": "1.2.4",
     "plywood-mysql-requester": "1.1.4",
     "q": "1.4.1",
