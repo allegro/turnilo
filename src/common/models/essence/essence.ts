@@ -73,6 +73,11 @@ export interface EssenceJS {
   highlight?: HighlightJS;
 }
 
+export interface EssenceContext {
+  dataSources: List<DataSource>;
+  visualizations: List<Manifest>;
+}
+
 var check: Class<EssenceValue, EssenceJS>;
 export class Essence implements Instance<EssenceValue, EssenceJS> {
   static isEssence(candidate: any): boolean {
@@ -84,7 +89,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return url.origin + url.pathname;
   }
 
-  static fromHash(hash: string, dataSources: List<DataSource>, visualizations: List<Manifest>): Essence {
+  static fromHash(hash: string, context: EssenceContext): Essence {
     // trim a potential leading #
     if (hash[0] === '#') hash = hash.substr(1);
 
@@ -122,7 +127,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
         colors: jsArray[6] || null,
         compare: jsArray[7] || null,
         highlight: jsArray[8] || null
-      }, dataSources, visualizations);
+      }, context);
     } catch (e) {
       return null;
     }
@@ -130,8 +135,9 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return essence;
   }
 
-  static fromDataSource(dataSource: DataSource, dataSources: List<DataSource>, visualizations: List<Manifest>): Essence {
+  static fromDataSource(dataSource: DataSource, context: EssenceContext): Essence {
     var timezone = dataSource.defaultTimezone;
+
 
     var filter = dataSource.defaultFilter;
     if (dataSource.timeAttribute) {
@@ -156,8 +162,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     }
 
     return new Essence({
-      dataSources: dataSources,
-      visualizations: visualizations,
+      dataSources: context.dataSources,
+      visualizations: context.visualizations,
 
       dataSource,
       visualization: null,
@@ -173,9 +179,11 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     });
   }
 
-  static fromJS(parameters: EssenceJS, dataSources?: List<DataSource>, visualizations?: List<Manifest>): Essence {
+  static fromJS(parameters: EssenceJS, context?: EssenceContext): Essence {
     var dataSourceName = parameters.dataSource;
     var visualizationID = parameters.visualization;
+    var visualizations = context.visualizations;
+    var dataSources = context.dataSources;
     var visualization = visualizations.find(v => v.id === visualizationID);
 
     var dataSource = dataSources.find((ds) => ds.name === dataSourceName);
@@ -365,11 +373,11 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     }
 
     return '#' + [
-      js.dataSource,
-      js.visualization,
-      HASH_VERSION,
-      compressToBase64(restJSON.join(','))
-    ].join('/');
+        js.dataSource,
+        js.visualization,
+        HASH_VERSION,
+        compressToBase64(restJSON.join(','))
+      ].join('/');
   }
 
   public getURL(): string {
@@ -505,7 +513,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     if (existingDataSource.equals(dataSource)) {
       // Just changing DataSource, nothing to see here.
-      return Essence.fromDataSource(dataSource, dataSources, visualizations);
+      return Essence.fromDataSource(dataSource, { dataSources: dataSources, visualizations: visualizations });
     }
 
     // We are actually updating info within the named dataSource

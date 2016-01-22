@@ -110,9 +110,12 @@ export class Filter implements Instance<FilterValue, FilterJS> {
       return clause.toExpression();
     });
     switch (clauses.length) {
-      case 0:  return Expression.TRUE;
-      case 1:  return clauses[0];
-      default: return Expression.and(clauses);
+      case 0:
+        return Expression.TRUE;
+      case 1:
+        return clauses[0];
+      default:
+        return Expression.and(clauses);
     }
   }
 

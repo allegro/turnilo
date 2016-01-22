@@ -145,7 +145,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     if (!dataSources.size) throw new Error('must have data sources');
     var dataSource = dataSources.first();
 
-    var essence = this.getEssenceFromHash() || Essence.fromDataSource(dataSource, dataSources, visualizations);
+    var essence = this.getEssenceFromHash() || Essence.fromDataSource(dataSource, {dataSources, visualizations});
     this.setState({ essence });
   }
 
@@ -189,7 +189,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   getEssenceFromHash(): Essence {
     var hash = window.location.hash;
-    return Essence.fromHash(hash, this.getDataSources(), visualizations);
+    var dataSources = this.getDataSources();
+    return Essence.fromHash(hash, {dataSources, visualizations});
   }
 
   globalResizeListener() {
