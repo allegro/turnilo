@@ -16,8 +16,28 @@ export interface StageValue {
   height: number;
 }
 
-// ToDo: make this a higher object
-export class Stage {
+export interface StageJS {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+var check: Class<StageValue, StageJS>;
+export class Stage implements Instance<StageValue, StageJS> {
+  static isStage(candidate: any) : boolean {
+    return isInstanceOf(candidate, Stage);
+  }
+
+  static fromJS(parameters: StageJS) : Stage {
+    return new Stage({
+      x: parameters.x,
+      y: parameters.y,
+      width: parameters.width,
+      height: parameters.height
+    });
+  }
+
+
   static fromClientRect(rect: ClientRect): Stage {
     return new Stage({
       x: rect.left,
@@ -58,6 +78,19 @@ export class Stage {
     };
   }
 
+  public toJS(): StageJS {
+    return {
+      x: this.x,
+      y: this.y,
+      width: this.width,
+      height: this.height
+    };
+  }
+
+  public toJSON() : StageJS {
+    return this.toJS();
+  }
+
   private sizeOnlyValue(): StageValue {
     return {
       x: 0,
@@ -69,6 +102,14 @@ export class Stage {
 
   public toString(): string {
     return `[stage: ${this.width}x${this.height}}]`;
+  }
+
+  public equals(other: Stage): boolean {
+    return Stage.isStage(other) &&
+      this.x === other.x &&
+      this.y === other.y &&
+      this.width === other.width &&
+      this.height === other.height;
   }
 
   public getTransform(): string {
@@ -100,3 +141,4 @@ export class Stage {
     return new Stage(value);
   }
 }
+check = Stage;
