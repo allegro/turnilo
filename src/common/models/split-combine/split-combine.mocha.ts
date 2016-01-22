@@ -13,7 +13,7 @@ describe('SplitCombine', () => {
                 expression: {op: 'ref', name: 'language'}
             },
             {
-                expression: {op: 'lookup', name: 'lookup'}
+                expression: {op: 'ref', name: 'lookup'}
             }
         ]);
     });
