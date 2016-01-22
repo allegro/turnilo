@@ -70,11 +70,18 @@ app.get('/', (req: Request, res: Response, next: Function) => {
 
 app.use('/plywood', plywoodRoutes);
 
-//catch 404 and forward to error handler
+app.get('/health', (req: Request, res: Response, next: Function) => {
+  res.send("Okay");
+});
+
+// Easter egg ( https://groups.google.com/forum/#!topic/imply-user-group/Ogks7pAnd-A )
+app.get('/graph', (req: Request, res: Response, next: Function) => {
+  res.send("I see you have been using Prometheus. Pivot saves you time by not asking you to type in /graph :-)");
+});
+
+// Catch 404 and redirect to /
 app.use((req: Request, res: Response, next: Function) => {
-  var err = new Error('Not Found');
-  (<any>err)['status'] = 404;
-  next(err);
+  res.redirect('/');
 });
 
 // error handlers
