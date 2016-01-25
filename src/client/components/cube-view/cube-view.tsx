@@ -164,6 +164,7 @@ export class CubeView extends React.Component< CubeViewProps, CubeViewState> {
   globalKeyDownListener(e: KeyboardEvent) {
     // Shortcuts will go here one day
   }
+
   globalResizeListener() {
     var { container, visualization } = this.refs;
     var containerDOM = ReactDOM.findDOMNode(container);

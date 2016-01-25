@@ -49,7 +49,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.globalHashChangeListener = this.globalHashChangeListener.bind(this);
   }
 
-  changeDataSource(dataSource : DataSource) {
+  changeDataSource(dataSource: DataSource) {
     var { essence } = this.state;
     this.setState({ essence: essence.changeDataSource(dataSource) });
   };
