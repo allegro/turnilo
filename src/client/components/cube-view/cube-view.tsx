@@ -260,7 +260,7 @@ export class CubeView extends React.Component< CubeViewProps, CubeViewState> {
       dropIndicator = <DropIndicator/>;
     }
 
-    return <div className='container' ref='container'>
+    return <div className='cube-view' ref='container'>
       <DimensionMeasurePanel
         clicker={clicker}
         essence={essence}
