@@ -2,9 +2,10 @@
 
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-//import { setupDOM } from '../../utils/jsdom-setup';
+import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/server';
+import '../../utils/require-extensions';
 
 import * as TestUtils from 'react-addons-test-utils';
 
@@ -12,8 +13,6 @@ import { $, Expression } from 'plywood';
 import { SvgIcon } from './svg-icon';
 
 describe('SvgIcon', () => {
-  //setupDOM();
-
   it('adds the correct class', () => {
     expect(ReactDOM.renderToStaticMarkup(
       <SvgIcon svg={null}/>
