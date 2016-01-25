@@ -13,20 +13,20 @@ import { Colors } from '../colors/colors';
 import { VisStrategy } from '../essence/essence';
 
 export interface Clicker {
-  changeDataSource(dataSource: DataSource): void;
-  changeTimeRange(timeRange: TimeRange): void;
-  changeFilter(filter: Filter, colors?: Colors): void;
-  changeSplits(splits: Splits, strategy: VisStrategy, colors?: Colors): void;
-  changeSplit(split: SplitCombine, strategy: VisStrategy): void;
-  addSplit(split: SplitCombine, strategy: VisStrategy): void;
-  removeSplit(split: SplitCombine, strategy: VisStrategy): void;
-  changeColors(colors: Colors): void;
-  changeVisualization(visualization: Manifest): void;
-  pin(dimension: Dimension): void;
-  unpin(dimension: Dimension): void;
-  changePinnedSortMeasure(measure: Measure): void;
-  toggleMeasure(measure: Measure): void;
-  changeHighlight(owner: string, delta: Filter): void;
-  acceptHighlight(): void;
-  dropHighlight(): void;
+  changeDataSource?(dataSource: DataSource): void;
+  changeTimeRange?(timeRange: TimeRange): void;
+  changeFilter?(filter: Filter, colors?: Colors): void;
+  changeSplits?(splits: Splits, strategy: VisStrategy, colors?: Colors): void;
+  changeSplit?(split: SplitCombine, strategy: VisStrategy): void;
+  addSplit?(split: SplitCombine, strategy: VisStrategy): void;
+  removeSplit?(split: SplitCombine, strategy: VisStrategy): void;
+  changeColors?(colors: Colors): void;
+  changeVisualization?(visualization: Manifest): void;
+  pin?(dimension: Dimension): void;
+  unpin?(dimension: Dimension): void;
+  changePinnedSortMeasure?(measure: Measure): void;
+  toggleMeasure?(measure: Measure): void;
+  changeHighlight?(owner: string, delta: Filter): void;
+  acceptHighlight?(): void;
+  dropHighlight?(): void;
 }
