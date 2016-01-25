@@ -45,22 +45,19 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       drawerOpen: false
     };
 
-    var clicker = {
-      changeDataSource: (dataSource: DataSource) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changeDataSource(dataSource) });
-      }
-    };
 
-    this.clicker = clicker;
     this.globalHashChangeListener = this.globalHashChangeListener.bind(this);
   }
+
+  changeDataSource(dataSource : DataSource) {
+    var { essence } = this.state;
+    this.setState({ essence: essence.changeDataSource(dataSource) });
+  };
 
   componentWillMount() {
     var { dataSources } = this.props;
     if (!dataSources.size) throw new Error('must have data sources');
     var dataSource = dataSources.first();
-
     var essence = this.getEssenceFromHash() || Essence.fromDataSource(dataSource, { dataSources, visualizations });
     this.setState({ essence });
   }
@@ -109,13 +106,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var { homeLink, maxFilters, maxSplits, showLastUpdated, hideGitHubIcon, headerBackground } = this.props;
     var { ReactCSSTransitionGroupAsync, essence, drawerOpen, SideDrawerAsync } = this.state;
     if (!essence) return null;
-    var clicker = this.clicker;
     var sideDrawer: JSX.Element = null;
     if (drawerOpen && SideDrawerAsync) {
       var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
       sideDrawer = <SideDrawerAsync
         key='drawer'
-        clicker={clicker}
+        changeDataSource={this.changeDataSource.bind(this)}
         essence={essence}
         onClose={closeSideDrawer}
         homeLink={homeLink}

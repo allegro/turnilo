@@ -142,6 +142,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   drop(e: DragEvent) {
+    console.log('drop triggered ');
     if (!this.canDrop(e)) return;
     e.preventDefault();
     var { clicker, essence } = this.props;
