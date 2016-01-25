@@ -16,7 +16,7 @@ describe('HeaderBar', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <HeaderBar
-        essence={null}
+        dataSource={null}
         onNavClick={null}
       />
     );

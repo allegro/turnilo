@@ -132,13 +132,17 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
     return <main className='pivot-application' id='portal-cont'>
       <HeaderBar
-        essence={essence}
+        dataSource={essence.dataSource}
         onNavClick={this.sideDrawerOpen.bind(this, true)}
         showLastUpdated={showLastUpdated}
         hideGitHubIcon={hideGitHubIcon}
         color={headerBackground}
       />
-      <CubeView essence={essence} maxFilters={maxFilters} maxSplits={maxSplits}/>
+      <CubeView essence={essence}
+                maxFilters={maxFilters}
+                maxSplits={maxSplits}
+      />
+
       {sideDrawerTransition}
     </main>;
   }

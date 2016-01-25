@@ -5,12 +5,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Datum, Dataset } from 'plywood';
-import { Essence } from "../../../common/models/index";
+import { Essence, DataSource } from "../../../common/models/index";
 
 import { Modal } from '../modal/modal';
 
 export interface HeaderBarProps extends React.Props<any> {
-  essence: Essence;
+  dataSource: DataSource;
   onNavClick: React.MouseEventHandler;
   showLastUpdated?: boolean;
   hideGitHubIcon?: boolean;
@@ -32,9 +32,10 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
 
   onPanicClick(e: MouseEvent) {
     if (e.altKey) {
-      var { essence } = this.props;
-      console.log('Filter:', essence.filter.toJS());
-      console.log('DataSource:', essence.dataSource.toJS());
+      var { dataSource } = this.props;
+     // console.log('Filter:', essence.filter.toJS());
+     // console.log('DataSource:', essence.dataSource.toJS());
+      console.log('DataSource:', dataSource.toJS());
       return;
     }
     if (e.shiftKey) {
@@ -66,8 +67,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
   }
 
   render() {
-    var { essence, onNavClick, showLastUpdated, hideGitHubIcon, color } = this.props;
-    var { dataSource } = essence;
+    var { onNavClick, showLastUpdated, hideGitHubIcon, color, dataSource } = this.props;
 
     var updated: JSX.Element = null;
     if (showLastUpdated) {

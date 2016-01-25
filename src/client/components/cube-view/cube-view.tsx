@@ -51,6 +51,10 @@ export class CubeView extends React.Component< CubeViewProps, CubeViewState> {
     };
 
     var clicker = {
+      changeDataSource: (dataSource: DataSource) => {
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeDataSource(dataSource) });
+      },
       changeFilter: (filter: Filter, colors?: Colors) => {
         var { essence } = this.state;
         essence = essence.changeFilter(filter);
@@ -227,6 +231,7 @@ export class CubeView extends React.Component< CubeViewProps, CubeViewState> {
 
   render() {
     var clicker = this.clicker;
+
     var { essence, menuStage, visualizationStage, dragOver } = this.state;
 
     var { visualization } = essence;
