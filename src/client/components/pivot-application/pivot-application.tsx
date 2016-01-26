@@ -49,11 +49,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.globalHashChangeListener = this.globalHashChangeListener.bind(this);
   }
 
-  changeDataSource(dataSource: DataSource) {
-    var { essence } = this.state;
-    this.setState({ essence: essence.changeDataSource(dataSource) });
-  };
-
   componentWillMount() {
     var { dataSources } = this.props;
     if (!dataSources.size) throw new Error('must have data sources');
@@ -80,6 +75,11 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     window.removeEventListener('hashchange', this.globalHashChangeListener);
   }
 
+  changeDataSource(dataSource: DataSource) {
+    var { essence } = this.state;
+    this.setState({ essence: essence.changeDataSource(dataSource) });
+  };
+  
   getDataSources(): List<DataSource> {
     var { essence } = this.state;
     return essence ? essence.dataSources : this.props.dataSources;
