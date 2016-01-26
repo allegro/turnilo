@@ -79,7 +79,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var { essence } = this.state;
     this.setState({ essence: essence.changeDataSource(dataSource) });
   };
-  
+
   getDataSources(): List<DataSource> {
     var { essence } = this.state;
     return essence ? essence.dataSources : this.props.dataSources;
@@ -100,6 +100,14 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   sideDrawerOpen(drawerOpen: boolean): void {
     this.setState({ drawerOpen });
+  }
+
+  updateHash(newEssence: Essence): void {
+    this.hashUpdating = true;
+    window.location.hash = newEssence.toHash();
+    setTimeout(() => {
+      this.hashUpdating = false;
+    }, 10);
   }
 
   render() {
@@ -138,9 +146,11 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         hideGitHubIcon={hideGitHubIcon}
         color={headerBackground}
       />
-      <CubeView essence={essence}
-                maxFilters={maxFilters}
-                maxSplits={maxSplits}
+      <CubeView
+        updateHash={this.updateHash.bind(this)}
+        essence={essence}
+        maxFilters={maxFilters}
+        maxSplits={maxSplits}
       />
 
       {sideDrawerTransition}

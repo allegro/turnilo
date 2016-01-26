@@ -33,8 +33,6 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
   onPanicClick(e: MouseEvent) {
     if (e.altKey) {
       var { dataSource } = this.props;
-     // console.log('Filter:', essence.filter.toJS());
-     // console.log('DataSource:', essence.dataSource.toJS());
       console.log('DataSource:', dataSource.toJS());
       return;
     }

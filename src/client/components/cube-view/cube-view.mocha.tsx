@@ -15,11 +15,11 @@ import { CubeView } from './cube-view';
 describe('CubeView', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <CubeView essence={null}
+      <CubeView essence={null} updateHash={null}
 
       />
     );
-    
+
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
     expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('cube-view');
 

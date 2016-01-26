@@ -24,6 +24,7 @@ export interface CubeViewProps extends React.Props<any> {
   maxFilters?: number;
   maxSplits?: number;
   essence: Essence;
+  updateHash: Function;
 }
 
 export interface CubeViewState {
@@ -33,7 +34,7 @@ export interface CubeViewState {
   dragOver?: boolean;
 }
 
-export class CubeView extends React.Component< CubeViewProps, CubeViewState> {
+export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   static defaultProps = {
     maxFilters: 20,
     maxSplits: 3
@@ -148,12 +149,7 @@ export class CubeView extends React.Component< CubeViewProps, CubeViewState> {
   }
 
   componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
-    this.hashUpdating = true;
-    window.location.hash = nextState.essence.toHash();
-    // delay unflagging the update so that the hashchange event has a chance to fire a blank
-    setTimeout(() => {
-      this.hashUpdating = false;
-    }, 10);
+    this.props.updateHash(nextState.essence);
   }
 
   componentWillUnmount() {
