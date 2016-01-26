@@ -42,7 +42,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   private clicker: Clicker;
   private dragCounter: number;
-  private hashUpdating: boolean = false;
 
   constructor() {
     super();

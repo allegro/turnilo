@@ -33,7 +33,6 @@ export interface PivotApplicationState {
 }
 
 export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
-  private clicker: Clicker;
   private hashUpdating: boolean = false;
 
   constructor() {
@@ -138,7 +137,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       </ReactCSSTransitionGroupAsync>;
     }
 
-    return <main className='pivot-application' id='portal-cont'>
+    return <main className='pivot-application'>
       <HeaderBar
         dataSource={essence.dataSource}
         onNavClick={this.sideDrawerOpen.bind(this, true)}
@@ -152,7 +151,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         maxFilters={maxFilters}
         maxSplits={maxSplits}
       />
-
       {sideDrawerTransition}
     </main>;
   }

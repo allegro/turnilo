@@ -15,8 +15,9 @@ import { CubeView } from './cube-view';
 describe('CubeView', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <CubeView essence={null} updateHash={null}
-
+      <CubeView
+        essence={null}
+        updateHash={null}
       />
     );
 
