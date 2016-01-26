@@ -10,19 +10,20 @@ import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { HeaderBar } from './header-bar';
+import { CubeView } from './cube-view';
 
-describe('HeaderBar', () => {
+describe('CubeView', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <HeaderBar
-        dataSource={null}
-        onNavClick={null}
+      <CubeView essence={null} updateHash={null}
+
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('header-bar');
-  });
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('cube-view');
 
+  });
 });
+
+

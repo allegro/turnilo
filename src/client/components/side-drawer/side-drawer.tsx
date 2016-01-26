@@ -13,7 +13,7 @@ import { DataSource, Clicker, Essence } from '../../../common/models/index';
 
 
 export interface SideDrawerProps extends React.Props<any> {
-  clicker: Clicker;
+  changeDataSource: Function;
   essence: Essence;
   onClose: Function;
   homeLink?: string;
@@ -55,8 +55,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   selectDataSource(dataSource: DataSource) {
-    var { clicker, onClose } = this.props;
-    clicker.changeDataSource(dataSource);
+    var { changeDataSource, onClose } = this.props;
+    changeDataSource(dataSource);
     onClose();
   }
 
