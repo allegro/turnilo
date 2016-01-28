@@ -2,7 +2,7 @@
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
-import { $, Expression, ExpressionJS, ApplyAction } from 'plywood';
+import { $, Expression, ExpressionJS, Action, ApplyAction, AttributeInfo } from 'plywood';
 import { makeTitle } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
@@ -35,17 +35,41 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return isInstanceOf(candidate, Measure);
   }
 
-  static getExpressionForName(name: string): Expression {
+  static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
+    var name = attribute.name;
     var $main = $('main');
     var ref = $(name);
-    var nameWithoutUnderscores = name.replace(/_/g, ' ');
-    if (/\bmin\b/.test(nameWithoutUnderscores)) {
-      return $main.min(ref);
-    } else if (/\bmax\b/.test(nameWithoutUnderscores)) {
-      return $main.max(ref);
-    } else {
-      return $main.sum(ref);
+
+    if (attribute.special) {
+      if (attribute.special === 'unique') {
+        return [
+          new Measure({
+            name,
+            expression: $main.countDistinct(ref)
+          })
+        ];
+      } else { // ToDo: handle: 'histogram'
+        return [];
+      }
     }
+
+    var expression = $main.sum(ref);
+    var makerAction = attribute.makerAction;
+    if (makerAction) {
+      switch (makerAction.action) {
+        case 'min':
+          expression = $main.min(ref);
+          break;
+
+        case 'max':
+          expression = $main.max(ref);
+          break;
+
+        //default: // sum, count
+      }
+    }
+
+    return [new Measure({ name, expression })];
   }
 
   static fromJS(parameters: MeasureJS): Measure {
@@ -68,7 +92,11 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     var name = parameters.name;
     this.name = name;
     this.title = parameters.title || makeTitle(name);
-    this.expression = parameters.expression || Measure.getExpressionForName(name);
+
+    var expression = parameters.expression;
+    if (!expression) throw new Error('must have expression');
+    this.expression = expression;
+
     var format = parameters.format || Measure.DEFAULT_FORMAT;
     if (format[0] === '(') throw new Error('can not have format that uses ( )');
     this.format = format;

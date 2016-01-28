@@ -125,18 +125,17 @@ Then you are ready to
 
 **Recent improvements:**
 
+- All new introspection code
 - Better comparison behavior and legend interaction
 - Support for query time lookups (ex. `$language.lookup('wikipedia-language-lookup')`)
 - Support for the extract function (ex. `resourceVersion: $resource.extract("(\d+\.\d+\.\d+)")`)
-- Custom dimensions (ex. `$user.substr(0,1)`)
-- Better legend for time series comparison
 
 **We will be working on:**
 
 - Additional visualizations (bar chart, geo, heatmap)
 - Exclusion filters
-- Better time selection
 - String / RegExp filters
+- Removing strict limits on dimension values
 - Better time selection with date picker
 - Various additions, improvements and fixes to make the app more complete
 

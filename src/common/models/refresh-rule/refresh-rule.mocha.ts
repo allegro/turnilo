@@ -4,11 +4,11 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { RefreshRule } from './refresh-rule';
+import { RefreshRule, RefreshRuleJS } from './refresh-rule';
 
 describe('RefreshRule', () => {
   it('is an immutable class', () => {
-    testImmutableClass(RefreshRule, [
+    testImmutableClass<RefreshRuleJS>(RefreshRule, [
       {
         rule: 'fixed',
         time: new Date("2015-10-15T19:21:00Z")

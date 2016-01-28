@@ -5,11 +5,11 @@ import { testImmutableClass } from 'immutable-class/build/tester';
 import { List } from 'immutable';
 
 import { $, Expression } from 'plywood';
-import { Essence } from './essence';
-import { DataSource } from "../data-source/data-source";
+import { Essence, EssenceJS } from './essence';
+import { DataSource, DataSourceJS } from "../data-source/data-source";
 
 describe('Essence', () => {
-  var dataSourceJS = {
+  var dataSourceJS: DataSourceJS = {
     name: 'twitter',
     title: 'Twitter',
     engine: 'druid',
@@ -71,7 +71,7 @@ describe('Essence', () => {
     }
   ];
   it('is an immutable class', () => {
-    testImmutableClass(Essence, [
+    testImmutableClass<EssenceJS>(Essence, [
       {
         dataSource: 'twitter',
         visualization: 'viz1',

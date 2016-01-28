@@ -4,7 +4,7 @@
 # The port on which the Pivot server will listen on
 port: 9090
 
-# Run in verbose mode and print the querries sent to the server
+# Run in verbose mode and print the queries sent to the server
 #verbose: true
 
 # A Druid broker node that can serve data (only used if you have Druid based data source)

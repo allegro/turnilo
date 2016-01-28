@@ -4,11 +4,11 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { Dimension } from './dimension';
+import { Dimension, DimensionJS } from './dimension';
 
 describe('Dimension', () => {
   it('is an immutable class', () => {
-    testImmutableClass(Dimension, [
+    testImmutableClass<DimensionJS>(Dimension, [
       {
         name: 'country',
         title: 'important countries',

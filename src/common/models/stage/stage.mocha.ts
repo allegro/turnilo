@@ -4,11 +4,11 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { Stage } from './stage';
+import { Stage, StageJS } from './stage';
 
 describe('Stage', () => {
   it('is an immutable class', () => {
-    testImmutableClass(Stage, [
+    testImmutableClass<StageJS>(Stage, [
       {
         x: 10,
         y: 5,

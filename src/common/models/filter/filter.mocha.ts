@@ -4,11 +4,11 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { Filter } from "./filter";
+import { Filter, FilterJS } from "./filter";
 
 describe('Filter', () => {
   it('is an immutable class', () => {
-    testImmutableClass(Filter, [
+    testImmutableClass<FilterJS>(Filter, [
       { op: 'literal', value: true },
       {
         "op": "chain", "expression": { "op": "ref", "name": "language" },

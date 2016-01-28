@@ -4,11 +4,11 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { Colors } from './colors';
+import { Colors, ColorsJS } from './colors';
 
 describe('Colors', () => {
   it('is an immutable class', () => {
-    testImmutableClass(Colors, [
+    testImmutableClass<ColorsJS>(Colors, [
       {
         dimension: 'country',
         limit: 5
@@ -35,8 +35,7 @@ describe('Colors', () => {
       },
       {
         dimension: 'country',
-        values: { '0': 'USA', '1': 'UK', '2': 'India' },
-        sameAsLimit: true
+        values: { '0': 'USA', '1': 'UK', '2': 'India' }
       }
     ]);
   });
