@@ -21,14 +21,19 @@ export interface PivotConfig {
   headerBackground?: string;
 }
 
-var packageObj = loadFileSync(path.join(__dirname, '../../package.json'), 'json') || {};
-export const VERSION = packageObj.version;
-
-function errorExit(e: Error): void {
-  console.error(e.message);
-  console.error((e as any).stack);
+function errorExit(message: string): void {
+  console.error(message);
   process.exit(1);
 }
+
+
+var packageObj: any = null;
+try {
+  packageObj = loadFileSync(path.join(__dirname, '../../package.json'), 'json');
+} catch (e) {
+  errorExit(`Could not read package.json: ${e.message}`);
+}
+export const VERSION = packageObj.version;
 
 function printUsage() {
   console.log(`
@@ -112,30 +117,34 @@ const DEFAULT_CONFIG: PivotConfig = {
   dataSources: []
 };
 
+if (!parsedArgs['example'] && !parsedArgs['config'] && !parsedArgs['druid'] && !parsedArgs['file']) {
+  printUsage();
+  process.exit();
+}
+
 var exampleConfig: PivotConfig = null;
 if (parsedArgs['example']) {
   delete parsedArgs['druid'];
   var example = parsedArgs['example'];
   if (example === 'wiki') {
-    exampleConfig = loadFileSync(path.join(__dirname, `../../config-example-${example}.yaml`), 'yaml');
+    try {
+      exampleConfig = loadFileSync(path.join(__dirname, `../../config-example-${example}.yaml`), 'yaml');
+    } catch (e) {
+      errorExit(`Could not load example config for '${example}': ${e.message}`);
+    }
   } else {
     console.log(`Unknown example '${example}'. Possible examples are: wiki`);
     process.exit();
   }
 }
 
-if (!parsedArgs['example'] && !parsedArgs['config'] && !parsedArgs['druid'] && !parsedArgs['file']) {
-  printUsage();
-  process.exit();
-}
-
 var configFilePath = parsedArgs['config'];
 var config: PivotConfig;
 if (configFilePath) {
-  config = loadFileSync(configFilePath, 'yaml');
-  if (!config) {
-    config = DEFAULT_CONFIG;
-    console.log(`Could not load config from '${configFilePath}', using default`);
+  try {
+    config = loadFileSync(configFilePath, 'yaml');
+  } catch (e) {
+    errorExit(`Could not load config from '${configFilePath}': ${e.message}`);
   }
 } else {
   config = DEFAULT_CONFIG;
@@ -172,13 +181,13 @@ export const HIDE_GITHUB_ICON = Boolean(config.hideGitHubIcon);
 export const HEADER_BACKGROUND: string = config.headerBackground || null;
 
 if (SOURCE_LIST_REFRESH_INTERVAL && SOURCE_LIST_REFRESH_INTERVAL < 1000) {
-  errorExit(new Error('can not refresh more often than once per second'));
+  errorExit('can not refresh more often than once per second');
 }
 
 export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSourceJS: DataSourceJS, i: number) => {
-  if (typeof dataSourceJS !== 'object') errorExit(new Error(`DataSource ${i} is not valid`));
+  if (typeof dataSourceJS !== 'object') errorExit(`DataSource ${i} is not valid`);
   var dataSourceName = dataSourceJS.name;
-  if (typeof dataSourceName !== 'string') errorExit(new Error(`DataSource ${i} must have a name`));
+  if (typeof dataSourceName !== 'string') errorExit(`DataSource ${i} must have a name`);
 
   // Convert maxTime into refreshRule if a maxTime exists
   if (dataSourceJS.maxTime && (typeof dataSourceJS.maxTime === 'string' || (<any>dataSourceJS.maxTime).toISOString)) {
@@ -190,7 +199,7 @@ export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSo
   try {
     return DataSource.fromJS(dataSourceJS);
   } catch (e) {
-    errorExit(e);
+    errorExit(`Could not parse data source '${dataSourceJS.name}': ${e.message}`);
   }
 });
 
@@ -250,11 +259,11 @@ if (PRINT_CONFIG) {
         }
       }
 
-      if (INTROSPECTION_STRATEGY) {
+      if (INTROSPECTION_STRATEGY !== 'segment-metadata-fallback') {
         if (withComments) {
-          lines.push("# Use the segmentMetadata query for introspection (only works well with Druid >= 0.8.2)");
+          lines.push("# The introspection strategy for the Druid external");
         }
-        lines.push(`noSegmentMetadata: true`, '');
+        lines.push(`introspectionStrategy: ${INTROSPECTION_STRATEGY}`, '');
       }
 
       lines.push("# Should new datasources automatically be added");

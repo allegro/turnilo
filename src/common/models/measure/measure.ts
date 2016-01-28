@@ -73,10 +73,11 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
   }
 
   static fromJS(parameters: MeasureJS): Measure {
+    var name = parameters.name;
     return new Measure({
-      name: parameters.name,
+      name,
       title: parameters.title,
-      expression: parameters.expression ? Expression.fromJSLoose(parameters.expression) : null,
+      expression: parameters.expression ? Expression.fromJSLoose(parameters.expression) : $('main').sum($(name)),
       format: parameters.format
     });
   }
@@ -94,7 +95,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     this.title = parameters.title || makeTitle(name);
 
     var expression = parameters.expression;
-    if (!expression) throw new Error('must have expression');
+    if (!expression) throw new Error('measure must have expression');
     this.expression = expression;
 
     var format = parameters.format || Measure.DEFAULT_FORMAT;
