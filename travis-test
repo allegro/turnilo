@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if grep -rq 'describe\.only' ./test
+  then
+    echo "describe.only found. Please update your test"
+    exit 1
+fi
+
+if grep -rq 'it\.only' ./test
+  then
+    echo "it.only found. Please update your test"
+    exit 1
+fi
+
+mocha \
+  build/common/models/*/*.mocha.js \
+;
