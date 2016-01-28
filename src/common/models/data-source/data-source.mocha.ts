@@ -4,12 +4,12 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { DataSource } from './data-source';
+import { DataSource, DataSourceJS } from './data-source';
 
 describe('DataSource', () => {
 
   it('is an immutable class', () => {
-    testImmutableClass(DataSource, [
+    testImmutableClass<DataSourceJS>(DataSource, [
       {
         name: 'twitter',
         title: 'Twitter',

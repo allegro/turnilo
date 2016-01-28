@@ -4,11 +4,11 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { Highlight } from './highlight';
+import { Highlight, HighlightJS } from './highlight';
 
 describe('Highlight', () => {
   it('is an immutable class', () => {
-    testImmutableClass(Highlight, [
+    testImmutableClass<HighlightJS>(Highlight, [
       {
         owner: 'Sunkist',
         delta: {

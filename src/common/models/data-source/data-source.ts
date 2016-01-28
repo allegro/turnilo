@@ -432,13 +432,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
         case 'STRING':
           if (attribute.special === 'unique') {
             if (!autofillMeasures) continue;
-            expression = $main.countDistinct($(name));
-            if (this.getMeasureByExpression(expression)) continue;
-            measures = measures.push(new Measure({
-              name,
-              expression,
-              format: Measure.INTEGER_FORMAT
-            }));
+
+            var newMeasures = Measure.measuresFromAttributeInfo(attribute);
+            newMeasures.forEach((newMeasure) => {
+              if (this.getMeasureByExpression(newMeasure.expression)) return;
+              measures = measures.push(newMeasure);
+            });
           } else {
             if (!autofillDimensions) continue;
             expression = $(name);
@@ -460,14 +459,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           break;
 
         case 'NUMBER':
-          if (attribute.special === 'histogram') continue;
           if (!autofillMeasures) continue;
 
-          expression = Measure.getExpressionForName(name);
-
-          if (this.getMeasureByExpression(expression)) continue;
-          var newMeasure = new Measure({ name, expression });
-          measures = (name === 'count') ? measures.unshift(newMeasure) : measures.push(newMeasure);
+          var newMeasures = Measure.measuresFromAttributeInfo(attribute);
+          newMeasures.forEach((newMeasure) => {
+            if (this.getMeasureByExpression(newMeasure.expression)) return;
+            measures = (name === 'count') ? measures.unshift(newMeasure) : measures.push(newMeasure);
+          });
           break;
 
         default:

@@ -12,7 +12,7 @@ export interface PivotConfig {
   verbose?: boolean;
   druidHost?: string;
   timeout?: number;
-  useSegmentMetadata?: string;
+  introspectionStrategy?: string;
   sourceListScan?: string;
   sourceListRefreshInterval?: number;
   dataSources?: DataSourceJS[];
@@ -39,21 +39,25 @@ Possible usage:
   pivot --example wiki
   pivot --druid your.broker.host:8082
 
-      --help                  Print this help message
-      --version               Display the version number
-  -v, --verbose               Display the DB queries that are being made
-  -p, --port                  The port pivot will run on
-      --example               Start pivot with some example data (overrides all other options)
-  -c, --config                The configuration YAML files to use
+      --help                   Print this help message
+      --version                Display the version number
+  -v, --verbose                Display the DB queries that are being made
+  -p, --port                   The port pivot will run on
+      --example                Start pivot with some example data (overrides all other options)
+  -c, --config                 The configuration YAML files to use
 
-      --print-config          Prints out the auto generated config
-      --with-comments         Adds comments when printing the auto generated config
-      --data-sources-only     Only print the data sources in the auto generated config
+      --print-config           Prints out the auto generated config
+      --with-comments          Adds comments when printing the auto generated config
+      --data-sources-only      Only print the data sources in the auto generated config
 
-  -f, --file                  Start pivot on top of this file based data source (must be JSON, CSV, or TSV)
+  -f, --file                   Start pivot on top of this file based data source (must be JSON, CSV, or TSV)
 
-  -d, --druid                 The Druid broker node to connect to
-      --use-segment-metadata  Use the segmentMetadata query for introspection instead of GET /druid/v2/datasources/...
+  -d, --druid                  The Druid broker node to connect to
+      --introspection-strategy Druid introspection strategy
+          Possible values:
+          * segment-metadata-fallback - (default) use the segmentMetadata and fallback to GET route
+          * segment-metadata-only     - only use the segmentMetadata query
+          * datasource-get            - only use GET /druid/v2/datasources/DATASOURCE route
 `
   );
 }
@@ -75,7 +79,7 @@ function parseArgs() {
       "file": String,
 
       "druid": String,
-      "use-segment-metadata": Boolean
+      "introspection-strategy": String
     },
     {
       "v": ["--verbose"],
@@ -160,7 +164,7 @@ export const PORT = parseInt(parsedArgs['port'] || config.port, 10);
 export const DRUID_HOST = parsedArgs['druid'] || config.druidHost;
 export const TIMEOUT = parseInt(<any>config.timeout, 10) || 30000;
 
-export const USE_SEGMENT_METADATA = Boolean(parsedArgs["use-segment-metadata"] || config.useSegmentMetadata);
+export const INTROSPECTION_STRATEGY = String(parsedArgs["introspection-strategy"] || config.introspectionStrategy || 'segment-metadata-fallback');
 export const SOURCE_LIST_SCAN = START_SERVER ? config.sourceListScan : 'disable';
 export const SOURCE_LIST_REFRESH_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceListRefreshInterval, 10) || 10000) : 0;
 
@@ -205,7 +209,7 @@ var fileDirectory = path.join(__dirname, '../..');
 export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
   dataSources: DATA_SOURCES,
   druidRequester,
-  dataSourceFiller: dataSourceFillerFactory(druidRequester, fileDirectory, TIMEOUT, USE_SEGMENT_METADATA),
+  dataSourceFiller: dataSourceFillerFactory(druidRequester, fileDirectory, TIMEOUT, INTROSPECTION_STRATEGY),
   sourceListScan: SOURCE_LIST_SCAN,
   sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL,
   log: PRINT_CONFIG ? null : (line: string) => console.log(line)
@@ -246,11 +250,11 @@ if (PRINT_CONFIG) {
         }
       }
 
-      if (USE_SEGMENT_METADATA) {
+      if (INTROSPECTION_STRATEGY) {
         if (withComments) {
           lines.push("# Use the segmentMetadata query for introspection (only works well with Druid >= 0.8.2)");
         }
-        lines.push(`useSegmentMetadata: true`, '');
+        lines.push(`noSegmentMetadata: true`, '');
       }
 
       lines.push("# Should new datasources automatically be added");

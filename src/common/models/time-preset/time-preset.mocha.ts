@@ -4,13 +4,13 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { TimePreset } from './time-preset';
+import { TimePreset, TimePresetJS } from './time-preset';
 
 describe('TimePreset', () => {
 
   it('is an immutable class', () => {
 
-    testImmutableClass(TimePreset, [
+    testImmutableClass<TimePresetJS>(TimePreset, [
       {
         name: 'range1',
         timeRange: {
