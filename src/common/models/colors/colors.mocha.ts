@@ -35,7 +35,7 @@ describe('Colors', () => {
       },
       {
         dimension: 'country',
-        values: { '0': 'USA', '1': 'UK', '2': 'India' }
+        values: { '0': 'USA', '1': 'UK', '3': 'India' }
       }
     ]);
   });
