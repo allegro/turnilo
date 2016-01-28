@@ -45,7 +45,8 @@ function valueEquals(v1: any, v2: any): boolean {
 }
 
 function valuesEqual(values1: Lookup<any>, values2: Lookup<any>): boolean {
-  if (Boolean(values1) === Boolean(values2)) return true;
+  if (!Boolean(values1) === Boolean(values2)) return false;
+  if (values1 === values2) return true;
   if (!values1 !== !values2) return false;
   for (var i = 0; i < COLORS.length; i++) {
     var v1 = values1[i];
