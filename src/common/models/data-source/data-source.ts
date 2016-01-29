@@ -407,7 +407,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public rolledUp(): boolean {
-    return this.source === 'druid';
+    return this.engine === 'druid';
   }
 
   public addAttributes(attributes: Attributes): DataSource {
