@@ -75,32 +75,50 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
       }
     }
 
-    var areaPath: JSX.Element = null;
-    if (showArea) {
-      var areaFn = d3.svg.area().y0(scaleY(0));
-      areaPath = <path className="area" d={areaFn(dataPoints)}/>;
-    }
-
-    var pathStyle: React.CSSProperties = null;
+    var strokeStyle: React.CSSProperties = null;
+    var fillStyle: React.CSSProperties = null;
     if (color !== 'default') {
-      pathStyle = { stroke: color };
+      strokeStyle = { stroke: color };
+      fillStyle = { fill: color };
     }
 
-    var hoverElement: JSX.Element = null;
+    var areaPath: JSX.Element = null;
+    var linePath: JSX.Element = null;
+    var singletonCircle: JSX.Element = null;
+
+    if (dataPoints.length > 1) {
+      if (showArea) {
+        var areaFn = d3.svg.area().y0(scaleY(0));
+        areaPath = <path className="area" d={areaFn(dataPoints)}/>;
+      }
+
+      linePath = <path className="line" d={lineFn(dataPoints)} style={strokeStyle}/>;
+    } else if (dataPoints.length === 1) {
+      singletonCircle = <circle
+        className="singleton"
+        cx={dataPoints[0][0]}
+        cy={dataPoints[0][1]}
+        r="2"
+        style={fillStyle}
+      />;
+    }
+
+    var hoverCircle: JSX.Element = null;
     if (hoverDataPoint) {
-      hoverElement = <circle
+      hoverCircle = <circle
         className="hover"
         cx={hoverDataPoint[0]}
         cy={hoverDataPoint[1]}
         r="2.5"
-        style={pathStyle}
+        style={strokeStyle}
       />;
     }
 
     return <g className="chart-line" transform={stage.getTransform()}>
       {areaPath}
-      <path className="line" d={lineFn(dataPoints)} style={pathStyle}/>
-      {hoverElement}
+      {linePath}
+      {singletonCircle}
+      {hoverCircle}
     </g>;
   }
 }
