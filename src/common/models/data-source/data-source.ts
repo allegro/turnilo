@@ -406,6 +406,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return new DataSource(value);
   }
 
+  public rolledUp(): boolean {
+    return this.engine === 'druid';
+  }
+
   public addAttributes(attributes: Attributes): DataSource {
     var { introspection, dimensions, measures } = this;
     if (introspection === 'none' || introspection === 'no-autofill') return this;
@@ -473,7 +477,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       }
     }
 
-    if (!measures.find(m => m.name === 'count')) {
+    if (!this.rolledUp() && !measures.find(m => m.name === 'count')) {
       measures = measures.unshift(new Measure({
         name: 'count',
         expression: $main.count()
