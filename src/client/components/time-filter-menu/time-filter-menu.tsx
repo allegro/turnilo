@@ -14,7 +14,7 @@ import { TimeInput } from '../time-input/time-input';
 const quarter = Duration.fromJS('P3M');
 
 function getLatest(maxTime: Date, tz: Timezone): TimePreset[] {
-  var maxTimeMinuteCeil = minute.ceil(maxTime, tz);
+  var maxTimeMinuteCeil = minute.move(minute.floor(maxTime, tz), tz, 1);
   return [
     TimePreset.fromJS({
       name: '1H',

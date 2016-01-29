@@ -3,7 +3,7 @@
 import { List, OrderedSet } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
-import { Timezone, Duration } from 'chronoshift';
+import { Timezone, Duration, minute } from 'chronoshift';
 import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange, ApplyAction, SortAction, Set } from 'plywood';
 import { listsEqual } from '../../utils/general/general';
 import { DataSource } from '../data-source/data-source';
@@ -138,13 +138,13 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   static fromDataSource(dataSource: DataSource, context: EssenceContext): Essence {
     var timezone = dataSource.defaultTimezone;
 
-
     var filter = dataSource.defaultFilter;
     if (dataSource.timeAttribute) {
-      var now = dataSource.getMaxTimeDate();
+      var maxTime = dataSource.getMaxTimeDate() || new Date();
+      var maxTimeMinuteCeil = minute.move(minute.floor(maxTime, timezone), timezone, 1);
       var timeRange = TimeRange.fromJS({
-        start: dataSource.defaultDuration.move(now, timezone, -1),
-        end: now
+        start: dataSource.defaultDuration.move(maxTimeMinuteCeil, timezone, -1),
+        end: maxTimeMinuteCeil
       });
       filter = filter.setTimeRange(dataSource.timeAttribute, timeRange);
     }
