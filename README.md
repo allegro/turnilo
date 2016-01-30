@@ -24,7 +24,7 @@ Internal and external APIs may change with little notice.
 
 ### Ensure that you have an up-to-date node
 
-Make sure you have node (4.x.x) installed. On MacOS with [homebrew](http://brew.sh/) you can do:
+Make sure you have node (>= 4.x.x) installed. On MacOS with [homebrew](http://brew.sh/) you can do:
 
 ```
 brew update
@@ -86,7 +86,7 @@ The next step is to examine and tweak the config using your favorite editor `nan
 
 Here are the steps to clone Pivot and run it as a developer. 
 
-Firstly make sure you have gulp installed globally:
+Firstly make sure you have the latest node (>= 5.5.x) and gulp installed:
 
 ```
 npm i -g gulp
@@ -120,6 +120,11 @@ Then you are ready to
 ```
 ./bin/pivot --config config.yaml
 ```
+
+We use [WebStorm 11](https://www.jetbrains.com/webstorm/) to develop Pivot and the checked in `.idea` directory contains
+all of the auto formatting and code styles. You are free to use any editor as all the build scripts are editor agnostic.
+
+Running `gulp watch` will build the project and start all the automated watchers.
 
 ## Roadmap
 
