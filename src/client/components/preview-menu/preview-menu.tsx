@@ -6,7 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, TimePreset, SplitCombine } from '../../../common/models/index';
+import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 //import { MenuHeader } from '../menu-header/menu-header';
 //import { MenuTable } from '../menu-table/menu-table';

@@ -22,9 +22,27 @@ describe('RefreshRule', () => {
         refresh: 'PT1M'
       },
       {
-        rule: 'realtime'
+        rule: 'realtime',
+        refresh: 'PT1M'
       }
     ]);
+  });
+
+  describe('Auto refresh rate', () => {
+    it("works for query", () => {
+      expect(RefreshRule.fromJS({ rule: 'query' }).toJS()).to.deep.equal({
+        rule: 'query',
+        refresh: 'PT1M'
+      });
+    });
+
+    it("works for realtime", () => {
+      expect(RefreshRule.fromJS({ rule: 'realtime' }).toJS()).to.deep.equal({
+        rule: 'realtime',
+        refresh: 'PT1M'
+      });
+    });
+
   });
 
 });

@@ -130,6 +130,7 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Relative filters
 - All new introspection code
 - Better comparison behavior and legend interaction
 - Support for query time lookups (ex. `$language.lookup('wikipedia-language-lookup')`)

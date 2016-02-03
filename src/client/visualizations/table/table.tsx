@@ -4,7 +4,7 @@ require('./table.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, ply, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, Set, SortAction } from 'plywood';
+import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, Set, SortAction } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, Colors, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
@@ -45,7 +45,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: Datum): Filter {
   return new Filter(List(segments.map((segment, i) => {
     return new FilterClause({
       expression: splits.get(i).expression,
-      values: Set.fromJS([segment])
+      selection: r(Set.fromJS([segment]))
     });
   })));
 }

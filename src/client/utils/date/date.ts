@@ -44,14 +44,19 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displa
   }
 
   if (startWallTime.getHours() || startWallTime.getMinutes() || endWallTime.getHours() || endWallTime.getMinutes()) {
-    var startTimeStr = formatTimeOfDay(startWallTime);
-    var endTimeStr = formatTimeOfDay(endWallTime);
+    formatted += (showingYear ? ' ' : ', ');
 
-    if (startTimeStr.substr(-2) === endTimeStr.substr(-2)) {
-      startTimeStr = startTimeStr.substr(0, startTimeStr.length - 2);
+    var startTimeStr = formatTimeOfDay(startWallTime).toLowerCase();
+    var endTimeStr = formatTimeOfDay(endWallTime).toLowerCase();
+
+    if (startTimeStr === endTimeStr) {
+      formatted += startTimeStr;
+    } else {
+      if (startTimeStr.substr(-2) === endTimeStr.substr(-2)) {
+        startTimeStr = startTimeStr.substr(0, startTimeStr.length - 2);
+      }
+      formatted += [startTimeStr, endTimeStr].join('-');
     }
-
-    formatted += (showingYear ? ' ' : ', ') + [startTimeStr, endTimeStr].join('-').toLowerCase();
   }
 
   return formatted;

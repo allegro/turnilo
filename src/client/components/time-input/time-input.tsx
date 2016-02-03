@@ -8,7 +8,7 @@ import * as d3 from 'd3';
 // import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, WallTime } from 'chronoshift';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 // import { SomeComp } from '../some-comp/some-comp';
 

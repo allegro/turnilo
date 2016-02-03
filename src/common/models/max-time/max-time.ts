@@ -20,6 +20,14 @@ export class MaxTime implements Instance<MaxTimeValue, MaxTimeJS> {
     return isInstanceOf(candidate, MaxTime);
   }
 
+  static fromNow(): MaxTime {
+    var now = new Date();
+    return new MaxTime({
+      time: now,
+      updated: now
+    });
+  }
+
   static fromDate(time: Date): MaxTime {
     return new MaxTime({
       time: time,

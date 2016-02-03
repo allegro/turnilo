@@ -5,7 +5,7 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { ply, $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, SortOn, TimePreset } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, SortOn } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
 

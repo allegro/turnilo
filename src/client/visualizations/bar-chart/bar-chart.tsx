@@ -156,8 +156,6 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
 
       var extentY = d3.extent(myDataset.data, getY);
 
-      console.log('extentY', extentY);
-
       if (isNaN(extentY[0])) {
         extentY = [0, 1];
       }

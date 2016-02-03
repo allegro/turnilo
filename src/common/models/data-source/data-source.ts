@@ -105,7 +105,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   static updateMaxTime(dataSource: DataSource): Q.Promise<DataSource> {
-    if (!dataSource.shouldQueryMaxTime()) return Q(dataSource);
+    if (!dataSource.shouldUpdateMaxTime()) return Q(dataSource);
+
+    if (dataSource.refreshRule.isRealtime()) {
+      return Q(dataSource.changeMaxTime(MaxTime.fromNow()));
+    }
 
     var ex = ply().apply('maxTime', $('main').max(dataSource.timeAttribute));
 
@@ -155,6 +159,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       throw new Error(`invalid introspection value ${introspection}, must be one of ${DataSource.INTROSPECTION_VALUES.join(', ')}`);
     }
 
+    var refreshRule = parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : RefreshRule.query();
+
+    var maxTime = parameters.maxTime ? MaxTime.fromJS(parameters.maxTime) : null;
+    if (!maxTime && refreshRule.isRealtime()) {
+      maxTime = MaxTime.fromNow();
+    }
+
     var value: DataSourceValue = {
       executor: null,
       name: parameters.name,
@@ -173,8 +184,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : DataSource.DEFAULT_DURATION,
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
       defaultPinnedDimensions: OrderedSet(parameters.defaultPinnedDimensions || []),
-      refreshRule: parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : RefreshRule.query(),
-      maxTime: parameters.maxTime ? MaxTime.fromJS(parameters.maxTime) : null
+      refreshRule,
+      maxTime
     };
     if (executor) {
       value.executor = executor;
@@ -296,6 +307,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public equals(other: DataSource): boolean {
+    return this.equalsWithoutMaxTime(other) &&
+      Boolean(this.maxTime) === Boolean(other.maxTime) &&
+      (!this.maxTime || this.maxTime.equals(other.maxTime));
+  }
+
+  public equalsWithoutMaxTime(other: DataSource): boolean {
     return DataSource.isDataSource(other) &&
       this.name === other.name &&
       this.title === other.title &&
@@ -327,8 +344,18 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
   public toClientDataSource(): DataSource {
     var value = this.valueOf();
+
+    // Do not reveal the subset filter to the client
     value.subsetFilter = null;
+
+    // No need for any introspection on the client
     value.introspection = 'none';
+
+    // No point sending over the maxTime
+    if (this.refreshRule.isRealtime()) {
+      value.maxTime = null;
+    }
+
     return new DataSource(value);
   }
 
@@ -338,24 +365,21 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
   public getMaxTimeDate(): Date {
     var { refreshRule } = this;
-    if (refreshRule.rule === 'realtime') {
-      return minute.ceil(new Date(), Timezone.UTC);
-    } else if (refreshRule.rule === 'fixed') {
-      return refreshRule.time;
-    } else { //refreshRule.rule === 'query'
-      var { maxTime } = this;
-      if (!maxTime) return null;
-      return second.ceil(maxTime.time, Timezone.UTC);
-    }
+    if (refreshRule.isFixed()) return refreshRule.time;
+
+    // refreshRule is query or realtime
+    var { maxTime } = this;
+    if (!maxTime) return null;
+    return second.ceil(maxTime.time, Timezone.UTC);
   }
 
   public updatedText(): string {
     var { refreshRule } = this;
-    if (refreshRule.rule === 'realtime') {
+    if (refreshRule.isRealtime()) {
       return 'Updated: ~1 second ago';
-    } else if (refreshRule.rule === 'fixed') {
+    } else if (refreshRule.isFixed()) {
       return `Fixed to: ${formatTimeDiff(Date.now() - refreshRule.time.valueOf())}`;
-    } else { //refreshRule.rule === 'query'
+    } else { // refreshRule is query
       var { maxTime } = this;
       if (maxTime) {
         return `Updated: ${formatTimeDiff(Date.now() - maxTime.time.valueOf())} ago`;
@@ -365,9 +389,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     }
   }
 
-  public shouldQueryMaxTime(): boolean {
-    if (!this.executor) return false;
-    return this.refreshRule.shouldQuery(this.maxTime);
+  public shouldUpdateMaxTime(): boolean {
+    if (!this.refreshRule.shouldUpdate(this.maxTime)) return false;
+    return Boolean(this.executor) || this.refreshRule.isRealtime();
   }
 
   public getDimension(dimensionName: string): Dimension {
@@ -387,7 +411,6 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public isTimeAttribute(ex: Expression) {
-    var { timeAttribute } = this;
     return ex.equals(this.timeAttribute);
   }
 
@@ -450,6 +473,15 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
               name
             }));
           }
+          break;
+
+        case 'SET/STRING':
+          if (!autofillDimensions) continue;
+          expression = $(name);
+          if (this.getDimensionByExpression(expression)) continue;
+          dimensions = dimensions.push(new Dimension({
+            name
+          }));
           break;
 
         case 'BOOLEAN':

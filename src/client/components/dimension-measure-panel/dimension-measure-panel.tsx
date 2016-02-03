@@ -4,7 +4,7 @@ require('./dimension-measure-panel.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure, TimePreset } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 // import { SvgIcon } from '../svg-icon/svg-icon';
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';

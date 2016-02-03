@@ -2,7 +2,6 @@
 
 export * from './clicker/clicker';
 export * from './stage/stage';
-export * from './time-preset/time-preset';
 
 export * from './max-time/max-time';
 export * from './refresh-rule/refresh-rule';

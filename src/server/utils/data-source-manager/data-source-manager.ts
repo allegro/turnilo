@@ -160,7 +160,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   // Periodically check if max time needs to be updated
   setInterval(() => {
     myDataSources.forEach((dataSource) => {
-      if (dataSource.shouldQueryMaxTime()) {
+      if (dataSource.refreshRule.isQuery() && dataSource.shouldUpdateMaxTime()) {
         DataSource.updateMaxTime(dataSource).then((updatedDataSource) => {
           log(`Getting the latest MaxTime for '${updatedDataSource.name}'`);
           addOrUpdateDataSource(updatedDataSource);

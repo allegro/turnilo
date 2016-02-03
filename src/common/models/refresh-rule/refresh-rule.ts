@@ -6,7 +6,7 @@ import { $, Expression } from 'plywood';
 import { MaxTime } from '../max-time/max-time';
 
 export interface RefreshRuleValue {
-  rule: string; // 'fixed' / 'query' / 'dynamic'
+  rule: string;
   refresh?: Duration;
   time?: Date;
 }
@@ -20,8 +20,11 @@ export interface RefreshRuleJS {
 var check: Class<RefreshRuleValue, RefreshRuleJS>;
 export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
+  static FIXED = 'fixed';
+  static QUERY = 'query';
+  static REALTIME = 'realtime';
+
   static DEFAULT_QUERY_REFRESH = Duration.fromJS('PT1M');
-  static REALTIME: RefreshRule;
 
   static isRefreshRule(candidate: any): boolean {
     return isInstanceOf(candidate, RefreshRule);
@@ -29,7 +32,7 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
   static query(refresh?: Duration): RefreshRule {
     return new RefreshRule({
-      rule: 'query',
+      rule: RefreshRule.QUERY,
       refresh
     });
   }
@@ -54,12 +57,12 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
   constructor(parameters: RefreshRuleValue) {
     var rule = parameters.rule;
-    if (rule !== 'fixed' && rule !== 'query' && rule !== 'realtime') {
-      throw new Error('rule must be on of: fixed, query, or realtime');
+    if (rule !== RefreshRule.FIXED && rule !== RefreshRule.QUERY && rule !== RefreshRule.REALTIME) {
+      throw new Error(`rule must be on of: ${RefreshRule.FIXED}, ${RefreshRule.QUERY}, or ${RefreshRule.REALTIME}`);
     }
     this.rule = rule;
     this.refresh = parameters.refresh;
-    if (this.rule === 'query' && !this.refresh) {
+    if (this.rule !== RefreshRule.FIXED && !this.refresh) {
       this.refresh = RefreshRule.DEFAULT_QUERY_REFRESH;
     }
     this.time = parameters.time;
@@ -108,19 +111,19 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   }
 
   public isFixed(): boolean {
-    return this.rule === 'fixed';
+    return this.rule === RefreshRule.FIXED;
   }
 
   public isQuery(): boolean {
-    return this.rule === 'query';
+    return this.rule === RefreshRule.QUERY;
   }
 
   public isRealtime(): boolean {
-    return this.rule === 'realtime';
+    return this.rule === RefreshRule.REALTIME;
   }
 
-  public shouldQuery(maxTime: MaxTime): boolean {
-    if (this.rule !== 'query') return false;
+  public shouldUpdate(maxTime: MaxTime): boolean {
+    if (this.isFixed()) return false;
     if (!maxTime) return true;
     var { refresh } = this;
     if (!refresh) return false;
@@ -129,5 +132,3 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
 }
 check = RefreshRule;
-
-RefreshRule.REALTIME = new RefreshRule({ rule: 'realtime' });
