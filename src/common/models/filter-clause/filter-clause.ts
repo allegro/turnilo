@@ -24,7 +24,7 @@ function isLiteral(ex: Expression): boolean {
   return false;
 }
 
-function isDynamic(ex: Expression): boolean {
+function isRelative(ex: Expression): boolean {
   if (ex instanceof ChainExpression) {
     if (ex.type !== 'TIME_RANGE') return false;
     var expression = ex.expression;
@@ -84,15 +84,15 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   public expression: Expression;
   public check: Expression;
   public exclude: boolean;
-  public dynamic: boolean;
+  public relative: boolean;
 
   constructor(parameters: FilterClauseValue) {
     this.expression = parameters.expression;
     var check = parameters.check;
-    if (isDynamic(check)) {
-      this.dynamic = true;
+    if (isRelative(check)) {
+      this.relative = true;
     } else if (isLiteral(check)) {
-      this.dynamic = false;
+      this.relative = false;
     } else {
       throw new Error(`invalid expression ${check.toString()}`);
     }
@@ -152,19 +152,19 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   }
 
   public getTimeRange(): TimeRange {
-    if (this.dynamic) return null;
+    if (this.relative) return null;
     var v = this.check.getLiteralValue();
     return TimeRange.isTimeRange(v) ? v : null;
   }
 
   public getValues(): Set {
-    if (this.dynamic) return null;
+    if (this.relative) return null;
     var v = this.check.getLiteralValue();
     return TimeRange.isTimeRange(v) ? Set.fromJS([v]) : v;
   }
 
   public evaluate(now: Date, maxTime: Date, timezone: Timezone): FilterClause {
-    if (!this.dynamic) return this;
+    if (!this.relative) return this;
     return this.changeLiteralTimeRange(FilterClause.evaluate(this.check, now, maxTime, timezone));
   }
 }

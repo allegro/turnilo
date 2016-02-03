@@ -119,12 +119,12 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     }
   }
 
-  public isDynamic(): boolean {
-    return this.clauses.some(clause => clause.dynamic);
+  public isRelative(): boolean {
+    return this.clauses.some(clause => clause.relative);
   }
 
   public getSpecificFilter(now: Date, maxTime: Date, timezone: Timezone): Filter {
-    if (!this.isDynamic()) return this;
+    if (!this.isRelative()) return this;
     return new Filter(this.clauses.map(c => c.evaluate(now, maxTime, timezone)) as List<FilterClause>);
   }
 

@@ -6,7 +6,7 @@ import { $, Expression } from 'plywood';
 import { MaxTime } from '../max-time/max-time';
 
 export interface RefreshRuleValue {
-  rule: string; // 'fixed' / 'query' / 'dynamic'
+  rule: string;
   refresh?: Duration;
   time?: Date;
 }
