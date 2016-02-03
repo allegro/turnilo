@@ -365,9 +365,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
   public getMaxTimeDate(): Date {
     var { refreshRule } = this;
-    if (refreshRule.rule === 'fixed') return refreshRule.time;
+    if (refreshRule.isFixed()) return refreshRule.time;
 
-    //refreshRule.rule === 'query' or 'realtime'
+    // refreshRule is query or realtime
     var { maxTime } = this;
     if (!maxTime) return null;
     return second.ceil(maxTime.time, Timezone.UTC);
@@ -375,11 +375,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
   public updatedText(): string {
     var { refreshRule } = this;
-    if (refreshRule.rule === 'realtime') {
+    if (refreshRule.isRealtime()) {
       return 'Updated: ~1 second ago';
-    } else if (refreshRule.rule === 'fixed') {
+    } else if (refreshRule.isFixed()) {
       return `Fixed to: ${formatTimeDiff(Date.now() - refreshRule.time.valueOf())}`;
-    } else { //refreshRule.rule === 'query'
+    } else { // refreshRule is query
       var { maxTime } = this;
       if (maxTime) {
         return `Updated: ${formatTimeDiff(Date.now() - maxTime.time.valueOf())} ago`;

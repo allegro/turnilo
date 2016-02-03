@@ -20,6 +20,10 @@ export interface RefreshRuleJS {
 var check: Class<RefreshRuleValue, RefreshRuleJS>;
 export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
+  static FIXED = 'fixed';
+  static QUERY = 'query';
+  static REALTIME = 'realtime';
+
   static DEFAULT_QUERY_REFRESH = Duration.fromJS('PT1M');
 
   static isRefreshRule(candidate: any): boolean {
@@ -28,7 +32,7 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
   static query(refresh?: Duration): RefreshRule {
     return new RefreshRule({
-      rule: 'query',
+      rule: RefreshRule.QUERY,
       refresh
     });
   }
@@ -53,12 +57,12 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
   constructor(parameters: RefreshRuleValue) {
     var rule = parameters.rule;
-    if (rule !== 'fixed' && rule !== 'query' && rule !== 'realtime') {
-      throw new Error('rule must be on of: fixed, query, or realtime');
+    if (rule !== RefreshRule.FIXED && rule !== RefreshRule.QUERY && rule !== RefreshRule.REALTIME) {
+      throw new Error(`rule must be on of: ${RefreshRule.FIXED}, ${RefreshRule.QUERY}, or ${RefreshRule.REALTIME}`);
     }
     this.rule = rule;
     this.refresh = parameters.refresh;
-    if (this.rule !== 'fixed' && !this.refresh) {
+    if (this.rule !== RefreshRule.FIXED && !this.refresh) {
       this.refresh = RefreshRule.DEFAULT_QUERY_REFRESH;
     }
     this.time = parameters.time;
@@ -107,15 +111,15 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   }
 
   public isFixed(): boolean {
-    return this.rule === 'fixed';
+    return this.rule === RefreshRule.FIXED;
   }
 
   public isQuery(): boolean {
-    return this.rule === 'query';
+    return this.rule === RefreshRule.QUERY;
   }
 
   public isRealtime(): boolean {
-    return this.rule === 'realtime';
+    return this.rule === RefreshRule.REALTIME;
   }
 
   public shouldUpdate(maxTime: MaxTime): boolean {
