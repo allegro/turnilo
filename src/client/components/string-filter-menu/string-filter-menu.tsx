@@ -110,7 +110,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
 
     var myColors = (colors && colors.dimension === dimension.name ? colors : null);
 
-    var valueSet = filter.getValues(dimension.expression);
+    var valueSet = filter.getLiteralSet(dimension.expression);
     this.setState({
       selectedValues: valueSet || (myColors ? myColors.toSet() : null) || Set.EMPTY,
       colors: myColors
@@ -156,7 +156,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     if (selectedValues.size()) {
       var clause = new FilterClause({
         expression: dimension.expression,
-        check: r(selectedValues)
+        selection: r(selectedValues)
       });
       if (insertPosition !== null) {
         return filter.insertByIndex(insertPosition, clause);

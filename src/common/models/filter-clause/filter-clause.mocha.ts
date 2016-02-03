@@ -12,7 +12,7 @@ describe('FilterClause', () => {
     testImmutableClass<FilterClauseJS>(FilterClause, [
       {
         expression: { op: 'ref', name: 'language' },
-        check: {
+        selection: {
           op: 'literal',
           value: {
             "setType": "STRING",
@@ -23,7 +23,7 @@ describe('FilterClause', () => {
       },
       {
         expression: { op: 'ref', name: 'language' },
-        check: {
+        selection: {
           op: 'literal',
           value: {
             "setType": "STRING",
@@ -34,7 +34,7 @@ describe('FilterClause', () => {
       },
       {
         expression: { op: 'ref', name: 'language' },
-        check: {
+        selection: {
           op: 'literal',
           value: {
             "setType": "STRING",
@@ -46,7 +46,7 @@ describe('FilterClause', () => {
       },
       {
         expression: { op: 'ref', name: 'time' },
-        check: {
+        selection: {
           op: 'literal',
           value: {
             "setType": "TIME_RANGE",
@@ -60,7 +60,7 @@ describe('FilterClause', () => {
       // Dynamic!
       {
         expression: { op: 'ref', name: 'language' },
-        check: {
+        selection: {
           op: 'chain',
           expression: { op: 'ref', name: 'n' },
           action: { action: 'timeRange', duration: 'P1D', step: -1 }
@@ -68,7 +68,7 @@ describe('FilterClause', () => {
       },
       {
         expression: { op: 'ref', name: 'language' },
-        check: {
+        selection: {
           op: 'chain',
           expression: { op: 'ref', name: 'm' },
           actions: [
@@ -84,7 +84,7 @@ describe('FilterClause', () => {
     it("works with now", () => {
       var clause = FilterClause.fromJS({
         expression: { op: 'ref', name: 'language' },
-        check: {
+        selection: {
           op: 'chain',
           expression: { op: 'ref', name: 'n' },
           action: { action: 'timeRange', duration: 'P1D', step: -1 }
@@ -95,7 +95,7 @@ describe('FilterClause', () => {
       var maxTime = new Date('2016-01-15T08:22:00Z');
 
       expect(clause.evaluate(now, maxTime, Timezone.UTC).toJS()).to.deep.equal({
-        "check": {
+        "selection": {
           "op": "literal",
           "type": "TIME_RANGE",
           "value": {
@@ -113,7 +113,7 @@ describe('FilterClause', () => {
     it("works with maxTime", () => {
       var clause = FilterClause.fromJS({
         expression: { op: 'ref', name: 'language' },
-        check: {
+        selection: {
           op: 'chain',
           expression: { op: 'ref', name: 'm' },
           action: { action: 'timeRange', duration: 'P1D', step: -1 }
@@ -124,7 +124,7 @@ describe('FilterClause', () => {
       var maxTime = new Date('2016-01-15T08:22:00Z');
 
       expect(clause.evaluate(now, maxTime, Timezone.UTC).toJS()).to.deep.equal({
-        "check": {
+        "selection": {
           "op": "literal",
           "type": "TIME_RANGE",
           "value": {

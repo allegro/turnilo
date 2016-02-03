@@ -13,33 +13,33 @@ import { TimeInput } from '../time-input/time-input';
 
 export interface Preset {
   name: string;
-  check: Expression;
+  selection: Expression;
 }
 
 var $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
 var latestPresets: Preset[] = [
-  { name: '1H',  check: $maxTime.timeRange('PT1H', -1) },
-  { name: '6H',  check: $maxTime.timeRange('PT6H', -1) },
-  { name: '1D',  check: $maxTime.timeRange('P1D', -1)  },
-  { name: '7D',  check: $maxTime.timeRange('P1D', -7)  },
-  { name: '30D', check: $maxTime.timeRange('P1D', -30) }
+  { name: '1H',  selection: $maxTime.timeRange('PT1H', -1) },
+  { name: '6H',  selection: $maxTime.timeRange('PT6H', -1) },
+  { name: '1D',  selection: $maxTime.timeRange('P1D', -1)  },
+  { name: '7D',  selection: $maxTime.timeRange('P1D', -7)  },
+  { name: '30D', selection: $maxTime.timeRange('P1D', -30) }
 ];
 
 var $now = $(FilterClause.NOW_REF_NAME);
 var currentPresets: Preset[] = [
-  { name: 'D', check: $now.timeBucket('P1D') },
-  { name: 'W', check: $now.timeBucket('P1W') },
-  { name: 'M', check: $now.timeBucket('P1M') },
-  { name: 'Q', check: $now.timeBucket('P3M') },
-  { name: 'Y', check: $now.timeBucket('P1Y') }
+  { name: 'D', selection: $now.timeBucket('P1D') },
+  { name: 'W', selection: $now.timeBucket('P1W') },
+  { name: 'M', selection: $now.timeBucket('P1M') },
+  { name: 'Q', selection: $now.timeBucket('P3M') },
+  { name: 'Y', selection: $now.timeBucket('P1Y') }
 ];
 
 var previousPresets: Preset[] = [
-  { name: 'D', check: $now.timeFloor('P1D').timeRange('P1D', -1) },
-  { name: 'W', check: $now.timeFloor('P1W').timeRange('P1W', -1) },
-  { name: 'M', check: $now.timeFloor('P1M').timeRange('P1M', -1) },
-  { name: 'Q', check: $now.timeFloor('P3M').timeRange('P3M', -1) },
-  { name: 'Y', check: $now.timeFloor('P1Y').timeRange('P1Y', -1) }
+  { name: 'D', selection: $now.timeFloor('P1D').timeRange('P1D', -1) },
+  { name: 'W', selection: $now.timeFloor('P1W').timeRange('P1W', -1) },
+  { name: 'M', selection: $now.timeFloor('P1M').timeRange('P1M', -1) },
+  { name: 'Q', selection: $now.timeFloor('P3M').timeRange('P3M', -1) },
+  { name: 'Y', selection: $now.timeFloor('P1Y').timeRange('P1Y', -1) }
 ];
 
 export interface TimeFilterMenuProps extends React.Props<any> {
@@ -51,7 +51,7 @@ export interface TimeFilterMenuProps extends React.Props<any> {
 
 export interface TimeFilterMenuState {
   tab?: string;
-  selectedTimeCheck?: Expression;
+  timeSelection?: Expression;
   startTime?: Date;
   endTime?: Date;
   hoverPreset?: Preset;
@@ -64,7 +64,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     super();
     this.state = {
       tab: 'relative',
-      selectedTimeCheck: null,
+      timeSelection: null,
       startTime: null,
       endTime: null,
       hoverPreset: null
@@ -76,11 +76,11 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     var { essence, dimension } = this.props;
     var { filter } = essence;
 
-    var selectedTimeCheck = filter.getCheck(dimension.expression);
-    var selectedTimeRange = essence.evaluateCheck(selectedTimeCheck);
+    var timeSelection = filter.getSelection(dimension.expression);
+    var selectedTimeRange = essence.evaluateSelection(timeSelection);
 
     this.setState({
-      selectedTimeCheck,
+      timeSelection,
       startTime: selectedTimeRange ? selectedTimeRange.start : null,
       endTime: selectedTimeRange ? selectedTimeRange.end : null
     });
@@ -108,7 +108,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     if (tab !== 'specific') return null;
 
     if (startTime && endTime && startTime < endTime) {
-      return filter.setTimeCheck(dimension.expression, r(TimeRange.fromJS({ start: startTime, end: endTime })));
+      return filter.setSelection(dimension.expression, r(TimeRange.fromJS({ start: startTime, end: endTime })));
     } else {
       return null;
     }
@@ -116,7 +116,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
   onPresetClick(preset: Preset) {
     var { clicker, onClose } = this.props;
-    clicker.changeTimeCheck(preset.check);
+    clicker.changeTimeSelection(preset.selection);
     onClose();
   }
 
@@ -168,14 +168,14 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
   renderPresets() {
     var { essence, dimension } = this.props;
-    var { selectedTimeCheck, hoverPreset } = this.state;
+    var { timeSelection, hoverPreset } = this.state;
     if (!dimension) return null;
 
     var { timezone } = essence;
 
     var presetToButton = (preset: Preset) => {
       var classNames = ['preset'];
-      if (preset.check.equals(selectedTimeCheck)) classNames.push('selected');
+      if (preset.selection.equals(timeSelection)) classNames.push('selected');
       if (preset === hoverPreset) classNames.push('hover');
       return <button
         key={preset.name}
@@ -186,7 +186,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       >{preset.name}</button>;
     };
 
-    var previewTimeRange = essence.evaluateCheck(hoverPreset ? hoverPreset.check : selectedTimeCheck);
+    var previewTimeRange = essence.evaluateSelection(hoverPreset ? hoverPreset.selection : timeSelection);
     var previewText = formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF);
 
     return <div className="cont">
@@ -210,10 +210,10 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
   renderCustom() {
     var { essence, dimension } = this.props;
-    var { selectedTimeCheck, startTime, endTime } = this.state;
+    var { timeSelection, startTime, endTime } = this.state;
     if (!dimension) return null;
 
-    if (!selectedTimeCheck) return null;
+    if (!timeSelection) return null;
     var { timezone } = essence;
 
     return <div className="cont">

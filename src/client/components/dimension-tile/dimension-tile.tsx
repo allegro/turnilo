@@ -235,7 +235,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     } else {
       if (e.altKey || e.ctrlKey || e.metaKey) {
-        if (filter.filteredOnValue(dimension.expression, value) && filter.getValues(dimension.expression).size() === 1) {
+        if (filter.filteredOnValue(dimension.expression, value) && filter.getLiteralSet(dimension.expression).size() === 1) {
           filter = filter.remove(dimension.expression);
         } else {
           filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
@@ -302,7 +302,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     var measure = sortOn.measure;
     var measureName = measure ? measure.name : null;
-    var filterSet = essence.filter.getValues(dimension.expression);
+    var filterSet = essence.filter.getLiteralSet(dimension.expression);
 
     var maxHeight = PIN_TITLE_HEIGHT;
 

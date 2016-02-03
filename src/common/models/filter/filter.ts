@@ -144,7 +144,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     var clauses = this.clauses;
     var index = this.indexOfClause(attribute);
     if (index === -1) return false;
-    return clauses.get(index).getValues().contains(value);
+    return clauses.get(index).getLiteralSet().contains(value);
   }
 
   public addValue(attribute: Expression, value: any): Filter {
@@ -153,12 +153,12 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     if (index === -1) {
       return new Filter(<List<FilterClause>>clauses.concat(new FilterClause({
         expression: attribute,
-        check: r(Set.fromJS([value]))
+        selection: r(Set.fromJS([value]))
       })));
     } else {
       var clause = clauses.get(index);
-      var newSet = clause.getValues().add(value);
-      return new Filter(<List<FilterClause>>clauses.splice(index, 1, clause.changeLiteralSet(newSet)));
+      var newSet = clause.getLiteralSet().add(value);
+      return new Filter(<List<FilterClause>>clauses.splice(index, 1, clause.changeSelection(r(newSet))));
     }
   }
 
@@ -175,11 +175,11 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     if (index === -1) return this;
     var clause = clauses.get(index);
 
-    var newSet = clause.getValues().remove(value);
+    var newSet = clause.getLiteralSet().remove(value);
     if (newSet.empty()) {
       return new Filter(clauses.delete(index));
     } else {
-      clauses = <List<FilterClause>>clauses.splice(index, 1, clause.changeLiteralSet(newSet));
+      clauses = <List<FilterClause>>clauses.splice(index, 1, clause.changeSelection(r(newSet)));
       return new Filter(clauses);
     }
   }
@@ -188,38 +188,19 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return this.filteredOnValue(attribute, value) ? this.removeValue(attribute, value) : this.addValue(attribute, value);
   }
 
-  public setValues(attribute: Expression, values: Set): Filter {
-    var clauses = this.clauses;
-    var index = this.indexOfClause(attribute);
-    if (values.size()) {
-      var newClause = new FilterClause({
-        expression: attribute,
-        check: r(values)
-      });
-      if (index === -1) {
-        clauses = <List<FilterClause>>clauses.push(newClause);
-      } else {
-        clauses = <List<FilterClause>>clauses.splice(index, 1, newClause);
-      }
-    } else {
-      return new Filter(clauses.delete(index));
-    }
-    return new Filter(clauses);
-  }
-
-  public getValues(attribute: Expression): Set {
+  public getSelection(attribute: Expression): Expression {
     var clauses = this.clauses;
     var index = this.indexOfClause(attribute);
     if (index === -1) return null;
-    return clauses.get(index).getValues();
+    return clauses.get(index).selection;
   }
 
-  public setTimeCheck(attribute: Expression, check: Expression): Filter {
+  public setSelection(attribute: Expression, selection: Expression): Filter {
     var clauses = this.clauses;
     var index = this.indexOfClause(attribute);
     var newClause = new FilterClause({
       expression: attribute,
-      check
+      selection
     });
     if (index === -1) {
       clauses = <List<FilterClause>>clauses.push(newClause);
@@ -236,11 +217,11 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return clauses.get(index).getTimeRange();
   }
 
-  public getCheck(attribute: Expression): Expression {
+  public getLiteralSet(attribute: Expression): Set {
     var clauses = this.clauses;
     var index = this.indexOfClause(attribute);
     if (index === -1) return null;
-    return clauses.get(index).check;
+    return clauses.get(index).getLiteralSet();
   }
 
   public setClause(expression: FilterClause): Filter {
@@ -272,7 +253,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
   public getSingleClauseSet(): Set {
     var clauses = this.clauses;
     if (clauses.size !== 1) return null;
-    return clauses.get(0).getValues();
+    return clauses.get(0).getLiteralSet();
   }
 
   public constrainToDimensions(dimensions: List<Dimension>, timeAttribute: Expression, oldTimeAttribute: Expression = null): Filter {
@@ -288,7 +269,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
         if (timeAttribute && oldTimeAttribute && oldTimeAttribute.equals(clauseExpression)) {
           clauses.push(new FilterClause({
             expression: timeAttribute,
-            check: clause.check
+            selection: clause.selection
           }));
         }
       }
@@ -307,7 +288,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
           start: duration.move(timeRange.start, timezone, -1),
           end: duration.move(timeRange.end, timezone, 1)
         });
-        return clause.changeLiteralTimeRange(newTimeRange);
+        return clause.changeSelection(r(newTimeRange));
       } else {
         return clause;
       }

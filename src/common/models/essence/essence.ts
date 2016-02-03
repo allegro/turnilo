@@ -141,7 +141,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var filter = dataSource.defaultFilter;
     if (dataSource.timeAttribute) {
-      filter = filter.setTimeCheck(dataSource.timeAttribute, $(FilterClause.MAX_TIME_REF_NAME).timeRange('P1D', -1));
+      filter = filter.setSelection(dataSource.timeAttribute, $(FilterClause.MAX_TIME_REF_NAME).timeRange('P1D', -1));
     }
 
     var splits = Splits.EMPTY;
@@ -154,7 +154,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       if (timeAttribute) {
         var now = new Date();
         var maxTime = dataSource.getMaxTimeDate();
-        splits = splits.updateWithTimeRange(timeAttribute, FilterClause.evaluate(filter.getCheck(timeAttribute), now, maxTime, timezone), timezone);
+        splits = splits.updateWithTimeRange(timeAttribute, FilterClause.evaluate(filter.getSelection(timeAttribute), now, maxTime, timezone), timezone);
       }
     }
 
@@ -401,10 +401,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.dataSource.getTimeDimension();
   }
 
-  public evaluateCheck(check: Expression, now: Date = new Date()): TimeRange {
+  public evaluateSelection(selection: Expression, now: Date = new Date()): TimeRange {
     var { dataSource, timezone } = this;
     var maxTime = dataSource.getMaxTimeDate();
-    return FilterClause.evaluate(check, now, maxTime, timezone);
+    return FilterClause.evaluate(selection, now, maxTime, timezone);
   }
 
   public getEffectiveFilter(highlightId: string = null, unfilterDimension: Dimension = null): Filter {
@@ -572,20 +572,20 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
-      var oldTimeCheck = this.filter.getCheck(timeAttribute);
-      var newTimeCheck = filter.getCheck(timeAttribute);
-      if (newTimeCheck && !newTimeCheck.equals(oldTimeCheck)) {
-        value.splits = value.splits.updateWithTimeRange(timeAttribute, this.evaluateCheck(newTimeCheck), this.timezone, true);
+      var oldTimeSelection = this.filter.getSelection(timeAttribute);
+      var newTimeSelection = filter.getSelection(timeAttribute);
+      if (newTimeSelection && !newTimeSelection.equals(oldTimeSelection)) {
+        value.splits = value.splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(newTimeSelection), this.timezone, true);
       }
     }
 
     return new Essence(value);
   }
 
-  public changeTimeCheck(check: Expression): Essence {
+  public changeTimeSelection(check: Expression): Essence {
     var { filter } = this;
     var timeAttribute = this.getTimeAttribute();
-    return this.changeFilter(filter.setTimeCheck(timeAttribute, check));
+    return this.changeFilter(filter.setSelection(timeAttribute, check));
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
@@ -593,7 +593,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
-      splits = splits.updateWithTimeRange(timeAttribute, this.evaluateCheck(filter.getCheck(timeAttribute)), this.timezone);
+      splits = splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(filter.getSelection(timeAttribute)), this.timezone);
     }
 
     // If in manual mode stay there, keep the vis regardless of suggested strategy

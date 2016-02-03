@@ -45,7 +45,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: Datum): Filter {
   return new Filter(List(segments.map((segment, i) => {
     return new FilterClause({
       expression: splits.get(i).expression,
-      check: r(Set.fromJS([segment]))
+      selection: r(Set.fromJS([segment]))
     });
   })));
 }

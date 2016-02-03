@@ -9,13 +9,13 @@ import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, 
 
 export interface FilterClauseValue {
   expression: Expression;
-  check?: Expression;
+  selection?: Expression;
   exclude?: boolean;
 }
 
 export interface FilterClauseJS {
   expression: ExpressionJS;
-  check?: ExpressionJS;
+  selection?: ExpressionJS;
   exclude?: boolean;
 }
 
@@ -45,13 +45,13 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   static NOW_REF_NAME = 'n';
   static MAX_TIME_REF_NAME = 'm';
 
-  static evaluate(check: Expression, now: Date, maxTime: Date, timezone: Timezone): TimeRange {
-    if (!check) return null;
+  static evaluate(selection: Expression, now: Date, maxTime: Date, timezone: Timezone): TimeRange {
+    if (!selection) return null;
     var maxTimeMinuteTop = minute.move(minute.floor(maxTime, timezone), timezone, 1);
     var datum: Datum = {};
     datum[FilterClause.NOW_REF_NAME] = now;
     datum[FilterClause.MAX_TIME_REF_NAME] = maxTimeMinuteTop;
-    return check.getFn()(datum, { timezone: timezone.toString() });
+    return selection.getFn()(datum, { timezone: timezone.toString() });
   }
 
   static fromExpression(ex: Expression): FilterClause {
@@ -64,7 +64,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     if (lastAction instanceof InAction) {
       return new FilterClause({
         expression: ex.popAction(),
-        check: lastAction.expression,
+        selection: lastAction.expression,
         exclude
       });
     }
@@ -74,7 +74,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   static fromJS(parameters: FilterClauseJS): FilterClause {
     var value: FilterClauseValue = {
       expression: Expression.fromJS(parameters.expression),
-      check: Expression.fromJS(parameters.check),
+      selection: Expression.fromJS(parameters.selection),
       exclude: Boolean(parameters.exclude)
     };
     return new FilterClause(value);
@@ -82,28 +82,28 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
 
 
   public expression: Expression;
-  public check: Expression;
+  public selection: Expression;
   public exclude: boolean;
   public relative: boolean;
 
   constructor(parameters: FilterClauseValue) {
     this.expression = parameters.expression;
-    var check = parameters.check;
-    if (isRelative(check)) {
+    var selection = parameters.selection;
+    if (isRelative(selection)) {
       this.relative = true;
-    } else if (isLiteral(check)) {
+    } else if (isLiteral(selection)) {
       this.relative = false;
     } else {
-      throw new Error(`invalid expression ${check.toString()}`);
+      throw new Error(`invalid expression ${selection.toString()}`);
     }
-    this.check = check;
+    this.selection = selection;
     this.exclude = parameters.exclude || false;
   }
 
   public valueOf(): FilterClauseValue {
     return {
       expression: this.expression,
-      check: this.check,
+      selection: this.selection,
       exclude: this.exclude
     };
   }
@@ -111,7 +111,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   public toJS(): FilterClauseJS {
     var js: FilterClauseJS = {
       expression: this.expression.toJS(),
-      check: this.check.toJS(),
+      selection: this.selection.toJS(),
     };
     if (this.exclude) js.exclude = true;
     return js;
@@ -128,44 +128,38 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   public equals(other: FilterClause): boolean {
     return FilterClause.isFilterClause(other) &&
       this.expression.equals(other.expression) &&
-      this.check.equals(other.check) &&
+      this.selection.equals(other.selection) &&
       this.exclude === other.exclude;
   }
 
   public toExpression(): ChainExpression {
-    var check = this.check;
-    var ex = this.expression.in(check);
+    var selection = this.selection;
+    var ex = this.expression.in(selection);
     if (this.exclude) ex = ex.not();
     return ex;
   }
 
-  public changeLiteralTimeRange(check: TimeRange) {
-    var value = this.valueOf();
-    value.check = r(check);
-    return new FilterClause(value);
-  }
-
-  public changeLiteralSet(check: Set) {
-    var value = this.valueOf();
-    value.check = r(check);
-    return new FilterClause(value);
-  }
-
   public getTimeRange(): TimeRange {
     if (this.relative) return null;
-    var v = this.check.getLiteralValue();
+    var v = this.selection.getLiteralValue();
     return TimeRange.isTimeRange(v) ? v : null;
   }
 
-  public getValues(): Set {
+  public getLiteralSet(): Set {
     if (this.relative) return null;
-    var v = this.check.getLiteralValue();
+    var v = this.selection.getLiteralValue();
     return TimeRange.isTimeRange(v) ? Set.fromJS([v]) : v;
+  }
+
+  public changeSelection(selection: Expression) {
+    var value = this.valueOf();
+    value.selection = selection;
+    return new FilterClause(value);
   }
 
   public evaluate(now: Date, maxTime: Date, timezone: Timezone): FilterClause {
     if (!this.relative) return this;
-    return this.changeLiteralTimeRange(FilterClause.evaluate(this.check, now, maxTime, timezone));
+    return this.changeSelection(r(FilterClause.evaluate(this.selection, now, maxTime, timezone)));
   }
 }
 check = FilterClause;

@@ -14,7 +14,7 @@ import { VisStrategy } from '../essence/essence';
 
 export interface Clicker {
   changeDataSource(dataSource: DataSource): void;
-  changeTimeCheck(check: Expression): void;
+  changeTimeSelection(selection: Expression): void;
   changeFilter(filter: Filter, colors?: Colors): void;
   changeSplits(splits: Splits, strategy: VisStrategy, colors?: Colors): void;
   changeSplit(split: SplitCombine, strategy: VisStrategy): void;

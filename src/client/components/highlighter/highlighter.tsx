@@ -109,7 +109,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
       highlightId,
       Filter.fromClause(new FilterClause({
         expression: timeDimension.expression,
-        check: r(timeRange)
+        selection: r(timeRange)
       }))
     );
   }

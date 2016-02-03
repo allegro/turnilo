@@ -34,13 +34,13 @@ function formatLabel(dimension: Dimension, clause: FilterClause, essence: Essenc
   switch (dimension.kind) {
     case 'string':
     case 'boolean':
-      var setElements = clause.getValues().elements;
+      var setElements = clause.getLiteralSet().elements;
       label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
       break;
 
     case 'time':
-      var timeCheck = clause.check;
-      var timeRange = essence.evaluateCheck(timeCheck);
+      var timeSelection = clause.selection;
+      var timeRange = essence.evaluateSelection(timeSelection);
       label = formatTimeRange(timeRange, essence.timezone, DisplayYear.IF_DIFF);
       break;
 

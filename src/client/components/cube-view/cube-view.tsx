@@ -61,9 +61,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         if (colors) essence = essence.changeColors(colors);
         this.setState({ essence });
       },
-      changeTimeCheck: (check: Expression) => {
+      changeTimeSelection: (selection: Expression) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeTimeCheck(check) });
+        this.setState({ essence: essence.changeTimeSelection(selection) });
       },
       changeSplits: (splits: Splits, strategy: VisStrategy, colors?: Colors) => {
         var { essence } = this.state;
