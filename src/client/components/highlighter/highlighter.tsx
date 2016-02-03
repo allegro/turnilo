@@ -4,7 +4,7 @@ require('./highlighter.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Timezone, Duration } from 'chronoshift';
-import { $, Expression, Executor, Dataset, TimeRange, Set } from 'plywood';
+import { $, r, Expression, Executor, Dataset, TimeRange, Set } from 'plywood';
 import { Clicker, Essence, Filter, FilterClause, Dimension, Measure } from '../../../common/models/index';
 import { isInside, escapeKey, getXFromEvent } from '../../utils/dom/dom';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
@@ -109,7 +109,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
       highlightId,
       Filter.fromClause(new FilterClause({
         expression: timeDimension.expression,
-        values: Set.fromJS([timeRange])
+        check: r(timeRange)
       }))
     );
   }
@@ -127,7 +127,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var shownTimeRange = pseudoHighlight;
     if (!shownTimeRange) {
       if (essence.highlightOn(highlightId)) {
-        shownTimeRange = essence.getSingleHighlightValue().elements[0];
+        shownTimeRange = essence.getSingleHighlightSet().elements[0];
       }
     }
 

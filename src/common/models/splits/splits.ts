@@ -161,6 +161,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   public updateWithTimeRange(timeAttribute: RefExpression, timeRange: TimeRange, timezone: Timezone, force?: boolean): Splits {
     var changed = false;
 
+    console.log('timeRange', timeRange);
     var granularity = timeRange ? getBestGranularity(timeRange) : DEFAULT_GRANULARITY;
 
     var newSplitCombines = <List<SplitCombine>>this.splitCombines.map((splitCombine) => {

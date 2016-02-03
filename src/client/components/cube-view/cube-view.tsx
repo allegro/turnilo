@@ -4,10 +4,10 @@ require('./cube-view.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
-import { TimeRange } from 'plywood';
+import { Expression } from 'plywood';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
-  SplitCombine, Splits, TimePreset, VisStrategy, VisualizationProps} from '../../../common/models/index';
+  SplitCombine, Splits, VisStrategy, VisualizationProps} from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 
 import { DimensionMeasurePanel } from '../dimension-measure-panel/dimension-measure-panel';
@@ -61,9 +61,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         if (colors) essence = essence.changeColors(colors);
         this.setState({ essence });
       },
-      changeTimeRange: (timeRange: TimeRange) => {
+      changeTimeCheck: (check: Expression) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeTimeRange(timeRange) });
+        this.setState({ essence: essence.changeTimeCheck(check) });
       },
       changeSplits: (splits: Splits, strategy: VisStrategy, colors?: Colors) => {
         var { essence } = this.state;

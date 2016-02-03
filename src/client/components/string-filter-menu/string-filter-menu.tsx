@@ -156,7 +156,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     if (selectedValues.size()) {
       var clause = new FilterClause({
         expression: dimension.expression,
-        values: selectedValues
+        check: r(selectedValues)
       });
       if (insertPosition !== null) {
         return filter.insertByIndex(insertPosition, clause);

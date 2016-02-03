@@ -8,6 +8,7 @@ import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange,
 import { listsEqual } from '../../utils/general/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
+import { FilterClause, FilterClauseJS } from '../filter-clause/filter-clause';
 import { Highlight, HighlightJS } from '../highlight/highlight';
 import { Splits, SplitsJS } from '../splits/splits';
 import { SplitCombine } from '../split-combine/split-combine';
@@ -140,13 +141,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var filter = dataSource.defaultFilter;
     if (dataSource.timeAttribute) {
-      var maxTime = dataSource.getMaxTimeDate() || new Date();
-      var maxTimeMinuteCeil = minute.move(minute.floor(maxTime, timezone), timezone, 1);
-      var timeRange = TimeRange.fromJS({
-        start: dataSource.defaultDuration.move(maxTimeMinuteCeil, timezone, -1),
-        end: maxTimeMinuteCeil
-      });
-      filter = filter.setTimeRange(dataSource.timeAttribute, timeRange);
+      filter = filter.setTimeCheck(dataSource.timeAttribute, $('m').timeRange('P1D', -1));
     }
 
     var splits = Splits.EMPTY;
@@ -157,7 +152,9 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       }
       var timeAttribute = dataSource.timeAttribute;
       if (timeAttribute) {
-        splits = splits.updateWithTimeRange(timeAttribute, filter.getTimeRange(timeAttribute), timezone);
+        var now = new Date();
+        var maxTime = dataSource.getMaxTimeDate();
+        splits = splits.updateWithTimeRange(timeAttribute, FilterClause.evaluate(filter.getCheck(timeAttribute), now, maxTime, timezone), timezone);
       }
     }
 
@@ -404,11 +401,19 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.dataSource.getTimeDimension();
   }
 
+  public evaluateCheck(check: Expression, now: Date = new Date()): TimeRange {
+    var { dataSource, timezone } = this;
+    var maxTime = dataSource.getMaxTimeDate();
+    return FilterClause.evaluate(check, now, maxTime, timezone);
+  }
+
   public getEffectiveFilter(highlightId: string = null, unfilterDimension: Dimension = null): Filter {
-    var { filter, highlight } = this;
+    var { dataSource, filter, highlight, timezone } = this;
     if (highlight && (highlightId !== highlight.owner)) filter = highlight.applyToFilter(filter);
     if (unfilterDimension) filter = filter.remove(unfilterDimension.expression);
-    return filter;
+
+    var maxTime = dataSource.getMaxTimeDate();
+    return filter.getActualFilter(new Date(), maxTime, timezone);
   }
 
   public getMeasures(): List<Measure> {
@@ -476,10 +481,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return highlight.owner === owner;
   }
 
-  public getSingleHighlightValue(): Set {
+  public getSingleHighlightSet(): Set {
     var { highlight } = this;
     if (!highlight) return null;
-    return highlight.delta.getSingleValue();
+    return highlight.delta.getSingleClauseSet();
   }
 
   public getApplyForSort(sort: SortAction): ApplyAction {
@@ -507,6 +512,15 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public changeDataSource(dataSource: DataSource): Essence {
     var { dataSources, visualizations } = this;
+
+    if (this.dataSource.equals(dataSource)) return this; // nothing to do
+
+    if (this.dataSource.equalsWithoutMaxTime(dataSource)) { // Updated maxTime
+      var value = this.valueOf();
+      value.dataSource = dataSource;
+      return new Essence(value);
+    }
+
     var dataSourceName = dataSource.name;
     var existingDataSource = dataSources.find((ds) => ds.name === dataSourceName);
     if (!existingDataSource) throw new Error(`unknown DataSource changed: ${dataSourceName}`);
@@ -516,7 +530,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       return Essence.fromDataSource(dataSource, { dataSources: dataSources, visualizations: visualizations });
     }
 
-    // We are actually updating info within the named dataSource
+    // We are actually updating info within the current dataSource
     if (this.dataSource.name !== dataSource.name) throw new Error('can not change non-selected dataSource');
 
     var value = this.valueOf();
@@ -557,19 +571,21 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     }
 
     var timeAttribute = this.getTimeAttribute();
-    var oldTimeRange = timeAttribute ? this.filter.getTimeRange(timeAttribute) : null;
-    var newTimeRange = timeAttribute ? filter.getTimeRange(timeAttribute) : null;
-    if (newTimeRange && !newTimeRange.equals(oldTimeRange)) {
-      value.splits = value.splits.updateWithTimeRange(timeAttribute, newTimeRange, this.timezone, true);
+    if (timeAttribute) {
+      var oldTimeCheck = this.filter.getCheck(timeAttribute);
+      var newTimeCheck = filter.getCheck(timeAttribute);
+      if (newTimeCheck && !newTimeCheck.equals(oldTimeCheck)) {
+        value.splits = value.splits.updateWithTimeRange(timeAttribute, this.evaluateCheck(newTimeCheck), this.timezone, true);
+      }
     }
 
     return new Essence(value);
   }
 
-  public changeTimeRange(timeRange: TimeRange): Essence {
+  public changeTimeCheck(check: Expression): Essence {
     var { filter } = this;
     var timeAttribute = this.getTimeAttribute();
-    return this.changeFilter(filter.setTimeRange(timeAttribute, timeRange));
+    return this.changeFilter(filter.setTimeCheck(timeAttribute, check));
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
@@ -577,7 +593,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
-      splits = splits.updateWithTimeRange(timeAttribute, filter.getTimeRange(timeAttribute), this.timezone);
+      splits = splits.updateWithTimeRange(timeAttribute, this.evaluateCheck(filter.getCheck(timeAttribute)), this.timezone);
     }
 
     // If in manual mode stay there, keep the vis regardless of suggested strategy

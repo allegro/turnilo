@@ -7,7 +7,7 @@ import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { $, Expression, InAction, Executor, Dataset } from 'plywood';
 import { BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, TimePreset} from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure} from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent } from '../../utils/dom/dom';
@@ -28,20 +28,20 @@ export interface ItemBlank {
   clause?: FilterClause;
 }
 
-function formatLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
+function formatLabel(dimension: Dimension, clause: FilterClause, essence: Essence): string {
   var label = dimension.title;
 
   switch (dimension.kind) {
     case 'string':
     case 'boolean':
-      var setElements = clause.values.elements;
+      var setElements = clause.getValues().elements;
       label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
       break;
 
     case 'time':
-      var timeRangeLiteral = clause.values.elements[0];
-      if (!timeRangeLiteral) return '?';
-      label = formatTimeRange(timeRangeLiteral, timezone, DisplayYear.IF_DIFF);
+      var timeCheck = clause.check;
+      var timeRange = essence.evaluateCheck(timeCheck);
+      label = formatTimeRange(timeRange, essence.timezone, DisplayYear.IF_DIFF);
       break;
 
     default:
@@ -479,7 +479,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onClick={clicker.acceptHighlight.bind(clicker)}
         style={style}
       >
-        <div className="reading">{formatLabel(dimension, clause, timezone)}</div>
+        <div className="reading">{formatLabel(dimension, clause, essence)}</div>
         {this.renderRemoveButton(itemBlank)}
       </div>;
     }
@@ -494,7 +494,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onDragStart={this.dragStart.bind(this, dimension, clause)}
         style={style}
       >
-        <div className="reading">{formatLabel(dimension, clause, timezone)}</div>
+        <div className="reading">{formatLabel(dimension, clause, essence)}</div>
         {this.renderRemoveButton(itemBlank)}
       </div>;
     } else {

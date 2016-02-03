@@ -21,7 +21,6 @@ var check: Class<RefreshRuleValue, RefreshRuleJS>;
 export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
   static DEFAULT_QUERY_REFRESH = Duration.fromJS('PT1M');
-  static REALTIME: RefreshRule;
 
   static isRefreshRule(candidate: any): boolean {
     return isInstanceOf(candidate, RefreshRule);
@@ -59,7 +58,7 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
     }
     this.rule = rule;
     this.refresh = parameters.refresh;
-    if (this.rule === 'query' && !this.refresh) {
+    if (this.rule !== 'fixed' && !this.refresh) {
       this.refresh = RefreshRule.DEFAULT_QUERY_REFRESH;
     }
     this.time = parameters.time;
@@ -119,8 +118,8 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
     return this.rule === 'realtime';
   }
 
-  public shouldQuery(maxTime: MaxTime): boolean {
-    if (this.rule !== 'query') return false;
+  public shouldUpdate(maxTime: MaxTime): boolean {
+    if (this.isFixed()) return false;
     if (!maxTime) return true;
     var { refresh } = this;
     if (!refresh) return false;
@@ -129,5 +128,3 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
 }
 check = RefreshRule;
-
-RefreshRule.REALTIME = new RefreshRule({ rule: 'realtime' });

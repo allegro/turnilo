@@ -70,6 +70,19 @@ describe('Filter', () => {
             }
           }
         ]
+      },
+
+      // Dynamic
+      {
+        "op": "chain", "expression": { "op": "ref", "name": "time" },
+        "action": {
+          "action": "in",
+          "expression": {
+            op: 'chain',
+            expression: { op: 'ref', name: 'n' },
+            action: { action: 'timeRange', duration: 'P1D', step: -1 }
+          }
+        }
       }
     ]);
   });
