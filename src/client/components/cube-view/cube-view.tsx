@@ -150,7 +150,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   componentWillReceiveProps(nextProps: CubeViewProps) {
     var { essence } = nextProps;
-    if (!essence.equals(this.props.essence)) {
+    if (!essence.equals(this.state.essence)) {
       this.setState({ essence });
     }
   }
