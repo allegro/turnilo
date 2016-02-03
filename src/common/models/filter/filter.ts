@@ -123,7 +123,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return this.clauses.some(clause => clause.dynamic);
   }
 
-  public getActualFilter(now: Date, maxTime: Date, timezone: Timezone): Filter {
+  public getSpecificFilter(now: Date, maxTime: Date, timezone: Timezone): Filter {
     if (!this.isDynamic()) return this;
     return new Filter(this.clauses.map(c => c.evaluate(now, maxTime, timezone)) as List<FilterClause>);
   }

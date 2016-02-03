@@ -8,7 +8,7 @@ import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange,
 import { listsEqual } from '../../utils/general/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
-import { FilterClause, FilterClauseJS } from '../filter-clause/filter-clause';
+import { FilterClause } from '../filter-clause/filter-clause';
 import { Highlight, HighlightJS } from '../highlight/highlight';
 import { Splits, SplitsJS } from '../splits/splits';
 import { SplitCombine } from '../split-combine/split-combine';
@@ -141,7 +141,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var filter = dataSource.defaultFilter;
     if (dataSource.timeAttribute) {
-      filter = filter.setTimeCheck(dataSource.timeAttribute, $('m').timeRange('P1D', -1));
+      filter = filter.setTimeCheck(dataSource.timeAttribute, $(FilterClause.MAX_TIME_REF_NAME).timeRange('P1D', -1));
     }
 
     var splits = Splits.EMPTY;
@@ -413,7 +413,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (unfilterDimension) filter = filter.remove(unfilterDimension.expression);
 
     var maxTime = dataSource.getMaxTimeDate();
-    return filter.getActualFilter(new Date(), maxTime, timezone);
+    return filter.getSpecificFilter(new Date(), maxTime, timezone);
   }
 
   public getMeasures(): List<Measure> {

@@ -2,7 +2,7 @@
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
-import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS, ChainExpression, NotAction, InAction, TimeRange } from 'plywood';
+import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS, ChainExpression, NotAction, InAction, TimeRange, Datum } from 'plywood';
 
 // Basically these represent
 // expression.in(check) .not()?
@@ -19,9 +19,6 @@ export interface FilterClauseJS {
   exclude?: boolean;
 }
 
-// n = now
-// m = maxTime
-
 function isLiteral(ex: Expression): boolean {
   if (ex instanceof LiteralExpression) return TimeRange.isTimeRange(ex.value) || Set.isSet(ex.value);
   return false;
@@ -32,7 +29,7 @@ function isDynamic(ex: Expression): boolean {
     if (ex.type !== 'TIME_RANGE') return false;
     var expression = ex.expression;
     if (expression instanceof RefExpression) {
-      return expression.name === 'n' || expression.name === 'm';
+      return expression.name === FilterClause.NOW_REF_NAME || expression.name === FilterClause.MAX_TIME_REF_NAME;
     }
   }
   return false;
@@ -45,13 +42,16 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     return isInstanceOf(candidate, FilterClause);
   }
 
+  static NOW_REF_NAME = 'n';
+  static MAX_TIME_REF_NAME = 'm';
+
   static evaluate(check: Expression, now: Date, maxTime: Date, timezone: Timezone): TimeRange {
     if (!check) return null;
     var maxTimeMinuteTop = minute.move(minute.floor(maxTime, timezone), timezone, 1);
-    return check.getFn()({
-      n: now,
-      m: maxTimeMinuteTop
-    }, { timezone: timezone.toString() });
+    var datum: Datum = {};
+    datum[FilterClause.NOW_REF_NAME] = now;
+    datum[FilterClause.MAX_TIME_REF_NAME] = maxTimeMinuteTop;
+    return check.getFn()(datum, { timezone: timezone.toString() });
   }
 
   static fromExpression(ex: Expression): FilterClause {

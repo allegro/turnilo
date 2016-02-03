@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Timezone, Duration, minute, hour, day, week, month, year } from 'chronoshift';
 import { $, r, Expression, Executor, Dataset, TimeRange } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure } from '../../../common/models/index';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { enterKey } from '../../utils/dom/dom';
 // import { ... } from '../../config/constants';
@@ -16,30 +16,30 @@ export interface Preset {
   check: Expression;
 }
 
-var $m = $('m');
+var $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
 var latestPresets: Preset[] = [
-  { name: '1H',  check: $m.timeRange('PT1H', -1) },
-  { name: '6H',  check: $m.timeRange('PT6H', -1) },
-  { name: '1D',  check: $m.timeRange('P1D', -1)  },
-  { name: '7D',  check: $m.timeRange('P1D', -7)  },
-  { name: '30D', check: $m.timeRange('P1D', -30) }
+  { name: '1H',  check: $maxTime.timeRange('PT1H', -1) },
+  { name: '6H',  check: $maxTime.timeRange('PT6H', -1) },
+  { name: '1D',  check: $maxTime.timeRange('P1D', -1)  },
+  { name: '7D',  check: $maxTime.timeRange('P1D', -7)  },
+  { name: '30D', check: $maxTime.timeRange('P1D', -30) }
 ];
 
-var $n = $('n');
+var $now = $(FilterClause.NOW_REF_NAME);
 var currentPresets: Preset[] = [
-  { name: 'D', check: $n.timeBucket('P1D') },
-  { name: 'W', check: $n.timeBucket('P1W') },
-  { name: 'M', check: $n.timeBucket('P1M') },
-  { name: 'Q', check: $n.timeBucket('P3M') },
-  { name: 'Y', check: $n.timeBucket('P1Y') }
+  { name: 'D', check: $now.timeBucket('P1D') },
+  { name: 'W', check: $now.timeBucket('P1W') },
+  { name: 'M', check: $now.timeBucket('P1M') },
+  { name: 'Q', check: $now.timeBucket('P3M') },
+  { name: 'Y', check: $now.timeBucket('P1Y') }
 ];
 
 var previousPresets: Preset[] = [
-  { name: 'D', check: $n.timeFloor('P1D').timeRange('P1D', -1) },
-  { name: 'W', check: $n.timeFloor('P1W').timeRange('P1W', -1) },
-  { name: 'M', check: $n.timeFloor('P1M').timeRange('P1M', -1) },
-  { name: 'Q', check: $n.timeFloor('P3M').timeRange('P3M', -1) },
-  { name: 'Y', check: $n.timeFloor('P1Y').timeRange('P1Y', -1) }
+  { name: 'D', check: $now.timeFloor('P1D').timeRange('P1D', -1) },
+  { name: 'W', check: $now.timeFloor('P1W').timeRange('P1W', -1) },
+  { name: 'M', check: $now.timeFloor('P1M').timeRange('P1M', -1) },
+  { name: 'Q', check: $now.timeFloor('P3M').timeRange('P3M', -1) },
+  { name: 'Y', check: $now.timeFloor('P1Y').timeRange('P1Y', -1) }
 ];
 
 export interface TimeFilterMenuProps extends React.Props<any> {
