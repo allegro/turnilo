@@ -122,6 +122,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.clicker = clicker;
     this.globalResizeListener = this.globalResizeListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
+
+    (window as any).autoRefresh = () => {
+      setInterval(() => {
+        var { essence } = this.state;
+        var { dataSource } = essence;
+        if (!dataSource.shouldUpdateMaxTime()) return;
+        DataSource.updateMaxTime(dataSource).then((updatedDataSource) => {
+          console.log(`Updated MaxTime for '${updatedDataSource.name}'`);
+          this.setState({ essence: essence.changeDataSource(updatedDataSource) });
+        });
+      }, 1000);
+    };
   }
 
   componentWillMount() {
