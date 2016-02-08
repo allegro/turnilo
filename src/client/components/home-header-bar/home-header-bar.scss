@@ -1,0 +1,11 @@
+@import '../../imports';
+
+.home-header-bar {
+  @extend %header-bar;
+
+  .icon-button {
+    svg path {
+      fill: #fff;
+    }
+  }
+}

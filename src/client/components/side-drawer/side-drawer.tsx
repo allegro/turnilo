@@ -8,13 +8,15 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { isInside, escapeKey } from '../../utils/dom/dom';
-import { DataSource, Clicker, Essence } from '../../../common/models/index';
+import { DataSource } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
+import { NavList } from '../nav-list/nav-list';
 
 
 export interface SideDrawerProps extends React.Props<any> {
   changeDataSource: Function;
-  essence: Essence;
+  selectedDataSource: DataSource;
+  dataSources: List<DataSource>;
   onClose: Function;
   homeLink?: string;
 }
@@ -60,21 +62,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     onClose();
   }
 
-  renderDataSourceItems() {
-    var { essence } = this.props;
-
-    var selectedDataSource = essence.dataSource;
-    return essence.dataSources.map((dataSource) => {
-      return <li
-        className={dataSource === selectedDataSource ? 'selected' : ''}
-        key={dataSource.name}
-        onClick={this.selectDataSource.bind(this, dataSource)}
-      >{dataSource.title}</li>;
-    });
-  }
-
   render() {
-    var { onClose, homeLink } = this.props;
+    var { onClose, homeLink, selectedDataSource, dataSources } = this.props;
 
     var homeLinkElement: JSX.Element = null;
     if (homeLink) {
@@ -84,13 +73,23 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       </a>;
     }
 
-    return <div className="side-drawer">
-      <div className="title" onClick={onClose as any}>
-        <SvgIcon className="combo-logo" svg={require('../../icons/combo-logo.svg')}/>
+    return <div className="nav side-drawer">
+      <div className="logo-cont" onClick={onClose as any}>
+        <div className="logo">
+          <SvgIcon svg={require('../../icons/pivot-logo.svg')}/>
+        </div>
       </div>
-      <ul className="data-sources">
-        {this.renderDataSourceItems()}
-      </ul>
+
+      <NavList
+        title="Data Cubes"
+        className="items"
+        selected={selectedDataSource.name}
+        navItems={dataSources}
+        onSelect={this.selectDataSource.bind(this)}
+        icon="'../../full-cube.svg'"
+
+      />
+
       {homeLinkElement}
     </div>;
   }

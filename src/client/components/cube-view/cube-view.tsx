@@ -23,7 +23,8 @@ import { visualizations } from '../../visualizations/index';
 export interface CubeViewProps extends React.Props<any> {
   maxFilters?: number;
   maxSplits?: number;
-  essence: Essence;
+  hash: string;
+  selectedDataSource: DataSource;
   updateHash: Function;
 }
 
@@ -137,7 +138,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillMount() {
-    var { essence } = this.props;
+    var selectedDataSource = this.props.selectedDataSource;
+    var essence = this.getEssenceFromHash(this.props.hash) || this.getEssenceFromDataSource(selectedDataSource);
     this.setState({ essence });
   }
 
@@ -149,23 +151,44 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillReceiveProps(nextProps: CubeViewProps) {
-    var { essence } = nextProps;
-    if (!essence.equals(this.state.essence)) {
-      this.setState({ essence });
+    var hashEssence = this.getEssenceFromHash(nextProps.hash);
+    if (hashEssence && !hashEssence.equals(this.state.essence)) {
+      this.setState({ essence: hashEssence });
     }
-  }
 
-  shouldComponentUpdate(nextProps: CubeViewProps, nextState: CubeViewState): boolean {
-    return Boolean(nextProps.essence);
+    if (!this.props.selectedDataSource.equals(nextProps.selectedDataSource)) {
+      var newEssence = Essence.fromDataSource(nextProps.selectedDataSource, {
+        dataSource: nextProps.selectedDataSource,
+        visualizations
+      });
+      this.setState({ essence: newEssence });
+    }
+
   }
 
   componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
-    this.props.updateHash(nextState.essence);
+    this.props.updateHash(nextState.essence.toHash(), "cube");
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.globalResizeListener);
     window.removeEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  getEssenceFromDataSource(selectedDataSource: DataSource): Essence {
+    return Essence.fromDataSource(selectedDataSource, { dataSource: selectedDataSource, visualizations });
+  }
+
+  getEssenceFromHash(hash: string): Essence {
+    var selectedDataSource = this.props.selectedDataSource;
+    if (hash[0] === '#') hash = hash.substr(1);
+
+    var parts = hash.split('/');
+    if (parts.length < 4) return null;
+    var view = parts.shift();
+    var cubeHash = parts.join('/');
+
+    return Essence.fromHash(cubeHash, { dataSource: selectedDataSource, visualizations });
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
@@ -241,6 +264,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     var clicker = this.clicker;
 
     var { essence, menuStage, visualizationStage, dragOver } = this.state;
+
+    if (!essence) return null;
 
     var { visualization } = essence;
 

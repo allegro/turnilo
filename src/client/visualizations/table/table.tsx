@@ -7,7 +7,8 @@ import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, Set, SortAction } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
-import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension, Measure, Colors, DataSource, Clicker, VisualizationProps, Resolve } from '../../../common/models/index';
+import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
+  Measure, Colors, DataSource, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';

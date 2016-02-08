@@ -6,26 +6,21 @@ import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
-
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { CubeView } from './cube-view';
+import { HomeHeaderBar } from './home-header-bar';
 
-describe('CubeView', () => {
-  it.skip('adds the correct class', () => {
+describe('HomeHeaderBar', () => {
+  it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <CubeView
-        hash={null}
-        selectedDataSource={null}
-        updateHash={null}
+      <HomeHeaderBar
+
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('cube-view');
-
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('home-header-bar');
   });
+
 });
-
-

@@ -6,23 +6,25 @@ import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
-
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { HeaderBar } from './header-bar';
+import { NavList } from './nav-list';
 
-describe('HeaderBar', () => {
+describe('NavList', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <HeaderBar
-        dataSource={null}
-        onNavClick={null}
+      <NavList
+        title={null}
+        className={null}
+        navItems={null}
+        onSelect={null}
+        icon={null}
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('header-bar');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('nav-list');
   });
 
 });

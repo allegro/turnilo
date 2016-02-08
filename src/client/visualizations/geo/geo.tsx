@@ -6,7 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
 // import { ... } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, Splits, Dimension, Measure, Colors, VisualizationProps, Resolve } from '../../../common/models/index';
+import { Stage, Essence, DataSource, Filter, Splits, Dimension, Measure, Colors, VisualizationProps, Resolve } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
 
 export interface GeoState {
