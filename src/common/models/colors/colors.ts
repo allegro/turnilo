@@ -5,22 +5,24 @@ import { $, Expression, Set, valueFromJS, valueToJS, FilterAction, LimitAction }
 import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataSource } from '../data-source/data-source';
 
-const COLORS = [
+const NULL_COLOR = '#666666';
+//const OTHERS_COLOR = '#AAAAAA';
+const NORMAL_COLORS = [
   '#2D95CA',
-  '#E4A83A',
-  '#D36FA4',
-  '#66CC86',
-  '#8476B2',
-  '#E48353',
-  '#E09BDB',
-  '#45A860',
-  '#B7BB53',
-  '#B8698C'
+  '#EFB925',
+  '#DA4E99',
+  '#4CC873',
+  '#745CBD',
+  '#EA7136',
+  '#E68EE0',
+  '#218C35',
+  '#B0B510',
+  '#904064'
 ];
 
 function valuesFromJS(valuesJS: Lookup<any>): Lookup<any> {
   var values: Lookup<any> = {};
-  for (var i = 0; i < COLORS.length; i++) {
+  for (var i = 0; i < NORMAL_COLORS.length; i++) {
     if (!hasOwnProperty(valuesJS, i)) continue;
     values[i] = valueFromJS(valuesJS[i]);
   }
@@ -29,7 +31,7 @@ function valuesFromJS(valuesJS: Lookup<any>): Lookup<any> {
 
 function valuesToJS(values: Lookup<any>): Lookup<any> {
   var valuesJS: Lookup<any> = {};
-  for (var i = 0; i < COLORS.length; i++) {
+  for (var i = 0; i < NORMAL_COLORS.length; i++) {
     if (!hasOwnProperty(values, i)) continue;
     valuesJS[i] = valueToJS(values[i]);
   }
@@ -48,7 +50,7 @@ function valuesEqual(values1: Lookup<any>, values2: Lookup<any>): boolean {
   if (!Boolean(values1) === Boolean(values2)) return false;
   if (values1 === values2) return true;
   if (!values1 !== !values2) return false;
-  for (var i = 0; i < COLORS.length; i++) {
+  for (var i = 0; i < NORMAL_COLORS.length; i++) {
     var v1 = values1[i];
     var v2 = values2[i];
     if (hasOwnProperty(values1, i) !== hasOwnProperty(values2, i)) return false;
@@ -59,7 +61,7 @@ function valuesEqual(values1: Lookup<any>, values2: Lookup<any>): boolean {
 
 function cloneValues(values: Lookup<any>): Lookup<any> {
   var newValues: Lookup<any> = {};
-  for (var i = 0; i < COLORS.length; i++) {
+  for (var i = 0; i < NORMAL_COLORS.length; i++) {
     if (!hasOwnProperty(values, i)) continue;
     newValues[i] = values[i];
   }
@@ -91,7 +93,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
 
   static fromValues(dimension: string, values: any[]): Colors {
     var valueLookup: Lookup<any> = {};
-    var n = Math.min(values.length, COLORS.length);
+    var n = Math.min(values.length, NORMAL_COLORS.length);
     for (var i = 0; i < n; i++) {
       valueLookup[i] = values[i];
     }
@@ -165,7 +167,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     if (!values) return null;
 
     var vs: any[] = [];
-    for (var i = 0; i < COLORS.length; i++) {
+    for (var i = 0; i < NORMAL_COLORS.length; i++) {
       if (!hasOwnProperty(values, i)) continue;
       vs.push(values[i]);
     }
@@ -201,7 +203,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   public valueIndex(v: any): number {
     var { values } = this;
     if (!values) return -1;
-    for (var i = 0; i < COLORS.length; i++) {
+    for (var i = 0; i < NORMAL_COLORS.length; i++) {
       if (!hasOwnProperty(values, i)) continue;
       if (valueEquals(values[i], v)) return i;
     }
@@ -211,7 +213,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   public nextIndex(): number {
     var { values } = this;
     if (!values) return 0;
-    for (var i = 0; i < COLORS.length; i++) {
+    for (var i = 0; i < NORMAL_COLORS.length; i++) {
       if (hasOwnProperty(values, i)) continue;
       return i;
     }
@@ -246,12 +248,13 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   }
 
   public getColor(value: any, index: number): string {
+    if (value === null) return NULL_COLOR;
     var { values, limit } = this;
     if (values) {
       var colorIdx = this.valueIndex(value);
-      return colorIdx === -1 ? null : COLORS[colorIdx];
+      return colorIdx === -1 ? null : NORMAL_COLORS[colorIdx];
     } else {
-      return index < limit ? COLORS[index] : null;
+      return index < limit ? NORMAL_COLORS[index] : null;
     }
   }
 }
