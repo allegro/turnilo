@@ -6,7 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
-import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Colors, DataSource, Clicker, VisualizationProps, Resolve } from "../../../common/models/index";
+import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Colors, DataSource, VisualizationProps, Resolve } from "../../../common/models/index";
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 

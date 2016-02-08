@@ -9,12 +9,17 @@
   overflow: hidden;
   background: $background-base;
 
-  .header-bar {
+  .collection {
+    @include pin-full;
+    overflow: scroll;
+  }
+
+  .home-header-bar, .cube-header-bar {
     @include pin-top($header-height);
     z-index: 11;
   }
 
-  .cube-view {
+  .home-view, .cube-view {
     @include unpin-top($header-height);
   }
 

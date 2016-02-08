@@ -73,7 +73,6 @@ describe('Essence', () => {
   it('is an immutable class', () => {
     testImmutableClass<EssenceJS>(Essence, [
       {
-        dataSource: 'twitter',
         visualization: 'viz1',
         timezone: 'Etc/UTC',
         filter: {
@@ -86,7 +85,7 @@ describe('Essence', () => {
         splits: []
       }], {
       context: {
-        dataSources: List(<any> dataSources),
+        dataSource: dataSource,
         visualizations: List(<any> visualizationsArray)
       }
     });

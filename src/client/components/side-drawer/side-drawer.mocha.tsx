@@ -17,7 +17,8 @@ describe('SideDrawer', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <SideDrawer
         changeDataSource={null}
-        essence={null}
+        dataSources={null}
+        selectedDataSource={null}
         onClose={null}
       />
     );

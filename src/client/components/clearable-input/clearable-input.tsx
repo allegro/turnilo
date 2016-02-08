@@ -9,7 +9,7 @@ require('./clearable-input.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 

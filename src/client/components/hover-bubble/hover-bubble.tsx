@@ -4,7 +4,7 @@ require('./hover-bubble.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset, Datum } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { TIME_SEGMENT } from '../../config/constants';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { BodyPortal } from '../body-portal/body-portal';

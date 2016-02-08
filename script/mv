@@ -38,9 +38,9 @@ console.log('Making path:', newPath);
 
 fs.copySync(oldPath, newPath);
 fs.removeSync(oldPath);
-fs.renameSync(newPath + oldName + '.ts', newPath + newName + '.ts');
+fs.renameSync(newPath + oldName + '.tsx', newPath + newName + '.tsx');
 fs.renameSync(newPath + oldName + '.scss', newPath + newName + '.scss');
-fs.renameSync(newPath + oldName + '.mocha.ts', newPath + newName + '.mocha.ts');
+fs.renameSync(newPath + oldName + '.mocha.tsx', newPath + newName + '.mocha.tsx');
 
 var replacePath = './src/client/';
 
