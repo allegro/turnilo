@@ -6,7 +6,7 @@ import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataSource } from '../data-source/data-source';
 
 const NULL_COLOR = '#666666';
-const OTHERS_COLOR = '#AAAAAA';
+//const OTHERS_COLOR = '#AAAAAA';
 const NORMAL_COLORS = [
   '#2D95CA',
   '#EFB925',
@@ -248,6 +248,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   }
 
   public getColor(value: any, index: number): string {
+    if (value === null) return NULL_COLOR;
     var { values, limit } = this;
     if (values) {
       var colorIdx = this.valueIndex(value);
