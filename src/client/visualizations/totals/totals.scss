@@ -1,44 +1,52 @@
 @import '../../imports';
 
-$padding: 50px;
-$total-width: 180px;
+$total-single-width: 260px;
+$total-width: 176px;
 
 .totals {
   @include pin-full;
 
   .total-container {
     position: absolute;
-    left: 50%;
-    top: $padding;
+    top: 60px;
+    width: 100%; // overwritten in JS if more than one total
   }
 
   .total {
     display: inline-block;
-    border: 1px solid $border-extra-light;
     width: $total-width;
-    height: 90px;
     text-align: center;
-    padding: 5px;
-    margin-right: -1px;
-    margin-bottom: -1px;
+    padding: 0 10px;
+    margin-bottom: 34px;
 
     .measure-name {
       @include ellipsis;
+      width: 100%;
       cursor: default;
-      margin-top: 15px;
-      padding-left: 3px;
-      padding-right: 3px;
       font-size: 15px;
-      height: 20px;
-      color: $text-medium;
+      padding-bottom: 8px;
+      color: #999;
       user-select: text;
     }
 
     .measure-value {
+      width: 100%;
       cursor: default;
-      margin-top: 5px;
-      font-size: 20px;
+      font-size: 30px;
       user-select: text;
+    }
+
+    &.single {
+      width: 100%;
+
+      .measure-name {
+        font-size: 20px;
+        padding-bottom: 11px;
+      }
+
+      .measure-value {
+        font-size: 40px;
+      }
     }
   }
 
