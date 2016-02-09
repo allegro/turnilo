@@ -94,6 +94,9 @@
     .menu-icon {
       display: inline-block;
       padding: 11px 5px;
+      svg path {
+        fill: #fff;
+      }
     }
 
     .title {
@@ -122,6 +125,20 @@
       display: inline-block;
       padding: 11px 5px;
       cursor: pointer;
+
+      &.panic:after { content: 'Reset (in case of bug)'; }
+      &.help:after { content: 'Google Groups'; }
+      &.github:after { content: 'Project GitHub'; }
+
+      &:hover {
+        svg {
+          opacity: 0.85;
+        }
+
+        &:after {
+          opacity: 1;
+        }
+      }
 
       &:after {
         @extend %menu-cont;
