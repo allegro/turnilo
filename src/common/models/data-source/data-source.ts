@@ -4,7 +4,7 @@ import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
-import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, ChainExpression, SortAction } from 'plywood';
+import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -57,6 +57,7 @@ export interface DataSourceValue {
   subsetFilter?: Expression;
   options?: Lookup<any>;
   introspection: string;
+  attributes: Attributes;
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
@@ -80,6 +81,7 @@ export interface DataSourceJS {
   subsetFilter?: ExpressionJS;
   options?: Lookup<any>;
   introspection?: string;
+  attributes?: AttributeJSs;
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
   timeAttribute?: string;
@@ -123,13 +125,14 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   static fromJS(parameters: DataSourceJS, executor: Executor = null): DataSource {
+    var attributes = AttributeInfo.fromJSs(parameters.attributes || []);
     var dimensions = makeUniqueDimensionList((parameters.dimensions || []).map((d) => Dimension.fromJS(d)));
     var measures = makeUniqueMeasureList((parameters.measures || []).map((m) => Measure.fromJS(m)));
 
     var engine = parameters.engine;
     var timeAttributeName = parameters.timeAttribute;
     if (engine === 'druid' && !timeAttributeName) {
-      timeAttributeName = 'time';
+      timeAttributeName = '__time';
     }
     var timeAttribute = timeAttributeName ? $(timeAttributeName) : null;
 
@@ -175,6 +178,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       subsetFilter: parameters.subsetFilter ? Expression.fromJSLoose(parameters.subsetFilter) : null,
       options,
       introspection,
+      attributes,
       dimensions,
       measures,
       timeAttribute,
@@ -201,6 +205,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public subsetFilter: Expression;
   public options: Lookup<any>;
   public introspection: string;
+  public attributes: Attributes;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
@@ -224,6 +229,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.subsetFilter = parameters.subsetFilter;
     this.options = parameters.options || {};
     this.introspection = parameters.introspection || DataSource.DEFAULT_INTROSPECTION;
+    this.attributes = parameters.attributes || [];
     this.dimensions = parameters.dimensions || List([]);
     this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
@@ -248,6 +254,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       subsetFilter: this.subsetFilter,
       options: this.options,
       introspection: this.introspection,
+      attributes: this.attributes,
       dimensions: this.dimensions,
       measures: this.measures,
       timeAttribute: this.timeAttribute,
@@ -274,6 +281,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       source: this.source,
       subsetFilter: this.subsetFilter ? this.subsetFilter.toJS() : null,
       introspection: this.introspection,
+      attributes: AttributeInfo.toJSs(this.attributes),
       dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
       measures: this.measures.toArray().map(measure => measure.toJS()),
       defaultTimezone: this.defaultTimezone.toJS(),
@@ -322,6 +330,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       (!this.subsetFilter || this.subsetFilter.equals(other.subsetFilter)) &&
       JSON.stringify(this.options) === JSON.stringify(other.options) &&
       this.introspection === other.introspection &&
+      arraysEqual(this.attributes, other.attributes) &&
       listsEqual(this.dimensions, other.dimensions) &&
       listsEqual(this.measures, other.measures) &&
       Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
@@ -433,9 +442,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return this.engine === 'druid';
   }
 
-  public addAttributes(attributes: Attributes): DataSource {
+  public setAttributes(attributes: Attributes): DataSource {
     var { introspection, dimensions, measures } = this;
-    if (introspection === 'none' || introspection === 'no-autofill') return this;
+    if (introspection === 'none') return this;
+
     var autofillDimensions = introspection === 'autofill-dimensions-only' || introspection === 'autofill-all';
     var autofillMeasures = introspection === 'autofill-measures-only' || introspection === 'autofill-all';
 
@@ -518,6 +528,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     var value = this.valueOf();
     value.introspection = 'no-autofill';
+    value.attributes = attributes;
     value.dimensions = dimensions;
     value.measures = measures;
 

@@ -49,7 +49,6 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
         name,
         engine: 'druid',
         source: name,
-        timeAttribute: 'time',
         refreshRule: RefreshRule.query().toJS()
       });
     };

@@ -40,10 +40,6 @@ dataSources:
     # This is useful if you are providing Pivot to people who should have restricted access. Must be an AND of INs (or just a single IN)
     #subsetFilter: $channel.in(["#en.wikipedia", "#de.wikipedia"])
 
-    # The primary time attribute of the data refers to the attribute that must always be filtered on
-    # This is particularly useful for Druid data sources as they must always have a time filter.
-    timeAttribute: time
-
     # The refresh rule describes how often the data source looks for new data. Default: 'query'/PT1M (every minute)
     # In this case it has to be fixed since this data source is static
     refreshRule:
@@ -175,8 +171,6 @@ dataSources:
     engine: druid # Set the engine to druid
     source: wikipedia # The druid dataSource
 
-    timeAttribute: time # The time attribute (this needs to be set for Druid, but could be anything. You should leave it as 'time')
-
     # This is a real time data source so always assume it is up to date
     # if this assumption is not true, better use 'query' instead
     refreshRule:
@@ -228,8 +222,6 @@ dataSources:
     title: Wikipedia Crazy
     engine: druid
     source: wikipedia
-
-    timeAttribute: time # The time attribute (this needs to be set for Druid, but could be anything. You should leave it as 'time')
 
     # Avoid creating automatic dimensions from the data
     introspection: no-autofill

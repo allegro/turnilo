@@ -27,7 +27,7 @@ export function makeTitle(name: string): string {
     return s.replace(/[_\-]+/, ' ').toUpperCase();
   }).replace(/[a-z][A-Z]/g, (s) => { // 'HelloWorld' -> 'Hello World'
     return s[0] + ' ' + s[1];
-  });
+  }).trim();
 }
 
 export function listsEqual<T>(listA: List<T>, listB: List<T>): boolean {

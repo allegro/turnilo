@@ -42,11 +42,13 @@ function getCountDistinctReferences(ex: Expression): string[] {
 
 /**
  * This function tries to deduce the structure of the dataSource based on the dimensions and measures defined within.
- * It should only be used when for some reason introspection if not available.
+ * It should only be used when, for some reason, introspection if not available.
  * @param dataSource
  * @returns {Attributes}
  */
 function deduceAttributes(dataSource: DataSource): Attributes {
+  if (dataSource.attributes.length) return dataSource.attributes;
+
   var attributeJSs: AttributeJSs = [];
 
   dataSource.dimensions.forEach((dimension) => {
@@ -177,7 +179,7 @@ export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequest
             datasets: { main: dataset }
           });
 
-          return dataSource.addAttributes(dataset.attributes).attachExecutor(executor);
+          return dataSource.setAttributes(dataset.attributes).attachExecutor(executor);
         });
 
       case 'druid':
@@ -186,7 +188,7 @@ export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequest
             datasets: { main: external }
           });
 
-          return dataSource.addAttributes(external.attributes).attachExecutor(executor);
+          return dataSource.setAttributes(external.attributes).attachExecutor(executor);
         }).then(DataSource.updateMaxTime);
 
       default:
