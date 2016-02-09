@@ -29,8 +29,10 @@ export class NavList extends React.Component< NavListProps, NavListState> {
   }
 
   getItemClassName(itemName: string) {
-    if (this.props.selected && this.props.selected === itemName) return 'item selected';
-    return 'item';
+    var itemClass = "item";
+    if (this.props.selected && this.props.selected === itemName) return `${itemClass} selected`;
+    if (itemName === "settings") return `${itemClass} not-implemented`;
+    return itemClass;
   }
 
   renderIcon(path: string): any {
@@ -56,7 +58,7 @@ export class NavList extends React.Component< NavListProps, NavListState> {
   render() {
     var groupClassName = "group";
     var titleSection = <section className="group-title">{this.props.title}
-      <ul className="icons">
+      <ul className="icons not-implemented">
         <li className="icon">
           <SvgIcon svg={require('../../icons/full-add.svg')}/>
         </li>

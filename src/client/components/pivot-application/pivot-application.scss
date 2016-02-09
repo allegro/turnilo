@@ -9,6 +9,8 @@
   overflow: hidden;
   background: $background-base;
 
+  .not-implemented {  display: none;  }
+
   .collection {
     @include pin-full;
     overflow: scroll;
