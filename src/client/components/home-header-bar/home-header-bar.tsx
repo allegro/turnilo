@@ -45,14 +45,14 @@ export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHead
       <div className="burger-bar">
         <div className="title">Home</div>
       </div>
-      <div className="right-bar">
-        <a className="icon-button" onClick={this.handleHelp.bind(this)}>
+      <ul className="right-bar">
+        <li className="icon-button" onClick={this.handleHelp.bind(this)}>
           <SvgIcon svg={require('../../icons/full-settings.svg')}/>
-        </a>
-        <a className="icon-button" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
+        </li>
+        <li className="icon-button" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
           <SvgIcon svg={require('../../icons/full-user.svg')}/>
-        </a>
-      </div>
+        </li>
+      </ul>
     </header>;
   }
 }
