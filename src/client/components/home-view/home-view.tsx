@@ -25,9 +25,19 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
   getAdditionalLinks() {
     return List([
       { title: 'Settings', name: 'settings' },
-      { title: 'Info & Feedback', name: 'info & feedback' }
+      { title: 'Info & Feedback', name: 'info & feedback', target: 'https://groups.google.com/forum/#!forum/imply-user-group'}
     ]);
   }
+
+  selectLink(selected: any) {
+    if (selected.target) {
+      window.open(selected.target);
+      return false;
+    } else {
+      // state change for application to handle
+    }
+
+  };
 
   selectDataCube(dataCube: DataSource) {
     this.props.selectDataCube(dataCube);
@@ -52,7 +62,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
           <NavList
             className="items"
             navItems={this.getAdditionalLinks()}
-            onSelect={function(){}}
+            onSelect={this.selectLink.bind(this)}
           />
         </div>
       </div>
