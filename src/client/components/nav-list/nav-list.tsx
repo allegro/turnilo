@@ -23,10 +23,6 @@ export interface NavListState {
 }
 
 export class NavList extends React.Component< NavListProps, NavListState> {
-  constructor() {
-    super();
-    // this.state = {};
-  }
 
   getItemClassName(itemName: string) {
     var itemClass = "item";
