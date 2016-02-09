@@ -48,7 +48,6 @@ export class NavList extends React.Component< NavListProps, NavListState> {
         onClick={this.props.onSelect.bind(this, navItem)}
       >
         {this.renderIcon(this.props.icon)}
-        {navItem.title}
       </li>;
     });
   }

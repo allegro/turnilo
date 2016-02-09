@@ -126,6 +126,10 @@
       padding: 11px 5px;
       cursor: pointer;
 
+      &:not(:first-child) {
+        margin-left: 3.11px;
+      }
+
       &.panic:after { content: 'Reset (in case of bug)'; }
       &.help:after { content: 'Google Groups'; }
       &.github:after { content: 'Project GitHub'; }
