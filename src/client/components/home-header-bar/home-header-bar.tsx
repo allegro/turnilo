@@ -17,27 +17,7 @@ export interface HomeHeaderBarState {
 }
 
 export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHeaderBarState> {
-  public mounted: boolean;
-
-  constructor() {
-    super();
-    // this.state = {};
-
-  }
-
-  componentDidMount() {
-    this.mounted = true;
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
-  }
-
-  componentWillReceiveProps(nextProps: HomeHeaderBarProps) {
-
-  }
-
-  handleHelp() {}
+  handleSettings() {}
 
 
   render() {
@@ -46,8 +26,8 @@ export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHead
         <div className="title">Home</div>
       </div>
       <ul className="right-bar">
-        <li className="icon-button" onClick={this.handleHelp.bind(this)}>
-          <SvgIcon svg={require('../../icons/full-settings.svg')}/>
+        <li className="icon-button" onClick={this.handleSettings.bind(this)}>
+          <SvgIcon className="not-implemented" svg={require('../../icons/full-settings.svg')}/>
         </li>
         <li className="icon-button" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
           <SvgIcon svg={require('../../icons/full-user.svg')}/>
