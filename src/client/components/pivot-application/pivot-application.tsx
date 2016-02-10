@@ -138,7 +138,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var viewType = this.state.viewType;
     this.hashUpdating = true;
     if (viewType === CUBE) newHash = `/${this.state.selectedDataSource.name}${newHash}`;
-    window.location.hash = "#" + viewType + newHash;
+    window.location.hash = `#${viewType}${newHash}`;
     // setTimeout(() => {
     this.hashUpdating = false;
     // }, 10);
