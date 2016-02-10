@@ -19,7 +19,6 @@ export interface HomeHeaderBarState {
 export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHeaderBarState> {
   handleSettings() {}
 
-
   render() {
     return <header className="home-header-bar">
       <div className="burger-bar">
@@ -29,8 +28,10 @@ export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHead
         <li className="icon-button" onClick={this.handleSettings.bind(this)}>
           <SvgIcon className="not-implemented" svg={require('../../icons/full-settings.svg')}/>
         </li>
-        <li className="icon-button" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
-          <SvgIcon svg={require('../../icons/full-user.svg')}/>
+        <li className="icon-button">
+          <a href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
+            <SvgIcon svg={require('../../icons/full-user.svg')}/>
+          </a>
         </li>
       </ul>
     </header>;
