@@ -2,7 +2,7 @@
 
 import * as Q from 'q';
 import { Duration, Timezone } from 'chronoshift';
-import { $ } from 'plywood';
+import { $, AttributeInfo, RefExpression } from 'plywood';
 import { DataSource, DataSourceJS, RefreshRule, Dimension, Measure } from '../../../common/models/index';
 
 export interface DataSourceFiller {
@@ -215,6 +215,20 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
 }
 
 
+function attributeToYAML(attribute: AttributeInfo): string[] {
+  var lines: string[] = [
+    `      - name: ${attribute.name}`,
+    `        type: ${attribute.type}`
+  ];
+
+  if (attribute.special) {
+    lines.push(`        special: ${attribute.special}`);
+  }
+
+  lines.push('');
+  return lines;
+}
+
 function dimensionToYAML(dimension: Dimension): string[] {
   var lines: string[] = [
     `      - name: ${dimension.name}`,
@@ -239,12 +253,16 @@ function measureToYAML(measure: Measure): string[] {
     `        title: ${measure.title}`,
   ];
 
-  var ex = measure.expression.toString();
-  var comment = '';
-  if (/\bmin\b|\bmax\b|\bunique\b|\buniques\b/i.test(ex.replace(/_/g, ' '))) { // \b matches "_"   :-(
+  var ex = measure.expression;
+  var lastAction = ex.lastAction();
+  var comment = ''; // Make a comment if this is a .sum(min_blah) or similar
+  if (
+    lastAction.action === 'sum' &&
+    /\bmin\b|\bmax\b|\bunique\b|\buniques\b/i.test(((lastAction.expression as RefExpression).name || '').replace(/_/g, ' ')) // \b matches "_"   :-(
+  ) {
     comment = ' # double check please';
   }
-  lines.push(`        expression: ${ex}${comment}`);
+  lines.push(`        expression: ${ex.toString()}${comment}`);
 
   var format = measure.format;
   if (format !== Measure.DEFAULT_FORMAT) {
@@ -264,20 +282,19 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
     ``
   ];
 
-
-  if (dataSource.timeAttribute) {
+  var timeAttribute = dataSource.timeAttribute;
+  if (timeAttribute && !(dataSource.engine === 'druid' && timeAttribute.name === '__time')) {
     if (withComments) {
       lines.push("    # The primary time attribute of the data refers to the attribute that must always be filtered on");
       lines.push("    # This is particularly useful for Druid data sources as they must always have a time filter.");
     }
-    lines.push(`    timeAttribute: ${dataSource.timeAttribute.name}`, '');
+    lines.push(`    timeAttribute: ${timeAttribute.name}`, '');
   }
 
 
   var refreshRule = dataSource.refreshRule;
   if (withComments) {
     lines.push("    # The refresh rule describes how often the data source looks for new data. Default: 'query'/PT1M (every minute)");
-    lines.push("    # In this case it has to be fixed since this data source is static");
   }
   lines.push(`    refreshRule:`);
   lines.push(`      rule: ${refreshRule.rule}`);
@@ -345,6 +362,29 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
   lines.push(`    introspection: ${introspection}`, '');
 
 
+  var attributeOverrides = dataSource.attributeOverrides;
+  if (withComments) {
+    lines.push("    # The list of attribute overrides in case introspection get something wrong");
+  }
+  lines.push('    attributeOverrides:');
+  if (withComments) {
+    lines.push(
+      "      # A general attribute override looks like so:",
+      "      #",
+      "      # name: user_unique",
+      "      # ^ the name of the attribute (the column in the database)",
+      "      #",
+      "      # type: STRING",
+      "      # ^ (optional) plywood type of the attribute",
+      "      #",
+      "      # special: unique",
+      "      # ^ (optional) any kind of special significance associated with this attribute",
+      ""
+    );
+  }
+  lines = lines.concat.apply(lines, attributeOverrides.map(attributeToYAML));
+
+
   var dimensions = dataSource.dimensions.toArray();
   if (withComments) {
     lines.push("    # The list of dimensions defined in the UI. The order here will be reflected in the UI");
@@ -366,11 +406,26 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
       "      # expression: $channel",
       "      # ^ (optional) the Plywood bucketing expression for this dimension. Defaults to '$name'",
       "      #   if, say, channel was called 'cnl' in the data you would put '$cnl' here",
-      "      #   See also the expressions API reference: https://github.com/implydata/plywood/blob/master/docs/expressions.md",
+      "      #   See also the expressions API reference: https://plywood.imply.io/expressions",
       ""
     );
   }
   lines = lines.concat.apply(lines, dimensions.map(dimensionToYAML));
+  if (withComments) {
+    lines.push(
+      "      # This is the place where you might want to add derived dimensions.",
+      "      #",
+      "      # Here are some examples of possible derived dimensions:",
+      "      #",
+      "      # - name: is_usa",
+      "      #   title: Is USA?",
+      "      #   expression: $country == 'United States'",
+      "      #",
+      "      # - name: file_version",
+      "      #   expression: $filename.extract('(\d+\.\d+\.\d+)')",
+      ""
+    );
+  }
 
 
   var measures = dataSource.measures.toArray();
@@ -396,6 +451,22 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
     );
   }
   lines = lines.concat.apply(lines, measures.map(measureToYAML));
+  if (withComments) {
+    lines.push(
+      "      # This is the place where you might want to add derived measures (a.k.a Post Aggregators).",
+      "      #",
+      "      # Here are some examples of possible derived measures:",
+      "      #",
+      "      # - name: ecpm",
+      "      #   title: eCPM",
+      "      #   expression: $main.sum($revenue) / $main.sum($impressions) * 1000",
+      "      #",
+      "      # - name: usa_revenue",
+      "      #   title: USA Revenue",
+      "      #   expression: $main.filter($country == 'United States').sum($revenue)",
+      ""
+    );
+  }
 
   lines.push('');
   return lines;

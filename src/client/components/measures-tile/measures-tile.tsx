@@ -34,8 +34,18 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     this.setState({ showSearch: !showSearch });
   }
 
+  measureClick(measure: Measure, e: MouseEvent) {
+    if (e.altKey && typeof console !== 'undefined') {
+      console.log(`Measure: ${measure.name}`);
+      console.log(`expression: ${measure.expression.toString()}`);
+      return;
+    }
+    var { clicker } = this.props;
+    clicker.toggleMeasure(measure);
+  }
+
   render() {
-    var { clicker, essence } = this.props;
+    var { essence } = this.props;
     var { showSearch } = this.state;
     var { dataSource, selectedMeasures } = essence;
 
@@ -48,7 +58,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       return <div
         className={'row' + (selected ? ' selected' : '')}
         key={measureName}
-        onClick={clicker.toggleMeasure.bind(clicker, measure)}
+        onClick={this.measureClick.bind(this, measure)}
       >
         <Checkbox selected={selected}/>
         <div className="label">{measure.title}</div>

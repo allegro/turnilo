@@ -10,4 +10,4 @@ assets/data/*-large.*
 assets/data/*-private.*
 webstorm/errors
 config.yaml
-config_.yaml
+config-test.yaml

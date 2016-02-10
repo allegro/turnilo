@@ -57,11 +57,11 @@ export interface DataSourceValue {
   subsetFilter?: Expression;
   options?: Lookup<any>;
   introspection: string;
+  attributeOverrides: Attributes;
   attributes: Attributes;
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
-  minGranularity: Duration;
   defaultTimezone: Timezone;
   defaultFilter: Filter;
   defaultDuration: Duration;
@@ -81,11 +81,11 @@ export interface DataSourceJS {
   subsetFilter?: ExpressionJS;
   options?: Lookup<any>;
   introspection?: string;
+  attributeOverrides?: AttributeJSs;
   attributes?: AttributeJSs;
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
   timeAttribute?: string;
-  minGranularity?: string;
   defaultTimezone?: string;
   defaultFilter?: FilterJS;
   defaultDuration?: string;
@@ -125,26 +125,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   static fromJS(parameters: DataSourceJS, executor: Executor = null): DataSource {
-    var attributes = AttributeInfo.fromJSs(parameters.attributes || []);
-    var dimensions = makeUniqueDimensionList((parameters.dimensions || []).map((d) => Dimension.fromJS(d)));
-    var measures = makeUniqueMeasureList((parameters.measures || []).map((m) => Measure.fromJS(m)));
-
     var engine = parameters.engine;
-    var timeAttributeName = parameters.timeAttribute;
-    if (engine === 'druid' && !timeAttributeName) {
-      timeAttributeName = '__time';
-    }
-    var timeAttribute = timeAttributeName ? $(timeAttributeName) : null;
-
-    if (timeAttribute && !Dimension.getDimensionByExpression(dimensions, timeAttribute)) {
-      dimensions = dimensions.unshift(new Dimension({
-        name: timeAttributeName,
-        expression: timeAttribute,
-        kind: 'time'
-      }));
-    }
-
     var introspection = parameters.introspection;
+    var attributeOverrideJSs = parameters.attributeOverrides;
 
     // Back compat.
     var options = parameters.options || {};
@@ -156,6 +139,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       if (!introspection) introspection = 'no-autofill';
       delete options['disableAutofill'];
     }
+    if (options['attributeOverrides']) {
+      if (!attributeOverrideJSs) attributeOverrideJSs = options['attributeOverrides'];
+      delete options['attributeOverrides'];
+    }
+    // End Back compat.
 
     introspection = introspection || DataSource.DEFAULT_INTROSPECTION;
     if (DataSource.INTROSPECTION_VALUES.indexOf(introspection) === -1) {
@@ -169,6 +157,25 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       maxTime = MaxTime.fromNow();
     }
 
+    var timeAttributeName = parameters.timeAttribute;
+    if (engine === 'druid' && !timeAttributeName) {
+      timeAttributeName = '__time';
+    }
+    var timeAttribute = timeAttributeName ? $(timeAttributeName) : null;
+
+    var attributeOverrides = AttributeInfo.fromJSs(attributeOverrideJSs || []);
+    var attributes = AttributeInfo.fromJSs(parameters.attributes || []);
+    var dimensions = makeUniqueDimensionList((parameters.dimensions || []).map((d) => Dimension.fromJS(d)));
+    var measures = makeUniqueMeasureList((parameters.measures || []).map((m) => Measure.fromJS(m)));
+
+    if (timeAttribute && !Dimension.getDimensionByExpression(dimensions, timeAttribute)) {
+      dimensions = dimensions.unshift(new Dimension({
+        name: timeAttributeName,
+        expression: timeAttribute,
+        kind: 'time'
+      }));
+    }
+
     var value: DataSourceValue = {
       executor: null,
       name: parameters.name,
@@ -178,11 +185,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       subsetFilter: parameters.subsetFilter ? Expression.fromJSLoose(parameters.subsetFilter) : null,
       options,
       introspection,
+      attributeOverrides,
       attributes,
       dimensions,
       measures,
       timeAttribute,
-      minGranularity: parameters.minGranularity ? Duration.fromJS(parameters.minGranularity) : null,
       defaultTimezone: parameters.defaultTimezone ? Timezone.fromJS(parameters.defaultTimezone) : DataSource.DEFAULT_TIMEZONE,
       defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : Filter.EMPTY,
       defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : DataSource.DEFAULT_DURATION,
@@ -206,10 +213,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public options: Lookup<any>;
   public introspection: string;
   public attributes: Attributes;
+  public attributeOverrides: Attributes;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
-  public minGranularity: Duration;
   public defaultTimezone: Timezone;
   public defaultFilter: Filter;
   public defaultDuration: Duration;
@@ -230,10 +237,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.options = parameters.options || {};
     this.introspection = parameters.introspection || DataSource.DEFAULT_INTROSPECTION;
     this.attributes = parameters.attributes || [];
+    this.attributeOverrides = parameters.attributeOverrides || [];
     this.dimensions = parameters.dimensions || List([]);
     this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
-    this.minGranularity = parameters.minGranularity;
     this.defaultTimezone = parameters.defaultTimezone;
     this.defaultFilter = parameters.defaultFilter;
     this.defaultDuration = parameters.defaultDuration;
@@ -254,11 +261,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       subsetFilter: this.subsetFilter,
       options: this.options,
       introspection: this.introspection,
+      attributeOverrides: this.attributeOverrides,
       attributes: this.attributes,
       dimensions: this.dimensions,
       measures: this.measures,
       timeAttribute: this.timeAttribute,
-      minGranularity: this.minGranularity,
       defaultTimezone: this.defaultTimezone,
       defaultFilter: this.defaultFilter,
       defaultDuration: this.defaultDuration,
@@ -281,7 +288,6 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       source: this.source,
       subsetFilter: this.subsetFilter ? this.subsetFilter.toJS() : null,
       introspection: this.introspection,
-      attributes: AttributeInfo.toJSs(this.attributes),
       dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
       measures: this.measures.toArray().map(measure => measure.toJS()),
       defaultTimezone: this.defaultTimezone.toJS(),
@@ -291,18 +297,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultPinnedDimensions: this.defaultPinnedDimensions.toArray(),
       refreshRule: this.refreshRule.toJS()
     };
-    if (this.timeAttribute) {
-      js.timeAttribute = this.timeAttribute.name;
-    }
-    if (this.minGranularity) {
-      js.minGranularity = this.minGranularity.toJS();
-    }
-    if (Object.keys(this.options).length) {
-      js.options = this.options;
-    }
-    if (this.maxTime) {
-      js.maxTime = this.maxTime.toJS();
-    }
+    if (this.timeAttribute) js.timeAttribute = this.timeAttribute.name;
+    if (this.attributeOverrides.length) js.attributeOverrides = AttributeInfo.toJSs(this.attributeOverrides);
+    if (this.attributes.length) js.attributes = AttributeInfo.toJSs(this.attributes);
+    if (Object.keys(this.options).length) js.options = this.options;
+    if (this.maxTime) js.maxTime = this.maxTime.toJS();
     return js;
   }
 
@@ -330,13 +329,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       (!this.subsetFilter || this.subsetFilter.equals(other.subsetFilter)) &&
       JSON.stringify(this.options) === JSON.stringify(other.options) &&
       this.introspection === other.introspection &&
+      arraysEqual(this.attributeOverrides, other.attributeOverrides) &&
       arraysEqual(this.attributes, other.attributes) &&
       listsEqual(this.dimensions, other.dimensions) &&
       listsEqual(this.measures, other.measures) &&
       Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
       (!this.timeAttribute || this.timeAttribute.equals(other.timeAttribute)) &&
-      Boolean(this.minGranularity) === Boolean(other.minGranularity) &&
-      (!this.minGranularity || this.minGranularity.equals(other.minGranularity)) &&
       this.defaultTimezone.equals(other.defaultTimezone) &&
       this.defaultFilter.equals(other.defaultFilter) &&
       this.defaultDuration.equals(other.defaultDuration) &&
@@ -364,6 +362,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (this.refreshRule.isRealtime()) {
       value.maxTime = null;
     }
+
+    // No need for the overrides
+    value.attributeOverrides = null;
 
     return new DataSource(value);
   }
