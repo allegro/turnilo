@@ -66,6 +66,11 @@ describe('DataSource', () => {
         source: 'wiki',
         subsetFilter: null,
         introspection: 'none',
+        attributes: [
+          { name: 'time', type: 'TIME' },
+          { name: 'articleName', type: 'STRING' },
+          { name: 'count', type: 'NUMBER', unsplitable: true, makerAction: { action: 'count' } }
+        ],
         dimensions: [
           {
             expression: {
@@ -90,11 +95,7 @@ describe('DataSource', () => {
           {
             name: 'count',
             title: 'count',
-            expression: {
-              name: 'count',
-              op: 'ref'
-            }
-
+            expression: $('main').sum('$count').toJS()
           }
         ],
         timeAttribute: 'time',
@@ -112,7 +113,7 @@ describe('DataSource', () => {
   });
 
 
-  describe("addAttributes", () => {
+  describe("setAttributes", () => {
     it("works in basic case (no count)", () => {
       var dataSourceStub = DataSource.fromJS({
         name: 'wiki',
@@ -121,7 +122,6 @@ describe('DataSource', () => {
         source: 'wiki',
         subsetFilter: null,
         introspection: 'autofill-all',
-        timeAttribute: 'time',
         defaultTimezone: 'Etc/UTC',
         defaultFilter: { op: 'literal', value: true },
         defaultDuration: 'P3D',
@@ -134,30 +134,44 @@ describe('DataSource', () => {
       });
 
       var attributes = [
-        AttributeInfo.fromJS({ name: 'time', type: 'TIME' }),
+        AttributeInfo.fromJS({ name: '__time', type: 'TIME' }),
         AttributeInfo.fromJS({ name: 'page', type: 'STRING' }),
         AttributeInfo.fromJS({ name: 'added', type: 'NUMBER' }),
         AttributeInfo.fromJS({ name: 'unique_user', special: 'unique' })
       ];
 
-      expect(dataSourceStub.addAttributes(attributes).toJS()).to.deep.equal(
+      expect(dataSourceStub.setAttributes(attributes).toJS()).to.deep.equal(
         {
-          "defaultDuration": "P3D",
-          "defaultFilter": {
-            "op": "literal",
-            "value": true
+          "name": "wiki",
+          "title": "Wiki",
+          "engine": "druid",
+          "source": "wiki",
+          "refreshRule": {
+            "refresh": "PT1M",
+            "rule": "fixed"
           },
+          "subsetFilter": null,
+          "defaultDuration": "P3D",
+          "defaultFilter": { "op": "literal", "value": true },
           "defaultPinnedDimensions": [],
           "defaultSortMeasure": "rows",
           "defaultTimezone": "Etc/UTC",
+          "introspection": "no-autofill",
+          "timeAttribute": '__time',
+          "attributes": [
+            { name: '__time', type: 'TIME' },
+            { name: 'page', type: 'STRING' },
+            { name: 'added', type: 'NUMBER' },
+            { name: 'unique_user', special: 'unique', "type": "STRING" }
+          ],
           "dimensions": [
             {
               "expression": {
-                "name": "time",
+                "name": "__time",
                 "op": "ref"
               },
               "kind": "time",
-              "name": "time",
+              "name": "__time",
               "title": "Time"
             },
             {
@@ -170,8 +184,6 @@ describe('DataSource', () => {
               "title": "Page"
             }
           ],
-          "engine": "druid",
-          "introspection": "no-autofill",
           "measures": [
             {
               "expression": {
@@ -209,16 +221,7 @@ describe('DataSource', () => {
               "name": "unique_user",
               "title": "Unique User"
             }
-          ],
-          "name": "wiki",
-          "refreshRule": {
-            "refresh": "PT1M",
-            "rule": "fixed"
-          },
-          "source": "wiki",
-          "subsetFilter": null,
-          "timeAttribute": "time",
-          "title": "Wiki"
+          ]
         }
       );
 

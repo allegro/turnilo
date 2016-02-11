@@ -3,7 +3,7 @@
 import * as path from 'path';
 import * as fs from 'fs-promise';
 import * as Q from 'q';
-import { ply, $, Expression, ExpressionJS, RefExpression, ChainExpression, External, Datum, Dataset, TimeRange,
+import { ply, $, Expression, ExpressionJS, RefExpression, ChainExpression, External, DruidExternal, Datum, Dataset, TimeRange,
          basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes } from 'plywood';
 import { DataSource, Dimension } from '../../../common/models/index';
 import { parseData } from '../../../common/utils/parser/parser';
@@ -42,16 +42,26 @@ function getCountDistinctReferences(ex: Expression): string[] {
 
 /**
  * This function tries to deduce the structure of the dataSource based on the dimensions and measures defined within.
- * It should only be used when for some reason introspection if not available.
+ * It should only be used when, for some reason, introspection if not available.
  * @param dataSource
  * @returns {Attributes}
  */
 function deduceAttributes(dataSource: DataSource): Attributes {
   var attributeJSs: AttributeJSs = [];
 
+  var timeAttribute = dataSource.timeAttribute;
+  if (timeAttribute) {
+    attributeJSs.push({ name: timeAttribute.name, type: 'TIME' });
+  }
+
   dataSource.dimensions.forEach((dimension) => {
-    // ToDo: fix this.
-    attributeJSs.push({ name: dimension.name, type: 'STRING' });
+    var expression = dimension.expression;
+    if (expression.equals(timeAttribute)) return;
+    var references = getReferences(expression);
+    for (var reference of references) {
+      if (reference === 'main') continue;
+      attributeJSs.push({ name: reference, type: 'STRING' });
+    }
   });
 
   dataSource.measures.forEach((measure) => {
@@ -69,8 +79,8 @@ function deduceAttributes(dataSource: DataSource): Attributes {
   });
 
   var attributes = AttributeInfo.fromJSs(attributeJSs);
-  if (dataSource.options['attributeOverrides']) {
-    attributes = AttributeInfo.applyOverrides(attributes, dataSource.options['attributeOverrides']);
+  if (dataSource.attributeOverrides.length) {
+    attributes = AttributeInfo.applyOverrides(attributes, dataSource.attributeOverrides);
   }
 
   return attributes;
@@ -92,11 +102,6 @@ export function getFileData(filePath: string): Q.Promise<any[]> {
 }
 
 export function externalFactory(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, timeout: number, introspectionStrategy: string): Q.Promise<External> {
-  var filter: ExpressionJS = null;
-  if (dataSource.subsetFilter) {
-    filter = dataSource.subsetFilter.toJS();
-  }
-
   var countDistinctReferences: string[] = [];
   if (dataSource.measures) {
     countDistinctReferences = [].concat.apply([], dataSource.measures.toArray().map((measure) => {
@@ -109,26 +114,26 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
   };
 
   if (dataSource.introspection === 'none') {
-    return Q(External.fromJS({
-      engine: 'druid',
+    return Q(new DruidExternal({
+      suppress: true,
       dataSource: dataSource.source,
       timeAttribute: dataSource.timeAttribute.name,
       customAggregations: dataSource.options['customAggregations'],
-      attributes: deduceAttributes(dataSource),
+      attributes: AttributeInfo.applyOverrides(deduceAttributes(dataSource), dataSource.attributeOverrides),
       introspectionStrategy,
-      filter,
+      filter: dataSource.subsetFilter,
       context,
       requester: druidRequester
     }));
   } else {
-    var introspectedExternalPromise = External.fromJS({
-      engine: 'druid',
+    var introspectedExternalPromise = new DruidExternal({
+      suppress: true,
       dataSource: dataSource.source,
       timeAttribute: dataSource.timeAttribute.name,
-      attributeOverrides: dataSource.options['attributeOverrides'],
+      attributeOverrides: dataSource.attributeOverrides,
       customAggregations: dataSource.options['customAggregations'],
       introspectionStrategy,
-      filter,
+      filter: dataSource.subsetFilter,
       context,
       requester: druidRequester
     }).introspect();
@@ -177,7 +182,7 @@ export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequest
             datasets: { main: dataset }
           });
 
-          return dataSource.addAttributes(dataset.attributes).attachExecutor(executor);
+          return dataSource.setAttributes(dataset.attributes).attachExecutor(executor);
         });
 
       case 'druid':
@@ -186,7 +191,7 @@ export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequest
             datasets: { main: external }
           });
 
-          return dataSource.addAttributes(external.attributes).attachExecutor(executor);
+          return dataSource.setAttributes(external.attributes).attachExecutor(executor);
         }).then(DataSource.updateMaxTime);
 
       default:

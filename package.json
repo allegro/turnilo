@@ -26,7 +26,7 @@
     "prepublish": "script/prepublish"
   },
   "dependencies": {
-    "body-parser": "1.14.2",
+    "body-parser": "1.15.0",
     "chronoshift": "0.3.7",
     "compression": "1.6.1",
     "d3": "3.5.14",
@@ -41,8 +41,8 @@
     "morgan": "1.6.1",
     "nopt": "3.0.6",
     "numeral": "1.5.3",
-    "plywood": "0.8.6",
-    "plywood-druid-requester": "1.2.6",
+    "plywood": "0.8.8",
+    "plywood-druid-requester": "1.2.7",
     "plywood-mysql-requester": "1.1.5",
     "q": "1.4.1",
     "qajax": "1.3.0",
@@ -53,7 +53,7 @@
   "devDependencies": {
     "chai": "3.5.0",
     "fs-extra": "0.26.5",
-    "gulp": "3.9.0",
+    "gulp": "3.9.1",
     "gulp-watch": "4.3.5",
     "jsdom": "8.0.2",
     "laborer": "2.4.6",
