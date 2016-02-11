@@ -5,6 +5,8 @@ import { Duration, Timezone } from 'chronoshift';
 import { $, AttributeInfo, RefExpression } from 'plywood';
 import { DataSource, DataSourceJS, RefreshRule, Dimension, Measure } from '../../../common/models/index';
 
+export type SourceListScan = string; // ToDo: when TS1.8 comes out make the type 'disable' | 'auto';   (https://basarat.gitbooks.io/typescript/content/docs/types/stringLiteralType.html)
+
 export interface DataSourceFiller {
   (dataSource: DataSource): Q.Promise<DataSource>;
 }
@@ -14,7 +16,7 @@ export interface DataSourceManagerOptions {
   dataSourceStubFactory?: (name: string) => DataSource;
   druidRequester?: Requester.PlywoodRequester<any>;
   dataSourceFiller?: DataSourceFiller;
-  sourceListScan?: string;
+  sourceListScan?: SourceListScan;
   sourceListRefreshInterval?: number;
   sourceListRefreshOnLoad?: boolean;
   log?: Function;
@@ -40,7 +42,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
 
   if (!sourceListScan) sourceListScan = 'auto';
   if (sourceListScan !== 'disable' && sourceListScan !== 'auto') {
-    throw new Error(`sourceListScan must be disabled or auto is ('${sourceListScan}')`);
+    throw new Error(`sourceListScan must be disable or auto is ('${sourceListScan}')`);
   }
 
   if (!dataSourceStubFactory) {
