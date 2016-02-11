@@ -17,7 +17,6 @@ describe('DataSource', () => {
         source: 'twitter',
         subsetFilter: null,
         introspection: 'none',
-        attributes: [],
         dimensions: [
           {
             expression: {
