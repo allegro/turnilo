@@ -11,3 +11,4 @@ assets/data/*-private.*
 webstorm/errors
 config.yaml
 config-test.yaml
+config-docker.yaml

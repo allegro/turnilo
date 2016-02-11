@@ -130,6 +130,8 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Configurable attribute overrides
+- Support for `absolute`, `power`, `sqrt`, and `fallback` actions
 - Relative filters
 - All new introspection code
 - Better comparison behavior and legend interaction
