@@ -26,3 +26,27 @@ export const TIME_SORT_ACTION = new SortAction({
 
 export const MAX_SEARCH_LENGTH = 300;
 export const SEARCH_WAIT = 900;
+
+export const STRINGS = {
+  dimensions: 'Dimensions',
+  measures: 'Measures',
+  filter: 'Filter',
+  split: 'Split',
+  subsplit: 'Split',
+  sortBy: 'Sort by',
+  limit: 'Limit',
+  pin: 'Pin',
+  pinboard: 'Pinboard',
+  pinboardPlaceholder: 'Click or drag dimensions to pin them',
+  granularity: 'Granularity',
+  relative: 'Relative',
+  specific: 'Specific',
+  latest: 'Latest',
+  current: 'Current',
+  previous: 'Previous',
+  start: 'Start',
+  end: 'End',
+  ok: 'OK',
+  cancel: 'Cancel',
+  queryError: 'Query Error'
+};

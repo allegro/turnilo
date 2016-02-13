@@ -6,7 +6,7 @@ import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
+import { STRINGS, TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
 import { moveInList } from '../../../common/utils/general/general';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { findParentWithClass, setDragGhost, transformStyle } from '../../utils/dom/dom';
@@ -245,7 +245,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       onDrop={this.drop.bind(this)}
       style={style}
     >
-      <div className="title">Dimensions</div>
+      <div className="title">{STRINGS.dimensions}</div>
       <div className="items" ref="items">
         {dimensionItems}
       </div>

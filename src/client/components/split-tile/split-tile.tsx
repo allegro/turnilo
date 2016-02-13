@@ -6,7 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
+import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension, Measure} from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { findParentWithClass, setDragGhost, transformStyle, getXFromEvent } from '../../utils/dom/dom';
@@ -266,7 +266,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       onDragLeave={this.dragLeave.bind(this)}
       onDrop={this.drop.bind(this)}
     >
-      <div className="title">Split</div>
+      <div className="title">{STRINGS.split}</div>
       <div className="items" ref="items">
         {splitItems}
       </div>

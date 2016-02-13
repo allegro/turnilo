@@ -6,6 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
+import { STRINGS } from '../../config/constants';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 //import { MenuHeader } from '../menu-header/menu-header';
@@ -85,19 +86,19 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
     >
       <div className="filter action" onClick={this.onFilter.bind(this)}>
         <SvgIcon svg={require('../../icons/preview-filter.svg')}/>
-        <div className="action-label">Filter</div>
+        <div className="action-label">{STRINGS.filter}</div>
       </div>
       <div className="pin action" onClick={this.onPin.bind(this)}>
         <SvgIcon svg={require('../../icons/preview-pin.svg')}/>
-        <div className="action-label">Pin</div>
+        <div className="action-label">{STRINGS.pin}</div>
       </div>
       <div className="split action" onClick={this.onSplit.bind(this)}>
         <SvgIcon svg={require('../../icons/preview-split.svg')}/>
-        <div className="action-label">Split</div>
+        <div className="action-label">{STRINGS.split}</div>
       </div>
       <div className="subsplit action" onClick={this.onSubsplit.bind(this)}>
         <SvgIcon svg={require('../../icons/preview-subsplit.svg')}/>
-        <div className="action-label">Subsplit</div>
+        <div className="action-label">{STRINGS.subsplit}</div>
       </div>
     </BubbleMenu>;
   }
