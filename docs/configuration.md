@@ -1,6 +1,6 @@
 # Configuring Pivot
 
-It is easy to start using Pivot by pointing it at your Druid cluster like so: `pivot --druid druid.broker.host:8082`
+It is easy to start using Pivot with Druid by pointing it at your Druid cluster: `pivot --druid druid.broker.host:8082`
 but to make the most of Pivot you will want to configure it.
 
 Pivot can be configured with a *config* YAML file. While you could write one from scratch it is recommended to let
@@ -143,20 +143,20 @@ You can also apply the `.fallback()` action as ether:
 
 #### Extraction
 
-Imagine you have an attribute like `resourceName` which has values like:
+Imagine you have an attribute `resourceName` which has values:
 
 ```json
 ["druid-0.8.2", "druid-0.8.1", "druid-0.7.0", "index.html"]
 ```
 
-You could apply, for example, the `.extract` function by creating a dimension like so:
+You could apply, for example, the `.extract` function by creating the following dimension:
 
 ```yaml
       - name: resourceVersion
         expression: $resourceName.extract('(\d+\.\d+\.\d+)')
 ```
 
-Which would have values like: 
+Which would have values: 
 
 ```json
 ["0.8.2", "0.8.1", "0.7.0", null]
@@ -183,8 +183,8 @@ The title for this measure in the UI. Can be anything and is safe to change at a
 
 The expression for this dimension. By default it is `$main.sum($name)` where *name* is the name of the measure.
 
-The `$main` part of the measure expressions serves as a place holder for the table name.
-In Plywood every aggregate is a function that acts on the segment group.
+The `$main` part of the measure expressions serves as a placeholder for the data segment.
+In Plywood every aggregate is a function that acts on a data segment. 
 
 You can create derived measures by using non-trivial expressions. Here are some common use cases for derived dimensions:
 
@@ -203,7 +203,7 @@ Ratios are generally considered fun.
 #### Filtered aggregations
 
 A very powerful tool is to use a filtered aggregate.
-If, for example, your revenue in the US is a very important measure you could express it like so:
+If, for example, your revenue in the US is a very important measure you could express it as:
 
 ```yaml
       - name: usa_revenue
