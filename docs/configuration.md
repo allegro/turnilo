@@ -38,11 +38,11 @@ The name of the data source as used internally in Pivot and used in the URLs. Th
 Changing this property for a given data source will break any URLs that someone might have generated for that data
 source in the past.
  
-**title**: (string)
+**title** (string)
 
 The user visible name that will be used to describe this data source in the UI. It is always safe to change this.
 
-**defaultSortMeasure**: (string)
+**defaultSortMeasure** (string)
 
 The name of the measure that will be used for default sorting. It is commonly set to the measure that represents the
 count of events.
