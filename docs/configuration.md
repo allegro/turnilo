@@ -191,7 +191,7 @@ You can create derived measures by using non-trivial expressions. Here are some 
 
 #### Dividing to compute ratios
 
-Ratios are generaly considered fun.
+Ratios are generally considered fun.
 
 ```yaml
       - name: ecpm
