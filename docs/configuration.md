@@ -191,6 +191,8 @@ You can create derived measures by using non-trivial expressions. Here are some 
 
 #### Dividing to compute ratios
 
+Ratios are generaly considered fun.
+
 ```yaml
       - name: ecpm
         title: eCPM
@@ -198,7 +200,10 @@ You can create derived measures by using non-trivial expressions. Here are some 
 ```
 
 
-#### Filtering aggregations
+#### Filtered aggregations
+
+A very powerful tool is to use a filtered aggregate.
+If, for example, your revenue in the US is a very important measure you could express it like so:
 
 ```yaml
       - name: usa_revenue
@@ -206,3 +211,11 @@ You can create derived measures by using non-trivial expressions. Here are some 
         expression: $main.filter($country == 'United States').sum($revenue)
 ```
 
+It is also common to express a ratio of something filtered vs unfiltered.
+
+```yaml
+      - name: errorRate
+        expression: $main.filter($statusCode == 500).sum($requests) / $main.sum($requests)
+```
+
+Neat.
