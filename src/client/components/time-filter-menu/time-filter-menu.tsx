@@ -5,6 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Timezone, Duration, minute, hour, day, week, month, year } from 'chronoshift';
 import { $, r, Expression, Executor, Dataset, TimeRange } from 'plywood';
+import { STRINGS } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure } from '../../../common/models/index';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { enterKey } from '../../utils/dom/dom';
@@ -190,11 +191,11 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     var previewText = formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF);
 
     return <div className="cont">
-      <div className="type">latest</div>
+      <div className="type">{STRINGS.latest}</div>
       <div className="buttons">{latestPresets.map(presetToButton)}</div>
-      <div className="type">current</div>
+      <div className="type">{STRINGS.current}</div>
       <div className="buttons">{currentPresets.map(presetToButton)}</div>
-      <div className="type">previous</div>
+      <div className="type">{STRINGS.previous}</div>
       <div className="buttons">{previousPresets.map(presetToButton)}</div>
       <div className="preview">{previewText}</div>
     </div>;
@@ -217,13 +218,13 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     var { timezone } = essence;
 
     return <div className="cont">
-      <div className="type">start</div>
+      <div className="type">{STRINGS.start}</div>
       <TimeInput time={startTime} timezone={timezone} onChange={this.onStartChange.bind(this)}/>
-      <div className="type">end</div>
+      <div className="type">{STRINGS.end}</div>
       <TimeInput time={endTime} timezone={timezone} onChange={this.onEndChange.bind(this)}/>
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>OK</button>
-        <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
+        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>{STRINGS.ok}</button>
+        <button className="cancel" onClick={this.onCancelClick.bind(this)}>{STRINGS.cancel}</button>
       </div>
     </div>;
   }
@@ -238,7 +239,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
         className={'tab ' + (tab === name ? 'selected' : '')}
         key={name}
         onClick={this.selectTab.bind(this, name)}
-      >{name}</div>;
+      >{name === 'relative' ? STRINGS.relative : STRINGS.specific}</div>;
     });
 
     return <div className="time-filter-menu">

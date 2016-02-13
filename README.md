@@ -130,13 +130,13 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Configuration docs: https://github.com/implydata/pivot/blob/master/docs/configuration.md
+- Support for numeric dimensions
 - Configurable attribute overrides
 - Support for `absolute`, `power`, `sqrt`, and `fallback` actions
 - Relative filters
 - All new introspection code
 - Better comparison behavior and legend interaction
-- Support for query time lookups (ex. `$language.lookup('wikipedia-language-lookup')`)
-- Support for the extract function (ex. `resourceVersion: $resource.extract("(\d+\.\d+\.\d+)")`)
 
 **We will be working on:**
 

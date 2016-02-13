@@ -5,6 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List, OrderedSet } from 'immutable';
 import { $, Expression, Executor, Dataset, RefExpression, SortAction } from 'plywood';
+import { STRINGS } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure, SortOn, VisStrategy, Colors } from '../../../common/models/index';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
@@ -197,7 +198,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     if (!dragOver && !dimensionTiles.length) {
       placeholder = <div className="placeholder">
         <SvgIcon svg={require('../../icons/preview-pin.svg')}/>
-        <div className="placeholder-message">Click or drag dimensions to pin them</div>
+        <div className="placeholder-message">{STRINGS.pinboardPlaceholder}</div>
       </div>;
     }
 
@@ -212,7 +213,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       {legendDimensionTile}
       <PinboardMeasureTile
         essence={essence}
-        title="Pinboard"
+        title={STRINGS.pinboard}
         sortOn={pinnedSortSortOn}
         onSelect={this.onPinboardSortOnSelect.bind(this)}
       />

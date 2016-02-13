@@ -424,7 +424,7 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
       "      #   expression: $country == 'United States'",
       "      #",
       "      # - name: file_version",
-      "      #   expression: $filename.extract('(\d+\.\d+\.\d+)')",
+      "      #   expression: $filename.extract('(\\d+\\.\\d+\\.\\d+)')",
       ""
     );
   }

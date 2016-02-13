@@ -6,7 +6,7 @@ import * as ReactDOM from 'react-dom';
 import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { $, Expression, InAction, Executor, Dataset } from 'plywood';
-import { BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
+import { STRINGS, BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure} from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
@@ -619,7 +619,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       onDragLeave={this.dragLeave.bind(this)}
       onDrop={this.drop.bind(this)}
     >
-      <div className="title">Filter</div>
+      <div className="title">{STRINGS.filter}</div>
       <div className="items" ref="items">
         {filterItems}
       </div>

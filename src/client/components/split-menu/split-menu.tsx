@@ -8,7 +8,7 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, RefExpression, Executor, Dataset, TimeBucketAction, SortAction, LimitAction } from 'plywood';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Colors, Dimension, Measure, SortOn } from '../../../common/models/index';
-import { SEGMENT } from '../../config/constants';
+import { STRINGS, SEGMENT } from '../../config/constants';
 import { enterKey } from '../../utils/dom/dom';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
@@ -165,7 +165,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     });
 
     return <div className="button-group">
-      <div className="button-group-title">Granularity</div>
+      <div className="button-group-title">{STRINGS.granularity}</div>
       <ul>{buttons}</ul>
     </div>;
   }
@@ -177,7 +177,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var md = this.getSortOn();
 
     return React.createElement(Dropdown, {
-      label: "Sort by",
+      label: STRINGS.sortBy,
       items: mds,
       selectedItem: md,
       equal: SortOn.equal,
@@ -213,7 +213,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
     if (includeNone) items.unshift(null);
     return React.createElement(Dropdown, {
-      label: "Limit",
+      label: STRINGS.limit,
       items,
       selectedItem,
       renderItem: formatLimit,
@@ -269,8 +269,8 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     >
       {menuControls}
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>OK</button>
-        <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
+        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>{STRINGS.ok}</button>
+        <button className="cancel" onClick={this.onCancelClick.bind(this)}>{STRINGS.cancel}</button>
       </div>
     </BubbleMenu>;
   }

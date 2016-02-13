@@ -5,7 +5,7 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, Executor, Dataset, SortAction, Set } from 'plywood';
-import { SEGMENT, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
+import { STRINGS, SEGMENT, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
 import { enterKey } from '../../utils/dom/dom';
@@ -301,8 +301,8 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     return <div className="string-filter-menu">
       {this.renderTable()}
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>OK</button>
-        <button className="cancel" onClick={this.onCancelClick.bind(this)}>Cancel</button>
+        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>{STRINGS.ok}</button>
+        <button className="cancel" onClick={this.onCancelClick.bind(this)}>{STRINGS.cancel}</button>
       </div>
     </div>;
   }
