@@ -146,7 +146,7 @@ You can also apply the `.fallback()` action as ether:
 Imagine you have an attribute like `resourceName` which has values like:
 
 ```json
-['druid-0.8.2', 'druid-0.8.1', 'druid-0.7.0', 'index.html']
+["druid-0.8.2", "druid-0.8.1", "druid-0.7.0", "index.html"]
 ```
 
 You could apply, for example, the `.extract` function by creating a dimension like so:
@@ -159,7 +159,7 @@ You could apply, for example, the `.extract` function by creating a dimension li
 Which would have values like: 
 
 ```json
-['0.8.2', '0.8.1', '0.7.0', null]
+["0.8.2", "0.8.1", "0.7.0", null]
 ```
 
 
