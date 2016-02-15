@@ -241,9 +241,7 @@ function dimensionToYAML(dimension: Dimension): string[] {
     lines.push(`        kind: ${dimension.kind}`);
   }
 
-  if (!dimension.expression.equals($(dimension.name))) {
-    lines.push(`        expression: ${dimension.expression.toString()}`);
-  }
+  lines.push(`        expression: ${dimension.expression.toString()}`);
 
   lines.push('');
   return lines;

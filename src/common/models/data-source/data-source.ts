@@ -4,7 +4,8 @@ import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
-import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction } from 'plywood';
+import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum,
+  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, FullType } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -250,6 +251,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.maxTime = parameters.maxTime;
 
     this.executor = parameters.executor;
+
+    if (this.attributes.length) {
+      this._validateDimensions();
+      this._validateMeasures();
+    }
   }
 
   public valueOf(): DataSourceValue {
@@ -341,6 +347,53 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.defaultSortMeasure === other.defaultSortMeasure &&
       this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions) &&
       this.refreshRule.equals(other.refreshRule);
+  }
+
+  public getMainTypeContext(): FullType {
+    var { attributes } = this;
+    if (!attributes) return null;
+
+    var datasetType: Lookup<AttributeInfo> = {};
+    for (var attribute of attributes) {
+      datasetType[attribute.name] = attribute;
+    }
+
+    return {
+      type: 'DATASET',
+      datasetType
+    };
+  }
+
+  private _validateDimensions() {
+    var { dimensions } = this;
+    var typeContext = this.getMainTypeContext();
+
+    dimensions.forEach((dimension) => {
+      try {
+        dimension.expression.referenceCheckInTypeContext(typeContext);
+      } catch (e) {
+        throw new Error(`failed to validate dimension '${dimension.name}' in data source '${this.name}': ${e.message}`);
+      }
+    });
+  }
+
+  private _validateMeasures() {
+    var { measures } = this;
+
+    var typeContext: FullType = {
+      type: 'DATASET',
+      datasetType: {
+        main: this.getMainTypeContext()
+      }
+    };
+
+    measures.forEach((measure) => {
+      try {
+        measure.expression.referenceCheckInTypeContext(typeContext);
+      } catch (e) {
+        throw new Error(`failed to validate measure '${measure.name}' in data source '${this.name}': ${e.message}`);
+      }
+    });
   }
 
   public attachExecutor(executor: Executor): DataSource {

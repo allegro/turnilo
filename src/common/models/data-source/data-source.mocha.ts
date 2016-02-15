@@ -113,6 +113,116 @@ describe('DataSource', () => {
   });
 
 
+  describe("validates attributes", () => {
+    it("thrown an error if it has a dimension without attribute", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'articleName',
+              expression: $('articleName').toJS()
+            }
+          ],
+          measures: [
+            {
+              name: 'count',
+              expression: $('main').sum('$count').toJS()
+            }
+          ]
+        });
+      }).to.throw("failed to validate dimension 'articleName' in data source 'wiki': could not resolve $articleName");
+    });
+
+    it("thrown an error if it has a nonsense dimension", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'bucketArticleName',
+              expression: $('articleName').numberBucket(5).toJS()
+            }
+          ],
+          measures: [
+            {
+              name: 'count',
+              expression: $('main').sum('$count').toJS()
+            }
+          ]
+        });
+      }).to.throw("failed to validate dimension 'bucketArticleName' in data source 'wiki': numberBucket must have input of type NUMBER or NUMBER_RANGE (is STRING)");
+    });
+
+    it("thrown an error if it has a measure without attribute", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'articleName',
+              expression: $('articleName').toJS()
+            }
+          ],
+          measures: [
+            {
+              name: 'added',
+              expression: $('main').sum('$added').toJS()
+            }
+          ]
+        });
+      }).to.throw("failed to validate measure 'added' in data source 'wiki': could not resolve $added");
+    });
+
+    it("thrown an error if it has a nonsense measure", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'articleName',
+              expression: $('articleName').toJS()
+            }
+          ],
+          measures: [
+            {
+              name: 'sumArticleName',
+              expression: $('main').sum('$articleName').toJS()
+            }
+          ]
+        });
+      }).to.throw("failed to validate measure 'sumArticleName' in data source 'wiki': sum must have expression of type NUMBER (is STRING)");
+    });
+  });
+
+
   describe("setAttributes", () => {
     it("works in basic case (no count)", () => {
       var dataSourceStub = DataSource.fromJS({
