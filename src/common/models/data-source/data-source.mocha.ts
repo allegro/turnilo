@@ -113,7 +113,7 @@ describe('DataSource', () => {
   });
 
 
-  describe("validates attributes", () => {
+  describe("validates data source", () => {
     it("thrown an error if it has a dimension without attribute", () => {
       expect(() => {
         DataSource.fromJS({
@@ -273,6 +273,34 @@ describe('DataSource', () => {
           ]
         });
       }).to.throw("failed to validate measure 'count' in data source 'wiki': measure must contain a $main reference");
+    });
+
+    it("thrown an error if there is no aggregation", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          defaultSortMeasure: 'gaga',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'articleName',
+              expression: '$articleName'
+            }
+          ],
+          measures: [
+            {
+              name: 'count',
+              expression: '$main.sum($count)'
+            }
+          ]
+        });
+      }).to.throw("xx");
     });
   });
 

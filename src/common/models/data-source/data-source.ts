@@ -256,6 +256,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this._validateDimensions();
       this._validateMeasures();
     }
+    this._validateDefaults();
   }
 
   public valueOf(): DataSourceValue {
@@ -401,6 +402,16 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
         throw new Error(`failed to validate measure '${measure.name}' in data source '${this.name}': ${message}`);
       }
     });
+  }
+
+  private _validateDefaults() {
+    var { measures, defaultSortMeasure } = this;
+
+    if (defaultSortMeasure) {
+      if (!measures.find((measure) => measure.name === defaultSortMeasure)) {
+        throw new Error(`can not find defaultSortMeasure '${defaultSortMeasure}' in data source '${this.name}'`);
+      }
+    }
   }
 
   public attachExecutor(executor: Executor): DataSource {
