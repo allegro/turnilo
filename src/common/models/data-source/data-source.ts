@@ -391,7 +391,14 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       try {
         measure.expression.referenceCheckInTypeContext(typeContext);
       } catch (e) {
-        throw new Error(`failed to validate measure '${measure.name}' in data source '${this.name}': ${e.message}`);
+        var message = e.message;
+        // If we get here it is possible that the user has misunderstood what the meaning of a measure is and have tried
+        // to do something like $volume / $volume. We detect this here by checking for a reference to $main
+        // If there is no main reference throw a more informative error.
+        if (measure.expression.getFreeReferences().indexOf('main') === -1) {
+          message = 'measure must contain a $main reference';
+        }
+        throw new Error(`failed to validate measure '${measure.name}' in data source '${this.name}': ${message}`);
       }
     });
   }

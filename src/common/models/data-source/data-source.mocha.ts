@@ -127,13 +127,13 @@ describe('DataSource', () => {
           dimensions: [
             {
               name: 'articleName',
-              expression: $('articleName').toJS()
+              expression: '$articleName'
             }
           ],
           measures: [
             {
               name: 'count',
-              expression: $('main').sum('$count').toJS()
+              expression: '$main.sum($count)'
             }
           ]
         });
@@ -160,7 +160,7 @@ describe('DataSource', () => {
           measures: [
             {
               name: 'count',
-              expression: $('main').sum('$count').toJS()
+              expression: '$main.sum($count)'
             }
           ]
         });
@@ -181,13 +181,13 @@ describe('DataSource', () => {
           dimensions: [
             {
               name: 'articleName',
-              expression: $('articleName').toJS()
+              expression: '$articleName'
             }
           ],
           measures: [
             {
               name: 'added',
-              expression: $('main').sum('$added').toJS()
+              expression: '$main.sum($added)'
             }
           ]
         });
@@ -208,17 +208,71 @@ describe('DataSource', () => {
           dimensions: [
             {
               name: 'articleName',
-              expression: $('articleName').toJS()
+              expression: '$articleName'
             }
           ],
           measures: [
             {
               name: 'sumArticleName',
-              expression: $('main').sum('$articleName').toJS()
+              expression: '$main.sum($articleName)'
             }
           ]
         });
       }).to.throw("failed to validate measure 'sumArticleName' in data source 'wiki': sum must have expression of type NUMBER (is STRING)");
+    });
+
+    it("thrown an error if it has a measure does not reference $main", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'articleName',
+              expression: '$articleName'
+            }
+          ],
+          measures: [
+            {
+              name: 'count',
+              expression: '$koala.sum($count)'
+            }
+          ]
+        });
+      }).to.throw("failed to validate measure 'count' in data source 'wiki': measure must contain a $main reference");
+    });
+
+    it("thrown an error if there is no aggregation", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'articleName',
+              expression: '$articleName'
+            }
+          ],
+          measures: [
+            {
+              name: 'count',
+              expression: '$count / 3'
+            }
+          ]
+        });
+      }).to.throw("failed to validate measure 'count' in data source 'wiki': measure must contain a $main reference");
     });
   });
 
