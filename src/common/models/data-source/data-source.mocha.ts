@@ -52,7 +52,7 @@ describe('DataSource', () => {
         defaultTimezone: 'Etc/UTC',
         defaultFilter: { op: 'literal', value: true },
         defaultDuration: 'P3D',
-        defaultSortMeasure: 'rows',
+        defaultSortMeasure: 'count',
         defaultPinnedDimensions: ['tweet'],
         refreshRule: {
           refresh: "PT1M",
@@ -102,7 +102,7 @@ describe('DataSource', () => {
         defaultTimezone: 'Etc/UTC',
         defaultFilter: { op: 'literal', value: true },
         defaultDuration: 'P3D',
-        defaultSortMeasure: 'rows',
+        defaultSortMeasure: 'count',
         defaultPinnedDimensions: ['articleName'],
         refreshRule: {
           refresh: "PT1M",
@@ -248,7 +248,7 @@ describe('DataSource', () => {
       }).to.throw("failed to validate measure 'count' in data source 'wiki': measure must contain a $main reference");
     });
 
-    it("thrown an error if there is no aggregation", () => {
+    it("thrown an error if there is no aggregation in measure", () => {
       expect(() => {
         DataSource.fromJS({
           name: 'wiki',
@@ -275,7 +275,7 @@ describe('DataSource', () => {
       }).to.throw("failed to validate measure 'count' in data source 'wiki': measure must contain a $main reference");
     });
 
-    it("thrown an error if there is no aggregation", () => {
+    it("thrown an error if the defaultSortMeasure can not be found", () => {
       expect(() => {
         DataSource.fromJS({
           name: 'wiki',
@@ -300,7 +300,7 @@ describe('DataSource', () => {
             }
           ]
         });
-      }).to.throw("xx");
+      }).to.throw("can not find defaultSortMeasure 'gaga' in data source 'wiki'");
     });
   });
 
@@ -316,8 +316,6 @@ describe('DataSource', () => {
         introspection: 'autofill-all',
         defaultTimezone: 'Etc/UTC',
         defaultFilter: { op: 'literal', value: true },
-        defaultDuration: 'P3D',
-        defaultSortMeasure: 'rows',
         defaultPinnedDimensions: [],
         refreshRule: {
           refresh: "PT1M",
@@ -346,7 +344,7 @@ describe('DataSource', () => {
           "defaultDuration": "P3D",
           "defaultFilter": { "op": "literal", "value": true },
           "defaultPinnedDimensions": [],
-          "defaultSortMeasure": "rows",
+          "defaultSortMeasure": "added",
           "defaultTimezone": "Etc/UTC",
           "introspection": "no-autofill",
           "timeAttribute": '__time',
