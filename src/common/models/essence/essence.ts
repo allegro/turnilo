@@ -495,19 +495,18 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   public updateDataSource(newDataSource: DataSource): Essence {
     var { dataSource, visualizations } = this;
 
-    if (this.dataSource.equals(newDataSource)) return this; // nothing to do
-
-    if (this.dataSource.equalsWithoutMaxTime(newDataSource)) { // Updated maxTime
+    if (dataSource.equals(newDataSource)) return this; // nothing to do
+    if (dataSource.equalsWithoutMaxTime(newDataSource)) { // Updated maxTime
       var value = this.valueOf();
       value.dataSource = newDataSource;
       return new Essence(value);
     }
 
     var dataSourceName = newDataSource.name;
-    var existingDataSource = this.dataSource;
+    var existingDataSource = dataSource;
     if (!existingDataSource) throw new Error(`unknown DataSource changed: ${dataSourceName}`);
 
-    if (existingDataSource.equals(dataSource)) {
+    if (existingDataSource.equals(newDataSource)) {
       // Just changing DataSource, nothing to see here.
       return Essence.fromDataSource(dataSource, { dataSource: dataSource, visualizations: visualizations });
     }

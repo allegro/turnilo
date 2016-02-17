@@ -60,16 +60,22 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   componentWillMount() {
     var { dataSources } = this.props;
-    if (!dataSources.size) throw new Error('must have data sources');
-    this.setState({ dataSources });
+    var viewType = HOME;
 
+    if (!dataSources.size) throw new Error('must have data sources');
     var selectedDataSource = dataSources.first();
     var hash = window.location.hash;
 
-    var viewType = this.getViewTypeFromHash(hash);
-    var hashDataSource = this.getDataSourceFromHash(dataSources, hash);
-    if (hashDataSource && !hashDataSource.equals(selectedDataSource)) selectedDataSource = hashDataSource;
-    this.setState({ viewType, hash, selectedDataSource });
+    // basically, if there's only one "link" other than info & feedback to click (so later, if also no collections etc)
+    if (dataSources.size === 1) {
+      viewType = CUBE;
+    } else {
+      viewType = this.getViewTypeFromHash(hash);
+      var hashDataSource = this.getDataSourceFromHash(dataSources, hash);
+      if (hashDataSource && !hashDataSource.equals(selectedDataSource)) selectedDataSource = hashDataSource;
+    }
+
+    this.setState({ dataSources, viewType, hash, selectedDataSource });
   }
 
   componentDidMount() {
@@ -105,16 +111,19 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   };
 
   globalHashChangeListener(): void {
-    if (this.hashUpdating) return;
     var hash = window.location.hash;
+
+    if (this.hashUpdating) return;
     var viewType = this.getViewTypeFromHash(hash);
+    this.setState({ viewType });
+
     if (viewType === CUBE) {
       var dataSource = this.getDataSourceFromHash(this.state.dataSources, hash);
       if (!dataSource) dataSource = this.props.dataSources.first();
       this.changeDataSource(dataSource);
       this.setState({ hash });
+      return;
     }
-    this.setState({ viewType });
     this.sideDrawerOpen(false);
   }
 
@@ -150,9 +159,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       newHash = viewType;
     }
     window.location.hash = `#${newHash}`;
-    // setTimeout(() => {
+   // setTimeout(() => {
     this.hashUpdating = false;
-    // }, 10);
+ //   }, 5);
   }
 
   render() {
@@ -202,7 +211,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       />;
 
     } else {
-      header = <HomeHeaderBar/>;
+      header = <HomeHeaderBar
+        onNavClick={this.sideDrawerOpen.bind(this, true)}
+      />;
       view = <HomeView
         dataCubes={dataSources}
         selectDataCube={this.changeDataSource.bind(this)}

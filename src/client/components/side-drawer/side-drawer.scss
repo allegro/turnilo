@@ -14,11 +14,18 @@
       height: 40px;
 
       path {
-        fill: $brand;
+        fill: #bbb;
       }
     }
   }
 
+  .items {
+    .item {
+      .icon svg path {
+        fill: #bbb;
+      }
+    }
+  }
 }
 
 .side-drawer-enter {

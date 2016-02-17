@@ -11,6 +11,7 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 // I am: import { HomeHeaderBar } from '../home-header-bar/home-header-bar';
 
 export interface HomeHeaderBarProps extends React.Props<any> {
+  onNavClick: React.MouseEventHandler;
 }
 
 export interface HomeHeaderBarState {
@@ -19,9 +20,15 @@ export interface HomeHeaderBarState {
 export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHeaderBarState> {
   handleSettings() {}
 
+
   render() {
+    var { onNavClick } = this.props;
+
     return <header className="home-header-bar">
-      <div className="burger-bar">
+      <div className="burger-bar" onClick={onNavClick}>
+        <div className="menu-icon">
+          <SvgIcon svg={require('../../icons/menu.svg')}/>
+        </div>
         <div className="title">Home</div>
       </div>
       <ul className="right-bar">
@@ -30,7 +37,7 @@ export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHead
         </li>
         <li className="icon-button">
           <a href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
-            <SvgIcon svg={require('../../icons/full-user.svg')}/>
+            <SvgIcon className="not-implemented" svg={require('../../icons/full-user.svg')}/>
           </a>
         </li>
       </ul>

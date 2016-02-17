@@ -15,7 +15,7 @@ describe('HomeHeaderBar', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <HomeHeaderBar
-
+        onNavClick={null}
       />
     );
 

@@ -44,10 +44,6 @@
           &:hover svg path {
             fill: #888;
           }
-
-          svg path {
-            fill: $brand;
-          }
         }
       }
     }
@@ -65,9 +61,6 @@
           left: 0;
           margin-right: 9px;
 
-          svg path {
-            fill: #bbb;
-          }
         }
 
         &:hover {

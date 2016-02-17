@@ -32,10 +32,10 @@ export class NavList extends React.Component< NavListProps, NavListState> {
   }
 
   renderIcon(path: string): any {
-    if (!path) return "";
-    return (<span className="icon">
+    if (!path) return null;
+    return <span className="icon">
       <SvgIcon svg={require('../../icons/full-cube.svg')}/>
-    </span>);
+    </span>;
   }
 
   renderNavList() {
@@ -63,10 +63,12 @@ export class NavList extends React.Component< NavListProps, NavListState> {
         </li>
       </ul>
     </section>;
+
     if (!this.props.title) {
       titleSection = null;
       groupClassName += " no-title";
     }
+
     return (
       <section className={groupClassName}>
         {titleSection}
