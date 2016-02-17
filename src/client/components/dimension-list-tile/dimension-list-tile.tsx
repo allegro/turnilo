@@ -21,6 +21,7 @@ export interface DimensionListTileProps extends React.Props<any> {
   menuStage: Stage;
   triggerFilterMenu: Function;
   triggerSplitMenu: Function;
+  getUrlPrefix?: Function;
 }
 
 export interface DimensionListTileState {
@@ -74,14 +75,17 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   dragStart(dimension: Dimension, e: DragEvent) {
-    var { essence } = this.props;
-
-    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame).getURL();
+    var { essence, getUrlPrefix } = this.props;
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
-    dataTransfer.setData("text/url-list", newUrl);
-    dataTransfer.setData("text/plain", newUrl);
+
+    if (getUrlPrefix) {
+      var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame).getURL(getUrlPrefix());
+      dataTransfer.setData("text/url-list", newUrl);
+      dataTransfer.setData("text/plain", newUrl);
+    }
+
     DragManager.setDragDimension(dimension);
     setDragGhost(dataTransfer, dimension.title);
 
@@ -161,7 +165,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     };
 
     return <div
-      className={'dimension-list-tile'}
+      className="dimension-list-tile"
       style={style}
     >
       <div className="title">{STRINGS.dimensions}</div>

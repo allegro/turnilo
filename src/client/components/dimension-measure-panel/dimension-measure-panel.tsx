@@ -16,6 +16,7 @@ export interface DimensionMeasurePanelProps extends React.Props<any> {
   menuStage: Stage;
   triggerFilterMenu: Function;
   triggerSplitMenu: Function;
+  getUrlPrefix?: Function;
 }
 
 export interface DimensionMeasurePanelState {
@@ -30,7 +31,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
   }
 
   render() {
-    const { clicker, essence, menuStage, triggerFilterMenu, triggerSplitMenu } = this.props;
+    const { clicker, essence, menuStage, triggerFilterMenu, triggerSplitMenu, getUrlPrefix } = this.props;
 
     return <div className="dimension-measure-panel">
       <DimensionListTile
@@ -39,6 +40,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
         menuStage={menuStage}
         triggerFilterMenu={triggerFilterMenu}
         triggerSplitMenu={triggerSplitMenu}
+        getUrlPrefix={getUrlPrefix}
       />
       <MeasuresTile
         clicker={clicker}

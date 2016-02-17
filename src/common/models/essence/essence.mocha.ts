@@ -15,15 +15,16 @@ describe('Essence', () => {
     engine: 'druid',
     source: 'twitter',
     introspection: 'none',
-    dimensions: [{
-      expression: {
+    dimensions: [
+      {
+        expression: {
+          name: 'time',
+          op: 'ref'
+        },
+        kind: 'time',
         name: 'time',
-        op: 'ref'
+        title: 'Time'
       },
-      kind: 'time',
-      name: 'time',
-      title: 'Time'
-    },
       {
         expression: {
           name: 'twitterHandle',
@@ -70,6 +71,12 @@ describe('Essence', () => {
       }
     }
   ];
+
+  var context: any = {
+    dataSource: dataSource,
+    visualizations: List(<any>visualizationsArray)
+  };
+
   it('is an immutable class', () => {
     testImmutableClass<EssenceJS>(Essence, [
       {
@@ -83,11 +90,41 @@ describe('Essence', () => {
         pinnedDimensions: [],
         selectedMeasures: [],
         splits: []
-      }], {
-      context: {
-        dataSource: dataSource,
-        visualizations: List(<any> visualizationsArray)
+      },
+      {
+        visualization: 'viz1',
+        timezone: 'Etc/UTC',
+        filter: {
+          op: "literal",
+          value: true
+
+        },
+        pinnedDimensions: ['twitterHandle'],
+        selectedMeasures: ['count'],
+        splits: []
       }
+    ], { context });
+  });
+
+  describe('fromHash / toHash', () => {
+    it("is symmetric", () => {
+      var essence1 = Essence.fromJS({
+        visualization: 'viz1',
+        timezone: 'Etc/UTC',
+        filter: {
+          op: "literal",
+          value: true
+
+        },
+        pinnedDimensions: ['twitterHandle'],
+        selectedMeasures: ['count'],
+        splits: []
+      }, context);
+
+      var hash = essence1.toHash();
+      var essence2 = Essence.fromHash(hash, context);
+
+      expect(essence1.toJS()).to.deep.equal(essence2.toJS());
     });
   });
 });

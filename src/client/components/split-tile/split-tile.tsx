@@ -20,6 +20,7 @@ export interface SplitTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
+  getUrlPrefix?: Function;
 }
 
 export interface SplitTileState {
@@ -91,14 +92,17 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   dragStart(dimension: Dimension, split: SplitCombine, splitIndex: number, e: DragEvent) {
-    var { essence } = this.props;
-
-    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame).getURL();
+    var { essence, getUrlPrefix } = this.props;
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
-    dataTransfer.setData("text/url-list", newUrl);
-    dataTransfer.setData("text/plain", newUrl);
+
+    if (getUrlPrefix) {
+      var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame).getURL(getUrlPrefix());
+      dataTransfer.setData("text/url-list", newUrl);
+      dataTransfer.setData("text/plain", newUrl);
+    }
+
     DragManager.setDragSplit(split);
     DragManager.setDragDimension(dimension);
     setDragGhost(dataTransfer, dimension.title);

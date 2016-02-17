@@ -32,6 +32,7 @@ export interface DimensionTileProps extends React.Props<any> {
   sortOn: SortOn;
   colors?: Colors;
   onClose?: any;
+  getUrlPrefix?: Function;
 }
 
 export interface DimensionTileState {
@@ -263,9 +264,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   onDragStart(e: DragEvent) {
-    var { essence, dimension } = this.props;
+    var { essence, dimension, getUrlPrefix } = this.props;
 
-    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame).getURL();
+    var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame).getURL(getUrlPrefix());
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';

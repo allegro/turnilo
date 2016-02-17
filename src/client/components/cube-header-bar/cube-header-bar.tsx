@@ -15,6 +15,7 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   showLastUpdated?: boolean;
   hideGitHubIcon?: boolean;
   color?: string;
+  getUrlPrefix?: Function;
 }
 
 export interface CubeHeaderBarState {
@@ -31,8 +32,8 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   onPanicClick(e: MouseEvent) {
+    var { dataSource, getUrlPrefix } = this.props;
     if (e.altKey) {
-      var { dataSource } = this.props;
       console.log('DataSource:', dataSource.toJS());
       return;
     }
@@ -42,7 +43,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       });
       return;
     }
-    window.location.assign(Essence.getBaseURL());
+    window.location.assign(getUrlPrefix(true));
   }
 
   onModalClose() {
