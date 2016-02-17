@@ -147,15 +147,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillReceiveProps(nextProps: CubeViewProps) {
-    var hashEssence = this.getEssenceFromHash(nextProps.hash);
-    if (hashEssence && !hashEssence.equals(this.state.essence)) {
-      if (nextProps.hash !== this.props.hash) {
-        this.setState({ essence: hashEssence });
-      } else {
-        return;
-      }
-    } else if (!this.props.selectedDataSource.equals(nextProps.selectedDataSource)) {
-      var newEssence = this.state.essence.updateDataSource(nextProps.selectedDataSource);
+    const { hash, selectedDataSource } = this.props;
+    const { essence } = this.state;
+
+    if (hash !== nextProps.hash) {
+      var hashEssence = this.getEssenceFromHash(nextProps.hash);
+      this.setState({ essence: hashEssence });
+    } else if (!selectedDataSource.equals(nextProps.selectedDataSource)) {
+      var newEssence = essence.updateDataSource(nextProps.selectedDataSource);
       this.setState({ essence: newEssence });
     }
 
