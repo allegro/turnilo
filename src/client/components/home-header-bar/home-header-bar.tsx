@@ -23,6 +23,9 @@ export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHead
 
   render() {
     var { onNavClick } = this.props;
+    var gitHubIcon : JSX.Element = <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
+      <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
+    </a>;
 
     return <header className="home-header-bar">
       <div className="burger-bar" onClick={onNavClick}>
@@ -40,6 +43,10 @@ export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHead
             <SvgIcon className="not-implemented" svg={require('../../icons/full-user.svg')}/>
           </a>
         </li>
+        <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
+          <SvgIcon className="help-icon" svg={require('../../icons/help.svg')}/>
+        </a>
+        {gitHubIcon}
       </ul>
     </header>;
   }
