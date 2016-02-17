@@ -28,8 +28,6 @@ export interface DimensionListTileState {
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   highlightDimension?: Dimension;
-  dragOver?: boolean;
-  dragPosition?: number;
 }
 
 export class DimensionListTile extends React.Component<DimensionListTileProps, DimensionListTileState> {
@@ -41,9 +39,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       PreviewMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
-      highlightDimension: null,
-      dragOver: false,
-      dragPosition: null
+      highlightDimension: null
     };
   }
 
@@ -77,17 +73,6 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     });
   }
 
-  calculateDragPosition(e: DragEvent) {
-    var { essence } = this.props;
-    var numItems = essence.dataSource.dimensions.size;
-    var rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
-    var offset = e.clientY - rect.top;
-
-    this.setState({
-      dragPosition: Math.min(Math.max(0, Math.round(offset / DIMENSION_HEIGHT)), numItems)
-    });
-  }
-
   dragStart(dimension: Dimension, e: DragEvent) {
     var { essence } = this.props;
 
@@ -101,66 +86,6 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
-  }
-
-  canDrop(e: DragEvent): boolean {
-    var { dataTransfer } = e;
-    return dataTransfer.effectAllowed === 'move' && Boolean(DragManager.getDragDimension());
-  }
-
-  dragOver(e: DragEvent) {
-    if (!this.canDrop(e)) return;
-    e.dataTransfer.dropEffect = 'move';
-    e.preventDefault();
-    this.calculateDragPosition(e);
-  }
-
-  dragEnter(e: DragEvent) {
-    if (!this.canDrop(e)) return;
-    var { dragOver } = this.state;
-    if (!dragOver) {
-      this.dragCounter = 0;
-      this.setState({ dragOver: true });
-      this.calculateDragPosition(e);
-    } else {
-      this.dragCounter++;
-    }
-  }
-
-  dragLeave(e: DragEvent) {
-    if (!this.canDrop(e)) return;
-    var { dragOver } = this.state;
-    if (!dragOver) return;
-    if (this.dragCounter === 0) {
-      this.setState({
-        dragOver: false,
-        dragPosition: null
-      });
-    } else {
-      this.dragCounter--;
-    }
-  }
-
-  drop(e: DragEvent) {
-    if (!this.canDrop(e)) return;
-    e.preventDefault();
-    var { clicker, essence } = this.props;
-    var { dragPosition } = this.state;
-    var { dataSource } = essence;
-
-    var dimension = DragManager.getDragDimension();
-    if (dimension) {
-      var dimensions = dataSource.dimensions;
-      var index = dimensions.findIndex((d) => d.name === dimension.name);
-      if (index !== -1 && index !== dragPosition) {
-        clicker.changeDataSource(dataSource.changeDimensions(moveInList(dimensions, index, dragPosition)));
-      }
-    }
-
-    this.dragCounter = 0;
-    this.setState({
-      dragPosition: null
-    });
   }
 
   onMouseOver(dimension: Dimension) {
@@ -200,12 +125,11 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   render() {
     var { essence } = this.props;
-    var { menuDimension, highlightDimension, dragOver, dragPosition } = this.state;
+    var { menuDimension, highlightDimension } = this.state;
     var { dataSource } = essence;
 
     var itemY = 0;
     var dimensionItems = dataSource.dimensions.toArray().map((dimension, i) => {
-      if (dragOver && dragPosition === i) itemY += DIMENSION_HEIGHT;
       var style = transformStyle(0, itemY);
       itemY += DIMENSION_HEIGHT;
 
@@ -213,7 +137,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
         DIMENSION_CLASS_NAME,
         'type-' + dimension.className
       ];
-      if (!dragOver && dimension === highlightDimension) classNames.push('highlight');
+      if (dimension === highlightDimension) classNames.push('highlight');
       if (dimension === menuDimension) classNames.push('selected');
       return <div
         className={classNames.join(' ')}
@@ -231,18 +155,13 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
         <div className="item-title">{dimension.title}</div>
       </div>;
     }, this);
-    if (dragOver && dragPosition === dataSource.dimensions.size) itemY += DIMENSION_HEIGHT;
 
     const style = {
       flex: dimensionItems.length + 2
     };
 
     return <div
-      className={'dimension-list-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
-      onDragOver={this.dragOver.bind(this)}
-      onDragEnter={this.dragEnter.bind(this)}
-      onDragLeave={this.dragLeave.bind(this)}
-      onDrop={this.drop.bind(this)}
+      className={'dimension-list-tile'}
       style={style}
     >
       <div className="title">{STRINGS.dimensions}</div>

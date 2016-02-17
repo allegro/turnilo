@@ -52,10 +52,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     };
 
     var clicker = {
-      changeDataSource: (dataSource: DataSource) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changeDataSource(dataSource) });
-      },
       changeFilter: (filter: Filter, colors?: Colors) => {
         var { essence } = this.state;
         essence = essence.changeFilter(filter);
@@ -131,7 +127,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         if (!dataSource.shouldUpdateMaxTime()) return;
         DataSource.updateMaxTime(dataSource).then((updatedDataSource) => {
           console.log(`Updated MaxTime for '${updatedDataSource.name}'`);
-          this.setState({ essence: essence.changeDataSource(updatedDataSource) });
+          this.setState({ essence: essence.updateDataSource(updatedDataSource) });
         });
       }, 1000);
     };
@@ -167,7 +163,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
-    this.props.updateHash(nextState.essence.toHash(), "cube");
+    this.props.updateHash(nextState.essence.toHash());
   }
 
   componentWillUnmount() {
