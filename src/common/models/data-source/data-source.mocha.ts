@@ -112,170 +112,8 @@ describe('DataSource', () => {
     ]);
   });
 
-
-  describe("validates data source", () => {
-    it("thrown an error if it has a dimension without attribute", () => {
-      expect(() => {
-        DataSource.fromJS({
-          name: 'wiki',
-          engine: 'druid',
-          source: 'wiki',
-          attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'count', type: 'NUMBER' }
-          ],
-          dimensions: [
-            {
-              name: 'articleName',
-              expression: '$articleName'
-            }
-          ],
-          measures: [
-            {
-              name: 'count',
-              expression: '$main.sum($count)'
-            }
-          ]
-        });
-      }).to.throw("failed to validate dimension 'articleName' in data source 'wiki': could not resolve $articleName");
-    });
-
-    it("thrown an error if it has a nonsense dimension", () => {
-      expect(() => {
-        DataSource.fromJS({
-          name: 'wiki',
-          engine: 'druid',
-          source: 'wiki',
-          attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'articleName', type: 'STRING' },
-            { name: 'count', type: 'NUMBER' }
-          ],
-          dimensions: [
-            {
-              name: 'bucketArticleName',
-              expression: $('articleName').numberBucket(5).toJS()
-            }
-          ],
-          measures: [
-            {
-              name: 'count',
-              expression: '$main.sum($count)'
-            }
-          ]
-        });
-      }).to.throw("failed to validate dimension 'bucketArticleName' in data source 'wiki': numberBucket must have input of type NUMBER or NUMBER_RANGE (is STRING)");
-    });
-
-    it("thrown an error if it has a measure without attribute", () => {
-      expect(() => {
-        DataSource.fromJS({
-          name: 'wiki',
-          engine: 'druid',
-          source: 'wiki',
-          attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'articleName', type: 'STRING' },
-            { name: 'count', type: 'NUMBER' }
-          ],
-          dimensions: [
-            {
-              name: 'articleName',
-              expression: '$articleName'
-            }
-          ],
-          measures: [
-            {
-              name: 'added',
-              expression: '$main.sum($added)'
-            }
-          ]
-        });
-      }).to.throw("failed to validate measure 'added' in data source 'wiki': could not resolve $added");
-    });
-
-    it("thrown an error if it has a nonsense measure", () => {
-      expect(() => {
-        DataSource.fromJS({
-          name: 'wiki',
-          engine: 'druid',
-          source: 'wiki',
-          attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'articleName', type: 'STRING' },
-            { name: 'count', type: 'NUMBER' }
-          ],
-          dimensions: [
-            {
-              name: 'articleName',
-              expression: '$articleName'
-            }
-          ],
-          measures: [
-            {
-              name: 'sumArticleName',
-              expression: '$main.sum($articleName)'
-            }
-          ]
-        });
-      }).to.throw("failed to validate measure 'sumArticleName' in data source 'wiki': sum must have expression of type NUMBER (is STRING)");
-    });
-
-    it("thrown an error if it has a measure does not reference $main", () => {
-      expect(() => {
-        DataSource.fromJS({
-          name: 'wiki',
-          engine: 'druid',
-          source: 'wiki',
-          attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'articleName', type: 'STRING' },
-            { name: 'count', type: 'NUMBER' }
-          ],
-          dimensions: [
-            {
-              name: 'articleName',
-              expression: '$articleName'
-            }
-          ],
-          measures: [
-            {
-              name: 'count',
-              expression: '$koala.sum($count)'
-            }
-          ]
-        });
-      }).to.throw("failed to validate measure 'count' in data source 'wiki': measure must contain a $main reference");
-    });
-
-    it("thrown an error if there is no aggregation in measure", () => {
-      expect(() => {
-        DataSource.fromJS({
-          name: 'wiki',
-          engine: 'druid',
-          source: 'wiki',
-          attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'articleName', type: 'STRING' },
-            { name: 'count', type: 'NUMBER' }
-          ],
-          dimensions: [
-            {
-              name: 'articleName',
-              expression: '$articleName'
-            }
-          ],
-          measures: [
-            {
-              name: 'count',
-              expression: '$count / 3'
-            }
-          ]
-        });
-      }).to.throw("failed to validate measure 'count' in data source 'wiki': measure must contain a $main reference");
-    });
-
-    it("thrown an error if the defaultSortMeasure can not be found", () => {
+  describe("validates defaults", () => {
+    it("throws an error if the defaultSortMeasure can not be found", () => {
       expect(() => {
         DataSource.fromJS({
           name: 'wiki',
@@ -300,7 +138,63 @@ describe('DataSource', () => {
             }
           ]
         });
-      }).to.throw("can not find defaultSortMeasure 'gaga' in data source 'wiki'");
+      }).to.throw("can not find defaultSortMeasure 'gaga'");
+    });
+  });
+
+  describe("#getIssues", () => {
+    it("raises issues", () => {
+      var dataSource = DataSource.fromJS({
+        name: 'wiki',
+        engine: 'druid',
+        source: 'wiki',
+        attributes: [
+          { name: '__time', type: 'TIME' },
+          { name: 'articleName', type: 'STRING' },
+          { name: 'count', type: 'NUMBER' }
+        ],
+        dimensions: [
+          {
+            name: 'gaga',
+            expression: '$gaga'
+          },
+          {
+            name: 'bucketArticleName',
+            expression: $('articleName').numberBucket(5).toJS()
+          }
+        ],
+        measures: [
+          {
+            name: 'count',
+            expression: '$main.sum($count)'
+          },
+          {
+            name: 'added',
+            expression: '$main.sum($added)'
+          },
+          {
+            name: 'sumArticleName',
+            expression: '$main.sum($articleName)'
+          },
+          {
+            name: 'koalaCount',
+            expression: '$koala.sum($count)'
+          },
+          {
+            name: 'countByThree',
+            expression: '$count / 3'
+          }
+        ]
+      });
+
+      expect(dataSource.getIssues()).to.deep.equal([
+        "failed to validate dimension 'gaga': could not resolve $gaga",
+        "failed to validate dimension 'bucketArticleName': numberBucket must have input of type NUMBER or NUMBER_RANGE (is STRING)",
+        "failed to validate measure 'added': could not resolve $added",
+        "failed to validate measure 'sumArticleName': sum must have expression of type NUMBER (is STRING)",
+        "failed to validate measure 'koalaCount': measure must contain a $main reference",
+        "failed to validate measure 'countByThree': measure must contain a $main reference"
+      ]);
     });
   });
 

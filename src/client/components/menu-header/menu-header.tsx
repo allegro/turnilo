@@ -1,4 +1,3 @@
-import MouseEventHandler = __React.MouseEventHandler;
 'use strict';
 require('./menu-header.css');
 
@@ -11,7 +10,7 @@ import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/mo
 export interface MenuHeaderProps extends React.Props<any> {
   //clicker: Clicker;
   dimension: Dimension;
-  onSearchClick: MouseEventHandler;
+  onSearchClick: React.MouseEventHandler;
 }
 
 export interface MenuHeaderState {

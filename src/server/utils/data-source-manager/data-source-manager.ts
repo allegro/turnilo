@@ -90,6 +90,12 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   function introspectDataSource(dataSource: DataSource): Q.Promise<any> {
     return dataSourceFiller(dataSource).then((filledDataSource) => {
       addOrUpdateDataSource(filledDataSource);
+
+      var issues = filledDataSource.getIssues();
+      if (issues.length) {
+        log(`Data source '${filledDataSource.name}' has the following issues:`);
+        log('- ' + issues.join('\n- ') + '\n');
+      }
     }).catch((e) => {
       log(`Failed to introspect data source: '${dataSource.name}' because ${e.message}`);
     });
@@ -137,17 +143,15 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     });
   }
 
-  var initialTasks: Array<Q.Promise<any>> = [];
+  // First concurrently introspect all the defined data sources
+  var initialLoad: Q.Promise<any> = Q.allSettled(myDataSources.map(introspectDataSource));
 
-  myDataSources.forEach((dataSource) => {
-    initialTasks.push(introspectDataSource(dataSource));
-  });
+  // Then (if needed) scan for more data sources
   if (sourceListScan === 'auto' && druidRequester) {
-    initialTasks.push(loadDruidDataSources());
+    initialLoad = initialLoad.then(loadDruidDataSources);
   }
 
-  var initialLoad: Q.Promise<any> = Q.allSettled(initialTasks);
-
+  // Then print out an update
   initialLoad.then(() => {
     var queryableDataSources = getQueryable();
     log(`Initial introspection complete. Got ${myDataSources.length} data sources, ${queryableDataSources.length} queryable`);

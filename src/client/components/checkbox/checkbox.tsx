@@ -1,4 +1,3 @@
-import MouseEventHandler = __React.MouseEventHandler;
 'use strict';
 require('./checkbox.css');
 
@@ -11,7 +10,7 @@ import { Filter, Dimension, Measure } from '../../../common/models/index';
 
 export interface CheckboxProps extends React.Props<any> {
   selected: Boolean;
-  onClick?: MouseEventHandler;
+  onClick?: React.MouseEventHandler;
   cross?: Boolean;
   color?: string;
 }

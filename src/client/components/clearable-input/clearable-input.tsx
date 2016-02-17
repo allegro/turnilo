@@ -1,8 +1,3 @@
-import MouseEventHandler = __React.MouseEventHandler;
-import FocusEventHandler = __React.FocusEventHandler;
-import FormEventHandler = __React.FormEventHandler;
-import DOMComponent = __React.DOMComponent;
-import HTMLAttributes = __React.HTMLAttributes;
 'use strict';
 require('./clearable-input.css');
 
@@ -13,7 +8,7 @@ import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from 
 // import { ... } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
-function focusOnInput(component: DOMComponent<HTMLAttributes>): void {
+function focusOnInput(component: React.DOMComponent<React.HTMLAttributes>): void {
   if (!component) return;
   (component as any).focus();
 }
@@ -25,7 +20,7 @@ export interface ClearableInputProps extends React.Props<any> {
   focusOnMount?: boolean;
   value: string;
   onChange: (newValue: string) => any;
-  onBlur?: FocusEventHandler;
+  onBlur?: React.FocusEventHandler;
 }
 
 export interface ClearableInputState {

@@ -252,10 +252,6 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     this.executor = parameters.executor;
 
-    if (this.attributes.length) {
-      this._validateDimensions();
-      this._validateMeasures();
-    }
     this._validateDefaults();
   }
 
@@ -350,6 +346,16 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.refreshRule.equals(other.refreshRule);
   }
 
+  private _validateDefaults() {
+    var { measures, defaultSortMeasure } = this;
+
+    if (defaultSortMeasure) {
+      if (!measures.find((measure) => measure.name === defaultSortMeasure)) {
+        throw new Error(`can not find defaultSortMeasure '${defaultSortMeasure}' in data source '${this.name}'`);
+      }
+    }
+  }
+
   public getMainTypeContext(): FullType {
     var { attributes } = this;
     if (!attributes) return null;
@@ -365,53 +371,42 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     };
   }
 
-  private _validateDimensions() {
-    var { dimensions } = this;
-    var typeContext = this.getMainTypeContext();
+  public getIssues(): string[] {
+    var { dimensions, measures } = this;
+    var mainTypeContext = this.getMainTypeContext();
+    var issues: string[] = [];
 
     dimensions.forEach((dimension) => {
       try {
-        dimension.expression.referenceCheckInTypeContext(typeContext);
+        dimension.expression.referenceCheckInTypeContext(mainTypeContext);
       } catch (e) {
-        throw new Error(`failed to validate dimension '${dimension.name}' in data source '${this.name}': ${e.message}`);
+        issues.push(`failed to validate dimension '${dimension.name}': ${e.message}`);
       }
     });
-  }
 
-  private _validateMeasures() {
-    var { measures } = this;
-
-    var typeContext: FullType = {
+    var measureTypeContext: FullType = {
       type: 'DATASET',
       datasetType: {
-        main: this.getMainTypeContext()
+        main: mainTypeContext
       }
     };
 
     measures.forEach((measure) => {
       try {
-        measure.expression.referenceCheckInTypeContext(typeContext);
+        measure.expression.referenceCheckInTypeContext(measureTypeContext);
       } catch (e) {
         var message = e.message;
         // If we get here it is possible that the user has misunderstood what the meaning of a measure is and have tried
         // to do something like $volume / $volume. We detect this here by checking for a reference to $main
-        // If there is no main reference throw a more informative error.
+        // If there is no main reference raise a more informative issue.
         if (measure.expression.getFreeReferences().indexOf('main') === -1) {
           message = 'measure must contain a $main reference';
         }
-        throw new Error(`failed to validate measure '${measure.name}' in data source '${this.name}': ${message}`);
+        issues.push(`failed to validate measure '${measure.name}': ${message}`);
       }
     });
-  }
 
-  private _validateDefaults() {
-    var { measures, defaultSortMeasure } = this;
-
-    if (defaultSortMeasure) {
-      if (!measures.find((measure) => measure.name === defaultSortMeasure)) {
-        throw new Error(`can not find defaultSortMeasure '${defaultSortMeasure}' in data source '${this.name}'`);
-      }
-    }
+    return issues;
   }
 
   public attachExecutor(executor: Executor): DataSource {

@@ -1,4 +1,3 @@
-import MouseEventHandler = __React.MouseEventHandler;
 'use strict';
 require('./side-drawer.css');
 
