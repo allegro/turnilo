@@ -52,7 +52,7 @@ describe('DataSource', () => {
         defaultTimezone: 'Etc/UTC',
         defaultFilter: { op: 'literal', value: true },
         defaultDuration: 'P3D',
-        defaultSortMeasure: 'rows',
+        defaultSortMeasure: 'count',
         defaultPinnedDimensions: ['tweet'],
         refreshRule: {
           refresh: "PT1M",
@@ -102,7 +102,7 @@ describe('DataSource', () => {
         defaultTimezone: 'Etc/UTC',
         defaultFilter: { op: 'literal', value: true },
         defaultDuration: 'P3D',
-        defaultSortMeasure: 'rows',
+        defaultSortMeasure: 'count',
         defaultPinnedDimensions: ['articleName'],
         refreshRule: {
           refresh: "PT1M",
@@ -110,6 +110,92 @@ describe('DataSource', () => {
         }
       }
     ]);
+  });
+
+  describe("validates defaults", () => {
+    it("throws an error if the defaultSortMeasure can not be found", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          defaultSortMeasure: 'gaga',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'articleName',
+              expression: '$articleName'
+            }
+          ],
+          measures: [
+            {
+              name: 'count',
+              expression: '$main.sum($count)'
+            }
+          ]
+        });
+      }).to.throw("can not find defaultSortMeasure 'gaga'");
+    });
+  });
+
+  describe("#getIssues", () => {
+    it("raises issues", () => {
+      var dataSource = DataSource.fromJS({
+        name: 'wiki',
+        engine: 'druid',
+        source: 'wiki',
+        attributes: [
+          { name: '__time', type: 'TIME' },
+          { name: 'articleName', type: 'STRING' },
+          { name: 'count', type: 'NUMBER' }
+        ],
+        dimensions: [
+          {
+            name: 'gaga',
+            expression: '$gaga'
+          },
+          {
+            name: 'bucketArticleName',
+            expression: $('articleName').numberBucket(5).toJS()
+          }
+        ],
+        measures: [
+          {
+            name: 'count',
+            expression: '$main.sum($count)'
+          },
+          {
+            name: 'added',
+            expression: '$main.sum($added)'
+          },
+          {
+            name: 'sumArticleName',
+            expression: '$main.sum($articleName)'
+          },
+          {
+            name: 'koalaCount',
+            expression: '$koala.sum($count)'
+          },
+          {
+            name: 'countByThree',
+            expression: '$count / 3'
+          }
+        ]
+      });
+
+      expect(dataSource.getIssues()).to.deep.equal([
+        "failed to validate dimension 'gaga': could not resolve $gaga",
+        "failed to validate dimension 'bucketArticleName': numberBucket must have input of type NUMBER or NUMBER_RANGE (is STRING)",
+        "failed to validate measure 'added': could not resolve $added",
+        "failed to validate measure 'sumArticleName': sum must have expression of type NUMBER (is STRING)",
+        "failed to validate measure 'koalaCount': measure must contain a $main reference",
+        "failed to validate measure 'countByThree': measure must contain a $main reference"
+      ]);
+    });
   });
 
 
@@ -124,8 +210,6 @@ describe('DataSource', () => {
         introspection: 'autofill-all',
         defaultTimezone: 'Etc/UTC',
         defaultFilter: { op: 'literal', value: true },
-        defaultDuration: 'P3D',
-        defaultSortMeasure: 'rows',
         defaultPinnedDimensions: [],
         refreshRule: {
           refresh: "PT1M",
@@ -154,7 +238,7 @@ describe('DataSource', () => {
           "defaultDuration": "P3D",
           "defaultFilter": { "op": "literal", "value": true },
           "defaultPinnedDimensions": [],
-          "defaultSortMeasure": "rows",
+          "defaultSortMeasure": "added",
           "defaultTimezone": "Etc/UTC",
           "introspection": "no-autofill",
           "timeAttribute": '__time',

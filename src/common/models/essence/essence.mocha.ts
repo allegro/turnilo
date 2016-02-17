@@ -15,15 +15,16 @@ describe('Essence', () => {
     engine: 'druid',
     source: 'twitter',
     introspection: 'none',
-    dimensions: [{
-      expression: {
+    dimensions: [
+      {
+        expression: {
+          name: 'time',
+          op: 'ref'
+        },
+        kind: 'time',
         name: 'time',
-        op: 'ref'
+        title: 'Time'
       },
-      kind: 'time',
-      name: 'time',
-      title: 'Time'
-    },
       {
         expression: {
           name: 'twitterHandle',
@@ -49,8 +50,8 @@ describe('Essence', () => {
     defaultTimezone: 'Etc/UTC',
     defaultFilter: { op: 'literal', value: true },
     defaultDuration: 'P3D',
-    defaultSortMeasure: 'rows',
-    defaultPinnedDimensions: ['tweet'],
+    defaultSortMeasure: 'count',
+    defaultPinnedDimensions: ['twitterHandle'],
     refreshRule: {
       refresh: "PT1M",
       rule: "fixed"

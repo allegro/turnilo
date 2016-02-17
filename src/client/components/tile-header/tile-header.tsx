@@ -1,5 +1,3 @@
-import DragEventHandler = __React.DragEventHandler;
-import MouseEventHandler = __React.MouseEventHandler;
 'use strict';
 require('./tile-header.css');
 
@@ -12,9 +10,9 @@ import { Filter, Dimension, Measure } from '../../../common/models/index';
 
 export interface TileHeaderProps extends React.Props<any> {
   title: string;
-  onDragStart: DragEventHandler;
-  onSearch: MouseEventHandler;
-  onClose: MouseEventHandler;
+  onDragStart: React.DragEventHandler;
+  onSearch: React.MouseEventHandler;
+  onClose: React.MouseEventHandler;
 }
 
 export interface TileHeaderState {

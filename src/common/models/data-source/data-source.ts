@@ -4,7 +4,8 @@ import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
-import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum, Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction } from 'plywood';
+import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum,
+  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, FullType } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -250,6 +251,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.maxTime = parameters.maxTime;
 
     this.executor = parameters.executor;
+
+    this._validateDefaults();
   }
 
   public valueOf(): DataSourceValue {
@@ -341,6 +344,69 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.defaultSortMeasure === other.defaultSortMeasure &&
       this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions) &&
       this.refreshRule.equals(other.refreshRule);
+  }
+
+  private _validateDefaults() {
+    var { measures, defaultSortMeasure } = this;
+
+    if (defaultSortMeasure) {
+      if (!measures.find((measure) => measure.name === defaultSortMeasure)) {
+        throw new Error(`can not find defaultSortMeasure '${defaultSortMeasure}' in data source '${this.name}'`);
+      }
+    }
+  }
+
+  public getMainTypeContext(): FullType {
+    var { attributes } = this;
+    if (!attributes) return null;
+
+    var datasetType: Lookup<AttributeInfo> = {};
+    for (var attribute of attributes) {
+      datasetType[attribute.name] = attribute;
+    }
+
+    return {
+      type: 'DATASET',
+      datasetType
+    };
+  }
+
+  public getIssues(): string[] {
+    var { dimensions, measures } = this;
+    var mainTypeContext = this.getMainTypeContext();
+    var issues: string[] = [];
+
+    dimensions.forEach((dimension) => {
+      try {
+        dimension.expression.referenceCheckInTypeContext(mainTypeContext);
+      } catch (e) {
+        issues.push(`failed to validate dimension '${dimension.name}': ${e.message}`);
+      }
+    });
+
+    var measureTypeContext: FullType = {
+      type: 'DATASET',
+      datasetType: {
+        main: mainTypeContext
+      }
+    };
+
+    measures.forEach((measure) => {
+      try {
+        measure.expression.referenceCheckInTypeContext(measureTypeContext);
+      } catch (e) {
+        var message = e.message;
+        // If we get here it is possible that the user has misunderstood what the meaning of a measure is and have tried
+        // to do something like $volume / $volume. We detect this here by checking for a reference to $main
+        // If there is no main reference raise a more informative issue.
+        if (measure.expression.getFreeReferences().indexOf('main') === -1) {
+          message = 'measure must contain a $main reference';
+        }
+        issues.push(`failed to validate measure '${measure.name}': ${message}`);
+      }
+    });
+
+    return issues;
   }
 
   public attachExecutor(executor: Executor): DataSource {
