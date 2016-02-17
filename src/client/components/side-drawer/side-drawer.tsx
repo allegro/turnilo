@@ -1,4 +1,3 @@
-import MouseEventHandler = __React.MouseEventHandler;
 'use strict';
 require('./side-drawer.css');
 
@@ -7,6 +6,7 @@ import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 import { $, Expression, Executor, Dataset } from 'plywood';
+import { ADDITIONAL_LINKS } from '../../config/constants';
 import { isInside, escapeKey } from '../../utils/dom/dom';
 import { DataSource } from '../../../common/models/index';
 // import { SomeComp } from '../some-comp/some-comp';
@@ -18,7 +18,6 @@ export interface SideDrawerProps extends React.Props<any> {
   selectedDataSource: DataSource;
   dataSources: List<DataSource>;
   onClose: Function;
-  homeLink?: string;
 }
 
 export interface SideDrawerState {
@@ -62,16 +61,17 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     onClose();
   }
 
-  render() {
-    var { onClose, homeLink, selectedDataSource, dataSources } = this.props;
-
-    var homeLinkElement: JSX.Element = null;
-    if (homeLink) {
-      homeLinkElement = <a className="home-link" href={homeLink}>
-        <SvgIcon svg={require('../../icons/home.svg')}/>
-        Home
-      </a>;
+  selectLink(selected: any) {
+    if (selected.target) {
+      window.open(selected.target);
+      return false;
+    } else {
+      // state change for application to handle
     }
+  };
+
+  render() {
+    var { onClose, selectedDataSource, dataSources } = this.props;
 
     return <div className="nav side-drawer">
       <div className="logo-cont" onClick={onClose as any}>
@@ -79,7 +79,6 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
           <SvgIcon svg={require('../../icons/pivot-logo.svg')}/>
         </div>
       </div>
-
       <NavList
         title="Data Cubes"
         className="items"
@@ -89,8 +88,11 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
         icon="'../../full-cube.svg'"
 
       />
-
-      {homeLinkElement}
+      <NavList
+        className="items"
+        navItems={ADDITIONAL_LINKS}
+        onSelect={this.selectLink.bind(this)}
+      />
     </div>;
   }
 }

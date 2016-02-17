@@ -20,7 +20,6 @@ import { visualizations } from '../../visualizations/index';
 export interface PivotApplicationProps extends React.Props<any> {
   version: string;
   dataSources: List<DataSource>;
-  homeLink?: string;
   maxFilters?: number;
   maxSplits?: number;
   showLastUpdated?: boolean;
@@ -39,7 +38,9 @@ export interface PivotApplicationState {
   selectedDataSource?: DataSource;
 }
 
+export const HOME = "home";
 export const CUBE = "cube";
+
 export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
   private hashUpdating: boolean = false;
 
@@ -90,12 +91,17 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   changeDataSource(dataSource: DataSource) {
-    if (this.state.viewType !== CUBE) {
-      this.setState({ viewType: CUBE });
+    const { viewType, selectedDataSource } = this.state;
+
+    var newState: PivotApplicationState = {};
+    if (viewType !== CUBE) {
+      newState.viewType = CUBE;
     }
-    if (!this.state.selectedDataSource.equals(dataSource)) {
-      this.setState({ selectedDataSource: dataSource });
+    if (!selectedDataSource.equals(dataSource)) {
+      newState.selectedDataSource = dataSource;
     }
+
+    this.setState(newState);
   };
 
   globalHashChangeListener(): void {
@@ -112,20 +118,21 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.sideDrawerOpen(false);
   }
 
-  getViewTypeFromHash(hash: string): string {
-    return this.parseHash(hash).shift();
-  }
-
   parseHash(hash: string): string[] {
     if (hash[0] === '#') hash = hash.substr(1);
     return hash.split('/');
+  }
+
+  getViewTypeFromHash(hash: string): string {
+    var hashPart = this.parseHash(hash).shift();
+    if (!hashPart) return HOME;
+    return CUBE;
   }
 
   getDataSourceFromHash(dataSources: List<DataSource>, hash: string): DataSource {
     // can change header from hash
     var parts = this.parseHash(hash);
     if (parts.length < 4) return null;
-    var viewType = parts.shift();
     var dataSourceName = parts.shift();
     return dataSources.find((ds) => ds.name === dataSourceName);
   }
@@ -134,18 +141,22 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.setState({ drawerOpen });
   }
 
-  updateHash(property: string, newHash: string): void {
+  updateHash(newHash: string): void {
     var viewType = this.state.viewType;
     this.hashUpdating = true;
-    if (viewType === CUBE) newHash = `/${this.state.selectedDataSource.name}${newHash}`;
-    window.location.hash = `#${viewType}${newHash}`;
+    if (viewType === CUBE) {
+      newHash = `${this.state.selectedDataSource.name}/${newHash}`;
+    } else {
+      newHash = viewType;
+    }
+    window.location.hash = `#${newHash}`;
     // setTimeout(() => {
     this.hashUpdating = false;
     // }, 10);
   }
 
   render() {
-    var { homeLink, maxFilters, maxSplits, showLastUpdated, hideGitHubIcon, headerBackground } = this.props;
+    var { maxFilters, maxSplits, showLastUpdated, hideGitHubIcon, headerBackground } = this.props;
     var { dataSources, hash, selectedDataSource, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync } = this.state;
 
     var sideDrawer: JSX.Element = null;
@@ -157,7 +168,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         selectedDataSource={selectedDataSource}
         dataSources={this.state.dataSources}
         onClose={closeSideDrawer}
-        homeLink={homeLink}
       />;
     }
 
@@ -184,7 +194,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         color={headerBackground}
       />;
       view = <CubeView
-        updateHash={this.updateHash.bind(this, CUBE)}
+        updateHash={this.updateHash.bind(this)}
         selectedDataSource={selectedDataSource}
         hash={hash}
         maxFilters={maxFilters}
@@ -193,9 +203,10 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
     } else {
       header = <HomeHeaderBar/>;
-      view =
-        <HomeView dataCubes={dataSources} selectDataCube={this.changeDataSource.bind(this)}/>;
-
+      view = <HomeView
+        dataCubes={dataSources}
+        selectDataCube={this.changeDataSource.bind(this)}
+      />;
     }
 
     return <main className='pivot-application'>

@@ -13,7 +13,6 @@ import { Colors } from '../colors/colors';
 import { VisStrategy } from '../essence/essence';
 
 export interface Clicker {
-  changeDataSource(dataSource: DataSource): void;
   changeTimeSelection(selection: Expression): void;
   changeFilter(filter: Filter, colors?: Colors): void;
   changeSplits(splits: Splits, strategy: VisStrategy, colors?: Colors): void;

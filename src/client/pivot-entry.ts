@@ -30,7 +30,6 @@ if (config && Array.isArray(config.dataSources)) {
   pivot(document.body, {
     version,
     dataSources,
-    homeLink: config.homeLink,
     showLastUpdated: config.showLastUpdated,
     hideGitHubIcon: config.hideGitHubIcon,
     headerBackground: config.headerBackground

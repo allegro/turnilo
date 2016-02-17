@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-// import { ... } from '../../config/constants';
+import { ADDITIONAL_LINKS } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { List } from 'immutable';
 
@@ -21,14 +21,6 @@ export interface HomeViewState {
 }
 
 export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
-
-  getAdditionalLinks() {
-    return List([
-      { title: 'Settings', name: 'settings' },
-      { title: 'Info & Feedback', name: 'info & feedback', target: 'https://groups.google.com/forum/#!forum/imply-user-group'}
-    ]);
-  }
-
   selectLink(selected: any) {
     if (selected.target) {
       window.open(selected.target);
@@ -36,7 +28,6 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
     } else {
       // state change for application to handle
     }
-
   };
 
   selectDataCube(dataCube: DataSource) {
@@ -61,7 +52,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
           />
           <NavList
             className="items"
-            navItems={this.getAdditionalLinks()}
+            navItems={ADDITIONAL_LINKS}
             onSelect={this.selectLink.bind(this)}
           />
         </div>

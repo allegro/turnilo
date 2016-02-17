@@ -336,7 +336,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public toHash(): string {
-    var js: any = this.toJS();
+    var js = this.toJS();
     var compressed: any[] = [
       js.timezone,         // 0
       js.filter,           // 1
@@ -355,11 +355,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     }
 
     return [
-        js.dataSource,
-        js.visualization,
-        HASH_VERSION,
-        compressToBase64(restJSON.join(','))
-      ].join('/');
+      js.visualization,
+      HASH_VERSION,
+      compressToBase64(restJSON.join(','))
+    ].join('/');
   }
 
   public getURL(): string {
@@ -493,9 +492,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return commonSort;
   }
 
-  // Modification
-
-  public changeDataSource(newDataSource: DataSource): Essence {
+  public updateDataSource(newDataSource: DataSource): Essence {
     var { dataSource, visualizations } = this;
 
     if (this.dataSource.equals(newDataSource)) return this; // nothing to do
@@ -545,6 +542,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     return new Essence(value);
   }
+
+  // Modification
 
   public changeFilter(filter: Filter, removeHighlight: boolean = false): Essence {
     var value = this.valueOf();

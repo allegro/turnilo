@@ -1,5 +1,6 @@
 'use strict';
 
+import { List } from 'immutable';
 import { $, SortAction } from 'plywood';
 
 export const TITLE_HEIGHT = 36;
@@ -26,3 +27,8 @@ export const TIME_SORT_ACTION = new SortAction({
 
 export const MAX_SEARCH_LENGTH = 300;
 export const SEARCH_WAIT = 900;
+
+export const ADDITIONAL_LINKS = List([
+  { title: 'Settings', name: 'settings' },
+  { title: 'Info & Feedback', name: 'info & feedback', target: 'https://groups.google.com/forum/#!forum/imply-user-group'}
+]);
