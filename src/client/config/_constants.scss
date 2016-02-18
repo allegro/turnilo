@@ -1,9 +1,12 @@
+$control-height: 30px;
+$control-height-compact: 26px;
+
 // Header
 $header-height: 42px;
 
 // Panels
 $left-panel-width: 240px;
-$side-drawer-width: 255px;
+$side-drawer-width: 300px;
 $pinboard-width: 240px;
 $vis-selector-width: 78px;
 
@@ -38,3 +41,5 @@ $highlight-button-size: 26px;
 $highlight-button-spacing: 5px;
 $highlight-button-frame-gap: 7px;
 $menu-title-bar-height: 40px;
+
+$nav-padding: 18px;

@@ -23,8 +23,10 @@ import { visualizations } from '../../visualizations/index';
 export interface CubeViewProps extends React.Props<any> {
   maxFilters?: number;
   maxSplits?: number;
-  essence: Essence;
+  hash: string;
   updateHash: Function;
+  getUrlPrefix?: Function;
+  selectedDataSource: DataSource;
 }
 
 export interface CubeViewState {
@@ -51,10 +53,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     };
 
     var clicker = {
-      changeDataSource: (dataSource: DataSource) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changeDataSource(dataSource) });
-      },
       changeFilter: (filter: Filter, colors?: Colors) => {
         var { essence } = this.state;
         essence = essence.changeFilter(filter);
@@ -130,14 +128,19 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         if (!dataSource.shouldUpdateMaxTime()) return;
         DataSource.updateMaxTime(dataSource).then((updatedDataSource) => {
           console.log(`Updated MaxTime for '${updatedDataSource.name}'`);
-          this.setState({ essence: essence.changeDataSource(updatedDataSource) });
+          this.setState({ essence: essence.updateDataSource(updatedDataSource) });
         });
       }, 1000);
     };
   }
 
   componentWillMount() {
-    var { essence } = this.props;
+    var { hash, selectedDataSource, updateHash } = this.props;
+    var essence = this.getEssenceFromHash(hash);
+    if (!essence) {
+      essence = this.getEssenceFromDataSource(selectedDataSource);
+      updateHash(essence.toHash());
+    }
     this.setState({ essence });
   }
 
@@ -149,23 +152,38 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillReceiveProps(nextProps: CubeViewProps) {
-    var { essence } = nextProps;
-    if (!essence.equals(this.state.essence)) {
-      this.setState({ essence });
+    const { hash, selectedDataSource } = this.props;
+    const { essence } = this.state;
+
+    if (hash !== nextProps.hash) {
+      var hashEssence = this.getEssenceFromHash(nextProps.hash);
+      this.setState({ essence: hashEssence });
+    } else if (!selectedDataSource.equals(nextProps.selectedDataSource)) {
+      var newEssence = essence.updateDataSource(nextProps.selectedDataSource);
+      this.setState({ essence: newEssence });
     }
   }
 
-  shouldComponentUpdate(nextProps: CubeViewProps, nextState: CubeViewState): boolean {
-    return Boolean(nextProps.essence);
-  }
-
   componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
-    this.props.updateHash(nextState.essence);
+    var { essence } = this.state;
+    if (!nextState.essence.equals(essence)) {
+      this.props.updateHash(nextState.essence.toHash());
+    }
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.globalResizeListener);
     window.removeEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  getEssenceFromDataSource(selectedDataSource: DataSource): Essence {
+    return Essence.fromDataSource(selectedDataSource, { dataSource: selectedDataSource, visualizations });
+  }
+
+  getEssenceFromHash(hash: string): Essence {
+    if (!hash) return null;
+    var selectedDataSource = this.props.selectedDataSource;
+    return Essence.fromHash(hash, { dataSource: selectedDataSource, visualizations });
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
@@ -240,7 +258,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   render() {
     var clicker = this.clicker;
 
+    var { getUrlPrefix } = this.props;
     var { essence, menuStage, visualizationStage, dragOver } = this.state;
+
+    if (!essence) return null;
 
     var { visualization } = essence;
 
@@ -274,13 +295,26 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         essence={essence}
         menuStage={menuStage}
         triggerFilterMenu={this.triggerFilterMenu.bind(this)}
-        triggerSplitMenu={this.triggerSplitMenu.bind(this)}/>
-
+        triggerSplitMenu={this.triggerSplitMenu.bind(this)}
+        getUrlPrefix={getUrlPrefix}
+      />
       <div className='center-panel'>
         <div className='center-top-bar'>
           <div className='filter-split-section'>
-            <FilterTile ref="filterTile" clicker={clicker} essence={essence} menuStage={visualizationStage}/>
-            <SplitTile ref="splitTile" clicker={clicker} essence={essence} menuStage={visualizationStage}/>
+            <FilterTile
+              ref="filterTile"
+              clicker={clicker}
+              essence={essence}
+              menuStage={visualizationStage}
+              getUrlPrefix={getUrlPrefix}
+            />
+            <SplitTile
+              ref="splitTile"
+              clicker={clicker}
+              essence={essence}
+              menuStage={visualizationStage}
+              getUrlPrefix={getUrlPrefix}
+            />
           </div>
           <VisSelector clicker={clicker} essence={essence}/>
         </div>
@@ -296,7 +330,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           {dropIndicator}
         </div>
       </div>
-      <PinboardPanel clicker={clicker} essence={essence}/>
+      <PinboardPanel
+        clicker={clicker}
+        essence={essence}
+        getUrlPrefix={getUrlPrefix}
+      />
     </div>;
   }
 }

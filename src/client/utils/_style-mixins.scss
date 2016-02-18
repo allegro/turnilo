@@ -2,6 +2,172 @@
 @import '../config/constants';
 @import 'variables';
 
+%bubble-cont {
+  @extend %menu-cont;
+  z-index: 31;
+
+  .shpitz {
+    $shpitz-size: 12px;
+    $clip-size: 60px;
+    position: absolute;
+    width: $clip-size;
+    height: $clip-size;
+    overflow: hidden;
+    pointer-events: none;
+
+    &:after {
+      content: '';
+      position: absolute;
+      width: $shpitz-size;
+      height: $shpitz-size;
+      transform: rotate(45deg);
+      background: $white;
+      box-shadow: 0 0 4px 0 rgba($black, 0.35);
+    }
+
+    &.top {
+      top: $clip-size * -1;
+      left: 50%;
+      margin-left: $clip-size * -0.5;
+
+      &:after {
+        bottom: 0;
+        left: 50%;
+        margin-left: $shpitz-size * -0.5;
+        margin-bottom: $shpitz-size * -0.5;
+      }
+    }
+
+    &.bottom {
+      bottom: $clip-size * -1;
+      left: 50%;
+      margin-left: $clip-size * -0.5;
+
+      &:after {
+        top: 0;
+        left: 50%;
+        margin-left: $shpitz-size * -0.5;
+        margin-top: $shpitz-size * -0.5;
+      }
+    }
+
+    &.left {
+      left: $clip-size * -1;
+      top: 50%;
+      margin-top: $clip-size * -0.5;
+
+      &:after {
+        right: 0;
+        top: 50%;
+        margin-top: $shpitz-size * -0.5;
+        margin-right: $shpitz-size * -0.5;
+      }
+    }
+
+    &.right {
+      right: $clip-size * -1;
+      top: 50%;
+      margin-top: $clip-size * -0.5;
+
+      &:after {
+        left: 0;
+        top: 50%;
+        margin-top: $shpitz-size * -0.5;
+        margin-left: $shpitz-size * -0.5;
+      }
+    }
+  }
+}
+
+%header-bar {
+  background: $brand;
+  color: $white;
+  font-size: 16px;
+
+  .burger-bar {
+    display: inline-block;
+    height: 100%;
+    padding-left: 12px;
+    padding-right: 12px;
+    cursor: pointer;
+
+    .menu-icon {
+      display: inline-block;
+      padding: 11px 5px;
+
+      svg path {
+        fill: #fff;
+      }
+    }
+
+    .title {
+      display: inline-block;
+      font-size: 15px;
+      margin-top: 13px;
+      padding: 0 4px;
+    }
+  }
+
+  .right-bar {
+    position: absolute;
+    top: 0;
+    right: 12px;
+
+    .last-updated {
+      display: inline-block;
+      vertical-align: top;
+      height: 100%;
+      padding: 14px 8px;
+      font-size: 13px;
+      cursor: default;
+    }
+
+    .icon-button {
+      display: inline-block;
+      padding: 11px 5px;
+      cursor: pointer;
+
+      &:not(:first-child) {
+        margin-left: 3.11px;
+      }
+
+      &.panic:after { content: 'Reset (in case of bug)'; }
+      &.help:after { content: 'Google Groups'; }
+      &.github:after { content: 'Project GitHub'; }
+
+      &:hover {
+        svg {
+          opacity: 0.85;
+        }
+
+        &:after {
+          opacity: 1;
+        }
+      }
+
+      &:after {
+        @extend %menu-cont;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        display: block;
+        bottom: -24px;
+        right: 0;
+        padding: 5px;
+        color: $text-standard;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+    }
+  }
+
+  svg {
+    height: 19px;
+    width: 19px;
+  }
+}
+
 // Buttons
 
 %button-base {

@@ -5,7 +5,7 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Stage, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 
 // Inspired by: https://gist.github.com/MoOx/1eb30eac43b2114de73a
 

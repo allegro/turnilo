@@ -1,5 +1,6 @@
 'use strict';
 
+import { List } from 'immutable';
 import { $, SortAction } from 'plywood';
 
 export const TITLE_HEIGHT = 36;
@@ -50,3 +51,8 @@ export const STRINGS = {
   cancel: 'Cancel',
   queryError: 'Query Error'
 };
+
+export const ADDITIONAL_LINKS = List([
+  { title: 'Settings', name: 'settings' },
+  { title: 'Info & Feedback', name: 'info & feedback', target: 'https://groups.google.com/forum/#!forum/imply-user-group'}
+]);

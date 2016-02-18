@@ -1,0 +1,80 @@
+@import '../../imports';
+
+.nav {
+  svg {
+    height: 19px;
+    width: 19px;
+  }
+
+  .group {
+    margin-bottom: 18px;
+    border-top: 1px solid #ddd;
+
+    &:first-child {
+      border-top: 0;
+    }
+
+    &.no-title {
+      padding-top: 8px;
+    }
+
+    .group-title {
+      padding-left: $nav-padding;
+      text-transform: uppercase;
+      font-size: 12px;
+      padding-top: 15px;
+      padding-bottom: 12px;
+      color: #999;
+
+      .icons {
+        position: absolute;
+        padding-right: $nav-padding;
+        top: 1px;
+        right: 0;
+        cursor: pointer;
+
+        .icon {
+          display: inline-block;
+          padding: 10px 1px;
+
+          &:not(:first-child) {
+            margin-left: 4px;
+          }
+
+          &:hover svg path {
+            fill: #888;
+          }
+        }
+      }
+    }
+
+    .items {
+      .item {
+        line-height: 34px;
+        padding-left: $nav-padding;
+        padding-right: $nav-padding;
+        cursor: pointer;
+
+        .icon {
+          display: inline-block;
+          top: 7px;
+          left: 0;
+          margin-right: 9px;
+
+        }
+
+        &:hover {
+          background: rgba($brand, 0.12);
+        }
+      }
+
+      .selected {
+        background: rgba($brand, 0.14);
+
+        .icon svg path {
+          fill: $brand;
+        }
+      }
+    }
+  }
+}

@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, SortAction, ChainExpression } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
-import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, Clicker, VisualizationProps, Resolve, Colors } from "../../../common/models/index";
+import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, VisualizationProps, Resolve, Colors } from "../../../common/models/index";
 import { SPLIT, SEGMENT, TIME_SEGMENT, TIME_SORT_ACTION } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { ChartLine, ChartLineProps } from '../../components/chart-line/chart-line';

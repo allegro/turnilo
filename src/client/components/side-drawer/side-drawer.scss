@@ -4,7 +4,6 @@
   @include pin-left($side-drawer-width);
 
   font-size: 13px;
-  background: $white;
   box-shadow: 1px 0 2px 0 hsla(0, 0, 0, 0.13), 2px 0 12px 0 hsla(0, 0, 0, 0.26);
 
   .title {
@@ -15,50 +14,16 @@
       height: 40px;
 
       path {
-        fill: $brand;
+        fill: #bbb;
       }
     }
   }
 
-  .data-sources {
-    li {
-      margin: 5px;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-size: 14px;
-      color: $text-medium;
-      border-left: 3px solid transparent;
-
-      &:hover {
-        background: $background-lighter;
-        border-color: $border-light;
+  .items {
+    .item {
+      .icon svg path {
+        fill: #bbb;
       }
-
-      &.selected {
-        background: $background-lighter;
-        border-color: $brand;
-      }
-    }
-  }
-
-  .home-link {
-    display: block;
-    margin: 5px;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 14px;
-    color: $text-medium;
-    border-left: 3px solid transparent;
-
-    &:hover {
-      background: $background-lighter;
-      border-color: $border-light;
-    }
-
-    svg {
-      width: 18px;
-      margin-top: -4px;
-      margin-right: 6px;
     }
   }
 }

@@ -1,0 +1,39 @@
+@import '../../imports';
+
+.nav {
+  @include pin-left(300px);
+  background: #fff;
+  box-shadow: 5px 0 9px 0 rgba($black, 0.2), 0 0 5px 0 rgba($black, 0.15);
+
+  &.home {
+    @extend %bubble-cont;
+    position: absolute;
+    width: 460px;
+    top: 60px;
+    left: 50%;
+    margin-left: -230px;
+    height: 546px;
+    margin-bottom: 60px;
+
+    .items {
+      .item {
+        .icon svg path {
+          fill: $brand;
+        }
+      }
+    }
+  }
+
+  .logo-cont {
+    padding-left: $nav-padding;
+    padding-right: $nav-padding;
+
+    .logo {
+      svg {
+        width: 86px;
+        height: 60px;
+      }
+    }
+  }
+
+}

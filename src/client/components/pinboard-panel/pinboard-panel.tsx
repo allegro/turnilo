@@ -15,6 +15,7 @@ import { DimensionTile } from '../dimension-tile/dimension-tile';
 export interface PinboardPanelProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
+  getUrlPrefix?: Function;
 }
 
 export interface PinboardPanelState {
@@ -142,7 +143,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   }
 
   render() {
-    var { clicker, essence } = this.props;
+    var { clicker, essence, getUrlPrefix } = this.props;
     var { dragOver } = this.state;
     var { dataSource, pinnedDimensions, colors } = essence;
 
@@ -169,6 +170,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
           sortOn={colorsSortOn}
           colors={colors}
           onClose={this.onRemoveLegend.bind(this)}
+          getUrlPrefix={getUrlPrefix}
         />;
       }
     }
@@ -186,6 +188,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         dimension={dimension}
         sortOn={pinnedSortSortOn}
         onClose={clicker.unpin.bind(clicker, dimension)}
+        getUrlPrefix={getUrlPrefix}
       />);
     });
 

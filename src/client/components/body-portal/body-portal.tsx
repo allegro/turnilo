@@ -4,7 +4,7 @@ require('./body-portal.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Clicker, Essence, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Essence, Filter, Dimension, Measure } from '../../../common/models/index';
 
 export interface BodyPortalProps extends React.Props<any> {
   left?: number;

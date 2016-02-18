@@ -59,6 +59,7 @@ export interface FilterTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
+  getUrlPrefix?: Function;
 }
 
 export interface FilterTileState {
@@ -248,14 +249,17 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   dragStart(dimension: Dimension, clause: FilterClause, e: DragEvent) {
-    var { essence } = this.props;
-
-    var newUrl = essence.getURL(); // .changeSplit(SplitCombine.fromExpression(dimension.expression))
+    var { essence, getUrlPrefix } = this.props;
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
-    dataTransfer.setData("text/url-list", newUrl);
-    dataTransfer.setData("text/plain", newUrl);
+
+    if (getUrlPrefix) {
+      var newUrl = essence.getURL(getUrlPrefix());
+      dataTransfer.setData("text/url-list", newUrl);
+      dataTransfer.setData("text/plain", newUrl);
+    }
+
     DragManager.setDragDimension(dimension);
 
     setDragGhost(dataTransfer, dimension.title);

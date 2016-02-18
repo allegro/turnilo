@@ -1,0 +1,13 @@
+@import '../../imports';
+
+.home-header-bar {
+  @extend %header-bar;
+  // Old temp icons (github and help) can't be filled white but new ones must be.
+  // Because none of the new ones are implemented yet, comment out the fill for now.
+  /* .icon-button {
+      svg path {
+        fill: #fff;
+      }
+    }
+    */
+}

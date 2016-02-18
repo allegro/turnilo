@@ -4,7 +4,7 @@ require('./modal.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Stage, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { isInside, escapeKey, uniqueId } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
 

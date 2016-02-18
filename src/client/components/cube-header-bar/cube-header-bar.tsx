@@ -1,5 +1,5 @@
 'use strict';
-require('./header-bar.css');
+require('./cube-header-bar.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -9,19 +9,20 @@ import { Essence, DataSource } from "../../../common/models/index";
 
 import { Modal } from '../modal/modal';
 
-export interface HeaderBarProps extends React.Props<any> {
+export interface CubeHeaderBarProps extends React.Props<any> {
   dataSource: DataSource;
   onNavClick: React.MouseEventHandler;
   showLastUpdated?: boolean;
   hideGitHubIcon?: boolean;
   color?: string;
+  getUrlPrefix?: Function;
 }
 
-export interface HeaderBarState {
+export interface CubeHeaderBarState {
   showTestMenu?: boolean;
 }
 
-export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
+export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeaderBarState> {
 
   constructor() {
     super();
@@ -31,8 +32,8 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
   }
 
   onPanicClick(e: MouseEvent) {
+    var { dataSource, getUrlPrefix } = this.props;
     if (e.altKey) {
-      var { dataSource } = this.props;
       console.log('DataSource:', dataSource.toJS());
       return;
     }
@@ -42,7 +43,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
       });
       return;
     }
-    window.location.assign(Essence.getBaseURL());
+    window.location.assign(getUrlPrefix(true));
   }
 
   onModalClose() {
@@ -87,10 +88,12 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
       headerStyle = { background: color };
     }
 
-    return <header className="header-bar" style={headerStyle}>
+    return <header className="cube-header-bar" style={headerStyle}>
       <div className="burger-bar" onClick={onNavClick}>
-        <SvgIcon className="menu" svg={require('../../icons/menu.svg')}/>
-        <div className="dataset-title">{dataSource.title}</div>
+        <div className="menu-icon">
+          <SvgIcon svg={require('../../icons/menu.svg')}/>
+        </div>
+        <div className="title">{dataSource.title}</div>
       </div>
       <div className="right-bar">
         {updated}
