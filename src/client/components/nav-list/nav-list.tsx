@@ -25,8 +25,9 @@ export interface NavListState {
 export class NavList extends React.Component< NavListProps, NavListState> {
 
   getItemClassName(itemName: string) {
+    var { selected } = this.props;
     var itemClass = "item";
-    if (this.props.selected && this.props.selected === itemName) return `${itemClass} selected`;
+    if (selected && selected === itemName) return `${itemClass} selected`;
     if (itemName === "settings") return `${itemClass} not-implemented`;
     return itemClass;
   }

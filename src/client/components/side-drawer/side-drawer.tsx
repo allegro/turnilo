@@ -82,11 +82,10 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       <NavList
         title="Data Cubes"
         className="items"
-        selected={selectedDataSource.name}
+        selected={selectedDataSource ? selectedDataSource.name : null}
         navItems={dataSources}
         onSelect={this.selectDataSource.bind(this)}
         icon="'../../full-cube.svg'"
-
       />
       <NavList
         className="items"

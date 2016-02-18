@@ -31,7 +31,6 @@ export interface PivotApplicationState {
   ReactCSSTransitionGroupAsync?: typeof ReactCSSTransitionGroup;
   SideDrawerAsync?: typeof SideDrawer;
   drawerOpen?: boolean;
-  dataSources?: List<DataSource>;
   selectedDataSource?: DataSource;
   viewType?: string;
   viewHash?: string;
@@ -49,7 +48,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       ReactCSSTransitionGroupAsync: null,
       SideDrawerAsync: null,
       drawerOpen: false,
-      dataSources: null,
       selectedDataSource: null,
       viewType: null,
       viewHash: null
@@ -59,23 +57,19 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   componentWillMount() {
     var { dataSources } = this.props;
-    var viewType = HOME;
-
     if (!dataSources.size) throw new Error('must have data sources');
-    var selectedDataSource = dataSources.first();
     var hash = window.location.hash;
 
-    // basically, if there's only one "link" other than info & feedback to click (so later, if also no collections etc)
-    if (dataSources.size === 1) {
+    var viewType = this.getViewTypeFromHash(hash);
+    var selectedDataSource = this.getDataSourceFromHash(dataSources, hash);
+    var viewHash = this.getViewHashFromHash(hash);
+
+    if (viewType === HOME && dataSources.size === 1) {
+      selectedDataSource = dataSources.first();
       viewType = CUBE;
-    } else {
-      viewType = this.getViewTypeFromHash(hash);
-      var hashDataSource = this.getDataSourceFromHash(dataSources, hash);
-      if (hashDataSource && !hashDataSource.equals(selectedDataSource)) selectedDataSource = hashDataSource;
     }
 
-    var viewHash = this.getViewHashFromHash(hash);
-    this.setState({ dataSources, viewType, viewHash, selectedDataSource });
+    this.setState({ viewType, viewHash, selectedDataSource });
   }
 
   componentDidMount() {
@@ -103,7 +97,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     if (viewType !== CUBE) {
       newState.viewType = CUBE;
     }
-    if (!selectedDataSource.equals(dataSource)) {
+    if (!selectedDataSource || !selectedDataSource.equals(dataSource)) {
       newState.selectedDataSource = dataSource;
     }
 
@@ -111,6 +105,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   };
 
   globalHashChangeListener(): void {
+    const { dataSources } = this.props;
     var hash = window.location.hash;
 
     if (this.hashUpdating) return;
@@ -119,8 +114,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.setState({ viewType });
 
     if (viewType === CUBE) {
-      var dataSource = this.getDataSourceFromHash(this.state.dataSources, hash);
-      if (!dataSource) dataSource = this.props.dataSources.first();
+      var dataSource = this.getDataSourceFromHash(dataSources, hash);
+      if (!dataSource) dataSource = dataSources.first();
 
       var viewHash = this.getViewHashFromHash(hash);
 
@@ -195,8 +190,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   render() {
-    var { maxFilters, maxSplits, showLastUpdated, hideGitHubIcon, headerBackground } = this.props;
-    var { dataSources, viewType, viewHash, selectedDataSource, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync } = this.state;
+    var { dataSources, maxFilters, maxSplits, showLastUpdated, hideGitHubIcon, headerBackground } = this.props;
+    var { viewType, viewHash, selectedDataSource, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync } = this.state;
 
     var sideDrawer: JSX.Element = null;
     if (drawerOpen && SideDrawerAsync) {

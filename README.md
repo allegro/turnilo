@@ -130,6 +130,7 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Added Home view
 - Configuration docs: https://github.com/implydata/pivot/blob/master/docs/configuration.md
 - Support for numeric dimensions
 - Configurable attribute overrides
