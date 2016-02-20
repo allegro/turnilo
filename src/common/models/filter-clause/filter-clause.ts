@@ -2,7 +2,7 @@
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
-import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS, ChainExpression, NotAction, InAction, TimeRange, Datum } from 'plywood';
+import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS, ChainExpression, NotAction, OverlapAction, InAction, TimeRange, Datum } from 'plywood';
 
 // Basically these represent
 // expression.in(check) .not()?
@@ -61,9 +61,10 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
       exclude = true;
     }
     var lastAction = ex.lastAction();
-    if (lastAction instanceof InAction) {
+    var dimExpression = ex.popAction();
+    if (lastAction instanceof InAction || lastAction instanceof OverlapAction) {
       return new FilterClause({
-        expression: ex.popAction(),
+        expression: dimExpression,
         selection: lastAction.expression,
         exclude
       });
@@ -133,8 +134,8 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   }
 
   public toExpression(): ChainExpression {
-    var selection = this.selection;
-    var ex = this.expression.in(selection);
+    const { expression, selection } = this;
+    var ex = (selection.type === 'TIME_RANGE') ? expression.in(selection) : expression.overlap(selection);
     if (this.exclude) ex = ex.not();
     return ex;
   }

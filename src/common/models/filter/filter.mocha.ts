@@ -13,7 +13,7 @@ describe('Filter', () => {
       {
         "op": "chain", "expression": { "op": "ref", "name": "language" },
         "action": {
-          "action": "in",
+          "action": "overlap",
           "expression": {
             "op": "literal",
             "value": { "setType": "STRING", "elements": ["en"] },
@@ -35,7 +35,7 @@ describe('Filter', () => {
       {
         "op": "chain", "expression": { "op": "ref", "name": "language" },
         "action": {
-          "action": "in",
+          "action": "overlap",
           "expression": {
             "op": "literal",
             "value": { "setType": "STRING", "elements": ["he"] },
@@ -48,7 +48,7 @@ describe('Filter', () => {
         "expression": { "op": "ref", "name": "language" },
         "actions": [
           {
-            "action": "in",
+            "action": "overlap",
             "expression": {
               "op": "literal",
               "value": { "setType": "STRING", "elements": ["he"] },
@@ -60,7 +60,7 @@ describe('Filter', () => {
             "expression": {
               "op": "chain", "expression": { "op": "ref", "name": "namespace" },
               "action": {
-                "action": "in",
+                "action": "overlap",
                 "expression": {
                   "op": "literal",
                   "value": { "setType": "STRING", "elements": ["wikipedia"] },
@@ -102,12 +102,73 @@ describe('Filter', () => {
 
     filter = filter.addValue($language, 'en');
 
-    var ex = $language.in(['en']);
+    var ex = $language.overlap(['en']);
     expect(filter.toExpression().toJS()).to.deep.equal(ex.toJS());
 
     filter = filter.addValue($language, null);
 
-    var ex = $language.in(['en', null]);
+    var ex = $language.overlap(['en', null]);
     expect(filter.toExpression().toJS()).to.deep.equal(ex.toJS());
+  });
+
+  it('upgrades', () => {
+    var filter = Filter.fromJS({
+      "op": "chain",
+      "expression": { "op": "ref", "name": "language" },
+      "actions": [
+        {
+          "action": "in",
+          "expression": {
+            "op": "literal",
+            "value": { "setType": "STRING", "elements": ["he"] },
+            "type": "SET"
+          }
+        },
+        {
+          "action": "and",
+          "expression": {
+            "op": "chain", "expression": { "op": "ref", "name": "namespace" },
+            "action": {
+              "action": "in",
+              "expression": {
+                "op": "literal",
+                "value": { "setType": "STRING", "elements": ["wikipedia"] },
+                "type": "SET"
+              }
+            }
+          }
+        }
+      ]
+    });
+
+    expect(filter.toJS()).to.deep.equal({
+      "op": "chain",
+      "expression": { "op": "ref", "name": "language" },
+      "actions": [
+        {
+          "action": "overlap",
+          "expression": {
+            "op": "literal",
+            "value": { "setType": "STRING", "elements": ["he"] },
+            "type": "SET"
+          }
+        },
+        {
+          "action": "and",
+          "expression": {
+            "op": "chain", "expression": { "op": "ref", "name": "namespace" },
+            "action": {
+              "action": "overlap",
+              "expression": {
+                "op": "literal",
+                "value": { "setType": "STRING", "elements": ["wikipedia"] },
+                "type": "SET"
+              }
+            }
+          }
+        }
+      ]
+    });
+
   });
 });
