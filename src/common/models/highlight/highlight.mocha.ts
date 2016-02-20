@@ -16,7 +16,7 @@ describe('Highlight', () => {
           "expression": { "op": "ref", "name": "language" },
           "actions": [
             {
-              "action": "in",
+              "action": "overlap",
               "expression": {
                 "op": "literal",
                 "value": { "setType": "STRING", "elements": ["he"] },
@@ -28,7 +28,7 @@ describe('Highlight', () => {
               "expression": {
                 "op": "chain", "expression": { "op": "ref", "name": "namespace" },
                 "action": {
-                  "action": "in",
+                  "action": "overlap",
                   "expression": {
                     "op": "literal",
                     "value": { "setType": "STRING", "elements": ["wikipedia"] },
