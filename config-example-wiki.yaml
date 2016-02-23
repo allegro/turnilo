@@ -27,7 +27,7 @@ dataSources:
       rule: fixed # also possible: 'query' and 'realtime'
       time: 2015-09-13T00:00:00Z
 
-    # The default duration for the time filter (if not set P3D is used)
+    # The default duration for the time filter (if not set P1D is used)
     defaultDuration: P1D
 
     # The default sort measure name (if not set the first measure name is used)

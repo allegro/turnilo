@@ -106,7 +106,50 @@ describe('Essence', () => {
     ], { context });
   });
 
-  describe('fromHash / toHash', () => {
+
+  describe('.fromDataSource', () => {
+    it('works in the base case', () => {
+      var essence = Essence.fromDataSource(dataSource, context);
+
+      expect(essence.toJS()).to.deep.equal({
+        "filter": {
+          "action": {
+            "action": "in",
+            "expression": {
+              "action": {
+                "action": "timeRange",
+                "duration": "P3D",
+                "step": -1
+              },
+              "expression": {
+                "name": "m",
+                "op": "ref"
+              },
+              "op": "chain"
+            }
+          },
+          "expression": {
+            "name": "time",
+            "op": "ref"
+          },
+          "op": "chain"
+        },
+        "pinnedDimensions": [
+          "twitterHandle"
+        ],
+        "selectedMeasures": [
+          "count"
+        ],
+        "splits": [],
+        "timezone": "Etc/UTC",
+        "visualization": "viz1"
+      });
+    });
+
+  });
+
+
+  describe('.toHash / #fromHash', () => {
     it("is symmetric", () => {
       var essence1 = Essence.fromJS({
         visualization: 'viz1',

@@ -235,7 +235,7 @@ describe('DataSource', () => {
             "rule": "fixed"
           },
           "subsetFilter": null,
-          "defaultDuration": "P3D",
+          "defaultDuration": "P1D",
           "defaultFilter": { "op": "literal", "value": true },
           "defaultPinnedDimensions": [],
           "defaultSortMeasure": "added",

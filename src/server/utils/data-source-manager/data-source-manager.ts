@@ -326,7 +326,7 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
 
   var defaultDuration = dataSource.defaultDuration;
   if (withComments) {
-    lines.push("    # The default duration for the time filter (if not set P3D is used)");
+    lines.push(`    # The default duration for the time filter (if not set ${DataSource.DEFAULT_DURATION.toString()} is used)`);
   }
   if (defaultDuration.equals(DataSource.DEFAULT_DURATION)) {
     if (withComments) {
