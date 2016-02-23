@@ -128,7 +128,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var filter = dataSource.defaultFilter;
     if (dataSource.timeAttribute) {
-      filter = filter.setSelection(dataSource.timeAttribute, $(FilterClause.MAX_TIME_REF_NAME).timeRange('P1D', -1));
+      filter = filter.setSelection(
+        dataSource.timeAttribute,
+        $(FilterClause.MAX_TIME_REF_NAME).timeRange(dataSource.defaultDuration, -1)
+      );
     }
 
     var splits = Splits.EMPTY;

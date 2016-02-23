@@ -101,7 +101,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   static DEFAULT_INTROSPECTION = 'autofill-all';
   static INTROSPECTION_VALUES = ['none', 'no-autofill', 'autofill-dimensions-only', 'autofill-measures-only', 'autofill-all'];
   static DEFAULT_TIMEZONE = Timezone.UTC;
-  static DEFAULT_DURATION = Duration.fromJS('P3D');
+  static DEFAULT_DURATION = Duration.fromJS('P1D');
 
   static isDataSource(candidate: any): boolean {
     return isInstanceOf(candidate, DataSource);

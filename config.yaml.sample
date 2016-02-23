@@ -49,7 +49,7 @@ dataSources:
     # The default timezone for this dataset to operate in defaults to UTC
     #defaultTimezone: Asia/Kathmandu
 
-    # The default duration for the time filter (if not set P3D is used)
+    # The default duration for the time filter (if not set P1D is used)
     defaultDuration: P1D
 
     # The default filter in the UI, must be an AND of INs (or just a single IN)
