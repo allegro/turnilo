@@ -112,7 +112,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   public toJS(): FilterClauseJS {
     var js: FilterClauseJS = {
       expression: this.expression.toJS(),
-      selection: this.selection.toJS(),
+      selection: this.selection.toJS()
     };
     if (this.exclude) js.exclude = true;
     return js;

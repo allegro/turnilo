@@ -98,7 +98,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       possibleDimension: null,
       possibleInsertPosition: null,
       possibleReplacePosition: null,
-      maxItems: 20,
+      maxItems: 20
     };
   }
 

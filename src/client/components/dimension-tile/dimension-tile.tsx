@@ -1,4 +1,3 @@
-'use strict';
 require('./dimension-tile.css');
 
 import * as React from 'react';

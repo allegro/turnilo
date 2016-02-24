@@ -49,7 +49,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     super();
     this.state = {
       essence: null,
-      dragOver: false,
+      dragOver: false
     };
 
     var clicker = {

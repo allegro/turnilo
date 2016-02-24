@@ -48,7 +48,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     this.state = {
       loading: false,
       dataset: null,
-      error: null,
+      error: null
     };
   }
 
@@ -103,7 +103,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
           this.setState({
             loading: false,
             dataset,
-            error: null,
+            error: null
           });
         },
         (error) => {

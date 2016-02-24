@@ -23,7 +23,7 @@ export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHead
 
   render() {
     var { onNavClick } = this.props;
-    var gitHubIcon : JSX.Element = <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
+    var gitHubIcon: JSX.Element = <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
       <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
     </a>;
 

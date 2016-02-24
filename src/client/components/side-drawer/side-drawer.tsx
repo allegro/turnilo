@@ -66,7 +66,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       window.open(selected.target);
       return false;
     } else {
-      // state change for application to handle
+      return; // state change for application to handle
     }
   };
 

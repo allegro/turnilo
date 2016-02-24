@@ -168,14 +168,12 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
       var { bucketAction } = splitCombine;
       if (bucketAction) {
         if (!force) return splitCombine;
-        if (bucketAction instanceof TimeBucketAction) {
-          if (!bucketAction.duration.equals(granularity)) {
-            changed = true;
-            return splitCombine.changeBucketAction(new TimeBucketAction({
-              timezone: bucketAction.timezone,
-              duration: granularity
-            }));
-          }
+        if (bucketAction instanceof TimeBucketAction && !bucketAction.duration.equals(granularity)) {
+          changed = true;
+          return splitCombine.changeBucketAction(new TimeBucketAction({
+            timezone: bucketAction.timezone,
+            duration: granularity
+          }));
         } else {
           return splitCombine;
         }

@@ -72,7 +72,7 @@ export class SortOn implements Instance<SortOnValue, SortOnJS> {
   public valueOf(): SortOnValue {
     return {
       dimension: this.dimension,
-      measure: this.measure,
+      measure: this.measure
     };
   }
 

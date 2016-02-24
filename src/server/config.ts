@@ -200,6 +200,7 @@ export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSo
     return DataSource.fromJS(dataSourceJS);
   } catch (e) {
     errorExit(`Could not parse data source '${dataSourceJS.name}': ${e.message}`);
+    return;
   }
 });
 

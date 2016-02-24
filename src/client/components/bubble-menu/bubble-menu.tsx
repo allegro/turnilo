@@ -105,8 +105,8 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     var menuWidth = stage.width;
     var menuHeight = stage.height;
 
-    var menuLeft: number = 0;
-    var menuTop: number = 0;
+    var menuLeft = 0;
+    var menuTop = 0;
     var menuStyle: any = {};
     if (fixedSize) {
       menuStyle.width = menuWidth;

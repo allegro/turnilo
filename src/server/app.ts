@@ -47,8 +47,7 @@ app.get('/', (req: Request, res: Response, next: Function) => {
     if (dataSources.length) {
       var config: any = {
         version: VERSION,
-        dataSources: dataSources.map((ds) => ds.toClientDataSource()),
-        //homeLink: '/',
+        dataSources: dataSources.map((ds) => ds.toClientDataSource())
       };
 
       if (HIDE_GITHUB_ICON) config.hideGitHubIcon = HIDE_GITHUB_ICON;

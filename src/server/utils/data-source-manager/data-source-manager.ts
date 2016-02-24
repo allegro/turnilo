@@ -254,7 +254,7 @@ function dimensionToYAML(dimension: Dimension): string[] {
 function measureToYAML(measure: Measure): string[] {
   var lines: string[] = [
     `      - name: ${measure.name}`,
-    `        title: ${measure.title}`,
+    `        title: ${measure.title}`
   ];
 
   var ex = measure.expression;

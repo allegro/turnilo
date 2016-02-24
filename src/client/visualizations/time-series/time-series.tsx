@@ -408,8 +408,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     if (splitLength === 1) {
       extentY = d3.extent(myDataset.data, getY);
     } else {
-      var minY: number = 0;
-      var maxY: number = 0;
+      var minY = 0;
+      var maxY = 0;
 
       myDataset.data.forEach(datum => {
         var dataset = datum[SPLIT];

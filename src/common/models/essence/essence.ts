@@ -533,7 +533,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   // Modification
 
-  public changeFilter(filter: Filter, removeHighlight: boolean = false): Essence {
+  public changeFilter(filter: Filter, removeHighlight = false): Essence {
     var value = this.valueOf();
     value.filter = filter;
 

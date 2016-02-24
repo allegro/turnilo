@@ -26,7 +26,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
       window.open(selected.target);
       return false;
     } else {
-      // state change for application to handle
+      return; // state change for application to handle
     }
   };
 
