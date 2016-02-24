@@ -3,7 +3,7 @@ import { Duration, Timezone } from 'chronoshift';
 import { $, AttributeInfo, RefExpression } from 'plywood';
 import { DataSource, DataSourceJS, RefreshRule, Dimension, Measure } from '../../../common/models/index';
 
-export type SourceListScan = string; // ToDo: when TS1.8 comes out make the type 'disable' | 'auto';   (https://basarat.gitbooks.io/typescript/content/docs/types/stringLiteralType.html)
+export type SourceListScan = "disable" | "auto";
 
 export interface DataSourceFiller {
   (dataSource: DataSource): Q.Promise<DataSource>;

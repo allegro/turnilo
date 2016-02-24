@@ -3,7 +3,7 @@ import * as Q from 'q';
 import * as nopt from 'nopt';
 
 import { DataSource, DataSourceJS, Dimension, Measure } from '../common/models/index';
-import { DataSourceManager, dataSourceManagerFactory, loadFileSync, dataSourceToYAML, properDruidRequesterFactory, dataSourceFillerFactory } from './utils/index';
+import { DataSourceManager, dataSourceManagerFactory, loadFileSync, dataSourceToYAML, properDruidRequesterFactory, dataSourceFillerFactory, SourceListScan } from './utils/index';
 
 export interface PivotConfig {
   port?: number;
@@ -11,7 +11,7 @@ export interface PivotConfig {
   druidHost?: string;
   timeout?: number;
   introspectionStrategy?: string;
-  sourceListScan?: string;
+  sourceListScan?: SourceListScan;
   sourceListRefreshInterval?: number;
   dataSources?: DataSourceJS[];
 
@@ -172,7 +172,7 @@ export const DRUID_HOST = parsedArgs['druid'] || config.druidHost;
 export const TIMEOUT = parseInt(<any>config.timeout, 10) || 30000;
 
 export const INTROSPECTION_STRATEGY = String(parsedArgs["introspection-strategy"] || config.introspectionStrategy || 'segment-metadata-fallback');
-export const SOURCE_LIST_SCAN = START_SERVER ? config.sourceListScan : 'disable';
+export const SOURCE_LIST_SCAN: SourceListScan = START_SERVER ? config.sourceListScan : 'disable';
 export const SOURCE_LIST_REFRESH_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceListRefreshInterval, 10) || 10000) : 0;
 
 export const HIDE_GITHUB_ICON = Boolean(config.hideGitHubIcon);
