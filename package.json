@@ -43,7 +43,7 @@
     "numeral": "1.5.3",
     "plywood": "0.8.17",
     "plywood-druid-requester": "1.2.8",
-    "plywood-mysql-requester": "1.2.1",
+    "plywood-mysql-requester": "1.2.2",
     "q": "1.4.1",
     "qajax": "1.3.0",
     "react": "0.14.7",
