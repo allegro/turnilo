@@ -1,5 +1,3 @@
-'use strict';
-
 import * as Qajax from 'qajax';
 import { $, Expression, Executor, Dataset, Datum, ChainExpression, SplitAction } from 'plywood';
 

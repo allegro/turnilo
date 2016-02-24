@@ -1,4 +1,3 @@
-'use strict';
 require('./body-portal.css');
 
 import * as React from 'react';

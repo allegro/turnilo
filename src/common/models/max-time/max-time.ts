@@ -1,5 +1,3 @@
-'use strict';
-
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression } from 'plywood';
 

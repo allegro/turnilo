@@ -1,5 +1,3 @@
-'use strict';
-
 import * as React from 'react';
 import { DataSource } from '../data-source/data-source';
 import { Splits } from '../splits/splits';

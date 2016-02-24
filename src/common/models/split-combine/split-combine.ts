@@ -1,5 +1,3 @@
-'use strict';
-
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';

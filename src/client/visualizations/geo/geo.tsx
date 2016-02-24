@@ -1,4 +1,3 @@
-'use strict';
 require('./geo.css');
 
 import { List } from 'immutable';

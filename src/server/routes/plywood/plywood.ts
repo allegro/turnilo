@@ -1,5 +1,3 @@
-'use strict';
-
 import { Router, Request, Response } from 'express';
 import { $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
 import { Timezone, WallTime, Duration } from 'chronoshift';

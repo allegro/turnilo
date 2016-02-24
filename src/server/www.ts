@@ -1,5 +1,3 @@
-'use strict';
-
 import * as debugModule from 'debug';
 import * as http from 'http';
 

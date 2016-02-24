@@ -1,4 +1,3 @@
-'use strict';
 require('./dimension-measure-panel.css');
 
 import * as React from 'react';

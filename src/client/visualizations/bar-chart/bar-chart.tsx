@@ -1,4 +1,3 @@
-'use strict';
 require('./bar-chart.css');
 
 import { List } from 'immutable';

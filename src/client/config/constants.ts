@@ -1,5 +1,3 @@
-'use strict';
-
 import { List } from 'immutable';
 import { $, SortAction } from 'plywood';
 

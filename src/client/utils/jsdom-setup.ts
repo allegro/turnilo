@@ -1,5 +1,3 @@
-'use strict';
-
 import * as jsdom from 'jsdom';
 
 var g: any = <any>global;

@@ -1,4 +1,3 @@
-'use strict';
 require('./clearable-input.css');
 
 import * as React from 'react';

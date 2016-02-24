@@ -45,8 +45,7 @@ function writeFile(path, data) {
 
 // Make the TypeScript file
 writeFile(path + name + '.tsx',
-`'use strict';
-require('./${name}.css');
+`require('./${name}.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -93,9 +92,7 @@ export class ${camelName} extends React.Component< ${camelName}Props, ${camelNam
 
 // Make the TypeScript test file
 writeFile(path + name + '.mocha.tsx',
-`'use strict';
-
-import { expect } from 'chai';
+`import { expect } from 'chai';
 import * as sinon from 'sinon';
 import '../../utils/jsdom-setup';
 import * as React from 'react';

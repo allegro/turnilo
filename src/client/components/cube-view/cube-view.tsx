@@ -1,4 +1,3 @@
-'use strict';
 require('./cube-view.css');
 
 import * as React from 'react';

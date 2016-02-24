@@ -1,4 +1,3 @@
-'use strict';
 require('./checkbox.css');
 
 import * as React from 'react';

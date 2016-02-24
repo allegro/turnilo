@@ -1,4 +1,3 @@
-'use strict';
 require('./pinboard-panel.css');
 
 import * as React from 'react';

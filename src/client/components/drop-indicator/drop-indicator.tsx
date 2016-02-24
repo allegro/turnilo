@@ -1,4 +1,3 @@
-'use strict';
 require('./drop-indicator.css');
 
 import * as React from 'react';

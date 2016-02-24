@@ -1,4 +1,3 @@
-'use strict';
 require('./highlight-controls.css');
 
 import { List } from 'immutable';

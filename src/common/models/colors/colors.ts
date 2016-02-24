@@ -1,5 +1,3 @@
-'use strict';
-
 import { Class, Instance, isInstanceOf, isImmutableClass } from 'immutable-class';
 import { $, Expression, Set, valueFromJS, valueToJS, FilterAction, LimitAction } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';

@@ -1,5 +1,3 @@
-'use strict';
-
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 

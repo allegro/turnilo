@@ -1,4 +1,3 @@
-'use strict';
 require('./home-header-bar.css');
 
 import * as React from 'react';

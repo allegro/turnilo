@@ -1,5 +1,3 @@
-'use strict';
-
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
 import { $, Expression, ExpressionJS, Action, ApplyAction, AttributeInfo } from 'plywood';

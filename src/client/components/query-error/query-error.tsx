@@ -1,4 +1,3 @@
-'use strict';
 require('./query-error.css');
 
 import { List } from 'immutable';

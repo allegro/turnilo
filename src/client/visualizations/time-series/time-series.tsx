@@ -1,4 +1,3 @@
-'use strict';
 require('./time-series.css');
 
 import { List } from 'immutable';

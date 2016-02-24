@@ -1,4 +1,3 @@
-'use strict';
 require('./hover-multi-bubble.css');
 
 import * as React from 'react';

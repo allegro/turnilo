@@ -1,4 +1,3 @@
-'use strict';
 require('./time-input.css');
 
 import { List } from 'immutable';

@@ -1,4 +1,3 @@
-'use strict';
 require('./menu-header.css');
 
 import * as React from 'react';

@@ -1,4 +1,3 @@
-'use strict';
 require('./bubble-menu.css');
 
 import * as React from 'react';

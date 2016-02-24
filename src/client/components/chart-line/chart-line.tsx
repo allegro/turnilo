@@ -1,4 +1,3 @@
-'use strict';
 require('./chart-line.css');
 
 import * as React from 'react';

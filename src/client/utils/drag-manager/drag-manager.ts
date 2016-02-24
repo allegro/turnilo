@@ -1,5 +1,3 @@
-'use strict';
-
 import { Dimension, SplitCombine } from '../../../common/models/index';
 
 export class DragManager {

@@ -1,5 +1,3 @@
-'use strict';
-
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Duration, Timezone } from 'chronoshift';
 import { $, Expression } from 'plywood';

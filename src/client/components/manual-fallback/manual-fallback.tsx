@@ -1,4 +1,3 @@
-'use strict';
 require('./manual-fallback.css');
 
 import { List } from 'immutable';

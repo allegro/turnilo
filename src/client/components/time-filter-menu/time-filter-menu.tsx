@@ -1,4 +1,3 @@
-'use strict';
 require('./time-filter-menu.css');
 
 import * as React from 'react';

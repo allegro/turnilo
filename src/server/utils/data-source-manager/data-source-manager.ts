@@ -1,5 +1,3 @@
-'use strict';
-
 import * as Q from 'q';
 import { Duration, Timezone } from 'chronoshift';
 import { $, AttributeInfo, RefExpression } from 'plywood';

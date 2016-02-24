@@ -1,5 +1,3 @@
-'use strict';
-
 export * from './clicker/clicker';
 export * from './stage/stage';
 

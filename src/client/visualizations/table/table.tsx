@@ -1,4 +1,3 @@
-'use strict';
 require('./table.css');
 
 import { List } from 'immutable';

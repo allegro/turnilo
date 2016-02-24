@@ -1,5 +1,3 @@
-'use strict';
-
 import * as d3 from 'd3';
 import { Timezone, WallTime } from 'chronoshift';
 import { TimeRange } from 'plywood';

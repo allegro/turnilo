@@ -1,4 +1,3 @@
-'use strict';
 require('./time-axis.css');
 
 import * as React from 'react';

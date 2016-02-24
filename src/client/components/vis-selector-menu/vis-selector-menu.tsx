@@ -1,4 +1,3 @@
-'use strict';
 require('./vis-selector-menu.css');
 
 import { List } from 'immutable';

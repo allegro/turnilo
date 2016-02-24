@@ -1,4 +1,3 @@
-'use strict';
 require('./nav-list.css');
 
 import * as React from 'react';

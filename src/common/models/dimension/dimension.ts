@@ -1,5 +1,3 @@
-'use strict';
-
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS, Action } from 'plywood';

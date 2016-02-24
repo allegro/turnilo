@@ -1,4 +1,3 @@
-'use strict';
 require('./totals.css');
 
 import { List } from 'immutable';

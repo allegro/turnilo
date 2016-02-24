@@ -1,4 +1,3 @@
-'use strict';
 require('./grid-lines.css');
 
 import * as React from 'react';

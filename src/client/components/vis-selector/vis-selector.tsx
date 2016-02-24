@@ -1,4 +1,3 @@
-'use strict';
 require('./vis-selector.css');
 
 import * as React from 'react';

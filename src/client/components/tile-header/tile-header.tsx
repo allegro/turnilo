@@ -1,4 +1,3 @@
-'use strict';
 require('./tile-header.css');
 
 import * as React from 'react';

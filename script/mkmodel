@@ -34,9 +34,7 @@ function writeFile(path, data) {
 
 // Make the TypeScript file
 writeFile(path + name + '.ts',
-`'use strict';
-
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+`import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression } from 'plywood';
 
 // I am: import { ${camelName} } from '../${name}/${name}';
@@ -98,9 +96,7 @@ check = ${camelName};
 
 // Make the TypeScript test file
 writeFile(path + name + '.mocha.ts',
-`'use strict';
-
-import { expect } from 'chai';
+`import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';

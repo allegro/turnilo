@@ -1,5 +1,3 @@
-'use strict';
-
 import * as numeral from 'numeral';
 
 export interface Formatter {

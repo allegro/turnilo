@@ -1,5 +1,3 @@
-'use strict';
-
 import { $, helper } from 'plywood';
 import { druidRequesterFactory } from 'plywood-druid-requester';
 import { mySqlRequesterFactory } from 'plywood-mysql-requester';

@@ -1,5 +1,3 @@
-'use strict';
-
 import * as path from 'path';
 import * as fs from 'fs-promise';
 import * as Q from 'q';

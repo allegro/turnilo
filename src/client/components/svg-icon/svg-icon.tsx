@@ -1,4 +1,3 @@
-'use strict';
 require('./svg-icon.css');
 
 import { List } from 'immutable';

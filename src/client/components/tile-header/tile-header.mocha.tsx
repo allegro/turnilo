@@ -1,5 +1,3 @@
-'use strict';
-
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import '../../utils/jsdom-setup';

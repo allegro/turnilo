@@ -1,4 +1,3 @@
-'use strict';
 require('./pivot-application.css');
 
 import * as React from 'react';

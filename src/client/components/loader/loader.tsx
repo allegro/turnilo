@@ -1,4 +1,3 @@
-'use strict';
 require('./loader.css');
 
 import * as React from 'react';

@@ -1,4 +1,3 @@
-'use strict';
 require('./home-view.css');
 
 import * as React from 'react';

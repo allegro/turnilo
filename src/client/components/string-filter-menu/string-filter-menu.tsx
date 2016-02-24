@@ -1,4 +1,3 @@
-'use strict';
 require('./string-filter-menu.css');
 
 import { List } from 'immutable';

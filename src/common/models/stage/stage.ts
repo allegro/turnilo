@@ -1,5 +1,3 @@
-'use strict';
-
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 
 export interface MarinParameters {

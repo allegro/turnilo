@@ -1,4 +1,3 @@
-'use strict';
 require('./cube-header-bar.css');
 
 import * as React from 'react';

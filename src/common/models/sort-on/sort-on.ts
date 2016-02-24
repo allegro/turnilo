@@ -1,5 +1,3 @@
-'use strict';
-
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, RefExpression, SortAction } from 'plywood';
 import { Dimension, DimensionJS } from '../dimension/dimension';

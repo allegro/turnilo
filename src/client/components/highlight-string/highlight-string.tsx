@@ -1,4 +1,3 @@
-'use strict';
 require('./highlight-string.css');
 
 import * as React from 'react';

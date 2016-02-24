@@ -1,4 +1,3 @@
-'use strict';
 require('./fancy-drag-indicator.css');
 
 import { List } from 'immutable';

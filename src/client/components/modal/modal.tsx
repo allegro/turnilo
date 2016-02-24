@@ -1,4 +1,3 @@
-'use strict';
 require('./modal.css');
 
 import * as React from 'react';

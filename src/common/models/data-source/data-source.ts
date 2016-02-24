@@ -1,5 +1,3 @@
-'use strict';
-
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';

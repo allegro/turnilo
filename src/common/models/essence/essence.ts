@@ -1,5 +1,3 @@
-'use strict';
-
 import { List, OrderedSet } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';

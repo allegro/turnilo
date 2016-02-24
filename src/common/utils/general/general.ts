@@ -1,5 +1,3 @@
-'use strict';
-
 import { List } from 'immutable';
 import { arraysEqual } from 'immutable-class';
 

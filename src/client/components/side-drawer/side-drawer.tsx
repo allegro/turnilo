@@ -1,4 +1,3 @@
-'use strict';
 require('./side-drawer.css');
 
 import * as React from 'react';

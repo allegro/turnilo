@@ -1,4 +1,3 @@
-'use strict';
 require('./filter-tile.css');
 
 import * as React from 'react';

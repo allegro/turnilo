@@ -1,4 +1,3 @@
-'use strict';
 require('./split-menu.css');
 
 import { List } from 'immutable';
