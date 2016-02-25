@@ -37,7 +37,7 @@ writeFile(path + name + '.ts',
 `import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression } from 'plywood';
 
-// I am: import { ${camelName} } from '../${name}/${name}';
+// I am: export * from './${name}/${name}';
 
 export interface ${camelName}Value {
 

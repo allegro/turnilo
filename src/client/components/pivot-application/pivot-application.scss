@@ -11,7 +11,9 @@
 
   .not-implemented {  display: none;  }
 
-  .home-view, .cube-view {
+  .home-view,
+  .cube-view,
+  .link-view {
     @include pin-full;
   }
 

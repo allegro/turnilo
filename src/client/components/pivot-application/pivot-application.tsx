@@ -8,8 +8,9 @@ import { List } from 'immutable';
 import { DataSource } from "../../../common/models/index";
 
 import { SideDrawer, SideDrawerProps } from '../side-drawer/side-drawer';
-import { CubeView } from '../cube-view/cube-view';
 import { HomeView } from '../home-view/home-view';
+import { CubeView } from '../cube-view/cube-view';
+import { LinkView } from '../link-view/link-view';
 
 import { visualizations } from '../../visualizations/index';
 
@@ -32,10 +33,11 @@ export interface PivotApplicationState {
   viewHash?: string;
 }
 
-export type ViewType = "home" | "cube";
+export type ViewType = "home" | "cube" | "link";
 
 export const HOME: ViewType = "home";
 export const CUBE: ViewType = "cube";
+export const LINK: ViewType = "link";
 
 export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
   private hashUpdating: boolean = false;
@@ -216,23 +218,42 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     }
 
     var view: JSX.Element = null;
-    if (viewType === CUBE) {
-      view = <CubeView
-        dataSource={selectedDataSource}
-        hash={viewHash}
-        updateHash={this.updateHash.bind(this)}
-        getUrlPrefix={this.getUrlPrefix.bind(this)}
-        maxFilters={maxFilters}
-        maxSplits={maxSplits}
-        onNavClick={this.sideDrawerOpen.bind(this, true)}
-      />;
+    if (selectedDataSource) {
+      viewType = LINK;
+    }
+    switch (viewType) {
+      case HOME:
+        view = <HomeView
+          dataCubes={dataSources}
+          selectDataCube={this.changeDataSource.bind(this)}
+          onNavClick={this.sideDrawerOpen.bind(this, true)}
+        />;
+        break;
 
-    } else {
-      view = <HomeView
-        dataCubes={dataSources}
-        selectDataCube={this.changeDataSource.bind(this)}
-        onNavClick={this.sideDrawerOpen.bind(this, true)}
-      />;
+      case CUBE:
+        view = <CubeView
+          dataSource={selectedDataSource}
+          hash={viewHash}
+          updateHash={this.updateHash.bind(this)}
+          getUrlPrefix={this.getUrlPrefix.bind(this)}
+          maxFilters={maxFilters}
+          maxSplits={maxSplits}
+          onNavClick={this.sideDrawerOpen.bind(this, true)}
+        />;
+        break;
+
+      case LINK:
+        view = <LinkView
+          dataSource={selectedDataSource}
+          hash={viewHash}
+          updateHash={this.updateHash.bind(this)}
+          getUrlPrefix={this.getUrlPrefix.bind(this)}
+          onNavClick={this.sideDrawerOpen.bind(this, true)}
+        />;
+        break;
+
+      default:
+        throw new Error('unknown view');
     }
 
     return <main className='pivot-application'>

@@ -4,7 +4,7 @@ var fs = require('fs-extra');
 var replace = require("replace");
 
 if (process.argv.length !== 5) {
-  console.log('Usage: mv <what> <old-component-name> <new-component-name>');
+  console.log('Usage: cp <what> <old-component-name> <new-component-name>');
   process.exit();
 }
 
@@ -36,17 +36,14 @@ var camelNewName = newName.replace(/(^|-)[a-z]/g, (s) => s.replace('-', '').toUp
 console.log('Making path:', newPath);
 
 fs.copySync(oldPath, newPath);
-fs.removeSync(oldPath);
 fs.renameSync(newPath + oldName + '.tsx', newPath + newName + '.tsx');
 fs.renameSync(newPath + oldName + '.scss', newPath + newName + '.scss');
 fs.renameSync(newPath + oldName + '.mocha.tsx', newPath + newName + '.mocha.tsx');
 
-var replacePath = './src/client/';
-
 replace({
   regex: oldName,
   replacement: newName,
-  paths: [replacePath],
+  paths: [newPath],
   recursive: true,
   silent: true
 });
@@ -54,7 +51,7 @@ replace({
 replace({
   regex: camelOldName,
   replacement: camelNewName,
-  paths: [replacePath],
+  paths: [newPath],
   recursive: true,
   silent: true
 });

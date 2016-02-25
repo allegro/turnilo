@@ -9,9 +9,9 @@ import { Filter, Dimension, Measure } from '../../../common/models/index';
 
 export interface TileHeaderProps extends React.Props<any> {
   title: string;
-  onDragStart: React.DragEventHandler;
-  onSearch: React.MouseEventHandler;
-  onClose: React.MouseEventHandler;
+  onDragStart?: React.DragEventHandler;
+  onSearch?: React.MouseEventHandler;
+  onClose?: React.MouseEventHandler;
 }
 
 export interface TileHeaderState {
@@ -35,12 +35,17 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
       </div>;
     }
 
+    var closeButton: JSX.Element = null;
+    if (onClose) {
+      closeButton = <div className="close" onClick={onClose}>
+        <SvgIcon svg={require('../../icons/x.svg')}/>
+      </div>;
+    }
+
     return <div className="tile-header" draggable={onDragStart ? true : null} onDragStart={onDragStart}>
       <div className="title">{title}</div>
       {searchButton}
-      <div className="close" onClick={onClose}>
-        <SvgIcon svg={require('../../icons/x.svg')}/>
-      </div>
+      {closeButton}
     </div>;
   }
 }

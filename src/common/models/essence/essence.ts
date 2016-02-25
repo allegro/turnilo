@@ -164,8 +164,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   static fromJS(parameters: EssenceJS, context?: EssenceContext): Essence {
-    var visualizations = context.visualizations;
-    var dataSource = context.dataSource;
+    if (!context) throw new Error('must have context');
+    const { dataSource, visualizations } = context;
 
     var visualizationID = parameters.visualization;
     var visualization = visualizations.find(v => v.id === visualizationID);

@@ -17,3 +17,4 @@ export * from './colors/colors';
 export * from './visualization-props/visualization-props';
 export * from './manifest/manifest';
 export * from './essence/essence';
+export * from './link-item/link-item';

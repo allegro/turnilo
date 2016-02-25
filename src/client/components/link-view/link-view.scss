@@ -1,7 +1,7 @@
 @import '../../imports';
 
-.cube-view {
-  .cube-header-bar {
+.link-view {
+  .link-header-bar {
     @include pin-top($header-height);
   }
 
@@ -9,8 +9,10 @@
     @include unpin-top($header-height);
   }
 
-  .dimension-measure-panel {
-    @include pin-left($left-panel-width);
+  .link-panel {
+    @include pin-left($left-panel-width - $tile-margin-h);
+
+    background: $white;
   }
 
   .center-panel {
@@ -21,31 +23,11 @@
     right: $pinboard-width;
 
     .center-top-bar {
+      @extend %module;
       @include pin-top($control-tile-height + 1px + $control-tile-height);
+      border-radius: $corner;
 
-      .filter-split-section {
-        @include unpin-right($vis-selector-width + 1px);
-      }
-
-      .filter-tile,
-      .split-tile {
-        height: $control-tile-height;
-      }
-
-      .filter-tile {
-        margin-bottom: 1px;
-        border-radius: $corner 0 0 0;
-      }
-
-      .split-tile {
-        border-radius: 0 0 0 $corner;
-      }
-
-      .vis-selector {
-        @include pin-right($vis-selector-width);
-        z-index: 8;
-        border-radius: 0 $corner $corner 0;
-      }
+      font-size: 20px;
     }
 
     .center-main {

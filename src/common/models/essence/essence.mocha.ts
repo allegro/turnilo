@@ -4,10 +4,10 @@ import { List } from 'immutable';
 
 import { $, Expression } from 'plywood';
 import { Essence, EssenceJS } from './essence';
-import { DataSource, DataSourceJS } from "../data-source/data-source";
+import { DataSource } from "../data-source/data-source";
 
 describe('Essence', () => {
-  var dataSourceJS: DataSourceJS = {
+  var dataSourceJS = {
     name: 'twitter',
     title: 'Twitter',
     engine: 'druid',
@@ -57,28 +57,23 @@ describe('Essence', () => {
   };
 
   var dataSource = DataSource.fromJS(dataSourceJS);
-  var dataSources: any[] = [];
-  dataSources.push(dataSource);
 
-  var visualizationsArray = [
+  var visualizations: any = List([
     {
-      id: 'viz1',
-      title: 'viz1',
+      id: 'vis1',
+      title: 'vis1',
       handleCircumstance(): any {
         return { 'isAutomatic': () => false };
       }
     }
-  ];
+  ]);
 
-  var context: any = {
-    dataSource: dataSource,
-    visualizations: List(<any>visualizationsArray)
-  };
+  var context = { dataSource, visualizations };
 
   it('is an immutable class', () => {
     testImmutableClass<EssenceJS>(Essence, [
       {
-        visualization: 'viz1',
+        visualization: 'vis1',
         timezone: 'Etc/UTC',
         filter: {
           op: "literal",
@@ -90,7 +85,7 @@ describe('Essence', () => {
         splits: []
       },
       {
-        visualization: 'viz1',
+        visualization: 'vis1',
         timezone: 'Etc/UTC',
         filter: {
           op: "literal",
@@ -102,6 +97,16 @@ describe('Essence', () => {
         splits: []
       }
     ], { context });
+  });
+
+
+  describe('errors', () => {
+    it('must have context', () => {
+      expect(() => {
+        Essence.fromJS({} as any);
+      }).to.throw('must have context');
+    });
+
   });
 
 
@@ -140,7 +145,7 @@ describe('Essence', () => {
         ],
         "splits": [],
         "timezone": "Etc/UTC",
-        "visualization": "viz1"
+        "visualization": "vis1"
       });
     });
 
@@ -150,7 +155,7 @@ describe('Essence', () => {
   describe('.toHash / #fromHash', () => {
     it("is symmetric", () => {
       var essence1 = Essence.fromJS({
-        visualization: 'viz1',
+        visualization: 'vis1',
         timezone: 'Etc/UTC',
         filter: {
           op: "literal",
