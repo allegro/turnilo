@@ -11,6 +11,12 @@
       .icon svg path {
         fill: #bbb;
       }
+
+      &.selected {
+        .icon svg path {
+          fill: $brand;
+        }
+      }
     }
   }
 }
