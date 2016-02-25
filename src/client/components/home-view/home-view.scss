@@ -1,12 +1,17 @@
 @import '../../imports';
 
-.nav {
-  @include pin-left(300px);
-  background: #fff;
-  box-shadow: 5px 0 9px 0 rgba($black, 0.2), 0 0 5px 0 rgba($black, 0.15);
+.home-view {
+  .home-header-bar {
+    @include pin-top($header-height);
+  }
 
-  &.home {
-    @extend %bubble-cont;
+  .container {
+    @include unpin-top($header-height);
+    overflow: scroll;
+  }
+
+  .home {
+    @extend %menu-cont;
     position: absolute;
     width: 460px;
     top: 60px;
@@ -23,17 +28,4 @@
       }
     }
   }
-
-  .logo-cont {
-    padding-left: $nav-padding;
-    padding-right: $nav-padding;
-
-    .logo {
-      svg {
-        width: 86px;
-        height: 60px;
-      }
-    }
-  }
-
 }

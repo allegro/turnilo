@@ -62,7 +62,7 @@ export interface ${camelName}Props extends React.Props<any> {
 export interface ${camelName}State {
 }
 
-export class ${camelName} extends React.Component< ${camelName}Props, ${camelName}State> {
+export class ${camelName} extends React.Component<${camelName}Props, ${camelName}State> {
   public mounted: boolean;
 
   constructor() {

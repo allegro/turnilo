@@ -6,7 +6,6 @@ import { DataSource, Filter, Dimension, Measure } from '../../../common/models/i
 // import { ... } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
-// I am: import { NavList } from '../nav-list/nav-list';
 import { List } from 'immutable';
 
 export interface NavListProps extends React.Props<any> {
@@ -52,32 +51,31 @@ export class NavList extends React.Component< NavListProps, NavListState> {
   }
 
   render() {
-    var groupClassName = "group";
-    var titleSection = <section className="group-title">{this.props.title}
-      <ul className="icons not-implemented">
-        <li className="icon">
-          <SvgIcon svg={require('../../icons/full-add.svg')}/>
-        </li>
-        <li className="icon">
-          <SvgIcon svg={require('../../icons/full-settings.svg')}/>
-        </li>
-      </ul>
-    </section>;
+    const { title } = this.props;
 
-    if (!this.props.title) {
-      titleSection = null;
-      groupClassName += " no-title";
+    var className = "nav-list";
+    var titleSection: JSX.Element = null;
+    if (title) {
+      titleSection = <div className="group-title">
+        {title}
+        <ul className="icons not-implemented">
+          <li className="icon">
+            <SvgIcon svg={require('../../icons/full-add.svg')}/>
+          </li>
+          <li className="icon">
+            <SvgIcon svg={require('../../icons/full-settings.svg')}/>
+          </li>
+        </ul>
+      </div>;
+    } else {
+      className += " no-title";
     }
 
-    return (
-      <section className={groupClassName}>
-        {titleSection}
-        <ul className="items">
-          { this.renderNavList() }
-        </ul>
-      </section>
-    );
+    return <div className={className}>
+      {titleSection}
+      <ul className="items">
+        { this.renderNavList() }
+      </ul>
+    </div>;
   };
 }
-;
-

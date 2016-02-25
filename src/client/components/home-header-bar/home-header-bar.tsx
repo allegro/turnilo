@@ -10,24 +10,21 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 // I am: import { HomeHeaderBar } from '../home-header-bar/home-header-bar';
 
 export interface HomeHeaderBarProps extends React.Props<any> {
-  onNavClick: React.MouseEventHandler;
+  onNavClick: Function;
 }
 
 export interface HomeHeaderBarState {
 }
 
-export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHeaderBarState> {
+export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeaderBarState> {
   handleSettings() {}
 
 
   render() {
     var { onNavClick } = this.props;
-    var gitHubIcon: JSX.Element = <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
-      <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
-    </a>;
 
     return <header className="home-header-bar">
-      <div className="burger-bar" onClick={onNavClick}>
+      <div className="burger-bar" onClick={onNavClick as any}>
         <div className="menu-icon">
           <SvgIcon svg={require('../../icons/menu.svg')}/>
         </div>
@@ -45,7 +42,9 @@ export class HomeHeaderBar extends React.Component< HomeHeaderBarProps, HomeHead
         <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
           <SvgIcon className="help-icon" svg={require('../../icons/help.svg')}/>
         </a>
-        {gitHubIcon}
+        <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
+          <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
+        </a>
       </ul>
     </header>;
   }

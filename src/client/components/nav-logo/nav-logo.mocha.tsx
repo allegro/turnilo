@@ -4,26 +4,21 @@ import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
-
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { CubeView } from './cube-view';
+import { NavLogo } from './nav-logo';
 
-describe('CubeView', () => {
-  it.skip('adds the correct class', () => {
+describe('NavLogo', () => {
+  it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <CubeView
-        hash={null}
-        dataSource={null}
-        updateHash={null}
+      <NavLogo
+
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('cube-view');
-
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('nav-logo');
   });
+
 });
-
-

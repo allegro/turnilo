@@ -9,6 +9,7 @@ import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifes
   SplitCombine, Splits, VisStrategy, VisualizationProps} from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 
+import { CubeHeaderBar } from '../cube-header-bar/cube-header-bar';
 import { DimensionMeasurePanel } from '../dimension-measure-panel/dimension-measure-panel';
 import { FilterTile } from '../filter-tile/filter-tile';
 import { SplitTile } from '../split-tile/split-tile';
@@ -25,7 +26,8 @@ export interface CubeViewProps extends React.Props<any> {
   hash: string;
   updateHash: Function;
   getUrlPrefix?: Function;
-  selectedDataSource: DataSource;
+  dataSource: DataSource;
+  onNavClick?: Function;
 }
 
 export interface CubeViewState {
@@ -134,10 +136,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillMount() {
-    var { hash, selectedDataSource, updateHash } = this.props;
+    var { hash, dataSource, updateHash } = this.props;
     var essence = this.getEssenceFromHash(hash);
     if (!essence) {
-      essence = this.getEssenceFromDataSource(selectedDataSource);
+      essence = this.getEssenceFromDataSource(dataSource);
       updateHash(essence.toHash());
     }
     this.setState({ essence });
@@ -151,14 +153,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillReceiveProps(nextProps: CubeViewProps) {
-    const { hash, selectedDataSource } = this.props;
+    const { hash, dataSource } = this.props;
     const { essence } = this.state;
 
     if (hash !== nextProps.hash) {
       var hashEssence = this.getEssenceFromHash(nextProps.hash);
       this.setState({ essence: hashEssence });
-    } else if (!selectedDataSource.equals(nextProps.selectedDataSource)) {
-      var newEssence = essence.updateDataSource(nextProps.selectedDataSource);
+    } else if (!dataSource.equals(nextProps.dataSource)) {
+      var newEssence = essence.updateDataSource(nextProps.dataSource);
       this.setState({ essence: newEssence });
     }
   }
@@ -175,14 +177,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     window.removeEventListener('keydown', this.globalKeyDownListener);
   }
 
-  getEssenceFromDataSource(selectedDataSource: DataSource): Essence {
-    return Essence.fromDataSource(selectedDataSource, { dataSource: selectedDataSource, visualizations });
+  getEssenceFromDataSource(dataSource: DataSource): Essence {
+    return Essence.fromDataSource(dataSource, { dataSource: dataSource, visualizations });
   }
 
   getEssenceFromHash(hash: string): Essence {
     if (!hash) return null;
-    var selectedDataSource = this.props.selectedDataSource;
-    return Essence.fromHash(hash, { dataSource: selectedDataSource, visualizations });
+    var { dataSource } = this.props;
+    return Essence.fromHash(hash, { dataSource: dataSource, visualizations });
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
@@ -257,7 +259,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   render() {
     var clicker = this.clicker;
 
-    var { getUrlPrefix } = this.props;
+    var { getUrlPrefix, onNavClick } = this.props;
     var { essence, menuStage, visualizationStage, dragOver } = this.state;
 
     if (!essence) return null;
@@ -288,52 +290,59 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       dropIndicator = <DropIndicator/>;
     }
 
-    return <div className='cube-view' ref='container'>
-      <DimensionMeasurePanel
-        clicker={clicker}
-        essence={essence}
-        menuStage={menuStage}
-        triggerFilterMenu={this.triggerFilterMenu.bind(this)}
-        triggerSplitMenu={this.triggerSplitMenu.bind(this)}
+    return <div className='cube-view'>
+      <CubeHeaderBar
+        dataSource={essence.dataSource}
+        onNavClick={onNavClick}
         getUrlPrefix={getUrlPrefix}
       />
-      <div className='center-panel'>
-        <div className='center-top-bar'>
-          <div className='filter-split-section'>
-            <FilterTile
-              ref="filterTile"
-              clicker={clicker}
-              essence={essence}
-              menuStage={visualizationStage}
-              getUrlPrefix={getUrlPrefix}
-            />
-            <SplitTile
-              ref="splitTile"
-              clicker={clicker}
-              essence={essence}
-              menuStage={visualizationStage}
-              getUrlPrefix={getUrlPrefix}
-            />
+      <div className="container" ref='container'>
+        <DimensionMeasurePanel
+          clicker={clicker}
+          essence={essence}
+          menuStage={menuStage}
+          triggerFilterMenu={this.triggerFilterMenu.bind(this)}
+          triggerSplitMenu={this.triggerSplitMenu.bind(this)}
+          getUrlPrefix={getUrlPrefix}
+        />
+        <div className='center-panel'>
+          <div className='center-top-bar'>
+            <div className='filter-split-section'>
+              <FilterTile
+                ref="filterTile"
+                clicker={clicker}
+                essence={essence}
+                menuStage={visualizationStage}
+                getUrlPrefix={getUrlPrefix}
+              />
+              <SplitTile
+                ref="splitTile"
+                clicker={clicker}
+                essence={essence}
+                menuStage={visualizationStage}
+                getUrlPrefix={getUrlPrefix}
+              />
+            </div>
+            <VisSelector clicker={clicker} essence={essence}/>
           </div>
-          <VisSelector clicker={clicker} essence={essence}/>
+          <div
+            className='center-main'
+            onDragOver={this.dragOver.bind(this)}
+            onDragEnter={this.dragEnter.bind(this)}
+            onDragLeave={this.dragLeave.bind(this)}
+            onDrop={this.drop.bind(this)}
+          >
+            <div className='visualization' ref='visualization'>{visElement}</div>
+            {manualFallback}
+            {dropIndicator}
+          </div>
         </div>
-        <div
-          className='center-main'
-          onDragOver={this.dragOver.bind(this)}
-          onDragEnter={this.dragEnter.bind(this)}
-          onDragLeave={this.dragLeave.bind(this)}
-          onDrop={this.drop.bind(this)}
-        >
-          <div className='visualization' ref='visualization'>{visElement}</div>
-          {manualFallback}
-          {dropIndicator}
-        </div>
+        <PinboardPanel
+          clicker={clicker}
+          essence={essence}
+          getUrlPrefix={getUrlPrefix}
+        />
       </div>
-      <PinboardPanel
-        clicker={clicker}
-        essence={essence}
-        getUrlPrefix={getUrlPrefix}
-      />
     </div>;
   }
 }

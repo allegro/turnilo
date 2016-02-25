@@ -83,6 +83,7 @@
   background: $brand;
   color: $white;
   font-size: 16px;
+  z-index: 11;
 
   .burger-bar {
     display: inline-block;
@@ -112,15 +113,6 @@
     position: absolute;
     top: 0;
     right: 12px;
-
-    .last-updated {
-      display: inline-block;
-      vertical-align: top;
-      height: 100%;
-      padding: 14px 8px;
-      font-size: 13px;
-      cursor: default;
-    }
 
     .icon-button {
       display: inline-block;

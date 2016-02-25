@@ -10,10 +10,7 @@ import { Modal } from '../modal/modal';
 
 export interface CubeHeaderBarProps extends React.Props<any> {
   dataSource: DataSource;
-  onNavClick: React.MouseEventHandler;
-  showLastUpdated?: boolean;
-  hideGitHubIcon?: boolean;
-  color?: string;
+  onNavClick: Function;
   getUrlPrefix?: Function;
 }
 
@@ -65,44 +62,25 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   render() {
-    var { onNavClick, showLastUpdated, hideGitHubIcon, color, dataSource } = this.props;
+    var { onNavClick, dataSource } = this.props;
 
-    var updated: JSX.Element = null;
-    if (showLastUpdated) {
-      var updatedText = dataSource.updatedText();
-      if (updatedText) {
-        updated = <div className="last-updated">{updatedText}</div>;
-      }
-    }
-
-    var gitHubIcon: JSX.Element = null;
-    if (!hideGitHubIcon) {
-      gitHubIcon = <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
-        <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
-      </a>;
-    }
-
-    var headerStyle: React.CSSProperties = null;
-    if (color) {
-      headerStyle = { background: color };
-    }
-
-    return <header className="cube-header-bar" style={headerStyle}>
-      <div className="burger-bar" onClick={onNavClick}>
+    return <header className="cube-header-bar">
+      <div className="burger-bar" onClick={onNavClick as any}>
         <div className="menu-icon">
           <SvgIcon svg={require('../../icons/menu.svg')}/>
         </div>
         <div className="title">{dataSource.title}</div>
       </div>
       <div className="right-bar">
-        {updated}
         <div className="icon-button panic" onClick={this.onPanicClick.bind(this)}>
           <SvgIcon className="panic-icon" svg={require('../../icons/panic.svg')}/>
         </div>
         <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
           <SvgIcon className="help-icon" svg={require('../../icons/help.svg')}/>
         </a>
-        {gitHubIcon}
+        <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
+          <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
+        </a>
       </div>
       {this.renderTestModal()}
     </header>;

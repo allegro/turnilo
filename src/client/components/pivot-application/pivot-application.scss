@@ -11,18 +11,8 @@
 
   .not-implemented {  display: none;  }
 
-  .collection {
-    @include pin-full;
-    overflow: scroll;
-  }
-
-  .home-header-bar, .cube-header-bar {
-    @include pin-top($header-height);
-    z-index: 11;
-  }
-
   .home-view, .cube-view {
-    @include unpin-top($header-height);
+    @include pin-full;
   }
 
   .side-drawer-container {
@@ -30,6 +20,6 @@
     left: 0;
     top: 0;
     bottom: 0;
-    z-index: 20;
+    z-index: 80;
   }
 }
