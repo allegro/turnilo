@@ -7,11 +7,8 @@ import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { List } from 'immutable';
 import { DataSource } from "../../../common/models/index";
 
-import { CubeHeaderBar } from '../cube-header-bar/cube-header-bar';
 import { SideDrawer, SideDrawerProps } from '../side-drawer/side-drawer';
 import { CubeView } from '../cube-view/cube-view';
-
-import { HomeHeaderBar } from '../home-header-bar/home-header-bar';
 import { HomeView } from '../home-view/home-view';
 
 import { visualizations } from '../../visualizations/index';
@@ -31,12 +28,14 @@ export interface PivotApplicationState {
   SideDrawerAsync?: typeof SideDrawer;
   drawerOpen?: boolean;
   selectedDataSource?: DataSource;
-  viewType?: string;
+  viewType?: ViewType;
   viewHash?: string;
 }
 
-export const HOME = "home";
-export const CUBE = "cube";
+export type ViewType = "home" | "cube";
+
+export const HOME: ViewType = "home";
+export const CUBE: ViewType = "cube";
 
 export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
   private hashUpdating: boolean = false;
@@ -132,7 +131,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     return hash.split('/');
   }
 
-  getViewTypeFromHash(hash: string): string {
+  getViewTypeFromHash(hash: string): ViewType {
     var hashPart = this.parseHash(hash).shift();
     if (!hashPart) return HOME;
     return CUBE;
@@ -216,39 +215,27 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       </ReactCSSTransitionGroupAsync>;
     }
 
-    var header: JSX.Element = null;
     var view: JSX.Element = null;
-
     if (viewType === CUBE) {
-      header = <CubeHeaderBar
-        dataSource={selectedDataSource}
-        onNavClick={this.sideDrawerOpen.bind(this, true)}
-        showLastUpdated={showLastUpdated}
-        hideGitHubIcon={hideGitHubIcon}
-        color={headerBackground}
-        getUrlPrefix={this.getUrlPrefix.bind(this)}
-      />;
       view = <CubeView
-        selectedDataSource={selectedDataSource}
+        dataSource={selectedDataSource}
         hash={viewHash}
         updateHash={this.updateHash.bind(this)}
         getUrlPrefix={this.getUrlPrefix.bind(this)}
         maxFilters={maxFilters}
         maxSplits={maxSplits}
+        onNavClick={this.sideDrawerOpen.bind(this, true)}
       />;
 
     } else {
-      header = <HomeHeaderBar
-        onNavClick={this.sideDrawerOpen.bind(this, true)}
-      />;
       view = <HomeView
         dataCubes={dataSources}
         selectDataCube={this.changeDataSource.bind(this)}
+        onNavClick={this.sideDrawerOpen.bind(this, true)}
       />;
     }
 
     return <main className='pivot-application'>
-      {header}
       {view}
       {sideDrawerTransition}
     </main>;

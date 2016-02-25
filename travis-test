@@ -13,5 +13,5 @@ if grep -rq 'it\.only' ./build
 fi
 
 mocha \
-  build/common/models/*/*.mocha.js \
+  build/common/**/*.mocha.js \
 ;

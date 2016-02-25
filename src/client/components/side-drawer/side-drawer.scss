@@ -2,27 +2,20 @@
 
 .side-drawer {
   @include pin-left($side-drawer-width);
-
+  background: $white;
   font-size: 13px;
   box-shadow: 1px 0 2px 0 hsla(0, 0, 0, 0.13), 2px 0 12px 0 hsla(0, 0, 0, 0.26);
-
-  .title {
-    height: 50px;
-    padding: 7px 0 2px 15px;
-
-    svg {
-      height: 40px;
-
-      path {
-        fill: #bbb;
-      }
-    }
-  }
 
   .items {
     .item {
       .icon svg path {
         fill: #bbb;
+      }
+
+      &.selected {
+        .icon svg path {
+          fill: $brand;
+        }
       }
     }
   }

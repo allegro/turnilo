@@ -1,6 +1,13 @@
 @import '../../imports';
 
 .cube-view {
+  .home-header-bar {
+    @include pin-top($header-height);
+  }
+
+  .container {
+    @include unpin-top($header-height);
+  }
 
   .dimension-measure-panel {
     @include pin-left($left-panel-width);

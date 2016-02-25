@@ -8,7 +8,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { ADDITIONAL_LINKS } from '../../config/constants';
 import { isInside, escapeKey } from '../../utils/dom/dom';
 import { DataSource } from '../../../common/models/index';
-// import { SomeComp } from '../some-comp/some-comp';
+import { NavLogo } from '../nav-logo/nav-logo';
 import { NavList } from '../nav-list/nav-list';
 
 
@@ -72,12 +72,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   render() {
     var { onClose, selectedDataSource, dataSources } = this.props;
 
-    return <div className="nav side-drawer">
-      <div className="logo-cont" onClick={onClose as any}>
-        <div className="logo">
-          <SvgIcon svg={require('../../icons/pivot-logo.svg')}/>
-        </div>
-      </div>
+    return <div className="side-drawer">
+      <NavLogo onClick={onClose as any}/>
       <NavList
         title="Data Cubes"
         className="items"

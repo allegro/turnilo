@@ -6,14 +6,15 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { ADDITIONAL_LINKS } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
+import { HomeHeaderBar } from '../home-header-bar/home-header-bar';
 import { List } from 'immutable';
-
+import { NavLogo } from '../nav-logo/nav-logo';
 import { NavList } from '../nav-list/nav-list';
-// I am: import { HomeView } from '../home-view/home-view';
 
 export interface HomeViewProps extends React.Props<any> {
   dataCubes?: List<DataSource>;
   selectDataCube?: Function;
+  onNavClick?: Function;
 }
 
 export interface HomeViewState {
@@ -34,14 +35,15 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
   }
 
   render() {
+    const { onNavClick } = this.props;
+
     return <div className="home-view">
-      <div className="collection">
-        <div className="nav home">
-          <div className="logo-cont">
-            <div className="logo">
-              <SvgIcon svg={require('../../icons/pivot-logo.svg')}/>
-            </div>
-          </div>
+      <HomeHeaderBar
+        onNavClick={onNavClick}
+      />
+      <div className="container">
+        <div className="home">
+          <NavLogo/>
           <NavList
             title="Data Cubes"
             className="items"

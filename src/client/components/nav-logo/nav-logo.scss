@@ -1,0 +1,13 @@
+@import '../../imports';
+
+.nav-logo {
+  padding-left: $nav-padding;
+  padding-right: $nav-padding;
+
+  .logo {
+    svg {
+      width: 86px;
+      height: 60px;
+    }
+  }
+}
