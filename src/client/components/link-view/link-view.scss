@@ -13,6 +13,33 @@
     @include pin-left($left-panel-width - $tile-margin-h);
 
     background: $white;
+    padding-top: 14px;
+
+    .link-group-title {
+      padding: 0 18px;
+      color: #999;
+      font-size: 12px;
+      text-transform: uppercase;
+      pointer-events: none;
+      margin-top: 8px;
+      height: 25px;
+      line-height: 25px;
+    }
+
+    .link-item {
+      height: 25px;
+      line-height: 25px;
+      padding: 0 18px 0 38px;
+      cursor: pointer;
+
+      &.selected {
+        background: rgba($brand, 0.16);
+      }
+
+      &:hover:not(.selected) {
+        background: rgba($brand, 0.12);
+      }
+    }
   }
 
   .center-panel {
@@ -26,8 +53,18 @@
       @extend %module;
       @include pin-top($control-tile-height + 1px + $control-tile-height);
       border-radius: $corner;
+      padding: 17px 20px;
+      border-bottom: 1px solid #eee;
 
-      font-size: 20px;
+      .link-title {
+        font-size: 17px;
+        margin-bottom: 8px;
+      }
+
+      .link-description {
+        font-size: 13px;
+        color: #999;
+      }
     }
 
     .center-main {

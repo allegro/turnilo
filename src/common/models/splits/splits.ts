@@ -4,7 +4,7 @@ import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction } from 'plywood';
 import { listsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
-import { SplitCombine, SplitCombineJS } from '../split-combine/split-combine';
+import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
 
 const DEFAULT_GRANULARITY = Duration.fromJS('P1D');
 
@@ -37,6 +37,7 @@ function swapSplit(splits: List<SplitCombine>, split: SplitCombine, other: Split
 
 export type SplitsValue = List<SplitCombine>;
 export type SplitsJS = SplitCombineJS[];
+export type SplitContext = SplitCombineContext;
 
 var check: Class<SplitsValue, SplitsJS>;
 export class Splits implements Instance<SplitsValue, SplitsJS> {
@@ -50,8 +51,8 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return new Splits(<List<SplitCombine>>List([splitCombine]));
   }
 
-  static fromJS(parameters: SplitsJS): Splits {
-    return new Splits(List(parameters.map(splitCombine => SplitCombine.fromJS(splitCombine))));
+  static fromJS(parameters: SplitsJS, context?: SplitContext): Splits {
+    return new Splits(List(parameters.map(splitCombine => SplitCombine.fromJS(splitCombine, context))));
   }
 
 

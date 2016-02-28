@@ -6,7 +6,7 @@ import { List } from 'immutable';
 import { Expression } from 'plywood';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
-  SplitCombine, Splits, VisStrategy, VisualizationProps} from '../../../common/models/index';
+  SplitCombine, Splits, VisStrategy, VisualizationProps, User} from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 
 import { CubeHeaderBar } from '../cube-header-bar/cube-header-bar';
@@ -23,6 +23,7 @@ import { visualizations } from '../../visualizations/index';
 export interface CubeViewProps extends React.Props<any> {
   maxFilters?: number;
   maxSplits?: number;
+  user?: User;
   hash: string;
   updateHash: Function;
   getUrlPrefix?: Function;
@@ -259,7 +260,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   render() {
     var clicker = this.clicker;
 
-    var { getUrlPrefix, onNavClick } = this.props;
+    var { getUrlPrefix, onNavClick, user } = this.props;
     var { essence, menuStage, visualizationStage, dragOver } = this.state;
 
     if (!essence) return null;
@@ -293,6 +294,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return <div className='cube-view'>
       <CubeHeaderBar
         dataSource={essence.dataSource}
+        user={user}
         onNavClick={onNavClick}
         getUrlPrefix={getUrlPrefix}
       />

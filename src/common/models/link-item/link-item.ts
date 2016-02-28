@@ -18,7 +18,7 @@ export interface LinkItemJS {
   name: string;
   title: string;
   description: string;
-  group?: string;
+  group: string;
   dataSource: string;
   essence: EssenceJS;
 }
@@ -41,6 +41,7 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
 
     var dataSourceName = parameters.dataSource;
     var dataSource = dataSources.find(d => d.name === dataSourceName);
+    if (!dataSource) throw new Error(`can not find dataSource '${dataSourceName}'`);
 
     var essence = Essence.fromJS(parameters.essence, { dataSource, visualizations });
 
@@ -82,15 +83,14 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
   }
 
   public toJS(): LinkItemJS {
-    var js: LinkItemJS = {
+    return {
       name: this.name,
       title: this.title,
       description: this.description,
+      group: this.group,
       dataSource: this.dataSource.name,
       essence: this.essence.toJS()
     };
-    if (this.group) js.group = this.group;
-    return js;
   }
 
   public toJSON(): LinkItemJS {

@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as Q from 'q';
 import * as nopt from 'nopt';
 
-import { DataSource, DataSourceJS, Dimension, Measure } from '../common/models/index';
+import { DataSource, DataSourceJS, Dimension, Measure, LinkViewConfig, LinkViewConfigJS } from '../common/models/index';
 import { DataSourceManager, dataSourceManagerFactory, loadFileSync, dataSourceToYAML, properDruidRequesterFactory, dataSourceFillerFactory, SourceListScan } from './utils/index';
 
 export interface PivotConfig {
@@ -13,7 +13,9 @@ export interface PivotConfig {
   introspectionStrategy?: string;
   sourceListScan?: SourceListScan;
   sourceListRefreshInterval?: number;
+  auth?: string;
   dataSources?: DataSourceJS[];
+  linkViewConfig?: LinkViewConfigJS;
 
   hideGitHubIcon?: boolean;
   headerBackground?: string;
@@ -177,8 +179,15 @@ export const INTROSPECTION_STRATEGY = String(parsedArgs["introspection-strategy"
 export const SOURCE_LIST_SCAN: SourceListScan = START_SERVER ? config.sourceListScan : 'disable';
 export const SOURCE_LIST_REFRESH_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceListRefreshInterval, 10) || 10000) : 0;
 
-export const HIDE_GITHUB_ICON = Boolean(config.hideGitHubIcon);
-export const HEADER_BACKGROUND: string = config.headerBackground || null;
+var auth = config.auth;
+var authModule: any = null;
+if (auth) {
+  auth = path.resolve(configFileDir, auth);
+  console.log(`Using auth ${auth}`);
+  var authModule = require(auth);
+  if (typeof authModule.auth !== 'function') errorExit('Invalid auth module');
+}
+export const AUTH = authModule;
 
 if (SOURCE_LIST_REFRESH_INTERVAL && SOURCE_LIST_REFRESH_INTERVAL < 1000) {
   errorExit('can not refresh more often than once per second');
@@ -203,6 +212,8 @@ export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSo
     return;
   }
 });
+
+export const LINK_VIEW_CONFIG = config.linkViewConfig || null;
 
 var druidRequester: Requester.PlywoodRequester<any> = null;
 if (DRUID_HOST) {

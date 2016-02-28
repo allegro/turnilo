@@ -4,12 +4,13 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Datum, Dataset } from 'plywood';
-import { Essence, DataSource } from "../../../common/models/index";
+import { Essence, DataSource, User } from "../../../common/models/index";
 
 import { Modal } from '../modal/modal';
 
 export interface LinkHeaderBarProps extends React.Props<any> {
   title: string;
+  user?: User;
   onNavClick: Function;
   getUrlPrefix?: Function;
 }
@@ -21,12 +22,18 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
 
   constructor() {
     super();
-    this.state = {
-    };
+    //this.state = {};
   }
 
   render() {
-    var { title, onNavClick } = this.props;
+    var { title, user, onNavClick } = this.props;
+
+    var userButton: JSX.Element = null;
+    if (user) {
+      userButton = <div className="icon-button">
+        <SvgIcon svg={require('../../icons/full-user.svg')}/>
+      </div>;
+    }
 
     return <header className="link-header-bar">
       <div className="left-bar" onClick={onNavClick as any}>
@@ -39,6 +46,7 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
         <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
           <SvgIcon className="help-icon" svg={require('../../icons/help.svg')}/>
         </a>
+        {userButton}
       </div>
     </header>;
   }

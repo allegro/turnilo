@@ -15,7 +15,8 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-import { VERSION, DATA_SOURCE_MANAGER, HIDE_GITHUB_ICON, HEADER_BACKGROUND } from './config';
+import { PivotRequest } from './utils/index';
+import { VERSION, DATA_SOURCE_MANAGER, AUTH, LINK_VIEW_CONFIG } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
 
 var app = express();
@@ -38,31 +39,50 @@ app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, '../../build/public')));
 app.use(express.static(path.join(__dirname, '../../assets')));
 
+if (AUTH) {
+  app.use(AUTH.auth({
+    version: VERSION,
+    dataSourceManager: DATA_SOURCE_MANAGER
+  }));
+} else {
+  app.use((req: PivotRequest, res: Response, next: Function) => {
+    req.user = null;
+    req.dataSourceManager = DATA_SOURCE_MANAGER;
+    next();
+  });
+}
+
+app.use((req: PivotRequest, res: Response, next: Function) => {
+  if (!req.dataSourceManager) {
+    return next(new Error('no dataSourceManager'));
+  }
+  next();
+});
+
 app.use(bodyParser.json());
 
-app.get('/', (req: Request, res: Response, next: Function) => {
-  DATA_SOURCE_MANAGER.getQueryableDataSources().then((dataSources) => {
-    if (dataSources.length) {
-      var config: any = {
-        version: VERSION,
-        dataSources: dataSources.map((ds) => ds.toClientDataSource())
-      };
-
-      if (HIDE_GITHUB_ICON) config.hideGitHubIcon = HIDE_GITHUB_ICON;
-      if (HEADER_BACKGROUND) config.headerBackground = HEADER_BACKGROUND;
-
-      res.render('pivot', {
-        version: VERSION,
-        config: JSON.stringify(config),
-        title: 'Pivot'
-      });
-    } else {
-      res.render('no-data-sources', {
-        version: VERSION,
-        title: 'No Data Sources'
-      });
-    }
-  }).done();
+app.get('/', (req: PivotRequest, res: Response, next: Function) => {
+  req.dataSourceManager.getQueryableDataSources()
+    .then((dataSources) => {
+      if (dataSources.length) {
+        res.render('pivot', {
+          version: VERSION,
+          title: `Pivot (${VERSION})`,
+          config: JSON.stringify({
+            version: VERSION,
+            user: req.user,
+            dataSources: dataSources.map((ds) => ds.toClientDataSource()),
+            linkViewConfig: LINK_VIEW_CONFIG
+          })
+        });
+      } else {
+        res.render('no-data-sources', {
+          version: VERSION,
+          title: 'No Data Sources'
+        });
+      }
+    })
+    .done();
 });
 
 app.use('/plywood', plywoodRoutes);

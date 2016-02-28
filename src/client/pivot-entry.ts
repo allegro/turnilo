@@ -28,10 +28,9 @@ if (config && Array.isArray(config.dataSources)) {
 
   pivot(document.body, {
     version,
+    user: config.user,
     dataSources,
-    showLastUpdated: config.showLastUpdated,
-    hideGitHubIcon: config.hideGitHubIcon,
-    headerBackground: config.headerBackground
+    linkViewConfig: config.linkViewConfig
   });
 
 } else {

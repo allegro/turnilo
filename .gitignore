@@ -10,6 +10,7 @@ private/
 assets/data/*-large.*
 assets/data/*-private.*
 webstorm/errors
+private/
 config.yaml
 config-test.yaml
 config-docker.yaml

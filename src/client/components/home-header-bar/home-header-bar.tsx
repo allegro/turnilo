@@ -3,13 +3,12 @@ require('./home-header-bar.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Stage, Clicker, User } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
-// I am: import { HomeHeaderBar } from '../home-header-bar/home-header-bar';
-
 export interface HomeHeaderBarProps extends React.Props<any> {
+  user?: User;
   onNavClick: Function;
 }
 
@@ -17,11 +16,22 @@ export interface HomeHeaderBarState {
 }
 
 export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeaderBarState> {
-  handleSettings() {}
 
 
   render() {
-    var { onNavClick } = this.props;
+    var { user, onNavClick } = this.props;
+
+    // One day
+    //<div className="icon-button" onClick={this.handleSettings.bind(this)}>
+    //  <SvgIcon className="not-implemented" svg={require('../../icons/full-settings.svg')}/>
+    //</div>
+
+    var userButton: JSX.Element = null;
+    if (user) {
+      userButton = <div className="icon-button">
+        <SvgIcon svg={require('../../icons/full-user.svg')}/>
+      </div>;
+    }
 
     return <header className="home-header-bar">
       <div className="left-bar" onClick={onNavClick as any}>
@@ -30,22 +40,15 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
         </div>
         <div className="title">Home</div>
       </div>
-      <ul className="right-bar">
-        <li className="icon-button" onClick={this.handleSettings.bind(this)}>
-          <SvgIcon className="not-implemented" svg={require('../../icons/full-settings.svg')}/>
-        </li>
-        <li className="icon-button">
-          <a href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
-            <SvgIcon className="not-implemented" svg={require('../../icons/full-user.svg')}/>
-          </a>
-        </li>
+      <div className="right-bar">
         <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
           <SvgIcon className="help-icon" svg={require('../../icons/help.svg')}/>
         </a>
         <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
           <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
         </a>
-      </ul>
+        {userButton}
+      </div>
     </header>;
   }
 }

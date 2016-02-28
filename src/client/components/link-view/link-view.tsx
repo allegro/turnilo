@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
 import { Expression } from 'plywood';
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
-  SplitCombine, Splits, VisStrategy, VisualizationProps} from '../../../common/models/index';
+  SplitCombine, Splits, VisStrategy, VisualizationProps, LinkViewConfig, LinkItem, User } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 
 import { LinkHeaderBar } from '../link-header-bar/link-header-bar';
@@ -17,12 +17,11 @@ import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 import { visualizations } from '../../visualizations/index';
 
 export interface LinkViewProps extends React.Props<any> {
-  maxFilters?: number;
-  maxSplits?: number;
+  linkViewConfig: LinkViewConfig;
+  user?: User;
   hash: string;
   updateHash: Function;
   getUrlPrefix?: Function;
-  dataSource: DataSource;
   onNavClick?: Function;
 }
 
@@ -32,18 +31,6 @@ export interface LinkViewState {
   visualizationStage?: Stage;
   menuStage?: Stage;
 }
-
-export interface LinkItem {
-  name: string;
-  title: string;
-  description: string;
-  group?: string;
-  dataSource: DataSource;
-  essence: Essence;
-}
-
-var linkItems: LinkItem[] = null;
-
 
 export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   private clicker: Clicker;
@@ -113,38 +100,12 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     };
     this.clicker = clicker;
     this.globalResizeListener = this.globalResizeListener.bind(this);
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentWillMount() {
-    var { hash, dataSource, updateHash } = this.props;
+    var { hash, linkViewConfig, updateHash } = this.props;
 
-    linkItems = [
-      {
-        name: 'test1',
-        title: 'Test One',
-        description: 'I like testing',
-        group: 'Tests',
-        dataSource: dataSource,
-        essence: Essence.fromJS({
-          visualization: 'totals',
-          timezone: 'Etc/UTC',
-          filter: {
-            op: "literal",
-            value: true
-          },
-          pinnedDimensions: ['statusCode'],
-          selectedMeasures: ['count', 'countPerIp', 'uniqueIp'],
-          splits: []
-        }, {
-          dataSource,
-          visualizations
-        })
-      }
-    ];
-
-    var linkItem = linkItems[0];
-    var essence = linkItem.essence;
+    var linkItem = linkViewConfig.first();
 
     //var essence = this.getEssenceFromHash(hash);
     //if (!essence) {
@@ -153,26 +114,22 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     //}
     this.setState({
       linkItem,
-      essence
+      essence: linkItem.essence
     });
   }
 
   componentDidMount() {
     window.addEventListener('resize', this.globalResizeListener);
-    window.addEventListener('keydown', this.globalKeyDownListener);
     this.globalResizeListener();
   }
 
   componentWillReceiveProps(nextProps: LinkViewProps) {
-    const { hash, dataSource } = this.props;
+    const { hash } = this.props;
     const { essence } = this.state;
 
     if (hash !== nextProps.hash) {
-      var hashEssence = this.getEssenceFromHash(nextProps.hash);
-      this.setState({ essence: hashEssence });
-    } else if (!dataSource.equals(nextProps.dataSource)) {
-      var newEssence = essence.updateDataSource(nextProps.dataSource);
-      this.setState({ essence: newEssence });
+      //var hashEssence = this.getEssenceFromHash(nextProps.hash);
+      //this.setState({ essence: hashEssence });
     }
   }
 
@@ -185,21 +142,6 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.globalResizeListener);
-    window.removeEventListener('keydown', this.globalKeyDownListener);
-  }
-
-  getEssenceFromDataSource(dataSource: DataSource): Essence {
-    return Essence.fromDataSource(dataSource, { dataSource: dataSource, visualizations });
-  }
-
-  getEssenceFromHash(hash: string): Essence {
-    if (!hash) return null;
-    var { dataSource } = this.props;
-    return Essence.fromHash(hash, { dataSource: dataSource, visualizations });
-  }
-
-  globalKeyDownListener(e: KeyboardEvent) {
-    // Shortcuts will go here one day
   }
 
   globalResizeListener() {
@@ -213,11 +155,50 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     });
   }
 
+  selectLinkItem(linkItem: LinkItem) {
+    this.setState({
+      linkItem,
+      essence: linkItem.essence
+    });
+  }
+
+  renderLinkPanel() {
+    const { linkViewConfig } = this.props;
+    const { linkItem } = this.state;
+
+    var groupId = 0;
+    var lastGroup: string = null;
+    var items: JSX.Element[] = [];
+    linkViewConfig.linkItems.forEach(li => {
+      // Add a group header if needed
+      if (lastGroup !== li.group) {
+        items.push(<div
+          className="link-group-title"
+          key={'group_' + groupId}
+        >
+          {li.group}
+        </div>);
+        groupId++;
+        lastGroup = li.group;
+      }
+
+      items.push(<div
+        className={'link-item' + (li === linkItem ? ' selected' : '')}
+        key={'li_' + li.name}
+        onClick={this.selectLinkItem.bind(this, li)}
+      >
+        {li.title}
+      </div>);
+    });
+
+    return <div className="link-panel">{items}</div>;
+  }
+
   render() {
     var clicker = this.clicker;
 
-    var { getUrlPrefix, onNavClick } = this.props;
-    var { linkItem, essence, menuStage, visualizationStage } = this.state;
+    var { getUrlPrefix, onNavClick, linkViewConfig, user } = this.props;
+    var { linkItem, essence, visualizationStage } = this.state;
 
     if (!linkItem) return null;
 
@@ -242,19 +223,19 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       });
     }
 
-    var title = 'Test Link View';
-
     return <div className='link-view'>
       <LinkHeaderBar
-        title={title}
+        title={linkViewConfig.title}
+        user={user}
         onNavClick={onNavClick}
         getUrlPrefix={getUrlPrefix}
       />
       <div className="container" ref='container'>
-        <div className="link-panel"/>
+        {this.renderLinkPanel()}
         <div className='center-panel'>
           <div className='center-top-bar'>
-            {linkItem.title}
+            <div className='link-title'>{linkItem.title}</div>
+            <div className='link-description'>{linkItem.description}</div>
           </div>
           <div className='center-main'>
             <div className='visualization' ref='visualization'>{visElement}</div>

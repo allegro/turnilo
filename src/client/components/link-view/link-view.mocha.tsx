@@ -14,8 +14,8 @@ describe('LinkView', () => {
   it.skip('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <LinkView
+        linkViewConfig={null}
         hash={null}
-        dataSource={null}
         updateHash={null}
       />
     );

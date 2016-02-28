@@ -57,12 +57,12 @@ export interface EssenceValue {
 }
 
 export interface EssenceJS {
-  visualization: string;
-  timezone: string;
-  filter: FilterJS;
-  splits: SplitsJS;
-  selectedMeasures: string[];
-  pinnedDimensions: string[];
+  visualization?: string;
+  timezone?: string;
+  filter?: FilterJS;
+  splits?: SplitsJS;
+  selectedMeasures?: string[];
+  pinnedDimensions?: string[];
   colors?: ColorsJS;
   pinnedSort?: string;
   compare?: FilterJS;
@@ -170,11 +170,11 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var visualizationID = parameters.visualization;
     var visualization = visualizations.find(v => v.id === visualizationID);
 
-    var timezone = Timezone.fromJS(parameters.timezone);
-    var filter = Filter.fromJS(parameters.filter).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute);
-    var splits = Splits.fromJS(parameters.splits).constrainToDimensions(dataSource.dimensions);
-    var selectedMeasures = constrainMeasures(OrderedSet(parameters.selectedMeasures), dataSource);
-    var pinnedDimensions = constrainDimensions(OrderedSet(parameters.pinnedDimensions), dataSource);
+    var timezone = parameters.timezone ? Timezone.fromJS(parameters.timezone) : Timezone.UTC;
+    var filter = Filter.fromJS(parameters.filter || { op: 'literal', value: true }).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute);
+    var splits = Splits.fromJS(parameters.splits || [], dataSource).constrainToDimensions(dataSource.dimensions);
+    var selectedMeasures = constrainMeasures(OrderedSet(parameters.selectedMeasures || []), dataSource);
+    var pinnedDimensions = constrainDimensions(OrderedSet(parameters.pinnedDimensions || []), dataSource);
 
     var defaultSortMeasureName = dataSource.defaultSortMeasure;
 

@@ -4,12 +4,13 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Datum, Dataset } from 'plywood';
-import { Essence, DataSource } from "../../../common/models/index";
+import { Essence, DataSource, User } from "../../../common/models/index";
 
 import { Modal } from '../modal/modal';
 
 export interface CubeHeaderBarProps extends React.Props<any> {
   dataSource: DataSource;
+  user?: User;
   onNavClick: Function;
   getUrlPrefix?: Function;
 }
@@ -62,7 +63,14 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   render() {
-    var { onNavClick, dataSource } = this.props;
+    var { user, onNavClick, dataSource } = this.props;
+
+    var userButton: JSX.Element = null;
+    if (user) {
+      userButton = <div className="icon-button">
+        <SvgIcon svg={require('../../icons/full-user.svg')}/>
+      </div>;
+    }
 
     return <header className="cube-header-bar">
       <div className="left-bar" onClick={onNavClick as any}>
@@ -81,6 +89,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
         <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
           <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
         </a>
+        {userButton}
       </div>
       {this.renderTestModal()}
     </header>;

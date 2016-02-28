@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import { List } from 'immutable';
-import { DataSource } from "../../../common/models/index";
+import { DataSource, LinkViewConfig, LinkViewConfigJS, User } from "../../../common/models/index";
 
 import { SideDrawer, SideDrawerProps } from '../side-drawer/side-drawer';
 import { HomeView } from '../home-view/home-view';
@@ -17,11 +17,10 @@ import { visualizations } from '../../visualizations/index';
 export interface PivotApplicationProps extends React.Props<any> {
   version: string;
   dataSources: List<DataSource>;
+  linkViewConfig?: LinkViewConfigJS;
+  user?: User;
   maxFilters?: number;
   maxSplits?: number;
-  showLastUpdated?: boolean;
-  hideGitHubIcon?: boolean;
-  headerBackground?: string;
 }
 
 export interface PivotApplicationState {
@@ -31,6 +30,7 @@ export interface PivotApplicationState {
   selectedDataSource?: DataSource;
   viewType?: ViewType;
   viewHash?: string;
+  linkViewConfig?: LinkViewConfig;
 }
 
 export type ViewType = "home" | "cube" | "link";
@@ -50,7 +50,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       drawerOpen: false,
       selectedDataSource: null,
       viewType: null,
-      viewHash: null
+      viewHash: null,
+      linkViewConfig: null
     };
     this.globalHashChangeListener = this.globalHashChangeListener.bind(this);
   }
@@ -58,18 +59,26 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   componentWillMount() {
     var { dataSources } = this.props;
     if (!dataSources.size) throw new Error('must have data sources');
-    var hash = window.location.hash;
 
-    var viewType = this.getViewTypeFromHash(hash);
-    var selectedDataSource = this.getDataSourceFromHash(dataSources, hash);
-    var viewHash = this.getViewHashFromHash(hash);
+    var linkViewConfigJS = this.props.linkViewConfig;
+    if (linkViewConfigJS) {
+      this.setState({
+        viewType: LINK,
+        linkViewConfig: LinkViewConfig.fromJS(linkViewConfigJS, { dataSources, visualizations })
+      });
+    } else {
+      var hash = window.location.hash;
+      var viewType = this.getViewTypeFromHash(hash);
+      var selectedDataSource = this.getDataSourceFromHash(dataSources, hash);
+      var viewHash = this.getViewHashFromHash(hash);
 
-    if (viewType === HOME && dataSources.size === 1) {
-      selectedDataSource = dataSources.first();
-      viewType = CUBE;
+      if (viewType === HOME && dataSources.size === 1) {
+        selectedDataSource = dataSources.first();
+        viewType = CUBE;
+      }
+
+      this.setState({ viewType, viewHash, selectedDataSource });
     }
-
-    this.setState({ viewType, viewHash, selectedDataSource });
   }
 
   componentDidMount() {
@@ -190,8 +199,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   render() {
-    var { dataSources, maxFilters, maxSplits, showLastUpdated, hideGitHubIcon, headerBackground } = this.props;
-    var { viewType, viewHash, selectedDataSource, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync } = this.state;
+    var { dataSources, maxFilters, maxSplits, user } = this.props;
+    var { viewType, viewHash, selectedDataSource, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync, linkViewConfig } = this.state;
 
     var sideDrawer: JSX.Element = null;
     if (drawerOpen && SideDrawerAsync) {
@@ -224,6 +233,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     switch (viewType) {
       case HOME:
         view = <HomeView
+          user={user}
           dataCubes={dataSources}
           selectDataCube={this.changeDataSource.bind(this)}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
@@ -232,6 +242,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
       case CUBE:
         view = <CubeView
+          user={user}
           dataSource={selectedDataSource}
           hash={viewHash}
           updateHash={this.updateHash.bind(this)}
@@ -244,7 +255,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
       case LINK:
         view = <LinkView
-          dataSource={selectedDataSource}
+          user={user}
+          linkViewConfig={linkViewConfig}
           hash={viewHash}
           updateHash={this.updateHash.bind(this)}
           getUrlPrefix={this.getUrlPrefix.bind(this)}
