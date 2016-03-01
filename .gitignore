@@ -6,6 +6,7 @@
 node_modules/
 build/
 public/
+private/
 assets/data/*-large.*
 assets/data/*-private.*
 webstorm/errors
