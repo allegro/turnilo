@@ -227,9 +227,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     }
 
     var view: JSX.Element = null;
-    if (selectedDataSource) {
-      viewType = LINK;
-    }
     switch (viewType) {
       case HOME:
         view = <HomeView
