@@ -97,7 +97,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     this.setState({ loading: true });
     dataSource.executor(query)
       .then(
-        (dataset) => {
+        (dataset: Dataset) => {
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -146,12 +146,12 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
 
     var measure = essence.getMeasures().first();
     var measureName = measure.name;
-    var getY = (d: Datum) => d[measureName];
+    var getY = (d: Datum) => d[measureName] as number;
 
     var bars: JSX.Element[] = null;
     if (dataset) {
       var myDatum: Datum = dataset.data[0];
-      var myDataset: Dataset = myDatum[SPLIT];
+      var myDataset = myDatum[SPLIT] as Dataset;
 
       var extentY = d3.extent(myDataset.data, getY);
 

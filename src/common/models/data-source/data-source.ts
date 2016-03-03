@@ -3,7 +3,7 @@ import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
 import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum,
-  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, FullType } from 'plywood';
+  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType } from 'plywood';
 import { makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -115,8 +115,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     var ex = ply().apply('maxTime', $('main').max(dataSource.timeAttribute));
 
     return dataSource.executor(ex).then((dataset: Dataset) => {
-      var maxTimeDate = dataset.data[0]['maxTime'];
-      if (!isNaN(maxTimeDate)) {
+      var maxTimeDate = <Date>dataset.data[0]['maxTime'];
+      if (!isNaN(maxTimeDate as any)) {
         return dataSource.changeMaxTime(MaxTime.fromDate(maxTimeDate));
       }
       return dataSource;
@@ -354,13 +354,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     }
   }
 
-  public getMainTypeContext(): FullType {
+  public getMainTypeContext(): DatasetFullType {
     var { attributes } = this;
     if (!attributes) return null;
 
-    var datasetType: Lookup<AttributeInfo> = {};
+    var datasetType: Lookup<SimpleFullType> = {};
     for (var attribute of attributes) {
-      datasetType[attribute.name] = attribute;
+      datasetType[attribute.name] = (attribute as any);
     }
 
     return {
@@ -382,7 +382,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       }
     });
 
-    var measureTypeContext: FullType = {
+    var measureTypeContext: DatasetFullType = {
       type: 'DATASET',
       datasetType: {
         main: mainTypeContext

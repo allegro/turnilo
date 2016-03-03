@@ -54,7 +54,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     this.setState({ loading: true });
     dataSource.executor(query)
       .then(
-        (dataset) => {
+        (dataset: Dataset) => {
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -108,7 +108,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
 
       var measureValueStr = '-';
       if (myDatum) {
-        measureValueStr = measure.formatFn(myDatum[measureName]);
+        measureValueStr = measure.formatFn(myDatum[measureName] as number);
       }
 
       return <div

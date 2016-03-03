@@ -38,7 +38,7 @@ function findClosest(data: Datum[], dragDate: Date, scaleX: Function) {
   var closestDatum: Datum = null;
   var minDist = Infinity;
   for (var datum of data) {
-    var timeSegmentValue = datum[TIME_SEGMENT];
+    var timeSegmentValue = datum[TIME_SEGMENT] as TimeRange;
     if (!timeSegmentValue) continue;
     var mid: Date = midpoint(timeSegmentValue);
     var dist = Math.abs(mid.valueOf() - dragDate.valueOf());
@@ -272,7 +272,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     this.setState({ loading: true });
     dataSource.executor(query)
       .then(
-        (dataset) => {
+        (dataset: Dataset) => {
           if (!this.mounted) return;
 
           this.setState({
@@ -349,7 +349,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var closest = findClosest(flatData, dragDate, scaleX);
 
       if (closest) {
-        thisHoverTimeRange = closest[TIME_SEGMENT];
+        thisHoverTimeRange = closest[TIME_SEGMENT] as TimeRange;
         var preFilter = flatData.filter(d => thisHoverTimeRange.equals(d[TIME_SEGMENT]));
         thisHoverDatums = dataset.data.map((myDatum: Datum) => {
           var seg = myDatum[SEGMENT];
@@ -359,7 +359,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     } else {
       var closestDatum = findClosest(dataset.data, dragDate, scaleX);
       if (closestDatum) {
-        thisHoverTimeRange = closestDatum[TIME_SEGMENT];
+        thisHoverTimeRange = closestDatum[TIME_SEGMENT] as TimeRange;
         thisHoverDatums.push(closestDatum);
       }
     }
@@ -398,10 +398,10 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var yAxisStage = svgStage.within({ top: TEXT_SPACER, left: lineStage.width });
 
     var measureName = measure.name;
-    var getY = (d: Datum) => d[measureName];
+    var getY = (d: Datum) => d[measureName] as number;
 
     var myDatum: Datum = dataset.data[0];
-    var myDataset: Dataset = myDatum[SPLIT];
+    var myDataset = myDatum[SPLIT] as Dataset;
 
     var extentY: number[] = null;
     if (splitLength === 1) {
@@ -411,9 +411,9 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var maxY = 0;
 
       myDataset.data.forEach(datum => {
-        var dataset = datum[SPLIT];
-        if (dataset) {
-          var tempExtentY = d3.extent(dataset.data, getY);
+        var subDataset = datum[SPLIT] as Dataset;
+        if (subDataset) {
+          var tempExtentY = d3.extent(subDataset.data, getY);
           minY = Math.min(tempExtentY[0], minY);
           maxY = Math.max(tempExtentY[1], maxY);
         }
@@ -451,10 +451,11 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       />);
     } else {
       chartLines = myDataset.data.map((datum, i) => {
-        if (!datum[SPLIT]) return null;
+        var subDataset = datum[SPLIT] as Dataset;
+        if (!subDataset) return null;
         return <ChartLine
           key={'single' + i}
-          dataset={datum[SPLIT]}
+          dataset={subDataset}
           getY={getY}
           scaleX={scaleX}
           scaleY={scaleY}
@@ -523,7 +524,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       <div className="measure-label">
         <span className="measure-title">{measure.title}</span>
         <span className="colon">: </span>
-        <span className="measure-value">{measure.formatFn(myDatum[measureName])}</span>
+        <span className="measure-value">{measure.formatFn(myDatum[measureName] as number)}</span>
       </div>
       {chartHoverBubble}
     </div>;
@@ -543,7 +544,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var timeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
       var measures = essence.getMeasures().toArray();
 
-      var getX = (d: Datum) => midpoint(d[TIME_SEGMENT]);
+      var getX = (d: Datum) => midpoint(d[TIME_SEGMENT] as TimeRange);
 
       var parentWidth = stage.width - H_PADDING * 2;
       var graphHeight = Math.max(MIN_GRAPH_HEIGHT, Math.floor((stage.height - X_AXIS_HEIGHT) / measures.length));

@@ -3,7 +3,7 @@ require('./table.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, TimeRange, Set, SortAction } from 'plywood';
+import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction } from 'plywood';
 import { listsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
@@ -35,7 +35,7 @@ function formatSegment(value: any): string {
   return String(value);
 }
 
-function getFilterFromDatum(splits: Splits, flatDatum: Datum): Filter {
+function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
   if (flatDatum['__nest'] === 0) return null;
   var segments: any[] = [];
   while (flatDatum['__nest'] > 0) {
@@ -60,7 +60,7 @@ export interface TableState {
   loading?: boolean;
   dataset?: Dataset;
   error?: any;
-  flatData?: Datum[];
+  flatData?: PseudoDatum[];
   scrollLeft?: number;
   scrollTop?: number;
   hoverMeasure?: Measure;
@@ -182,7 +182,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     this.setState({ loading: true });
     dataSource.executor(query)
       .then(
-        (dataset) => {
+        (dataset: Dataset) => {
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -359,7 +359,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     if (flatData) {
       var formatters = measuresArray.map(measure => {
         var measureName = measure.name;
-        var measureValues = flatData.map((d: Datum) => d[measureName]);
+        var measureValues = flatData.map((d: Datum) => d[measureName] as number);
         return formatterFromData(measureValues, measure.format);
       });
 

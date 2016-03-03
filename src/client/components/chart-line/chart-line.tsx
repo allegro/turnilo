@@ -41,7 +41,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
     var ds = dataset.data;
     for (var i = 0; i < ds.length; i++) {
       var datum = ds[i];
-      var timeRange: TimeRange = datum[TIME_SEGMENT];
+      var timeRange = datum[TIME_SEGMENT] as TimeRange;
       if (!timeRange) return null; // Incorrect data loaded
 
       var timeRangeMidPoint = timeRange.midpoint();
@@ -49,11 +49,14 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
 
       // Add potential pre zero point
       var prevDatum = ds[i - 1];
-      if (prevDatum && prevDatum[TIME_SEGMENT].end.valueOf() !== timeRange.start.valueOf()) {
-        dataPoints.push([
-          scaleX(timeRangeMidPoint.valueOf() - (timeRange.end.valueOf() - timeRange.start.valueOf())),
-          scaleY(0)
-        ]);
+      if (prevDatum) {
+        var prevTimeRange = prevDatum[TIME_SEGMENT] as TimeRange;
+        if (prevTimeRange.end.valueOf() !== timeRange.start.valueOf()) {
+          dataPoints.push([
+            scaleX(timeRangeMidPoint.valueOf() - (timeRange.end.valueOf() - timeRange.start.valueOf())),
+            scaleY(0)
+          ]);
+        }
       }
 
       // Add the point itself
@@ -66,11 +69,14 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
 
       // Add potential post zero point
       var nextDatum = ds[i + 1];
-      if (nextDatum && timeRange.end.valueOf() !== nextDatum[TIME_SEGMENT].start.valueOf()) {
-        dataPoints.push([
-          scaleX(timeRangeMidPoint.valueOf() + (timeRange.end.valueOf() - timeRange.start.valueOf())),
-          scaleY(0)
-        ]);
+      if (nextDatum) {
+        var nextTimeRange = nextDatum[TIME_SEGMENT] as TimeRange;
+        if (timeRange.end.valueOf() !== nextTimeRange.start.valueOf()) {
+          dataPoints.push([
+            scaleX(timeRangeMidPoint.valueOf() + (timeRange.end.valueOf() - timeRange.start.valueOf())),
+            scaleY(0)
+          ]);
+        }
       }
     }
 
