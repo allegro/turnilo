@@ -156,18 +156,18 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
   }
 }
 
-export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequester<any>, fileDirectory: string, timeout: number, introspectionStrategy: string) {
+export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequester<any>, configDirectory: string, timeout: number, introspectionStrategy: string) {
   return function(dataSource: DataSource): Q.Promise<DataSource> {
     switch (dataSource.engine) {
       case 'native':
         // Do not do anything if the file was already loaded
         if (dataSource.executor) return Q(dataSource);
 
-        if (!fileDirectory) {
-          throw new Error('Must have a file directory');
+        if (!configDirectory) {
+          throw new Error('Must have a config directory');
         }
 
-        var filePath = path.join(fileDirectory, dataSource.source);
+        var filePath = path.resolve(configDirectory, dataSource.source);
         return getFileData(filePath).then((rawData) => {
           var dataset = Dataset.fromJS(rawData).hide();
           dataset.introspect();

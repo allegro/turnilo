@@ -137,8 +137,10 @@ if (parsedArgs['example']) {
 }
 
 var configFilePath = parsedArgs['config'];
+var configFileDir: string = null;
 var config: PivotConfig;
 if (configFilePath) {
+  configFileDir = path.dirname(configFilePath);
   try {
     config = loadFileSync(configFilePath, 'yaml');
   } catch (e) {
@@ -212,12 +214,12 @@ if (DRUID_HOST) {
   });
 }
 
-var fileDirectory = path.join(__dirname, '../..');
+var configDirectory = configFileDir || path.join(__dirname, '../..');
 
 export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
   dataSources: DATA_SOURCES,
   druidRequester,
-  dataSourceFiller: dataSourceFillerFactory(druidRequester, fileDirectory, TIMEOUT, INTROSPECTION_STRATEGY),
+  dataSourceFiller: dataSourceFillerFactory(druidRequester, configDirectory, TIMEOUT, INTROSPECTION_STRATEGY),
   sourceListScan: SOURCE_LIST_SCAN,
   sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL,
   log: PRINT_CONFIG ? null : (line: string) => console.log(line)
