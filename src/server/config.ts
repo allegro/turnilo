@@ -281,7 +281,9 @@ if (PRINT_CONFIG) {
         lines.push(`introspectionStrategy: ${INTROSPECTION_STRATEGY}`, '');
       }
 
-      lines.push("# Should new datasources automatically be added");
+      if (withComments) {
+        lines.push("# Should new datasources automatically be added?");
+      }
       lines.push(`sourceListScan: disable`, '');
     }
 

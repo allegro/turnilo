@@ -16,7 +16,8 @@ describe('LinkView', () => {
       <LinkView
         linkViewConfig={null}
         hash={null}
-        updateHash={null}
+        updateViewHash={null}
+        changeHash={null}
       />
     );
 

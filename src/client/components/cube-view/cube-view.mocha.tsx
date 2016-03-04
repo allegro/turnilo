@@ -16,7 +16,7 @@ describe('CubeView', () => {
       <CubeView
         hash={null}
         dataSource={null}
-        updateHash={null}
+        updateViewHash={null}
       />
     );
 

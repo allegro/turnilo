@@ -20,7 +20,8 @@ export interface LinkViewProps extends React.Props<any> {
   linkViewConfig: LinkViewConfig;
   user?: User;
   hash: string;
-  updateHash: Function;
+  updateViewHash: Function;
+  changeHash: Function;
   getUrlPrefix?: Function;
   onNavClick?: Function;
 }
@@ -38,7 +39,10 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   constructor() {
     super();
     this.state = {
-      essence: null
+      linkItem: null,
+      essence: null,
+      visualizationStage: null,
+      menuStage: null
     };
 
     var clicker = {
@@ -52,30 +56,9 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
         var { essence } = this.state;
         this.setState({ essence: essence.changeTimeSelection(selection) });
       },
-      changeSplits: (splits: Splits, strategy: VisStrategy, colors?: Colors) => {
-        var { essence } = this.state;
-        if (colors) essence = essence.changeColors(colors);
-        this.setState({ essence: essence.changeSplits(splits, strategy) });
-      },
-      changeSplit: (split: SplitCombine, strategy: VisStrategy) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changeSplit(split, strategy) });
-      },
-      addSplit: (split: SplitCombine, strategy: VisStrategy) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.addSplit(split, strategy) });
-      },
-      removeSplit: (split: SplitCombine, strategy: VisStrategy) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.removeSplit(split, strategy) });
-      },
       changeColors: (colors: Colors) => {
         var { essence } = this.state;
         this.setState({ essence: essence.changeColors(colors) });
-      },
-      changeVisualization: (visualization: Manifest) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changeVisualization(visualization) });
       },
       changePinnedSortMeasure: (measure: Measure) => {
         var { essence } = this.state;
@@ -103,12 +86,12 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   componentWillMount() {
-    var { hash, linkViewConfig, updateHash } = this.props;
+    var { hash, linkViewConfig, updateViewHash } = this.props;
 
     var linkItem = linkViewConfig.findByName(hash);
     if (!linkItem) {
       linkItem = linkViewConfig.defaultLinkItem();
-      updateHash(linkItem.name);
+      updateViewHash(linkItem.name);
     }
 
     this.setState({
@@ -132,10 +115,10 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   componentWillUpdate(nextProps: LinkViewProps, nextState: LinkViewState): void {
-    const { updateHash } = this.props;
+    const { updateViewHash } = this.props;
     const { linkItem } = this.state;
-    if (updateHash && !nextState.linkItem.equals(linkItem)) {
-      updateHash(nextState.linkItem.name);
+    if (updateViewHash && !nextState.linkItem.equals(linkItem)) {
+      updateViewHash(nextState.linkItem.name);
     }
   }
 
@@ -159,6 +142,13 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       linkItem,
       essence: linkItem.essence
     });
+  }
+
+  goToCubeView() {
+    var { changeHash, getUrlPrefix } = this.props;
+    var { essence } = this.state;
+
+    changeHash(`${essence.dataSource.name}/${essence.toHash()}`, true);
   }
 
   renderLinkPanel() {
@@ -227,6 +217,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
         title={linkViewConfig.title}
         user={user}
         onNavClick={onNavClick}
+        onExploreClick={this.goToCubeView.bind(this)}
         getUrlPrefix={getUrlPrefix}
       />
       <div className="container" ref='container'>

@@ -12,6 +12,7 @@ export interface LinkHeaderBarProps extends React.Props<any> {
   title: string;
   user?: User;
   onNavClick: Function;
+  onExploreClick: Function;
   getUrlPrefix?: Function;
 }
 
@@ -26,7 +27,7 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
   }
 
   render() {
-    var { title, user, onNavClick } = this.props;
+    var { title, user, onNavClick, onExploreClick } = this.props;
 
     var userButton: JSX.Element = null;
     if (user) {
@@ -43,6 +44,7 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
         <div className="title">{title}</div>
       </div>
       <div className="right-bar">
+        <div className="text-button" onClick={onExploreClick as any}>Explore</div>
         <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
           <SvgIcon className="help-icon" svg={require('../../icons/help.svg')}/>
         </a>

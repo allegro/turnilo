@@ -16,6 +16,7 @@ describe('LinkHeaderBar', () => {
       <LinkHeaderBar
         title="Test Link Bar"
         onNavClick={null}
+        onExploreClick={null}
       />
     );
 

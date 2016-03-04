@@ -25,7 +25,7 @@ export interface CubeViewProps extends React.Props<any> {
   maxSplits?: number;
   user?: User;
   hash: string;
-  updateHash: Function;
+  updateViewHash: Function;
   getUrlPrefix?: Function;
   dataSource: DataSource;
   onNavClick?: Function;
@@ -137,11 +137,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillMount() {
-    var { hash, dataSource, updateHash } = this.props;
+    var { hash, dataSource, updateViewHash } = this.props;
     var essence = this.getEssenceFromHash(hash);
     if (!essence) {
       essence = this.getEssenceFromDataSource(dataSource);
-      updateHash(essence.toHash());
+      updateViewHash(essence.toHash());
     }
     this.setState({ essence });
   }
@@ -167,10 +167,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
-    const { updateHash } = this.props;
+    const { updateViewHash } = this.props;
     const { essence } = this.state;
-    if (updateHash && !nextState.essence.equals(essence)) {
-      updateHash(nextState.essence.toHash());
+    if (updateViewHash && !nextState.essence.equals(essence)) {
+      updateViewHash(nextState.essence.toHash());
     }
   }
 

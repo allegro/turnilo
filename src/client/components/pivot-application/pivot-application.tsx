@@ -117,11 +117,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   };
 
   globalHashChangeListener(): void {
-    const { dataSources } = this.props;
-    var hash = window.location.hash;
-
     if (this.hashUpdating) return;
+    this.hashToState(window.location.hash);
+  }
 
+  hashToState(hash: string) {
+    const { dataSources } = this.props;
     var viewType = this.getViewTypeFromHash(hash);
     var viewHash = this.getViewHashFromHash(hash);
     this.setState({ viewType });
@@ -170,22 +171,28 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.setState({ drawerOpen });
   }
 
-  updateHash(newHash: string): void {
+  changeHash(hash: string, force = false): void {
+    this.hashUpdating = true;
+    window.location.hash = `#${hash}`;
+    setTimeout(() => {
+      this.hashUpdating = false;
+    }, 5);
+    if (force) this.hashToState(hash);
+  }
+
+  updateViewHash(viewHash: string): void {
     var { viewType } = this.state;
 
+    var newHash: string;
     if (viewType === CUBE) {
-      newHash = `${this.state.selectedDataSource.name}/${newHash}`;
+      newHash = `${this.state.selectedDataSource.name}/${viewHash}`;
     } else if (viewType === LINK) {
-      newHash = `${viewType}/${newHash}`;
+      newHash = `${viewType}/${viewHash}`;
     } else {
       newHash = viewType;
     }
 
-    this.hashUpdating = true;
-    window.location.hash = `#${newHash}`;
-    setTimeout(() => {
-      this.hashUpdating = false;
-    }, 5);
+    this.changeHash(newHash);
   }
 
   getUrlPrefix(baseOnly = false): string {
@@ -248,7 +255,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           user={user}
           dataSource={selectedDataSource}
           hash={viewHash}
-          updateHash={this.updateHash.bind(this)}
+          updateViewHash={this.updateViewHash.bind(this)}
           getUrlPrefix={this.getUrlPrefix.bind(this)}
           maxFilters={maxFilters}
           maxSplits={maxSplits}
@@ -261,7 +268,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           user={user}
           linkViewConfig={linkViewConfig}
           hash={viewHash}
-          updateHash={this.updateHash.bind(this)}
+          updateViewHash={this.updateViewHash.bind(this)}
+          changeHash={this.changeHash.bind(this)}
           getUrlPrefix={this.getUrlPrefix.bind(this)}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
         />;
