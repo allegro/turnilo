@@ -134,9 +134,10 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   componentWillUpdate(nextProps: LinkViewProps, nextState: LinkViewState): void {
-    var { essence } = this.state;
-    if (!nextState.essence.equals(essence)) {
-      this.props.updateHash(nextState.essence.toHash());
+    const { updateHash } = this.props;
+    const { linkItem } = this.state;
+    if (updateHash && !nextState.linkItem.equals(linkItem)) {
+      updateHash(nextState.linkItem.name);
     }
   }
 

@@ -28,24 +28,23 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
   render() {
     var { title, onDragStart, onSearch, onClose } = this.props;
 
-    var searchButton: JSX.Element = null;
+    var icons: JSX.Element[] = [];
+
     if (onSearch) {
-      searchButton = <div className="search" onClick={onSearch} ref="searchButton">
-        <SvgIcon svg={require('../../icons/loupe.svg')}/>
-      </div>;
+      icons.push(<div className="icon search" key="search" onClick={onSearch}>
+        <SvgIcon svg={require('../../icons/full-search.svg')}/>
+      </div>);
     }
 
-    var closeButton: JSX.Element = null;
     if (onClose) {
-      closeButton = <div className="close" onClick={onClose}>
-        <SvgIcon svg={require('../../icons/x.svg')}/>
-      </div>;
+      icons.push(<div className="icon close" key="close" onClick={onClose}>
+        <SvgIcon svg={require('../../icons/full-remove.svg')}/>
+      </div>);
     }
 
     return <div className="tile-header" draggable={onDragStart ? true : null} onDragStart={onDragStart}>
       <div className="title">{title}</div>
-      {searchButton}
-      {closeButton}
+      <div className="icons">{icons}</div>
     </div>;
   }
 }

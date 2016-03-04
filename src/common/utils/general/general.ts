@@ -89,3 +89,11 @@ export function collect(wait: number, func: Function): Function {
     }
   };
 }
+
+export function verifyUrlSafeName(name: string): void {
+  if (typeof name !== 'string') throw new TypeError('name must be a string');
+  if (!name.length) throw new Error('can not have empty name');
+  if (!/^[\w.~\-]*$/.test(name)) {
+    throw new Error(`'${name}' is not a URL safe name. Try '${name.replace(/[^\w~.~\-]+/g, '_')}' instead?`);
+  }
+}

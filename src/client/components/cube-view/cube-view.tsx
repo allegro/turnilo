@@ -167,9 +167,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
-    var { essence } = this.state;
-    if (!nextState.essence.equals(essence)) {
-      this.props.updateHash(nextState.essence.toHash());
+    const { updateHash } = this.props;
+    const { essence } = this.state;
+    if (updateHash && !nextState.essence.equals(essence)) {
+      updateHash(nextState.essence.toHash());
     }
   }
 

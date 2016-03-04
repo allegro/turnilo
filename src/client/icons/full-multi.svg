@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>full-multi</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="full-multi" sketch:type="MSArtboardGroup" fill="#000000">
+            <g id="Rectangle-112-+-Rectangle-112-+-Path-39" sketch:type="MSLayerGroup" transform="translate(3.000000, 3.000000)">
+                <path d="M12,2 L12,1.00247329 C12,0.455760956 11.5511774,0 10.9975267,0 L1.00247329,0 C0.455760956,0 0,0.448822582 0,1.00247329 L0,10.9975267 C0,11.544239 0.448822582,12 1.00247329,12 L2,12 L2,4.00276013 C2,2.89666625 2.89354265,2 4.00276013,2 L12,2 Z M3,3.9955775 C3,3.44573523 3.44483697,3 3.9955775,3 L13.0044225,3 C13.5542648,3 14,3.44483697 14,3.9955775 L14,13.0044225 C14,13.5542648 13.555163,14 13.0044225,14 L3.9955775,14 C3.44573523,14 3,13.555163 3,13.0044225 L3,3.9955775 Z M6.7576206,11.4354379 L7.46397296,12.3147697 L8.12273147,11.3990432 L12.3169711,5.56871801 L10.9241827,4.561222 L7.40466411,9.49569228 L5.75335309,7.43998979 L4.41591974,8.52027517 L6.7576206,11.4354379 Z" id="Rectangle-112" sketch:type="MSShapeGroup"></path>
+            </g>
+        </g>
+    </g>
+</svg>

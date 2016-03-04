@@ -1,6 +1,7 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression } from 'plywood';
+import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 import { DataSource, DataSourceJS } from '../data-source/data-source';
 import { Essence, EssenceJS } from '../essence/essence';
 import { Manifest } from '../manifest/manifest';
@@ -63,8 +64,10 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
   public essence: Essence;
 
   constructor(parameters: LinkItemValue) {
-    this.name = parameters.name;
-    this.title = parameters.title;
+    var name = parameters.name;
+    verifyUrlSafeName(name);
+    this.name = name;
+    this.title = parameters.title || makeTitle(name);
     this.description = parameters.description;
     this.group = parameters.group;
     this.dataSource = parameters.dataSource;

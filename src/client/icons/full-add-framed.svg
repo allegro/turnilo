@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
     <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
-    <title>full-cube</title>
+    <title>full-add-framed</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
     <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-        <g id="full-cube" sketch:type="MSArtboardGroup" fill="#000000">
-            <path d="M10,17.5960697 L17,14.0697019 L17,6.34777241 L10,10.007318 L10,17.5960697 Z M9,17.5960697 L2,14.0697019 L2,6.34777241 L9,10.007318 L9,17.5960697 Z M2,5.29999995 L9.5,1.3499999 L17,5.29999995 L9.5,9.25 L2,5.29999995 Z" id="Rectangle-144" sketch:type="MSShapeGroup"></path>
+        <g id="full-add-framed" sketch:type="MSArtboardGroup" fill="#000000">
+            <path d="M10,8 L10,4 L8,4 L8,8 L4,8 L4,10 L8,10 L8,14 L10,14 L10,10 L14,10 L14,8 L10,8 Z M1,2.99406028 C1,1.8927712 1.89451376,1 2.99406028,1 L15.0059397,1 C16.1072288,1 17,1.89451376 17,2.99406028 L17,15.0059397 C17,16.1072288 16.1054862,17 15.0059397,17 L2.99406028,17 C1.8927712,17 1,16.1054862 1,15.0059397 L1,2.99406028 Z" id="Rectangle-37" sketch:type="MSShapeGroup"></path>
         </g>
     </g>
 </svg>

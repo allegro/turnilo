@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
     <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
-    <title>full-cube</title>
+    <title>full-delete</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
     <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-        <g id="full-cube" sketch:type="MSArtboardGroup" fill="#000000">
-            <path d="M10,17.5960697 L17,14.0697019 L17,6.34777241 L10,10.007318 L10,17.5960697 Z M9,17.5960697 L2,14.0697019 L2,6.34777241 L9,10.007318 L9,17.5960697 Z M2,5.29999995 L9.5,1.3499999 L17,5.29999995 L9.5,9.25 L2,5.29999995 Z" id="Rectangle-144" sketch:type="MSShapeGroup"></path>
+        <g id="full-delete" sketch:type="MSArtboardGroup" fill="#000000">
+            <path d="M5,14.7142857 C5,15.4214286 5.675,16 6.5,16 L12.5,16 C13.325,16 14,15.4214286 14,14.7142857 L14,7 L5,7 L5,14.7142857 L5,14.7142857 Z M15,4 L12.25,4 L11.4642857,3 L7.53571429,3 L6.75,4 L4,4 L4,6 L15,6 L15,4 L15,4 Z" id="Shape" sketch:type="MSShapeGroup"></path>
         </g>
     </g>
 </svg>

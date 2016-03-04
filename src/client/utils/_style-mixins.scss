@@ -232,11 +232,35 @@
 
 %module-title {
   .title {
-    padding: 15px 0 0 $tile-padding-h;
-    height: $title-height;
+    //padding: 15px 0 0 $tile-padding-h;
+    padding: 15px $padding-compact 10px $padding-compact;
     font-size: 12px;
     text-transform: uppercase;
     color: $text-standard;
+  }
+
+  .icons {
+    position: absolute;
+    top: 1px;
+    right: 8px;
+
+    .icon {
+      display: inline-block;
+      padding: 10px 0;
+      cursor: pointer;
+      width: 19px;
+
+      svg path {
+        fill: #bbb;
+      }
+
+      &:hover,
+      &.active {
+        svg path {
+          fill: #888;
+        }
+      }
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
 import { $, Expression, ExpressionJS, Action, ApplyAction, AttributeInfo } from 'plywood';
-import { makeTitle } from '../../utils/general/general';
+import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
   return (n: number) => {
@@ -89,6 +89,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
 
   constructor(parameters: MeasureValue) {
     var name = parameters.name;
+    verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
 

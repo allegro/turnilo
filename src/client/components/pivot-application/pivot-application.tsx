@@ -57,28 +57,27 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   componentWillMount() {
-    var { dataSources } = this.props;
+    var { dataSources, linkViewConfig } = this.props;
     if (!dataSources.size) throw new Error('must have data sources');
 
-    var linkViewConfigJS = this.props.linkViewConfig;
-    if (linkViewConfigJS) {
-      this.setState({
-        viewType: LINK,
-        linkViewConfig: LinkViewConfig.fromJS(linkViewConfigJS, { dataSources, visualizations })
-      });
-    } else {
-      var hash = window.location.hash;
-      var viewType = this.getViewTypeFromHash(hash);
-      var selectedDataSource = this.getDataSourceFromHash(dataSources, hash);
-      var viewHash = this.getViewHashFromHash(hash);
+    var hash = window.location.hash;
+    var viewType = this.getViewTypeFromHash(hash);
+    var selectedDataSource = this.getDataSourceFromHash(dataSources, hash);
+    var viewHash = this.getViewHashFromHash(hash);
 
-      if (viewType === HOME && dataSources.size === 1) {
-        selectedDataSource = dataSources.first();
+    var stateLinkViewConfig: LinkViewConfig = null;
+    if (viewType === HOME) {
+      if (linkViewConfig) {
+        viewType = LINK;
+        stateLinkViewConfig = LinkViewConfig.fromJS(linkViewConfig, { dataSources, visualizations });
+
+      } else if (dataSources.size === 1) {
         viewType = CUBE;
+        selectedDataSource = dataSources.first();
       }
-
-      this.setState({ viewType, viewHash, selectedDataSource });
     }
+
+    this.setState({ viewType, viewHash, selectedDataSource, linkViewConfig: stateLinkViewConfig });
   }
 
   componentDidMount() {
@@ -171,6 +170,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
     if (viewType === CUBE) {
       newHash = `${this.state.selectedDataSource.name}/${newHash}`;
+    } else if (viewType === CUBE) {
+      newHash = `${viewType}/${newHash}`;
     } else {
       newHash = viewType;
     }

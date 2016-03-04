@@ -4,7 +4,7 @@ import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
 import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum,
   Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType } from 'plywood';
-import { makeTitle, listsEqual } from '../../utils/general/general';
+import { verifyUrlSafeName, makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 import { Filter, FilterJS } from '../filter/filter';
@@ -228,6 +228,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
   constructor(parameters: DataSourceValue) {
     var name = parameters.name;
+    verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
     this.engine = parameters.engine;
