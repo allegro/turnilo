@@ -15,33 +15,23 @@ describe('Essence', () => {
     introspection: 'none',
     dimensions: [
       {
-        expression: {
-          name: 'time',
-          op: 'ref'
-        },
         kind: 'time',
         name: 'time',
-        title: 'Time'
+        title: 'Time',
+        expression: '$time'
       },
       {
-        expression: {
-          name: 'twitterHandle',
-          op: 'ref'
-        },
         kind: 'string',
         name: 'twitterHandle',
-        title: 'Twitter Handle'
+        title: 'Twitter Handle',
+        expression: '$twitterHandle'
       }
     ],
     measures: [
       {
         name: 'count',
         title: 'count',
-        expression: {
-          name: 'count',
-          op: 'ref'
-        }
-
+        expression: '$main.count()'
       }
     ],
     timeAttribute: 'time',
@@ -87,11 +77,7 @@ describe('Essence', () => {
       {
         visualization: 'vis1',
         timezone: 'Etc/UTC',
-        filter: {
-          op: "literal",
-          value: true
-
-        },
+        filter: $('twitterHandle').overlap(['A', 'B', 'C']).toJS(),
         pinnedDimensions: ['twitterHandle'],
         selectedMeasures: ['count'],
         splits: []
@@ -107,6 +93,49 @@ describe('Essence', () => {
       }).to.throw('must have context');
     });
 
+  });
+
+
+  describe('upgrades', () => {
+    it('works in the base case', () => {
+      var essence = Essence.fromJS({
+        visualization: 'vis1',
+        timezone: 'Etc/UTC',
+        pinnedDimensions: [],
+        selectedMeasures: [],
+        splits: []
+      }, context);
+
+      expect(essence.toJS()).to.deep.equal({
+        "filter": {
+          "action": {
+            "action": "in",
+            "expression": {
+              "action": {
+                "action": "timeRange",
+                "duration": "P3D",
+                "step": -1
+              },
+              "expression": {
+                "name": "m",
+                "op": "ref"
+              },
+              "op": "chain"
+            }
+          },
+          "expression": {
+            "name": "time",
+            "op": "ref"
+          },
+          "op": "chain"
+        },
+        "pinnedDimensions": [],
+        "selectedMeasures": [],
+        "splits": [],
+        "timezone": "Etc/UTC",
+        "visualization": "vis1"
+      });
+    });
   });
 
 

@@ -105,13 +105,12 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   componentWillMount() {
     var { hash, linkViewConfig, updateHash } = this.props;
 
-    var linkItem = linkViewConfig.first();
+    var linkItem = linkViewConfig.findByName(hash);
+    if (!linkItem) {
+      linkItem = linkViewConfig.defaultLinkItem();
+      updateHash(linkItem.name);
+    }
 
-    //var essence = this.getEssenceFromHash(hash);
-    //if (!essence) {
-    //  essence = this.getEssenceFromDataSource(dataSource);
-    //  updateHash(essence.toHash());
-    //}
     this.setState({
       linkItem,
       essence: linkItem.essence
@@ -124,12 +123,11 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   componentWillReceiveProps(nextProps: LinkViewProps) {
-    const { hash } = this.props;
-    const { essence } = this.state;
+    const { hash, linkViewConfig } = this.props;
 
     if (hash !== nextProps.hash) {
-      //var hashEssence = this.getEssenceFromHash(nextProps.hash);
-      //this.setState({ essence: hashEssence });
+      var linkItem = linkViewConfig.findByName(hash);
+      this.setState({ linkItem });
     }
   }
 

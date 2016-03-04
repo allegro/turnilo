@@ -540,8 +540,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var measureGraphs: Array<JSX.Element>;
     var bottomAxes: Array<JSX.Element>;
 
-    if (dataset && splits.length()) {
-      var timeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
+    var timeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
+    if (dataset && splits.length() && timeRange) {
       var measures = essence.getMeasures().toArray();
 
       var getX = (d: Datum) => midpoint(d[TIME_SEGMENT] as TimeRange);

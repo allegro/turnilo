@@ -3,11 +3,13 @@ import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
 import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum,
-  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType } from 'plywood';
+  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType,
+  CustomDruidAggregations } from 'plywood';
 import { verifyUrlSafeName, makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 import { Filter, FilterJS } from '../filter/filter';
+import { SplitsJS } from '../splits/splits';
 import { MaxTime, MaxTimeJS } from '../max-time/max-time';
 import { RefreshRule, RefreshRuleJS } from '../refresh-rule/refresh-rule';
 
@@ -54,7 +56,7 @@ export interface DataSourceValue {
   engine: string;
   source: string;
   subsetFilter?: Expression;
-  options?: Lookup<any>;
+  options?: DataSourceOptions;
   introspection: string;
   attributeOverrides: Attributes;
   attributes: Attributes;
@@ -78,7 +80,7 @@ export interface DataSourceJS {
   engine: string;
   source: string;
   subsetFilter?: ExpressionJS;
-  options?: Lookup<any>;
+  options?: DataSourceOptions;
   introspection?: string;
   attributeOverrides?: AttributeJSs;
   attributes?: AttributeJSs;
@@ -92,6 +94,17 @@ export interface DataSourceJS {
   defaultPinnedDimensions?: string[];
   refreshRule?: RefreshRuleJS;
   maxTime?: MaxTimeJS;
+}
+
+export interface DataSourceOptions {
+  customAggregations?: CustomDruidAggregations;
+  defaultSplits?: SplitsJS;
+
+  // Deprecated
+  defaultSplitDimension?: string;
+  skipIntrospection?: boolean;
+  disableAutofill?: boolean;
+  attributeOverrides?: AttributeJSs;
 }
 
 var check: Class<DataSourceValue, DataSourceJS>;
@@ -130,17 +143,21 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     // Back compat.
     var options = parameters.options || {};
-    if (options['skipIntrospection']) {
+    if (options.skipIntrospection) {
       if (!introspection) introspection = 'none';
-      delete options['skipIntrospection'];
+      delete options.skipIntrospection;
     }
-    if (options['disableAutofill']) {
+    if (options.disableAutofill) {
       if (!introspection) introspection = 'no-autofill';
-      delete options['disableAutofill'];
+      delete options.disableAutofill;
     }
-    if (options['attributeOverrides']) {
-      if (!attributeOverrideJSs) attributeOverrideJSs = options['attributeOverrides'];
-      delete options['attributeOverrides'];
+    if (options.attributeOverrides) {
+      if (!attributeOverrideJSs) attributeOverrideJSs = options.attributeOverrides;
+      delete options.attributeOverrides;
+    }
+    if (options.defaultSplitDimension) {
+      options.defaultSplits = options.defaultSplitDimension;
+      delete options.defaultSplitDimension;
     }
     // End Back compat.
 
@@ -209,7 +226,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public engine: string;
   public source: string;
   public subsetFilter: Expression;
-  public options: Lookup<any>;
+  public options: DataSourceOptions;
   public introspection: string;
   public attributes: Attributes;
   public attributeOverrides: Attributes;

@@ -36,7 +36,7 @@ function swapSplit(splits: List<SplitCombine>, split: SplitCombine, other: Split
 }
 
 export type SplitsValue = List<SplitCombine>;
-export type SplitsJS = SplitCombineJS[];
+export type SplitsJS = string | SplitCombineJS[];
 export type SplitContext = SplitCombineContext;
 
 var check: Class<SplitsValue, SplitsJS>;
@@ -52,7 +52,8 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   }
 
   static fromJS(parameters: SplitsJS, context?: SplitContext): Splits {
-    return new Splits(List(parameters.map(splitCombine => SplitCombine.fromJS(splitCombine, context))));
+    if (typeof parameters === 'string') parameters = [parameters as string];
+    return new Splits(List((parameters as SplitCombineJS[]).map(splitCombine => SplitCombine.fromJS(splitCombine, context))));
   }
 
 

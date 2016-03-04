@@ -17,8 +17,8 @@ export interface LinkItemValue {
 
 export interface LinkItemJS {
   name: string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   group: string;
   dataSource: string;
   essence: EssenceJS;
@@ -44,7 +44,7 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
     var dataSource = dataSources.find(d => d.name === dataSourceName);
     if (!dataSource) throw new Error(`can not find dataSource '${dataSourceName}'`);
 
-    var essence = Essence.fromJS(parameters.essence, { dataSource, visualizations });
+    var essence = Essence.fromJS(parameters.essence, { dataSource, visualizations }).updateWithTimeRange();
 
     return new LinkItem({
       name: parameters.name,
@@ -68,7 +68,7 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
     verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
-    this.description = parameters.description;
+    this.description = parameters.description || '';
     this.group = parameters.group;
     this.dataSource = parameters.dataSource;
     this.essence = parameters.essence;

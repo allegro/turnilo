@@ -69,7 +69,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     if (viewType === HOME) {
       if (linkViewConfig) {
         viewType = LINK;
-        stateLinkViewConfig = LinkViewConfig.fromJS(linkViewConfig, { dataSources, visualizations });
 
       } else if (dataSources.size === 1) {
         viewType = CUBE;
@@ -77,7 +76,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       }
     }
 
-    this.setState({ viewType, viewHash, selectedDataSource, linkViewConfig: stateLinkViewConfig });
+    this.setState({
+      viewType,
+      viewHash,
+      selectedDataSource,
+      linkViewConfig: linkViewConfig ? LinkViewConfig.fromJS(linkViewConfig, { dataSources, visualizations }) : null
+    });
   }
 
   componentDidMount() {
@@ -119,20 +123,20 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     if (this.hashUpdating) return;
 
     var viewType = this.getViewTypeFromHash(hash);
+    var viewHash = this.getViewHashFromHash(hash);
     this.setState({ viewType });
 
     if (viewType === CUBE) {
       var dataSource = this.getDataSourceFromHash(dataSources, hash);
       if (!dataSource) dataSource = dataSources.first();
 
-      var viewHash = this.getViewHashFromHash(hash);
-
       this.changeDataSource(dataSource);
-
-      if (viewHash !== this.state.viewHash) {
-        this.setState({ viewHash });
-      }
     }
+
+    if (viewHash !== this.state.viewHash) {
+      this.setState({ viewHash });
+    }
+
     this.sideDrawerOpen(false);
   }
 
@@ -142,8 +146,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   getViewTypeFromHash(hash: string): ViewType {
-    var hashPart = this.parseHash(hash).shift();
-    if (!hashPart) return HOME;
+    var viewType = this.parseHash(hash).shift();
+    if (!viewType || viewType === HOME) return HOME;
+    if (viewType === LINK) return LINK;
     return CUBE;
   }
 
@@ -156,7 +161,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   getViewHashFromHash(hash: string): string {
     var parts = this.parseHash(hash);
-    if (parts.length < 4) return null;
+    if (parts.length < 2) return null;
     parts.shift();
     return parts.join('/');
   }
@@ -170,7 +175,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
     if (viewType === CUBE) {
       newHash = `${this.state.selectedDataSource.name}/${newHash}`;
-    } else if (viewType === CUBE) {
+    } else if (viewType === LINK) {
       newHash = `${viewType}/${newHash}`;
     } else {
       newHash = viewType;
