@@ -101,7 +101,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   static DEFAULT_TIMEZONE = Timezone.UTC;
   static DEFAULT_DURATION = Duration.fromJS('P1D');
 
-  static isDataSource(candidate: any): boolean {
+  static isDataSource(candidate: any): candidate is DataSource {
     return isInstanceOf(candidate, DataSource);
   }
 

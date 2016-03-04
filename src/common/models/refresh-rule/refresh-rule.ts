@@ -24,7 +24,7 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
   static DEFAULT_QUERY_REFRESH = Duration.fromJS('PT1M');
 
-  static isRefreshRule(candidate: any): boolean {
+  static isRefreshRule(candidate: any): candidate is RefreshRule {
     return isInstanceOf(candidate, RefreshRule);
   }
 

@@ -31,7 +31,7 @@ export interface LinkItemContext {
 var check: Class<LinkItemValue, LinkItemJS>;
 export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
 
-  static isLinkItem(candidate: any): boolean {
+  static isLinkItem(candidate: any): candidate is LinkItem {
     return isInstanceOf(candidate, LinkItem);
   }
 

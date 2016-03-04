@@ -29,7 +29,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
   static DEFAULT_FORMAT = '0,0.0 a';
   static INTEGER_FORMAT = '0,0 a';
 
-  static isMeasure(candidate: any): boolean {
+  static isMeasure(candidate: any): candidate is Measure {
     return isInstanceOf(candidate, Measure);
   }
 

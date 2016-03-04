@@ -29,7 +29,7 @@ export interface DimensionJS {
 
 var check: Class<DimensionValue, DimensionJS>;
 export class Dimension implements Instance<DimensionValue, DimensionJS> {
-  static isDimension(candidate: any): boolean {
+  static isDimension(candidate: any): candidate is Dimension {
     return isInstanceOf(candidate, Dimension);
   }
 

@@ -16,7 +16,7 @@ export interface LinkViewConfigJS {
 var check: Class<LinkViewConfigValue, LinkViewConfigJS>;
 export class LinkViewConfig implements Instance<LinkViewConfigValue, LinkViewConfigJS> {
 
-  static isLinkViewConfig(candidate: any): boolean {
+  static isLinkViewConfig(candidate: any): candidate is LinkViewConfig {
     return isInstanceOf(candidate, LinkViewConfig);
   }
 

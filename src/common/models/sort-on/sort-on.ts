@@ -17,7 +17,7 @@ export interface SortOnJS {
 var check: Class<SortOnValue, SortOnJS>;
 export class SortOn implements Instance<SortOnValue, SortOnJS> {
 
-  static isSortOn(candidate: any): boolean {
+  static isSortOn(candidate: any): candidate is SortOn {
     return isInstanceOf(candidate, SortOn);
   }
 

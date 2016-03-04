@@ -50,7 +50,7 @@ export interface ${camelName}JS {
 var check: Class<${camelName}Value, ${camelName}JS>;
 export class ${camelName} implements Instance<${camelName}Value, ${camelName}JS> {
 
-  static is${camelName}(candidate: any): boolean {
+  static is${camelName}(candidate: any): candidate is ${camelName} {
     return isInstanceOf(candidate, ${camelName});
   }
 

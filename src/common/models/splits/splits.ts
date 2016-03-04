@@ -43,7 +43,7 @@ var check: Class<SplitsValue, SplitsJS>;
 export class Splits implements Instance<SplitsValue, SplitsJS> {
   static EMPTY: Splits;
 
-  static isSplits(candidate: any): boolean {
+  static isSplits(candidate: any): candidate is Splits {
     return isInstanceOf(candidate, Splits);
   }
 

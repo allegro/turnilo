@@ -76,7 +76,7 @@ export interface EssenceContext {
 
 var check: Class<EssenceValue, EssenceJS>;
 export class Essence implements Instance<EssenceValue, EssenceJS> {
-  static isEssence(candidate: any): boolean {
+  static isEssence(candidate: any): candidate is Essence {
     return isInstanceOf(candidate, Essence);
   }
 

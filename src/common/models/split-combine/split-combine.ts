@@ -25,7 +25,7 @@ export interface SplitCombineContext {
 
 var check: Class<SplitCombineValue, SplitCombineJS>;
 export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS> {
-  static isSplitCombine(candidate: any): boolean {
+  static isSplitCombine(candidate: any): candidate is SplitCombine {
     return isInstanceOf(candidate, SplitCombine);
   }
 
