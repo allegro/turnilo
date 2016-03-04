@@ -84,7 +84,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     });
     dataSource.executor(query)
       .then(
-        (dataset) => {
+        (dataset: Dataset) => {
           if (!this.mounted) return;
           this.setState({
             loading: false,

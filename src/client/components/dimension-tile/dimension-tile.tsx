@@ -108,7 +108,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     });
     dataSource.executor(query)
       .then(
-        (dataset) => {
+        (dataset: Dataset) => {
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -349,7 +349,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         });
       }
 
-      var formatter = measure ? formatterFromData(rowData.map(d => d[measureName]), measure.format) : null;
+      var formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.format) : null;
       rows = rowData.map((d, i) => {
         var segmentValue = d[SEGMENT];
         var segmentValueStr = String(segmentValue);
@@ -373,7 +373,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
         var measureValueElement: JSX.Element = null;
         if (measure) {
-          measureValueElement = <div className="measure-value">{formatter(d[measureName])}</div>;
+          measureValueElement = <div className="measure-value">{formatter(d[measureName] as number)}</div>;
         }
 
         var row = <div

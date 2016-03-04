@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-promise';
 import * as Q from 'q';
 import { ply, $, Expression, ExpressionJS, RefExpression, ChainExpression, External, DruidExternal, Datum, Dataset, TimeRange,
-         basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes } from 'plywood';
+         basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes, PseudoDatum } from 'plywood';
 import { DataSource, Dimension } from '../../../common/models/index';
 import { parseData } from '../../../common/utils/parser/parser';
 
@@ -92,7 +92,7 @@ export function getFileData(filePath: string): Q.Promise<any[]> {
       throw new Error(`could not parse '${filePath}': ${e.message}`);
     }
   }).then((fileJSON) => {
-    fileJSON.forEach((d: Datum, i: number) => {
+    fileJSON.forEach((d: PseudoDatum) => {
       d['time'] = new Date(d['time']);
     });
     return fileJSON;

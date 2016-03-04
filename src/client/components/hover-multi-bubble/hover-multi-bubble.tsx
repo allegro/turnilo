@@ -2,7 +2,7 @@ require('./hover-multi-bubble.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset, Datum } from 'plywood';
+import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
 import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
@@ -54,7 +54,7 @@ export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, Hov
 
     return <BodyPortal left={left + LEFT_OFFSET} top={top} disablePointerEvents={true}>
       <div className="hover-multi-bubble">
-        <div className="bucket">{formatTimeRange(existingDatum[TIME_SEGMENT], essence.timezone, DisplayYear.NEVER)}</div>
+        <div className="bucket">{formatTimeRange(existingDatum[TIME_SEGMENT] as TimeRange, essence.timezone, DisplayYear.NEVER)}</div>
         <div className="colors">{colorSwabs}</div>
       </div>
     </BodyPortal>;
