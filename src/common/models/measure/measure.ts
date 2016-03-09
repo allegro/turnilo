@@ -34,20 +34,29 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
-    var name = attribute.name;
+    var { name, special } = attribute;
     var $main = $('main');
     var ref = $(name);
 
-    if (attribute.special) {
-      if (attribute.special === 'unique') {
+    if (special) {
+      if (special === 'unique') {
         return [
           new Measure({
             name,
             expression: $main.countDistinct(ref)
           })
         ];
-      } else { // ToDo: handle: 'histogram'
-        return [];
+      } else if (special === 'histogram') {
+        return [
+          new Measure({
+            name: name + '_p95',
+            expression: $main.quantile(ref, 0.95)
+          }),
+          new Measure({
+            name: name + '_p99',
+            expression: $main.quantile(ref, 0.99)
+          })
+        ];
       }
     }
 

@@ -26,12 +26,15 @@ if (config && Array.isArray(config.dataSources)) {
     return DataSource.fromJS(dataSourceJS, executor);
   }));
 
-  pivot(document.body, {
-    version,
-    user: config.user,
-    dataSources,
-    linkViewConfig: config.linkViewConfig
-  });
+  var container = document.getElementsByClassName('app-container')[0];
+  if (container) {
+    pivot(container, {
+      version,
+      user: config.user,
+      dataSources,
+      linkViewConfig: config.linkViewConfig
+    });
+  }
 
 } else {
   throw new Error('config not found');

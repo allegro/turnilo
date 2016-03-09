@@ -44,8 +44,8 @@ describe('LinkItem', () => {
     defaultDuration: 'P3D',
     defaultSortMeasure: 'count',
     refreshRule: {
-      refresh: "PT1M",
-      rule: "fixed"
+      rule: "fixed",
+      time: new Date('2015-09-13T00:00:00Z')
     }
   };
 
@@ -110,6 +110,78 @@ describe('LinkItem', () => {
       expect(() => {
         LinkItem.fromJS({} as any);
       }).to.throw('must have context');
+    });
+
+  });
+
+  describe('upgrades', () => {
+    it('must add filter and timezone', () => {
+      var linkItem = LinkItem.fromJS({
+        name: 'test1',
+        title: 'Test One',
+        description: 'I like testing',
+        group: 'Tests',
+        dataSource: 'twitter',
+        essence: {
+          visualization: 'vis1',
+          pinnedDimensions: ['statusCode'],
+          selectedMeasures: ['count'],
+          splits: 'time'
+        }
+      }, context);
+
+      expect(linkItem.toJS()).to.deep.equal({
+        "dataSource": "twitter",
+        "description": "I like testing",
+        "essence": {
+          "filter": {
+            "action": {
+              "action": "in",
+              "expression": {
+                "action": {
+                  "action": "timeRange",
+                  "duration": "P3D",
+                  "step": -1
+                },
+                "expression": {
+                  "name": "m",
+                  "op": "ref"
+                },
+                "op": "chain"
+              }
+            },
+            "expression": {
+              "name": "time",
+              "op": "ref"
+            },
+            "op": "chain"
+          },
+          "pinnedDimensions": [
+            "statusCode"
+          ],
+          "selectedMeasures": [
+            "count"
+          ],
+          "splits": [
+            {
+              "bucketAction": {
+                "action": "timeBucket",
+                "duration": "PT1H",
+                "timezone": "Etc/UTC"
+              },
+              "expression": {
+                "name": "time",
+                "op": "ref"
+              }
+            }
+          ],
+          "timezone": "Etc/UTC",
+          "visualization": "vis1"
+        },
+        "group": "Tests",
+        "name": "test1",
+        "title": "Test One"
+      });
     });
 
   });

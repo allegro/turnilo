@@ -41,8 +41,8 @@ describe('Essence', () => {
     defaultSortMeasure: 'count',
     defaultPinnedDimensions: ['twitterHandle'],
     refreshRule: {
-      refresh: "PT1M",
-      rule: "fixed"
+      rule: "fixed",
+      time: new Date('2015-09-13T00:00:00Z')
     }
   };
 
@@ -136,6 +136,31 @@ describe('Essence', () => {
         "visualization": "vis1"
       });
     });
+
+    it('adds timezone', () => {
+      var linkItem = Essence.fromJS({
+        visualization: 'vis1',
+        pinnedDimensions: ['statusCode'],
+        selectedMeasures: ['count'],
+        splits: [],
+        filter: 'true'
+      }, context);
+
+      expect(linkItem.toJS()).to.deep.equal({
+        "filter": {
+          "op": "literal",
+          "value": true
+        },
+        "pinnedDimensions": [],
+        "selectedMeasures": [
+          "count"
+        ],
+        "splits": [],
+        "timezone": "Etc/UTC",
+        "visualization": "vis1"
+      });
+    });
+
   });
 
 

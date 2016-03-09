@@ -106,6 +106,7 @@ describe('Measure', () => {
           }
         }
       });
+
       var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
@@ -135,8 +136,48 @@ describe('Measure', () => {
         "special": "histogram",
         "type": "NUMBER"
       });
+
       var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
-      expect(measures).to.deep.equal([]);
+      expect(measures).to.deep.equal([
+        {
+          "expression": {
+            "action": {
+              "action": "quantile",
+              "expression": {
+                "name": "delta_hist",
+                "op": "ref"
+              },
+              "quantile": 0.95
+            },
+            "expression": {
+              "name": "main",
+              "op": "ref"
+            },
+            "op": "chain"
+          },
+          "name": "delta_hist_p95",
+          "title": "Delta Hist P95"
+        },
+        {
+          "expression": {
+            "action": {
+              "action": "quantile",
+              "expression": {
+                "name": "delta_hist",
+                "op": "ref"
+              },
+              "quantile": 0.99
+            },
+            "expression": {
+              "name": "main",
+              "op": "ref"
+            },
+            "op": "chain"
+          },
+          "name": "delta_hist_p99",
+          "title": "Delta Hist P99"
+        }
+      ]);
     });
 
     it('works with max', () => {
