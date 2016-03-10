@@ -29,6 +29,8 @@
       <w>mstile</w>
       <w>notranslate</w>
       <w>ofir</w>
+      <w>ondragstart</w>
+      <w>ondrop</w>
       <w>pinboard</w>
       <w>polyfill</w>
       <w>postcss</w>

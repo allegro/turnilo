@@ -85,7 +85,7 @@
   font-size: 16px;
   z-index: 11;
 
-  .burger-bar {
+  .left-bar {
     display: inline-block;
     height: 100%;
     padding-left: 12px;
@@ -113,6 +113,17 @@
     position: absolute;
     top: 0;
     right: 12px;
+
+    .text-button {
+      display: inline-block;
+      font-size: 12px;
+      text-transform: uppercase;
+      height: 42px;
+      line-height: 42px;
+      padding: 0 5px;
+      margin-right: 2px;
+      cursor: pointer;
+    }
 
     .icon-button {
       display: inline-block;
@@ -149,6 +160,10 @@
         color: $text-standard;
         font-size: 12px;
         white-space: nowrap;
+      }
+
+      svg path {
+        fill: #fff;
       }
 
     }
@@ -228,11 +243,35 @@
 
 %module-title {
   .title {
-    padding: 15px 0 0 $tile-padding-h;
-    height: $title-height;
+    //padding: 15px 0 0 $tile-padding-h;
+    padding: 15px $padding-compact 10px $padding-compact;
     font-size: 12px;
     text-transform: uppercase;
     color: $text-standard;
+  }
+
+  .icons {
+    position: absolute;
+    top: 1px;
+    right: 8px;
+
+    .icon {
+      display: inline-block;
+      padding: 10px 0;
+      cursor: pointer;
+      width: 19px;
+
+      svg path {
+        fill: #bbb;
+      }
+
+      &:hover,
+      &.active {
+        svg path {
+          fill: #888;
+        }
+      }
+    }
   }
 }
 

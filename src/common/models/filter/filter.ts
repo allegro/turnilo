@@ -25,7 +25,7 @@ var check: Class<FilterValue, FilterJS>;
 export class Filter implements Instance<FilterValue, FilterJS> {
   static EMPTY: Filter;
 
-  static isFilter(candidate: any): boolean {
+  static isFilter(candidate: any): candidate is Filter {
     return isInstanceOf(candidate, Filter);
   }
 

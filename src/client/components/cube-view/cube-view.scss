@@ -1,7 +1,7 @@
 @import '../../imports';
 
 .cube-view {
-  .home-header-bar {
+  .cube-header-bar {
     @include pin-top($header-height);
   }
 

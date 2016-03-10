@@ -14,7 +14,7 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-var config: any = (<any>window)['PIVOT_CONFIG'];
+var config: any = (window as any)['__CONFIG__'];
 
 var version: string = null;
 var dataSources: List<DataSource>;
@@ -26,13 +26,15 @@ if (config && Array.isArray(config.dataSources)) {
     return DataSource.fromJS(dataSourceJS, executor);
   }));
 
-  pivot(document.body, {
-    version,
-    dataSources,
-    showLastUpdated: config.showLastUpdated,
-    hideGitHubIcon: config.hideGitHubIcon,
-    headerBackground: config.headerBackground
-  });
+  var container = document.getElementsByClassName('app-container')[0];
+  if (container) {
+    pivot(container, {
+      version,
+      user: config.user,
+      dataSources,
+      linkViewConfig: config.linkViewConfig
+    });
+  }
 
 } else {
   throw new Error('config not found');

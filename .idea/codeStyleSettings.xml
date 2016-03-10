@@ -19,6 +19,9 @@
           <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />
           <option name="SPACES_WITHIN_OBJECT_LITERAL_BRACES" value="true" />
         </JSCodeStyleSettings>
+        <MultiMarkdownCodeStyleSettings>
+          <option name="RIGHT_MARGIN" value="72" />
+        </MultiMarkdownCodeStyleSettings>
         <TypeScriptCodeStyleSettings>
           <option name="SPACE_AFTER_TYPE_COLON" value="true" />
           <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />

@@ -57,12 +57,12 @@ export interface EssenceValue {
 }
 
 export interface EssenceJS {
-  visualization: string;
-  timezone: string;
-  filter: FilterJS;
-  splits: SplitsJS;
-  selectedMeasures: string[];
-  pinnedDimensions: string[];
+  visualization?: string;
+  timezone?: string;
+  filter?: FilterJS;
+  splits?: SplitsJS;
+  selectedMeasures?: string[];
+  pinnedDimensions?: string[];
   colors?: ColorsJS;
   pinnedSort?: string;
   compare?: FilterJS;
@@ -76,7 +76,7 @@ export interface EssenceContext {
 
 var check: Class<EssenceValue, EssenceJS>;
 export class Essence implements Instance<EssenceValue, EssenceJS> {
-  static isEssence(candidate: any): boolean {
+  static isEssence(candidate: any): candidate is Essence {
     return isInstanceOf(candidate, Essence);
   }
 
@@ -124,35 +124,19 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   static fromDataSource(dataSource: DataSource, context: EssenceContext): Essence {
     var timezone = dataSource.defaultTimezone;
 
-    var filter = dataSource.defaultFilter;
-    if (dataSource.timeAttribute) {
-      filter = filter.setSelection(
-        dataSource.timeAttribute,
-        $(FilterClause.MAX_TIME_REF_NAME).timeRange(dataSource.defaultDuration, -1)
-      );
-    }
-
     var splits = Splits.EMPTY;
-    if (typeof dataSource.options['defaultSplitDimension'] === 'string') {
-      var defaultSplitDimension = dataSource.getDimension(dataSource.options['defaultSplitDimension']);
-      if (defaultSplitDimension) {
-        splits = Splits.fromSplitCombine(SplitCombine.fromExpression(defaultSplitDimension.expression));
-      }
-      var timeAttribute = dataSource.timeAttribute;
-      if (timeAttribute) {
-        var now = new Date();
-        var maxTime = dataSource.getMaxTimeDate();
-        splits = splits.updateWithTimeRange(timeAttribute, FilterClause.evaluate(filter.getSelection(timeAttribute), now, maxTime, timezone), timezone);
-      }
+    var { defaultSplits } = dataSource.options;
+    if (defaultSplits) {
+      splits = Splits.fromJS(defaultSplits, dataSource);
     }
 
-    return new Essence({
+    var essence = new Essence({
       dataSource: context.dataSource,
       visualizations: context.visualizations,
 
       visualization: null,
       timezone,
-      filter,
+      filter: null,
       splits,
       selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
       pinnedDimensions: dataSource.defaultPinnedDimensions,
@@ -161,20 +145,26 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       compare: null,
       highlight: null
     });
+
+    if (defaultSplits) {
+      essence = essence.updateWithTimeRange();
+    }
+
+    return essence;
   }
 
   static fromJS(parameters: EssenceJS, context?: EssenceContext): Essence {
-    var visualizations = context.visualizations;
-    var dataSource = context.dataSource;
+    if (!context) throw new Error('must have context');
+    const { dataSource, visualizations } = context;
 
     var visualizationID = parameters.visualization;
     var visualization = visualizations.find(v => v.id === visualizationID);
 
-    var timezone = Timezone.fromJS(parameters.timezone);
-    var filter = Filter.fromJS(parameters.filter).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute);
-    var splits = Splits.fromJS(parameters.splits).constrainToDimensions(dataSource.dimensions);
-    var selectedMeasures = constrainMeasures(OrderedSet(parameters.selectedMeasures), dataSource);
-    var pinnedDimensions = constrainDimensions(OrderedSet(parameters.pinnedDimensions), dataSource);
+    var timezone = parameters.timezone ? Timezone.fromJS(parameters.timezone) : null;
+    var filter = parameters.filter ? Filter.fromJS(parameters.filter).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute) : null;
+    var splits = Splits.fromJS(parameters.splits || [], dataSource).constrainToDimensions(dataSource.dimensions);
+    var selectedMeasures = constrainMeasures(OrderedSet(parameters.selectedMeasures || []), dataSource);
+    var pinnedDimensions = constrainDimensions(OrderedSet(parameters.pinnedDimensions || []), dataSource);
 
     var defaultSortMeasureName = dataSource.defaultSortMeasure;
 
@@ -232,11 +222,21 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   constructor(parameters: EssenceValue) {
     this.visualizations = parameters.visualizations;
 
-    this.dataSource = parameters.dataSource;
-    if (!this.dataSource) throw new Error('must have a dataSource');
+    var dataSource = parameters.dataSource;
+    if (!dataSource) throw new Error('Essence must have a dataSource');
+    this.dataSource = dataSource;
 
-    this.timezone = parameters.timezone;
-    this.filter = parameters.filter;
+    this.timezone = parameters.timezone || Timezone.UTC;
+
+    var filter = parameters.filter;
+    if (!filter && dataSource.timeAttribute) {
+      filter = dataSource.defaultFilter.setSelection(
+        dataSource.timeAttribute,
+        $(FilterClause.MAX_TIME_REF_NAME).timeRange(dataSource.defaultDuration, -1)
+      );
+    }
+    this.filter = filter;
+
     this.splits = parameters.splits;
     this.selectedMeasures = parameters.selectedMeasures;
     this.pinnedDimensions = parameters.pinnedDimensions;
@@ -558,11 +558,11 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
-    var { dataSource, visualization, visResolve, filter, colors } = this;
+    var { visualization, visResolve, filter, colors, timezone } = this;
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
-      splits = splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(filter.getSelection(timeAttribute)), this.timezone);
+      splits = splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(filter.getSelection(timeAttribute)), timezone);
     }
 
     // If in manual mode stay there, keep the vis regardless of suggested strategy
@@ -597,6 +597,16 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   public removeSplit(split: SplitCombine, strategy: VisStrategy): Essence {
     var { splits } = this;
     return this.changeSplits(splits.removeSplit(split), strategy);
+  }
+
+  public updateWithTimeRange(): Essence {
+    var { filter, splits, timezone } = this;
+    var timeAttribute = this.getTimeAttribute();
+    if (!timeAttribute) return this;
+
+    var value = this.valueOf();
+    value.splits = splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(filter.getSelection(timeAttribute)), timezone);
+    return new Essence(value);
   }
 
   public changeColors(colors: Colors): Essence {

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var fs = require('fs-extra');
-var mkdirp = require('mkdirp');
 var replace = require("replace");
 
 if (process.argv.length !== 5) {

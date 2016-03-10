@@ -23,7 +23,7 @@ export interface StageJS {
 
 var check: Class<StageValue, StageJS>;
 export class Stage implements Instance<StageValue, StageJS> {
-  static isStage(candidate: any): boolean {
+  static isStage(candidate: any): candidate is Stage {
     return isInstanceOf(candidate, Stage);
   }
 

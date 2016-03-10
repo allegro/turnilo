@@ -14,7 +14,7 @@ export interface MaxTimeJS {
 var check: Class<MaxTimeValue, MaxTimeJS>;
 export class MaxTime implements Instance<MaxTimeValue, MaxTimeJS> {
 
-  static isMaxTime(candidate: any): boolean {
+  static isMaxTime(candidate: any): candidate is MaxTime {
     return isInstanceOf(candidate, MaxTime);
   }
 

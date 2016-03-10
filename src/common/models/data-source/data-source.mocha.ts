@@ -110,7 +110,34 @@ describe('DataSource', () => {
     ]);
   });
 
-  describe("validates defaults", () => {
+  describe("validates", () => {
+    it("throws an error if bad name is used", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki hello',
+          engine: 'druid',
+          source: 'wiki',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'articleName',
+              expression: '$articleName'
+            }
+          ],
+          measures: [
+            {
+              name: 'count',
+              expression: '$main.sum($count)'
+            }
+          ]
+        });
+      }).to.throw("'wiki hello' is not a URL safe name. Try 'wiki_hello' instead?");
+    });
+
     it("throws an error if the defaultSortMeasure can not be found", () => {
       expect(() => {
         DataSource.fromJS({

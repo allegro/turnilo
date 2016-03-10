@@ -186,7 +186,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         essence={essence}
         dimension={dimension}
         sortOn={pinnedSortSortOn}
-        onClose={clicker.unpin.bind(clicker, dimension)}
+        onClose={clicker.unpin ? clicker.unpin.bind(clicker, dimension) : null}
         getUrlPrefix={getUrlPrefix}
       />);
     });

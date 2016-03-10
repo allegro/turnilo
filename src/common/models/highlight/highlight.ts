@@ -17,7 +17,7 @@ export interface HighlightJS {
 var check: Class<HighlightValue, HighlightJS>;
 export class Highlight implements Instance<HighlightValue, HighlightJS> {
 
-  static isHighlight(candidate: any): boolean {
+  static isHighlight(candidate: any): candidate is Highlight {
     return isInstanceOf(candidate, Highlight);
   }
 

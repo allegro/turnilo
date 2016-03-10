@@ -11,16 +11,21 @@ export interface SplitCombineValue {
   limitAction: LimitAction;
 }
 
-export interface SplitCombineJS {
+export type SplitCombineJS = string | SplitCombineJSFull
+export interface SplitCombineJSFull {
   expression: ExpressionJS;
   bucketAction?: ActionJS;
   sortAction?: ActionJS;
   limitAction?: ActionJS;
 }
 
+export interface SplitCombineContext {
+  dimensions: List<Dimension>;
+}
+
 var check: Class<SplitCombineValue, SplitCombineJS>;
 export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS> {
-  static isSplitCombine(candidate: any): boolean {
+  static isSplitCombine(candidate: any): candidate is SplitCombine {
     return isInstanceOf(candidate, SplitCombine);
   }
 
@@ -33,18 +38,30 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     });
   }
 
-  static fromJS(parameters: SplitCombineJS): SplitCombine {
-    var value: SplitCombineValue = {
-      expression: Expression.fromJS(parameters.expression),
-      bucketAction: null,
-      sortAction: null,
-      limitAction: null
-    };
+  static fromJS(parameters: SplitCombineJS, context?: SplitCombineContext): SplitCombine {
+    if (typeof parameters === 'string') {
+      if (!context) throw new Error('must have context for string split');
+      var dimension = context.dimensions.find(d => d.name === parameters);
+      if (!dimension) throw new Error(`can not find dimension ${parameters}`);
+      return new SplitCombine({
+        expression: dimension.expression,
+        bucketAction: null,
+        sortAction: null,
+        limitAction: null
+      });
+    } else {
+      var value: SplitCombineValue = {
+        expression: Expression.fromJS(parameters.expression),
+        bucketAction: null,
+        sortAction: null,
+        limitAction: null
+      };
 
-    if (parameters.bucketAction) value.bucketAction = Action.fromJS(parameters.bucketAction);
-    if (parameters.sortAction) value.sortAction = SortAction.fromJS(parameters.sortAction);
-    if (parameters.limitAction) value.limitAction = LimitAction.fromJS(parameters.limitAction);
-    return new SplitCombine(value);
+      if (parameters.bucketAction) value.bucketAction = Action.fromJS(parameters.bucketAction);
+      if (parameters.sortAction) value.sortAction = SortAction.fromJS(parameters.sortAction);
+      if (parameters.limitAction) value.limitAction = LimitAction.fromJS(parameters.limitAction);
+      return new SplitCombine(value);
+    }
   }
 
 
@@ -71,7 +88,7 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
   }
 
   public toJS(): SplitCombineJS {
-    var js: SplitCombineJS = {
+    var js: SplitCombineJSFull = {
       expression: this.expression.toJS()
     };
     if (this.bucketAction) js.bucketAction = this.bucketAction.toJS();

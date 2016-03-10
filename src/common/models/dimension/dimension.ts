@@ -1,7 +1,7 @@
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS, Action } from 'plywood';
-import { makeTitle } from '../../utils/general/general';
+import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 
 var geoName = /continent|country|city|region/i;
 function isGeo(name: string): boolean {
@@ -29,7 +29,7 @@ export interface DimensionJS {
 
 var check: Class<DimensionValue, DimensionJS>;
 export class Dimension implements Instance<DimensionValue, DimensionJS> {
-  static isDimension(candidate: any): boolean {
+  static isDimension(candidate: any): candidate is Dimension {
     return isInstanceOf(candidate, Dimension);
   }
 
@@ -60,6 +60,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
 
   constructor(parameters: DimensionValue) {
     var name = parameters.name;
+    verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
     this.expression = parameters.expression || $(name);

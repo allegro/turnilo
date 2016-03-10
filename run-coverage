@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Use a reporter that does not take a ton of height
+node node_modules/.bin/istanbul cover _mocha -- --reporter nyan build/common/**/*.mocha.js

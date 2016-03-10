@@ -36,7 +36,7 @@ function isRelative(ex: Expression): boolean {
 var check: Class<FilterClauseValue, FilterClauseJS>;
 export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS> {
 
-  static isFilterClause(candidate: any): boolean {
+  static isFilterClause(candidate: any): candidate is FilterClause {
     return isInstanceOf(candidate, FilterClause);
   }
 

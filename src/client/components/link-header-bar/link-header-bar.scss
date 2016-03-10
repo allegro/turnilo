@@ -1,0 +1,6 @@
+@import '../../imports';
+
+.link-header-bar {
+  @extend %header-bar;
+  background: #208b84;
+}

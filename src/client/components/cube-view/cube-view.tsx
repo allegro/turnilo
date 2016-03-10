@@ -6,7 +6,7 @@ import { List } from 'immutable';
 import { Expression } from 'plywood';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
-  SplitCombine, Splits, VisStrategy, VisualizationProps} from '../../../common/models/index';
+  SplitCombine, Splits, VisStrategy, VisualizationProps, User} from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 
 import { CubeHeaderBar } from '../cube-header-bar/cube-header-bar';
@@ -23,8 +23,9 @@ import { visualizations } from '../../visualizations/index';
 export interface CubeViewProps extends React.Props<any> {
   maxFilters?: number;
   maxSplits?: number;
+  user?: User;
   hash: string;
-  updateHash: Function;
+  updateViewHash: Function;
   getUrlPrefix?: Function;
   dataSource: DataSource;
   onNavClick?: Function;
@@ -136,11 +137,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillMount() {
-    var { hash, dataSource, updateHash } = this.props;
+    var { hash, dataSource, updateViewHash } = this.props;
     var essence = this.getEssenceFromHash(hash);
     if (!essence) {
       essence = this.getEssenceFromDataSource(dataSource);
-      updateHash(essence.toHash());
+      updateViewHash(essence.toHash());
     }
     this.setState({ essence });
   }
@@ -166,9 +167,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
-    var { essence } = this.state;
-    if (!nextState.essence.equals(essence)) {
-      this.props.updateHash(nextState.essence.toHash());
+    const { updateViewHash } = this.props;
+    const { essence } = this.state;
+    if (updateViewHash && !nextState.essence.equals(essence)) {
+      updateViewHash(nextState.essence.toHash());
     }
   }
 
@@ -259,7 +261,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   render() {
     var clicker = this.clicker;
 
-    var { getUrlPrefix, onNavClick } = this.props;
+    var { getUrlPrefix, onNavClick, user } = this.props;
     var { essence, menuStage, visualizationStage, dragOver } = this.state;
 
     if (!essence) return null;
@@ -293,6 +295,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return <div className='cube-view'>
       <CubeHeaderBar
         dataSource={essence.dataSource}
+        user={user}
         onNavClick={onNavClick}
         getUrlPrefix={getUrlPrefix}
       />

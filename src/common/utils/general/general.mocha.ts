@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { List } from 'immutable';
-import { moveInList } from './general';
+import { moveInList, verifyUrlSafeName } from './general';
 
 describe('General', () => {
   describe('moveInList', () => {
@@ -28,6 +28,18 @@ describe('General', () => {
     it('works in simple case 4', () => {
       var list = List("ABCD".split(''));
       expect(moveInList(list, 0, 4).join('')).to.equal('BCDA');
+    });
+  });
+
+  describe('verifyUrlSafeName', () => {
+    it('works in good case', () => {
+      verifyUrlSafeName('a_b-c.d~E059');
+    });
+
+    it('works in bad case', () => {
+      expect(() => {
+        verifyUrlSafeName('abcd%po#@$moon is!cool');
+      }).to.throw("'abcd%po#@$moon is!cool' is not a URL safe name. Try 'abcd_po_moon_is_cool' instead?");
     });
   });
 });

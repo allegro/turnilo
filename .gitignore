@@ -7,8 +7,8 @@ node_modules/
 build/
 public/
 private/
+coverage/
 assets/data/*-large.*
-assets/data/*-private.*
 webstorm/errors
 config.yaml
 config-test.yaml

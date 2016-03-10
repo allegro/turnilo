@@ -1,7 +1,7 @@
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
 import { $, Expression, ExpressionJS, Action, ApplyAction, AttributeInfo } from 'plywood';
-import { makeTitle } from '../../utils/general/general';
+import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
   return (n: number) => {
@@ -29,25 +29,34 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
   static DEFAULT_FORMAT = '0,0.0 a';
   static INTEGER_FORMAT = '0,0 a';
 
-  static isMeasure(candidate: any): boolean {
+  static isMeasure(candidate: any): candidate is Measure {
     return isInstanceOf(candidate, Measure);
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
-    var name = attribute.name;
+    var { name, special } = attribute;
     var $main = $('main');
     var ref = $(name);
 
-    if (attribute.special) {
-      if (attribute.special === 'unique') {
+    if (special) {
+      if (special === 'unique') {
         return [
           new Measure({
             name,
             expression: $main.countDistinct(ref)
           })
         ];
-      } else { // ToDo: handle: 'histogram'
-        return [];
+      } else if (special === 'histogram') {
+        return [
+          new Measure({
+            name: name + '_p95',
+            expression: $main.quantile(ref, 0.95)
+          }),
+          new Measure({
+            name: name + '_p99',
+            expression: $main.quantile(ref, 0.99)
+          })
+        ];
       }
     }
 
@@ -89,6 +98,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
 
   constructor(parameters: MeasureValue) {
     var name = parameters.name;
+    verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
 
