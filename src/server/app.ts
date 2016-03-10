@@ -5,7 +5,6 @@ import * as path from 'path';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import * as compress from 'compression';
-import * as handlebars from 'express-handlebars';
 import { $, Expression, Datum, Dataset } from 'plywood';
 
 import { Timezone, WallTime } from 'chronoshift';
@@ -18,20 +17,10 @@ if (!WallTime.rules) {
 import { PivotRequest } from './utils/index';
 import { VERSION, DATA_SOURCE_MANAGER, AUTH, LINK_VIEW_CONFIG } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
+import { pivotLayout, noDataSourcesLayout, errorLayout } from './views';
 
 var app = express();
 app.disable('x-powered-by');
-
-// view engine setup
-const viewsDir = path.join(__dirname, '../../src/views');
-app.engine('.hbs', handlebars({
-  defaultLayout: 'main',
-  extname: '.hbs',
-  layoutsDir: path.join(viewsDir, 'layouts'),
-  partialsDir: path.join(viewsDir, 'partials')
-}));
-app.set('views', viewsDir);
-app.set('view engine', '.hbs');
 
 app.use(compress());
 app.use(logger('dev'));
@@ -65,21 +54,21 @@ app.get('/', (req: PivotRequest, res: Response, next: Function) => {
   req.dataSourceManager.getQueryableDataSources()
     .then((dataSources) => {
       if (dataSources.length) {
-        res.render('pivot', {
+        res.send(pivotLayout({
           version: VERSION,
           title: `Pivot (${VERSION})`,
-          config: JSON.stringify({
+          config: {
             version: VERSION,
             user: req.user,
             dataSources: dataSources.map((ds) => ds.toClientDataSource()),
             linkViewConfig: LINK_VIEW_CONFIG
-          })
-        });
+          }
+        }));
       } else {
-        res.render('no-data-sources', {
+        res.send(noDataSourcesLayout({
           version: VERSION,
           title: 'No Data Sources'
-        });
+        }));
       }
     })
     .done();
@@ -106,15 +95,9 @@ app.use((req: Request, res: Response, next: Function) => {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') { // NODE_ENV
-
   app.use((err: any, req: Request, res: Response, next: Function) => {
     res.status(err['status'] || 500);
-    res.render('error', {
-      message: err.message,
-      error: err,
-      version: VERSION,
-      title: 'Error'
-    });
+    res.send(errorLayout({ version: VERSION, title: 'Error' }, err.message, err));
   });
 }
 
@@ -122,12 +105,7 @@ if (app.get('env') === 'development') { // NODE_ENV
 // no stacktraces leaked to user
 app.use((err: any, req: Request, res: Response, next: Function) => {
   res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {},
-    version: VERSION,
-    title: 'Error'
-  });
+  res.send(errorLayout({ version: VERSION, title: 'Error' }, err.message));
 });
 
 export = app;

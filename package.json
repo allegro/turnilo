@@ -32,7 +32,6 @@
     "d3": "3.5.16",
     "debug": "2.2.0",
     "express": "4.13.4",
-    "express-handlebars": "3.0.0",
     "fs-promise": "0.5.0",
     "immutable": "3.7.6",
     "immutable-class": "0.3.10",

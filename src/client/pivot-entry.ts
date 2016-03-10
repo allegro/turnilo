@@ -14,7 +14,7 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
-var config: any = (<any>window)['PIVOT_CONFIG'];
+var config: any = (window as any)['__CONFIG__'];
 
 var version: string = null;
 var dataSources: List<DataSource>;
