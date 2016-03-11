@@ -61,9 +61,17 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     var lastAction = ex.lastAction();
     var dimExpression = ex.popAction();
     if (lastAction instanceof InAction || lastAction instanceof OverlapAction) {
+      var selection = lastAction.expression;
+
+      if (selection.type === 'SET/TIME_RANGE') {
+        var literalSet: Set = selection.getLiteralValue();
+        if (literalSet.size() > 1) throw new Error('can not filter on multiple time range values');
+        selection = r(literalSet.elements[0]);
+      }
+
       return new FilterClause({
         expression: dimExpression,
-        selection: lastAction.expression,
+        selection,
         exclude
       });
     }

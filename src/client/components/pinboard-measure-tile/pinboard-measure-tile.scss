@@ -59,6 +59,8 @@
       margin-top: 1px;
       right: 0;
       width: 190px;
+      max-height: 600px;
+      overflow-y: auto;
     }
   }
 }

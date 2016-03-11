@@ -2,7 +2,7 @@
 
 if [ "$(git status --porcelain)" != "" ]
 then
-  echo "pivot git status not clean!" >&2
+  echo "git status not clean!" >&2
   exit 1
 fi
 

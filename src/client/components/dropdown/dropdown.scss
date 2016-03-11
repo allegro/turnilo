@@ -44,6 +44,7 @@
   }
 
   .dropdown-item {
+    @include ellipsis;
     padding: 0 4px;
     cursor: pointer;
 

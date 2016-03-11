@@ -23,13 +23,11 @@
     }
 
     .color-name {
+      @include ellipsis;
       display: inline-block;
       margin-left: 22px;
       line-height: 18px;
       width: 108px;
-      white-space: nowrap;
-      overflow-x: hidden;
-      text-overflow: ellipsis;
     }
 
     .color-value {

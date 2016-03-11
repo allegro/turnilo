@@ -155,8 +155,10 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
       left: endPos
     };
 
-    return <div className={'highlighter ' + (dragStartPx !== null ? 'dragging' : 'confirm')}
-                onMouseDown={this.onMouseDown.bind(this)}>
+    return <div
+      className={'highlighter ' + (dragStartPx !== null ? 'dragging' : 'confirm')}
+      onMouseDown={this.onMouseDown.bind(this)}
+    >
       <div className="whiteout left" style={whiteoutLeftStyle}></div>
       <div className="frame" style={frameStyle}>{highlightControls}</div>
       <div className="whiteout right" style={whiteoutRightStyle}></div>
