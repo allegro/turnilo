@@ -24,7 +24,7 @@ var outputFunctions: PlyqlOutputFunctions = {
 router.post('/', (req: PivotRequest, res: Response) => {
   var { version, outputType, query } = req.body;
 
-  if (version !== VERSION) {
+  if (version && version !== VERSION) {
     res.status(400).send({
       error: 'incorrect version',
       action: 'reload'

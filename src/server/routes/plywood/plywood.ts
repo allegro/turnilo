@@ -11,7 +11,7 @@ var router = Router();
 router.post('/', (req: PivotRequest, res: Response) => {
   var { version, dataSource, expression } = req.body;
 
-  if (version !== VERSION) {
+  if (version && version !== VERSION) {
     res.status(400).send({
       error: 'incorrect version',
       action: 'reload'
