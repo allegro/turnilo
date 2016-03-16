@@ -3,6 +3,7 @@ import { $, Expression, ChainExpression, RefExpression, External, Datum, Dataset
 import { Timezone, WallTime, Duration } from 'chronoshift';
 
 import { PivotRequest } from '../../utils/index';
+import { VERSION } from '../../config';
 import { DataSource } from '../../../common/models/index';
 
 var router = Router();
