@@ -15,9 +15,12 @@ if (!WallTime.rules) {
 }
 
 import { PivotRequest } from './utils/index';
-import { VERSION, DATA_SOURCE_MANAGER, AUTH, LINK_VIEW_CONFIG } from './config';
+import { VERSION, DATA_SOURCE_MANAGER, AUTH, SERVER_CONFIG } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
-import { pivotLayout, noDataSourcesLayout, errorLayout } from './views';
+import * as plyqlRoutes from './routes/plyql/plyql';
+import * as pivotRoutes from './routes/pivot/pivot';
+import * as healthRoutes from './routes/health/health';
+import { errorLayout } from './views';
 
 var app = express();
 app.disable('x-powered-by');
@@ -33,6 +36,14 @@ if (AUTH) {
     version: VERSION,
     dataSourceManager: DATA_SOURCE_MANAGER
   }));
+
+  app.use((req: PivotRequest, res: Response, next: Function) => {
+    if (!req.dataSourceManager) {
+      return next(new Error('no dataSourceManager'));
+    }
+    next();
+  });
+
 } else {
   app.use((req: PivotRequest, res: Response, next: Function) => {
     req.user = null;
@@ -41,44 +52,24 @@ if (AUTH) {
   });
 }
 
-app.use((req: PivotRequest, res: Response, next: Function) => {
-  if (!req.dataSourceManager) {
-    return next(new Error('no dataSourceManager'));
-  }
-  next();
-});
-
 app.use(bodyParser.json());
 
-app.get('/', (req: PivotRequest, res: Response, next: Function) => {
-  req.dataSourceManager.getQueryableDataSources()
-    .then((dataSources) => {
-      if (dataSources.length) {
-        res.send(pivotLayout({
-          version: VERSION,
-          title: `Pivot (${VERSION})`,
-          config: {
-            version: VERSION,
-            user: req.user,
-            dataSources: dataSources.map((ds) => ds.toClientDataSource()),
-            linkViewConfig: LINK_VIEW_CONFIG
-          }
-        }));
-      } else {
-        res.send(noDataSourcesLayout({
-          version: VERSION,
-          title: 'No Data Sources'
-        }));
-      }
-    })
-    .done();
-});
-
+// Data routes
 app.use('/plywood', plywoodRoutes);
+app.use('/plyql', plyqlRoutes);
 
-app.get('/health', (req: Request, res: Response, next: Function) => {
-  res.send("Okay");
-});
+// View routes
+if (SERVER_CONFIG.iframe === 'deny') {
+  app.use((req: PivotRequest, res: Response, next: Function) => {
+    res.setHeader("X-Frame-Options", "DENY");
+    res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
+    next();
+  });
+}
+
+app.use('/', pivotRoutes);
+app.use('/pivot', pivotRoutes);
+app.use('/health', healthRoutes);
 
 // Easter egg ( https://groups.google.com/forum/#!topic/imply-user-group/Ogks7pAnd-A )
 app.get('/graph', (req: Request, res: Response, next: Function) => {
@@ -96,7 +87,7 @@ app.use((req: Request, res: Response, next: Function) => {
 // will print stacktrace
 if (app.get('env') === 'development') { // NODE_ENV
   app.use((err: any, req: Request, res: Response, next: Function) => {
-    res.status(err['status'] || 500);
+    res.status(err.status || 500);
     res.send(errorLayout({ version: VERSION, title: 'Error' }, err.message, err));
   });
 }
