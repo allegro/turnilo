@@ -47,7 +47,7 @@ router.post('/', (req: PivotRequest, res: Response) => {
   req.dataSourceManager.getQueryableDataSource(dataSource)
     .then((myDataSource) => {
       if (!myDataSource) {
-        res.status(400).send({ error: 'unknown dataset' });
+        res.status(400).send({ error: 'unknown data source' });
         return;
       }
 
