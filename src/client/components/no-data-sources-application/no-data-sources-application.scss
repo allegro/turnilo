@@ -1,0 +1,22 @@
+@import '../../imports';
+
+.no-data-sources-application {
+  margin-top: 280px;
+  text-align: center;
+  font-size: 16px;
+  color: $text-light;
+
+  .icon {
+    display: inline-block;
+    margin-bottom: 6px;
+    width: 42px;
+
+    svg {
+      width: 42px;
+    }
+  }
+
+  p {
+    display: block;
+  }
+}
