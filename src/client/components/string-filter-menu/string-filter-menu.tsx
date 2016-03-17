@@ -11,6 +11,7 @@ import { enterKey } from '../../utils/dom/dom';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
+import { QueryError } from '../query-error/query-error';
 import { HighlightString } from '../highlight-string/highlight-string';
 
 const TOP_N = 100;
@@ -230,7 +231,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   renderTable() {
-    var { loading, dataset, fetchQueued, searchText, selectedValues } = this.state;
+    var { loading, dataset, error, fetchQueued, searchText, selectedValues } = this.state;
 
     var rows: Array<JSX.Element> = [];
     var hasMore = false;
@@ -270,6 +271,11 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       message = <div className="message">{'No results for "' + searchText + '"'}</div>;
     }
 
+    var queryError: JSX.Element = null;
+    if (error) {
+      queryError = <QueryError error={error}/>;
+    }
+
     var className = [
       'menu-table',
       (hasMore ? 'has-more' : 'no-more')
@@ -288,6 +294,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         {rows}
         {message}
       </div>
+      {queryError}
       {loader}
     </div>;
   }

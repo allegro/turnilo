@@ -24,6 +24,7 @@ $container-height: 50px;
     .message {
       margin-top: 5px;
       font-size: 13px;
+      overflow: hidden;
     }
   }
 }

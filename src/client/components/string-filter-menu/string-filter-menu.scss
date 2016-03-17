@@ -59,7 +59,8 @@ $checkbox-width: 20px;
       font-style: italic;
     }
 
-    .loader {
+    .loader,
+    .query-error {
       @include pin-full;
     }
   }
