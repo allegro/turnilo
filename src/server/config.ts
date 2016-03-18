@@ -3,7 +3,9 @@ import * as Q from 'q';
 import * as nopt from 'nopt';
 
 import { DataSource, DataSourceJS, Dimension, Measure, LinkViewConfig, LinkViewConfigJS } from '../common/models/index';
-import { DataSourceManager, dataSourceManagerFactory, loadFileSync, dataSourceToYAML, properDruidRequesterFactory, dataSourceFillerFactory, SourceListScan } from './utils/index';
+import { dataSourceToYAML } from '../common/utils/yaml-helper/yaml-helper';
+import { DataSourceManager, dataSourceManagerFactory, loadFileSync, properDruidRequesterFactory, dataSourceFillerFactory, SourceListScan } from './utils/index';
+
 
 export interface ServerConfig {
   iframe?: "allow" | "deny";

@@ -4,7 +4,7 @@ import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
 import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum,
   Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType,
-  CustomDruidAggregations } from 'plywood';
+  CustomDruidAggregations, helper } from 'plywood';
 import { verifyUrlSafeName, makeTitle, listsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -525,8 +525,49 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return this.engine === 'druid';
   }
 
-  public setAttributes(attributes: Attributes): DataSource {
-    var { introspection, dimensions, measures } = this;
+  /**
+   * This function tries to deduce the structure of the dataSource based on the dimensions and measures defined within.
+   * It should only be used when, for some reason, introspection if not available.
+   */
+  public deduceAttributes(): Attributes {
+    const { dimensions, measures, timeAttribute, attributeOverrides } = this;
+    var attributes: Attributes = [];
+
+    if (timeAttribute) {
+      attributes.push(AttributeInfo.fromJS({ name: timeAttribute.name, type: 'TIME' }));
+    }
+
+    dimensions.forEach((dimension) => {
+      var expression = dimension.expression;
+      if (expression.equals(timeAttribute)) return;
+      var references = expression.getFreeReferences();
+      for (var reference of references) {
+        attributes.push(AttributeInfo.fromJS({ name: reference, type: 'STRING' }));
+      }
+    });
+
+    measures.forEach((measure) => {
+      var expression = measure.expression;
+      var references = Measure.getAggregateReferences(expression);
+      var countDistinctReferences = Measure.getCountDistinctReferences(expression);
+      for (var reference of references) {
+        if (countDistinctReferences.indexOf(reference) !== -1) {
+          attributes.push(AttributeInfo.fromJS({ name: reference, special: 'unique' }));
+        } else {
+          attributes.push(AttributeInfo.fromJS({ name: reference, type: 'NUMBER' }));
+        }
+      }
+    });
+
+    if (attributeOverrides.length) {
+      attributes = AttributeInfo.override(attributes, attributeOverrides);
+    }
+
+    return attributes;
+  }
+
+  public addAttributes(newAttributes: Attributes): DataSource {
+    var { introspection, dimensions, measures, attributes } = this;
     if (introspection === 'none') return this;
 
     var autofillDimensions = introspection === 'autofill-dimensions-only' || introspection === 'autofill-all';
@@ -534,8 +575,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     var $main = $('main');
 
-    for (var attribute of attributes) {
-      var { name, type } = attribute;
+    for (var newAttribute of newAttributes) {
+      var { name, type, special } = newAttribute;
+
+      // Already exists
+      if (attributes && helper.findByName(attributes, name)) continue;
+
       var expression: Expression;
       switch (type) {
         case 'TIME':
@@ -550,10 +595,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           break;
 
         case 'STRING':
-          if (attribute.special === 'unique') {
+          if (special === 'unique') {
             if (!autofillMeasures) continue;
 
-            var newMeasures = Measure.measuresFromAttributeInfo(attribute);
+            var newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
             newMeasures.forEach((newMeasure) => {
               if (this.getMeasureByExpression(newMeasure.expression)) return;
               measures = measures.push(newMeasure);
@@ -590,7 +635,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
         case 'NUMBER':
           if (!autofillMeasures) continue;
 
-          var newMeasures = Measure.measuresFromAttributeInfo(attribute);
+          var newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
           newMeasures.forEach((newMeasure) => {
             if (this.getMeasureByExpression(newMeasure.expression)) return;
             measures = (name === 'count') ? measures.unshift(newMeasure) : measures.push(newMeasure);
@@ -610,8 +655,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     }
 
     var value = this.valueOf();
-    value.introspection = 'no-autofill';
-    value.attributes = attributes;
+    value.attributes = attributes ? AttributeInfo.override(attributes, newAttributes) : newAttributes;
     value.dimensions = dimensions;
     value.measures = measures;
 

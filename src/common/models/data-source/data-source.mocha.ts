@@ -224,115 +224,321 @@ describe('DataSource', () => {
   });
 
 
-  describe("setAttributes", () => {
-    it("works in basic case (no count)", () => {
-      var dataSourceStub = DataSource.fromJS({
-        name: 'wiki',
-        title: 'Wiki',
-        engine: 'druid',
-        source: 'wiki',
-        subsetFilter: null,
+  describe("#addAttributes", () => {
+    it("works in a generic case", () => {
+      var dataSource = DataSource.fromJS({
+        "name": "wiki",
+        "engine": "druid",
+        "source": "wiki",
+        "subsetFilter": null,
         introspection: 'autofill-all',
-        defaultTimezone: 'Etc/UTC',
-        defaultFilter: { op: 'literal', value: true },
-        defaultPinnedDimensions: [],
-        refreshRule: {
-          refresh: "PT1M",
-          rule: "fixed"
-        }
+        "defaultDuration": "P1D",
+        "defaultFilter": { "op": "literal", "value": true },
+        "defaultPinnedDimensions": [],
+        "defaultSortMeasure": "added",
+        "defaultTimezone": "Etc/UTC",
+        "dimensions": [
+          {
+            "kind": "time",
+            "name": "__time",
+            "expression": "$__time"
+          },
+          {
+            "name": "page",
+            "title": "Page"
+          },
+          {
+            "name": "user",
+            "expression": "'[' ++ $user ++ ']'"
+          },
+          {
+            "name": "language",
+            "expression": "$language.lookup(wiki_language_lookup)"
+          }
+        ],
+        "measures": [
+          {
+            "name": "added",
+            "expression": "$main.sum($added)"
+          },
+          {
+            "name": "addedByDeleted",
+            "expression": "$main.sum($added) / $main.sum($deleted)"
+          },
+          {
+            "name": "unique_user",
+            "expression": "$main.countDistinct($unique_user)"
+          }
+        ]
       });
 
-      var attributes = [
-        AttributeInfo.fromJS({ name: '__time', type: 'TIME' }),
-        AttributeInfo.fromJS({ name: 'page', type: 'STRING' }),
-        AttributeInfo.fromJS({ name: 'added', type: 'NUMBER' }),
-        AttributeInfo.fromJS({ name: 'unique_user', special: 'unique' })
-      ];
-
-      expect(dataSourceStub.setAttributes(attributes).toJS()).to.deep.equal(
+      expect(AttributeInfo.toJSs(dataSource.deduceAttributes())).to.deep.equal([
         {
-          "name": "wiki",
-          "title": "Wiki",
-          "engine": "druid",
-          "source": "wiki",
-          "refreshRule": {
-            "refresh": "PT1M",
-            "rule": "fixed"
-          },
-          "subsetFilter": null,
-          "defaultDuration": "P1D",
-          "defaultFilter": { "op": "literal", "value": true },
-          "defaultPinnedDimensions": [],
-          "defaultSortMeasure": "added",
-          "defaultTimezone": "Etc/UTC",
-          "introspection": "no-autofill",
-          "timeAttribute": '__time',
-          "attributes": [
-            { name: '__time', type: 'TIME' },
-            { name: 'page', type: 'STRING' },
-            { name: 'added', type: 'NUMBER' },
-            { name: 'unique_user', special: 'unique', "type": "STRING" }
-          ],
-          "dimensions": [
-            {
-              "expression": {
-                "name": "__time",
-                "op": "ref"
-              },
-              "kind": "time",
-              "name": "__time",
-              "title": "Time"
-            },
-            {
-              "expression": {
-                "name": "page",
-                "op": "ref"
-              },
-              "kind": "string",
-              "name": "page",
-              "title": "Page"
-            }
-          ],
-          "measures": [
-            {
-              "expression": {
-                "action": {
-                  "action": "sum",
-                  "expression": {
-                    "name": "added",
-                    "op": "ref"
-                  }
-                },
-                "expression": {
-                  "name": "main",
-                  "op": "ref"
-                },
-                "op": "chain"
-              },
-              "name": "added",
-              "title": "Added"
-            },
-            {
-              "expression": {
-                "action": {
-                  "action": "countDistinct",
-                  "expression": {
-                    "name": "unique_user",
-                    "op": "ref"
-                  }
-                },
-                "expression": {
-                  "name": "main",
-                  "op": "ref"
-                },
-                "op": "chain"
-              },
-              "name": "unique_user",
-              "title": "Unique User"
-            }
-          ]
+          "name": "__time",
+          "type": "TIME"
+        },
+        {
+          "name": "page",
+          "type": "STRING"
+        },
+        {
+          "name": "user",
+          "type": "STRING"
+        },
+        {
+          "name": "language",
+          "type": "STRING"
+        },
+        {
+          "name": "added",
+          "type": "NUMBER"
+        },
+        {
+          "name": "deleted",
+          "type": "NUMBER"
+        },
+        {
+          "name": "unique_user",
+          "special": "unique",
+          "type": "STRING"
         }
-      );
+      ]);
+
+    });
+
+  });
+
+
+  describe("#addAttributes", () => {
+    var dataSourceStub = DataSource.fromJS({
+      name: 'wiki',
+      title: 'Wiki',
+      engine: 'druid',
+      source: 'wiki',
+      subsetFilter: null,
+      introspection: 'autofill-all',
+      defaultTimezone: 'Etc/UTC',
+      defaultFilter: { op: 'literal', value: true },
+      defaultPinnedDimensions: [],
+      refreshRule: {
+        refresh: "PT1M",
+        rule: "fixed"
+      }
+    });
+
+    it("works in basic case (no count) + re-add", () => {
+      var attributes1 = AttributeInfo.fromJSs([
+        { name: '__time', type: 'TIME' },
+        { name: 'page', type: 'STRING' },
+        { name: 'added', type: 'NUMBER' },
+        { name: 'unique_user', special: 'unique' }
+      ]);
+
+      dataSourceStub = dataSourceStub.addAttributes(attributes1);
+      expect(dataSourceStub.toJS()).to.deep.equal({
+        "name": "wiki",
+        "title": "Wiki",
+        "engine": "druid",
+        "source": "wiki",
+        "refreshRule": {
+          "refresh": "PT1M",
+          "rule": "fixed"
+        },
+        "subsetFilter": null,
+        introspection: 'autofill-all',
+        "defaultDuration": "P1D",
+        "defaultFilter": { "op": "literal", "value": true },
+        "defaultPinnedDimensions": [],
+        "defaultSortMeasure": "added",
+        "defaultTimezone": "Etc/UTC",
+        "timeAttribute": '__time',
+        "attributes": [
+          { name: '__time', type: 'TIME' },
+          { name: 'page', type: 'STRING' },
+          { name: 'added', type: 'NUMBER' },
+          { name: 'unique_user', special: 'unique', "type": "STRING" }
+        ],
+        "dimensions": [
+          {
+            "expression": {
+              "name": "__time",
+              "op": "ref"
+            },
+            "kind": "time",
+            "name": "__time",
+            "title": "Time"
+          },
+          {
+            "expression": {
+              "name": "page",
+              "op": "ref"
+            },
+            "kind": "string",
+            "name": "page",
+            "title": "Page"
+          }
+        ],
+        "measures": [
+          {
+            "expression": {
+              "action": {
+                "action": "sum",
+                "expression": {
+                  "name": "added",
+                  "op": "ref"
+                }
+              },
+              "expression": {
+                "name": "main",
+                "op": "ref"
+              },
+              "op": "chain"
+            },
+            "name": "added",
+            "title": "Added"
+          },
+          {
+            "expression": {
+              "action": {
+                "action": "countDistinct",
+                "expression": {
+                  "name": "unique_user",
+                  "op": "ref"
+                }
+              },
+              "expression": {
+                "name": "main",
+                "op": "ref"
+              },
+              "op": "chain"
+            },
+            "name": "unique_user",
+            "title": "Unique User"
+          }
+        ]
+      });
+
+      var attributes2 = AttributeInfo.fromJSs([
+        { name: '__time', type: 'TIME' },
+        { name: 'page', type: 'STRING' },
+        { name: 'added', type: 'NUMBER' },
+        { name: 'deleted', type: 'NUMBER' },
+        { name: 'unique_user', special: 'unique' },
+        { name: 'user', type: 'STRING' }
+      ]);
+
+      dataSourceStub = dataSourceStub.addAttributes(attributes2);
+      expect(dataSourceStub.toJS()).to.deep.equal({
+        "name": "wiki",
+        "title": "Wiki",
+        "engine": "druid",
+        "source": "wiki",
+        "refreshRule": {
+          "refresh": "PT1M",
+          "rule": "fixed"
+        },
+        "subsetFilter": null,
+        introspection: 'autofill-all',
+        "defaultDuration": "P1D",
+        "defaultFilter": { "op": "literal", "value": true },
+        "defaultPinnedDimensions": [],
+        "defaultSortMeasure": "added",
+        "defaultTimezone": "Etc/UTC",
+        "timeAttribute": '__time',
+        "attributes": [
+          { name: '__time', type: 'TIME' },
+          { name: 'page', type: 'STRING' },
+          { name: 'added', type: 'NUMBER' },
+          { name: 'unique_user', special: 'unique', "type": "STRING" },
+          { name: 'deleted', type: 'NUMBER' },
+          { name: 'user', type: 'STRING' }
+        ],
+        "dimensions": [
+          {
+            "expression": {
+              "name": "__time",
+              "op": "ref"
+            },
+            "kind": "time",
+            "name": "__time",
+            "title": "Time"
+          },
+          {
+            "expression": {
+              "name": "page",
+              "op": "ref"
+            },
+            "kind": "string",
+            "name": "page",
+            "title": "Page"
+          },
+          {
+            "expression": {
+              "name": "user",
+              "op": "ref"
+            },
+            "kind": "string",
+            "name": "user",
+            "title": "User"
+          }
+        ],
+        "measures": [
+          {
+            "expression": {
+              "action": {
+                "action": "sum",
+                "expression": {
+                  "name": "added",
+                  "op": "ref"
+                }
+              },
+              "expression": {
+                "name": "main",
+                "op": "ref"
+              },
+              "op": "chain"
+            },
+            "name": "added",
+            "title": "Added"
+          },
+          {
+            "expression": {
+              "action": {
+                "action": "countDistinct",
+                "expression": {
+                  "name": "unique_user",
+                  "op": "ref"
+                }
+              },
+              "expression": {
+                "name": "main",
+                "op": "ref"
+              },
+              "op": "chain"
+            },
+            "name": "unique_user",
+            "title": "Unique User"
+          },
+          {
+            "expression": {
+              "action": {
+                "action": "sum",
+                "expression": {
+                  "name": "deleted",
+                  "op": "ref"
+                }
+              },
+              "expression": {
+                "name": "main",
+                "op": "ref"
+              },
+              "op": "chain"
+            },
+            "name": "deleted",
+            "title": "Deleted"
+          }
+        ]
+      });
 
     });
   });

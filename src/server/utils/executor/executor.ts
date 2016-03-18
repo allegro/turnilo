@@ -3,107 +3,32 @@ import * as fs from 'fs-promise';
 import * as Q from 'q';
 import { ply, $, Expression, ExpressionJS, RefExpression, ChainExpression, External, DruidExternal, Datum, Dataset, TimeRange,
          basicExecutorFactory, Executor, AttributeJSs, AttributeInfo, Attributes, PseudoDatum } from 'plywood';
-import { DataSource, Dimension } from '../../../common/models/index';
+import { DataSource, Dimension, Measure } from '../../../common/models/index';
 import { parseData } from '../../../common/utils/parser/parser';
 
 
-function getReferences(ex: Expression): string[] {
-  var references: string[] = [];
-  ex.forEach((ex: Expression) => {
-    if (ex instanceof RefExpression) {
-      references.push(ex.name);
-    }
-  });
-  return references;
-}
-
-/**
- * Look for all instances of countDistinct($blah) and return the blahs
- * @param ex
- * @returns {string[]}
- */
-function getCountDistinctReferences(ex: Expression): string[] {
-  var references: string[] = [];
-  ex.forEach((ex: Expression) => {
-    if (ex instanceof ChainExpression) {
-      var actions = ex.actions;
-      for (var action of actions) {
-        if (action.action === 'countDistinct') {
-          var refExpression = action.expression;
-          if (refExpression instanceof RefExpression) references.push(refExpression.name);
-        }
-      }
-    }
-  });
-  return references;
-}
-
-/**
- * This function tries to deduce the structure of the dataSource based on the dimensions and measures defined within.
- * It should only be used when, for some reason, introspection if not available.
- * @param dataSource
- * @returns {Attributes}
- */
-function deduceAttributes(dataSource: DataSource): Attributes {
-  var attributeJSs: AttributeJSs = [];
-
-  var timeAttribute = dataSource.timeAttribute;
-  if (timeAttribute) {
-    attributeJSs.push({ name: timeAttribute.name, type: 'TIME' });
-  }
-
-  dataSource.dimensions.forEach((dimension) => {
-    var expression = dimension.expression;
-    if (expression.equals(timeAttribute)) return;
-    var references = getReferences(expression);
-    for (var reference of references) {
-      if (reference === 'main') continue;
-      attributeJSs.push({ name: reference, type: 'STRING' });
-    }
-  });
-
-  dataSource.measures.forEach((measure) => {
-    var expression = measure.expression;
-    var references = getReferences(expression);
-    var countDistinctReferences = getCountDistinctReferences(expression);
-    for (var reference of references) {
-      if (reference === 'main') continue;
-      if (countDistinctReferences.indexOf(reference) !== -1) {
-        attributeJSs.push({ name: reference, special: 'unique' });
-      } else {
-        attributeJSs.push({ name: reference, type: 'NUMBER' });
-      }
-    }
-  });
-
-  var attributes = AttributeInfo.fromJSs(attributeJSs);
-  if (dataSource.attributeOverrides.length) {
-    attributes = AttributeInfo.override(attributes, dataSource.attributeOverrides);
-  }
-
-  return attributes;
-}
-
 export function getFileData(filePath: string): Q.Promise<any[]> {
-  return fs.readFile(filePath, 'utf-8').then((fileData) => {
-    try {
-      return parseData(fileData, path.extname(filePath));
-    } catch (e) {
-      throw new Error(`could not parse '${filePath}': ${e.message}`);
-    }
-  }).then((fileJSON) => {
-    fileJSON.forEach((d: PseudoDatum) => {
-      d['time'] = new Date(d['time']);
+  return fs.readFile(filePath, 'utf-8')
+    .then((fileData) => {
+      try {
+        return parseData(fileData, path.extname(filePath));
+      } catch (e) {
+        throw new Error(`could not parse '${filePath}': ${e.message}`);
+      }
+    })
+    .then((fileJSON) => {
+      fileJSON.forEach((d: PseudoDatum) => {
+        d['time'] = new Date(d['time']);
+      });
+      return fileJSON;
     });
-    return fileJSON;
-  });
 }
 
 export function externalFactory(dataSource: DataSource, druidRequester: Requester.PlywoodRequester<any>, timeout: number, introspectionStrategy: string): Q.Promise<External> {
   var countDistinctReferences: string[] = [];
   if (dataSource.measures) {
     countDistinctReferences = [].concat.apply([], dataSource.measures.toArray().map((measure) => {
-      return getCountDistinctReferences(measure.expression);
+      return Measure.getCountDistinctReferences(measure.expression);
     }));
   }
 
@@ -117,7 +42,7 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
       dataSource: dataSource.source,
       timeAttribute: dataSource.timeAttribute.name,
       customAggregations: dataSource.options.customAggregations,
-      attributes: AttributeInfo.override(deduceAttributes(dataSource), dataSource.attributeOverrides),
+      attributes: AttributeInfo.override(dataSource.deduceAttributes(), dataSource.attributeOverrides),
       introspectionStrategy,
       filter: dataSource.subsetFilter,
       context,
@@ -140,19 +65,20 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
       return introspectedExternalPromise;
     }
 
-    return introspectedExternalPromise.then((introspectedExternal) => {
-      var attributes = introspectedExternal.attributes;
-      for (var attribute of attributes) {
-        // This is a metric that should really be a HLL
-        if (attribute.type === 'NUMBER' && countDistinctReferences.indexOf(attribute.name) !== -1) {
-          introspectedExternal = introspectedExternal.updateAttribute(AttributeInfo.fromJS({
-            name: attribute.name,
-            special: 'unique'
-          }));
+    return introspectedExternalPromise
+      .then((introspectedExternal) => {
+        var attributes = introspectedExternal.attributes;
+        for (var attribute of attributes) {
+          // This is a metric that should really be a HLL
+          if (attribute.type === 'NUMBER' && countDistinctReferences.indexOf(attribute.name) !== -1) {
+            introspectedExternal = introspectedExternal.updateAttribute(AttributeInfo.fromJS({
+              name: attribute.name,
+              special: 'unique'
+            }));
+          }
         }
-      }
-      return introspectedExternal;
-    });
+        return introspectedExternal;
+      });
   }
 }
 
@@ -168,29 +94,32 @@ export function dataSourceFillerFactory(druidRequester: Requester.PlywoodRequest
         }
 
         var filePath = path.resolve(configDirectory, dataSource.source);
-        return getFileData(filePath).then((rawData) => {
-          var dataset = Dataset.fromJS(rawData).hide();
-          dataset.introspect();
+        return getFileData(filePath)
+          .then((rawData) => {
+            var dataset = Dataset.fromJS(rawData).hide();
+            dataset.introspect();
 
-          if (dataSource.subsetFilter) {
-            dataset = dataset.filter(dataSource.subsetFilter.getFn(), {});
-          }
+            if (dataSource.subsetFilter) {
+              dataset = dataset.filter(dataSource.subsetFilter.getFn(), {});
+            }
 
-          var executor = basicExecutorFactory({
-            datasets: { main: dataset }
+            var executor = basicExecutorFactory({
+              datasets: { main: dataset }
+            });
+
+            return dataSource.addAttributes(dataset.attributes).attachExecutor(executor);
           });
-
-          return dataSource.setAttributes(dataset.attributes).attachExecutor(executor);
-        });
 
       case 'druid':
-        return externalFactory(dataSource, druidRequester, timeout, introspectionStrategy).then((external) => {
-          var executor = basicExecutorFactory({
-            datasets: { main: external }
-          });
+        return externalFactory(dataSource, druidRequester, timeout, introspectionStrategy)
+          .then((external) => {
+            var executor = basicExecutorFactory({
+              datasets: { main: external }
+            });
 
-          return dataSource.setAttributes(external.attributes).attachExecutor(executor);
-        }).then(DataSource.updateMaxTime);
+            return dataSource.addAttributes(external.attributes).attachExecutor(executor);
+          })
+          .then(DataSource.updateMaxTime);
 
       default:
         throw new Error(`Invalid engine: '${dataSource.engine}' in '${dataSource.name}'`);

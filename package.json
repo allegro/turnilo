@@ -22,9 +22,6 @@
   "bin": {
     "pivot": "bin/pivot"
   },
-  "scripts": {
-    "prepublish": "script/prepublish"
-  },
   "dependencies": {
     "body-parser": "1.15.0",
     "chronoshift": "0.3.7",
