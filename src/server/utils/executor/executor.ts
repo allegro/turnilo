@@ -78,7 +78,7 @@ function deduceAttributes(dataSource: DataSource): Attributes {
 
   var attributes = AttributeInfo.fromJSs(attributeJSs);
   if (dataSource.attributeOverrides.length) {
-    attributes = AttributeInfo.applyOverrides(attributes, dataSource.attributeOverrides);
+    attributes = AttributeInfo.override(attributes, dataSource.attributeOverrides);
   }
 
   return attributes;
@@ -117,7 +117,7 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
       dataSource: dataSource.source,
       timeAttribute: dataSource.timeAttribute.name,
       customAggregations: dataSource.options.customAggregations,
-      attributes: AttributeInfo.applyOverrides(deduceAttributes(dataSource), dataSource.attributeOverrides),
+      attributes: AttributeInfo.override(deduceAttributes(dataSource), dataSource.attributeOverrides),
       introspectionStrategy,
       filter: dataSource.subsetFilter,
       context,

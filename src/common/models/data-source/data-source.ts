@@ -248,8 +248,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
-    this.engine = parameters.engine;
-    this.source = parameters.source;
+    this.engine = parameters.engine || 'druid';
+    this.source = parameters.source || name;
     this.subsetFilter = parameters.subsetFilter;
     this.options = parameters.options || {};
     this.introspection = parameters.introspection || DataSource.DEFAULT_INTROSPECTION;

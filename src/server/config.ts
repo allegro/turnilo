@@ -177,7 +177,7 @@ export const PRINT_CONFIG = Boolean(parsedArgs['print-config']);
 export const START_SERVER = !PRINT_CONFIG;
 export const VERBOSE = Boolean(parsedArgs['verbose'] || config.verbose);
 
-export const PORT = parseInt(parsedArgs['port'] || config.port, 10);
+export const PORT = parseInt(parsedArgs['port'] || config.port, 10) || 9090;
 export const DRUID_HOST = parsedArgs['druid'] || config.brokerHost || config.druidHost;
 export const TIMEOUT = parseInt(<any>config.timeout, 10) || 30000;
 
