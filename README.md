@@ -6,8 +6,8 @@ Pivot is a web-based exploratory visualization UI for [Druid](https://github.com
 The project is currently undergoing rapid development.
 Internal and external APIs may change with little notice.
 
-Pivot is best used with the Imply Analytics Platform. If you are using Pivot with base Druid, please ensure your Druid 
-version is at least 0.9.0 as there are several bugs related to properly introspecting datasources with older versions of Druid.
+Note: Pivot is best used with the Imply Analytics Platform.
+If you are using Pivot with base Druid, please ensure your Druid version is at least 0.9.0 as there are several bugs related to properly introspecting and querying datasources with older versions of Druid.
 
 ## Features
 
