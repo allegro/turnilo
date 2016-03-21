@@ -1,6 +1,6 @@
 import * as Q from 'q';
 import { Duration, Timezone } from 'chronoshift';
-import { $, AttributeInfo, RefExpression, helper } from 'plywood';
+import { $, AttributeInfo, RefExpression, DruidExternal, helper } from 'plywood';
 import { DataSource, DataSourceJS, RefreshRule, Dimension, Measure } from '../../../common/models/index';
 
 export type SourceListScan = "disable" | "auto";
@@ -90,43 +90,43 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   function loadDruidDataSources(): Q.Promise<any> {
     if (!druidRequester) return Q(null);
 
-    return druidRequester({
-      query: { queryType: 'sourceList' } as any
-    }).then((ds: string[]) => {
-      if (!Array.isArray(ds)) throw new Error('invalid result from data source list');
+    return DruidExternal.getSourceList(druidRequester)
+      .then((ds: string[]) => {
+        if (!Array.isArray(ds)) throw new Error('invalid result from data source list');
 
-      var unknownDataSourceNames: string[] = [];
-      var nonQueryableDataSources: DataSource[] = [];
-      ds.forEach((d: string) => {
-        var existingDataSources = myDataSources.filter((dataSource) => {
-          return dataSource.engine === 'druid' && dataSource.source === d;
+        var unknownDataSourceNames: string[] = [];
+        var nonQueryableDataSources: DataSource[] = [];
+        ds.forEach((d: string) => {
+          var existingDataSources = myDataSources.filter((dataSource) => {
+            return dataSource.engine === 'druid' && dataSource.source === d;
+          });
+
+          if (existingDataSources.length === 0) {
+            unknownDataSourceNames.push(d);
+          } else {
+            nonQueryableDataSources = nonQueryableDataSources.concat(existingDataSources.filter((dataSource) => {
+              return !dataSource.isQueryable();
+            }));
+          }
         });
 
-        if (existingDataSources.length === 0) {
-          unknownDataSourceNames.push(d);
-        } else {
-          nonQueryableDataSources = nonQueryableDataSources.concat(existingDataSources.filter((dataSource) => {
-            return !dataSource.isQueryable();
-          }));
-        }
+        nonQueryableDataSources = nonQueryableDataSources.concat(unknownDataSourceNames.map((name) => {
+          var newDataSource = dataSourceStubFactory(name);
+          log(`Adding Druid data source: '${name}'`);
+          addOrUpdateDataSource(newDataSource);
+          return newDataSource;
+        }));
+
+        // Nothing to do
+        if (!nonQueryableDataSources.length) return Q(null);
+
+        return Q.allSettled(nonQueryableDataSources.map((dataSource) => {
+          return introspectDataSource(dataSource);
+        }));
+      })
+      .catch((e: Error) => {
+        log(`Could not get druid source list: ${e.message}`);
       });
-
-      nonQueryableDataSources = nonQueryableDataSources.concat(unknownDataSourceNames.map((name) => {
-        var newDataSource = dataSourceStubFactory(name);
-        log(`Adding Druid data source: '${name}'`);
-        addOrUpdateDataSource(newDataSource);
-        return newDataSource;
-      }));
-
-      // Nothing to do
-      if (!nonQueryableDataSources.length) return Q(null);
-
-      return Q.allSettled(nonQueryableDataSources.map((dataSource) => {
-        return introspectDataSource(dataSource);
-      }));
-    }).catch((e: Error) => {
-      log(`Could not get druid source list: ${e.message}`);
-    });
   }
 
   // First concurrently introspect all the defined data sources

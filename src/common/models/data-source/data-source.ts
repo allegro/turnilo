@@ -1,11 +1,11 @@
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
-import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
+import { Class, Instance, isInstanceOf, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
-import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum,
-  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType,
+import { $, ply, r, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum,
+  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
   CustomDruidAggregations, helper } from 'plywood';
-import { verifyUrlSafeName, makeTitle, listsEqual } from '../../utils/general/general';
+import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 import { Filter, FilterJS } from '../filter/filter';
@@ -56,10 +56,13 @@ export interface DataSourceValue {
   engine: string;
   source: string;
   subsetFilter?: Expression;
+  rollup?: boolean;
   options?: DataSourceOptions;
   introspection: string;
   attributeOverrides: Attributes;
   attributes: Attributes;
+  derivedAttributes?: Lookup<Expression>;
+
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
@@ -80,10 +83,12 @@ export interface DataSourceJS {
   engine: string;
   source: string;
   subsetFilter?: ExpressionJS;
+  rollup?: boolean;
   options?: DataSourceOptions;
   introspection?: string;
   attributeOverrides?: AttributeJSs;
   attributes?: AttributeJSs;
+  derivedAttributes?: Lookup<ExpressionJS>;
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
   timeAttribute?: string;
@@ -94,6 +99,8 @@ export interface DataSourceJS {
   defaultPinnedDimensions?: string[];
   refreshRule?: RefreshRuleJS;
   maxTime?: MaxTimeJS;
+
+  longForm?: LongForm;
 }
 
 export interface DataSourceOptions {
@@ -105,6 +112,57 @@ export interface DataSourceOptions {
   skipIntrospection?: boolean;
   disableAutofill?: boolean;
   attributeOverrides?: AttributeJSs;
+}
+
+export interface LongForm {
+  metricColumn: string;
+  possibleAggregates: Lookup<any>;
+  addSubsetFilter?: boolean;
+  values: LongFormValue[];
+}
+
+export interface LongFormValue {
+  value: string;
+  aggregates: string[];
+}
+
+function measuresFromLongForm(longForm: LongForm): Measure[] {
+  var { metricColumn, values, possibleAggregates } = longForm;
+  var myPossibleAggregates: Lookup<Expression> = {};
+  for (var agg in possibleAggregates) {
+    if (!hasOwnProperty(possibleAggregates, agg)) continue;
+    myPossibleAggregates[agg] = Expression.fromJSLoose(possibleAggregates[agg]);
+  }
+
+  var measures: Measure[] = [];
+  for (var value of values) {
+    var aggregates = value.aggregates;
+    if (!Array.isArray(aggregates)) {
+      throw new Error('must have aggregates in longForm value');
+    }
+
+    for (var aggregate of aggregates) {
+      var myExpression = myPossibleAggregates[aggregate];
+      if (!myExpression) throw new Error(`can not find aggregate ${aggregate} for value ${value.value}`);
+
+      measures.push(new Measure({
+        name: makeUrlSafeName(`${aggregate}_${value.value}`),
+        expression: myExpression.substitute((ex) => {
+          if (ex instanceof RefExpression && ex.name === 'filtered') {
+            return $('main').filter($(metricColumn).is(r(value.value)));
+          }
+          return null;
+        })
+      }));
+    }
+  }
+
+  return measures;
+}
+
+function filterFromLongFrom(longForm: LongForm): Expression {
+  var { metricColumn, values } = longForm;
+  return $(metricColumn).in(values.map(v => v.value));
 }
 
 var check: Class<DataSourceValue, DataSourceJS>;
@@ -181,6 +239,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     var attributeOverrides = AttributeInfo.fromJSs(attributeOverrideJSs || []);
     var attributes = AttributeInfo.fromJSs(parameters.attributes || []);
+    var derivedAttributes: Lookup<Expression> = null;
+    if (parameters.derivedAttributes) {
+      derivedAttributes = helper.expressionLookupFromJS(parameters.derivedAttributes);
+    }
+
     var dimensions = makeUniqueDimensionList((parameters.dimensions || []).map((d) => Dimension.fromJS(d)));
     var measures = makeUniqueMeasureList((parameters.measures || []).map((m) => Measure.fromJS(m)));
 
@@ -192,17 +255,31 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       }));
     }
 
+    var subsetFilter = parameters.subsetFilter ? Expression.fromJSLoose(parameters.subsetFilter) : null;
+
+    var longForm = parameters.longForm;
+    if (longForm) {
+      measures = measures.concat(measuresFromLongForm(longForm)) as List<Measure>;
+
+      if (longForm.addSubsetFilter) {
+        if (!subsetFilter) subsetFilter = Expression.TRUE;
+        subsetFilter = subsetFilter.and(filterFromLongFrom(longForm)).simplify();
+      }
+    }
+
     var value: DataSourceValue = {
       executor: null,
       name: parameters.name,
       title: parameters.title,
       engine,
       source: parameters.source,
-      subsetFilter: parameters.subsetFilter ? Expression.fromJSLoose(parameters.subsetFilter) : null,
+      subsetFilter,
+      rollup: parameters.rollup,
       options,
       introspection,
       attributeOverrides,
       attributes,
+      derivedAttributes,
       dimensions,
       measures,
       timeAttribute,
@@ -226,10 +303,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public engine: string;
   public source: string;
   public subsetFilter: Expression;
+  public rollup: boolean;
   public options: DataSourceOptions;
   public introspection: string;
   public attributes: Attributes;
   public attributeOverrides: Attributes;
+  public derivedAttributes: Lookup<Expression>;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
@@ -251,10 +330,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.engine = parameters.engine || 'druid';
     this.source = parameters.source || name;
     this.subsetFilter = parameters.subsetFilter;
+    this.rollup = Boolean(parameters.rollup);
     this.options = parameters.options || {};
     this.introspection = parameters.introspection || DataSource.DEFAULT_INTROSPECTION;
     this.attributes = parameters.attributes || [];
     this.attributeOverrides = parameters.attributeOverrides || [];
+    this.derivedAttributes = parameters.derivedAttributes;
     this.dimensions = parameters.dimensions || List([]);
     this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
@@ -278,10 +359,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       engine: this.engine,
       source: this.source,
       subsetFilter: this.subsetFilter,
+      rollup: this.rollup,
       options: this.options,
       introspection: this.introspection,
       attributeOverrides: this.attributeOverrides,
       attributes: this.attributes,
+      derivedAttributes: this.derivedAttributes,
       dimensions: this.dimensions,
       measures: this.measures,
       timeAttribute: this.timeAttribute,
@@ -316,9 +399,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultPinnedDimensions: this.defaultPinnedDimensions.toArray(),
       refreshRule: this.refreshRule.toJS()
     };
+    if (this.rollup) js.rollup = true;
     if (this.timeAttribute) js.timeAttribute = this.timeAttribute.name;
     if (this.attributeOverrides.length) js.attributeOverrides = AttributeInfo.toJSs(this.attributeOverrides);
     if (this.attributes.length) js.attributes = AttributeInfo.toJSs(this.attributes);
+    if (this.derivedAttributes) js.derivedAttributes = helper.expressionLookupToJS(this.derivedAttributes);
     if (Object.keys(this.options).length) js.options = this.options;
     if (this.maxTime) js.maxTime = this.maxTime.toJS();
     return js;
@@ -346,12 +431,14 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.source === other.source &&
       Boolean(this.subsetFilter) === Boolean(other.subsetFilter) &&
       (!this.subsetFilter || this.subsetFilter.equals(other.subsetFilter)) &&
+      this.rollup === other.rollup &&
       JSON.stringify(this.options) === JSON.stringify(other.options) &&
       this.introspection === other.introspection &&
-      arraysEqual(this.attributeOverrides, other.attributeOverrides) &&
-      arraysEqual(this.attributes, other.attributes) &&
-      listsEqual(this.dimensions, other.dimensions) &&
-      listsEqual(this.measures, other.measures) &&
+      immutableArraysEqual(this.attributeOverrides, other.attributeOverrides) &&
+      immutableArraysEqual(this.attributes, other.attributes) &&
+      immutableLookupsEqual(this.derivedAttributes, other.derivedAttributes) &&
+      immutableListsEqual(this.dimensions, other.dimensions) &&
+      immutableListsEqual(this.measures, other.measures) &&
       Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
       (!this.timeAttribute || this.timeAttribute.equals(other.timeAttribute)) &&
       this.defaultTimezone.equals(other.defaultTimezone) &&
@@ -372,13 +459,19 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     }
   }
 
-  public getMainTypeContext(): DatasetFullType {
-    var { attributes } = this;
+  public getMainTypeContext(): DatasetFullType { // ToDo: use external getFullType instead
+    var { attributes, derivedAttributes } = this;
     if (!attributes) return null;
 
     var datasetType: Lookup<SimpleFullType> = {};
     for (var attribute of attributes) {
       datasetType[attribute.name] = (attribute as any);
+    }
+
+    for (var name in derivedAttributes) {
+      datasetType[name] = {
+        type: <PlyTypeSimple>derivedAttributes[name].type
+      };
     }
 
     return {

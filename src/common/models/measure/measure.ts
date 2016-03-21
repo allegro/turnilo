@@ -45,7 +45,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
         var actions = ex.actions;
         for (var action of actions) {
           if (action.isAggregate()) {
-            references = references.concat(action.expression.getFreeReferences());
+            references = references.concat(action.getFreeReferences());
           }
         }
       }
@@ -65,7 +65,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
         var actions = ex.actions;
         for (var action of actions) {
           if (action.action === 'countDistinct') {
-            references = references.concat(action.expression.getFreeReferences());
+            references = references.concat(action.getFreeReferences());
           }
         }
       }

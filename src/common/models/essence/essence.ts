@@ -1,9 +1,9 @@
 import { List, OrderedSet } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
-import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
+import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
 import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange, ApplyAction, SortAction, Set } from 'plywood';
-import { listsEqual } from '../../utils/general/general';
+import { immutableListsEqual } from '../../utils/general/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
 import { FilterClause } from '../filter-clause/filter-clause';

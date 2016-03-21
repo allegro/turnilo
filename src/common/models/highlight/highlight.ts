@@ -1,5 +1,5 @@
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
+import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
 import { $, Expression } from 'plywood';
 import { Dimension } from '../dimension/dimension';
 import { Filter, FilterJS } from '../filter/filter';

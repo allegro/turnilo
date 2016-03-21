@@ -1,7 +1,7 @@
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
+import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
 import { $, Expression } from 'plywood';
-import { listsEqual } from '../../utils/general/general';
+import { immutableListsEqual } from '../../utils/general/general';
 
 import { LinkItem, LinkItemJS, LinkItemContext } from '../link-item/link-item';
 
@@ -62,7 +62,7 @@ export class LinkViewConfig implements Instance<LinkViewConfigValue, LinkViewCon
   public equals(other: LinkViewConfig): boolean {
     return LinkViewConfig.isLinkViewConfig(other) &&
       this.title === other.title &&
-      listsEqual(this.linkItems, other.linkItems);
+      immutableListsEqual(this.linkItems, other.linkItems);
   }
 
   public defaultLinkItem(): LinkItem {

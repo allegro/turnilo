@@ -40,9 +40,11 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
     return Q(new DruidExternal({
       suppress: true,
       dataSource: dataSource.source,
+      rollup: dataSource.rollup,
       timeAttribute: dataSource.timeAttribute.name,
       customAggregations: dataSource.options.customAggregations,
       attributes: AttributeInfo.override(dataSource.deduceAttributes(), dataSource.attributeOverrides),
+      derivedAttributes: dataSource.derivedAttributes,
       introspectionStrategy,
       filter: dataSource.subsetFilter,
       context,
@@ -52,8 +54,10 @@ export function externalFactory(dataSource: DataSource, druidRequester: Requeste
     var introspectedExternalPromise = new DruidExternal({
       suppress: true,
       dataSource: dataSource.source,
+      rollup: dataSource.rollup,
       timeAttribute: dataSource.timeAttribute.name,
       attributeOverrides: dataSource.attributeOverrides,
+      derivedAttributes: dataSource.derivedAttributes,
       customAggregations: dataSource.options.customAggregations,
       introspectionStrategy,
       filter: dataSource.subsetFilter,
