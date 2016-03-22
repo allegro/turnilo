@@ -4,7 +4,7 @@ import * as nopt from 'nopt';
 
 import { DataSource, DataSourceJS, Dimension, Measure, LinkViewConfig, LinkViewConfigJS } from '../common/models/index';
 import { dataSourceToYAML } from '../common/utils/yaml-helper/yaml-helper';
-import { DataSourceManager, dataSourceManagerFactory, loadFileSync, properDruidRequesterFactory, dataSourceFillerFactory, SourceListScan } from './utils/index';
+import { DataSourceManager, dataSourceManagerFactory, loadFileSync, properDruidRequesterFactory, dataSourceLoaderFactory, SourceListScan } from './utils/index';
 
 
 export interface ServerConfig {
@@ -18,8 +18,14 @@ export interface PivotConfig {
   druidHost?: string;
   timeout?: number;
   introspectionStrategy?: string;
+
+  pageMustLoadTimeout?: number;
   sourceListScan?: SourceListScan;
+  sourceListRefreshOnLoad?: boolean;
   sourceListRefreshInterval?: number;
+  sourceReintrospectOnLoad?: boolean;
+  sourceReintrospectInterval?: number;
+
   auth?: string;
   dataSources?: DataSourceJS[];
   linkViewConfig?: LinkViewConfigJS;
@@ -114,7 +120,7 @@ if (parsedArgs['help']) {
 }
 
 if (parsedArgs['version']) {
-  console.log(packageObj.version);
+  console.log(VERSION);
   process.exit();
 }
 
@@ -184,8 +190,20 @@ export const DRUID_HOST = parsedArgs['druid'] || config.brokerHost || config.dru
 export const TIMEOUT = parseInt(<any>config.timeout, 10) || 30000;
 
 export const INTROSPECTION_STRATEGY = String(parsedArgs["introspection-strategy"] || config.introspectionStrategy || 'segment-metadata-fallback');
+export const PAGE_MUST_LOAD_TIMEOUT = START_SERVER ? (parseInt(<any>config.pageMustLoadTimeout, 10) || 800) : 0;
 export const SOURCE_LIST_SCAN: SourceListScan = START_SERVER ? config.sourceListScan : 'disable';
-export const SOURCE_LIST_REFRESH_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceListRefreshInterval, 10) || 10000) : 0;
+
+export const SOURCE_LIST_REFRESH_ON_LOAD = START_SERVER ? Boolean(<any>config.sourceListRefreshOnLoad) : false;
+export const SOURCE_LIST_REFRESH_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceListRefreshInterval, 10) || 15000) : 0;
+if (SOURCE_LIST_REFRESH_INTERVAL && SOURCE_LIST_REFRESH_INTERVAL < 1000) {
+  errorExit(`can not set sourceListRefreshInterval to < 1000 (is ${SOURCE_LIST_REFRESH_INTERVAL})`);
+}
+
+export const SOURCE_REINTROSPECT_ON_LOAD = START_SERVER ? Boolean(<any>config.sourceReintrospectOnLoad) : false;
+export const SOURCE_REINTROSPECT_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceReintrospectInterval, 10) || 0) : 0;
+if (SOURCE_REINTROSPECT_INTERVAL && SOURCE_REINTROSPECT_INTERVAL < 1000) {
+  errorExit(`can not set sourceReintrospectInterval to < 1000 (is ${SOURCE_REINTROSPECT_INTERVAL})`);
+}
 
 var auth = config.auth;
 var authModule: any = null;
@@ -196,10 +214,6 @@ if (auth) {
   if (typeof authModule.auth !== 'function') errorExit('Invalid auth module');
 }
 export const AUTH = authModule;
-
-if (SOURCE_LIST_REFRESH_INTERVAL && SOURCE_LIST_REFRESH_INTERVAL < 1000) {
-  errorExit('can not refresh more often than once per second');
-}
 
 export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSourceJS: DataSourceJS, i: number) => {
   if (typeof dataSourceJS !== 'object') errorExit(`DataSource ${i} is not valid`);
@@ -236,12 +250,22 @@ if (DRUID_HOST) {
 
 var configDirectory = configFileDir || path.join(__dirname, '../..');
 
+if (!PRINT_CONFIG) {
+  console.log(`Starting Pivot v${VERSION}`);
+}
+
 export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
   dataSources: DATA_SOURCES,
   druidRequester,
-  dataSourceFiller: dataSourceFillerFactory(druidRequester, configDirectory, TIMEOUT, INTROSPECTION_STRATEGY),
+  dataSourceLoader: dataSourceLoaderFactory(druidRequester, configDirectory, TIMEOUT, INTROSPECTION_STRATEGY),
+
+  pageMustLoadTimeout: PAGE_MUST_LOAD_TIMEOUT,
   sourceListScan: SOURCE_LIST_SCAN,
+  sourceListRefreshOnLoad: SOURCE_LIST_REFRESH_ON_LOAD,
   sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL,
+  sourceReintrospectOnLoad: SOURCE_REINTROSPECT_ON_LOAD,
+  sourceReintrospectInterval: SOURCE_REINTROSPECT_INTERVAL,
+
   log: PRINT_CONFIG ? null : (line: string) => console.log(line)
 });
 

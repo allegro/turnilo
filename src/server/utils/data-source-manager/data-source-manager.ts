@@ -5,7 +5,7 @@ import { DataSource, DataSourceJS, RefreshRule, Dimension, Measure } from '../..
 
 export type SourceListScan = "disable" | "auto";
 
-export interface DataSourceFiller {
+export interface DataSourceLoader {
   (dataSource: DataSource): Q.Promise<DataSource>;
 }
 
@@ -13,10 +13,15 @@ export interface DataSourceManagerOptions {
   dataSources?: DataSource[];
   dataSourceStubFactory?: (name: string) => DataSource;
   druidRequester?: Requester.PlywoodRequester<any>;
-  dataSourceFiller?: DataSourceFiller;
+  dataSourceLoader?: DataSourceLoader;
+
+  pageMustLoadTimeout?: number;
   sourceListScan?: SourceListScan;
-  sourceListRefreshInterval?: number;
   sourceListRefreshOnLoad?: boolean;
+  sourceListRefreshInterval?: number;
+  sourceReintrospectOnLoad?: boolean;
+  sourceReintrospectInterval?: number;
+
   log?: Function;
 }
 
@@ -31,13 +36,19 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     dataSources,
     dataSourceStubFactory,
     druidRequester,
-    dataSourceFiller,
+    dataSourceLoader,
+
+    pageMustLoadTimeout,
     sourceListScan,
     sourceListRefreshOnLoad,
     sourceListRefreshInterval,
+    sourceReintrospectOnLoad,
+    sourceReintrospectInterval,
+
     log
   } = options;
 
+  if (!pageMustLoadTimeout) pageMustLoadTimeout = 800;
   if (!sourceListScan) sourceListScan = 'auto';
   if (sourceListScan !== 'disable' && sourceListScan !== 'auto') {
     throw new Error(`sourceListScan must be disable or auto is ('${sourceListScan}')`);
@@ -71,20 +82,48 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     myDataSources = helper.overrideByName(myDataSources, [dataSource]);
   }
 
-  function introspectDataSource(dataSource: DataSource): Q.Promise<any> {
-    return dataSourceFiller(dataSource)
-      .then((filledDataSource) => {
-        addOrUpdateDataSource(filledDataSource);
+  function loadAndIntrospectDataSource(dataSource: DataSource): Q.Promise<DataSource> {
+    return loadDataSource(dataSource)
+      .then(introspectDataSource);
+  }
 
-        var issues = filledDataSource.getIssues();
-        if (issues.length) {
-          log(`Data source '${filledDataSource.name}' has the following issues:`);
-          log('- ' + issues.join('\n- ') + '\n');
-        }
+  function loadDataSource(dataSource: DataSource): Q.Promise<DataSource> {
+    return dataSourceLoader(dataSource)
+      .then((loadedDataSource) => {
+        addOrUpdateDataSource(loadedDataSource);
+        return loadedDataSource;
       })
-      .catch((e) => {
-        log(`Failed to introspect data source: '${dataSource.name}' because ${e.message}`);
+      .catch((e): DataSource => {
+        log(`Failed to load data source: '${dataSource.name}' because ${e.message}`);
+        throw e;
       });
+  }
+
+  function introspectDataSource(dataSource: DataSource, doLog = false): Q.Promise<DataSource> {
+    return dataSource.introspect()
+      .then((introspectedDataSource) => {
+        if (introspectedDataSource !== dataSource) {
+          if (doLog) log(`loaded new schema for ${dataSource.name}`);
+          addOrUpdateDataSource(introspectedDataSource);
+
+          var issues = introspectedDataSource.getIssues();
+          if (issues.length) {
+            log(`Data source '${introspectedDataSource.name}' has the following issues:`);
+            log('- ' + issues.join('\n- ') + '\n');
+          }
+        }
+        return introspectedDataSource;
+      })
+      .catch((e): DataSource => {
+        log(`Failed to introspect data source: '${dataSource.name}' because ${e.message}`);
+        throw e;
+      });
+  }
+
+  function introspectDataSources(): Q.Promise<any> {
+    return Q.allSettled(getQueryable().map((dataSource) => {
+      return introspectDataSource(dataSource, true);
+    }));
   }
 
   function loadDruidDataSources(): Q.Promise<any> {
@@ -120,9 +159,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
         // Nothing to do
         if (!nonQueryableDataSources.length) return Q(null);
 
-        return Q.allSettled(nonQueryableDataSources.map((dataSource) => {
-          return introspectDataSource(dataSource);
-        }));
+        return Q.allSettled(nonQueryableDataSources.map(loadAndIntrospectDataSource));
       })
       .catch((e: Error) => {
         log(`Could not get druid source list: ${e.message}`);
@@ -130,7 +167,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   }
 
   // First concurrently introspect all the defined data sources
-  var initialLoad: Q.Promise<any> = Q.allSettled(myDataSources.map(introspectDataSource));
+  var initialLoad: Q.Promise<any> = Q.allSettled(myDataSources.map(loadAndIntrospectDataSource));
 
   // Then (if needed) scan for more data sources
   if (sourceListScan === 'auto' && druidRequester) {
@@ -140,12 +177,17 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   // Then print out an update
   initialLoad.then(() => {
     var queryableDataSources = getQueryable();
-    log(`Initial introspection complete. Got ${myDataSources.length} data sources, ${queryableDataSources.length} queryable`);
+    log(`Initial load and introspection complete. Got ${myDataSources.length} data sources, ${queryableDataSources.length} queryable`);
   });
 
   if (sourceListScan === 'auto' && druidRequester && sourceListRefreshInterval) {
-    log(`Will refresh data sources every ${sourceListRefreshInterval}ms`);
+    log(`Will refresh data source list every ${sourceListRefreshInterval}ms`);
     setInterval(loadDruidDataSources, sourceListRefreshInterval).unref();
+  }
+
+  if (druidRequester && sourceReintrospectInterval) {
+    log(`Will re-introspect data sources every ${sourceReintrospectInterval}ms`);
+    setInterval(introspectDataSources, sourceReintrospectInterval).unref();
   }
 
   // Periodically check if max time needs to be updated
@@ -160,13 +202,34 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     });
   }, 1000).unref();
 
+  function onLoadTasks(): Q.Promise<any> {
+    var tasks = <Q.Promise<any>[]>[];
+
+    if (sourceListRefreshOnLoad) {
+      console.log('did sourceListRefreshOnLoad');
+      tasks.push(loadDruidDataSources());
+    }
+
+    if (sourceReintrospectOnLoad) {
+      console.log('did sourceReintrospectOnLoad');
+      tasks.push(introspectDataSources());
+    }
+
+    return Q.allSettled(tasks)
+      .timeout(pageMustLoadTimeout)
+      .catch(() => {
+        log(`pageMustLoadTimeout (${pageMustLoadTimeout}) exceeded, loading anyways.`);
+        return null;
+      });
+  }
+
   return {
     getDataSources: () => {
       return initialLoad.then(() => {
-        if (myDataSources.length && !sourceListRefreshOnLoad) return myDataSources;
+        if (myDataSources.length && !sourceListRefreshOnLoad && !sourceReintrospectOnLoad) return myDataSources;
 
         // There are no data sources... lets try to load some:
-        return loadDruidDataSources().then(() => {
+        return onLoadTasks().then(() => {
           return myDataSources; // we tried
         });
       });
@@ -175,10 +238,10 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     getQueryableDataSources: () => {
       return initialLoad.then(() => {
         var queryableDataSources = getQueryable();
-        if (queryableDataSources.length && !sourceListRefreshOnLoad) return queryableDataSources;
+        if (queryableDataSources.length && !sourceListRefreshOnLoad && !sourceReintrospectOnLoad) return queryableDataSources;
 
         // There are no data sources... lets try to load some:
-        return loadDruidDataSources().then(() => {
+        return onLoadTasks().then(() => {
           return getQueryable(); // we tried
         });
       });

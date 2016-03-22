@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
+import * as Q from 'q';
 
 import { $, Expression, AttributeInfo } from 'plywood';
 import { DataSource, DataSourceJS } from './data-source';
@@ -541,6 +542,154 @@ describe('DataSource', () => {
       });
 
     });
+  });
+
+
+  describe("#introspection", () => {
+    var dataSource = DataSource.fromJS({
+      name: 'wiki',
+      title: 'Wiki',
+      engine: 'druid',
+      source: 'wiki',
+      subsetFilter: null,
+      introspection: 'autofill-all',
+      defaultTimezone: 'Etc/UTC',
+      defaultFilter: { op: 'literal', value: true },
+      defaultPinnedDimensions: [],
+      refreshRule: {
+        refresh: "PT1M",
+        rule: "fixed"
+      }
+    });
+
+    it('adds new dimensions', (testComplete) => {
+      var columns: any = {
+        "__time": {
+          "type": "LONG",
+          "hasMultipleValues": false,
+          "size": 0,
+          "cardinality": null,
+          "errorMessage": null
+        },
+        "added": {
+          "type": "LONG",
+          "hasMultipleValues": false,
+          "size": 0,
+          "cardinality": null,
+          "errorMessage": null
+        },
+        "count": {
+          "type": "LONG",
+          "hasMultipleValues": false,
+          "size": 0,
+          "cardinality": null,
+          "errorMessage": null
+        },
+        "delta_hist": {
+          "type": "approximateHistogram",
+          "hasMultipleValues": false,
+          "size": 0,
+          "cardinality": null,
+          "errorMessage": null
+        },
+        "page": {
+          "type": "STRING",
+          "hasMultipleValues": false,
+          "size": 0,
+          "cardinality": 0,
+          "errorMessage": null
+        },
+        "page_unique": {
+          "type": "hyperUnique",
+          "hasMultipleValues": false,
+          "size": 0,
+          "cardinality": null,
+          "errorMessage": null
+        }
+      };
+
+      var run = 0;
+      function requester({query}) {
+        return Q.fcall(() => {
+          if (query.queryType === 'status') return { version: '0.8.3' };
+          if (query.queryType !== 'segmentMetadata') throw new Error(`what is ${query.queryType}`);
+          run++;
+
+          if (run > 1) {
+            columns.channel = {
+              "type": "STRING",
+              "hasMultipleValues": false,
+              "size": 0,
+              "cardinality": 0,
+              "errorMessage": null
+            };
+          }
+
+          return [{ columns }];
+        });
+      }
+
+      dataSource = dataSource.createExternal(requester, null, 10000);
+
+      dataSource.introspect()
+        .then(ds1 => {
+          expect(ds1.toJS().dimensions).to.deep.equal([
+            {
+              "expression": {
+                "name": "__time",
+                "op": "ref"
+              },
+              "kind": "time",
+              "name": "__time",
+              "title": "Time"
+            },
+            {
+              "expression": {
+                "name": "page",
+                "op": "ref"
+              },
+              "kind": "string",
+              "name": "page",
+              "title": "Page"
+            }
+          ]);
+          return dataSource.introspect();
+        })
+        .then(ds1 => {
+          expect(ds1.toJS().dimensions).to.deep.equal([
+            {
+              "expression": {
+                "name": "__time",
+                "op": "ref"
+              },
+              "kind": "time",
+              "name": "__time",
+              "title": "Time"
+            },
+            {
+              "expression": {
+                "name": "page",
+                "op": "ref"
+              },
+              "kind": "string",
+              "name": "page",
+              "title": "Page"
+            },
+            {
+              "expression": {
+                "name": "channel",
+                "op": "ref"
+              },
+              "kind": "string",
+              "name": "channel",
+              "title": "Channel"
+            }
+          ]);
+          testComplete();
+        })
+        .done();
+    });
+
   });
 
 });

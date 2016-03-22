@@ -1,8 +1,8 @@
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
-import { Class, Instance, isInstanceOf, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
+import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
-import { $, ply, r, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum,
+import { $, ply, r, Expression, ExpressionJS, Executor, External, DruidExternal, RefExpression, basicExecutorFactory, Dataset, Datum,
   Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
   CustomDruidAggregations, helper } from 'plywood';
 import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
@@ -74,6 +74,7 @@ export interface DataSourceValue {
   refreshRule: RefreshRule;
   maxTime?: MaxTime;
 
+  external?: External;
   executor?: Executor;
 }
 
@@ -112,6 +113,11 @@ export interface DataSourceOptions {
   skipIntrospection?: boolean;
   disableAutofill?: boolean;
   attributeOverrides?: AttributeJSs;
+}
+
+export interface DataSourceContext {
+  executor?: Executor;
+  external?: External;
 }
 
 export interface LongForm {
@@ -194,7 +200,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     });
   }
 
-  static fromJS(parameters: DataSourceJS, executor: Executor = null): DataSource {
+  static fromJS(parameters: DataSourceJS, context: DataSourceContext = {}): DataSource {
+    const { executor, external } = context;
     var engine = parameters.engine;
     var introspection = parameters.introspection;
     var attributeOverrideJSs = parameters.attributeOverrides;
@@ -291,9 +298,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       refreshRule,
       maxTime
     };
-    if (executor) {
-      value.executor = executor;
-    }
+    if (external) value.external = external;
+    if (executor) value.executor = executor;
     return new DataSource(value);
   }
 
@@ -321,6 +327,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public maxTime: MaxTime;
 
   public executor: Executor;
+  public external: External;
 
   constructor(parameters: DataSourceValue) {
     var name = parameters.name;
@@ -348,6 +355,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.maxTime = parameters.maxTime;
 
     this.executor = parameters.executor;
+    this.external = parameters.external;
 
     this._validateDefaults();
   }
@@ -376,9 +384,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       refreshRule: this.refreshRule,
       maxTime: this.maxTime
     };
-    if (this.executor) {
-      value.executor = this.executor;
-    }
+    if (this.executor) value.executor = this.executor;
+    if (this.external) value.external = this.external;
     return value;
   }
 
@@ -429,8 +436,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.title === other.title &&
       this.engine === other.engine &&
       this.source === other.source &&
-      Boolean(this.subsetFilter) === Boolean(other.subsetFilter) &&
-      (!this.subsetFilter || this.subsetFilter.equals(other.subsetFilter)) &&
+      immutableEqual(this.subsetFilter, other.subsetFilter) &&
       this.rollup === other.rollup &&
       JSON.stringify(this.options) === JSON.stringify(other.options) &&
       this.introspection === other.introspection &&
@@ -439,8 +445,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       immutableLookupsEqual(this.derivedAttributes, other.derivedAttributes) &&
       immutableListsEqual(this.dimensions, other.dimensions) &&
       immutableListsEqual(this.measures, other.measures) &&
-      Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
-      (!this.timeAttribute || this.timeAttribute.equals(other.timeAttribute)) &&
+      immutableEqual(this.timeAttribute, other.timeAttribute) &&
       this.defaultTimezone.equals(other.defaultTimezone) &&
       this.defaultFilter.equals(other.defaultFilter) &&
       this.defaultDuration.equals(other.defaultDuration) &&
@@ -516,6 +521,85 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     });
 
     return issues;
+  }
+
+  public createExternal(requester: Requester.PlywoodRequester<any>, introspectionStrategy: string, timeout: number): DataSource {
+    if (this.engine !== 'druid') return; // Only Druid supported for now.
+    var value = this.valueOf();
+
+    var context = {
+      timeout
+    };
+
+    if (this.introspection === 'none') {
+      value.external = new DruidExternal({
+        suppress: true,
+        dataSource: this.source,
+        rollup: this.rollup,
+        timeAttribute: this.timeAttribute.name,
+        customAggregations: this.options.customAggregations,
+        attributes: AttributeInfo.override(this.deduceAttributes(), this.attributeOverrides),
+        derivedAttributes: this.derivedAttributes,
+        introspectionStrategy,
+        filter: this.subsetFilter,
+        context,
+        requester
+      });
+    } else {
+      value.external = new DruidExternal({
+        suppress: true,
+        dataSource: this.source,
+        rollup: this.rollup,
+        timeAttribute: this.timeAttribute.name,
+        attributeOverrides: this.attributeOverrides,
+        derivedAttributes: this.derivedAttributes,
+        customAggregations: this.options.customAggregations,
+        introspectionStrategy,
+        filter: this.subsetFilter,
+        context,
+        requester
+      });
+    }
+
+    return new DataSource(value);
+  }
+
+  public introspect(): Q.Promise<DataSource> {
+    var { external } = this;
+    if (this.engine === 'native') return Q(this);
+    if (!external) throw new Error(`must have external to introspect in ${this.name}`);
+
+    var countDistinctReferences: string[] = [];
+    if (this.measures) {
+      countDistinctReferences = [].concat.apply([], this.measures.toArray().map((measure) => {
+        return Measure.getCountDistinctReferences(measure.expression);
+      }));
+    }
+
+    return external.introspect()
+      .then((introspectedExternal) => {
+        if (immutableArraysEqual(external.attributes, introspectedExternal.attributes)) return this;
+
+        if (!countDistinctReferences) {
+          var attributes = introspectedExternal.attributes;
+          for (var attribute of attributes) {
+            // This is a metric that should really be a HLL
+            if (attribute.type === 'NUMBER' && countDistinctReferences.indexOf(attribute.name) !== -1) {
+              introspectedExternal = introspectedExternal.updateAttribute(AttributeInfo.fromJS({
+                name: attribute.name,
+                special: 'unique'
+              }));
+            }
+          }
+        }
+
+        var value = this.addAttributes(introspectedExternal.attributes).valueOf();
+        value.external = introspectedExternal;
+        value.executor = basicExecutorFactory({
+          datasets: { main: introspectedExternal }
+        });
+        return new DataSource(value);
+      });
   }
 
   public attachExecutor(executor: Executor): DataSource {
@@ -736,7 +820,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           break;
 
         default:
-          throw new Error('unsupported type ' + type);
+          throw new Error(`unsupported type ${type}`);
       }
     }
 
