@@ -1,11 +1,11 @@
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
-import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
+import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
-import { ply, $, Expression, ExpressionJS, Executor, RefExpression, basicExecutorFactory, Dataset, Datum,
-  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType,
-  CustomDruidAggregations } from 'plywood';
-import { verifyUrlSafeName, makeTitle, listsEqual } from '../../utils/general/general';
+import { $, ply, r, Expression, ExpressionJS, Executor, External, DruidExternal, RefExpression, basicExecutorFactory, Dataset, Datum,
+  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
+  CustomDruidAggregations, helper } from 'plywood';
+import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 import { Filter, FilterJS } from '../filter/filter';
@@ -56,10 +56,13 @@ export interface DataSourceValue {
   engine: string;
   source: string;
   subsetFilter?: Expression;
+  rollup?: boolean;
   options?: DataSourceOptions;
   introspection: string;
   attributeOverrides: Attributes;
   attributes: Attributes;
+  derivedAttributes?: Lookup<Expression>;
+
   dimensions: List<Dimension>;
   measures: List<Measure>;
   timeAttribute: RefExpression;
@@ -71,6 +74,7 @@ export interface DataSourceValue {
   refreshRule: RefreshRule;
   maxTime?: MaxTime;
 
+  external?: External;
   executor?: Executor;
 }
 
@@ -80,10 +84,12 @@ export interface DataSourceJS {
   engine: string;
   source: string;
   subsetFilter?: ExpressionJS;
+  rollup?: boolean;
   options?: DataSourceOptions;
   introspection?: string;
   attributeOverrides?: AttributeJSs;
   attributes?: AttributeJSs;
+  derivedAttributes?: Lookup<ExpressionJS>;
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
   timeAttribute?: string;
@@ -94,6 +100,8 @@ export interface DataSourceJS {
   defaultPinnedDimensions?: string[];
   refreshRule?: RefreshRuleJS;
   maxTime?: MaxTimeJS;
+
+  longForm?: LongForm;
 }
 
 export interface DataSourceOptions {
@@ -105,6 +113,62 @@ export interface DataSourceOptions {
   skipIntrospection?: boolean;
   disableAutofill?: boolean;
   attributeOverrides?: AttributeJSs;
+}
+
+export interface DataSourceContext {
+  executor?: Executor;
+  external?: External;
+}
+
+export interface LongForm {
+  metricColumn: string;
+  possibleAggregates: Lookup<any>;
+  addSubsetFilter?: boolean;
+  values: LongFormValue[];
+}
+
+export interface LongFormValue {
+  value: string;
+  aggregates: string[];
+}
+
+function measuresFromLongForm(longForm: LongForm): Measure[] {
+  var { metricColumn, values, possibleAggregates } = longForm;
+  var myPossibleAggregates: Lookup<Expression> = {};
+  for (var agg in possibleAggregates) {
+    if (!hasOwnProperty(possibleAggregates, agg)) continue;
+    myPossibleAggregates[agg] = Expression.fromJSLoose(possibleAggregates[agg]);
+  }
+
+  var measures: Measure[] = [];
+  for (var value of values) {
+    var aggregates = value.aggregates;
+    if (!Array.isArray(aggregates)) {
+      throw new Error('must have aggregates in longForm value');
+    }
+
+    for (var aggregate of aggregates) {
+      var myExpression = myPossibleAggregates[aggregate];
+      if (!myExpression) throw new Error(`can not find aggregate ${aggregate} for value ${value.value}`);
+
+      measures.push(new Measure({
+        name: makeUrlSafeName(`${aggregate}_${value.value}`),
+        expression: myExpression.substitute((ex) => {
+          if (ex instanceof RefExpression && ex.name === 'filtered') {
+            return $('main').filter($(metricColumn).is(r(value.value)));
+          }
+          return null;
+        })
+      }));
+    }
+  }
+
+  return measures;
+}
+
+function filterFromLongFrom(longForm: LongForm): Expression {
+  var { metricColumn, values } = longForm;
+  return $(metricColumn).in(values.map(v => v.value));
 }
 
 var check: Class<DataSourceValue, DataSourceJS>;
@@ -136,7 +200,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     });
   }
 
-  static fromJS(parameters: DataSourceJS, executor: Executor = null): DataSource {
+  static fromJS(parameters: DataSourceJS, context: DataSourceContext = {}): DataSource {
+    const { executor, external } = context;
     var engine = parameters.engine;
     var introspection = parameters.introspection;
     var attributeOverrideJSs = parameters.attributeOverrides;
@@ -181,6 +246,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     var attributeOverrides = AttributeInfo.fromJSs(attributeOverrideJSs || []);
     var attributes = AttributeInfo.fromJSs(parameters.attributes || []);
+    var derivedAttributes: Lookup<Expression> = null;
+    if (parameters.derivedAttributes) {
+      derivedAttributes = helper.expressionLookupFromJS(parameters.derivedAttributes);
+    }
+
     var dimensions = makeUniqueDimensionList((parameters.dimensions || []).map((d) => Dimension.fromJS(d)));
     var measures = makeUniqueMeasureList((parameters.measures || []).map((m) => Measure.fromJS(m)));
 
@@ -192,17 +262,31 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       }));
     }
 
+    var subsetFilter = parameters.subsetFilter ? Expression.fromJSLoose(parameters.subsetFilter) : null;
+
+    var longForm = parameters.longForm;
+    if (longForm) {
+      measures = measures.concat(measuresFromLongForm(longForm)) as List<Measure>;
+
+      if (longForm.addSubsetFilter) {
+        if (!subsetFilter) subsetFilter = Expression.TRUE;
+        subsetFilter = subsetFilter.and(filterFromLongFrom(longForm)).simplify();
+      }
+    }
+
     var value: DataSourceValue = {
       executor: null,
       name: parameters.name,
       title: parameters.title,
       engine,
       source: parameters.source,
-      subsetFilter: parameters.subsetFilter ? Expression.fromJSLoose(parameters.subsetFilter) : null,
+      subsetFilter,
+      rollup: parameters.rollup,
       options,
       introspection,
       attributeOverrides,
       attributes,
+      derivedAttributes,
       dimensions,
       measures,
       timeAttribute,
@@ -214,9 +298,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       refreshRule,
       maxTime
     };
-    if (executor) {
-      value.executor = executor;
-    }
+    if (external) value.external = external;
+    if (executor) value.executor = executor;
     return new DataSource(value);
   }
 
@@ -226,10 +309,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public engine: string;
   public source: string;
   public subsetFilter: Expression;
+  public rollup: boolean;
   public options: DataSourceOptions;
   public introspection: string;
   public attributes: Attributes;
   public attributeOverrides: Attributes;
+  public derivedAttributes: Lookup<Expression>;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
@@ -242,6 +327,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public maxTime: MaxTime;
 
   public executor: Executor;
+  public external: External;
 
   constructor(parameters: DataSourceValue) {
     var name = parameters.name;
@@ -251,10 +337,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.engine = parameters.engine || 'druid';
     this.source = parameters.source || name;
     this.subsetFilter = parameters.subsetFilter;
+    this.rollup = Boolean(parameters.rollup);
     this.options = parameters.options || {};
     this.introspection = parameters.introspection || DataSource.DEFAULT_INTROSPECTION;
     this.attributes = parameters.attributes || [];
     this.attributeOverrides = parameters.attributeOverrides || [];
+    this.derivedAttributes = parameters.derivedAttributes;
     this.dimensions = parameters.dimensions || List([]);
     this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
@@ -267,6 +355,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.maxTime = parameters.maxTime;
 
     this.executor = parameters.executor;
+    this.external = parameters.external;
 
     this._validateDefaults();
   }
@@ -278,10 +367,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       engine: this.engine,
       source: this.source,
       subsetFilter: this.subsetFilter,
+      rollup: this.rollup,
       options: this.options,
       introspection: this.introspection,
       attributeOverrides: this.attributeOverrides,
       attributes: this.attributes,
+      derivedAttributes: this.derivedAttributes,
       dimensions: this.dimensions,
       measures: this.measures,
       timeAttribute: this.timeAttribute,
@@ -293,9 +384,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       refreshRule: this.refreshRule,
       maxTime: this.maxTime
     };
-    if (this.executor) {
-      value.executor = this.executor;
-    }
+    if (this.executor) value.executor = this.executor;
+    if (this.external) value.external = this.external;
     return value;
   }
 
@@ -316,9 +406,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultPinnedDimensions: this.defaultPinnedDimensions.toArray(),
       refreshRule: this.refreshRule.toJS()
     };
+    if (this.rollup) js.rollup = true;
     if (this.timeAttribute) js.timeAttribute = this.timeAttribute.name;
     if (this.attributeOverrides.length) js.attributeOverrides = AttributeInfo.toJSs(this.attributeOverrides);
     if (this.attributes.length) js.attributes = AttributeInfo.toJSs(this.attributes);
+    if (this.derivedAttributes) js.derivedAttributes = helper.expressionLookupToJS(this.derivedAttributes);
     if (Object.keys(this.options).length) js.options = this.options;
     if (this.maxTime) js.maxTime = this.maxTime.toJS();
     return js;
@@ -344,16 +436,16 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.title === other.title &&
       this.engine === other.engine &&
       this.source === other.source &&
-      Boolean(this.subsetFilter) === Boolean(other.subsetFilter) &&
-      (!this.subsetFilter || this.subsetFilter.equals(other.subsetFilter)) &&
+      immutableEqual(this.subsetFilter, other.subsetFilter) &&
+      this.rollup === other.rollup &&
       JSON.stringify(this.options) === JSON.stringify(other.options) &&
       this.introspection === other.introspection &&
-      arraysEqual(this.attributeOverrides, other.attributeOverrides) &&
-      arraysEqual(this.attributes, other.attributes) &&
-      listsEqual(this.dimensions, other.dimensions) &&
-      listsEqual(this.measures, other.measures) &&
-      Boolean(this.timeAttribute) === Boolean(other.timeAttribute) &&
-      (!this.timeAttribute || this.timeAttribute.equals(other.timeAttribute)) &&
+      immutableArraysEqual(this.attributeOverrides, other.attributeOverrides) &&
+      immutableArraysEqual(this.attributes, other.attributes) &&
+      immutableLookupsEqual(this.derivedAttributes, other.derivedAttributes) &&
+      immutableListsEqual(this.dimensions, other.dimensions) &&
+      immutableListsEqual(this.measures, other.measures) &&
+      immutableEqual(this.timeAttribute, other.timeAttribute) &&
       this.defaultTimezone.equals(other.defaultTimezone) &&
       this.defaultFilter.equals(other.defaultFilter) &&
       this.defaultDuration.equals(other.defaultDuration) &&
@@ -372,13 +464,19 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     }
   }
 
-  public getMainTypeContext(): DatasetFullType {
-    var { attributes } = this;
+  public getMainTypeContext(): DatasetFullType { // ToDo: use external getFullType instead
+    var { attributes, derivedAttributes } = this;
     if (!attributes) return null;
 
     var datasetType: Lookup<SimpleFullType> = {};
     for (var attribute of attributes) {
       datasetType[attribute.name] = (attribute as any);
+    }
+
+    for (var name in derivedAttributes) {
+      datasetType[name] = {
+        type: <PlyTypeSimple>derivedAttributes[name].type
+      };
     }
 
     return {
@@ -423,6 +521,85 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     });
 
     return issues;
+  }
+
+  public createExternal(requester: Requester.PlywoodRequester<any>, introspectionStrategy: string, timeout: number): DataSource {
+    if (this.engine !== 'druid') return; // Only Druid supported for now.
+    var value = this.valueOf();
+
+    var context = {
+      timeout
+    };
+
+    if (this.introspection === 'none') {
+      value.external = new DruidExternal({
+        suppress: true,
+        dataSource: this.source,
+        rollup: this.rollup,
+        timeAttribute: this.timeAttribute.name,
+        customAggregations: this.options.customAggregations,
+        attributes: AttributeInfo.override(this.deduceAttributes(), this.attributeOverrides),
+        derivedAttributes: this.derivedAttributes,
+        introspectionStrategy,
+        filter: this.subsetFilter,
+        context,
+        requester
+      });
+    } else {
+      value.external = new DruidExternal({
+        suppress: true,
+        dataSource: this.source,
+        rollup: this.rollup,
+        timeAttribute: this.timeAttribute.name,
+        attributeOverrides: this.attributeOverrides,
+        derivedAttributes: this.derivedAttributes,
+        customAggregations: this.options.customAggregations,
+        introspectionStrategy,
+        filter: this.subsetFilter,
+        context,
+        requester
+      });
+    }
+
+    return new DataSource(value);
+  }
+
+  public introspect(): Q.Promise<DataSource> {
+    var { external } = this;
+    if (this.engine === 'native') return Q(this);
+    if (!external) throw new Error(`must have external to introspect in ${this.name}`);
+
+    var countDistinctReferences: string[] = [];
+    if (this.measures) {
+      countDistinctReferences = [].concat.apply([], this.measures.toArray().map((measure) => {
+        return Measure.getCountDistinctReferences(measure.expression);
+      }));
+    }
+
+    return external.introspect()
+      .then((introspectedExternal) => {
+        if (immutableArraysEqual(external.attributes, introspectedExternal.attributes)) return this;
+
+        if (!countDistinctReferences) {
+          var attributes = introspectedExternal.attributes;
+          for (var attribute of attributes) {
+            // This is a metric that should really be a HLL
+            if (attribute.type === 'NUMBER' && countDistinctReferences.indexOf(attribute.name) !== -1) {
+              introspectedExternal = introspectedExternal.updateAttribute(AttributeInfo.fromJS({
+                name: attribute.name,
+                special: 'unique'
+              }));
+            }
+          }
+        }
+
+        var value = this.addAttributes(introspectedExternal.attributes).valueOf();
+        value.external = introspectedExternal;
+        value.executor = basicExecutorFactory({
+          datasets: { main: introspectedExternal }
+        });
+        return new DataSource(value);
+      });
   }
 
   public attachExecutor(executor: Executor): DataSource {
@@ -525,8 +702,51 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return this.engine === 'druid';
   }
 
-  public setAttributes(attributes: Attributes): DataSource {
-    var { introspection, dimensions, measures } = this;
+  /**
+   * This function tries to deduce the structure of the dataSource based on the dimensions and measures defined within.
+   * It should only be used when, for some reason, introspection if not available.
+   */
+  public deduceAttributes(): Attributes {
+    const { dimensions, measures, timeAttribute, attributeOverrides } = this;
+    var attributes: Attributes = [];
+
+    if (timeAttribute) {
+      attributes.push(AttributeInfo.fromJS({ name: timeAttribute.name, type: 'TIME' }));
+    }
+
+    dimensions.forEach((dimension) => {
+      var expression = dimension.expression;
+      if (expression.equals(timeAttribute)) return;
+      var references = expression.getFreeReferences();
+      for (var reference of references) {
+        if (helper.findByName(attributes, reference)) continue;
+        attributes.push(AttributeInfo.fromJS({ name: reference, type: 'STRING' }));
+      }
+    });
+
+    measures.forEach((measure) => {
+      var expression = measure.expression;
+      var references = Measure.getAggregateReferences(expression);
+      var countDistinctReferences = Measure.getCountDistinctReferences(expression);
+      for (var reference of references) {
+        if (helper.findByName(attributes, reference)) continue;
+        if (countDistinctReferences.indexOf(reference) !== -1) {
+          attributes.push(AttributeInfo.fromJS({ name: reference, special: 'unique' }));
+        } else {
+          attributes.push(AttributeInfo.fromJS({ name: reference, type: 'NUMBER' }));
+        }
+      }
+    });
+
+    if (attributeOverrides.length) {
+      attributes = AttributeInfo.override(attributes, attributeOverrides);
+    }
+
+    return attributes;
+  }
+
+  public addAttributes(newAttributes: Attributes): DataSource {
+    var { introspection, dimensions, measures, attributes } = this;
     if (introspection === 'none') return this;
 
     var autofillDimensions = introspection === 'autofill-dimensions-only' || introspection === 'autofill-all';
@@ -534,8 +754,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     var $main = $('main');
 
-    for (var attribute of attributes) {
-      var { name, type } = attribute;
+    for (var newAttribute of newAttributes) {
+      var { name, type, special } = newAttribute;
+
+      // Already exists
+      if (attributes && helper.findByName(attributes, name)) continue;
+
       var expression: Expression;
       switch (type) {
         case 'TIME':
@@ -550,10 +774,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           break;
 
         case 'STRING':
-          if (attribute.special === 'unique') {
+          if (special === 'unique') {
             if (!autofillMeasures) continue;
 
-            var newMeasures = Measure.measuresFromAttributeInfo(attribute);
+            var newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
             newMeasures.forEach((newMeasure) => {
               if (this.getMeasureByExpression(newMeasure.expression)) return;
               measures = measures.push(newMeasure);
@@ -590,7 +814,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
         case 'NUMBER':
           if (!autofillMeasures) continue;
 
-          var newMeasures = Measure.measuresFromAttributeInfo(attribute);
+          var newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
           newMeasures.forEach((newMeasure) => {
             if (this.getMeasureByExpression(newMeasure.expression)) return;
             measures = (name === 'count') ? measures.unshift(newMeasure) : measures.push(newMeasure);
@@ -598,7 +822,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           break;
 
         default:
-          throw new Error('unsupported type ' + type);
+          throw new Error(`unsupported type ${type}`);
       }
     }
 
@@ -610,8 +834,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     }
 
     var value = this.valueOf();
-    value.introspection = 'no-autofill';
-    value.attributes = attributes;
+    value.attributes = attributes ? AttributeInfo.override(attributes, newAttributes) : newAttributes;
     value.dimensions = dimensions;
     value.measures = measures;
 

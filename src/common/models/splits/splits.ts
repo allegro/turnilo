@@ -1,8 +1,8 @@
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf, arraysEqual } from 'immutable-class';
+import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction } from 'plywood';
-import { listsEqual } from '../../utils/general/general';
+import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
 import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
 
@@ -81,7 +81,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
 
   public equals(other: Splits): boolean {
     return Splits.isSplits(other) &&
-      listsEqual(this.splitCombines, other.splitCombines);
+      immutableListsEqual(this.splitCombines, other.splitCombines);
   }
 
   public replaceByIndex(index: number, replace: SplitCombine): Splits {

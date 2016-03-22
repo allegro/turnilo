@@ -1,7 +1,5 @@
 .idea
-build/tmp
 assets/data/*-large.*
-assets/data/*-private.*
 webstorm
 resources/data
 config.yaml

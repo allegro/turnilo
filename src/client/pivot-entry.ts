@@ -23,7 +23,7 @@ if (config && Array.isArray(config.dataSources)) {
   version = config.version || '0.0.0';
   dataSources = <List<DataSource>>List(config.dataSources.map((dataSourceJS: DataSourceJS) => {
     var executor = queryUrlExecutorFactory(dataSourceJS.name, '/plywood', version);
-    return DataSource.fromJS(dataSourceJS, executor);
+    return DataSource.fromJS(dataSourceJS, { executor });
   }));
 
   var container = document.getElementsByClassName('app-container')[0];

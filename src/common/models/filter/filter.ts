@@ -2,7 +2,7 @@ import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration } from 'chronoshift';
 import { $, r, Expression, LiteralExpression, ExpressionJS, InAction, Set, TimeRange } from 'plywood';
-import { listsEqual } from '../../utils/general/general';
+import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
 import { FilterClause, FilterClauseJS } from '../filter-clause/filter-clause';
 
@@ -72,7 +72,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
 
   public equals(other: Filter): boolean {
     return Filter.isFilter(other) &&
-      listsEqual(this.clauses, other.clauses);
+      immutableListsEqual(this.clauses, other.clauses);
   }
 
   public replaceByIndex(index: number, replace: FilterClause): Filter {

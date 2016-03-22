@@ -1,5 +1,5 @@
 import { List } from 'immutable';
-import { arraysEqual } from 'immutable-class';
+import { immutableArraysEqual, Equalable } from 'immutable-class';
 
 var objectHasOwnProperty = Object.prototype.hasOwnProperty;
 export function hasOwnProperty(obj: any, key: string | number): boolean {
@@ -28,10 +28,10 @@ export function makeTitle(name: string): string {
   }).trim();
 }
 
-export function listsEqual<T>(listA: List<T>, listB: List<T>): boolean {
+export function immutableListsEqual<T extends Equalable>(listA: List<T>, listB: List<T>): boolean {
   if (listA === listB) return true;
-  if (!listA || !listB) return false;
-  return arraysEqual(listA.toArray(), listB.toArray());
+  if (!listA !== !listB) return false;
+  return immutableArraysEqual(listA.toArray(), listB.toArray());
 }
 
 export interface DragPosition {
@@ -90,10 +90,17 @@ export function collect(wait: number, func: Function): Function {
   };
 }
 
+const URL_UNSAFE_CHARS = /[^\w.~\-]+/g;
+
+export function makeUrlSafeName(name: string): string {
+  return name.replace(URL_UNSAFE_CHARS, '_');
+}
+
 export function verifyUrlSafeName(name: string): void {
   if (typeof name !== 'string') throw new TypeError('name must be a string');
   if (!name.length) throw new Error('can not have empty name');
-  if (!/^[\w.~\-]*$/.test(name)) {
-    throw new Error(`'${name}' is not a URL safe name. Try '${name.replace(/[^\w~.~\-]+/g, '_')}' instead?`);
+  var urlSafeName = makeUrlSafeName(name);
+  if (name !== urlSafeName) {
+    throw new Error(`'${name}' is not a URL safe name. Try '${urlSafeName}' instead?`);
   }
 }

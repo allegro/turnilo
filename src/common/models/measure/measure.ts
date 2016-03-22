@@ -1,6 +1,6 @@
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
-import { $, Expression, ExpressionJS, Action, ApplyAction, AttributeInfo } from 'plywood';
+import { $, Expression, ExpressionJS, Action, ApplyAction, AttributeInfo, ChainExpression, helper } from 'plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
@@ -31,6 +31,46 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
 
   static isMeasure(candidate: any): candidate is Measure {
     return isInstanceOf(candidate, Measure);
+  }
+
+  /**
+   * Look for all instances of aggregateAction($blah) and return the blahs
+   * @param ex
+   * @returns {string[]}
+   */
+  static getAggregateReferences(ex: Expression): string[] {
+    var references: string[] = [];
+    ex.forEach((ex: Expression) => {
+      if (ex instanceof ChainExpression) {
+        var actions = ex.actions;
+        for (var action of actions) {
+          if (action.isAggregate()) {
+            references = references.concat(action.getFreeReferences());
+          }
+        }
+      }
+    });
+    return helper.deduplicateSort(references);
+  }
+
+  /**
+   * Look for all instances of countDistinct($blah) and return the blahs
+   * @param ex
+   * @returns {string[]}
+   */
+  static getCountDistinctReferences(ex: Expression): string[] {
+    var references: string[] = [];
+    ex.forEach((ex: Expression) => {
+      if (ex instanceof ChainExpression) {
+        var actions = ex.actions;
+        for (var action of actions) {
+          if (action.action === 'countDistinct') {
+            references = references.concat(action.getFreeReferences());
+          }
+        }
+      }
+    });
+    return helper.deduplicateSort(references);
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {

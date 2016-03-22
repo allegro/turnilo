@@ -1,5 +1,7 @@
 #!/bin/bash
 
+gulp
+
 if grep -rq 'describe\.only' ./build
   then
     echo "describe.only found. Please update your test"
