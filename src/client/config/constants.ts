@@ -47,10 +47,14 @@ export const STRINGS = {
   end: 'End',
   ok: 'OK',
   cancel: 'Cancel',
-  queryError: 'Query Error'
+  queryError: 'Query Error',
+  autoUpdate: 'Auto Update',
+  copyUrl: 'Copy URL',
+  copyStaticUrl: 'Copy static URL',
+  logout: 'Logout'
 };
 
 export const ADDITIONAL_LINKS = List([
-  { title: 'Settings', name: 'settings' },
-  { title: 'Info & Feedback', name: 'info & feedback', target: 'https://groups.google.com/forum/#!forum/imply-user-group'}
+  { title: 'Help & Feedback', name: 'help', target: 'https://groups.google.com/forum/#!forum/imply-user-group'},
+  { title: 'GitHub', name: 'github', target: 'https://github.com/implydata/pivot'}
 ]);

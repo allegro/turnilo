@@ -206,12 +206,10 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
     var tasks = <Q.Promise<any>[]>[];
 
     if (sourceListRefreshOnLoad) {
-      console.log('did sourceListRefreshOnLoad');
       tasks.push(loadDruidDataSources());
     }
 
     if (sourceReintrospectOnLoad) {
-      console.log('did sourceReintrospectOnLoad');
       tasks.push(introspectDataSources());
     }
 

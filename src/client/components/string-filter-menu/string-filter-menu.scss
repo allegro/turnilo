@@ -5,13 +5,15 @@ $checkbox-width: 20px;
 .string-filter-menu {
   .menu-table {
     @extend %white-shadow;
-    padding-top: 12px;
     background: $white;
     color: $text-standard;
 
+    &:after {
+      @include unpin-full(0, -14px, 0, -14px);
+    }
+
     .search-box {
       height: 30px;
-      padding: 0 10px;
 
       .clearable-input {
         @extend %input-cont-inset;
@@ -24,6 +26,8 @@ $checkbox-width: 20px;
     .rows {
       height: 280px;
       margin-top: 10px;
+      margin-left: -$padding-compact;
+      margin-right: -$padding-compact;
 
       overflow: auto;
     }
@@ -31,17 +35,17 @@ $checkbox-width: 20px;
     .row {
       height: 24px;
       cursor: pointer;
+      padding: 0 $padding-compact;
 
-      overflow: hidden;
-      white-space: nowrap;
-      padding-left: 10px;
-      margin-right: 10px;
-      padding-top: 2px;
+      .row-wrapper {
+        @include ellipsis;
+        height: 100%;
 
-      .label {
-        display: inline-block;
-        vertical-align: top;
-        padding-top: 4px;
+        .label {
+          display: inline-block;
+          vertical-align: top;
+          padding-top: 4px;
+        }
       }
 
       &:hover {
@@ -66,7 +70,7 @@ $checkbox-width: 20px;
   }
 
   .button-bar {
-    padding: 10px;
+    margin-top: 10px;
 
     .ok {
       @extend %button-primary;

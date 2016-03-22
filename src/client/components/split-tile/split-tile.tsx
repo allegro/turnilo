@@ -208,7 +208,6 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     return <SplitMenuAsync
       clicker={clicker}
       essence={essence}
-      direction="down"
       containerStage={menuStage}
       openOn={menuOpenOn}
       dimension={menuDimension}

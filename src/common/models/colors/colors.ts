@@ -1,7 +1,6 @@
 import { Class, Instance, isInstanceOf, isImmutableClass } from 'immutable-class';
-import { $, Expression, Set, valueFromJS, valueToJS, FilterAction, LimitAction } from 'plywood';
+import { $, Set, valueFromJS, valueToJS, FilterAction, LimitAction } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
-import { DataSource } from '../data-source/data-source';
 
 const NULL_COLOR = '#666666';
 //const OTHERS_COLOR = '#AAAAAA';
@@ -17,15 +16,6 @@ const NORMAL_COLORS = [
   '#B0B510',
   '#904064'
 ];
-
-function valuesFromJS(valuesJS: Lookup<any>): Lookup<any> {
-  var values: Lookup<any> = {};
-  for (var i = 0; i < NORMAL_COLORS.length; i++) {
-    if (!hasOwnProperty(valuesJS, i)) continue;
-    values[i] = valueFromJS(valuesJS[i]);
-  }
-  return values;
-}
 
 function valuesToJS(values: Lookup<any>): Lookup<any> {
   var valuesJS: Lookup<any> = {};
@@ -70,12 +60,14 @@ function cloneValues(values: Lookup<any>): Lookup<any> {
 export interface ColorsValue {
   dimension: string;
   values?: Lookup<any>;
+  nil?: boolean;
   limit?: number;
 }
 
 export interface ColorsJS {
   dimension: string;
   values?: Lookup<any>;
+  nil?: boolean;
   limit?: number;
 }
 
@@ -92,31 +84,64 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
 
   static fromValues(dimension: string, values: any[]): Colors {
     var valueLookup: Lookup<any> = {};
+    var nil = false;
     var n = Math.min(values.length, NORMAL_COLORS.length);
-    for (var i = 0; i < n; i++) {
-      valueLookup[i] = values[i];
+    var i = 0;
+    var j = 0;
+    while (i < n) {
+      var v = values[i];
+      if (v === null) {
+        nil = true;
+      } else {
+        valueLookup[j] = v;
+        j++;
+      }
+      i++;
     }
-    return new Colors({ dimension, values: valueLookup });
+    return new Colors({
+      dimension,
+      nil,
+      values: valueLookup
+    });
   }
 
   static fromJS(parameters: ColorsJS): Colors {
     var value: ColorsValue = {
       dimension: parameters.dimension,
-      values: parameters.values ? valuesFromJS(parameters.values) : null,
       limit: parameters.limit
     };
+
+    var valuesJS = parameters.values;
+    if (valuesJS) {
+      var nil = Boolean(parameters.nil);
+      var values: Lookup<any> = {};
+      for (var i = 0; i < NORMAL_COLORS.length; i++) {
+        if (!hasOwnProperty(valuesJS, i)) continue;
+        var vJS = valuesJS[i];
+        if (vJS === null) {
+          nil = true; // Back compat (there might be a null in values)
+        } else {
+          values[i] = valueFromJS(vJS);
+        }
+      }
+      value.values = values;
+      value.nil = nil;
+    }
+
     return new Colors(value);
   }
 
 
   public dimension: string;
   public values: Lookup<any>;
+  public nil: boolean;
   public limit: number;
 
   constructor(parameters: ColorsValue) {
     this.dimension = parameters.dimension;
     if (!this.dimension) throw new Error('must have a dimension');
     this.values = parameters.values;
+    this.nil = parameters.nil;
     this.limit = parameters.limit;
     if (!this.values && !this.limit) throw new Error('must have values or limit');
   }
@@ -125,6 +150,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return {
       dimension: this.dimension,
       values: this.values,
+      nil: this.nil,
       limit: this.limit
     };
   }
@@ -134,6 +160,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
       dimension: this.dimension
     };
     if (this.values) js.values = valuesToJS(this.values);
+    if (this.nil) js.nil = true;
     if (this.limit) js.limit = this.limit;
     return js;
   }
@@ -149,23 +176,24 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   public equals(other: Colors): boolean {
     return Colors.isColors(other) &&
       valuesEqual(this.values, other.values) &&
-      Boolean(this.limit) === Boolean(other.limit) &&
-      (!this.limit || this.limit === other.limit);
+      this.nil === other.nil &&
+      this.limit === other.limit;
   }
 
   public numColors(): number {
     var { values, limit } = this;
     if (values) {
-      return Object.keys(values).length;
+      return Object.keys(values).length + Number(this.nil);
     }
     return limit;
   }
 
   public toArray(): any[] {
-    var { values } = this;
+    var { values, nil } = this;
     if (!values) return null;
 
     var vs: any[] = [];
+    if (nil) vs.push(null);
     for (var i = 0; i < NORMAL_COLORS.length; i++) {
       if (!hasOwnProperty(values, i)) continue;
       vs.push(values[i]);
@@ -220,40 +248,52 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   }
 
   public has(v: any): boolean {
+    if (v == null) return this.nil;
     return this.valueIndex(v) !== -1;
   }
 
   public add(v: any): Colors {
     if (this.has(v)) return this;
-    var idx = this.nextIndex();
-    if (idx === -1) return this;
-
     var value = this.valueOf();
-    value.values = value.values ? cloneValues(value.values) : {};
-    value.values[idx] = v;
-    delete value.limit;
+
+    if (v === null) {
+      value.nil = true;
+    } else {
+      var idx = this.nextIndex();
+      if (idx === -1) return this;
+      value.values = value.values ? cloneValues(value.values) : {};
+      value.values[idx] = v;
+      delete value.limit;
+    }
+
     return new Colors(value);
   }
 
   public remove(v: any): Colors {
-    var idx = this.valueIndex(v);
-    if (idx === -1) return this;
-
+    if (!this.has(v)) return this;
     var value = this.valueOf();
-    value.values = cloneValues(value.values);
-    delete value.values[idx];
-    delete value.limit;
+
+    if (v == null) {
+      value.nil = false;
+    } else {
+      var idx = this.valueIndex(v);
+      if (idx === -1) return this;
+      value.values = cloneValues(value.values);
+      delete value.values[idx];
+      delete value.limit;
+    }
+
     return new Colors(value);
   }
 
   public getColor(value: any, index: number): string {
-    if (value === null) return NULL_COLOR;
     var { values, limit } = this;
     if (values) {
+      if (value === null && this.nil) return NULL_COLOR;
       var colorIdx = this.valueIndex(value);
       return colorIdx === -1 ? null : NORMAL_COLORS[colorIdx];
     } else {
-      return index < limit ? NORMAL_COLORS[index] : null;
+      return index < limit ? (value === null ? NULL_COLOR : NORMAL_COLORS[index]) : null;
     }
   }
 }

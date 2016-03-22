@@ -14,7 +14,6 @@ import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { TileHeader } from '../tile-header/tile-header';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
-import { HighlightControls } from '../highlight-controls/highlight-controls';
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
 import { HighlightString } from '../highlight-string/highlight-string';

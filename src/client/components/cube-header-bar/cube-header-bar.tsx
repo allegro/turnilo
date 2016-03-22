@@ -1,38 +1,74 @@
 require('./cube-header-bar.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Datum, Dataset } from 'plywood';
-import { Essence, DataSource, User, Stage } from "../../../common/models/index";
+import { Clicker, Essence, DataSource, User } from "../../../common/models/index";
 
-import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Modal } from '../modal/modal';
+import { HilukMenu } from '../hiluk-menu/hiluk-menu';
+import { AutoRefreshMenu } from '../auto-refresh-menu/auto-refresh-menu';
+import { UserMenu } from '../user-menu/user-menu';
+
 
 export interface CubeHeaderBarProps extends React.Props<any> {
-  dataSource: DataSource;
+  clicker: Clicker;
+  essence: Essence;
   user?: User;
   onNavClick: Function;
   getUrlPrefix?: Function;
+  refreshMaxTime?: Function;
 }
 
 export interface CubeHeaderBarState {
   showTestMenu?: boolean;
+  hilukMenuOpenOn?: Element;
   autoRefreshMenuOpenOn?: Element;
+  autoRefreshRate?: number;
+  userMenuOpenOn?: Element;
 }
 
 export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeaderBarState> {
+  private autoRefreshTimer: NodeJS.Timer;
 
   constructor() {
     super();
     this.state = {
       showTestMenu: false,
-      autoRefreshMenuOpenOn: null
+      hilukMenuOpenOn: null,
+      autoRefreshMenuOpenOn: null,
+      userMenuOpenOn: null
     };
   }
 
+  componentDidMount() {
+    this.setAutoRefreshRate(5);
+  }
+
+  setAutoRefreshRate(rate: number) {
+    if (this.state.autoRefreshRate === rate) return;
+
+    // CLear existing timer if exists
+    if (this.autoRefreshTimer) {
+      clearInterval(this.autoRefreshTimer);
+      this.autoRefreshTimer = null;
+    }
+
+    // Make new timer
+    var { refreshMaxTime } = this.props;
+    if (refreshMaxTime && rate) {
+      this.autoRefreshTimer = setInterval(() => {
+        refreshMaxTime();
+      }, rate * 60000);
+
+      this.setState({
+        autoRefreshRate: rate
+      });
+    }
+  }
+
   onPanicClick(e: MouseEvent) {
-    var { dataSource, getUrlPrefix } = this.props;
+    var { essence, getUrlPrefix } = this.props;
+    var { dataSource } = essence;
     if (e.altKey) {
       console.log('DataSource:', dataSource.toJS());
       return;
@@ -65,40 +101,96 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     </Modal>;
   }
 
-  onAutoRefreshClick(e: MouseEvent) {
+  // Share menu ("hiluk" = share in Hebrew)
+
+  onHilukMenuClick(e: MouseEvent) {
+    const { hilukMenuOpenOn } = this.state;
+    if (hilukMenuOpenOn) return this.onHilukMenuClose();
+    this.setState({
+      hilukMenuOpenOn: e.target as Element
+    });
+  }
+
+  onHilukMenuClose() {
+    this.setState({
+      hilukMenuOpenOn: null
+    });
+  }
+
+  renderHilukMenu() {
+    const { hilukMenuOpenOn } = this.state;
+    if (!hilukMenuOpenOn) return null;
+
+    return <HilukMenu
+      openOn={hilukMenuOpenOn}
+      onClose={this.onHilukMenuClose.bind(this)}
+    />;
+  }
+
+  // Auto Refresh menu
+
+  onAutoRefreshMenuClick(e: MouseEvent) {
+    const { autoRefreshMenuOpenOn } = this.state;
+    if (autoRefreshMenuOpenOn) return this.onAutoRefreshMenuClose();
     this.setState({
       autoRefreshMenuOpenOn: e.target as Element
     });
   }
 
-  onAutoRefreshClose() {
+  onAutoRefreshMenuClose() {
     this.setState({
       autoRefreshMenuOpenOn: null
     });
   }
 
   renderAutoRefreshMenu() {
-    const { autoRefreshMenuOpenOn } = this.state;
+    const { refreshMaxTime } = this.props;
+    const { autoRefreshMenuOpenOn, autoRefreshRate } = this.state;
     if (!autoRefreshMenuOpenOn) return null;
 
-    var stage = Stage.fromSize(300, 200);
-    return <BubbleMenu
-      className="refresh-menu"
-      direction="down"
-      stage={stage}
+    return <AutoRefreshMenu
       openOn={autoRefreshMenuOpenOn}
-      onClose={this.onAutoRefreshClose.bind(this)}
-    >
-      lol
-    </BubbleMenu>;
+      onClose={this.onAutoRefreshMenuClose.bind(this)}
+      autoRefreshRate={autoRefreshRate}
+      setAutoRefreshRate={this.setAutoRefreshRate.bind(this)}
+      refreshMaxTime={refreshMaxTime}
+    />;
+  }
+
+  // User menu
+
+  onUserMenuClick(e: MouseEvent) {
+    const { userMenuOpenOn } = this.state;
+    if (userMenuOpenOn) return this.onUserMenuClose();
+    this.setState({
+      userMenuOpenOn: e.target as Element
+    });
+  }
+
+  onUserMenuClose() {
+    this.setState({
+      userMenuOpenOn: null
+    });
+  }
+
+  renderUserMenu() {
+    const { user } = this.props;
+    const { userMenuOpenOn } = this.state;
+    if (!userMenuOpenOn) return null;
+
+    return <UserMenu
+      openOn={userMenuOpenOn}
+      onClose={this.onUserMenuClose.bind(this)}
+      user={user}
+    />;
   }
 
   render() {
-    var { user, onNavClick, dataSource } = this.props;
+    var { user, onNavClick, essence } = this.props;
 
     var userButton: JSX.Element = null;
     if (user) {
-      userButton = <div className="icon-button">
+      userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
         <SvgIcon svg={require('../../icons/full-user.svg')}/>
       </div>;
     }
@@ -108,25 +200,24 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
         <div className="menu-icon">
           <SvgIcon svg={require('../../icons/menu.svg')}/>
         </div>
-        <div className="title">{dataSource.title}</div>
+        <div className="title">{essence.dataSource.title}</div>
       </div>
       <div className="right-bar">
+        <div className="icon-button auto-refresh" onClick={this.onAutoRefreshMenuClick.bind(this)}>
+          <SvgIcon className="auto-refresh-icon" svg={require('../../icons/full-refresh.svg')}/>
+        </div>
+        <div className="icon-button hiluk" onClick={this.onHilukMenuClick.bind(this)}>
+          <SvgIcon className="hiluk-icon" svg={require('../../icons/full-hiluk.svg')}/>
+        </div>
         <div className="icon-button panic" onClick={this.onPanicClick.bind(this)}>
           <SvgIcon className="panic-icon" svg={require('../../icons/panic.svg')}/>
-        </div>
-        <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
-          <SvgIcon className="help-icon" svg={require('../../icons/help.svg')}/>
-        </a>
-        <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
-          <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
-        </a>
-        <div className="icon-button auto-refresh" onClick={this.onAutoRefreshClick.bind(this)}>
-          <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
         </div>
         {userButton}
       </div>
       {this.renderTestModal()}
+      {this.renderHilukMenu()}
       {this.renderAutoRefreshMenu()}
+      {this.renderUserMenu()}
     </header>;
   }
 }

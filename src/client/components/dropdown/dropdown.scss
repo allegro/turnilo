@@ -22,12 +22,16 @@
     padding-top: 8px;
   }
 
+  .dropdown-label {
+    @extend %input-top-label;
+  }
+
   .caret-icon {
     position: absolute;
     width: 11px;
     height: 9px;
     right: 9px;
-    bottom: 10px;
+    bottom: 9px;
 
     path {
       fill: $text-lighterish;

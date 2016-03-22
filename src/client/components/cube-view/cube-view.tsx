@@ -117,23 +117,25 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       dropHighlight: () => {
         var { essence } = this.state;
         this.setState({ essence: essence.dropHighlight() });
+      },
+
+      setAutoRefresh: (rate: number) => {
+
       }
     };
     this.clicker = clicker;
     this.globalResizeListener = this.globalResizeListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
+  }
 
-    (window as any).autoRefresh = () => {
-      setInterval(() => {
-        var { essence } = this.state;
-        var { dataSource } = essence;
-        if (!dataSource.shouldUpdateMaxTime()) return;
-        DataSource.updateMaxTime(dataSource).then((updatedDataSource) => {
-          console.log(`Updated MaxTime for '${updatedDataSource.name}'`);
-          this.setState({ essence: essence.updateDataSource(updatedDataSource) });
-        });
-      }, 1000);
-    };
+  refreshMaxTime() {
+    var { essence } = this.state;
+    var { dataSource } = essence;
+    if (!dataSource.shouldUpdateMaxTime()) return;
+    DataSource.updateMaxTime(dataSource).then((updatedDataSource) => {
+      console.log(`Updated MaxTime for '${updatedDataSource.name}'`);
+      this.setState({ essence: essence.updateDataSource(updatedDataSource) });
+    });
   }
 
   componentWillMount() {
@@ -294,10 +296,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
     return <div className='cube-view'>
       <CubeHeaderBar
-        dataSource={essence.dataSource}
+        clicker={clicker}
+        essence={essence}
         user={user}
         onNavClick={onNavClick}
         getUrlPrefix={getUrlPrefix}
+        refreshMaxTime={this.refreshMaxTime.bind(this)}
       />
       <div className="container" ref='container'>
         <DimensionMeasurePanel

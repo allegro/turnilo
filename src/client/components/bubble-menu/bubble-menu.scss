@@ -5,6 +5,11 @@ $shpitz-size: 10px;
 .bubble-menu {
   @extend %menu-cont;
   position: absolute;
+  padding: $padding-compact;
+
+  &.mini {
+    padding: $padding-mini;
+  }
 
   .shpitz {
     position: absolute;
@@ -47,5 +52,20 @@ $shpitz-size: 10px;
 
   .menu-header {
     @include pin-top($menu-title-bar-height);
+  }
+
+  ul.bubble-list {
+    margin-left: -$padding-compact;
+    margin-right: -$padding-compact;
+
+    li {
+      padding: 0 $padding-compact;
+      line-height: 25px;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba($brand, 0.12);
+      }
+    }
   }
 }

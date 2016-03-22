@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
-import { $, Expression } from 'plywood';
 import { Colors, ColorsJS } from './colors';
 
 describe('Colors', () => {
@@ -17,11 +16,13 @@ describe('Colors', () => {
       },
       {
         dimension: 'country',
-        values: { '1': null, '3': 'UK', '7': 'India' }
+        values: { '3': 'UK', '7': 'India' },
+        nil: true
       },
       {
         dimension: 'country',
-        values: { '1': null, '3': 100, '7': 200 }
+        values: { '3': 100, '7': 200 },
+        nil: true
       },
       {
         dimension: 'country',
@@ -39,78 +40,101 @@ describe('Colors', () => {
   });
 
   describe('methods', () => {
-    it('#fromLimit', () => {
-      var colors = Colors.fromLimit('country', 5);
-      expect(colors.toJS()).to.deep.equal({
-        dimension: 'country',
-        limit: 5
+    describe('#fromLimit', () => {
+      it('works in basic case', () => {
+        var colors = Colors.fromLimit('country', 5);
+        expect(colors.toJS()).to.deep.equal({
+          dimension: 'country',
+          limit: 5
+        });
       });
+
     });
 
-    it('#fromValues', () => {
+    describe('#fromValues', () => {
+      it('works in basic case', () => {
+        var colors = Colors.fromValues('country', [null, 'Madagascar', 'UK', 'India', 'Russia']);
+        expect(colors.toJS()).to.deep.equal({
+          "dimension": "country",
+          "values": {
+            "0": 'Madagascar',
+            "1": "UK",
+            "2": "India",
+            "3": "Russia"
+          },
+          "nil": true
+        });
+
+        expect(colors.has(null), 'has null').to.equal(true);
+
+        expect(colors.has('South Africa'), 'no SA').to.equal(false);
+
+        colors = colors.add('South Africa');
+
+        expect(colors.has('South Africa')).to.equal(true);
+
+        expect(colors.toJS()).to.deep.equal({
+          "dimension": "country",
+          "values": {
+            "0": "Madagascar",
+            "1": "UK",
+            "2": "India",
+            "3": "Russia",
+            "4": "South Africa"
+          },
+          "nil": true
+        });
+
+        colors = colors.remove('UK');
+
+        expect(colors.toJS()).to.deep.equal({
+          "dimension": "country",
+          "values": {
+            "0": "Madagascar",
+            "2": "India",
+            "3": "Russia",
+            "4": "South Africa"
+          },
+          "nil": true
+        });
+
+        colors = colors.add('Australia');
+
+        expect(colors.toJS()).to.deep.equal({
+          "dimension": "country",
+          "values": {
+            "0": "Madagascar",
+            "1": "Australia",
+            "2": "India",
+            "3": "Russia",
+            "4": "South Africa"
+          },
+          "nil": true
+        });
+
+        var colorsWithGap = colors.remove("Australia");
+        expect(colors.equals(colorsWithGap)).to.equal(false);
+        expect(colorsWithGap.equals(colors)).to.equal(false);
+      });
+
+    });
+  });
+
+  describe('#getColor', () => {
+    it('works in basic case (with null)', () => {
       var colors = Colors.fromValues('country', [null, 'UK', 'India', 'Russia', 'Madagascar']);
-      expect(colors.toJS()).to.deep.equal({
-        "dimension": "country",
-        "values": {
-          "0": null,
-          "1": "UK",
-          "2": "India",
-          "3": "Russia",
-          "4": "Madagascar"
-        }
-      });
-
-      expect(colors.has(null), 'has null').to.equal(true);
-
-      expect(colors.has('South Africa'), 'no SA').to.equal(false);
-
-      colors = colors.add('South Africa');
-
-      expect(colors.has('South Africa')).to.equal(true);
-
-      expect(colors.toJS()).to.deep.equal({
-        "dimension": "country",
-        "values": {
-          "0": null,
-          "1": "UK",
-          "2": "India",
-          "3": "Russia",
-          "4": "Madagascar",
-          "5": "South Africa"
-        }
-      });
-
-      colors = colors.remove('UK');
-
-      expect(colors.toJS()).to.deep.equal({
-        "dimension": "country",
-        "values": {
-          "0": null,
-          "2": "India",
-          "3": "Russia",
-          "4": "Madagascar",
-          "5": "South Africa"
-        }
-      });
-
-      colors = colors.add('Australia');
-
-      expect(colors.toJS()).to.deep.equal({
-        "dimension": "country",
-        "values": {
-          "0": null,
-          "1": "Australia",
-          "2": "India",
-          "3": "Russia",
-          "4": "Madagascar",
-          "5": "South Africa"
-        }
-      });
-
-      var colorsWithGap = colors.remove("Australia");
-      expect(colors.equals(colorsWithGap)).to.equal(false);
-      expect(colorsWithGap.equals(colors)).to.equal(false);
+      expect(colors.getColor('UK', 0)).to.equal('#2D95CA');
+      expect(colors.getColor(null, 1)).to.equal('#666666');
+      expect(colors.getColor('lol', 2)).to.equal(null);
     });
+
+    it('works in basic case (no null)', () => {
+      var colors = Colors.fromValues('country', ['Null Island', 'UK', 'India', 'Russia', 'Madagascar']);
+      expect(colors.getColor('UK', 0)).to.equal('#EFB925');
+      expect(colors.getColor(null, 1)).to.equal(null);
+      expect(colors.getColor('lol', 2)).to.equal(null);
+    });
+
   });
 
 });

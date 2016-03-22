@@ -37,6 +37,6 @@ export class HighlightString extends React.Component<HighlightStringProps, Highl
   render() {
     var { className } = this.props;
 
-    return <div className={'highlight-string ' + (className || '')}>{this.highlightInString()}</div>;
+    return <span className={'highlight-string ' + (className || '')}>{this.highlightInString()}</span>;
   }
 }

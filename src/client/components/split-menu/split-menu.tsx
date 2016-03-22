@@ -1,13 +1,11 @@
 require('./split-menu.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression, RefExpression, Executor, Dataset, TimeBucketAction, SortAction, LimitAction } from 'plywood';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Colors, Dimension, Measure, SortOn } from '../../../common/models/index';
-import { STRINGS, SEGMENT } from '../../config/constants';
+import { STRINGS } from '../../config/constants';
 import { enterKey } from '../../utils/dom/dom';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
@@ -26,12 +24,11 @@ function formatGranularity(gran: string): string {
 export interface SplitMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
-  direction: string;
-  containerStage: Stage;
   openOn: Element;
+  containerStage: Stage;
+  onClose: Function;
   dimension: Dimension;
   split: SplitCombine;
-  onClose: Function;
 }
 
 export interface SplitMenuState {
@@ -245,7 +242,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   render() {
-    var { direction, containerStage, openOn, dimension, onClose } = this.props;
+    var { containerStage, openOn, dimension, onClose } = this.props;
     var { split } = this.state;
     if (!dimension) return null;
 
@@ -260,7 +257,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
     return <BubbleMenu
       className="split-menu"
-      direction={direction}
+      direction="down"
       containerStage={containerStage}
       stage={menuSize}
       openOn={openOn}

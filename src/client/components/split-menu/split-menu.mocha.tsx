@@ -17,7 +17,6 @@ describe('SplitMenu', () => {
         clicker={null}
         containerStage={null}
         dimension={null}
-        direction={null}
         essence={null}
         onClose={null}
         openOn={null}

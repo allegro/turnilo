@@ -11,6 +11,9 @@ import { BodyPortal } from '../body-portal/body-portal';
 
 const OFFSET_H = 10;
 const OFFSET_V = -1;
+const SCREEN_OFFSET = 5;
+
+export type BubbleLayout = 'normal' | 'mini';
 
 export interface BubbleMenuProps extends React.Props<any> {
   className: string;
@@ -22,6 +25,7 @@ export interface BubbleMenuProps extends React.Props<any> {
   openOn: Element;
   onClose: Function;
   inside?: Element;
+  layout?: BubbleLayout;
 }
 
 export interface BubbleMenuState {
@@ -98,7 +102,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   render(): any {
-    var { className, direction, stage, fixedSize, containerStage, inside, children } = this.props;
+    var { className, direction, stage, fixedSize, containerStage, inside, layout, children } = this.props;
     var { id, x, y } = this.state;
 
     var menuWidth = stage.width;
@@ -117,7 +121,12 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     };
 
     if (!containerStage) {
-      containerStage = Stage.fromSize(window.innerWidth, window.innerHeight);
+      containerStage = new Stage({
+        x: SCREEN_OFFSET,
+        y: SCREEN_OFFSET,
+        width: window.innerWidth - SCREEN_OFFSET * 2,
+        height: window.innerHeight - SCREEN_OFFSET * 2
+      });
     }
 
     switch (direction) {
@@ -151,10 +160,11 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
       if (!insideId) throw new Error('inside element must have id');
     }
 
-    var myClass = 'bubble-menu ' + direction;
-    if (className) myClass += ' ' + className;
+    var myClasses = ['bubble-menu', direction];
+    if (className) myClasses.push(className);
+    if (layout === 'mini') myClasses.push('mini');
     return <BodyPortal left={menuLeft} top={menuTop}>
-      <div className={myClass} id={id} data-parent={insideId} style={menuStyle}>
+      <div className={myClasses.join(' ')} id={id} data-parent={insideId} style={menuStyle}>
         {children}
         <div className="shpitz" style={shpitzStyle}></div>
       </div>
