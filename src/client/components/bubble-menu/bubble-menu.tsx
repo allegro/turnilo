@@ -116,12 +116,15 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
       top: 0
     };
 
+    if (!containerStage) {
+      containerStage = Stage.fromSize(window.innerWidth, window.innerHeight);
+    }
+
     switch (direction) {
       case 'right':
         var top = y - menuHeight / 2;
-        if (containerStage) {
-          top = Math.min(Math.max(top, containerStage.y), containerStage.y + containerStage.height - menuHeight);
-        }
+        // constrain
+        top = Math.min(Math.max(top, containerStage.y), containerStage.y + containerStage.height - menuHeight);
         menuLeft = x;
         menuTop = top;
         shpitzStyle.top = y - top;
@@ -130,9 +133,8 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
       case 'down':
         var left = x - menuWidth / 2;
-        if (containerStage) {
-          left = Math.min(Math.max(left, containerStage.x), containerStage.x + containerStage.width - menuWidth);
-        }
+        // constrain
+        left = Math.min(Math.max(left, containerStage.x), containerStage.x + containerStage.width - menuWidth);
         menuLeft = left;
         menuTop = y;
         shpitzStyle.left = x - left;

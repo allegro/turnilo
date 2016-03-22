@@ -4,8 +4,9 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Datum, Dataset } from 'plywood';
-import { Essence, DataSource, User } from "../../../common/models/index";
+import { Essence, DataSource, User, Stage } from "../../../common/models/index";
 
+import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Modal } from '../modal/modal';
 
 export interface CubeHeaderBarProps extends React.Props<any> {
@@ -17,6 +18,7 @@ export interface CubeHeaderBarProps extends React.Props<any> {
 
 export interface CubeHeaderBarState {
   showTestMenu?: boolean;
+  autoRefreshMenuOpenOn?: Element;
 }
 
 export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeaderBarState> {
@@ -24,7 +26,8 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   constructor() {
     super();
     this.state = {
-      showTestMenu: false
+      showTestMenu: false,
+      autoRefreshMenuOpenOn: null
     };
   }
 
@@ -62,6 +65,34 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     </Modal>;
   }
 
+  onAutoRefreshClick(e: MouseEvent) {
+    this.setState({
+      autoRefreshMenuOpenOn: e.target as Element
+    });
+  }
+
+  onAutoRefreshClose() {
+    this.setState({
+      autoRefreshMenuOpenOn: null
+    });
+  }
+
+  renderAutoRefreshMenu() {
+    const { autoRefreshMenuOpenOn } = this.state;
+    if (!autoRefreshMenuOpenOn) return null;
+
+    var stage = Stage.fromSize(300, 200);
+    return <BubbleMenu
+      className="refresh-menu"
+      direction="down"
+      stage={stage}
+      openOn={autoRefreshMenuOpenOn}
+      onClose={this.onAutoRefreshClose.bind(this)}
+    >
+      lol
+    </BubbleMenu>;
+  }
+
   render() {
     var { user, onNavClick, dataSource } = this.props;
 
@@ -89,9 +120,13 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
         <a className="icon-button github" href="https://github.com/implydata/pivot" target="_blank">
           <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
         </a>
+        <div className="icon-button auto-refresh" onClick={this.onAutoRefreshClick.bind(this)}>
+          <SvgIcon className="github-icon" svg={require('../../icons/github.svg')}/>
+        </div>
         {userButton}
       </div>
       {this.renderTestModal()}
+      {this.renderAutoRefreshMenu()}
     </header>;
   }
 }
