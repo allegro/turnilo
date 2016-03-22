@@ -225,7 +225,7 @@ describe('DataSource', () => {
   });
 
 
-  describe("#addAttributes", () => {
+  describe("#deduceAttributes", () => {
     it("works in a generic case", () => {
       var dataSource = DataSource.fromJS({
         "name": "wiki",
@@ -245,15 +245,18 @@ describe('DataSource', () => {
             "expression": "$__time"
           },
           {
-            "name": "page",
-            "title": "Page"
+            "name": "page"
           },
           {
-            "name": "user",
+            "name": "pageInBrackets",
+            "expression": "'[' ++ $page ++ ']'"
+          },
+          {
+            "name": "userInBrackets",
             "expression": "'[' ++ $user ++ ']'"
           },
           {
-            "name": "language",
+            "name": "languageLookup",
             "expression": "$language.lookup(wiki_language_lookup)"
           }
         ],

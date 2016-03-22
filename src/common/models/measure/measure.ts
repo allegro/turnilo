@@ -1,6 +1,6 @@
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
-import { $, Expression, ExpressionJS, Action, ApplyAction, AttributeInfo, ChainExpression } from 'plywood';
+import { $, Expression, ExpressionJS, Action, ApplyAction, AttributeInfo, ChainExpression, helper } from 'plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
@@ -50,7 +50,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
         }
       }
     });
-    return references;
+    return helper.deduplicateSort(references);
   }
 
   /**
@@ -70,7 +70,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
         }
       }
     });
-    return references;
+    return helper.deduplicateSort(references);
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {

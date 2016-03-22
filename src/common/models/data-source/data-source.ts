@@ -719,6 +719,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       if (expression.equals(timeAttribute)) return;
       var references = expression.getFreeReferences();
       for (var reference of references) {
+        if (helper.findByName(attributes, reference)) continue;
         attributes.push(AttributeInfo.fromJS({ name: reference, type: 'STRING' }));
       }
     });
@@ -728,6 +729,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       var references = Measure.getAggregateReferences(expression);
       var countDistinctReferences = Measure.getCountDistinctReferences(expression);
       for (var reference of references) {
+        if (helper.findByName(attributes, reference)) continue;
         if (countDistinctReferences.indexOf(reference) !== -1) {
           attributes.push(AttributeInfo.fromJS({ name: reference, special: 'unique' }));
         } else {
