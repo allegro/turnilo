@@ -37,7 +37,7 @@
     "morgan": "1.7.0",
     "nopt": "3.0.6",
     "numeral": "1.5.3",
-    "plywood": "0.9.16",
+    "plywood": "0.9.17",
     "plywood-druid-requester": "1.4.1",
     "plywood-mysql-requester": "1.2.2",
     "q": "1.4.1",
