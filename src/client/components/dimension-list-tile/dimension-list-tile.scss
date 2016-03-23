@@ -40,7 +40,7 @@ $icon-width: 37px;
       .icon {
         @include pin-left($icon-width);
         top: 4px;
-        left: -1px;
+        left: 0;
         width: 19px;
 
         svg {
@@ -59,7 +59,7 @@ $icon-width: 37px;
         top: 7px;
         bottom: 0;
         right: 10px;
-        left: $icon-width;
+        left: $icon-width + 1;
       }
     }
   }

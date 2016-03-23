@@ -112,8 +112,9 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
 
     return <div className={'dropdown ' + direction} onClick={this.onClick.bind(this)}>
       {labelElement}
-      <div className="selected-item">{renderItem(selectedItem)}</div>
-      <SvgIcon className="caret-icon" svg={require('../../icons/dropdown-caret.svg')}/>
+      <div className="selected-item">{renderItem(selectedItem)}
+        <SvgIcon className="caret-icon" svg={require('../../icons/dropdown-caret.svg')}/>
+      </div>
       { open ? this.renderMenu() : null }
     </div>;
   }
