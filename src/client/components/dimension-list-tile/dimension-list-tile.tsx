@@ -153,7 +153,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
         style={style}
       >
         <div className="icon">
-          <SvgIcon svg={require('../../icons/type-' + dimension.className + '.svg')}/>
+          <SvgIcon svg={require('../../icons/dim-' + dimension.className + '.svg')}/>
         </div>
         <div className="item-title">{dimension.title}</div>
       </div>;
