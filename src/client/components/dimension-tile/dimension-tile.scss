@@ -22,7 +22,7 @@ $folder-box-height: 32px;
     left: 0;
     right: 0;
     height: $search-box-height;
-    padding: 0 $tile-padding-h;
+    padding: 0 $padding-compact;
     margin-bottom: 4px;
 
     .clearable-input {
@@ -80,7 +80,7 @@ $folder-box-height: 32px;
     }
 
     &:hover {
-      background: $background-lightest;
+      background: $hover;
     }
   }
 
@@ -119,18 +119,18 @@ $folder-box-height: 32px;
   .segment-value {
     @include unpin-right($measure-width);
 
-    left: $tile-padding-h;
+    left: $padding-compact;
     overflow: hidden;
     white-space: nowrap;
 
     .checkbox {
-
+      margin-top: 1px;
     }
 
     .label {
       display: inline-block;
       vertical-align: top;
-      padding-top: 5px;
+      padding-top: 6px;
     }
   }
 
@@ -138,8 +138,8 @@ $folder-box-height: 32px;
     @include pin-right($measure-width);
 
     text-align: right;
-    padding-top: 5px;
-    padding-right: $tile-padding-h;
+    padding-top: 6px;
+    padding-right: $padding-compact;
     white-space: nowrap;
   }
 

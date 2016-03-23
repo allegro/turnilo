@@ -1,6 +1,6 @@
 @import '../../imports';
 
-$icon-width: 35px;
+$icon-width: 37px;
 
 .dimension-list-tile {
   @extend %module;
@@ -42,7 +42,7 @@ $icon-width: 35px;
 
         svg {
           position: absolute;
-          left: $tile-padding-h;
+          left: $padding-compact - 2px;
 
           path {
             fill: hsla(0, 0, 0, 0.35);
