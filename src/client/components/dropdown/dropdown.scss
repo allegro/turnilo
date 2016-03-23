@@ -3,6 +3,7 @@
 .dropdown {
   cursor: pointer;
   white-space: nowrap;
+  pointer-events: none;
 
   &:hover {
     .caret-icon {
@@ -13,13 +14,20 @@
   }
 
   .selected-item {
-    display: inline-block;
+    @extend %input-cont;
+    display: block;
+    pointer-events: auto;
+    height: $input-height;
+    padding-left: 6px;
+    padding-top: 8px;
   }
 
   .caret-icon {
     position: absolute;
     width: 11px;
     height: 9px;
+    right: 9px;
+    bottom: 10px;
 
     path {
       fill: $text-lighterish;
@@ -29,6 +37,7 @@
   .dropdown-menu {
     @extend %menu-cont;
     position: absolute;
+    pointer-events: auto;
     z-index: 800;
     padding: 6px;
     width: 100%;

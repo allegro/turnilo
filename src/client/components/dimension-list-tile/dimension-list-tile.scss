@@ -39,6 +39,9 @@ $icon-width: 37px;
 
       .icon {
         @include pin-left($icon-width);
+        top: 4px;
+        left: 0;
+        width: 19px;
 
         svg {
           position: absolute;
@@ -50,40 +53,13 @@ $icon-width: 37px;
         }
       }
 
-      &.type-string .icon svg {
-        top: 10px;
-        width: 17px;
-      }
-
-      &.type-number .icon svg {
-        top: 6px;
-        width: 16px;
-      }
-
-      &.type-boolean .icon svg {
-        top: 6px;
-        width: 15px;
-      }
-
-      &.type-time .icon svg {
-        top: 6px;
-        margin-left: 1px;
-        width: 15px;
-      }
-
-      &.type-string-geo .icon svg {
-        top: 6px;
-        margin-left: 1px;
-        width: 15px;
-      }
-
       .item-title {
         @include ellipsis;
         position: absolute;
         top: 7px;
         bottom: 0;
         right: 10px;
-        left: $icon-width;
+        left: $icon-width + 1;
       }
     }
   }

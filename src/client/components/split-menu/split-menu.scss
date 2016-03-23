@@ -47,25 +47,6 @@ $title-margin: 6px;
 
     .dropdown-label {
       @extend %input-top-label;
-      margin-bottom: $title-margin;
-    }
-
-    .selected-item {
-      @extend %input-cont;
-      display: block;
-      padding: 7px 6px;
-      pointer-events: auto;
-    }
-
-    .caret-icon {
-      position: absolute;
-      right: 9px;
-      bottom: 10px;
-    }
-
-    .dropdown-menu {
-      width: 100%;
-      pointer-events: auto;
     }
   }
 
@@ -80,7 +61,7 @@ $title-margin: 6px;
       right: 0;
       bottom: 0;
       width: 32px;
-      height: 29px;
+      height: $input-height;
 
       svg {
         position: absolute;

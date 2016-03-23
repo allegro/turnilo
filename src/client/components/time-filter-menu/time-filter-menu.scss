@@ -29,46 +29,43 @@
 
   .cont {
     padding: 0 10px 10px 10px;
-    margin-top: 14px;
+    margin-top: 18px;
 
     .type {
       @extend %input-top-label;
-      margin-bottom: 6px;
     }
 
     .buttons {
-      margin-bottom: 16px;
+      margin-bottom: $form-spacing-compact;
 
       button {
-        @extend %input-cont;
-        width: 18%;
-        height: 27px;
-        margin-right: 2%;
-        color: $text-light;
-        //border-color: $border-extra-light;
-        box-shadow: 0 1px 1px 0 hsla(0, 0, 0, 0.2);
+        @extend %button-secondary;
+        min-width: 0;
+        padding: 0;
+        width: 17.5%;
+        margin-right: 3%;
 
         &.selected {
-          background: $brand;
-          border: 0;
-          color: $white;
+          @extend %button-primary;
+          min-width: 0;
+          padding: 0;
+        }
+
+        &:last-child {
+          margin-right: 0;
         }
       }
     }
 
     .preview {
-      margin-top: 22px;
-      padding-left: 4px;
-      padding-top: 10px;
-      border-top: 1px solid $border-extra-light;
-      color: $text-light;
+      @extend %indicator-field;
     }
 
     .time-input {
       width: 100%;
-      height: 27px;
+      height: $input-height;
       border: 0;
-      margin-bottom: 12px;
+      margin-bottom: $form-spacing-compact;
 
       input {
         @extend %input-cont-inset;

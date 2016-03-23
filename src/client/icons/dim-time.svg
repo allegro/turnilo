@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>dim-time</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="dim-time" sketch:type="MSArtboardGroup" fill="#000000">
+            <path d="M9.5,17 C13.6421356,17 17,13.6421356 17,9.5 C17,5.35786438 13.6421356,2 9.5,2 C5.35786438,2 2,5.35786438 2,9.5 C2,13.6421356 5.35786438,17 9.5,17 Z M9.5,16 C5.91014913,16 3,13.0898509 3,9.5 C3,5.91014913 5.91014913,3 9.5,3 C13.0898509,3 16,5.91014913 16,9.5 C16,13.0898509 13.0898509,16 9.5,16 Z M9,4 L10,4 L10,9 L9,9 L9,4 Z M9,9 L14,9 L14,10 L9,10 L9,9 Z" id="Rectangle-92-Copy-5" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

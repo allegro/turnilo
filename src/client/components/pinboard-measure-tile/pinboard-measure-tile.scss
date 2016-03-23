@@ -16,42 +16,40 @@
   .dropdown {
     display: inline-block;
     position: absolute;
-    padding: 2px 22px 2px 7px;
-    margin-bottom: 1px;
     top: 5px;
     right: 5px;
     font-size: 12px;
-    border: 1px solid transparent;
     border-radius: $corner;
-
-    &:hover {
-      @extend %input-cont;
-
-      .caret-icon {
-        path {
-          fill: $text-light;
-        }
-      }
-
-      .selected-item {
-        color: $text-standard;
-      }
-    }
 
     .selected-item {
       @include ellipsis;
       line-height: 19px;
+      padding: 2px 22px 2px 7px;
+      border: 1px solid transparent;
       color: $text-light;
       max-width: 104px;
-    }
+      height: auto;
+      box-shadow: none;
 
-    .caret-icon {
-      position: absolute;
-      top: 8px;
-      right: 7px;
+      .caret-icon {
+        position: absolute;
+        right: 7px;
+        bottom: 6px;
 
-      path {
-        fill: $text-lighter;
+        path {
+          fill: $text-lighter;
+        }
+      }
+
+      &:hover {
+        @extend %input-cont;
+        color: $text-standard;
+
+        .caret-icon {
+          path {
+            fill: $text-light;
+          }
+        }
       }
     }
 
