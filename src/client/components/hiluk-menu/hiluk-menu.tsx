@@ -7,24 +7,62 @@ import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 
 export interface HilukMenuProps extends React.Props<any> {
-  //clicker: Clicker;
+  essence: Essence;
   openOn: Element;
   onClose: Function;
+  getUrlPrefix: Function;
 }
 
 export interface HilukMenuState {
+  url?: string;
+  specificUrl?: string;
 }
 
 export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
 
   constructor() {
     super();
-    // this.state = {};
+    this.state = {
+      url: null,
+      specificUrl: null
+    };
 
   }
 
+  componentDidMount() {
+    var { essence, getUrlPrefix } = this.props;
+
+    var urlPrefix = getUrlPrefix();
+    var url = essence.getURL(urlPrefix);
+    var specificUrl = essence.filter.isRelative() ? essence.convertToSpecificFilter().getURL(urlPrefix) : null;
+
+    this.setState({
+      url,
+      specificUrl
+    });
+  }
+
   render() {
-    var { openOn, onClose } = this.props;
+    const { openOn, onClose } = this.props;
+    const { url, specificUrl } = this.state;
+
+    var shareOptions: JSX.Element[] = [
+      <li
+        className="copy-url clipboard"
+        key="copy-url"
+        data-clipboard-text={url}
+        onClick={onClose as any}
+      >{STRINGS.copyUrl}</li>
+    ];
+
+    if (specificUrl) {
+      shareOptions.push(<li
+        className="copy-specific-url clipboard"
+        key="copy-specific-url"
+        data-clipboard-text={specificUrl}
+        onClick={onClose as any}
+      >{STRINGS.copySpecificUrl}</li>);
+    }
 
     var stage = Stage.fromSize(200, 200);
     return <BubbleMenu
@@ -35,16 +73,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
       onClose={onClose}
     >
       <ul className="bubble-list">
-        <li
-          className="copy-url clipboard"
-          data-clipboard-text="URL"
-          onClick={onClose as any}
-        >{STRINGS.copyUrl}</li>
-        <li
-          className="copy-static-url clipboard"
-          data-clipboard-text="STATIC_URL"
-          onClick={onClose as any}
-        >{STRINGS.copyStaticUrl}</li>
+        {shareOptions}
       </ul>
     </BubbleMenu>;
   }

@@ -17,12 +17,12 @@ describe('Colors', () => {
       {
         dimension: 'country',
         values: { '3': 'UK', '7': 'India' },
-        nil: true
+        hasNull: true
       },
       {
         dimension: 'country',
         values: { '3': 100, '7': 200 },
-        nil: true
+        hasNull: true
       },
       {
         dimension: 'country',
@@ -62,7 +62,7 @@ describe('Colors', () => {
             "2": "India",
             "3": "Russia"
           },
-          "nil": true
+          "hasNull": true
         });
 
         expect(colors.has(null), 'has null').to.equal(true);
@@ -82,7 +82,7 @@ describe('Colors', () => {
             "3": "Russia",
             "4": "South Africa"
           },
-          "nil": true
+          "hasNull": true
         });
 
         colors = colors.remove('UK');
@@ -95,7 +95,7 @@ describe('Colors', () => {
             "3": "Russia",
             "4": "South Africa"
           },
-          "nil": true
+          "hasNull": true
         });
 
         colors = colors.add('Australia');
@@ -109,7 +109,7 @@ describe('Colors', () => {
             "3": "Russia",
             "4": "South Africa"
           },
-          "nil": true
+          "hasNull": true
         });
 
         var colorsWithGap = colors.remove("Australia");
@@ -120,19 +120,15 @@ describe('Colors', () => {
     });
   });
 
-  describe('#getColor', () => {
+  describe('#getColors', () => {
     it('works in basic case (with null)', () => {
       var colors = Colors.fromValues('country', [null, 'UK', 'India', 'Russia', 'Madagascar']);
-      expect(colors.getColor('UK', 0)).to.equal('#2D95CA');
-      expect(colors.getColor(null, 1)).to.equal('#666666');
-      expect(colors.getColor('lol', 2)).to.equal(null);
+      expect(colors.getColors(['UK', null, 'lol'])).to.deep.equal(['#2D95CA', '#666666', null]);
     });
 
     it('works in basic case (no null)', () => {
       var colors = Colors.fromValues('country', ['Null Island', 'UK', 'India', 'Russia', 'Madagascar']);
-      expect(colors.getColor('UK', 0)).to.equal('#EFB925');
-      expect(colors.getColor(null, 1)).to.equal(null);
-      expect(colors.getColor('lol', 2)).to.equal(null);
+      expect(colors.getColors(['UK', null, 'lol'])).to.deep.equal(['#EFB925', null, null]);
     });
 
   });

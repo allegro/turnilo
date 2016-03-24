@@ -1,25 +1,39 @@
 require('./auto-refresh-menu.css');
 
 import * as React from 'react';
-import { Stage } from '../../../common/models/index';
+import { Duration } from 'chronoshift';
+import { Stage, DataSource } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
 
 const AUTO_REFRESH_LABELS: Lookup<string> = {
-  "0": "Off",
-  "1": "Every minute",
-  "5": "Every 5 minutes",
-  "10": "Every 10 minutes",
-  "60": "Every 60 minutes"
+  "null": "Off",
+  "PT5S": "Every 5 seconds",
+  "PT15S": "Every 15 seconds",
+  "PT1M": "Every minute",
+  "PT5M": "Every 5 minutes",
+  "PT10M": "Every 10 minutes",
+  "PT30M": "Every 30 minutes"
 };
+
+const REFRESH_DURATIONS: Duration[] = [
+  null,
+  Duration.fromJS("PT5S"),
+  Duration.fromJS("PT15S"),
+  Duration.fromJS("PT1M"),
+  Duration.fromJS("PT5M"),
+  Duration.fromJS("PT10M"),
+  Duration.fromJS("PT30M")
+];
 
 export interface AutoRefreshMenuProps extends React.Props<any> {
   openOn: Element;
   onClose: Function;
-  autoRefreshRate: number;
+  autoRefreshRate: Duration;
   setAutoRefreshRate: Function;
   refreshMaxTime: Function;
+  dataSource: DataSource;
 }
 
 export interface AutoRefreshMenuState {
@@ -33,22 +47,25 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
 
   }
 
+  onRefreshNowClick() {
+    var { refreshMaxTime } = this.props;
+    refreshMaxTime();
+  }
+
   renderRefreshIntervalDropdown() {
     const { autoRefreshRate, setAutoRefreshRate } = this.props;
 
-    var items: number[] = [0, 1, 5, 10, 60];
-
     return React.createElement(Dropdown, {
       label: STRINGS.autoUpdate,
-      items,
+      items: REFRESH_DURATIONS,
       selectedItem: autoRefreshRate,
-      renderItem: (rate) => AUTO_REFRESH_LABELS[rate] || '???',
+      renderItem: (d) => AUTO_REFRESH_LABELS[String(d)] || `Custom ${d}`,
       onSelect: setAutoRefreshRate
-    } as DropdownProps<number>);
+    } as DropdownProps<Duration>);
   }
 
   render() {
-    var { openOn, onClose, refreshMaxTime } = this.props;
+    var { openOn, onClose, dataSource } = this.props;
 
     var stage = Stage.fromSize(260, 200);
     return <BubbleMenu
@@ -59,12 +76,8 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
       onClose={onClose}
     >
       {this.renderRefreshIntervalDropdown()}
-      <button className="update-now-button">
-        Update now
-      </button>
-      <div className="update-info" onClick={refreshMaxTime as any}>
-        Updated 29 min ago
-      </div>
+      <button className="update-now-button" onClick={this.onRefreshNowClick.bind(this)}>Update now</button>
+      <div className="update-info">{dataSource.updatedText()}</div>
     </BubbleMenu>;
   }
 }

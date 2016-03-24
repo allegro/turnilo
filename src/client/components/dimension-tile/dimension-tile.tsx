@@ -348,6 +348,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         });
       }
 
+      var colorValues: string[] = null;
+      if (colors) colorValues = colors.getColors(rowData.map(d => d[SEGMENT]));
+
       var formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.format) : null;
       rows = rowData.map((d, i) => {
         var segmentValue = d[SEGMENT];
@@ -366,7 +369,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           }
           checkbox = <Checkbox
             selected={selected}
-            color={colors ? colors.getColor(segmentValue, i) : null}
+            color={colorValues ? colorValues[i] : null}
           />;
         }
 

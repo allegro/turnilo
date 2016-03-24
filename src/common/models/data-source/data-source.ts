@@ -183,8 +183,6 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   static updateMaxTime(dataSource: DataSource): Q.Promise<DataSource> {
-    if (!dataSource.shouldUpdateMaxTime()) return Q(dataSource);
-
     if (dataSource.refreshRule.isRealtime()) {
       return Q(dataSource.changeMaxTime(MaxTime.fromNow()));
     }
@@ -645,13 +643,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public updatedText(): string {
     var { refreshRule } = this;
     if (refreshRule.isRealtime()) {
-      return 'Updated: ~1 second ago';
+      return 'Updated ~1 second ago';
     } else if (refreshRule.isFixed()) {
-      return `Fixed to: ${formatTimeDiff(Date.now() - refreshRule.time.valueOf())}`;
+      return `Fixed to ${refreshRule.time.toISOString()}`;
     } else { // refreshRule is query
       var { maxTime } = this;
       if (maxTime) {
-        return `Updated: ${formatTimeDiff(Date.now() - maxTime.time.valueOf())} ago`;
+        return `Updated ${formatTimeDiff(Date.now() - maxTime.time.valueOf())} ago`;
       } else {
         return null;
       }

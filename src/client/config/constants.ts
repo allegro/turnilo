@@ -50,7 +50,7 @@ export const STRINGS = {
   queryError: 'Query Error',
   autoUpdate: 'Auto Update',
   copyUrl: 'Copy URL',
-  copyStaticUrl: 'Copy static URL',
+  copySpecificUrl: 'Copy URL - fixed time',
   logout: 'Logout'
 };
 

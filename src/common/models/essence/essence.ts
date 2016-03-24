@@ -1,9 +1,8 @@
 import { List, OrderedSet } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
-import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
+import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
-import { $, Expression, RefExpression, ChainExpression, ExpressionJS, TimeRange, ApplyAction, SortAction, Set } from 'plywood';
-import { immutableListsEqual } from '../../utils/general/general';
+import { $, Expression, RefExpression, TimeRange, ApplyAction, SortAction, Set } from 'plywood';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
 import { FilterClause } from '../filter-clause/filter-clause';
@@ -14,6 +13,7 @@ import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
 import { Colors, ColorsJS } from '../colors/colors';
 import { Manifest, Resolve } from '../manifest/manifest';
+
 const HASH_VERSION = 1;
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataSource: DataSource): OrderedSet<string> {
@@ -555,6 +555,13 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var { filter } = this;
     var timeAttribute = this.getTimeAttribute();
     return this.changeFilter(filter.setSelection(timeAttribute, check));
+  }
+
+  public convertToSpecificFilter(): Essence {
+    var { dataSource, filter, timezone } = this;
+    if (!filter.isRelative()) return this;
+    var maxTime = dataSource.getMaxTimeDate();
+    return this.changeFilter(filter.getSpecificFilter(new Date(), maxTime, timezone));
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {

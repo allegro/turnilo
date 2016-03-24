@@ -134,6 +134,8 @@
         margin-left: 3px;
       }
 
+      &:active:after { display: none; }
+
       &.panic:after { content: 'Reset (in case of bug)'; }
       &.help:after { content: 'Google Groups'; }
       &.auto-refresh:after { content: 'Refresh options'; }

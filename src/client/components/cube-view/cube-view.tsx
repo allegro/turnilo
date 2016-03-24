@@ -2,12 +2,10 @@ require('./cube-view.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { List } from 'immutable';
 import { Expression } from 'plywood';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
   SplitCombine, Splits, VisStrategy, VisualizationProps, User} from '../../../common/models/index';
-// import { ... } from '../../config/constants';
 
 import { CubeHeaderBar } from '../cube-header-bar/cube-header-bar';
 import { DimensionMeasurePanel } from '../dimension-measure-panel/dimension-measure-panel';
@@ -117,10 +115,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       dropHighlight: () => {
         var { essence } = this.state;
         this.setState({ essence: essence.dropHighlight() });
-      },
-
-      setAutoRefresh: (rate: number) => {
-
       }
     };
     this.clicker = clicker;
@@ -131,11 +125,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   refreshMaxTime() {
     var { essence } = this.state;
     var { dataSource } = essence;
-    if (!dataSource.shouldUpdateMaxTime()) return;
-    DataSource.updateMaxTime(dataSource).then((updatedDataSource) => {
-      console.log(`Updated MaxTime for '${updatedDataSource.name}'`);
-      this.setState({ essence: essence.updateDataSource(updatedDataSource) });
-    });
+    DataSource.updateMaxTime(dataSource)
+      .then((updatedDataSource) => {
+        this.setState({ essence: essence.updateDataSource(updatedDataSource) });
+      });
   }
 
   componentWillMount() {

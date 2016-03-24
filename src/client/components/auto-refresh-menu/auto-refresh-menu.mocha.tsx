@@ -18,6 +18,7 @@ describe('AutoRefreshMenu', () => {
         autoRefreshRate={null}
         setAutoRefreshRate={null}
         refreshMaxTime={null}
+        dataSource={null}
       />
     );
 

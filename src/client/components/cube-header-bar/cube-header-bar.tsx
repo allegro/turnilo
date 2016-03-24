@@ -1,6 +1,8 @@
 require('./cube-header-bar.css');
 
 import * as React from 'react';
+import { immutableEqual } from "immutable-class";
+import { Duration } from 'chronoshift';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, DataSource, User } from "../../../common/models/index";
 
@@ -23,7 +25,7 @@ export interface CubeHeaderBarState {
   showTestMenu?: boolean;
   hilukMenuOpenOn?: Element;
   autoRefreshMenuOpenOn?: Element;
-  autoRefreshRate?: number;
+  autoRefreshRate?: Duration;
   userMenuOpenOn?: Element;
 }
 
@@ -36,16 +38,31 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       showTestMenu: false,
       hilukMenuOpenOn: null,
       autoRefreshMenuOpenOn: null,
+      autoRefreshRate: null,
       userMenuOpenOn: null
     };
   }
 
   componentDidMount() {
-    this.setAutoRefreshRate(5);
+    const { dataSource } = this.props.essence;
+    this.setAutoRefreshFromDataSource(dataSource);
   }
 
-  setAutoRefreshRate(rate: number) {
-    if (this.state.autoRefreshRate === rate) return;
+  componentWillReceiveProps(nextProps: CubeHeaderBarProps) {
+    if (this.props.essence.dataSource.name !== nextProps.essence.dataSource.name) {
+      this.setAutoRefreshFromDataSource(nextProps.essence.dataSource);
+    }
+  }
+
+  setAutoRefreshFromDataSource(dataSource: DataSource) {
+    const { refreshRule } = dataSource;
+    if (refreshRule.isFixed()) return;
+    this.setAutoRefreshRate(refreshRule.refresh);
+  }
+
+  setAutoRefreshRate(rate: Duration) {
+    const { autoRefreshRate } = this.state;
+    if (immutableEqual(autoRefreshRate, rate)) return;
 
     // CLear existing timer if exists
     if (this.autoRefreshTimer) {
@@ -58,12 +75,12 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     if (refreshMaxTime && rate) {
       this.autoRefreshTimer = setInterval(() => {
         refreshMaxTime();
-      }, rate * 60000);
-
-      this.setState({
-        autoRefreshRate: rate
-      });
+      }, rate.getCanonicalLength());
     }
+
+    this.setState({
+      autoRefreshRate: rate
+    });
   }
 
   onPanicClick(e: MouseEvent) {
@@ -118,12 +135,15 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderHilukMenu() {
+    const { essence, getUrlPrefix } = this.props;
     const { hilukMenuOpenOn } = this.state;
     if (!hilukMenuOpenOn) return null;
 
     return <HilukMenu
+      essence={essence}
       openOn={hilukMenuOpenOn}
       onClose={this.onHilukMenuClose.bind(this)}
+      getUrlPrefix={getUrlPrefix}
     />;
   }
 
@@ -144,7 +164,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderAutoRefreshMenu() {
-    const { refreshMaxTime } = this.props;
+    const { refreshMaxTime, essence } = this.props;
     const { autoRefreshMenuOpenOn, autoRefreshRate } = this.state;
     if (!autoRefreshMenuOpenOn) return null;
 
@@ -154,6 +174,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       autoRefreshRate={autoRefreshRate}
       setAutoRefreshRate={this.setAutoRefreshRate.bind(this)}
       refreshMaxTime={refreshMaxTime}
+      dataSource={essence.dataSource}
     />;
   }
 

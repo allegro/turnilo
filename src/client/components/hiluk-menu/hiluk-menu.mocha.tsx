@@ -13,8 +13,10 @@ describe('HilukMenu', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <HilukMenu
+        essence={null}
         onClose={null}
         openOn={null}
+        getUrlPrefix={null}
       />
     );
 

@@ -60,14 +60,14 @@ function cloneValues(values: Lookup<any>): Lookup<any> {
 export interface ColorsValue {
   dimension: string;
   values?: Lookup<any>;
-  nil?: boolean;
+  hasNull?: boolean;
   limit?: number;
 }
 
 export interface ColorsJS {
   dimension: string;
   values?: Lookup<any>;
-  nil?: boolean;
+  hasNull?: boolean;
   limit?: number;
 }
 
@@ -84,14 +84,14 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
 
   static fromValues(dimension: string, values: any[]): Colors {
     var valueLookup: Lookup<any> = {};
-    var nil = false;
-    var n = Math.min(values.length, NORMAL_COLORS.length);
+    var hasNull = false;
+    var n = Math.min(values.length, NORMAL_COLORS.length + 1);
     var i = 0;
     var j = 0;
     while (i < n) {
       var v = values[i];
       if (v === null) {
-        nil = true;
+        hasNull = true;
       } else {
         valueLookup[j] = v;
         j++;
@@ -100,7 +100,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     }
     return new Colors({
       dimension,
-      nil,
+      hasNull,
       values: valueLookup
     });
   }
@@ -113,19 +113,19 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
 
     var valuesJS = parameters.values;
     if (valuesJS) {
-      var nil = Boolean(parameters.nil);
+      var hasNull = Boolean(parameters.hasNull);
       var values: Lookup<any> = {};
       for (var i = 0; i < NORMAL_COLORS.length; i++) {
         if (!hasOwnProperty(valuesJS, i)) continue;
         var vJS = valuesJS[i];
         if (vJS === null) {
-          nil = true; // Back compat (there might be a null in values)
+          hasNull = true; // Back compat (there might be a null in values)
         } else {
           values[i] = valueFromJS(vJS);
         }
       }
       value.values = values;
-      value.nil = nil;
+      value.hasNull = hasNull;
     }
 
     return new Colors(value);
@@ -134,14 +134,14 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
 
   public dimension: string;
   public values: Lookup<any>;
-  public nil: boolean;
+  public hasNull: boolean;
   public limit: number;
 
   constructor(parameters: ColorsValue) {
     this.dimension = parameters.dimension;
     if (!this.dimension) throw new Error('must have a dimension');
     this.values = parameters.values;
-    this.nil = parameters.nil;
+    this.hasNull = parameters.hasNull;
     this.limit = parameters.limit;
     if (!this.values && !this.limit) throw new Error('must have values or limit');
   }
@@ -150,7 +150,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return {
       dimension: this.dimension,
       values: this.values,
-      nil: this.nil,
+      hasNull: this.hasNull,
       limit: this.limit
     };
   }
@@ -160,7 +160,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
       dimension: this.dimension
     };
     if (this.values) js.values = valuesToJS(this.values);
-    if (this.nil) js.nil = true;
+    if (this.hasNull) js.hasNull = true;
     if (this.limit) js.limit = this.limit;
     return js;
   }
@@ -176,24 +176,24 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   public equals(other: Colors): boolean {
     return Colors.isColors(other) &&
       valuesEqual(this.values, other.values) &&
-      this.nil === other.nil &&
+      this.hasNull === other.hasNull &&
       this.limit === other.limit;
   }
 
   public numColors(): number {
     var { values, limit } = this;
     if (values) {
-      return Object.keys(values).length + Number(this.nil);
+      return Object.keys(values).length + Number(this.hasNull);
     }
     return limit;
   }
 
   public toArray(): any[] {
-    var { values, nil } = this;
+    var { values, hasNull } = this;
     if (!values) return null;
 
     var vs: any[] = [];
-    if (nil) vs.push(null);
+    if (hasNull) vs.push(null);
     for (var i = 0; i < NORMAL_COLORS.length; i++) {
       if (!hasOwnProperty(values, i)) continue;
       vs.push(values[i]);
@@ -248,7 +248,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   }
 
   public has(v: any): boolean {
-    if (v == null) return this.nil;
+    if (v == null) return this.hasNull;
     return this.valueIndex(v) !== -1;
   }
 
@@ -257,7 +257,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     var value = this.valueOf();
 
     if (v === null) {
-      value.nil = true;
+      value.hasNull = true;
     } else {
       var idx = this.nextIndex();
       if (idx === -1) return this;
@@ -274,7 +274,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     var value = this.valueOf();
 
     if (v == null) {
-      value.nil = false;
+      value.hasNull = false;
     } else {
       var idx = this.valueIndex(v);
       if (idx === -1) return this;
@@ -286,14 +286,31 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return new Colors(value);
   }
 
-  public getColor(value: any, index: number): string {
-    var { values, limit } = this;
+  public getColors(valuesToColor: any[]): string[] {
+    var { values, limit, hasNull } = this;
     if (values) {
-      if (value === null && this.nil) return NULL_COLOR;
-      var colorIdx = this.valueIndex(value);
-      return colorIdx === -1 ? null : NORMAL_COLORS[colorIdx];
+      return valuesToColor.map(value => {
+        if (value === null && hasNull) return NULL_COLOR;
+        var colorIdx = this.valueIndex(value);
+        return colorIdx === -1 ? null : NORMAL_COLORS[colorIdx];
+      });
     } else {
-      return index < limit ? (value === null ? NULL_COLOR : NORMAL_COLORS[index]) : null;
+      var colors: string[] = [];
+      var colorIdx = 0;
+      for (var i = 0; i < valuesToColor.length; i++) {
+        if (i < limit) {
+          var v = valuesToColor[i];
+          if (v === null) {
+            colors.push(NULL_COLOR);
+          } else {
+            colors.push(NORMAL_COLORS[colorIdx]);
+            colorIdx++;
+          }
+        } else {
+          colors.push(null);
+        }
+      }
+      return colors;
     }
   }
 }
