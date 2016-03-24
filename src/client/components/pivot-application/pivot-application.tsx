@@ -1,8 +1,8 @@
 require('./pivot-application.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import * as Clipboard from 'clipboard';
 
 import { List } from 'immutable';
 import { DataSource, LinkViewConfig, LinkViewConfigJS, User } from "../../../common/models/index";
@@ -65,7 +65,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var selectedDataSource = this.getDataSourceFromHash(dataSources, hash);
     var viewHash = this.getViewHashFromHash(hash);
 
-    var stateLinkViewConfig: LinkViewConfig = null;
+    // If datasource does not exit bounce to home
+    if (viewType === CUBE && !selectedDataSource) {
+      this.changeHash('');
+      viewType = HOME;
+    }
+
     if (viewType === HOME) {
       if (linkViewConfig) {
         viewType = LINK;
@@ -86,6 +91,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   componentDidMount() {
     window.addEventListener('hashchange', this.globalHashChangeListener);
+
+    var clipboard = new Clipboard('.clipboard');
+
+    clipboard.on('success', (e: any) => {
+      // ToDo: do something here
+    });
 
     require.ensure([
       'react-addons-css-transition-group',

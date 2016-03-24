@@ -4,7 +4,6 @@ $bottom-margin: 12px;
 $title-margin: 6px;
 
 .split-menu {
-  padding: 16px 10px 10px 10px;
 
   .button-group {
     margin-bottom: $bottom-margin;
@@ -21,7 +20,8 @@ $title-margin: 6px;
       cursor: pointer;
       width: 20%;
       text-align: center;
-      padding: 6px 2px;
+      height: $input-height;
+      padding: 8px 2px 0 2px;
       border-right: 0;
 
       &:first-child {
@@ -38,16 +38,15 @@ $title-margin: 6px;
       &.selected {
         @extend %input-selected;
       }
+
+      &:not(.selected):not(:hover) {
+        color: $text-light;
+      }
     }
   }
 
   .dropdown {
     margin-bottom: $bottom-margin;
-    pointer-events: none;
-
-    .dropdown-label {
-      @extend %input-top-label;
-    }
   }
 
   .sort-direction {

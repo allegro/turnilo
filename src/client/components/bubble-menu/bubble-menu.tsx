@@ -11,6 +11,9 @@ import { BodyPortal } from '../body-portal/body-portal';
 
 const OFFSET_H = 10;
 const OFFSET_V = -1;
+const SCREEN_OFFSET = 5;
+
+export type BubbleLayout = 'normal' | 'mini';
 
 export interface BubbleMenuProps extends React.Props<any> {
   className: string;
@@ -22,6 +25,7 @@ export interface BubbleMenuProps extends React.Props<any> {
   openOn: Element;
   onClose: Function;
   inside?: Element;
+  layout?: BubbleLayout;
 }
 
 export interface BubbleMenuState {
@@ -98,7 +102,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   render(): any {
-    var { className, direction, stage, fixedSize, containerStage, inside, children } = this.props;
+    var { className, direction, stage, fixedSize, containerStage, inside, layout, children } = this.props;
     var { id, x, y } = this.state;
 
     var menuWidth = stage.width;
@@ -116,12 +120,20 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
       top: 0
     };
 
+    if (!containerStage) {
+      containerStage = new Stage({
+        x: SCREEN_OFFSET,
+        y: SCREEN_OFFSET,
+        width: window.innerWidth - SCREEN_OFFSET * 2,
+        height: window.innerHeight - SCREEN_OFFSET * 2
+      });
+    }
+
     switch (direction) {
       case 'right':
         var top = y - menuHeight / 2;
-        if (containerStage) {
-          top = Math.min(Math.max(top, containerStage.y), containerStage.y + containerStage.height - menuHeight);
-        }
+        // constrain
+        top = Math.min(Math.max(top, containerStage.y), containerStage.y + containerStage.height - menuHeight);
         menuLeft = x;
         menuTop = top;
         shpitzStyle.top = y - top;
@@ -130,9 +142,8 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
       case 'down':
         var left = x - menuWidth / 2;
-        if (containerStage) {
-          left = Math.min(Math.max(left, containerStage.x), containerStage.x + containerStage.width - menuWidth);
-        }
+        // constrain
+        left = Math.min(Math.max(left, containerStage.x), containerStage.x + containerStage.width - menuWidth);
         menuLeft = left;
         menuTop = y;
         shpitzStyle.left = x - left;
@@ -149,10 +160,11 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
       if (!insideId) throw new Error('inside element must have id');
     }
 
-    var myClass = 'bubble-menu ' + direction;
-    if (className) myClass += ' ' + className;
+    var myClasses = ['bubble-menu', direction];
+    if (className) myClasses.push(className);
+    if (layout === 'mini') myClasses.push('mini');
     return <BodyPortal left={menuLeft} top={menuTop}>
-      <div className={myClass} id={id} data-parent={insideId} style={menuStyle}>
+      <div className={myClasses.join(' ')} id={id} data-parent={insideId} style={menuStyle}>
         {children}
         <div className="shpitz" style={shpitzStyle}></div>
       </div>

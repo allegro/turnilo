@@ -26,7 +26,6 @@ export class NavList extends React.Component< NavListProps, NavListState> {
     var { selected } = this.props;
     var itemClass = "item";
     if (selected && selected === itemName) return `${itemClass} selected`;
-    if (itemName === "settings") return `${itemClass} not-implemented`;
     return itemClass;
   }
 
@@ -56,17 +55,7 @@ export class NavList extends React.Component< NavListProps, NavListState> {
     var className = "nav-list";
     var titleSection: JSX.Element = null;
     if (title) {
-      titleSection = <div className="group-title">
-        {title}
-        <ul className="icons not-implemented">
-          <li className="icon">
-            <SvgIcon svg={require('../../icons/full-add.svg')}/>
-          </li>
-          <li className="icon">
-            <SvgIcon svg={require('../../icons/full-settings.svg')}/>
-          </li>
-        </ul>
-      </div>;
+      titleSection = <div className="group-title">{title}</div>;
     } else {
       className += " no-title";
     }
@@ -74,7 +63,7 @@ export class NavList extends React.Component< NavListProps, NavListState> {
     return <div className={className}>
       {titleSection}
       <ul className="items">
-        { this.renderNavList() }
+        {this.renderNavList()}
       </ul>
     </div>;
   };

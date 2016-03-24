@@ -54,7 +54,13 @@ export function dataSourceLoaderFactory(druidRequester: Requester.PlywoodRequest
 
       case 'druid':
         return dataSource.createExternal(druidRequester, introspectionStrategy, timeout).introspect()
-          .then(DataSource.updateMaxTime);
+          .then(dataSourceWithExternal => {
+            if (dataSourceWithExternal.shouldUpdateMaxTime()) {
+              return DataSource.updateMaxTime(dataSourceWithExternal);
+            } else {
+              return dataSourceWithExternal;
+            }
+          });
 
       default:
         throw new Error(`Invalid engine: '${dataSource.engine}' in '${dataSource.name}'`);

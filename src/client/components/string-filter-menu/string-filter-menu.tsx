@@ -257,8 +257,10 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
           title={segmentValueStr}
           onClick={this.onValueClick.bind(this, segmentValue)}
         >
-          <Checkbox selected={selected}/>
-          <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
+          <div className="row-wrapper">
+            <Checkbox selected={selected}/>
+            <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
+          </div>
         </div>;
       });
     }
@@ -300,8 +302,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   render() {
-    var { essence, dimension } = this.props;
-    var { selectedValues, colors } = this.state;
+    var { dimension } = this.props;
     if (!dimension) return null;
 
     return <div className="string-filter-menu">

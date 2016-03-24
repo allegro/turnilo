@@ -1,0 +1,23 @@
+@import '../../imports';
+
+.auto-refresh-menu {
+  .update-now-button {
+    @extend %button-secondary;
+    width: 100%;
+    margin-top: 8px;
+
+    svg {
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      margin-left: -10px;
+      width: 19px;
+    }
+  }
+
+  .update-info {
+    @extend %indicator-field;
+    flex: 1;
+    margin-top: 8px;
+  }
+}

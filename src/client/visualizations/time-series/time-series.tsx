@@ -450,6 +450,9 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         color="default"
       />);
     } else {
+      var colorValues: string[] = null;
+      if (colors) colorValues = colors.getColors(myDataset.data.map(d => d[SEGMENT]));
+
       chartLines = myDataset.data.map((datum, i) => {
         var subDataset = datum[SPLIT] as Dataset;
         if (!subDataset) return null;
@@ -462,7 +465,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           stage={lineStage}
           showArea={false}
           hoverTimeRange={hoverMeasure === measure ? hoverTimeRange : null}
-          color={colors.getColor(datum[SEGMENT], i)}
+          color={colorValues ? colorValues[i] : null}
         />;
       });
     }

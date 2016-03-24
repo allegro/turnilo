@@ -1,8 +1,10 @@
 @import '../../imports';
 
-$action-size: 60px;
+$action-size: 50px;
 
 .preview-menu {
+  padding: 8px;
+
   .action {
     display: inline-block;
     width: $action-size;
@@ -14,8 +16,8 @@ $action-size: 60px;
 
     svg {
       width: 18px;
-      padding-top: 14px;
-      padding-bottom: 5px;
+      padding-top: 7px;
+      padding-bottom: 4px;
 
       path {
         fill: $brand;

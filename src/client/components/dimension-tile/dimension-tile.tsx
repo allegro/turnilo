@@ -14,7 +14,6 @@ import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { TileHeader } from '../tile-header/tile-header';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
-import { HighlightControls } from '../highlight-controls/highlight-controls';
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
 import { HighlightString } from '../highlight-string/highlight-string';
@@ -349,6 +348,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         });
       }
 
+      var colorValues: string[] = null;
+      if (colors) colorValues = colors.getColors(rowData.map(d => d[SEGMENT]));
+
       var formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.format) : null;
       rows = rowData.map((d, i) => {
         var segmentValue = d[SEGMENT];
@@ -367,7 +369,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           }
           checkbox = <Checkbox
             selected={selected}
-            color={colors ? colors.getColor(segmentValue, i) : null}
+            color={colorValues ? colorValues[i] : null}
           />;
         }
 
