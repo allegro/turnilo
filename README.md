@@ -133,6 +133,8 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Auto refresh
+- Sharing menu for static and relative time frames
 - Quantile measures are now available. Try `$main.quantile($my_value_hist, 0.99)`
 - Added Home view
 - Configuration docs: https://github.com/implydata/pivot/blob/master/docs/configuration.md
@@ -140,8 +142,6 @@ Running `gulp watch` will build the project and start all the automated watchers
 - Configurable attribute overrides
 - Support for `absolute`, `power`, `sqrt`, and `fallback` actions
 - Relative filters
-- All new introspection code
-- Better comparison behavior and legend interaction
 
 **We will be working on:**
 
