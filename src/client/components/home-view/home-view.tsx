@@ -12,9 +12,8 @@ import { NavLogo } from '../nav-logo/nav-logo';
 import { NavList } from '../nav-list/nav-list';
 
 export interface HomeViewProps extends React.Props<any> {
-  dataCubes?: List<DataSource>;
+  dataSources?: List<DataSource>;
   user?: User;
-  selectDataCube?: Function;
   onNavClick?: Function;
 }
 
@@ -22,21 +21,17 @@ export interface HomeViewState {
 }
 
 export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
-  selectLink(selected: any) {
-    if (selected.target) {
-      window.open(selected.target);
-      return false;
-    } else {
-      return; // state change for application to handle
-    }
-  };
-
-  selectDataCube(dataCube: DataSource) {
-    this.props.selectDataCube(dataCube);
-  }
 
   render() {
-    const { user, onNavClick } = this.props;
+    const { user, dataSources, onNavClick } = this.props;
+
+    var navLinks = dataSources.toArray().map(ds => {
+      return {
+        name: ds.name,
+        title: ds.title,
+        href: '#' + ds.name
+      };
+    });
 
     return <div className="home-view">
       <HomeHeaderBar
@@ -48,15 +43,11 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
           <NavLogo/>
           <NavList
             title="Data Cubes"
-            className="items"
-            navItems={this.props.dataCubes}
-            onSelect={this.selectDataCube.bind(this)}
-            icon="'../../full-cube.svg'"
+            navLinks={navLinks}
+            iconSvg={require('../../icons/full-cube.svg')}
           />
           <NavList
-            className="items"
-            navItems={ADDITIONAL_LINKS}
-            onSelect={this.selectLink.bind(this)}
+            navLinks={ADDITIONAL_LINKS}
           />
         </div>
       </div>

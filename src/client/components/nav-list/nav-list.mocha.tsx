@@ -13,11 +13,7 @@ describe('NavList', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <NavList
-        title={null}
-        className={null}
-        navItems={null}
-        onSelect={null}
-        icon={null}
+        navLinks={null}
       />
     );
 

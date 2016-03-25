@@ -230,9 +230,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
         <div className="icon-button hiluk" onClick={this.onHilukMenuClick.bind(this)}>
           <SvgIcon className="hiluk-icon" svg={require('../../icons/full-hiluk.svg')}/>
         </div>
-        <div className="icon-button panic" onClick={this.onPanicClick.bind(this)}>
-          <SvgIcon className="panic-icon" svg={require('../../icons/panic.svg')}/>
-        </div>
         {userButton}
       </div>
       {this.renderTestModal()}

@@ -1,19 +1,19 @@
 require('./nav-list.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-// import { ... } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
-import { List } from 'immutable';
+export interface NavLink {
+  name: string;
+  title: string;
+  href: string;
+  newTab?: boolean;
+}
 
 export interface NavListProps extends React.Props<any> {
   title?: string;
-  navItems: List<any>;
-  onSelect?: Function;
-  icon?: string;
-  className: string;
+  navLinks: NavLink[];
+  iconSvg?: string;
   selected?: string;
 }
 
@@ -29,23 +29,27 @@ export class NavList extends React.Component< NavListProps, NavListState> {
     return itemClass;
   }
 
-  renderIcon(path: string): any {
-    if (!path) return null;
+  renderIcon(iconSvg: string): any {
+    if (!iconSvg) return null;
     return <span className="icon">
-      <SvgIcon svg={require('../../icons/full-cube.svg')}/>
+      <SvgIcon svg={iconSvg}/>
     </span>;
   }
 
   renderNavList() {
-    return this.props.navItems.map((navItem) => {
-      return <li
-        className={this.getItemClassName(navItem.name)}
-        key={navItem.name}
-        onClick={this.props.onSelect.bind(this, navItem)}
+    const { navLinks, iconSvg, selected } = this.props;
+    return navLinks.map((navLink) => {
+      var itemClass = "item";
+      if (selected && selected === navLink.name) itemClass += ' selected';
+      return <a
+        className={itemClass}
+        key={navLink.name}
+        href={navLink.href}
+        target={navLink.newTab ? '_blank' : null}
       >
-        {this.renderIcon(this.props.icon)}
-        {navItem.title}
-      </li>;
+        {this.renderIcon(iconSvg)}
+        {navLink.title}
+      </a>;
     });
   }
 
@@ -62,9 +66,9 @@ export class NavList extends React.Component< NavListProps, NavListState> {
 
     return <div className={className}>
       {titleSection}
-      <ul className="items">
+      <div className="items">
         {this.renderNavList()}
-      </ul>
+      </div>
     </div>;
   };
 }
