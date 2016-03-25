@@ -54,7 +54,7 @@ export const STRINGS = {
   logout: 'Logout'
 };
 
-export const ADDITIONAL_LINKS = List([
-  { title: 'Help & Feedback', name: 'help', target: 'https://groups.google.com/forum/#!forum/imply-user-group'},
-  { title: 'GitHub', name: 'github', target: 'https://github.com/implydata/pivot'}
-]);
+export const ADDITIONAL_LINKS = [
+  { name: 'help', title: 'Help & Feedback', href: 'https://groups.google.com/forum/#!forum/imply-user-group'},
+  { name: 'github', title: 'GitHub', href: 'https://github.com/implydata/pivot'}
+];

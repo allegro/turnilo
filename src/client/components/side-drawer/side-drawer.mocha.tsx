@@ -14,7 +14,6 @@ describe('SideDrawer', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <SideDrawer
-        changeDataSource={null}
         dataSources={null}
         selectedDataSource={null}
         onClose={null}
