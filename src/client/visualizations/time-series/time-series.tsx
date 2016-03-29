@@ -212,7 +212,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   fetchData(essence: Essence): void {
     var { splits, colors, dataSource } = essence;
-    var measures = essence.getMeasures();
+    var measures = essence.getEffectiveMeasures();
 
     // var timeSplit = splits.last();
     // var timeBucketAction = timeSplit.bucketAction as TimeBucketAction;
@@ -306,7 +306,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       nextEssence.differentEffectiveFilter(essence, TimeSeries.id) ||
       nextEssence.differentSplits(essence) ||
       nextEssence.differentColors(essence) ||
-      nextEssence.newSelectedMeasures(essence)
+      nextEssence.newEffectiveMeasures(essence)
     ) {
       this.fetchData(nextEssence);
     }
@@ -388,14 +388,14 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     this.setState({ dragStart: null });
   }
 
-  renderChart(dataset: Dataset, measure: Measure, graphIndex: number, stage: Stage, svgStage: Stage, getX: any, scaleX: any, xTicks: Date[]): JSX.Element {
+  renderChart(dataset: Dataset, measure: Measure, graphIndex: number, containerStage: Stage, chartStage: Stage, getX: any, scaleX: any, xTicks: Date[]): JSX.Element {
     var { essence } = this.props;
     var { scrollTop, hoverTimeRange, hoverDatums, hoverMeasure } = this.state;
     var { splits, colors } = essence;
     var splitLength = splits.length();
 
-    var lineStage = svgStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH });
-    var yAxisStage = svgStage.within({ top: TEXT_SPACER, left: lineStage.width });
+    var lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH });
+    var yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width });
 
     var measureName = measure.name;
     var getY = (d: Datum) => d[measureName] as number;
@@ -422,65 +422,79 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       extentY = [minY, maxY];
     }
 
-    if (isNaN(extentY[0])) {
-      extentY = [0, 1];
-    }
-
-    extentY[0] = Math.min(extentY[0] * 1.1, 0);
-    extentY[1] = Math.max(extentY[1] * 1.1, 0);
-
-    var scaleY = d3.scale.linear()
-      .domain(extentY)
-      .range([lineStage.height, 0]);
-
-    var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
-
+    var horizontalGridLines: JSX.Element;
     var chartLines: JSX.Element[];
-    if (splitLength === 1) {
-      chartLines = [];
-      chartLines.push(<ChartLine
-        key='single'
-        dataset={myDataset}
-        getY={getY}
-        scaleX={scaleX}
-        scaleY={scaleY}
-        stage={lineStage}
-        showArea={true}
-        hoverTimeRange={hoverMeasure === measure ? hoverTimeRange : null}
-        color="default"
-      />);
-    } else {
-      var colorValues: string[] = null;
-      if (colors) colorValues = colors.getColors(myDataset.data.map(d => d[SEGMENT]));
+    var verticalAxis: JSX.Element;
 
-      chartLines = myDataset.data.map((datum, i) => {
-        var subDataset = datum[SPLIT] as Dataset;
-        if (!subDataset) return null;
-        return <ChartLine
-          key={'single' + i}
-          dataset={subDataset}
+    if (!isNaN(extentY[0]) && !isNaN(extentY[1])) {
+      extentY[0] = Math.min(extentY[0] * 1.1, 0);
+      extentY[1] = Math.max(extentY[1] * 1.1, 0);
+
+      var scaleY = d3.scale.linear()
+        .domain(extentY)
+        .range([lineStage.height, 1]); // leave 1 for border
+
+      var yTicks = scaleY.ticks().filter((n: number, i: number) => n !== 0 && i % 2 === 0);
+
+      horizontalGridLines = <GridLines
+        orientation="horizontal"
+        scale={scaleY}
+        ticks={yTicks}
+        stage={lineStage}
+      />;
+
+      verticalAxis = <VerticalAxis
+        stage={yAxisStage}
+        yTicks={yTicks}
+        scaleY={scaleY}
+      />;
+
+      if (splitLength === 1) {
+        chartLines = [];
+        chartLines.push(<ChartLine
+          key='single'
+          dataset={myDataset}
           getY={getY}
           scaleX={scaleX}
           scaleY={scaleY}
           stage={lineStage}
-          showArea={false}
+          showArea={true}
           hoverTimeRange={hoverMeasure === measure ? hoverTimeRange : null}
-          color={colorValues ? colorValues[i] : null}
-        />;
-      });
+          color="default"
+        />);
+      } else {
+        var colorValues: string[] = null;
+        if (colors) colorValues = colors.getColors(myDataset.data.map(d => d[SEGMENT]));
+
+        chartLines = myDataset.data.map((datum, i) => {
+          var subDataset = datum[SPLIT] as Dataset;
+          if (!subDataset) return null;
+          return <ChartLine
+            key={'single' + i}
+            dataset={subDataset}
+            getY={getY}
+            scaleX={scaleX}
+            scaleY={scaleY}
+            stage={lineStage}
+            showArea={false}
+            hoverTimeRange={hoverMeasure === measure ? hoverTimeRange : null}
+            color={colorValues ? colorValues[i] : null}
+          />;
+        });
+      }
     }
 
     var chartHoverBubble: JSX.Element = null;
     if (hoverTimeRange && hoverDatums && hoverMeasure === measure) {
-      var leftOffset = stage.x + H_PADDING + scaleX(hoverTimeRange.midpoint());
-      var topOffset = (svgStage.height + 1) * graphIndex + HOVER_BUBBLE_V_OFFSET - scrollTop;
+      var leftOffset = containerStage.x + H_PADDING + scaleX(hoverTimeRange.midpoint());
+      var topOffset = chartStage.height * graphIndex + HOVER_BUBBLE_V_OFFSET - scrollTop;
       if (colors) {
         chartHoverBubble = <HoverMultiBubble
           essence={essence}
           datums={hoverDatums}
           measure={measure}
           getY={getY}
-          top={stage.y + topOffset + 30}
+          top={containerStage.y + topOffset + 30}
           left={leftOffset}
         />;
       } else {
@@ -490,7 +504,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
             datum={hoverDatums[0]}
             measure={measure}
             getY={getY}
-            top={stage.y + topOffset}
+            top={containerStage.y + topOffset}
             left={leftOffset}
           />;
         }
@@ -498,19 +512,14 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     }
 
     return <div
-      className="measure-graph"
+      className="measure-time-chart"
       key={measureName}
       onMouseDown={this.onMouseDown.bind(this)}
       onMouseMove={this.onMouseMove.bind(this, myDataset, measure, scaleX)}
       onMouseLeave={this.onMouseLeave.bind(this, measure)}
     >
-      <svg width={svgStage.width} height={svgStage.height}>
-        <GridLines
-          orientation="horizontal"
-          scale={scaleY}
-          ticks={yTicks}
-          stage={lineStage}
-        />
+      <svg width={chartStage.width} height={chartStage.height}>
+        {horizontalGridLines}
         <GridLines
           orientation="vertical"
           scale={scaleX}
@@ -518,10 +527,12 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           stage={lineStage}
         />
         {chartLines}
-        <VerticalAxis
-          stage={yAxisStage}
-          yTicks={yTicks}
-          scaleY={scaleY}
+        {verticalAxis}
+        <line className="h-zero"
+          x1="0"
+          y1={chartStage.height - 0.5}
+          x2={chartStage.width}
+          y2={chartStage.height - 0.5}
         />
       </svg>
       <div className="measure-label">
@@ -545,7 +556,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     var timeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
     if (dataset && splits.length() && timeRange) {
-      var measures = essence.getMeasures().toArray();
+      var measures = essence.getEffectiveMeasures().toArray();
 
       var getX = (d: Datum) => midpoint(d[TIME_SEGMENT] as TimeRange);
 
@@ -555,7 +566,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         x: H_PADDING,
         y: 0,
         width: Math.floor(parentWidth / numberOfColumns),
-        height: graphHeight - 1 // -1 for border
+        height: graphHeight
       });
 
       var scaleX = d3.time.scale()
@@ -613,7 +624,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     }
 
     return <div className="time-series">
-      <div className="measure-graphs" style={measureGraphsStyle} onScroll={this.onScroll.bind(this)}>
+      <div className="measure-time-charts" style={measureGraphsStyle} onScroll={this.onScroll.bind(this)}>
         {measureGraphs}
       </div>
       {bottomAxes}

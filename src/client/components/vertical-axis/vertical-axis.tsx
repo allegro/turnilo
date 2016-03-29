@@ -1,12 +1,9 @@
 require('./vertical-axis.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-// import { SvgIcon } from '../svg-icon/svg-icon';
-import * as d3 from 'd3';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
+import { roundToHalfPx } from '../../utils/dom/dom';
 import { Stage, Measure } from '../../../common/models/index';
-// import { SomeComp } from '../some-comp/some-comp';
 
 const TICK_WIDTH = 5;
 const TEXT_OFFSET = 2;
@@ -34,7 +31,7 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
     var formatter = formatterFromData(yTicks, Measure.DEFAULT_FORMAT);
 
     var lines = yTicks.map((tick: any, i: number) => {
-      var y = scaleY(tick);
+      var y = roundToHalfPx(scaleY(tick));
       return <line className="tick" key={String(tick)} x1={0} y1={y} x2={TICK_WIDTH} y2={y}/>;
     });
 

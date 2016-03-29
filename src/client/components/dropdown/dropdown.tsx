@@ -1,12 +1,11 @@
 require('./dropdown.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-import { isInside, escapeKey } from '../../utils/dom/dom';
+import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
 
 function simpleEqual(item1: any, item2: any): boolean {
   return item1 === item2;
@@ -86,7 +85,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
     if (!equal) equal = simpleEqual;
     var itemElements = items.map((item) => {
       return <div
-        className={'dropdown-item' + (equal(item, selectedItem) ? ' selected' : '')}
+        className={classNames('dropdown-item', equal(item, selectedItem) ? 'selected' : null)}
         key={keyItem(item)}
         onClick={this.selectItem.bind(this, item)}
       >
@@ -110,7 +109,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
       labelElement = <div className="dropdown-label">{label}</div>;
     }
 
-    return <div className={'dropdown ' + direction} onClick={this.onClick.bind(this)}>
+    return <div className={classNames('dropdown', direction)} onClick={this.onClick.bind(this)}>
       {labelElement}
       <div className="selected-item">{renderItem(selectedItem)}
         <SvgIcon className="caret-icon" svg={require('../../icons/dropdown-caret.svg')}/>

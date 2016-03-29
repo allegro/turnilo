@@ -1,14 +1,11 @@
 require('./measures-tile.css');
 
-import { List, OrderedSet } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
 import { STRINGS, PIN_TITLE_HEIGHT, SEARCH_BOX_HEIGHT, MEASURE_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
-import { hasOwnProperty } from '../../../common/utils/general/general';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-import { TileHeader } from '../tile-header/tile-header';
-import { Checkbox } from '../checkbox/checkbox';
+import { classNames } from '../../utils/dom/dom';
+import { Checkbox, CheckboxType } from '../checkbox/checkbox';
+import { TileHeader, TileHeaderIcon } from '../tile-header/tile-header';
 
 export interface MeasuresTileProps extends React.Props<any> {
   clicker: Clicker;
@@ -40,26 +37,29 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       return;
     }
     var { clicker } = this.props;
-    clicker.toggleMeasure(measure);
+    clicker.toggleEffectiveMeasure(measure);
   }
 
   render() {
-    var { essence } = this.props;
+    var { clicker, essence } = this.props;
     var { showSearch } = this.state;
-    var { dataSource, selectedMeasures } = essence;
+    var { dataSource } = essence;
+    var multiMeasureMode = essence.getEffectiveMultiMeasureMode();
+    var selectedMeasures = essence.getEffectiveSelectedMeasure();
 
     var maxHeight = PIN_TITLE_HEIGHT;
 
+    var checkboxType: CheckboxType = multiMeasureMode ? 'check' : 'radio';
     var rows = dataSource.measures.map(measure => {
       var measureName = measure.name;
       var selected = selectedMeasures.has(measureName);
 
       return <div
-        className={'row' + (selected ? ' selected' : '')}
+        className={classNames('row', { selected })}
         key={measureName}
         onClick={this.measureClick.bind(this, measure)}
       >
-        <Checkbox selected={selected}/>
+        <Checkbox type={checkboxType} selected={selected}/>
         <div className="label">{measure.title}</div>
       </div>;
     });
@@ -70,8 +70,26 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       maxHeight
     };
 
+    var icons: TileHeaderIcon[] = [];
+
+    if (!essence.isFixedMeasureMode()) {
+      icons.push({
+        name: 'multi',
+        onClick: clicker.toggleMultiMeasureMode,
+        svg: require('../../icons/full-multi.svg'),
+        active: multiMeasureMode
+      });
+    }
+
+    // More icons to add later
+    //{ name: 'more', onClick: null, svg: require('../../icons/full-more-mini.svg') }
+    //{ name: 'search', onClick: null, svg: require('../../icons/full-search.svg') }
+
     return <div className="measures-tile" style={style}>
-      <div className="title">{STRINGS.measures}</div>
+      <TileHeader
+        title={STRINGS.measures}
+        icons={icons}
+      />
       <div className="rows">{rows}</div>
     </div>;
   }

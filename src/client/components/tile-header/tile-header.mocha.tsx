@@ -14,9 +14,7 @@ describe('TileHeader', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <TileHeader
-        onClose={null}
         onDragStart={null}
-        onSearch={null}
         title={null}
       />
     );

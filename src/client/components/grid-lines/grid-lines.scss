@@ -3,6 +3,7 @@
 .grid-lines {
   line {
     pointer-events: none;
+    shape-rendering: crispEdges;
     stroke: $grid-line-color;
   }
 }

@@ -1,7 +1,7 @@
 import * as Q from 'q';
 import { Duration, Timezone } from 'chronoshift';
 import { $, AttributeInfo, RefExpression, DruidExternal, helper } from 'plywood';
-import { DataSource, DataSourceJS, RefreshRule, Dimension, Measure } from '../../../common/models/index';
+import { DataSource, RefreshRule } from '../../../common/models/index';
 
 export type SourceListScan = "disable" | "auto";
 
@@ -12,8 +12,8 @@ export interface DataSourceLoader {
 export interface DataSourceManagerOptions {
   dataSources?: DataSource[];
   dataSourceStubFactory?: (name: string) => DataSource;
-  druidRequester?: Requester.PlywoodRequester<any>;
   dataSourceLoader?: DataSourceLoader;
+  druidRequester?: Requester.PlywoodRequester<any>;
 
   pageMustLoadTimeout?: number;
   sourceListScan?: SourceListScan;

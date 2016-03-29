@@ -1,11 +1,11 @@
 @import '../../imports';
 
 .tile-header {
-  @extend %module-title;
-
   .title {
-    //font-size: 13px;
-    //text-transform: none;
+    padding: 15px $padding-compact 10px $padding-compact;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: $text-standard;
   }
 
   .icons {
@@ -17,6 +17,19 @@
       display: inline-block;
       padding: 10px 0;
       cursor: pointer;
+      width: 19px;
+      margin-left: 3px;
+
+      svg path {
+        fill: #bbb;
+      }
+
+      &:hover,
+      &.active {
+        svg path {
+          fill: #888;
+        }
+      }
     }
   }
 }

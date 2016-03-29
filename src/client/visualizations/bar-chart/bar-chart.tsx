@@ -3,10 +3,10 @@ require('./bar-chart.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, ply, r, Expression, Executor, Dataset, Datum } from 'plywood';
+import { $, ply, r, Expression, Executor, Dataset, Datum, SortAction } from 'plywood';
 // import { ... } from '../../config/constants';
 import { Stage, Essence, DataSource, Filter, Splits, SplitCombine, Dimension, Measure, Colors, VisualizationProps, Resolve } from '../../../common/models/index';
-import { SPLIT, SEGMENT } from '../../config/constants';
+import { SPLIT, SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
@@ -36,8 +36,37 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       );
     }
 
-    //return Resolve.ready(8);
-    return Resolve.manual(0, 'The Bar Chart visualization is not ready, please select another visualization.', []);
+    // Auto adjustment
+    var autoChanged = false;
+    splits = splits.map((split, i) => {
+      var splitDimension = dataSource.getDimensionByExpression(split.expression);
+
+      if (!split.sortAction) {
+        split = split.changeSortAction(dataSource.getDefaultSortAction());
+        autoChanged = true;
+      } else if (split.sortAction.refName() === TIME_SEGMENT) {
+        split = split.changeSortAction(new SortAction({
+          expression: $(SEGMENT),
+          direction: split.sortAction.direction
+        }));
+        autoChanged = true;
+      }
+
+      // ToDo: review this
+      if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
+        split = split.changeLimit(i ? 5 : 50);
+        autoChanged = true;
+      }
+
+      return split;
+    });
+
+    if (colors) {
+      colors = null;
+      autoChanged = true;
+    }
+
+    return autoChanged ? Resolve.automatic(5, { splits }) : Resolve.ready(8);
   }
 
   public mounted: boolean;
@@ -53,7 +82,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
 
   fetchData(essence: Essence): void {
     var { splits, dataSource } = essence;
-    var measures = essence.getMeasures();
+    var measures = essence.getEffectiveMeasures();
 
     var $main = $('main');
 
@@ -129,7 +158,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       nextEssence.differentDataSource(essence) ||
       nextEssence.differentEffectiveFilter(essence, BarChart.id) ||
       nextEssence.differentSplits(essence) ||
-      nextEssence.newSelectedMeasures(essence)
+      nextEssence.newEffectiveMeasures(essence)
     ) {
       this.fetchData(nextEssence);
     }
@@ -144,7 +173,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     var { loading, error, dataset } = this.state;
     var { splits } = essence;
 
-    var measure = essence.getMeasures().first();
+    var measure = essence.getEffectiveMeasures().first();
     var measureName = measure.name;
     var getY = (d: Datum) => d[measureName] as number;
 

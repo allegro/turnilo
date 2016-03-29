@@ -283,8 +283,8 @@ export class Filter implements Instance<FilterValue, FilterJS> {
       if (clause.expression.equals(timeAttribute)) {
         var timeRange: TimeRange = clause.getTimeRange();
         var newTimeRange = new TimeRange({
-          start: duration.move(timeRange.start, timezone, -1),
-          end: duration.move(timeRange.end, timezone, 1)
+          start: duration.shift(timeRange.start, timezone, -1),
+          end: duration.shift(timeRange.end, timezone, 1)
         });
         return clause.changeSelection(r(newTimeRange));
       } else {

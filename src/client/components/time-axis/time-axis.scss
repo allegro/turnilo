@@ -2,6 +2,11 @@
 
 .time-axis {
   line {
+    shape-rendering: crispEdges;
+    pointer-events: none;
+  }
+
+  line {
     stroke: $gray;
   }
 

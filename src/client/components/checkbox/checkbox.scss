@@ -20,8 +20,30 @@ $checkbox-size: 15px;
     border-radius: 2px;
   }
 
-  &.check .checkbox-body {
-    background: hsla(0, 0, 0, 0.45);
+  &.radio {
+    .checkbox-body {
+      border-radius: 30px;
+    }
+  }
+
+  &.selected.check,
+  &.selected.radio {
+    .checkbox-body {
+      background: hsla(0, 0, 0, 0.45);
+    }
+  }
+
+  &.selected.radio {
+    .checkbox-body:after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      width: 5px;
+      height: 5px;
+      border-radius: 30px;
+      background: #fff;
+    }
   }
 
   svg {

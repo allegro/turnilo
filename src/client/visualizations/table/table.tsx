@@ -71,6 +71,8 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   static id = 'table';
   static title = 'Table';
 
+  static measureModeNeed = 'multi';
+
   static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
     // Must have at least one dimension
     if (splits.length() === 0) {
@@ -138,7 +140,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
   fetchData(essence: Essence): void {
     var { splits, dataSource } = essence;
-    var measures = essence.getMeasures();
+    var measures = essence.getEffectiveMeasures();
 
     var $main = $('main');
 
@@ -220,7 +222,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       nextEssence.differentDataSource(essence) ||
       nextEssence.differentEffectiveFilter(essence, Table.id) ||
       nextEssence.differentSplits(essence) ||
-      nextEssence.newSelectedMeasures(essence)
+      nextEssence.newEffectiveMeasures(essence)
     ) {
       this.fetchData(nextEssence);
     }
@@ -253,7 +255,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
       x = x - SEGMENT_WIDTH + scrollLeft;
       var measureIndex = Math.floor(x / MEASURE_WIDTH);
-      var measure = essence.getMeasures().get(measureIndex);
+      var measure = essence.getEffectiveMeasures().get(measureIndex);
       if (!measure) return { what: 'whitespace' };
       return { what: 'header', measure };
     }
@@ -340,7 +342,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       cornerSortArrow = sortArrowIcon;
     }
 
-    var measuresArray = essence.getMeasures().toArray();
+    var measuresArray = essence.getEffectiveMeasures().toArray();
 
     var headerColumns = measuresArray.map((measure, i) => {
       return <div

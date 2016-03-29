@@ -1,3 +1,4 @@
+import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
 import { $, Expression, ExpressionJS, Action, ApplyAction, AttributeInfo, ChainExpression, helper } from 'plywood';
@@ -31,6 +32,12 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
 
   static isMeasure(candidate: any): candidate is Measure {
     return isInstanceOf(candidate, Measure);
+  }
+
+  static getMeasure(measures: List<Measure>, measureName: string): Measure {
+    if (!measureName) return null;
+    measureName = measureName.toLowerCase(); // Case insensitive
+    return measures.find(measure => measure.name.toLowerCase() === measureName);
   }
 
   /**

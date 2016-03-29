@@ -71,8 +71,11 @@ export class Resolve {
 
 Resolve.NEVER = new Resolve(-1, 'never', null, null, null);
 
+export type MeasureModeNeeded = 'single' | 'multi';
+
 export interface Manifest {
   id: string;
   title: string;
+  measureModeNeed?: MeasureModeNeeded;
   handleCircumstance: (dataSource: DataSource, splits: Splits, colors: Colors, selected: boolean) => Resolve;
 }

@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { hasOwnProperty } from '../../../common/utils/general/general';
 
 const DRAG_GHOST_OFFSET_X = -12;
 const DRAG_GHOST_OFFSET_Y = -12;
@@ -84,4 +85,28 @@ export function getXFromEvent(e: MouseEvent | DragEvent): number {
 
 export function getYFromEvent(e: MouseEvent | DragEvent): number {
   return e.clientY || e.pageY;
+}
+
+export function roundToHalfPx(n: number): number {
+  return Math.round(n - 0.5) + 0.5;
+}
+
+export function classNames(...args: Array<string | Lookup<any>>): string {
+  var classes: string[] = [];
+
+  for (var arg of args) {
+    if (!arg) continue;
+
+    var argType = typeof arg;
+
+    if (argType === 'string') {
+      classes.push(arg as string);
+    } else if (argType === 'object') {
+      for (var key in (arg as Lookup<any>)) {
+        if (hasOwnProperty(arg, key) && (arg as any)[key]) classes.push(key);
+      }
+    }
+  }
+
+  return classes.join(' ');
 }

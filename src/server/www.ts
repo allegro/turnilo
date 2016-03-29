@@ -16,12 +16,12 @@ if (START_SERVER) {
     // handle specific listen errors with friendly messages
     switch (error.code) {
       case 'EACCES':
-        console.error('Port ' + PORT + ' requires elevated privileges');
+        console.error(`Port ${PORT} requires elevated privileges`);
         process.exit(1);
         break;
 
       case 'EADDRINUSE':
-        console.error('Port ' + PORT + ' is already in use');
+        console.error(`Port ${PORT} is already in use`);
         process.exit(1);
         break;
 

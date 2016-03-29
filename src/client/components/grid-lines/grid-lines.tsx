@@ -1,10 +1,8 @@
 require('./grid-lines.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-// import { SvgIcon } from '../svg-icon/svg-icon';
 import { Stage } from '../../../common/models/index';
-// import { SomeComp } from '../some-comp/some-comp';
+import { classNames, roundToHalfPx } from '../../utils/dom/dom';
 
 export interface GridLinesProps extends React.Props<any> {
   orientation: string;
@@ -33,13 +31,13 @@ export class GridLines extends React.Component<GridLinesProps, GridLinesState> {
       };
 
       if (orientation === 'horizontal') {
-        var y = scale(tick);
+        var y = roundToHalfPx(scale(tick));
         lineProps.x1 = 0;
         lineProps.x2 = stage.width;
         lineProps.y1 = y;
         lineProps.y2 = y;
       } else {
-        var x = scale(tick);
+        var x = roundToHalfPx(scale(tick));
         lineProps.x1 = x;
         lineProps.x2 = x;
         lineProps.y1 = 0;
@@ -49,7 +47,7 @@ export class GridLines extends React.Component<GridLinesProps, GridLinesState> {
       return React.createElement('line', lineProps);
     });
 
-    return <g className={'grid-lines ' + orientation} transform={stage.getTransform()}>
+    return <g className={classNames('grid-lines', orientation)} transform={stage.getTransform()}>
       {lines}
     </g>;
   }

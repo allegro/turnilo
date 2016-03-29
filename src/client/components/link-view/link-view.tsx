@@ -66,7 +66,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       },
       toggleMeasure: (measure: Measure) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.toggleMeasure(measure) });
+        this.setState({ essence: essence.toggleSelectedMeasure(measure) });
       },
       changeHighlight: (owner: string, delta: Filter) => {
         var { essence } = this.state;

@@ -1,8 +1,7 @@
 require('./highlight-string.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-// import { ... } from '../../config/constants';
+import { classNames } from '../../utils/dom/dom';
 
 export interface HighlightStringProps extends React.Props<any> {
   className?: string;
@@ -37,6 +36,6 @@ export class HighlightString extends React.Component<HighlightStringProps, Highl
   render() {
     var { className } = this.props;
 
-    return <span className={'highlight-string ' + (className || '')}>{this.highlightInString()}</span>;
+    return <span className={classNames('highlight-string', className)}>{this.highlightInString()}</span>;
   }
 }

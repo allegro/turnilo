@@ -1,6 +1,11 @@
 @import '../../imports';
 
 .vertical-axis {
+  line {
+    shape-rendering: crispEdges;
+    pointer-events: none;
+  }
+
   line.border {
     stroke: $gray;
   }

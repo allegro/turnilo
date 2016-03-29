@@ -6,24 +6,23 @@ $h-padding: 10px;
   display: inline-block;
   overflow: hidden;
 
-  .measure-graphs {
+  .measure-time-charts {
     overflow-x: hidden;
     overflow-y: auto;
     padding-left: $h-padding;
   }
 
-  .measure-graph {
-    border-bottom: 1px solid $gray;
-
+  .measure-time-chart {
     .measure-label {
       position: absolute;
       left: 6px;
       top: 12px;
+    }
 
-      /*span.measure-title,
-      span.colon {
-        color: $text-light;
-      }*/
+    .h-zero {
+      pointer-events: none;
+      shape-rendering: crispEdges;
+      stroke: $gray;
     }
   }
 

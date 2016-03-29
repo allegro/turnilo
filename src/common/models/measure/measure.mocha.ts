@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
-import { $, Expression, AttributeInfo } from 'plywood';
+import { $, AttributeInfo } from 'plywood';
 import { Measure, MeasureJS } from './measure';
 
 describe('Measure', () => {
