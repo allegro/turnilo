@@ -51,7 +51,7 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
       });
     } else {
       var value: SplitCombineValue = {
-        expression: Expression.fromJS(parameters.expression),
+        expression: Expression.fromJSLoose(parameters.expression),
         bucketAction: null,
         sortAction: null,
         limitAction: null
