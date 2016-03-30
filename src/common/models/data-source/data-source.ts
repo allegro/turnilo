@@ -124,6 +124,7 @@ export interface LongForm {
   metricColumn: string;
   possibleAggregates: Lookup<any>;
   addSubsetFilter?: boolean;
+  titleNameTrim?: string;
   values: LongFormValue[];
 }
 
@@ -133,7 +134,7 @@ export interface LongFormValue {
 }
 
 function measuresFromLongForm(longForm: LongForm): Measure[] {
-  var { metricColumn, values, possibleAggregates } = longForm;
+  var { metricColumn, values, possibleAggregates, titleNameTrim } = longForm;
   var myPossibleAggregates: Lookup<Expression> = {};
   for (var agg in possibleAggregates) {
     if (!hasOwnProperty(possibleAggregates, agg)) continue;
@@ -151,8 +152,10 @@ function measuresFromLongForm(longForm: LongForm): Measure[] {
       var myExpression = myPossibleAggregates[aggregate];
       if (!myExpression) throw new Error(`can not find aggregate ${aggregate} for value ${value.value}`);
 
+      var name = makeUrlSafeName(`${aggregate}_${value.value}`);
       measures.push(new Measure({
-        name: makeUrlSafeName(`${aggregate}_${value.value}`),
+        name,
+        title: makeTitle(titleNameTrim ? name.replace(titleNameTrim, '') : name),
         expression: myExpression.substitute((ex) => {
           if (ex instanceof RefExpression && ex.name === 'filtered') {
             return $('main').filter($(metricColumn).is(r(value.value)));

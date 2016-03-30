@@ -54,6 +54,10 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     }
   }
 
+  componentWillUnmount() {
+    this.clearTimerIfExists();
+  }
+
   setAutoRefreshFromDataSource(dataSource: DataSource) {
     const { refreshRule } = dataSource;
     if (refreshRule.isFixed()) return;
@@ -64,11 +68,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     const { autoRefreshRate } = this.state;
     if (immutableEqual(autoRefreshRate, rate)) return;
 
-    // CLear existing timer if exists
-    if (this.autoRefreshTimer) {
-      clearInterval(this.autoRefreshTimer);
-      this.autoRefreshTimer = null;
-    }
+    this.clearTimerIfExists();
 
     // Make new timer
     var { refreshMaxTime } = this.props;
@@ -81,6 +81,13 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     this.setState({
       autoRefreshRate: rate
     });
+  }
+
+  clearTimerIfExists() {
+    if (this.autoRefreshTimer) {
+      clearInterval(this.autoRefreshTimer);
+      this.autoRefreshTimer = null;
+    }
   }
 
   onModalClose() {
