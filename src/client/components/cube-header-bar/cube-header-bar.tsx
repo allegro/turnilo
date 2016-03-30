@@ -83,22 +83,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     });
   }
 
-  onPanicClick(e: MouseEvent) {
-    var { essence, getUrlPrefix } = this.props;
-    var { dataSource } = essence;
-    if (e.altKey) {
-      console.log('DataSource:', dataSource.toJS());
-      return;
-    }
-    if (e.shiftKey) {
-      this.setState({
-        showTestMenu: true
-      });
-      return;
-    }
-    window.location.assign(getUrlPrefix(true));
-  }
-
   onModalClose() {
     this.setState({
       showTestMenu: false
@@ -118,7 +102,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     </Modal>;
   }
 
-  // Share menu ("hiluk" = share in Hebrew)
+  // Share menu ("hiluk" = share in Hebrew, kind of)
 
   onHilukMenuClick(e: MouseEvent) {
     const { hilukMenuOpenOn } = this.state;

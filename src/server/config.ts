@@ -159,6 +159,7 @@ if (configFilePath) {
   configFileDir = path.dirname(configFilePath);
   try {
     config = loadFileSync(configFilePath, 'yaml');
+    console.log(`Using config ${configFilePath}`);
   } catch (e) {
     errorExit(`Could not load config from '${configFilePath}': ${e.message}`);
   }
