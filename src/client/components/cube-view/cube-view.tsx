@@ -42,6 +42,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     maxSplits: 3
   };
 
+  public mounted: boolean;
   private clicker: Clicker;
   private dragCounter: number;
 
@@ -127,6 +128,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     var { dataSource } = essence;
     DataSource.updateMaxTime(dataSource)
       .then((updatedDataSource) => {
+        if (!this.mounted) return;
         this.setState({ essence: essence.updateDataSource(updatedDataSource) });
       });
   }
@@ -143,6 +145,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentDidMount() {
+    this.mounted = true;
     DragManager.init();
     window.addEventListener('resize', this.globalResizeListener);
     window.addEventListener('keydown', this.globalKeyDownListener);
@@ -176,6 +179,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillUnmount() {
+    this.mounted = false;
     window.removeEventListener('resize', this.globalResizeListener);
     window.removeEventListener('keydown', this.globalKeyDownListener);
   }

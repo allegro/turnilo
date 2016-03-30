@@ -192,7 +192,7 @@ export const TIMEOUT = parseInt(<any>config.timeout, 10) || 30000;
 
 export const INTROSPECTION_STRATEGY = String(parsedArgs["introspection-strategy"] || config.introspectionStrategy || 'segment-metadata-fallback');
 export const PAGE_MUST_LOAD_TIMEOUT = START_SERVER ? (parseInt(<any>config.pageMustLoadTimeout, 10) || 800) : 0;
-export const SOURCE_LIST_SCAN: SourceListScan = START_SERVER ? config.sourceListScan : 'disable';
+export const SOURCE_LIST_SCAN: SourceListScan = config.sourceListScan;
 
 export const SOURCE_LIST_REFRESH_ON_LOAD = START_SERVER ? Boolean(<any>config.sourceListRefreshOnLoad) : false;
 export const SOURCE_LIST_REFRESH_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceListRefreshInterval, 10) || 15000) : 0;

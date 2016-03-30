@@ -31,8 +31,9 @@ function formatLabel(dimension: Dimension, clause: FilterClause, essence: Essenc
   var label = dimension.title;
 
   switch (dimension.kind) {
-    case 'string':
     case 'boolean':
+    case 'number':
+    case 'string':
       var setElements = clause.getLiteralSet().elements;
       label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
       break;
@@ -44,7 +45,7 @@ function formatLabel(dimension: Dimension, clause: FilterClause, essence: Essenc
       break;
 
     default:
-      throw new Error('unknown kind ' + dimension.kind);
+      throw new Error(`unknown kind ${dimension.kind}`);
   }
 
   return label;
