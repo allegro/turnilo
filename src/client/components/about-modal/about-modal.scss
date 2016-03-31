@@ -1,0 +1,16 @@
+@import '../../imports';
+
+.about-modal {
+  p {
+    margin-bottom: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  a {
+    color: $brand;
+    cursor: pointer;
+  }
+}

@@ -1,8 +1,10 @@
 @import '../../imports';
 
-.grid-lines {
+.bucket-marks {
+  pointer-events: none;
+
   line {
     pointer-events: none;
-    stroke: $grid-line-color;
+    stroke: $gray;
   }
 }

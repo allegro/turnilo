@@ -21,6 +21,7 @@
       <w>jsdom</w>
       <w>keydown</w>
       <w>kfar</w>
+      <w>lighterish</w>
       <w>lightish</w>
       <w>linter</w>
       <w>loupe</w>
@@ -45,6 +46,7 @@
       <w>scsslint</w>
       <w>shpitz</w>
       <w>sinon</w>
+      <w>slanty</w>
       <w>sourcemap</w>
       <w>subsplit</w>
       <w>supertest</w>

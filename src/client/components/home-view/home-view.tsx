@@ -39,16 +39,18 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
         onNavClick={onNavClick}
       />
       <div className="container">
-        <div className="home">
-          <NavLogo/>
-          <NavList
-            title="Data Cubes"
-            navLinks={navLinks}
-            iconSvg={require('../../icons/full-cube.svg')}
-          />
-          <NavList
-            navLinks={ADDITIONAL_LINKS}
-          />
+        <div className="wrapper">
+          <div className="home">
+            <NavLogo/>
+            <NavList
+              title="Data Cubes"
+              navLinks={navLinks}
+              iconSvg={require('../../icons/full-cube.svg')}
+            />
+            <NavList
+              navLinks={ADDITIONAL_LINKS}
+            />
+          </div>
         </div>
       </div>
     </div>;

@@ -1,6 +1,7 @@
+import * as React from 'react';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 
-export interface MarinParameters {
+export interface MarginParameters {
   left?: number;
   right?: number;
   top?: number;
@@ -115,7 +116,30 @@ export class Stage implements Instance<StageValue, StageJS> {
     return `translate(${this.x},${this.y})`;
   }
 
-  public within(param: MarinParameters): Stage {
+  public getLeftTop(): React.CSSProperties {
+    return {
+      left: this.x,
+      top: this.y
+    };
+  }
+
+  public getWidthHeight(): React.CSSProperties {
+    return {
+      width: this.width,
+      height: this.height
+    };
+  }
+
+  public getLeftTopWidthHeight(): React.CSSProperties {
+    return {
+      left: this.x,
+      top: this.y,
+      width: this.width,
+      height: this.height
+    };
+  }
+
+  public within(param: MarginParameters): Stage {
     var value = this.sizeOnlyValue();
     var { left, right, top, bottom } = param;
 

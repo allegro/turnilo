@@ -87,6 +87,10 @@ export function getYFromEvent(e: MouseEvent | DragEvent): number {
   return e.clientY || e.pageY;
 }
 
+export function roundToPx(n: number): number {
+  return Math.round(n);
+}
+
 export function roundToHalfPx(n: number): number {
   return Math.round(n - 0.5) + 0.5;
 }

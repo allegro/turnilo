@@ -10,14 +10,18 @@
     overflow: scroll;
   }
 
+  .wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+    padding: 30px 0 100px 0;
+  }
+
   .home {
     @extend %menu-cont;
-    position: absolute;
+    display: inline-block;
     width: 460px;
-    top: 60px;
-    left: 50%;
-    margin-left: -230px;
-    margin-bottom: 60px;
 
     .items {
       .item {

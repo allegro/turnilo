@@ -10,14 +10,18 @@ const TEXT_OFFSET = 2;
 
 export interface VerticalAxisProps extends React.Props<any> {
   stage: Stage;
-  yTicks: number[];
-  scaleY: any;
+  ticks: number[];
+  scale: any;
+  topLineExtend?: number;
 }
 
 export interface VerticalAxisState {
 }
 
 export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxisState> {
+  static defaultProps = {
+    topLineExtend: 0
+  };
 
   constructor() {
     super();
@@ -26,24 +30,24 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
   }
 
   render() {
-    var { stage, yTicks, scaleY } = this.props;
+    var { stage, ticks, scale, topLineExtend } = this.props;
 
-    var formatter = formatterFromData(yTicks, Measure.DEFAULT_FORMAT);
+    var formatter = formatterFromData(ticks, Measure.DEFAULT_FORMAT);
 
-    var lines = yTicks.map((tick: any, i: number) => {
-      var y = roundToHalfPx(scaleY(tick));
+    var lines = ticks.map((tick: any) => {
+      var y = roundToHalfPx(scale(tick));
       return <line className="tick" key={String(tick)} x1={0} y1={y} x2={TICK_WIDTH} y2={y}/>;
     });
 
     var labelX = TICK_WIDTH + TEXT_OFFSET;
     var dy = "0.31em";
-    var labels = yTicks.map((tick: any, i: number) => {
-      var y = scaleY(tick);
+    var labels = ticks.map((tick: any) => {
+      var y = scale(tick);
       return <text className="tick" key={String(tick)} x={labelX} y={y} dy={dy}>{formatter(tick)}</text>;
     });
 
     return <g className="vertical-axis" transform={stage.getTransform()}>
-      <line className="border" x1={0} x2={0} y1={0} y2={stage.height}/>
+      <line className="border" x1={0.5} y1={-topLineExtend} x2={0.5} y2={stage.height}/>
       {lines}
       {labels}
     </g>;

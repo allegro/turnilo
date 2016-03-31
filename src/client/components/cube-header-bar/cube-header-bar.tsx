@@ -6,7 +6,6 @@ import { Duration } from 'chronoshift';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, DataSource, User } from "../../../common/models/index";
 
-import { Modal } from '../modal/modal';
 import { HilukMenu } from '../hiluk-menu/hiluk-menu';
 import { AutoRefreshMenu } from '../auto-refresh-menu/auto-refresh-menu';
 import { UserMenu } from '../user-menu/user-menu';
@@ -22,7 +21,6 @@ export interface CubeHeaderBarProps extends React.Props<any> {
 }
 
 export interface CubeHeaderBarState {
-  showTestMenu?: boolean;
   hilukMenuOpenOn?: Element;
   autoRefreshMenuOpenOn?: Element;
   autoRefreshRate?: Duration;
@@ -35,7 +33,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   constructor() {
     super();
     this.state = {
-      showTestMenu: false,
       hilukMenuOpenOn: null,
       autoRefreshMenuOpenOn: null,
       autoRefreshRate: null,
@@ -88,25 +85,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       clearInterval(this.autoRefreshTimer);
       this.autoRefreshTimer = null;
     }
-  }
-
-  onModalClose() {
-    this.setState({
-      showTestMenu: false
-    });
-  }
-
-  renderTestModal() {
-    if (!this.state.showTestMenu) return null;
-    return <Modal
-      className="test-modal"
-      title="Test Modal"
-      onClose={this.onModalClose.bind(this)}
-    >
-      <div>Hello 1</div>
-      <div>Hello 2</div>
-      <div>Hello 3</div>
-    </Modal>;
   }
 
   // Share menu ("hiluk" = share in Hebrew, kind of)
@@ -223,7 +201,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
         </div>
         {userButton}
       </div>
-      {this.renderTestModal()}
       {this.renderHilukMenu()}
       {this.renderAutoRefreshMenu()}
       {this.renderUserMenu()}

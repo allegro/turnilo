@@ -14,7 +14,8 @@ describe('HoverBubble', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <HoverBubble
         datum={null}
-        essence={null}
+        timezone={null}
+        getValue={null}
         getY={null}
         left={null}
         measure={null}

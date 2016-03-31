@@ -10,13 +10,28 @@
   }
 
   .modal-window {
-    width: 300px;
+    @extend %module;
+    width: 420px;
+    padding: 18px;
     margin: auto;
     background: $white;
 
     .modal-title {
-      height: 25px;
-      padding: 4px;
+      line-height: 30px;
+      font-size: 17px;
+      margin-bottom: 16px;
+
+      .close {
+        top: 0;
+        right: 0;
+        position: absolute;
+        padding: 5px;
+        cursor: pointer;
+      }
+
+      svg {
+        width: 19px;
+      }
     }
   }
 }

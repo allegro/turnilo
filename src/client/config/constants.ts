@@ -14,6 +14,7 @@ export const PIN_TITLE_HEIGHT = 36;
 export const SEARCH_BOX_HEIGHT = 30;
 export const PIN_ITEM_HEIGHT = 25;
 export const PIN_PADDING_BOTTOM = 12;
+export const VIS_H_PADDING = 10;
 
 export const SPLIT = 'SPLIT';
 export const SEGMENT = 'SEGMENT';
@@ -46,6 +47,7 @@ export const STRINGS = {
   start: 'Start',
   end: 'End',
   ok: 'OK',
+  select: 'Select',
   cancel: 'Cancel',
   queryError: 'Query Error',
   autoUpdate: 'Auto Update',

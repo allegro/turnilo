@@ -1,27 +1,49 @@
 @import '../../imports';
 
+// These max width and height are arbitrary
+$hover-bubble-max-width: 30px;
+$hover-bubble-max-height: 10px;
 $shpitz-size: 7px;
-$hover-bubble-max-width: 300px;
 
 .hover-bubble {
   position: absolute;
   width: $hover-bubble-max-width;
+  height: $hover-bubble-max-height;
   margin-left: -$hover-bubble-max-width / 2;
-  text-align: center;
+  margin-top: -$hover-bubble-max-height - $shpitz-size;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
 
   .hover-bubble-inner {
     @extend %menu-cont;
     background: rgba($white, 0.9);
     display: inline-block;
     padding: 8px;
+    text-align: center;
 
     .text {
       display: inline-block;
 
-      .bucket {
+      .segment {
         color: $text-lighterish;
         display: block;
         margin-bottom: 3px;
+      }
+    }
+
+    .buttons {
+      white-space: nowrap;
+      margin-top: 7px;
+
+      .select {
+        @extend %button-primary;
+        margin-right: 5px;
+      }
+
+      .cancel {
+        @extend %button-secondary;
       }
     }
   }

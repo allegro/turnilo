@@ -4,25 +4,23 @@ import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
-
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { TimeAxis } from './time-axis';
+import { BucketMarks } from './bucket-marks';
 
-describe('TimeAxis', () => {
+describe('BucketMarks', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <TimeAxis
-        scale={null}
+      <BucketMarks
         stage={null}
         ticks={null}
-        timezone={null}
+        scale={null}
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('time-axis');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('bucket-marks');
   });
 
 });

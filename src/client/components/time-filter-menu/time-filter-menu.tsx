@@ -7,7 +7,7 @@ import { $, r, Expression, Executor, Dataset, TimeRange } from 'plywood';
 import { STRINGS } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure } from '../../../common/models/index';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
-import { enterKey } from '../../utils/dom/dom';
+import { enterKey, classNames } from '../../utils/dom/dom';
 // import { ... } from '../../config/constants';
 import { TimeInput } from '../time-input/time-input';
 
@@ -174,12 +174,9 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     var { timezone } = essence;
 
     var presetToButton = (preset: Preset) => {
-      var classNames = ['preset'];
-      if (preset.selection.equals(timeSelection)) classNames.push('selected');
-      if (preset === hoverPreset) classNames.push('hover');
       return <button
         key={preset.name}
-        className={classNames.join(' ')}
+        className={classNames('preset', { hover: preset === hoverPreset, selected: preset.selection.equals(timeSelection) })}
         onClick={this.onPresetClick.bind(this, preset)}
         onMouseEnter={this.onPresetMouseEnter.bind(this, preset)}
         onMouseLeave={this.onPresetMouseLeave.bind(this, preset)}

@@ -4,14 +4,13 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction } from 'plywood';
-import { immutableListsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
   Measure, Colors, DataSource, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
-import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
+import { HoverBubble } from '../../components/hover-bubble/hover-bubble';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
@@ -25,8 +24,7 @@ const SPACE_RIGHT = 10;
 
 const ROW_PADDING_RIGHT = 50;
 const BODY_PADDING_BOTTOM = 90;
-
-const HIGHLIGHT_CONTROLS_TOP = -34;
+const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
 function formatSegment(value: any): string {
   if (TimeRange.isTimeRange(value)) {
@@ -386,7 +384,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         var selected = false;
         var selectedClass = '';
         if (highlightDelta) {
-          selected = highlightDelta && highlightDelta.equals(getFilterFromDatum(splits, d));
+          selected = highlightDelta.equals(getFilterFromDatum(splits, d));
           selectedClass = selected ? 'selected' : 'not-selected';
         }
 
@@ -470,15 +468,13 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       height: HEADER_HEIGHT + bodyHeight + BODY_PADDING_BOTTOM
     };
 
-    var highlightControls: JSX.Element = null;
+    var highlightBubble: JSX.Element = null;
     if (highlighter) {
-      highlightControls = React.createElement(HighlightControls, {
-        clicker,
-        orientation: 'horizontal',
-        style: {
-          top: HEADER_HEIGHT + highlighterStyle.top - scrollTop + HIGHLIGHT_CONTROLS_TOP
-        }
-      });
+      highlightBubble = <HoverBubble
+        clicker={clicker}
+        left={stage.x + stage.width / 2}
+        top={stage.y + HEADER_HEIGHT + highlighterStyle.top - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
+      />;
     }
 
     var loader: JSX.Element = null;
@@ -522,7 +518,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       >
         <div className="scroller" style={scrollerStyle}></div>
       </div>
-      {highlightControls}
+      {highlightBubble}
     </div>;
   }
 }

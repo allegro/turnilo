@@ -4,8 +4,9 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-import { isInside, escapeKey, uniqueId } from '../../utils/dom/dom';
+import { isInside, escapeKey, uniqueId, classNames } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
+import { SvgIcon } from '../svg-icon/svg-icon';
 
 const TOP_RATIO = 0.618 / 1.618;
 
@@ -67,6 +68,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     var target = e.target as Element;
 
     if (isInside(target, myElement)) return;
+    console.log('here', target, myElement);
     onClose();
   }
 
@@ -86,21 +88,21 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   }
 
   render() {
-    var { className, title, children } = this.props;
+    var { className, title, children, onClose } = this.props;
     var { id, windowTop } = this.state;
 
     var titleElement: JSX.Element = null;
     if (typeof title === 'string') {
       titleElement = <div className="modal-title">
-        {title}
+        <div className="text">{title}</div>
+        <div className="close" onClick={onClose as any}>
+          <SvgIcon svg={require('../../icons/full-remove.svg')}/>
+        </div>
       </div>;
     }
 
-    var myClass = 'modal';
-    if (className) myClass += ' ' + className;
-
     return <BodyPortal fullSize={true}>
-      <div className={myClass} ref="modal">
+      <div className={classNames('modal', className)} ref="modal">
         <div className="backdrop"></div>
         <div className="modal-window" id={id} ref="window" style={{ top: windowTop }}>
           {titleElement}
