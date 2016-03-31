@@ -54,7 +54,7 @@
     "gulp-watch": "4.3.5",
     "istanbul": "0.4.2",
     "jsdom": "8.1.0",
-    "laborer": "2.4.12",
+    "laborer": "2.4.13",
     "mkdirp": "0.5.1",
     "mocha": "2.4.5",
     "react-addons-test-utils": "0.14.7",
