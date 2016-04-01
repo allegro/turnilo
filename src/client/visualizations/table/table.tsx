@@ -117,7 +117,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       autoChanged = true;
     }
 
-    return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(10);
+    return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(current ? 10 : 8);
   }
 
   public mounted: boolean;
@@ -317,7 +317,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         }
       }
 
-      clicker.changeHighlight(Table.id, rowHighlight);
+      clicker.changeHighlight(Table.id, null, rowHighlight);
     }
   }
 

@@ -3,6 +3,7 @@ require('./cube-header-bar.css');
 import * as React from 'react';
 import { immutableEqual } from "immutable-class";
 import { Duration } from 'chronoshift';
+import { Fn } from "../../../common/utils/general/general";
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, DataSource, User } from "../../../common/models/index";
 
@@ -15,9 +16,9 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   user?: User;
-  onNavClick: Function;
-  getUrlPrefix?: Function;
-  refreshMaxTime?: Function;
+  onNavClick: Fn;
+  getUrlPrefix?: () => string;
+  refreshMaxTime?: Fn;
 }
 
 export interface CubeHeaderBarState {

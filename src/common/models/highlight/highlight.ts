@@ -7,11 +7,13 @@ import { Filter, FilterJS } from '../filter/filter';
 export interface HighlightValue {
   owner: string;
   delta: Filter;
+  measure?: string;
 }
 
 export interface HighlightJS {
   owner: string;
   delta: FilterJS;
+  measure?: string;
 }
 
 var check: Class<HighlightValue, HighlightJS>;
@@ -24,33 +26,39 @@ export class Highlight implements Instance<HighlightValue, HighlightJS> {
   static fromJS(parameters: HighlightJS): Highlight {
     return new Highlight({
       owner: parameters.owner,
-      delta: Filter.fromJS(parameters.delta)
+      delta: Filter.fromJS(parameters.delta),
+      measure: parameters.measure
     });
   }
 
 
   public owner: string;
   public delta: Filter;
+  public measure: string;
 
   constructor(parameters: HighlightValue) {
     var owner = parameters.owner;
     if (typeof owner !== 'string') throw new TypeError('owner must be a string');
     this.owner = owner;
     this.delta = parameters.delta;
+    this.measure = parameters.measure || null;
   }
 
   public valueOf(): HighlightValue {
     return {
       owner: this.owner,
-      delta: this.delta
+      delta: this.delta,
+      measure: this.measure
     };
   }
 
   public toJS(): HighlightJS {
-    return {
+    var js: HighlightJS = {
       owner: this.owner,
       delta: this.delta.toJS()
     };
+    if (this.measure) js.measure = this.measure;
+    return js;
   }
 
   public toJSON(): HighlightJS {
@@ -64,7 +72,8 @@ export class Highlight implements Instance<HighlightValue, HighlightJS> {
   public equals(other: Highlight): boolean {
     return Highlight.isHighlight(other) &&
       this.owner === other.owner &&
-      this.delta.equals(other.delta);
+      this.delta.equals(other.delta) &&
+      this.measure === other.measure;
   }
 
   public applyToFilter(filter: Filter): Filter {

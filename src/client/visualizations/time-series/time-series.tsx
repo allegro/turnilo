@@ -9,7 +9,7 @@ import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataS
 import { SPLIT, SEGMENT, TIME_SEGMENT, TIME_SORT_ACTION, VIS_H_PADDING } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { VisMeasureLabel } from '../../components/vis-measure-label/vis-measure-label';
-import { ChartLine, ChartLineProps } from '../../components/chart-line/chart-line';
+import { ChartLine } from '../../components/chart-line/chart-line';
 import { TimeAxis } from '../../components/time-axis/time-axis';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
 import { GridLines } from '../../components/grid-lines/grid-lines';
@@ -25,13 +25,14 @@ const Y_AXIS_WIDTH = 60;
 const MIN_CHART_HEIGHT = 140;
 const HOVER_BUBBLE_V_OFFSET = 7;
 const MAX_HOVER_DIST = 50;
+const MAX_ASPECT_RATIO = 1; // width / height
 
 function midpoint(timeRange: TimeRange): Date {
   if (!timeRange) return null;
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
-function findClosest(data: Datum[], dragDate: Date, scaleX: Function) {
+function findClosest(data: Datum[], dragDate: Date, scaleX: (t: Date) => number) {
   var closestDatum: Datum = null;
   var minDist = Infinity;
   for (var datum of data) {
@@ -550,12 +551,18 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
       var getX = (d: Datum) => midpoint(d[TIME_SEGMENT] as TimeRange);
 
-      var parentWidth = stage.width - VIS_H_PADDING * 2;
-      var chartHeight = Math.max(MIN_CHART_HEIGHT, Math.floor((stage.height - X_AXIS_HEIGHT) / measures.length));
+      var chartWidth = stage.width - VIS_H_PADDING * 2;
+      var chartHeight = Math.max(
+        MIN_CHART_HEIGHT,
+        Math.floor(Math.min(
+          chartWidth / MAX_ASPECT_RATIO,
+          (stage.height - X_AXIS_HEIGHT) / measures.length
+        ))
+      );
       var chartStage = new Stage({
         x: VIS_H_PADDING,
         y: 0,
-        width: parentWidth,
+        width: chartWidth,
         height: chartHeight
       });
 

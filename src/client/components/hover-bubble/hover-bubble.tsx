@@ -2,7 +2,8 @@ require('./hover-bubble.css');
 
 import * as React from 'react';
 import { Timezone } from 'chronoshift';
-import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
+import { $, PlywoodValue, Datum, TimeRange } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { Clicker, Measure } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
@@ -14,10 +15,10 @@ export interface HoverBubbleProps extends React.Props<any> {
   timezone?: Timezone;
   datum?: Datum;
   measure?: Measure;
-  getValue?: Function;
-  getY?: Function;
+  getValue?: (d: Datum) => PlywoodValue;
+  getY?: (d: Datum) => number;
   clicker?: Clicker;
-  onClose?: Function;
+  onClose?: Fn;
 }
 
 export interface HoverBubbleState {

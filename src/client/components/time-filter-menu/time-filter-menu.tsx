@@ -1,14 +1,13 @@
 require('./time-filter-menu.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { Timezone, Duration, minute, hour, day, week, month, year } from 'chronoshift';
 import { $, r, Expression, Executor, Dataset, TimeRange } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure } from '../../../common/models/index';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { enterKey, classNames } from '../../utils/dom/dom';
-// import { ... } from '../../config/constants';
 import { TimeInput } from '../time-input/time-input';
 
 export interface Preset {
@@ -46,7 +45,7 @@ export interface TimeFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;
-  onClose: Function;
+  onClose: Fn;
 }
 
 export interface TimeFilterMenuState {

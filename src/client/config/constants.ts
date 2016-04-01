@@ -1,4 +1,3 @@
-import { List } from 'immutable';
 import { $, SortAction } from 'plywood';
 
 export const TITLE_HEIGHT = 36;
@@ -49,14 +48,11 @@ export const STRINGS = {
   ok: 'OK',
   select: 'Select',
   cancel: 'Cancel',
+  close: 'Close',
   queryError: 'Query Error',
   autoUpdate: 'Auto Update',
   copyUrl: 'Copy URL',
   copySpecificUrl: 'Copy URL - fixed time',
-  logout: 'Logout'
+  logout: 'Logout',
+  infoAndFeedback: 'Info & Feedback'
 };
-
-export const ADDITIONAL_LINKS = [
-  { name: 'help', title: 'Help & Feedback', href: 'https://groups.google.com/forum/#!forum/imply-user-group'},
-  { name: 'github', title: 'GitHub', href: 'https://github.com/implydata/pivot'}
-];

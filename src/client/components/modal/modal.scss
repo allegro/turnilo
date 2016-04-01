@@ -10,7 +10,7 @@
   }
 
   .modal-window {
-    @extend %module;
+    @extend %modal-cont;
     width: 420px;
     padding: 18px;
     margin: auto;
@@ -29,8 +29,18 @@
         cursor: pointer;
       }
 
+      &:hover {
+        svg path {
+          fill: #888;
+        }
+      }
+
       svg {
         width: 19px;
+
+        path {
+          fill: #bbb;
+        }
       }
     }
   }

@@ -1,6 +1,7 @@
 require('./bubble-menu.css');
 
 import * as React from 'react';
+import { Fn } from "../../../common/utils/general/general";
 import { Stage } from '../../../common/models/index';
 import { isInside, escapeKey, uniqueId } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
@@ -19,7 +20,7 @@ export interface BubbleMenuProps extends React.Props<any> {
   fixedSize?: boolean;
   containerStage?: Stage;
   openOn: Element;
-  onClose: Function;
+  onClose: Fn;
   inside?: Element;
   layout?: BubbleLayout;
 }

@@ -1,11 +1,8 @@
 require('./dimension-measure-panel.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-// import { ... } from '../../config/constants';
-// import { SvgIcon } from '../svg-icon/svg-icon';
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
 import { MeasuresTile } from '../measures-tile/measures-tile';
 
@@ -13,9 +10,9 @@ export interface DimensionMeasurePanelProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  triggerFilterMenu: Function;
-  triggerSplitMenu: Function;
-  getUrlPrefix?: Function;
+  triggerFilterMenu: Fn;
+  triggerSplitMenu: Fn;
+  getUrlPrefix?: () => string;
 }
 
 export interface DimensionMeasurePanelState {

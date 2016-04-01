@@ -24,7 +24,7 @@ export interface Clicker {
   changePinnedSortMeasure?(measure: Measure): void;
   toggleMultiMeasureMode?(): void;
   toggleEffectiveMeasure?(measure: Measure): void;
-  changeHighlight?(owner: string, delta: Filter): void;
+  changeHighlight?(owner: string, measure: string, delta: Filter): void;
   acceptHighlight?(): void;
   dropHighlight?(): void;
 }

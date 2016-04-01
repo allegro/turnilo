@@ -1,20 +1,12 @@
 require('./time-input.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as d3 from 'd3';
-// import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, WallTime } from 'chronoshift';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-// import { ... } from '../../config/constants';
-// import { SomeComp } from '../some-comp/some-comp';
 
 export interface TimeInputProps extends React.Props<any> {
   time: Date;
   timezone: Timezone;
-  onChange: Function;
+  onChange: (t: Date) => void;
 }
 
 export interface TimeInputState {

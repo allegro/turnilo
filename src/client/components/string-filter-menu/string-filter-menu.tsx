@@ -1,9 +1,8 @@
 require('./string-filter-menu.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, Executor, Dataset, SortAction, Set } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { STRINGS, SEGMENT, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
@@ -22,7 +21,7 @@ export interface StringFilterMenuProps extends React.Props<any> {
   essence: Essence;
   insertPosition: number;
   replacePosition: number;
-  onClose: Function;
+  onClose: Fn;
 }
 
 export interface StringFilterMenuState {
@@ -37,7 +36,7 @@ export interface StringFilterMenuState {
 
 export class StringFilterMenu extends React.Component<StringFilterMenuProps, StringFilterMenuState> {
   public mounted: boolean;
-  public collectTriggerSearch: Function;
+  public collectTriggerSearch: Fn;
 
   constructor() {
     super();

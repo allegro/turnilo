@@ -1,6 +1,11 @@
 import { List } from 'immutable';
 import { immutableArraysEqual, Equalable } from 'immutable-class';
 
+// The most generic function
+export interface Fn {
+  (): void;
+}
+
 var objectHasOwnProperty = Object.prototype.hasOwnProperty;
 export function hasOwnProperty(obj: any, key: string | number): boolean {
   if (!obj) return false;
@@ -77,11 +82,11 @@ export function calculateDragPosition(offset: number, numItems: number, itemWidt
   }
 }
 
-export function collect(wait: number, func: Function): Function {
+export function collect(wait: number, fn: Fn): Fn {
   var timeout: any;
   var later = function() {
     timeout = null;
-    func();
+    fn();
   };
   return function() {
     if (!timeout) {

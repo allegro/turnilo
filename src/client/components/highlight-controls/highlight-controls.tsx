@@ -1,11 +1,10 @@
 require('./highlight-controls.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import { Fn } from "../../../common/utils/general/general";
 import { Stage, Clicker } from '../../../common/models/index';
 import { classNames } from '../../utils/dom/dom';
+import { SvgIcon } from '../svg-icon/svg-icon';
 
 function stopEvent(e: React.MouseEvent): void {
   e.stopPropagation();
@@ -14,7 +13,7 @@ function stopEvent(e: React.MouseEvent): void {
 export interface HighlightControlsProps extends React.Props<any> {
   clicker: Clicker;
   orientation: string;
-  onClose?: Function;
+  onClose?: Fn;
   style?: any;
 }
 

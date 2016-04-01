@@ -2,7 +2,7 @@ require('./dimension-tile.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import { Fn } from "../../../common/utils/general/general";
 import { $, r, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
 import { SEGMENT, PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
@@ -11,6 +11,7 @@ import { Clicker, Essence, VisStrategy, Dimension, SortOn, SplitCombine, Colors 
 import { collect } from '../../../common/utils/general/general';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { TileHeader, TileHeaderIcon } from '../tile-header/tile-header';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
@@ -30,7 +31,7 @@ export interface DimensionTileProps extends React.Props<any> {
   sortOn: SortOn;
   colors?: Colors;
   onClose?: any;
-  getUrlPrefix?: Function;
+  getUrlPrefix?: () => string;
 }
 
 export interface DimensionTileState {
@@ -46,7 +47,7 @@ export interface DimensionTileState {
 
 export class DimensionTile extends React.Component<DimensionTileProps, DimensionTileState> {
   public mounted: boolean;
-  public collectTriggerSearch: Function;
+  public collectTriggerSearch: Fn;
 
   constructor() {
     super();

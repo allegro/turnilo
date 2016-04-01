@@ -2,7 +2,7 @@
 
 .about-modal {
   p {
-    margin-bottom: 12px;
+    margin-bottom: $form-spacing-compact;
 
     &:last-child {
       margin-bottom: 0;
@@ -12,5 +12,17 @@
   a {
     color: $brand;
     cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .button-bar {
+    padding-top: 6px;
+
+    .button-primary {
+      @extend %button-primary;
+    }
   }
 }

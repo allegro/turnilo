@@ -8,12 +8,12 @@ import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { PreviewMenu } from './preview-menu';
+import { DimensionActionsMenu } from './dimension-actions-menu';
 
-describe('PreviewMenu', () => {
+describe('DimensionActionsMenu', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <PreviewMenu
+      <DimensionActionsMenu
         clicker={null}
         containerStage={null}
         dimension={null}
@@ -27,7 +27,7 @@ describe('PreviewMenu', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('preview-menu');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('dimension-actions-menu');
   });
 
 });

@@ -1,15 +1,13 @@
 require('./home-header-bar.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { Stage, Clicker, User } from '../../../common/models/index';
-// import { ... } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
 export interface HomeHeaderBarProps extends React.Props<any> {
   user?: User;
-  onNavClick: Function;
+  onNavClick: Fn;
 }
 
 export interface HomeHeaderBarState {

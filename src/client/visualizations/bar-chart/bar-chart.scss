@@ -27,8 +27,12 @@
       rect {
         fill: $brand;
 
-        &.selected {
+        &.hover {
           fill-opacity: 0.9;
+        }
+
+        &.not-selected {
+          fill-opacity: 0.5;
         }
       }
     }
@@ -42,6 +46,15 @@
 
     .mask {
       fill: $white;
+    }
+
+    .bar-highlight {
+      pointer-events: none;
+
+      rect {
+        fill: none;
+        stroke: $brand;
+      }
     }
 
     .slanty-labels {

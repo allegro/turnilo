@@ -88,6 +88,17 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return isInstanceOf(candidate, Essence);
   }
 
+  static getBestVisualization(visualizations: List<Manifest>, dataSource: DataSource, splits: Splits, colors: Colors, currentVisualization: Manifest): VisualizationAndResolve {
+    var visAndResolves = visualizations.toArray().map((visualization) => {
+      return {
+        visualization,
+        resolve: visualization.handleCircumstance(dataSource, splits, colors, visualization === currentVisualization)
+      };
+    });
+
+    return visAndResolves.sort((vr1, vr2) => Resolve.compare(vr1.resolve, vr2.resolve))[0];
+  }
+
   static fromHash(hash: string, context: EssenceContext): Essence {
     var parts = hash.split('/');
     if (parts.length < 3) return null;
@@ -241,52 +252,78 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   public visResolve: Resolve;
 
   constructor(parameters: EssenceValue) {
-    this.visualizations = parameters.visualizations;
+    var {
+      visualizations,
+      dataSource,
+      visualization,
+      timezone,
+      filter,
+      splits,
+      multiMeasureMode,
+      singleMeasure,
+      selectedMeasures,
+      pinnedDimensions,
+      colors,
+      pinnedSort,
+      compare,
+      highlight
+    } = parameters;
 
-    var dataSource = parameters.dataSource;
     if (!dataSource) throw new Error('Essence must have a dataSource');
-    this.dataSource = dataSource;
 
-    this.timezone = parameters.timezone || Timezone.UTC;
+    timezone = timezone || Timezone.UTC;
 
-    var filter = parameters.filter;
     if (!filter && dataSource.timeAttribute) {
       filter = dataSource.defaultFilter.setSelection(
         dataSource.timeAttribute,
         $(FilterClause.MAX_TIME_REF_NAME).timeRange(dataSource.defaultDuration, -1)
       );
     }
-    this.filter = filter;
 
-    this.splits = parameters.splits;
-    this.multiMeasureMode = Boolean(parameters.multiMeasureMode);
-    this.singleMeasure = parameters.singleMeasure;
-    this.selectedMeasures = parameters.selectedMeasures;
-    this.pinnedDimensions = parameters.pinnedDimensions;
-    this.colors = parameters.colors;
-    this.pinnedSort = parameters.pinnedSort;
-    this.compare = parameters.compare;
-    this.highlight = parameters.highlight;
+    multiMeasureMode = Boolean(multiMeasureMode);
+
+    function visibleMeasure(measureName: string): boolean {
+      return multiMeasureMode ? selectedMeasures.has(measureName) : measureName === singleMeasure;
+    }
+
+    // Wipe out the highlight if measure is not selected
+    if (highlight && highlight.measure && !visibleMeasure(highlight.measure)) {
+      highlight = null;
+    }
 
     // Place vis here because it needs to know about splits and colors (and maybe later other things)
-    var visualization = parameters.visualization;
     if (!visualization) {
-      var visAndResolve = this.getBestVisualization(this.splits, this.colors, null);
+      var visAndResolve = Essence.getBestVisualization(visualizations, dataSource, splits, colors, null);
       visualization = visAndResolve.visualization;
     }
-    this.visualization = visualization;
 
-    var visResolve = visualization.handleCircumstance(this.dataSource, this.splits, this.colors, true);
+    var visResolve = visualization.handleCircumstance(dataSource, splits, colors, true);
     if (visResolve.isAutomatic()) {
       var adjustment = visResolve.adjustment;
-      this.splits = adjustment.splits;
-      this.colors = adjustment.colors || null;
-      visResolve = visualization.handleCircumstance(this.dataSource, this.splits, this.colors, true);
+      splits = adjustment.splits;
+      colors = adjustment.colors || null;
+      visResolve = visualization.handleCircumstance(dataSource, splits, colors, true);
       if (!visResolve.isReady()) {
         console.log(visResolve);
         throw new Error('visualization must be ready after automatic adjustment');
       }
     }
+
+    this.visualizations = visualizations;
+    this.dataSource = dataSource;
+    this.visualization = visualization;
+    this.dataSource = dataSource;
+    this.timezone = timezone;
+    this.filter = filter;
+    this.splits = splits;
+    this.multiMeasureMode = multiMeasureMode;
+    this.singleMeasure = singleMeasure;
+    this.selectedMeasures = selectedMeasures;
+    this.pinnedDimensions = pinnedDimensions;
+    this.colors = colors;
+    this.pinnedSort = pinnedSort;
+    this.highlight = highlight;
+    this.compare = compare;
     this.visResolve = visResolve;
   }
 
@@ -384,18 +421,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public getURL(urlPrefix: string): string {
     return urlPrefix + this.toHash();
-  }
-
-  public getBestVisualization(splits: Splits, colors: Colors, currentVisualization: Manifest): VisualizationAndResolve {
-    var { visualizations, dataSource } = this;
-    var visAndResolves = visualizations.toArray().map((visualization) => {
-      return {
-        visualization,
-        resolve: visualization.handleCircumstance(dataSource, splits, colors, visualization === currentVisualization)
-      };
-    });
-
-    return visAndResolves.sort((vr1, vr2) => Resolve.compare(vr1.resolve, vr2.resolve))[0];
   }
 
   public getTimeAttribute(): RefExpression {
@@ -516,10 +541,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return !myEffectiveFilter.equals(otherEffectiveFilter);
   }
 
-  public highlightOn(owner: string): boolean {
+  public highlightOn(owner: string, measure?: string): boolean {
     var { highlight } = this;
     if (!highlight) return false;
-    return highlight.owner === owner;
+    return highlight.owner === owner && (!measure || highlight.measure === measure);
   }
 
   public getSingleHighlightSet(): Set {
@@ -627,7 +652,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
-    var { visualization, visResolve, filter, colors, timezone } = this;
+    var { visualizations, dataSource, visualization, visResolve, filter, colors, timezone } = this;
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
@@ -640,7 +665,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     }
 
     if (strategy !== VisStrategy.KeepAlways) {
-      var visAndResolve = this.getBestVisualization(splits, colors, (strategy === VisStrategy.FairGame ? null : visualization));
+      var visAndResolve = Essence.getBestVisualization(visualizations, dataSource, splits, colors, (strategy === VisStrategy.FairGame ? null : visualization));
       visualization = visAndResolve.visualization;
     }
 
@@ -765,7 +790,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.changeFilter(highlight.applyToFilter(this.filter), true);
   }
 
-  public changeHighlight(owner: string, delta: Filter): Essence {
+  public changeHighlight(owner: string, measure: string, delta: Filter): Essence {
     var { highlight } = this;
 
     // If there is already a highlight from someone else accept it
@@ -778,7 +803,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     value.highlight = new Highlight({
       owner,
-      delta
+      delta,
+      measure
     });
     return new Essence(value);
   }

@@ -3,7 +3,8 @@ require('./highlighter.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Timezone, Duration } from 'chronoshift';
-import { $, r, Expression, Executor, Dataset, TimeRange, Set } from 'plywood';
+import { $, r, TimeRange, Set } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { Clicker, Essence, Filter, FilterClause, Dimension, Measure } from '../../../common/models/index';
 import { escapeKey, getXFromEvent, classNames } from '../../utils/dom/dom';
 import { HighlightControls } from '../highlight-controls/highlight-controls';
@@ -16,7 +17,7 @@ export interface HighlighterProps extends React.Props<any> {
   dragStart: number;
   duration: Duration;
   timezone: Timezone;
-  onClose: Function;
+  onClose: Fn;
 }
 
 export interface HighlighterState {
@@ -106,6 +107,7 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
     var timeDimension = essence.getTimeDimension();
     clicker.changeHighlight(
       highlightId,
+      null,
       Filter.fromClause(new FilterClause({
         expression: timeDimension.expression,
         selection: r(timeRange)

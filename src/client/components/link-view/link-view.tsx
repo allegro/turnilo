@@ -2,28 +2,24 @@ require('./link-view.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { List } from 'immutable';
 import { Expression } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
-  SplitCombine, Splits, VisStrategy, VisualizationProps, LinkViewConfig, LinkItem, User } from '../../../common/models/index';
+  VisualizationProps, LinkViewConfig, LinkItem, User } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 
 import { LinkHeaderBar } from '../link-header-bar/link-header-bar';
-import { DimensionMeasurePanel } from '../dimension-measure-panel/dimension-measure-panel';
 import { ManualFallback } from '../manual-fallback/manual-fallback';
-import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
-
-import { visualizations } from '../../visualizations/index';
 
 export interface LinkViewProps extends React.Props<any> {
   linkViewConfig: LinkViewConfig;
   user?: User;
   hash: string;
-  updateViewHash: Function;
-  changeHash: Function;
-  getUrlPrefix?: Function;
-  onNavClick?: Function;
+  updateViewHash: (newHash: string) => void;
+  changeHash: (newHash: string, force?: boolean) => void;
+  getUrlPrefix?: () => string;
+  onNavClick?: Fn;
 }
 
 export interface LinkViewState {
@@ -68,9 +64,9 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
         var { essence } = this.state;
         this.setState({ essence: essence.toggleSelectedMeasure(measure) });
       },
-      changeHighlight: (owner: string, delta: Filter) => {
+      changeHighlight: (owner: string, measure: string, delta: Filter) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(owner, delta) });
+        this.setState({ essence: essence.changeHighlight(owner, measure, delta) });
       },
       acceptHighlight: () => {
         var { essence } = this.state;

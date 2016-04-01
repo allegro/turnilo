@@ -6,7 +6,7 @@ import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, Executor, Dataset, Datum, SortAction, PlywoodValue, Set, TimeRange } from 'plywood';
 import { Stage, Essence, DataSource, Filter, FilterClause, Splits, SplitCombine, Dimension, Measure, Colors, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT, TIME_SEGMENT, VIS_H_PADDING } from '../../config/constants';
-import { roundToPx } from "../../utils/dom/dom";
+import { roundToPx, roundToHalfPx, classNames } from "../../utils/dom/dom";
 import { VisMeasureLabel } from '../../components/vis-measure-label/vis-measure-label';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
 import { BucketMarks } from '../../components/bucket-marks/bucket-marks';
@@ -21,10 +21,13 @@ const Y_AXIS_WIDTH = 60;
 const MIN_CHART_HEIGHT = 200;
 const MAX_STEP_WIDTH = 140; // Note that the step is bar + empty space around it. The width of the rectangle is step * BAR_PROPORTION
 const MIN_STEP_WIDTH = 20;
-const BAR_PROPORTION = 0.9;
+const BAR_PROPORTION = 0.8;
 const BARS_MIN_PAD_LEFT = 30;
 const BARS_MIN_PAD_RIGHT = 6;
-const HOVER_BUBBLE_V_OFFSET = 5;
+const HOVER_BUBBLE_V_OFFSET = 8;
+const SELECTION_PAD = 3.5; // Must be a x.5
+const SELECTION_CORNERS = 2;
+const SELECTION_DASHARRAY = "3,3"; // https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray
 
 export interface BarChartState {
   loading?: boolean;
@@ -65,10 +68,28 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       );
     }
 
+    // Has too many splits
+    if (splits.length() > 1) {
+      return Resolve.manual(3, 'Too many splits', [
+        {
+          description: `Remove all but the first split`,
+          adjustment: {
+            splits: Splits.fromSplitCombine(splits.get(0))
+          }
+        }
+      ]);
+    }
+
+    var booleanBoost = 0;
+
     // Auto adjustment
     var autoChanged = false;
     splits = splits.map((split, i) => {
       var splitDimension = dataSource.getDimensionByExpression(split.expression);
+
+      if (splitDimension.kind === 'boolean') {
+        booleanBoost = 2;
+      }
 
       if (!split.sortAction) {
         split = split.changeSortAction(dataSource.getDefaultSortAction());
@@ -95,7 +116,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       autoChanged = true;
     }
 
-    return autoChanged ? Resolve.automatic(5, { splits }) : Resolve.ready(8);
+    return autoChanged ? Resolve.automatic(5 + booleanBoost, { splits }) : Resolve.ready(current ? 10 : (7 + booleanBoost));
   }
 
   public mounted: boolean;
@@ -210,7 +231,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     });
   }
 
-  onMouseEnter(measure: Measure, hoverValue: PlywoodValue, datum: Datum, e: MouseEvent) {
+  onMouseEnter(measure: Measure, datum: Datum, hoverValue: PlywoodValue, e: MouseEvent) {
     this.setState({
       hoverValue: hoverValue,
       hoverDatums: [datum],
@@ -229,23 +250,23 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     }
   }
 
-  onClick(datum: Datum, e: MouseEvent) {
+  onClick(measure: Measure, datum: Datum, e: MouseEvent) {
     const { essence, clicker } = this.props;
     const { splits } = essence;
 
     var rowHighlight = getFilterFromDatum(splits, datum);
 
-    if (essence.highlightOn(BarChart.id)) {
+    if (essence.highlightOn(BarChart.id, measure.name)) {
       if (rowHighlight.equals(essence.highlight.delta)) {
         clicker.dropHighlight();
         return;
       }
     }
 
-    clicker.changeHighlight(BarChart.id, rowHighlight);
+    clicker.changeHighlight(BarChart.id, measure.name, rowHighlight);
   }
 
-  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, getX: any, scaleX: any, xTicks: any[], highlightDelta: Filter): JSX.Element {
+  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, getX: any, scaleX: any, xTicks: any[]): JSX.Element {
     const { essence, clicker } = this.props;
     const { scrollTop, hoverValue, hoverDatums, hoverMeasure } = this.state;
     const { timezone, splits } = essence;
@@ -260,12 +281,22 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     var measureName = measure.name;
     var getY = (d: Datum) => d[measureName] as number;
 
+    var borderHighlightDelta: Filter = null;
+    var bubbleHighlightDelta: Filter = null;
+    if (essence.highlightOn(BarChart.id)) {
+      borderHighlightDelta = essence.highlight.delta;
+      if (essence.highlightOn(BarChart.id, measureName)) {
+        bubbleHighlightDelta = borderHighlightDelta;
+      }
+    }
+
     var extentY = d3.extent(mySplitDataset.data, getY);
 
     var stepWidth = scaleX.rangeBand();
 
     var horizontalGridLines: JSX.Element;
     var bars: JSX.Element[];
+    var barHighlight: JSX.Element;
     var barGhosts: JSX.Element[];
     var slantyLabels: JSX.Element[];
     var verticalAxis: JSX.Element;
@@ -301,19 +332,47 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
         var segmentValueStr = String(segmentValue);
         var x = scaleX(getX(d));
         var y = scaleY(getY(d));
-        var onMouseEnter = this.onMouseEnter.bind(this, measure, segmentValue, d);
+        var onMouseEnter = this.onMouseEnter.bind(this, measure, d, segmentValue);
         var onMouseLeave = this.onMouseLeave.bind(this, measure);
 
         if (barStage.width < x) return;
+        var hover: boolean;
+        if (bubbleHighlightDelta) {
+          hover = false;
+        } else {
+          hover = hoverDatums && hoverMeasure === measure && hoverDatums[0] === d;
+        }
+
+        var selected: boolean;
+        var selectedClass: string;
+        if (borderHighlightDelta) {
+          selected = borderHighlightDelta.equals(getFilterFromDatum(splits, d));
+          selectedClass = selected ? 'selected' : 'not-selected';
+        } else {
+          hover = hoverDatums && hoverMeasure === measure && hoverDatums[0] === d;
+        }
 
         bars.push(<rect
-          className={hoverDatums && hoverMeasure === measure && hoverDatums[0] === d ? 'selected' : null}
+          className={classNames(selectedClass, { hover })}
           key={segmentValueStr}
           x={roundToPx(x + barOffset)}
           y={roundToPx(y)}
-          width={barWidth}
-          height={Math.abs(y - scaleY0)}
+          width={roundToPx(barWidth)}
+          height={roundToPx(Math.abs(y - scaleY0))}
         />);
+
+        if (selected) {
+          barHighlight = <rect
+            className="selection"
+            x={roundToPx(x + barOffset) - SELECTION_PAD}
+            y={roundToPx(y) - SELECTION_PAD}
+            width={roundToPx(barWidth) + SELECTION_PAD * 2}
+            height={roundToPx(Math.abs(y - scaleY0)) + SELECTION_PAD * 2}
+            rx={SELECTION_CORNERS}
+            ry={SELECTION_CORNERS}
+            strokeDasharray={SELECTION_DASHARRAY}
+          />;
+        }
 
         barGhosts.push(<rect
           key={segmentValueStr}
@@ -321,7 +380,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
           y={-TEXT_SPACER}
           width={stepWidth}
           height={scaleY0 + TEXT_SPACER}
-          onClick={this.onClick.bind(this, d)}
+          onClick={this.onClick.bind(this, measure, d)}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         />);
@@ -336,28 +395,11 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       });
     }
 
-    var chartHoverBubble: JSX.Element = null;
-    if (hoverDatums && hoverMeasure === measure) {
-      var hoverDatum = hoverDatums[0];
-      var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(hoverValue) + stepWidth / 2;
-      var topOffset = chartStage.height * chartIndex - scrollTop + scaleY(getY(hoverDatum)) + TEXT_SPACER - HOVER_BUBBLE_V_OFFSET;
-      if (topOffset > 0) {
-        chartHoverBubble = <HoverBubble
-          timezone={timezone}
-          datum={hoverDatum}
-          measure={measure}
-          getValue={getX}
-          getY={getY}
-          top={containerStage.y + topOffset}
-          left={leftOffset}
-        />;
-      }
-    }
-
+    var hoverBubble: JSX.Element = null;
     var highlightBubble: JSX.Element = null;
-    if (highlightDelta) {
+    if (bubbleHighlightDelta) {
       mySplitDataset.data.forEach((d) => {
-        if (highlightBubble || !highlightDelta.equals(getFilterFromDatum(splits, d))) return;
+        if (highlightBubble || !bubbleHighlightDelta.equals(getFilterFromDatum(splits, d))) return;
 
         var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(d[SEGMENT]) + stepWidth / 2;
         var topOffset = chartStage.height * chartIndex - scrollTop + scaleY(getY(d)) + TEXT_SPACER - HOVER_BUBBLE_V_OFFSET;
@@ -374,6 +416,21 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
           />;
         }
       });
+    } else if (hoverDatums && hoverMeasure === measure) {
+      var hoverDatum = hoverDatums[0];
+      var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(hoverValue) + stepWidth / 2;
+      var topOffset = chartStage.height * chartIndex - scrollTop + scaleY(getY(hoverDatum)) + TEXT_SPACER - HOVER_BUBBLE_V_OFFSET;
+      if (topOffset > 0) {
+        hoverBubble = <HoverBubble
+          timezone={timezone}
+          datum={hoverDatum}
+          measure={measure}
+          getValue={getX}
+          getY={getY}
+          top={containerStage.y + topOffset}
+          left={leftOffset}
+        />;
+      }
     }
 
     return <div
@@ -394,10 +451,11 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
           x2={chartStage.width}
           y2={TEXT_SPACER + barStage.height - 0.5}
         />
+        <g className="bar-highlight" transform={barStage.getTransform()}>{barHighlight}</g>
       </svg>
       <div className="slanty-labels" style={xAxisStage.getLeftTopWidthHeight()}>{slantyLabels}</div>
       <VisMeasureLabel measure={measure} datum={myDatum}/>
-      {chartHoverBubble}
+      {hoverBubble}
       {highlightBubble}
     </div>;
   }
@@ -411,11 +469,6 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
 
     if (dataset && splits.length()) {
       var measures = essence.getEffectiveMeasures().toArray();
-
-      var highlightDelta: Filter = null;
-      if (essence.highlightOn(BarChart.id)) {
-        highlightDelta = essence.highlight.delta;
-      }
 
       var getX = (d: Datum) => d[SEGMENT] as string;
 
@@ -444,7 +497,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
         .rangeBands([padLeft, padLeft + usedWidth]);
 
       measureCharts = measures.map((measure, chartIndex) => {
-        return this.renderChart(dataset, measure, chartIndex, stage, chartStage, getX, scaleX, xTicks, (chartIndex ? null : highlightDelta));
+        return this.renderChart(dataset, measure, chartIndex, stage, chartStage, getX, scaleX, xTicks);
       });
     }
 

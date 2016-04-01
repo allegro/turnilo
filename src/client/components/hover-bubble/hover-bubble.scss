@@ -25,6 +25,7 @@ $shpitz-size: 7px;
 
     .text {
       display: inline-block;
+      white-space: nowrap;
 
       .segment {
         color: $text-lighterish;

@@ -1,12 +1,13 @@
 require('./split-menu.css');
 
 import * as React from 'react';
-import { SvgIcon } from '../svg-icon/svg-icon';
 import { Timezone, Duration } from 'chronoshift';
-import { $, Expression, RefExpression, Executor, Dataset, TimeBucketAction, SortAction, LimitAction } from 'plywood';
+import { $, TimeBucketAction, SortAction, LimitAction } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { Stage, Clicker, Essence, VisStrategy, DataSource, SplitCombine, Filter, Colors, Dimension, Measure, SortOn } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { enterKey } from '../../utils/dom/dom';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
 
@@ -26,7 +27,7 @@ export interface SplitMenuProps extends React.Props<any> {
   essence: Essence;
   openOn: Element;
   containerStage: Stage;
-  onClose: Function;
+  onClose: Fn;
   dimension: Dimension;
   split: SplitCombine;
 }

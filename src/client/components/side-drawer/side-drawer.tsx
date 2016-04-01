@@ -3,31 +3,28 @@ require('./side-drawer.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
-import { ADDITIONAL_LINKS } from '../../config/constants';
+import { Fn } from "../../../common/utils/general/general";
+import { STRINGS } from '../../config/constants';
 import { isInside, escapeKey } from '../../utils/dom/dom';
 import { DataSource } from '../../../common/models/index';
 import { NavLogo } from '../nav-logo/nav-logo';
 import { NavList } from '../nav-list/nav-list';
-import { AboutModal } from '../about-modal/about-modal';
-
 
 export interface SideDrawerProps extends React.Props<any> {
   selectedDataSource: DataSource;
   dataSources: List<DataSource>;
-  onClose: Function;
+  onOpenAbout: Fn;
+  onClose: Fn;
 }
 
 export interface SideDrawerState {
-  showAboutModal?: boolean;
 }
 
 export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
 
   constructor() {
     super();
-    this.state = {
-      showAboutModal: false
-    };
+    //this.state = {};
 
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
@@ -44,8 +41,6 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   globalMouseDownListener(e: MouseEvent) {
-    if (this.state.showAboutModal) return;
-
     var myElement = ReactDOM.findDOMNode(this);
     var target = e.target as Element;
 
@@ -58,34 +53,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     this.props.onClose();
   }
 
-  openAboutModal() {
-    this.setState({
-      showAboutModal: true
-    });
-  }
-
-  onAboutModalClose() {
-    this.setState({
-      showAboutModal: false
-    });
-  }
-
-  renderAboutModal() {
-    const { showAboutModal } = this.state;
-    if (!showAboutModal) return;
-    return <AboutModal onClose={this.onAboutModalClose.bind(this)}/>;
-  }
-
   render() {
-    var { onClose, selectedDataSource, dataSources } = this.props;
-
-    var onLogoClick = (e: React.MouseEvent) => {
-      if (e.altKey) {
-        this.openAboutModal();
-        return;
-      }
-      onClose();
-    };
+    var { onClose, selectedDataSource, dataSources, onOpenAbout } = this.props;
 
     var navLinks = dataSources.toArray().map(ds => {
       return {
@@ -95,8 +64,17 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       };
     });
 
+    var infoAndFeedback = [{
+      name: 'info',
+      title: STRINGS.infoAndFeedback,
+      onClick: () => {
+        onClose();
+        onOpenAbout();
+      }
+    }];
+
     return <div className="side-drawer">
-      <NavLogo onClick={onLogoClick}/>
+      <NavLogo onClick={onClose}/>
       <NavList
         title="Data Cubes"
         selected={selectedDataSource ? selectedDataSource.name : null}
@@ -104,9 +82,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
         iconSvg={require('../../icons/full-cube.svg')}
       />
       <NavList
-        navLinks={ADDITIONAL_LINKS}
+        navLinks={infoAndFeedback}
       />
-      {this.renderAboutModal()}
     </div>;
   }
 }

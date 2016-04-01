@@ -2,8 +2,7 @@ require('./modal.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Fn } from "../../../common/utils/general/general";
 import { isInside, escapeKey, uniqueId, classNames } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
 import { SvgIcon } from '../svg-icon/svg-icon';
@@ -15,7 +14,7 @@ export interface ModalProps extends React.Props<any> {
   id?: string;
   title?: string;
   mandatory?: boolean;
-  onClose: Function;
+  onClose: Fn;
 }
 
 export interface ModalState {
@@ -68,7 +67,6 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     var target = e.target as Element;
 
     if (isInside(target, myElement)) return;
-    console.log('here', target, myElement);
     onClose();
   }
 

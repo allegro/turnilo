@@ -16,6 +16,7 @@ describe('SideDrawer', () => {
       <SideDrawer
         dataSources={null}
         selectedDataSource={null}
+        onOpenAbout={null}
         onClose={null}
       />
     );

@@ -1,35 +1,30 @@
-require('./preview-menu.css');
+require('./dimension-actions-menu.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { Fn } from "../../../common/utils/general/general";
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Executor, Dataset } from 'plywood';
 import { STRINGS } from '../../config/constants';
 import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
-//import { MenuHeader } from '../menu-header/menu-header';
-//import { MenuTable } from '../menu-table/menu-table';
-//import { MenuTimeSeries } from '../menu-time-series/menu-time-series';
 
 const ACTION_SIZE = 60;
 
-export interface PreviewMenuProps extends React.Props<any> {
+export interface DimensionActionsMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   direction: string;
   containerStage: Stage;
   openOn: Element;
   dimension: Dimension;
-  triggerFilterMenu: Function;
-  triggerSplitMenu: Function;
-  onClose: Function;
+  triggerFilterMenu: (dimension: Dimension) => void;
+  triggerSplitMenu: (dimension: Dimension) => void;
+  onClose: Fn;
 }
 
-export interface PreviewMenuState {
+export interface DimensionActionsMenuState {
 }
 
-export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuState> {
+export class DimensionActionsMenu extends React.Component<DimensionActionsMenuProps, DimensionActionsMenuState> {
 
   constructor() {
     super();
@@ -75,7 +70,7 @@ export class PreviewMenu extends React.Component<PreviewMenuProps, PreviewMenuSt
 
     var menuSize: Stage = Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2);
     return <BubbleMenu
-      className="preview-menu"
+      className="dimension-actions-menu"
       direction={direction}
       containerStage={containerStage}
       stage={menuSize}

@@ -13,7 +13,7 @@ describe('HomeView', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <HomeView
-
+        onOpenAbout={null}
       />
     );
 

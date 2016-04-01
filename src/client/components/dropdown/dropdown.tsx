@@ -18,7 +18,7 @@ export interface DropdownProps<T> {
   equal?: (item1: T, item2: T) => boolean;
   renderItem?: (item: T) => string;
   keyItem?: (item: T) => string;
-  onSelect?: Function;
+  onSelect?: (item: T) => void;
   direction?: string;
 }
 
@@ -72,13 +72,8 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
     this.setState({ open: false });
   }
 
-  selectItem(item: T) {
-    var { onSelect } = this.props;
-    if (onSelect) onSelect(item);
-  }
-
   renderMenu() {
-    var { items, renderItem, keyItem, selectedItem, equal } = this.props;
+    var { items, renderItem, keyItem, selectedItem, equal, onSelect } = this.props;
     if (!items || !items.length) return null;
     if (!renderItem) renderItem = String;
     if (!keyItem) keyItem = renderItem;
@@ -87,7 +82,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
       return <div
         className={classNames('dropdown-item', equal(item, selectedItem) ? 'selected' : null)}
         key={keyItem(item)}
-        onClick={this.selectItem.bind(this, item)}
+        onClick={() => onSelect(item)}
       >
         {renderItem(item)}
       </div>;
