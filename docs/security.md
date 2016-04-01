@@ -6,7 +6,7 @@ Pivot can act as a 'gatekeeper' for Druid or any supported datasource via the co
 ### Data source level access
 
 It is possible to restrict which data sources users have access to by explicitly defining in the config all the data sources that you want the users to see and disabling source discovery.
-This will prevent any data sources not explicitly defined from being quarried through Pivot.
+This will prevent any data sources not explicitly defined from being queried through Pivot.
 
 ### Column level access
 
