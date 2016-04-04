@@ -1,4 +1,4 @@
-require('./hover-bubble.css');
+require('./segment-bubble.css');
 
 import * as React from 'react';
 import { Timezone } from 'chronoshift';
@@ -9,7 +9,7 @@ import { STRINGS } from '../../config/constants';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { BodyPortal } from '../body-portal/body-portal';
 
-export interface HoverBubbleProps extends React.Props<any> {
+export interface SegmentBubbleProps extends React.Props<any> {
   left: number;
   top: number;
   timezone?: Timezone;
@@ -21,10 +21,10 @@ export interface HoverBubbleProps extends React.Props<any> {
   onClose?: Fn;
 }
 
-export interface HoverBubbleState {
+export interface SegmentBubbleState {
 }
 
-export class HoverBubble extends React.Component<HoverBubbleProps, HoverBubbleState> {
+export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBubbleState> {
 
   constructor() {
     super();
@@ -72,8 +72,8 @@ export class HoverBubble extends React.Component<HoverBubbleProps, HoverBubbleSt
     }
 
     return <BodyPortal left={left} top={top} disablePointerEvents={!clicker}>
-      <div className="hover-bubble">
-        <div className="hover-bubble-inner">
+      <div className="segment-bubble">
+        <div className="segment-bubble-inner">
           {textElement}
           {buttons}
           <div className="shpitz"></div>

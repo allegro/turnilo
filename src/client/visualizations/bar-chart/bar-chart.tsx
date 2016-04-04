@@ -13,7 +13,7 @@ import { BucketMarks } from '../../components/bucket-marks/bucket-marks';
 import { GridLines } from '../../components/grid-lines/grid-lines';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
-import { HoverBubble } from '../../components/hover-bubble/hover-bubble';
+import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 80;
@@ -404,7 +404,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
         var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(d[SEGMENT]) + stepWidth / 2;
         var topOffset = chartStage.height * chartIndex - scrollTop + scaleY(getY(d)) + TEXT_SPACER - HOVER_BUBBLE_V_OFFSET;
         if (topOffset > 0) {
-          highlightBubble = <HoverBubble
+          highlightBubble = <SegmentBubble
             timezone={timezone}
             datum={d}
             measure={measure}
@@ -421,7 +421,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(hoverValue) + stepWidth / 2;
       var topOffset = chartStage.height * chartIndex - scrollTop + scaleY(getY(hoverDatum)) + TEXT_SPACER - HOVER_BUBBLE_V_OFFSET;
       if (topOffset > 0) {
-        hoverBubble = <HoverBubble
+        hoverBubble = <SegmentBubble
           timezone={timezone}
           datum={hoverDatum}
           measure={measure}

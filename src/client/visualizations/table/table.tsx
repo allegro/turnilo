@@ -10,7 +10,7 @@ import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine
 import { SPLIT, SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
-import { HoverBubble } from '../../components/hover-bubble/hover-bubble';
+import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
@@ -470,7 +470,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     var highlightBubble: JSX.Element = null;
     if (highlighter) {
-      highlightBubble = <HoverBubble
+      highlightBubble = <SegmentBubble
         clicker={clicker}
         left={stage.x + stage.width / 2}
         top={stage.y + HEADER_HEIGHT + highlighterStyle.top - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}

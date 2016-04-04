@@ -1,22 +1,22 @@
 @import '../../imports';
 
 // These max width and height are arbitrary
-$hover-bubble-max-width: 30px;
-$hover-bubble-max-height: 10px;
+$segment-bubble-max-width: 30px;
+$segment-bubble-max-height: 10px;
 $shpitz-size: 7px;
 
-.hover-bubble {
+.segment-bubble {
   position: absolute;
-  width: $hover-bubble-max-width;
-  height: $hover-bubble-max-height;
-  margin-left: -$hover-bubble-max-width / 2;
-  margin-top: -$hover-bubble-max-height - $shpitz-size;
+  width: $segment-bubble-max-width;
+  height: $segment-bubble-max-height;
+  margin-left: -$segment-bubble-max-width / 2;
+  margin-top: -$segment-bubble-max-height - $shpitz-size;
 
   display: flex;
   justify-content: center;
   align-items: flex-end;
 
-  .hover-bubble-inner {
+  .segment-bubble-inner {
     @extend %menu-cont;
     background: rgba($white, 0.9);
     display: inline-block;
@@ -36,7 +36,10 @@ $shpitz-size: 7px;
 
     .buttons {
       white-space: nowrap;
-      margin-top: 7px;
+
+      &:nth-child(n+2) {
+        margin-top: 7px;
+      }
 
       .select {
         @extend %button-primary;

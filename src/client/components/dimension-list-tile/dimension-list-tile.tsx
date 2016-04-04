@@ -29,7 +29,6 @@ export interface DimensionListTileState {
 }
 
 export class DimensionListTile extends React.Component<DimensionListTileProps, DimensionListTileState> {
-  private dragCounter: number;
 
   constructor() {
     super();

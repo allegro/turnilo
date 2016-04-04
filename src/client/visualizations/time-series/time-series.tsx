@@ -16,7 +16,7 @@ import { GridLines } from '../../components/grid-lines/grid-lines';
 import { Highlighter } from '../../components/highlighter/highlighter';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
-import { HoverBubble } from '../../components/hover-bubble/hover-bubble';
+import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 import { HoverMultiBubble } from '../../components/hover-multi-bubble/hover-multi-bubble';
 
 const TEXT_SPACER = 36;
@@ -478,12 +478,12 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       }
     }
 
-    var chartHoverBubble: JSX.Element = null;
+    var chartSegmentBubble: JSX.Element = null;
     if (hoverTimeRange && hoverDatums && hoverMeasure === measure) {
       var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(hoverTimeRange.midpoint());
       var topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop - HOVER_BUBBLE_V_OFFSET;
       if (colors) {
-        chartHoverBubble = <HoverMultiBubble
+        chartSegmentBubble = <HoverMultiBubble
           essence={essence}
           datums={hoverDatums}
           measure={measure}
@@ -494,7 +494,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       } else {
         var getValue = (d: Datum) => d[TIME_SEGMENT];
         if (topOffset > 0) {
-          chartHoverBubble = <HoverBubble
+          chartSegmentBubble = <SegmentBubble
             timezone={timezone}
             datum={hoverDatums[0]}
             measure={measure}
@@ -533,7 +533,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         />
       </svg>
       <VisMeasureLabel measure={measure} datum={myDatum}/>
-      {chartHoverBubble}
+      {chartSegmentBubble}
     </div>;
   }
 

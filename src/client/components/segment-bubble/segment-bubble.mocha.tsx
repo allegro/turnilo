@@ -7,12 +7,12 @@ import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { HoverBubble } from './hover-bubble';
+import { SegmentBubble } from './segment-bubble';
 
-describe('HoverBubble', () => {
+describe('SegmentBubble', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <HoverBubble
+      <SegmentBubble
         datum={null}
         timezone={null}
         getValue={null}
@@ -24,7 +24,7 @@ describe('HoverBubble', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('hover-bubble');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('segment-bubble');
   });
 
 });
