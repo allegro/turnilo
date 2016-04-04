@@ -20,9 +20,5 @@
 
   .button-bar {
     padding-top: 6px;
-
-    .button-primary {
-      @extend %button-primary;
-    }
   }
 }

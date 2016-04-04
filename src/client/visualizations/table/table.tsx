@@ -309,6 +309,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     } else if (pos.what === 'row') {
       var rowHighlight = getFilterFromDatum(essence.splits, pos.row);
+      if (!rowHighlight) return;
 
       if (essence.highlightOn(Table.id)) {
         if (rowHighlight.equals(essence.highlight.delta)) {

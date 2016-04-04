@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from '../../config/constants';
 import { Modal } from '../modal/modal';
+import { Button } from '../button/button';
 
 export interface AboutModalProps extends React.Props<any> {
   onClose: Fn;
@@ -38,7 +39,7 @@ export class AboutModal extends React.Component<AboutModalProps, AboutModalState
         <a href="https://github.com/implydata/pivot">Imply Pivot</a> is released under the <a href="https://github.com/implydata/pivot/blob/master/LICENSE">Apache 2.0</a> license.
       </p>
       <div className="button-bar">
-        <button className="button-primary" onClick={onClose}>{STRINGS.close}</button>
+        <Button type="primary" onClick={onClose} title={STRINGS.close}/>
       </div>
     </Modal>;
   }

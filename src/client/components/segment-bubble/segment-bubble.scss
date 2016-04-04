@@ -41,13 +41,8 @@ $shpitz-size: 7px;
         margin-top: 7px;
       }
 
-      .select {
-        @extend %button-primary;
+      .button:first-child {
         margin-right: 5px;
-      }
-
-      .cancel {
-        @extend %button-secondary;
       }
     }
   }

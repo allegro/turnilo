@@ -34,6 +34,7 @@
       <w>ofir</w>
       <w>ondragstart</w>
       <w>ondrop</w>
+      <w>onerror</w>
       <w>pinboard</w>
       <w>polyfill</w>
       <w>postcss</w>

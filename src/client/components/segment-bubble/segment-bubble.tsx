@@ -8,6 +8,7 @@ import { Clicker, Measure } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { BodyPortal } from '../body-portal/body-portal';
+import { Button } from '../button/button';
 
 export interface SegmentBubbleProps extends React.Props<any> {
   left: number;
@@ -66,8 +67,8 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
     var buttons: JSX.Element;
     if (clicker) {
       buttons = <div className="buttons">
-        <button className="select" onClick={this.onSelect.bind(this)}>{STRINGS.select}</button>
-        <button className="cancel" onClick={this.onCancel.bind(this)}>{STRINGS.cancel}</button>
+        <Button type="primary" onClick={this.onSelect.bind(this)} title={STRINGS.select}/>
+        <Button type="secondary" onClick={this.onCancel.bind(this)} title={STRINGS.cancel}/>
       </div>;
     }
 

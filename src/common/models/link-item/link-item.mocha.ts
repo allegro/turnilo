@@ -79,6 +79,7 @@ describe('LinkItem', () => {
             value: true
           },
           pinnedDimensions: ['statusCode'],
+          singleMeasure: "count",
           selectedMeasures: ['count'],
           splits: []
         }
@@ -97,6 +98,7 @@ describe('LinkItem', () => {
             value: true
           },
           pinnedDimensions: ['statusCode'],
+          singleMeasure: "count",
           selectedMeasures: ['count', 'uniqueIp'],
           splits: []
         }
@@ -125,6 +127,7 @@ describe('LinkItem', () => {
         essence: {
           visualization: 'vis1',
           pinnedDimensions: ['statusCode'],
+          singleMeasure: "count",
           selectedMeasures: ['count'],
           splits: 'time'
         }
@@ -159,6 +162,7 @@ describe('LinkItem', () => {
           "pinnedDimensions": [
             "statusCode"
           ],
+          "singleMeasure": "count",
           "selectedMeasures": [
             "count"
           ],

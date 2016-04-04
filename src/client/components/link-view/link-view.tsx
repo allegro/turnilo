@@ -3,6 +3,7 @@ require('./link-view.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Expression } from 'plywood';
+import { classNames } from "../../utils/dom/dom";
 import { Fn } from "../../../common/utils/general/general";
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
   VisualizationProps, LinkViewConfig, LinkItem, User } from '../../../common/models/index';
@@ -168,7 +169,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       }
 
       items.push(<div
-        className={'link-item' + (li === linkItem ? ' selected' : '')}
+        className={classNames('link-item', { selected: li === linkItem })}
         key={'li_' + li.name}
         onClick={this.selectLinkItem.bind(this, li)}
       >
