@@ -7,3 +7,4 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 - Started this changelog
 - Added Bar Chart visualization
 - Added About modal
+- Single measure mode
