@@ -124,7 +124,7 @@ Then you are ready to
 ./bin/pivot --config config.yaml
 ```
 
-We use [WebStorm 11](https://www.jetbrains.com/webstorm/) to develop Pivot and the checked in `.idea` directory contains
+We use [WebStorm 2016.1](https://www.jetbrains.com/webstorm/) to develop Pivot and the checked in `.idea` directory contains
 all of the auto formatting and code styles. You are free to use any editor as all the build scripts are editor agnostic.
 
 Running `gulp watch` will build the project and start all the automated watchers.
@@ -133,19 +133,16 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Bar chart
 - Auto refresh
 - Sharing menu for static and relative time frames
 - Quantile measures are now available. Try `$main.quantile($my_value_hist, 0.99)`
 - Added Home view
 - Configuration docs: https://github.com/implydata/pivot/blob/master/docs/configuration.md
-- Support for numeric dimensions
-- Configurable attribute overrides
-- Support for `absolute`, `power`, `sqrt`, and `fallback` actions
-- Relative filters
 
 **We will be working on:**
 
-- Additional visualizations (bar chart, geo, heatmap)
+- Additional visualizations (geo, heatmap)
 - Exclusion filters
 - String / RegExp filters
 - Removing strict limits on dimension values
