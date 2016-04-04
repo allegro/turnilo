@@ -35,6 +35,14 @@ export interface PivotConfig {
   headerBackground?: string;
 }
 
+export interface RequestDecoratorFactoryOptions {
+  config: any;
+}
+
+export interface DruidRequestDecoratorFactory {
+  (options: RequestDecoratorFactoryOptions) => any; //RequestDecorator;
+}
+
 function errorExit(message: string): void {
   console.error(message);
   process.exit(1);
@@ -206,6 +214,7 @@ if (SOURCE_REINTROSPECT_INTERVAL && SOURCE_REINTROSPECT_INTERVAL < 1000) {
   errorExit(`can not set sourceReintrospectInterval to < 1000 (is ${SOURCE_REINTROSPECT_INTERVAL})`);
 }
 
+
 var auth = config.auth;
 var authModule: any = null;
 if (auth) {
@@ -215,6 +224,18 @@ if (auth) {
   if (typeof authModule.auth !== 'function') errorExit('Invalid auth module');
 }
 export const AUTH = authModule;
+
+
+var druidRequestDecorator = config.druidRequestDecorator;
+var druidRequestDecoratorFactory: any = null;
+if (auth) {
+  auth = path.resolve(configFileDir, auth);
+  console.log(`Using auth ${auth}`);
+  var authModule = require(auth);
+  if (typeof authModule.auth !== 'function') errorExit('Invalid auth module');
+}
+export const AUTH = authModule;
+
 
 export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSourceJS: DataSourceJS, i: number) => {
   if (typeof dataSourceJS !== 'object') errorExit(`DataSource ${i} is not valid`);
