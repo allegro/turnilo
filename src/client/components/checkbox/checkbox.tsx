@@ -1,16 +1,15 @@
 require('./checkbox.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Filter, Dimension, Measure } from '../../../common/models/index';
-// import { SomeComp } from '../some-comp/some-comp';
+import { classNames } from '../../utils/dom/dom';
+
+export type CheckboxType = 'check' | 'cross' | 'radio';
 
 export interface CheckboxProps extends React.Props<any> {
-  selected: Boolean;
+  selected: boolean;
   onClick?: React.MouseEventHandler;
-  cross?: Boolean;
+  type?: CheckboxType;
   color?: string;
 }
 
@@ -19,38 +18,38 @@ export interface CheckboxState {
 
 export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
 
+  static defaultProps = {
+    type: 'check'
+  };
+
   constructor() {
     super();
     // this.state = {};
 
   }
 
-  render() {
-    var { selected, onClick, cross, color } = this.props;
+  renderIcon() {
+    const { selected, type } = this.props;
+    if (!selected) return null;
+    if (type === 'check') {
+      return <SvgIcon svg={require('../../icons/check.svg')}/>;
+    } else if (type === 'cross') {
+      return <SvgIcon svg={require('../../icons/x.svg')}/>;
+    }
+    return null;
+  }
 
-    var className = 'checkbox';
+  render() {
+    const { onClick, type, color, selected } = this.props;
 
     var style: React.CSSProperties = null;
     if (color) {
-      className += ' color';
       style = { background: color };
     }
 
-    var check: JSX.Element = null;
-
-    if (selected) {
-      if (cross) {
-        className += ' cross';
-        check = <SvgIcon svg={require('../../icons/x.svg')}/>;
-      } else {
-        className += ' check';
-        check = <SvgIcon svg={require('../../icons/check.svg')}/>;
-      }
-    }
-
-    return <div className={className} onClick={onClick}>
+    return <div className={classNames('checkbox', type, { selected, color })} onClick={onClick}>
       <div className="checkbox-body" style={style}></div>
-      {check}
+      {this.renderIcon()}
     </div>;
   }
 }

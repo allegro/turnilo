@@ -1,4 +1,4 @@
-import { List, OrderedSet } from 'immutable';
+import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, ExpressionJS, Action } from 'plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
@@ -34,6 +34,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   static getDimension(dimensions: List<Dimension>, dimensionName: string): Dimension {
+    if (!dimensionName) return null;
     dimensionName = dimensionName.toLowerCase(); // Case insensitive
     return dimensions.find(dimension => dimension.name.toLowerCase() === dimensionName);
   }

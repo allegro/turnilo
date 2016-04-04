@@ -2,6 +2,7 @@ require('./auto-refresh-menu.css');
 
 import * as React from 'react';
 import { Duration } from 'chronoshift';
+import { Fn } from "../../../common/utils/general/general";
 import { Stage, DataSource } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
@@ -29,10 +30,10 @@ const REFRESH_DURATIONS: Duration[] = [
 
 export interface AutoRefreshMenuProps extends React.Props<any> {
   openOn: Element;
-  onClose: Function;
+  onClose: Fn;
   autoRefreshRate: Duration;
-  setAutoRefreshRate: Function;
-  refreshMaxTime: Function;
+  setAutoRefreshRate: Fn;
+  refreshMaxTime: Fn;
   dataSource: DataSource;
 }
 

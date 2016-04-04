@@ -1,6 +1,6 @@
 {
   "name": "imply-pivot",
-  "version": "0.7.52",
+  "version": "0.8.0",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "body-parser": "1.15.0",
-    "chronoshift": "0.3.7",
+    "chronoshift": "0.4.2",
     "clipboard": "1.5.9",
     "compression": "1.6.1",
     "d3": "3.5.16",
@@ -38,14 +38,14 @@
     "morgan": "1.7.0",
     "nopt": "3.0.6",
     "numeral": "1.5.3",
-    "plywood": "0.9.19",
+    "plywood": "0.9.23",
     "plywood-druid-requester": "1.4.1",
     "plywood-mysql-requester": "1.2.2",
     "q": "1.4.1",
     "qajax": "1.3.0",
-    "react": "0.14.7",
-    "react-addons-css-transition-group": "0.14.7",
-    "react-dom": "0.14.7"
+    "react": "0.14.8",
+    "react-addons-css-transition-group": "0.14.8",
+    "react-dom": "0.14.8"
   },
   "devDependencies": {
     "chai": "3.5.0",
@@ -53,11 +53,11 @@
     "gulp": "3.9.1",
     "gulp-watch": "4.3.5",
     "istanbul": "0.4.2",
-    "jsdom": "8.1.0",
+    "jsdom": "8.2.0",
     "laborer": "2.4.13",
     "mkdirp": "0.5.1",
     "mocha": "2.4.5",
-    "react-addons-test-utils": "0.14.7",
+    "react-addons-test-utils": "0.14.8",
     "replace": "0.3.0",
     "run-sequence": "1.1.5",
     "sinon": "1.17.3",

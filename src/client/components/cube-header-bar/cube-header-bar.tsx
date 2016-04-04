@@ -3,10 +3,10 @@ require('./cube-header-bar.css');
 import * as React from 'react';
 import { immutableEqual } from "immutable-class";
 import { Duration } from 'chronoshift';
+import { Fn } from "../../../common/utils/general/general";
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, DataSource, User } from "../../../common/models/index";
 
-import { Modal } from '../modal/modal';
 import { HilukMenu } from '../hiluk-menu/hiluk-menu';
 import { AutoRefreshMenu } from '../auto-refresh-menu/auto-refresh-menu';
 import { UserMenu } from '../user-menu/user-menu';
@@ -16,13 +16,12 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   user?: User;
-  onNavClick: Function;
-  getUrlPrefix?: Function;
-  refreshMaxTime?: Function;
+  onNavClick: Fn;
+  getUrlPrefix?: () => string;
+  refreshMaxTime?: Fn;
 }
 
 export interface CubeHeaderBarState {
-  showTestMenu?: boolean;
   hilukMenuOpenOn?: Element;
   autoRefreshMenuOpenOn?: Element;
   autoRefreshRate?: Duration;
@@ -35,7 +34,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   constructor() {
     super();
     this.state = {
-      showTestMenu: false,
       hilukMenuOpenOn: null,
       autoRefreshMenuOpenOn: null,
       autoRefreshRate: null,
@@ -88,25 +86,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       clearInterval(this.autoRefreshTimer);
       this.autoRefreshTimer = null;
     }
-  }
-
-  onModalClose() {
-    this.setState({
-      showTestMenu: false
-    });
-  }
-
-  renderTestModal() {
-    if (!this.state.showTestMenu) return null;
-    return <Modal
-      className="test-modal"
-      title="Test Modal"
-      onClose={this.onModalClose.bind(this)}
-    >
-      <div>Hello 1</div>
-      <div>Hello 2</div>
-      <div>Hello 3</div>
-    </Modal>;
   }
 
   // Share menu ("hiluk" = share in Hebrew, kind of)
@@ -223,7 +202,6 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
         </div>
         {userButton}
       </div>
-      {this.renderTestModal()}
       {this.renderHilukMenu()}
       {this.renderAutoRefreshMenu()}
       {this.renderUserMenu()}

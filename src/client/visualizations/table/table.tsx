@@ -4,14 +4,13 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction } from 'plywood';
-import { immutableListsEqual } from '../../../common/utils/general/general';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
   Measure, Colors, DataSource, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
-import { HighlightControls } from '../../components/highlight-controls/highlight-controls';
+import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
@@ -25,8 +24,7 @@ const SPACE_RIGHT = 10;
 
 const ROW_PADDING_RIGHT = 50;
 const BODY_PADDING_BOTTOM = 90;
-
-const HIGHLIGHT_CONTROLS_TOP = -34;
+const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
 function formatSegment(value: any): string {
   if (TimeRange.isTimeRange(value)) {
@@ -70,6 +68,8 @@ export interface TableState {
 export class Table extends React.Component<VisualizationProps, TableState> {
   static id = 'table';
   static title = 'Table';
+
+  static measureModeNeed = 'multi';
 
   static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
     // Must have at least one dimension
@@ -117,7 +117,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       autoChanged = true;
     }
 
-    return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(10);
+    return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(current ? 10 : 8);
   }
 
   public mounted: boolean;
@@ -138,7 +138,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
   fetchData(essence: Essence): void {
     var { splits, dataSource } = essence;
-    var measures = essence.getMeasures();
+    var measures = essence.getEffectiveMeasures();
 
     var $main = $('main');
 
@@ -220,7 +220,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       nextEssence.differentDataSource(essence) ||
       nextEssence.differentEffectiveFilter(essence, Table.id) ||
       nextEssence.differentSplits(essence) ||
-      nextEssence.newSelectedMeasures(essence)
+      nextEssence.newEffectiveMeasures(essence)
     ) {
       this.fetchData(nextEssence);
     }
@@ -253,7 +253,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
       x = x - SEGMENT_WIDTH + scrollLeft;
       var measureIndex = Math.floor(x / MEASURE_WIDTH);
-      var measure = essence.getMeasures().get(measureIndex);
+      var measure = essence.getEffectiveMeasures().get(measureIndex);
       if (!measure) return { what: 'whitespace' };
       return { what: 'header', measure };
     }
@@ -309,6 +309,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     } else if (pos.what === 'row') {
       var rowHighlight = getFilterFromDatum(essence.splits, pos.row);
+      if (!rowHighlight) return;
 
       if (essence.highlightOn(Table.id)) {
         if (rowHighlight.equals(essence.highlight.delta)) {
@@ -317,7 +318,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         }
       }
 
-      clicker.changeHighlight(Table.id, rowHighlight);
+      clicker.changeHighlight(Table.id, null, rowHighlight);
     }
   }
 
@@ -340,7 +341,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       cornerSortArrow = sortArrowIcon;
     }
 
-    var measuresArray = essence.getMeasures().toArray();
+    var measuresArray = essence.getEffectiveMeasures().toArray();
 
     var headerColumns = measuresArray.map((measure, i) => {
       return <div
@@ -384,7 +385,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         var selected = false;
         var selectedClass = '';
         if (highlightDelta) {
-          selected = highlightDelta && highlightDelta.equals(getFilterFromDatum(splits, d));
+          selected = highlightDelta.equals(getFilterFromDatum(splits, d));
           selectedClass = selected ? 'selected' : 'not-selected';
         }
 
@@ -468,15 +469,13 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       height: HEADER_HEIGHT + bodyHeight + BODY_PADDING_BOTTOM
     };
 
-    var highlightControls: JSX.Element = null;
+    var highlightBubble: JSX.Element = null;
     if (highlighter) {
-      highlightControls = React.createElement(HighlightControls, {
-        clicker,
-        orientation: 'horizontal',
-        style: {
-          top: HEADER_HEIGHT + highlighterStyle.top - scrollTop + HIGHLIGHT_CONTROLS_TOP
-        }
-      });
+      highlightBubble = <SegmentBubble
+        clicker={clicker}
+        left={stage.x + stage.width / 2}
+        top={stage.y + HEADER_HEIGHT + highlighterStyle.top - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
+      />;
     }
 
     var loader: JSX.Element = null;
@@ -520,7 +519,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       >
         <div className="scroller" style={scrollerStyle}></div>
       </div>
-      {highlightControls}
+      {highlightBubble}
     </div>;
   }
 }

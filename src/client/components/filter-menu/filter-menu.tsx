@@ -1,10 +1,8 @@
 require('./filter-menu.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Fn } from "../../../common/utils/general/general";
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 
@@ -21,7 +19,7 @@ export interface FilterMenuProps extends React.Props<any> {
   dimension: Dimension;
   insertPosition: number;
   replacePosition: number;
-  onClose: Function;
+  onClose: Fn;
   inside?: Element;
 }
 

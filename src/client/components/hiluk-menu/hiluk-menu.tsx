@@ -1,6 +1,7 @@
 require('./hiluk-menu.css');
 
 import * as React from 'react';
+import { Fn } from "../../../common/utils/general/general";
 import { Stage, Clicker, Essence } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
@@ -9,8 +10,8 @@ import { BubbleMenu } from '../bubble-menu/bubble-menu';
 export interface HilukMenuProps extends React.Props<any> {
   essence: Essence;
   openOn: Element;
-  onClose: Function;
-  getUrlPrefix: Function;
+  onClose: Fn;
+  getUrlPrefix: () => string;
 }
 
 export interface HilukMenuState {

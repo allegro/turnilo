@@ -19,7 +19,7 @@ export interface SplitTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  getUrlPrefix?: Function;
+  getUrlPrefix?: () => string;
 }
 
 export interface SplitTileState {

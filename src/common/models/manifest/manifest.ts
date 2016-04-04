@@ -41,7 +41,7 @@ export class Resolve {
   public resolutions: Resolution[];
 
   constructor(score: number, state: string, adjustment: Adjustment, message: string, resolutions: Resolution[]) {
-    this.score = score;
+    this.score = Math.max(1, Math.min(10, score));
     this.state = state;
     this.adjustment = adjustment;
     this.message = message;
@@ -71,8 +71,11 @@ export class Resolve {
 
 Resolve.NEVER = new Resolve(-1, 'never', null, null, null);
 
+export type MeasureModeNeeded = 'single' | 'multi';
+
 export interface Manifest {
   id: string;
   title: string;
+  measureModeNeed?: MeasureModeNeeded;
   handleCircumstance: (dataSource: DataSource, splits: Splits, colors: Colors, selected: boolean) => Resolve;
 }

@@ -1,10 +1,7 @@
 require('./bubble-menu.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { List } from 'immutable';
-import { $, Expression, Executor } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { Stage } from '../../../common/models/index';
 import { isInside, escapeKey, uniqueId } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
@@ -23,7 +20,7 @@ export interface BubbleMenuProps extends React.Props<any> {
   fixedSize?: boolean;
   containerStage?: Stage;
   openOn: Element;
-  onClose: Function;
+  onClose: Fn;
   inside?: Element;
   layout?: BubbleLayout;
 }

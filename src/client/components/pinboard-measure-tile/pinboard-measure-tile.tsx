@@ -1,9 +1,6 @@
 require('./pinboard-measure-tile.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { ply, $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Essence, DataSource, Filter, Dimension, Measure, SortOn } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 import { Dropdown, DropdownProps } from '../dropdown/dropdown';
@@ -13,7 +10,7 @@ export interface PinboardMeasureTileProps extends React.Props<any> {
   title: string;
   dimension?: Dimension;
   sortOn: SortOn;
-  onSelect: Function;
+  onSelect: (sel: SortOn) => void;
 }
 
 export interface PinboardMeasureTileState {

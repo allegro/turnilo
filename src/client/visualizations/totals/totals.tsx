@@ -22,6 +22,8 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   static id = 'totals';
   static title = 'Totals';
 
+  static measureModeNeed = 'multi';
+
   static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
     if (!splits.length()) return Resolve.ready(10);
     return Resolve.automatic(3, { splits: Splits.EMPTY });
@@ -40,7 +42,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
 
   fetchData(essence: Essence): void {
     var { dataSource } = essence;
-    var measures = essence.getMeasures();
+    var measures = essence.getEffectiveMeasures();
 
     var $main = $('main');
 
@@ -85,7 +87,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     if (
       nextEssence.differentDataSource(essence) ||
       nextEssence.differentEffectiveFilter(essence, Totals.id) ||
-      nextEssence.newSelectedMeasures(essence)
+      nextEssence.newEffectiveMeasures(essence)
     ) {
       this.fetchData(nextEssence);
     }
@@ -100,7 +102,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     var { loading, dataset, error } = this.state;
 
     var myDatum = dataset ? dataset.data[0] : null;
-    var measures = essence.getMeasures();
+    var measures = essence.getEffectiveMeasures();
     var single = measures.size === 1;
 
     var totals = measures.map(measure => {

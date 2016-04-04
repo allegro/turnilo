@@ -1,41 +1,37 @@
 @import '../../imports';
 
-$h-padding: 10px;
-
 .time-series {
   display: inline-block;
   overflow: hidden;
 
-  .measure-graphs {
+  .measure-time-charts {
     overflow-x: hidden;
     overflow-y: auto;
-    padding-left: $h-padding;
+    padding-left: $vis-h-padding;
   }
 
-  .measure-graph {
-    border-bottom: 1px solid $gray;
-
-    .measure-label {
+  .measure-time-chart {
+    .vis-measure-label {
       position: absolute;
       left: 6px;
       top: 12px;
+    }
 
-      /*span.measure-title,
-      span.colon {
-        color: $text-light;
-      }*/
+    .vis-bottom {
+      pointer-events: none;
+      stroke: $gray;
     }
   }
 
   .bottom-axis {
-    padding-left: $h-padding;
+    padding-left: $vis-h-padding;
   }
 
   .highlighter {
     position: absolute;
     top: 0;
-    left: $h-padding;
-    right: $h-padding;
+    left: $vis-h-padding;
+    right: $vis-h-padding;
     bottom: 0;
   }
 

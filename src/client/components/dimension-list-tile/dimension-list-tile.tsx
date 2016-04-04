@@ -1,16 +1,14 @@
 require('./dimension-list-tile.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { List } from 'immutable';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { STRINGS, TITLE_HEIGHT, DIMENSION_HEIGHT } from '../../config/constants';
-import { moveInList } from '../../../common/utils/general/general';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
-import { findParentWithClass, setDragGhost, transformStyle } from '../../utils/dom/dom';
-import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine} from '../../../common/models/index';
-import { PreviewMenu } from '../preview-menu/preview-menu';
+import { findParentWithClass, setDragGhost, transformStyle, classNames } from '../../utils/dom/dom';
+import { Stage, Clicker, Essence, VisStrategy, Dimension, SplitCombine } from '../../../common/models/index';
+import { SvgIcon } from '../svg-icon/svg-icon';
+import { DimensionActionsMenu } from '../dimension-actions-menu/dimension-actions-menu';
+import { TileHeader, TileHeaderIcon } from '../tile-header/tile-header';
 
 const DIMENSION_CLASS_NAME = 'dimension';
 
@@ -18,25 +16,24 @@ export interface DimensionListTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  triggerFilterMenu: Function;
-  triggerSplitMenu: Function;
-  getUrlPrefix?: Function;
+  triggerFilterMenu: Fn;
+  triggerSplitMenu: Fn;
+  getUrlPrefix?: () => string;
 }
 
 export interface DimensionListTileState {
-  PreviewMenuAsync?: typeof PreviewMenu;
+  DimensionActionsMenuAsync?: typeof DimensionActionsMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   highlightDimension?: Dimension;
 }
 
 export class DimensionListTile extends React.Component<DimensionListTileProps, DimensionListTileState> {
-  private dragCounter: number;
 
   constructor() {
     super();
     this.state = {
-      PreviewMenuAsync: null,
+      DimensionActionsMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
       highlightDimension: null
@@ -44,11 +41,11 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   componentDidMount() {
-    require.ensure(['../preview-menu/preview-menu'], (require) => {
+    require.ensure(['../dimension-actions-menu/dimension-actions-menu'], (require) => {
       this.setState({
-        PreviewMenuAsync: require('../preview-menu/preview-menu').PreviewMenu
+        DimensionActionsMenuAsync: require('../dimension-actions-menu/dimension-actions-menu').DimensionActionsMenu
       });
-    }, 'preview-menu');
+    }, 'dimension-actions-menu');
   }
 
   clickDimension(dimension: Dimension, e: MouseEvent) {
@@ -109,11 +106,11 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   renderMenu(): JSX.Element {
     var { essence, clicker, menuStage, triggerFilterMenu, triggerSplitMenu } = this.props;
-    var { PreviewMenuAsync, menuOpenOn, menuDimension } = this.state;
-    if (!PreviewMenuAsync || !menuDimension) return null;
+    var { DimensionActionsMenuAsync, menuOpenOn, menuDimension } = this.state;
+    if (!DimensionActionsMenuAsync || !menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
-    return <PreviewMenuAsync
+    return <DimensionActionsMenuAsync
       clicker={clicker}
       essence={essence}
       direction="right"
@@ -136,14 +133,17 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       var style = transformStyle(0, itemY);
       itemY += DIMENSION_HEIGHT;
 
-      var classNames = [
+      var className = classNames(
         DIMENSION_CLASS_NAME,
-        'type-' + dimension.className
-      ];
-      if (dimension === highlightDimension) classNames.push('highlight');
-      if (dimension === menuDimension) classNames.push('selected');
+        'type-' + dimension.className,
+        {
+          highlight: dimension === highlightDimension,
+          selected: dimension === menuDimension
+        }
+      );
+
       return <div
-        className={classNames.join(' ')}
+        className={className}
         key={dimension.name}
         onClick={this.clickDimension.bind(this, dimension)}
         onMouseOver={this.onMouseOver.bind(this, dimension)}
@@ -163,11 +163,19 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       flex: dimensionItems.length + 2
     };
 
+    var icons: TileHeaderIcon[] = [
+      //{ name: 'more', onClick: null, svg: require('../../icons/full-more-mini.svg') }
+      //{ name: 'search', onClick: null, svg: require('../../icons/full-search.svg') }
+    ];
+
     return <div
       className="dimension-list-tile"
       style={style}
     >
-      <div className="title">{STRINGS.dimensions}</div>
+      <TileHeader
+        title={STRINGS.dimensions}
+        icons={icons}
+      />
       <div className="items" ref="items">
         {dimensionItems}
       </div>

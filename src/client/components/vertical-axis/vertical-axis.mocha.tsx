@@ -14,9 +14,9 @@ describe('VerticalAxis', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <VerticalAxis
-        scaleY={null}
+        scale={null}
         stage={null}
-        yTicks={null}
+        ticks={null}
       />
     );
 

@@ -3,17 +3,18 @@ require('./side-drawer.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
-import { ADDITIONAL_LINKS } from '../../config/constants';
+import { Fn } from "../../../common/utils/general/general";
+import { STRINGS } from '../../config/constants';
 import { isInside, escapeKey } from '../../utils/dom/dom';
 import { DataSource } from '../../../common/models/index';
 import { NavLogo } from '../nav-logo/nav-logo';
 import { NavList } from '../nav-list/nav-list';
 
-
 export interface SideDrawerProps extends React.Props<any> {
   selectedDataSource: DataSource;
   dataSources: List<DataSource>;
-  onClose: Function;
+  onOpenAbout: Fn;
+  onClose: Fn;
 }
 
 export interface SideDrawerState {
@@ -23,7 +24,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
   constructor() {
     super();
-    // this.state = {};
+    //this.state = {};
+
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
@@ -52,7 +54,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   render() {
-    var { onClose, selectedDataSource, dataSources } = this.props;
+    var { onClose, selectedDataSource, dataSources, onOpenAbout } = this.props;
 
     var navLinks = dataSources.toArray().map(ds => {
       return {
@@ -62,8 +64,17 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       };
     });
 
+    var infoAndFeedback = [{
+      name: 'info',
+      title: STRINGS.infoAndFeedback,
+      onClick: () => {
+        onClose();
+        onOpenAbout();
+      }
+    }];
+
     return <div className="side-drawer">
-      <NavLogo onClick={onClose as any}/>
+      <NavLogo onClick={onClose}/>
       <NavList
         title="Data Cubes"
         selected={selectedDataSource ? selectedDataSource.name : null}
@@ -71,7 +82,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
         iconSvg={require('../../icons/full-cube.svg')}
       />
       <NavList
-        navLinks={ADDITIONAL_LINKS}
+        navLinks={infoAndFeedback}
       />
     </div>;
   }

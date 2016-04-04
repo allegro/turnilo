@@ -9,7 +9,7 @@
   .items {
     .item {
       .icon svg path {
-        fill: #bbb;
+        fill: rgba($black, 0.26);
       }
 
       &.selected {

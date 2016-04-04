@@ -1,27 +1,48 @@
 @import '../../imports';
 
+// These max width and height are arbitrary
+$segment-bubble-max-width: 30px;
+$segment-bubble-max-height: 10px;
 $shpitz-size: 7px;
-$hover-bubble-max-width: 300px;
 
-.hover-bubble {
+.segment-bubble {
   position: absolute;
-  width: $hover-bubble-max-width;
-  margin-left: -$hover-bubble-max-width / 2;
-  text-align: center;
+  width: $segment-bubble-max-width;
+  height: $segment-bubble-max-height;
+  margin-left: -$segment-bubble-max-width / 2;
+  margin-top: -$segment-bubble-max-height - $shpitz-size;
 
-  .hover-bubble-inner {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+
+  .segment-bubble-inner {
     @extend %menu-cont;
     background: rgba($white, 0.9);
     display: inline-block;
     padding: 8px;
+    text-align: center;
 
     .text {
       display: inline-block;
+      white-space: nowrap;
 
-      .bucket {
+      .segment {
         color: $text-lighterish;
         display: block;
         margin-bottom: 3px;
+      }
+    }
+
+    .buttons {
+      white-space: nowrap;
+
+      &:nth-child(n+2) {
+        margin-top: 7px;
+      }
+
+      .button:first-child {
+        margin-right: 5px;
       }
     }
   }

@@ -27,7 +27,8 @@
     //transition: opacity $duration ease;
   }
 
-  &:hover {
+  &:hover,
+  &.active {
     &:after, &:before {
       opacity: 1;
     }

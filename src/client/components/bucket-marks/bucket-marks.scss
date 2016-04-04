@@ -1,0 +1,10 @@
+@import '../../imports';
+
+.bucket-marks {
+  pointer-events: none;
+
+  line {
+    pointer-events: none;
+    stroke: $gray;
+  }
+}

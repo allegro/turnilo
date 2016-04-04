@@ -14,7 +14,7 @@ import { DimensionTile } from '../dimension-tile/dimension-tile';
 export interface PinboardPanelProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
-  getUrlPrefix?: Function;
+  getUrlPrefix?: () => string;
 }
 
 export interface PinboardPanelState {

@@ -1,13 +1,10 @@
 require('./highlight-controls.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { Fn } from "../../../common/utils/general/general";
+import { Stage, Clicker } from '../../../common/models/index';
+import { classNames } from '../../utils/dom/dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Executor, Dataset } from 'plywood';
-// import { ... } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-// import { SomeComp } from '../some-comp/some-comp';
 
 function stopEvent(e: React.MouseEvent): void {
   e.stopPropagation();
@@ -16,7 +13,7 @@ function stopEvent(e: React.MouseEvent): void {
 export interface HighlightControlsProps extends React.Props<any> {
   clicker: Clicker;
   orientation: string;
-  onClose?: Function;
+  onClose?: Fn;
   style?: any;
 }
 
@@ -48,8 +45,11 @@ export class HighlightControls extends React.Component<HighlightControlsProps, H
   render() {
     var { orientation, style } = this.props;
 
-    var orientationClass = orientation === 'horizontal' ? 'horizontal' : 'vertical';
-    return <div className={'highlight-controls ' + orientationClass} onMouseDown={stopEvent} style={style}>
+    return <div
+      className={classNames('highlight-controls', orientation === 'horizontal' ? 'horizontal' : 'vertical')}
+      onMouseDown={stopEvent}
+      style={style}
+    >
       <div className="button accept" onClick={this.onAccept.bind(this)}>
         <SvgIcon svg={require('../../icons/check.svg')}/>
       </div>

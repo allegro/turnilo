@@ -1,8 +1,7 @@
 require('./hover-multi-bubble.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
+import { $, Datum, TimeRange } from 'plywood';
 import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
@@ -14,7 +13,7 @@ export interface HoverMultiBubbleProps extends React.Props<any> {
   essence: Essence;
   datums: Datum[];
   measure: Measure;
-  getY: Function;
+  getY: (d: Datum) => number;
   left: number;
   top: number;
 }

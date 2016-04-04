@@ -1,13 +1,16 @@
 require('./nav-list.css');
 
 import * as React from 'react';
+import { Fn } from "../../../common/utils/general/general";
+import { classNames } from '../../utils/dom/dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
 export interface NavLink {
   name: string;
   title: string;
-  href: string;
+  href?: string;
   newTab?: boolean;
+  onClick?: Fn;
 }
 
 export interface NavListProps extends React.Props<any> {
@@ -22,13 +25,6 @@ export interface NavListState {
 
 export class NavList extends React.Component< NavListProps, NavListState> {
 
-  getItemClassName(itemName: string) {
-    var { selected } = this.props;
-    var itemClass = "item";
-    if (selected && selected === itemName) return `${itemClass} selected`;
-    return itemClass;
-  }
-
   renderIcon(iconSvg: string): any {
     if (!iconSvg) return null;
     return <span className="icon">
@@ -39,17 +35,18 @@ export class NavList extends React.Component< NavListProps, NavListState> {
   renderNavList() {
     const { navLinks, iconSvg, selected } = this.props;
     return navLinks.map((navLink) => {
-      var itemClass = "item";
-      if (selected && selected === navLink.name) itemClass += ' selected';
-      return <a
-        className={itemClass}
-        key={navLink.name}
-        href={navLink.href}
-        target={navLink.newTab ? '_blank' : null}
-      >
-        {this.renderIcon(iconSvg)}
-        {navLink.title}
-      </a>;
+      return React.createElement(
+        navLink.href ? 'a' : 'div',
+        {
+          className: classNames('item', { selected: selected && selected === navLink.name }),
+          key: navLink.name,
+          href: navLink.href,
+          target: navLink.newTab ? '_blank' : null,
+          onClick: navLink.onClick
+        },
+        this.renderIcon(iconSvg),
+        navLink.title
+      );
     });
   }
 

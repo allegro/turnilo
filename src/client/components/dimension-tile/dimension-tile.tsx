@@ -2,16 +2,17 @@ require('./dimension-tile.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import { Fn } from "../../../common/utils/general/general";
 import { $, r, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
 import { SEGMENT, PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
-import { setDragGhost, isInside, escapeKey } from '../../utils/dom/dom';
-import { Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SortOn, SplitCombine, Colors } from '../../../common/models/index';
+import { setDragGhost, isInside, escapeKey, classNames } from '../../utils/dom/dom';
+import { Clicker, Essence, VisStrategy, Dimension, SortOn, SplitCombine, Colors } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 
-import { TileHeader } from '../tile-header/tile-header';
+import { SvgIcon } from '../svg-icon/svg-icon';
+import { TileHeader, TileHeaderIcon } from '../tile-header/tile-header';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
@@ -30,7 +31,7 @@ export interface DimensionTileProps extends React.Props<any> {
   sortOn: SortOn;
   colors?: Colors;
   onClose?: any;
-  getUrlPrefix?: Function;
+  getUrlPrefix?: () => string;
 }
 
 export interface DimensionTileState {
@@ -46,7 +47,7 @@ export interface DimensionTileState {
 
 export class DimensionTile extends React.Component<DimensionTileProps, DimensionTileState> {
   public mounted: boolean;
-  public collectTriggerSearch: Function;
+  public collectTriggerSearch: Fn;
 
   constructor() {
     super();
@@ -161,10 +162,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (
       essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, null, unfolded ? dimension : null) ||
-      essence.differentColors(nextEssence) ||
-      !dimension.equals(nextDimension) ||
-      !sortOn.equals(nextSortOn)
-  ) {
+      essence.differentColors(nextEssence) || !dimension.equals(nextDimension) || !sortOn.equals(nextSortOn)
+    ) {
       this.fetchData(nextEssence, nextDimension, nextSortOn, unfolded);
     }
   }
@@ -182,21 +181,20 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   globalMouseDownListener(e: MouseEvent) {
-    var searchBoxElement = ReactDOM.findDOMNode(this.refs['search-box']);
-    if (!searchBoxElement) return;
-
-    var headerRef = this.refs['header'];
-    if (!headerRef) return;
-    var searchButtonElement = ReactDOM.findDOMNode(headerRef.refs['searchButton']);
-    if (!searchButtonElement) return;
-
-    var target = e.target as Element;
-
-    if (isInside(target, searchBoxElement) || isInside(target, searchButtonElement)) return;
-
     var { searchText } = this.state;
     // Remove search if it looses focus while empty
     if (searchText !== '') return;
+
+    var target = e.target as Element;
+
+    var searchBoxElement = ReactDOM.findDOMNode(this.refs['search-box']);
+    if (!searchBoxElement || isInside(target, searchBoxElement)) return;
+
+    var headerRef = this.refs['header'];
+    if (!headerRef) return;
+    var searchButtonElement = ReactDOM.findDOMNode(headerRef.refs['search']);
+    if (!searchButtonElement || isInside(target, searchButtonElement)) return;
+
     this.toggleSearch();
   }
 
@@ -397,7 +395,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
       if (foldability) {
         folder = <div
-          className={'folder ' + (unfolded ? 'folded' : 'unfolded')}
+          className={classNames('folder', unfolded ? 'folded' : 'unfolded')}
           onClick={this.toggleFold.bind(this)}
         >
           <SvgIcon svg={require('../../icons/caret.svg')}/>
@@ -422,23 +420,37 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       queryError = <QueryError error={error}/>;
     }
 
-    const className = [
+    const className = classNames(
       'dimension-tile',
       (searchBar ? 'has-search' : 'no-search'),
       (folder ? 'has-folder' : 'no-folder'),
       (colors ? 'has-colors' : 'no-colors')
-    ].join(' ');
+    );
 
     const style = {
       maxHeight
     };
 
+    var icons: TileHeaderIcon[] = [
+      {
+        name: 'search',
+        ref: 'search',
+        onClick: this.toggleSearch.bind(this),
+        svg: require('../../icons/full-search.svg'),
+        active: showSearch
+      },
+      {
+        name: 'close',
+        onClick: onClose,
+        svg: require('../../icons/full-remove.svg')
+      }
+    ];
+
     return <div className={className} style={style}>
       <TileHeader
         title={dimension.title}
         onDragStart={this.onDragStart.bind(this)}
-        onSearch={this.toggleSearch.bind(this)}
-        onClose={onClose}
+        icons={icons}
         ref="header"
       />
       {searchBar}

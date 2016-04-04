@@ -71,6 +71,7 @@ describe('Essence', () => {
 
         },
         pinnedDimensions: [],
+        singleMeasure: 'count',
         selectedMeasures: [],
         splits: []
       },
@@ -79,6 +80,7 @@ describe('Essence', () => {
         timezone: 'Etc/UTC',
         filter: $('twitterHandle').overlap(['A', 'B', 'C']).toJS(),
         pinnedDimensions: ['twitterHandle'],
+        singleMeasure: 'count',
         selectedMeasures: ['count'],
         splits: []
       }
@@ -130,6 +132,7 @@ describe('Essence', () => {
           "op": "chain"
         },
         "pinnedDimensions": [],
+        "singleMeasure": "count",
         "selectedMeasures": [],
         "splits": [],
         "timezone": "Etc/UTC",
@@ -152,6 +155,7 @@ describe('Essence', () => {
           "value": true
         },
         "pinnedDimensions": [],
+        "singleMeasure": "count",
         "selectedMeasures": [
           "count"
         ],
@@ -194,6 +198,7 @@ describe('Essence', () => {
         "pinnedDimensions": [
           "twitterHandle"
         ],
+        "singleMeasure": "count",
         "selectedMeasures": [
           "count"
         ],

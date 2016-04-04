@@ -2,6 +2,10 @@
 
 .time-axis {
   line {
+    pointer-events: none;
+  }
+
+  line {
     stroke: $gray;
   }
 

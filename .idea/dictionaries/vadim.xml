@@ -8,6 +8,7 @@
       <w>bezier</w>
       <w>clearable</w>
       <w>compat</w>
+      <w>dasharray</w>
       <w>doctype</w>
       <w>foldability</w>
       <w>fontcustom</w>
@@ -21,6 +22,7 @@
       <w>jsdom</w>
       <w>keydown</w>
       <w>kfar</w>
+      <w>lighterish</w>
       <w>lightish</w>
       <w>linter</w>
       <w>loupe</w>
@@ -32,6 +34,7 @@
       <w>ofir</w>
       <w>ondragstart</w>
       <w>ondrop</w>
+      <w>onerror</w>
       <w>pinboard</w>
       <w>polyfill</w>
       <w>postcss</w>
@@ -45,6 +48,7 @@
       <w>scsslint</w>
       <w>shpitz</w>
       <w>sinon</w>
+      <w>slanty</w>
       <w>sourcemap</w>
       <w>subsplit</w>
       <w>supertest</w>

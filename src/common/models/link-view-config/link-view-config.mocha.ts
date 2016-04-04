@@ -82,6 +82,7 @@ describe('LinkViewConfig', () => {
                 value: true
               },
               pinnedDimensions: ['statusCode'],
+              singleMeasure: "count",
               selectedMeasures: ['count'],
               splits: []
             }

@@ -3,6 +3,7 @@ require('./cube-view.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Expression } from 'plywood';
+import { Fn } from "../../../common/utils/general/general";
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
   SplitCombine, Splits, VisStrategy, VisualizationProps, User} from '../../../common/models/index';
@@ -23,10 +24,10 @@ export interface CubeViewProps extends React.Props<any> {
   maxSplits?: number;
   user?: User;
   hash: string;
-  updateViewHash: Function;
-  getUrlPrefix?: Function;
+  updateViewHash: (newHash: string, force?: boolean) => void;
+  getUrlPrefix?: () => string;
   dataSource: DataSource;
-  onNavClick?: Function;
+  onNavClick?: Fn;
 }
 
 export interface CubeViewState {
@@ -101,13 +102,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         var { essence } = this.state;
         this.setState({ essence: essence.changePinnedSortMeasure(measure) });
       },
-      toggleMeasure: (measure: Measure) => {
+      toggleMultiMeasureMode: () => {
         var { essence } = this.state;
-        this.setState({ essence: essence.toggleMeasure(measure) });
+        this.setState({ essence: essence.toggleMultiMeasureMode() });
       },
-      changeHighlight: (owner: string, delta: Filter) => {
+      toggleEffectiveMeasure: (measure: Measure) => {
         var { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(owner, delta) });
+        this.setState({ essence: essence.toggleEffectiveMeasure(measure) });
+      },
+      changeHighlight: (owner: string, measure: string, delta: Filter) => {
+        var { essence } = this.state;
+        this.setState({ essence: essence.changeHighlight(owner, measure, delta) });
       },
       acceptHighlight: () => {
         var { essence } = this.state;

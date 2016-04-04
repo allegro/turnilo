@@ -1,19 +1,16 @@
 require('./link-header-bar.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { Fn } from "../../../common/utils/general/general";
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Datum, Dataset } from 'plywood';
-import { Essence, DataSource, User } from "../../../common/models/index";
-
-import { Modal } from '../modal/modal';
+import { User } from "../../../common/models/index";
 
 export interface LinkHeaderBarProps extends React.Props<any> {
   title: string;
   user?: User;
-  onNavClick: Function;
-  onExploreClick: Function;
-  getUrlPrefix?: Function;
+  onNavClick: Fn;
+  onExploreClick: Fn;
+  getUrlPrefix?: () => string;
 }
 
 export interface LinkHeaderBarState {

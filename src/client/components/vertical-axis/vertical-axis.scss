@@ -1,6 +1,8 @@
 @import '../../imports';
 
 .vertical-axis {
+  pointer-events: none;
+
   line.border {
     stroke: $gray;
   }

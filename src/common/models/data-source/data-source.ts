@@ -685,8 +685,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public getMeasure(measureName: string): Measure {
-    measureName = measureName.toLowerCase(); // Case insensitive
-    return this.measures.find(measure => measure.name.toLowerCase() === measureName);
+    return Measure.getMeasure(this.measures, measureName);
   }
 
   public getMeasureByExpression(expression: Expression): Measure {

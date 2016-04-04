@@ -14,9 +14,10 @@ describe('TimeAxis', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <TimeAxis
-        scaleX={null}
+        scale={null}
         stage={null}
-        xTicks={null}
+        ticks={null}
+        timezone={null}
       />
     );
 
