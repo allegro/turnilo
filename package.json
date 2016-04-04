@@ -1,6 +1,6 @@
 {
   "name": "imply-pivot",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
