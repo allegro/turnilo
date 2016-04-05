@@ -1,0 +1,15 @@
+# This is am example configuration file for Pivot, here you can add data sources as well as configure Pivot settings
+# You can start by using this sample config by running `cp config_sample.yaml config.yaml`
+
+# The port on which the Pivot server will listen on
+port: 9090
+
+# This happens to be my Docker machine
+druidHost: 192.168.99.100
+
+druidRequestDecorator: './druid-request-decorator.js'
+
+# The are being read by the druidRequestDecorator which is passed the config in. Pivot itself will ignore these keys.
+myUsername: Aladdin
+myPassword: OpenSesame
+

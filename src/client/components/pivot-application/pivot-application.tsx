@@ -97,25 +97,24 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.globalErrorMonitor();
     window.addEventListener('hashchange', this.globalHashChangeListener);
 
-    var clipboard = new Clipboard('.clipboard');
+    require.ensure(['clipboard'], (require) => {
+      var Clipboard = require('clipboard');
 
-    clipboard.on('success', (e: any) => {
-      // ToDo: do something here
-    });
+      var clipboard = new Clipboard('.clipboard');
 
-    require.ensure([
-      'react-addons-css-transition-group',
-      '../side-drawer/side-drawer'
-    ], (require) => {
+      clipboard.on('success', (e: any) => {
+        // ToDo: do something here
+      });
+    }, 'clipboard');
+
+    require.ensure(['react-addons-css-transition-group', '../side-drawer/side-drawer'], (require) => {
       this.setState({
         ReactCSSTransitionGroupAsync: require('react-addons-css-transition-group'),
         SideDrawerAsync: require('../side-drawer/side-drawer').SideDrawer
       });
     }, 'side-drawer');
 
-    require.ensure([
-      '../about-modal/about-modal'
-    ], (require) => {
+    require.ensure(['../about-modal/about-modal'], (require) => {
       this.setState({
         AboutModalAsync: require('../about-modal/about-modal').AboutModal
       });

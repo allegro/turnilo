@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as Q from 'q';
 import * as nopt from 'nopt';
-
+import { DruidRequestDecorator } from 'plywood-druid-requester';
 import { DataSource, DataSourceJS, Dimension, Measure, LinkViewConfig, LinkViewConfigJS } from '../common/models/index';
 import { dataSourceToYAML } from '../common/utils/yaml-helper/yaml-helper';
 import { DataSourceManager, dataSourceManagerFactory, loadFileSync, properDruidRequesterFactory, dataSourceLoaderFactory, SourceListScan } from './utils/index';
@@ -27,6 +27,7 @@ export interface PivotConfig {
   sourceReintrospectInterval?: number;
 
   auth?: string;
+  druidRequestDecorator?: string;
   dataSources?: DataSourceJS[];
   linkViewConfig?: LinkViewConfigJS;
   serverConfig?: ServerConfig;
@@ -39,8 +40,8 @@ export interface RequestDecoratorFactoryOptions {
   config: any;
 }
 
-export interface DruidRequestDecoratorFactory {
-  (options: RequestDecoratorFactoryOptions) => any; //RequestDecorator;
+export interface DruidRequestDecoratorModule {
+  druidRequestDecorator: (log: (line: string) => void, options: RequestDecoratorFactoryOptions) => DruidRequestDecorator;
 }
 
 function errorExit(message: string): void {
@@ -220,21 +221,29 @@ var authModule: any = null;
 if (auth) {
   auth = path.resolve(configFileDir, auth);
   console.log(`Using auth ${auth}`);
-  var authModule = require(auth);
+  try {
+    authModule = require(auth);
+  } catch (e) {
+    errorExit(`error loading auth module: ${e.message}`);
+  }
   if (typeof authModule.auth !== 'function') errorExit('Invalid auth module');
 }
 export const AUTH = authModule;
 
 
 var druidRequestDecorator = config.druidRequestDecorator;
-var druidRequestDecoratorFactory: any = null;
-if (auth) {
-  auth = path.resolve(configFileDir, auth);
-  console.log(`Using auth ${auth}`);
-  var authModule = require(auth);
-  if (typeof authModule.auth !== 'function') errorExit('Invalid auth module');
+var druidRequestDecoratorModule: DruidRequestDecoratorModule = null;
+if (druidRequestDecorator) {
+  druidRequestDecorator = path.resolve(configFileDir, druidRequestDecorator);
+  console.log(`Using druidRequestDecorator ${druidRequestDecorator}`);
+  try {
+    druidRequestDecoratorModule = require(druidRequestDecorator);
+  } catch (e) {
+    errorExit(`error loading druidRequestDecorator module: ${e.message}`);
+  }
+  if (typeof druidRequestDecoratorModule.druidRequestDecorator !== 'function') errorExit('Invalid druidRequestDecorator module');
 }
-export const AUTH = authModule;
+export const DRUID_REQUEST_DECORATOR = druidRequestDecoratorModule;
 
 
 export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSourceJS: DataSourceJS, i: number) => {
@@ -262,11 +271,20 @@ export const SERVER_CONFIG = config.serverConfig || {};
 
 var druidRequester: Requester.PlywoodRequester<any> = null;
 if (DRUID_HOST) {
+  var requestDecorator: DruidRequestDecorator = null;
+  if (druidRequestDecoratorModule) {
+    var logger = (str: string) => console.log(str);
+    requestDecorator = druidRequestDecoratorModule.druidRequestDecorator(logger, {
+      config
+    });
+  }
+
   druidRequester = properDruidRequesterFactory({
     druidHost: DRUID_HOST,
     timeout: TIMEOUT,
     verbose: VERBOSE,
-    concurrentLimit: 5
+    concurrentLimit: 5,
+    requestDecorator
   });
 }
 
