@@ -2,6 +2,7 @@
 @import '../../node_modules/laborer/common/style/sanity';
 @import '../../node_modules/laborer/common/style/open-sans-regular';
 @import '../../node_modules/laborer/common/style/open-sans-600';
+@import 'imports';
 
 html,
 body {
@@ -13,13 +14,27 @@ body {
 }
 
 .app-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  @include pin-full;
 
   * {
     user-select: none;
   }
+
+  // Pin my loader
+  & > .loader {
+    @include pin-full;
+  }
+}
+
+.drag-ghost {
+  // Do not change these position things
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -10;
+
+  padding: 3px 10px;
+  border: 1px solid $black;
+  background: $white;
+  border-radius: 5px;
 }

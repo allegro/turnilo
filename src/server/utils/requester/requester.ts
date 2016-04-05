@@ -1,5 +1,5 @@
 import { $, helper } from 'plywood';
-import { druidRequesterFactory } from 'plywood-druid-requester';
+import { druidRequesterFactory, DruidRequestDecorator } from 'plywood-druid-requester';
 import { mySqlRequesterFactory } from 'plywood-mysql-requester';
 
 export interface ProperDruidRequesterOptions {
@@ -8,6 +8,7 @@ export interface ProperDruidRequesterOptions {
   timeout?: number;
   verbose?: boolean;
   concurrentLimit?: number;
+  requestDecorator?: DruidRequestDecorator;
 }
 
 export function properDruidRequesterFactory(options: ProperDruidRequesterOptions): Requester.PlywoodRequester<any> {
@@ -16,12 +17,14 @@ export function properDruidRequesterFactory(options: ProperDruidRequesterOptions
     retry,
     timeout,
     verbose,
-    concurrentLimit
+    concurrentLimit,
+    requestDecorator
   } = options;
 
   var druidRequester = druidRequesterFactory({
     host: druidHost,
-    timeout: timeout || 30000
+    timeout: timeout || 30000,
+    requestDecorator
   });
 
   if (retry) {
