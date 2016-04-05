@@ -4,10 +4,11 @@ import * as React from 'react';
 import { Timezone } from 'chronoshift';
 import { $, PlywoodValue, Datum, TimeRange } from 'plywood';
 import { Fn } from "../../../common/utils/general/general";
-import { Clicker, Measure } from '../../../common/models/index';
+import { Stage, Clicker, Measure } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { BodyPortal } from '../body-portal/body-portal';
+import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Button } from '../button/button';
 
 export interface SegmentBubbleProps extends React.Props<any> {
@@ -23,13 +24,16 @@ export interface SegmentBubbleProps extends React.Props<any> {
 }
 
 export interface SegmentBubbleState {
+  moreMenuOpenOn?: Element;
 }
 
 export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBubbleState> {
 
   constructor() {
     super();
-    // this.state = {};
+    this.state = {
+      moreMenuOpenOn: null
+    };
 
   }
 
@@ -43,6 +47,36 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
     var { onClose, clicker } = this.props;
     clicker.dropHighlight();
     if (onClose) onClose();
+  }
+
+  onMore(e: MouseEvent) {
+    console.log('e', e, e.target);
+    this.setState({
+      moreMenuOpenOn: e.target as any
+    });
+  }
+
+  closeMoreMenu() {
+    this.setState({
+      moreMenuOpenOn: null
+    });
+  }
+
+  renderMoreMenu() {
+    const { moreMenuOpenOn } = this.state;
+    if (!moreMenuOpenOn) return null;
+
+    var menuSize = Stage.fromSize(250, 240);
+
+    return <BubbleMenu
+      className="more-menu"
+      direction="down"
+      stage={menuSize}
+      openOn={moreMenuOpenOn}
+      onClose={this.closeMoreMenu.bind(this)}
+    >
+      Copy Value
+    </BubbleMenu>;
   }
 
   render() {
@@ -69,6 +103,7 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
       buttons = <div className="buttons">
         <Button type="primary" onClick={this.onSelect.bind(this)} title={STRINGS.select}/>
         <Button type="secondary" onClick={this.onCancel.bind(this)} title={STRINGS.cancel}/>
+        <Button type="secondary" onClick={this.onMore.bind(this)} title="..."/>
       </div>;
     }
 
@@ -79,6 +114,7 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
           {buttons}
           <div className="shpitz"></div>
         </div>
+        {this.renderMoreMenu()}
       </div>
     </BodyPortal>;
   }

@@ -60,13 +60,6 @@ export function pivotLayout(options: ViewOptions): string {
   );
 }
 
-export function noDataSourcesLayout(options: ViewOptions): string {
-  const { version } = options;
-  return layout(options, `<div class="app-container"></div>
-<script charset="UTF-8" src="/no-data-sources.js?v=${version}"></script>`
-  );
-}
-
 export function errorLayout(options: ViewOptions, message: string, error: any = {}): string {
   return layout(options, `<h1>{{message}}</h1>
 <h2>{{error.status}}</h2>

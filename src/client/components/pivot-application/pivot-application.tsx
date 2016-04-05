@@ -28,6 +28,7 @@ export interface PivotApplicationState {
   AboutModalAsync?: typeof AboutModal;
   ReactCSSTransitionGroupAsync?: typeof ReactCSSTransitionGroup;
   SideDrawerAsync?: typeof SideDrawer;
+
   drawerOpen?: boolean;
   selectedDataSource?: DataSource;
   viewType?: ViewType;
@@ -94,7 +95,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   componentDidMount() {
-    this.globalErrorMonitor();
     window.addEventListener('hashchange', this.globalHashChangeListener);
 
     require.ensure(['clipboard'], (require) => {
@@ -119,29 +119,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         AboutModalAsync: require('../about-modal/about-modal').AboutModal
       });
     }, 'about-modal');
-  }
-
-  globalErrorMonitor() {
-    window.onerror = (message, file, line, column, errorObject) => {
-      column = column || (window.event && (window.event as any).errorCharacter);
-      var stack = errorObject ? errorObject.stack : null;
-
-      var err = {
-        message,
-        file,
-        line,
-        column,
-        stack
-      };
-
-      if (typeof console !== "undefined") {
-        console.log('An error has occurred. Please include the below information in the issue:');
-        console.log(JSON.stringify(err));
-      }
-
-      // the error can still be triggered as usual, we just wanted to know what's happening on the client side
-      return false;
-    };
   }
 
   componentWillUnmount() {

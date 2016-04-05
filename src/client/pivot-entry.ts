@@ -2,9 +2,12 @@ require('./pivot-entry.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { addErrorMonitor } from './utils/error-monitor/error-monitor';
 import { DataSourceJS } from '../common/models/index';
 
 import { Loader } from './components/loader/loader';
+
+addErrorMonitor();
 
 var container = document.getElementsByClassName('app-container')[0];
 if (!container) throw new Error('container not found');
@@ -16,10 +19,10 @@ ReactDOM.render(
 );
 
 var config: any = (window as any)['__CONFIG__'];
-var version: string = null;
+if (!config || !Array.isArray(config.dataSources)) throw new Error('config not found');
 
-if (config && Array.isArray(config.dataSources)) {
-  version = config.version || '0.0.0';
+if (config.dataSources.length) {
+  var version = config.version || '0.0.0';
 
   require.ensure([
     'immutable',
@@ -61,7 +64,16 @@ if (config && Array.isArray(config.dataSources)) {
   }, 'pivot-main');
 
 } else {
-  throw new Error('config not found');
+  require.ensure([
+    './components/no-data-sources-application/no-data-sources-application'
+  ], (require) => {
+    var NoDataSourcesApplication = require('./components/no-data-sources-application/no-data-sources-application').NoDataSourcesApplication;
+
+    ReactDOM.render(
+      React.createElement(NoDataSourcesApplication, {}),
+      container
+    );
+  }, 'no-data-sources');
 }
 
 

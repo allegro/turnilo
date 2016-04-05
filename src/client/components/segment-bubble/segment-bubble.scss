@@ -41,8 +41,12 @@ $shpitz-size: 7px;
         margin-top: 7px;
       }
 
-      .button:first-child {
+      .button {
         margin-right: 5px;
+      }
+
+      .button:last-child {
+        margin-right: 0;
       }
     }
   }

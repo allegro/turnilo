@@ -9,11 +9,14 @@
     opacity: 0.2;
   }
 
+  .golden-center {
+    @include pin-full;
+  }
+
   .modal-window {
     @extend %modal-cont;
     width: 420px;
     padding: 18px;
-    margin: auto;
     background: $white;
 
     .modal-title {
