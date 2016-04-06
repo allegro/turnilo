@@ -133,15 +133,17 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     );
     const body = <div className="rows">{ rows } </div>;
     return <SearchableTile
-        style={style}
-        title={STRINGS.measures}
-        toggleChangeFn={this.toggleSearch.bind(this)}
-        onSearchChange={this.onSearchChange.bind(this)}
-        searchText={searchText}
-        showSearch={showSearch}
-        icons={icons}
-        className={className}
-        body={body}
-    />;
-  }
+      style={style}
+      title={STRINGS.measures}
+      toggleChangeFn={this.toggleSearch.bind(this)}
+      onSearchChange={this.onSearchChange.bind(this)}
+      searchText={searchText}
+      showSearch={showSearch}
+      icons={icons}
+      className={className}
+    >
+      { body }
+    </SearchableTile>;
+  };
 }
+

@@ -246,7 +246,6 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     const body = <div className="items" ref="items">
       {dimensionItems}
     </div>;
-    const renderMenu = this.renderMenu.bind(this);
 
     return <SearchableTile
       style={style}
@@ -257,9 +256,10 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       showSearch={showSearch}
       icons={icons}
       className={className}
-      body={body}
-      additionalFn={renderMenu}
-    />;
+    >
+      { body }
+      { this.renderMenu() }
+    </SearchableTile>;
 
   }
 }

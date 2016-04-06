@@ -416,11 +416,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       showSearch={showSearch}
       icons={icons}
       className={className}
-      body={body}
-      folder={folder}
-      queryError={queryError}
-      loader={loader}
-      />;
+      >
+      { body }
+      { folder }
+      { queryError }
+      { loader }
+    </SearchableTile>;
 
   }
 }

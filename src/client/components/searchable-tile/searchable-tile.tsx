@@ -24,7 +24,6 @@ export interface SearchableTileProps extends React.Props<any> {
   className: string;
   style: Lookup<any>;
   title: string;
-  body: JSX.Element;
   folder?: JSX.Element;
   queryError?: JSX.Element;
   loader?: JSX.Element;
@@ -34,9 +33,6 @@ export interface SearchableTileProps extends React.Props<any> {
 
 export interface SearchableTileState {
 }
-
-const SEARCH_BOX_HEIGHT = 26;
-const SEARCH_BOX_GAP = 3;
 
 export class SearchableTile extends React.Component<SearchableTileProps, SearchableTileState> {
   public mounted: boolean;
@@ -92,7 +88,8 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
 
 
   render() {
-    const { className, style, icons, title, onSearchChange, showSearch, searchText, body, folder, queryError, loader, onDragStart, additionalFn } = this.props;
+    const { className, style, icons, title, onSearchChange, showSearch, searchText,
+      children, onDragStart } = this.props;
     const qualifiedClassName = "searchable-tile " + className;
     const header = <TileHeader
       title={title}
@@ -115,11 +112,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     return <div className={qualifiedClassName} style={style} >
       { header }
       { searchBar }
-      { body }
-      { folder }
-      { queryError }
-      { loader }
-      { additionalFn ? additionalFn() : null }
+      { children }
     </div>;
   }
 }

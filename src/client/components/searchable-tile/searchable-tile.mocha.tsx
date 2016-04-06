@@ -20,7 +20,6 @@ describe('SearchableTile', () => {
         icons={null}
         className=""
         title=""
-        body={null}
         style={null}
       />
     );
