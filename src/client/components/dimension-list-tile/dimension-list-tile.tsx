@@ -192,7 +192,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     }, this);
     var message: JSX.Element = null;
     if (searchText && !dimensionItems.length) {
-      message = <div className="message">{`No ${STRINGS.dimensions} for "${searchText}"`}</div>;
+      message = <div className="message">{`No ${ STRINGS.dimensions.toLowerCase() } for "${searchText}"`}</div>;
     }
     const style = {
       flex: dimensionItems.length + 2

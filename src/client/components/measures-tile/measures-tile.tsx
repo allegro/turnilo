@@ -88,7 +88,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       </div>;
     });
     if (searchText && !rows.length) {
-      message = <div className="message">{`No ${STRINGS.measures} for "${searchText}"`}</div>;
+      message = <div className="message">{`No ${ STRINGS.measures.toLowerCase() } for "${searchText}"`}</div>;
     }
 
     maxHeight += (totalMeasures.size + 2) * MEASURE_HEIGHT + PIN_PADDING_BOTTOM;
