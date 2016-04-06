@@ -150,80 +150,47 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var { essence } = this.props;
     var { menuDimension, highlightDimension, showSearch, searchText } = this.state;
     var { dataSource } = essence;
-    var dimensionItems: JSX.Element[] = [];
     var rowData = dataSource.dimensions.toArray();
     var itemY = 0;
 
     if (searchText) {
-      var searchTextLower = searchText.toLowerCase();
-      dimensionItems = rowData.map((dimension => {
-        var className = classNames(
-          DIMENSION_CLASS_NAME,
-          'type-' + dimension.className,
-          {
-            highlight: dimension === highlightDimension,
-            selected: dimension === menuDimension
-          }
-        );
-        var dimensionName = dimension.name;
-        if (dimension.title.toLowerCase().indexOf(searchTextLower) !== -1) {
-          var style = transformStyle(0, itemY);
-          itemY += DIMENSION_HEIGHT;
-          return <div
-            className={className}
-            key={dimension.name}
-            onClick={this.clickDimension.bind(this, dimension)}
-            onMouseOver={this.onMouseOver.bind(this, dimension)}
-            onMouseLeave={this.onMouseLeave.bind(this, dimension)}
-            draggable={true}
-            onDragStart={this.dragStart.bind(this, dimension)}
-            style={style}
-          >
-            <div className="icon">
-              <SvgIcon svg={require('../../icons/dim-' + dimension.className + '.svg')}/>
-            </div>
-            <div
-              className="item-title"
-              key={dimensionName}
-              onClick={this.clickDimension.bind(this, dimension)}
-            >
-              <HighlightString className="label" text={dimension.title} highlightText={searchText} />
-            </div>
-          </div>;
-        } else {
-          return null;
-        }
-      }));
-    } else {
-      dimensionItems = rowData.map((dimension, i) => {
-        var className = classNames(
-          DIMENSION_CLASS_NAME,
-          'type-' + dimension.className,
-          {
-            highlight: dimension === highlightDimension,
-            selected: dimension === menuDimension
-          }
-        );
-        var style = transformStyle(0, itemY);
-        itemY += DIMENSION_HEIGHT;
-
-        return <div
-          className={className}
-          key={dimension.name}
-          onClick={this.clickDimension.bind(this, dimension)}
-          onMouseOver={this.onMouseOver.bind(this, dimension)}
-          onMouseLeave={this.onMouseLeave.bind(this, dimension)}
-          draggable={true}
-          onDragStart={this.dragStart.bind(this, dimension)}
-          style={style}
-        >
-          <div className="icon">
-            <SvgIcon svg={require('../../icons/dim-' + dimension.className + '.svg')}/>
-          </div>
-          <div className="item-title">{dimension.title}</div>
-        </div>;
-      }, this);
+      rowData = rowData.filter((r) => {
+        return r.title.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
+      });
     }
+
+    const dimensionItems = rowData.map((dimension, i) => {
+      var className = classNames(
+        DIMENSION_CLASS_NAME,
+        'type-' + dimension.className,
+        {
+          highlight: dimension === highlightDimension,
+          selected: dimension === menuDimension
+        }
+      );
+      var style = transformStyle(0, itemY);
+      itemY += DIMENSION_HEIGHT;
+
+      return <div
+        className={className}
+        key={dimension.name}
+        onClick={this.clickDimension.bind(this, dimension)}
+        onMouseOver={this.onMouseOver.bind(this, dimension)}
+        onMouseLeave={this.onMouseLeave.bind(this, dimension)}
+        draggable={true}
+        onDragStart={this.dragStart.bind(this, dimension)}
+        style={style}
+      >
+        <div className="icon">
+          <SvgIcon svg={require('../../icons/dim-' + dimension.className + '.svg')}/>
+        </div>
+        <div className="item-title">
+          <HighlightString className="label" text={dimension.title} highlightText={searchText} />
+        </div>
+
+      </div>;
+    }, this);
+
     const style = {
       flex: dimensionItems.length + 2
     };

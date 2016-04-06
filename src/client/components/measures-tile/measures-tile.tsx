@@ -1,7 +1,6 @@
 require('./measures-tile.css');
 
 import * as React from 'react';
-import { List } from 'immutable';
 
 import { STRINGS, PIN_TITLE_HEIGHT, MEASURE_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH } from '../../config/constants';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
@@ -68,39 +67,28 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     var maxHeight = PIN_TITLE_HEIGHT;
 
     var checkboxType: CheckboxType = multiMeasureMode ? 'check' : 'radio';
-    var rows: List<JSX.Element> = null;
-    var rowData = dataSource.measures;
-    if (searchText) { 
-      var searchTextLower = searchText.toLowerCase(); 
-      rows = rowData.map(measure => { 
-        var measureName = measure.name; 
-        if (measure.title.toLowerCase().indexOf(searchTextLower) !== -1) { 
-          return <div  className="row" key={measureName} onClick={this.measureClick.bind(this, measure)} > 
-            <HighlightString className="label" text={measure.title} highlightText={searchText} /> 
-          </div>; 
-        } else { 
-          return null; 
-        } 
-      }).toList();
-     } else {
-        rows = dataSource.measures.map(measure => {
-          var measureName = measure.name;
-          var selected = selectedMeasures.has(measureName);
-
-          return <div
-            className={classNames('row', { selected })}
-            key={measureName}
-            onClick={this.measureClick.bind(this, measure)}
-          >
-            <Checkbox type={checkboxType} selected={selected}/>
-            <div className="label">{measure.title}</div>
-          </div>;
-        }).toList();
+    var rowData = dataSource.measures.toArray();
+    if (searchText) {
+      rowData = rowData.filter((r) => {
+        return r.title.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
+      });
     }
-    maxHeight += (rows.size + 2) * MEASURE_HEIGHT + PIN_PADDING_BOTTOM;
+    var rows = rowData.map(measure => {
+      var measureName = measure.name;
+      var selected = selectedMeasures.has(measureName);
+      return <div
+        className={classNames('row', { selected })}
+        key={measureName}
+        onClick={this.measureClick.bind(this, measure)}
+      >
+        <Checkbox type={checkboxType} selected={selected}/>
+        <HighlightString className="label" text={measure.title} highlightText={searchText}/>
+      </div>;
+    });
 
+    maxHeight += (rows.length + 2) * MEASURE_HEIGHT + PIN_PADDING_BOTTOM;
     const style = {
-      flex: rows.size + 2,
+      flex: rows.length + 2,
       maxHeight
     };
 
@@ -108,24 +96,23 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
 
     if (!essence.isFixedMeasureMode()) {
       icons.push({
-        name: 'multi',
-        onClick: clicker.toggleMultiMeasureMode,
-        svg: require('../../icons/full-multi.svg'),
-        active: multiMeasureMode
-      },
-      {
-        name: 'search',
-        ref: 'search',
-        onClick: this.toggleSearch.bind(this),
-        svg: require('../../icons/full-search.svg'),
-        active: showSearch
-      }
+          name: 'multi',
+          onClick: clicker.toggleMultiMeasureMode,
+          svg: require('../../icons/full-multi.svg'),
+          active: multiMeasureMode
+        },
+        {
+          name: 'search',
+          ref: 'search',
+          onClick: this.toggleSearch.bind(this),
+          svg: require('../../icons/full-search.svg'),
+          active: showSearch
+        }
       );
     }
 
     // More icons to add later
     //{ name: 'more', onClick: null, svg: require('../../icons/full-more-mini.svg') }
-
 
     const className = classNames(
       'measures-tile',
