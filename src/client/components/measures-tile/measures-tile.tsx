@@ -67,7 +67,8 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     var maxHeight = PIN_TITLE_HEIGHT;
 
     var checkboxType: CheckboxType = multiMeasureMode ? 'check' : 'radio';
-    var rowData = dataSource.measures.toArray();
+    const totalMeasures = dataSource.measures;
+    var rowData = totalMeasures.toArray();
     if (searchText) {
       rowData = rowData.filter((r) => {
         return r.title.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
@@ -90,9 +91,9 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       message = <div className="message">{`No ${STRINGS.measures} for "${searchText}"`}</div>;
     }
 
-    maxHeight += (rows.length + 2) * MEASURE_HEIGHT + PIN_PADDING_BOTTOM;
+    maxHeight += (totalMeasures.size + 2) * MEASURE_HEIGHT + PIN_PADDING_BOTTOM;
     const style = {
-      flex: rows.length + 2,
+      flex: totalMeasures.size + 2,
       maxHeight
     };
 
