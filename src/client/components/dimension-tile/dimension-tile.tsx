@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Fn } from "../../../common/utils/general/general";
 import { $, r, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
-import { SEGMENT, PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
+import { SEGMENT, PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT, STRINGS } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { setDragGhost, isInside, escapeKey, classNames } from '../../utils/dom/dom';
 import { Clicker, Essence, VisStrategy, Dimension, SortOn, SplitCombine, Colors } from '../../../common/models/index';
@@ -12,12 +12,12 @@ import { collect } from '../../../common/utils/general/general';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { TileHeader, TileHeaderIcon } from '../tile-header/tile-header';
-import { ClearableInput } from '../clearable-input/clearable-input';
+import { TileHeaderIcon } from '../tile-header/tile-header';
 import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
 import { HighlightString } from '../highlight-string/highlight-string';
+import { SearchableTile } from '../searchable-tile/searchable-tile';
 
 const TOP_N = 100;
 const SEARCH_BOX_HEIGHT = 26;
@@ -69,8 +69,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       this.fetchData(essence, dimension, sortOn, unfolded);
     });
 
-    this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   fetchData(essence: Essence, dimension: Dimension, sortOn: SortOn, unfolded: boolean): void {
@@ -170,45 +168,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   componentDidMount() {
     this.mounted = true;
-    window.addEventListener('mousedown', this.globalMouseDownListener);
-    window.addEventListener('keydown', this.globalKeyDownListener);
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    window.removeEventListener('mousedown', this.globalMouseDownListener);
-    window.removeEventListener('keydown', this.globalKeyDownListener);
-  }
-
-  globalMouseDownListener(e: MouseEvent) {
-    var { searchText } = this.state;
-    // Remove search if it looses focus while empty
-    if (searchText !== '') return;
-
-    var target = e.target as Element;
-
-    var searchBoxElement = ReactDOM.findDOMNode(this.refs['search-box']);
-    if (!searchBoxElement || isInside(target, searchBoxElement)) return;
-
-    var headerRef = this.refs['header'];
-    if (!headerRef) return;
-    var searchButtonElement = ReactDOM.findDOMNode(headerRef.refs['search']);
-    if (!searchButtonElement || isInside(target, searchButtonElement)) return;
-
-    this.toggleSearch();
-  }
-
-  globalKeyDownListener(e: KeyboardEvent) {
-    if (!escapeKey(e)) return;
-    var { showSearch } = this.state;
-    if (!showSearch) return;
-    this.toggleSearch();
-  }
-
-  toggleSearch() {
-    var { showSearch } = this.state;
-    this.setState({ showSearch: !showSearch });
-    this.onSearchChange('');
   }
 
   onRowClick(value: any, e: MouseEvent) {
@@ -272,6 +235,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     setDragGhost(dataTransfer, dimension.title);
   }
 
+  toggleSearch() {
+    var { showSearch } = this.state;
+    this.setState({ showSearch: !showSearch });
+    this.onSearchChange('');
+  }
+
   onSearchChange(text: string) {
     var { searchText, dataset, fetchQueued, loading } = this.state;
     var newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
@@ -300,21 +269,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var measure = sortOn.measure;
     var measureName = measure ? measure.name : null;
     var filterSet = essence.filter.getLiteralSet(dimension.expression);
-
     var maxHeight = PIN_TITLE_HEIGHT;
-
-    var searchBar: JSX.Element = null;
-    if (showSearch) {
-      searchBar = <div className="search-box" ref="search-box">
-        <ClearableInput
-          placeholder="Search"
-          focusOnMount={true}
-          value={searchText}
-          onChange={this.onSearchChange.bind(this)}
-        />
-      </div>;
-      maxHeight += SEARCH_BOX_HEIGHT + SEARCH_BOX_GAP;
-    }
 
     var rows: Array<JSX.Element> = [];
     var folder: JSX.Element = null;
@@ -422,7 +377,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const className = classNames(
       'dimension-tile',
-      (searchBar ? 'has-search' : 'no-search'),
       (folder ? 'has-folder' : 'no-folder'),
       (colors ? 'has-colors' : 'no-colors')
     );
@@ -446,21 +400,25 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       }
     ];
 
-    return <div className={className} style={style}>
-      <TileHeader
-        title={dimension.title}
-        onDragStart={this.onDragStart.bind(this)}
-        icons={icons}
-        ref="header"
-      />
-      {searchBar}
+    return <SearchableTile
+      style={style}
+      title={dimension.title}
+      toggleChangeFn={this.toggleSearch.bind(this)}
+      onDragStart={this.onDragStart.bind(this)}
+      onSearchChange={this.onSearchChange.bind(this)}
+      searchText={searchText}
+      showSearch={showSearch}
+      icons={icons}
+      className={className}
+      >
       <div className="rows">
         {rows}
         {message}
       </div>
-      {folder}
-      {queryError}
-      {loader}
-    </div>;
+      { folder }
+      { queryError }
+      { loader }
+    </SearchableTile>;
+
   }
 }

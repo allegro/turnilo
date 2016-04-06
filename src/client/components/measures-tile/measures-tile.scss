@@ -1,20 +1,6 @@
 @import '../../imports';
 
 .measures-tile {
-  @extend %module;
-  @extend %module-title;
-  @extend %white-shadow;
-
-  .rows {
-    position: absolute;
-    top: $pin-title-height;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    overflow: auto;
-  }
-
   .row {
     padding-left: $padding-compact;
     height: $measure-height;

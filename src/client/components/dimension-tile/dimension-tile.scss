@@ -2,54 +2,11 @@
 
 $checkbox-width: 20px;
 $measure-width: 80px;
-$search-box-height: 26px;
-$search-box-gap: 3px;
 $folder-box-height: 32px;
 
 .dimension-tile {
-  @extend %module;
-  @extend %white-shadow;
   min-height: 94px;
   overflow-y: hidden;
-
-  .tile-header {
-    height: $pin-title-height;
-  }
-
-  .search-box {
-    position: absolute;
-    top: $pin-title-height;
-    left: 0;
-    right: 0;
-    height: $search-box-height;
-    padding: 0 $padding-compact;
-    margin-bottom: 4px;
-
-    .clearable-input {
-      @extend %input-cont-inset;
-      width: 100%;
-      height: $search-box-height;
-      padding-left: 6px;
-
-      .clear {
-        top: 3px;
-      }
-    }
-  }
-
-  .rows {
-    position: absolute;
-    top: $pin-title-height;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    overflow: auto;
-  }
-
-  &.has-search .rows {
-    top: $pin-title-height + $search-box-height + $search-box-gap;
-  }
 
   &.has-folder .rows {
     bottom: $folder-box-height;
@@ -141,12 +98,6 @@ $folder-box-height: 32px;
     padding-top: 6px;
     padding-right: $padding-compact;
     white-space: nowrap;
-  }
-
-  .message {
-    padding: 4px 10px;
-    color: $text-light;
-    font-style: italic;
   }
 
   .loader,

@@ -1,0 +1,57 @@
+@import '../../imports';
+
+$search-box-gap: 3px;
+$search-box-height: 26px;
+
+.searchable-tile {
+  @extend %module;
+  @extend %white-shadow;
+  @extend %module-title;
+
+  .rows {
+    position: absolute;
+    top: $pin-title-height;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    overflow: auto;
+  }
+
+
+  .search-box {
+    position: absolute;
+    top: $pin-title-height;
+    left: 0;
+    right: 0;
+    height: $search-box-height;
+    padding: 0 $padding-compact;
+    margin-bottom: 4px;
+
+    .clearable-input {
+      @extend %input-cont-inset;
+      width: 100%;
+      height: $search-box-height;
+      padding-left: 6px;
+
+      .clear {
+        top: 3px;
+      }
+    }
+  }
+
+
+  &.has-search .rows {
+    top: $pin-title-height + $search-box-height + $search-box-gap;
+  }
+
+  &.has-search .items {
+    top: $pin-title-height + $search-box-height + $search-box-gap;
+  }
+
+  .message {
+    padding: 4px 10px;
+    color: $text-light;
+    font-style: italic;
+  }
+}

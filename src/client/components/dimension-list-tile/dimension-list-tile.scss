@@ -3,10 +3,6 @@
 $icon-width: 37px;
 
 .dimension-list-tile {
-  @extend %module;
-  @extend %module-title;
-  @extend %white-shadow;
-
   overflow: hidden;
 
   .items {
