@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.3
+
+- Added search in Dimensions and Measures panels
+
 ## 0.8.2
 
 - Added UI loader and chucked up main pivot JS blob into two
