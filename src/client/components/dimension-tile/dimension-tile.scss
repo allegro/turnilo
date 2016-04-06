@@ -100,12 +100,6 @@ $folder-box-height: 32px;
     white-space: nowrap;
   }
 
-  .message {
-    padding: 4px 10px;
-    color: $text-light;
-    font-style: italic;
-  }
-
   .loader,
   .query-error {
     @include pin-full;

@@ -48,4 +48,10 @@ $search-box-height: 26px;
   &.has-search .items {
     top: $pin-title-height + $search-box-height + $search-box-gap;
   }
+
+  .message {
+    padding: 4px 10px;
+    color: $text-light;
+    font-style: italic;
+  }
 }

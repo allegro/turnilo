@@ -190,7 +190,10 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
       </div>;
     }, this);
-
+    var message: JSX.Element = null;
+    if (searchText && !dimensionItems.length) {
+      message = <div className="message">{`No ${STRINGS.dimensions} for "${searchText}"`}</div>;
+    }
     const style = {
       flex: dimensionItems.length + 2
     };
@@ -218,7 +221,8 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     >
       <div className="items" ref="items">
         {dimensionItems}
-      </div>;
+        { message }
+      </div>
 
       { this.renderMenu() }
     </SearchableTile>;

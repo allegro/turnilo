@@ -93,7 +93,6 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     var searchBar: JSX.Element = null;
 
     if (showSearch) {
-      qualifiedClassName += ' has-search';
       searchBar = <div className="search-box" ref="search-box">
         <ClearableInput
           placeholder="Search"
@@ -102,9 +101,9 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
           onChange={onSearchChange.bind(this)}
         />
       </div>;
-    } else {
-      qualifiedClassName += ' no-search';
     }
+
+    qualifiedClassName = classNames(qualifiedClassName, (showSearch ? 'has-search' : 'no-search'));
 
     return <div className={qualifiedClassName} style={style} >
       { header }

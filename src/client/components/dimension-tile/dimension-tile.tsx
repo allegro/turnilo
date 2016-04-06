@@ -402,7 +402,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     return <SearchableTile
       style={style}
-      title={STRINGS.dimensions}
+      title={dimension.title}
       toggleChangeFn={this.toggleSearch.bind(this)}
       onDragStart={this.onDragStart.bind(this)}
       onSearchChange={this.onSearchChange.bind(this)}

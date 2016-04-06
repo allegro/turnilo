@@ -73,6 +73,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
         return r.title.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
       });
     }
+    var message: JSX.Element = null;
     var rows = rowData.map(measure => {
       var measureName = measure.name;
       var selected = selectedMeasures.has(measureName);
@@ -85,6 +86,9 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
         <HighlightString className="label" text={measure.title} highlightText={searchText}/>
       </div>;
     });
+    if (searchText && !rows.length) {
+      message = <div className="message">{`No ${STRINGS.measures} for "${searchText}"`}</div>;
+    }
 
     maxHeight += (rows.length + 2) * MEASURE_HEIGHT + PIN_PADDING_BOTTOM;
     const style = {
@@ -100,16 +104,17 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
           onClick: clicker.toggleMultiMeasureMode,
           svg: require('../../icons/full-multi.svg'),
           active: multiMeasureMode
-        },
-        {
-          name: 'search',
-          ref: 'search',
-          onClick: this.toggleSearch.bind(this),
-          svg: require('../../icons/full-search.svg'),
-          active: showSearch
         }
       );
     }
+
+    icons.push({
+      name: 'search',
+      ref: 'search',
+      onClick: this.toggleSearch.bind(this),
+      svg: require('../../icons/full-search.svg'),
+      active: showSearch
+    });
 
     // More icons to add later
     //{ name: 'more', onClick: null, svg: require('../../icons/full-more-mini.svg') }
@@ -124,7 +129,10 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       icons={icons}
       className='measures-tile'
     >
-      <div className="rows">{ rows } </div>;
+      <div className="rows">
+        { rows }
+        { message }
+      </div>
     </SearchableTile>;
   };
 }
