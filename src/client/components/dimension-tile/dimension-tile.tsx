@@ -377,7 +377,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const className = classNames(
       'dimension-tile',
-      (showSearch ? 'has-search' : 'no-search'),
       (folder ? 'has-folder' : 'no-folder'),
       (colors ? 'has-colors' : 'no-colors')
     );
@@ -401,11 +400,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       }
     ];
 
-    var body = <div className="rows">
-      {rows}
-      {message}
-    </div>;
-
     return <SearchableTile
       style={style}
       title={STRINGS.dimensions}
@@ -417,7 +411,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       icons={icons}
       className={className}
       >
-      { body }
+      <div className="rows">
+        {rows}
+        {message}
+      </div>
       { folder }
       { queryError }
       { loader }

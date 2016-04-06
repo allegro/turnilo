@@ -114,11 +114,6 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     // More icons to add later
     //{ name: 'more', onClick: null, svg: require('../../icons/full-more-mini.svg') }
 
-    const className = classNames(
-      'measures-tile',
-      (showSearch ? 'has-search' : 'no-search')
-    );
-    const body = <div className="rows">{ rows } </div>;
     return <SearchableTile
       style={style}
       title={STRINGS.measures}
@@ -127,9 +122,9 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
       searchText={searchText}
       showSearch={showSearch}
       icons={icons}
-      className={className}
+      className='measures-tile'
     >
-      { body }
+      <div className="rows">{ rows } </div>;
     </SearchableTile>;
   };
 }

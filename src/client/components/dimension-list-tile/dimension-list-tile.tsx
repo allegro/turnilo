@@ -206,14 +206,6 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       }
     ];
 
-    const className = classNames(
-      'dimension-list-tile',
-      (showSearch ? 'has-search' : 'no-search')
-    );
-    const body = <div className="items" ref="items">
-      {dimensionItems}
-    </div>;
-
     return <SearchableTile
       style={style}
       title={STRINGS.dimensions}
@@ -222,9 +214,12 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
       searchText={searchText}
       showSearch={showSearch}
       icons={icons}
-      className={className}
+      className='dimension-list-tile'
     >
-      { body }
+      <div className="items" ref="items">
+        {dimensionItems}
+      </div>;
+
       { this.renderMenu() }
     </SearchableTile>;
 

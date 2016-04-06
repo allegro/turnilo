@@ -12,23 +12,16 @@ import { setDragGhost, isInside, escapeKey, classNames } from '../../utils/dom/d
 import { TileHeader, TileHeaderIcon } from '../tile-header/tile-header';
 import { ClearableInput } from '../clearable-input/clearable-input';
 
-
-// I am: import { SearchableTile } from '../searchable-tile/searchable-tile';
-
 export interface SearchableTileProps extends React.Props<any> {
   toggleChangeFn: Fn;
   onSearchChange: (text: string) => void;
   searchText: string;
   showSearch: boolean;
   icons: TileHeaderIcon[];
-  className: string;
+  className?: string;
   style: Lookup<any>;
   title: string;
-  folder?: JSX.Element;
-  queryError?: JSX.Element;
-  loader?: JSX.Element;
   onDragStart?: Fn;
-  additionalFn?: Fn;
 }
 
 export interface SearchableTileState {
@@ -90,7 +83,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
   render() {
     const { className, style, icons, title, onSearchChange, showSearch, searchText,
       children, onDragStart } = this.props;
-    const qualifiedClassName = "searchable-tile " + className;
+    var qualifiedClassName = "searchable-tile " + className;
     const header = <TileHeader
       title={title}
       icons={icons}
@@ -100,6 +93,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     var searchBar: JSX.Element = null;
 
     if (showSearch) {
+      qualifiedClassName += ' has-search';
       searchBar = <div className="search-box" ref="search-box">
         <ClearableInput
           placeholder="Search"
@@ -108,7 +102,10 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
           onChange={onSearchChange.bind(this)}
         />
       </div>;
+    } else {
+      qualifiedClassName += ' no-search';
     }
+
     return <div className={qualifiedClassName} style={style} >
       { header }
       { searchBar }
