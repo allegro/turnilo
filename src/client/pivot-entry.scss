@@ -13,6 +13,11 @@ body {
   overflow: hidden;
 }
 
+svg {
+  width: auto;
+  height: auto;
+}
+
 .app-container {
   @include pin-full;
 

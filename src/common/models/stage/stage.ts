@@ -116,6 +116,10 @@ export class Stage implements Instance<StageValue, StageJS> {
     return `translate(${this.x},${this.y})`;
   }
 
+  public getViewBox(): string {
+    return `0 0 ${this.width} ${this.height}`;
+  }
+
   public getLeftTop(): React.CSSProperties {
     return {
       left: this.x,
