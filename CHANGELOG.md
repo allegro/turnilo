@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.4
+
+- Fix SVG sizing in IE Edge
+
 ## 0.8.3
 
 - Added search in Dimensions and Measures panels
