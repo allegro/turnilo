@@ -437,7 +437,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       className="measure-bar-chart"
       key={measureName}
     >
-      <svg width={chartStage.width} height={chartStage.height}>
+      <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
         {horizontalGridLines}
         <g className="bars" transform={barStage.getTransform()}>{bars}</g>
         <g className="bar-ghosts" transform={barStage.getTransform()}>{barGhosts}</g>

@@ -514,7 +514,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       onMouseMove={this.onMouseMove.bind(this, mySplitDataset, measure, scaleX)}
       onMouseLeave={this.onMouseLeave.bind(this, measure)}
     >
-      <svg width={chartStage.width} height={chartStage.height}>
+      <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
         {horizontalGridLines}
         <GridLines
           orientation="vertical"
