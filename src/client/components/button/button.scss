@@ -12,13 +12,13 @@
 
   &.mini {
     height: $input-height-mini;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
     min-width: 40px;
   }
 
   &.icon {
-    min-width: 25px;
+    min-width: 27px;
     padding: 2px 0;
 
     svg {

@@ -16,7 +16,7 @@ import { QueryError } from '../../components/query-error/query-error';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 
 const TEXT_SPACER = 36;
-const X_AXIS_HEIGHT = 80;
+const X_AXIS_HEIGHT = 84;
 const Y_AXIS_WIDTH = 60;
 const MIN_CHART_HEIGHT = 200;
 const MAX_STEP_WIDTH = 140; // Note that the step is bar + empty space around it. The width of the rectangle is step * BAR_PROPORTION
