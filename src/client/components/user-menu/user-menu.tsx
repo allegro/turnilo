@@ -39,7 +39,7 @@ export class UserMenu extends React.Component<UserMenuProps, UserMenuState> {
         >{user.name}</li>
         <li
           className="copy-static-url clipboard"
-          onClick={onClose as any}
+          onClick={onClose}
         >{STRINGS.logout}</li>
       </ul>
     </BubbleMenu>;

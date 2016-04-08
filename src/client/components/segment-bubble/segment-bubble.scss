@@ -1,53 +1,42 @@
 @import '../../imports';
 
-// These max width and height are arbitrary
-$segment-bubble-max-width: 30px;
-$segment-bubble-max-height: 10px;
 $shpitz-size: 7px;
 
 .segment-bubble {
+  @extend %menu-cont;
   position: absolute;
-  width: $segment-bubble-max-width;
-  height: $segment-bubble-max-height;
-  margin-left: -$segment-bubble-max-width / 2;
-  margin-top: -$segment-bubble-max-height - $shpitz-size;
+  background: rgba($white, 0.9);
+  padding: 8px;
+  text-align: center;
+  transform: translate(-50%, -100%);
+  max-width: 400px;
 
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-
-  .segment-bubble-inner {
-    @extend %menu-cont;
-    background: rgba($white, 0.9);
-    display: inline-block;
-    padding: 8px;
-    text-align: center;
-
-    .text {
-      display: inline-block;
-      white-space: nowrap;
-
-      .segment {
-        color: $text-lighterish;
-        display: block;
-        margin-bottom: 3px;
-      }
+  .text {
+    .segment {
+      color: $text-lighterish;
+      display: block;
+      padding-bottom: 3px;
+      overflow: hidden;
     }
 
-    .buttons {
+    .measure-value {
       white-space: nowrap;
+    }
+  }
 
-      &:nth-child(n+2) {
-        margin-top: 7px;
-      }
+  .buttons {
+    white-space: nowrap;
 
-      .button {
-        margin-right: 5px;
-      }
+    &:nth-child(n+2) {
+      margin-top: 7px;
+    }
 
-      .button:last-child {
-        margin-right: 0;
-      }
+    .button {
+      margin-right: 5px;
+    }
+
+    .button:last-child {
+      margin-right: 0;
     }
   }
 

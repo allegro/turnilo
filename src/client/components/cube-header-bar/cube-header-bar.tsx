@@ -187,7 +187,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     }
 
     return <header className="cube-header-bar">
-      <div className="left-bar" onClick={onNavClick as any}>
+      <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
           <SvgIcon svg={require('../../icons/menu.svg')}/>
         </div>

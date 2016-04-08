@@ -49,10 +49,11 @@ export const STRINGS = {
   select: 'Select',
   cancel: 'Cancel',
   close: 'Close',
-  queryError: 'Query Error',
-  autoUpdate: 'Auto Update',
+  queryError: 'Query error',
+  autoUpdate: 'Auto update',
   copyUrl: 'Copy URL',
   copySpecificUrl: 'Copy URL - fixed time',
   logout: 'Logout',
-  infoAndFeedback: 'Info & Feedback'
+  infoAndFeedback: 'Info & Feedback',
+  copyValue: 'Copy value'
 };

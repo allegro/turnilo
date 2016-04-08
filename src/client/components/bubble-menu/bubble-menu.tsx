@@ -3,7 +3,7 @@ require('./bubble-menu.css');
 import * as React from 'react';
 import { Fn } from "../../../common/utils/general/general";
 import { Stage } from '../../../common/models/index';
-import { isInside, escapeKey, uniqueId } from '../../utils/dom/dom';
+import { isInside, escapeKey, uniqueId, classNames } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
 
 const OFFSET_H = 10;
@@ -11,6 +11,7 @@ const OFFSET_V = -1;
 const SCREEN_OFFSET = 5;
 
 export type BubbleLayout = 'normal' | 'mini';
+export type Align = 'start' | 'center' | 'end';
 
 export interface BubbleMenuProps extends React.Props<any> {
   className: string;
@@ -23,6 +24,7 @@ export interface BubbleMenuProps extends React.Props<any> {
   onClose: Fn;
   inside?: Element;
   layout?: BubbleLayout;
+  align?: Align;
 }
 
 export interface BubbleMenuState {
@@ -32,6 +34,9 @@ export interface BubbleMenuState {
 }
 
 export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState> {
+  static defaultProps = {
+    align: 'center'
+  };
 
   constructor() {
     super();
@@ -43,7 +48,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   componentWillMount() {
-    var { openOn, direction, id } = this.props;
+    var { openOn, direction, align, id } = this.props;
     var rect = openOn.getBoundingClientRect();
 
     var x: number;
@@ -55,7 +60,13 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
         break;
 
       case 'down':
-        x = rect.left + rect.width / 2;
+        if (align === 'center') {
+          x = rect.left + rect.width / 2;
+        } else if (align === 'start') {
+          x = rect.left;
+        } else { // align === 'end'
+          x = rect.left + rect.width;
+        }
         y = rect.top + rect.height - OFFSET_V;
         break;
 
@@ -99,7 +110,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   render(): any {
-    var { className, direction, stage, fixedSize, containerStage, inside, layout, children } = this.props;
+    var { className, direction, stage, fixedSize, containerStage, inside, layout, align, children } = this.props;
     var { id, x, y } = this.state;
 
     var menuWidth = stage.width;
@@ -138,7 +149,14 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
         break;
 
       case 'down':
-        var left = x - menuWidth / 2;
+        var left: number;
+        if (align === 'center') {
+          left = x - menuWidth / 2;
+        } else if (align === 'start') {
+          left = x;
+        } else { // align === 'end'
+          left = x - menuWidth;
+        }
         // constrain
         left = Math.min(Math.max(left, containerStage.x), containerStage.x + containerStage.width - menuWidth);
         menuLeft = left;
@@ -157,13 +175,16 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
       if (!insideId) throw new Error('inside element must have id');
     }
 
-    var myClasses = ['bubble-menu', direction];
-    if (className) myClasses.push(className);
-    if (layout === 'mini') myClasses.push('mini');
+    var shpitzElement: JSX.Element = null;
+    if (align === 'center') {
+      shpitzElement = <div className="shpitz" style={shpitzStyle}></div>;
+    }
+
+    var myClass = classNames('bubble-menu', direction, className, { mini: layout === 'mini' });
     return <BodyPortal left={menuLeft} top={menuTop}>
-      <div className={myClasses.join(' ')} id={id} data-parent={insideId} style={menuStyle}>
+      <div className={myClass} id={id} data-parent={insideId} style={menuStyle}>
         {children}
-        <div className="shpitz" style={shpitzStyle}></div>
+        {shpitzElement}
       </div>
     </BodyPortal>;
   }

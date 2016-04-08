@@ -32,7 +32,7 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
     }
 
     return <header className="home-header-bar">
-      <div className="left-bar" onClick={onNavClick as any}>
+      <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
           <SvgIcon svg={require('../../icons/menu.svg')}/>
         </div>

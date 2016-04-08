@@ -34,14 +34,14 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
     }
 
     return <header className="link-header-bar">
-      <div className="left-bar" onClick={onNavClick as any}>
+      <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
           <SvgIcon svg={require('../../icons/menu.svg')}/>
         </div>
         <div className="title">{title}</div>
       </div>
       <div className="right-bar">
-        <div className="text-button" onClick={onExploreClick as any}>Explore</div>
+        <div className="text-button" onClick={onExploreClick}>Explore</div>
         <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
           <SvgIcon className="help-icon" svg={require('../../icons/help.svg')}/>
         </a>

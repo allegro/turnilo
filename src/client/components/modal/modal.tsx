@@ -77,7 +77,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     if (typeof title === 'string') {
       titleElement = <div className="modal-title">
         <div className="text">{title}</div>
-        <div className="close" onClick={onClose as any}>
+        <div className="close" onClick={onClose}>
           <SvgIcon svg={require('../../icons/full-remove.svg')}/>
         </div>
       </div>;
