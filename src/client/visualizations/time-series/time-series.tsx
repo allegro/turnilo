@@ -596,7 +596,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           scaleX={scaleX}
           dragStart={dragStart}
           duration={timeBucketAction.duration}
-          timezone={timeBucketAction.timezone}
           onClose={this.onHighlightEnd.bind(this)}
         />;
       }

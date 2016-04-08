@@ -92,7 +92,10 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       }
 
       if (!split.sortAction) {
-        split = split.changeSortAction(dataSource.getDefaultSortAction());
+        split = split.changeSortAction(new SortAction({
+          expression: $(SEGMENT),
+          direction: 'ascending'
+        }));
         autoChanged = true;
       } else if (split.sortAction.refName() === TIME_SEGMENT) {
         split = split.changeSortAction(new SortAction({

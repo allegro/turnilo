@@ -21,7 +21,6 @@ describe('Highlighter', () => {
         highlightId={null}
         onClose={null}
         scaleX={null}
-        timezone={null}
       />
     );
 

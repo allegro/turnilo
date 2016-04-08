@@ -56,6 +56,8 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
   }
 
   onMore(e: MouseEvent) {
+    const { moreMenuOpenOn } = this.state;
+    if (moreMenuOpenOn) return this.closeMoreMenu();
     this.setState({
       moreMenuOpenOn: e.target as any
     });
@@ -105,6 +107,7 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
 
   render() {
     const { hideText, datum, measure, getY, left, top, clicker } = this.props;
+    const { moreMenuOpenOn } = this.state;
 
     var textElement: JSX.Element;
     if (!hideText && datum) {
@@ -137,6 +140,7 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
           className="mini"
           onClick={this.onMore.bind(this)}
           svg={require('../../icons/full-more-mini.svg')}
+          active={Boolean(moreMenuOpenOn)}
         />
       </div>;
     }

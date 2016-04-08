@@ -12,6 +12,7 @@ export interface ButtonProps extends React.Props<any> {
   className?: string;
   title?: string;
   svg?: string;
+  active?: boolean;
   onClick?: Fn;
 }
 
@@ -26,7 +27,7 @@ export class Button extends React.Component<ButtonProps, ButtonState> {
   }
 
   render() {
-    const { title, type, className, svg, onClick } = this.props;
+    const { title, type, className, svg, active, onClick } = this.props;
 
     var icon: JSX.Element = null;
     if (svg) {
@@ -34,7 +35,7 @@ export class Button extends React.Component<ButtonProps, ButtonState> {
     }
 
     return <button
-      className={classNames('button', type, className, { icon })}
+      className={classNames('button', type, className, { icon, active })}
       onClick={onClick}
     >
       {icon}
