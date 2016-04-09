@@ -82,7 +82,7 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
     const { moreMenuOpenOn } = this.state;
     if (!moreMenuOpenOn) return null;
 
-    var menuSize = Stage.fromSize(200, 200);
+    var menuSize = Stage.fromSize(160, 160);
     var label = this.getLabel();
 
     return <BubbleMenu
