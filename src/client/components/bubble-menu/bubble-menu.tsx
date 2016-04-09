@@ -7,7 +7,7 @@ import { isInside, escapeKey, uniqueId, classNames } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
 
 const OFFSET_H = 10;
-const OFFSET_V = -1;
+const OFFSET_V = 0;
 const SCREEN_OFFSET = 5;
 
 export type BubbleLayout = 'normal' | 'mini';

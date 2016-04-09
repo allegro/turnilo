@@ -1,7 +1,7 @@
 @import '../../imports';
 
 $shpitz-size: 12px;
-$shpitz-clip-size: 60px;
+$shpitz-clip-size: 40px;
 
 .bubble-menu {
   @extend %menu-cont;
@@ -24,7 +24,7 @@ $shpitz-clip-size: 60px;
       position: absolute;
       width: $shpitz-size;
       height: $shpitz-size;
-      transform: rotate(45deg);
+      transform: translate(-50%, -50%) rotate(45deg);
       background: $white;
       box-shadow: 0 0 4px 0 rgba($black, 0.35);
     }
@@ -35,10 +35,8 @@ $shpitz-clip-size: 60px;
     margin-left: $shpitz-clip-size * -0.5;
 
     &:after {
-      top: 0;
+      bottom: 100%;
       left: 50%;
-      margin-left: $shpitz-size * -0.5;
-      margin-top: $shpitz-size * -0.5;
     }
   }
 
@@ -47,10 +45,8 @@ $shpitz-clip-size: 60px;
     margin-left: $shpitz-clip-size * -0.5;
 
     &:after {
-      bottom: 0;
+      top: 100%;
       left: 50%;
-      margin-left: $shpitz-size * -0.5;
-      margin-bottom: $shpitz-size * -0.5;
     }
   }
 
@@ -59,10 +55,8 @@ $shpitz-clip-size: 60px;
     margin-top: $shpitz-clip-size * -0.5;
 
     &:after {
-      left: 0;
+      right: 100%;
       top: 50%;
-      margin-top: $shpitz-size * -0.5;
-      margin-left: $shpitz-size * -0.5;
     }
   }
 
@@ -71,10 +65,8 @@ $shpitz-clip-size: 60px;
     margin-top: $shpitz-clip-size * -0.5;
 
     &:after {
-      right: 0;
+      left: 100%;
       top: 50%;
-      margin-top: $shpitz-size * -0.5;
-      margin-right: $shpitz-size * -0.5;
     }
   }
 
