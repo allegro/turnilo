@@ -10,7 +10,6 @@ export const CORE_ITEM_GAP = 8;
 export const BAR_TITLE_WIDTH = 66;
 
 export const PIN_TITLE_HEIGHT = 36;
-export const SEARCH_BOX_HEIGHT = 30;
 export const PIN_ITEM_HEIGHT = 25;
 export const PIN_PADDING_BOTTOM = 12;
 export const VIS_H_PADDING = 10;
