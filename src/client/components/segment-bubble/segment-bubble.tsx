@@ -4,8 +4,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Timezone } from 'chronoshift';
 import { $, PlywoodValue, Datum, TimeRange } from 'plywood';
-import { Fn, hasOwnProperty} from "../../../common/utils/general/general";
-import { Stage, Clicker, Measure } from '../../../common/models/index';
+import { Fn, hasOwnProperty } from "../../../common/utils/general/general";
+import { Stage, Clicker, Measure, Essence } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { clamp } from "../../utils/dom/dom";
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
@@ -28,6 +28,7 @@ export interface SegmentBubbleProps extends React.Props<any> {
   getY?: (d: Datum) => number;
   clicker?: Clicker;
   onClose?: Fn;
+  openRawDataModal?: Fn;
 
   urls?: string[];
 }
@@ -101,6 +102,11 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
     return Boolean(urls[index]);
   }
 
+  openRawDataModal(): void {
+    const { openRawDataModal } = this.props;
+    this.closeMoreMenu();
+    openRawDataModal();
+  }
 
   renderMoreMenu() {
     const { moreMenuOpenOn } = this.state;
@@ -127,6 +133,15 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
         </li>
       );
     }
+
+    bubbleListItems.push(
+      <li
+        className="view-raw-data"
+        data-clipboard-text={label}
+        onClick={this.openRawDataModal.bind(this)}
+      >{STRINGS.viewRawData}</li>
+    );
+
     return <BubbleMenu
       className="more-menu"
       direction="down"

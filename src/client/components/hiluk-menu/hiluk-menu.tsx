@@ -1,9 +1,11 @@
 require('./hiluk-menu.css');
 
 import * as React from 'react';
+import { Dataset } from 'plywood';
 import { Fn } from "../../../common/utils/general/general";
 import { Stage, Clicker, Essence, ExternalView } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
+import { download } from "../../utils/download/download";
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 
@@ -12,7 +14,9 @@ export interface HilukMenuProps extends React.Props<any> {
   openOn: Element;
   onClose: Fn;
   getUrlPrefix: () => string;
+  openRawDataModal: Fn;
   externalViews?: ExternalView[];
+  getVisualizationDataset?: () => Dataset;
 }
 
 export interface HilukMenuState {
@@ -44,8 +48,23 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     });
   }
 
+  openRawDataModal() {
+    const { openRawDataModal, onClose } = this.props;
+    openRawDataModal();
+    onClose();
+  }
+
+  onExport() {
+    const { onClose, getVisualizationDataset } = this.props;
+    if (!getVisualizationDataset) return;
+    var dataset = getVisualizationDataset();
+    if (!dataset) return;
+    download(dataset, 'export-todo', 'csv');
+    onClose();
+  }
+
   render() {
-    const { openOn, onClose, externalViews, essence } = this.props;
+    const { openOn, onClose, externalViews, essence, getVisualizationDataset } = this.props;
     const { url, specificUrl } = this.state;
 
     var shareOptions: JSX.Element[] = [
@@ -64,6 +83,20 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
         data-clipboard-text={specificUrl}
         onClick={onClose}
       >{STRINGS.copySpecificUrl}</li>);
+    }
+
+    shareOptions.push(<li
+      className="view-raw-data"
+      key="view-raw-data"
+      onClick={this.openRawDataModal.bind(this)}
+    >{STRINGS.viewRawData}</li>);
+
+    if (getVisualizationDataset) {
+      shareOptions.push(<li
+        className="export"
+        key="export"
+        onClick={this.onExport.bind(this)}
+      >{STRINGS.exportToCSV}</li>);
     }
 
     if (externalViews) {

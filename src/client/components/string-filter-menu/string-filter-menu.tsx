@@ -264,17 +264,9 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       });
     }
 
-    var loader: JSX.Element = null;
     var message: JSX.Element = null;
-    if (loading) {
-      loader = <Loader/>;
-    } else if (dataset && !fetchQueued && searchText && !rows.length) {
+    if (!loading && dataset && !fetchQueued && searchText && !rows.length) {
       message = <div className="message">{'No results for "' + searchText + '"'}</div>;
-    }
-
-    var queryError: JSX.Element = null;
-    if (error) {
-      queryError = <QueryError error={error}/>;
     }
 
     var className = [
@@ -295,8 +287,8 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         {rows}
         {message}
       </div>
-      {queryError}
-      {loader}
+      {error ? <QueryError error={error}/> : null}
+      {loading ? <Loader/> : null}
     </div>;
   }
 

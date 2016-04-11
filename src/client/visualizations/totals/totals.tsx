@@ -122,16 +122,6 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       </div>;
     });
 
-    var loader: JSX.Element = null;
-    if (loading) {
-      loader = <Loader/>;
-    }
-
-    var queryError: JSX.Element = null;
-    if (error) {
-      queryError = <QueryError error={error}/>;
-    }
-
     var totalContainerStyle: React.CSSProperties = null;
     if (!single) {
       var numColumns = Math.min(totals.size, Math.max(1, Math.floor((stage.width - 2 * PADDING_H) / TOTAL_WIDTH)));
@@ -145,8 +135,8 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
 
     return <div className="totals">
       <div className="total-container" style={totalContainerStyle}>{totals}</div>
-      {queryError}
-      {loader}
+      {error ? <QueryError error={error}/> : null}
+      {loading ? <Loader/> : null}
     </div>;
   }
 }

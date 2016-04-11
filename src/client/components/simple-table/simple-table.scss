@@ -1,0 +1,46 @@
+@import '../../imports';
+
+.simple-table {
+  @include pin-full;
+
+  .pre-body {
+    @include pin-full;
+  }
+
+  .header-cont {
+    @include pin-full;
+    height: $table-header-height;
+    overflow: hidden;
+
+    .header {
+      height: $table-header-height;
+      border-bottom: 1px solid $border-extra-light;
+      white-space: nowrap;
+    }
+  }
+
+  .body-cont {
+    @include unpin-top($table-header-height);
+    overflow: hidden;
+
+    .row {
+      position: absolute;
+      height: $row-height;
+      border-bottom: 1px solid $border-extra-light;
+      left: 0;
+      white-space: nowrap;
+      width: 100%;
+    }
+  }
+
+  .horizontal-scroll-shadow {
+    position: absolute;
+    top: 0;
+    height: $table-header-height;
+    box-shadow: 0 4px 4px -3px hsla(0, 0, 0, 0.2);
+  }
+
+  .post-body {
+    @include pin-full;
+  }
+}

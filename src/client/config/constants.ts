@@ -50,11 +50,15 @@ export const STRINGS = {
   close: 'Close',
   queryError: 'Query error',
   autoUpdate: 'Auto update',
+  download: 'Download',
   copyUrl: 'Copy URL',
+  viewRawData: 'View raw data',
+  rawData: 'Raw Data',
   copySpecificUrl: 'Copy URL - fixed time',
   logout: 'Logout',
   infoAndFeedback: 'Info & Feedback',
   copyValue: 'Copy value',
   goToUrl: 'Go to URL',
-  openIn: 'Open in'
+  openIn: 'Open in',
+  exportToCSV: 'Export to CSV'
 };

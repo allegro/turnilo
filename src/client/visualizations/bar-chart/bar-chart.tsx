@@ -270,7 +270,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
   }
 
   renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, getX: any, scaleX: any, xTicks: any[]): JSX.Element {
-    const { essence, clicker } = this.props;
+    const { essence, clicker, openRawDataModal } = this.props;
     const { scrollTop, hoverValue, hoverDatums, hoverMeasure } = this.state;
     const { timezone, splits } = essence;
 
@@ -419,6 +419,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
             top={containerStage.y + topOffset}
             left={leftOffset}
             clicker={clicker}
+            openRawDataModal={openRawDataModal}
 
             urls={urls}
           />;

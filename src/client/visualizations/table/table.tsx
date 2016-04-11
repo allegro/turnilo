@@ -11,6 +11,8 @@ import { SPLIT, SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
+import { Scroller } from '../../components/scroller/scroller';
+import { SimpleTable, InlineStyle } from '../../components/simple-table/simple-table';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
@@ -21,7 +23,6 @@ const MEASURE_WIDTH = 100;
 const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
-
 const ROW_PADDING_RIGHT = 50;
 const BODY_PADDING_BOTTOM = 90;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
@@ -323,7 +324,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   }
 
   render() {
-    var { clicker, essence, stage } = this.props;
+    var { clicker, essence, stage, openRawDataModal } = this.props;
     var { loading, error, flatData, scrollLeft, scrollTop, hoverMeasure, hoverRow } = this.state;
     var { splits } = essence;
 
@@ -370,8 +371,8 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         highlightDelta = essence.highlight.delta;
       }
 
-      const skipNumber = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT));
-      const lastElementToShow = Math.min(flatData.length, Math.ceil((scrollTop + stage.height) / ROW_HEIGHT));
+      const skipNumber = SimpleTable.getFirstElementToShow(ROW_HEIGHT, scrollTop);
+      const lastElementToShow = SimpleTable.getLastElementToShow(ROW_HEIGHT, flatData.length, scrollTop, stage.height);
 
       var rowY = skipNumber * ROW_HEIGHT;
       for (var i = skipNumber; i < lastElementToShow; i++) {
@@ -402,7 +403,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
           return <div className="measure" key={measure.name}>{measureValueStr}</div>;
         });
 
-        var rowStyle = { top: rowY };
+        var rowStyle = SimpleTable.getRowStyle(rowY);
         rows.push(<div
           className={'row nest' + nest + ' ' + selectedClass + hoverClass}
           key={'_' + i}
@@ -429,8 +430,8 @@ export class Table extends React.Component<VisualizationProps, TableState> {
             clicker={clicker}
             left={stage.x + stage.width / 2}
             top={stage.y + HEADER_HEIGHT + rowY - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
-
             urls={dimensionUrls}
+            openRawDataModal={openRawDataModal}
           />;
         }
 
@@ -449,33 +450,15 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       );
     }
 
-    const headerStyle = {
-      width: rowWidthExtended,
-      left: -scrollLeft
-    };
-
     const segmentsStyle = {
       top: -scrollTop
     };
 
     const bodyHeight = flatData ? flatData.length * ROW_HEIGHT : 0;
-    const bodyStyle = {
-      left: -scrollLeft,
-      top: -scrollTop,
-      width: rowWidthExtended,
-      height: bodyHeight
-    };
 
     const highlightStyle = {
       top: -scrollTop
     };
-
-    var horizontalScrollShadowStyle: any = { display: 'none' };
-    if (scrollTop) {
-      horizontalScrollShadowStyle = {
-        width: SEGMENT_WIDTH + rowWidthExtended - scrollLeft
-      };
-    }
 
     var verticalScrollShadowStyle: any = { display: 'none' };
     if (scrollLeft) {
@@ -497,37 +480,44 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       queryError = <QueryError error={error}/>;
     }
 
+    const preRows = <div className="segments-cont">
+      <div className="segments" style={segmentsStyle}>{segments}</div>
+    </div>;
+    // added extra wrapping div for pin full and single parent
+    const postRows = <div className="post-body">
+      <div className="highlight-cont">
+        <div className="highlight" style={highlightStyle}>{highlighter}</div>
+      </div>
+      <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
+      {queryError}
+      {loader}
+    </div>;
+
     return <div className="table">
       <div className="corner">
         <div className="corner-wrap">{segmentTitle}</div>
         {cornerSortArrow}
       </div>
-      <div className="header-cont">
-        <div className="header" style={headerStyle}>{headerColumns}</div>
-      </div>
-      <div className="segments-cont">
-        <div className="segments" style={segmentsStyle}>{segments}</div>
-      </div>
-      <div className="body-cont">
-        <div className="body" style={bodyStyle}>{rows}</div>
-      </div>
-      <div className="highlight-cont">
-        <div className="highlight" style={highlightStyle}>{highlighter}</div>
-      </div>
-      <div className="horizontal-scroll-shadow" style={horizontalScrollShadowStyle}></div>
-      <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
-      {queryError}
-      {loader}
-      <div
-        className="scroller-cont"
+      <SimpleTable
+        scrollLeft={scrollLeft}
+        scrollTop={scrollTop}
+        rowHeight={ROW_HEIGHT}
+        dataLength={flatData ? flatData.length : 0}
+        headerColumns={headerColumns}
+        rowWidth={rowWidthExtended}
+        preRows={preRows}
+        rows={rows}
+        rowLeftOffset={SEGMENT_WIDTH}
+        postRows={postRows}
+      />
+      <Scroller
+        style={scrollerStyle}
         ref="base"
         onScroll={this.onScroll.bind(this)}
         onMouseLeave={this.onMouseLeave.bind(this)}
         onMouseMove={this.onMouseMove.bind(this)}
         onClick={this.onClick.bind(this)}
-      >
-        <div className="scroller" style={scrollerStyle}></div>
-      </div>
+      />;
       {highlightBubble}
     </div>;
   }

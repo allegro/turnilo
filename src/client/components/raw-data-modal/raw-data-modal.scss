@@ -1,0 +1,102 @@
+@import '../../imports';
+
+.raw-data-modal {
+
+  .content {
+    @include unpin-top($modal-header-height + $control-height);
+    left: $modal-window-padding;
+    right: $modal-window-padding;
+    overflow: hidden;
+
+    .filters {
+      @include pin-full;
+      height: $control-height;
+
+      .filter {
+        font-size: 13px;
+        text-transform: uppercase;
+        color: $text-light;
+        height: $control-height;
+        display: inline;
+      }
+
+      .filter + .filter:before {
+        content: '; ';
+      }
+    }
+
+    .table-container {
+      position: absolute;
+      top: $control-height + 10;
+      bottom: $control-height + $modal-window-padding + $padding;
+      left: 0;
+      right: 0;
+
+      .simple-table {
+        bottom: 2px;
+
+        .header-cont {
+          .header {
+            background: $background-lightest;
+
+            .table-header {
+              border-right: 1px solid $border-extra-light;
+              padding-right: $padding;
+            }
+          }
+        }
+
+        .header-cell,
+        .cell {
+          white-space: nowrap;
+          padding-left: 6px;
+          display: inline-block;
+          height: 100%;
+
+          &.number {
+            text-align: right;
+          }
+
+          &.unsplitable {
+            background: $background-lightest;
+          }
+        }
+
+        .header-cell {
+          padding-top: 12px;
+
+          .title-wrap {
+            @include ellipsis;
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        .cell {
+          border-right: 1px solid $border-extra-light;
+          padding-right: $padding;
+          overflow: hidden;
+          padding-top: 8px;
+        }
+      }
+    }
+
+    .loader,
+    .query-error {
+      @include pin-full;
+    }
+
+    .button-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: $modal-window-padding;
+
+      .close {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+

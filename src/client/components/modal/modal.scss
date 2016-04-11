@@ -16,11 +16,11 @@
   .modal-window {
     @extend %modal-cont;
     width: 420px;
-    padding: 18px;
+    padding: $modal-window-padding;
     background: $white;
 
     .modal-title {
-      line-height: 30px;
+      line-height: $modal-header-height;
       font-size: 17px;
       margin-bottom: 16px;
 
@@ -45,6 +45,14 @@
           fill: #bbb;
         }
       }
+    }
+  }
+
+  &.raw-data-modal {
+    .modal-window {
+      width: 70%;
+      height: 85%;
+      min-height: 200px;
     }
   }
 }

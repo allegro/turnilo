@@ -105,7 +105,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
 
     qualifiedClassName = classNames(qualifiedClassName, (showSearch ? 'has-search' : 'no-search'));
 
-    return <div className={qualifiedClassName} style={style} >
+    return <div className={qualifiedClassName} style={style}>
       { header }
       { searchBar }
       { children }

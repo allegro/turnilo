@@ -7,22 +7,24 @@ import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { HilukMenu } from './hiluk-menu';
+import { SimpleTable } from './simple-table';
 
-describe('HilukMenu', () => {
+describe('SimpleTable', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <HilukMenu
-        essence={null}
-        onClose={null}
-        openOn={null}
-        getUrlPrefix={null}
-        openRawDataModal={null}
+      <SimpleTable
+        scrollLeft={2}
+        scrollTop={3}
+        headerColumns={null}
+        rows={null}
+        rowWidth={100}
+        dataLength={30}
+        rowHeight={30}
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('hiluk-menu');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('simple-table');
   });
 
 });
