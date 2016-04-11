@@ -10,10 +10,11 @@ import { STRINGS } from '../../config/constants';
 import { clamp } from "../../utils/dom/dom";
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { BodyPortal } from '../body-portal/body-portal';
+import { Shpitz } from '../shpitz/shpitz';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Button } from '../button/button';
 
-const SHPITZ_SIZE = 7;
+const OFFSET_V = -10;
 const PER_LETTER_PIXELS = 5;
 
 export interface SegmentBubbleProps extends React.Props<any> {
@@ -145,11 +146,11 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
       </div>;
     }
 
-    return <BodyPortal left={left} top={top - SHPITZ_SIZE} disablePointerEvents={!clicker}>
+    return <BodyPortal left={left} top={top + OFFSET_V} disablePointerEvents={!clicker}>
       <div className="segment-bubble" ref="bubble">
         {textElement}
         {buttons}
-        <div className="shpitz"></div>
+        <Shpitz direction="up"/>
         {this.renderMoreMenu()}
       </div>
     </BodyPortal>;

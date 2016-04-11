@@ -1,8 +1,5 @@
 @import '../../imports';
 
-$shpitz-size: 12px;
-$shpitz-clip-size: 40px;
-
 .bubble-menu {
   @extend %menu-cont;
   position: absolute;
@@ -10,64 +7,6 @@ $shpitz-clip-size: 40px;
 
   &.mini {
     padding: $padding-mini;
-  }
-
-  .shpitz {
-    position: absolute;
-    width: $shpitz-clip-size;
-    height: $shpitz-clip-size;
-    overflow: hidden;
-    pointer-events: none;
-
-    &:after {
-      content: '';
-      position: absolute;
-      width: $shpitz-size;
-      height: $shpitz-size;
-      transform: translate(-50%, -50%) rotate(45deg);
-      background: $white;
-      box-shadow: 0 0 4px 0 rgba($black, 0.35);
-    }
-  }
-
-  &.up .shpitz {
-    margin-bottom: $shpitz-clip-size * -1;
-    margin-left: $shpitz-clip-size * -0.5;
-
-    &:after {
-      bottom: 100%;
-      left: 50%;
-    }
-  }
-
-  &.down .shpitz {
-    margin-top: $shpitz-clip-size * -1;
-    margin-left: $shpitz-clip-size * -0.5;
-
-    &:after {
-      top: 100%;
-      left: 50%;
-    }
-  }
-
-  &.left .shpitz {
-    margin-right: $shpitz-clip-size * -1;
-    margin-top: $shpitz-clip-size * -0.5;
-
-    &:after {
-      right: 100%;
-      top: 50%;
-    }
-  }
-
-  &.right .shpitz {
-    margin-left: $shpitz-clip-size * -1;
-    margin-top: $shpitz-clip-size * -0.5;
-
-    &:after {
-      left: 100%;
-      top: 50%;
-    }
   }
 
   .menu-header {

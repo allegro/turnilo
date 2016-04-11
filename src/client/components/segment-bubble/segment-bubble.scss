@@ -1,7 +1,5 @@
 @import '../../imports';
 
-$shpitz-size: 7px;
-
 .segment-bubble {
   @extend %menu-cont;
   position: absolute;
@@ -41,24 +39,7 @@ $shpitz-size: 7px;
   }
 
   .shpitz {
-    position: absolute;
     left: 50%;
-    margin-left: -$shpitz-size;
-
-    &:before,
-    &:after {
-      content: '';
-      position: absolute;
-    }
-
-    &:before {
-      @include triangle(down, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.15));
-      bottom: -1 * $shpitz-size - 8;
-    }
-
-    &:after {
-      @include triangle(down, $shpitz-size, $shpitz-size, $white);
-      bottom: -1 * $shpitz-size + 1 - 8;
-    }
+    top: 100%;
   }
 }

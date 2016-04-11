@@ -5,6 +5,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { Stage } from '../../../common/models/index';
 import { isInside, escapeKey, uniqueId, classNames } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
+import { Shpitz } from '../shpitz/shpitz';
 
 const OFFSET_H = 10;
 const OFFSET_V = 0;
@@ -177,7 +178,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
     var shpitzElement: JSX.Element = null;
     if (align === 'center') {
-      shpitzElement = <div className="shpitz" style={shpitzStyle}></div>;
+      shpitzElement = <Shpitz style={shpitzStyle} direction={direction}/>;
     }
 
     var myClass = classNames('bubble-menu', direction, className, { mini: layout === 'mini' });

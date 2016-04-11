@@ -776,8 +776,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public toggleEffectiveMeasure(measure: Measure): Essence {
-    const { multiMeasureMode } = this;
-    if (multiMeasureMode) {
+    if (this.getEffectiveMultiMeasureMode()) {
       return this.toggleSelectedMeasure(measure);
     } else {
       return this.changeSingleMeasure(measure);
