@@ -8,9 +8,11 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 export type ButtonType = "primary" | "secondary";
 
 export interface ButtonProps extends React.Props<any> {
-  title: string;
   type: ButtonType;
   className?: string;
+  title?: string;
+  svg?: string;
+  active?: boolean;
   onClick?: Fn;
 }
 
@@ -25,11 +27,19 @@ export class Button extends React.Component<ButtonProps, ButtonState> {
   }
 
   render() {
-    const { title, type, className, onClick } = this.props;
+    const { title, type, className, svg, active, onClick } = this.props;
+
+    var icon: JSX.Element = null;
+    if (svg) {
+      icon = <SvgIcon svg={svg}/>;
+    }
 
     return <button
-      className={classNames('button', type, className)}
+      className={classNames('button', type, className, { icon, active })}
       onClick={onClick}
-    >{title}</button>;
+    >
+      {icon}
+      {title}
+    </button>;
   }
 }

@@ -101,12 +101,11 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
 
     if (!essence.isFixedMeasureMode()) {
       icons.push({
-          name: 'multi',
-          onClick: clicker.toggleMultiMeasureMode,
-          svg: require('../../icons/full-multi.svg'),
-          active: multiMeasureMode
-        }
-      );
+        name: 'multi',
+        onClick: clicker.toggleMultiMeasureMode,
+        svg: require('../../icons/full-multi.svg'),
+        active: multiMeasureMode
+      });
     }
 
     icons.push({

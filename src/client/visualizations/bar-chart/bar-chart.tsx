@@ -16,7 +16,7 @@ import { QueryError } from '../../components/query-error/query-error';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 
 const TEXT_SPACER = 36;
-const X_AXIS_HEIGHT = 80;
+const X_AXIS_HEIGHT = 84;
 const Y_AXIS_WIDTH = 60;
 const MIN_CHART_HEIGHT = 200;
 const MAX_STEP_WIDTH = 140; // Note that the step is bar + empty space around it. The width of the rectangle is step * BAR_PROPORTION
@@ -92,7 +92,10 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       }
 
       if (!split.sortAction) {
-        split = split.changeSortAction(dataSource.getDefaultSortAction());
+        split = split.changeSortAction(new SortAction({
+          expression: $(SEGMENT),
+          direction: 'ascending'
+        }));
         autoChanged = true;
       } else if (split.sortAction.refName() === TIME_SEGMENT) {
         split = split.changeSortAction(new SortAction({

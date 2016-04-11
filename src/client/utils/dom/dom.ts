@@ -95,6 +95,10 @@ export function roundToHalfPx(n: number): number {
   return Math.round(n - 0.5) + 0.5;
 }
 
+export function clamp(n: number, min: number, max: number): number {
+  return Math.min(Math.max(n, min), max);
+}
+
 export function classNames(...args: Array<string | Lookup<any>>): string {
   var classes: string[] = [];
 

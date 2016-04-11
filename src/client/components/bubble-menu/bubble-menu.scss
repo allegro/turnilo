@@ -1,7 +1,5 @@
 @import '../../imports';
 
-$shpitz-size: 10px;
-
 .bubble-menu {
   @extend %menu-cont;
   position: absolute;
@@ -9,45 +7,6 @@ $shpitz-size: 10px;
 
   &.mini {
     padding: $padding-mini;
-  }
-
-  .shpitz {
-    position: absolute;
-    pointer-events: none;
-
-    &:before,
-    &:after {
-      content: '';
-      position: absolute;
-    }
-  }
-
-  &.right .shpitz {
-    &:before {
-      @include triangle(left, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.12));
-      left: -1 * $shpitz-size;
-      margin-top: -1 * $shpitz-size;
-    }
-
-    &:after {
-      @include triangle(left, $shpitz-size, $shpitz-size, $white);
-      left: -1 * $shpitz-size + 1;
-      margin-top: -1 * $shpitz-size;
-    }
-  }
-
-  &.down .shpitz {
-    &:before {
-      @include triangle(up, $shpitz-size, $shpitz-size, hsla(0, 0, 0, 0.12));
-      top: -1 * $shpitz-size;
-      margin-left: -1 * $shpitz-size;
-    }
-
-    &:after {
-      @include triangle(up, $shpitz-size, $shpitz-size, $white);
-      top: -1 * $shpitz-size + 1;
-      margin-left: -1 * $shpitz-size;
-    }
   }
 
   .menu-header {

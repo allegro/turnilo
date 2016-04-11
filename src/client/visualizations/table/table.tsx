@@ -357,6 +357,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var rows: JSX.Element[] = [];
     var highlighter: JSX.Element = null;
     var highlighterStyle: any = null;
+    var highlightBubble: JSX.Element = null;
     if (flatData) {
       var formatters = measuresArray.map(measure => {
         var measureName = measure.name;
@@ -414,6 +415,16 @@ export class Table extends React.Component<VisualizationProps, TableState> {
             left
           };
           highlighter = <div className='highlighter' key='highlight' style={highlighterStyle}></div>;
+
+          highlightBubble = <SegmentBubble
+            hideText={true}
+            datum={d}
+            getValue={(d) => d[SEGMENT]}
+            timezone={essence.timezone}
+            clicker={clicker}
+            left={stage.x + stage.width / 2}
+            top={stage.y + HEADER_HEIGHT + rowY - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
+          />;
         }
 
         rowY += ROW_HEIGHT;
@@ -468,15 +479,6 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       width: SPACE_LEFT + SEGMENT_WIDTH + rowWidth + SPACE_RIGHT,
       height: HEADER_HEIGHT + bodyHeight + BODY_PADDING_BOTTOM
     };
-
-    var highlightBubble: JSX.Element = null;
-    if (highlighter) {
-      highlightBubble = <SegmentBubble
-        clicker={clicker}
-        left={stage.x + stage.width / 2}
-        top={stage.y + HEADER_HEIGHT + highlighterStyle.top - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
-      />;
-    }
 
     var loader: JSX.Element = null;
     if (loading) {

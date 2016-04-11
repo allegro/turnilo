@@ -9,7 +9,7 @@ import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Color
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
-const PADDING_H = 100;
+const PADDING_H = 60;
 const TOTAL_WIDTH = 176;
 
 export interface TotalsState {

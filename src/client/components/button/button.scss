@@ -2,10 +2,27 @@
 
 .button {
   &.primary {
+    // ToDo: make everything that is a button a button and inline these
     @extend %button-primary;
   }
 
   &.secondary {
     @extend %button-secondary;
+  }
+
+  &.mini {
+    height: $input-height-mini;
+    padding-left: 10px;
+    padding-right: 10px;
+    min-width: 40px;
+  }
+
+  &.icon {
+    min-width: 27px;
+    padding: 2px 0;
+
+    svg {
+      height: 19px;
+    }
   }
 }

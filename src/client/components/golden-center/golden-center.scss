@@ -1,0 +1,7 @@
+@import '../../imports';
+
+.golden-center {
+  & > div {
+    margin: auto;
+  }
+}

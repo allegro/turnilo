@@ -16,7 +16,6 @@ export interface HighlighterProps extends React.Props<any> {
   scaleX: any;
   dragStart: number;
   duration: Duration;
-  timezone: Timezone;
   onClose: Fn;
 }
 
@@ -84,8 +83,10 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
   }
 
   globalMouseUpListener(e: MouseEvent) {
-    var { clicker, essence, highlightId, duration, timezone, onClose } = this.props;
+    var { clicker, essence, highlightId, duration, onClose } = this.props;
     var { dragStartPx, pseudoHighlight } = this.state;
+    var { timezone } = essence;
+
     if (dragStartPx === null) return;
     if (!pseudoHighlight) { // There was no mouse move so just quietly cancel out
       clicker.dropHighlight();

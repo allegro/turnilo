@@ -10,17 +10,13 @@
     overflow: scroll;
   }
 
-  .wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+  .golden-center {
+    width: 100%;
     min-height: 100%;
-    padding: 60px 0 60px 0;
   }
 
   .home {
     @extend %menu-cont;
-    display: inline-block;
     width: 460px;
 
     .items {

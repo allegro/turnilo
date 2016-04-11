@@ -1,13 +1,11 @@
 require('./modal.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { Fn } from "../../../common/utils/general/general";
 import { isInside, escapeKey, uniqueId, classNames } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
 import { SvgIcon } from '../svg-icon/svg-icon';
-
-const TOP_RATIO = 0.618 / 1.618;
+import { GoldenCenter } from '../golden-center/golden-center';
 
 export interface ModalProps extends React.Props<any> {
   className?: string;
@@ -19,7 +17,6 @@ export interface ModalProps extends React.Props<any> {
 
 export interface ModalState {
   id?: string;
-  windowTop?: number;
 }
 
 export class Modal extends React.Component<ModalProps, ModalState> {
@@ -27,10 +24,8 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   constructor() {
     super();
     this.state = {
-      id: null,
-      windowTop: 0
+      id: null
     };
-    this.globalResizeListener = this.globalResizeListener.bind(this);
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
@@ -46,14 +41,11 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   componentDidMount() {
     window.addEventListener('mousedown', this.globalMouseDownListener);
     window.addEventListener('keydown', this.globalKeyDownListener);
-    window.addEventListener('resize', this.globalResizeListener);
-    this.globalResizeListener();
   }
 
   componentWillUnmount() {
     window.removeEventListener('mousedown', this.globalMouseDownListener);
     window.removeEventListener('keydown', this.globalKeyDownListener);
-    window.removeEventListener('resize', this.globalResizeListener);
   }
 
   globalMouseDownListener(e: MouseEvent) {
@@ -77,35 +69,29 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     onClose();
   }
 
-  globalResizeListener() {
-    var modalRect = ReactDOM.findDOMNode(this.refs['modal']).getBoundingClientRect();
-    var windowRect = ReactDOM.findDOMNode(this.refs['window']).getBoundingClientRect();
-
-    var windowTop = (modalRect.height - windowRect.height) * TOP_RATIO;
-    this.setState({ windowTop });
-  }
-
   render() {
     var { className, title, children, onClose } = this.props;
-    var { id, windowTop } = this.state;
+    var { id } = this.state;
 
     var titleElement: JSX.Element = null;
     if (typeof title === 'string') {
       titleElement = <div className="modal-title">
         <div className="text">{title}</div>
-        <div className="close" onClick={onClose as any}>
+        <div className="close" onClick={onClose}>
           <SvgIcon svg={require('../../icons/full-remove.svg')}/>
         </div>
       </div>;
     }
 
     return <BodyPortal fullSize={true}>
-      <div className={classNames('modal', className)} ref="modal">
+      <div className={classNames('modal', className)}>
         <div className="backdrop"></div>
-        <div className="modal-window" id={id} ref="window" style={{ top: windowTop }}>
-          {titleElement}
-          {children}
-        </div>
+        <GoldenCenter>
+          <div className="modal-window" id={id}>
+            {titleElement}
+            {children}
+          </div>
+        </GoldenCenter>
       </div>
     </BodyPortal>;
   }

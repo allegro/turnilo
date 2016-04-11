@@ -1,0 +1,66 @@
+@import '../../imports';
+
+$shpitz-size: 12px;
+$shpitz-clip-size: 40px;
+
+.shpitz {
+  position: absolute;
+  width: $shpitz-clip-size;
+  height: $shpitz-clip-size;
+  overflow: hidden;
+  pointer-events: none;
+
+  .rectangle {
+    position: absolute;
+
+    &:after {
+      content: '';
+      position: absolute;
+      width: $shpitz-size;
+      height: $shpitz-size;
+      transform: translate(-50%, -50%) rotate(45deg);
+      background: $white;
+      box-shadow: 0 0 4px 0 rgba($black, 0.35);
+    }
+  }
+
+  &.up {
+    margin-bottom: $shpitz-clip-size * -1;
+    margin-left: $shpitz-clip-size * -0.5;
+
+    .rectangle {
+      bottom: 100%;
+      left: 50%;
+    }
+  }
+
+  &.down {
+    margin-top: $shpitz-clip-size * -1;
+    margin-left: $shpitz-clip-size * -0.5;
+
+    .rectangle {
+      top: 100%;
+      left: 50%;
+    }
+  }
+
+  &.left {
+    margin-right: $shpitz-clip-size * -1;
+    margin-top: $shpitz-clip-size * -0.5;
+
+    .rectangle {
+      right: 100%;
+      top: 50%;
+    }
+  }
+
+  &.right {
+    margin-left: $shpitz-clip-size * -1;
+    margin-top: $shpitz-clip-size * -0.5;
+
+    .rectangle {
+      left: 100%;
+      top: 50%;
+    }
+  }
+}

@@ -4,28 +4,21 @@ import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
-
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { Highlighter } from './highlighter';
+import { GoldenCenter } from './golden-center';
 
-describe('Highlighter', () => {
+describe('GoldenCenter', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <Highlighter
-        clicker={null}
-        dragStart={null}
-        duration={null}
-        essence={null}
-        highlightId={null}
-        onClose={null}
-        scaleX={null}
+      <GoldenCenter
+
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('highlighter');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('golden-center');
   });
 
 });
