@@ -2,9 +2,12 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.6
+
+- New plywood
+
 ## 0.8.5
 
-- Create basic initial loader
 - Bubble refactor
 - Copy selected value option in bubbles
 - Fix bug in selecting measures in totals

@@ -133,6 +133,7 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Copy value to clipboard
 - Bar chart
 - Auto refresh
 - Sharing menu for static and relative time frames

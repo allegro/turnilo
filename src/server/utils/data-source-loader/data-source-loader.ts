@@ -39,7 +39,6 @@ export function dataSourceLoaderFactory(druidRequester: Requester.PlywoodRequest
         return getFileData(filePath)
           .then((rawData) => {
             var dataset = Dataset.fromJS(rawData).hide();
-            dataset.introspect();
 
             if (dataSource.subsetFilter) {
               dataset = dataset.filter(dataSource.subsetFilter.getFn(), {});

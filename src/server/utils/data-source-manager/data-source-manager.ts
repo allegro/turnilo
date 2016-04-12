@@ -79,7 +79,7 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
 
   // Updates the correct datasource (by name) in myDataSources
   function addOrUpdateDataSource(dataSource: DataSource): void {
-    myDataSources = helper.overrideByName(myDataSources, [dataSource]);
+    myDataSources = helper.overrideByName(myDataSources, dataSource);
   }
 
   function loadAndIntrospectDataSource(dataSource: DataSource): Q.Promise<DataSource> {
