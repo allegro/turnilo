@@ -55,11 +55,6 @@
         @extend %module;
         @include pin-full;
         border-radius: $corner;
-
-        .time-series,
-        .table {
-          @include pin-full;
-        }
       }
 
       .manual-fallback {

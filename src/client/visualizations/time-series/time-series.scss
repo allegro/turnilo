@@ -1,6 +1,7 @@
 @import '../../imports';
 
 .time-series {
+  @include pin-full;
   display: inline-block;
   overflow: hidden;
 

@@ -3,6 +3,7 @@ import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, isInstanceOf, immutableEqual } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, ApplyAction, SortAction, Set } from 'plywood';
+import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
 import { FilterClause } from '../filter-clause/filter-clause';
@@ -192,6 +193,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var splits = Splits.fromJS(parameters.splits || [], dataSource).constrainToDimensions(dataSource.dimensions);
 
     var defaultSortMeasureName = dataSource.defaultSortMeasure;
+
+    var multiMeasureMode = hasOwnProperty(parameters, 'multiMeasureMode') ? parameters.multiMeasureMode : !hasOwnProperty(parameters, 'singleMeasure');
     var singleMeasure = dataSource.getMeasure(parameters.singleMeasure) ? parameters.singleMeasure : defaultSortMeasureName;
 
     var selectedMeasures = constrainMeasures(OrderedSet(parameters.selectedMeasures || []), dataSource);
@@ -221,7 +224,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       timezone,
       filter,
       splits,
-      multiMeasureMode: parameters.multiMeasureMode,
+      multiMeasureMode,
       singleMeasure,
       selectedMeasures,
       pinnedDimensions,

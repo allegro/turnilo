@@ -1,6 +1,8 @@
 @import '../../imports';
 
 .time-axis {
+  @include pin-full;
+
   line {
     pointer-events: none;
   }

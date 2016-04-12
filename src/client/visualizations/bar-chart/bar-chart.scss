@@ -1,6 +1,7 @@
 @import '../../imports';
 
 .bar-chart {
+  @include pin-full;
   overflow: hidden;
 
   .measure-bar-charts {

@@ -9,6 +9,7 @@ $space-left: 10px;
 $header-padding-top: 12px;
 
 .table {
+  @include pin-full;
   overflow: hidden;
 
   .sort-arrow {
