@@ -131,6 +131,7 @@ describe('Essence', () => {
           },
           "op": "chain"
         },
+        "multiMeasureMode": true,
         "pinnedDimensions": [],
         "singleMeasure": "count",
         "selectedMeasures": [],
@@ -154,6 +155,7 @@ describe('Essence', () => {
           "op": "literal",
           "value": true
         },
+        "multiMeasureMode": true,
         "pinnedDimensions": [],
         "singleMeasure": "count",
         "selectedMeasures": [
