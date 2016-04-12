@@ -453,8 +453,8 @@ describe('DataSource', () => {
           { name: '__time', type: 'TIME' },
           { name: 'page', type: 'STRING' },
           { name: 'added', type: 'NUMBER' },
-          { name: 'unique_user', special: 'unique', "type": "STRING" },
           { name: 'deleted', type: 'NUMBER' },
+          { name: 'unique_user', special: 'unique', "type": "STRING" },
           { name: 'user', type: 'STRING' }
         ],
         "dimensions": [
