@@ -18,6 +18,7 @@ export interface DimensionValue {
   title?: string;
   expression?: Expression;
   kind?: string;
+  url?: string;
 }
 
 export interface DimensionJS {
@@ -25,6 +26,7 @@ export interface DimensionJS {
   title?: string;
   expression?: ExpressionJS | string;
   kind?: string;
+  url?: string;
 }
 
 var check: Class<DimensionValue, DimensionJS>;
@@ -58,6 +60,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public expression: Expression;
   public kind: string;
   public className: string;
+  public url: string;
 
   constructor(parameters: DimensionValue) {
     var name = parameters.name;
@@ -73,6 +76,12 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     } else {
       this.className = kind;
     }
+    if (parameters.url) {
+      if (typeof parameters.url !== 'string') {
+        throw new Error(`unsupported url: ${parameters.url}: only strings are supported`);
+      }
+      this.url = parameters.url;
+    }
   }
 
   public valueOf(): DimensionValue {
@@ -80,17 +89,20 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       name: this.name,
       title: this.title,
       expression: this.expression,
-      kind: this.kind
+      kind: this.kind,
+      url: this.url
     };
   }
 
   public toJS(): DimensionJS {
-    return {
+    var js: DimensionJS = {
       name: this.name,
       title: this.title,
       expression: this.expression.toJS(),
       kind: this.kind
     };
+    if (this.url) js.url = this.url;
+    return js;
   }
 
   public toJSON(): DimensionJS {
@@ -106,7 +118,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.name === other.name &&
       this.title === other.title &&
       this.expression.equals(other.expression) &&
-      this.kind === other.kind;
+      this.kind === other.kind &&
+      this.url === other.url;
   }
 }
 check = Dimension;
