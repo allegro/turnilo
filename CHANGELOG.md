@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.7
+
+- New plywood fixes startup [bug](https://github.com/implydata/pivot/issues/150).
+
 ## 0.8.8
 
 - Re-releasing
