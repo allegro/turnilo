@@ -2,6 +2,15 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.8
+
+- Re-releasing
+
+## 0.8.7
+
+- New plywood fixes `timeFloor`, allows select sorting
+- Fixed broken travis tests being merged in 
+
 ## 0.8.6
 
 - New plywood
