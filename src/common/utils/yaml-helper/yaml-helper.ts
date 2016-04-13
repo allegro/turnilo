@@ -191,6 +191,10 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
       "      # ^ (optional) the Plywood bucketing expression for this dimension. Defaults to '$name'",
       "      #   if, say, channel was called 'cnl' in the data you would put '$cnl' here",
       "      #   See also the expressions API reference: https://plywood.imply.io/expressions",
+      "      #",
+      "      # url: string",
+      "      # ^ (optional) a url (including protocol) associated with the dimension, with optional token '%s'",
+      "      #   that is replaced by the dimension value to generate links specific to each value.",
       ""
     );
   }

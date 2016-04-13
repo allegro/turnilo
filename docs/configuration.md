@@ -122,6 +122,11 @@ Changing this property will break any URLs that someone might have generated tha
 
 The title for this dimension in the UI. Can be anything and is safe to change at any time.
 
+**url** (string)
+
+A url associated with the dimension, with optional token '%s' that is replaced by the dimension value to generate 
+a link specific to each value.
+
 **expression** (plywood expression)
 
 The expression for this dimension. By default it is `$name` where *name* is the name of the dimension.
