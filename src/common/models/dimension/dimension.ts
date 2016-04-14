@@ -50,7 +50,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       name: parameters.name,
       title: parameters.title,
       expression: parameters.expression ? Expression.fromJSLoose(parameters.expression) : null,
-      kind: parameters.kind || typeToKind((parameters as any).type)
+      kind: parameters.kind || typeToKind((parameters as any).type),
+      url: parameters.url
     });
   }
 
