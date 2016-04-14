@@ -15,7 +15,8 @@ describe('Dimension', () => {
           'value': { 'setType': 'STRING', 'elements': ['en'] },
           'type': 'SET'
         },
-        kind: 'string'
+        kind: 'string',
+        url: 'https://www.country.com/%s'
       },
       {
         name: 'time',
@@ -25,7 +26,8 @@ describe('Dimension', () => {
           'value': { 'start': new Date('2013-02-26T19:00:00.000Z'), 'end': new Date('2013-02-26T22:00:00.000Z') },
           'type': 'TIME_RANGE'
         },
-        kind: 'time'
+        kind: 'time',
+        url: 'http://www.time.com/%s'
       }
     ]);
   });
