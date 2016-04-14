@@ -2,7 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
-## 0.8.7
+## 0.8.10
+
+- 'Goto Url' option added
+
+## 0.8.9
 
 - New plywood fixes startup [bug](https://github.com/implydata/pivot/issues/150).
 
