@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.11
+
+- New Plywood fixes introspection of [JS ingestion aggregates](https://groups.google.com/forum/#!topic/imply-user-group/lC68IA79hYg) 
+
 ## 0.8.10
 
 - 'Goto Url' option added
