@@ -8,6 +8,7 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 
 export interface NavLogoProps extends React.Props<any> {
   onClick?: React.MouseEventHandler;
+  customLogoSvg?: string;
 }
 
 export interface NavLogoState {
@@ -22,11 +23,12 @@ export class NavLogo extends React.Component<NavLogoProps, NavLogoState> {
   }
 
   render() {
-    const { onClick } = this.props;
+    const { onClick, customLogoSvg } = this.props;
+    const svg = customLogoSvg || require('../../icons/pivot-logo.svg');
 
     return <div className="nav-logo" onClick={onClick}>
       <div className="logo">
-        <SvgIcon svg={require('../../icons/pivot-logo.svg')}/>
+        <SvgIcon svg={svg}/>
       </div>
     </div>;
   }

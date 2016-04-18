@@ -1,7 +1,7 @@
 require('./home-view.css');
 
 import * as React from 'react';
-import { Stage, DataSource, User } from '../../../common/models/index';
+import { Stage, DataSource, User, Customization } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { HomeHeaderBar } from '../home-header-bar/home-header-bar';
 import { List } from 'immutable';
@@ -15,6 +15,7 @@ export interface HomeViewProps extends React.Props<any> {
   user?: User;
   onNavClick?: Fn;
   onOpenAbout: Fn;
+  customization?: Customization;
 }
 
 export interface HomeViewState {
@@ -23,7 +24,7 @@ export interface HomeViewState {
 export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
 
   render() {
-    const { user, dataSources, onNavClick, onOpenAbout } = this.props;
+    const { user, dataSources, onNavClick, onOpenAbout, customization } = this.props;
 
     var navLinks = dataSources.toArray().map(ds => {
       return {
@@ -43,6 +44,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
       <HomeHeaderBar
         user={user}
         onNavClick={onNavClick}
+        customization={customization}
       />
       <div className="container">
         <GoldenCenter>

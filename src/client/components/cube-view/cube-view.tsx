@@ -6,7 +6,7 @@ import { Expression } from 'plywood';
 import { Fn } from "../../../common/utils/general/general";
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
-  SplitCombine, Splits, VisStrategy, VisualizationProps, User} from '../../../common/models/index';
+  SplitCombine, Splits, VisStrategy, VisualizationProps, User, Customization} from '../../../common/models/index';
 
 import { CubeHeaderBar } from '../cube-header-bar/cube-header-bar';
 import { DimensionMeasurePanel } from '../dimension-measure-panel/dimension-measure-panel';
@@ -28,6 +28,7 @@ export interface CubeViewProps extends React.Props<any> {
   getUrlPrefix?: () => string;
   dataSource: DataSource;
   onNavClick?: Fn;
+  customization?: Customization;
 }
 
 export interface CubeViewState {
@@ -271,7 +272,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   render() {
     var clicker = this.clicker;
 
-    var { getUrlPrefix, onNavClick, user } = this.props;
+    var { getUrlPrefix, onNavClick, user, customization } = this.props;
     var { essence, menuStage, visualizationStage, dragOver } = this.state;
 
     if (!essence) return null;
@@ -310,6 +311,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         onNavClick={onNavClick}
         getUrlPrefix={getUrlPrefix}
         refreshMaxTime={this.refreshMaxTime.bind(this)}
+        customization={customization}
       />
       <div className="container" ref='container'>
         <DimensionMeasurePanel

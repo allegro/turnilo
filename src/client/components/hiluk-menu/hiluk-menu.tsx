@@ -2,7 +2,7 @@ require('./hiluk-menu.css');
 
 import * as React from 'react';
 import { Fn } from "../../../common/utils/general/general";
-import { Stage, Clicker, Essence } from '../../../common/models/index';
+import { Stage, Clicker, Essence, ExternalView } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
@@ -12,6 +12,7 @@ export interface HilukMenuProps extends React.Props<any> {
   openOn: Element;
   onClose: Fn;
   getUrlPrefix: () => string;
+  externalViews?: ExternalView[];
 }
 
 export interface HilukMenuState {
@@ -44,7 +45,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
   }
 
   render() {
-    const { openOn, onClose } = this.props;
+    const { openOn, onClose, externalViews, essence } = this.props;
     const { url, specificUrl } = this.state;
 
     var shareOptions: JSX.Element[] = [
@@ -63,6 +64,23 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
         data-clipboard-text={specificUrl}
         onClick={onClose}
       >{STRINGS.copySpecificUrl}</li>);
+    }
+
+    if (externalViews) {
+      externalViews.forEach((externalView: ExternalView, i: number) => {
+        const url = externalView.linkGeneratorFn(essence.dataSource, essence.timezone, essence.filter, essence.splits);
+        if (typeof url !== "string") return;
+        var title = `${STRINGS.openIn} ${externalView.title}`;
+        var target = externalView.sameWindow === false ? "_self" : "_blank";
+        shareOptions.push(<li key={`custom-url-${i}`}>
+          <a
+            href={url}
+            target={target}
+          >
+            {title}
+          </a>
+        </li>);
+      });
     }
 
     var stage = Stage.fromSize(200, 200);

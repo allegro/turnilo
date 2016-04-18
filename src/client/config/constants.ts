@@ -55,5 +55,6 @@ export const STRINGS = {
   logout: 'Logout',
   infoAndFeedback: 'Info & Feedback',
   copyValue: 'Copy value',
-  goToUrl: 'Go to URL'
+  goToUrl: 'Go to URL',
+  openIn: 'Open in'
 };

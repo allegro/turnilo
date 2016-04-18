@@ -326,3 +326,40 @@ Then in the measure definitions:
 
 Note that whichever method you chose you should not change the `name` attribute of your original measure as it will preserve the function of any bookmarks.
 
+### Customization
+
+Pivot supports defining external view links with access to dataSource, visualization, timezone, filter, and splits objects at link generation time.
+This is done by defining a function body in the configuration file.  
+For example:
+
+```yaml
+  customization:
+    externalViews:
+      - title: myTimezoneView
+        linkGenerator: "return 'http://www.worldtimezone.com/' + timezone"
+```
+
+By default, external views are opened in a new tab but you can disable this by setting `sameWindow: true`
+
+```yaml
+  customization:
+    externalViews:
+      - title: myTimezoneView
+        linkGenerator: "return 'http://www.worldtimezone.com/' + timezone"
+        sameWindow: true
+```
+
+You can also customize the header background color and logo icon by supplying a color string and svg string respectively.  
+
+```yaml
+  customization:
+    customLogoSvg: >
+      <svg width="300" height="200"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <rect width="100%" height="100%" fill="green" />
+      </svg>
+
+    headerBackground: #2D95CA
+```
+
