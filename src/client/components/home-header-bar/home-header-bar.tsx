@@ -2,12 +2,13 @@ require('./home-header-bar.css');
 
 import * as React from 'react';
 import { Fn } from "../../../common/utils/general/general";
-import { Stage, Clicker, User } from '../../../common/models/index';
+import { Stage, Clicker, User, Customization } from '../../../common/models/index';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
 export interface HomeHeaderBarProps extends React.Props<any> {
   user?: User;
   onNavClick: Fn;
+  customization?: Customization;
 }
 
 export interface HomeHeaderBarState {
@@ -17,7 +18,7 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
 
 
   render() {
-    var { user, onNavClick } = this.props;
+    var { user, onNavClick, customization } = this.props;
 
     // One day
     //<div className="icon-button" onClick={this.handleSettings.bind(this)}>
@@ -31,7 +32,14 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
       </div>;
     }
 
-    return <header className="home-header-bar">
+    var headerStyle: any = null;
+    if (customization && customization.headerBackground) {
+      headerStyle = {
+        background: customization.headerBackground
+      };
+    }
+
+    return <header className="home-header-bar" style={headerStyle}>
       <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
           <SvgIcon svg={require('../../icons/menu.svg')}/>

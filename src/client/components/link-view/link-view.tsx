@@ -6,7 +6,7 @@ import { Expression } from 'plywood';
 import { classNames } from "../../utils/dom/dom";
 import { Fn } from "../../../common/utils/general/general";
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
-  VisualizationProps, LinkViewConfig, LinkItem, User } from '../../../common/models/index';
+  VisualizationProps, LinkViewConfig, LinkItem, User, Customization } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 
 import { LinkHeaderBar } from '../link-header-bar/link-header-bar';
@@ -21,6 +21,7 @@ export interface LinkViewProps extends React.Props<any> {
   changeHash: (newHash: string, force?: boolean) => void;
   getUrlPrefix?: () => string;
   onNavClick?: Fn;
+  customization?: Customization;
 }
 
 export interface LinkViewState {
@@ -183,7 +184,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   render() {
     var clicker = this.clicker;
 
-    var { getUrlPrefix, onNavClick, linkViewConfig, user } = this.props;
+    var { getUrlPrefix, onNavClick, linkViewConfig, user, customization } = this.props;
     var { linkItem, essence, visualizationStage } = this.state;
 
     if (!linkItem) return null;
@@ -216,6 +217,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
         onNavClick={onNavClick}
         onExploreClick={this.goToCubeView.bind(this)}
         getUrlPrefix={getUrlPrefix}
+        customization={customization}
       />
       <div className="container" ref='container'>
         {this.renderLinkPanel()}

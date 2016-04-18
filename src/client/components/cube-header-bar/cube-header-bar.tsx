@@ -5,7 +5,7 @@ import { immutableEqual } from "immutable-class";
 import { Duration } from 'chronoshift';
 import { Fn } from "../../../common/utils/general/general";
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { Clicker, Essence, DataSource, User } from "../../../common/models/index";
+import { Clicker, Essence, DataSource, User, Customization, ExternalView } from "../../../common/models/index";
 
 import { HilukMenu } from '../hiluk-menu/hiluk-menu';
 import { AutoRefreshMenu } from '../auto-refresh-menu/auto-refresh-menu';
@@ -19,6 +19,7 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   onNavClick: Fn;
   getUrlPrefix?: () => string;
   refreshMaxTime?: Fn;
+  customization?: Customization;
 }
 
 export interface CubeHeaderBarState {
@@ -105,15 +106,21 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderHilukMenu() {
-    const { essence, getUrlPrefix } = this.props;
+    const { essence, getUrlPrefix, customization } = this.props;
     const { hilukMenuOpenOn } = this.state;
     if (!hilukMenuOpenOn) return null;
+
+    var externalViews: ExternalView[] = null;
+    if (customization && customization.externalViews) {
+      externalViews = customization.externalViews;
+    }
 
     return <HilukMenu
       essence={essence}
       openOn={hilukMenuOpenOn}
       onClose={this.onHilukMenuClose.bind(this)}
       getUrlPrefix={getUrlPrefix}
+      externalViews={externalViews}
     />;
   }
 
@@ -177,7 +184,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   render() {
-    var { user, onNavClick, essence } = this.props;
+    var { user, onNavClick, essence, customization } = this.props;
 
     var userButton: JSX.Element = null;
     if (user) {
@@ -186,7 +193,14 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       </div>;
     }
 
-    return <header className="cube-header-bar">
+    var headerStyle: React.CSSProperties = null;
+    if (customization && customization.headerBackground) {
+      headerStyle = {
+        background: customization.headerBackground
+      };
+    }
+
+    return <header className="cube-header-bar" style={headerStyle}>
       <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
           <SvgIcon svg={require('../../icons/menu.svg')}/>

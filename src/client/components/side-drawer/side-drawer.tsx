@@ -6,7 +6,7 @@ import { List } from 'immutable';
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from '../../config/constants';
 import { isInside, escapeKey } from '../../utils/dom/dom';
-import { DataSource } from '../../../common/models/index';
+import { DataSource, Customization } from '../../../common/models/index';
 import { NavLogo } from '../nav-logo/nav-logo';
 import { NavList } from '../nav-list/nav-list';
 
@@ -15,6 +15,7 @@ export interface SideDrawerProps extends React.Props<any> {
   dataSources: List<DataSource>;
   onOpenAbout: Fn;
   onClose: Fn;
+  customization?: Customization;
 }
 
 export interface SideDrawerState {
@@ -54,7 +55,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   render() {
-    var { onClose, selectedDataSource, dataSources, onOpenAbout } = this.props;
+    var { onClose, selectedDataSource, dataSources, onOpenAbout, customization } = this.props;
 
     var navLinks = dataSources.toArray().map(ds => {
       return {
@@ -73,8 +74,13 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       }
     }];
 
+    var customLogoSvg: string = null;
+    if (customization && customization.customLogoSvg) {
+      customLogoSvg = customization.customLogoSvg;
+    }
+
     return <div className="side-drawer">
-      <NavLogo onClick={onClose}/>
+      <NavLogo customLogoSvg={customLogoSvg} onClick={onClose}/>
       <NavList
         title="Data Cubes"
         selected={selectedDataSource ? selectedDataSource.name : null}

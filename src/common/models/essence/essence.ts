@@ -270,7 +270,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       pinnedSort,
       compare,
       highlight
-    } = parameters;
+      } = parameters;
 
     if (!dataSource) throw new Error('Essence must have a dataSource');
 

@@ -5,7 +5,7 @@ import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import * as Clipboard from 'clipboard';
 
 import { List } from 'immutable';
-import { DataSource, LinkViewConfig, LinkViewConfigJS, User } from "../../../common/models/index";
+import { DataSource, LinkViewConfig, LinkViewConfigJS, User, Customization} from "../../../common/models/index";
 
 import { AboutModal } from '../about-modal/about-modal';
 import { SideDrawer } from '../side-drawer/side-drawer';
@@ -22,6 +22,7 @@ export interface PivotApplicationProps extends React.Props<any> {
   user?: User;
   maxFilters?: number;
   maxSplits?: number;
+  customization?: Customization;
 }
 
 export interface PivotApplicationState {
@@ -240,9 +241,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   render() {
-    var { dataSources, maxFilters, maxSplits, user } = this.props;
+    var { dataSources, maxFilters, maxSplits, user, customization } = this.props;
     var { viewType, viewHash, selectedDataSource, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync, linkViewConfig } = this.state;
-
     var sideDrawer: JSX.Element = null;
     if (drawerOpen && SideDrawerAsync) {
       var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
@@ -252,6 +252,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         dataSources={dataSources}
         onOpenAbout={this.openAboutModal.bind(this)}
         onClose={closeSideDrawer}
+        customization={customization}
       />;
     }
 
@@ -275,6 +276,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           dataSources={dataSources}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           onOpenAbout={this.openAboutModal.bind(this)}
+          customization={customization}
         />;
         break;
 
@@ -288,6 +290,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           maxFilters={maxFilters}
           maxSplits={maxSplits}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
+          customization={customization}
         />;
         break;
 
@@ -300,6 +303,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           changeHash={this.changeHash.bind(this)}
           getUrlPrefix={this.getUrlPrefix.bind(this)}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
+          customization={customization}
         />;
         break;
 

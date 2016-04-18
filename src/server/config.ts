@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as Q from 'q';
 import * as nopt from 'nopt';
 import { DruidRequestDecorator } from 'plywood-druid-requester';
-import { DataSource, DataSourceJS, Dimension, Measure, LinkViewConfig, LinkViewConfigJS } from '../common/models/index';
+import { DataSource, DataSourceJS, Dimension, Measure, LinkViewConfig, LinkViewConfigJS, Customization } from '../common/models/index';
 import { dataSourceToYAML } from '../common/utils/yaml-helper/yaml-helper';
 import { DataSourceManager, dataSourceManagerFactory, loadFileSync, properDruidRequesterFactory, dataSourceLoaderFactory, SourceListScan } from './utils/index';
 
@@ -32,8 +32,7 @@ export interface PivotConfig {
   linkViewConfig?: LinkViewConfigJS;
   serverConfig?: ServerConfig;
 
-  hideGitHubIcon?: boolean;
-  headerBackground?: string;
+  customization?: Customization;
 }
 
 export interface RequestDecoratorFactoryOptions {
@@ -268,6 +267,8 @@ export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSo
 
 export const LINK_VIEW_CONFIG = config.linkViewConfig || null;
 export const SERVER_CONFIG = config.serverConfig || {};
+export const CUSTOMIZATION = config.customization ? Customization.fromJS(config.customization) : null;
+
 
 var druidRequester: Requester.PlywoodRequester<any> = null;
 if (DRUID_HOST) {

@@ -3,7 +3,7 @@ require('./pivot-entry.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { addErrorMonitor } from './utils/error-monitor/error-monitor';
-import { DataSourceJS } from '../common/models/index';
+import { DataSourceJS, CustomizationJS } from '../common/models/index';
 
 import { Loader } from './components/loader/loader';
 
@@ -36,6 +36,7 @@ if (config.dataSources.length) {
     var WallTime = require('chronoshift').WallTime;
     var queryUrlExecutorFactory = require('./utils/ajax/ajax').queryUrlExecutorFactory;
     var DataSource = require('../common/models/index').DataSource;
+    var Customization = require('../common/models/index').Customization;
     var PivotApplication = require('./components/pivot-application/pivot-application').PivotApplication;
 
     // Init chronoshift
@@ -56,7 +57,8 @@ if (config.dataSources.length) {
           version,
           user: config.user,
           dataSources,
-          linkViewConfig: config.linkViewConfig
+          linkViewConfig: config.linkViewConfig,
+          customization: Customization.fromJS(config.customization) || null
         }
       ),
       container

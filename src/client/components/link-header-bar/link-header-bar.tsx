@@ -3,7 +3,7 @@ require('./link-header-bar.css');
 import * as React from 'react';
 import { Fn } from "../../../common/utils/general/general";
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { User } from "../../../common/models/index";
+import { User, Customization } from "../../../common/models/index";
 
 export interface LinkHeaderBarProps extends React.Props<any> {
   title: string;
@@ -11,6 +11,7 @@ export interface LinkHeaderBarProps extends React.Props<any> {
   onNavClick: Fn;
   onExploreClick: Fn;
   getUrlPrefix?: () => string;
+  customization?: Customization;
 }
 
 export interface LinkHeaderBarState {
@@ -24,7 +25,7 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
   }
 
   render() {
-    var { title, user, onNavClick, onExploreClick } = this.props;
+    var { title, user, onNavClick, onExploreClick, customization } = this.props;
 
     var userButton: JSX.Element = null;
     if (user) {
@@ -33,7 +34,14 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
       </div>;
     }
 
-    return <header className="link-header-bar">
+    var headerStyle: any = null;
+    if (customization && customization.headerBackground) {
+      headerStyle = {
+        background: customization.headerBackground
+      };
+    }
+
+    return <header className="link-header-bar" style={headerStyle}>
       <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
           <SvgIcon svg={require('../../icons/menu.svg')}/>
