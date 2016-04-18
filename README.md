@@ -133,6 +133,7 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- New [customization options](https://github.com/implydata/pivot/blob/master/docs/configuration.md#customization)
 - Go to URL option
 - Copy value to clipboard
 - Bar chart
@@ -140,7 +141,6 @@ Running `gulp watch` will build the project and start all the automated watchers
 - Sharing menu for static and relative time frames
 - Quantile measures are now available. Try `$main.quantile($my_value_hist, 0.99)`
 - Added Home view
-- Configuration docs: https://github.com/implydata/pivot/blob/master/docs/configuration.md
 
 **We will be working on:**
 

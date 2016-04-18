@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.12
+
+- New [customization options](https://github.com/implydata/pivot/blob/master/docs/configuration.md#customization)
+- Updated favicon PNGs
+
 ## 0.8.11
 
 - New Plywood fixes introspection of [JS ingestion aggregates](https://groups.google.com/forum/#!topic/imply-user-group/lC68IA79hYg) 
