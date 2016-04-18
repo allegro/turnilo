@@ -71,7 +71,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
         const url = externalView.linkGeneratorFn(essence.dataSource, essence.timezone, essence.filter, essence.splits);
         if (typeof url !== "string") return;
         var title = `${STRINGS.openIn} ${externalView.title}`;
-        var target = externalView.sameWindow === false ? "_self" : "_blank";
+        var target = externalView.sameWindow ? "_self" : "_blank";
         shareOptions.push(<li key={`custom-url-${i}`}>
           <a
             href={url}

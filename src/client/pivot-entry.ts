@@ -58,7 +58,7 @@ if (config.dataSources.length) {
           user: config.user,
           dataSources,
           linkViewConfig: config.linkViewConfig,
-          customization: Customization.fromJS(config.customization) || null
+          customization: config.customization ? Customization.fromJS(config.customization) : null
         }
       ),
       container

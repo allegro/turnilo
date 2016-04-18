@@ -52,8 +52,8 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
       try {
         return linkGeneratorFnRaw(dataSource, timezone, filter, splits);
       } catch (e) {
-        console.warn(`Error with function '${linkGenerator}': ${e.message}`);
-        return null; // swallow the error lol
+        console.warn(`Error with custom link generating function '${title}': ${e.message} [${linkGenerator}]`);
+        return null;
       }
     };
     this.sameWindow = Boolean(parameters.sameWindow);

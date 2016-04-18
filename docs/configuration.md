@@ -328,15 +328,19 @@ Note that whichever method you chose you should not change the `name` attribute 
 
 ### Customization
 
-Pivot supports defining external view links with access to dataSource, visualization, timezone, filter, and splits objects at link generation time.
-This is done by defining a function body in the configuration file.  
+Pivot supports defining external view links with access to `dataSource`, `filter`, `splits`, and `timezone` objects at link generation time.
+This is done by defining a function body in the configuration file.
+
 For example:
 
 ```yaml
   customization:
-    externalViews:
-      - title: myTimezoneView
-        linkGenerator: "return 'http://www.worldtimezone.com/' + timezone"
+    externalViews:      
+      - title: Timezone Info      
+        linkGenerator:  >
+          {
+            return 'http://www.tickcounter.com/timezone/' + timezone.toString().toLowerCase().replace(/\//g, '-');
+          }
 ```
 
 By default, external views are opened in a new tab but you can disable this by setting `sameWindow: true`
@@ -344,12 +348,15 @@ By default, external views are opened in a new tab but you can disable this by s
 ```yaml
   customization:
     externalViews:
-      - title: myTimezoneView
-        linkGenerator: "return 'http://www.worldtimezone.com/' + timezone"
+      - title: Timezone Info      
         sameWindow: true
+        linkGenerator:  >
+          {
+            return 'http://www.tickcounter.com/timezone/' + timezone.toString().toLowerCase().replace(/\//g, '-');
+          }     
 ```
 
-You can also customize the header background color and logo icon by supplying a color string and svg string respectively.  
+You can also customize the header background color and logo icon by supplying a color string and SVG string respectively.  
 
 ```yaml
   customization:
