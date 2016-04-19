@@ -357,7 +357,7 @@ For example:
   customization:
     externalViews:      
       - title: Timezone Info      
-        linkGenerator:  >
+        linkGenerator: >
           {
             return 'http://www.tickcounter.com/timezone/' + timezone.toString().toLowerCase().replace(/\//g, '-');
           }
@@ -368,14 +368,3 @@ These custom links will appear in the share menu.
 ![custom-link](./images/custom-link.png)
 
 By default, external views are opened in a new tab but you can disable this by setting `sameWindow: true`
-
-```yaml
-  customization:
-    externalViews:
-      - title: Timezone Info      
-        sameWindow: true
-        linkGenerator:  >
-          {
-            return 'http://www.tickcounter.com/timezone/' + timezone.toString().toLowerCase().replace(/\//g, '-');
-          }     
-```
