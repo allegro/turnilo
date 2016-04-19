@@ -343,7 +343,7 @@ Can customize the header background color and logo icon by supplying a color str
         <rect width="100%" height="100%" fill="green" />
       </svg>
 
-    headerBackground: #2D95CA
+    headerBackground: '#2D95CA'
 ```
 
 ### External links
