@@ -92,12 +92,6 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
       >{STRINGS.copySpecificUrl}</li>);
     }
 
-    shareOptions.push(<li
-      className="view-raw-data"
-      key="view-raw-data"
-      onClick={this.openRawDataModal.bind(this)}
-    >{STRINGS.viewRawData}</li>);
-
     if (downloadableDataset) {
       shareOptions.push(<li
         className="export"
@@ -105,6 +99,12 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
         onClick={this.onExport.bind(this)}
       >{STRINGS.exportToCSV}</li>);
     }
+
+    shareOptions.push(<li
+      className="view-raw-data"
+      key="view-raw-data"
+      onClick={this.openRawDataModal.bind(this)}
+    >{STRINGS.viewRawData}</li>);
 
     if (externalViews) {
       externalViews.forEach((externalView: ExternalView, i: number) => {

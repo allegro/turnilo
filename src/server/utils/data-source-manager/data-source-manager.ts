@@ -1,6 +1,7 @@
 import * as Q from 'q';
 import { Duration, Timezone } from 'chronoshift';
 import { $, AttributeInfo, RefExpression, DruidExternal, helper } from 'plywood';
+import { makeUrlSafeName } from "../../../common/utils/general/general";
 import { DataSource, RefreshRule } from '../../../common/models/index';
 
 export type SourceListScan = "disable" | "auto";
@@ -11,7 +12,7 @@ export interface DataSourceLoader {
 
 export interface DataSourceManagerOptions {
   dataSources?: DataSource[];
-  dataSourceStubFactory?: (name: string) => DataSource;
+  dataSourceStubFactory?: (source: string) => DataSource;
   dataSourceLoader?: DataSourceLoader;
   druidRequester?: Requester.PlywoodRequester<any>;
 
@@ -55,11 +56,11 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
   }
 
   if (!dataSourceStubFactory) {
-    dataSourceStubFactory = (name: string) => {
+    dataSourceStubFactory = (source: string) => {
       return DataSource.fromJS({
-        name,
+        name: makeUrlSafeName(source),
         engine: 'druid',
-        source: name,
+        source: source,
         refreshRule: RefreshRule.query().toJS()
       });
     };
@@ -149,9 +150,9 @@ export function dataSourceManagerFactory(options: DataSourceManagerOptions): Dat
           }
         });
 
-        nonQueryableDataSources = nonQueryableDataSources.concat(unknownDataSourceNames.map((name) => {
-          var newDataSource = dataSourceStubFactory(name);
-          log(`Adding Druid data source: '${name}'`);
+        nonQueryableDataSources = nonQueryableDataSources.concat(unknownDataSourceNames.map((source) => {
+          var newDataSource = dataSourceStubFactory(source);
+          log(`Adding Druid data source: '${source}'`);
           addOrUpdateDataSource(newDataSource);
           return newDataSource;
         }));

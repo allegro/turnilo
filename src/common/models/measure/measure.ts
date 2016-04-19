@@ -1,8 +1,8 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
-import { $, Expression, ExpressionJS, Action, ApplyAction, AttributeInfo, ChainExpression, helper } from 'plywood';
-import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
+import { $, Expression, ExpressionJS, Datum, ApplyAction, AttributeInfo, ChainExpression, helper } from 'plywood';
+import { verifyUrlSafeName, makeTitle, makeUrlSafeName } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
   return (n: number) => {
@@ -89,18 +89,18 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
       if (special === 'unique') {
         return [
           new Measure({
-            name,
+            name: makeUrlSafeName(name),
             expression: $main.countDistinct(ref)
           })
         ];
       } else if (special === 'histogram') {
         return [
           new Measure({
-            name: name + '_p95',
+            name: makeUrlSafeName(name + '_p95'),
             expression: $main.quantile(ref, 0.95)
           }),
           new Measure({
-            name: name + '_p99',
+            name: makeUrlSafeName(name + '_p99'),
             expression: $main.quantile(ref, 0.99)
           })
         ];
@@ -123,7 +123,10 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
       }
     }
 
-    return [new Measure({ name, expression })];
+    return [new Measure({
+      name: makeUrlSafeName(name),
+      expression
+    })];
   }
 
   static fromJS(parameters: MeasureJS): Measure {
@@ -200,6 +203,10 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
       name: name,
       expression: expression
     });
+  }
+
+  public formatDatum(datum: Datum): string {
+    return this.formatFn(datum[this.name] as number);
   }
 }
 check = Measure;

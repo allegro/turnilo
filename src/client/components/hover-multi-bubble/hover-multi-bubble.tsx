@@ -1,21 +1,27 @@
 require('./hover-multi-bubble.css');
 
 import * as React from 'react';
-import { $, Datum, TimeRange } from 'plywood';
-import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-import { SEGMENT, TIME_SEGMENT } from '../../config/constants';
-import { formatTimeRange, DisplayYear } from '../../utils/date/date';
+import { Fn } from "../../../common/utils/general/general";
+import { Stage, Clicker, Dimension } from '../../../common/models/index';
 import { BodyPortal } from '../body-portal/body-portal';
+import { SegmentActionButtons } from '../segment-action-buttons/segment-action-buttons';
 
 const LEFT_OFFSET = 22;
 
+export interface ColorEntry {
+  color: string;
+  segmentLabel: string;
+  measureLabel: string;
+}
+
 export interface HoverMultiBubbleProps extends React.Props<any> {
-  essence: Essence;
-  datums: Datum[];
-  measure: Measure;
-  getY: (d: Datum) => number;
   left: number;
   top: number;
+  dimension?: Dimension;
+  segmentLabel?: string;
+  colorEntries?: ColorEntry[];
+  clicker?: Clicker;
+  onClose?: Fn;
 }
 
 export interface HoverMultiBubbleState {
@@ -30,33 +36,31 @@ export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, Hov
 
   }
 
-  render() {
-    const { essence, datums, measure, getY, left, top } = this.props;
-    const { colors } = essence;
+  renderColorSwabs(): JSX.Element {
+    const { colorEntries } = this.props;
+    if (!colorEntries || !colorEntries.length) return null;
 
-    var existingDatum = datums.filter(Boolean)[0];
-
-    if (!datums || !existingDatum || !colors) return null;
-
-    var colorValues = colors.getColors(datums.map(datum => datum ? datum[SEGMENT] : '!___DUMMY___!'));
-
-    var colorSwabs = datums.map((datum, i) => {
-      if (!datum) return null;
-      var segmentValue = datum[SEGMENT];
-      var segmentValueString = String(segmentValue);
-      var segmentMeasure = getY(datum);
-      var swabStyle = { background: colorValues[i] };
-      return <div className="color" key={segmentValueString}>
+    var colorSwabs = colorEntries.map((colorEntry) => {
+      const { color, segmentLabel, measureLabel } = colorEntry;
+      var swabStyle = { background: color };
+      return <div className="color" key={segmentLabel}>
         <div className="color-swab" style={swabStyle}></div>
-        <div className="color-name">{segmentValueString}</div>
-        <div className="color-value">{measure.formatFn(segmentMeasure)}</div>
+        <div className="color-name">{segmentLabel}</div>
+        <div className="color-value">{measureLabel}</div>
       </div>;
     });
 
-    return <BodyPortal left={left + LEFT_OFFSET} top={top} disablePointerEvents={true}>
+    return <div className="colors">{colorSwabs}</div>;
+  }
+
+  render() {
+    const { left, top, dimension, segmentLabel, clicker, onClose } = this.props;
+
+    return <BodyPortal left={left + LEFT_OFFSET} top={top} disablePointerEvents={!clicker}>
       <div className="hover-multi-bubble">
-        <div className="bucket">{formatTimeRange(existingDatum[TIME_SEGMENT] as TimeRange, essence.timezone, DisplayYear.NEVER)}</div>
-        <div className="colors">{colorSwabs}</div>
+        <div className="bucket">{segmentLabel}</div>
+        {this.renderColorSwabs()}
+        {clicker ? <SegmentActionButtons clicker={clicker} dimension={dimension} segmentLabel={segmentLabel} disableMoreMenu={true} onClose={onClose}/> : null}
       </div>
     </BodyPortal>;
   }

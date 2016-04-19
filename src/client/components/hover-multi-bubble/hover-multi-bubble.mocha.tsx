@@ -13,12 +13,10 @@ describe('HoverMultiBubble', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <HoverMultiBubble
-        datums={null}
-        essence={null}
-        getY={null}
         left={null}
-        measure={null}
         top={null}
+        segmentLabel={null}
+        colorEntries={null}
       />
     );
 

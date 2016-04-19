@@ -770,8 +770,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           if (this.getDimensionByExpression(expression)) continue;
           // Add to the start
           dimensions = dimensions.unshift(new Dimension({
-            name,
-            kind: 'time'
+            name: makeUrlSafeName(name),
+            kind: 'time',
+            expression
           }));
           break;
 
@@ -789,7 +790,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
             expression = $(name);
             if (this.getDimensionByExpression(expression)) continue;
             dimensions = dimensions.push(new Dimension({
-              name
+              name: makeUrlSafeName(name),
+              expression
             }));
           }
           break;
@@ -799,7 +801,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           expression = $(name);
           if (this.getDimensionByExpression(expression)) continue;
           dimensions = dimensions.push(new Dimension({
-            name
+            name: makeUrlSafeName(name),
+            expression
           }));
           break;
 
@@ -808,8 +811,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           expression = $(name);
           if (this.getDimensionByExpression(expression)) continue;
           dimensions = dimensions.push(new Dimension({
-            name,
-            kind: 'boolean'
+            name: makeUrlSafeName(name),
+            kind: 'boolean',
+            expression
           }));
           break;
 

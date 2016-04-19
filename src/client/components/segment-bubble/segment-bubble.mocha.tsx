@@ -13,12 +13,7 @@ describe('SegmentBubble', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <SegmentBubble
-        datum={null}
-        timezone={null}
-        getValue={null}
-        getY={null}
         left={null}
-        measure={null}
         top={null}
       />
     );

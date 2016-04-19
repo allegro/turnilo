@@ -26,6 +26,7 @@
           <option name="SPACE_AFTER_TYPE_COLON" value="true" />
           <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />
           <option name="SPACES_WITHIN_OBJECT_LITERAL_BRACES" value="true" />
+          <option name="SPACES_WITHIN_IMPORTS" value="true" />
         </TypeScriptCodeStyleSettings>
         <XML>
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />

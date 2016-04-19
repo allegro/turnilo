@@ -4,10 +4,11 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
-import { $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeBucketAction, SortAction, ChainExpression } from 'plywood';
-import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, DataSource, VisualizationProps, Resolve, Colors } from "../../../common/models/index";
+import { r, $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction } from 'plywood';
+import { Stage, Essence, Splits, SplitCombine, Filter, FilterClause, Measure, DataSource, VisualizationProps, Resolve, Colors } from "../../../common/models/index";
 import { SPLIT, SEGMENT, TIME_SEGMENT, TIME_SORT_ACTION, VIS_H_PADDING } from '../../config/constants';
-import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
+import { getXFromEvent, escapeKey } from '../../utils/dom/dom';
+import { formatTimeRange, DisplayYear } from '../../utils/date/date';
 import { VisMeasureLabel } from '../../components/vis-measure-label/vis-measure-label';
 import { ChartLine } from '../../components/chart-line/chart-line';
 import { TimeAxis } from '../../components/time-axis/time-axis';
@@ -17,13 +18,14 @@ import { Highlighter } from '../../components/highlighter/highlighter';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
-import { HoverMultiBubble } from '../../components/hover-multi-bubble/hover-multi-bubble';
+import { HoverMultiBubble, ColorEntry } from '../../components/hover-multi-bubble/hover-multi-bubble';
 
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
 const Y_AXIS_WIDTH = 60;
 const MIN_CHART_HEIGHT = 140;
-const HOVER_BUBBLE_V_OFFSET = 7;
+const HOVER_BUBBLE_V_OFFSET = -7;
+const HOVER_MULTI_BUBBLE_V_OFFSET = -8;
 const MAX_HOVER_DIST = 50;
 const MAX_ASPECT_RATIO = 1; // width / height
 
@@ -49,16 +51,26 @@ function findClosest(data: Datum[], dragDate: Date, scaleX: (t: Date) => number)
   return closestDatum;
 }
 
+function findInDataset(dataset: Dataset, attribute: string, value: TimeRange): Datum {
+  return dataset.data.filter(d => value.equals(d[attribute] as TimeRange))[0] || null;
+}
+
 export interface TimeSeriesState {
   loading?: boolean;
   dataset?: Dataset;
   error?: any;
-  dragStart?: number;
+  dragStartTime?: Date;
+  dragTimeRange?: TimeRange;
+  roundDragTimeRange?: TimeRange;
+  dragOnMeasure?: Measure;
   scrollLeft?: number;
   scrollTop?: number;
   hoverTimeRange?: TimeRange;
-  hoverDatums?: Datum[];
   hoverMeasure?: Measure;
+
+  // Cached properer
+  axisTimeRange?: TimeRange;
+  scaleX?: any;
 }
 
 export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesState> {
@@ -198,14 +210,18 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     this.state = {
       loading: false,
       dataset: null,
-      dragStart: null,
+      dragStartTime: null,
+      dragTimeRange: null,
       error: null,
       scrollLeft: 0,
       scrollTop: 0,
       hoverTimeRange: null,
-      hoverDatums: null,
       hoverMeasure: null
     };
+
+    this.globalMouseMoveListener = this.globalMouseMoveListener.bind(this);
+    this.globalMouseUpListener = this.globalMouseUpListener.bind(this);
+    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   fetchData(essence: Essence): void {
@@ -293,13 +309,22 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       );
   }
 
+  componentWillMount() {
+    this.updateCached(this.props);
+  }
+
   componentDidMount() {
     this.mounted = true;
     var { essence } = this.props;
     this.fetchData(essence);
+
+    window.addEventListener('keydown', this.globalKeyDownListener);
+    window.addEventListener('mousemove', this.globalMouseMoveListener);
+    window.addEventListener('mouseup', this.globalMouseUpListener);
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
+    this.updateCached(nextProps);
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
@@ -315,6 +340,10 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   componentWillUnmount() {
     this.mounted = false;
+
+    window.removeEventListener('keydown', this.globalKeyDownListener);
+    window.removeEventListener('mousemove', this.globalMouseMoveListener);
+    window.removeEventListener('mouseup', this.globalMouseUpListener);
   }
 
   onScroll(e: UIEvent) {
@@ -325,11 +354,22 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     });
   }
 
-  onMouseDown(e: MouseEvent) {
+  getMyEventX(e: MouseEvent): number {
     var myDOM = ReactDOM.findDOMNode(this);
     var rect = myDOM.getBoundingClientRect();
-    var dragStart = getXFromEvent(e) - (rect.left + VIS_H_PADDING);
-    this.setState({ dragStart });
+    return getXFromEvent(e) - (rect.left + VIS_H_PADDING);
+  }
+
+  onMouseDown(measure: Measure, e: MouseEvent) {
+    const { scaleX } = this.state;
+    if (!scaleX) return;
+
+    var dragStartTime = scaleX.invert(this.getMyEventX(e));
+    this.setState({
+      dragStartTime,
+      dragTimeRange: null,
+      dragOnMeasure: measure
+    });
   }
 
   onMouseMove(dataset: Dataset, measure: Measure, scaleX: any, e: MouseEvent) {
@@ -343,32 +383,19 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var rect = myDOM.getBoundingClientRect();
     var dragDate = scaleX.invert(getXFromEvent(e) - (rect.left + VIS_H_PADDING));
 
-    var thisHoverTimeRange: TimeRange = null;
-    var thisHoverDatums: Datum[] = [];
+    var closestDatum: Datum;
     if (splitLength > 1) {
       var flatData = dataset.flatten();
-      var closest = findClosest(flatData, dragDate, scaleX);
-
-      if (closest) {
-        thisHoverTimeRange = closest[TIME_SEGMENT] as TimeRange;
-        var preFilter = flatData.filter(d => thisHoverTimeRange.equals(d[TIME_SEGMENT]));
-        thisHoverDatums = dataset.data.map((myDatum: Datum) => {
-          var seg = myDatum[SEGMENT];
-          return preFilter.filter(d => d[SEGMENT] === seg)[0] || null;
-        });
-      }
+      closestDatum = findClosest(flatData, dragDate, scaleX);
     } else {
-      var closestDatum = findClosest(dataset.data, dragDate, scaleX);
-      if (closestDatum) {
-        thisHoverTimeRange = closestDatum[TIME_SEGMENT] as TimeRange;
-        thisHoverDatums.push(closestDatum);
-      }
+      closestDatum = findClosest(dataset.data, dragDate, scaleX);
     }
+
+    var thisHoverTimeRange = closestDatum ? (closestDatum[TIME_SEGMENT] as TimeRange) : null;
 
     if (!hoverTimeRange || !hoverTimeRange.equals(thisHoverTimeRange) || measure !== hoverMeasure) {
       this.setState({
         hoverTimeRange: thisHoverTimeRange,
-        hoverDatums: thisHoverDatums,
         hoverMeasure: measure
       });
     }
@@ -379,20 +406,223 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     if (hoverMeasure === measure) {
       this.setState({
         hoverTimeRange: null,
-        hoverDatums: null,
         hoverMeasure: null
       });
     }
   }
 
-  onHighlightEnd() {
-    this.setState({ dragStart: null });
+  getDragTimeRange(e: MouseEvent): TimeRange {
+    const { dragStartTime, axisTimeRange, scaleX } = this.state;
+
+    var dragEndTime = scaleX.invert(this.getMyEventX(e));
+
+    if (dragStartTime.valueOf() === dragEndTime.valueOf()) {
+      dragEndTime = new Date(dragEndTime.valueOf() + 1); // Offset by 1ms to make a meaningful range;
+    }
+
+    var timeRangeJS: TimeRangeJS = null;
+    if (dragStartTime < dragEndTime) {
+      timeRangeJS = { start: dragStartTime, end: dragEndTime };
+    } else {
+      timeRangeJS = { start: dragEndTime, end: dragStartTime };
+    }
+
+    return TimeRange.fromJS(timeRangeJS).intersect(axisTimeRange) as TimeRange;
   }
 
-  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, getX: any, scaleX: any, xTicks: Date[]): JSX.Element {
+  roundTimeRange(dragTimeRange: TimeRange): TimeRange {
     const { essence } = this.props;
-    const { scrollTop, hoverTimeRange, hoverDatums, hoverMeasure } = this.state;
-    const { splits, colors, timezone } = essence;
+    const { splits, timezone } = essence;
+
+    var timeSplit = splits.last();
+    var timeBucketAction = timeSplit.bucketAction as TimeBucketAction;
+    var duration = timeBucketAction.duration;
+    return TimeRange.fromJS({
+      start: duration.floor(dragTimeRange.start, timezone),
+      end: duration.shift(duration.floor(dragTimeRange.end, timezone), timezone, 1)
+    });
+  }
+
+  globalMouseMoveListener(e: MouseEvent) {
+    const { dragStartTime } = this.state;
+    if (dragStartTime === null) return;
+
+    var dragTimeRange = this.getDragTimeRange(e);
+    this.setState({
+      dragTimeRange,
+      roundDragTimeRange: this.roundTimeRange(dragTimeRange)
+    });
+  }
+
+  globalMouseUpListener(e: MouseEvent) {
+    const { clicker, essence } = this.props;
+    const { dragStartTime, dragTimeRange, dragOnMeasure } = this.state;
+    if (dragStartTime === null) return;
+
+    var highlightTimeRange = this.roundTimeRange(this.getDragTimeRange(e));
+
+    this.resetDrag();
+
+    // If already highlighted and user clicks within it switches measure
+    if (!dragTimeRange && essence.highlightOn(TimeSeries.id)) {
+      var existingHighlightTimeRange = essence.getSingleHighlightSet().elements[0];
+      if (existingHighlightTimeRange.contains(highlightTimeRange.start)) {
+        var { highlight } = essence;
+        if (highlight.measure === dragOnMeasure.name) {
+          clicker.dropHighlight();
+        } else {
+          clicker.changeHighlight(
+            TimeSeries.id,
+            dragOnMeasure.name,
+            highlight.delta
+          );
+        }
+        return;
+      }
+    }
+
+    var timeDimension = essence.getTimeDimension();
+    clicker.changeHighlight(
+      TimeSeries.id,
+      dragOnMeasure.name,
+      Filter.fromClause(new FilterClause({
+        expression: timeDimension.expression,
+        selection: r(highlightTimeRange)
+      }))
+    );
+  }
+
+  globalKeyDownListener(e: KeyboardEvent) {
+    if (!escapeKey(e)) return;
+
+    const { dragStartTime } = this.state;
+    if (dragStartTime === null) return;
+
+    this.resetDrag();
+  }
+
+  resetDrag() {
+    this.setState({
+      dragStartTime: null,
+      dragTimeRange: null,
+      roundDragTimeRange: null,
+      dragOnMeasure: null
+    });
+  }
+
+  renderHighlighter(): JSX.Element {
+    const { essence } = this.props;
+    const { dragTimeRange, scaleX } = this.state;
+
+    if (dragTimeRange !== null) {
+      return <Highlighter highlightTimeRange={dragTimeRange} scaleX={scaleX}/>;
+    }
+    if (essence.highlightOn(TimeSeries.id)) {
+      var highlightTimeRange = essence.getSingleHighlightSet().elements[0];
+      return <Highlighter highlightTimeRange={highlightTimeRange} scaleX={scaleX}/>;
+    }
+    return null;
+  }
+
+  renderChartBubble(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, extentY: number[], scaleY: any): JSX.Element {
+    const { clicker, essence, openRawDataModal } = this.props;
+    const { scrollTop, dragTimeRange, roundDragTimeRange, dragOnMeasure, hoverTimeRange, hoverMeasure, scaleX } = this.state;
+    const { colors, timezone } = essence;
+
+    if (essence.highlightOnDiffernetMeasure(TimeSeries.id, measure.name)) return null;
+
+    var topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
+    if (topOffset < 0) return null;
+    topOffset += containerStage.y;
+
+    if ((dragTimeRange && dragOnMeasure === measure) || (!dragTimeRange && essence.highlightOn(TimeSeries.id, measure.name))) {
+      var bubbleTimeRange = dragTimeRange || essence.getSingleHighlightSet().elements[0];
+
+      var shownTimeRange = roundDragTimeRange || bubbleTimeRange;
+      if (colors) {
+        var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(bubbleTimeRange.end);
+
+        var hoverDatums = dataset.data.map(d => findInDataset(d[SPLIT] as Dataset, TIME_SEGMENT, bubbleTimeRange));
+        var colorValues = colors.getColors(dataset.data.map(d => d[SEGMENT]));
+        var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
+          var segment = d[SEGMENT];
+          var hoverDatum = hoverDatums[i];
+          if (!hoverDatum) return null;
+
+          return {
+            color: colorValues[i],
+            segmentLabel: String(segment),
+            measureLabel: measure.formatDatum(hoverDatum)
+          };
+        }).filter(Boolean);
+
+        return <HoverMultiBubble
+          left={leftOffset}
+          top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
+          segmentLabel={formatTimeRange(bubbleTimeRange, timezone, DisplayYear.NEVER)}
+          colorEntries={colorEntries}
+          clicker={dragTimeRange ? null : clicker}
+        />;
+      } else {
+        var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(bubbleTimeRange.midpoint());
+
+        var highlightDatum = findInDataset(dataset, TIME_SEGMENT, shownTimeRange);
+        return <SegmentBubble
+          left={leftOffset}
+          top={topOffset + HOVER_BUBBLE_V_OFFSET}
+          segmentLabel={formatTimeRange(shownTimeRange, timezone, DisplayYear.NEVER)}
+          measureLabel={highlightDatum ? measure.formatDatum(highlightDatum) : null}
+          clicker={dragTimeRange ? null : clicker}
+          openRawDataModal={openRawDataModal}
+        />;
+      }
+
+    } else if (!dragTimeRange && hoverTimeRange && hoverMeasure === measure) {
+      var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(hoverTimeRange.midpoint());
+
+      if (colors) {
+        var hoverDatums = dataset.data.map(d => findInDataset(d[SPLIT] as Dataset, TIME_SEGMENT, hoverTimeRange));
+        var colorValues = colors.getColors(dataset.data.map(d => d[SEGMENT]));
+        var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
+          var segment = d[SEGMENT];
+          var hoverDatum = hoverDatums[i];
+          if (!hoverDatum) return null;
+
+          return {
+            color: colorValues[i],
+            segmentLabel: String(segment),
+            measureLabel: measure.formatDatum(hoverDatum)
+          };
+        }).filter(Boolean);
+
+        return <HoverMultiBubble
+          left={leftOffset}
+          top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
+          segmentLabel={formatTimeRange(hoverTimeRange, timezone, DisplayYear.NEVER)}
+          colorEntries={colorEntries}
+        />;
+
+      } else {
+        var hoverDatum = findInDataset(dataset, TIME_SEGMENT, hoverTimeRange);
+        if (!hoverDatum) return null;
+        return <SegmentBubble
+          left={leftOffset}
+          top={topOffset + HOVER_BUBBLE_V_OFFSET}
+          segmentLabel={formatTimeRange(hoverTimeRange, timezone, DisplayYear.NEVER)}
+          measureLabel={measure.formatDatum(hoverDatum)}
+        />;
+
+      }
+
+    }
+
+    return null;
+  }
+
+  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, getX: any, xTicks: Date[]): JSX.Element {
+    const { essence, clicker } = this.props;
+    const { hoverTimeRange, hoverMeasure, dragTimeRange, scaleX } = this.state;
+    const { splits, colors } = essence;
     var splitLength = splits.length();
 
     var lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
@@ -426,12 +656,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var horizontalGridLines: JSX.Element;
     var chartLines: JSX.Element[];
     var verticalAxis: JSX.Element;
+    var bubble: JSX.Element;
     if (!isNaN(extentY[0]) && !isNaN(extentY[1])) {
-      var scaleY = d3.scale.linear()
+      let scaleY = d3.scale.linear()
         .domain([Math.min(extentY[0] * 1.1, 0), Math.max(extentY[1] * 1.1, 0)])
         .range([lineStage.height, 0]);
 
-      var yTicks = scaleY.ticks(5).filter((n: number) => n !== 0);
+      let yTicks = scaleY.ticks(5).filter((n: number) => n !== 0);
 
       horizontalGridLines = <GridLines
         orientation="horizontal"
@@ -456,7 +687,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           scaleY={scaleY}
           stage={lineStage}
           showArea={true}
-          hoverTimeRange={hoverMeasure === measure ? hoverTimeRange : null}
+          hoverTimeRange={(!dragTimeRange && hoverMeasure === measure) ? hoverTimeRange : null}
           color="default"
         />);
       } else {
@@ -474,46 +705,19 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
             scaleY={scaleY}
             stage={lineStage}
             showArea={false}
-            hoverTimeRange={hoverMeasure === measure ? hoverTimeRange : null}
+            hoverTimeRange={(!dragTimeRange && hoverMeasure === measure) ? hoverTimeRange : null}
             color={colorValues ? colorValues[i] : null}
           />;
         });
       }
-    }
 
-    var chartSegmentBubble: JSX.Element = null;
-    if (hoverTimeRange && hoverDatums && hoverMeasure === measure) {
-      var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(hoverTimeRange.midpoint());
-      var topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop - HOVER_BUBBLE_V_OFFSET;
-      if (colors) {
-        chartSegmentBubble = <HoverMultiBubble
-          essence={essence}
-          datums={hoverDatums}
-          measure={measure}
-          getY={getY}
-          top={containerStage.y + topOffset + 30}
-          left={leftOffset}
-        />;
-      } else {
-        var getValue = (d: Datum) => d[TIME_SEGMENT];
-        if (topOffset > 0) {
-          chartSegmentBubble = <SegmentBubble
-            timezone={timezone}
-            datum={hoverDatums[0]}
-            measure={measure}
-            getValue={getValue}
-            getY={getY}
-            top={containerStage.y + topOffset}
-            left={leftOffset}
-          />;
-        }
-      }
+      bubble = this.renderChartBubble(mySplitDataset, measure, chartIndex, containerStage, chartStage, extentY, scaleY);
     }
 
     return <div
       className="measure-time-chart"
       key={measureName}
-      onMouseDown={this.onMouseDown.bind(this)}
+      onMouseDown={this.onMouseDown.bind(this, measure)}
       onMouseMove={this.onMouseMove.bind(this, mySplitDataset, measure, scaleX)}
       onMouseLeave={this.onMouseLeave.bind(this, measure)}
     >
@@ -536,20 +740,39 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         />
       </svg>
       <VisMeasureLabel measure={measure} datum={myDatum}/>
-      {chartSegmentBubble}
+      {this.renderHighlighter()}
+      {bubble}
     </div>;
+
+  }
+
+  updateCached(props: VisualizationProps) {
+    const { essence, stage } = props;
+    var axisTimeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
+
+    var scaleX: any = null;
+
+    if (axisTimeRange) {
+      scaleX = d3.time.scale()
+        .domain([axisTimeRange.start, axisTimeRange.end])
+        .range([0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH]);
+    }
+
+    this.setState({
+      axisTimeRange,
+      scaleX
+    });
   }
 
   render() {
-    var { clicker, essence, stage } = this.props;
-    var { loading, dataset, error, dragStart } = this.state;
+    var { essence, stage } = this.props;
+    var { loading, dataset, error, axisTimeRange, scaleX } = this.state;
     var { splits, timezone } = essence;
 
     var measureCharts: JSX.Element[];
     var bottomAxis: JSX.Element;
 
-    var timeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
-    if (dataset && splits.length() && timeRange) {
+    if (dataset && splits.length() && axisTimeRange) {
       var measures = essence.getEffectiveMeasures().toArray();
 
       var getX = (d: Datum) => midpoint(d[TIME_SEGMENT] as TimeRange);
@@ -569,14 +792,10 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         height: chartHeight
       });
 
-      var scaleX = d3.time.scale()
-        .domain([timeRange.start, timeRange.end])
-        .range([0, chartStage.width - Y_AXIS_WIDTH]);
-
       var xTicks = scaleX.ticks();
 
       measureCharts = measures.map((measure, chartIndex) => {
-        return this.renderChart(dataset, measure, chartIndex, stage, chartStage, getX, scaleX, xTicks);
+        return this.renderChart(dataset, measure, chartIndex, stage, chartStage, getX, xTicks);
       });
 
       var xAxisStage = Stage.fromSize(chartStage.width, X_AXIS_HEIGHT);
@@ -587,31 +806,6 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       >
         <TimeAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone}/>
       </svg>;
-
-      var highlighter: JSX.Element = null;
-      if (dragStart !== null || essence.highlightOn(TimeSeries.id)) {
-        var timeSplit = splits.last();
-        var timeBucketAction = timeSplit.bucketAction as TimeBucketAction;
-        highlighter = <Highlighter
-          clicker={clicker}
-          essence={essence}
-          highlightId={TimeSeries.id}
-          scaleX={scaleX}
-          dragStart={dragStart}
-          duration={timeBucketAction.duration}
-          onClose={this.onHighlightEnd.bind(this)}
-        />;
-      }
-    }
-
-    var loader: JSX.Element = null;
-    if (loading) {
-      loader = <Loader/>;
-    }
-
-    var queryError: JSX.Element = null;
-    if (error) {
-      queryError = <QueryError error={error}/>;
     }
 
     var measureChartsStyle = {
@@ -623,9 +817,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         {measureCharts}
       </div>
       {bottomAxis}
-      {queryError}
-      {loader}
-      {highlighter}
+      {error ? <QueryError error={error}/> : null}
+      {loading ? <Loader/> : null}
     </div>;
   }
 }

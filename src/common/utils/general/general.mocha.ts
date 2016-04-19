@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { List } from 'immutable';
-import { moveInList, verifyUrlSafeName } from './general';
+import { moveInList, verifyUrlSafeName, makeTitle } from './general';
 
 describe('General', () => {
   describe('moveInList', () => {
@@ -29,6 +29,7 @@ describe('General', () => {
       var list = List("ABCD".split(''));
       expect(moveInList(list, 0, 4).join('')).to.equal('BCDA');
     });
+
   });
 
   describe('verifyUrlSafeName', () => {
@@ -41,7 +42,24 @@ describe('General', () => {
         verifyUrlSafeName('abcd%po#@$moon is!cool');
       }).to.throw("'abcd%po#@$moon is!cool' is not a URL safe name. Try 'abcd_po_moon_is_cool' instead?");
     });
+
   });
+
+  describe('makeTitle', () => {
+    it('works in simple snake case', () => {
+      expect(makeTitle('hello_world')).to.equal('Hello World');
+    });
+
+    it('works in simple camel case', () => {
+      expect(makeTitle('helloWorld')).to.equal('Hello World');
+    });
+
+    it('works with leading and trailing _', () => {
+      expect(makeTitle('_hello_world_')).to.equal('Hello World');
+    });
+
+  });
+
 });
 
 
