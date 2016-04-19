@@ -326,7 +326,27 @@ Then in the measure definitions:
 
 Note that whichever method you chose you should not change the `name` attribute of your original measure as it will preserve the function of any bookmarks.
 
-### Customization
+## Customization
+
+You can define a `customization` option in the config to configure some aspects of the look and feel of Pivot.
+
+### Visual
+
+Can customize the header background color and logo icon by supplying a color string and SVG string respectively.  
+
+```yaml
+  customization:
+    customLogoSvg: >
+      <svg width="300" height="200"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <rect width="100%" height="100%" fill="green" />
+      </svg>
+
+    headerBackground: #2D95CA
+```
+
+### External links
 
 Pivot supports defining external view links with access to `dataSource`, `filter`, `splits`, and `timezone` objects at link generation time.
 This is done by defining a function body in the configuration file.
@@ -343,6 +363,10 @@ For example:
           }
 ```
 
+These custom links will appear in the share menu.
+
+![custom-link](./images/custom-link.png)
+
 By default, external views are opened in a new tab but you can disable this by setting `sameWindow: true`
 
 ```yaml
@@ -355,18 +379,3 @@ By default, external views are opened in a new tab but you can disable this by s
             return 'http://www.tickcounter.com/timezone/' + timezone.toString().toLowerCase().replace(/\//g, '-');
           }     
 ```
-
-You can also customize the header background color and logo icon by supplying a color string and SVG string respectively.  
-
-```yaml
-  customization:
-    customLogoSvg: >
-      <svg width="300" height="200"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink">
-        <rect width="100%" height="100%" fill="green" />
-      </svg>
-
-    headerBackground: #2D95CA
-```
-
