@@ -10,11 +10,12 @@
 
     .filters {
       @include pin-full;
+      @include ellipsis;
       height: $control-height;
+      color: $text-light;
 
       .filter {
         font-size: 13px;
-        color: $text-light;
         height: $control-height;
         display: inline;
       }
