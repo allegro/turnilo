@@ -50,6 +50,7 @@ export function makeFileName(...args: Array<string>): string {
   args.forEach((arg) => {
     if (arg) nameComponents.push(arg.toLowerCase());
   });
-  return nameComponents.join("_");
+  var nameString = nameComponents.join("_");
+  return nameString.length < 200 ? nameString : nameString.substr(0, 200);
 }
 
