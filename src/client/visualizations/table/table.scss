@@ -41,19 +41,24 @@ $header-padding-top: 12px;
     .header-cont {
       left: $space-left + $segment-width;
 
+      .header {
+        height: $header-height;
+      }
+
       .sort-arrow {
         right: -15px;
       }
     }
 
     .body-cont {
+      @include unpin-top($header-height);
       left: $space-left + $segment-width;
     }
 
     .segments-cont {
       position: absolute;
       left: $space-left;
-      top: $table-header-height;
+      top: $header-height;
       bottom: 0;
       width: $segment-width;
       overflow: hidden;
@@ -63,7 +68,7 @@ $header-padding-top: 12px;
       position: absolute;
       left: $space-left;
       right: 0;
-      top: $table-header-height;
+      top: $header-height;
       bottom: 0;
       overflow: hidden;
 
@@ -160,6 +165,10 @@ $header-padding-top: 12px;
     width: $measure-width;
     height: 100%;
     text-align: right;
+  }
+
+  .horizontal-scroll-shadow {
+    height: $header-height;
   }
 }
 

@@ -1,5 +1,8 @@
 @import '../../imports';
 
+$header-height: 38px;
+$row-height: 30px;
+
 .raw-data-modal {
 
   .content {
@@ -14,13 +17,14 @@
       height: $control-height;
       color: $text-light;
 
+      .limit,
       .filter {
         font-size: 13px;
         height: $control-height;
         display: inline;
       }
 
-      .filter + .filter:before {
+      .filter:not(:last-child):after {
         content: '; ';
       }
     }
@@ -36,8 +40,18 @@
         bottom: 2px;
 
         .header-cont {
+
           .header {
             background: $background-lightest;
+            height: $header-height;
+          }
+        }
+
+        .body-cont {
+          @include unpin-top($header-height);
+
+          .row {
+            height: $row-height;
           }
         }
 
@@ -80,6 +94,10 @@
           padding-top: 8px;
         }
       }
+    }
+
+    .horizontal-scroll-shadow {
+      height: $header-height;
     }
 
     .loader,

@@ -154,12 +154,11 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
   }
 
   renderFilters(): List<JSX.Element> {
-    const stringifiedFilters = this.getStringifiedFilters();
-    var filters = stringifiedFilters.map((filter: string, i: number) => {
+    const filters = this.getStringifiedFilters().map((filter: string, i: number) => {
       return <li className="filter" key={i}>{filter}</li>;
-    });
-    filters = filters.concat(<li className="filter" key="filter">limit: {LIMIT}</li>);
-    return filters.toList();
+    }).toList();
+    const limit = <li className="limit" key="limit">First {LIMIT} events matching </li>;
+    return filters.unshift(limit);
   }
 
   renderHeader(dataset: Dataset): JSX.Element[] {
