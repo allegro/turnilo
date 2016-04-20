@@ -5,7 +5,7 @@ import { Dataset } from 'plywood';
 import { Fn } from "../../../common/utils/general/general";
 import { Stage, Clicker, Essence, ExternalView } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
-import { download } from "../../utils/download/download";
+import { download, makeFileName } from "../../utils/download/download";
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 
@@ -55,11 +55,19 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
   }
 
   onExport() {
-    const { onClose, getVisualizationDataset } = this.props;
+    const { onClose, getVisualizationDataset, essence } = this.props;
+    const { dataSource, splits } = essence;
+    const filters = essence.getEffectiveFilter().getFileString(dataSource.timeAttribute);
+    var splitsString = splits.toArray().map((split) => {
+      var dimension = split.getDimension(dataSource.dimensions);
+      if (!dimension) return '';
+      return `${STRINGS.splitDelimiter}_${dimension.name}`;
+    }).join("_");
     if (!getVisualizationDataset) return;
     var dataset = getVisualizationDataset();
     if (!dataset) return;
-    download(dataset, 'export-todo', 'csv');
+
+    download(dataset, makeFileName(dataSource.name, filters, splitsString), 'csv');
     onClose();
   }
 
@@ -91,7 +99,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
       onClick={this.openRawDataModal.bind(this)}
     >{STRINGS.viewRawData}</li>);
 
-    if (getVisualizationDataset) {
+    if (getVisualizationDataset()) {
       shareOptions.push(<li
         className="export"
         key="export"

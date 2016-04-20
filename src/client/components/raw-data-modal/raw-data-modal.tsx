@@ -7,7 +7,7 @@ import { Essence, Stage, FilterClause, Dimension, DataSource } from '../../../co
 
 import { Fn, makeTitle, setToString, arraySum } from "../../../common/utils/general/general";
 import { formatTimeRange, DisplayYear } from "../../utils/date/date";
-import { download } from "../../utils/download/download";
+import { download, makeFileName } from "../../utils/download/download";
 import { formatLabel } from "../../../common/utils/formatter/formatter";
 import { classNames } from "../../utils/dom/dom";
 import { STRINGS, SEGMENT } from '../../config/constants';
@@ -223,26 +223,12 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     });
   }
 
-  makeFileName(): string {
-    const { essence } = this.props;
-    const filters = this.getStringifiedFilters();
-    var wordsOnly = "";
-    if (filters.size > 2) {
-      wordsOnly = `filters-${filters.size}`;
-    } else {
-      wordsOnly = filters.map((filter) => {
-        return filter.toLowerCase().replace(/[^0-9a-z]/g, '');
-      }).join('-');
-    }
-    const dsName = essence.dataSource.name.toLowerCase().substr(0, 5);
-    return `${dsName}-raw-${wordsOnly}`;
-  }
-
   render() {
     const { essence, onClose, stage } = this.props;
     const { dataset, loading, scrollTop, scrollLeft, error } = this.state;
+    const { dataSource } = essence;
 
-    const rowWidth = arraySum(essence.dataSource.attributes.map((a) => getColumnWidth(a.type)));
+    const rowWidth = arraySum(dataSource.attributes.map((a) => getColumnWidth(a.type)));
     const title = `${makeTitle(SEGMENT.toLowerCase())} ${STRINGS.rawData}`;
     const dataLength = dataset ? dataset.data.length : 0;
     const bodyHeight = dataLength * ROW_HEIGHT;
@@ -250,6 +236,8 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       width: SPACE_LEFT + rowWidth + SPACE_RIGHT,
       height: bodyHeight + BODY_PADDING_BOTTOM
     };
+
+    const filtersString = essence.getEffectiveFilter().getFileString(dataSource.timeAttribute);
 
     return <Modal
       className="raw-data-modal"
@@ -277,7 +265,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
           <Button
             type="secondary"
             className="download"
-            onClick={download.bind(this, dataset, this.makeFileName(), 'csv')}
+            onClick={download.bind(this, dataset, makeFileName(dataSource.name, filtersString, 'raw'), 'csv')}
             title={STRINGS.download}
             disabled={Boolean(loading || error)}
           />

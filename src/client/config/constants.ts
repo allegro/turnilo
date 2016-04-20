@@ -60,5 +60,6 @@ export const STRINGS = {
   copyValue: 'Copy value',
   goToUrl: 'Go to URL',
   openIn: 'Open in',
-  exportToCSV: 'Export to CSV'
+  exportToCSV: 'Export to CSV',
+  splitDelimiter: 'by'
 };

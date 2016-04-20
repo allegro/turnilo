@@ -44,3 +44,12 @@ export function datasetToFileString(dataset: Dataset, fileFormat?: FileFormat): 
     return JSON.stringify(dataset.toJS(), null, 2);
   }
 }
+
+export function makeFileName(...args: Array<string>): string {
+  var nameComponents: string[] = [];
+  args.forEach((arg) => {
+    if (arg) nameComponents.push(arg.toLowerCase());
+  });
+  return nameComponents.join("_");
+}
+
