@@ -8,4 +8,5 @@ export interface VisualizationProps {
   essence: Essence;
   stage: Stage;
   openRawDataModal?: Fn;
+  ref?: string;
 }

@@ -300,7 +300,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   getVisualizationDataset(): Dataset {
-    return null;
+    var curVis = this.refs['curVis'];
+    if (!curVis) return null;
+    return curVis.state.dataset;
   }
 
   render() {
@@ -319,7 +321,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         clicker,
         essence,
         stage: visualizationStage,
-        openRawDataModal: this.openRawDataModal.bind(this)
+        openRawDataModal: this.openRawDataModal.bind(this),
+        ref: 'curVis'
       };
 
       visElement = React.createElement(visualization as any, visProps);

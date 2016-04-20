@@ -20,7 +20,7 @@ export function download(dataset: Dataset, fileName?: string, fileFormat?: FileF
   const blob = new Blob([datasetToFileString(dataset, fileFormat)], {type});
   if (!fileName) fileName = `${new Date()}-data`;
   fileName += `.${fileFormat}`;
-  filesaver.saveAs(blob, fileName);
+  filesaver.saveAs(blob, fileName, true); // true == disable auto BOM
 }
 
 export function datasetToFileString(dataset: Dataset, fileFormat?: FileFormat): string {
