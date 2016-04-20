@@ -14,7 +14,6 @@
 
       .filter {
         font-size: 13px;
-        text-transform: uppercase;
         color: $text-light;
         height: $control-height;
         display: inline;
@@ -27,7 +26,7 @@
 
     .table-container {
       position: absolute;
-      top: $control-height + 10;
+      top: $control-height;
       bottom: $control-height + $modal-window-padding + $padding;
       left: 0;
       right: 0;
@@ -38,20 +37,17 @@
         .header-cont {
           .header {
             background: $background-lightest;
-
-            .table-header {
-              border-right: 1px solid $border-extra-light;
-              padding-right: $padding;
-            }
           }
         }
 
         .header-cell,
         .cell {
-          white-space: nowrap;
-          padding-left: 6px;
+          @include ellipsis;
           display: inline-block;
           height: 100%;
+          border-right: 1px solid $border-extra-light;
+          padding-left: 6px;
+          padding-right: 6px;
 
           &.number {
             text-align: right;
@@ -60,10 +56,15 @@
           &.unsplitable {
             background: $background-lightest;
           }
+
+          &:first-child {
+            border-left: 1px solid $border-extra-light;
+          }
         }
 
         .header-cell {
           padding-top: 12px;
+          border-top: 1px solid $border-extra-light;
 
           .title-wrap {
             @include ellipsis;
@@ -74,8 +75,6 @@
         }
 
         .cell {
-          border-right: 1px solid $border-extra-light;
-          padding-right: $padding;
           overflow: hidden;
           padding-top: 8px;
         }
