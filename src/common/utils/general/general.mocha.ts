@@ -58,6 +58,14 @@ describe('General', () => {
       expect(makeTitle('_hello_world_')).to.equal('Hello World');
     });
 
+    it('works with trailing numbers in the middle', () => {
+      expect(makeTitle('hello99_world')).to.equal('Hello99 World');
+    });
+
+    it('works with trailing numbers at the end', () => {
+      expect(makeTitle('hello_world99')).to.equal('Hello World99');
+    });
+
   });
 
 });

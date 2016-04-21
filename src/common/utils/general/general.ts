@@ -28,11 +28,11 @@ export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: num
 
 export function makeTitle(name: string): string {
   return name
-    .replace(/^[ -_]+|[ -_]+$/g, '')
+    .replace(/^[ _\-]+|[ _\-]+$/g, '')
     .replace(/(^|[_\-]+)\w/g, (s) => { // 'hello_world-love' -> 'Hello World Love'
       return s.replace(/[_\-]+/, ' ').toUpperCase();
     })
-    .replace(/[a-z][A-Z]/g, (s) => { // 'HelloWorld' -> 'Hello World'
+    .replace(/[a-z0-9][A-Z]/g, (s) => { // 'HelloWorld' -> 'Hello World'
       return s[0] + ' ' + s[1];
     });
 }
