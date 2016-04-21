@@ -90,10 +90,14 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       }
 
       if (!split.sortAction) {
-        split = split.changeSortAction(new SortAction({
-          expression: $(SEGMENT),
-          direction: 'ascending'
-        }));
+        if (splitDimension.kind === 'boolean') {
+          split = split.changeSortAction(new SortAction({
+            expression: $(SEGMENT),
+            direction: 'ascending'
+          }));
+        } else {
+          split = split.changeSortAction(dataSource.getDefaultSortAction());
+        }
         autoChanged = true;
       } else if (split.sortAction.refName() === TIME_SEGMENT) {
         split = split.changeSortAction(new SortAction({
