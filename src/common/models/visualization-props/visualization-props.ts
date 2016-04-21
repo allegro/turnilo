@@ -1,3 +1,4 @@
+import { Dataset } from 'plywood';
 import { Fn } from "../../utils/general/general";
 import { Clicker } from '../clicker/clicker';
 import { Stage } from '../stage/stage';
@@ -8,5 +9,5 @@ export interface VisualizationProps {
   essence: Essence;
   stage: Stage;
   openRawDataModal?: Fn;
-  ref?: string;
+  registerDownloadableDataset?: (dataset: Dataset) => void;
 }

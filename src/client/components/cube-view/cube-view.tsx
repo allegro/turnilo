@@ -39,6 +39,7 @@ export interface CubeViewState {
   dragOver?: boolean;
   showRawDataModal?: boolean;
   RawDataModalAsync?: typeof RawDataModal;
+  downloadableDataset?: Dataset;
 }
 
 export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
@@ -56,7 +57,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.state = {
       essence: null,
       dragOver: false,
-      showRawDataModal: false
+      showRawDataModal: false,
+      downloadableDataset: null
     };
 
     var clicker = {
@@ -299,17 +301,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     (this.refs['splitTile'] as SplitTile).splitMenuRequest(dimension);
   }
 
-  getVisualizationDataset(): Dataset {
-    var curVis = this.refs['curVis'];
-    if (!curVis) return null;
-    return curVis.state.dataset;
+  registerDownloadableDataset(downloadableDataset: Dataset): void {
+    this.setState({
+      downloadableDataset
+    });
   }
 
   render() {
     var clicker = this.clicker;
 
     var { getUrlPrefix, onNavClick, user, customization } = this.props;
-    var { essence, menuStage, visualizationStage, dragOver } = this.state;
+    var { essence, menuStage, visualizationStage, dragOver, downloadableDataset } = this.state;
 
     if (!essence) return null;
 
@@ -322,7 +324,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         essence,
         stage: visualizationStage,
         openRawDataModal: this.openRawDataModal.bind(this),
-        ref: 'curVis'
+        registerDownloadableDataset: this.registerDownloadableDataset.bind(this)
       };
 
       visElement = React.createElement(visualization as any, visProps);
@@ -346,7 +348,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         refreshMaxTime={this.refreshMaxTime.bind(this)}
         openRawDataModal={this.openRawDataModal.bind(this)}
         customization={customization}
-        getVisualizationDataset={this.getVisualizationDataset.bind(this)}
+        downloadableDataset={downloadableDataset}
       />
       <div className="container" ref='container'>
         <DimensionMeasurePanel

@@ -209,6 +209,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   }
 
   fetchData(essence: Essence): void {
+    var { registerDownloadableDataset } = this.props;
     var { splits, colors, dataSource } = essence;
     var measures = essence.getEffectiveMeasures();
 
@@ -271,6 +272,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     dataSource.executor(query)
       .then(
         (dataset: Dataset) => {
+          registerDownloadableDataset(dataset);
           if (!this.mounted) return;
 
           this.setState({
@@ -280,6 +282,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           });
         },
         (error) => {
+          registerDownloadableDataset(null);
           if (!this.mounted) return;
           this.setState({
             loading: false,

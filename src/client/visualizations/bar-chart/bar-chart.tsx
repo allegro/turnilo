@@ -139,6 +139,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
   }
 
   fetchData(essence: Essence): void {
+    var { registerDownloadableDataset } = this.props;
     var { splits, dataSource } = essence;
     var measures = essence.getEffectiveMeasures();
 
@@ -185,6 +186,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     dataSource.executor(query)
       .then(
         (dataset: Dataset) => {
+          registerDownloadableDataset(dataset);
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -193,6 +195,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
           });
         },
         (error) => {
+          registerDownloadableDataset(null);
           if (!this.mounted) return;
           this.setState({
             loading: false,

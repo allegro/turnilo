@@ -138,6 +138,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   }
 
   fetchData(essence: Essence): void {
+    var { registerDownloadableDataset } = this.props;
     var { splits, dataSource } = essence;
     var measures = essence.getEffectiveMeasures();
 
@@ -184,6 +185,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     dataSource.executor(query)
       .then(
         (dataset: Dataset) => {
+          registerDownloadableDataset(dataset);
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -197,6 +199,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
           });
         },
         (error) => {
+          registerDownloadableDataset(null);
           if (!this.mounted) return;
           this.setState({
             loading: false,
