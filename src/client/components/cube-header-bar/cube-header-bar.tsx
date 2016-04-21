@@ -3,6 +3,7 @@ require('./cube-header-bar.css');
 import * as React from 'react';
 import { immutableEqual } from "immutable-class";
 import { Duration } from 'chronoshift';
+import { Dataset } from "plywood";
 import { Fn } from "../../../common/utils/general/general";
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, DataSource, User, Customization, ExternalView } from "../../../common/models/index";
@@ -19,7 +20,9 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   onNavClick: Fn;
   getUrlPrefix?: () => string;
   refreshMaxTime?: Fn;
+  openRawDataModal?: Fn;
   customization?: Customization;
+  downloadableDataset?: Dataset;
 }
 
 export interface CubeHeaderBarState {
@@ -106,7 +109,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderHilukMenu() {
-    const { essence, getUrlPrefix, customization } = this.props;
+    const { essence, getUrlPrefix, customization, openRawDataModal, downloadableDataset } = this.props;
     const { hilukMenuOpenOn } = this.state;
     if (!hilukMenuOpenOn) return null;
 
@@ -120,7 +123,9 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       openOn={hilukMenuOpenOn}
       onClose={this.onHilukMenuClose.bind(this)}
       getUrlPrefix={getUrlPrefix}
+      openRawDataModal={openRawDataModal}
       externalViews={externalViews}
+      downloadableDataset={downloadableDataset}
     />;
   }
 

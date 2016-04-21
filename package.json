@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "body-parser": "1.15.0",
+    "browser-filesaver": "1.1.1",
     "chronoshift": "0.4.2",
     "clipboard": "1.5.10",
     "compression": "1.6.1",

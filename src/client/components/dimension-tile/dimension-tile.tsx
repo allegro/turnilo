@@ -362,17 +362,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     maxHeight += PIN_PADDING_BOTTOM;
 
-    var loader: JSX.Element = null;
     var message: JSX.Element = null;
-    if (loading) {
-      loader = <Loader/>;
-    } else if (dataset && !fetchQueued && searchText && !rows.length) {
+    if (!loading && dataset && !fetchQueued && searchText && !rows.length) {
       message = <div className="message">{`No results for "${searchText}"`}</div>;
-    }
-
-    var queryError: JSX.Element = null;
-    if (error) {
-      queryError = <QueryError error={error}/>;
     }
 
     const className = classNames(
@@ -416,8 +408,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         {message}
       </div>
       { folder }
-      { queryError }
-      { loader }
+      {error ? <QueryError error={error}/> : null}
+      {loading ? <Loader/> : null}
     </SearchableTile>;
 
   }

@@ -1,9 +1,11 @@
 require('./hiluk-menu.css');
 
 import * as React from 'react';
+import { Dataset } from 'plywood';
 import { Fn } from "../../../common/utils/general/general";
-import { Stage, Clicker, Essence, ExternalView } from '../../../common/models/index';
+import { Stage, Essence, ExternalView } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
+import { download, makeFileName } from "../../utils/download/download";
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 
@@ -12,7 +14,9 @@ export interface HilukMenuProps extends React.Props<any> {
   openOn: Element;
   onClose: Fn;
   getUrlPrefix: () => string;
+  openRawDataModal: Fn;
   externalViews?: ExternalView[];
+  downloadableDataset?: Dataset;
 }
 
 export interface HilukMenuState {
@@ -44,8 +48,30 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     });
   }
 
+  openRawDataModal() {
+    const { openRawDataModal, onClose } = this.props;
+    openRawDataModal();
+    onClose();
+  }
+
+  onExport() {
+    const { onClose, downloadableDataset, essence } = this.props;
+    const { dataSource, splits } = essence;
+    if (!downloadableDataset) return;
+
+    const filters = essence.getEffectiveFilter().getFileString(dataSource.timeAttribute);
+    var splitsString = splits.toArray().map((split) => {
+      var dimension = split.getDimension(dataSource.dimensions);
+      if (!dimension) return '';
+      return `${STRINGS.splitDelimiter}_${dimension.name}`;
+    }).join("_");
+
+    download(downloadableDataset, makeFileName(dataSource.name, filters, splitsString), 'csv');
+    onClose();
+  }
+
   render() {
-    const { openOn, onClose, externalViews, essence } = this.props;
+    const { openOn, onClose, externalViews, essence, downloadableDataset } = this.props;
     const { url, specificUrl } = this.state;
 
     var shareOptions: JSX.Element[] = [
@@ -64,6 +90,20 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
         data-clipboard-text={specificUrl}
         onClick={onClose}
       >{STRINGS.copySpecificUrl}</li>);
+    }
+
+    shareOptions.push(<li
+      className="view-raw-data"
+      key="view-raw-data"
+      onClick={this.openRawDataModal.bind(this)}
+    >{STRINGS.viewRawData}</li>);
+
+    if (downloadableDataset) {
+      shareOptions.push(<li
+        className="export"
+        key="export"
+        onClick={this.onExport.bind(this)}
+      >{STRINGS.exportToCSV}</li>);
     }
 
     if (externalViews) {

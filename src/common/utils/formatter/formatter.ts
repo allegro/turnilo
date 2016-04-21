@@ -1,4 +1,6 @@
 import * as numeral from 'numeral';
+import { Dimension, FilterClause, Essence } from '../../models/index';
+import { DisplayYear, formatTimeRange } from "../../../client/utils/date/date";
 
 export interface Formatter {
   (n: number): string;
@@ -64,3 +66,43 @@ export function formatterFromData(values: number[], format: string): Formatter {
     };
   }
 }
+
+export interface LabelFormatOptions {
+  dimension: Dimension;
+  clause: FilterClause;
+  essence: Essence;
+  verbose?: boolean;
+}
+
+export function formatLabel(options: LabelFormatOptions): string {
+  const { dimension, clause, essence, verbose } = options;
+  var label = dimension.title;
+
+  switch (dimension.kind) {
+    case 'boolean':
+    case 'number':
+    case 'string':
+      if (verbose) {
+        label += `: ${clause.getLiteralSet().toString()}`;
+      } else {
+        var setElements = clause.getLiteralSet().elements;
+        label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
+      }
+      break;
+    case 'time':
+      var timeSelection = clause.selection;
+      var timeRange = essence.evaluateSelection(timeSelection);
+      if (verbose) {
+        label = `Time: ${ formatTimeRange(timeRange, essence.timezone, DisplayYear.IF_DIFF) }`;
+      } else {
+        label = formatTimeRange(timeRange, essence.timezone, DisplayYear.IF_DIFF);
+      }
+      break;
+
+    default:
+      throw new Error(`unknown kind ${dimension.kind}`);
+  }
+
+  return label;
+}
+

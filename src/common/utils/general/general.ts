@@ -1,5 +1,6 @@
 import { List } from 'immutable';
 import { immutableArraysEqual, Equalable } from 'immutable-class';
+import { Set } from 'plywood';
 
 // The most generic function
 export interface Fn {
@@ -108,4 +109,10 @@ export function verifyUrlSafeName(name: string): void {
   if (name !== urlSafeName) {
     throw new Error(`'${name}' is not a URL safe name. Try '${urlSafeName}' instead?`);
   }
+}
+
+export function arraySum(inputArray: number[]) {
+  return inputArray.reduce((pV: number, cV: number) => {
+    return pV + cV;
+  }, 0);
 }

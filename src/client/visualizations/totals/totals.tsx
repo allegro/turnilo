@@ -41,6 +41,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   }
 
   fetchData(essence: Essence): void {
+    var { registerDownloadableDataset } = this.props;
     var { dataSource } = essence;
     var measures = essence.getEffectiveMeasures();
 
@@ -57,6 +58,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     dataSource.executor(query)
       .then(
         (dataset: Dataset) => {
+          registerDownloadableDataset(dataset);
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -65,6 +67,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
           });
         },
         (error) => {
+          registerDownloadableDataset(null);
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -122,16 +125,6 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       </div>;
     });
 
-    var loader: JSX.Element = null;
-    if (loading) {
-      loader = <Loader/>;
-    }
-
-    var queryError: JSX.Element = null;
-    if (error) {
-      queryError = <QueryError error={error}/>;
-    }
-
     var totalContainerStyle: React.CSSProperties = null;
     if (!single) {
       var numColumns = Math.min(totals.size, Math.max(1, Math.floor((stage.width - 2 * PADDING_H) / TOTAL_WIDTH)));
@@ -145,8 +138,8 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
 
     return <div className="totals">
       <div className="total-container" style={totalContainerStyle}>{totals}</div>
-      {queryError}
-      {loader}
+      {error ? <QueryError error={error}/> : null}
+      {loading ? <Loader/> : null}
     </div>;
   }
 }

@@ -9,6 +9,7 @@ import { STRINGS, BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure} from '../../../common/models/index';
 import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
+import { formatLabel } from "../../../common/utils/formatter/formatter";
 import { findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent } from '../../utils/dom/dom';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 
@@ -25,30 +26,6 @@ export interface ItemBlank {
   dimension: Dimension;
   source: string;
   clause?: FilterClause;
-}
-
-function formatLabel(dimension: Dimension, clause: FilterClause, essence: Essence): string {
-  var label = dimension.title;
-
-  switch (dimension.kind) {
-    case 'boolean':
-    case 'number':
-    case 'string':
-      var setElements = clause.getLiteralSet().elements;
-      label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
-      break;
-
-    case 'time':
-      var timeSelection = clause.selection;
-      var timeRange = essence.evaluateSelection(timeSelection);
-      label = formatTimeRange(timeRange, essence.timezone, DisplayYear.IF_DIFF);
-      break;
-
-    default:
-      throw new Error(`unknown kind ${dimension.kind}`);
-  }
-
-  return label;
 }
 
 function formatLabelDummy(dimension: Dimension): string {
@@ -483,7 +460,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onClick={clicker.acceptHighlight.bind(clicker)}
         style={style}
       >
-        <div className="reading">{formatLabel(dimension, clause, essence)}</div>
+        <div className="reading">{formatLabel({dimension, clause, essence})}</div>
         {this.renderRemoveButton(itemBlank)}
       </div>;
     }
@@ -498,7 +475,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onDragStart={this.dragStart.bind(this, dimension, clause)}
         style={style}
       >
-        <div className="reading">{formatLabel(dimension, clause, essence)}</div>
+        <div className="reading">{formatLabel({dimension, clause, essence})}</div>
         {this.renderRemoveButton(itemBlank)}
       </div>;
     } else {
@@ -520,7 +497,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dragOver, dragInsertPosition, dragReplacePosition,
       possibleDimension, possibleInsertPosition, possibleReplacePosition,
       maxItems
-    } = this.state;
+      } = this.state;
     var { dataSource, filter, highlight } = essence;
 
     const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;

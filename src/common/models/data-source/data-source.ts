@@ -543,6 +543,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
         derivedAttributes: this.derivedAttributes,
         introspectionStrategy,
         filter: this.subsetFilter,
+        allowSelectQueries: true,
         context,
         requester
       });
@@ -557,6 +558,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
         customAggregations: this.options.customAggregations,
         introspectionStrategy,
         filter: this.subsetFilter,
+        allowSelectQueries: true,
         context,
         requester
       });
