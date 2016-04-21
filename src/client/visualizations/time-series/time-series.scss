@@ -22,18 +22,20 @@
       pointer-events: none;
       stroke: $gray;
     }
+
+    .highlighter {
+      @include pin-full;
+    }
+
+    &:nth-child(n+2) { // same as not(first-child)
+      .highlighter .frame {
+        border-top: 0;
+      }
+    }
   }
 
   .bottom-axis {
     padding-left: $vis-h-padding;
-  }
-
-  .highlighter {
-    position: absolute;
-    top: 0;
-    left: $vis-h-padding;
-    right: $vis-h-padding;
-    bottom: 0;
   }
 
   .loader,

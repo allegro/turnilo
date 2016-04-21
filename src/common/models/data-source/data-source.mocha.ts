@@ -338,8 +338,8 @@ describe('DataSource', () => {
         { name: 'unique_user', special: 'unique' }
       ]);
 
-      dataSourceStub = dataSourceStub.addAttributes(attributes1);
-      expect(dataSourceStub.toJS()).to.deep.equal({
+      var dataSource1 = dataSourceStub.addAttributes(attributes1);
+      expect(dataSource1.toJS()).to.deep.equal({
         "name": "wiki",
         "title": "Wiki",
         "engine": "druid",
@@ -431,8 +431,8 @@ describe('DataSource', () => {
         { name: 'user', type: 'STRING' }
       ]);
 
-      dataSourceStub = dataSourceStub.addAttributes(attributes2);
-      expect(dataSourceStub.toJS()).to.deep.equal({
+      var dataSource2 = dataSource1.addAttributes(attributes2);
+      expect(dataSource2.toJS()).to.deep.equal({
         "name": "wiki",
         "title": "Wiki",
         "engine": "druid",
@@ -543,8 +543,117 @@ describe('DataSource', () => {
           }
         ]
       });
-
     });
+
+    it("works with non-url-safe names", () => {
+      var attributes1 = AttributeInfo.fromJSs([
+        { name: '__time', type: 'TIME' },
+        { name: 'page:#love$', type: 'STRING' },
+        { name: 'added:#love$', type: 'NUMBER' },
+        { name: 'unique_user:#love$', special: 'unique' }
+      ]);
+
+      var dataSource = dataSourceStub.addAttributes(attributes1);
+      expect(dataSource.toJS()).to.deep.equal({
+        "attributes": [
+          {
+            "name": "__time",
+            "type": "TIME"
+          },
+          {
+            "name": "page:#love$",
+            "type": "STRING"
+          },
+          {
+            "name": "added:#love$",
+            "type": "NUMBER"
+          },
+          {
+            "name": "unique_user:#love$",
+            "special": "unique",
+            "type": "STRING"
+          }
+        ],
+        "defaultDuration": "P1D",
+        "defaultFilter": {
+          "op": "literal",
+          "value": true
+        },
+        "defaultPinnedDimensions": [],
+        "defaultSortMeasure": "added_love_",
+        "defaultTimezone": "Etc/UTC",
+        "dimensions": [
+          {
+            "expression": {
+              "name": "__time",
+              "op": "ref"
+            },
+            "kind": "time",
+            "name": "__time",
+            "title": "Time"
+          },
+          {
+            "expression": {
+              "name": "page:#love$",
+              "op": "ref"
+            },
+            "kind": "string",
+            "name": "page_love_",
+            "title": "Page Love"
+          }
+        ],
+        "engine": "druid",
+        "introspection": "autofill-all",
+        "measures": [
+          {
+            "expression": {
+              "action": {
+                "action": "sum",
+                "expression": {
+                  "name": "added:#love$",
+                  "op": "ref"
+                }
+              },
+              "expression": {
+                "name": "main",
+                "op": "ref"
+              },
+              "op": "chain"
+            },
+            "name": "added_love_",
+            "title": "Added Love"
+          },
+          {
+            "expression": {
+              "action": {
+                "action": "countDistinct",
+                "expression": {
+                  "name": "unique_user:#love$",
+                  "op": "ref"
+                }
+              },
+              "expression": {
+                "name": "main",
+                "op": "ref"
+              },
+              "op": "chain"
+            },
+            "name": "unique_user_love_",
+            "title": "Unique User Love"
+          }
+        ],
+        "name": "wiki",
+        "refreshRule": {
+          "refresh": "PT1M",
+          "rule": "fixed"
+        },
+        "source": "wiki",
+        "subsetFilter": null,
+        "timeAttribute": "__time",
+        "title": "Wiki"
+      });
+    });
+
   });
 
 

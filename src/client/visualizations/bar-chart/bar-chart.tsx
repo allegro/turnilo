@@ -1,8 +1,6 @@
 require('./bar-chart.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, Executor, Dataset, Datum, SortAction, PlywoodValue, Set, TimeRange } from 'plywood';
 import { Stage, Essence, DataSource, Filter, FilterClause, Splits, SplitCombine, Dimension, Measure, Colors, VisualizationProps, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT, TIME_SEGMENT, VIS_H_PADDING } from '../../config/constants';
@@ -401,30 +399,24 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       });
     }
 
-    var hoverBubble: JSX.Element = null;
-    var highlightBubble: JSX.Element = null;
+    var bubble: JSX.Element = null;
     if (bubbleHighlightDelta) {
       mySplitDataset.data.forEach((d) => {
-        if (highlightBubble || !bubbleHighlightDelta.equals(getFilterFromDatum(splits, d))) return;
+        if (bubble || !bubbleHighlightDelta.equals(getFilterFromDatum(splits, d))) return;
 
-        const url = essence.dataSource.getDimensionByExpression(splits.get(0).expression).url;
-        const urls = url ? [url] : [];
+        const dimension = essence.dataSource.getDimensionByExpression(splits.get(0).expression);
 
         var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(d[SEGMENT]) + stepWidth / 2;
         var topOffset = chartStage.height * chartIndex - scrollTop + scaleY(getY(d)) + TEXT_SPACER - HOVER_BUBBLE_V_OFFSET;
         if (topOffset > 0) {
-          highlightBubble = <SegmentBubble
-            timezone={timezone}
-            datum={d}
-            measure={measure}
-            getValue={getX}
-            getY={getY}
-            top={containerStage.y + topOffset}
+          bubble = <SegmentBubble
             left={leftOffset}
+            top={containerStage.y + topOffset}
+            dimension={dimension}
+            segmentLabel={String(getX(d))}
+            measureLabel={measure.formatDatum(d)}
             clicker={clicker}
             openRawDataModal={openRawDataModal}
-
-            urls={urls}
           />;
         }
       });
@@ -433,14 +425,11 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(hoverValue) + stepWidth / 2;
       var topOffset = chartStage.height * chartIndex - scrollTop + scaleY(getY(hoverDatum)) + TEXT_SPACER - HOVER_BUBBLE_V_OFFSET;
       if (topOffset > 0) {
-        hoverBubble = <SegmentBubble
-          timezone={timezone}
-          datum={hoverDatum}
-          measure={measure}
-          getValue={getX}
-          getY={getY}
+        bubble = <SegmentBubble
           top={containerStage.y + topOffset}
           left={leftOffset}
+          segmentLabel={String(getX(hoverDatum))}
+          measureLabel={measure.formatDatum(hoverDatum)}
         />;
       }
     }
@@ -467,8 +456,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       </svg>
       <div className="slanty-labels" style={xAxisStage.getLeftTopWidthHeight()}>{slantyLabels}</div>
       <VisMeasureLabel measure={measure} datum={myDatum}/>
-      {hoverBubble}
-      {highlightBubble}
+      {bubble}
     </div>;
   }
 

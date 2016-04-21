@@ -22,20 +22,8 @@
     }
   }
 
-  .buttons {
-    white-space: nowrap;
-
-    &:nth-child(n+2) {
-      margin-top: 7px;
-    }
-
-    .button {
-      margin-right: 5px;
-    }
-
-    .button:last-child {
-      margin-right: 0;
-    }
+  .segment-action-buttons:nth-child(n+2) {
+    margin-top: 7px;
   }
 
   .shpitz {

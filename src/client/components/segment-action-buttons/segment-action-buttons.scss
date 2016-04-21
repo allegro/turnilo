@@ -1,0 +1,13 @@
+@import '../../imports';
+
+.segment-action-buttons {
+  white-space: nowrap;
+
+  .button {
+    margin-right: 5px;
+  }
+
+  .button:last-child {
+    margin-right: 0;
+  }
+}

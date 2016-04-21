@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+if [ `git symbolic-ref --short HEAD` != "master" ]
+then
+  echo "can not publish from a non master branch" >&2
+  exit 1
+fi
+
 if [ "$(git status --porcelain)" != "" ]
 then
   echo "git status not clean!" >&2

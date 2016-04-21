@@ -550,6 +550,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return highlight.owner === owner && (!measure || highlight.measure === measure);
   }
 
+  public highlightOnDiffernetMeasure(owner: string, measure: string): boolean {
+    var { highlight } = this;
+    if (!highlight) return false;
+    return highlight.owner === owner && measure && highlight.measure !== measure;
+  }
+
   public getSingleHighlightSet(): Set {
     var { highlight } = this;
     if (!highlight) return null;

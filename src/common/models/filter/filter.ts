@@ -18,6 +18,13 @@ function swapClause(clauses: List<FilterClause>, clause: FilterClause, other: Fi
   });
 }
 
+function dateToFileString(date: Date): string {
+  return date.toISOString()
+    .replace('T', '_')
+    .replace('Z', '')
+    .replace('.000', '');
+}
+
 export type FilterValue = List<FilterClause>;
 export type FilterJS = ExpressionJS | string;
 
@@ -224,7 +231,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     if (timeRange) {
       var { start, end } = timeRange;
       nonTimeClauseSize--;
-      return `${start.toISOString()}_${end.toISOString()}${nonTimeFilters(nonTimeClauseSize)}`;
+      return `${dateToFileString(start)}_${dateToFileString(end)}${nonTimeFilters(nonTimeClauseSize)}`;
     }
     return nonTimeFilters(nonTimeClauseSize);
   }

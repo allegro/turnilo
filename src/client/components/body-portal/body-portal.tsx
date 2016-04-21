@@ -22,27 +22,30 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     // this.state = {};
   }
 
-  position() {
-    var { left, top } = this.props;
+  updateStyle() {
+    var { left, top, disablePointerEvents } = this.props;
+    var style = this.target.style;
     if (typeof left === 'number') {
-      this.target.style.left = Math.round(left) + 'px';
+      style.left = Math.round(left) + 'px';
     }
     if (typeof top === 'number') {
-      this.target.style.top = Math.round(top) + 'px';
+      style.top = Math.round(top) + 'px';
     }
+    style['z-index'] = disablePointerEvents ? 200 : 201;
+    style['pointer-events'] = disablePointerEvents ? 'none' : 'auto';
   }
 
   componentDidMount() {
-    var { fullSize, disablePointerEvents } = this.props;
+    var { fullSize } = this.props;
     var newDiv = document.createElement('div');
-    newDiv.className = 'body-portal' + (fullSize ? ' full-size' : '') + (disablePointerEvents ? '' : ' pointer-events');
+    newDiv.className = 'body-portal' + (fullSize ? ' full-size' : '');
     this.target = document.body.appendChild(newDiv);
-    this.position();
+    this.updateStyle();
     this.component = ReactDOM.render(React.Children.only(this.props.children) as any, this.target);
   }
 
   componentDidUpdate() {
-    this.position();
+    this.updateStyle();
     this.component = ReactDOM.render(React.Children.only(this.props.children) as any, this.target);
   }
 

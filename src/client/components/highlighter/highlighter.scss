@@ -1,6 +1,8 @@
 @import '../../imports';
 
 .highlighter {
+  pointer-events: none;
+
   .frame {
     position: absolute;
     height: 100%;
