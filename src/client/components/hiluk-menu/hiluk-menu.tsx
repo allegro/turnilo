@@ -3,7 +3,7 @@ require('./hiluk-menu.css');
 import * as React from 'react';
 import { Dataset } from 'plywood';
 import { Fn } from "../../../common/utils/general/general";
-import { Stage, Clicker, Essence, ExternalView } from '../../../common/models/index';
+import { Stage, Essence, ExternalView } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { download, makeFileName } from "../../utils/download/download";
 import { BubbleMenu } from '../bubble-menu/bubble-menu';

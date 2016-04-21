@@ -1,6 +1,5 @@
 import * as numeral from 'numeral';
 import { Dimension, FilterClause, Essence } from '../../models/index';
-import { setToString } from '../general/general';
 import { DisplayYear, formatTimeRange } from "../../../client/utils/date/date";
 
 export interface Formatter {
@@ -84,7 +83,7 @@ export function formatLabel(options: LabelFormatOptions): string {
     case 'number':
     case 'string':
       if (verbose) {
-        label += `: ${setToString(clause.getLiteralSet(), { encloseIn: "" })}`;
+        label += `: ${clause.getLiteralSet().toString()}`;
       } else {
         var setElements = clause.getLiteralSet().elements;
         label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;

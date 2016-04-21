@@ -1,6 +1,5 @@
 import * as filesaver from 'browser-filesaver';
-import { Dataset, Set } from 'plywood';
-import { setToString } from "../../../common/utils/general/general";
+import { Dataset } from 'plywood';
 
 export type FileFormat = "csv" | "tsv" | "json" | "txt";
 
@@ -25,21 +24,9 @@ export function download(dataset: Dataset, fileName?: string, fileFormat?: FileF
 
 export function datasetToFileString(dataset: Dataset, fileFormat?: FileFormat): string {
   if (fileFormat === 'csv') {
-    return dataset.toCSV({
-      formatter: {
-        'SET/STRING': ((v: Set) => {
-          return setToString(v, { encloseIn: ["\"[", "\"]"] });
-        })
-      }
-    });
+    return dataset.toCSV();
   } else if (fileFormat === 'tsv') {
-    return dataset.toTSV({
-      formatter: {
-        'SET/STRING': ((v: Set) => {
-          return setToString(v, { encloseIn: ["[", "]"] });
-        })
-      }
-    });
+    return dataset.toTSV();
   } else {
     return JSON.stringify(dataset.toJS(), null, 2);
   }

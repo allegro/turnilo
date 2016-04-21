@@ -1,7 +1,6 @@
 require('./simple-table.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 export interface InlineStyle {
   left?: number;

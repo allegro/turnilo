@@ -3,10 +3,9 @@ require('./raw-data-modal.css');
 import * as React from 'react';
 import { List } from 'immutable';
 import { $, Dataset, PlywoodValue, Datum, Set, AttributeInfo, isDate, PlyType } from 'plywood';
-import { Essence, Stage, FilterClause, Dimension, DataSource } from '../../../common/models/index';
+import { Essence, Stage, DataSource } from '../../../common/models/index';
 
-import { Fn, makeTitle, setToString, arraySum } from "../../../common/utils/general/general";
-import { formatTimeRange, DisplayYear } from "../../utils/date/date";
+import { Fn, makeTitle, arraySum } from "../../../common/utils/general/general";
 import { download, makeFileName } from "../../utils/download/download";
 import { formatLabel } from "../../../common/utils/formatter/formatter";
 import { classNames } from "../../utils/dom/dom";
@@ -205,10 +204,6 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
         if (isDate(datum[name])) {
           displayValue = (datum[name] as Date).toISOString();
-        }
-
-        if (Set.isSet(value)) {
-          displayValue = setToString(value);
         }
 
         cols.push(<div className={classNames('cell', classFromAttribute(attribute))} key={name} style={colStyle}>

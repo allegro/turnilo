@@ -1,8 +1,6 @@
 import { expect } from 'chai';
 import '../../utils/jsdom-setup';
-import { Dataset, Set } from 'plywood';
-import { List } from 'immutable';
-
+import { Dataset } from 'plywood';
 import { datasetToFileString, getMIMEType } from './download';
 
 describe('Download', () => {

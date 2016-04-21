@@ -215,12 +215,18 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return clauses.get(index).getTimeRange();
   }
 
-  public getFileString(attribute: Expression) {
-    var timeRange = this.getTimeRange(attribute);
-    var { start, end } = timeRange;
-    var nonTimeClauseSize = this.clauses.size - 1;
-    var nonTimeFilters = this.clauses.size - 1 === 0 ? "" : `_filters-${nonTimeClauseSize}`;
-    return `${start.toISOString()}_${end.toISOString()}${nonTimeFilters}`;
+  public getFileString(timeAttribute: Expression) {
+    var nonTimeClauseSize = this.clauses.size;
+    const timeRange = this.getTimeRange(timeAttribute);
+    const nonTimeFilters = ((nonTimeClauseSize: number) => {
+      return nonTimeClauseSize === 0 ? "" : `_filters-${nonTimeClauseSize}`;
+    });
+    if (timeRange) {
+      var { start, end } = timeRange;
+      nonTimeClauseSize--;
+      return `${start.toISOString()}_${end.toISOString()}${nonTimeFilters(nonTimeClauseSize)}`;
+    }
+    return nonTimeFilters(nonTimeClauseSize);
   }
 
   public getLiteralSet(attribute: Expression): Set {
