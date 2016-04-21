@@ -134,7 +134,6 @@ Running `gulp watch` will build the project and start all the automated watchers
 **Recent improvements:**
 
 - Export data to CSV
-- New time series bubbles with hover logic
 - Raw data modal allows you to see the raw data in the selected segment
 - New [customization options](https://github.com/implydata/pivot/blob/master/docs/configuration.md#customization)
 - Go to URL option
