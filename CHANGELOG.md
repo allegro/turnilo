@@ -2,6 +2,21 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.15
+
+- Export data to CSV
+- New time series bubbles with hover logic
+- Raw data modal allows you to see the raw data in the selected segment
+- Better automatic config generation for data sources with URL unsafe names 
+
+## 0.8.14
+
+- Published due to script error (unpublished, please ignore)
+
+## 0.8.13
+
+- Published due to script error (unpublished, please ignore)
+
 ## 0.8.12
 
 - New [customization options](https://github.com/implydata/pivot/blob/master/docs/configuration.md#customization)

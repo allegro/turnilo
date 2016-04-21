@@ -133,14 +133,16 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Export data to CSV
+- New time series bubbles with hover logic
+- Raw data modal allows you to see the raw data in the selected segment
 - New [customization options](https://github.com/implydata/pivot/blob/master/docs/configuration.md#customization)
 - Go to URL option
 - Copy value to clipboard
 - Bar chart
 - Auto refresh
-- Sharing menu for static and relative time frames
-- Quantile measures are now available. Try `$main.quantile($my_value_hist, 0.99)`
-- Added Home view
+
+For a full list of changes see our [CHANGELOG](CHANGELOG.md)
 
 **We will be working on:**
 
