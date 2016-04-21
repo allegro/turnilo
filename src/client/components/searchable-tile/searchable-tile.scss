@@ -6,7 +6,6 @@ $search-box-height: 26px;
 .searchable-tile {
   @extend %module;
   @extend %white-shadow;
-  @extend %module-title;
 
   .rows {
     position: absolute;
