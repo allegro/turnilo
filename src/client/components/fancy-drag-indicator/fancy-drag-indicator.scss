@@ -3,6 +3,8 @@
 $arrow-width: 16px;
 
 .fancy-drag-indicator {
+  pointer-events: none;
+
   .drag-ghost-element {
     position: absolute;
     // left: 0; It gets left from the JS
