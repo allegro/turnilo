@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.16
+
+- Fixed sort metric when following auto suggestion
+
 ## 0.8.15
 
 - Export data to CSV
