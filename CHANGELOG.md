@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.17
+
+- Build `gulp` will fail (exit 1) on error
+
 ## 0.8.16
 
 - Fixed sort metric when following auto suggestion

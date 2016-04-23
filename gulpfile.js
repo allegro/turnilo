@@ -15,11 +15,12 @@ gulp.task('server:tsc', laborer.taskServerTypeScript({ declaration: true }));
 gulp.task('client:test', laborer.taskClientTest());
 gulp.task('server:test', laborer.taskServerTest());
 
-gulp.task('client:bundle', laborer.taskClientPack({ showStats: true }));
+gulp.task('client:bundle', laborer.taskClientPack());
 
 gulp.task('clean', laborer.taskClean());
 
 gulp.task('all', function(cb) {
+  laborer.failOnError();
   runSequence(
     'clean' ,
     ['style', 'icons'],
@@ -29,7 +30,12 @@ gulp.task('all', function(cb) {
   );
 });
 
-gulp.task('all-bundle', function(cb) {
+gulp.task('stats', function(cb) {
+  laborer.showStats();
+  gulp.start('all');
+});
+
+gulp.task('all-minus-bundle', function(cb) {
   runSequence(
     'clean' ,
     ['style', 'icons'],
@@ -38,7 +44,7 @@ gulp.task('all-bundle', function(cb) {
   );
 });
 
-gulp.task('watch', ['all-bundle'], function() {
+gulp.task('watch', ['all-minus-bundle'], function() {
   watch('./src/client/**/*.scss', function() {
     gulp.start('style');
   });
@@ -55,7 +61,7 @@ gulp.task('watch', ['all-bundle'], function() {
     gulp.start('server:tsc');
   });
 
-  laborer.clientPackWatch({ showStats: true })
+  laborer.clientPackWatch()
 });
 
 gulp.task('default', ['all']);
