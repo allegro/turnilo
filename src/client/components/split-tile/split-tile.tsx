@@ -1,14 +1,12 @@
 require('./split-tile.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Executor, Dataset } from 'plywood';
 import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension, Measure} from '../../../common/models/index';
-import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
-import { findParentWithClass, setDragGhost, transformStyle, getXFromEvent } from '../../utils/dom/dom';
+import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension } from '../../../common/models/index';
+import { calculateDragPosition, dragPositionEquals, DragPosition } from '../../../common/utils/general/general';
+import { findParentWithClass, setDragGhost, transformStyle, getXFromEvent, classNames } from '../../utils/dom/dom';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
 import { SplitMenu } from '../split-menu/split-menu';
@@ -22,7 +20,7 @@ export interface SplitTileProps extends React.Props<any> {
   getUrlPrefix?: () => string;
 }
 
-export interface SplitTileState {
+export interface SplitTileState extends DragPosition {
   SplitMenuAsync?: typeof SplitMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
@@ -126,7 +124,9 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
-    this.setState(this.calculateDragPosition(e));
+    var dragPosition = this.calculateDragPosition(e);
+    if (dragPositionEquals(dragPosition, this.state)) return;
+    this.setState(dragPosition);
   }
 
   dragEnter(e: DragEvent) {
@@ -255,14 +255,14 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     var fancyDragIndicator: JSX.Element = null;
     if (dragInsertPosition !== null || dragReplacePosition !== null) {
-      fancyDragIndicator = React.createElement(FancyDragIndicator, {
-        dragInsertPosition,
-        dragReplacePosition
-      });
+      fancyDragIndicator = <FancyDragIndicator
+        dragInsertPosition={dragInsertPosition}
+        dragReplacePosition={dragReplacePosition}
+      />;
     }
 
     return <div
-      className={'split-tile ' + (dragOver ? 'drag-over' : 'no-drag')}
+      className={classNames('split-tile', (dragOver ? 'drag-over' : 'no-drag'))}
       onDragOver={this.dragOver.bind(this)}
       onDragEnter={this.dragEnter.bind(this)}
       onDragLeave={this.dragLeave.bind(this)}

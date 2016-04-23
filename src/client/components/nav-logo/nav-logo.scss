@@ -5,6 +5,9 @@
   padding-right: $nav-padding;
 
   .logo {
+    height: 60px;
+    overflow: hidden;
+
     svg {
       width: 86px;
       height: 60px;

@@ -44,8 +44,12 @@ export function immutableListsEqual<T extends Equalable>(listA: List<T>, listB: 
 }
 
 export interface DragPosition {
-  dragInsertPosition: number;
-  dragReplacePosition: number;
+  dragInsertPosition?: number;
+  dragReplacePosition?: number;
+}
+
+export function dragPositionEquals(dp1: DragPosition, dp2: DragPosition): boolean {
+  return dp1.dragInsertPosition === dp2.dragInsertPosition && dp1.dragReplacePosition === dp2.dragReplacePosition;
 }
 
 export function calculateDragPosition(offset: number, numItems: number, itemWidth: number, itemGap: number): DragPosition {

@@ -4,13 +4,14 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
-import { $, Expression, InAction, Executor, Dataset } from 'plywood';
 import { STRINGS, BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure} from '../../../common/models/index';
-import { calculateDragPosition, DragPosition } from '../../../common/utils/general/general';
-import { formatTimeRange, DisplayYear } from '../../utils/date/date';
+import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension } from '../../../common/models/index';
+import { calculateDragPosition, dragPositionEquals, DragPosition } from '../../../common/utils/general/general';
 import { formatLabel } from "../../../common/utils/formatter/formatter";
-import { findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent } from '../../utils/dom/dom';
+import {
+  findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent,
+  classNames
+} from '../../utils/dom/dom';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 
 import { SvgIcon } from '../svg-icon/svg-icon';
@@ -39,7 +40,7 @@ export interface FilterTileProps extends React.Props<any> {
   getUrlPrefix?: () => string;
 }
 
-export interface FilterTileState {
+export interface FilterTileState extends DragPosition  {
   FilterMenuAsync?: typeof FilterMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
@@ -261,7 +262,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
-    this.setState(this.calculateDragPosition(e));
+    var dragPosition = this.calculateDragPosition(e);
+    if (dragPositionEquals(dragPosition, this.state)) return;
+    this.setState(dragPosition);
   }
 
   dragEnter(e: DragEvent) {
@@ -587,14 +590,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       />;
     }
 
-    var className = [
-      'filter-tile',
-      overflowIndicator ? 'has-overflow' : 'no-overflow',
-      (dragOver ? 'drag-over' : 'no-drag')
-    ].join(' ');
-
     return <div
-      className={className}
+      className={classNames('filter-tile', (overflowIndicator ? 'has-overflow' : 'no-overflow'), (dragOver ? 'drag-over' : 'no-drag'))}
       onDragOver={this.dragOver.bind(this)}
       onDragEnter={this.dragEnter.bind(this)}
       onDragLeave={this.dragLeave.bind(this)}

@@ -1,13 +1,8 @@
 require('./fancy-drag-indicator.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Executor, Dataset } from 'plywood';
 import { CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-// import { SomeComp } from '../some-comp/some-comp';
 
 export interface FancyDragIndicatorProps extends React.Props<any> {
   dragInsertPosition: number;

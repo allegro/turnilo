@@ -330,6 +330,7 @@
 
   .reading {
     @include ellipsis;
+    pointer-events: none;
     white-space: nowrap;
     margin-right: 20px;
     height: 16px;
