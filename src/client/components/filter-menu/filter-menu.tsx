@@ -2,7 +2,7 @@ require('./filter-menu.css');
 
 import * as React from 'react';
 import { Fn } from "../../../common/utils/general/general";
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, Dimension, DragPosition } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 
@@ -17,8 +17,7 @@ export interface FilterMenuProps extends React.Props<any> {
   containerStage?: Stage;
   openOn: Element;
   dimension: Dimension;
-  insertPosition: number;
-  replacePosition: number;
+  changePosition: DragPosition;
   onClose: Fn;
   inside?: Element;
 }
@@ -34,7 +33,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   }
 
   render() {
-    var { clicker, essence, insertPosition, replacePosition, direction, containerStage, openOn, dimension, onClose, inside } = this.props;
+    var { clicker, essence, changePosition, direction, containerStage, openOn, dimension, onClose, inside } = this.props;
     if (!dimension) return null;
 
     var menuSize: Stage = null;
@@ -53,8 +52,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
         clicker={clicker}
         dimension={dimension}
         essence={essence}
-        insertPosition={insertPosition}
-        replacePosition={replacePosition}
+        changePosition={changePosition}
         onClose={onClose}
       />;
     }

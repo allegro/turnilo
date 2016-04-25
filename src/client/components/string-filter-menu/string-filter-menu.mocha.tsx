@@ -16,9 +16,8 @@ describe('StringFilterMenu', () => {
         clicker={null}
         dimension={null}
         essence={null}
-        insertPosition={null}
+        changePosition={null}
         onClose={null}
-        replacePosition={null}
       />
     );
 

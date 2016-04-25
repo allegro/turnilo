@@ -4,7 +4,7 @@ import * as React from 'react';
 import { $, ply, r, Expression, Executor, Dataset, SortAction, Set } from 'plywood';
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS, SEGMENT, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors, DragPosition } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
 import { enterKey } from '../../utils/dom/dom';
 import { ClearableInput } from '../clearable-input/clearable-input';
@@ -19,8 +19,7 @@ export interface StringFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   dimension: Dimension;
   essence: Essence;
-  insertPosition: number;
-  replacePosition: number;
+  changePosition: DragPosition;
   onClose: Fn;
 }
 
@@ -148,7 +147,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   constructFilter(): Filter {
-    var { essence, dimension, insertPosition, replacePosition } = this.props;
+    var { essence, dimension, changePosition } = this.props;
     var { selectedValues } = this.state;
     var { filter } = essence;
 
@@ -157,10 +156,10 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         expression: dimension.expression,
         selection: r(selectedValues)
       });
-      if (insertPosition !== null) {
-        return filter.insertByIndex(insertPosition, clause);
-      } else if (replacePosition !== null) {
-        return filter.replaceByIndex(replacePosition, clause);
+      if (changePosition.insert !== null) {
+        return filter.insertByIndex(changePosition.insert, clause);
+      } else if (changePosition.replace !== null) {
+        return filter.replaceByIndex(changePosition.replace, clause);
       } else {
         return filter.setClause(clause);
       }

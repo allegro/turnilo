@@ -23,3 +23,4 @@ export * from './link-view-config/link-view-config';
 export * from './user/user';
 export * from './customization/customization';
 export * from './external-view/external-view';
+export * from './drag-position/drag-position';
