@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.18
+
+- Better favicon
+- Fixed natural bar chart order
+
 ## 0.8.17
 
 - Build `gulp` will fail (exit 1) on error
