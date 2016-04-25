@@ -25,7 +25,7 @@ function favicon(options: ViewOptions): string {
 <link rel="shortcut icon" href="/favicon/favicon.ico?v=${version}">
 <meta name="apple-mobile-web-app-title" content="${title}">
 <meta name="application-name" content="${title}">
-<meta name="msapplication-TileColor" content="#e4e4e4">
+<meta name="msapplication-TileColor" content="#0093E2">
 <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png?v=${version}">
 <meta name="msapplication-config" content="/favicon/browserconfig.xml?v=${version}">
 <meta name="theme-color" content="#ffffff">

@@ -51,10 +51,6 @@ function findClosest(data: Datum[], dragDate: Date, scaleX: (t: Date) => number)
   return closestDatum;
 }
 
-function findInDataset(dataset: Dataset, attribute: string, value: TimeRange): Datum {
-  return dataset.data.filter(d => value.equals(d[attribute] as TimeRange))[0] || null;
-}
-
 export interface TimeSeriesState {
   loading?: boolean;
   dataset?: Dataset;
@@ -542,7 +538,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       if (colors) {
         var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(bubbleTimeRange.end);
 
-        var hoverDatums = dataset.data.map(d => findInDataset(d[SPLIT] as Dataset, TIME_SEGMENT, bubbleTimeRange));
+        var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(TIME_SEGMENT, bubbleTimeRange));
         var colorValues = colors.getColors(dataset.data.map(d => d[SEGMENT]));
         var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
           var segment = d[SEGMENT];
@@ -566,7 +562,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       } else {
         var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(bubbleTimeRange.midpoint());
 
-        var highlightDatum = findInDataset(dataset, TIME_SEGMENT, shownTimeRange);
+        var highlightDatum = dataset.findDatumByAttribute(TIME_SEGMENT, shownTimeRange);
         return <SegmentBubble
           left={leftOffset}
           top={topOffset + HOVER_BUBBLE_V_OFFSET}
@@ -581,7 +577,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(hoverTimeRange.midpoint());
 
       if (colors) {
-        var hoverDatums = dataset.data.map(d => findInDataset(d[SPLIT] as Dataset, TIME_SEGMENT, hoverTimeRange));
+        var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(TIME_SEGMENT, hoverTimeRange));
         var colorValues = colors.getColors(dataset.data.map(d => d[SEGMENT]));
         var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
           var segment = d[SEGMENT];
@@ -603,7 +599,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         />;
 
       } else {
-        var hoverDatum = findInDataset(dataset, TIME_SEGMENT, hoverTimeRange);
+        var hoverDatum = dataset.findDatumByAttribute(TIME_SEGMENT, hoverTimeRange);
         if (!hoverDatum) return null;
         return <SegmentBubble
           left={leftOffset}
