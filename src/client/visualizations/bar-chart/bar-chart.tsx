@@ -93,7 +93,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
         if (splitDimension.kind === 'boolean') {
           split = split.changeSortAction(new SortAction({
             expression: $(SEGMENT),
-            direction: 'ascending'
+            direction: 'descending'
           }));
         } else {
           split = split.changeSortAction(dataSource.getDefaultSortAction());
