@@ -1,11 +1,7 @@
 require('./drop-indicator.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Filter, Dimension, Measure } from '../../../common/models/index';
-// import { SomeComp } from '../some-comp/some-comp';
 
 export interface DropIndicatorProps extends React.Props<any> {
 }

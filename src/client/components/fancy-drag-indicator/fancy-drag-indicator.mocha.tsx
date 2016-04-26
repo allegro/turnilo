@@ -7,15 +7,18 @@ import '../../utils/require-extensions';
 
 import * as TestUtils from 'react-addons-test-utils';
 
-import { $, Expression } from 'plywood';
+import { DragPosition } from '../../../common/models/index';
 import { FancyDragIndicator } from './fancy-drag-indicator';
 
 describe('FancyDragIndicator', () => {
+  var dragPosition = DragPosition.fromJS({
+    insert: 0
+  });
+
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <FancyDragIndicator
-        dragInsertPosition={null}
-        dragReplacePosition={null}
+        dragPosition={dragPosition}
       />
     );
 

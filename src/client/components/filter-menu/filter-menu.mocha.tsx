@@ -19,10 +19,9 @@ describe('FilterMenu', () => {
         dimension={null}
         direction={null}
         essence={null}
-        insertPosition={null}
+        changePosition={null}
         onClose={null}
         openOn={null}
-        replacePosition={null}
       />
     );
 

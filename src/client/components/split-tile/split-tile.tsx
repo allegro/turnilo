@@ -4,8 +4,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension } from '../../../common/models/index';
-import { calculateDragPosition, dragPositionEquals, DragPosition } from '../../../common/utils/general/general';
+import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension, DragPosition } from '../../../common/models/index';
 import { findParentWithClass, setDragGhost, transformStyle, getXFromEvent, classNames } from '../../utils/dom/dom';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
@@ -20,18 +19,15 @@ export interface SplitTileProps extends React.Props<any> {
   getUrlPrefix?: () => string;
 }
 
-export interface SplitTileState extends DragPosition {
+export interface SplitTileState {
   SplitMenuAsync?: typeof SplitMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   menuSplit?: SplitCombine;
-  dragOver?: boolean;
-  dragInsertPosition?: number;
-  dragReplacePosition?: number;
+  dragPosition?: DragPosition;
 }
 
 export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
-  private dragCounter: number;
 
   constructor() {
     super();
@@ -39,9 +35,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       SplitMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
-      dragOver: false,
-      dragInsertPosition: null,
-      dragReplacePosition: null
+      dragPosition: null
     };
   }
 
@@ -100,24 +94,31 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       dataTransfer.setData("text/plain", newUrl);
     }
 
-    DragManager.setDragSplit(split);
-    DragManager.setDragDimension(dimension);
+    DragManager.setDragSplit(split, 'filter-tile');
+    DragManager.setDragDimension(dimension, 'filter-tile');
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
   }
 
   calculateDragPosition(e: DragEvent): DragPosition {
-    var { essence } = this.props;
+    const { essence } = this.props;
     var numItems = essence.splits.length();
     var rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
     var x = getXFromEvent(e);
     var offset = x - rect.left;
-    return calculateDragPosition(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
+    return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
 
   canDrop(e: DragEvent): boolean {
     return Boolean(DragManager.getDragSplit() || DragManager.getDragDimension());
+  }
+
+  dragEnter(e: DragEvent) {
+    if (!this.canDrop(e)) return;
+    this.setState({
+      dragPosition: this.calculateDragPosition(e)
+    });
   }
 
   dragOver(e: DragEvent) {
@@ -125,36 +126,15 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
     var dragPosition = this.calculateDragPosition(e);
-    if (dragPositionEquals(dragPosition, this.state)) return;
-    this.setState(dragPosition);
-  }
-
-  dragEnter(e: DragEvent) {
-    if (!this.canDrop(e)) return;
-    var { dragOver } = this.state;
-    if (!dragOver) {
-      this.dragCounter = 0;
-      var newState: SplitTileState = this.calculateDragPosition(e);
-      newState.dragOver = true;
-      this.setState(newState);
-    } else {
-      this.dragCounter++;
-    }
+    if (dragPosition.equals(this.state.dragPosition)) return;
+    this.setState({ dragPosition });
   }
 
   dragLeave(e: DragEvent) {
     if (!this.canDrop(e)) return;
-    var { dragOver } = this.state;
-    if (!dragOver) return;
-    if (this.dragCounter === 0) {
-      this.setState({
-        dragOver: false,
-        dragInsertPosition: null,
-        dragReplacePosition: null
-      });
-    } else {
-      this.dragCounter--;
-    }
+    this.setState({
+      dragPosition: null
+    });
   }
 
   drop(e: DragEvent) {
@@ -171,19 +151,16 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     }
 
     if (newSplitCombine) {
-      var { dragReplacePosition, dragInsertPosition } = this.calculateDragPosition(e);
-      if (dragReplacePosition !== null) {
-        clicker.changeSplits(splits.replaceByIndex(dragReplacePosition, newSplitCombine), VisStrategy.FairGame);
-      } else if (dragInsertPosition !== null) {
-        clicker.changeSplits(splits.insertByIndex(dragInsertPosition, newSplitCombine), VisStrategy.FairGame);
+      var dragPosition = this.calculateDragPosition(e);
+      if (dragPosition.isReplace()) {
+        clicker.changeSplits(splits.replaceByIndex(dragPosition.replace, newSplitCombine), VisStrategy.FairGame);
+      } else {
+        clicker.changeSplits(splits.insertByIndex(dragPosition.insert, newSplitCombine), VisStrategy.FairGame);
       }
     }
 
-    this.dragCounter = 0;
     this.setState({
-      dragOver: false,
-      dragInsertPosition: null,
-      dragReplacePosition: null
+      dragPosition: null
     });
   }
 
@@ -218,7 +195,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   render() {
     var { essence } = this.props;
-    var { menuDimension, dragOver, dragInsertPosition, dragReplacePosition } = this.state;
+    var { menuDimension, dragPosition } = this.state;
     var { dataSource, splits } = essence;
 
     var sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
@@ -253,26 +230,21 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       </div>;
     }, this);
 
-    var fancyDragIndicator: JSX.Element = null;
-    if (dragInsertPosition !== null || dragReplacePosition !== null) {
-      fancyDragIndicator = <FancyDragIndicator
-        dragInsertPosition={dragInsertPosition}
-        dragReplacePosition={dragReplacePosition}
-      />;
-    }
-
     return <div
-      className={classNames('split-tile', (dragOver ? 'drag-over' : 'no-drag'))}
-      onDragOver={this.dragOver.bind(this)}
+      className="split-tile"
       onDragEnter={this.dragEnter.bind(this)}
-      onDragLeave={this.dragLeave.bind(this)}
-      onDrop={this.drop.bind(this)}
     >
       <div className="title">{STRINGS.split}</div>
       <div className="items" ref="items">
         {splitItems}
       </div>
-      {fancyDragIndicator}
+      {dragPosition ? <FancyDragIndicator dragPosition={dragPosition}/> : null}
+      {dragPosition ? <div
+        className="drag-mask"
+        onDragOver={this.dragOver.bind(this)}
+        onDragLeave={this.dragLeave.bind(this)}
+        onDrop={this.drop.bind(this)}
+      /> : null}
       {this.renderMenu()}
     </div>;
   }

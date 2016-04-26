@@ -231,7 +231,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     dataTransfer.effectAllowed = 'all';
     dataTransfer.setData("text/url-list", newUrl);
     dataTransfer.setData("text/plain", newUrl);
-    DragManager.setDragDimension(dimension);
+    DragManager.setDragDimension(dimension, 'dimension-tile');
     setDragGhost(dataTransfer, dimension.title);
   }
 

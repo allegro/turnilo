@@ -43,53 +43,6 @@ export function immutableListsEqual<T extends Equalable>(listA: List<T>, listB: 
   return immutableArraysEqual(listA.toArray(), listB.toArray());
 }
 
-export interface DragPosition {
-  dragInsertPosition?: number;
-  dragReplacePosition?: number;
-}
-
-export function dragPositionEquals(dp1: DragPosition, dp2: DragPosition): boolean {
-  return dp1.dragInsertPosition === dp2.dragInsertPosition && dp1.dragReplacePosition === dp2.dragReplacePosition;
-}
-
-export function calculateDragPosition(offset: number, numItems: number, itemWidth: number, itemGap: number): DragPosition {
-  if (!numItems) {
-    return {
-      dragInsertPosition: null,
-      dragReplacePosition: 0
-    };
-  }
-
-  if (offset < 0) {
-    return {
-      dragInsertPosition: 0,
-      dragReplacePosition: null
-    };
-  }
-
-  var sectionWidth = itemWidth + itemGap;
-  var sectionNumber = Math.floor(offset / sectionWidth);
-  if (sectionNumber > numItems) {
-    return {
-      dragInsertPosition: null,
-      dragReplacePosition: numItems
-    };
-  }
-
-  var offsetWithinSection = offset - sectionWidth * sectionNumber;
-  if (offsetWithinSection < itemWidth) {
-    return {
-      dragInsertPosition: null,
-      dragReplacePosition: sectionNumber
-    };
-  } else {
-    return {
-      dragInsertPosition: sectionNumber + 1,
-      dragReplacePosition: null
-    };
-  }
-}
-
 export function collect(wait: number, fn: Fn): Fn {
   var timeout: any;
   var later = function() {
