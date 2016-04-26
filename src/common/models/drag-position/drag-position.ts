@@ -102,7 +102,7 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   }
 
   public isReplace(): boolean {
-    return this.insert !== null;
+    return this.replace !== null;
   }
 
 }
