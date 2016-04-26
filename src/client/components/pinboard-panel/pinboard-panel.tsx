@@ -1,12 +1,10 @@
 require('./pinboard-panel.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { List, OrderedSet } from 'immutable';
-import { $, Expression, Executor, Dataset, RefExpression, SortAction } from 'plywood';
+import { $, Expression, SortAction } from 'plywood';
 import { STRINGS } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { Clicker, Essence, DataSource, Filter, Dimension, Measure, SortOn, VisStrategy, Colors } from '../../../common/models/index';
+import { Clicker, Essence, SortOn, VisStrategy, Colors } from '../../../common/models/index';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { PinboardMeasureTile } from '../pinboard-measure-tile/pinboard-measure-tile';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
@@ -22,7 +20,6 @@ export interface PinboardPanelState {
 }
 
 export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardPanelState> {
-  private dragCounter: number;
 
   constructor() {
     super();
@@ -40,43 +37,25 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     return false;
   }
 
+  dragEnter(e: DragEvent) {
+    if (!this.canDrop(e)) return;
+    this.setState({ dragOver: true });
+  }
+
   dragOver(e: DragEvent) {
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
   }
 
-  dragEnter(e: DragEvent) {
-    if (!this.canDrop(e)) return;
-    var { dragOver } = this.state;
-    if (!dragOver) {
-      this.dragCounter = 0;
-      this.setState({
-        dragOver: true
-      });
-    } else {
-      this.dragCounter++;
-
-    }
-  }
-
   dragLeave(e: DragEvent) {
     if (!this.canDrop(e)) return;
-    var { dragOver } = this.state;
-    if (!dragOver) return;
-    if (this.dragCounter === 0) {
-      this.setState({
-        dragOver: false
-      });
-    } else {
-      this.dragCounter--;
-    }
+    this.setState({ dragOver: false });
   }
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
     e.preventDefault();
-    this.dragCounter = 0;
     var dimension = DragManager.getDragDimension();
     if (dimension) {
       this.props.clicker.pin(dimension);
@@ -191,11 +170,6 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       />);
     });
 
-    var dropIndicatorTile: JSX.Element = null;
-    if (dragOver) {
-      dropIndicatorTile = <div className="drop-indicator-tile"></div>;
-    }
-
     var placeholder: JSX.Element = null;
     if (!dragOver && !dimensionTiles.length) {
       placeholder = <div className="placeholder">
@@ -206,10 +180,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
     return <div
       className="pinboard-panel"
-      onDragOver={this.dragOver.bind(this)}
       onDragEnter={this.dragEnter.bind(this)}
-      onDragLeave={this.dragLeave.bind(this)}
-      onDrop={this.drop.bind(this)}
     >
       {legendMeasureSelector}
       {legendDimensionTile}
@@ -220,8 +191,14 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         onSelect={this.onPinboardSortOnSelect.bind(this)}
       />
       {dimensionTiles}
-      {dropIndicatorTile}
+      {dragOver ? <div className="drop-indicator-tile"/> : null}
       {placeholder}
+      {dragOver ? <div
+        className="drag-mask"
+        onDragOver={this.dragOver.bind(this)}
+        onDragLeave={this.dragLeave.bind(this)}
+        onDrop={this.drop.bind(this)}
+      /> : null}
     </div>;
   }
 }

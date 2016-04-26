@@ -71,4 +71,8 @@
       text-align: center;
     }
   }
+
+  .drag-mask {
+    @include pin-full;
+  }
 }

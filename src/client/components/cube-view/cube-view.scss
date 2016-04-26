@@ -65,6 +65,11 @@
         @include pin-full;
         z-index: 9;
       }
+
+      .drag-mask {
+        @include pin-full;
+        z-index: 10;
+      }
     }
   }
 

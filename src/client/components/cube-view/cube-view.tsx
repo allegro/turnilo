@@ -50,7 +50,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   public mounted: boolean;
   private clicker: Clicker;
-  private dragCounter: number;
 
   constructor() {
     super();
@@ -230,39 +229,25 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return Boolean(DragManager.getDragDimension());
   }
 
+  dragEnter(e: DragEvent) {
+    if (!this.canDrop(e)) return;
+    this.setState({ dragOver: true });
+  }
+
   dragOver(e: DragEvent) {
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
   }
 
-  dragEnter(e: DragEvent) {
-    if (!this.canDrop(e)) return;
-    var { dragOver } = this.state;
-    if (!dragOver) {
-      this.dragCounter = 0;
-      this.setState({ dragOver: true });
-    } else {
-      this.dragCounter++;
-    }
-  }
-
   dragLeave(e: DragEvent) {
-    if (!this.canDrop(e)) return;
-    var { dragOver } = this.state;
-    if (!dragOver) return;
-    if (this.dragCounter === 0) {
-      this.setState({ dragOver: false });
-    } else {
-      this.dragCounter--;
-    }
+    this.setState({ dragOver: false });
   }
 
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
     e.preventDefault();
     var { essence } = this.state;
-    this.dragCounter = 0;
     var dimension = DragManager.getDragDimension();
     if (dimension) {
       this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
@@ -381,14 +366,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           </div>
           <div
             className='center-main'
-            onDragOver={this.dragOver.bind(this)}
             onDragEnter={this.dragEnter.bind(this)}
-            onDragLeave={this.dragLeave.bind(this)}
-            onDrop={this.drop.bind(this)}
           >
             <div className='visualization' ref='visualization'>{visElement}</div>
             {manualFallback}
             {dragOver ? <DropIndicator/> : null}
+            {dragOver ? <div
+              className="drag-mask"
+              onDragOver={this.dragOver.bind(this)}
+              onDragLeave={this.dragLeave.bind(this)}
+              onDrop={this.drop.bind(this)}
+            /> : null}
           </div>
         </div>
         <PinboardPanel

@@ -248,8 +248,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     return Boolean(DragManager.getDragDimension());
   }
 
+  dragEnter(e: DragEvent) {
+    if (!this.canDrop(e)) return;
+    var dragPosition = this.calculateDragPosition(e);
+    if (dragPosition.equals(this.state.dragPosition)) return;
+    this.setState({ dragPosition });
+  }
+
   dragOver(e: DragEvent) {
-    console.log('dragOver', e.target);
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = 'move';
     e.preventDefault();
@@ -258,16 +264,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState({ dragPosition });
   }
 
-  dragEnter(e: DragEvent) {
-    console.log('dragEnter', e.target);
-    if (!this.canDrop(e)) return;
-    var dragPosition = this.calculateDragPosition(e);
-    if (dragPosition.equals(this.state.dragPosition)) return;
-    this.setState({ dragPosition });
-  }
-
   dragLeave(e: DragEvent) {
-    console.log('dragLeave', e.target);
     this.setState({ dragPosition: null });
   }
 
@@ -547,15 +544,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       overflowIndicator = this.renderOverflow(overflowItemBlanks);
     }
 
-    var dragMask: JSX.Element = null;
-    if (dragPosition) {
-      dragMask = <div className="drag-mask"
-        onDragOver={this.dragOver.bind(this)}
-        onDragLeave={this.dragLeave.bind(this)}
-        onDrop={this.drop.bind(this)}
-      />;
-    }
-
     return <div
       className={classNames('filter-tile', (overflowIndicator ? 'has-overflow' : 'no-overflow'))}
       onDragEnter={this.dragEnter.bind(this)}
@@ -567,7 +555,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       </div>
       {overflowIndicator}
       {dragPosition ? <FancyDragIndicator dragPosition={dragPosition}/> : null}
-      {dragMask}
+      {dragPosition ? <div
+        className="drag-mask"
+        onDragOver={this.dragOver.bind(this)}
+        onDragLeave={this.dragLeave.bind(this)}
+        onDrop={this.drop.bind(this)}
+      /> : null}
       {this.renderMenu()}
     </div>;
   }

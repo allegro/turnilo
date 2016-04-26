@@ -114,6 +114,13 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     return Boolean(DragManager.getDragSplit() || DragManager.getDragDimension());
   }
 
+  dragEnter(e: DragEvent) {
+    if (!this.canDrop(e)) return;
+    this.setState({
+      dragPosition: this.calculateDragPosition(e)
+    });
+  }
+
   dragOver(e: DragEvent) {
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = 'move';
@@ -121,13 +128,6 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
     this.setState({ dragPosition });
-  }
-
-  dragEnter(e: DragEvent) {
-    if (!this.canDrop(e)) return;
-    this.setState({
-      dragPosition: this.calculateDragPosition(e)
-    });
   }
 
   dragLeave(e: DragEvent) {
@@ -152,7 +152,6 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     if (newSplitCombine) {
       var dragPosition = this.calculateDragPosition(e);
-      console.log('dragPosition', dragPosition);
       if (dragPosition.replace !== null) {
         clicker.changeSplits(splits.replaceByIndex(dragPosition.replace, newSplitCombine), VisStrategy.FairGame);
       } else if (dragPosition.insert !== null) {
@@ -231,16 +230,6 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       </div>;
     }, this);
 
-    var dragMask: JSX.Element = null;
-    if (dragPosition) {
-      dragMask = <div
-        className="drag-mask"
-        onDragOver={this.dragOver.bind(this)}
-        onDragLeave={this.dragLeave.bind(this)}
-        onDrop={this.drop.bind(this)}
-      />;
-    }
-
     return <div
       className="split-tile"
       onDragEnter={this.dragEnter.bind(this)}
@@ -250,7 +239,12 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         {splitItems}
       </div>
       {dragPosition ? <FancyDragIndicator dragPosition={dragPosition}/> : null}
-      {dragMask}
+      {dragPosition ? <div
+        className="drag-mask"
+        onDragOver={this.dragOver.bind(this)}
+        onDragLeave={this.dragLeave.bind(this)}
+        onDrop={this.drop.bind(this)}
+      /> : null}
       {this.renderMenu()}
     </div>;
   }
