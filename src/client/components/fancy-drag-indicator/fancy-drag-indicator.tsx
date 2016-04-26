@@ -22,12 +22,13 @@ export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps,
 
   render() {
     const { dragPosition } = this.props;
+    if (!dragPosition) return null;
 
     const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 
     let ghostArrowLeft: number;
     let dragGhostElement: JSX.Element = null;
-    if (dragPosition.insert !== null) {
+    if (dragPosition.isInsert()) {
       ghostArrowLeft = dragPosition.insert * sectionWidth - CORE_ITEM_GAP / 2;
     } else {
       ghostArrowLeft = dragPosition.replace * sectionWidth + CORE_ITEM_WIDTH / 2;

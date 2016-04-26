@@ -156,10 +156,12 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         expression: dimension.expression,
         selection: r(selectedValues)
       });
-      if (changePosition.insert !== null) {
-        return filter.insertByIndex(changePosition.insert, clause);
-      } else if (changePosition.replace !== null) {
-        return filter.replaceByIndex(changePosition.replace, clause);
+      if (changePosition) {
+        if (changePosition.isInsert()) {
+          return filter.insertByIndex(changePosition.insert, clause);
+        } else {
+          return filter.replaceByIndex(changePosition.replace, clause);
+        }
       } else {
         return filter.setClause(clause);
       }

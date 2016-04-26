@@ -33,7 +33,7 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
 
     var sectionWidth = itemWidth + itemGap;
     var sectionNumber = Math.floor(offset / sectionWidth);
-    if (sectionNumber > numItems) {
+    if (numItems <= sectionNumber) {
       return new DragPosition({
         replace: numItems
       });
@@ -95,6 +95,14 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
     return DragPosition.isDragPosition(other) &&
       this.insert === other.insert &&
       this.replace === other.replace;
+  }
+
+  public isInsert(): boolean {
+    return this.insert !== null;
+  }
+
+  public isReplace(): boolean {
+    return this.insert !== null;
   }
 
 }

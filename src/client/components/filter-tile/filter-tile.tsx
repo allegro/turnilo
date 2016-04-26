@@ -291,9 +291,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       var existingClause = filter.clauseForExpression(dimension.expression);
       if (existingClause) {
         var newFilter: Filter;
-        if (dragPosition.replace !== null) {
+        if (dragPosition.isReplace()) {
           newFilter = filter.replaceByIndex(dragPosition.replace, existingClause);
-        } else if (dragPosition.insert !== null) {
+        } else {
           newFilter = filter.insertByIndex(dragPosition.insert, existingClause);
         }
         if (filter.equals(newFilter)) {
@@ -346,7 +346,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { FilterMenuAsync, menuOpenOn, menuDimension, menuInside, possiblePosition, maxItems, overflowMenuOpenOn } = this.state;
     if (!FilterMenuAsync || !menuDimension) return null;
 
-    if (possiblePosition.replace === maxItems) {
+    if (possiblePosition && possiblePosition.replace === maxItems) {
       possiblePosition = new DragPosition({ insert: possiblePosition.replace });
     }
 
@@ -508,7 +508,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       });
     }
 
-    if (possibleDimension) {
+    if (possibleDimension && possiblePosition) {
       var dummyBlank: ItemBlank = {
         dimension: possibleDimension,
         source: 'from-drag'
@@ -516,10 +516,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       if (possiblePosition.replace === maxItems) {
         possiblePosition = new DragPosition({ insert: possiblePosition.replace });
       }
-      if (possiblePosition.insert !== null) {
+      if (possiblePosition.isInsert()) {
         itemBlanks.splice(possiblePosition.insert, 0, dummyBlank);
-      }
-      if (possiblePosition.replace !== null) {
+      } else {
         itemBlanks[possiblePosition.replace] = dummyBlank;
       }
     }
