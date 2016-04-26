@@ -228,7 +228,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dataTransfer.setData("text/plain", newUrl);
     }
 
-    DragManager.setDragDimension(dimension);
+    DragManager.setDragDimension(dimension, 'filter-tile');
 
     setDragGhost(dataTransfer, dimension.title);
 
@@ -296,13 +296,21 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         } else {
           newFilter = filter.insertByIndex(dragPosition.insert, existingClause);
         }
-        if (filter.equals(newFilter)) {
-          this.filterMenuRequest(dimension);
-        } else {
+
+        var newFilterSame = filter.equals(newFilter);
+        if (!newFilterSame) {
           clicker.changeFilter(newFilter);
-          setTimeout(() => {
+        }
+
+        if (DragManager.getDragOrigin() !== 'filter-tile') { // Do not open the menu if it is an internal re-arrange
+          if (newFilterSame) {
             this.filterMenuRequest(dimension);
-          }, ANIMATION_DURATION + 50); // Wait for the animation to finish to know where to open the menu;
+          } else {
+            // Wait for the animation to finish to know where to open the menu
+            setTimeout(() => {
+              this.filterMenuRequest(dimension);
+            }, ANIMATION_DURATION + 50);
+          }
         }
 
       } else {
