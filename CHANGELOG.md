@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.19
+
+- More robust cross browser dragging
+- Faster incremental build system
+
 ## 0.8.18
 
 - Better favicon
