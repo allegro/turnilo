@@ -284,7 +284,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
 
     var stepWidth = scaleX.rangeBand();
 
-    if (essence.highlightOnDiffernetMeasure(BarChart.id, measure.name)) return null;
+    if (essence.highlightOnDifferentMeasure(BarChart.id, measure.name)) return null;
 
     if (essence.highlightOn(BarChart.id, measure.name)) {
       var bubbleHighlightDelta = essence.highlight.delta;

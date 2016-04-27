@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
-    "fs-extra": "0.28.0",
+    "fs-extra": "0.29.0",
     "gulp": "3.9.1",
     "gulp-watch": "4.3.5",
     "istanbul": "0.4.3",

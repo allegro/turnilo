@@ -519,7 +519,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     const { scrollTop, dragTimeRange, roundDragTimeRange, dragOnMeasure, hoverTimeRange, hoverMeasure, scaleX } = this.state;
     const { colors, timezone } = essence;
 
-    if (essence.highlightOnDiffernetMeasure(TimeSeries.id, measure.name)) return null;
+    if (essence.highlightOnDifferentMeasure(TimeSeries.id, measure.name)) return null;
 
     var topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
     if (topOffset < 0) return null;
