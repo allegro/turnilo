@@ -286,9 +286,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     (this.refs['splitTile'] as SplitTile).splitMenuRequest(dimension);
   }
 
-  registerDownloadableDataset(downloadableDataset: Dataset): void {
+  registerDownloadableDataset(newDownloadableDataset: Dataset): void {
+    const { downloadableDataset } = this.state;
+    if (downloadableDataset === newDownloadableDataset) return;
     this.setState({
-      downloadableDataset
+      downloadableDataset: newDownloadableDataset
     });
   }
 

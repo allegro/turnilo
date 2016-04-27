@@ -11,3 +11,9 @@ export interface VisualizationProps {
   openRawDataModal?: Fn;
   registerDownloadableDataset?: (dataset: Dataset) => void;
 }
+
+export interface DatasetLoad {
+  loading?: boolean;
+  dataset?: Dataset;
+  error?: any;
+}

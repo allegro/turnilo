@@ -1,11 +1,8 @@
 require('./totals.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';
-import { hasOwnProperty } from '../../../common/utils/general/general';
-import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Colors, DataSource, VisualizationProps, Resolve } from "../../../common/models/index";
+import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve } from "../../../common/models/index";
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 
@@ -13,9 +10,7 @@ const PADDING_H = 60;
 const TOTAL_WIDTH = 176;
 
 export interface TotalsState {
-  loading?: boolean;
-  dataset?: Dataset;
-  error?: any;
+  datasetLoad?: DatasetLoad;
 }
 
 export class Totals extends React.Component<VisualizationProps, TotalsState> {
@@ -34,9 +29,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   constructor() {
     super();
     this.state = {
-      loading: false,
-      dataset: null,
-      error: null
+      datasetLoad: {}
     };
   }
 
@@ -54,28 +47,30 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       query = query.performAction(measure.toApplyAction());
     });
 
-    this.setState({ loading: true });
+    this.precalculate(this.props, { loading: true });
     dataSource.executor(query)
       .then(
         (dataset: Dataset) => {
-          registerDownloadableDataset(dataset);
           if (!this.mounted) return;
-          this.setState({
+          this.precalculate(this.props, {
             loading: false,
             dataset,
             error: null
           });
         },
         (error) => {
-          registerDownloadableDataset(null);
           if (!this.mounted) return;
-          this.setState({
+          this.precalculate(this.props, {
             loading: false,
             dataset: null,
             error
           });
         }
       );
+  }
+
+  componentWillMount() {
+    this.precalculate(this.props);
   }
 
   componentDidMount() {
@@ -85,6 +80,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
+    this.precalculate(nextProps);
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
@@ -100,20 +96,41 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     this.mounted = false;
   }
 
+  precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
+    const { registerDownloadableDataset, essence } = props;
+    const { splits } = essence;
+
+    var existingDatasetLoad = this.state.datasetLoad;
+    var newState: TotalsState = {};
+    if (datasetLoad) {
+      // Always keep the old dataset while loading
+      if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
+
+      newState.datasetLoad = datasetLoad;
+    } else {
+      datasetLoad = existingDatasetLoad;
+    }
+
+    var { dataset } = datasetLoad;
+    if (dataset && splits.length()) {
+      if (registerDownloadableDataset) registerDownloadableDataset(dataset);
+    }
+
+    this.setState(newState);
+  }
+
   render() {
     var { essence, stage } = this.props;
-    var { loading, dataset, error } = this.state;
+    var { datasetLoad } = this.state;
 
-    var myDatum = dataset ? dataset.data[0] : null;
+    var myDatum = datasetLoad.dataset ? datasetLoad.dataset.data[0] : null;
     var measures = essence.getEffectiveMeasures();
     var single = measures.size === 1;
 
     var totals = measures.map(measure => {
-      var measureName = measure.name;
-
       var measureValueStr = '-';
       if (myDatum) {
-        measureValueStr = measure.formatFn(myDatum[measureName] as number);
+        measureValueStr = measure.formatDatum(myDatum);
       }
 
       return <div
@@ -138,8 +155,8 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
 
     return <div className="totals">
       <div className="total-container" style={totalContainerStyle}>{totals}</div>
-      {error ? <QueryError error={error}/> : null}
-      {loading ? <Loader/> : null}
+      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
+      {datasetLoad.loading ? <Loader/> : null}
     </div>;
   }
 }

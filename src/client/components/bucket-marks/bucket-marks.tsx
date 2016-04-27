@@ -1,7 +1,7 @@
 require('./bucket-marks.css');
 
 import * as React from 'react';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { PlywoodValue } from 'plywood';
 import { Stage } from '../../../common/models/index';
 import { roundToHalfPx } from "../../utils/dom/dom";
 
@@ -9,7 +9,7 @@ const TICK_HEIGHT = 5;
 
 export interface BucketMarksProps extends React.Props<any> {
   stage: Stage;
-  ticks: string[];
+  ticks: PlywoodValue[];
   scale: any;
 }
 

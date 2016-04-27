@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import { r, $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction } from 'plywood';
-import { Stage, Essence, Splits, SplitCombine, Filter, FilterClause, Measure, DataSource, VisualizationProps, Resolve, Colors } from "../../../common/models/index";
+import { Stage, Essence, Splits, SplitCombine, Filter, FilterClause, Measure, DataSource, VisualizationProps, DatasetLoad, Resolve, Colors } from "../../../common/models/index";
 import { SPLIT, SEGMENT, TIME_SEGMENT, TIME_SORT_ACTION, VIS_H_PADDING } from '../../config/constants';
 import { getXFromEvent, escapeKey } from '../../utils/dom/dom';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
@@ -52,9 +52,7 @@ function findClosest(data: Datum[], dragDate: Date, scaleX: (t: Date) => number)
 }
 
 export interface TimeSeriesState {
-  loading?: boolean;
-  dataset?: Dataset;
-  error?: any;
+  datasetLoad?: DatasetLoad;
   dragStartTime?: Date;
   dragTimeRange?: TimeRange;
   roundDragTimeRange?: TimeRange;
@@ -64,7 +62,7 @@ export interface TimeSeriesState {
   hoverTimeRange?: TimeRange;
   hoverMeasure?: Measure;
 
-  // Cached properer
+  // Cached props
   axisTimeRange?: TimeRange;
   scaleX?: any;
 }
@@ -204,11 +202,9 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   constructor() {
     super();
     this.state = {
-      loading: false,
-      dataset: null,
+      datasetLoad: {},
       dragStartTime: null,
       dragTimeRange: null,
-      error: null,
       scrollLeft: 0,
       scrollTop: 0,
       hoverTimeRange: null,
@@ -280,14 +276,12 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     query = query.apply(SPLIT, makeQuery(0));
 
-    this.setState({ loading: true });
+    this.precalculate(this.props, { loading: true });
     dataSource.executor(query)
       .then(
         (dataset: Dataset) => {
-          registerDownloadableDataset(dataset);
           if (!this.mounted) return;
-
-          this.setState({
+          this.precalculate(this.props, {
             loading: false,
             dataset,
             error: null
@@ -296,7 +290,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         (error) => {
           registerDownloadableDataset(null);
           if (!this.mounted) return;
-          this.setState({
+          this.precalculate(this.props, {
             loading: false,
             dataset: null,
             error
@@ -306,7 +300,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   }
 
   componentWillMount() {
-    this.updateCached(this.props);
+    this.precalculate(this.props);
   }
 
   componentDidMount() {
@@ -320,7 +314,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
-    this.updateCached(nextProps);
+    this.precalculate(nextProps);
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
@@ -742,33 +736,47 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   }
 
-  updateCached(props: VisualizationProps) {
-    const { essence, stage } = props;
+  precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
+    const { registerDownloadableDataset, essence, stage } = props;
+    const { splits } = essence;
+
+    var existingDatasetLoad = this.state.datasetLoad;
+    var newState: TimeSeriesState = {};
+    if (datasetLoad) {
+      // Always keep the old dataset while loading (for now)
+      if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
+
+      newState.datasetLoad = datasetLoad;
+    } else {
+      datasetLoad = this.state.datasetLoad;
+    }
+
+    var { dataset } = datasetLoad;
+
+    if (dataset && splits.length()) {
+      if (registerDownloadableDataset) registerDownloadableDataset(dataset);
+    }
+
     var axisTimeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
-
-    var scaleX: any = null;
-
     if (axisTimeRange) {
-      scaleX = d3.time.scale()
+      newState.axisTimeRange = axisTimeRange;
+      newState.scaleX = d3.time.scale()
         .domain([axisTimeRange.start, axisTimeRange.end])
         .range([0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH]);
     }
 
-    this.setState({
-      axisTimeRange,
-      scaleX
-    });
+    this.setState(newState);
   }
 
   render() {
     var { essence, stage } = this.props;
-    var { loading, dataset, error, axisTimeRange, scaleX } = this.state;
+    var { datasetLoad, axisTimeRange, scaleX } = this.state;
     var { splits, timezone } = essence;
 
     var measureCharts: JSX.Element[];
     var bottomAxis: JSX.Element;
 
-    if (dataset && splits.length() && axisTimeRange) {
+    if (datasetLoad.dataset && splits.length() && axisTimeRange) {
       var measures = essence.getEffectiveMeasures().toArray();
 
       var getX = (d: Datum) => midpoint(d[TIME_SEGMENT] as TimeRange);
@@ -791,7 +799,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var xTicks = scaleX.ticks();
 
       measureCharts = measures.map((measure, chartIndex) => {
-        return this.renderChart(dataset, measure, chartIndex, stage, chartStage, getX, xTicks);
+        return this.renderChart(datasetLoad.dataset, measure, chartIndex, stage, chartStage, getX, xTicks);
       });
 
       var xAxisStage = Stage.fromSize(chartStage.width, X_AXIS_HEIGHT);
@@ -813,8 +821,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         {measureCharts}
       </div>
       {bottomAxis}
-      {error ? <QueryError error={error}/> : null}
-      {loading ? <Loader/> : null}
+      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
+      {datasetLoad.loading ? <Loader/> : null}
     </div>;
   }
 }
