@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.20
+
+- Added pre-calculation pattern to visualizations
+- Fixed bar chart on negative values 
+
 ## 0.8.19
 
 - More robust cross browser dragging

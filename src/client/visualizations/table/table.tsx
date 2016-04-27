@@ -6,7 +6,7 @@ import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction } from 'plywood';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
-  Measure, Colors, DataSource, VisualizationProps, Resolve } from '../../../common/models/index';
+  Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT, TIME_SEGMENT } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
@@ -56,9 +56,7 @@ export interface PositionHover {
 }
 
 export interface TableState {
-  loading?: boolean;
-  dataset?: Dataset;
-  error?: any;
+  datasetLoad?: DatasetLoad;
   flatData?: PseudoDatum[];
   scrollLeft?: number;
   scrollTop?: number;
@@ -126,9 +124,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   constructor() {
     super();
     this.state = {
-      loading: false,
-      dataset: null,
-      error: null,
+      datasetLoad: {},
       flatData: null,
       scrollLeft: 0,
       scrollTop: 0,
@@ -181,34 +177,30 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
     query = query.apply(SPLIT, makeQuery(0));
 
-    this.setState({ loading: true });
+    this.precalculate(this.props, { loading: true });
     dataSource.executor(query)
       .then(
         (dataset: Dataset) => {
-          registerDownloadableDataset(dataset);
           if (!this.mounted) return;
-          this.setState({
+          this.precalculate(this.props, {
             loading: false,
             dataset,
-            error: null,
-            flatData: dataset.flatten({
-              order: 'preorder',
-              nestingName: '__nest',
-              parentName: '__parent'
-            })
+            error: null
           });
         },
         (error) => {
-          registerDownloadableDataset(null);
           if (!this.mounted) return;
-          this.setState({
+          this.precalculate(this.props, {
             loading: false,
             dataset: null,
-            error,
-            flatData: null
+            error
           });
         }
       );
+  }
+
+  componentWillMount() {
+    this.precalculate(this.props);
   }
 
   componentDidMount() {
@@ -218,6 +210,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
+    this.precalculate(nextProps);
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
@@ -294,14 +287,6 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     var { clicker, essence } = this.props;
     var pos = this.calculateMousePosition(e);
 
-    // Hack
-    if (pos.what === 'corner' && e.altKey && e.shiftKey) {
-      var { dataset } = this.state;
-      // Data "download" LOL
-      console.log(dataset ? dataset.toTSV() : '[no dataset]');
-      return;
-    }
-
     if (pos.what === 'corner' || pos.what === 'header') {
       var sortExpression = $(pos.what === 'corner' ? SEGMENT : pos.measure.name);
       var commonSort = essence.getCommonSort();
@@ -326,9 +311,39 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     }
   }
 
+  precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
+    const { registerDownloadableDataset, essence } = props;
+    const { splits } = essence;
+
+    var existingDatasetLoad = this.state.datasetLoad;
+    var newState: TableState = {};
+    if (datasetLoad) {
+      // Always keep the old dataset while loading (for now)
+      if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
+
+      newState.datasetLoad = datasetLoad;
+    } else {
+      datasetLoad = this.state.datasetLoad;
+    }
+
+    var { dataset } = datasetLoad;
+
+    if (dataset && splits.length()) {
+      if (registerDownloadableDataset) registerDownloadableDataset(dataset);
+
+      newState.flatData = dataset.flatten({
+        order: 'preorder',
+        nestingName: '__nest',
+        parentName: '__parent'
+      });
+    }
+
+    this.setState(newState);
+  }
+
   render() {
     var { clicker, essence, stage, openRawDataModal } = this.props;
-    var { loading, error, flatData, scrollLeft, scrollTop, hoverMeasure, hoverRow } = this.state;
+    var { datasetLoad, flatData, scrollLeft, scrollTop, hoverMeasure, hoverRow } = this.state;
     var { splits } = essence;
 
     var segmentTitle = splits.getTitle(essence.dataSource.dimensions);
@@ -469,16 +484,6 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       height: HEADER_HEIGHT + bodyHeight + BODY_PADDING_BOTTOM
     };
 
-    var loader: JSX.Element = null;
-    if (loading) {
-      loader = <Loader/>;
-    }
-
-    var queryError: JSX.Element = null;
-    if (error) {
-      queryError = <QueryError error={error}/>;
-    }
-
     const preRows = <div className="segments-cont">
       <div className="segments" style={segmentsStyle}>{segments}</div>
     </div>;
@@ -488,8 +493,8 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         <div className="highlight" style={highlightStyle}>{highlighter}</div>
       </div>
       <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
-      {queryError}
-      {loader}
+      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
+      {datasetLoad.loading ? <Loader/> : null}
     </div>;
 
     return <div className="table">
