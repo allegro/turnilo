@@ -8,11 +8,12 @@ import { pivotLayout } from '../../views';
 var router = Router();
 
 router.get('/', (req: PivotRequest, res: Response, next: Function) => {
+  var title = (CUSTOMIZATION && CUSTOMIZATION.title) ? CUSTOMIZATION.title : 'Pivot (%v)';
   req.dataSourceManager.getQueryableDataSources()
     .then((dataSources) => {
       res.send(pivotLayout({
         version: VERSION,
-        title: `Pivot (${VERSION})`,
+        title: title.replace(/%v/g, VERSION),
         config: {
           version: VERSION,
           user: req.user,

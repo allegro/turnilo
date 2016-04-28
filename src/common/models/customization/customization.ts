@@ -2,12 +2,14 @@ import { Class, Instance, isInstanceOf, isImmutableClass, immutableArraysEqual }
 import { ExternalView, ExternalViewValue} from '../external-view/external-view';
 
 export interface CustomizationValue {
+  title?: string;
   headerBackground?: string;
   customLogoSvg?: string;
   externalViews?: ExternalView[];
 }
 
 export interface CustomizationJS {
+  title?: string;
   headerBackground?: string;
   customLogoSvg?: string;
   externalViews?: ExternalViewValue[];
@@ -22,6 +24,7 @@ export class Customization implements Instance<CustomizationValue, Customization
 
   static fromJS(parameters: CustomizationJS): Customization {
     var value: CustomizationValue = {
+      title: parameters.title,
       headerBackground: parameters.headerBackground,
       customLogoSvg: parameters.customLogoSvg
     };
@@ -34,11 +37,13 @@ export class Customization implements Instance<CustomizationValue, Customization
     return new Customization(value);
   }
 
+  public title: string;
   public headerBackground: string;
   public customLogoSvg: string;
   public externalViews: ExternalView[];
 
   constructor(parameters: CustomizationValue) {
+    this.title = parameters.title || null;
     this.headerBackground = parameters.headerBackground || null;
     this.customLogoSvg = parameters.customLogoSvg || null;
     if (parameters.externalViews) this.externalViews = parameters.externalViews;
@@ -47,6 +52,7 @@ export class Customization implements Instance<CustomizationValue, Customization
 
   public valueOf(): CustomizationValue {
     return {
+      title: this.title,
       headerBackground: this.headerBackground,
       customLogoSvg: this.customLogoSvg,
       externalViews: this.externalViews
@@ -55,6 +61,7 @@ export class Customization implements Instance<CustomizationValue, Customization
 
   public toJS(): CustomizationJS {
     var js: CustomizationJS = {};
+    if (this.title) js.title = this.title;
     if (this.headerBackground) js.headerBackground = this.headerBackground;
     if (this.customLogoSvg) js.customLogoSvg = this.customLogoSvg;
     if (this.externalViews) {
@@ -68,12 +75,12 @@ export class Customization implements Instance<CustomizationValue, Customization
   }
 
   public toString(): string {
-    return `[custom: headerBackground: ${this.headerBackground}, logo: ${Boolean(this.customLogoSvg)},
-    externalViews: ${Boolean(this.externalViews)}]`;
+    return `[custom: (${this.headerBackground}) logo: ${Boolean(this.customLogoSvg)}, externalViews: ${Boolean(this.externalViews)}]`;
   }
 
   public equals(other: Customization): boolean {
     return Customization.isCustomization(other) &&
+      this.title === other.title &&
       this.headerBackground === other.headerBackground &&
       this.customLogoSvg === other.customLogoSvg &&
       immutableArraysEqual(this.externalViews, other.externalViews);
