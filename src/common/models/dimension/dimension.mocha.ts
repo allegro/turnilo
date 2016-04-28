@@ -15,6 +15,16 @@ describe('Dimension', () => {
           'value': { 'setType': 'STRING', 'elements': ['en'] },
           'type': 'SET'
         },
+        kind: 'string'
+      },
+      {
+        name: 'country',
+        title: 'important countries',
+        'expression': {
+          'op': 'literal',
+          'value': { 'setType': 'STRING', 'elements': ['en'] },
+          'type': 'SET'
+        },
         kind: 'string',
         url: 'https://www.country.com/%s'
       },
