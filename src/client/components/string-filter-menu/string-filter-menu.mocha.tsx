@@ -9,7 +9,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { StringFilterMenu } from './string-filter-menu';
 
-describe('StringFilterMenu', () => {
+describe.skip('StringFilterMenu', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <StringFilterMenu

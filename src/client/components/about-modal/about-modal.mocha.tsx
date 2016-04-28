@@ -9,7 +9,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { AboutModal } from './about-modal';
 
-describe('AboutModal', () => {
+describe.skip('AboutModal', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <AboutModal

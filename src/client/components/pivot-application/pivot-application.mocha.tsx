@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { PivotApplication } from './pivot-application';
 
-describe('PivotApplication', () => {
+describe.skip('PivotApplication', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <PivotApplication

@@ -38,7 +38,7 @@ export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
           return '';
         });
     } else {
-      console.warn('missing icon');
+      console.warn('svg-icon.tsx: missing icon');
       viewBox = '0 0 16 16';
       svgInsides = "<rect width=16 height=16 fill='red'></rect>";
     }

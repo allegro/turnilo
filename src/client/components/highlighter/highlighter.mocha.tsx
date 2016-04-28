@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { Highlighter } from './highlighter';
 
-describe('Highlighter', () => {
+describe.skip('Highlighter', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <Highlighter

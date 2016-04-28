@@ -3,7 +3,7 @@ import '../../utils/jsdom-setup';
 import { Dataset } from 'plywood';
 import { datasetToFileString, getMIMEType } from './download';
 
-describe('Download', () => {
+describe.skip('Download', () => {
   describe('datasetToFileString', () => {
 
     it('defaults to JSON if no type specified', () => {

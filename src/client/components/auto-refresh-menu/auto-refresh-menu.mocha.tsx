@@ -9,7 +9,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { AutoRefreshMenu } from './auto-refresh-menu';
 
-describe('AutoRefreshMenu', () => {
+describe.skip('AutoRefreshMenu', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <AutoRefreshMenu

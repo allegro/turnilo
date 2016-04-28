@@ -1,7 +1,6 @@
 'use strict';
 
 var gulp = require('gulp');
-var watch = require('gulp-watch');
 var runSequence = require('run-sequence');
 
 var laborer = require('laborer');
@@ -12,8 +11,9 @@ gulp.task('icons', laborer.taskIcons());
 gulp.task('client:tsc', laborer.taskClientTypeScript({ declaration: true }));
 gulp.task('server:tsc', laborer.taskServerTypeScript({ declaration: true }));
 
-gulp.task('client:test', laborer.taskClientTest());
+gulp.task('client:test', laborer.taskClientTest({reporter: 'progress'}));
 gulp.task('server:test', laborer.taskServerTest());
+gulp.task('common:test', laborer.taskCommonTest({reporter: 'progress'}));
 
 gulp.task('client:bundle', laborer.taskClientPack());
 
@@ -25,6 +25,7 @@ gulp.task('all', function(cb) {
     'clean' ,
     ['style', 'icons'],
     ['server:tsc', 'client:tsc'],
+    ['client:test', 'common:test'],
     'client:bundle',
     cb
   );
@@ -45,22 +46,12 @@ gulp.task('all-minus-bundle', function(cb) {
 });
 
 gulp.task('watch', ['all-minus-bundle'], function() {
-  watch('./src/client/**/*.scss', function() {
-    gulp.start('style');
+  gulp.watch('./src/client/**/*.scss', ['style']);
+  gulp.watch('./src/client/**/*.svg', ['icons']);
+  gulp.watch(['./src/common/**/*.ts', './src/client/**/*.{ts,tsx}', './assets/icons/**'], function() {
+    runSequence('client:tsc', ['client:test', 'common:test']);
   });
-
-  watch('./src/client/**/*.svg', function() {
-    gulp.start('icons');
-  });
-
-  watch(['./src/common/**/*.ts', './src/client/**/*.{ts,tsx}', './assets/icons/**'], function() {
-    runSequence('client:tsc');
-  });
-
-  watch(['./src/common/**/*.ts', './src/server/**'], function() {
-    gulp.start('server:tsc');
-  });
-
+  gulp.watch(['./src/common/**/*.ts', './src/server/**'], ['server:tsc']);
   laborer.clientPackWatch()
 });
 

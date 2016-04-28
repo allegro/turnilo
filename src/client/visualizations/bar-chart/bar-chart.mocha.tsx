@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { BarChart } from './bar-chart';
 
-describe('BarChart', () => {
+describe.skip('BarChart', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <BarChart

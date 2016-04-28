@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { BubbleMenu } from './bubble-menu';
 
-describe('BubbleMenu', () => {
+describe.skip('BubbleMenu', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <BubbleMenu

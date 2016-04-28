@@ -17,8 +17,6 @@ export class AboutModal extends React.Component<AboutModalProps, AboutModalState
 
   constructor() {
     super();
-    // this.state = {};
-
   }
 
   render() {

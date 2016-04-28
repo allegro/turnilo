@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { MenuHeader } from './menu-header';
 
-describe('MenuHeader', () => {
+describe.skip('MenuHeader', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <MenuHeader

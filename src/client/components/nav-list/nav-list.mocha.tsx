@@ -9,7 +9,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { NavList } from './nav-list';
 
-describe('NavList', () => {
+describe.skip('NavList', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <NavList

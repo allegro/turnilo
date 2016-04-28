@@ -9,7 +9,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { GoldenCenter } from './golden-center';
 
-describe('GoldenCenter', () => {
+describe.skip('GoldenCenter', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <GoldenCenter

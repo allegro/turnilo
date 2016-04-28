@@ -9,7 +9,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { SegmentBubble } from './segment-bubble';
 
-describe('SegmentBubble', () => {
+describe.skip('SegmentBubble', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <SegmentBubble

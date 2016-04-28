@@ -9,7 +9,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { FilterTile } from './filter-tile';
 
-describe('FilterTile', () => {
+describe.skip('FilterTile', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <FilterTile

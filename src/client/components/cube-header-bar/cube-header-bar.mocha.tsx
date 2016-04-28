@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { CubeHeaderBar } from './cube-header-bar';
 
-describe('CubeHeaderBar', () => {
+describe.skip('CubeHeaderBar', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <CubeHeaderBar

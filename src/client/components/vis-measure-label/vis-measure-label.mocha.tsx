@@ -9,7 +9,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { VisMeasureLabel } from './vis-measure-label';
 
-describe('VisMeasureLabel', () => {
+describe.skip('VisMeasureLabel', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <VisMeasureLabel

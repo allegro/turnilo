@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { DimensionTile } from './dimension-tile';
 
-describe('DimensionTile', () => {
+describe.skip('DimensionTile', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <DimensionTile

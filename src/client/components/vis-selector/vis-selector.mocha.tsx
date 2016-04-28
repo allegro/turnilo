@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { VisSelector } from './vis-selector';
 
-describe('VisSelector', () => {
+describe.skip('VisSelector', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <VisSelector

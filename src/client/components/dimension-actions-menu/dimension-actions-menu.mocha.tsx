@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { DimensionActionsMenu } from './dimension-actions-menu';
 
-describe('DimensionActionsMenu', () => {
+describe.skip('DimensionActionsMenu', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <DimensionActionsMenu

@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { ManualFallback } from './manual-fallback';
 
-describe('ManualFallback', () => {
+describe.skip('ManualFallback', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <ManualFallback

@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { PinboardPanel } from './pinboard-panel';
 
-describe('PinboardPanel', () => {
+describe.skip('PinboardPanel', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <PinboardPanel

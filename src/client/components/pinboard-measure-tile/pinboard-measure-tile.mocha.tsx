@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { PinboardMeasureTile } from './pinboard-measure-tile';
 
-describe('PinboardMeasureTile', () => {
+describe.skip('PinboardMeasureTile', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <PinboardMeasureTile

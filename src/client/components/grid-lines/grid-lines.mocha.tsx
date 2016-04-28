@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { GridLines } from './grid-lines';
 
-describe('GridLines', () => {
+describe.skip('GridLines', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <GridLines

@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { FilterMenu } from './filter-menu';
 
-describe('FilterMenu', () => {
+describe.skip('FilterMenu', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <FilterMenu

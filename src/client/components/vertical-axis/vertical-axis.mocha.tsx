@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { VerticalAxis } from './vertical-axis';
 
-describe('VerticalAxis', () => {
+describe.skip('VerticalAxis', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <VerticalAxis

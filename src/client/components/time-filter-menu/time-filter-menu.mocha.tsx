@@ -9,7 +9,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { TimeFilterMenu } from './time-filter-menu';
 
-describe('TimeFilterMenu', () => {
+describe.skip('TimeFilterMenu', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <TimeFilterMenu

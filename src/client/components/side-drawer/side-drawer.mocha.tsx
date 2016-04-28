@@ -10,7 +10,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { SideDrawer } from './side-drawer';
 
-describe('SideDrawer', () => {
+describe.skip('SideDrawer', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <SideDrawer

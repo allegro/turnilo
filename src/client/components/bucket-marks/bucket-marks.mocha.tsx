@@ -9,7 +9,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { BucketMarks } from './bucket-marks';
 
-describe('BucketMarks', () => {
+describe.skip('BucketMarks', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <BucketMarks
