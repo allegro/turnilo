@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.21
+
+- Build system works with node 6
+- Ability to set custom page title
+
 ## 0.8.20
 
 - Added pre-calculation pattern to visualizations
