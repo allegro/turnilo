@@ -19,7 +19,6 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
 
   constructor() {
     super();
-    // this.state = {};
   }
 
   updateStyle() {
@@ -36,6 +35,10 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
   }
 
   componentDidMount() {
+    this.teleport();
+  }
+
+  teleport() {
     var { fullSize } = this.props;
     var newDiv = document.createElement('div');
     newDiv.className = 'body-portal' + (fullSize ? ' full-size' : '');

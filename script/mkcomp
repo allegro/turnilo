@@ -100,6 +100,8 @@ import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
 
+import { DataSourceMock, EssenceMock } from '../../../common/models/mocks';
+
 import { $, Expression } from 'plywood';
 import { ${camelName} } from './${name}';
 

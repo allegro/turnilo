@@ -27,8 +27,6 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
 
   constructor() {
     super();
-    // this.state = {};
-
   }
 
   render() {

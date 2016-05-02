@@ -10,17 +10,24 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { BubbleMenu } from './bubble-menu';
 
-describe.skip('BubbleMenu', () => {
+import { StageMock } from '../../../common/models/mocks';
+import { BodyPortalMock } from '../body-portal/body-portal.mock';
+
+describe('BubbleMenu', () => {
+  BodyPortalMock.disableBodyPortal();
+
   it('adds the correct class', () => {
+    var openOn = document.createElement('div');
+
     var renderedComponent = TestUtils.renderIntoDocument(
       <BubbleMenu
         children={null}
         className={null}
         containerStage={null}
-        direction={null}
+        direction={'right'}
         onClose={null}
-        openOn={null}
-        stage={null}
+        openOn={openOn}
+        stage={StageMock.defaultA()}
       />
     );
 

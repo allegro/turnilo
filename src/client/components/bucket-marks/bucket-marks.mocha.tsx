@@ -6,15 +6,17 @@ import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
 
-import { $, Expression } from 'plywood';
+import { $, Expression, PlywoodValue } from 'plywood';
 import { BucketMarks } from './bucket-marks';
 
-describe.skip('BucketMarks', () => {
+import { StageMock } from '../../../common/models/mocks';
+
+describe('BucketMarks', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <BucketMarks
-        stage={null}
-        ticks={null}
+        stage={StageMock.defaultA()}
+        ticks={[]}
         scale={null}
       />
     );

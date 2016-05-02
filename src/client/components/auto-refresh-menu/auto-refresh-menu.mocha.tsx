@@ -6,19 +6,26 @@ import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
 
+import { DataSourceMock } from '../../../common/models/mocks';
+import { BodyPortalMock } from '../body-portal/body-portal.mock';
+
 import { $, Expression } from 'plywood';
 import { AutoRefreshMenu } from './auto-refresh-menu';
 
-describe.skip('AutoRefreshMenu', () => {
+describe('AutoRefreshMenu', () => {
+  BodyPortalMock.disableBodyPortal();
+
   it('adds the correct class', () => {
+    var openOn = document.createElement('div');
+
     var renderedComponent = TestUtils.renderIntoDocument(
       <AutoRefreshMenu
         onClose={null}
-        openOn={null}
+        openOn={openOn}
         autoRefreshRate={null}
         setAutoRefreshRate={null}
         refreshMaxTime={null}
-        dataSource={null}
+        dataSource={DataSourceMock.wiki()}
       />
     );
 

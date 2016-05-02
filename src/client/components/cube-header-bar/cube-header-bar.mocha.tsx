@@ -6,16 +6,17 @@ import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
 
 import * as TestUtils from 'react-addons-test-utils';
+import { EssenceMock } from '../../../common/models/mocks';
 
 import { $, Expression } from 'plywood';
 import { CubeHeaderBar } from './cube-header-bar';
 
-describe.skip('CubeHeaderBar', () => {
+describe('CubeHeaderBar', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <CubeHeaderBar
         clicker={null}
-        essence={null}
+        essence={EssenceMock.wiki()}
         onNavClick={null}
       />
     );

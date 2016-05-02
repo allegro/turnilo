@@ -1,6 +1,8 @@
 import { DataSource, DataSourceJS } from './data-source';
 import { $ } from 'plywood';
 
+var queryUrlExecutorFactory = require('../../../client/utils/ajax/ajax').queryUrlExecutorFactory;
+
 export class DataSourceMock {
   public static get WIKI_JS(): DataSourceJS {
     return {
@@ -49,7 +51,7 @@ export class DataSourceMock {
       defaultSortMeasure: 'count',
       defaultPinnedDimensions: ['articleName'],
       refreshRule: {
-        refresh: "PT1M",
+        time: new Date('2016-04-30T12:39:51.350Z'),
         rule: "fixed"
       }
     };
@@ -108,10 +110,12 @@ export class DataSourceMock {
   }
 
   static wiki() {
-    return DataSource.fromJS(DataSourceMock.WIKI_JS);
+    var executor = queryUrlExecutorFactory('wiki', '/plywood', '0.0.0');
+    return DataSource.fromJS(DataSourceMock.WIKI_JS, { executor });
   }
 
   static twitter() {
-    return DataSource.fromJS(DataSourceMock.TWITTER_JS);
+    var executor = queryUrlExecutorFactory('wiki', '/plywood', '0.0.0');
+    return DataSource.fromJS(DataSourceMock.TWITTER_JS, { executor });
   }
 }

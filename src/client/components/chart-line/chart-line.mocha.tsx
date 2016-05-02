@@ -7,19 +7,42 @@ import '../../utils/require-extensions';
 
 import * as TestUtils from 'react-addons-test-utils';
 
-import { $, Expression } from 'plywood';
+import { Dataset, TimeRange } from 'plywood';
 import { ChartLine } from './chart-line';
 
-describe.skip('ChartLine', () => {
+import { StageMock } from '../../../common/models/mocks';
+
+describe('ChartLine', () => {
   it('adds the correct class', () => {
+    var dataset = Dataset.fromJS([
+      {
+        TIME: {
+          type: 'TIME_RANGE',
+          start: new Date('2015-01-26T00:00:00Z'),
+          end: new Date('2015-01-26T01:00:00Z')
+        },
+        numberOfKoalas: 10,
+        index: 0 // to return a simple x for testing purposes
+      },
+      {
+        TIME: {
+          type: 'TIME_RANGE',
+          start: new Date('2015-01-26T01:00:00Z'),
+          end: new Date('2015-01-26T02:00:00Z')
+        },
+        numberOfKoalas: 12,
+        index: 1 // to return a simple x for testing purposes
+      }
+    ]);
+
     var renderedComponent = TestUtils.renderIntoDocument(
       <ChartLine
-        dataset={null}
-        getY={null}
-        scaleX={null}
-        scaleY={null}
-        stage={null}
-        color={null}
+        dataset={dataset}
+        getY={d => d['numberOfKoalas']}
+        scaleX={d => d['index']}
+        scaleY={d => 2}
+        stage={StageMock.defaultA()}
+        color={'yes'}
         showArea={null}
       />
     );
@@ -27,5 +50,4 @@ describe.skip('ChartLine', () => {
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
     expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('chart-line');
   });
-
 });

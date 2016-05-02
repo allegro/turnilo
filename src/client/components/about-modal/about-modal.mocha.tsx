@@ -5,12 +5,17 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
+import { BodyPortalMock } from '../body-portal/body-portal.mock';
 
-import { $, Expression } from 'plywood';
 import { AboutModal } from './about-modal';
 
-describe.skip('AboutModal', () => {
+
+describe('AboutModal', () => {
+
+  BodyPortalMock.disableBodyPortal();
+
   it('adds the correct class', () => {
+
     var renderedComponent = TestUtils.renderIntoDocument(
       <AboutModal
         onClose={null}
@@ -20,5 +25,4 @@ describe.skip('AboutModal', () => {
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
     expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('about-modal');
   });
-
 });
