@@ -84,6 +84,10 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     this.setState({ hoverTimeRange });
   }
 
+  onCalendarMouseLeave() {
+    this.setState({ hoverTimeRange: null });
+  }
+
   selectNewRange(startDate: Date, endDate?: Date) {
     const { onStartChange, onEndChange, timezone } = this.props;
     onStartChange(startDate);
@@ -105,7 +109,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
       const isBackwardSelection = selection < startTime;
 
       if (isDoubleClickSameDay) {
-        this.selectNewRange(startTime, null);
+        this.selectNewRange(startTime, startTime);
       } else if (isBackwardSelection) {
         this.selectNewRange(selection, startTime);
       } else {
@@ -196,16 +200,19 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
   render() {
     const { startTime, endTime, timezone, onStartChange, onEndChange } = this.props;
-    const { activeMonthStartDate } = this.state;
+    const { activeMonthStartDate, selectionSet } = this.state;
     if (!activeMonthStartDate) return null;
 
     var isSingleDate = endTime ? getWallTimeDay(startTime, timezone) === getEndWallTimeInclusive(endTime, timezone).getDate() : true;
     return <div className="date-range-picker">
       <div className="side-by-side">
         <DateRangeInput type="start" time={startTime} timezone={timezone} onChange={onStartChange.bind(this)}/>
-        <DateRangeInput type="end" time={endTime} timezone={timezone} onChange={onEndChange.bind(this)} hide={isSingleDate}/>
+        <DateRangeInput type="end" time={endTime} timezone={timezone} onChange={onEndChange.bind(this)} hide={!selectionSet} />
       </div>
-      <div className="calendar" ref="calendar">
+      <div
+        className="calendar"
+        onMouseLeave={this.onCalendarMouseLeave.bind(this)}
+      >
         {this.renderCalendarNav(activeMonthStartDate)}
         <div className="week">
           { getLocale().shortDays.map((day, i) => {
