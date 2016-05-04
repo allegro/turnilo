@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.23
+
+- Fixed npm publish issue
+
 ## 0.8.22
 
 - Timezone support

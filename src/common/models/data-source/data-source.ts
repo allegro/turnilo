@@ -1,12 +1,11 @@
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
-import { Duration, Timezone, minute, second } from 'chronoshift';
+import { Duration, Timezone, WallTime, minute, second } from 'chronoshift';
 import { $, ply, r, Expression, ExpressionJS, Executor, External, DruidExternal, RefExpression, basicExecutorFactory, Dataset,
   Attributes, AttributeInfo, AttributeJSs, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
   CustomDruidAggregations, helper } from 'plywood';
 import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
-import { getWallTimeString } from "../../../client/utils/date/date";
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 import { Filter, FilterJS } from '../filter/filter';
@@ -49,6 +48,19 @@ function makeUniqueMeasureList(measures: Measure[]): List<Measure> {
     return true;
   }));
 }
+
+function getWallTimeString(date: Date, timezone: Timezone, includeTime?: boolean, delimiter?: string): string {
+  const wallTimeISOString = wallTimeHelper(WallTime.UTCToWallTime(date, timezone.toString())).toISOString();
+  if (includeTime) {
+    return wallTimeISOString.replace(/(\.\d\d\d)?Z?$/, '').replace('T', delimiter || ', ');
+  }
+  return wallTimeISOString.replace( /:\d\d(\.\d\d\d)?Z?$/, '').split('T')[0];
+}
+
+function wallTimeHelper(wallTime: any) {
+  return wallTime['wallTime'];
+}
+
 
 
 export interface DataSourceValue {
