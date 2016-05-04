@@ -141,6 +141,7 @@
       &.hiluk:after { content: 'Share link'; }
       &.user:after { content: 'User'; }
       &.github:after { content: 'Pivot on Github'; }
+      &.settings:after { content: 'Settings'; }
 
       &:hover:after {
         opacity: 1;

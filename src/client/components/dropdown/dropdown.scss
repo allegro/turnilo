@@ -15,11 +15,11 @@
 
   .selected-item {
     @extend %input-cont;
+    @include ellipsis;
     display: block;
     pointer-events: auto;
     height: $input-height;
-    padding-left: 6px;
-    padding-top: 8px;
+    padding: 8px 22px 0 6px;
   }
 
   .dropdown-label {
@@ -43,7 +43,7 @@
     position: absolute;
     pointer-events: auto;
     z-index: 800;
-    padding: 6px;
+    padding: 8px 0;
     width: 100%;
     line-height: 24px;
   }
@@ -58,7 +58,7 @@
 
   .dropdown-item {
     @include ellipsis;
-    padding: 0 4px;
+    padding: 0 10px;
     cursor: pointer;
 
     &.selected {

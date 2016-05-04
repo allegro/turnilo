@@ -75,7 +75,7 @@ export class SettingsMenu extends React.Component<SettingsMenuProps, SettingsMen
   render() {
     const { openOn, onClose } = this.props;
 
-    var stage = Stage.fromSize(200, 200);
+    var stage = Stage.fromSize(240, 200);
     return <BubbleMenu
       className="settings-menu"
       direction="down"

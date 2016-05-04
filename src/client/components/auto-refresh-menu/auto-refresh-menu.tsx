@@ -68,7 +68,7 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
   render() {
     var { openOn, onClose, dataSource } = this.props;
 
-    var stage = Stage.fromSize(260, 200);
+    var stage = Stage.fromSize(240, 200);
     return <BubbleMenu
       className="auto-refresh-menu"
       direction="down"
