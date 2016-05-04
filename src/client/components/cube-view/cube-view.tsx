@@ -3,6 +3,7 @@ require('./cube-view.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Expression, Dataset } from 'plywood';
+import { Timezone } from 'chronoshift';
 import { Fn } from "../../../common/utils/general/general";
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
@@ -294,6 +295,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     });
   }
 
+  changeTimezone(newTimezone: Timezone): void {
+    const { essence } = this.state;
+    const newEsssence = essence.changeTimezone(newTimezone);
+    this.setState({ essence: newEsssence });
+  }
+
   render() {
     var clicker = this.clicker;
 
@@ -336,6 +343,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         openRawDataModal={this.openRawDataModal.bind(this)}
         customization={customization}
         downloadableDataset={downloadableDataset}
+        changeTimezone={this.changeTimezone.bind(this)}
+        timezone={essence.timezone}
       />
       <div className="container" ref='container'>
         <DimensionMeasurePanel

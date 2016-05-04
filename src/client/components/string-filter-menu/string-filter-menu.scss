@@ -68,17 +68,4 @@ $checkbox-width: 20px;
       @include pin-full;
     }
   }
-
-  .button-bar {
-    margin-top: 10px;
-
-    .ok {
-      @extend %button-primary;
-      margin-right: 8px;
-    }
-
-    .cancel {
-      @extend %button-secondary;
-    }
-  }
 }

@@ -12,6 +12,7 @@ import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
 import { HighlightString } from '../highlight-string/highlight-string';
+import { Button } from '../button/button';
 
 const TOP_N = 100;
 
@@ -300,8 +301,8 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     return <div className="string-filter-menu">
       {this.renderTable()}
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>{STRINGS.ok}</button>
-        <button className="cancel" onClick={this.onCancelClick.bind(this)}>{STRINGS.cancel}</button>
+        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} />
+        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick.bind(this)} />
       </div>
     </div>;
   }

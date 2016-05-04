@@ -66,6 +66,14 @@
         font-size: 13px;
         color: #999;
       }
+
+      .right-align {
+        position: absolute;
+        min-width: 150px;
+        right: $padding;
+        top: $control-tile-height/ 2;
+        bottom: $control-tile-height/ 2;
+      }
     }
 
     .center-main {

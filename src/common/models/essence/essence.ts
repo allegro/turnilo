@@ -449,6 +449,11 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return filter.getSpecificFilter(new Date(), maxTime, timezone);
   }
 
+  public getTimeSelection() {
+    const timeAttribute = this.getTimeAttribute();
+    return this.filter.getSelection(timeAttribute);
+  }
+
   public isFixedMeasureMode(): boolean {
     return Boolean(this.visualization.measureModeNeed);
   }
@@ -644,6 +649,14 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       }
     }
 
+    return new Essence(value);
+  }
+
+  public changeTimezone(newTimezone: Timezone): Essence {
+    var { timezone } = this;
+    if (timezone === newTimezone) return this;
+    var value = this.valueOf();
+    value.timezone = newTimezone;
     return new Essence(value);
   }
 

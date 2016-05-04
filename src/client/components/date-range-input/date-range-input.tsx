@@ -1,28 +1,28 @@
-require('./time-input.css');
+require('./date-range-input.css');
 
 import * as React from 'react';
 import { Timezone, WallTime } from 'chronoshift';
+import { getEndWallTimeInclusive } from "../../utils/date/date";
 
-export interface TimeInputProps extends React.Props<any> {
+export interface DateRangeInputProps extends React.Props<any> {
   time: Date;
   timezone: Timezone;
   onChange: (t: Date) => void;
+  hide?: boolean;
+  type?: string;
 }
 
-export interface TimeInputState {
+export interface DateRangeInputState {
   dateString?: string;
-  timeString?: string;
 }
 
-export class TimeInput extends React.Component<TimeInputProps, TimeInputState> {
+export class DateRangeInput extends React.Component<DateRangeInputProps, DateRangeInputState> {
 
   constructor() {
     super();
     this.state = {
-      dateString: '',
-      timeString: ''
+      dateString: ''
     };
-
   }
 
   // 2015-09-23T17:42:57.636Z
@@ -33,7 +33,7 @@ export class TimeInput extends React.Component<TimeInputProps, TimeInputState> {
     this.updateStateFromTime(time, timezone);
   }
 
-  componentWillReceiveProps(nextProps: TimeInputProps) {
+  componentWillReceiveProps(nextProps: DateRangeInputProps) {
     var { time, timezone } = nextProps;
     this.updateStateFromTime(time, timezone);
   }
@@ -42,48 +42,41 @@ export class TimeInput extends React.Component<TimeInputProps, TimeInputState> {
     if (!time) return;
     if (isNaN(time.valueOf())) {
       this.setState({
-        dateString: '',
-        timeString: ''
+        dateString: ''
       });
       return;
     }
 
-    var adjTime = WallTime.UTCToWallTime(time, timezone.toString());
-    var timeISO = adjTime.toISOString().replace(/:\d\d(\.\d\d\d)?Z?$/, '').split('T');
+    var adjTime: Date = null;
+    if (this.props.type === "end") {
+      adjTime = getEndWallTimeInclusive(time, timezone);
+    } else {
+      adjTime = WallTime.UTCToWallTime(time, timezone.toString());
+    }
+
+    var timeISO = (adjTime as any)['wallTime'].toISOString().replace(/:\d\d(\.\d\d\d)?Z?$/, '').split('T');
 
     this.setState({
-      dateString: timeISO[0],
-      timeString: timeISO[1]
+      dateString: timeISO[0]
     });
   }
 
   dateChange(e: KeyboardEvent) {
-    var { timeString } = this.state;
     var dateString = (e.target as HTMLInputElement).value.replace(/[^\d-]/g, '').substr(0, 10);
     this.setState({
       dateString
     });
 
     if (dateString.length === 10) {
-      this.changeDate(dateString + 'T' + timeString + 'Z');
-    } else {
-      this.changeDate('blah');
+      this.changeDate(dateString);
     }
   }
 
-  timeChange(e: KeyboardEvent) {
-    var { dateString } = this.state;
-    var timeString = (e.target as HTMLInputElement).value.replace(/[^\d:]/g, '').substr(0, 8);
-    this.setState({
-      timeString
-    });
-
-    this.changeDate(dateString + 'T' + timeString + 'Z');
-  }
-
   changeDate(possibleDateString: string): void {
-    var { timezone, onChange } = this.props;
+    var { timezone, onChange, type } = this.props;
     var possibleDate = new Date(possibleDateString);
+    // add one if end so it passes the inclusive formatting
+    var day = type === "end" ? possibleDate.getUTCDate() + 1 : possibleDate.getUTCDate();
 
     if (isNaN(possibleDate.valueOf())) {
       onChange(null);
@@ -91,7 +84,7 @@ export class TimeInput extends React.Component<TimeInputProps, TimeInputState> {
       // Convert from WallTime to UTC
       var possibleDate = WallTime.WallTimeToUTC(
         timezone.toString(),
-        possibleDate.getUTCFullYear(), possibleDate.getUTCMonth(), possibleDate.getUTCDate(),
+        possibleDate.getUTCFullYear(), possibleDate.getUTCMonth(), day,
         possibleDate.getUTCHours(), possibleDate.getUTCMinutes(), possibleDate.getUTCSeconds(),
         possibleDate.getUTCMilliseconds()
       );
@@ -101,11 +94,12 @@ export class TimeInput extends React.Component<TimeInputProps, TimeInputState> {
   }
 
   render() {
-    var { dateString, timeString } = this.state;
+    const { hide } = this.props;
+    const { dateString } = this.state;
+    const value = hide ? '' : dateString;
 
-    return <div className="time-input">
-      <input className="date" value={dateString} onChange={this.dateChange.bind(this)}/>
-      <input className="time" value={timeString} onChange={this.timeChange.bind(this)}/>
+    return <div className="date-range-input">
+      <input className="input-field" value={value} onChange={this.dateChange.bind(this)}/>
     </div>;
   }
 }

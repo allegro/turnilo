@@ -2,16 +2,26 @@ require('./link-view.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Expression } from 'plywood';
+import { Expression, $ } from 'plywood';
 import { classNames } from "../../utils/dom/dom";
 import { Fn } from "../../../common/utils/general/general";
-import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
+import { Colors, Clicker, Essence, Filter, FilterClause, Stage, Measure,
   VisualizationProps, LinkViewConfig, LinkItem, User, Customization } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 
 import { LinkHeaderBar } from '../link-header-bar/link-header-bar';
 import { ManualFallback } from '../manual-fallback/manual-fallback';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
+import { ButtonGroup } from '../button-group/button-group';
+import { Preset } from '../time-filter-menu/time-filter-menu';
+
+var $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
+var latestPresets: Preset[] = [
+  { name: '5M',  selection: $maxTime.timeRange('PT5M', -1) },
+  { name: '1H',  selection: $maxTime.timeRange('PT1H', -1) },
+  { name: '1D',  selection: $maxTime.timeRange('P1D', -1)  },
+  { name: '1W',  selection: $maxTime.timeRange('P1W', -1)  }
+];
 
 export interface LinkViewProps extends React.Props<any> {
   linkViewConfig: LinkViewConfig;
@@ -149,6 +159,20 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     changeHash(`${essence.dataSource.name}/${essence.toHash()}`, true);
   }
 
+  renderPresets() {
+    const { essence } = this.state;
+
+    var presetToButton = (preset: Preset) => {
+      return {
+        isSelected: preset.selection.equals(essence.getTimeSelection()),
+        title: preset.name,
+        onClick: this.clicker.changeTimeSelection.bind(this, preset.selection),
+        key: preset.name
+      };
+    };
+    return <ButtonGroup groupMembers={latestPresets.map(presetToButton)} />;
+  }
+
   renderLinkPanel() {
     const { linkViewConfig } = this.props;
     const { linkItem } = this.state;
@@ -225,6 +249,9 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
           <div className='center-top-bar'>
             <div className='link-title'>{linkItem.title}</div>
             <div className='link-description'>{linkItem.description}</div>
+            <div className="right-align">
+              {this.renderPresets()}
+            </div>
           </div>
           <div className='center-main'>
             <div className='visualization' ref='visualization'>{visElement}</div>

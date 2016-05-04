@@ -2,7 +2,7 @@ require('./cube-header-bar.css');
 
 import * as React from 'react';
 import { immutableEqual } from "immutable-class";
-import { Duration } from 'chronoshift';
+import { Duration, Timezone } from 'chronoshift';
 import { Dataset } from "plywood";
 import { Fn } from "../../../common/utils/general/general";
 import { SvgIcon } from '../svg-icon/svg-icon';
@@ -11,7 +11,7 @@ import { Clicker, Essence, DataSource, User, Customization, ExternalView } from 
 import { HilukMenu } from '../hiluk-menu/hiluk-menu';
 import { AutoRefreshMenu } from '../auto-refresh-menu/auto-refresh-menu';
 import { UserMenu } from '../user-menu/user-menu';
-
+import { SettingsMenu } from '../settings-menu/settings-menu';
 
 export interface CubeHeaderBarProps extends React.Props<any> {
   clicker: Clicker;
@@ -23,12 +23,15 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   openRawDataModal?: Fn;
   customization?: Customization;
   downloadableDataset?: Dataset;
+  changeTimezone?: (timezone: Timezone) => void;
+  timezone?: Timezone;
 }
 
 export interface CubeHeaderBarState {
   hilukMenuOpenOn?: Element;
   autoRefreshMenuOpenOn?: Element;
   autoRefreshRate?: Duration;
+  settingsMenuOpen?: Element;
   userMenuOpenOn?: Element;
 }
 
@@ -188,6 +191,36 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     />;
   }
 
+  // Settings menu
+
+  onSettingsMenuClick(e: MouseEvent) {
+    const { settingsMenuOpen } = this.state;
+    if (settingsMenuOpen) return this.onSettingsMenuClose();
+    this.setState({
+      settingsMenuOpen: e.target as Element
+    });
+  }
+
+  onSettingsMenuClose() {
+    this.setState({
+      settingsMenuOpen: null
+    });
+  }
+
+  renderSettingsMenu() {
+    const { changeTimezone, timezone } = this.props;
+    const { settingsMenuOpen } = this.state;
+    if (!settingsMenuOpen) return null;
+
+    return <SettingsMenu
+      timezone={timezone}
+      changeTimezone={changeTimezone}
+      openOn={settingsMenuOpen}
+      onClose={this.onSettingsMenuClose.bind(this)}
+    />;
+  }
+
+
   render() {
     var { user, onNavClick, essence, customization } = this.props;
 
@@ -219,10 +252,15 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
         <div className="icon-button hiluk" onClick={this.onHilukMenuClick.bind(this)}>
           <SvgIcon className="hiluk-icon" svg={require('../../icons/full-hiluk.svg')}/>
         </div>
+        <div className="icon-button settings" onClick={this.onSettingsMenuClick.bind(this)}>
+          <SvgIcon className="settings-icon" svg={require('../../icons/full-settings.svg')}/>
+        </div>
+
         {userButton}
       </div>
       {this.renderHilukMenu()}
       {this.renderAutoRefreshMenu()}
+      {this.renderSettingsMenu()}
       {this.renderUserMenu()}
     </header>;
   }

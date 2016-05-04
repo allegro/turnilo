@@ -5,46 +5,6 @@ $title-margin: 6px;
 
 .split-menu {
 
-  .button-group {
-    margin-bottom: $bottom-margin;
-
-    .button-group-title {
-      @extend %input-top-label;
-      margin-bottom: $title-margin;
-    }
-
-    li {
-      @extend %input-cont;
-      border-radius: 0;
-      display: inline-block;
-      cursor: pointer;
-      width: 20%;
-      text-align: center;
-      height: $input-height;
-      padding: 8px 2px 0 2px;
-      border-right: 0;
-
-      &:first-child {
-        border-top-left-radius: $corner;
-        border-bottom-left-radius: $corner;
-      }
-
-      &:last-child {
-        border-right: 1px solid $border-light;
-        border-top-right-radius: $corner;
-        border-bottom-right-radius: $corner;
-      }
-
-      &.selected {
-        @extend %input-selected;
-      }
-
-      &:not(.selected):not(:hover) {
-        color: $text-light;
-      }
-    }
-  }
-
   .dropdown {
     margin-bottom: $bottom-margin;
   }

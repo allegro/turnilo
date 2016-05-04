@@ -61,5 +61,16 @@ export const STRINGS = {
   goToUrl: 'Go to URL',
   openIn: 'Open in',
   exportToCSV: 'Export to CSV',
+  updateTimezone: 'Update Timezone',
+  timezone: 'Timezone',
   splitDelimiter: 'by'
 };
+
+export const EN_US = {
+  shortDays: [ "S", "M", "T", "W", "T", "F", "S" ],
+  weekStart: 0
+};
+
+export function getLocale() {
+  return EN_US;
+}
