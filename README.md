@@ -133,13 +133,13 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Timezone support
+- Date range picker
 - Export data to CSV
 - Raw data modal allows you to see the raw data in the selected segment
 - New [customization options](https://github.com/implydata/pivot/blob/master/docs/configuration.md#customization)
 - Go to URL option
 - Copy value to clipboard
-- Bar chart
-- Auto refresh
 
 For a full list of changes see our [CHANGELOG](CHANGELOG.md)
 

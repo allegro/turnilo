@@ -2,6 +2,12 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.22
+
+- Timezone support
+- Date range picker
+- Fixed X-axis labeling
+
 ## 0.8.21
 
 - Build system works with node 6
