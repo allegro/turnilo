@@ -5,16 +5,14 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
+import { findDOMNode } from '../../utils/test-utils/index';
 
 import { DataSourceMock } from '../../../common/models/mocks';
-import { BodyPortalMock } from '../body-portal/body-portal.mock';
 
 import { $, Expression } from 'plywood';
 import { AutoRefreshMenu } from './auto-refresh-menu';
 
 describe('AutoRefreshMenu', () => {
-  BodyPortalMock.disableBodyPortal();
-
   it('adds the correct class', () => {
     var openOn = document.createElement('div');
 
@@ -30,7 +28,7 @@ describe('AutoRefreshMenu', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('auto-refresh-menu');
+    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('auto-refresh-menu');
   });
 
 });

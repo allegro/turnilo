@@ -5,16 +5,19 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
+import { mockRequireEnsure } from '../../utils/test-utils/index';
 
 import { $, Expression } from 'plywood';
-import { FilterTile } from './filter-tile';
+import { EssenceMock, StageMock, DimensionMock } from '../../../common/models/mocks';
 
-describe.skip('FilterTile', () => {
+describe('FilterTile', () => {
+  var { FilterTile } = mockRequireEnsure('./filter-tile');
+
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <FilterTile
         clicker={null}
-        essence={null}
+        essence={EssenceMock.wiki()}
         menuStage={null}
       />
     );

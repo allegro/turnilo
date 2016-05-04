@@ -28,8 +28,6 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
 
   constructor() {
     super();
-    //this.state = {
-    //};
   }
 
   onFilter(): void {

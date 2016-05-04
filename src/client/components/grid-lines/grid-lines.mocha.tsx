@@ -7,17 +7,19 @@ import '../../utils/require-extensions';
 
 import * as TestUtils from 'react-addons-test-utils';
 
+import { StageMock } from '../../../common/models/mocks';
+
 import { $, Expression } from 'plywood';
 import { GridLines } from './grid-lines';
 
-describe.skip('GridLines', () => {
+describe('GridLines', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <GridLines
         orientation={null}
         scale={null}
-        stage={null}
-        ticks={null}
+        stage={StageMock.defaultB()}
+        ticks={[]}
       />
     );
 

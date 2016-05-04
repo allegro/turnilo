@@ -4,18 +4,14 @@ import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
+import { findDOMNode } from '../../utils/test-utils/index';
 import * as TestUtils from 'react-addons-test-utils';
-import { BodyPortalMock } from '../body-portal/body-portal.mock';
-
 import { AboutModal } from './about-modal';
 
 
 describe('AboutModal', () => {
 
-  BodyPortalMock.disableBodyPortal();
-
   it('adds the correct class', () => {
-
     var renderedComponent = TestUtils.renderIntoDocument(
       <AboutModal
         onClose={null}
@@ -23,6 +19,6 @@ describe('AboutModal', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('about-modal');
+    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('about-modal');
   });
 });

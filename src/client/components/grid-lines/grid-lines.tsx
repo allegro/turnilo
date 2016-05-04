@@ -18,8 +18,6 @@ export class GridLines extends React.Component<GridLinesProps, GridLinesState> {
 
   constructor() {
     super();
-    // this.state = {};
-
   }
 
   render() {

@@ -7,15 +7,22 @@ import '../../utils/require-extensions';
 
 import * as TestUtils from 'react-addons-test-utils';
 
-import { $, Expression } from 'plywood';
+import { TimeRange } from 'plywood';
 import { Highlighter } from './highlighter';
 
-describe.skip('Highlighter', () => {
+describe('Highlighter', () => {
   it('adds the correct class', () => {
+    var fakeTimeRange = TimeRange.fromJS({
+      start: new Date('2015-01-26T04:54:10Z'),
+      end: new Date('2015-01-26T05:54:10Z')
+    });
+
+    var myScaleX = (value: any) => { return 42; };
+
     var renderedComponent = TestUtils.renderIntoDocument(
       <Highlighter
-        highlightTimeRange={null}
-        scaleX={null}
+        highlightTimeRange={fakeTimeRange}
+        scaleX={myScaleX}
       />
     );
 

@@ -9,12 +9,12 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { GoldenCenter } from './golden-center';
 
-describe.skip('GoldenCenter', () => {
+describe('GoldenCenter', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <GoldenCenter
-
-      />
+      <GoldenCenter>
+        <div className="Hello">Is it me you're looking for?</div>
+      </GoldenCenter>
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);

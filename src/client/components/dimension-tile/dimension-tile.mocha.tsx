@@ -10,14 +10,16 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 import { DimensionTile } from './dimension-tile';
 
-describe.skip('DimensionTile', () => {
+import { EssenceMock, DimensionMock, SortOnMock } from '../../../common/models/mocks';
+
+describe('DimensionTile', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <DimensionTile
         clicker={null}
-        dimension={null}
-        sortOn={null}
-        essence={null}
+        dimension={DimensionMock.countryURL()}
+        sortOn={SortOnMock.defaultA()}
+        essence={EssenceMock.wiki()}
       />
     );
 

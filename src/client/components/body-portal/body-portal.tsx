@@ -14,16 +14,24 @@ export interface BodyPortalState {
 }
 
 export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
-  private target: any = null; // HTMLElement, a div that is appended to the body
-  private component: React.DOMComponent<any> = null; // ReactElement, which is mounted on the target
+  private _target: any = null; // HTMLElement, a div that is appended to the body
+  private _component: React.DOMComponent<any> = null; // ReactElement, which is mounted on the target
 
   constructor() {
     super();
   }
 
+  public get component() {
+    return this._component;
+  }
+
+  public get target() {
+    return this._target;
+  }
+
   updateStyle() {
     var { left, top, disablePointerEvents } = this.props;
-    var style = this.target.style;
+    var style = this._target.style;
     if (typeof left === 'number') {
       style.left = Math.round(left) + 'px';
     }
@@ -42,19 +50,19 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     var { fullSize } = this.props;
     var newDiv = document.createElement('div');
     newDiv.className = 'body-portal' + (fullSize ? ' full-size' : '');
-    this.target = document.body.appendChild(newDiv);
+    this._target = document.body.appendChild(newDiv);
     this.updateStyle();
-    this.component = ReactDOM.render(React.Children.only(this.props.children) as any, this.target);
+    this._component = ReactDOM.render(React.Children.only(this.props.children) as any, this._target);
   }
 
   componentDidUpdate() {
     this.updateStyle();
-    this.component = ReactDOM.render(React.Children.only(this.props.children) as any, this.target);
+    this._component = ReactDOM.render(React.Children.only(this.props.children) as any, this._target);
   }
 
   componentWillUnmount() {
-    ReactDOM.unmountComponentAtNode(this.target);
-    document.body.removeChild(this.target);
+    ReactDOM.unmountComponentAtNode(this._target);
+    document.body.removeChild(this._target);
   }
 
   render(): React.ReactElement<BodyPortalProps> {

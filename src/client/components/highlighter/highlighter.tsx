@@ -16,7 +16,6 @@ export class Highlighter extends React.Component<HighlighterProps, HighlighterSt
 
   constructor() {
     super();
-    //this.state = {};
   }
 
   render() {

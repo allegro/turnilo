@@ -6,16 +6,14 @@ import * as ReactDOM from 'react-dom';
 import '../../utils/require-extensions';
 
 import * as TestUtils from 'react-addons-test-utils';
+import { findDOMNode } from '../../utils/test-utils/index';
 
 import { $, Expression } from 'plywood';
 import { BubbleMenu } from './bubble-menu';
 
 import { StageMock } from '../../../common/models/mocks';
-import { BodyPortalMock } from '../body-portal/body-portal.mock';
 
 describe('BubbleMenu', () => {
-  BodyPortalMock.disableBodyPortal();
-
   it('adds the correct class', () => {
     var openOn = document.createElement('div');
 
@@ -32,7 +30,7 @@ describe('BubbleMenu', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('bubble-menu');
+    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('bubble-menu');
   });
 
 });

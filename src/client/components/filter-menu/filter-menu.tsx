@@ -29,7 +29,6 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
 
   constructor() {
     super();
-    // this.state = {};
   }
 
   render() {
