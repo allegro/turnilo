@@ -2,10 +2,11 @@ import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
-import { $, ply, r, Expression, ExpressionJS, Executor, External, DruidExternal, RefExpression, basicExecutorFactory, Dataset, Datum,
-  Attributes, AttributeInfo, AttributeJSs, ChainExpression, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
+import { $, ply, r, Expression, ExpressionJS, Executor, External, DruidExternal, RefExpression, basicExecutorFactory, Dataset,
+  Attributes, AttributeInfo, AttributeJSs, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
   CustomDruidAggregations, helper } from 'plywood';
 import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
+import { getWallTimeString } from "../../../client/utils/date/date";
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 import { Filter, FilterJS } from '../filter/filter';
@@ -650,7 +651,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (refreshRule.isRealtime()) {
       return 'Updated ~1 second ago';
     } else if (refreshRule.isFixed()) {
-      return `Fixed to ${refreshRule.time.toISOString()}`;
+      return `Fixed to ${getWallTimeString(refreshRule.time, this.defaultTimezone, true)}`;
     } else { // refreshRule is query
       var { maxTime } = this;
       if (maxTime) {

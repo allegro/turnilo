@@ -25,7 +25,11 @@ export enum DisplayYear {
 }
 
 export function getEndWallTimeInclusive(exclusiveEnd: Date, timezone: Timezone) {
-  return WallTime.UTCToWallTime(new Date(exclusiveEnd.valueOf() - 1), timezone.toString());
+  return WallTime.UTCToWallTime(exclusiveToInclusiveEnd(exclusiveEnd), timezone.toString());
+}
+
+export function exclusiveToInclusiveEnd(exclusiveEnd: Date): Date {
+  return new Date(exclusiveEnd.valueOf() - 1);
 }
 
 export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displayYear: DisplayYear): string {
@@ -132,6 +136,14 @@ export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone
   const d1InclusiveEnd = wallTimeHelper(getEndWallTimeInclusive(d1, timezone));
   const d2InclusiveEnd = wallTimeHelper(getEndWallTimeInclusive(d2, timezone));
   return datesEqual(d1InclusiveEnd, d2InclusiveEnd);
+}
+
+export function getWallTimeString(date: Date, timezone: Timezone, includeTime?: boolean, delimiter?: string): string {
+  const wallTimeISOString = wallTimeHelper(WallTime.UTCToWallTime(date, timezone.toString())).toISOString();
+  if (includeTime) {
+    return wallTimeISOString.replace(/(\.\d\d\d)?Z?$/, '').replace('T', delimiter || ', ');
+  }
+  return wallTimeISOString.replace( /:\d\d(\.\d\d\d)?Z?$/, '').split('T')[0];
 }
 
 function wallTimeHelper(wallTime: any) {
