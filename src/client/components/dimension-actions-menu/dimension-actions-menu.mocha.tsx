@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import '../../utils/require-extensions';
+
+import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
 import { findDOMNode } from '../../utils/test-utils/index';

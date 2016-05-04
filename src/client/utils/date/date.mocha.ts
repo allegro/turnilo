@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import "../../utils/jsdom-setup";
+import '../../utils/test-utils/index';
 import { Timezone } from "chronoshift";
 import { datesEqual, prependDays, appendDays, getEndWallTimeInclusive, getWallTimeDay, getWallTimeMonthWithYear } from "./date";
 

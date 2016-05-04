@@ -1,9 +1,8 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import '../../utils/require-extensions';
+
 import { mockRequireEnsure } from '../../utils/test-utils/index';
 
 import { EssenceMock } from '../../../common/models/mocks';

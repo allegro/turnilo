@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
+
+import '../../utils/test-utils/index';
 
 import { $, Expression } from 'plywood';
 import { GoldenCenter } from './golden-center';

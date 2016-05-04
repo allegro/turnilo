@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import '../../utils/jsdom-setup';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
 import { Timezone } from "chronoshift";
+
+import '../../utils/test-utils/index';
 
 import { DateRangePicker } from './date-range-picker';
 var { WallTime } = require('chronoshift');
