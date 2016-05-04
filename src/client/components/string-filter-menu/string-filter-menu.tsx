@@ -82,7 +82,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       loading: true,
       fetchQueued: false
     });
-    dataSource.executor(query)
+    dataSource.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;

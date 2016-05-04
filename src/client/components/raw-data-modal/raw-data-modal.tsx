@@ -90,7 +90,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const $main = $('main');
     const query = $main.filter(essence.getEffectiveFilter().toExpression()).limit(LIMIT);
     this.setState({ loading: true });
-    dataSource.executor(query)
+    dataSource.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;

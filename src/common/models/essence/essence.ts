@@ -495,12 +495,20 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return !this.timezone.equals(other.timezone);
   }
 
+  public differentTimezoneMatters(other: Essence): boolean {
+    return this.splits.timezoneDependant() && this.differentTimezone(other);
+  }
+
   public differentFilter(other: Essence): boolean {
     return !this.filter.equals(other.filter);
   }
 
   public differentSplits(other: Essence): boolean {
     return !this.splits.equals(other.splits);
+  }
+
+  public differentEffectiveSplits(other: Essence): boolean {
+    return this.differentSplits(other) || this.differentTimezoneMatters(other);
   }
 
   public differentColors(other: Essence): boolean {
@@ -645,7 +653,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       var oldTimeSelection = this.filter.getSelection(timeAttribute);
       var newTimeSelection = filter.getSelection(timeAttribute);
       if (newTimeSelection && !newTimeSelection.equals(oldTimeSelection)) {
-        value.splits = value.splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(newTimeSelection), this.timezone, true);
+        value.splits = value.splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(newTimeSelection), true);
       }
     }
 
@@ -678,7 +686,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var timeAttribute = this.getTimeAttribute();
     if (timeAttribute) {
-      splits = splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(filter.getSelection(timeAttribute)), timezone);
+      splits = splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(filter.getSelection(timeAttribute)));
     }
 
     // If in manual mode stay there, keep the vis regardless of suggested strategy
@@ -721,7 +729,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (!timeAttribute) return this;
 
     var value = this.valueOf();
-    value.splits = splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(filter.getSelection(timeAttribute)), timezone);
+    value.splits = splits.updateWithTimeRange(timeAttribute, this.evaluateSelection(filter.getSelection(timeAttribute)));
     return new Essence(value);
   }
 

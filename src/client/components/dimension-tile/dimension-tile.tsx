@@ -104,7 +104,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       loading: true,
       fetchQueued: false
     });
-    dataSource.executor(query)
+    dataSource.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;
@@ -160,7 +160,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (
       essence.differentDataSource(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, null, unfolded ? dimension : null) ||
-      essence.differentColors(nextEssence) || !dimension.equals(nextDimension) || !sortOn.equals(nextSortOn)
+      essence.differentColors(nextEssence) || !dimension.equals(nextDimension) || !sortOn.equals(nextSortOn) ||
+      essence.differentTimezoneMatters(nextEssence)
     ) {
       this.fetchData(nextEssence, nextDimension, nextSortOn, unfolded);
     }

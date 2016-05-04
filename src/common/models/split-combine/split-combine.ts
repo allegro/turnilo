@@ -155,6 +155,12 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     return this.changeLimitAction(limitAction);
   }
 
+  public timezoneDependant(): boolean {
+    const { bucketAction } = this;
+    if (!bucketAction) return false;
+    return bucketAction.needsEnvironment();
+  }
+
   public getDimension(dimensions: List<Dimension>): Dimension {
     return Dimension.getDimensionByExpression(dimensions, this.expression);
   }

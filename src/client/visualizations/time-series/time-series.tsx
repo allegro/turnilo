@@ -6,6 +6,7 @@ import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import { r, $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction } from 'plywood';
 import { Stage, Essence, Splits, SplitCombine, Filter, FilterClause, Measure, DataSource, VisualizationProps, DatasetLoad, Resolve, Colors } from "../../../common/models/index";
+import { getTimeTicks } from '../../../common/utils/date-calc/date-calc';
 import { SPLIT, SEGMENT, TIME_SEGMENT, TIME_SORT_ACTION, VIS_H_PADDING } from '../../config/constants';
 import { getXFromEvent, escapeKey } from '../../utils/dom/dom';
 import { formatTimeRange, DisplayYear } from '../../utils/date/date';
@@ -65,6 +66,7 @@ export interface TimeSeriesState {
   // Cached props
   axisTimeRange?: TimeRange;
   scaleX?: any;
+  xTicks?: Date[];
 }
 
 export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesState> {
@@ -277,7 +279,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     query = query.apply(SPLIT, makeQuery(0));
 
     this.precalculate(this.props, { loading: true });
-    dataSource.executor(query)
+    dataSource.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;
@@ -320,7 +322,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     if (
       nextEssence.differentDataSource(essence) ||
       nextEssence.differentEffectiveFilter(essence, TimeSeries.id) ||
-      nextEssence.differentSplits(essence) ||
+      nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.newEffectiveMeasures(essence)
     ) {
@@ -609,9 +611,9 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     return null;
   }
 
-  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, getX: any, xTicks: Date[]): JSX.Element {
+  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, getX: any): JSX.Element {
     const { essence, clicker } = this.props;
-    const { hoverTimeRange, hoverMeasure, dragTimeRange, scaleX } = this.state;
+    const { hoverTimeRange, hoverMeasure, dragTimeRange, scaleX, xTicks } = this.state;
     const { splits, colors } = essence;
     var splitLength = splits.length();
 
@@ -738,7 +740,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
     const { registerDownloadableDataset, essence, stage } = props;
-    const { splits } = essence;
+    const { splits, timezone } = essence;
 
     var existingDatasetLoad = this.state.datasetLoad;
     var newState: TimeSeriesState = {};
@@ -763,6 +765,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       newState.scaleX = d3.time.scale()
         .domain([axisTimeRange.start, axisTimeRange.end])
         .range([0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH]);
+
+      newState.xTicks = getTimeTicks(axisTimeRange, timezone);
     }
 
     this.setState(newState);
@@ -770,7 +774,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
   render() {
     var { essence, stage } = this.props;
-    var { datasetLoad, axisTimeRange, scaleX } = this.state;
+    var { datasetLoad, axisTimeRange, scaleX, xTicks } = this.state;
     var { splits, timezone } = essence;
 
     var measureCharts: JSX.Element[];
@@ -796,10 +800,8 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         height: chartHeight
       });
 
-      var xTicks = scaleX.ticks();
-
       measureCharts = measures.map((measure, chartIndex) => {
-        return this.renderChart(datasetLoad.dataset, measure, chartIndex, stage, chartStage, getX, xTicks);
+        return this.renderChart(datasetLoad.dataset, measure, chartIndex, stage, chartStage, getX);
       });
 
       var xAxisStage = Stage.fromSize(chartStage.width, X_AXIS_HEIGHT);

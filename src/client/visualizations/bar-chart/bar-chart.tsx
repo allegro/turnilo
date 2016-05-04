@@ -187,7 +187,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     query = query.apply(SPLIT, makeQuery(0));
 
     this.precalculate(this.props, { loading: true });
-    dataSource.executor(query)
+    dataSource.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;
@@ -225,7 +225,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     if (
       nextEssence.differentDataSource(essence) ||
       nextEssence.differentEffectiveFilter(essence, BarChart.id) ||
-      nextEssence.differentSplits(essence) ||
+      nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.newEffectiveMeasures(essence)
     ) {
       this.fetchData(nextEssence);

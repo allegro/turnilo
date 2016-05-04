@@ -3,25 +3,11 @@ import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-c
 import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction } from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
+import { getBestGranularity } from '../../utils/date-calc/date-calc';
 import { Dimension } from '../dimension/dimension';
 import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
 
 const DEFAULT_GRANULARITY = Duration.fromJS('P1D');
-
-function getBestGranularity(timeRange: TimeRange): Duration {
-  var len = timeRange.end.valueOf() - timeRange.start.valueOf();
-  if (len > 95 * day.canonicalLength) {
-    return Duration.fromJS('P1W');
-  } else if (len > 8 * day.canonicalLength) {
-    return Duration.fromJS('P1D');
-  } else if (len > 8 * hour.canonicalLength) {
-    return Duration.fromJS('PT1H');
-  } else if (len > 3 * hour.canonicalLength) {
-    return Duration.fromJS('PT5M');
-  } else {
-    return Duration.fromJS('PT1M');
-  }
-}
 
 function withholdSplit(splits: List<SplitCombine>, split: SplitCombine, allowIndex: number): List<SplitCombine> {
   return <List<SplitCombine>>splits.filter((s, i) => {
@@ -158,7 +144,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return this.splitCombines.toArray();
   }
 
-  public updateWithTimeRange(timeAttribute: RefExpression, timeRange: TimeRange, timezone: Timezone, force?: boolean): Splits {
+  public updateWithTimeRange(timeAttribute: RefExpression, timeRange: TimeRange, force?: boolean): Splits {
     var changed = false;
 
     var granularity = timeRange ? getBestGranularity(timeRange) : DEFAULT_GRANULARITY;
@@ -171,7 +157,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
         if (bucketAction instanceof TimeBucketAction && !bucketAction.duration.equals(granularity)) {
           changed = true;
           return splitCombine.changeBucketAction(new TimeBucketAction({
-            timezone: bucketAction.timezone,
+            timezone: bucketAction.timezone, // This is just preserving the existing timezone which is probably null
             duration: granularity
           }));
         } else {
@@ -180,7 +166,6 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
       } else {
         changed = true;
         return splitCombine.changeBucketAction(new TimeBucketAction({
-          timezone,
           duration: granularity
         }));
       }
@@ -203,6 +188,11 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
 
     return hasChanged ? new Splits(List(splitCombines)) : this;
   }
+
+  public timezoneDependant(): boolean {
+    return this.splitCombines.some((splitCombine) => splitCombine.timezoneDependant());
+  }
+
 }
 check = Splits;
 

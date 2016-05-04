@@ -48,7 +48,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     });
 
     this.precalculate(this.props, { loading: true });
-    dataSource.executor(query)
+    dataSource.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;

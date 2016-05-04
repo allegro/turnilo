@@ -170,8 +170,7 @@ describe('LinkItem', () => {
             {
               "bucketAction": {
                 "action": "timeBucket",
-                "duration": "PT1H",
-                "timezone": "Etc/UTC"
+                "duration": "PT1H"
               },
               "expression": {
                 "name": "time",

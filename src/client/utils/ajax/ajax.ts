@@ -1,5 +1,5 @@
 import * as Qajax from 'qajax';
-import { $, Expression, Executor, Dataset, Datum, ChainExpression, SplitAction } from 'plywood';
+import { $, Expression, Executor, Dataset, ChainExpression, SplitAction, Environment } from 'plywood';
 
 function getSplitsDescription(ex: Expression): string {
   var splits: string[] = [];
@@ -23,14 +23,15 @@ function reload() {
 }
 
 export function queryUrlExecutorFactory(name: string, url: string, version: string): Executor {
-  return (ex: Expression) => {
+  return (ex: Expression, env: Environment = {}) => {
     return Qajax({
       method: "POST",
       url: url + '?by=' + getSplitsDescription(ex),
       data: {
         version: version,
         dataSource: name,
-        expression: ex.toJS()
+        expression: ex.toJS(),
+        timezone: env ? env.timezone : null
       }
     })
       .then(Qajax.filterSuccess)

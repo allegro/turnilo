@@ -178,7 +178,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     query = query.apply(SPLIT, makeQuery(0));
 
     this.precalculate(this.props, { loading: true });
-    dataSource.executor(query)
+    dataSource.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;
@@ -216,7 +216,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     if (
       nextEssence.differentDataSource(essence) ||
       nextEssence.differentEffectiveFilter(essence, Table.id) ||
-      nextEssence.differentSplits(essence) ||
+      nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.newEffectiveMeasures(essence)
     ) {
       this.fetchData(nextEssence);

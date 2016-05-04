@@ -9,7 +9,7 @@ import { DataSource } from '../../../common/models/index';
 var router = Router();
 
 router.post('/', (req: PivotRequest, res: Response) => {
-  var { version, dataSource, expression } = req.body;
+  var { version, dataSource, expression, timezone } = req.body;
 
   if (version && version !== VERSION) {
     res.status(400).send({
@@ -24,6 +24,19 @@ router.post('/', (req: PivotRequest, res: Response) => {
       error: 'must have a dataSource'
     });
     return;
+  }
+
+  var queryTimezone: Timezone = null;
+  if (typeof timezone === 'string') {
+    try {
+      queryTimezone = Timezone.fromJS(timezone);
+    } catch (e) {
+      res.status(400).send({
+        error: 'bad timezone',
+        message: e.message
+      });
+      return;
+    }
   }
 
   var ex: Expression = null;
@@ -44,7 +57,7 @@ router.post('/', (req: PivotRequest, res: Response) => {
         return;
       }
 
-      return myDataSource.executor(ex).then(
+      return myDataSource.executor(ex, { timezone: queryTimezone }).then(
         (data: Dataset) => {
           res.send(data.toJS());
         },
