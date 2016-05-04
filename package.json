@@ -54,7 +54,7 @@
     "gulp": "3.9.1",
     "istanbul": "0.4.3",
     "jsdom": "8.5.0",
-    "laborer": "2.5.11",
+    "laborer": "2.5.13",
     "mkdirp": "0.5.1",
     "mocha": "2.4.5",
     "react-addons-test-utils": "15.0.2",
