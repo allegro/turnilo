@@ -111,6 +111,10 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
     if (tab !== 'specific') return null;
 
+    if (startTime && !endTime) {
+      endTime = day.shift(startTime, timezone, 1);
+    }
+
     if (startTime && endTime && startTime < endTime) {
       return filter.setSelection(dimension.expression, r(TimeRange.fromJS({ start: startTime, end: endTime })));
     } else {

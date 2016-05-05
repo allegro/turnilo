@@ -58,4 +58,19 @@ describe('DateRangePicker', () => {
       />);
     }).to.throw('end time must be round');
   });
+
+  it('does not error on null end time', () => {
+    expect(() => {
+      TestUtils.renderIntoDocument(
+        <DateRangePicker
+          startTime={new Date(Date.UTC(2003, 11, 2))}
+          endTime={null}
+          maxTime={new Date(Date.UTC(2004, 11, 2))}
+          timezone={Timezone.UTC}
+          onStartChange={() => {}}
+          onEndChange={() => {}}
+        />);
+    }).to.not.throw();
+  });
+
 });
