@@ -1,4 +1,4 @@
-import {classNames} from "../../utils/dom/dom";
+import {classNames} from '../../utils/dom/dom';
 require('./tile-header.css');
 
 import * as React from 'react';

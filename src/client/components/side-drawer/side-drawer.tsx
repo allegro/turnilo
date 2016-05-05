@@ -3,7 +3,7 @@ require('./side-drawer.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { isInside, escapeKey } from '../../utils/dom/dom';
 import { DataSource, Customization } from '../../../common/models/index';

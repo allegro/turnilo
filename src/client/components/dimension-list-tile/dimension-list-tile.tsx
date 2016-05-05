@@ -1,7 +1,7 @@
 require('./dimension-list-tile.css');
 
 import * as React from 'react';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { STRINGS, TITLE_HEIGHT, DIMENSION_HEIGHT, MAX_SEARCH_LENGTH } from '../../config/constants';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { findParentWithClass, setDragGhost, transformStyle, classNames } from '../../utils/dom/dom';

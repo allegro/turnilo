@@ -2,7 +2,7 @@ require('./vis-selector-menu.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
 import { Clicker, Essence, Measure, Manifest } from '../../../common/models/index';

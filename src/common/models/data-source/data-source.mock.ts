@@ -1,7 +1,12 @@
+import { $, Executor, Dataset, basicExecutorFactory } from 'plywood';
 import { DataSource, DataSourceJS } from './data-source';
-import { $ } from 'plywood';
 
-var queryUrlExecutorFactory = require('../../../client/utils/ajax/ajax').queryUrlExecutorFactory;
+var executor = basicExecutorFactory({
+  datasets: {
+    wiki: Dataset.fromJS([]),
+    twitter: Dataset.fromJS([])
+  }
+});
 
 export class DataSourceMock {
   public static get WIKI_JS(): DataSourceJS {
@@ -110,12 +115,10 @@ export class DataSourceMock {
   }
 
   static wiki() {
-    var executor = queryUrlExecutorFactory('wiki', '/plywood', '0.0.0');
     return DataSource.fromJS(DataSourceMock.WIKI_JS, { executor });
   }
 
   static twitter() {
-    var executor = queryUrlExecutorFactory('wiki', '/plywood', '0.0.0');
     return DataSource.fromJS(DataSourceMock.TWITTER_JS, { executor });
   }
 }

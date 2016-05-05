@@ -5,7 +5,7 @@ import { Stage, DataSource, User, Customization } from '../../../common/models/i
 import { STRINGS } from '../../config/constants';
 import { HomeHeaderBar } from '../home-header-bar/home-header-bar';
 import { List } from 'immutable';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { GoldenCenter } from '../golden-center/golden-center';
 import { NavLogo } from '../nav-logo/nav-logo';
 import { NavList } from '../nav-list/nav-list';

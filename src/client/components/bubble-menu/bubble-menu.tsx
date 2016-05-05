@@ -1,7 +1,7 @@
 require('./bubble-menu.css');
 
 import * as React from 'react';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { Stage } from '../../../common/models/index';
 import { isInside, escapeKey, uniqueId, classNames } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';

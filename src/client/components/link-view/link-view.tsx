@@ -3,8 +3,8 @@ require('./link-view.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Expression, $ } from 'plywood';
-import { classNames } from "../../utils/dom/dom";
-import { Fn } from "../../../common/utils/general/general";
+import { classNames } from '../../utils/dom/dom';
+import { Fn } from '../../../common/utils/general/general';
 import { Colors, Clicker, Essence, Filter, FilterClause, Stage, Measure,
   VisualizationProps, LinkViewConfig, LinkItem, User, Customization } from '../../../common/models/index';
 // import { ... } from '../../config/constants';

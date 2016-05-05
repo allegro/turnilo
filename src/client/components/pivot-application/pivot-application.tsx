@@ -5,7 +5,7 @@ import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import * as Clipboard from 'clipboard';
 
 import { List } from 'immutable';
-import { DataSource, LinkViewConfig, LinkViewConfigJS, User, Customization} from "../../../common/models/index";
+import { DataSource, LinkViewConfig, LinkViewConfigJS, User, Customization} from '../../../common/models/index';
 
 import { AboutModal } from '../about-modal/about-modal';
 import { SideDrawer } from '../side-drawer/side-drawer';

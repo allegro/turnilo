@@ -1,7 +1,6 @@
-import { expect } from "chai";
-import '../../utils/test-utils/index';
-import { Timezone } from "chronoshift";
-import { datesEqual, prependDays, appendDays, getEndWallTimeInclusive, getWallTimeDay, getWallTimeMonthWithYear } from "./date";
+import { expect } from 'chai';
+import { Timezone } from 'chronoshift';
+import { datesEqual, prependDays, appendDays, getEndWallTimeInclusive, getWallTimeDay, getWallTimeMonthWithYear } from './time';
 
 var { WallTime } = require('chronoshift');
 if (!WallTime.rules) {

@@ -2,7 +2,7 @@ require('./scroller.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 
 export interface ScrollerProps extends React.Props<any> {
   onScroll: Fn;

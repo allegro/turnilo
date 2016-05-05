@@ -5,10 +5,10 @@ import { List } from 'immutable';
 import { $, Dataset, PlywoodValue, Datum, Set, AttributeInfo, isDate, PlyType } from 'plywood';
 import { Essence, Stage, DataSource } from '../../../common/models/index';
 
-import { Fn, makeTitle, arraySum } from "../../../common/utils/general/general";
-import { download, makeFileName } from "../../utils/download/download";
-import { formatLabel } from "../../../common/utils/formatter/formatter";
-import { classNames } from "../../utils/dom/dom";
+import { Fn, makeTitle, arraySum } from '../../../common/utils/general/general';
+import { download, makeFileName } from '../../utils/download/download';
+import { formatLabel } from '../../../common/utils/formatter/formatter';
+import { classNames } from '../../utils/dom/dom';
 import { STRINGS, SEGMENT } from '../../config/constants';
 import { Modal } from '../modal/modal';
 import { Button } from '../button/button';

@@ -2,7 +2,7 @@ require('./string-filter-menu.css');
 
 import * as React from 'react';
 import { $, ply, r, Expression, Executor, Dataset, SortAction, Set } from 'plywood';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { STRINGS, SEGMENT, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors, DragPosition } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';

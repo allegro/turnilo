@@ -5,7 +5,7 @@ import { generalEqual } from 'immutable-class';
 import { $, ply, r, Expression, Executor, Dataset, Datum, SortAction, PlywoodValue, Set, TimeRange } from 'plywood';
 import { Stage, Essence, DataSource, Filter, FilterClause, Splits, SplitCombine, Dimension, Measure, Colors, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
 import { SPLIT, SEGMENT, TIME_SEGMENT, VIS_H_PADDING } from '../../config/constants';
-import { roundToPx, roundToHalfPx, classNames } from "../../utils/dom/dom";
+import { roundToPx, roundToHalfPx, classNames } from '../../utils/dom/dom';
 import { VisMeasureLabel } from '../../components/vis-measure-label/vis-measure-label';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
 import { BucketMarks } from '../../components/bucket-marks/bucket-marks';

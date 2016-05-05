@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { Filter, FilterJS } from "./filter";
+import { Filter, FilterJS } from './filter';
 
 describe('Filter', () => {
   it('is an immutable class', () => {

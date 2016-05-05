@@ -1,7 +1,7 @@
 require('./dimension-measure-panel.css');
 
 import * as React from 'react';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
 import { MeasuresTile } from '../measures-tile/measures-tile';

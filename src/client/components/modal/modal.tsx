@@ -1,7 +1,7 @@
 require('./modal.css');
 
 import * as React from 'react';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { isInside, escapeKey, uniqueId, classNames } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
 import { SvgIcon } from '../svg-icon/svg-icon';

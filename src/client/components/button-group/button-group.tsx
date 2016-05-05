@@ -1,8 +1,8 @@
 require('./button-group.css');
 
 import * as React from 'react';
-import { Fn } from "../../../common/utils/general/general";
-import { classNames } from "../../utils/dom/dom";
+import { Fn } from '../../../common/utils/general/general';
+import { classNames } from '../../utils/dom/dom';
 
 export interface GroupMember {
   title: string;

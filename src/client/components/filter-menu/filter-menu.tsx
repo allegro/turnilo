@@ -1,7 +1,7 @@
 require('./filter-menu.css');
 
 import * as React from 'react';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, DragPosition } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 

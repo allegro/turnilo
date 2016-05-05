@@ -1,9 +1,9 @@
 require('./link-header-bar.css');
 
 import * as React from 'react';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { User, Customization } from "../../../common/models/index";
+import { User, Customization } from '../../../common/models/index';
 
 export interface LinkHeaderBarProps extends React.Props<any> {
   title: string;

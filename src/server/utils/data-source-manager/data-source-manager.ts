@@ -1,7 +1,7 @@
 import * as Q from 'q';
 import { Duration, Timezone } from 'chronoshift';
 import { $, AttributeInfo, RefExpression, DruidExternal, helper } from 'plywood';
-import { makeUrlSafeName } from "../../../common/utils/general/general";
+import { makeUrlSafeName } from '../../../common/utils/general/general';
 import { DataSource, RefreshRule } from '../../../common/models/index';
 
 export type SourceListScan = "disable" | "auto";

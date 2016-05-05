@@ -3,10 +3,10 @@ require('./cube-header-bar.css');
 import * as React from 'react';
 import { immutableEqual } from "immutable-class";
 import { Duration, Timezone } from 'chronoshift';
-import { Dataset } from "plywood";
-import { Fn } from "../../../common/utils/general/general";
+import { Dataset } from 'plywood';
+import { Fn } from '../../../common/utils/general/general';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { Clicker, Essence, DataSource, User, Customization, ExternalView } from "../../../common/models/index";
+import { Clicker, Essence, DataSource, User, Customization, ExternalView } from '../../../common/models/index';
 
 import { HilukMenu } from '../hiluk-menu/hiluk-menu';
 import { AutoRefreshMenu } from '../auto-refresh-menu/auto-refresh-menu';

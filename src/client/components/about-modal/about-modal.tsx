@@ -1,7 +1,7 @@
 require('./about-modal.css');
 
 import * as React from 'react';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { Modal } from '../modal/modal';
 import { Button } from '../button/button';

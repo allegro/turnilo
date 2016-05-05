@@ -3,7 +3,7 @@ require('./split-menu.css');
 import * as React from 'react';
 import { Timezone, Duration } from 'chronoshift';
 import { TimeBucketAction, SortAction } from 'plywood';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { Stage, Clicker, Essence, VisStrategy, SplitCombine, Colors, Dimension, SortOn } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { enterKey } from '../../utils/dom/dom';

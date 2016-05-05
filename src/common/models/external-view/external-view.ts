@@ -1,7 +1,7 @@
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone } from 'chronoshift';
 import { $, Expression } from 'plywood';
-import { Essence, DataSource, Filter, Splits, Customization} from "../../../common/models/index";
+import { Essence, DataSource, Filter, Splits, Customization} from '../../../common/models/index';
 
 export interface LinkGenerator {
   (dataSource: DataSource, timezone: Timezone, filter: Filter, splits: Splits): string;

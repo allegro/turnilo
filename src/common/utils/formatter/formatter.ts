@@ -1,6 +1,6 @@
 import * as numeral from 'numeral';
 import { Dimension, FilterClause, Essence } from '../../models/index';
-import { DisplayYear, formatTimeRange } from "../../../client/utils/date/date";
+import { DisplayYear, formatTimeRange } from '../../utils/time/time';
 
 export interface Formatter {
   (n: number): string;

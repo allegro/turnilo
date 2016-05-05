@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
-import { Timezone, WallTime, month, day } from 'chronoshift';
+import { Timezone, Duration, WallTime, month, day, hour } from 'chronoshift';
 import { TimeRange } from 'plywood';
-import { getLocale } from "../../config/constants";
 
 const FORMAT_WITH_YEAR = d3.time.format('%b %-d, %Y');
 const FORMAT_WITHOUT_YEAR = d3.time.format('%b %-d');
@@ -18,6 +17,11 @@ function formatTimeOfDay(d: Date): string {
 function isCurrentYear(year: number, timezone: Timezone): boolean {
   var nowWallTime = WallTime.UTCToWallTime(new Date(), timezone.toString());
   return nowWallTime.getFullYear() === year;
+}
+
+export interface Locale {
+  shortDays: string[];
+  weekStart: number;
 }
 
 export enum DisplayYear {
@@ -73,7 +77,7 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displa
 
 // calendar utils
 
-export function monthToWeeks(firstDayOfMonth: Date, timezone: Timezone): Date[][] {
+export function monthToWeeks(firstDayOfMonth: Date, timezone: Timezone, locale: Locale): Date[][] {
   const weeks: Date[][] = [];
   const firstDayNextMonth = month.shift(firstDayOfMonth, timezone, 1);
 
@@ -81,7 +85,7 @@ export function monthToWeeks(firstDayOfMonth: Date, timezone: Timezone): Date[][
   let currentPointer = day.floor(firstDayOfMonth, timezone);
   while (currentPointer < firstDayNextMonth) {
     var wallTime = WallTime.UTCToWallTime(currentPointer, timezone.toString());
-    if ((wallTime.getDay() === getLocale().weekStart || 0) && week.length > 0) {
+    if ((wallTime.getDay() === locale.weekStart || 0) && week.length > 0) {
       weeks.push(week);
       week = [];
     }
@@ -148,4 +152,65 @@ export function getWallTimeString(date: Date, timezone: Timezone, includeTime?: 
 
 function wallTimeHelper(wallTime: any) {
   return wallTime['wallTime'];
+}
+
+
+export function getBestGranularity(timeRange: TimeRange): Duration {
+  var len = timeRange.end.valueOf() - timeRange.start.valueOf();
+  if (len > 95 * day.canonicalLength) {
+    return Duration.fromJS('P1W');
+
+  } else if (len > 8 * day.canonicalLength) {
+    return Duration.fromJS('P1D');
+
+  } else if (len > 8 * hour.canonicalLength) {
+    return Duration.fromJS('PT1H');
+
+  } else if (len > 3 * hour.canonicalLength) {
+    return Duration.fromJS('PT5M');
+
+  } else {
+    return Duration.fromJS('PT1M');
+  }
+}
+
+export function getTickDuration(timeRange: TimeRange): Duration {
+  var len = timeRange.end.valueOf() - timeRange.start.valueOf();
+  if (len > 95 * day.canonicalLength) {
+    return Duration.fromJS('P1M');
+
+  } else if (len > 20 * day.canonicalLength) {
+    return Duration.fromJS('P1W');
+
+  } else if (len > 6 * day.canonicalLength) {
+    return Duration.fromJS('P1D');
+
+  } else if (len > 2 * day.canonicalLength) {
+    return Duration.fromJS('PT12H');
+
+  } else if (len > 23 * hour.canonicalLength) {
+    return Duration.fromJS('PT6H');
+
+  } else if (len > 3 * hour.canonicalLength) {
+    return Duration.fromJS('PT1H');
+
+  } else if (len > hour.canonicalLength) {
+    return Duration.fromJS('PT5M');
+
+  } else {
+    return Duration.fromJS('PT1M');
+  }
+}
+
+export function getTimeTicks(timeRange: TimeRange, timezone: Timezone): Date[] {
+  const { start, end } = timeRange;
+  const tickDuration = getTickDuration(timeRange);
+
+  var ticks: Date[] = [];
+  var iter = tickDuration.floor(start, timezone);
+  while (iter <= end) {
+    ticks.push(iter);
+    iter = tickDuration.shift(iter, timezone, 1);
+  }
+  return ticks;
 }

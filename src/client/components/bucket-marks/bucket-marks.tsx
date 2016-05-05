@@ -3,7 +3,7 @@ require('./bucket-marks.css');
 import * as React from 'react';
 import { PlywoodValue } from 'plywood';
 import { Stage } from '../../../common/models/index';
-import { roundToHalfPx } from "../../utils/dom/dom";
+import { roundToHalfPx } from '../../utils/dom/dom';
 
 const TICK_HEIGHT = 5;
 

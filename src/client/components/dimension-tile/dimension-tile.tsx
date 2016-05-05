@@ -2,7 +2,7 @@ require('./dimension-tile.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { $, r, Expression, Executor, Dataset, Set, SortAction } from 'plywood';
 import { SEGMENT, PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT, STRINGS } from '../../config/constants';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';

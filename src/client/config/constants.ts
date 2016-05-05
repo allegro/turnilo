@@ -1,4 +1,5 @@
 import { $, SortAction } from 'plywood';
+import { Locale } from '../../common/utils/time/time';
 
 export const TITLE_HEIGHT = 36;
 
@@ -66,11 +67,12 @@ export const STRINGS = {
   splitDelimiter: 'by'
 };
 
-export const EN_US = {
+
+const EN_US: Locale = {
   shortDays: [ "S", "M", "T", "W", "T", "F", "S" ],
   weekStart: 0
 };
 
-export function getLocale() {
+export function getLocale(): Locale {
   return EN_US;
 }

@@ -2,7 +2,7 @@ require('./totals.css');
 
 import * as React from 'react';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve } from "../../../common/models/index";
+import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 

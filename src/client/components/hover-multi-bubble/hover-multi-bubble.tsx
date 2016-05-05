@@ -1,7 +1,7 @@
 require('./hover-multi-bubble.css');
 
 import * as React from 'react';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { Stage, Clicker, Dimension } from '../../../common/models/index';
 import { BodyPortal } from '../body-portal/body-portal';
 import { SegmentActionButtons } from '../segment-action-buttons/segment-action-buttons';

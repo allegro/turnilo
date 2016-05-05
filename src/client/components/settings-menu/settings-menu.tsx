@@ -2,7 +2,7 @@ require('./settings-menu.css');
 
 import * as React from 'react';
 import { Timezone } from 'chronoshift';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { Stage } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';

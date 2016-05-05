@@ -3,7 +3,7 @@ require('./time-axis.css');
 import * as React from 'react';
 import { Timezone, WallTime } from 'chronoshift';
 import { Stage } from '../../../common/models/index';
-import { roundToHalfPx } from "../../utils/dom/dom";
+import { roundToHalfPx } from '../../utils/dom/dom';
 
 const TICK_HEIGHT = 5;
 const TEXT_OFFSET = 12;

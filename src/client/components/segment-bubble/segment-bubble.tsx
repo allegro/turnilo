@@ -2,9 +2,9 @@ require('./segment-bubble.css');
 
 import * as React from 'react';
 import { Timezone } from 'chronoshift';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { Stage, Clicker, Dimension } from '../../../common/models/index';
-import { clamp } from "../../utils/dom/dom";
+import { clamp } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
 import { Shpitz } from '../shpitz/shpitz';
 import { SegmentActionButtons } from '../segment-action-buttons/segment-action-buttons';

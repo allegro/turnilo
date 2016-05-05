@@ -6,7 +6,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { setDragGhost, isInside, escapeKey, classNames } from '../../utils/dom/dom';
 
 import { TileHeader, TileHeaderIcon } from '../tile-header/tile-header';

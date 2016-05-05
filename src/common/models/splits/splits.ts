@@ -3,7 +3,7 @@ import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-c
 import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction } from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
-import { getBestGranularity } from '../../utils/date-calc/date-calc';
+import { getBestGranularity } from '../../utils/time/time';
 import { Dimension } from '../dimension/dimension';
 import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
 

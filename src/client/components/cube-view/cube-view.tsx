@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Expression, Dataset } from 'plywood';
 import { Timezone } from 'chronoshift';
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from '../../../common/utils/general/general';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
   SplitCombine, Splits, VisStrategy, VisualizationProps, User, Customization} from '../../../common/models/index';

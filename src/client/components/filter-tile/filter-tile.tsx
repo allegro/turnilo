@@ -6,7 +6,7 @@ import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { STRINGS, BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, DragPosition } from '../../../common/models/index';
-import { formatLabel } from "../../../common/utils/formatter/formatter";
+import { formatLabel } from '../../../common/utils/formatter/formatter';
 import {
   findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent,
   classNames
