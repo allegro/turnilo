@@ -148,8 +148,9 @@ For a full list of changes see our [CHANGELOG](CHANGELOG.md)
 - Additional visualizations (geo, heatmap)
 - Exclusion filters
 - String / RegExp filters
-- Removing strict limits on dimension values
-- Better time selection with date picker
+- Continuous dimension support
+- Removing strict limits on queries
+- Bookmarks and dashboarding features
 - Various additions, improvements and fixes to make the app more complete
 
 ## Questions & Support
