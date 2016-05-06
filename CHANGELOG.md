@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.25
+
+- New Plywood (0.10.14)
+
 ## 0.8.24
 
 - Improved performance of raw data modal
