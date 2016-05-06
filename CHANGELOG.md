@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.26
+
+- Better time axis for tiny intervals
+
 ## 0.8.25
 
 - New Plywood (0.10.14)

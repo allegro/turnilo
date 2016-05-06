@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { Timezone, Duration, WallTime, month, day, hour } from 'chronoshift';
+import { Timezone, Duration, WallTime, month, day, hour, minute } from 'chronoshift';
 import { TimeRange } from 'plywood';
 
 const FORMAT_WITH_YEAR = d3.time.format('%b %-d, %Y');
@@ -194,7 +194,7 @@ export function getTickDuration(timeRange: TimeRange): Duration {
   } else if (len > 3 * hour.canonicalLength) {
     return Duration.fromJS('PT1H');
 
-  } else if (len > hour.canonicalLength) {
+  } else if (len > 30 * minute.canonicalLength) {
     return Duration.fromJS('PT5M');
 
   } else {
