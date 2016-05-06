@@ -55,6 +55,10 @@ $header-padding-top: 12px;
       left: $space-left + $segment-width;
     }
 
+    .row {
+      width: 100%;
+    }
+
     .segments-cont {
       position: absolute;
       left: $space-left;

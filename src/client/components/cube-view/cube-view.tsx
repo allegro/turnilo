@@ -272,9 +272,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { RawDataModalAsync, showRawDataModal, essence, visualizationStage } = this.state;
     if (!RawDataModalAsync || !showRawDataModal) return null;
     return <RawDataModalAsync
-      stage={visualizationStage}
       essence={essence}
-      onClose={this.onRawDataModalClose.bind(this)}/>;
+      onClose={this.onRawDataModalClose.bind(this)}
+    />;
   }
 
   triggerFilterMenu(dimension: Dimension) {

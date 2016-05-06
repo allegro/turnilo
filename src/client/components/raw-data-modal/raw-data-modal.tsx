@@ -1,14 +1,16 @@
 require('./raw-data-modal.css');
 
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
-import { $, Dataset, PlywoodValue, Datum, Set, AttributeInfo, isDate, PlyType } from 'plywood';
+import { $, Dataset, PlywoodValue, Datum, Set, AttributeInfo, isDate } from 'plywood';
 import { Essence, Stage, DataSource } from '../../../common/models/index';
 
 import { Fn, makeTitle, arraySum } from '../../../common/utils/general/general';
 import { download, makeFileName } from '../../utils/download/download';
 import { formatLabel } from '../../../common/utils/formatter/formatter';
 import { classNames } from '../../utils/dom/dom';
+import { getVisibleSegments } from '../../utils/sizing/sizing';
 import { STRINGS, SEGMENT } from '../../config/constants';
 import { Modal } from '../modal/modal';
 import { Button } from '../button/button';
@@ -29,7 +31,6 @@ const DEFAULT_COL_WIDTH = 200;
 
 export interface RawDataModalProps extends React.Props<any> {
   onClose: Fn;
-  stage: Stage;
   essence: Essence;
 }
 
@@ -39,10 +40,11 @@ export interface RawDataModalState {
   loading?: boolean;
   scrollLeft?: number;
   scrollTop?: number;
+  stage?: Stage;
 }
 
-function getColumnWidth(type: PlyType): number {
-  switch (type) {
+function getColumnWidth(attribute: AttributeInfo): number {
+  switch (attribute.type) {
     case 'BOOLEAN':
       return BOOLEAN_COL_WIDTH;
     case 'NUMBER':
@@ -71,14 +73,18 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       dataset: null,
       scrollLeft: 0,
       scrollTop: 0,
-      error: null
+      error: null,
+      stage: null
     };
+
+    this.globalResizeListener = this.globalResizeListener.bind(this);
   }
 
   componentDidMount() {
     this.mounted = true;
     const { essence } = this.props;
     this.fetchData(essence);
+    this.globalResizeListener();
   }
 
   componentWillUnmount() {
@@ -107,6 +113,15 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
           });
         }
       );
+  }
+
+  globalResizeListener() {
+    var { table } = this.refs;
+    var tableDOM = ReactDOM.findDOMNode(table);
+    if (!tableDOM) return;
+    this.setState({
+      stage: Stage.fromClientRect(tableDOM.getBoundingClientRect())
+    });
   }
 
   onScroll(e: UIEvent) {
@@ -160,14 +175,17 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     return filters.unshift(limit);
   }
 
-  renderHeader(dataset: Dataset): JSX.Element[] {
-    if (!dataset) return null;
+  renderHeader(): JSX.Element[] {
     const { essence } = this.props;
+    const { dataset } = this.state;
+    if (!dataset) return null;
     const { dataSource } = essence;
+
     const attributes = this.getSortedAttributes(dataSource);
+
     return attributes.map((attribute, i) => {
       const name = attribute.name;
-      const width = getColumnWidth(attribute.type);
+      const width = getColumnWidth(attribute);
       const style = { width };
       const key = name;
       return (<div className={classNames("header-cell", classFromAttribute(attribute))} style={style} key={i}>
@@ -178,26 +196,33 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     });
   }
 
-  renderRows(dataset: Dataset, scrollTop: number, stage: Stage): JSX.Element[] {
-    if (!dataset) return null;
+  renderRows(): JSX.Element[] {
     const { essence } = this.props;
+    const { dataset, scrollTop, scrollLeft, stage } = this.state;
+    if (!dataset) return null;
     const { dataSource } = essence;
 
     const rawData = dataset.data;
-    const firstElementToShow = SimpleTable.getFirstElementToShow(ROW_HEIGHT, scrollTop);
-    const lastElementToShow = SimpleTable.getLastElementToShow(ROW_HEIGHT, rawData.length, scrollTop, stage.height);
+    const firstRowToShow = SimpleTable.getFirstElementToShow(ROW_HEIGHT, scrollTop);
+    const lastRowToShow = SimpleTable.getLastElementToShow(ROW_HEIGHT, rawData.length, scrollTop, stage.height);
 
-    const rows = rawData.slice(firstElementToShow, lastElementToShow);
-    const attributes = this.getSortedAttributes(dataSource);
+    const rows = rawData.slice(firstRowToShow, lastRowToShow);
+    var attributes = this.getSortedAttributes(dataSource);
+    var attributeWidths = attributes.map(getColumnWidth);
 
-    var rowY = firstElementToShow * ROW_HEIGHT;
+    const { startIndex, shownColumns } = getVisibleSegments(attributeWidths, scrollLeft, stage.width);
+    var leftOffset = arraySum(attributeWidths.slice(0, startIndex));
+
+    attributes = attributes.slice(startIndex, startIndex + shownColumns);
+
+    var rowY = firstRowToShow * ROW_HEIGHT;
     return rows.map((datum: Datum, i: number) => {
       var cols: JSX.Element[] = [];
       attributes.forEach((attribute: AttributeInfo) => {
         const name = attribute.name;
         const value: PlywoodValue = datum[name];
         const colStyle = {
-          width: getColumnWidth(attribute.type)
+          width: getColumnWidth(attribute)
         };
 
         var displayValue = value;
@@ -209,21 +234,20 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
         cols.push(<div className={classNames('cell', classFromAttribute(attribute))} key={name} style={colStyle}>
           <span className="cell-value">{String(displayValue)}</span>
         </div>);
-
       });
 
-      const rowStyle = { top: rowY };
+      const rowStyle = { top: rowY, left: leftOffset };
       rowY += ROW_HEIGHT;
       return <div className="row" style={rowStyle} key={i}>{cols}</div>;
     });
   }
 
   render() {
-    const { essence, onClose, stage } = this.props;
+    const { essence, onClose } = this.props;
     const { dataset, loading, scrollTop, scrollLeft, error } = this.state;
     const { dataSource } = essence;
 
-    const rowWidth = arraySum(dataSource.attributes.map((a) => getColumnWidth(a.type)));
+    const rowWidth = arraySum(dataSource.attributes.map(getColumnWidth));
     const title = `${makeTitle(SEGMENT.toLowerCase())} ${STRINGS.rawData}`;
     const dataLength = dataset ? dataset.data.length : 0;
     const bodyHeight = dataLength * ROW_HEIGHT;
@@ -241,14 +265,14 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     >
       <div className="content">
         <ul className="filters">{this.renderFilters()}</ul>
-        <div className="table-container">
+        <div className="table-container" ref="table">
           <SimpleTable
             scrollLeft={scrollLeft}
             scrollTop={scrollTop}
             rowHeight={ROW_HEIGHT}
-            headerColumns={this.renderHeader(dataset)}
+            headerColumns={this.renderHeader()}
             rowWidth={rowWidth}
-            rows={this.renderRows(dataset, scrollTop, stage)}
+            rows={this.renderRows()}
             dataLength={dataLength}
           />
           <Scroller style={scrollerStyle} onScroll={this.onScroll.bind(this)} />

@@ -15,7 +15,6 @@ describe.skip('RawDataModal', () => {
       <RawDataModal
         onClose={null}
         essence={null}
-        stage={null}
       />
     );
 
