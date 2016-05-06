@@ -1,16 +1,18 @@
 @import '../../imports';
 
 .nav-logo {
-  padding-left: $nav-padding;
   padding-right: $nav-padding;
+  height: 60px;
 
   .logo {
-    height: 60px;
-    overflow: hidden;
+    position: absolute;
+    left: $nav-padding;
+    top: 50%;
+    transform: translate(0, -50%);
+    height: 31px;
 
     svg {
-      width: 86px;
-      height: 60px;
+      height: 100%;
     }
   }
 }
