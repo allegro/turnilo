@@ -172,6 +172,17 @@ Which would have values:
 ["0.8.2", "0.8.1", "0.7.0", null]
 ```
 
+#### Boolean
+
+It is often useful to create dimensions that are the result of some boolean expression.
+Let's say that you are responsible for all accounts in the United States as well as some specific account you could create a dimension like:
+ 
+```yaml
+      - name: myAccounts
+        expression: $country == 'United States' or $accountName.in(['Toyota', 'Honda'])
+```
+ 
+Now my account would represent a custom filter boolean diemension. 
 
 ### Measures
 

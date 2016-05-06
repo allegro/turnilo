@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.24
+
+- Improved performance of raw data modal
+- Added all US timezones
+
 ## 0.8.23
 
 - Fixed npm publish issue
