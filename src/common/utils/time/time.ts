@@ -21,6 +21,7 @@ function isCurrentYear(year: number, timezone: Timezone): boolean {
 
 export interface Locale {
   shortDays: string[];
+  shortMonths: string[];
   weekStart: number;
 }
 
@@ -143,19 +144,22 @@ export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone
 }
 
 export function getWallTimeString(date: Date, timezone: Timezone, includeTime?: boolean, delimiter?: string): string {
-  const wallTimeISOString = wallTimeHelper(WallTime.UTCToWallTime(date, timezone.toString())).toISOString();
+  const wallTimeISOString = cleanISOString(wallTimeHelper(WallTime.UTCToWallTime(date, timezone.toString())).toISOString());
   if (includeTime) {
-    return wallTimeISOString.replace(/(\.\d\d\d)?Z?$/, '').replace('T', delimiter || ', ');
+    return wallTimeISOString.replace('T', delimiter || ', ');
   }
-  return wallTimeISOString.replace( /:\d\d(\.\d\d\d)?Z?$/, '').split('T')[0];
+  return wallTimeISOString.replace( /:\d\d/, '').split('T')[0];
 }
 
 function wallTimeHelper(wallTime: any) {
   return wallTime['wallTime'];
 }
 
+function cleanISOString(input: string) {
+  return input.replace(/(\.\d\d\d)?Z?$/, '');
+}
 
-export function getBestGranularity(timeRange: TimeRange): Duration {
+export function getBestGranularityDuration(timeRange: TimeRange): Duration {
   var len = timeRange.end.valueOf() - timeRange.start.valueOf();
   if (len > 95 * day.canonicalLength) {
     return Duration.fromJS('P1W');
@@ -206,4 +210,47 @@ export function getTimeTicks(timeRange: TimeRange, timezone: Timezone): Date[] {
   const { start, end } = timeRange;
   const tickDuration = getTickDuration(timeRange);
   return tickDuration.materialize(start, end, timezone);
+}
+
+function pad(input: number) {
+  if (input < 10) return `0${input}`;
+  return String(input);
+}
+
+export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Duration, timezone: Timezone, locale: Locale): string {
+  const wallTimeStart = WallTime.UTCToWallTime(range.start, timezone.toString());
+
+  const year = wallTimeStart.getFullYear();
+  const month = wallTimeStart.getMonth();
+  const day = wallTimeStart.getDate();
+  const hour = wallTimeStart.getHours();
+  const minute = wallTimeStart.getMinutes();
+  const second = wallTimeStart.getSeconds();
+
+  const monthString = locale.shortMonths[month];
+  const hourToTwelve = hour % 12 === 0 ? 12 : hour % 12;
+  const amPm = (hour / 12) >= 1 ? 'pm' : 'am';
+
+  var granularityString = granularity.toJS();
+  var unit = granularityString.substring(granularityString.length - 1);
+
+  switch (unit) {
+    case 'S':
+      return `${monthString} ${day}, ${pad(hour)}:${pad(minute)}:${pad(second)}`;
+    case 'M':
+      var prefix = granularityString.substring(0, 2);
+      return prefix === "PT" ? `${monthString} ${day}, ${hourToTwelve}:${pad(minute)}${amPm}` : `${monthString}, ${year}`;
+    case 'H':
+      return `${monthString} ${day}, ${year}, ${hourToTwelve}${amPm}`;
+    case 'D':
+      return `${monthString} ${day}, ${year}`;
+    case 'W':
+      return `${formatTimeRange(range, timezone, DisplayYear.ALWAYS)}`;
+    default:
+      return cleanISOString(wallTimeHelper(wallTimeStart).toISOString());
+  }
+}
+
+export function formatGranularity(granularity: string): string {
+  return granularity.replace(/^PT?/, '');
 }

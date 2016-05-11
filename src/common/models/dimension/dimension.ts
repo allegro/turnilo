@@ -1,7 +1,9 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { $, Expression, ExpressionJS, Action } from 'plywood';
+import { $, Expression, ExpressionJS, Action, NumberRangeJS, ApplyAction } from 'plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
+import { Granularity, GranularityJS, granularityFromJS, granularityToJS } from "../granularity/granularity";
+import { immutableArraysEqual } from "immutable-class";
 
 var geoName = /continent|country|city|region/i;
 function isGeo(name: string): boolean {
@@ -19,6 +21,7 @@ export interface DimensionValue {
   expression?: Expression;
   kind?: string;
   url?: string;
+  granularities?: Granularity[];
 }
 
 export interface DimensionJS {
@@ -27,6 +30,7 @@ export interface DimensionJS {
   expression?: ExpressionJS | string;
   kind?: string;
   url?: string;
+  granularities?: GranularityJS[];
 }
 
 var check: Class<DimensionValue, DimensionJS>;
@@ -46,15 +50,30 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   static fromJS(parameters: DimensionJS): Dimension {
-    return new Dimension({
+    var value: DimensionValue = {
       name: parameters.name,
       title: parameters.title,
       expression: parameters.expression ? Expression.fromJSLoose(parameters.expression) : null,
       kind: parameters.kind || typeToKind((parameters as any).type),
       url: parameters.url
-    });
-  }
+    };
+    var granularities = parameters.granularities;
+    if (granularities) {
+      if (!Array.isArray(granularities) || granularities.length !== 5) {
+        throw new Error("must have list of 5 granularities");
+      }
 
+      var runningActionType: string = null;
+      value.granularities = granularities.map((g) => {
+        var granularity = granularityFromJS(g);
+        if (runningActionType === null) runningActionType = granularity.action;
+        if (granularity.action !== runningActionType) throw new Error("granularities must have the same type of actions");
+        return granularity;
+      });
+    }
+
+    return new Dimension(value);
+  }
 
   public name: string;
   public title: string;
@@ -62,6 +81,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public kind: string;
   public className: string;
   public url: string;
+  public granularities: Granularity[];
 
   constructor(parameters: DimensionValue) {
     var name = parameters.name;
@@ -83,6 +103,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       }
       this.url = parameters.url;
     }
+
+    if (parameters.granularities) this.granularities = parameters.granularities;
   }
 
   public valueOf(): DimensionValue {
@@ -91,7 +113,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       title: this.title,
       expression: this.expression,
       kind: this.kind,
-      url: this.url
+      url: this.url,
+      granularities: this.granularities
     };
   }
 
@@ -103,6 +126,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       kind: this.kind
     };
     if (this.url) js.url = this.url;
+    if (this.granularities) js.granularities = this.granularities.map((g) => { return granularityToJS(g); });
     return js;
   }
 
@@ -120,7 +144,13 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.title === other.title &&
       this.expression.equals(other.expression) &&
       this.kind === other.kind &&
-      this.url === other.url;
+      this.url === other.url &&
+      immutableArraysEqual(this.granularities, other.granularities);
+  }
+
+  public isContinuous() {
+    return this.kind === 'time';
+    // more later?
   }
 }
 check = Dimension;

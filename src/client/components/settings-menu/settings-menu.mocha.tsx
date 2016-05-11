@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 import { Timezone } from 'chronoshift';
 import { SettingsMenu } from './settings-menu';

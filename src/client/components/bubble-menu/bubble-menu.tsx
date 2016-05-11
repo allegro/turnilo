@@ -22,6 +22,7 @@ export interface BubbleMenuProps extends React.Props<any> {
   fixedSize?: boolean;
   containerStage?: Stage;
   openOn: Element;
+  alignOn?: Element;
   onClose: Fn;
   inside?: Element;
   layout?: BubbleLayout;
@@ -49,8 +50,8 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   componentWillMount() {
-    var { openOn, direction, align, id } = this.props;
-    var rect = openOn.getBoundingClientRect();
+    var { alignOn, openOn, direction, align, id } = this.props;
+    var rect = (alignOn || openOn).getBoundingClientRect();
 
     var x: number;
     var y: number;

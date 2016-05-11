@@ -71,6 +71,12 @@ $folder-box-height: 32px;
         bottom: -34px;
       }
     }
+
+    /* disable interactions until filtering on buckets is implemented */
+    &.continuous {
+      pointer-events: none;
+      color: $black;
+    }
   }
 
   .segment-value {

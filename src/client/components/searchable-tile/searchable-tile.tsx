@@ -2,15 +2,21 @@ require('./searchable-tile.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-// import { ... } from '../../config/constants';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import { Stage, Granularity, granularityEquals, granularityToString } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';
-import { setDragGhost, isInside, escapeKey, classNames } from '../../utils/dom/dom';
+import { formatGranularity } from '../../../common/utils/time/time';
+import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
 
 import { TileHeader, TileHeaderIcon } from '../tile-header/tile-header';
 import { ClearableInput } from '../clearable-input/clearable-input';
+import { BubbleMenu } from '../bubble-menu/bubble-menu';
+
+export interface TileAction {
+  selected: boolean;
+  onSelect: Fn;
+  keyString?: string;
+  displayValue?: string;
+}
 
 export interface SearchableTileProps extends React.Props<any> {
   toggleChangeFn: Fn;
@@ -22,9 +28,12 @@ export interface SearchableTileProps extends React.Props<any> {
   style: Lookup<any>;
   title: string;
   onDragStart?: Fn;
+  actions?: TileAction[];
 }
 
 export interface SearchableTileState {
+  actionsMenuOpenOn?: Element;
+  actionsMenuAlignOn?: Element;
 }
 
 export class SearchableTile extends React.Component<SearchableTileProps, SearchableTileState> {
@@ -32,13 +41,17 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
 
   constructor() {
     super();
-    // this.state = {};
+    this.state = {
+      actionsMenuOpenOn: null
+    };
+
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentDidMount() {
     this.mounted = true;
+    this.setState({ actionsMenuAlignOn: ReactDOM.findDOMNode(this.refs['header']) });
     window.addEventListener('mousedown', this.globalMouseDownListener);
     window.addEventListener('keydown', this.globalKeyDownListener);
   }
@@ -47,10 +60,6 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     this.mounted = false;
     window.removeEventListener('mousedown', this.globalMouseDownListener);
     window.removeEventListener('keydown', this.globalKeyDownListener);
-  }
-
-  componentWillReceiveProps(nextProps: SearchableTileProps) {
-
   }
 
   globalMouseDownListener(e: MouseEvent) {
@@ -79,19 +88,88 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     toggleChangeFn();
   }
 
+  onActionsMenuClose() {
+    var { actionsMenuOpenOn } = this.state;
+    if (!actionsMenuOpenOn) return;
+    this.setState({
+      actionsMenuOpenOn: null
+    });
+  }
+
+  onActionsMenuClick(e: MouseEvent) {
+    var { actionsMenuOpenOn } = this.state;
+    if (actionsMenuOpenOn) return this.onActionsMenuClose();
+    this.setState({
+      actionsMenuOpenOn: e.target as Element
+    });
+  }
+
+  onSelectGranularity(action: TileAction) {
+    this.onActionsMenuClose();
+    action.onSelect();
+  }
+
+  renderGranularityElements() {
+    const { actions } = this.props;
+
+    return actions.map((action: TileAction) => {
+      return <li
+        className={classNames({selected: action.selected })}
+        key={action.keyString || action.toString()}
+        onClick={this.onSelectGranularity.bind(this, action)}
+      >
+        {action.displayValue || action.toString()}
+      </li>;
+    });
+  }
+
+  renderActionsMenu() {
+    const { actionsMenuOpenOn, actionsMenuAlignOn } = this.state;
+
+    var stage = Stage.fromSize(180, 200);
+
+    return <BubbleMenu
+      align="end"
+      className="dimension-tile-actions"
+      direction="down"
+      stage={stage}
+      onClose={this.onActionsMenuClose.bind(this)}
+      openOn={actionsMenuOpenOn}
+      alignOn={actionsMenuAlignOn}
+    >
+      <ul className="bubble-list">
+        {this.renderGranularityElements()}
+      </ul>
+    </BubbleMenu>;
+  }
+
 
   render() {
     const { className, style, icons, title, onSearchChange, showSearch, searchText,
-      children, onDragStart } = this.props;
+      children, onDragStart, actions } = this.props;
+    const { actionsMenuOpenOn } = this.state;
+    var tileIcons = icons;
+
+    if (actions && actions.length > 0) {
+      tileIcons = [({
+        name: 'more',
+        ref: 'more',
+        onClick: this.onActionsMenuClick.bind(this),
+        svg: require('../../icons/full-more.svg'),
+        active: Boolean(actionsMenuOpenOn)
+      } as TileHeaderIcon)].concat(icons);
+    }
+
+
     var qualifiedClassName = "searchable-tile " + className;
     const header = <TileHeader
       title={title}
-      icons={icons}
       ref="header"
+      icons={tileIcons}
       onDragStart={onDragStart}
     />;
-    var searchBar: JSX.Element = null;
 
+    var searchBar: JSX.Element = null;
     if (showSearch) {
       searchBar = <div className="search-box" ref="search-box">
         <ClearableInput
@@ -108,6 +186,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     return <div className={qualifiedClassName} style={style}>
       { header }
       { searchBar }
+      { actionsMenuOpenOn ? this.renderActionsMenu() : null}
       { children }
     </div>;
   }

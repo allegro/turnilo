@@ -25,6 +25,10 @@
       &:hover {
         background: rgba($brand, 0.12);
       }
+
+      &.selected {
+        background: $background-light;
+      }
     }
   }
 }

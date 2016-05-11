@@ -52,6 +52,7 @@ import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
+// import { Fn } from '../../../common/utils/general/general';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
 // I am: import { ${camelName} } from '../${name}/${name}';
@@ -94,15 +95,14 @@ export class ${camelName} extends React.Component<${camelName}Props, ${camelName
 writeFile(path + name + '.mocha.tsx',
 `import { expect } from 'chai';
 import * as sinon from 'sinon';
-import '../../utils/jsdom-setup';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import '../../utils/require-extensions';
 import * as TestUtils from 'react-addons-test-utils';
+import { $, Expression } from 'plywood';
 
 import { DataSourceMock, EssenceMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'plywood';
+import { findDOMNode } from '../../utils/test-utils/index';
+
 import { ${camelName} } from './${name}';
 
 describe('${camelName}', () => {
@@ -114,7 +114,7 @@ describe('${camelName}', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('${name}');
+    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('${name}');
   });
 
 });

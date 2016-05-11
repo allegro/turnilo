@@ -70,6 +70,7 @@ export const STRINGS = {
 
 const EN_US: Locale = {
   shortDays: [ "S", "M", "T", "W", "T", "F", "S" ],
+  shortMonths: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec" ],
   weekStart: 0
 };
 
