@@ -205,12 +205,5 @@ export function getTickDuration(timeRange: TimeRange): Duration {
 export function getTimeTicks(timeRange: TimeRange, timezone: Timezone): Date[] {
   const { start, end } = timeRange;
   const tickDuration = getTickDuration(timeRange);
-
-  var ticks: Date[] = [];
-  var iter = tickDuration.floor(start, timezone);
-  while (iter <= end) {
-    ticks.push(iter);
-    iter = tickDuration.shift(iter, timezone, 1);
-  }
-  return ticks;
+  return tickDuration.materialize(start, end, timezone);
 }

@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.27
+
+- New chronoshift fixes bug with flooring `PT12H`
+- Fix burger menu overflow
+
 ## 0.8.26
 
 - Better time axis for tiny intervals
