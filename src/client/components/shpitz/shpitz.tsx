@@ -15,7 +15,6 @@ export class Shpitz extends React.Component<ShpitzProps, ShpitzState> {
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

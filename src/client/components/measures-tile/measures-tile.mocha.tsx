@@ -7,15 +7,22 @@ import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
 
+import { EssenceMock } from '../../../common/models/mocks';
+
 import { $, Expression } from 'plywood';
 import { MeasuresTile } from './measures-tile';
 
-describe.skip('MeasuresTile', () => {
+describe('MeasuresTile', () => {
   it('adds the correct class', () => {
+    var fakeClicker = {
+      toggleEffectiveMeasure: () => {},
+      toggleMultiMeasureMode: () => {}
+    };
+
     var renderedComponent = TestUtils.renderIntoDocument(
       <MeasuresTile
-        clicker={null}
-        essence={null}
+        clicker={fakeClicker}
+        essence={EssenceMock.wiki()}
       />
     );
 

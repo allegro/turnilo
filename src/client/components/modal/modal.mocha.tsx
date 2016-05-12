@@ -4,12 +4,14 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 
+import { findDOMNode } from '../../utils/test-utils/index';
+
 import '../../utils/test-utils/index';
 
 import { $, Expression } from 'plywood';
 import { Modal } from './modal';
 
-describe.skip('Modal', () => {
+describe('Modal', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <Modal
@@ -19,7 +21,7 @@ describe.skip('Modal', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('modal');
+    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('modal');
   });
 
 });

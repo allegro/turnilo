@@ -1,10 +1,6 @@
 @import '../../imports';
 
 .time-series {
-  @include pin-full;
-  display: inline-block;
-  overflow: hidden;
-
   .measure-time-charts {
     overflow-x: hidden;
     overflow-y: auto;
@@ -36,10 +32,5 @@
 
   .bottom-axis {
     padding-left: $vis-h-padding;
-  }
-
-  .loader,
-  .query-error {
-    @include pin-full;
   }
 }

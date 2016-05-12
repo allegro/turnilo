@@ -1,72 +1,29 @@
 require('./totals.css');
 
+import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
+
 import * as React from 'react';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
-import { Loader } from '../../components/loader/loader';
-import { QueryError } from '../../components/query-error/query-error';
+import { MeasureModeNeeded, Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
 
 const PADDING_H = 60;
 const TOTAL_WIDTH = 176;
 
-export interface TotalsState {
-  datasetLoad?: DatasetLoad;
-}
+export class Totals extends BaseVisualization<BaseVisualizationState> {
+  public static id = 'totals';
+  public static title = 'Totals';
 
-export class Totals extends React.Component<VisualizationProps, TotalsState> {
-  static id = 'totals';
-  static title = 'Totals';
+  // For some reason, tsc absolutely wants a typing here, otherwise it throws a
+  // weird TS2322 error...
+  public static measureModeNeed: MeasureModeNeeded = 'multi';
 
-  static measureModeNeed = 'multi';
-
-  static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
+  public static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
     if (!splits.length()) return Resolve.ready(10);
     return Resolve.automatic(3, { splits: Splits.EMPTY });
   }
 
-  public mounted: boolean;
-
   constructor() {
     super();
-    this.state = {
-      datasetLoad: {}
-    };
-  }
-
-  fetchData(essence: Essence): void {
-    var { registerDownloadableDataset } = this.props;
-    var { dataSource } = essence;
-    var measures = essence.getEffectiveMeasures();
-
-    var $main = $('main');
-
-    var query = ply()
-      .apply('main', $main.filter(essence.getEffectiveFilter(Totals.id).toExpression()));
-
-    measures.forEach((measure) => {
-      query = query.performAction(measure.toApplyAction());
-    });
-
-    this.precalculate(this.props, { loading: true });
-    dataSource.executor(query, { timezone: essence.timezone })
-      .then(
-        (dataset: Dataset) => {
-          if (!this.mounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset,
-            error: null
-          });
-        },
-        (error) => {
-          if (!this.mounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset: null,
-            error
-          });
-        }
-      );
   }
 
   componentWillMount() {
@@ -74,7 +31,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   }
 
   componentDidMount() {
-    this.mounted = true;
+    this._isMounted = true;
     var { essence } = this.props;
     this.fetchData(essence);
   }
@@ -93,7 +50,18 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
   }
 
   componentWillUnmount() {
-    this.mounted = false;
+    this._isMounted = false;
+  }
+
+  makeQuery(essence: Essence): Expression {
+    var query = ply()
+      .apply('main', $('main').filter(essence.getEffectiveFilter(Totals.id).toExpression()));
+
+    essence.getEffectiveMeasures().forEach((measure) => {
+      query = query.performAction(measure.toApplyAction());
+    });
+
+    return query;
   }
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
@@ -101,7 +69,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     const { splits } = essence;
 
     var existingDatasetLoad = this.state.datasetLoad;
-    var newState: TotalsState = {};
+    var newState: BaseVisualizationState = {};
     if (datasetLoad) {
       // Always keep the old dataset while loading
       if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
@@ -119,7 +87,7 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
     this.setState(newState);
   }
 
-  render() {
+  renderInternals() {
     var { essence, stage } = this.props;
     var { datasetLoad } = this.state;
 
@@ -153,10 +121,10 @@ export class Totals extends React.Component<VisualizationProps, TotalsState> {
       };
     }
 
-    return <div className="totals">
-      <div className="total-container" style={totalContainerStyle}>{totals}</div>
-      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
-      {datasetLoad.loading ? <Loader/> : null}
+    return <div className="internals">
+      <div className="total-container" style={totalContainerStyle}>
+        {totals}
+      </div>
     </div>;
   }
 }

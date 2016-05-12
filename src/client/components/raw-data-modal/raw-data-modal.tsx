@@ -11,7 +11,7 @@ import { download, makeFileName } from '../../utils/download/download';
 import { formatLabel } from '../../../common/utils/formatter/formatter';
 import { classNames } from '../../utils/dom/dom';
 import { getVisibleSegments } from '../../utils/sizing/sizing';
-import { STRINGS, SEGMENT } from '../../config/constants';
+import { STRINGS } from '../../config/constants';
 import { Modal } from '../modal/modal';
 import { Button } from '../button/button';
 import { Scroller } from '../scroller/scroller';
@@ -248,7 +248,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataSource } = essence;
 
     const rowWidth = arraySum(dataSource.attributes.map(getColumnWidth));
-    const title = `${makeTitle(SEGMENT.toLowerCase())} ${STRINGS.rawData}`;
+    const title = `${makeTitle(STRINGS.segment)} ${STRINGS.rawData}`;
     const dataLength = dataset ? dataset.data.length : 0;
     const bodyHeight = dataLength * ROW_HEIGHT;
     const scrollerStyle = {

@@ -9,11 +9,11 @@ import '../../utils/test-utils/index';
 import { $, Expression } from 'plywood';
 import { NavList } from './nav-list';
 
-describe.skip('NavList', () => {
+describe('NavList', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <NavList
-        navLinks={null}
+        navLinks={[]}
       />
     );
 

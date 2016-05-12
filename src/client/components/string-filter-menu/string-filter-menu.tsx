@@ -3,7 +3,7 @@ require('./string-filter-menu.css');
 import * as React from 'react';
 import { $, ply, r, Expression, Executor, Dataset, SortAction, Set } from 'plywood';
 import { Fn } from '../../../common/utils/general/general';
-import { STRINGS, SEGMENT, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
+import { STRINGS, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors, DragPosition } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
 import { enterKey } from '../../utils/dom/dom';
@@ -73,7 +73,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
 
     var query = $('main')
       .filter(filterExpression)
-      .split(dimension.expression, SEGMENT)
+      .split(dimension.expression, dimension.name)
       .apply('MEASURE', measureExpression)
       .sort($('MEASURE'), SortAction.DESCENDING)
       .limit(TOP_N + 1);
@@ -233,6 +233,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
 
   renderTable() {
     var { loading, dataset, error, fetchQueued, searchText, selectedValues } = this.state;
+    var { dimension } = this.props;
 
     var rows: Array<JSX.Element> = [];
     var hasMore = false;
@@ -243,12 +244,12 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       if (searchText) {
         var searchTextLower = searchText.toLowerCase();
         rowData = rowData.filter((d) => {
-          return String(d[SEGMENT]).toLowerCase().indexOf(searchTextLower) !== -1;
+          return String(d[dimension.name]).toLowerCase().indexOf(searchTextLower) !== -1;
         });
       }
 
       rows = rowData.map((d) => {
-        var segmentValue = d[SEGMENT];
+        var segmentValue = d[dimension.name];
         var segmentValueStr = String(segmentValue);
         var selected = selectedValues && selectedValues.contains(segmentValue);
 

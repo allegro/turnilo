@@ -21,7 +21,6 @@ export interface TimeAxisState {
 export class TimeAxis extends React.Component<TimeAxisProps, TimeAxisState> {
   constructor() {
     super();
-    // this.state = {};
 
   }
 

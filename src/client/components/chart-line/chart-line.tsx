@@ -5,13 +5,13 @@ import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
-import { TIME_SEGMENT } from '../../config/constants';
 
 const lineFn = d3.svg.line();
 
 export interface ChartLineProps extends React.Props<any> {
   stage: Stage;
   dataset: Dataset;
+  getX: (d: Datum) => TimeRange;
   getY: (d: Datum) => any;
   scaleX: (v: any) => number;
   scaleY: (v: any) => number;
@@ -30,7 +30,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
   }
 
   render() {
-    var { stage, dataset, getY, scaleX, scaleY, color, showArea, hoverTimeRange } = this.props;
+    var { stage, dataset, getY, getX, scaleX, scaleY, color, showArea, hoverTimeRange } = this.props;
     if (!dataset || !color) return null;
 
     var dataPoints: Array<[number, number]> = [];
@@ -39,7 +39,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
     var ds = dataset.data;
     for (var i = 0; i < ds.length; i++) {
       var datum = ds[i];
-      var timeRange = datum[TIME_SEGMENT] as TimeRange;
+      var timeRange = getX(datum) as TimeRange;
       if (!timeRange) return null; // Incorrect data loaded
 
       var timeRangeMidPoint = timeRange.midpoint();
@@ -48,7 +48,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
       // Add potential pre zero point
       var prevDatum = ds[i - 1];
       if (prevDatum) {
-        var prevTimeRange = prevDatum[TIME_SEGMENT] as TimeRange;
+        var prevTimeRange = getX(prevDatum) as TimeRange;
         if (prevTimeRange.end.valueOf() !== timeRange.start.valueOf()) {
           dataPoints.push([
             scaleX(timeRangeMidPoint.valueOf() - (timeRange.end.valueOf() - timeRange.start.valueOf())),
@@ -68,7 +68,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
       // Add potential post zero point
       var nextDatum = ds[i + 1];
       if (nextDatum) {
-        var nextTimeRange = nextDatum[TIME_SEGMENT] as TimeRange;
+        var nextTimeRange = getX(nextDatum) as TimeRange;
         if (timeRange.end.valueOf() !== nextTimeRange.start.valueOf()) {
           dataPoints.push([
             scaleX(timeRangeMidPoint.valueOf() + (timeRange.end.valueOf() - timeRange.start.valueOf())),

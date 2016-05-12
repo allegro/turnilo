@@ -306,9 +306,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       splits = adjustment.splits;
       colors = adjustment.colors || null;
       visResolve = visualization.handleCircumstance(dataSource, splits, colors, true);
+
       if (!visResolve.isReady()) {
         console.log(visResolve);
-        throw new Error('visualization must be ready after automatic adjustment');
+        throw new Error(visualization.title + ' must be ready after automatic adjustment');
       }
     }
 
@@ -455,12 +456,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public isFixedMeasureMode(): boolean {
-    return Boolean(this.visualization.measureModeNeed);
+    return this.visualization.measureModeNeed !== 'any';
   }
 
   public getEffectiveMultiMeasureMode(): boolean {
     const { measureModeNeed } = this.visualization;
-    if (measureModeNeed) {
+    if (measureModeNeed !== 'any') {
       return measureModeNeed === 'multi';
     }
     return this.multiMeasureMode;

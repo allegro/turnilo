@@ -44,7 +44,6 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

@@ -32,8 +32,6 @@ export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, Hov
 
   constructor() {
     super();
-    // this.state = {};
-
   }
 
   renderColorSwabs(): JSX.Element {

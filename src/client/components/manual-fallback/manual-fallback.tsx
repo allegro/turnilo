@@ -21,7 +21,6 @@ export class ManualFallback extends React.Component<ManualFallbackProps, ManualF
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

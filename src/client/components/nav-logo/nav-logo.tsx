@@ -18,7 +18,6 @@ export class NavLogo extends React.Component<NavLogoProps, NavLogoState> {
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

@@ -1,13 +1,15 @@
 require('./time-series.css');
 
+import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
+
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
-import { r, $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction } from 'plywood';
-import { Stage, Essence, Splits, SplitCombine, Filter, FilterClause, Measure, DataSource, VisualizationProps, DatasetLoad, Resolve, Colors } from '../../../common/models/index';
+import { r, $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction, SortAction } from 'plywood';
+import { Splits, Colors, FilterClause, Dimension, Stage, Filter, Measure, DataSource, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
 import { getTimeTicks, formatTimeRange, DisplayYear } from '../../../common/utils/time/time';
-import { SPLIT, SEGMENT, TIME_SEGMENT, TIME_SORT_ACTION, VIS_H_PADDING } from '../../config/constants';
+import { SPLIT, VIS_H_PADDING } from '../../config/constants';
 import { getXFromEvent, escapeKey } from '../../utils/dom/dom';
 import { VisMeasureLabel } from '../../components/vis-measure-label/vis-measure-label';
 import { ChartLine } from '../../components/chart-line/chart-line';
@@ -15,10 +17,10 @@ import { TimeAxis } from '../../components/time-axis/time-axis';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
 import { GridLines } from '../../components/grid-lines/grid-lines';
 import { Highlighter } from '../../components/highlighter/highlighter';
-import { Loader } from '../../components/loader/loader';
-import { QueryError } from '../../components/query-error/query-error';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 import { HoverMultiBubble, ColorEntry } from '../../components/hover-multi-bubble/hover-multi-bubble';
+
+import handler from './circumstances';
 
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
@@ -34,11 +36,11 @@ function midpoint(timeRange: TimeRange): Date {
   return new Date((timeRange.start.valueOf() + timeRange.end.valueOf()) / 2);
 }
 
-function findClosest(data: Datum[], dragDate: Date, scaleX: (t: Date) => number) {
+function findClosest(data: Datum[], dragDate: Date, scaleX: (t: Date) => number, timeDimension: Dimension) {
   var closestDatum: Datum = null;
   var minDist = Infinity;
   for (var datum of data) {
-    var timeSegmentValue = datum[TIME_SEGMENT] as TimeRange;
+    var timeSegmentValue = datum[timeDimension.name] as TimeRange;
     if (!timeSegmentValue) continue;
     var mid: Date = midpoint(timeSegmentValue);
     var dist = Math.abs(mid.valueOf() - dragDate.valueOf());
@@ -51,16 +53,11 @@ function findClosest(data: Datum[], dragDate: Date, scaleX: (t: Date) => number)
   return closestDatum;
 }
 
-export interface TimeSeriesState {
-  datasetLoad?: DatasetLoad;
+export interface TimeSeriesState extends BaseVisualizationState {
   dragStartTime?: Date;
   dragTimeRange?: TimeRange;
   roundDragTimeRange?: TimeRange;
-  dragOnMeasure?: Measure;
-  scrollLeft?: number;
-  scrollTop?: number;
   hoverTimeRange?: TimeRange;
-  hoverMeasure?: Measure;
 
   // Cached props
   axisTimeRange?: TimeRange;
@@ -68,282 +65,26 @@ export interface TimeSeriesState {
   xTicks?: Date[];
 }
 
-export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesState> {
-  static id = 'time-series';
-  static title = 'Time Series';
+export class TimeSeries extends BaseVisualization<TimeSeriesState> {
+  public static id = 'time-series';
+  public static title = 'Time Series';
 
-  static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
-    var timeDimensions = dataSource.getDimensionByKind('time');
-    if (!timeDimensions.size) return Resolve.NEVER;
-
-    // Has no splits
-    if (splits.length() === 0) {
-      return Resolve.manual(3, 'This visualization requires a time split',
-        timeDimensions.toArray().map((timeDimension) => {
-          return {
-            description: `Add a split on ${timeDimension.title}`,
-            adjustment: {
-              splits: Splits.fromSplitCombine(SplitCombine.fromExpression(timeDimension.expression))
-            }
-          };
-        })
-      );
-    }
-
-    var colorSplit: SplitCombine = null;
-    var timeSplit: SplitCombine = null;
-    var overflowSplit: SplitCombine = null;
-    splits.forEach((split) => {
-      var dimension = split.getDimension(dataSource.dimensions);
-      if (!dimension) return;
-      if (dimension.kind === 'time') {
-        timeSplit = split;
-      } else {
-        if (timeSplit) {
-          overflowSplit = split;
-        } else {
-          colorSplit = split;
-        }
-      }
-    });
-
-    // Has a time split and other splits
-    if (splits.length() > 2) {
-      if (timeSplit) {
-        return Resolve.manual(3, 'Too many splits', [
-          {
-            description: `Remove all but the time split`,
-            adjustment: {
-              splits: Splits.fromSplitCombine(timeSplit)
-            }
-          }
-        ]);
-      } else {
-        return Resolve.manual(3, 'Too many splits',
-          timeDimensions.toArray().map((timeDimension) => {
-            return {
-              description: `Split on ${timeDimension.title} instead`,
-              adjustment: {
-                splits: Splits.fromSplitCombine(SplitCombine.fromExpression(timeDimension.expression))
-              }
-            };
-          })
-        );
-      }
-    }
-
-    // No time split
-    if (!timeSplit) {
-      var lastSplit = splits.last();
-      var lastSplitDimension = lastSplit.getDimension(dataSource.dimensions);
-      return Resolve.manual(3, 'This visualization requires a time split',
-        timeDimensions.toArray().map((timeDimension) => {
-          return {
-            description: `Replace ${lastSplitDimension.title} with ${timeDimension.title}`,
-            adjustment: {
-              splits: Splits.fromSplitCombine(SplitCombine.fromExpression(timeDimension.expression))
-            }
-          };
-        })
-      );
-    }
-
-    var autoChanged = false;
-
-    // Fix time sort
-    if (!TIME_SORT_ACTION.equals(timeSplit.sortAction)) {
-      timeSplit = timeSplit.changeSortAction(TIME_SORT_ACTION);
-      autoChanged = true;
-    }
-
-    // Fix time limit
-    if (timeSplit.limitAction) {
-      timeSplit = timeSplit.changeLimitAction(null);
-      autoChanged = true;
-    }
-
-    // Swap splits if needed
-    if (overflowSplit) {
-      colorSplit = overflowSplit;
-      autoChanged = true;
-    }
-
-    // Adjust color split
-    if (colorSplit) {
-      if (!colorSplit.sortAction) {
-        colorSplit = colorSplit.changeSortAction(dataSource.getDefaultSortAction());
-        autoChanged = true;
-      }
-
-      var colorSplitDimension = dataSource.getDimensionByExpression(colorSplit.expression);
-      if (!colors || colors.dimension !== colorSplitDimension.name) {
-        colors = Colors.fromLimit(colorSplitDimension.name, 5);
-        autoChanged = true;
-      }
-
-    } else if (colors) { // Remove colors if not needed
-      colors = null;
-      autoChanged = true;
-    }
-
-    if (!autoChanged) return Resolve.ready(10);
-
-    var newSplits = [timeSplit];
-    if (colorSplit) newSplits.unshift(colorSplit);
-
-    return Resolve.automatic(8, {
-      splits: new Splits(List(newSplits)),
-      colors
-    });
-  }
-
-
-  public mounted: boolean;
+  public static handleCircumstance = handler.evaluate.bind(handler);
 
   constructor() {
     super();
-    this.state = {
-      datasetLoad: {},
-      dragStartTime: null,
-      dragTimeRange: null,
-      scrollLeft: 0,
-      scrollTop: 0,
-      hoverTimeRange: null,
-      hoverMeasure: null
-    };
-
-    this.globalMouseMoveListener = this.globalMouseMoveListener.bind(this);
-    this.globalMouseUpListener = this.globalMouseUpListener.bind(this);
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
-  fetchData(essence: Essence): void {
-    var { registerDownloadableDataset } = this.props;
-    var { splits, colors, dataSource } = essence;
-    var measures = essence.getEffectiveMeasures();
+  getDefaultState(): TimeSeriesState {
+    var s = super.getDefaultState() as TimeSeriesState;
 
-    // var timeSplit = splits.last();
-    // var timeBucketAction = timeSplit.bucketAction as TimeBucketAction;
-    //   .overQuery(timeBucketAction.duration, timeBucketAction.timezone, dataSource)
+    s.dragStartTime = null;
+    s.dragTimeRange = null;
+    s.hoverTimeRange = null;
 
-    var $main = $('main');
-
-    var query = ply()
-      .apply('main', $main.filter(essence.getEffectiveFilter(TimeSeries.id).toExpression()));
-
-    measures.forEach((measure) => {
-      query = query.performAction(measure.toApplyAction());
-    });
-
-    function makeQuery(i: number): Expression {
-      var split = splits.get(i);
-      var splitDimension = dataSource.getDimensionByExpression(split.expression);
-      var { sortAction, limitAction } = split;
-      if (!sortAction) throw new Error('something went wrong in time series query generation');
-
-      var segmentName = splitDimension.kind === 'time' ? TIME_SEGMENT : SEGMENT;
-
-      var subQuery: Expression = $main.split(split.toSplitExpression(), segmentName);
-
-      if (colors && colors.dimension === splitDimension.name) {
-        var havingFilter = colors.toHavingFilter(segmentName);
-        if (havingFilter) {
-          subQuery = subQuery.performAction(havingFilter);
-        }
-      }
-
-      measures.forEach((measure) => {
-        subQuery = subQuery.performAction(measure.toApplyAction());
-      });
-
-      var applyForSort = essence.getApplyForSort(sortAction);
-      if (applyForSort) {
-        subQuery = subQuery.performAction(applyForSort);
-      }
-      subQuery = subQuery.performAction(sortAction);
-
-      if (colors && colors.dimension === splitDimension.name) {
-        subQuery = subQuery.performAction(colors.toLimitAction());
-      } else if (limitAction) {
-        subQuery = subQuery.performAction(limitAction);
-      }
-
-      if (i + 1 < splits.length()) {
-        subQuery = subQuery.apply(SPLIT, makeQuery(i + 1));
-      }
-
-      return subQuery;
-    }
-
-    query = query.apply(SPLIT, makeQuery(0));
-
-    this.precalculate(this.props, { loading: true });
-    dataSource.executor(query, { timezone: essence.timezone })
-      .then(
-        (dataset: Dataset) => {
-          if (!this.mounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset,
-            error: null
-          });
-        },
-        (error) => {
-          registerDownloadableDataset(null);
-          if (!this.mounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset: null,
-            error
-          });
-        }
-      );
+    return s;
   }
 
-  componentWillMount() {
-    this.precalculate(this.props);
-  }
-
-  componentDidMount() {
-    this.mounted = true;
-    var { essence } = this.props;
-    this.fetchData(essence);
-
-    window.addEventListener('keydown', this.globalKeyDownListener);
-    window.addEventListener('mousemove', this.globalMouseMoveListener);
-    window.addEventListener('mouseup', this.globalMouseUpListener);
-  }
-
-  componentWillReceiveProps(nextProps: VisualizationProps) {
-    this.precalculate(nextProps);
-    var { essence } = this.props;
-    var nextEssence = nextProps.essence;
-    if (
-      nextEssence.differentDataSource(essence) ||
-      nextEssence.differentEffectiveFilter(essence, TimeSeries.id) ||
-      nextEssence.differentEffectiveSplits(essence) ||
-      nextEssence.differentColors(essence) ||
-      nextEssence.newEffectiveMeasures(essence)
-    ) {
-      this.fetchData(nextEssence);
-    }
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
-
-    window.removeEventListener('keydown', this.globalKeyDownListener);
-    window.removeEventListener('mousemove', this.globalMouseMoveListener);
-    window.removeEventListener('mouseup', this.globalMouseUpListener);
-  }
-
-  onScroll(e: UIEvent) {
-    var target = e.target as Element;
-    this.setState({
-      scrollLeft: target.scrollLeft,
-      scrollTop: target.scrollTop
-    });
-  }
 
   getMyEventX(e: MouseEvent): number {
     var myDOM = ReactDOM.findDOMNode(this);
@@ -369,6 +110,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     if (!dataset) return;
 
     var splitLength = essence.splits.length();
+    var timeDimension = essence.getTimeDimension();
 
     var myDOM = ReactDOM.findDOMNode(this);
     var rect = myDOM.getBoundingClientRect();
@@ -377,27 +119,17 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     var closestDatum: Datum;
     if (splitLength > 1) {
       var flatData = dataset.flatten();
-      closestDatum = findClosest(flatData, dragDate, scaleX);
+      closestDatum = findClosest(flatData, dragDate, scaleX, timeDimension);
     } else {
-      closestDatum = findClosest(dataset.data, dragDate, scaleX);
+      closestDatum = findClosest(dataset.data, dragDate, scaleX, timeDimension);
     }
 
-    var thisHoverTimeRange = closestDatum ? (closestDatum[TIME_SEGMENT] as TimeRange) : null;
+    var thisHoverTimeRange = closestDatum ? (closestDatum[timeDimension.name] as TimeRange) : null;
 
     if (!hoverTimeRange || !hoverTimeRange.equals(thisHoverTimeRange) || measure !== hoverMeasure) {
       this.setState({
         hoverTimeRange: thisHoverTimeRange,
         hoverMeasure: measure
-      });
-    }
-  }
-
-  onMouseLeave(measure: Measure, e: MouseEvent) {
-    const { hoverMeasure } = this.state;
-    if (hoverMeasure === measure) {
-      this.setState({
-        hoverTimeRange: null,
-        hoverMeasure: null
       });
     }
   }
@@ -501,6 +233,16 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     });
   }
 
+  onMouseLeave(measure: Measure, e: MouseEvent) {
+    const { hoverMeasure } = this.state;
+    if (hoverMeasure === measure) {
+      this.setState({
+        hoverTimeRange: null,
+        hoverMeasure: null
+      });
+    }
+  }
+
   renderHighlighter(): JSX.Element {
     const { essence } = this.props;
     const { dragTimeRange, scaleX } = this.state;
@@ -519,6 +261,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     const { clicker, essence, openRawDataModal } = this.props;
     const { scrollTop, dragTimeRange, roundDragTimeRange, dragOnMeasure, hoverTimeRange, hoverMeasure, scaleX } = this.state;
     const { colors, timezone } = essence;
+    const timeDimension = essence.getTimeDimension();
 
     if (essence.highlightOnDifferentMeasure(TimeSeries.id, measure.name)) return null;
 
@@ -531,12 +274,13 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
       var shownTimeRange = roundDragTimeRange || bubbleTimeRange;
       if (colors) {
+        var categoryDimension = essence.splits.get(0).getDimension(essence.dataSource.dimensions);
         var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(bubbleTimeRange.end);
 
-        var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(TIME_SEGMENT, bubbleTimeRange));
-        var colorValues = colors.getColors(dataset.data.map(d => d[SEGMENT]));
+        var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(timeDimension.name, bubbleTimeRange));
+        var colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
         var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
-          var segment = d[SEGMENT];
+          var segment = d[categoryDimension.name];
           var hoverDatum = hoverDatums[i];
           if (!hoverDatum) return null;
 
@@ -557,7 +301,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       } else {
         var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(bubbleTimeRange.midpoint());
 
-        var highlightDatum = dataset.findDatumByAttribute(TIME_SEGMENT, shownTimeRange);
+        var highlightDatum = dataset.findDatumByAttribute(timeDimension.name, shownTimeRange);
         return <SegmentBubble
           left={leftOffset}
           top={topOffset + HOVER_BUBBLE_V_OFFSET}
@@ -572,10 +316,11 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(hoverTimeRange.midpoint());
 
       if (colors) {
-        var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(TIME_SEGMENT, hoverTimeRange));
-        var colorValues = colors.getColors(dataset.data.map(d => d[SEGMENT]));
+        var categoryDimension = essence.splits.get(0).getDimension(essence.dataSource.dimensions);
+        var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(timeDimension.name, hoverTimeRange));
+        var colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
         var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
-          var segment = d[SEGMENT];
+          var segment = d[categoryDimension.name];
           var hoverDatum = hoverDatums[i];
           if (!hoverDatum) return null;
 
@@ -594,7 +339,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         />;
 
       } else {
-        var hoverDatum = dataset.findDatumByAttribute(TIME_SEGMENT, hoverTimeRange);
+        var hoverDatum = dataset.findDatumByAttribute(timeDimension.name, hoverTimeRange);
         if (!hoverDatum) return null;
         return <SegmentBubble
           left={leftOffset}
@@ -610,7 +355,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     return null;
   }
 
-  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, getX: any): JSX.Element {
+  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage): JSX.Element {
     const { essence, clicker } = this.props;
     const { hoverTimeRange, hoverMeasure, dragTimeRange, scaleX, xTicks } = this.state;
     const { splits, colors } = essence;
@@ -621,6 +366,9 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
 
     var measureName = measure.name;
     var getY = (d: Datum) => d[measureName] as number;
+
+    const timeDimension = essence.getTimeDimension();
+    var getX = (d: Datum) => d[timeDimension.name] as TimeRange;
 
     var myDatum: Datum = dataset.data[0];
     var mySplitDataset = myDatum[SPLIT] as Dataset;
@@ -673,6 +421,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         chartLines.push(<ChartLine
           key='single'
           dataset={mySplitDataset}
+          getX={getX}
           getY={getY}
           scaleX={scaleX}
           scaleY={scaleY}
@@ -683,7 +432,9 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
         />);
       } else {
         var colorValues: string[] = null;
-        if (colors) colorValues = colors.getColors(mySplitDataset.data.map(d => d[SEGMENT]));
+        var categoryDimension = essence.splits.get(0).getDimension(essence.dataSource.dimensions);
+
+        if (colors) colorValues = colors.getColors(mySplitDataset.data.map(d => d[categoryDimension.name]));
 
         chartLines = mySplitDataset.data.map((datum, i) => {
           var subDataset = datum[SPLIT] as Dataset;
@@ -691,6 +442,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
           return <ChartLine
             key={'single' + i}
             dataset={subDataset}
+            getX={getX}
             getY={getY}
             scaleX={scaleX}
             scaleY={scaleY}
@@ -771,10 +523,11 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     this.setState(newState);
   }
 
-  render() {
+  renderInternals() {
     var { essence, stage } = this.props;
     var { datasetLoad, axisTimeRange, scaleX, xTicks } = this.state;
     var { splits, timezone } = essence;
+    const timeDimension = essence.getTimeDimension();
 
     var measureCharts: JSX.Element[];
     var bottomAxis: JSX.Element;
@@ -782,7 +535,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
     if (datasetLoad.dataset && splits.length() && axisTimeRange) {
       var measures = essence.getEffectiveMeasures().toArray();
 
-      var getX = (d: Datum) => midpoint(d[TIME_SEGMENT] as TimeRange);
+      var getX = (d: Datum) => midpoint(d[timeDimension.name] as TimeRange);
 
       var chartWidth = stage.width - VIS_H_PADDING * 2;
       var chartHeight = Math.max(
@@ -800,7 +553,7 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       });
 
       measureCharts = measures.map((measure, chartIndex) => {
-        return this.renderChart(datasetLoad.dataset, measure, chartIndex, stage, chartStage, getX);
+        return this.renderChart(datasetLoad.dataset, measure, chartIndex, stage, chartStage);
       });
 
       var xAxisStage = Stage.fromSize(chartStage.width, X_AXIS_HEIGHT);
@@ -817,13 +570,11 @@ export class TimeSeries extends React.Component<VisualizationProps, TimeSeriesSt
       maxHeight: stage.height - X_AXIS_HEIGHT
     };
 
-    return <div className="time-series">
+    return <div className="internals time-series-inner">
       <div className="measure-time-charts" style={measureChartsStyle} onScroll={this.onScroll.bind(this)}>
         {measureCharts}
       </div>
       {bottomAxis}
-      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
-      {datasetLoad.loading ? <Loader/> : null}
     </div>;
   }
 }

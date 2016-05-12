@@ -12,7 +12,6 @@ export interface LoaderState {
 export class Loader extends React.Component<LoaderProps, LoaderState> {
   constructor() {
     super();
-    // this.state = {};
 
   }
 

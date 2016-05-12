@@ -19,8 +19,6 @@ export interface PinboardMeasureTileState {
 export class PinboardMeasureTile extends React.Component<PinboardMeasureTileProps, PinboardMeasureTileState> {
   constructor() {
     super();
-    //this.state = {
-    //};
   }
 
   render() {

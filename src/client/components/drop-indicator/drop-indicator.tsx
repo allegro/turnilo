@@ -13,7 +13,6 @@ export class DropIndicator extends React.Component<DropIndicatorProps, DropIndic
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

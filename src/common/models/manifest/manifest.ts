@@ -14,8 +14,8 @@ export interface Resolution {
 }
 
 export class Resolve {
-  static NEVER: Resolve;
-  static READY: Resolve;
+  static NEVER: Resolve = new Resolve(-1, 'never', null, null, null);
+  // static READY: Resolve;
 
   static compare(r1: Resolve, r2: Resolve): number {
     return r2.score - r1.score;
@@ -69,9 +69,8 @@ export class Resolve {
   }
 }
 
-Resolve.NEVER = new Resolve(-1, 'never', null, null, null);
 
-export type MeasureModeNeeded = 'single' | 'multi';
+export type MeasureModeNeeded = 'any' | 'single' | 'multi';
 
 export interface Manifest {
   id: string;

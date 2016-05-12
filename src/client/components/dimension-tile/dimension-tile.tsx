@@ -12,7 +12,7 @@ import { Clicker, Essence, VisStrategy, Dimension, SortOn, SplitCombine, Colors,
 import { setDragGhost, classNames } from '../../utils/dom/dom';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { getLocale } from '../../config/constants';
-import { SEGMENT, PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
+import { PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Checkbox } from '../checkbox/checkbox';

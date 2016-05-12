@@ -25,7 +25,6 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

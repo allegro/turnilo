@@ -16,12 +16,6 @@ export const PIN_PADDING_BOTTOM = 12;
 export const VIS_H_PADDING = 10;
 
 export const SPLIT = 'SPLIT';
-export const SEGMENT = 'SEGMENT';
-export const TIME_SEGMENT = 'TIME';
-export const TIME_SORT_ACTION = new SortAction({
-  expression: $(TIME_SEGMENT),
-  direction: SortAction.ASCENDING
-});
 
 export const MAX_SEARCH_LENGTH = 300;
 export const SEARCH_WAIT = 900;
@@ -61,6 +55,7 @@ export const STRINGS = {
   copyValue: 'Copy value',
   goToUrl: 'Go to URL',
   openIn: 'Open in',
+  segment: 'segment',
   exportToCSV: 'Export to CSV',
   updateTimezone: 'Update Timezone',
   timezone: 'Timezone',

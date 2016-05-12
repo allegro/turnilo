@@ -38,6 +38,7 @@ describe('ChartLine', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <ChartLine
         dataset={dataset}
+        getX={d => d['TIME'] as TimeRange}
         getY={d => d['numberOfKoalas']}
         scaleX={d => d['index']}
         scaleY={d => 2}

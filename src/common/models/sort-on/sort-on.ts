@@ -108,8 +108,7 @@ export class SortOn implements Instance<SortOnValue, SortOnJS> {
   }
 
   public getExpression(): Expression {
-    var { measure } = this;
-    return $(measure ? measure.name : 'SEGMENT');
+    return $(this.toName());
   }
 }
 check = SortOn;

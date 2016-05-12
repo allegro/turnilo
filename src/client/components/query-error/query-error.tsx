@@ -16,7 +16,6 @@ export class QueryError extends React.Component<QueryErrorProps, QueryErrorState
 
   constructor() {
     super();
-    // this.state = {};
   }
 
   render() {

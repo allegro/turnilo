@@ -1,9 +1,6 @@
 @import '../../imports';
 
 .bar-chart {
-  @include pin-full;
-  overflow: hidden;
-
   .measure-bar-charts {
     overflow-x: hidden;
     overflow-y: auto;
@@ -75,10 +72,5 @@
       cursor: default;
       overflow: hidden;
     }
-  }
-
-  .loader,
-  .query-error {
-    @include pin-full;
   }
 }

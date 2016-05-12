@@ -1,0 +1,15 @@
+@import '../../imports';
+
+.base-visualization {
+  @include pin-full;
+  overflow: hidden;
+
+  .internals {
+    @include pin-full;
+  }
+
+  .loader,
+  .query-error {
+    @include pin-full;
+  }
+}

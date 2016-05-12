@@ -7,16 +7,23 @@ import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
 
+import { SortOn } from '../../../common/models/index';
+import { EssenceMock } from '../../../common/models/mocks';
+
 import { $, Expression } from 'plywood';
 import { PinboardMeasureTile } from './pinboard-measure-tile';
 
-describe.skip('PinboardMeasureTile', () => {
+describe('PinboardMeasureTile', () => {
   it('adds the correct class', () => {
+
+    var essence = EssenceMock.wiki();
+    var sortOn = new SortOn({dimension: essence.dataSource.getDimension('articleName')});
+
     var renderedComponent = TestUtils.renderIntoDocument(
       <PinboardMeasureTile
-        essence={null}
+        essence={essence}
         title="Pinboard"
-        sortOn={null}
+        sortOn={sortOn}
         onSelect={null}
       />
     );

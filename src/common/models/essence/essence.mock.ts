@@ -1,7 +1,11 @@
 import { List } from 'immutable';
 
+import { CircumstancesHandlerMock } from '../../utils/circumstances-handler/circumstances-handler.mock';
+
 import { Essence, EssenceJS, EssenceContext } from './essence';
 import { DataSourceMock } from "../data-source/data-source.mock";
+
+import { Resolve } from '../index';
 
 export class EssenceMock {
   static wiki() {
@@ -20,7 +24,8 @@ export class EssenceMock {
           id: 'vis1',
           title: 'vis1',
           handleCircumstance(): any {
-            return { 'isAutomatic': () => false };
+            let handler = CircumstancesHandlerMock.alwaysManual();
+            return handler.evaluate.apply(handler, arguments);
           }
         }
       ])

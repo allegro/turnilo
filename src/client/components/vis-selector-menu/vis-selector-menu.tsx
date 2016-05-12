@@ -22,7 +22,6 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
 
   constructor() {
     super();
-    // this.state = {};
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }

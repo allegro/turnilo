@@ -17,7 +17,6 @@ export class NoDataSourcesApplication extends React.Component<NoDataSourcesAppli
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

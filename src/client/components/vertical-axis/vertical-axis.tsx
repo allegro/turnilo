@@ -25,7 +25,6 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

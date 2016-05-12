@@ -1,20 +1,22 @@
 require('./table.css');
 
+import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
+
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction } from 'plywood';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
-  Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
-import { SPLIT, SEGMENT, TIME_SEGMENT } from '../../config/constants';
+  Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve, MeasureModeNeeded } from '../../../common/models/index';
+import { SPLIT } from '../../config/constants';
 import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 import { Scroller } from '../../components/scroller/scroller';
 import { SimpleTable, InlineStyle } from '../../components/simple-table/simple-table';
-import { Loader } from '../../components/loader/loader';
-import { QueryError } from '../../components/query-error/query-error';
+
+import { CircumstancesHandler } from '../../../common/utils/circumstances-handler/circumstances-handler';
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 300;
@@ -34,11 +36,11 @@ function formatSegment(value: any): string {
   return String(value);
 }
 
-function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): Filter {
+function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataSource: DataSource): Filter {
   if (flatDatum['__nest'] === 0) return null;
   var segments: any[] = [];
   while (flatDatum['__nest'] > 0) {
-    segments.unshift(flatDatum[SEGMENT]);
+    segments.unshift(flatDatum[splits.get(flatDatum['__nest'] - 1).getDimension(dataSource.dimensions).name]);
     flatDatum = flatDatum['__parent'];
   }
   return new Filter(List(segments.map((segment, i) => {
@@ -55,184 +57,64 @@ export interface PositionHover {
   row?: Datum;
 }
 
-export interface TableState {
-  datasetLoad?: DatasetLoad;
+export interface TableState extends BaseVisualizationState {
   flatData?: PseudoDatum[];
-  scrollLeft?: number;
-  scrollTop?: number;
-  hoverMeasure?: Measure;
   hoverRow?: Datum;
 }
 
-export class Table extends React.Component<VisualizationProps, TableState> {
-  static id = 'table';
-  static title = 'Table';
+export class Table extends BaseVisualization<TableState> {
+  public static id = 'table';
+  public static title = 'Table';
 
-  static measureModeNeed = 'multi';
+  public static measureModeNeed: MeasureModeNeeded = 'multi';
 
-  static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
-    // Must have at least one dimension
-    if (splits.length() === 0) {
-      var someDimensions = dataSource.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
-      return Resolve.manual(4, 'This visualization requires at least one split',
-        someDimensions.map((someDimension) => {
-          return {
-            description: `Add a split on ${someDimension.title}`,
-            adjustment: {
-              splits: Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
-            }
-          };
-        })
-      );
-    }
+  private static handler = CircumstancesHandler.EMPTY()
+    .needsAtLeastOneSplit()
+    .otherwise(
+      (splits: Splits, dataSource: DataSource, colors: Colors, current: boolean) => {
+        var autoChanged = false;
+        splits = splits.map((split, i) => {
+          if (!split.sortAction) {
+            split = split.changeSortAction(dataSource.getDefaultSortAction());
+            autoChanged = true;
+          }
 
-    // Auto adjustment
-    var autoChanged = false;
-    splits = splits.map((split, i) => {
-      var splitDimension = dataSource.getDimensionByExpression(split.expression);
+          var splitDimension = splits.get(0).getDimension(dataSource.dimensions);
 
-      if (!split.sortAction) {
-        split = split.changeSortAction(dataSource.getDefaultSortAction());
-        autoChanged = true;
-      } else if (split.sortAction.refName() === TIME_SEGMENT) {
-        split = split.changeSortAction(new SortAction({
-          expression: $(SEGMENT),
-          direction: split.sortAction.direction
-        }));
-        autoChanged = true;
+          // ToDo: review this
+          if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
+            split = split.changeLimit(i ? 5 : 50);
+            autoChanged = true;
+          }
+
+          return split;
+        });
+
+        if (colors) {
+          colors = null;
+          autoChanged = true;
+        }
+
+        return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(current ? 10 : 8);
       }
+    );
 
-      // ToDo: review this
-      if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
-        split = split.changeLimit(i ? 5 : 50);
-        autoChanged = true;
-      }
-
-      return split;
-    });
-
-    if (colors) {
-      colors = null;
-      autoChanged = true;
-    }
-
-    return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(current ? 10 : 8);
+  public static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
+    return this.handler.evaluate(dataSource, splits, colors, current);
   }
 
-  public mounted: boolean;
 
   constructor() {
     super();
-    this.state = {
-      datasetLoad: {},
-      flatData: null,
-      scrollLeft: 0,
-      scrollTop: 0,
-      hoverMeasure: null,
-      hoverRow: null
-    };
   }
 
-  fetchData(essence: Essence): void {
-    var { registerDownloadableDataset } = this.props;
-    var { splits, dataSource } = essence;
-    var measures = essence.getEffectiveMeasures();
+  getDefaultState(): TableState {
+    var s = super.getDefaultState() as TableState;
 
-    var $main = $('main');
+    s.flatData = null;
+    s.hoverRow = null;
 
-    var query = ply()
-      .apply('main', $main.filter(essence.getEffectiveFilter(Table.id).toExpression()));
-
-    measures.forEach((measure) => {
-      query = query.performAction(measure.toApplyAction());
-    });
-
-    function makeQuery(i: number): Expression {
-      var split = splits.get(i);
-      var { sortAction, limitAction } = split;
-      if (!sortAction) throw new Error('something went wrong in table query generation');
-
-      var subQuery = $main.split(split.toSplitExpression(), SEGMENT);
-
-      measures.forEach((measure) => {
-        subQuery = subQuery.performAction(measure.toApplyAction());
-      });
-
-      var applyForSort = essence.getApplyForSort(sortAction);
-      if (applyForSort) {
-        subQuery = subQuery.performAction(applyForSort);
-      }
-      subQuery = subQuery.performAction(sortAction);
-
-      if (limitAction) {
-        subQuery = subQuery.performAction(limitAction);
-      }
-
-      if (i + 1 < splits.length()) {
-        subQuery = subQuery.apply(SPLIT, makeQuery(i + 1));
-      }
-
-      return subQuery;
-    }
-
-    query = query.apply(SPLIT, makeQuery(0));
-
-    this.precalculate(this.props, { loading: true });
-    dataSource.executor(query, { timezone: essence.timezone })
-      .then(
-        (dataset: Dataset) => {
-          if (!this.mounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset,
-            error: null
-          });
-        },
-        (error) => {
-          if (!this.mounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset: null,
-            error
-          });
-        }
-      );
-  }
-
-  componentWillMount() {
-    this.precalculate(this.props);
-  }
-
-  componentDidMount() {
-    this.mounted = true;
-    var { essence } = this.props;
-    this.fetchData(essence);
-  }
-
-  componentWillReceiveProps(nextProps: VisualizationProps) {
-    this.precalculate(nextProps);
-    var { essence } = this.props;
-    var nextEssence = nextProps.essence;
-    if (
-      nextEssence.differentDataSource(essence) ||
-      nextEssence.differentEffectiveFilter(essence, Table.id) ||
-      nextEssence.differentEffectiveSplits(essence) ||
-      nextEssence.newEffectiveMeasures(essence)
-    ) {
-      this.fetchData(nextEssence);
-    }
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
-  }
-
-  onScroll(e: UIEvent) {
-    var target = e.target as Element;
-    this.setState({
-      scrollLeft: target.scrollLeft,
-      scrollTop: target.scrollTop
-    });
+    return s;
   }
 
   calculateMousePosition(e: MouseEvent): PositionHover {
@@ -262,16 +144,6 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     return { what: 'row', row: datum };
   }
 
-  onMouseLeave() {
-    var { hoverMeasure, hoverRow } = this.state;
-    if (hoverMeasure || hoverRow) {
-      this.setState({
-        hoverMeasure: null,
-        hoverRow: null
-      });
-    }
-  }
-
   onMouseMove(e: MouseEvent) {
     var { hoverMeasure, hoverRow } = this.state;
     var pos = this.calculateMousePosition(e);
@@ -285,10 +157,13 @@ export class Table extends React.Component<VisualizationProps, TableState> {
 
   onClick(e: MouseEvent) {
     var { clicker, essence } = this.props;
+    var { splits, dataSource } = essence;
     var pos = this.calculateMousePosition(e);
 
+    var splitDimension = splits.get(0).getDimension(dataSource.dimensions);
+
     if (pos.what === 'corner' || pos.what === 'header') {
-      var sortExpression = $(pos.what === 'corner' ? SEGMENT : pos.measure.name);
+      var sortExpression = $(pos.what === 'corner' ? splitDimension.name : pos.measure.name);
       var commonSort = essence.getCommonSort();
       var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === SortAction.DESCENDING);
       clicker.changeSplits(essence.splits.changeSortAction(new SortAction({
@@ -297,7 +172,9 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       })), VisStrategy.KeepAlways);
 
     } else if (pos.what === 'row') {
-      var rowHighlight = getFilterFromDatum(essence.splits, pos.row);
+      var nest = pos.row['__nest'] as number;
+      var rowHighlight = getFilterFromDatum(essence.splits, pos.row, dataSource);
+
       if (!rowHighlight) return;
 
       if (essence.highlightOn(Table.id)) {
@@ -341,10 +218,21 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     this.setState(newState);
   }
 
-  render() {
+  onMouseLeave() {
+    var { hoverMeasure, hoverRow } = this.state;
+    if (hoverMeasure || hoverRow) {
+      this.setState({
+        hoverMeasure: null,
+        hoverRow: null
+      });
+    }
+  }
+
+  renderInternals() {
     var { clicker, essence, stage, openRawDataModal } = this.props;
     var { datasetLoad, flatData, scrollLeft, scrollTop, hoverMeasure, hoverRow } = this.state;
-    var { splits } = essence;
+    var { splits, dataSource } = essence;
+    var splitDimension = splits.get(0).getDimension(dataSource.dimensions);
 
     var segmentTitle = splits.getTitle(essence.dataSource.dimensions);
     var commonSort = essence.getCommonSort();
@@ -356,7 +244,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
     }) : null;
 
     var cornerSortArrow: JSX.Element = null;
-    if (commonSortName === SEGMENT) {
+    if (commonSortName === splitDimension.name) {
       cornerSortArrow = sortArrowIcon;
     }
 
@@ -396,7 +284,11 @@ export class Table extends React.Component<VisualizationProps, TableState> {
       for (var i = skipNumber; i < lastElementToShow; i++) {
         var d = flatData[i];
         var nest = d['__nest'];
-        var segmentValue = d[SEGMENT];
+
+        var split = nest > 0 ? splits.get(nest - 1) : null;
+        var dimension = split ? split.getDimension(dataSource.dimensions) : null;
+
+        var segmentValue = dimension ? d[dimension.name] : '';
         var segmentName = nest ? formatSegment(segmentValue) : 'Total';
         var left = Math.max(0, nest - 1) * INDENT_WIDTH;
         var segmentStyle = { left: left, width: SEGMENT_WIDTH - left, top: rowY };
@@ -405,7 +297,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         var selected = false;
         var selectedClass = '';
         if (highlightDelta) {
-          selected = highlightDelta.equals(getFilterFromDatum(splits, d));
+          selected = highlightDelta.equals(getFilterFromDatum(splits, d, dataSource));
           selectedClass = selected ? 'selected' : 'not-selected';
         }
 
@@ -492,11 +384,9 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         <div className="highlight" style={highlightStyle}>{highlighter}</div>
       </div>
       <div className="vertical-scroll-shadow" style={verticalScrollShadowStyle}></div>
-      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
-      {datasetLoad.loading ? <Loader/> : null}
     </div>;
 
-    return <div className="table">
+    return <div className="internals table-inner">
       <div className="corner">
         <div className="corner-wrap">{segmentTitle}</div>
         {cornerSortArrow}
@@ -520,7 +410,7 @@ export class Table extends React.Component<VisualizationProps, TableState> {
         onMouseLeave={this.onMouseLeave.bind(this)}
         onMouseMove={this.onMouseMove.bind(this)}
         onClick={this.onClick.bind(this)}
-      />;
+      />
       {highlightBubble}
     </div>;
   }

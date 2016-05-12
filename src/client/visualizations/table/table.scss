@@ -9,9 +9,6 @@ $space-left: 10px;
 $header-padding-top: 12px;
 
 .table {
-  @include pin-full;
-  overflow: hidden;
-
   .sort-arrow {
     position: absolute;
     top: 12px;
@@ -89,11 +86,6 @@ $header-padding-top: 12px;
         }
       }
     }
-  }
-
-  .loader,
-  .query-error {
-    @include pin-full;
   }
 
   .vertical-scroll-shadow {

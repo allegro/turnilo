@@ -29,7 +29,6 @@ export class ClearableInput extends React.Component<ClearableInputProps, Clearab
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

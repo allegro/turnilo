@@ -1,10 +1,12 @@
 require('./bar-chart.css');
 
+import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
+
 import * as React from 'react';
 import { generalEqual } from 'immutable-class';
 import { $, ply, r, Expression, Executor, Dataset, Datum, SortAction, PlywoodValue, Set, TimeRange } from 'plywood';
 import { Stage, Essence, DataSource, Filter, FilterClause, Splits, SplitCombine, Dimension, Measure, Colors, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
-import { SPLIT, SEGMENT, TIME_SEGMENT, VIS_H_PADDING } from '../../config/constants';
+import { SPLIT, VIS_H_PADDING } from '../../config/constants';
 import { roundToPx, roundToHalfPx, classNames } from '../../utils/dom/dom';
 import { VisMeasureLabel } from '../../components/vis-measure-label/vis-measure-label';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
@@ -13,6 +15,8 @@ import { GridLines } from '../../components/grid-lines/grid-lines';
 import { Loader } from '../../components/loader/loader';
 import { QueryError } from '../../components/query-error/query-error';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
+
+import { CircumstancesHandler } from '../../../common/utils/circumstances-handler/circumstances-handler';
 
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 84;
@@ -32,49 +36,79 @@ export interface HoverValue {
   value: PlywoodValue;
 }
 
-export interface BarChartState {
-  datasetLoad?: DatasetLoad;
-  scrollLeft?: number;
-  scrollTop?: number;
+export interface BarChartState extends BaseVisualizationState {
   hoverValue?: HoverValue;
-  hoverMeasure?: Measure;
 
   // Cached props
   xTicks?: PlywoodValue[];
   scaleX?: any;
 }
 
-function getFilterFromDatum(splits: Splits, datum: Datum): Filter {
-  var segment = datum[SEGMENT];
+function getFilterFromDatum(splits: Splits, datum: Datum, xField: string): Filter {
+  var segment = datum[xField];
   return Filter.fromClause(new FilterClause({
     expression: splits.get(0).expression,
     selection: r(TimeRange.isTimeRange(segment) ? segment : Set.fromJS([segment]))
   }));
 }
 
-export class BarChart extends React.Component<VisualizationProps, BarChartState> {
-  static id = 'bar-chart';
-  static title = 'Bar Chart';
+export class BarChart extends BaseVisualization<BarChartState> {
+  public static id = 'bar-chart';
+  public static title = 'Bar Chart';
 
-  static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
-    // Must have at least one dimension
-    if (splits.length() === 0) {
-      var someDimensions = dataSource.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
-      return Resolve.manual(4, 'This visualization requires at least one split',
-        someDimensions.map((someDimension) => {
-          return {
-            description: `Add a split on ${someDimension.title}`,
-            adjustment: {
-              splits: Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
+  private static handler = CircumstancesHandler.EMPTY()
+    .needsAtLeastOneSplit()
+    .when(
+      CircumstancesHandler.areExactSplitKinds('*'),
+      (splits: Splits, dataSource: DataSource, colors: Colors, current: boolean) => {
+        var booleanBoost = 0;
+
+        // Auto adjustment
+        var autoChanged = false;
+        splits = splits.map((split, i) => {
+          var splitDimension = dataSource.getDimensionByExpression(split.expression);
+
+          if (splitDimension.kind === 'boolean') {
+            booleanBoost = 2;
+          }
+
+          if (!split.sortAction) {
+            if (splitDimension.kind === 'boolean') {
+              split = split.changeSortAction(new SortAction({
+                expression: $(splitDimension.name),
+                direction: 'descending'
+              }));
+            } else {
+              split = split.changeSortAction(dataSource.getDefaultSortAction());
             }
-          };
-        })
-      );
-    }
+            autoChanged = true;
+          } else if (split.sortAction.refName() === dataSource.getTimeDimension().name) {
+            split = split.changeSortAction(new SortAction({
+              expression: $(splitDimension.name),
+              direction: split.sortAction.direction
+            }));
+            autoChanged = true;
+          }
 
-    // Has too many splits
-    if (splits.length() > 1) {
-      return Resolve.manual(3, 'Too many splits', [
+          // ToDo: review this
+          if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
+            split = split.changeLimit(i ? 5 : 25);
+            autoChanged = true;
+          }
+
+          return split;
+        });
+
+        if (colors) {
+          colors = null;
+          autoChanged = true;
+        }
+
+        return autoChanged ? Resolve.automatic(5 + booleanBoost, { splits }) : Resolve.ready(current ? 10 : (7 + booleanBoost));
+      }
+    ).otherwise(
+      (splits: Splits) => {
+        return Resolve.manual(3, 'This visualization needs one split exactly', [
         {
           description: `Remove all but the first split`,
           adjustment: {
@@ -82,140 +116,23 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
           }
         }
       ]);
-    }
-
-    var booleanBoost = 0;
-
-    // Auto adjustment
-    var autoChanged = false;
-    splits = splits.map((split, i) => {
-      var splitDimension = dataSource.getDimensionByExpression(split.expression);
-
-      if (splitDimension.kind === 'boolean') {
-        booleanBoost = 2;
       }
+    );
 
-      if (!split.sortAction) {
-        if (splitDimension.kind === 'boolean') {
-          split = split.changeSortAction(new SortAction({
-            expression: $(SEGMENT),
-            direction: 'descending'
-          }));
-        } else {
-          split = split.changeSortAction(dataSource.getDefaultSortAction());
-        }
-        autoChanged = true;
-      } else if (split.sortAction.refName() === TIME_SEGMENT) {
-        split = split.changeSortAction(new SortAction({
-          expression: $(SEGMENT),
-          direction: split.sortAction.direction
-        }));
-        autoChanged = true;
-      }
-
-      // ToDo: review this
-      if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
-        split = split.changeLimit(i ? 5 : 25);
-        autoChanged = true;
-      }
-
-      return split;
-    });
-
-    if (colors) {
-      colors = null;
-      autoChanged = true;
-    }
-
-    return autoChanged ? Resolve.automatic(5 + booleanBoost, { splits }) : Resolve.ready(current ? 10 : (7 + booleanBoost));
+  public static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
+    return this.handler.evaluate(dataSource, splits, colors, current);
   }
-
-  public mounted: boolean;
 
   constructor() {
     super();
-    this.state = {
-      datasetLoad: {},
-      scrollLeft: 0,
-      scrollTop: 0,
-      hoverValue: null,
-      hoverMeasure: null
-    };
   }
 
-  fetchData(essence: Essence): void {
-    var { splits, dataSource } = essence;
-    var measures = essence.getEffectiveMeasures();
+  getDefaultState(): BarChartState {
+    var s = super.getDefaultState() as BarChartState;
 
-    var $main = $('main');
+    s.hoverValue = null;
 
-    var query = ply()
-      .apply('main', $main.filter(essence.getEffectiveFilter(BarChart.id).toExpression()));
-
-    measures.forEach((measure) => {
-      query = query.performAction(measure.toApplyAction());
-    });
-
-    function makeQuery(i: number): Expression {
-      var split = splits.get(i);
-      var { sortAction, limitAction } = split;
-      if (!sortAction) throw new Error('something went wrong in bar chart query generation');
-
-      var subQuery = $main.split(split.toSplitExpression(), SEGMENT);
-
-      measures.forEach((measure) => {
-        subQuery = subQuery.performAction(measure.toApplyAction());
-      });
-
-      var applyForSort = essence.getApplyForSort(sortAction);
-      if (applyForSort) {
-        subQuery = subQuery.performAction(applyForSort);
-      }
-      subQuery = subQuery.performAction(sortAction);
-
-      if (limitAction) {
-        subQuery = subQuery.performAction(limitAction);
-      }
-
-      if (i + 1 < splits.length()) {
-        subQuery = subQuery.apply(SPLIT, makeQuery(i + 1));
-      }
-
-      return subQuery;
-    }
-
-    query = query.apply(SPLIT, makeQuery(0));
-
-    this.precalculate(this.props, { loading: true });
-    dataSource.executor(query, { timezone: essence.timezone })
-      .then(
-        (dataset: Dataset) => {
-          if (!this.mounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset,
-            error: null
-          });
-        },
-        (error) => {
-          if (!this.mounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset: null,
-            error
-          });
-        }
-      );
-  }
-
-  componentWillMount() {
-    this.precalculate(this.props);
-  }
-
-  componentDidMount() {
-    this.mounted = true;
-    var { essence } = this.props;
-    this.fetchData(essence);
+    return s;
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
@@ -230,18 +147,6 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     ) {
       this.fetchData(nextEssence);
     }
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
-  }
-
-  onScroll(e: UIEvent) {
-    var target = e.target as Element;
-    this.setState({
-      scrollLeft: target.scrollLeft,
-      scrollTop: target.scrollTop
-    });
   }
 
   onMouseEnter(measure: Measure, hoverValue: PlywoodValue, e: MouseEvent) {
@@ -263,9 +168,11 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
 
   onClick(measure: Measure, datum: Datum, e: MouseEvent) {
     const { essence, clicker } = this.props;
-    const { splits } = essence;
+    const { splits, dataSource } = essence;
 
-    var rowHighlight = getFilterFromDatum(splits, datum);
+    const dimension = splits.get(0).getDimension(dataSource.dimensions);
+
+    var rowHighlight = getFilterFromDatum(splits, datum, dimension.name);
 
     if (essence.highlightOn(BarChart.id, measure.name)) {
       if (rowHighlight.equals(essence.highlight.delta)) {
@@ -280,7 +187,8 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
   renderChartBubble(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, extentY: number[], scaleY: any): JSX.Element {
     const { essence, clicker, openRawDataModal } = this.props;
     const { scrollTop, hoverValue, hoverMeasure, scaleX } = this.state;
-    const { splits } = essence;
+    const { splits, dataSource } = essence;
+    const dimension = splits.get(0).getDimension(dataSource.dimensions);
 
     var stepWidth = scaleX.rangeBand();
 
@@ -288,19 +196,17 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
 
     if (essence.highlightOn(BarChart.id, measure.name)) {
       var bubbleHighlightDelta = essence.highlight.delta;
-      var highlightDatum = dataset.data.filter((d) => bubbleHighlightDelta.equals(getFilterFromDatum(splits, d)))[0];
+      var highlightDatum = dataset.data.filter((d) => bubbleHighlightDelta.equals(getFilterFromDatum(splits, d, dimension.name)))[0];
       if (!highlightDatum) return null;
 
-      const dimension = essence.dataSource.getDimensionByExpression(splits.get(0).expression);
-
-      var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(highlightDatum[SEGMENT]) + stepWidth / 2;
+      var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(highlightDatum[dimension.name]) + stepWidth / 2;
       var topOffset = chartStage.height * chartIndex - scrollTop + scaleY(highlightDatum[measure.name]) + TEXT_SPACER - HOVER_BUBBLE_V_OFFSET;
       if (topOffset > 0) {
         return <SegmentBubble
           left={leftOffset}
           top={containerStage.y + topOffset}
           dimension={dimension}
-          segmentLabel={String(highlightDatum[SEGMENT])}
+          segmentLabel={String(highlightDatum[dimension.name])}
           measureLabel={measure.formatDatum(highlightDatum)}
           clicker={clicker}
           openRawDataModal={openRawDataModal}
@@ -308,7 +214,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       }
 
     } else if (hoverValue && hoverMeasure === measure) {
-      var hoverDatum = dataset.findDatumByAttribute(SEGMENT, hoverValue.value);
+      var hoverDatum = dataset.findDatumByAttribute(dimension.name, hoverValue.value);
       var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(hoverValue.value) + stepWidth / 2;
       var topOffset = chartStage.height * chartIndex - scrollTop + scaleY(hoverDatum[measure.name]) + TEXT_SPACER - HOVER_BUBBLE_V_OFFSET;
       if (topOffset > 0) {
@@ -327,7 +233,8 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
   renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, getX: any): JSX.Element {
     const { essence } = this.props;
     const { hoverValue, hoverMeasure, xTicks, scaleX } = this.state;
-    const { splits } = essence;
+    const { splits, dataSource } = essence;
+    const dimension = splits.get(0).getDimension(dataSource.dimensions);
 
     var myDatum: Datum = dataset.data[0];
     var mySplitDataset = myDatum[SPLIT] as Dataset;
@@ -387,7 +294,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       slantyLabels = [];
       var scaleY0 = scaleY(0);
       mySplitDataset.data.forEach((d) => {
-        var segmentValue = d[SEGMENT];
+        var segmentValue = d[dimension.name];
         var segmentValueStr = String(segmentValue);
         var x = scaleX(getX(d));
         var y = scaleY(getY(d));
@@ -405,7 +312,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
         var selected: boolean;
         var selectedClass: string;
         if (borderHighlightDelta) {
-          selected = borderHighlightDelta.equals(getFilterFromDatum(splits, d));
+          selected = borderHighlightDelta.equals(getFilterFromDatum(splits, d, dimension.name));
           selectedClass = selected ? 'selected' : 'not-selected';
         }
 
@@ -483,7 +390,8 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
     const { registerDownloadableDataset, essence, stage } = props;
-    const { splits } = essence;
+    const { splits, dataSource} = essence;
+    const dimension = splits.get(0).getDimension(dataSource.dimensions);
 
     var existingDatasetLoad = this.state.datasetLoad;
     var newState: BarChartState = {};
@@ -500,7 +408,7 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     if (dataset && splits.length()) {
       if (registerDownloadableDataset) registerDownloadableDataset(dataset);
 
-      var getX = (d: Datum) => d[SEGMENT] as string;
+      var getX = (d: Datum) => d[dimension.name] as string;
 
       var myDatum: Datum = dataset.data[0];
       var mySplitDataset = myDatum[SPLIT] as Dataset;
@@ -522,17 +430,18 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
     this.setState(newState);
   }
 
-  render() {
+  renderInternals() {
     var { essence, stage } = this.props;
     var { datasetLoad } = this.state;
-    var { splits } = essence;
+    var { splits, dataSource } = essence;
+    const dimension = splits.get(0).getDimension(dataSource.dimensions);
 
     var measureCharts: JSX.Element[];
 
     if (datasetLoad.dataset && splits.length()) {
       var measures = essence.getEffectiveMeasures().toArray();
 
-      var getX = (d: Datum) => d[SEGMENT] as string;
+      var getX = (d: Datum) => d[dimension.name] as string;
 
       var parentWidth = stage.width - VIS_H_PADDING * 2;
       var chartHeight = Math.max(MIN_CHART_HEIGHT, Math.floor(stage.height / measures.length));
@@ -552,12 +461,8 @@ export class BarChart extends React.Component<VisualizationProps, BarChartState>
       maxHeight: stage.height
     };
 
-    return <div className="bar-chart">
-      <div className="measure-bar-charts" style={measureChartsStyle} onScroll={this.onScroll.bind(this)}>
-        {measureCharts}
-      </div>
-      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
-      {datasetLoad.loading ? <Loader/> : null}
+    return <div className="internals measure-bar-charts" style={measureChartsStyle} onScroll={this.onScroll.bind(this)}>
+      {measureCharts}
     </div>;
   }
 }

@@ -1,45 +1,39 @@
 require('./geo.css');
 
+import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
+
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
-// import { ... } from '../../config/constants';
 import { Stage, Essence, DataSource, Filter, Splits, Dimension, Measure, Colors, VisualizationProps, Resolve } from '../../../common/models/index';
-// import { SomeComp } from '../some-comp/some-comp';
 
-export interface GeoState {
+export interface GeoState extends BaseVisualizationState {
 }
 
-export class Geo extends React.Component<VisualizationProps, GeoState> {
-  static id = 'geo';
-  static title = 'Geo';
+export class Geo extends BaseVisualization<GeoState> {
+  public static id = 'geo';
+  public static title = 'Geo';
 
-  static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
+  public static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
     return Resolve.manual(0, 'The Geo visualization is not ready, please select another visualization.', []);
   }
 
-  public mounted: boolean;
-
   constructor() {
     super();
-    // this.state = {};
-
   }
 
-  componentDidMount() {
-    this.mounted = true;
+  getDefaultState(): GeoState {
+    return super.getDefaultState() as GeoState;
   }
 
-  componentWillUnmount() {
-    this.mounted = false;
-  }
+  componentWillMount() {}
 
-  componentWillReceiveProps(nextProps: VisualizationProps) {
+  componentDidMount() {}
 
-  }
+  componentWillReceiveProps(nextProps: VisualizationProps) {}
 
-  render() {
-    return <div className="geo"></div>;
+  renderInternals() {
+    return <div className="internals"></div>;
   }
 }

@@ -16,7 +16,6 @@ export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps,
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

@@ -24,7 +24,6 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
 
   constructor() {
     super();
-    // this.state = {};
 
   }
 

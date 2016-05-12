@@ -4,8 +4,6 @@ $total-single-width: 260px;
 $total-width: 176px;
 
 .totals {
-  @include pin-full;
-
   .total-container {
     position: absolute;
     top: 60px;
@@ -48,10 +46,5 @@ $total-width: 176px;
         font-size: 40px;
       }
     }
-  }
-
-  .loader,
-  .query-error {
-    @include pin-full;
   }
 }

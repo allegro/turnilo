@@ -22,5 +22,5 @@ var cleanup = () => {
 kickstart();
 
 beforeEach(kickstart);
-// afterEach(cleanup);
+afterEach(cleanup);
 
