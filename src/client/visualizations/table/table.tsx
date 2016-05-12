@@ -441,7 +441,6 @@ export class Table extends React.Component<VisualizationProps, TableState> {
           highlightBubble = <SegmentBubble
             left={stage.x + stage.width / 2}
             top={stage.y + HEADER_HEIGHT + rowY - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
-            hideText={true}
             segmentLabel={segmentName}
             dimension={dimension}
             clicker={clicker}
