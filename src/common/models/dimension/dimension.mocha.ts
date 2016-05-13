@@ -38,7 +38,7 @@ describe('Dimension', () => {
         },
         kind: 'time',
         url: 'http://www.time.com/%s',
-        granularities: ['PT1M', { action: 'timeBucket', duration: 'P5M', timezone: 'Etc/UTC' }, 'PT6H', 'P1D', 'P1W']
+        granularities: ['PT1M', { action: 'timeBucket', duration: 'P6M', timezone: 'Etc/UTC' }, 'PT6H', 'P1D', 'P1W']
       },
       {
         name: 'time',
@@ -50,7 +50,7 @@ describe('Dimension', () => {
         },
         kind: 'time',
         url: 'http://www.time.com/%s',
-        granularities: ['PT1M', 'P5M', 'PT6H', 'P1D', 'P1W']
+        granularities: ['PT1M', 'P6M', 'PT6H', 'P1D', 'P1W']
       }
     ]);
   });
