@@ -124,15 +124,27 @@ The title for this dimension in the UI. Can be anything and is safe to change at
 
 **url** (string)
 
-A url associated with the dimension, with optional token '%s' that is replaced by the dimension value to generate 
+A url associated with the dimension, with optional token '%s' that is replaced by the dimension value to generate
 a link specific to each value.
+
+**granularities** (string[5])
+
+For time dimensions you can define a set of exactly 5 granularities that you want to be available for bucketing.
+
+Each granularity must be expressed as a 'floorable' [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations)
+A floorable duration is any duration that is either a single period like `P1D`, `P1W`, `PT1S`, e.t.c. or a multiple period
+that divides into the larger period. For example, `P3M` is floorable because 3 divides 12 but `P5M` is not floorable.
+
+By default `granularities` is set to: `['PT1M', 'PT5M', 'PT1H', 'P1D', 'P1W']`
+
+If you mainly care about smaller intervals, you might want to set it to: `['PT1S', 'PT15S', 'PT30S', 'PT1M', 'PT1H']`
+
+Alternatively, if you mainly care about large intervals, you might want to try: `['P1D', 'P1W', 'P1M', 'P3M', 'P1Y']`
 
 **expression** (plywood expression)
 
 The expression for this dimension. By default it is `$name` where *name* is the name of the dimension.
-
 You can create derived dimensions by using non-trivial expressions. Here are some common use cases for derived dimensions:
-
 
 #### Lookups
 
@@ -176,13 +188,13 @@ Which would have values:
 
 It is often useful to create dimensions that are the result of some boolean expression.
 Let's say that you are responsible for all accounts in the United States as well as some specific account you could create a dimension like:
- 
+
 ```yaml
       - name: myAccounts
         expression: $country == 'United States' or $accountName.in(['Toyota', 'Honda'])
 ```
- 
-Now my account would represent a custom filter boolean diemension. 
+
+Now my account would represent a custom filter boolean diemension.
 
 ### Measures
 
@@ -343,7 +355,7 @@ You can define a `customization` option in the config to configure some aspects 
 
 ### Visual
 
-Can customize the header background color and logo icon by supplying a color string and SVG string respectively.  
+Can customize the header background color and logo icon by supplying a color string and SVG string respectively.
 
 ```yaml
   customization:
@@ -366,8 +378,8 @@ For example:
 
 ```yaml
   customization:
-    externalViews:      
-      - title: Timezone Info      
+    externalViews:
+      - title: Timezone Info
         linkGenerator: >
           {
             return 'http://www.tickcounter.com/timezone/' + timezone.toString().toLowerCase().replace(/\//g, '-');

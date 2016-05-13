@@ -18,7 +18,6 @@ export interface SegmentBubbleProps extends React.Props<any> {
   dimension?: Dimension;
   segmentLabel?: string;
   measureLabel?: string;
-  hideText?: boolean;
   clicker?: Clicker;
   onClose?: Fn;
   openRawDataModal?: Fn;
@@ -37,10 +36,10 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
   }
 
   render() {
-    const { left, top, hideText, dimension, segmentLabel, measureLabel, clicker, openRawDataModal, onClose } = this.props;
+    const { left, top, dimension, segmentLabel, measureLabel, clicker, openRawDataModal, onClose } = this.props;
 
     var textElement: JSX.Element;
-    if (!hideText && segmentLabel) {
+    if (segmentLabel) {
       var minTextWidth = clamp(segmentLabel.length * PER_LETTER_PIXELS, 80, 300);
       textElement = <div className="text" style={{ minWidth: minTextWidth }}>
         <div className="segment">{segmentLabel}</div>

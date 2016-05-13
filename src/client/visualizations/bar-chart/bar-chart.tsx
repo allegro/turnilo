@@ -12,8 +12,6 @@ import { VisMeasureLabel } from '../../components/vis-measure-label/vis-measure-
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
 import { BucketMarks } from '../../components/bucket-marks/bucket-marks';
 import { GridLines } from '../../components/grid-lines/grid-lines';
-import { Loader } from '../../components/loader/loader';
-import { QueryError } from '../../components/query-error/query-error';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 
 import { CircumstancesHandler } from '../../../common/utils/circumstances-handler/circumstances-handler';
@@ -76,7 +74,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
             if (splitDimension.kind === 'boolean') {
               split = split.changeSortAction(new SortAction({
                 expression: $(splitDimension.name),
-                direction: 'descending'
+                direction: SortAction.DESCENDING
               }));
             } else {
               split = split.changeSortAction(dataSource.getDefaultSortAction());

@@ -2,6 +2,14 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.28
+
+- Visualization class refactor
+- Table highlight bubble now shows full value
+- Better work wrapping in highlight bubbles
+- New Plywood ensures to send UTC timestamps to Druid
+- Ability to define custom granularities for bucketing
+
 ## 0.8.27
 
 - New chronoshift fixes bug with flooring `PT12H`

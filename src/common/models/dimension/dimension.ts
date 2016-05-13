@@ -60,7 +60,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     var granularities = parameters.granularities;
     if (granularities) {
       if (!Array.isArray(granularities) || granularities.length !== 5) {
-        throw new Error("must have list of 5 granularities");
+        throw new Error(`must have list of 5 granularities in dimension '${parameters.name}'`);
       }
 
       var runningActionType: string = null;

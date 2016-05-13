@@ -3,11 +3,13 @@
 Pivot is a web-based exploratory visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
 [Plywood](https://github.com/implydata/plywood). 
 
+Pivot is best used with the [Imply Analytics Platform](http://imply.io/product)
+which can be downloaded from [imply.io/download](http://imply.io/download) and comes with the stable version of Pivot.
+Alternatively nightly standalone Pivot versions can be installed through npm. 
+
 The project is currently undergoing rapid development.
 Internal and external APIs may change with little notice.
 
-Note: Pivot is best used with the Imply Analytics Platform.
-If you are using Pivot with base Druid, please ensure your Druid version is at least 0.9.0 as there are several bugs related to properly introspecting and querying datasources with older versions of Druid.
 
 ## Features
 
@@ -133,13 +135,13 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Ability to define custom granularities for bucketing
 - Timezone support
 - Date range picker
 - Export data to CSV
 - Raw data modal allows you to see the raw data in the selected segment
 - New [customization options](https://github.com/implydata/pivot/blob/master/docs/configuration.md#customization)
 - Go to URL option
-- Copy value to clipboard
 
 For a full list of changes see our [CHANGELOG](CHANGELOG.md)
 

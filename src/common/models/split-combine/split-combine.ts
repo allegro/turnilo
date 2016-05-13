@@ -173,21 +173,7 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
   public getBucketTitle(): string {
     var bucketAction = this.bucketAction;
     if (bucketAction instanceof TimeBucketAction) {
-      var duration = bucketAction.duration.toString();
-      switch (duration) {
-        case 'PT1M':
-          return ' (Minute)';
-        case 'PT5M':
-          return ' (5 Minutes)';
-        case 'PT1H':
-          return ' (Hour)';
-        case 'P1D':
-          return ' (Day)';
-        case 'P1W':
-          return ' (Week)';
-        default:
-          return '';
-      }
+      return ` (${bucketAction.duration.getDescription(true)})`;
     }
     return '';
   }
