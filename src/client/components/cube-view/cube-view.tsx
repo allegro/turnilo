@@ -18,8 +18,15 @@ import { ManualFallback } from '../manual-fallback/manual-fallback';
 import { DropIndicator } from '../drop-indicator/drop-indicator';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 import { RawDataModal } from '../raw-data-modal/raw-data-modal';
+import { ResizeHandle } from '../resize-handle/resize-handle';
 
 import { visualizations } from '../../visualizations/index';
+import * as localStorage from '../../utils/local-storage/local-storage';
+
+export interface CubeViewLayout {
+  dimensionPanelWidth: number;
+  pinboardWidth: number;
+}
 
 export interface CubeViewProps extends React.Props<any> {
   maxFilters?: number;
@@ -41,7 +48,11 @@ export interface CubeViewState {
   showRawDataModal?: boolean;
   RawDataModalAsync?: typeof RawDataModal;
   downloadableDataset?: Dataset;
+  layout?: CubeViewLayout;
 }
+
+const MIN_PANEL_WIDTH = 240;
+const MAX_PANEL_WIDTH = 400;
 
 export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   static defaultProps = {
@@ -49,16 +60,19 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     maxSplits: 3
   };
 
+
   public mounted: boolean;
   private clicker: Clicker;
 
   constructor() {
     super();
+
     this.state = {
       essence: null,
       dragOver: false,
       showRawDataModal: false,
-      downloadableDataset: null
+      downloadableDataset: null,
+      layout: this.getStoredLayout()
     };
 
     var clicker = {
@@ -301,11 +315,39 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({ essence: newEsssence });
   }
 
+  getStoredLayout(): CubeViewLayout {
+    return localStorage.get('cube-view-layout') || {dimensionPanelWidth: 240, pinboardWidth: 240};
+  }
+
+  storeLayout(layout: CubeViewLayout) {
+    localStorage.set('cube-view-layout', layout);
+  }
+
+  onDimensionPanelResize(value: number) {
+    let { layout } = this.state;
+    layout.dimensionPanelWidth = value;
+
+    this.setState({layout});
+    this.storeLayout(layout);
+  }
+
+  onPinboardPanelResize(value: number) {
+    let { layout } = this.state;
+    layout.pinboardWidth = value;
+
+    this.setState({layout});
+    this.storeLayout(layout);
+  }
+
+  onPanelResizeEnd() {
+    this.globalResizeListener();
+  }
+
   render() {
     var clicker = this.clicker;
 
     var { getUrlPrefix, onNavClick, user, customization } = this.props;
-    var { essence, menuStage, visualizationStage, dragOver, downloadableDataset } = this.state;
+    var { layout, essence, menuStage, visualizationStage, dragOver, downloadableDataset } = this.state;
 
     if (!essence) return null;
 
@@ -332,6 +374,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       });
     }
 
+    var styles = {
+      dimensionMeasurePanel: {width: layout.dimensionPanelWidth},
+      centerPanel: {left: layout.dimensionPanelWidth, right: layout.pinboardWidth},
+      pinboardPanel: {width: layout.pinboardWidth}
+    };
+
     return <div className='cube-view'>
       <CubeHeaderBar
         clicker={clicker}
@@ -348,6 +396,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       />
       <div className="container" ref='container'>
         <DimensionMeasurePanel
+          style={styles.dimensionMeasurePanel}
           clicker={clicker}
           essence={essence}
           menuStage={menuStage}
@@ -355,7 +404,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           triggerSplitMenu={this.triggerSplitMenu.bind(this)}
           getUrlPrefix={getUrlPrefix}
         />
-        <div className='center-panel'>
+
+        <ResizeHandle
+          side="left"
+          initialValue={layout.dimensionPanelWidth}
+          onResize={this.onDimensionPanelResize.bind(this)}
+          onResizeEnd={this.onPanelResizeEnd.bind(this)}
+          min={MIN_PANEL_WIDTH}
+          max={MAX_PANEL_WIDTH}
+        ></ResizeHandle>
+
+        <div className='center-panel' style={styles.centerPanel}>
           <div className='center-top-bar'>
             <div className='filter-split-section'>
               <FilterTile
@@ -390,7 +449,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
             /> : null}
           </div>
         </div>
+
+        <ResizeHandle
+          side="right"
+          initialValue={layout.pinboardWidth}
+          onResize={this.onPinboardPanelResize.bind(this)}
+          onResizeEnd={this.onPanelResizeEnd.bind(this)}
+          min={MIN_PANEL_WIDTH}
+          max={MAX_PANEL_WIDTH}
+        ></ResizeHandle>
+
         <PinboardPanel
+          style={styles.pinboardPanel}
           clicker={clicker}
           essence={essence}
           getUrlPrefix={getUrlPrefix}

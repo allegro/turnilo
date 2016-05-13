@@ -7,13 +7,15 @@ import { classNames } from '../../utils/dom/dom';
 import { Fn } from '../../../common/utils/general/general';
 import { Colors, Clicker, Essence, Filter, FilterClause, Stage, Measure,
   VisualizationProps, LinkViewConfig, LinkItem, User, Customization } from '../../../common/models/index';
-// import { ... } from '../../config/constants';
+
+import * as localStorage from '../../utils/local-storage/local-storage';
 
 import { LinkHeaderBar } from '../link-header-bar/link-header-bar';
 import { ManualFallback } from '../manual-fallback/manual-fallback';
 import { PinboardPanel } from '../pinboard-panel/pinboard-panel';
 import { ButtonGroup } from '../button-group/button-group';
 import { Preset } from '../time-filter-menu/time-filter-menu';
+import { ResizeHandle } from '../resize-handle/resize-handle';
 
 var $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
 var latestPresets: Preset[] = [
@@ -22,6 +24,11 @@ var latestPresets: Preset[] = [
   { name: '1D',  selection: $maxTime.timeRange('P1D', -1)  },
   { name: '1W',  selection: $maxTime.timeRange('P1W', -1)  }
 ];
+
+export interface LinkViewLayout {
+  linkPanelWidth: number;
+  pinboardWidth: number;
+}
 
 export interface LinkViewProps extends React.Props<any> {
   linkViewConfig: LinkViewConfig;
@@ -39,7 +46,11 @@ export interface LinkViewState {
   essence?: Essence;
   visualizationStage?: Stage;
   menuStage?: Stage;
+  layout?: LinkViewLayout;
 }
+
+const MIN_PANEL_WIDTH = 240;
+const MAX_PANEL_WIDTH = 400;
 
 export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   private clicker: Clicker;
@@ -50,7 +61,8 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       linkItem: null,
       essence: null,
       visualizationStage: null,
-      menuStage: null
+      menuStage: null,
+      layout: this.getStoredLayout()
     };
 
     var clicker = {
@@ -159,6 +171,34 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     changeHash(`${essence.dataSource.name}/${essence.toHash()}`, true);
   }
 
+  getStoredLayout(): LinkViewLayout {
+    return localStorage.get('link-view-layout') || {linkPanelWidth: 240, pinboardWidth: 240};
+  }
+
+  storeLayout(layout: LinkViewLayout) {
+    localStorage.set('link-view-layout', layout);
+  }
+
+  onLinkPanelResize(value: number) {
+    let { layout } = this.state;
+    layout.linkPanelWidth = value;
+
+    this.setState({layout});
+    this.storeLayout(layout);
+  }
+
+  onPinboardPanelResize(value: number) {
+    let { layout } = this.state;
+    layout.pinboardWidth = value;
+
+    this.setState({layout});
+    this.storeLayout(layout);
+  }
+
+  onPanelResizeEnd() {
+    this.globalResizeListener();
+  }
+
   renderPresets() {
     const { essence } = this.state;
 
@@ -173,7 +213,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     return <ButtonGroup groupMembers={latestPresets.map(presetToButton)} />;
   }
 
-  renderLinkPanel() {
+  renderLinkPanel(style: React.CSSProperties) {
     const { linkViewConfig } = this.props;
     const { linkItem } = this.state;
 
@@ -202,14 +242,18 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       </div>);
     });
 
-    return <div className="link-panel">{items}</div>;
+    return <div className="link-panel" style={style}>
+      <div className="link-container">
+        {items}
+      </div>
+    </div>;
   }
 
   render() {
     var clicker = this.clicker;
 
     var { getUrlPrefix, onNavClick, linkViewConfig, user, customization } = this.props;
-    var { linkItem, essence, visualizationStage } = this.state;
+    var { linkItem, essence, visualizationStage, layout } = this.state;
 
     if (!linkItem) return null;
 
@@ -234,6 +278,12 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       });
     }
 
+    var styles = {
+      linkMeasurePanel: {width: layout.linkPanelWidth},
+      centerPanel: {left: layout.linkPanelWidth, right: layout.pinboardWidth},
+      pinboardPanel: {width: layout.pinboardWidth}
+    };
+
     return <div className='link-view'>
       <LinkHeaderBar
         title={linkViewConfig.title}
@@ -244,8 +294,18 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
         customization={customization}
       />
       <div className="container" ref='container'>
-        {this.renderLinkPanel()}
-        <div className='center-panel'>
+        {this.renderLinkPanel(styles.linkMeasurePanel)}
+
+        <ResizeHandle
+          side="left"
+          initialValue={layout.linkPanelWidth}
+          onResize={this.onLinkPanelResize.bind(this)}
+          onResizeEnd={this.onPanelResizeEnd.bind(this)}
+          min={MIN_PANEL_WIDTH}
+          max={MAX_PANEL_WIDTH}
+        ></ResizeHandle>
+
+        <div className='center-panel' style={styles.centerPanel}>
           <div className='center-top-bar'>
             <div className='link-title'>{linkItem.title}</div>
             <div className='link-description'>{linkItem.description}</div>
@@ -258,7 +318,16 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
             {manualFallback}
           </div>
         </div>
+        <ResizeHandle
+          side="right"
+          initialValue={layout.pinboardWidth}
+          onResize={this.onPinboardPanelResize.bind(this)}
+          onResizeEnd={this.onPanelResizeEnd.bind(this)}
+          min={MIN_PANEL_WIDTH}
+          max={MAX_PANEL_WIDTH}
+        ></ResizeHandle>
         <PinboardPanel
+          style={styles.pinboardPanel}
           clicker={clicker}
           essence={essence}
           getUrlPrefix={getUrlPrefix}

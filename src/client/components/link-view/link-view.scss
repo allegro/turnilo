@@ -12,35 +12,42 @@
   .link-panel {
     @include pin-left($left-panel-width - $tile-margin-h);
 
-    background: $white;
-    padding-top: 14px;
-    overflow: auto;
+    padding: $tile-margin-v $tile-margin-h;
 
-    .link-group-title {
-      padding: 0 18px;
-      color: #999;
-      font-size: 12px;
-      text-transform: uppercase;
-      pointer-events: none;
-      margin-top: 8px;
-      height: 25px;
-      line-height: 25px;
-    }
+    .link-container {
+      background: $white;
+      overflow: auto;
+      padding-right: 10px;
+      height: 100%;
 
-    .link-item {
-      height: 25px;
-      line-height: 25px;
-      padding: 0 18px 0 38px;
-      cursor: pointer;
-
-      &.selected {
-        background: rgba($brand, 0.16);
+      .link-group-title {
+        padding: 0 18px;
+        color: #999;
+        font-size: 12px;
+        text-transform: uppercase;
+        pointer-events: none;
+        margin-top: 8px;
+        height: 25px;
+        line-height: 25px;
       }
 
-      &:hover:not(.selected) {
-        background: rgba($brand, 0.12);
+      .link-item {
+        height: 25px;
+        line-height: 25px;
+        padding: 0 18px 0 38px;
+        cursor: pointer;
+
+        &.selected {
+          background: rgba($brand, 0.16);
+        }
+
+        &:hover:not(.selected) {
+          background: rgba($brand, 0.12);
+        }
       }
+
     }
+
   }
 
   .center-panel {

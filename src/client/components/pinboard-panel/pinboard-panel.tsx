@@ -13,6 +13,7 @@ export interface PinboardPanelProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   getUrlPrefix?: () => string;
+  style?: React.CSSProperties;
 }
 
 export interface PinboardPanelState {
@@ -121,7 +122,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   }
 
   render() {
-    var { clicker, essence, getUrlPrefix } = this.props;
+    var { clicker, essence, getUrlPrefix, style } = this.props;
     var { dragOver } = this.state;
     var { dataSource, pinnedDimensions, colors } = essence;
 
@@ -181,6 +182,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     return <div
       className="pinboard-panel"
       onDragEnter={this.dragEnter.bind(this)}
+      style={style}
     >
       {legendMeasureSelector}
       {legendDimensionTile}

@@ -21,7 +21,6 @@ export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
 
   constructor() {
     super();
-    //this.state = {};
   }
 
   render() {
