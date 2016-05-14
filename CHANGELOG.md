@@ -6,7 +6,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
 - Visualization class refactor
 - Table highlight bubble now shows full value
-- Better work wrapping in highlight bubbles
+- Better word wrapping in highlight bubbles
 - New Plywood ensures to send UTC timestamps to Druid
 - Ability to define custom granularities for bucketing
 
