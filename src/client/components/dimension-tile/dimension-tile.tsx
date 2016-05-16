@@ -484,7 +484,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       showSearch={showSearch}
       icons={icons}
       className={className}
-      actions={this.getGranularityActions()}
+      actions={dimension.isContinuous() ? this.getGranularityActions() : null}
       >
       <div className="rows">
         {rows}
