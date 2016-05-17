@@ -6,11 +6,11 @@ import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction } from 'plywood';
-import { formatterFromData } from '../../../common/utils/formatter/formatter';
+import { formatterFromData, Formatter } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
   Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve, MeasureModeNeeded } from '../../../common/models/index';
 import { SPLIT } from '../../config/constants';
-import { getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
+import { getXFromEvent, getYFromEvent, classNames } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 import { Scroller } from '../../components/scroller/scroller';
@@ -21,11 +21,11 @@ import { CircumstancesHandler } from '../../../common/utils/circumstances-handle
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 300;
 const INDENT_WIDTH = 25;
-const MEASURE_WIDTH = 100;
+const MEASURE_WIDTH = 130;
 const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
-const ROW_PADDING_RIGHT = 50;
+const ROW_PADDING_RIGHT = 0;
 const BODY_PADDING_BOTTOM = 90;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
@@ -69,7 +69,7 @@ export class Table extends BaseVisualization<TableState> {
   public static measureModeNeed: MeasureModeNeeded = 'multi';
 
   private static handler = CircumstancesHandler.EMPTY()
-    .needsAtLeastOneSplit()
+    .needsAtLeastOneSplit('The Table requires at least one split')
     .otherwise(
       (splits: Splits, dataSource: DataSource, colors: Colors, current: boolean) => {
         var autoChanged = false;
@@ -131,7 +131,8 @@ export class Table extends BaseVisualization<TableState> {
       if (x <= SEGMENT_WIDTH) return { what: 'corner' };
 
       x = x - SEGMENT_WIDTH + scrollLeft;
-      var measureIndex = Math.floor(x / MEASURE_WIDTH);
+      var measureWidth = this.getIdealMeasureWidth(this.props.essence);
+      var measureIndex = Math.floor(x / measureWidth);
       var measure = essence.getEffectiveMeasures().get(measureIndex);
       if (!measure) return { what: 'whitespace' };
       return { what: 'header', measure };
@@ -228,13 +229,81 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  renderInternals() {
-    var { clicker, essence, stage, openRawDataModal } = this.props;
-    var { datasetLoad, flatData, scrollLeft, scrollTop, hoverMeasure, hoverRow } = this.state;
-    var { splits, dataSource } = essence;
-    var splitDimension = splits.get(0).getDimension(dataSource.dimensions);
+  getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): d3.scale.Linear<number, number>[] {
+    var measuresArray = essence.getEffectiveMeasures().toArray();
+    var splitLength = essence.splits.length();
 
-    var segmentTitle = splits.getTitle(essence.dataSource.dimensions);
+    return measuresArray.map(measure => {
+      var measureValues = flatData
+        .filter((d: Datum) => d['__nest'] === splitLength)
+        .map((d: Datum) => d[measure.name] as number);
+
+      return d3.scale.linear()
+        .domain(d3.extent(measureValues))
+        .range([0, 100]); // really those are percents
+    });
+  }
+
+  getFormattersFromMeasures(essence: Essence, flatData: PseudoDatum[]): Formatter[] {
+    var measuresArray = essence.getEffectiveMeasures().toArray();
+
+    return measuresArray.map(measure => {
+      var measureName = measure.name;
+      var measureValues = flatData.map((d: Datum) => d[measureName] as number);
+      return formatterFromData(measureValues, measure.format);
+    });
+  }
+
+  getIdealMeasureWidth(essence: Essence): number {
+    var availableWidth = this.props.stage.width - SPACE_LEFT - SEGMENT_WIDTH - SPACE_RIGHT;
+    var columnsCount = essence.getEffectiveMeasures().size;
+
+    if (columnsCount * MEASURE_WIDTH < availableWidth) {
+      return availableWidth / columnsCount;
+    }
+
+    return MEASURE_WIDTH;
+  }
+
+  renderRowMeasures(essence: Essence, formatters: Formatter[], hScales: d3.scale.Linear<number, number>[], datum: PseudoDatum): JSX.Element[] {
+    var measuresArray = essence.getEffectiveMeasures().toArray();
+    var splitLength = essence.splits.length();
+    var isSingleMeasure = measuresArray.length === 1;
+
+    return measuresArray.map((measure, i) => {
+      var measureValue = datum[measure.name];
+      var measureValueStr = formatters[i](measureValue);
+
+      var background: JSX.Element = null;
+      if (datum['__nest'] === splitLength) {
+        let backgroundWidth = hScales[i](measureValue);
+        background = <div className="background" style={{width: backgroundWidth + '%'}}></div>;
+      }
+
+      var measureWidth = this.getIdealMeasureWidth(essence);
+
+      return <div
+        className={classNames('measure', {'all-alone': !!isSingleMeasure})}
+        key={measure.name}
+        style={{width: measureWidth}}
+      >
+        {background}
+        <div className="label">{measureValueStr}</div>
+      </div>;
+    });
+  }
+
+  renderRow(index: number, rowMeasures: JSX.Element[], rowY: number, classes: string[]): JSX.Element {
+    var rowStyle = SimpleTable.getRowStyle(rowY);
+    return <div
+      className={['row', 'nest'].concat(classes).join(' ')}
+      key={'_' + index}
+      style={rowStyle}
+    >{rowMeasures}</div>;
+  }
+
+  renderHeaderColumns(essence: Essence, hoverMeasure: Measure): JSX.Element[] {
+    var splitDimension = essence.splits.get(0).getDimension(essence.dataSource.dimensions);
     var commonSort = essence.getCommonSort();
     var commonSortName = commonSort ? (commonSort.expression as RefExpression).name : null;
 
@@ -243,22 +312,50 @@ export class Table extends BaseVisualization<TableState> {
       className: 'sort-arrow ' + commonSort.direction
     }) : null;
 
-    var cornerSortArrow: JSX.Element = null;
-    if (commonSortName === splitDimension.name) {
-      cornerSortArrow = sortArrowIcon;
-    }
+    var measureWidth = this.getIdealMeasureWidth(essence);
 
-    var measuresArray = essence.getEffectiveMeasures().toArray();
+    return essence.getEffectiveMeasures().toArray().map((measure, i) => {
+      let amISorted = commonSortName === measure.name;
 
-    var headerColumns = measuresArray.map((measure, i) => {
       return <div
-        className={'measure-name' + (measure === hoverMeasure ? ' hover' : '')}
+        className={classNames('measure-name', {hover: measure === hoverMeasure, sorted: amISorted})}
         key={measure.name}
+        style={{width: measureWidth}}
       >
         <div className="title-wrap">{measure.title}</div>
-        {commonSortName === measure.name ? sortArrowIcon : null}
+        {amISorted ? sortArrowIcon : null}
       </div>;
     });
+  }
+
+  renderCornerSortArrow(essence: Essence): JSX.Element {
+    var commonSort = essence.getCommonSort();
+
+    if (!commonSort) {
+      return null;
+    }
+
+    var { splits, dataSource } = essence;
+    var splitDimension = splits.get(0).getDimension(dataSource.dimensions);
+    if ((commonSort.expression as RefExpression).name === splitDimension.name) {
+      return <SvgIcon
+        svg={require('../../icons/sort-arrow.svg')}
+        className={'sort-arrow ' + commonSort.direction}
+      />;
+    }
+
+    return null;
+  }
+
+  renderInternals() {
+    var { clicker, essence, stage, openRawDataModal } = this.props;
+    var { datasetLoad, flatData, scrollLeft, scrollTop, hoverMeasure, hoverRow } = this.state;
+    var { splits, dataSource } = essence;
+
+    var segmentTitle = splits.getTitle(essence.dataSource.dimensions);
+
+    var cornerSortArrow: JSX.Element = this.renderCornerSortArrow(essence);
+    var headerColumns = this.renderHeaderColumns(essence, hoverMeasure);
 
     var segments: JSX.Element[] = [];
     var rows: JSX.Element[] = [];
@@ -266,11 +363,8 @@ export class Table extends BaseVisualization<TableState> {
     var highlighterStyle: any = null;
     var highlightBubble: JSX.Element = null;
     if (flatData) {
-      var formatters = measuresArray.map(measure => {
-        var measureName = measure.name;
-        var measureValues = flatData.map((d: Datum) => d[measureName] as number);
-        return formatterFromData(measureValues, measure.format);
-      });
+      var formatters = this.getFormattersFromMeasures(essence, flatData);
+      var hScales = this.getScalesForColumns(essence, flatData);
 
       var highlightDelta: Filter = null;
       if (essence.highlightOn(Table.id)) {
@@ -283,6 +377,7 @@ export class Table extends BaseVisualization<TableState> {
       var rowY = skipNumber * ROW_HEIGHT;
       for (var i = skipNumber; i < lastElementToShow; i++) {
         var d = flatData[i];
+
         var nest = d['__nest'];
 
         var split = nest > 0 ? splits.get(nest - 1) : null;
@@ -307,18 +402,9 @@ export class Table extends BaseVisualization<TableState> {
           style={segmentStyle}
         >{segmentName}</div>);
 
-        var row = measuresArray.map((measure, j) => {
-          var measureValue = d[measure.name];
-          var measureValueStr = formatters[j](measureValue);
-          return <div className="measure" key={measure.name}>{measureValueStr}</div>;
-        });
-
-        var rowStyle = SimpleTable.getRowStyle(rowY);
-        rows.push(<div
-          className={'row nest' + nest + ' ' + selectedClass + hoverClass}
-          key={'_' + i}
-          style={rowStyle}
-        >{row}</div>);
+        let rowMeasures = this.renderRowMeasures(essence, formatters, hScales, d);
+        let rowClass = [nest, selectedClass, hoverClass];
+        rows.push(this.renderRow(i, rowMeasures, rowY, rowClass));
 
         if (!highlighter && selected) {
           highlighterStyle = {
@@ -344,7 +430,8 @@ export class Table extends BaseVisualization<TableState> {
       }
     }
 
-    var rowWidth = MEASURE_WIDTH * measuresArray.length + ROW_PADDING_RIGHT;
+    var measureWidth = this.getIdealMeasureWidth(essence);
+    var rowWidth = measureWidth * essence.getEffectiveMeasures().size + ROW_PADDING_RIGHT;
 
     // Extended so that the horizontal lines extend fully
     var rowWidthExtended = rowWidth;

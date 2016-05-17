@@ -38,7 +38,7 @@ $text-link:               $brand;
 
 // other
 
-$hover:                   hsl(202, 79%, 94%);
+$hover:                   lighten($brand, 43);
 $highlight:               darken($hover, 7%);
 $highlight-border:        darken($brand, 8%);
 

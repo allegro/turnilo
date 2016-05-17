@@ -9,15 +9,36 @@ export class CircumstancesHandler {
     return (splits: Splits) => splits.length() === 0;
   }
 
-  public static areExactSplitKinds = (...kinds: string[]) => {
+  private static testKind(kind: string, selector: string): boolean {
+    if (selector === '*') {
+      return true;
+    }
+
+    var bareSelector = selector.replace(/^!/, '');
+
+    // This can be enriched later, right now it's just a 1-1 match
+    var result = kind === bareSelector;
+
+    if (selector.charAt(0) === '!') {
+      return !result;
+    }
+
+    return result;
+  }
+
+
+  public static strictCompare(selectors: string[], kinds: string[]): boolean {
+    if (selectors.length !== kinds.length) {
+      return false;
+    }
+
+    return selectors.every((selector, i) => CircumstancesHandler.testKind(kinds[i], selector));
+  }
+
+  public static areExactSplitKinds = (...selectors: string[]) => {
     return (splits: Splits, dataSource: DataSource): boolean => {
-      if (kinds.length !== splits.length()) {
-        return false;
-      }
-
-      let getKind = (split: SplitCombine) => split.getDimension(dataSource.dimensions).kind;
-
-      return kinds.every((kind, i) => kind === '*' || getKind(splits.get(i)) === kind);
+      var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataSource.dimensions).kind);
+      return CircumstancesHandler.strictCompare(selectors, kinds);
     };
   }
 
@@ -58,12 +79,12 @@ export class CircumstancesHandler {
     return this;
   }
 
-  public needsAtLeastOneSplit(): CircumstancesHandler {
+  public needsAtLeastOneSplit(message?: string): CircumstancesHandler {
     return this.when(
       CircumstancesHandler.noSplits(),
       (splits: Splits, dataSource: DataSource) => {
         var someDimensions = dataSource.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
-        return Resolve.manual(4, 'This visualization requires at least one split',
+        return Resolve.manual(4, message,
           someDimensions.map((someDimension) => {
             return {
               description: `Add a split on ${someDimension.title}`,

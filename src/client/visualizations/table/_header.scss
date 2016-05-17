@@ -1,0 +1,36 @@
+> .header-cont {
+  left: $space-left + $segment-width;
+
+  > .header {
+    height: $header-height;
+
+    > .measure-name {
+      padding-top: $header-padding-top;
+
+      white-space: nowrap;
+      padding-left: $measure-column-padding-left;
+
+      display: inline-block;
+      width: $measure-width;
+      height: 100%;
+
+      > .title-wrap {
+        @include ellipsis;
+        display: inline-block;
+        height: 100%;
+        padding-left: 4px;
+        max-width: 100%;
+      }
+
+      &.sorted {
+        > .title-wrap {
+          max-width: calc(100% - 15px);
+        }
+      }
+
+      > .sort-arrow {
+        @include sort-arrow;
+      }
+    }
+  }
+}

@@ -55,7 +55,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   public static title = 'Bar Chart';
 
   private static handler = CircumstancesHandler.EMPTY()
-    .needsAtLeastOneSplit()
+    .needsAtLeastOneSplit('The Bar Chart requires at least one split')
     .when(
       CircumstancesHandler.areExactSplitKinds('*'),
       (splits: Splits, dataSource: DataSource, colors: Colors, current: boolean) => {
@@ -63,57 +63,65 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
         // Auto adjustment
         var autoChanged = false;
-        splits = splits.map((split, i) => {
-          var splitDimension = dataSource.getDimensionByExpression(split.expression);
 
+        var split = splits.get(0);
+        var splitDimension = dataSource.getDimensionByExpression(split.expression);
+
+        if (splitDimension.kind === 'boolean') {
+          booleanBoost = 2;
+        }
+
+        if (!split.sortAction) {
           if (splitDimension.kind === 'boolean') {
-            booleanBoost = 2;
-          }
-
-          if (!split.sortAction) {
-            if (splitDimension.kind === 'boolean') {
-              split = split.changeSortAction(new SortAction({
-                expression: $(splitDimension.name),
-                direction: SortAction.DESCENDING
-              }));
-            } else {
-              split = split.changeSortAction(dataSource.getDefaultSortAction());
-            }
-            autoChanged = true;
-          } else if (split.sortAction.refName() === dataSource.getTimeDimension().name) {
             split = split.changeSortAction(new SortAction({
               expression: $(splitDimension.name),
-              direction: split.sortAction.direction
+              direction: SortAction.DESCENDING
             }));
-            autoChanged = true;
+          } else {
+            split = split.changeSortAction(dataSource.getDefaultSortAction());
           }
+          autoChanged = true;
+        } else if (split.sortAction.refName() === dataSource.getTimeDimension().name) {
+          split = split.changeSortAction(new SortAction({
+            expression: $(splitDimension.name),
+            direction: split.sortAction.direction
+          }));
+          autoChanged = true;
+        }
 
-          // ToDo: review this
-          if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
-            split = split.changeLimit(i ? 5 : 25);
-            autoChanged = true;
-          }
-
-          return split;
-        });
+        // ToDo: review this
+        if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
+          split = split.changeLimit(25);
+          autoChanged = true;
+        }
 
         if (colors) {
           colors = null;
           autoChanged = true;
         }
 
-        return autoChanged ? Resolve.automatic(5 + booleanBoost, { splits }) : Resolve.ready(current ? 10 : (7 + booleanBoost));
+        if (autoChanged) {
+          return Resolve.automatic(5 + booleanBoost, { splits: Splits.fromSplitCombine(split) });
+        }
+
+        return Resolve.ready(current ? 10 : (7 + booleanBoost));
       }
     ).otherwise(
-      (splits: Splits) => {
-        return Resolve.manual(3, 'This visualization needs one split exactly', [
-        {
-          description: `Remove all but the first split`,
-          adjustment: {
-            splits: Splits.fromSplitCombine(splits.get(0))
-          }
-        }
-      ]);
+      (splits: Splits, dataSource: DataSource) => {
+        let categoricalDimensions = dataSource.dimensions.filter((d) => d.kind !== 'time');
+
+        return Resolve.manual(
+          3,
+          'The Bar Chart needs one category split exactly',
+          categoricalDimensions.toArray().slice(0, 2).map((dimension: Dimension) => {
+            return {
+              description: `Split on ${dimension.title} instead`,
+              adjustment: {
+                splits: Splits.fromSplitCombine(SplitCombine.fromExpression(dimension.expression))
+              }
+            };
+          })
+        );
       }
     );
 

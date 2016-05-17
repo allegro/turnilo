@@ -151,7 +151,7 @@ export default CircumstancesHandler.EMPTY()
   ).otherwise(
     (splits: Splits, dataSource: DataSource) => {
       let timeDimensions = dataSource.getDimensionByKind('time');
-      return Resolve.manual(3, 'Too many splits',
+      return Resolve.manual(3, 'The Time Series needs one time split',
         timeDimensions.toArray().map((timeDimension) => {
           return {
             description: `Split on ${timeDimension.title} instead`,

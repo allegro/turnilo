@@ -1,0 +1,23 @@
+> .segments-cont {
+  position: absolute;
+  left: $space-left;
+  top: $header-height;
+  bottom: 0;
+  width: $segment-width;
+  overflow: hidden;
+
+  > .segments {
+
+    > .segment {
+      @include row-style;
+
+      white-space: nowrap;
+      padding-left: 6px;
+
+      overflow: hidden;
+      padding-top: 8px;
+    }
+
+  }
+
+}
