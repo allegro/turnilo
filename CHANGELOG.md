@@ -2,6 +2,15 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.30
+
+- Horizontal bars in Table
+- Misc visualization selection fixes
+
+## 0.8.29
+
+- Side panel resizing
+
 ## 0.8.28
 
 - Visualization class refactor
