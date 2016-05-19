@@ -77,14 +77,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       viewType = HOME;
     }
 
-    if (viewType === HOME) {
-      if (linkViewConfig) {
-        viewType = LINK;
-
-      } else if (dataSources.size === 1) {
-        viewType = CUBE;
-        selectedDataSource = dataSources.first();
-      }
+    if (viewType === HOME && dataSources.size === 1) {
+      viewType = CUBE;
+      selectedDataSource = dataSources.first();
     }
 
     this.setState({
@@ -158,9 +153,10 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   getViewTypeFromHash(hash: string): ViewType {
+    const { linkViewConfig } = this.props;
     var viewType = this.parseHash(hash)[0];
-    if (!viewType || viewType === HOME) return HOME;
-    if (viewType === LINK) return LINK;
+    if (!viewType || viewType === HOME) return linkViewConfig ? LINK : HOME;
+    if (linkViewConfig && viewType === LINK) return LINK;
     return CUBE;
   }
 
@@ -253,6 +249,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         onOpenAbout={this.openAboutModal.bind(this)}
         onClose={closeSideDrawer}
         customization={customization}
+        showOverviewLink={Boolean(linkViewConfig && viewType === CUBE)}
       />;
     }
 

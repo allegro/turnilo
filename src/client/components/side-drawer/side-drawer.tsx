@@ -8,6 +8,7 @@ import { STRINGS } from '../../config/constants';
 import { isInside, escapeKey } from '../../utils/dom/dom';
 import { DataSource, Customization } from '../../../common/models/index';
 import { NavLogo } from '../nav-logo/nav-logo';
+import { SvgIcon } from '../svg-icon/svg-icon';
 import { NavList } from '../nav-list/nav-list';
 
 export interface SideDrawerProps extends React.Props<any> {
@@ -16,6 +17,7 @@ export interface SideDrawerProps extends React.Props<any> {
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
+  showOverviewLink?: boolean;
 }
 
 export interface SideDrawerState {
@@ -54,6 +56,19 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     this.props.onClose();
   }
 
+  onHomeClick() {
+    window.location.hash = '#';
+  }
+
+  renderOverviewLink() {
+    const { showOverviewLink } = this.props;
+    if (!showOverviewLink) return null;
+    return <div className="home-link" onClick={this.onHomeClick.bind(this)}>
+      <SvgIcon svg={require('../../icons/home.svg')}/>
+      <span>Overview</span>
+    </div>;
+  }
+
   render() {
     var { onClose, selectedDataSource, dataSources, onOpenAbout, customization } = this.props;
 
@@ -81,6 +96,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
     return <div className="side-drawer">
       <NavLogo customLogoSvg={customLogoSvg} onClick={onClose}/>
+      {this.renderOverviewLink()}
       <NavList
         title="Data Cubes"
         selected={selectedDataSource ? selectedDataSource.name : null}

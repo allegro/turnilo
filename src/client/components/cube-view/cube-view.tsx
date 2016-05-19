@@ -412,7 +412,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           onResizeEnd={this.onPanelResizeEnd.bind(this)}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
-        ></ResizeHandle>
+        />
 
         <div className='center-panel' style={styles.centerPanel}>
           <div className='center-top-bar'>
@@ -457,7 +457,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           onResizeEnd={this.onPanelResizeEnd.bind(this)}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
-        ></ResizeHandle>
+        />
 
         <PinboardPanel
           style={styles.pinboardPanel}

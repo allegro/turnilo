@@ -158,9 +158,16 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   selectLinkItem(linkItem: LinkItem) {
+    const { essence } = this.state;
+    var newEssence = linkItem.essence;
+
+    if (essence.getTimeAttribute()) {
+      newEssence = newEssence.changeTimeSelection(essence.getTimeSelection());
+    }
+
     this.setState({
       linkItem,
-      essence: linkItem.essence
+      essence: newEssence
     });
   }
 
@@ -303,7 +310,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
           onResizeEnd={this.onPanelResizeEnd.bind(this)}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
-        ></ResizeHandle>
+        />
 
         <div className='center-panel' style={styles.centerPanel}>
           <div className='center-top-bar'>
@@ -318,6 +325,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
             {manualFallback}
           </div>
         </div>
+
         <ResizeHandle
           side="right"
           initialValue={layout.pinboardWidth}
@@ -325,7 +333,8 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
           onResizeEnd={this.onPanelResizeEnd.bind(this)}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
-        ></ResizeHandle>
+        />
+
         <PinboardPanel
           style={styles.pinboardPanel}
           clicker={clicker}
