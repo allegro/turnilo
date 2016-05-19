@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.32
+
+- Configurable server root (default: `/pivot`)
+
 ## 0.8.31
 
 - Support and auto detection for Theta sketches (for countDistinct() only for now) 

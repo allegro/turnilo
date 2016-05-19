@@ -46,7 +46,7 @@ if (config.dataSources.length) {
     }
 
     var dataSources = List(config.dataSources.map((dataSourceJS: DataSourceJS) => {
-      var executor = queryUrlExecutorFactory(dataSourceJS.name, '/plywood', version);
+      var executor = queryUrlExecutorFactory(dataSourceJS.name, 'plywood', version);
       return DataSource.fromJS(dataSourceJS, { executor });
     }));
 
@@ -91,7 +91,7 @@ var evts = 'ondragstart' in div && 'ondrop' in div;
 var needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
 
 if (needsPatch) {
-  require.ensure(['../../assets/polyfill/ios-drag-drop.js'], (require) => {
-    require('../../assets/polyfill/ios-drag-drop.js');
+  require.ensure(['../../lib/polyfill/ios-drag-drop.js'], (require) => {
+    require('../../lib/polyfill/ios-drag-drop.js');
   }, 'ios-drag-drop');
 }

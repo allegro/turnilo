@@ -21,6 +21,22 @@ The next step is to open the generated config file in your favourite text editor
 Below we will go through a typical configuration flow. At any point you can save the config and re-launch Pivot to load
 that config in.
 
+## Configuring the Pivot server
+
+**verbose** (boolean)
+
+Indicates that Pivot should run in verbose mode. This will log all the queries done by Pivot.
+
+**port** (number)
+
+The port that Pivot should run on. Default 9090. 
+
+**serverRoot** (string)
+
+A custom path to act as the server string. Default: `pivot`
+
+The Pivot UI will be served from `http://pivot-host:$port/` and `http://pivot-host:$port/$serverRoot`
+
 
 ## Configuring the DataSources
 
