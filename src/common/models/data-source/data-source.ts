@@ -778,7 +778,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           break;
 
         case 'STRING':
-          if (special === 'unique') {
+          if (special === 'unique' || special === 'theta') {
             if (!autofillMeasures) continue;
 
             var newMeasures = Measure.measuresFromAttributeInfo(newAttribute);

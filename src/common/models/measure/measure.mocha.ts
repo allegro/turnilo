@@ -180,7 +180,7 @@ describe('Measure', () => {
       ]);
     });
 
-    it('works with max', () => {
+    it('works with unique', () => {
       var attribute = AttributeInfo.fromJS({
         "name": "unique_page",
         "special": "unique",
@@ -205,6 +205,35 @@ describe('Measure', () => {
           },
           "name": "unique_page",
           "title": "Unique Page"
+        }
+      ]);
+    });
+
+    it('works with theta', () => {
+      var attribute = AttributeInfo.fromJS({
+        "name": "page_theta",
+        "special": "theta",
+        "type": "STRING"
+      });
+      var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      expect(measures).to.deep.equal([
+        {
+          "expression": {
+            "action": {
+              "action": "countDistinct",
+              "expression": {
+                "name": "page_theta",
+                "op": "ref"
+              }
+            },
+            "expression": {
+              "name": "main",
+              "op": "ref"
+            },
+            "op": "chain"
+          },
+          "name": "page_theta",
+          "title": "Page Theta"
         }
       ]);
     });

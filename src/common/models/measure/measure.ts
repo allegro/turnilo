@@ -86,7 +86,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     var ref = $(name);
 
     if (special) {
-      if (special === 'unique') {
+      if (special === 'unique' || special === 'theta') {
         return [
           new Measure({
             name: makeUrlSafeName(name),

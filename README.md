@@ -135,6 +135,7 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Support for Druid Theta sketches (for countDistinct())
 - Horizontal bars in Table
 - Side panel resizing
 - Ability to define custom granularities for bucketing
