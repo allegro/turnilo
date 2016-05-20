@@ -47,7 +47,6 @@ export interface CubeViewState {
   dragOver?: boolean;
   showRawDataModal?: boolean;
   RawDataModalAsync?: typeof RawDataModal;
-  downloadableDataset?: Dataset;
   layout?: CubeViewLayout;
 }
 
@@ -63,6 +62,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   public mounted: boolean;
   private clicker: Clicker;
+  private downloadableDataset: Dataset;
 
   constructor() {
     super();
@@ -71,7 +71,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence: null,
       dragOver: false,
       showRawDataModal: false,
-      downloadableDataset: null,
       layout: this.getStoredLayout()
     };
 
@@ -301,14 +300,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     (this.refs['splitTile'] as SplitTile).splitMenuRequest(dimension);
   }
 
-  registerDownloadableDataset(newDownloadableDataset: Dataset): void {
-    const { downloadableDataset } = this.state;
-    if (downloadableDataset === newDownloadableDataset) return;
-    this.setState({
-      downloadableDataset: newDownloadableDataset
-    });
-  }
-
   changeTimezone(newTimezone: Timezone): void {
     const { essence } = this.state;
     const newEsssence = essence.changeTimezone(newTimezone);
@@ -347,7 +338,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     var clicker = this.clicker;
 
     var { getUrlPrefix, onNavClick, user, customization } = this.props;
-    var { layout, essence, menuStage, visualizationStage, dragOver, downloadableDataset } = this.state;
+    var { layout, essence, menuStage, visualizationStage, dragOver } = this.state;
 
     if (!essence) return null;
 
@@ -360,7 +351,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         essence,
         stage: visualizationStage,
         openRawDataModal: this.openRawDataModal.bind(this),
-        registerDownloadableDataset: this.registerDownloadableDataset.bind(this)
+        registerDownloadableDataset: (dataset: Dataset) => { this.downloadableDataset = dataset; }
       };
 
       visElement = React.createElement(visualization as any, visProps);
@@ -390,7 +381,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         refreshMaxTime={this.refreshMaxTime.bind(this)}
         openRawDataModal={this.openRawDataModal.bind(this)}
         customization={customization}
-        downloadableDataset={downloadableDataset}
+        getDownloadableDataset={() => this.downloadableDataset}
         changeTimezone={this.changeTimezone.bind(this)}
         timezone={essence.timezone}
       />

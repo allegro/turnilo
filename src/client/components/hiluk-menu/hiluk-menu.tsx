@@ -16,7 +16,7 @@ export interface HilukMenuProps extends React.Props<any> {
   getUrlPrefix: () => string;
   openRawDataModal: Fn;
   externalViews?: ExternalView[];
-  downloadableDataset?: Dataset;
+  getDownloadableDataset?: () => Dataset;
 }
 
 export interface HilukMenuState {
@@ -55,9 +55,9 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
   }
 
   onExport() {
-    const { onClose, downloadableDataset, essence } = this.props;
+    const { onClose, getDownloadableDataset, essence } = this.props;
     const { dataSource, splits } = essence;
-    if (!downloadableDataset) return;
+    if (!getDownloadableDataset) return;
 
     const filters = essence.getEffectiveFilter().getFileString(dataSource.timeAttribute);
     var splitsString = splits.toArray().map((split) => {
@@ -66,12 +66,12 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
       return `${STRINGS.splitDelimiter}_${dimension.name}`;
     }).join("_");
 
-    download(downloadableDataset, makeFileName(dataSource.name, filters, splitsString), 'csv');
+    download(getDownloadableDataset(), makeFileName(dataSource.name, filters, splitsString), 'csv');
     onClose();
   }
 
   render() {
-    const { openOn, onClose, externalViews, essence, downloadableDataset } = this.props;
+    const { openOn, onClose, externalViews, essence, getDownloadableDataset } = this.props;
     const { url, specificUrl } = this.state;
 
     var shareOptions: JSX.Element[] = [
@@ -92,7 +92,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
       >{STRINGS.copySpecificUrl}</li>);
     }
 
-    if (downloadableDataset) {
+    if (getDownloadableDataset()) {
       shareOptions.push(<li
         className="export"
         key="export"
