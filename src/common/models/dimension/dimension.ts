@@ -149,8 +149,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   public isContinuous() {
-    return this.kind === 'time';
-    // more later?
+    const { kind } = this;
+    return kind === 'time' || kind === 'number';
   }
 }
 check = Dimension;
