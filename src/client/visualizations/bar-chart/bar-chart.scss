@@ -19,40 +19,36 @@
       stroke: $gray;
     }
 
-    .bars {
-      pointer-events: none;
-
-      rect {
-        fill: $brand;
+    g.bars {
+      g.bar {
+        &.not-selected {
+          fill-opacity: 0.5;
+        }
 
         &.hover {
           fill-opacity: 0.9;
         }
 
-        &.not-selected {
-          fill-opacity: 0.5;
+        > rect.background {
+          pointer-events: none;
+          fill: $brand;
         }
-      }
-    }
 
-    .bar-ghosts {
-      rect {
-        fill: $white;
-        fill-opacity: 0.001;
+        > rect.mouse-event-target {
+          fill: $white;
+          fill-opacity: 0.001;
+        }
+
+        .selection {
+          pointer-events: none;
+          fill: none;
+          stroke: $brand;
+        }
       }
     }
 
     .mask {
       fill: $white;
-    }
-
-    .bar-highlight {
-      pointer-events: none;
-
-      rect {
-        fill: none;
-        stroke: $brand;
-      }
     }
 
     .slanty-labels {
