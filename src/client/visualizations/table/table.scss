@@ -27,7 +27,7 @@ $header-padding-top: 12px;
     }
 
     &.not-selected {
-      opacity: 0.5;
+      color: #a6a6a6;
     }
   }
 
@@ -42,12 +42,13 @@ $header-padding-top: 12px;
 
   .corner {
     position: absolute;
-    left: $space-left;
+    background-color: $white;
+    left: 0;
     top: 0;
     width: $segment-width;
     height: $header-height;
     overflow: hidden;
-    padding: $header-padding-top 0 0 6px;
+    padding: $header-padding-top 0 0 #{$space-left + 6px};
     border-bottom: 1px solid $border-super-light;
 
     > .corner-wrap {
@@ -60,11 +61,32 @@ $header-padding-top: 12px;
     }
   }
 
-  .simple-table {
+  .scroller {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
     @import './header';
-    @import './segments'; // first, left column of the table
     @import './body'; // actual values
-    @import './post-body'; // v-scroll shadow, highlighter...
+    @import './highlight-cont'; // highlighter
+
+    .segment-labels {
+      margin-left: $space-left;
+
+      .segment {
+        @include row-style;
+
+        background-color: $white;
+
+        white-space: nowrap;
+        padding-left: 6px;
+
+        overflow: hidden;
+        padding-top: 8px;
+      }
+    }
 
     > .horizontal-scroll-shadow {
       height: $header-height;

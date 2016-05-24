@@ -70,6 +70,14 @@ export class BaseVisualization<S extends BaseVisualizationState>
     return (this.constructor as any).id;
   }
 
+  protected onScroll(e: UIEvent) {
+    var target = e.target as Element;
+    this.setState({
+      scrollLeft: target.scrollLeft,
+      scrollTop: target.scrollTop
+    } as BaseVisualizationState as S); // Geez, TypeScript
+  }
+
   protected makeQuery(essence: Essence): Expression {
     var { splits, colors, dataSource } = essence;
     var measures = essence.getEffectiveMeasures();
@@ -196,14 +204,6 @@ export class BaseVisualization<S extends BaseVisualizationState>
   protected globalMouseMoveListener(e: MouseEvent) {}
   protected globalMouseUpListener(e: MouseEvent) {}
   protected globalKeyDownListener(e: KeyboardEvent) {}
-
-  protected onScroll(e: UIEvent) {
-    var target = e.target as Element;
-    this.setState({
-      scrollLeft: target.scrollLeft,
-      scrollTop: target.scrollTop
-    } as BaseVisualizationState as S); // Geez, TypeScript
-  }
 
   protected renderInternals(): JSX.Element {
     return null;

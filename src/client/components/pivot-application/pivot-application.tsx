@@ -231,9 +231,13 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   renderAboutModal() {
+    const { version } = this.props;
     const { AboutModalAsync, showAboutModal } = this.state;
     if (!AboutModalAsync || !showAboutModal) return null;
-    return <AboutModalAsync onClose={this.onAboutModalClose.bind(this)}/>;
+    return <AboutModalAsync
+      version={version}
+      onClose={this.onAboutModalClose.bind(this)}
+    />;
   }
 
   render() {

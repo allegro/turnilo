@@ -12,6 +12,7 @@ describe('AboutModal', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <AboutModal
+        version={'0.9.123'}
         onClose={null}
       />
     );

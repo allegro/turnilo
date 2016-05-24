@@ -1,13 +1,46 @@
 @import '../../imports';
 
 .scroller {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
+  overflow: hidden;
+  cursor: pointer;
 
-  .scroller-inner {
-    background: $white;
-    opacity: 0.001; // must be > 0 for it to get mouse events
-    cursor: pointer;
+  > * {
+    position: absolute;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  > .event-container {
+    overflow: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    > .event-target {
+      background: $white;
+      opacity: 0.001;
+    }
+  }
+
+
+  .left-shadow {
+    box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .top-shadow {
+    box-shadow: 3px 0 5px 1px rgba(0, 0, 0, 0.2);
+  }
+
+  .right-shadow {
+    box-shadow: 4px 0 4px 5px hsla(0, 0, 0, 0.2);
+  }
+
+  .bottom-shadow {
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+  }
+
+  .overlay {
+    @include pin-full;
   }
 }

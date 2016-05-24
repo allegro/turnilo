@@ -1,0 +1,21 @@
+.highlight-cont {
+  position: absolute;
+  left: $space-left;
+  right: 0;
+  top: $header-height;
+  bottom: 0;
+  overflow: hidden;
+
+  .highlighter {
+    right: 0;
+    height: $row-height + 1;
+    margin-top: -1px;
+    border: 1px solid $hover;
+
+    &:after {
+      @include unpin-full(-1px);
+      content: '';
+      border: 1px dashed $highlight-border;
+    }
+  }
+}

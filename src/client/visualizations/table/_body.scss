@@ -1,55 +1,49 @@
-> .body-cont {
-  @include unpin-top($header-height);
-  left: $space-left + $segment-width;
+.row {
+  @include row-style;
+  width: 100%;
+  white-space: nowrap;
 
-  > .body {
-    > .row {
-      @include row-style;
+  &.hover,
+  &.selected {
+    > .measure {
+      > .background {
+        background-color: #a8dbf5;
+        border-top: 1px solid #98cbe5;
+        border-bottom: 1px solid #98cbe5;
+      }
+    }
+  }
+
+  > .measure {
+    white-space: nowrap;
+    padding-left: $measure-column-padding-left;
+
+    overflow: hidden;
+    padding-top: 8px;
+
+    display: inline-block;
+    width: $measure-width;
+    height: calc(100% + 2px);
+    margin-top: -1px;
+
+    &.all-alone {
       width: 100%;
-
-      &.hover,
-      &.selected {
-        > .measure {
-          > .background {
-            background-color: #a8dbf5;
-            border-top: 1px solid #98cbe5;
-            border-bottom: 1px solid #98cbe5;
-          }
-        }
-      }
-
-      > .measure {
-        white-space: nowrap;
-        padding-left: $measure-column-padding-left;
-
-        overflow: hidden;
-        padding-top: 8px;
-
-        display: inline-block;
-        width: $measure-width;
-        height: calc(100% + 2px);
-        margin-top: -1px;
-
-        &.all-alone {
-          width: 100%;
-        }
+    }
 
 
-        > .background {
-          position: absolute;
-          top: 0;
+    > .background {
+      position: absolute;
+      top: 0;
 
-          height: 100%;
+      height: 100%;
 
-          background-color: #d2edfa;
-          border-top: 1px solid #bed9e6;
-          border-bottom: 1px solid #bed9e6;
-        }
+      background-color: #d2edfa;
+      border-top: 1px solid #bed9e6;
+      border-bottom: 1px solid #bed9e6;
+    }
 
-        > .label {
-          padding-left: 4px;
-        }
-      }
+    > .label {
+      padding-left: 4px;
     }
   }
 }

@@ -14,14 +14,14 @@ import { getVisibleSegments } from '../../utils/sizing/sizing';
 import { STRINGS } from '../../config/constants';
 import { Modal } from '../modal/modal';
 import { Button } from '../button/button';
-import { Scroller } from '../scroller/scroller';
+import { Scroller, ScrollerLayout } from '../scroller/scroller';
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
-import { SimpleTable } from '../../components/simple-table/simple-table';
 
 const SPACE_RIGHT = 10;
 const SPACE_LEFT = 10;
 const BODY_PADDING_BOTTOM = 90;
+const HEADER_HEIGHT = 30;
 const ROW_HEIGHT = 30;
 const LIMIT = 100;
 const TIME_COL_WIDTH = 180;
@@ -124,12 +124,8 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     });
   }
 
-  onScroll(e: UIEvent) {
-    const target = e.target as Element;
-    this.setState({
-      scrollLeft: target.scrollLeft,
-      scrollTop: target.scrollTop
-    });
+  onScroll(scrollTop: number, scrollLeft: number) {
+    this.setState({scrollLeft, scrollTop});
   }
 
   getStringifiedFilters(): List<string> {
@@ -196,15 +192,24 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     });
   }
 
+  getVisibleIndices(rowCount: number, height: number): number[] {
+    const { scrollTop } = this.state;
+
+    return [
+      Math.max(0, Math.floor(scrollTop / ROW_HEIGHT)),
+      Math.min(rowCount, Math.ceil((scrollTop + height) / ROW_HEIGHT))
+    ];
+  }
+
   renderRows(): JSX.Element[] {
     const { essence } = this.props;
-    const { dataset, scrollTop, scrollLeft, stage } = this.state;
+    const { dataset, scrollLeft, stage } = this.state;
     if (!dataset) return null;
     const { dataSource } = essence;
 
     const rawData = dataset.data;
-    const firstRowToShow = SimpleTable.getFirstElementToShow(ROW_HEIGHT, scrollTop);
-    const lastRowToShow = SimpleTable.getLastElementToShow(ROW_HEIGHT, rawData.length, scrollTop, stage.height);
+
+    const [ firstRowToShow, lastRowToShow ] = this.getVisibleIndices(rawData.length, stage.height);
 
     const rows = rawData.slice(firstRowToShow, lastRowToShow);
     var attributes = this.getSortedAttributes(dataSource);
@@ -244,19 +249,24 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
   render() {
     const { essence, onClose } = this.props;
-    const { dataset, loading, scrollTop, scrollLeft, error } = this.state;
+    const { dataset, loading, error } = this.state;
     const { dataSource } = essence;
 
-    const rowWidth = arraySum(dataSource.attributes.map(getColumnWidth));
     const title = `${makeTitle(STRINGS.segment)} ${STRINGS.rawData}`;
-    const dataLength = dataset ? dataset.data.length : 0;
-    const bodyHeight = dataLength * ROW_HEIGHT;
-    const scrollerStyle = {
-      width: SPACE_LEFT + rowWidth + SPACE_RIGHT,
-      height: bodyHeight + BODY_PADDING_BOTTOM
-    };
 
     const filtersString = essence.getEffectiveFilter().getFileString(dataSource.timeAttribute);
+
+    const scrollerLayout: ScrollerLayout = {
+      // Inner dimensions
+      bodyWidth: arraySum(dataSource.attributes.map(getColumnWidth)),
+      bodyHeight: (dataset ? dataset.data.length : 0) * ROW_HEIGHT,
+
+      // Gutters
+      top: HEADER_HEIGHT,
+      right: 0,
+      bottom: 0,
+      left: 0
+    };
 
     return <Modal
       className="raw-data-modal"
@@ -265,18 +275,13 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     >
       <div className="content">
         <ul className="filters">{this.renderFilters()}</ul>
-        <div className="table-container" ref="table">
-          <SimpleTable
-            scrollLeft={scrollLeft}
-            scrollTop={scrollTop}
-            rowHeight={ROW_HEIGHT}
-            headerColumns={this.renderHeader()}
-            rowWidth={rowWidth}
-            rows={this.renderRows()}
-            dataLength={dataLength}
-          />
-          <Scroller style={scrollerStyle} onScroll={this.onScroll.bind(this)} />
-        </div>
+        <Scroller
+          ref="table"
+          layout={scrollerLayout}
+          topGutter={this.renderHeader()}
+          body={this.renderRows()}
+          onScroll={this.onScroll.bind(this)}
+        />
         {error ? <QueryError error={error}/> : null}
         {loading ? <Loader/> : null}
         <div className="button-bar">
