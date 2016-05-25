@@ -2,6 +2,15 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.34
+
+- New table scroller
+- About dialog shows version
+
+## 0.8.33
+
+- Fixed error when going from Time Series to Bar Chart
+
 ## 0.8.32
 
 - Configurable server root (default: `/pivot`)
