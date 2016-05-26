@@ -261,7 +261,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
     e.preventDefault();
-    var { essence } = this.state;
     var dimension = DragManager.getDragDimension();
     if (dimension) {
       this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);

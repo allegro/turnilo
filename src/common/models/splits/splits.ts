@@ -1,10 +1,11 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
-import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction } from 'plywood';
+import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction, NumberRange } from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
 import { getBestGranularityDuration } from '../../utils/time/time';
 import { Dimension } from '../dimension/dimension';
+import { Filter } from '../filter/filter';
 import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
 
 const DEFAULT_GRANULARITY = Duration.fromJS('P1D');
@@ -144,49 +145,64 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return this.splitCombines.toArray();
   }
 
-  public updateWithTimeRange(timeAttribute: RefExpression, timeRange: TimeRange, force?: boolean): Splits {
+  public removeBucketingFrom(expressions: Expression[]) {
     var changed = false;
-
-    var granularity = timeRange ? getBestGranularityDuration(timeRange) : DEFAULT_GRANULARITY;
-
     var newSplitCombines = <List<SplitCombine>>this.splitCombines.map((splitCombine) => {
-      if (!splitCombine.expression.equals(timeAttribute)) return splitCombine;
-      var { bucketAction } = splitCombine;
-      if (bucketAction) {
-        if (!force) return splitCombine;
-        if (bucketAction instanceof TimeBucketAction && !bucketAction.duration.equals(granularity)) {
-          changed = true;
-          return splitCombine.changeBucketAction(new TimeBucketAction({
-            timezone: bucketAction.timezone, // This is just preserving the existing timezone which is probably null
-            duration: granularity
-          }));
-        } else {
-          return splitCombine;
-        }
-      } else {
-        changed = true;
+      if (!splitCombine.bucketAction) return splitCombine;
+      var splitCombineExpression = splitCombine.expression;
+      if (expressions.every(ex => !ex.equals(splitCombineExpression))) return splitCombine;
+
+      changed = true;
+      return splitCombine.changeBucketAction(null);
+    });
+
+    return changed ? new Splits(newSplitCombines) : this;
+  }
+
+  public updateWithFilter(filter: Filter, dimensions: List<Dimension>): Splits {
+    if (filter.isRelative()) throw new Error('can not be a relative filter');
+
+    var changed = false;
+    var newSplitCombines = <List<SplitCombine>>this.splitCombines.map((splitCombine) => {
+      if (splitCombine.bucketAction) return splitCombine;
+
+      var splitExpression = splitCombine.expression;
+      var splitDimension = dimensions.find(d => splitExpression.equals(d.expression));
+      var splitKind = splitDimension.kind;
+      if (!splitDimension || !(splitKind === 'time' || splitKind === 'number')) return splitCombine;
+      changed = true;
+
+      var selectionSet = filter.getLiteralSet(splitExpression);
+      var extent = selectionSet ? selectionSet.extent() : null;
+
+      if (splitKind === 'time') {
         return splitCombine.changeBucketAction(new TimeBucketAction({
-          duration: granularity
+          duration: TimeRange.isTimeRange(extent) ? getBestGranularityDuration(extent) : DEFAULT_GRANULARITY
         }));
+      } else if (splitKind === 'number') {
+        return splitCombine; // ToDo: temp
+        //throw new Error('nothing here yet');
       }
+
+      throw new Error('unknown extent type');
     });
 
     return changed ? new Splits(newSplitCombines) : this;
   }
 
   public constrainToDimensions(dimensions: List<Dimension>): Splits {
-    var hasChanged = false;
+    var changed = false;
     var splitCombines: SplitCombine[] = [];
     this.splitCombines.forEach((split) => {
       if (split.getDimension(dimensions)) {
         splitCombines.push(split);
       } else {
-        hasChanged = true;
+        changed = true;
         // Potential special handling for time split would go here
       }
     });
 
-    return hasChanged ? new Splits(List(splitCombines)) : this;
+    return changed ? new Splits(List(splitCombines)) : this;
   }
 
   public timezoneDependant(): boolean {

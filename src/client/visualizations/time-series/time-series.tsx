@@ -60,6 +60,7 @@ export interface TimeSeriesState extends BaseVisualizationState {
   hoverTimeRange?: TimeRange;
 
   // Cached props
+  timeDimension?: Dimension;
   axisTimeRange?: TimeRange;
   scaleX?: any;
   xTicks?: Date[];
@@ -106,11 +107,10 @@ export class TimeSeries extends BaseVisualization<TimeSeriesState> {
 
   onMouseMove(dataset: Dataset, measure: Measure, scaleX: any, e: MouseEvent) {
     var { essence } = this.props;
-    var { hoverTimeRange, hoverMeasure } = this.state;
+    var { timeDimension, hoverTimeRange, hoverMeasure } = this.state;
     if (!dataset) return;
 
     var splitLength = essence.splits.length();
-    var timeDimension = essence.getTimeDimension();
 
     var myDOM = ReactDOM.findDOMNode(this);
     var rect = myDOM.getBoundingClientRect();
@@ -179,7 +179,7 @@ export class TimeSeries extends BaseVisualization<TimeSeriesState> {
 
   globalMouseUpListener(e: MouseEvent) {
     const { clicker, essence } = this.props;
-    const { dragStartTime, dragTimeRange, dragOnMeasure } = this.state;
+    const { timeDimension, dragStartTime, dragTimeRange, dragOnMeasure } = this.state;
     if (dragStartTime === null) return;
 
     var highlightTimeRange = this.roundTimeRange(this.getDragTimeRange(e));
@@ -204,7 +204,6 @@ export class TimeSeries extends BaseVisualization<TimeSeriesState> {
       }
     }
 
-    var timeDimension = essence.getTimeDimension();
     clicker.changeHighlight(
       TimeSeries.id,
       dragOnMeasure.name,
@@ -259,9 +258,8 @@ export class TimeSeries extends BaseVisualization<TimeSeriesState> {
 
   renderChartBubble(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, extentY: number[], scaleY: any): JSX.Element {
     const { clicker, essence, openRawDataModal } = this.props;
-    const { scrollTop, dragTimeRange, roundDragTimeRange, dragOnMeasure, hoverTimeRange, hoverMeasure, scaleX } = this.state;
+    const { scrollTop, dragTimeRange, roundDragTimeRange, dragOnMeasure, hoverTimeRange, hoverMeasure, scaleX, timeDimension } = this.state;
     const { colors, timezone } = essence;
-    const timeDimension = essence.getTimeDimension();
 
     if (essence.highlightOnDifferentMeasure(TimeSeries.id, measure.name)) return null;
 
@@ -357,7 +355,7 @@ export class TimeSeries extends BaseVisualization<TimeSeriesState> {
 
   renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage): JSX.Element {
     const { essence, clicker } = this.props;
-    const { hoverTimeRange, hoverMeasure, dragTimeRange, scaleX, xTicks } = this.state;
+    const { hoverTimeRange, hoverMeasure, dragTimeRange, scaleX, xTicks, timeDimension } = this.state;
     const { splits, colors } = essence;
     var splitLength = splits.length();
 
@@ -365,10 +363,8 @@ export class TimeSeries extends BaseVisualization<TimeSeriesState> {
     var yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
 
     var measureName = measure.name;
-    var getY = (d: Datum) => d[measureName] as number;
-
-    const timeDimension = essence.getTimeDimension();
     var getX = (d: Datum) => d[timeDimension.name] as TimeRange;
+    var getY = (d: Datum) => d[measureName] as number;
 
     var myDatum: Datum = dataset.data[0];
     var mySplitDataset = myDatum[SPLIT] as Dataset;
@@ -504,20 +500,38 @@ export class TimeSeries extends BaseVisualization<TimeSeriesState> {
       datasetLoad = this.state.datasetLoad;
     }
 
-    var { dataset } = datasetLoad;
+    if (splits.length()) {
+      var { dataset } = datasetLoad;
+      if (dataset) {
+        if (registerDownloadableDataset) registerDownloadableDataset(dataset);
+      }
 
-    if (dataset && splits.length()) {
-      if (registerDownloadableDataset) registerDownloadableDataset(dataset);
-    }
+      var timeSplit = splits.length() === 1 ? splits.get(0) : splits.get(1);
+      var timeDimension = timeSplit.getDimension(essence.dataSource.dimensions);
+      if (timeDimension) {
+        newState.timeDimension = timeDimension;
 
-    var axisTimeRange = essence.getEffectiveFilter(TimeSeries.id).getTimeRange(essence.dataSource.timeAttribute);
-    if (axisTimeRange) {
-      newState.axisTimeRange = axisTimeRange;
-      newState.scaleX = d3.time.scale()
-        .domain([axisTimeRange.start, axisTimeRange.end])
-        .range([0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH]);
+        var axisTimeRange = essence.getEffectiveFilter(TimeSeries.id).getExtent(timeDimension.expression) as TimeRange;
 
-      newState.xTicks = getTimeTicks(axisTimeRange, timezone);
+        // Not filtered on time
+        if (!axisTimeRange && dataset) {
+          var myDataset = dataset.data[0]['SPLIT'] as Dataset;
+          console.log('myDataset', myDataset);
+          axisTimeRange = new TimeRange({
+            start: (myDataset.data[0][timeDimension.name] as TimeRange).start,
+            end: (myDataset.data[myDataset.data.length - 1][timeDimension.name] as TimeRange).end
+          });
+        }
+
+        if (axisTimeRange) {
+          newState.axisTimeRange = axisTimeRange;
+          newState.scaleX = d3.time.scale()
+            .domain([axisTimeRange.start, axisTimeRange.end])
+            .range([0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH]);
+
+          newState.xTicks = getTimeTicks(axisTimeRange, timezone);
+        }
+      }
     }
 
     this.setState(newState);
@@ -525,9 +539,8 @@ export class TimeSeries extends BaseVisualization<TimeSeriesState> {
 
   renderInternals() {
     var { essence, stage } = this.props;
-    var { datasetLoad, axisTimeRange, scaleX, xTicks } = this.state;
+    var { datasetLoad, timeDimension, axisTimeRange, scaleX, xTicks } = this.state;
     var { splits, timezone } = essence;
-    const timeDimension = essence.getTimeDimension();
 
     var measureCharts: JSX.Element[];
     var bottomAxis: JSX.Element;

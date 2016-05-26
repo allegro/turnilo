@@ -190,6 +190,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
       </div>;
     }, this);
+
     var message: JSX.Element = null;
     if (searchText && !dimensionItems.length) {
       message = <div className="message">{`No ${ STRINGS.dimensions.toLowerCase() } for "${searchText}"`}</div>;

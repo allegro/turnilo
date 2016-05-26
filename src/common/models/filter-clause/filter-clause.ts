@@ -1,9 +1,9 @@
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
-import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS, ChainExpression, NotAction, OverlapAction, InAction, TimeRange, Datum } from 'plywood';
+import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS, ChainExpression, NotAction, OverlapAction, InAction, Range, TimeRange, Datum } from 'plywood';
 
 // Basically these represent
-// expression.in(check) .not()?
+// expression.in(selection) .not()?
 
 export interface FilterClauseValue {
   expression: Expression;
@@ -62,12 +62,6 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     var dimExpression = ex.popAction();
     if (lastAction instanceof InAction || lastAction instanceof OverlapAction) {
       var selection = lastAction.expression;
-
-      if (selection.type === 'SET/TIME_RANGE') {
-        var literalSet: Set = selection.getLiteralValue();
-        if (literalSet.size() > 1) throw new Error('can not filter on multiple time range values');
-        selection = r(literalSet.elements[0]);
-      }
 
       return new FilterClause({
         expression: dimExpression,
@@ -141,21 +135,20 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
 
   public toExpression(): ChainExpression {
     const { expression, selection } = this;
-    var ex = (selection.type === 'TIME_RANGE') ? expression.in(selection) : expression.overlap(selection);
+    var ex = (selection.type === 'TIME_RANGE' || selection.type === 'SET/TIME_RANGE') ? expression.in(selection) : expression.overlap(selection);
     if (this.exclude) ex = ex.not();
     return ex;
-  }
-
-  public getTimeRange(): TimeRange {
-    if (this.relative) return null;
-    var v = this.selection.getLiteralValue();
-    return TimeRange.isTimeRange(v) ? v : null;
   }
 
   public getLiteralSet(): Set {
     if (this.relative) return null;
     var v = this.selection.getLiteralValue();
     return TimeRange.isTimeRange(v) ? Set.fromJS([v]) : v;
+  }
+
+  public getExtent(): Range<any> {
+    var mySet = this.getLiteralSet();
+    return mySet ? mySet.extent() : null;
   }
 
   public changeSelection(selection: Expression) {

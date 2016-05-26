@@ -849,7 +849,6 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       value.defaultSortMeasure = measures.size ? measures.first().name : null;
     }
 
-    // ToDo: remove this when Pivot can handle it
     if (!value.timeAttribute && dimensions.first().kind === 'time') {
       value.timeAttribute = <RefExpression>dimensions.first().expression;
     }

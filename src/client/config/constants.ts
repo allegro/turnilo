@@ -34,6 +34,7 @@ export const STRINGS = {
   granularity: 'Granularity',
   relative: 'Relative',
   specific: 'Specific',
+  noFilter: 'No filter',
   latest: 'Latest',
   current: 'Current',
   previous: 'Previous',

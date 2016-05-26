@@ -44,7 +44,7 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
     var dataSource = dataSources.find(d => d.name === dataSourceName);
     if (!dataSource) throw new Error(`can not find dataSource '${dataSourceName}'`);
 
-    var essence = Essence.fromJS(parameters.essence, { dataSource, visualizations }).updateWithTimeRange();
+    var essence = Essence.fromJS(parameters.essence, { dataSource, visualizations }).updateSplitsWithFilter();
 
     return new LinkItem({
       name: parameters.name,

@@ -79,11 +79,12 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     const { timezone } = essence;
 
     var timeSelection = filter.getSelection(dimension.expression);
-    var selectedTimeRange = essence.evaluateSelection(timeSelection);
+    var selectedTimeRangeSet = essence.getEffectiveFilter().getLiteralSet(dimension.expression);
+    var selectedTimeRange = (selectedTimeRangeSet && selectedTimeRangeSet.size() === 1) ? selectedTimeRangeSet.elements[0] : null;
 
     this.setState({
       timeSelection,
-      tab: filter.isRelative() ? 'relative' : 'specific',
+      tab: (filter.isEmpty() || filter.isRelative()) ? 'relative' : 'specific',
       startTime: selectedTimeRange ? day.floor(selectedTimeRange.start, timezone) : null,
       endTime: selectedTimeRange ? day.ceil(selectedTimeRange.end, timezone) : null
     });
@@ -192,7 +193,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     };
 
     var previewTimeRange = essence.evaluateSelection(hoverPreset ? hoverPreset.selection : timeSelection);
-    var previewText = formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF);
+    var previewText = previewTimeRange ? formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
 
     return <div className="cont">
       <div className="type">{STRINGS.latest}</div>
@@ -219,14 +220,13 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     if (!dimension) return null;
 
     if (!timeSelection) return null;
-    var { timezone } = essence;
 
     return <div>
       <DateRangePicker
         startTime={startTime}
         endTime={endTime}
-        maxTime={new Date(essence.evaluateSelection($maxTime).toString())}
-        timezone={timezone}
+        maxTime={essence.dataSource.getMaxTimeDate()}
+        timezone={essence.timezone}
         onStartChange={this.onStartChange.bind(this)}
         onEndChange={this.onEndChange.bind(this)}
       />
@@ -241,6 +241,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     var { dimension } = this.props;
     var { tab } = this.state;
     if (!dimension) return null;
+
     var tabs = ['relative', 'specific'].map((name) => {
       return {
         isSelected: tab === name,

@@ -76,7 +76,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   }
 
-  fetchData(essence: Essence, dimension: Dimension, sortOn: SortOn, unfolded: boolean, granularity?: Granularity): void {
+  fetchData(essence: Essence, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Granularity): void {
     var { searchText } = this.state;
     var { dataSource, colors } = essence;
 
@@ -105,12 +105,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       const dimensionExpression = dimension.expression as RefExpression;
       const attributeName = dimensionExpression.name;
       const timeFilterSelection = essence.filter.getSelection(dimensionExpression);
-      let selectedGranularity: Granularity = null;
-      if (timeFilterSelection) {
-        var defaultBest: Duration = getTickDuration(essence.evaluateSelection(timeFilterSelection));
-        selectedGranularity = granularity || TimeBucketAction.fromJS({ duration: defaultBest.toJS() });
-      } else {
-        selectedGranularity = DEFAULT_DURATION_GRANULARITY;
+
+      if (!selectedGranularity) {
+        if (timeFilterSelection) {
+          var duration = getTickDuration(essence.evaluateSelection(timeFilterSelection));
+          selectedGranularity = new TimeBucketAction({ duration });
+        } else {
+          selectedGranularity = DEFAULT_DURATION_GRANULARITY;
+        }
       }
       this.setState({ selectedGranularity });
 
@@ -406,6 +408,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
         if (segmentValue instanceof TimeRange) {
           segmentValueStr = formatTimeBasedOnGranularity(segmentValue, (selectedGranularity as TimeBucketAction).duration, essence.timezone, getLocale());
+        }
+
+        if (dimension.isContinuous()) {
           className += ' continuous';
         }
 

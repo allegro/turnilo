@@ -1,7 +1,7 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration } from 'chronoshift';
-import { $, r, Expression, LiteralExpression, ExpressionJS, InAction, Set, TimeRange } from 'plywood';
+import { $, r, Expression, LiteralExpression, ExpressionJS, InAction, Set, Range, TimeRange } from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
 import { FilterClause, FilterClauseJS } from '../filter-clause/filter-clause';
@@ -124,6 +124,10 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     }
   }
 
+  public isEmpty(): boolean {
+    return this.clauses.isEmpty();
+  }
+
   public isRelative(): boolean {
     return this.clauses.some(clause => clause.relative);
   }
@@ -215,16 +219,16 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return new Filter(clauses);
   }
 
-  public getTimeRange(attribute: Expression): TimeRange {
+  public getExtent(attribute: Expression): Range<any> {
     var clauses = this.clauses;
     var index = this.indexOfClause(attribute);
     if (index === -1) return null;
-    return clauses.get(index).getTimeRange();
+    return clauses.get(index).getExtent();
   }
 
   public getFileString(timeAttribute: Expression) {
     var nonTimeClauseSize = this.clauses.size;
-    const timeRange = this.getTimeRange(timeAttribute);
+    const timeRange = this.getExtent(timeAttribute); // ToDo: revisit this
     const nonTimeFilters = ((nonTimeClauseSize: number) => {
       return nonTimeClauseSize === 0 ? "" : `_filters-${nonTimeClauseSize}`;
     });
@@ -297,12 +301,24 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return hasChanged ? new Filter(List(clauses)) : this;
   }
 
+  public getDifferentAttributes(other: Filter): Expression[] {
+    var diff: Expression[] = [];
+    this.clauses.forEach((clause) => {
+      var clauseExpression = clause.expression;
+      var otherClause = other.clauseForExpression(clauseExpression);
+      if (!clause.equals(otherClause)) {
+        diff.push(clauseExpression);
+      }
+    });
+    return diff;
+  }
+
   public overQuery(duration: Duration, timezone: Timezone, timeAttribute: Expression): Filter {
     if (!timeAttribute) return this;
 
     return new Filter(<List<FilterClause>>this.clauses.map((clause) => {
       if (clause.expression.equals(timeAttribute)) {
-        var timeRange: TimeRange = clause.getTimeRange();
+        var timeRange: TimeRange = clause.getExtent() as TimeRange;
         var newTimeRange = new TimeRange({
           start: duration.shift(timeRange.start, timezone, -1),
           end: duration.shift(timeRange.end, timezone, 1)
