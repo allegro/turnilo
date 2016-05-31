@@ -13,6 +13,7 @@ export interface VerticalAxisProps extends React.Props<any> {
   ticks: number[];
   scale: any;
   topLineExtend?: number;
+  hideZero?: boolean;
 }
 
 export interface VerticalAxisState {
@@ -25,11 +26,12 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
 
   constructor() {
     super();
-
   }
 
   render() {
-    var { stage, ticks, scale, topLineExtend } = this.props;
+    var { stage, ticks, scale, topLineExtend, hideZero } = this.props;
+
+    if (hideZero) ticks = ticks.filter((tick: number) => tick !== 0);
 
     var formatter = formatterFromData(ticks, Measure.DEFAULT_FORMAT);
 
@@ -40,6 +42,8 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
 
     var labelX = TICK_WIDTH + TEXT_OFFSET;
     var dy = "0.31em";
+
+
     var labels = ticks.map((tick: any) => {
       var y = scale(tick);
       return <text className="tick" key={String(tick)} x={labelX} y={y} dy={dy}>{formatter(tick)}</text>;

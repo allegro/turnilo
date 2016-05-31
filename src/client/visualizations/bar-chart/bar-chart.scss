@@ -7,6 +7,48 @@
     padding-left: $vis-h-padding;
   }
 
+  .scroller {
+    position: relative;
+    height: 100%;
+
+    .bottom-shadow {
+      opacity: 0;
+    }
+  }
+
+  .selection-highlight-container {
+    position: absolute;
+
+    .selection-highlight {
+      pointer-events: none;
+      border: 1px dashed $brand;
+    }
+  }
+
+  .x-axis {
+    stroke: $gray;
+    stroke-width: 2px;
+
+    .slanty-labels {
+      position: absolute;
+      overflow: hidden;
+    }
+
+    .slanty-label {
+      @include ellipsis;
+      position: absolute;
+      width: 100px;
+      height: 20px;
+      top: 3px;
+      transform: rotate(-43deg);
+      transform-origin: right top;
+      text-align: right;
+      cursor: default;
+      overflow: hidden;
+      font-size: 12px;
+    }
+  }
+
   .measure-bar-chart {
     .vis-measure-label {
       position: absolute;
@@ -38,35 +80,11 @@
           fill: $white;
           fill-opacity: 0.001;
         }
-
-        .selection {
-          pointer-events: none;
-          fill: none;
-          stroke: $brand;
-        }
       }
     }
 
     .mask {
       fill: $white;
-    }
-
-    .slanty-labels {
-      position: absolute;
-      overflow: hidden;
-    }
-
-    .slanty-label {
-      @include ellipsis;
-      position: absolute;
-      width: 100px;
-      height: 20px;
-      top: 3px;
-      transform: rotate(-43deg);
-      transform-origin: right top;
-      text-align: right;
-      cursor: default;
-      overflow: hidden;
     }
   }
 }

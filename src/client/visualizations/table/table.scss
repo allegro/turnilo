@@ -5,6 +5,7 @@ $segment-width: 300px;
 $measure-width: 130px;
 $row-height: 30px;
 $space-left: 10px;
+$space-right: 10px;
 $measure-column-padding-left: 10px;
 
 $header-padding-top: 12px;
@@ -40,26 +41,6 @@ $header-padding-top: 12px;
     }
   }
 
-  .corner {
-    position: absolute;
-    background-color: $white;
-    left: 0;
-    top: 0;
-    width: $segment-width;
-    height: $header-height;
-    overflow: hidden;
-    padding: $header-padding-top 0 0 #{$space-left + 6px};
-    border-bottom: 1px solid $border-super-light;
-
-    > .corner-wrap {
-      display: inline-block;
-      max-width: calc(100% - 10px);
-    }
-
-    .sort-arrow {
-      @include sort-arrow;
-    }
-  }
 
   .scroller {
     position: absolute;
@@ -71,6 +52,28 @@ $header-padding-top: 12px;
     @import './header';
     @import './body'; // actual values
     @import './highlight-cont'; // highlighter
+
+    .corner {
+      position: absolute;
+      background-color: $white;
+      left: 0;
+      top: 0;
+      width: $segment-width - $space-left;
+      height: $header-height;
+      overflow: hidden;
+      padding: $header-padding-top 0 0 6px;
+      margin-left: $space-left;
+      border-bottom: 1px solid $border-super-light;
+
+      > .corner-wrap {
+        display: inline-block;
+        max-width: calc(100% - 10px);
+      }
+
+      .sort-arrow {
+        @include sort-arrow;
+      }
+    }
 
     .segment-labels {
       margin-left: $space-left;
@@ -86,10 +89,6 @@ $header-padding-top: 12px;
         overflow: hidden;
         padding-top: 8px;
       }
-    }
-
-    > .horizontal-scroll-shadow {
-      height: $header-height;
     }
   }
 }

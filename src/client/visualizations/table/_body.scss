@@ -1,6 +1,6 @@
 .row {
   @include row-style;
-  width: 100%;
+  width: calc(100% - #{$space-right});
   white-space: nowrap;
 
   &.hover,

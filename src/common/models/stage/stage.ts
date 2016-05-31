@@ -116,8 +116,8 @@ export class Stage implements Instance<StageValue, StageJS> {
     return `translate(${this.x},${this.y})`;
   }
 
-  public getViewBox(): string {
-    return `0 0 ${this.width} ${this.height}`;
+  public getViewBox(widthOffset = 0, heightOffset = 0): string {
+    return `0 0 ${this.width + widthOffset} ${this.height + this.y + heightOffset}`;
   }
 
   public getLeftTop(): React.CSSProperties {
@@ -127,10 +127,10 @@ export class Stage implements Instance<StageValue, StageJS> {
     };
   }
 
-  public getWidthHeight(): React.CSSProperties {
+  public getWidthHeight(widthOffset = 0, heightOffset = 0): React.CSSProperties {
     return {
-      width: this.width,
-      height: this.height
+      width: this.width + widthOffset,
+      height: this.height + this.y + heightOffset
     };
   }
 
@@ -141,6 +141,20 @@ export class Stage implements Instance<StageValue, StageJS> {
       width: this.width,
       height: this.height
     };
+  }
+
+  public changeY(y: number): Stage {
+    var value = this.valueOf();
+    value.y = y;
+
+    return Stage.fromJS(value);
+  }
+
+  public changeHeight(height: number): Stage {
+    var value = this.valueOf();
+    value.height = height;
+
+    return Stage.fromJS(value);
   }
 
   public within(param: MarginParameters): Stage {

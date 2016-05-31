@@ -3,6 +3,7 @@ require('./scroller.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { classNames, getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
+import { firstUp } from '../../utils/string/string';
 
 export type XSide = 'left' | 'right';
 export type YSide = 'top' | 'bottom';
@@ -25,7 +26,7 @@ export interface ScrollerProps extends React.Props<any> {
   onMouseLeave?: () => void;
   onScroll?: (scrollTop: number, scrollLeft: number) => void;
 
-  // Transcluded elements
+  // "Transcluded" elements
   topGutter?: JSX.Element | JSX.Element[];
   rightGutter?: JSX.Element | JSX.Element[];
   bottomGutter?: JSX.Element | JSX.Element[];
@@ -81,7 +82,8 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
         return {
           height: layout.bottom,
           left: layout.left - scrollLeft,
-          right: layout.right
+          right: layout.right,
+          bottom: 0
         };
 
       case "left":
@@ -93,7 +95,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
         };
 
       default:
-        throw new Error("Unknown side for shadow. This shouldn't happen.");
+        throw new Error("Unknown side for gutter. This shouldn't happen.");
     }
   }
 
@@ -173,8 +175,11 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       this.setState({
         scrollTop: target.scrollTop,
         scrollLeft: target.scrollLeft
-      }, () => {
-        this.props.onScroll(target.scrollTop, target.scrollLeft);
+      }, () => this.props.onScroll(target.scrollTop, target.scrollLeft));
+    } else {
+      this.setState({
+        scrollTop: target.scrollTop,
+        scrollLeft: target.scrollLeft
       });
     }
   }
@@ -219,10 +224,6 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     this.props.onMouseMove(x, y);
   }
 
-  firstUp(str: string): string {
-    return str ? str.charAt(0).toUpperCase() + str.slice(1) : undefined;
-  }
-
   renderGutter(side: XSide | YSide): JSX.Element {
     var element = (this.props as any)[`${side}Gutter`];
     if (!element) return null;
@@ -251,7 +252,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
 
   renderCorner(yPos: YSide, xPos: XSide): JSX.Element {
     var style = this.getCornerStyle(yPos, xPos);
-    var element = (this.props as any)[yPos + this.firstUp(xPos) + 'Corner'];
+    var element = (this.props as any)[yPos + firstUp(xPos) + 'Corner'];
     if (!element) return null;
 
     return <div className={[yPos, xPos, 'corner'].join('-')} style={style}>{element}</div>;
@@ -270,7 +271,9 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   }
 
   render() {
-    const { body, overlay, onMouseLeave } = this.props;
+    const { body, overlay, onMouseLeave, layout } = this.props;
+
+    if (!layout) return null;
 
     return <div className="scroller" ref="Scroller">
 

@@ -28,9 +28,7 @@ export class CircumstancesHandler {
 
 
   public static strictCompare(selectors: string[], kinds: string[]): boolean {
-    if (selectors.length !== kinds.length) {
-      return false;
-    }
+    if (selectors.length !== kinds.length) return false;
 
     return selectors.every((selector, i) => CircumstancesHandler.testKind(kinds[i], selector));
   }
@@ -56,7 +54,7 @@ export class CircumstancesHandler {
     return new CircumstancesHandler();
   }
 
-  private configurations: Configuration[];
+  private configurations: Configuration[][];
   private actions: Action[];
 
   private otherwiseAction: Action;
@@ -66,12 +64,24 @@ export class CircumstancesHandler {
     this.actions = [];
   }
 
-  public when(configuration: Configuration, action: Action): CircumstancesHandler {
-    this.configurations.push(configuration);
-    this.actions.push(action);
+  public when(configuration: Configuration): any {
+    let temp: Configuration[] = [configuration];
 
-    return this;
+    let ret = {
+      or: (conf: Configuration) => {
+        temp.push(conf);
+        return ret;
+      },
+      then: (action: Action) => {
+        this.configurations.push(temp);
+        this.actions.push(action);
+        return this;
+      }
+    };
+
+    return ret;
   }
+
 
   public otherwise(action: Action): CircumstancesHandler {
     this.otherwiseAction = action;
@@ -80,9 +90,9 @@ export class CircumstancesHandler {
   }
 
   public needsAtLeastOneSplit(message?: string): CircumstancesHandler {
-    return this.when(
-      CircumstancesHandler.noSplits(),
-      (splits: Splits, dataSource: DataSource) => {
+    return this
+      .when(CircumstancesHandler.noSplits())
+      .then((splits: Splits, dataSource: DataSource) => {
         var someDimensions = dataSource.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
         return Resolve.manual(4, message,
           someDimensions.map((someDimension) => {
@@ -100,7 +110,9 @@ export class CircumstancesHandler {
 
   public evaluate(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
     for (let i = 0; i < this.configurations.length; i++) {
-      if (this.configurations[i](splits, dataSource)) {
+      let confs = this.configurations[i];
+
+      if (confs.some((c) => c(splits, dataSource))) {
         return this.actions[i](splits, dataSource, colors, current);
       }
     }
