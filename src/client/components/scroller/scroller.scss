@@ -17,11 +17,20 @@
     left: 0;
     right: 0;
 
+    &.no-x-scroll {
+      overflow-x: hidden;
+    }
+
+    &.no-y-scroll {
+      overflow-y: hidden;
+    }
+
     > .event-target {
       background: $white;
       opacity: 0.001;
     }
   }
+
 
 
   .left-shadow {

@@ -53,6 +53,10 @@ $header-padding-top: 12px;
     @import './body'; // actual values
     @import './highlight-cont'; // highlighter
 
+    .left-gutter, .top-left-corner {
+      background-color: $white;
+    }
+
     .corner {
       position: absolute;
       background-color: $white;

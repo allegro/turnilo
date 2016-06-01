@@ -187,6 +187,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   onClick(x: number, y: number) {
     const selectionInfo = this.calculateMousePosition(x, y);
+
+    if (!selectionInfo) return;
+
     const { essence, clicker } = this.props;
 
     if (!selectionInfo.coordinates) {
@@ -247,9 +250,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const xTicks = xScale.domain();
     const width = roundToPx(xScale(xTicks[xTicks.length - 1])) + stepWidth;
 
-    const measures = essence.getEffectiveMeasures().toArray();
+    const measures = essence.getEffectiveMeasures();
     const availableHeight = stage.height - X_AXIS_HEIGHT;
-    const height = Math.max(MIN_CHART_HEIGHT, Math.floor(availableHeight / measures.length));
+    const height = Math.max(MIN_CHART_HEIGHT, Math.floor(availableHeight / measures.size));
 
     return new Stage({
       x: 0,
@@ -259,13 +262,40 @@ export class BarChart extends BaseVisualization<BarChartState> {
     });
   }
 
+  // hasVerticalScroll(): boolean {
+  //   const { essence, stage } = this.props;
+
+  //   const measures = essence.getEffectiveMeasures();
+  //   const availableHeight = stage.height - X_AXIS_HEIGHT;
+
+  //   return Math.floor(availableHeight / measures.size) < MIN_CHART_HEIGHT;
+  // }
+
+  // hasHorizontalScroll(): boolean {
+  //   const xScale = this.getPrimaryXScale();
+  //   const { essence, stage } = this.props;
+
+  //   const { stepWidth } = this.getBarDimensions(xScale.rangeBand());
+  //   const xTicks = xScale.domain();
+  //   const width = roundToPx(xScale(xTicks[xTicks.length - 1])) + stepWidth;
+
+  //   return width > stage.width - Y_AXIS_WIDTH - VIS_H_PADDING * 2;
+  // }
+
   getOuterChartHeight(chartStage: Stage): number {
     return chartStage.height + CHART_TOP_PADDING + CHART_BOTTOM_PADDING;
   }
 
   getAxisStages(chartStage: Stage): {xAxisStage: Stage, yAxisStage: Stage} {
+    const { essence, stage } = this.props;
+
+    const xHeight = Math.max(
+      stage.height - (CHART_TOP_PADDING + CHART_BOTTOM_PADDING + chartStage.height) * essence.getEffectiveMeasures().size,
+      X_AXIS_HEIGHT
+    );
+
     return {
-      xAxisStage: new Stage({x: chartStage.x, y: 0, height: X_AXIS_HEIGHT, width: chartStage.width}),
+      xAxisStage: new Stage({x: chartStage.x, y: 0, height: xHeight, width: chartStage.width}),
       yAxisStage: new Stage({x: 0, y: chartStage.y, height: chartStage.height, width: Y_AXIS_WIDTH + VIS_H_PADDING})
     };
   }
@@ -519,13 +549,6 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return <div className="x-axis" style={{width: xAxisStage.width}}>
       <svg style={xAxisStage.getWidthHeight()} viewBox={xAxisStage.getViewBox()}>
         <BucketMarks stage={xAxisStage} ticks={xTicks} scale={xScale}/>
-        <line
-          className="vis-bottom"
-          x1="0"
-          x2={xAxisStage.width}
-          y1="0"
-          y2="0"
-        />
       </svg>
       {labels}
     </div>;
@@ -548,15 +571,11 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     var axisStage = yAxisStage.changeY(yAxisStage.y + (chartStage.height + CHART_TOP_PADDING + CHART_BOTTOM_PADDING) * chartIndex);
 
-    var topLineExtend = 0;
-    if (chartIndex !== 0) topLineExtend += CHART_BOTTOM_PADDING + CHART_TOP_PADDING;
-
     var yAxis: JSX.Element = <VerticalAxis
       key={measure.name}
       stage={axisStage}
       ticks={yTicks}
       scale={yScale}
-      topLineExtend={topLineExtend}
       hideZero={true}
     />;
 
@@ -593,7 +612,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     // Invalid data, early return
     if (!this.hasValidYExtent(measure, mySplitDataset.data)) {
       return {
-        chart: <div className="measure-bar-chart" key={measure.name}>
+        chart: <div className="measure-bar-chart" key={measure.name} style={{width: chartStage.width}}>
           <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}/>
           <VisMeasureLabel measure={measure} datum={dataset.data[0]}/>
         </div>,
@@ -615,7 +634,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
        highlight = renderedChart.highlight;
     }
 
-    var chart = <div className="measure-bar-chart" key={measure.name}>
+    var chart = <div className="measure-bar-chart" key={measure.name} style={{width: chartStage.width}}>
       <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}>
         {yGridLines}
         <g className="bars" transform={chartStage.getTransform()}>{bars}</g>
@@ -851,6 +870,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
       scrollerLayout = this.getScrollerLayout(chartStage, xAxisStage, yAxisStage);
       rightGutter = this.renderRightGutter(measures, chartStage, yAxes);
+
     }
 
     return <div className="internals measure-bar-charts" style={{maxHeight: stage.height}}>

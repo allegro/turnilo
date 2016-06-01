@@ -25,9 +25,13 @@
     }
   }
 
+  .vertical-axis .border {
+    stroke-width: 0;
+  }
+
   .x-axis {
     stroke: $gray;
-    stroke-width: 2px;
+    stroke-width: 1px;
 
     .slanty-labels {
       position: absolute;
@@ -50,6 +54,21 @@
   }
 
   .measure-bar-chart {
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      border-bottom: 1px solid $gray;
+      border-right: 1px solid $gray;
+    }
+
+    &:first-child:after {
+      top: 10px;
+    }
+
     .vis-measure-label {
       position: absolute;
       left: 6px;

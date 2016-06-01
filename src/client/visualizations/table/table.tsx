@@ -24,7 +24,6 @@ const MEASURE_WIDTH = 130;
 const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
-const ROW_PADDING_RIGHT = 0;
 const BODY_PADDING_BOTTOM = 90;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
@@ -250,14 +249,10 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   getIdealMeasureWidth(essence: Essence): number {
-    var availableWidth = this.props.stage.width - SPACE_LEFT - SEGMENT_WIDTH - SPACE_RIGHT;
+    var availableWidth = this.props.stage.width - SPACE_LEFT - SEGMENT_WIDTH;
     var columnsCount = essence.getEffectiveMeasures().size;
 
-    if (columnsCount * MEASURE_WIDTH < availableWidth) {
-      return availableWidth / columnsCount;
-    }
-
-    return MEASURE_WIDTH;
+    return columnsCount * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / columnsCount;
   }
 
   makeMeasuresRenderer(essence: Essence, formatters: Formatter[], hScales: d3.scale.Linear<number, number>[]): (datum: PseudoDatum) => JSX.Element[] {
@@ -277,7 +272,9 @@ export class Table extends BaseVisualization<TableState> {
         var background: JSX.Element = null;
         if (datum['__nest'] === splitLength) {
           let backgroundWidth = hScales[i](measureValue);
-          background = <div className="background" style={{width: backgroundWidth + '%'}}></div>;
+          background = <div className="background-container">
+            <div className="background" style={{width: backgroundWidth + '%'}}></div>
+          </div>;
         }
 
         return <div className={className} key={measure.name} style={{width: idealWidth}}>
@@ -288,15 +285,15 @@ export class Table extends BaseVisualization<TableState> {
     };
   }
 
-  renderRow(index: number, rowMeasures: JSX.Element[], rowY: number, rowClass: string): JSX.Element {
+  renderRow(index: number, rowMeasures: JSX.Element[], style: React.CSSProperties, rowClass: string): JSX.Element {
     return <div
       className={'row ' + rowClass}
       key={'_' + index}
-      style={{top: rowY}}
+      style={style}
     >{rowMeasures}</div>;
   }
 
-  renderHeaderColumns(essence: Essence, hoverMeasure: Measure): JSX.Element[] {
+  renderHeaderColumns(essence: Essence, hoverMeasure: Measure, measureWidth: number): JSX.Element[] {
     var commonSort = essence.getCommonSort();
     var commonSortName = commonSort ? (commonSort.expression as RefExpression).name : null;
 
@@ -304,8 +301,6 @@ export class Table extends BaseVisualization<TableState> {
       svg: require('../../icons/sort-arrow.svg'),
       className: 'sort-arrow ' + commonSort.direction
     }) : null;
-
-    var measureWidth = this.getIdealMeasureWidth(essence);
 
     return essence.getEffectiveMeasures().toArray().map((measure, i) => {
       let amISorted = commonSortName === measure.name;
@@ -361,7 +356,11 @@ export class Table extends BaseVisualization<TableState> {
     var segmentTitle = splits.getTitle(essence.dataSource.dimensions);
 
     var cornerSortArrow: JSX.Element = this.renderCornerSortArrow(essence);
-    var headerColumns = this.renderHeaderColumns(essence, hoverMeasure);
+    var idealWidth = this.getIdealMeasureWidth(essence);
+
+    var headerColumns = this.renderHeaderColumns(essence, hoverMeasure, idealWidth);
+
+    var rowWidth = idealWidth * headerColumns.length;
 
     var segments: JSX.Element[] = [];
     var rows: JSX.Element[] = [];
@@ -412,7 +411,9 @@ export class Table extends BaseVisualization<TableState> {
 
         let rowMeasures = measuresRenderer(d);
         let rowClass = classNames(nestClass, selectedClass, hoverClass);
-        rows.push(this.renderRow(i, rowMeasures, rowY, rowClass));
+        let rowStyle: React.CSSProperties = {top: rowY, width: rowWidth};
+
+        rows.push(this.renderRow(i, rowMeasures, rowStyle, rowClass));
 
         if (!highlighter && selected) {
           highlighterStyle = {
@@ -455,7 +456,7 @@ export class Table extends BaseVisualization<TableState> {
 
     const scrollerLayout: ScrollerLayout = {
       // Inner dimensions
-      bodyWidth: measureWidth * essence.getEffectiveMeasures().size + ROW_PADDING_RIGHT,
+      bodyWidth: measureWidth * essence.getEffectiveMeasures().size + SPACE_RIGHT,
       bodyHeight: flatData ? flatData.length * ROW_HEIGHT : 0,
 
       // Gutters
