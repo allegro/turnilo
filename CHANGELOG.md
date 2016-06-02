@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.35
+
+- Two splits with scrolling in bar chart
+- Pivot will only query within server root
+
 ## 0.8.34
 
 - New table scroller

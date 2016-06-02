@@ -64,7 +64,7 @@ export default CircumstancesHandler.EMPTY()
 
       return Resolve.manual(
         3,
-        'The Bar Chart needs one category split exactly',
+        'The Bar Chart needs one or two splits',
         categoricalDimensions.toArray().slice(0, 2).map((dimension: Dimension) => {
           return {
             description: `Split on ${dimension.title} instead`,
