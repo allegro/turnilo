@@ -4,23 +4,17 @@ import { BaseVisualization, BaseVisualizationState } from '../base-visualization
 
 import * as React from 'react';
 import { List } from 'immutable';
-import { generalEqual } from 'immutable-class';
-import { $, ply, r, Expression, Executor, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, TimeRange } from 'plywood';
+import { r, Range, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, TimeRange } from 'plywood';
 
 import {
   Stage,
-  Essence,
   DataSource,
   Filter,
   FilterClause,
   Splits,
-  SplitCombine,
-  Dimension,
   Measure,
-  Colors,
   VisualizationProps,
-  DatasetLoad,
-  Resolve
+  DatasetLoad
 } from '../../../common/models/index';
 
 import { SPLIT, VIS_H_PADDING } from '../../config/constants';
@@ -533,18 +527,47 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const xScale = this.getPrimaryXScale();
     const xTicks = xScale.domain();
 
-    const dimension = essence.splits.get(0).getDimension(essence.dataSource.dimensions);
+    const split = essence.splits.get(0);
+    const dimension = split.getDimension(essence.dataSource.dimensions);
 
-    var labels: JSX.Element[] = data.map((d, i) => {
-      let segmentValueStr = String(d[dimension.name]);
-      let coordinate = coordinates[i];
+    var labels: JSX.Element[] = [];
+    if (dimension.isContinuous()) {
+      var lastIndex = data.length - 1;
+      var ascending = split.sortAction.direction === SortAction.ASCENDING;
+      var leftThing = ascending ? 'start' : 'end';
+      var rightThing = ascending ? 'end' : 'start';
+      data.forEach((d, i) => {
+        let segmentValue = d[dimension.name];
+        let segmentValueStr = String(Range.isRange(segmentValue) ? (segmentValue as any)[leftThing] : '');
+        let coordinate = coordinates[i];
 
-      return <div
-        className="slanty-label"
-        key={segmentValueStr}
-        style={{ right: xAxisStage.width - (coordinate.x + coordinate.stepWidth / 2) }}
-      >{segmentValueStr}</div>;
-    });
+        labels.push(<div
+          className="slanty-label continuous"
+          key={segmentValueStr}
+          style={{ right: xAxisStage.width - coordinate.x }}
+        >{segmentValueStr}</div>);
+
+        if (i === lastIndex) {
+          segmentValueStr = String(Range.isRange(segmentValue) ? (segmentValue as any)[rightThing] : '');
+          labels.push(<div
+            className="slanty-label continuous"
+            key={segmentValueStr}
+            style={{ right: xAxisStage.width - (coordinate.x + coordinate.stepWidth) }}
+          >{segmentValueStr}</div>);
+        }
+      });
+    } else {
+      data.forEach((d, i) => {
+        let segmentValueStr = String(d[dimension.name]);
+        let coordinate = coordinates[i];
+
+        labels.push(<div
+          className="slanty-label categorical"
+          key={segmentValueStr}
+          style={{ right: xAxisStage.width - (coordinate.x + coordinate.stepWidth / 2) }}
+        >{segmentValueStr}</div>);
+      });
+    }
 
     return <div className="x-axis" style={{width: xAxisStage.width}}>
       <svg style={xAxisStage.getWidthHeight()} viewBox={xAxisStage.getViewBox()}>

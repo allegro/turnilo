@@ -1,0 +1,35 @@
+@import '../../imports';
+
+$num-size: 16px;
+$bar-top: 6px;
+$bar-height: 6px;
+
+.number-range-picker {
+  margin: $padding-mini 0;
+  height: 25px;
+
+  .range-bar {
+    position: absolute;
+    top: $bar-top;
+    height: $bar-height;
+
+    &.full {
+      background-color: $background-medium;
+      left: $num-size / 2;
+      right: $num-size / 2;
+    }
+
+    &.selected {
+      background-color: $brand;
+    }
+  }
+
+  .range-handle {
+    position: absolute;
+  }
+
+  .loader,
+  .query-error {
+    @include pin-full;
+  }
+}

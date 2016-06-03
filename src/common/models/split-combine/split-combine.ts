@@ -1,7 +1,7 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
-import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction, TimeRange } from 'plywood';
+import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction, NumberBucketAction } from 'plywood';
 import { Dimension } from '../dimension/dimension';
 
 export interface SplitCombineValue {
@@ -174,6 +174,8 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     var bucketAction = this.bucketAction;
     if (bucketAction instanceof TimeBucketAction) {
       return ` (${bucketAction.duration.getDescription(true)})`;
+    } else if (bucketAction instanceof NumberBucketAction) {
+      return ` (by ${bucketAction.size})`;
     }
     return '';
   }

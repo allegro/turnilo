@@ -1,4 +1,5 @@
 import * as numeral from 'numeral';
+import { NumberRange } from 'plywood';
 import { Dimension, FilterClause, Essence } from '../../models/index';
 import { DisplayYear, formatTimeRange } from '../../utils/time/time';
 
@@ -67,6 +68,15 @@ export function formatterFromData(values: number[], format: string): Formatter {
   }
 }
 
+
+export function formatValue(value: any): string {
+  if (NumberRange.isNumberRange(value)) {
+    return `${formatValue(value.start)}-${formatValue(value.end)}`;
+  } else {
+    return '' + value;
+  }
+}
+
 export interface LabelFormatOptions {
   dimension: Dimension;
   clause: FilterClause;
@@ -74,8 +84,9 @@ export interface LabelFormatOptions {
   verbose?: boolean;
 }
 
-export function formatLabel(options: LabelFormatOptions): string {
+export function formatFilterClause(options: LabelFormatOptions): string {
   const { dimension, clause, essence, verbose } = options;
+  // ToDo: get essence out of here
   var label = dimension.title;
 
   switch (dimension.kind) {
@@ -86,14 +97,15 @@ export function formatLabel(options: LabelFormatOptions): string {
         label += `: ${clause.getLiteralSet().toString()}`;
       } else {
         var setElements = clause.getLiteralSet().elements;
-        label += setElements.length > 1 ? ` (${setElements.length})` : `: ${setElements[0]}`;
+        label += setElements.length > 1 ? ` (${setElements.length})` : `: ${formatValue(setElements[0])}`;
       }
       break;
+
     case 'time':
       var timeSelection = clause.selection;
       var timeRange = essence.evaluateSelection(timeSelection);
       if (verbose) {
-        label = `Time: ${ formatTimeRange(timeRange, essence.timezone, DisplayYear.IF_DIFF) }`;
+        label += `: ${formatTimeRange(timeRange, essence.timezone, DisplayYear.IF_DIFF)}`;
       } else {
         label = formatTimeRange(timeRange, essence.timezone, DisplayYear.IF_DIFF);
       }

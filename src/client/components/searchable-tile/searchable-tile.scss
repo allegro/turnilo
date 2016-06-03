@@ -48,6 +48,10 @@ $search-box-height: 26px;
     top: $pin-title-height + $search-box-height + $search-box-gap;
   }
 
+  &.continuous .rows .row {
+    pointer-events: none;
+  }
+
   .message {
     padding: 4px 10px;
     color: $text-light;

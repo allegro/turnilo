@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import { Timezone, Duration, WallTime, month, day, hour, minute } from 'chronoshift';
-import { TimeRange } from 'plywood';
+import { TimeRange, TimeBucketAction } from 'plywood';
+import { getBestBucketUnitForRange } from '../../models/granularity/granularity';
 
 const FORMAT_WITH_YEAR = d3.time.format('%b %-d, %Y');
 const FORMAT_WITHOUT_YEAR = d3.time.format('%b %-d');
@@ -159,56 +160,9 @@ function cleanISOString(input: string) {
   return input.replace(/(\.\d\d\d)?Z?$/, '');
 }
 
-export function getBestGranularityDuration(timeRange: TimeRange): Duration {
-  var len = timeRange.end.valueOf() - timeRange.start.valueOf();
-  if (len > 95 * day.canonicalLength) {
-    return Duration.fromJS('P1W');
-
-  } else if (len > 8 * day.canonicalLength) {
-    return Duration.fromJS('P1D');
-
-  } else if (len > 8 * hour.canonicalLength) {
-    return Duration.fromJS('PT1H');
-
-  } else if (len > 3 * hour.canonicalLength) {
-    return Duration.fromJS('PT5M');
-
-  } else {
-    return Duration.fromJS('PT1M');
-  }
-}
-
-export function getTickDuration(timeRange: TimeRange): Duration {
-  var len = timeRange.end.valueOf() - timeRange.start.valueOf();
-  if (len > 95 * day.canonicalLength) {
-    return Duration.fromJS('P1M');
-
-  } else if (len > 20 * day.canonicalLength) {
-    return Duration.fromJS('P1W');
-
-  } else if (len > 6 * day.canonicalLength) {
-    return Duration.fromJS('P1D');
-
-  } else if (len > 2 * day.canonicalLength) {
-    return Duration.fromJS('PT12H');
-
-  } else if (len > 23 * hour.canonicalLength) {
-    return Duration.fromJS('PT6H');
-
-  } else if (len > 3 * hour.canonicalLength) {
-    return Duration.fromJS('PT1H');
-
-  } else if (len > 30 * minute.canonicalLength) {
-    return Duration.fromJS('PT5M');
-
-  } else {
-    return Duration.fromJS('PT1M');
-  }
-}
-
 export function getTimeTicks(timeRange: TimeRange, timezone: Timezone): Date[] {
   const { start, end } = timeRange;
-  const tickDuration = getTickDuration(timeRange);
+  const tickDuration = getBestBucketUnitForRange(timeRange, true) as Duration;
   return tickDuration.materialize(start, end, timezone);
 }
 

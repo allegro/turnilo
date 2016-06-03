@@ -366,7 +366,8 @@
     background-color: darken($item-categorical, 6%);
   }
 
-  &.type-time {
+  &.type-time,
+  &.type-number {
     background: $item-continuous;
 
     &:hover,
@@ -395,4 +396,40 @@
   background: #fff;
   border-radius: 2px;
   box-shadow: 0 5px 9px 0 rgba(0, 0, 0, 0.3), 0 0 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+%side-by-side {
+  display: flex;
+
+  > input {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+  }
+
+  :not(:last-child) {
+    margin-right: 8px;
+  }
+}
+
+%input-field {
+  border: 1px solid #d4d4d4;
+  border-radius: $corner;
+  box-shadow: inset 0 1px 1px rgba($black, 0.13);
+  padding-left: 6px;
+  padding-right: 6px;
+  width: 100%;
+  height: $control-height;
+
+  &:hover {
+    border-color: #b8b8b8;
+  }
+
+  &:focus {
+    border-color: $brand;
+  }
+
+  &.error {
+    border-color: $danger;
+  }
 }

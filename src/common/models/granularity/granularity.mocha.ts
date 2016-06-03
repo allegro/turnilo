@@ -1,7 +1,8 @@
 import { expect } from "chai";
+import { immutableArraysEqual } from "immutable-class";
 import { Duration } from "chronoshift";
-import { Granularity, granularityFromJS, granularityEquals, granularityToString } from "./granularity";
-import { TimeBucketAction, NumberBucketAction } from "plywood";
+import { Granularity, granularityFromJS, granularityEquals, granularityToString, updateBucketSize, getGranularities, getDefaultGranularityForKind, getBestBucketUnitForRange } from "./granularity";
+import { TimeBucketAction, NumberBucketAction, TimeRange, NumberRange } from "plywood";
 
 var { WallTime } = require('chronoshift');
 if (!WallTime.rules) {
@@ -152,6 +153,192 @@ describe('Granularity', () => {
     expect(granularityEquals(numberBucketAction1, numberBucketAction2)).to.equal(true);
     expect(granularityEquals(numberBucketAction2, numberBucketAction3)).to.equal(false);
     expect(granularityEquals(numberBucketAction3, numberBucketAction4)).to.equal(true);
+
+  });
+
+  it('updatesBucketSize appropriately, preserves original non size properties', () => {
+
+    var numberBucketAction1 = granularityFromJS({
+      action: 'numberBucket',
+      size: 5,
+      offset: 1
+    });
+
+    var numberBucketAction2 = granularityFromJS({
+      action: 'numberBucket',
+      size: 10,
+      offset: 0
+    });
+
+    var numberBucketAction3 = granularityFromJS({
+      action: 'numberBucket',
+      size: 10,
+      offset: 1
+    });
+
+    expect(granularityEquals(updateBucketSize(numberBucketAction1, numberBucketAction2), numberBucketAction3)).to.equal(true);
+
+    var timeBucketAction1 = granularityFromJS({
+      action: 'timeBucket',
+      duration: 'P1W',
+      timezone: 'America/Tijuana'
+    });
+
+    var timeBucketAction2 = granularityFromJS({
+      action: 'timeBucket',
+      duration: 'P1M',
+      timezone: null
+    });
+
+    var timeBucketAction3 = granularityFromJS({
+      action: 'timeBucket',
+      duration: 'P1M',
+      timezone: 'America/Tijuana'
+    });
+
+    expect(granularityEquals(updateBucketSize(timeBucketAction1, timeBucketAction2), timeBucketAction3)).to.equal(true);
+
+  });
+
+  it('getGranularities appropriately for time', () => {
+    var defaults = getGranularities('time');
+    var expectedDefaults = ['P1W', 'P1D', 'PT1H', 'PT5M', 'PT1M'].map(granularityFromJS);
+
+    expect(immutableArraysEqual(defaults, expectedDefaults), 'time defaults are returned').to.equal(true);
+
+    var coarse = getGranularities('time', null, true);
+    var expectedCoarseDefaults = ['P1M', 'P1W', 'P1D', 'PT12H', 'PT6H', 'PT1H', 'PT5M', 'PT1M'].map(granularityFromJS);
+
+    expect(immutableArraysEqual(coarse, expectedCoarseDefaults), 'coarse time defaults are returned').to.equal(true);
+
+    var bucketedBy = getGranularities('time', granularityFromJS('PT12H'), false);
+    var expectedDefaults = ['PT12H', 'P1D', 'P1W', 'P1M', 'P3M'].map(granularityFromJS);
+
+    expect(immutableArraysEqual(bucketedBy, expectedDefaults), 'bucketed by returns larger granularities').to.equal(true);
+
+  });
+
+  it('getGranularities appropriately for number', () => {
+    var defaults = getGranularities('number');
+    var expectedDefaults = [0.1, 1, 10, 100, 1000].map(granularityFromJS);
+
+    expect(immutableArraysEqual(defaults, expectedDefaults), 'number defaults are returned').to.equal(true);
+
+    var bucketedBy = getGranularities('number', granularityFromJS(100), false);
+    var expectedGrans = [100, 500, 1000, 5000, 10000].map(granularityFromJS);
+
+    expect(immutableArraysEqual(bucketedBy, expectedGrans), 'bucketed by returns larger granularities').to.equal(true);
+
+  });
+
+  it('getDefaultGranularityForKind appropriately for number', () => {
+    var defaultNumber = getDefaultGranularityForKind('number');
+    var expected = granularityFromJS(10);
+
+    expect(granularityEquals(defaultNumber, expected)).to.equal(true);
+
+    var bucketedBy = getDefaultGranularityForKind('number', granularityFromJS(50));
+    expected = granularityFromJS(50);
+
+    expect(granularityEquals(bucketedBy, expected), 'default will bucket by provided bucketedBy amount').to.equal(true);
+
+    var customGrans = getDefaultGranularityForKind('number', null, [100, 500, 1000, 5000, 10000].map(granularityFromJS));
+    expected = granularityFromJS(1000);
+
+    expect(granularityEquals(customGrans, expected), 'default will bucket according to provided customs').to.equal(true);
+
+  });
+
+  it('getDefaultGranularityForKind appropriately for time', () => {
+    var defaultNumber = getDefaultGranularityForKind('time');
+    var expected = granularityFromJS('P1D');
+
+    expect(granularityEquals(defaultNumber, expected)).to.equal(true);
+
+    var bucketedBy = getDefaultGranularityForKind('time', granularityFromJS('P1W'));
+    expected = granularityFromJS('P1W');
+
+    expect(granularityEquals(bucketedBy, expected), 'default will bucket by provided bucketedBy amount').to.equal(true);
+
+    var customGrans = getDefaultGranularityForKind('time', null, ['PT1H', 'PT8H', 'PT12H', 'P1D', 'P1W'].map(granularityFromJS));
+    expected = granularityFromJS('PT12H');
+
+    expect(granularityEquals(customGrans, expected), 'default will bucket according to provided customs').to.equal(true);
+
+  });
+
+  it('getsBestBucketUnit appropriately for time defaults depending on coarse flag', () => {
+    var month = 'P1M';
+    var week = 'P1W';
+    var day = 'P1D';
+    var twelveHours = 'PT12H';
+    var sixHours = 'PT6H';
+    var oneHour = 'PT1H';
+    var fiveMinutes = 'PT5M';
+    var oneMinute = 'PT1M';
+
+    var yearLength = new TimeRange({ start: new Date('1994-02-24T00:00:00.000Z'), end: new Date('1995-02-25T00:00:00.000Z') });
+    expect(getBestBucketUnitForRange(yearLength, false).toString()).to.equal(week);
+    expect(getBestBucketUnitForRange(yearLength, true).toString()).to.equal(month);
+
+    var monthLength = new TimeRange({ start: new Date('1995-02-24T00:00:00.000Z'), end: new Date('1995-03-25T00:00:00.000Z') });
+    expect(getBestBucketUnitForRange(monthLength, false).toString()).to.equal(day);
+    expect(getBestBucketUnitForRange(monthLength, true).toString()).to.equal(week);
+
+    var sevenDaysLength = new TimeRange({ start: new Date('1995-02-20T00:00:00.000Z'), end: new Date('1995-02-28T00:00:00.000Z') });
+    expect(getBestBucketUnitForRange(sevenDaysLength, false).toString()).to.equal(oneHour);
+    expect(getBestBucketUnitForRange(sevenDaysLength, true).toString()).to.equal(day);
+
+    var threeDaysLength = new TimeRange({ start: new Date('1995-02-20T00:00:00.000Z'), end: new Date('1995-02-24T00:00:00.000Z') });
+    expect(getBestBucketUnitForRange(sevenDaysLength, false).toString()).to.equal(oneHour);
+    expect(getBestBucketUnitForRange(threeDaysLength, true).toString()).to.equal(twelveHours);
+
+    var dayLength = new TimeRange({ start: new Date('1995-02-24T00:00:00.000Z'), end: new Date('1995-02-25T00:00:00.000Z') });
+    expect(getBestBucketUnitForRange(dayLength, false).toString()).to.equal(oneHour);
+    expect(getBestBucketUnitForRange(dayLength, true).toString()).to.equal(sixHours);
+
+    var fourHours = new TimeRange({ start: new Date('1995-02-24T00:00:00.000Z'), end: new Date('1995-02-24T04:00:00.000Z') });
+    expect(getBestBucketUnitForRange(fourHours, false).toString()).to.equal(fiveMinutes);
+    expect(getBestBucketUnitForRange(fourHours, true).toString()).to.equal(oneHour);
+
+    var fortyFiveMin = new TimeRange({ start: new Date('1995-02-24T00:00:00.000Z'), end: new Date('1995-02-24T00:45:00.000Z') });
+    expect(getBestBucketUnitForRange(fortyFiveMin, false).toString()).to.equal(oneMinute);
+    expect(getBestBucketUnitForRange(fortyFiveMin, true).toString()).to.equal(fiveMinutes);
+
+  });
+
+  it('getsBestBucketUnit appropriately for time with bucketing and custom granularities', () => {
+    var sixHours = 'PT6H';
+    var oneHour = 'PT1H';
+    var week = 'P1W';
+
+    var dayLength = new TimeRange({ start: new Date('1995-02-24T00:00:00.000Z'), end: new Date('1995-02-25T00:00:00.000Z') });
+    expect(getBestBucketUnitForRange(dayLength, false).toString()).to.equal(oneHour);
+    expect(getBestBucketUnitForRange(dayLength, false, granularityFromJS('PT6H')).toString()).to.equal(sixHours);
+
+    var yearLength = new TimeRange({ start: new Date('1994-02-24T00:00:00.000Z'), end: new Date('1995-02-25T00:00:00.000Z') });
+    expect(getBestBucketUnitForRange(yearLength, false, granularityFromJS('PT6H')).toString()).to.equal(week);
+
+    var customs = ['PT1H', 'PT8H', 'PT12H', 'P1D', 'P1W'].map(granularityFromJS);
+    expect(getBestBucketUnitForRange(dayLength, false, null, customs).toString()).to.equal(oneHour);
+
+    var fortyFiveMin = new TimeRange({ start: new Date('1995-02-24T00:00:00.000Z'), end: new Date('1995-02-24T00:45:00.000Z') });
+    expect(getBestBucketUnitForRange(fortyFiveMin, false, null, customs).toString()).to.equal(oneHour);
+
+  });
+
+  it('getsBestBucketUnit appropriately for number defaults with bucketing and custom granularities', () => {
+    var ten = new NumberRange({ start: 0, end: 10 });
+    var thirtyOne = new NumberRange({ start: 0, end: 31 });
+    var hundred = new NumberRange({ start: 0, end: 100 });
+
+    expect(getBestBucketUnitForRange(ten, false)).to.equal(1);
+    expect(getBestBucketUnitForRange(thirtyOne, false)).to.equal(10);
+    expect(getBestBucketUnitForRange(hundred, false)).to.equal(10);
+    expect(getBestBucketUnitForRange(hundred, false, granularityFromJS(50))).to.equal(50);
+
+    var customs = [-5, 0.25, 0.5, 0.78, 5].map(granularityFromJS);
+    expect(getBestBucketUnitForRange(ten, false, null, customs)).to.equal(5);
 
   });
 

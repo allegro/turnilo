@@ -1,0 +1,40 @@
+@import '../../imports';
+
+$nub-size: 16px;
+
+.range-handle {
+  width: $nub-size;
+  height: $nub-size;
+  background: $brand;
+  border-radius: 50%;
+  border: 2px solid $brand;
+  z-index: 2;
+
+  &.empty {
+    background: $white;
+  }
+
+  &.beyond::before {
+    border-style: solid;
+    border-color: $background-light;
+    border-width: 2.5px 2.5px 0 0;
+    content: '';
+    display: inline-block;
+    height: 4px;
+    position: relative;
+    top: 2.5px;
+    vertical-align: top;
+    width: 4px;
+  }
+
+  &.beyond.min::before {
+    top: 3px;
+    left: 4px;
+    transform: rotate(-135deg);
+  }
+
+  &.beyond.max::before {
+    left: 2px;
+    transform: rotate(45deg);
+  }
+}

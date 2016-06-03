@@ -8,7 +8,7 @@ import { Essence, Stage, DataSource } from '../../../common/models/index';
 
 import { Fn, makeTitle, arraySum } from '../../../common/utils/general/general';
 import { download, makeFileName } from '../../utils/download/download';
-import { formatLabel } from '../../../common/utils/formatter/formatter';
+import { formatFilterClause } from '../../../common/utils/formatter/formatter';
 import { classNames } from '../../utils/dom/dom';
 import { getVisibleSegments } from '../../utils/sizing/sizing';
 import { STRINGS } from '../../config/constants';
@@ -134,7 +134,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     return essence.getEffectiveFilter().clauses.map((clause, i) => {
       const dimension = dataSource.getDimensionByExpression(clause.expression);
       if (!dimension) return null;
-      return formatLabel({ dimension, clause, essence, verbose: true });
+      return formatFilterClause({ dimension, clause, essence, verbose: true });
     }).toList();
   }
 

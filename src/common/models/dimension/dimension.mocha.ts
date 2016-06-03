@@ -26,7 +26,8 @@ describe('Dimension', () => {
           'type': 'SET'
         },
         kind: 'string',
-        url: 'https://www.country.com/%s'
+        url: 'https://www.country.com/%s',
+        bucketedBy: 1
       },
       {
         name: 'time',
@@ -50,7 +51,8 @@ describe('Dimension', () => {
         },
         kind: 'time',
         url: 'http://www.time.com/%s',
-        granularities: ['PT1M', 'P6M', 'PT6H', 'P1D', 'P1W']
+        granularities: ['PT1M', 'P6M', 'PT6H', 'P1D', 'P1W'],
+        bucketedBy: 'PT6H'
       }
     ]);
   });

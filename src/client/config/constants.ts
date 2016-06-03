@@ -60,7 +60,8 @@ export const STRINGS = {
   exportToCSV: 'Export to CSV',
   updateTimezone: 'Update Timezone',
   timezone: 'Timezone',
-  splitDelimiter: 'by'
+  splitDelimiter: 'by',
+  any: 'any'
 };
 
 

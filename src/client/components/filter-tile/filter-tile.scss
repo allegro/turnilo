@@ -25,7 +25,8 @@ $overflow-width: 40px;
         border: 1px dashed $highlight-border;
         background: rgba($item-categorical, 0.5);
 
-        &.type-time {
+        &.type-time,
+        &.type-number {
           border: 1px dashed hsl(130, 39%, 44%);
           background: rgba($item-continuous, 0.5);
         }
@@ -65,7 +66,8 @@ $overflow-width: 40px;
       border: 1px dashed $highlight-border;
       background: rgba($item-categorical, 0.5);
 
-      &.type-time {
+      &.type-time,
+      &.type-number {
         border: 1px dashed hsl(130, 39%, 44%);
         background: rgba($item-continuous, 0.5);
       }

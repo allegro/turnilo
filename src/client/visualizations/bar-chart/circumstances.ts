@@ -9,7 +9,7 @@ export default CircumstancesHandler.EMPTY()
   .when(CircumstancesHandler.areExactSplitKinds('*'))
   .or(CircumstancesHandler.areExactSplitKinds('*', '*'))
   .then((splits: Splits, dataSource: DataSource, colors: Colors, current: boolean) => {
-    var booleanBoost = 0;
+    var continuousBoost = 0;
 
     // Auto adjustment
     var autoChanged = false;
@@ -25,7 +25,14 @@ export default CircumstancesHandler.EMPTY()
             direction: SortAction.DESCENDING
           }));
         } else {
-          split = split.changeSortAction(dataSource.getDefaultSortAction());
+          if (splitDimension.isContinuous()) {
+            split = split.changeSortAction(new SortAction({
+              expression: $(splitDimension.name),
+              direction: SortAction.ASCENDING
+            }));
+          } else {
+            split = split.changeSortAction(dataSource.getDefaultSortAction());
+          }
         }
         autoChanged = true;
       } else if (splitDimension.isContinuous() && split.sortAction.refName() !== splitDimension.name) {
@@ -36,6 +43,9 @@ export default CircumstancesHandler.EMPTY()
         autoChanged = true;
       }
 
+      if (splitDimension.isContinuous()) {
+        continuousBoost = 2;
+      }
 
       // ToDo: review this
       if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
@@ -52,10 +62,10 @@ export default CircumstancesHandler.EMPTY()
     });
 
     if (autoChanged) {
-      return Resolve.automatic(5 + booleanBoost, { splits });
+      return Resolve.automatic(5 + continuousBoost, { splits });
     }
 
-    return Resolve.ready(current ? 10 : (7 + booleanBoost));
+    return Resolve.ready(current ? 10 : (7 + continuousBoost));
   })
 
   .otherwise(

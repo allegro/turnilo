@@ -1,0 +1,25 @@
+@import '../../imports';
+
+.number-filter-menu {
+
+  .side-by-side {
+    @extend %side-by-side;
+  }
+
+  .group {
+    flex-direction: column;
+  }
+
+  .input-top-label {
+    @extend %input-top-label;
+  }
+
+  input {
+    @extend %input-field;
+    margin-top: 6px;
+
+    &.gray {
+      color: $gray;
+    }
+  }
+}

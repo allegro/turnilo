@@ -76,3 +76,39 @@ export function arraySum(inputArray: number[]) {
     return pV + cV;
   }, 0);
 }
+
+export function findFirstBiggerIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {
+  if (!elementToFind) return -1;
+  return List(array).findIndex(g => valueOf(g) > valueOf(elementToFind));
+}
+
+export function findBiggerClosestToIdeal<T>(array: T[], elementToFind: T, ideal: T, valueOf: (input: T) => number) {
+  var biggerOrEqualIndex = List(array).findIndex(g => valueOf(g) >= valueOf(elementToFind));
+  var biggerArrayOrEqual = array.slice(biggerOrEqualIndex);
+  return biggerArrayOrEqual.reduce((pV, cV, i, arr) => Math.abs(valueOf(pV) - valueOf(ideal)) < Math.abs(valueOf(cV) - valueOf(ideal)) ? pV : cV);
+}
+
+export function findExactIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {
+  return List(array).findIndex(g => valueOf(g) === valueOf(elementToFind));
+}
+
+export function findMaxValueIndex<T>(array: T[], valueOf: (input: T) => number) {
+  return array.reduce((currMax, cV, cIdx, arr) => valueOf(cV) > valueOf(arr[currMax]) ? cIdx : currMax, 0);
+}
+
+export function findMinValueIndex<T>(array: T[], valueOf: (input: T) => number) {
+  return array.reduce((currMax, cV, cIdx, arr) => valueOf(cV) < valueOf(arr[currMax]) ? cIdx : currMax, 0);
+}
+
+function log10(n: number) {
+  return Math.log(n) * Math.LOG10E;
+}
+
+export function toSignificantDigits(n: number, digits: number) {
+  var multiplier = Math.pow(10, digits - Math.floor(Math.log(n) / Math.LN10) - 1);
+  return Math.round(n * multiplier) / multiplier;
+}
+
+export function getNumberOfWholeDigits(n: number) {
+  return Math.max(Math.floor(log10(Math.abs(n))), 0) + 1;
+}

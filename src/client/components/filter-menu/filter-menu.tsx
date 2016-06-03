@@ -8,7 +8,7 @@ import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 import { StringFilterMenu } from '../string-filter-menu/string-filter-menu';
 import { TimeFilterMenu } from '../time-filter-menu/time-filter-menu';
-
+import { NumberFilterMenu } from '../number-filter-menu/number-filter-menu';
 
 export interface FilterMenuProps extends React.Props<any> {
   clicker: Clicker;
@@ -40,6 +40,14 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
     if (dimension.kind === 'time') {
       menuSize = Stage.fromSize(250, 274);
       menuCont = <TimeFilterMenu
+        clicker={clicker}
+        dimension={dimension}
+        essence={essence}
+        onClose={onClose}
+      />;
+    } else if (dimension.kind === 'number') {
+      menuSize = Stage.fromSize(250, 274);
+      menuCont = <NumberFilterMenu
         clicker={clicker}
         dimension={dimension}
         essence={essence}

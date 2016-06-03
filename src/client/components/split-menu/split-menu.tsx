@@ -2,7 +2,7 @@ require('./split-menu.css');
 
 import * as React from "react";
 import { Timezone, Duration } from "chronoshift";
-import { TimeBucketAction, SortAction } from "plywood";
+import { TimeBucketAction, NumberBucketAction, SortAction } from "plywood";
 import { Fn, formatGranularity } from "../../../common/utils/index";
 import {
   Stage,
@@ -14,8 +14,10 @@ import {
   Dimension,
   SortOn,
   Granularity,
-  granularityFromJS,
-  granularityToString
+  granularityToString,
+  updateBucketSize,
+  getGranularities,
+  ContinuousDimensionKind
 } from "../../../common/models/index";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
@@ -23,8 +25,6 @@ import { SvgIcon } from "../svg-icon/svg-icon";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Dropdown, DropdownProps } from "../dropdown/dropdown";
 import { ButtonGroup } from "../button-group/button-group";
-
-const GRANULARITIES = ['PT1M', 'PT5M', 'PT1H', 'P1D', 'P1W'].map(granularityFromJS);
 
 function formatLimit(limit: number | string): string {
   if (limit === 'custom') return 'Custom';
@@ -92,15 +92,10 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   onSelectGranularity(granularity: Granularity): void {
     var { split } = this.state;
-    var bucketAction = split.bucketAction;
-    if (bucketAction instanceof TimeBucketAction) {
-      this.setState({
-        split: split.changeBucketAction(new TimeBucketAction({
-          duration: (granularity as TimeBucketAction).duration,
-          timezone: bucketAction.timezone
-        }))
-      });
-    }
+    var bucketAction = split.bucketAction as Granularity;
+    this.setState({
+      split: split.changeBucketAction(updateBucketSize(bucketAction, granularity))
+    });
   }
 
   onSelectSortOn(sortOn: SortOn): void {
@@ -158,11 +153,11 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     return SortOn.fromSortAction(split.sortAction, essence.dataSource, dimension);
   }
 
-  renderGranularityPicker() {
+  renderGranularityPicker(type: ContinuousDimensionKind) {
     var { split } = this.state;
     var { dimension } = this.props;
-    var selectedGran = (split.bucketAction as TimeBucketAction).duration.toString();
-    const granularities = dimension.granularities || GRANULARITIES;
+    var selectedGran = granularityToString(split.bucketAction as Granularity);
+    const granularities = dimension.granularities || getGranularities(type, dimension.bucketedBy);
     var buttons = granularities.map((g: Granularity) => {
       const granularityStr = granularityToString(g);
       return {
@@ -229,7 +224,15 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   renderTimeControls() {
     return <div>
-      {this.renderGranularityPicker()}
+      {this.renderGranularityPicker('time')}
+      {this.renderSortDirection()}
+      {this.renderLimitDropdown(true)}
+    </div>;
+  }
+
+  renderNumberControls() {
+    return <div>
+      {this.renderGranularityPicker('number')}
       {this.renderSortDirection()}
       {this.renderLimitDropdown(true)}
     </div>;
@@ -261,6 +264,8 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var menuControls: JSX.Element = null;
     if (split.bucketAction instanceof TimeBucketAction) {
       menuControls = this.renderTimeControls();
+    } else if (split.bucketAction instanceof NumberBucketAction) {
+      menuControls = this.renderNumberControls();
     } else {
       menuControls = this.renderStringControls();
     }

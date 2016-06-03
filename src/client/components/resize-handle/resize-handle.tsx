@@ -23,6 +23,7 @@ export interface ResizeHandleState {
 
   startValue?: number;
   currentValue?: number;
+  anchor?: number;
 }
 
 export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandleState> {
@@ -55,11 +56,13 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     window.addEventListener('mousemove', this.onGlobalMouseMove);
 
     var newX = this.state.currentValue;
+    var eventX = this.getValueFromX(getXFromEvent(event));
 
     this.setState({
       dragging: true,
       startValue: newX,
-      currentValue: newX
+      currentValue: newX,
+      anchor: eventX - newX
     });
 
     event.preventDefault();
@@ -78,7 +81,9 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
   }
 
   onGlobalMouseMove(event: MouseEvent) {
-    let newX = this.getValueFromX(getXFromEvent(event));
+    const { anchor } = this.state;
+
+    let newX = this.getValueFromX(getXFromEvent(event)) - anchor;
 
     this.setState({
       currentValue: newX

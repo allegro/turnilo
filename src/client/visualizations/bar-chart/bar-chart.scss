@@ -43,13 +43,20 @@
       position: absolute;
       width: 100px;
       height: 20px;
-      top: 3px;
       transform: rotate(-43deg);
       transform-origin: right top;
       text-align: right;
       cursor: default;
       overflow: hidden;
       font-size: 12px;
+
+      &.categorical {
+        top: 3px;
+      }
+
+      &.continuous {
+        top: 6px;
+      }
     }
   }
 

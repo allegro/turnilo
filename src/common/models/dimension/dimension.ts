@@ -1,8 +1,8 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { $, Expression, ExpressionJS, Action, NumberRangeJS, ApplyAction } from 'plywood';
+import { $, Expression, ExpressionJS, Action, NumberRangeJS, ApplyAction, AttributeInfo } from 'plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
-import { Granularity, GranularityJS, granularityFromJS, granularityToJS } from "../granularity/granularity";
+import { Granularity, GranularityJS, granularityFromJS, granularityToJS, granularityEquals } from "../granularity/granularity";
 import { immutableArraysEqual } from "immutable-class";
 
 var geoName = /continent|country|city|region/i;
@@ -22,6 +22,7 @@ export interface DimensionValue {
   kind?: string;
   url?: string;
   granularities?: Granularity[];
+  bucketedBy?: Granularity;
 }
 
 export interface DimensionJS {
@@ -31,6 +32,7 @@ export interface DimensionJS {
   kind?: string;
   url?: string;
   granularities?: GranularityJS[];
+  bucketedBy?: GranularityJS;
 }
 
 var check: Class<DimensionValue, DimensionJS>;
@@ -72,6 +74,11 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       });
     }
 
+    var bucketedBy = parameters.bucketedBy;
+    if (bucketedBy) {
+      value.bucketedBy = granularityFromJS(bucketedBy);
+    }
+
     return new Dimension(value);
   }
 
@@ -82,6 +89,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public className: string;
   public url: string;
   public granularities: Granularity[];
+  public bucketedBy: Granularity;
 
   constructor(parameters: DimensionValue) {
     var name = parameters.name;
@@ -105,6 +113,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     }
 
     if (parameters.granularities) this.granularities = parameters.granularities;
+    if (parameters.bucketedBy) this.bucketedBy = parameters.bucketedBy;
   }
 
   public valueOf(): DimensionValue {
@@ -114,7 +123,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       expression: this.expression,
       kind: this.kind,
       url: this.url,
-      granularities: this.granularities
+      granularities: this.granularities,
+      bucketedBy: this.bucketedBy
     };
   }
 
@@ -127,6 +137,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     };
     if (this.url) js.url = this.url;
     if (this.granularities) js.granularities = this.granularities.map((g) => { return granularityToJS(g); });
+    if (this.bucketedBy) js.bucketedBy = granularityToJS(this.bucketedBy);
     return js;
   }
 
@@ -145,12 +156,14 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.expression.equals(other.expression) &&
       this.kind === other.kind &&
       this.url === other.url &&
-      immutableArraysEqual(this.granularities, other.granularities);
+      immutableArraysEqual(this.granularities, other.granularities) &&
+      granularityEquals(this.bucketedBy, other.bucketedBy);
   }
 
   public isContinuous() {
     const { kind } = this;
     return kind === 'time' || kind === 'number';
   }
+
 }
 check = Dimension;

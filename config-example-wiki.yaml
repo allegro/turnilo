@@ -10,12 +10,12 @@ dataSources:
     engine: native
 
     # The file representing the datasource relative to repo root
-    source: assets/data/wikiticker-2015-09-12-sampled.json
+    source: resources/data/wikiticker-2015-09-12-sampled.json
     # This datasource was scraped using https://github.com/implydata/wikiticker
     # GitHub does not like large files so only a sampled file is checked in
     # There is also a non-sampled file with the filter: isAnonymous == true applied, to use it set:
-    # source: assets/data/wikiticker-2015-09-12-anonymous.json
-    # Run `assets/data-raw/process-wikiticker-2015-09-12` to get the full example file
+    # source: resources/data/wikiticker-2015-09-12-anonymous.json
+    # Run `resources/data/process-wikiticker-2015-09-12` to get the full example file
 
     # The primary time attribute of the data refers to the attribute that must always be filtered on
     # This is particularly useful for Druid data sources as they must always have a time filter.
@@ -44,45 +44,108 @@ dataSources:
 
     introspection: no-autofill
 
+    attributeOverrides:
+      - name: sometimeLater
+        type: TIME
+
+      - name: commentLength
+        type: NUMBER
+
+      - name: deltaBucket100
+        type: NUMBER
+
     dimensions:
       - name: time
         type: TIME
+        kind: time
+        expression: $time
+
+    #  - name: sometimeLater
+    #    title: Sometime Later
+    #    kind: time
 
       - name: channel
+        title: Channel
+        expression: $channel
 
       - name: cityName
+        title: City Name
+        expression: $cityName
 
       - name: comment
+        title: Comment
+        expression: $comment
+
+      - name: commentLength
+        title: Comment Length
+        expression: $commentLength
+        kind: number
+
+      - name: commentLengthOver100
+        title: Comment Length Over 100
+        expression: $commentLength > 100
+        kind: boolean
 
       - name: countryIso
         title: Country ISO
         expression: $countryIsoCode
 
       - name: countryName
+        title: Country Name
+        expression: $countryName
+
+      - name: deltaBucket100
+        title: Delta Bucket
+        expression: $deltaBucket100
+        kind: number
 
       - name: isAnonymous
+        title: Is Anonymous
+        kind: boolean
 
       - name: isMinor
+        title: Is Minor
+        kind: boolean
 
       - name: isNew
+        title: Is New
+        kind: boolean
 
       - name: isRobot
+        title: Is Robot
+        kind: boolean
 
       - name: isUnpatrolled
+        title: Is Unpatrolled
+        expression: $isUnpatrolled
 
       - name: metroCode
+        title: Metro Code
+        expression: $metroCode
 
       - name: namespace
+        title: Namespace
+        expression: $namespace
 
       - name: page
+        title: Page
+        expression: $page
 
       - name: regionIso
         title: Region ISO
         expression: $regionIsoCode
 
       - name: regionName
+        title: Region Name
+        expression: $regionName
 
       - name: user
+        title: User
+        expression: $user
+
+      - name: userChars
+        title: User Chars
+        expression: $userChars
 
 
     measures:

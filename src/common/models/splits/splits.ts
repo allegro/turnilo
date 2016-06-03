@@ -1,14 +1,13 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
-import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction, NumberRange } from 'plywood';
+import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction, NumberRange, Range } from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
-import { getBestGranularityDuration } from '../../utils/time/time';
 import { Dimension } from '../dimension/dimension';
 import { Filter } from '../filter/filter';
 import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
-
-const DEFAULT_GRANULARITY = Duration.fromJS('P1D');
+import { NumberBucketAction } from "plywood";
+import { getDefaultGranularityForKind, getBestBucketUnitForRange } from "../granularity/granularity";
 
 function withholdSplit(splits: List<SplitCombine>, split: SplitCombine, allowIndex: number): List<SplitCombine> {
   return <List<SplitCombine>>splits.filter((s, i) => {
@@ -177,11 +176,16 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
 
       if (splitKind === 'time') {
         return splitCombine.changeBucketAction(new TimeBucketAction({
-          duration: TimeRange.isTimeRange(extent) ? getBestGranularityDuration(extent) : DEFAULT_GRANULARITY
+          duration: TimeRange.isTimeRange(extent) ? (getBestBucketUnitForRange(extent, false, splitDimension.bucketedBy, splitDimension.granularities) as Duration) :
+            (getDefaultGranularityForKind('time', splitDimension.bucketedBy, splitDimension.granularities) as TimeBucketAction).duration
         }));
+
       } else if (splitKind === 'number') {
-        return splitCombine; // ToDo: temp
-        //throw new Error('nothing here yet');
+        return splitCombine.changeBucketAction(new NumberBucketAction({
+          size: extent ? (getBestBucketUnitForRange(extent, false, splitDimension.bucketedBy, splitDimension.granularities) as number) :
+            (getDefaultGranularityForKind('number', splitDimension.bucketedBy, splitDimension.granularities) as NumberBucketAction).size
+        }));
+
       }
 
       throw new Error('unknown extent type');
