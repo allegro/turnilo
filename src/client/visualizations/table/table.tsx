@@ -232,6 +232,9 @@ export class Table extends BaseVisualization<TableState> {
         .filter((d: Datum) => d['__nest'] === splitLength)
         .map((d: Datum) => d[measure.name] as number);
 
+      // Ensure that 0 is in there
+      measureValues.push(0);
+
       return d3.scale.linear()
         .domain(d3.extent(measureValues))
         .range([0, 100]); // really those are percents
