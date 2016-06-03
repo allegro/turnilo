@@ -29,11 +29,11 @@ dataSources:
     engine: native
 
     # The file representing the datasource relative to repo root
-    source: resources/data/wikiticker-2015-09-12-sampled.json
+    source: assets/data/wikiticker-2015-09-12-sampled.json
     # This datasource was scraped using https://github.com/implydata/wikiticker
     # GitHub does not like large files so only a sampled file is checked in
     # There is also a non-sampled file with the filter: isAnonymous == true applied, to use it set:
-    # source: resources/data/wikiticker-2015-09-12-anonymous.json
+    # source: assets/data/wikiticker-2015-09-12-anonymous.json
     # Run `resources/data/process-wikiticker-2015-09-12` to get the full example file
 
     # The subset filter that is applied to the data. This essentially restricts the data to only the rows that match the filter
