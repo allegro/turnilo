@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.36
+
+- Misc query improvements from new Plywood 
+
 ## 0.8.35
 
 - Two splits with scrolling in bar chart
