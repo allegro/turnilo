@@ -58,7 +58,7 @@ function getMaxItems(stageWidth: number, itemsLength: number): number {
     }
     return maxItems;
   } else {
-    return itemsLength;
+    return initialMax;
   }
 }
 
