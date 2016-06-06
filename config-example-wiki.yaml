@@ -10,12 +10,12 @@ dataSources:
     engine: native
 
     # The file representing the datasource relative to repo root
-    source: resources/data/wikiticker-2015-09-12-sampled.json
+    source: assets/data/wikiticker-2015-09-12-sampled.json
     # This datasource was scraped using https://github.com/implydata/wikiticker
     # GitHub does not like large files so only a sampled file is checked in
     # There is also a non-sampled file with the filter: isAnonymous == true applied, to use it set:
-    # source: resources/data/wikiticker-2015-09-12-anonymous.json
-    # Run `resources/data/process-wikiticker-2015-09-12` to get the full example file
+    # source: assets/data/wikiticker-2015-09-12-anonymous.json
+    # Run `assets/data/process-wikiticker-2015-09-12` to get the full example file
 
     # The primary time attribute of the data refers to the attribute that must always be filtered on
     # This is particularly useful for Druid data sources as they must always have a time filter.
