@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.39
+
+- Fixed example config
+
 ## 0.8.38
 
 - Continuous dimension filtering and splitting
