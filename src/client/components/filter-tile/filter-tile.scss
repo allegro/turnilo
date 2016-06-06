@@ -34,19 +34,24 @@ $overflow-width: 40px;
     }
   }
 
-  &.has-overflow {
-    .items {
-      right: $overflow-width;
-    }
-  }
-
   .overflow {
-    @include pin-right($overflow-width);
-    cursor: pointer;
-    border-left: 1px solid $gray;
-    padding-top: 12px;
-    text-align: center;
-    font-weight: 600;
+    @extend %dimension-item;
+    @extend %dimension-item-h;
+    position: absolute;
+    left: 0;
+    padding: 0 10px;
+    width: 40px;
+
+    &.all-continuous {
+      background: $item-continuous;
+    }
+
+    .count {
+      pointer-events: none;
+      white-space: nowrap;
+      height: 16px;
+      margin-top: 7px;
+    }
   }
 
   .fancy-drag-indicator {

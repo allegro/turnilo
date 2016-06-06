@@ -8,8 +8,7 @@ import { STRINGS, BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, DragPosition } from '../../../common/models/index';
 import { formatFilterClause } from '../../../common/utils/formatter/formatter';
 import {
-  findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent,
-  classNames
+  findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent, classNames
 } from '../../utils/dom/dom';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 
@@ -21,6 +20,9 @@ import { BubbleMenu } from '../bubble-menu/bubble-menu';
 const FILTER_CLASS_NAME = 'filter';
 const ANIMATION_DURATION = 400;
 const OVERFLOW_WIDTH = 40;
+const VIS_SELECTOR_WIDTH = 79;
+const SECTION_WIDTH = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
+
 
 export interface ItemBlank {
   dimension: Dimension;
@@ -30,6 +32,34 @@ export interface ItemBlank {
 
 function formatLabelDummy(dimension: Dimension): string {
   return dimension.title;
+}
+
+
+function getWidthNoOverflowAdjustment(stageWidth: number) {
+  return stageWidth - BAR_TITLE_WIDTH - VIS_SELECTOR_WIDTH + CORE_ITEM_GAP;
+}
+
+function getMaxItems(stageWidth: number, itemsLength: number): number {
+  var maxWidth = getWidthNoOverflowAdjustment(stageWidth);
+  var includedItems = itemsLength;
+  var initialMax = Math.floor((maxWidth - OVERFLOW_WIDTH ) / SECTION_WIDTH);
+
+  if (initialMax < includedItems) {
+
+    var widthPlusOverflow = initialMax * SECTION_WIDTH + OVERFLOW_WIDTH + CORE_ITEM_GAP;
+    var maxItems: number = null;
+
+    if (maxWidth < widthPlusOverflow) {
+      maxItems = initialMax - 1;
+    } else if (includedItems - initialMax === 1) {
+      maxItems = Math.floor(maxWidth / SECTION_WIDTH);
+    } else {
+      maxItems = initialMax;
+    }
+    return maxItems;
+  } else {
+    return itemsLength;
+  }
 }
 
 export interface FilterTileProps extends React.Props<any> {
@@ -49,6 +79,7 @@ export interface FilterTileState {
   possibleDimension?: Dimension;
   possiblePosition?: DragPosition;
   maxItems?: number;
+  maxWidth?: number;
 }
 
 export class FilterTile extends React.Component<FilterTileProps, FilterTileState> {
@@ -82,10 +113,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   componentWillReceiveProps(nextProps: FilterTileProps) {
     const { menuStage } = nextProps;
-    const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 
     if (menuStage) {
-      var newMaxItems = Math.floor((menuStage.width - BAR_TITLE_WIDTH - OVERFLOW_WIDTH - 79 + CORE_ITEM_GAP) / sectionWidth); // 79 = vis selector width
+      var newMaxItems = getMaxItems(menuStage.width, this.getItemBlanks().length);
       if (newMaxItems !== this.state.maxItems) {
         this.setState({
           menuOpenOn: null,
@@ -397,13 +427,17 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     </BubbleMenu>;
   }
 
-  renderOverflow(overflowItemBlanks: ItemBlank[]): JSX.Element {
+  renderOverflow(overflowItemBlanks: ItemBlank[], itemX: number): JSX.Element {
+    var style = transformStyle(itemX, 0);
+
     return <div
-      className="overflow"
+      className={classNames('overflow', { 'all-continuous': overflowItemBlanks.every(item => item.dimension.isContinuous()) })}
       ref="overflow"
+      key="overflow"
+      style={style}
       onClick={this.overflowButtonClick.bind(this)}
     >
-      {'+' + overflowItemBlanks.length}
+      <div className="count">{'+' + overflowItemBlanks.length}</div>
       {this.renderOverflowMenu(overflowItemBlanks)}
     </div>;
   }
@@ -420,7 +454,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   renderItemBlank(itemBlank: ItemBlank, style: any): JSX.Element {
     var { essence, clicker } = this.props;
     var { menuDimension } = this.state;
-    var { timezone } = essence;
 
     var { dimension, clause, source } = itemBlank;
     var dimensionName = dimension.name;
@@ -469,12 +502,11 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
   }
 
-  render() {
+  getItemBlanks(): ItemBlank[] {
     var { essence } = this.props;
-    var { dragPosition, possibleDimension, possiblePosition, maxItems } = this.state;
-    var { dataSource, filter, highlight } = essence;
+    var { possibleDimension, possiblePosition, maxItems } = this.state;
 
-    const sectionWidth = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
+    var { dataSource, filter, highlight } = essence;
 
     var itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
@@ -531,28 +563,28 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       }
     }
 
-    var overflowItemBlanks: ItemBlank[];
-    if (maxItems < itemBlanks.length) {
-      overflowItemBlanks = itemBlanks.slice(maxItems);
-      itemBlanks = itemBlanks.slice(0, maxItems);
-    } else {
-      overflowItemBlanks = [];
-    }
+    return itemBlanks;
+  }
+
+  render() {
+    var { dragPosition, maxItems } = this.state;
+    var itemBlanks = this.getItemBlanks();
 
     var itemX = 0;
-    var filterItems = itemBlanks.map((itemBlank) => {
+    var filterItems = itemBlanks.slice(0, maxItems).map((item) => {
       var style = transformStyle(itemX, 0);
-      itemX += sectionWidth;
-      return this.renderItemBlank(itemBlank, style);
+      itemX += SECTION_WIDTH;
+      return this.renderItemBlank(item, style);
     });
 
-    var overflowIndicator: JSX.Element = null;
-    if (overflowItemBlanks.length) {
-      overflowIndicator = this.renderOverflow(overflowItemBlanks);
+    var overflow = itemBlanks.slice(maxItems);
+    if (overflow.length > 0) {
+      var overFlowStart = filterItems.length * SECTION_WIDTH;
+      filterItems.push(this.renderOverflow(overflow, overFlowStart));
     }
 
     return <div
-      className={classNames('filter-tile', (overflowIndicator ? 'has-overflow' : 'no-overflow'))}
+      className='filter-tile'
       onDragEnter={this.dragEnter.bind(this)}
 
     >
@@ -560,7 +592,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       <div className="items" ref="items">
         {filterItems}
       </div>
-      {overflowIndicator}
       {dragPosition ? <FancyDragIndicator dragPosition={dragPosition}/> : null}
       {dragPosition ? <div
         className="drag-mask"
