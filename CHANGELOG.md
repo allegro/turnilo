@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.40
+
+- New Plywood adds support for native quantiles
+- New filter menu overflow style
+
 ## 0.8.39
 
 - Fixed example config
