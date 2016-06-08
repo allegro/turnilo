@@ -434,6 +434,9 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     var className = classNames.join(' ');
 
+    var evaluatedClause = dimension.kind === 'time' ? essence.evaluateClause(clause) : clause;
+    var timezone = essence.timezone;
+
     if (source === 'from-highlight') {
       return <div
         className={className}
@@ -442,7 +445,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onClick={clicker.acceptHighlight.bind(clicker)}
         style={style}
       >
-        <div className="reading">{formatFilterClause({dimension, clause, essence})}</div>
+        <div className="reading">{formatFilterClause(dimension, evaluatedClause, timezone)}</div>
         {this.renderRemoveButton(itemBlank)}
       </div>;
     }
@@ -457,7 +460,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onDragStart={this.dragStart.bind(this, dimension, clause)}
         style={style}
       >
-        <div className="reading">{formatFilterClause({dimension, clause, essence})}</div>
+        <div className="reading">{formatFilterClause(dimension, evaluatedClause, timezone)}</div>
         {this.renderRemoveButton(itemBlank)}
       </div>;
     } else {

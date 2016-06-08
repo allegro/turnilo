@@ -1,7 +1,17 @@
 import { expect } from 'chai';
 
 import { List } from 'immutable';
-import { getMiddleNumber, formatterFromData } from './formatter';
+import { Timezone } from 'chronoshift';
+import { FilterClause } from "../../models/filter-clause/filter-clause";
+import { DimensionMock } from '../../../common/models/mocks';
+
+var { WallTime } = require('chronoshift');
+if (!WallTime.rules) {
+  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
+  WallTime.init(tzData.rules, tzData.zones);
+}
+
+import { getMiddleNumber, formatterFromData, formatFilterClause } from './formatter';
 
 describe('General', () => {
   describe('getMiddleNumber', () => {
@@ -35,6 +45,93 @@ describe('General', () => {
       var formatter = formatterFromData(values, '0,0.000 b');
       expect(formatter(10)).to.equal('0.010 KB');
       expect(formatter(12345)).to.equal('12.056 KB');
+    });
+  });
+
+  describe('formatFilterClause', () => {
+    var timeFilterDifferentMonth = FilterClause.fromJS(
+      {
+        expression: { op: 'ref', name: 'time' },
+        selection: {
+          op: 'literal',
+          type: 'TIME_RANGE',
+          value: { start: new Date('2016-11-11'), end: new Date('2016-12-12') }
+        }
+      }
+    );
+
+    var timeFilterDifferentYear = FilterClause.fromJS(
+      {
+        expression: { op: 'ref', name: 'time' },
+        selection: {
+          op: 'literal',
+          type: 'TIME_RANGE',
+          value: { start: new Date('2015-11-11'), end: new Date('2016-12-12') }
+        }
+      }
+    );
+
+    var timeFilterSameMonth = FilterClause.fromJS(
+      {
+        expression: { op: 'ref', name: 'time' },
+        selection: {
+          op: 'literal',
+          type: 'TIME_RANGE',
+          value: { start: new Date('2015-11-11'), end: new Date('2015-11-14') }
+        }
+      }
+    );
+
+
+    var numberFilter = FilterClause.fromJS({
+      expression: { op: 'ref', name: 'commentLength' },
+      selection: {
+        op: 'literal',
+        value: {
+          "setType": "NUMBER",
+          "elements": [1, 2, 3]
+        },
+        "type": "SET"
+      },
+      exclude: true
+    });
+
+    var stringFilterShort = FilterClause.fromJS({
+      expression: { op: 'ref', name: 'country' },
+      selection: {
+        op: 'literal',
+        value: {
+          "setType": "STRING",
+          "elements": ["iceland"]
+        },
+        "type": "SET"
+      }
+    });
+
+    it('works in time case', () => {
+      expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentMonth, Timezone.UTC)).to.equal('Nov 11 - Dec 11');
+      expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentYear, Timezone.UTC)).to.equal('Nov 11, 2015 - Dec 11, 2016');
+      expect(formatFilterClause(DimensionMock.time(), timeFilterSameMonth, Timezone.UTC)).to.equal('Nov 11 - Nov 13, 2015');
+    });
+
+    it('works in time case verbose', () => {
+      expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentMonth, Timezone.UTC, true)).to.equal('time: Nov 11 - Dec 11');
+    });
+
+    it('works in number case', () => {
+      expect(formatFilterClause(DimensionMock.number(), numberFilter, Timezone.UTC)).to.equal('Numeric (3)');
+    });
+
+    it('works in number verbose', () => {
+      expect(formatFilterClause(DimensionMock.number(), numberFilter, Timezone.UTC, true)).to.equal('Numeric: 1, 2, 3');
+    });
+
+    it('works in string case', () => {
+      expect(formatFilterClause(DimensionMock.countryString(), stringFilterShort, Timezone.UTC)).to.equal('important countries: iceland');
+    });
+
+    it('works in string verbose', () => {
+      expect(formatFilterClause(DimensionMock.countryString(), stringFilterShort, Timezone.UTC, true)).to.equal('important countries: iceland');
     });
   });
 });

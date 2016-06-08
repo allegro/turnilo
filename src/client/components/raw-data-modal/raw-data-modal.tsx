@@ -18,9 +18,6 @@ import { Scroller, ScrollerLayout } from '../scroller/scroller';
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
 
-const SPACE_RIGHT = 10;
-const SPACE_LEFT = 10;
-const BODY_PADDING_BOTTOM = 90;
 const HEADER_HEIGHT = 30;
 const ROW_HEIGHT = 30;
 const LIMIT = 100;
@@ -134,7 +131,8 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     return essence.getEffectiveFilter().clauses.map((clause, i) => {
       const dimension = dataSource.getDimensionByExpression(clause.expression);
       if (!dimension) return null;
-      return formatFilterClause({ dimension, clause, essence, verbose: true });
+      var evaluatedClause = dimension.kind === 'time' ? essence.evaluateClause(clause) : clause;
+      return formatFilterClause(dimension, evaluatedClause, essence.timezone);
     }).toList();
   }
 

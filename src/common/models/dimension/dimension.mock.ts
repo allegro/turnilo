@@ -41,6 +41,19 @@ export class DimensionMock {
     };
   }
 
+  public static get NUMBER_JS(): DimensionJS {
+    return {
+      name: 'numeric',
+      title: 'Numeric',
+      'expression': {
+        'op': 'literal',
+        'value': { 'setType': 'NUMBER', 'elements': [1] },
+        'type': 'SET'
+      },
+      kind: 'number'
+    };
+  }
+
   static countryString() {
     return Dimension.fromJS(DimensionMock.COUNTRY_STRING_JS);
   }
@@ -51,5 +64,9 @@ export class DimensionMock {
 
   static time() {
     return Dimension.fromJS(DimensionMock.TIME_JS);
+  }
+
+  static number() {
+    return Dimension.fromJS(DimensionMock.NUMBER_JS);
   }
 }

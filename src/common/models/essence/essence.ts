@@ -446,6 +446,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return FilterClause.evaluate(selection, now, maxTime, timezone);
   }
 
+  public evaluateClause(clause: FilterClause, now: Date = new Date()): FilterClause {
+    var { dataSource, timezone } = this;
+    var maxTime = dataSource.getMaxTimeDate();
+    return clause.evaluate(now, maxTime, timezone);
+  }
+
   public getEffectiveFilter(highlightId: string = null, unfilterDimension: Dimension = null): Filter {
     var { dataSource, filter, highlight, timezone } = this;
     if (highlight && (highlightId !== highlight.owner)) filter = highlight.applyToFilter(filter);
