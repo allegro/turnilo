@@ -140,6 +140,7 @@ describe('DataSource', () => {
         "defaultDuration": "P1D",
         "defaultFilter": { "op": "literal", "value": true },
         "defaultPinnedDimensions": [],
+        "defaultSelectedMeasures": [],
         "defaultSortMeasure": "added",
         "defaultTimezone": "Etc/UTC",
         "dimensions": [
@@ -257,6 +258,7 @@ describe('DataSource', () => {
         "defaultDuration": "P1D",
         "defaultFilter": { "op": "literal", "value": true },
         "defaultPinnedDimensions": [],
+        "defaultSelectedMeasures": [],
         "defaultSortMeasure": "added",
         "defaultTimezone": "Etc/UTC",
         "timeAttribute": '__time',
@@ -350,6 +352,7 @@ describe('DataSource', () => {
         "defaultDuration": "P1D",
         "defaultFilter": { "op": "literal", "value": true },
         "defaultPinnedDimensions": [],
+        "defaultSelectedMeasures": [],
         "defaultSortMeasure": "added",
         "defaultTimezone": "Etc/UTC",
         "timeAttribute": '__time',
@@ -484,6 +487,7 @@ describe('DataSource', () => {
           "value": true
         },
         "defaultPinnedDimensions": [],
+        "defaultSelectedMeasures": [],
         "defaultSortMeasure": "added_love_",
         "defaultTimezone": "Etc/UTC",
         "dimensions": [

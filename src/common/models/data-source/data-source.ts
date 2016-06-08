@@ -71,6 +71,7 @@ export interface DataSourceValue {
   defaultFilter: Filter;
   defaultDuration: Duration;
   defaultSortMeasure: string;
+  defaultSelectedMeasures?: OrderedSet<string>;
   defaultPinnedDimensions?: OrderedSet<string>;
   refreshRule: RefreshRule;
   maxTime?: MaxTime;
@@ -98,6 +99,7 @@ export interface DataSourceJS {
   defaultFilter?: FilterJS;
   defaultDuration?: string;
   defaultSortMeasure?: string;
+  defaultSelectedMeasures?: string[];
   defaultPinnedDimensions?: string[];
   refreshRule?: RefreshRuleJS;
   maxTime?: MaxTimeJS;
@@ -296,6 +298,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : Filter.EMPTY,
       defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : DataSource.DEFAULT_DURATION,
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
+      defaultSelectedMeasures: OrderedSet(parameters.defaultSelectedMeasures || measures.toArray().slice(0, 4).map(m => m.name)),
       defaultPinnedDimensions: OrderedSet(parameters.defaultPinnedDimensions || []),
       refreshRule,
       maxTime
@@ -324,6 +327,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public defaultFilter: Filter;
   public defaultDuration: Duration;
   public defaultSortMeasure: string;
+  public defaultSelectedMeasures: OrderedSet<string>;
   public defaultPinnedDimensions: OrderedSet<string>;
   public refreshRule: RefreshRule;
   public maxTime: MaxTime;
@@ -352,6 +356,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.defaultFilter = parameters.defaultFilter;
     this.defaultDuration = parameters.defaultDuration;
     this.defaultSortMeasure = parameters.defaultSortMeasure;
+    this.defaultSelectedMeasures = parameters.defaultSelectedMeasures;
     this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
     this.refreshRule = parameters.refreshRule;
     this.maxTime = parameters.maxTime;
@@ -382,6 +387,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultFilter: this.defaultFilter,
       defaultDuration: this.defaultDuration,
       defaultSortMeasure: this.defaultSortMeasure,
+      defaultSelectedMeasures: this.defaultSelectedMeasures,
       defaultPinnedDimensions: this.defaultPinnedDimensions,
       refreshRule: this.refreshRule,
       maxTime: this.maxTime
@@ -405,6 +411,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultFilter: this.defaultFilter.toJS(),
       defaultDuration: this.defaultDuration.toJS(),
       defaultSortMeasure: this.defaultSortMeasure,
+      defaultSelectedMeasures: this.defaultSelectedMeasures.toArray(),
       defaultPinnedDimensions: this.defaultPinnedDimensions.toArray(),
       refreshRule: this.refreshRule.toJS()
     };
@@ -452,6 +459,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.defaultFilter.equals(other.defaultFilter) &&
       this.defaultDuration.equals(other.defaultDuration) &&
       this.defaultSortMeasure === other.defaultSortMeasure &&
+      this.defaultSelectedMeasures.equals(other.defaultSelectedMeasures) &&
       this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions) &&
       this.refreshRule.equals(other.refreshRule);
   }

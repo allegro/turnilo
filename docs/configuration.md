@@ -68,6 +68,10 @@ that will be shown when the user first opens Pivot. Default `P1D` (1 day).
 The name of the measure that will be used for default sorting. It is commonly set to the measure that represents the
 count of events. Default: the first measure.
 
+**defaultSelectedMeasures** (string[])
+
+The names of the measures that will be selected by default. Default: first four measures.
+
 **defaultPinnedDimensions** (string[])
 
 The names of the dimensions (in order) that will appear *pinned* by default on the right panel. Default: `[]`.

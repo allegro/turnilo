@@ -55,6 +55,7 @@ export class DataSourceMock {
       defaultDuration: 'P3D',
       defaultSortMeasure: 'count',
       defaultPinnedDimensions: ['articleName'],
+      defaultSelectedMeasures: ['count'],
       refreshRule: {
         time: new Date('2016-04-30T12:39:51.350Z'),
         rule: "fixed"
@@ -107,6 +108,7 @@ export class DataSourceMock {
       defaultDuration: 'P3D',
       defaultSortMeasure: 'count',
       defaultPinnedDimensions: ['tweet'],
+      defaultSelectedMeasures: ['count'],
       refreshRule: {
         refresh: "PT1M",
         rule: "fixed"

@@ -166,7 +166,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       splits,
       multiMeasureMode: false,
       singleMeasure: dataSource.defaultSortMeasure,
-      selectedMeasures: OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
+      selectedMeasures: dataSource.defaultSelectedMeasures,
       pinnedDimensions: dataSource.defaultPinnedDimensions,
       colors: null,
       pinnedSort: dataSource.defaultSortMeasure,
