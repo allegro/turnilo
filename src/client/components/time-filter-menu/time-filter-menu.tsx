@@ -78,13 +78,15 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     const { filter } = essence;
     const { timezone } = essence;
 
-    var timeSelection = filter.getSelection(dimension.expression);
-    var selectedTimeRangeSet = essence.getEffectiveFilter().getLiteralSet(dimension.expression);
+    var dimensionExpression = dimension.expression;
+    var timeSelection = filter.getSelection(dimensionExpression);
+    var selectedTimeRangeSet = essence.getEffectiveFilter().getLiteralSet(dimensionExpression);
     var selectedTimeRange = (selectedTimeRangeSet && selectedTimeRangeSet.size() === 1) ? selectedTimeRangeSet.elements[0] : null;
+    var clause = filter.clauseForExpression(dimensionExpression);
 
     this.setState({
       timeSelection,
-      tab: (filter.isEmpty() || filter.isRelative()) ? 'relative' : 'specific',
+      tab: (!clause || clause.relative) ? 'relative' : 'specific',
       startTime: selectedTimeRange ? day.floor(selectedTimeRange.start, timezone) : null,
       endTime: selectedTimeRange ? day.ceil(selectedTimeRange.end, timezone) : null
     });
@@ -124,8 +126,10 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   }
 
   onPresetClick(preset: Preset) {
-    var { clicker, onClose } = this.props;
-    clicker.changeTimeSelection(preset.selection);
+    var { clicker, onClose, essence, dimension } = this.props;
+    var { filter } = essence;
+    var newFilter = filter.setSelection(dimension.expression, preset.selection);
+    clicker.changeFilter(newFilter);
     onClose();
   }
 
@@ -194,10 +198,13 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
     var previewTimeRange = essence.evaluateSelection(hoverPreset ? hoverPreset.selection : timeSelection);
     var previewText = previewTimeRange ? formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
-
-    return <div className="cont">
+    var maxTimeBasedPresets = <div>
       <div className="type">{STRINGS.latest}</div>
       <div className="buttons">{latestPresets.map(presetToButton)}</div>
+    </div>;
+
+    return <div className="cont">
+      { essence.dataSource.isTimeAttribute(dimension.expression) ? maxTimeBasedPresets : null}
       <div className="type">{STRINGS.current}</div>
       <div className="buttons">{currentPresets.map(presetToButton)}</div>
       <div className="type">{STRINGS.previous}</div>
@@ -216,10 +223,8 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
   renderCustom() {
     var { essence, dimension } = this.props;
-    var { timeSelection, startTime, endTime } = this.state;
+    var { startTime, endTime } = this.state;
     if (!dimension) return null;
-
-    if (!timeSelection) return null;
 
     return <div>
       <DateRangePicker

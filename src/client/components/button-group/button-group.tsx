@@ -10,7 +10,6 @@ export interface GroupMember {
   key: string | number;
   className?: string;
   isSelected?: boolean;
-
 }
 
 export interface ButtonGroupProps extends React.Props<any> {

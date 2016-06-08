@@ -516,7 +516,7 @@ export class TimeSeries extends BaseVisualization<TimeSeriesState> {
         // Not filtered on time
         if (!axisTimeRange && dataset) {
           var myDataset = dataset.data[0]['SPLIT'] as Dataset;
-          console.log('myDataset', myDataset);
+          if (myDataset.data.length === 0) return;
           axisTimeRange = new TimeRange({
             start: (myDataset.data[0][timeDimension.name] as TimeRange).start,
             end: (myDataset.data[myDataset.data.length - 1][timeDimension.name] as TimeRange).end

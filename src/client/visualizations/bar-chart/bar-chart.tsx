@@ -242,7 +242,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const { stepWidth } = this.getBarDimensions(xScale.rangeBand());
     const xTicks = xScale.domain();
-    const width = roundToPx(xScale(xTicks[xTicks.length - 1])) + stepWidth;
+    const width = xTicks.length > 0 ? roundToPx(xScale(xTicks[xTicks.length - 1])) + stepWidth : 0;
 
     const measures = essence.getEffectiveMeasures();
     const availableHeight = stage.height - X_AXIS_HEIGHT;
@@ -735,6 +735,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   getBarDimensions(xRangeBand: number): {stepWidth: number, barWidth: number, barOffset: number} {
+    if (isNaN(xRangeBand)) xRangeBand = 0;
     var stepWidth = xRangeBand;
     var barWidth = Math.max(stepWidth * BAR_PROPORTION, 0);
     var barOffset = (stepWidth - barWidth) / 2;
