@@ -2,6 +2,12 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.41
+
+- New overflow style in split bar also
+- Ability to define defaultSelectedMeasures
+- Misc fixes for time filter rendering
+
 ## 0.8.40
 
 - New Plywood adds support for native quantiles
