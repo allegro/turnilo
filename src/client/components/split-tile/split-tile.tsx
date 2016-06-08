@@ -220,6 +220,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     if (!this.canDrop(e)) return;
     e.preventDefault();
     var { clicker, essence } = this.props;
+    var { maxItems } = this.state;
+
     var { splits } = essence;
 
     var newSplitCombine: SplitCombine = null;
@@ -231,6 +233,11 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     if (newSplitCombine) {
       var dragPosition = this.calculateDragPosition(e);
+
+      if (dragPosition.replace === maxItems) {
+        dragPosition = new DragPosition({ insert: dragPosition.replace });
+      }
+
       if (dragPosition.isReplace()) {
         clicker.changeSplits(splits.replaceByIndex(dragPosition.replace, newSplitCombine), VisStrategy.FairGame);
       } else {
