@@ -21,7 +21,15 @@
     }
   }
 
+  .overflow {
+    @extend %overflow;
+  }
+
   .fancy-drag-indicator {
     @include unpin-left($bar-title-width);
   }
+}
+
+.overflow-menu {
+  @extend %overflow-menu
 }

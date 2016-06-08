@@ -39,6 +39,7 @@ export interface SplitMenuProps extends React.Props<any> {
   onClose: Fn;
   dimension: Dimension;
   split: SplitCombine;
+  inside?: Element;
 }
 
 export interface SplitMenuState {
@@ -255,7 +256,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   render() {
-    var { containerStage, openOn, dimension, onClose } = this.props;
+    var { containerStage, openOn, dimension, onClose, inside } = this.props;
     var { split } = this.state;
     if (!dimension) return null;
 
@@ -277,6 +278,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       stage={menuSize}
       openOn={openOn}
       onClose={onClose}
+      inside={inside}
     >
       {menuControls}
       <div className="button-bar">

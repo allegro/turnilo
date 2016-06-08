@@ -4,12 +4,15 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
-import { STRINGS, BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
+import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, DragPosition } from '../../../common/models/index';
 import { formatFilterClause } from '../../../common/utils/formatter/formatter';
+import { getMaxItems, SECTION_WIDTH } from '../../utils/pill-tile/pill-tile';
+
 import {
   findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent, classNames
 } from '../../utils/dom/dom';
+
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 
 import { SvgIcon } from '../svg-icon/svg-icon';
@@ -19,10 +22,6 @@ import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 const FILTER_CLASS_NAME = 'filter';
 const ANIMATION_DURATION = 400;
-const OVERFLOW_WIDTH = 40;
-const VIS_SELECTOR_WIDTH = 79;
-const SECTION_WIDTH = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
-
 
 export interface ItemBlank {
   dimension: Dimension;
@@ -32,34 +31,6 @@ export interface ItemBlank {
 
 function formatLabelDummy(dimension: Dimension): string {
   return dimension.title;
-}
-
-
-function getWidthNoOverflowAdjustment(stageWidth: number) {
-  return stageWidth - BAR_TITLE_WIDTH - VIS_SELECTOR_WIDTH + CORE_ITEM_GAP;
-}
-
-function getMaxItems(stageWidth: number, itemsLength: number): number {
-  var maxWidth = getWidthNoOverflowAdjustment(stageWidth);
-  var includedItems = itemsLength;
-  var initialMax = Math.floor((maxWidth - OVERFLOW_WIDTH ) / SECTION_WIDTH);
-
-  if (initialMax < includedItems) {
-
-    var widthPlusOverflow = initialMax * SECTION_WIDTH + OVERFLOW_WIDTH + CORE_ITEM_GAP;
-    var maxItems: number = null;
-
-    if (maxWidth < widthPlusOverflow) {
-      maxItems = initialMax - 1;
-    } else if (includedItems - initialMax === 1) {
-      maxItems = Math.floor(maxWidth / SECTION_WIDTH);
-    } else {
-      maxItems = initialMax;
-    }
-    return maxItems;
-  } else {
-    return initialMax;
-  }
 }
 
 export interface FilterTileProps extends React.Props<any> {

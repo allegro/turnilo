@@ -15,6 +15,9 @@ export const PIN_ITEM_HEIGHT = 25;
 export const PIN_PADDING_BOTTOM = 12;
 export const VIS_H_PADDING = 10;
 
+export const VIS_SELECTOR_WIDTH = 79;
+export const OVERFLOW_WIDTH = 40;
+
 export const SPLIT = 'SPLIT';
 
 export const MAX_SEARCH_LENGTH = 300;
