@@ -298,8 +298,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : Filter.EMPTY,
       defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : DataSource.DEFAULT_DURATION,
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
-      defaultSelectedMeasures: OrderedSet(parameters.defaultSelectedMeasures || measures.toArray().slice(0, 4).map(m => m.name)),
-      defaultPinnedDimensions: OrderedSet(parameters.defaultPinnedDimensions || []),
+      defaultSelectedMeasures: parameters.defaultSelectedMeasures ? OrderedSet(parameters.defaultSelectedMeasures) : null,
+      defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : null,
       refreshRule,
       maxTime
     };
@@ -411,10 +411,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       defaultFilter: this.defaultFilter.toJS(),
       defaultDuration: this.defaultDuration.toJS(),
       defaultSortMeasure: this.defaultSortMeasure,
-      defaultSelectedMeasures: this.defaultSelectedMeasures.toArray(),
-      defaultPinnedDimensions: this.defaultPinnedDimensions.toArray(),
       refreshRule: this.refreshRule.toJS()
     };
+    if (this.defaultSelectedMeasures) js.defaultSelectedMeasures = this.defaultSelectedMeasures.toArray();
+    if (this.defaultPinnedDimensions) js.defaultPinnedDimensions = this.defaultPinnedDimensions.toArray();
     if (this.rollup) js.rollup = true;
     if (this.timeAttribute) js.timeAttribute = this.timeAttribute.name;
     if (this.attributeOverrides.length) js.attributeOverrides = AttributeInfo.toJSs(this.attributeOverrides);
@@ -459,8 +459,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.defaultFilter.equals(other.defaultFilter) &&
       this.defaultDuration.equals(other.defaultDuration) &&
       this.defaultSortMeasure === other.defaultSortMeasure &&
-      this.defaultSelectedMeasures.equals(other.defaultSelectedMeasures) &&
-      this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions) &&
+      Boolean(this.defaultSelectedMeasures) === Boolean(other.defaultSelectedMeasures) &&
+      (!this.defaultSelectedMeasures || this.defaultSelectedMeasures.equals(other.defaultSelectedMeasures)) &&
+      Boolean(this.defaultPinnedDimensions) === Boolean(other.defaultPinnedDimensions) &&
+      (!this.defaultPinnedDimensions || this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions)) &&
       this.refreshRule.equals(other.refreshRule);
   }
 

@@ -139,8 +139,6 @@ describe('DataSource', () => {
         introspection: 'autofill-all',
         "defaultDuration": "P1D",
         "defaultFilter": { "op": "literal", "value": true },
-        "defaultPinnedDimensions": [],
-        "defaultSelectedMeasures": [],
         "defaultSortMeasure": "added",
         "defaultTimezone": "Etc/UTC",
         "dimensions": [
@@ -228,7 +226,6 @@ describe('DataSource', () => {
       introspection: 'autofill-all',
       defaultTimezone: 'Etc/UTC',
       defaultFilter: { op: 'literal', value: true },
-      defaultPinnedDimensions: [],
       refreshRule: {
         refresh: "PT1M",
         rule: "fixed"
@@ -257,8 +254,6 @@ describe('DataSource', () => {
         introspection: 'autofill-all',
         "defaultDuration": "P1D",
         "defaultFilter": { "op": "literal", "value": true },
-        "defaultPinnedDimensions": [],
-        "defaultSelectedMeasures": [],
         "defaultSortMeasure": "added",
         "defaultTimezone": "Etc/UTC",
         "timeAttribute": '__time',
@@ -351,8 +346,6 @@ describe('DataSource', () => {
         introspection: 'autofill-all',
         "defaultDuration": "P1D",
         "defaultFilter": { "op": "literal", "value": true },
-        "defaultPinnedDimensions": [],
-        "defaultSelectedMeasures": [],
         "defaultSortMeasure": "added",
         "defaultTimezone": "Etc/UTC",
         "timeAttribute": '__time',
@@ -486,8 +479,6 @@ describe('DataSource', () => {
           "op": "literal",
           "value": true
         },
-        "defaultPinnedDimensions": [],
-        "defaultSelectedMeasures": [],
         "defaultSortMeasure": "added_love_",
         "defaultTimezone": "Etc/UTC",
         "dimensions": [
@@ -575,7 +566,6 @@ describe('DataSource', () => {
       introspection: 'autofill-all',
       defaultTimezone: 'Etc/UTC',
       defaultFilter: { op: 'literal', value: true },
-      defaultPinnedDimensions: [],
       refreshRule: {
         refresh: "PT1M",
         rule: "fixed"

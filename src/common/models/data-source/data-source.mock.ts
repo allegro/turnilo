@@ -108,7 +108,6 @@ export class DataSourceMock {
       defaultDuration: 'P3D',
       defaultSortMeasure: 'count',
       defaultPinnedDimensions: ['tweet'],
-      defaultSelectedMeasures: ['count'],
       refreshRule: {
         refresh: "PT1M",
         rule: "fixed"
