@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.8.42
+
+- Fixed bug in Print config and added CLI tests
+
 ## 0.8.41
 
 - New overflow style in split bar also
