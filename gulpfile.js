@@ -12,7 +12,7 @@ gulp.task('client:tsc', laborer.taskClientTypeScript({ declaration: true }));
 gulp.task('server:tsc', laborer.taskServerTypeScript({ declaration: true }));
 
 gulp.task('client:test', laborer.taskClientTest({reporter: 'progress'}));
-gulp.task('server:test', laborer.taskServerTest());
+gulp.task('server:test', laborer.taskServerTest({reporter: 'progress'}));
 gulp.task('common:test', laborer.taskCommonTest({reporter: 'progress'}));
 
 gulp.task('client:bundle', laborer.taskClientPack());
@@ -25,7 +25,9 @@ gulp.task('all', function(cb) {
     'clean' ,
     ['style', 'icons'],
     ['server:tsc', 'client:tsc'],
-    ['client:test', 'common:test'],
+    'common:test',
+    'server:test',
+    'client:test',
     'client:bundle',
     cb
   );

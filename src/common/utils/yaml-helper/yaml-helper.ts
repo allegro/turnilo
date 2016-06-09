@@ -124,14 +124,14 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
   lines.push(`    defaultSortMeasure: ${defaultSortMeasure}`, '');
 
 
-  var defaultSelectedMeasures = dataSource.defaultSelectedMeasures.toArray();
+  var defaultSelectedMeasures = dataSource.defaultSelectedMeasures ? dataSource.defaultSelectedMeasures.toArray() : [];
   if (withComments) {
     lines.push("    # The names of measures that are selected by default");
   }
   lines.push(`    defaultSelectedMeasures: ${JSON.stringify(defaultSelectedMeasures)}`, '');
 
 
-  var defaultPinnedDimensions = dataSource.defaultPinnedDimensions.toArray();
+  var defaultPinnedDimensions = dataSource.defaultPinnedDimensions ? dataSource.defaultPinnedDimensions.toArray() : [];
   if (withComments) {
     lines.push("    # The names of dimensions that are pinned by default (in order that they will appear in the pin bar)");
   }

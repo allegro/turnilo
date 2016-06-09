@@ -2,7 +2,7 @@ import path = require('path');
 import supertest = require('supertest');
 import mime = require('mime');
 
-import app = require('../../app');
+// import app = require('../../app');
 
 //import { dataSourceManagerFactory } from 'imply-pivot/build/server/utils/index';
 //
@@ -62,19 +62,19 @@ function responseHandler(err: any, res: any) {
 }
 
 function testPlyqlHelper(testName: string, contentType: string, queryStr: string) {
-  it(testName, (done) => {
-    supertest(app)
-      .post('/plyql')
-      .set('Content-Type', "application/json")
-      .send(queryStr)
-      //.expect(function(res: any) { return res.type === contentType ? false : "content-type mismatch"; })
-      .expect('Content-Type', contentType + "; charset=utf-8")
-      .expect(200)
-      .end(function (err: any, res: any) {
-        //responseHandler(err, res);
-        done(err);
-      });
-  });
+  // it(testName, (done) => {
+  //   supertest(app)
+  //     .post('/plyql')
+  //     .set('Content-Type', "application/json")
+  //     .send(queryStr)
+  //     //.expect(function(res: any) { return res.type === contentType ? false : "content-type mismatch"; })
+  //     .expect('Content-Type', contentType + "; charset=utf-8")
+  //     .expect(200)
+  //     .end(function (err: any, res: any) {
+  //       //responseHandler(err, res);
+  //       done(err);
+  //     });
+  // });
 }
 
 describe.skip('PlyQL', () => {
