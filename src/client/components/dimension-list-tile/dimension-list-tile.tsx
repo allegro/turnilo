@@ -2,7 +2,7 @@ require('./dimension-list-tile.css');
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';
-import { STRINGS, TITLE_HEIGHT, DIMENSION_HEIGHT, MAX_SEARCH_LENGTH } from '../../config/constants';
+import { STRINGS, TITLE_HEIGHT, DIMENSION_HEIGHT, MAX_SEARCH_LENGTH, PIN_TITLE_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { findParentWithClass, setDragGhost, transformStyle, classNames } from '../../utils/dom/dom';
 import { Stage, Clicker, Essence, VisStrategy, Dimension, SplitCombine } from '../../../common/models/index';
@@ -150,7 +150,8 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     var { essence } = this.props;
     var { menuDimension, highlightDimension, showSearch, searchText } = this.state;
     var { dataSource } = essence;
-    var rowData = dataSource.dimensions.toArray();
+    var totalDimensions = dataSource.dimensions;
+    var rowData = totalDimensions.toArray();
     var itemY = 0;
 
     if (searchText) {
@@ -195,8 +196,11 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     if (searchText && !dimensionItems.length) {
       message = <div className="message">{`No ${ STRINGS.dimensions.toLowerCase() } for "${searchText}"`}</div>;
     }
+    var maxHeight = PIN_TITLE_HEIGHT;
+    maxHeight += (totalDimensions.size + 2) * DIMENSION_HEIGHT + PIN_PADDING_BOTTOM;
     const style = {
-      flex: dimensionItems.length + 2
+      flex: totalDimensions.size + 2,
+      maxHeight
     };
 
     var icons: TileHeaderIcon[] = [
