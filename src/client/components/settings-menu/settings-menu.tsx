@@ -41,6 +41,7 @@ const TIMEZONES: Timezone[] = [
   new Timezone("Europe/Paris"), // +1.0
   new Timezone("Asia/Kathmandu"), // +5.8
   new Timezone("Asia/Hong_Kong"), // +8.0
+  new Timezone("Asia/Seoul"), // +9.0
   new Timezone("Pacific/Guam") // +10.0
 ];
 
