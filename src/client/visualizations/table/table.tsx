@@ -64,8 +64,6 @@ export class Table extends BaseVisualization<TableState> {
   public static id = 'table';
   public static title = 'Table';
 
-  public static measureModeNeed: MeasureModeNeeded = 'multi';
-
   private static handler = CircumstancesHandler.EMPTY()
     .needsAtLeastOneSplit('The Table requires at least one split')
     .otherwise(

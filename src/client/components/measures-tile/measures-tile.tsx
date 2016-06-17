@@ -5,6 +5,8 @@ import * as React from 'react';
 import { STRINGS, PIN_TITLE_HEIGHT, MEASURE_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH } from '../../config/constants';
 import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { classNames } from '../../utils/dom/dom';
+import * as localStorage from '../../utils/local-storage/local-storage';
+
 import { Checkbox, CheckboxType } from '../checkbox/checkbox';
 import { TileHeaderIcon } from '../tile-header/tile-header';
 import { HighlightString } from '../highlight-string/highlight-string';
@@ -57,8 +59,14 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     });
   }
 
-  render() {
+  toggleMultiMeasure() {
     var { clicker, essence } = this.props;
+    clicker.toggleMultiMeasureMode();
+    localStorage.set('is-multi-measure', !essence.getEffectiveMultiMeasureMode());
+  }
+
+  render() {
+    var { essence } = this.props;
     var { showSearch, searchText } = this.state;
     var { dataSource } = essence;
     var multiMeasureMode = essence.getEffectiveMultiMeasureMode();
@@ -102,7 +110,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
     if (!essence.isFixedMeasureMode()) {
       icons.push({
         name: 'multi',
-        onClick: clicker.toggleMultiMeasureMode,
+        onClick: this.toggleMultiMeasure.bind(this),
         svg: require('../../icons/full-multi.svg'),
         active: multiMeasureMode
       });
