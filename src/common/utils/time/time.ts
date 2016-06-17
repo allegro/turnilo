@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 import { Timezone, Duration, WallTime, month, day, hour, minute } from 'chronoshift';
-import { TimeRange, TimeBucketAction } from 'plywood';
-import { getBestBucketUnitForRange } from '../../models/granularity/granularity';
+import { TimeRange } from 'plywood';
 
 const FORMAT_WITH_YEAR = d3.time.format('%b %-d, %Y');
 const FORMAT_WITHOUT_YEAR = d3.time.format('%b %-d');
@@ -158,12 +157,6 @@ function wallTimeHelper(wallTime: any) {
 
 function cleanISOString(input: string) {
   return input.replace(/(\.\d\d\d)?Z?$/, '');
-}
-
-export function getTimeTicks(timeRange: TimeRange, timezone: Timezone): Date[] {
-  const { start, end } = timeRange;
-  const tickDuration = getBestBucketUnitForRange(timeRange, true) as Duration;
-  return tickDuration.materialize(start, end, timezone);
 }
 
 function pad(input: number) {

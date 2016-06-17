@@ -21,7 +21,7 @@ describe('Highlighter', () => {
 
     var renderedComponent = TestUtils.renderIntoDocument(
       <Highlighter
-        highlightTimeRange={fakeTimeRange}
+        highlightRange={fakeTimeRange}
         scaleX={myScaleX}
       />
     );

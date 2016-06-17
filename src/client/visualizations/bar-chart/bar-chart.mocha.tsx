@@ -5,6 +5,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import * as TestUtils from 'react-addons-test-utils';
+import { EssenceMock, StageMock } from '../../../common/models/mocks';
 
 import { $, Expression } from 'plywood';
 import { BarChart } from './bar-chart';
@@ -14,8 +15,8 @@ describe.skip('BarChart', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <BarChart
         clicker={null}
-        essence={null}
-        stage={null}
+        essence={EssenceMock.wiki()}
+        stage={StageMock.defaultA()}
       />
     );
 

@@ -1,6 +1,6 @@
 import { List } from 'immutable';
 import { immutableArraysEqual, Equalable } from 'immutable-class';
-import { Set } from 'plywood';
+import { TimeRange, NumberRange, PlywoodRange } from 'plywood';
 
 // The most generic function
 export interface Fn {
@@ -111,4 +111,10 @@ export function toSignificantDigits(n: number, digits: number) {
 
 export function getNumberOfWholeDigits(n: number) {
   return Math.max(Math.floor(log10(Math.abs(n))), 0) + 1;
+}
+
+
+export function rangeEquals(v1: PlywoodRange, v2: PlywoodRange) {
+  if (v1 instanceof TimeRange) return (v1 as TimeRange).equals(v2 as TimeRange);
+  return (v1 as NumberRange).equals(v2 as NumberRange);
 }

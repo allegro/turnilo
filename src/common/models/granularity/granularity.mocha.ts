@@ -333,8 +333,8 @@ describe('Granularity', () => {
     var hundred = new NumberRange({ start: 0, end: 100 });
 
     expect(getBestBucketUnitForRange(ten, false)).to.equal(1);
-    expect(getBestBucketUnitForRange(thirtyOne, false)).to.equal(10);
-    expect(getBestBucketUnitForRange(hundred, false)).to.equal(10);
+    expect(getBestBucketUnitForRange(thirtyOne, false)).to.equal(1);
+    expect(getBestBucketUnitForRange(hundred, false)).to.equal(1);
     expect(getBestBucketUnitForRange(hundred, false, granularityFromJS(50))).to.equal(50);
 
     var customs = [-5, 0.25, 0.5, 0.78, 5].map(granularityFromJS);

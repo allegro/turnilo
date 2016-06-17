@@ -1,13 +1,13 @@
 @import '../../imports';
 
-.time-series {
-  .measure-time-charts {
+.line-chart {
+  .measure-line-charts {
     overflow-x: hidden;
     overflow-y: auto;
     padding-left: $vis-h-padding;
   }
 
-  .measure-time-chart {
+  .measure-line-chart {
     .vis-measure-label {
       position: absolute;
       left: 6px;

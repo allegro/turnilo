@@ -1,8 +1,9 @@
 import * as numeral from 'numeral';
-import { NumberRange, TimeRange, LiteralExpression } from 'plywood';
 import { Timezone } from 'chronoshift';
 
-import { Dimension, FilterClause } from '../../models/index';
+import { NumberRange, TimeRange, LiteralExpression } from 'plywood';
+
+import { Dimension, FilterClause, Essence } from '../../models/index';
 import { DisplayYear, formatTimeRange } from '../../utils/time/time';
 
 export interface Formatter {
@@ -71,9 +72,11 @@ export function formatterFromData(values: number[], format: string): Formatter {
 }
 
 
-export function formatValue(value: any): string {
+export function formatValue(value: any, timezone?: Timezone, displayYear?: DisplayYear): string {
   if (NumberRange.isNumberRange(value)) {
     return `${formatValue(value.start)}-${formatValue(value.end)}`;
+  } else if (TimeRange.isTimeRange(value)) {
+    return formatTimeRange(value, timezone, displayYear);
   } else {
     return '' + value;
   }

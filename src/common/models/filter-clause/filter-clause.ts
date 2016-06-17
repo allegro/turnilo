@@ -1,6 +1,6 @@
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
-import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS, ChainExpression, NotAction, OverlapAction, InAction, Range, TimeRange, Datum } from 'plywood';
+import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS, ChainExpression, NotAction, OverlapAction, InAction, Range, TimeRange, Datum, NumberRange } from 'plywood';
 
 // Basically these represent
 // expression.in(selection) .not()?
@@ -18,7 +18,7 @@ export interface FilterClauseJS {
 }
 
 function isLiteral(ex: Expression): boolean {
-  if (ex instanceof LiteralExpression) return TimeRange.isTimeRange(ex.value) || Set.isSet(ex.value);
+  if (ex instanceof LiteralExpression) return TimeRange.isTimeRange(ex.value) || Set.isSet(ex.value) || NumberRange.isNumberRange(ex.value);
   return false;
 }
 
@@ -149,7 +149,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   public getLiteralSet(): Set {
     if (this.relative) return null;
     var v = this.selection.getLiteralValue();
-    return TimeRange.isTimeRange(v) ? Set.fromJS([v]) : v;
+    return (TimeRange.isTimeRange(v) || NumberRange.isNumberRange(v)) ? Set.fromJS([v]) : v;
   }
 
   public getExtent(): Range<any> {

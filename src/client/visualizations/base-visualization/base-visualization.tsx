@@ -1,7 +1,7 @@
 require('./base-visualization.css');
 
 import * as React from 'react';
-import { $, ply, TimeRange, Expression, Dataset } from 'plywood';
+import { $, ply, TimeRange, Expression, Dataset, LimitAction } from 'plywood';
 import {
   MeasureModeNeeded,
   Manifest,
@@ -122,6 +122,11 @@ export class BaseVisualization<S extends BaseVisualizationState>
         subQuery = subQuery.performAction(colors.toLimitAction());
       } else if (limitAction) {
         subQuery = subQuery.performAction(limitAction);
+      } else if (splitDimension.kind === 'number') {
+      // Hack: Plywood converts groupBys to topN if the limit is below a certain threshold.  Currently sorting on dimension in a groupBy query does not
+      // behave as expected and in the future plywood will handle this, but for now add a limit so a topN query is performed.
+      // 5000 is just a randomly selected number that's high enough that it's not immediately obvious that there's a limit.
+        subQuery = subQuery.limit(5000);
       }
 
       if (i + 1 < splits.length()) {
@@ -151,7 +156,7 @@ export class BaseVisualization<S extends BaseVisualizationState>
           });
         },
         (error) => {
-          registerDownloadableDataset(null);
+          if (registerDownloadableDataset) registerDownloadableDataset(null);
           if (!this._isMounted) return;
           this.precalculate(this.props, {
             loading: false,

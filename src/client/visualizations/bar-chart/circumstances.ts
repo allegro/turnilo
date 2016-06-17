@@ -43,8 +43,8 @@ export default CircumstancesHandler.EMPTY()
         autoChanged = true;
       }
 
-      if (splitDimension.isContinuous()) {
-        continuousBoost = 2;
+      if (splitDimension.kind === 'number') {
+        continuousBoost = 4;
       }
 
       // ToDo: review this

@@ -124,6 +124,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var jsArrayLength = jsArray.length;
     if (!(8 <= jsArrayLength && jsArrayLength <= 11)) return null;
 
+
+    if (visualization === 'time-series') visualization = 'line-chart'; // Back compat (used to be named time-series)
     var essence: Essence;
     try {
       essence = Essence.fromJS({

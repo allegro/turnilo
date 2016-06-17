@@ -4,8 +4,7 @@ import { CircumstancesHandlerMock } from '../../utils/circumstances-handler/circ
 
 import { Essence, EssenceJS, EssenceContext } from './essence';
 import { DataSourceMock } from "../data-source/data-source.mock";
-
-import { Resolve } from '../index';
+import { SplitCombineMock } from "../split-combine/split-combine.mock";
 
 export class EssenceMock {
   static wiki() {
@@ -14,7 +13,7 @@ export class EssenceMock {
       timezone: 'Etc/UTC',
       pinnedDimensions: [],
       selectedMeasures: [],
-      splits: []
+      splits: [SplitCombineMock.TIME_JS]
     };
 
     var context: EssenceContext = {

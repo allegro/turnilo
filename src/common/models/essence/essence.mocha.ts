@@ -55,6 +55,13 @@ describe('Essence', () => {
       handleCircumstance(): any {
         return { 'isAutomatic': () => false };
       }
+    },
+    {
+      id: 'line-chart',
+      title: 'my line chart',
+      handleCircumstance(): any {
+        return { 'isAutomatic': () => false };
+      }
     }
   ]);
 
@@ -165,6 +172,22 @@ describe('Essence', () => {
         "timezone": "Etc/UTC",
         "visualization": "vis1"
       });
+    });
+
+    it('handles time series', () => {
+      var hashNoVis = "2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gA2AlmAKYBOAhgSsAG7UCupeY5zAvsgNoC6ybZsmAQMjAHZgU3EWMnB+MsAHcSZcgAlK4gCYEW/cYwIEgA=";
+
+      var timeSeriesHash = `time-series/${hashNoVis}`;
+      var lineChartHash = `line-chart/${hashNoVis}`;
+      var barChartHash = `bar-chart/${hashNoVis}`;
+
+      var timeSeries = Essence.fromHash(timeSeriesHash, context);
+      var lineChart = Essence.fromHash(lineChartHash, context);
+      var barChart = Essence.fromHash(barChartHash, context);
+
+      expect(timeSeries.visualization).to.equal(lineChart.visualization);
+      expect(timeSeries.visualization).to.not.equal(barChart.visualization);
+
     });
 
   });

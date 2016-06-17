@@ -3,21 +3,22 @@ require('./chart-line.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
-import { $, Expression, Executor, Dataset, Datum, TimeRange } from 'plywood';
+import { $, Expression, Executor, Dataset, Datum, TimeRange, PlywoodRange, NumberRange } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
+import { rangeEquals } from '../../../common/utils/general/general';
 
 const lineFn = d3.svg.line();
 
 export interface ChartLineProps extends React.Props<any> {
   stage: Stage;
   dataset: Dataset;
-  getX: (d: Datum) => TimeRange;
+  getX: (d: Datum) => PlywoodRange;
   getY: (d: Datum) => any;
   scaleX: (v: any) => number;
   scaleY: (v: any) => number;
   color: string;
   showArea?: boolean;
-  hoverTimeRange?: TimeRange;
+  hoverRange?: PlywoodRange;
 }
 
 export interface ChartLineState {
@@ -30,7 +31,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
   }
 
   render() {
-    var { stage, dataset, getY, getX, scaleX, scaleY, color, showArea, hoverTimeRange } = this.props;
+    var { stage, dataset, getY, getX, scaleX, scaleY, color, showArea, hoverRange } = this.props;
     if (!dataset || !color) return null;
 
     var dataPoints: Array<[number, number]> = [];
@@ -39,19 +40,19 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
     var ds = dataset.data;
     for (var i = 0; i < ds.length; i++) {
       var datum = ds[i];
-      var timeRange = getX(datum) as TimeRange;
-      if (!timeRange) return null; // Incorrect data loaded
+      var range = getX(datum) as PlywoodRange;
+      if (!range) return null; // Incorrect data loaded
 
-      var timeRangeMidPoint = timeRange.midpoint();
+      var rangeMidpoint = (range as NumberRange | TimeRange).midpoint();
       var measureValue = getY(datum);
 
       // Add potential pre zero point
       var prevDatum = ds[i - 1];
       if (prevDatum) {
-        var prevTimeRange = getX(prevDatum) as TimeRange;
-        if (prevTimeRange.end.valueOf() !== timeRange.start.valueOf()) {
+        var prevRange = getX(prevDatum) as PlywoodRange;
+        if (prevRange.end.valueOf() !== range.start.valueOf()) {
           dataPoints.push([
-            scaleX(timeRangeMidPoint.valueOf() - (timeRange.end.valueOf() - timeRange.start.valueOf())),
+            scaleX(rangeMidpoint.valueOf() - (range.end.valueOf() - range.start.valueOf())),
             scaleY(0)
           ]);
         }
@@ -59,19 +60,19 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
 
       // Add the point itself
       var y = scaleY(measureValue);
-      var dataPoint: [number, number] = [scaleX(timeRangeMidPoint), isNaN(y) ? 0 : y];
+      var dataPoint: [number, number] = [scaleX(rangeMidpoint), isNaN(y) ? 0 : y];
       dataPoints.push(dataPoint);
-      if (hoverTimeRange && hoverTimeRange.equals(timeRange)) {
+      if (hoverRange && rangeEquals(hoverRange, range)) {
         hoverDataPoint = dataPoint;
       }
 
       // Add potential post zero point
       var nextDatum = ds[i + 1];
       if (nextDatum) {
-        var nextTimeRange = getX(nextDatum) as TimeRange;
-        if (timeRange.end.valueOf() !== nextTimeRange.start.valueOf()) {
+        var nextRange = getX(nextDatum) as PlywoodRange;
+        if (range.end.valueOf() !== nextRange.start.valueOf()) {
           dataPoints.push([
-            scaleX(timeRangeMidPoint.valueOf() + (timeRange.end.valueOf() - timeRange.start.valueOf())),
+            scaleX(rangeMidpoint.valueOf() + (range.end.valueOf() - range.start.valueOf())),
             scaleY(0)
           ]);
         }

@@ -1,5 +1,5 @@
-import { TimeBucketAction, NumberBucketAction, ActionJS, Action, ActionValue, TimeRange, Duration, PlywoodRange } from 'plywood';
-import { day, hour, minute } from 'chronoshift';
+import { TimeBucketAction, NumberBucketAction, ActionJS, Action, ActionValue, TimeRange, Duration, PlywoodRange, NumberRange } from 'plywood';
+import { day, hour, minute, Timezone } from 'chronoshift';
 
 import {
   hasOwnProperty, findFirstBiggerIndex, findExactIndex, findMaxValueIndex, findMinValueIndex,
@@ -116,10 +116,26 @@ export class NumberHelper {
   static minGranularity = granularityFromJS(1);
   static defaultGranularity = granularityFromJS(10);
 
-  static checkers = makeNumberBucketsSimple().map((v: NumberBucketAction) => makeCheckpoint(v.size, v));
-  static defaultGranularities = NumberHelper.checkers.map((c: any) => { return granularityFromJS(c.checkPoint); }).reverse();
+  static checkers = [
+    makeCheckpoint(5000, 1000),
+    makeCheckpoint(500, 100),
+    makeCheckpoint(100, 10),
+    makeCheckpoint(1, 1),
+    makeCheckpoint(0.1, 0.1)
+  ];
+
+  static defaultGranularities = NumberHelper.checkers.map((c: any) => { return granularityFromJS(c.returnValue); }).reverse();
   static coarseGranularities: Granularity[] = null;
-  static coarseCheckers: Checker[] = null;
+  static coarseCheckers: Checker[] = [
+    makeCheckpoint(500000, 50000),
+    makeCheckpoint(50000, 10000),
+    makeCheckpoint(5000, 5000),
+    makeCheckpoint(1000, 1000),
+    makeCheckpoint(100, 100),
+    makeCheckpoint(10, 10),
+    makeCheckpoint(1, 1),
+    makeCheckpoint(0.1, 0.1)
+  ];
 
   static supportedGranularities = (bucketedBy: Granularity) => {
     return makeNumberBuckets(getBucketSize(bucketedBy), 10);
@@ -294,3 +310,21 @@ export function getBestBucketUnitForRange(inputRange: PlywoodRange, bigChecker: 
   return getBucketUnit(granularity);
 }
 
+export function getLineChartTicks(range: PlywoodRange, timezone: Timezone): (Date | number)[] {
+  if (range instanceof TimeRange) {
+    const { start, end } = range as TimeRange;
+    const tickDuration = getBestBucketUnitForRange(range as TimeRange, true) as Duration;
+    return tickDuration.materialize(start, end, timezone);
+  } else {
+    const { start, end } = range as NumberRange;
+    var unit = getBestBucketUnitForRange(range as NumberRange, true) as number;
+    var values: number[] = [];
+    var iter = Math.round(start * unit) / unit;
+
+    while (iter <= end) {
+      values.push(iter);
+      iter += unit;
+    }
+    return values;
+  }
+}

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="53px" height="53px" viewBox="0 0 53 53" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
     <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
-    <title>vis-time-series</title>
+    <title>vis-line-chart</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
     <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-        <g id="vis-time-series" sketch:type="MSArtboardGroup">
+        <g id="vis-line-chart" sketch:type="MSArtboardGroup">
             <g id="Rectangle-1-Copy-6-+-Line-Chart-+-Path-11-Copy-+-Path-11-Copy-Copy" sketch:type="MSLayerGroup" transform="translate(5.000000, 11.000000)">
                 <g id="Path-11-Copy-+-Path-11" sketch:type="MSShapeGroup">
                     <path d="M0.955555556,20.8129857 L9.42181091,8.8558428 L17.5717472,14.8344142 L25.7838201,0.88441423 L34.5810198,12.8415571 L43,4.87012852 L43,30.7540849 L0.955555556,30.7540849 L0.955555556,20.8129857 Z" id="Path-11-Copy" fill="#EEEEEE"></path>
