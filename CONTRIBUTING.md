@@ -1,5 +1,5 @@
 # How to Contribute
 
-If you have questions about Imply Pivot, please direct them to our [user group](https://groups.google.com/forum/#!forum/imply-user-group).
-We are not accepting pull requests at the moment, but will do so once the project is in beta. 
-
+- Bug reports, feature requests, and any sort of feedback is very welcome.
+- Pull requests fixing bugs are very welcome as well.
+- For pull requests involving any changes to the UI, please discuss them first on the [Imply user group](https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!forum/imply-user-group).
