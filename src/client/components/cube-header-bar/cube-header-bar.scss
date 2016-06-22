@@ -2,4 +2,16 @@
 
 .cube-header-bar {
   @extend %header-bar;
+
+  .refreshing svg {
+    animation-name: rotate;
+    animation-duration: 1s;
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  }
+
+
 }

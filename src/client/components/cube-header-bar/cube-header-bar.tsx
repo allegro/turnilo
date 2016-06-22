@@ -5,6 +5,8 @@ import { immutableEqual } from "immutable-class";
 import { Duration, Timezone } from 'chronoshift';
 import { Dataset } from 'plywood';
 import { Fn } from '../../../common/utils/general/general';
+import { classNames } from "../../utils/dom/dom";
+
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, DataSource, User, Customization, ExternalView } from '../../../common/models/index';
 
@@ -20,6 +22,7 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   onNavClick: Fn;
   getUrlPrefix?: () => string;
   refreshMaxTime?: Fn;
+  updatingMaxTime?: boolean;
   openRawDataModal?: Fn;
   customization?: Customization;
   getDownloadableDataset?: () => Dataset;
@@ -33,9 +36,11 @@ export interface CubeHeaderBarState {
   autoRefreshRate?: Duration;
   settingsMenuOpen?: Element;
   userMenuOpenOn?: Element;
+  animating?: boolean;
 }
 
 export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeaderBarState> {
+  public mounted: boolean;
   private autoRefreshTimer: NodeJS.Timer;
 
   constructor() {
@@ -44,11 +49,13 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       hilukMenuOpenOn: null,
       autoRefreshMenuOpenOn: null,
       autoRefreshRate: null,
-      userMenuOpenOn: null
+      userMenuOpenOn: null,
+      animating: false
     };
   }
 
   componentDidMount() {
+    this.mounted = true;
     const { dataSource } = this.props.essence;
     this.setAutoRefreshFromDataSource(dataSource);
   }
@@ -57,9 +64,18 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     if (this.props.essence.dataSource.name !== nextProps.essence.dataSource.name) {
       this.setAutoRefreshFromDataSource(nextProps.essence.dataSource);
     }
+
+    if (!this.props.updatingMaxTime && nextProps.updatingMaxTime) {
+      this.setState({ animating: true });
+      setTimeout(() => {
+        if (!this.mounted) return;
+        this.setState({ animating: false });
+      }, 1000);
+    }
   }
 
   componentWillUnmount() {
+    this.mounted = false;
     this.clearTimerIfExists();
   }
 
@@ -229,6 +245,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
 
   render() {
     var { user, onNavClick, essence, customization } = this.props;
+    var { animating } = this.state;
 
     var userButton: JSX.Element = null;
     if (user) {
@@ -252,7 +269,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
         <div className="title">{essence.dataSource.title}</div>
       </div>
       <div className="right-bar">
-        <div className="icon-button auto-refresh" onClick={this.onAutoRefreshMenuClick.bind(this)}>
+        <div className={classNames("icon-button", "auto-refresh", { "refreshing": animating })} onClick={this.onAutoRefreshMenuClick.bind(this)}>
           <SvgIcon className="auto-refresh-icon" svg={require('../../icons/full-refresh.svg')}/>
         </div>
         <div className="icon-button hiluk" onClick={this.onHilukMenuClick.bind(this)}>

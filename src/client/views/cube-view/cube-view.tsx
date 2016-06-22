@@ -48,6 +48,7 @@ export interface CubeViewState {
   showRawDataModal?: boolean;
   RawDataModalAsync?: typeof RawDataModal;
   layout?: CubeViewLayout;
+  updatingMaxTime?: boolean;
 }
 
 const MIN_PANEL_WIDTH = 240;
@@ -71,7 +72,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence: null,
       dragOver: false,
       showRawDataModal: false,
-      layout: this.getStoredLayout()
+      layout: this.getStoredLayout(),
+      updatingMaxTime: false
     };
 
     var clicker = {
@@ -151,10 +153,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   refreshMaxTime() {
     var { essence } = this.state;
     var { dataSource } = essence;
+    this.setState({ updatingMaxTime: true });
+
     DataSource.updateMaxTime(dataSource)
       .then((updatedDataSource) => {
         if (!this.mounted) return;
-        this.setState({ essence: essence.updateDataSource(updatedDataSource) });
+        this.setState({ essence: essence.updateDataSource(updatedDataSource), updatingMaxTime: false  });
       });
   }
 
@@ -338,7 +342,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     var clicker = this.clicker;
 
     var { getUrlPrefix, onNavClick, user, customization } = this.props;
-    var { layout, essence, menuStage, visualizationStage, dragOver } = this.state;
+    var { layout, essence, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
 
     if (!essence) return null;
 
@@ -384,6 +388,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         getDownloadableDataset={() => this.downloadableDataset}
         changeTimezone={this.changeTimezone.bind(this)}
         timezone={essence.timezone}
+        updatingMaxTime={updatingMaxTime}
       />
       <div className="container" ref='container'>
         <DimensionMeasurePanel
