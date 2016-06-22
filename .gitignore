@@ -10,7 +10,6 @@ private/
 coverage/
 assets/data/*-large.*
 webstorm/errors
-config.yaml
-config-test.yaml
-config-docker.yaml
+/config.yaml
+/config-test.yaml
 *.sublime-*

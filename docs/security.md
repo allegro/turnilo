@@ -42,10 +42,10 @@ exports.version = 1;
 // logger - is just a collection of functions that you should use instead of console to have your logs included with the Pivot logs
 // options - is an object with the following keys:
 //   * cluster: Cluster - the cluster object
-exports.druidRequestDecoratorFactory = function (logger, options) {
-  var config = options.config;
-  var myUsername = config.myUsername; // pretend we store the username and password
-  var myPassword = config.myPassword; // in the config
+exports.druidRequestDecoratorFactory = function (logger, params) {
+  var options = params.options;
+  var myUsername = options.myUsername; // pretend we store the username and password
+  var myPassword = options.myPassword; // in the config
 
   if (!myUsername) throw new Error('must have username');
   if (!myPassword) throw new Error('must have password');
@@ -59,7 +59,7 @@ exports.druidRequestDecoratorFactory = function (logger, options) {
   //   * url: string -
   //   * query: Druid.Query -
   return function (decoratorRequest) {
-    
+
     var decoration = {
       headers: {
         "Authorization": auth,

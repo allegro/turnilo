@@ -1,0 +1,15 @@
+# The port on which the Pivot server will listen on
+port: 9090
+
+clusters:
+  - name: druid
+    type: druid
+    host: the.druid.host:8082 # This happens to be my Docker machine
+
+    requestDecorator: './druid-request-decorator.js'
+
+    # The are being read by the druidRequestDecorator
+    decoratorOptions:
+      myUsername: Aladdin
+      myPassword: OpenSesame
+

@@ -29,7 +29,11 @@ Indicates that Pivot should run in verbose mode. This will log all the queries d
 
 **port** (number)
 
-The port that Pivot should run on. Default 9090. 
+The port that Pivot should run on. Default 9090.
+
+**serverHost** (string)
+
+The host that Pivot will bind to. Defaults to all hosts.
 
 **serverRoot** (string)
 
@@ -38,10 +42,90 @@ A custom path to act as the server string. Default: `pivot`
 The Pivot UI will be served from `http://pivot-host:$port/` and `http://pivot-host:$port/$serverRoot`
 
 
+## Configuring the Clusters
+
+The top level `clusters:` key that holds the clusters that Pivot will connect to.
+
+### General properties
+
+Each cluster has the following properties:
+
+**name** (string)
+
+The name of the cluster (to be referenced later from the data sources)
+
+**type** ('druid' | 'mysql' | 'postgres')
+
+The database type of the cluster
+
+**host** (string)
+
+The host (hostname:port) of the cluster. In the Druid case this must be the broker IP.
+
+**version** (string)
+
+The explicit version to use for this cluster.
+This does not need to be defined as the version will naturally be determined through introspection.
+
+**timeout** (number)
+
+The timeout to set on the queries in ms. Default: 40000
+
+**sourceListScan** ('disable' | 'auto')
+
+Should the sources of this cluster be automatically scanned and new sources added as data sources. Default: 'disable'
+
+**sourceListRefreshOnLoad** (boolean)
+
+Should the list of sources be reloaded every time that Pivot is loaded.
+This will put additional load on the data store but will ensure that sources are visible in the UI as soon as they are created.
+
+**sourceListRefreshInterval** (number)
+
+How often should sources be reloaded in ms.
+
+**sourceReintrospectOnLoad** (boolean)
+
+Should sources be scanned for additional dimensions every time that Pivot is loaded.
+This will put additional load on the data store but will ensure that dimension are visible in the UI as soon as they are created.
+
+**sourceReintrospectInterval** (number)
+
+How often should source schema be reloaded in ms.
+
+### Druid specific
+
+**introspectionStrategy** (string)
+
+Which introspection method to use.
+
+**requestDecorator** (string)
+
+A potential request decorator file to load.
+
+**decoratorOptions** (any)
+
+Options passed to the request decorator module
+
+### Postgres + MySQL specific
+
+**database** (string)
+
+Which database to connect to
+
+**user** (string)
+
+The user to connect as. This user needs no permissions other than 'SELECT'.
+
+**password** (string)
+
+The password to use with the provided user.
+
+
 ## Configuring the DataSources
 
-In your Pivot config you will see a top level `dataSources:` key that holds the data sources that will be loaded into
-Pivot. The order of the data sources in the config will define the ordering seen in the UI.
+The top level `dataSources:` key that holds the data sources that will be loaded into Pivot.
+The order of the data sources in the config will define the ordering seen in the UI.
 
 
 ### Basic data source properties
@@ -53,6 +137,10 @@ Described here are only the properties which you might want to change.
 The name of the data source as used internally in Pivot and used in the URLs. This should be a URL safe string.
 Changing this property for a given data source will break any URLs that someone might have generated for that data
 source in the past.
+
+**engine** (string)
+
+The cluster that the dataSource belongs to (or native if this is a file based dataSource)
 
 **title** (string)
 

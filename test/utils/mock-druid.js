@@ -8,23 +8,35 @@ function mockDruid(port, options) {
   app.disable('x-powered-by');
 
   app.get('/status', (req, res) => {
-    Q(options.onStatus()).then(function (r) {
-      res.status(r.status || 200).json(r.result);
-    });
+    if (options.onStatus) {
+      Q(options.onStatus()).then(function(r) {
+        res.status(r.status || 200).json(r.json);
+      });
+    } else {
+      throw new Error('should not GET /status');
+    }
   });
 
   app.get('/druid/v2/datasources', (req, res) => {
-    Q(options.onDataSources(req.body)).then(function (r) {
-      res.status(r.status || 200).json(r.result);
-    });
+    if (options.onDataSources) {
+      Q(options.onDataSources(req.body)).then(function(r) {
+        res.status(r.status || 200).json(r.json);
+      });
+    } else {
+      throw new Error('should not GET /druid/v2/datasources');
+    }
   });
 
   app.use(bodyParser.json());
 
   app.post('/druid/v2/', (req, res) => {
-    Q(options.onQuery(req.body)).then(function (r) {
-      res.status(r.status || 200).json(r.result);
-    });
+    if (options.onQuery) {
+      Q(options.onQuery(req.body)).then(function(r) {
+        res.status(r.status || 200).json(r.json);
+      });
+    } else {
+      throw new Error('should not POST /druid/v2/');
+    }
   });
 
   var server = http.createServer(app);

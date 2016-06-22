@@ -7,11 +7,16 @@ port: 9090
 # Run in verbose mode and print the queries sent to the server
 #verbose: true
 
-# A Druid broker node that can serve data (only used if you have Druid based data source)
-druidHost: localhost:8082
+# The databases that Pivot will connect to
+clusters:
+  - name: druid-cluster
+    type: druid
 
-# A timeout for the Druid queries in ms (default: 30000 = 30 seconds)
-#timeout: 30000
+    # A Druid broker node that can serve data (only used if you have Druid based data source)
+    host: localhost:8082
+
+    # A timeout for the Druid queries in ms (default: 30000 = 30 seconds)
+    #timeout: 30000
 
 # The data sources that you have configured, these will appear, in order, inside the navigation menu of Pivot
 # In general there can be two types of 'engine':
@@ -227,7 +232,7 @@ dataSources:
   # It will work for you if you have setup the demo Wikipedia Editstream scraper
   - name: wiki
     title: Wikipedia Edits
-    engine: druid # Set the engine to druid
+    engine: druid-cluster # Set the engine to the name of the cluster
     source: wikipedia # The druid dataSource
 
     # This is a real time data source so always assume it is up to date

@@ -45,7 +45,6 @@ describe('AppSettings', () => {
           "name": "druid",
           "type": "druid",
           "host": "192.168.99.100",
-          "introspectionStrategy": "segment-metadata-fallback",
           "sourceListRefreshInterval": 10001,
           "sourceListScan": "auto",
           "sourceReintrospectInterval": 10002,
@@ -67,11 +66,8 @@ describe('AppSettings', () => {
       expect(AppSettings.fromJS(oldJS).toJS().clusters).to.deep.equal([
         {
           "host": "192.168.99.100",
-          "introspectionStrategy": "segment-metadata-fallback",
           "name": "druid",
-          "sourceListRefreshInterval": 15000,
           "sourceListScan": "disable",
-          "timeout": 40000,
           "type": "druid"
         }
       ]);
@@ -90,17 +86,12 @@ describe('AppSettings', () => {
     });
 
     it("converts to client settings", () => {
-      const settings = AppSettingsMock.wikiOnly();
-      settings.dataSources[0].isQueryable = () => true;
+      const settings = AppSettingsMock.wikiOnlyWithExecutor();
 
       expect(settings.toClientSettings().toJS()).to.deep.equal({
         "clusters": [
           {
-            "introspectionStrategy": "segment-metadata-fallback",
             "name": "druid",
-            "sourceListRefreshInterval": 15000,
-            "sourceListScan": "disable",
-            "timeout": 40000,
             "type": "druid"
           }
         ],

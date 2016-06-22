@@ -513,10 +513,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (cluster.type === 'druid') {
       externalValue.rollup = this.rollup;
       externalValue.timeAttribute = this.timeAttribute.name;
-      externalValue.introspectionStrategy = cluster.introspectionStrategy;
+      externalValue.introspectionStrategy = cluster.getIntrospectionStrategy();
       externalValue.allowSelectQueries = true;
       externalValue.context = {
-        timeout: cluster.timeout
+        timeout: cluster.getTimeout()
       };
     }
 

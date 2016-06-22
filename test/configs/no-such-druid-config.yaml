@@ -1,5 +1,8 @@
-druidHost: 11.22.33.44:5555
-timeout: 30000
+clusters:
+  - name: druid
+    type: druid
+    druidHost: 11.22.33.44:5555
+    timeout: 30000
 
 dataSources:
   - name: wiki

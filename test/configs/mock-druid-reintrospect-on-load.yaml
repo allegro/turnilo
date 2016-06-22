@@ -1,0 +1,9 @@
+clusters:
+  - name: c1
+    type: druid
+    host: localhost:28082
+    version: 0.9.1
+    sourceListScan: auto
+    sourceReintrospectOnLoad: true
+    sourceListRefreshInterval: 0
+    sourceReintrospectInterval: 0

@@ -43,8 +43,19 @@ describe('basics', function () {
   });
 
   it('complains if there are too many settings inputs', (testComplete) => {
-    exec('bin/pivot --example wiki --druid localhost', (error, stdout, stderr) => {
-      expect(error.message).to.contain('only one of --config, --examples, --file, --druid, --postgres, --mysql can be given on the command line');
+    exec('bin/pivot --example wiki --postgres localhost', (error, stdout, stderr) => {
+      expect(error).to.be.an('error');
+      expect(stderr).to.contain('only one of --config, --examples, --file, --druid, --postgres, --mysql can be given on the command line');
+      expect(stderr).to.not.contain('https://github.com/implydata/pivot/blob/master/docs/pivot-0.9.x-migration.md');
+      testComplete();
+    });
+  });
+
+  it('complains if there are too many settings inputs (+message)', (testComplete) => {
+    exec('bin/pivot --config blah.yaml --druid localhost', (error, stdout, stderr) => {
+      expect(error).to.be.an('error');
+      expect(stderr).to.contain('only one of --config, --examples, --file, --druid, --postgres, --mysql can be given on the command line');
+      expect(stderr).to.contain('https://github.com/implydata/pivot/blob/master/docs/pivot-0.9.x-migration.md');
       testComplete();
     });
   });
