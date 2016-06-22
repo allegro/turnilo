@@ -90,7 +90,10 @@ describe('AppSettings', () => {
     });
 
     it("converts to client settings", () => {
-      expect(AppSettingsMock.wikiOnly().toClientSettings().toJS()).to.deep.equal({
+      const settings = AppSettingsMock.wikiOnly();
+      settings.dataSources[0].isQueryable = () => true;
+
+      expect(settings.toClientSettings().toJS()).to.deep.equal({
         "clusters": [
           {
             "introspectionStrategy": "segment-metadata-fallback",
