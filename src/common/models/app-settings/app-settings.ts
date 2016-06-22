@@ -125,8 +125,13 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
   public toClientSettings(): AppSettings {
     var value = this.valueOf();
+
     value.clusters = value.clusters.map((c) => c.toClientCluster());
-    value.dataSources = value.dataSources.map((ds) => ds.toClientDataSource());
+
+    value.dataSources = value.dataSources
+      .filter((ds) => ds.isQueryable())
+      .map((ds) => ds.toClientDataSource());
+
     return new AppSettings(value);
   }
 

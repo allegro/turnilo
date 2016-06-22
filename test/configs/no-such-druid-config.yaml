@@ -1,0 +1,15 @@
+druidHost: 11.22.33.44:5555
+timeout: 30000
+
+dataSources:
+  - name: wiki
+    title: Wikipedia Edits
+    engine: druid
+    source: wikipedia
+
+    dimensions:
+      - name: language
+        expression: $language
+
+    measures:
+      - name: count

@@ -89,6 +89,130 @@ describe('AppSettings', () => {
       });
     });
 
+    it("converts to client settings", () => {
+      expect(AppSettingsMock.wikiOnly().toClientSettings().toJS()).to.deep.equal({
+        "clusters": [
+          {
+            "introspectionStrategy": "segment-metadata-fallback",
+            "name": "druid",
+            "sourceListRefreshInterval": 15000,
+            "sourceListScan": "disable",
+            "timeout": 40000,
+            "type": "druid"
+          }
+        ],
+        "customization": {
+          "customLogoSvg": "ansvgstring",
+          "headerBackground": "brown",
+          "title": "Hello World"
+        },
+        "dataSources": [
+          {
+            "attributes": [
+              {
+                "name": "time",
+                "type": "TIME"
+              },
+              {
+                "name": "articleName",
+                "type": "STRING"
+              },
+              {
+                "makerAction": {
+                  "action": "count"
+                },
+                "name": "count",
+                "type": "NUMBER",
+                "unsplitable": true
+              }
+            ],
+            "defaultDuration": "P3D",
+            "defaultFilter": {
+              "op": "literal",
+              "value": true
+            },
+            "defaultPinnedDimensions": [
+              "articleName"
+            ],
+            "defaultSelectedMeasures": [
+              "count"
+            ],
+            "defaultSortMeasure": "count",
+            "defaultTimezone": "Etc/UTC",
+            "dimensions": [
+              {
+                "expression": {
+                  "name": "time",
+                  "op": "ref"
+                },
+                "kind": "time",
+                "name": "time",
+                "title": "Time"
+              },
+              {
+                "expression": {
+                  "name": "articleName",
+                  "op": "ref"
+                },
+                "kind": "string",
+                "name": "articleName",
+                "title": "Article Name"
+              }
+            ],
+            "engine": "druid",
+            "introspection": "none",
+            "measures": [
+              {
+                "expression": {
+                  "action": {
+                    "action": "sum",
+                    "expression": {
+                      "name": "count",
+                      "op": "ref"
+                    }
+                  },
+                  "expression": {
+                    "name": "main",
+                    "op": "ref"
+                  },
+                  "op": "chain"
+                },
+                "name": "count",
+                "title": "Count"
+              },
+              {
+                "expression": {
+                  "action": {
+                    "action": "sum",
+                    "expression": {
+                      "name": "added",
+                      "op": "ref"
+                    }
+                  },
+                  "expression": {
+                    "name": "main",
+                    "op": "ref"
+                  },
+                  "op": "chain"
+                },
+                "name": "added",
+                "title": "Added"
+              }
+            ],
+            "name": "wiki",
+            "refreshRule": {
+              "rule": "fixed",
+              "time": new Date('2016-04-30T12:39:51.350Z')
+            },
+            "source": "wiki",
+            "subsetFilter": null,
+            "timeAttribute": "time",
+            "title": "Wiki"
+          }
+        ]
+      });
+    });
+
   });
 
 });

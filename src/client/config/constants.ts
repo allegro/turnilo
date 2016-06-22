@@ -66,7 +66,8 @@ export const STRINGS = {
   updateTimezone: 'Update Timezone',
   timezone: 'Timezone',
   splitDelimiter: 'by',
-  any: 'any'
+  any: 'any',
+  noQueryableDataSources: 'There are no queryable data sources configured'
 };
 
 

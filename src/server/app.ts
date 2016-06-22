@@ -20,6 +20,7 @@ import * as plywoodRoutes from './routes/plywood/plywood';
 import * as plyqlRoutes from './routes/plyql/plyql';
 import * as pivotRoutes from './routes/pivot/pivot';
 import * as settingsRoutes from './routes/settings/settings';
+import * as mkurlRoutes from './routes/mkurl/mkurl';
 import * as healthRoutes from './routes/health/health';
 import { errorLayout } from './views';
 
@@ -60,7 +61,11 @@ addRoutes('/health', healthRoutes);
 // Data routes
 addRoutes('/plywood', plywoodRoutes);
 addRoutes('/plyql', plyqlRoutes);
-addRoutes('/settings', settingsRoutes);
+addRoutes('/mkurl', mkurlRoutes);
+
+if (process.env['PIVOT_ENABLE_SETTINGS']) {
+  addRoutes('/settings', settingsRoutes);
+}
 
 // View routes
 if (SERVER_SETTINGS.iframe === 'deny') {

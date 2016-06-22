@@ -11,6 +11,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 - Full support of Druid 0.9.1
 - Auth module versioning
 - Druid Request decorator versioning
+- Ability to [generate programmatic links](docs/generating-links-into-pivot.md) into Pivot
 
 ## 0.8.42
 

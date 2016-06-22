@@ -500,8 +500,6 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     const { cluster } = this;
     if (!cluster) throw new Error('must have a cluster');
 
-
-
     var externalValue: ExternalValue = {
       engine: cluster.type,
       suppress: true,

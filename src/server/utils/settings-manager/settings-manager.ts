@@ -63,7 +63,7 @@ export class SettingsManager {
           return AppSettings.fromJS(appSettingsJS);
         })
           .then((appSettings) => {
-            this.reviseSettings(appSettings);
+            return this.reviseSettings(appSettings);
           })
           .catch(e => {
             logger.error(`Fatal settings load error: ${e.message}`);
@@ -142,8 +142,9 @@ export class SettingsManager {
   getSettings(opts: GetSettingsOptions = {}): Q.Promise<AppSettings> {
     var currentWork = this.currentWork;
 
-    if (opts.timeout !== 0) {
-      currentWork = currentWork.timeout(opts.timeout || this.initialLoadTimeout)
+    var timeout = opts.timeout || this.initialLoadTimeout;
+    if (timeout !== 0) {
+      currentWork = currentWork.timeout(timeout)
         .catch(e => {
           this.logger.error(`Initial load timeout hit, continuing`);
         });
