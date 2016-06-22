@@ -24,7 +24,7 @@ $row-height: 30px;
         display: inline;
       }
 
-      .filter:not(:last-child):after {
+      .filter:not(:last-child)::after {
         content: '; ';
       }
     }

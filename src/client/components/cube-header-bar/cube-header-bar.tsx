@@ -196,6 +196,12 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   onSettingsMenuClick(e: MouseEvent) {
     const { settingsMenuOpen } = this.state;
     if (settingsMenuOpen) return this.onSettingsMenuClose();
+
+    if (e.metaKey && e.altKey) {
+      console.log(this.props.essence.toJS());
+      return;
+    }
+
     this.setState({
       settingsMenuOpen: e.target as Element
     });

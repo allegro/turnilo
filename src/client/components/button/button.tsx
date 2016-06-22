@@ -23,7 +23,6 @@ export interface ButtonState {
 export class Button extends React.Component<ButtonProps, ButtonState> {
   constructor() {
     super();
-
   }
 
   render() {

@@ -24,6 +24,8 @@ export const MAX_SEARCH_LENGTH = 300;
 export const SEARCH_WAIT = 900;
 
 export const STRINGS = {
+  home: 'Home',
+  settings: 'Settings',
   dimensions: 'Dimensions',
   measures: 'Measures',
   filter: 'Filter',

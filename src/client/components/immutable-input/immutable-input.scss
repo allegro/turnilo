@@ -1,0 +1,5 @@
+@import '../../imports';
+
+.immutable-input {
+  @extend %default-input;
+}

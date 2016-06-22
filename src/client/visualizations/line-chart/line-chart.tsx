@@ -2,6 +2,7 @@ require('./line-chart.css');
 
 import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
 
+import { immutableEqual } from 'immutable-class';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
@@ -9,7 +10,6 @@ import { r, $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeRangeJS
   PlywoodRange, NumberRangeJS, NumberRange, LiteralExpression, Set, Range, NumberBucketAction } from 'plywood';
 import { Splits, Colors, FilterClause, Dimension, Stage, Filter, Measure, DataSource, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
 import { DisplayYear } from '../../../common/utils/time/time';
-import { rangeEquals } from '../../../common/utils/general/general';
 import { formatValue } from '../../../common/utils/formatter/formatter';
 
 import { getLineChartTicks } from '../../../common/models/granularity/granularity';
@@ -133,7 +133,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     var currentHoverRange: any = closestDatum ? (closestDatum[continuousDimension.name]) : null;
 
-    if (!hoverRange || !rangeEquals(hoverRange, currentHoverRange) || measure !== hoverMeasure) {
+    if (!hoverRange || !immutableEqual(hoverRange, currentHoverRange) || measure !== hoverMeasure) {
       this.setState({
         hoverRange: currentHoverRange,
         hoverMeasure: measure

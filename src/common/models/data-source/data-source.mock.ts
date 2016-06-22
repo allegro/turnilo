@@ -45,8 +45,13 @@ export class DataSourceMock {
       measures: [
         {
           name: 'count',
-          title: 'count',
+          title: 'Count',
           expression: $('main').sum('$count').toJS()
+        },
+        {
+          name: 'added',
+          title: 'Added',
+          expression: $('main').sum('$added').toJS()
         }
       ],
       timeAttribute: 'time',

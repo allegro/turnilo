@@ -9,6 +9,7 @@ export interface HomeHeaderBarProps extends React.Props<any> {
   user?: User;
   onNavClick: Fn;
   customization?: Customization;
+  title?: string;
 }
 
 export interface HomeHeaderBarState {
@@ -18,7 +19,7 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
 
 
   render() {
-    var { user, onNavClick, customization } = this.props;
+    var { user, onNavClick, customization, title } = this.props;
 
     // One day
     //<div className="icon-button" onClick={this.handleSettings.bind(this)}>
@@ -44,7 +45,7 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
         <div className="menu-icon">
           <SvgIcon svg={require('../../icons/menu.svg')}/>
         </div>
-        <div className="title">Home</div>
+        <div className="title">{title}</div>
       </div>
       <div className="right-bar">
         <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">

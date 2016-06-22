@@ -1,93 +1,79 @@
 import * as path from 'path';
-import * as Q from 'q';
 import * as nopt from 'nopt';
-import { DruidRequestDecorator } from 'plywood-druid-requester';
-import { DataSource, DataSourceJS, Dimension, Measure, LinkViewConfig, LinkViewConfigJS, Customization } from '../common/models/index';
-import { dataSourceToYAML } from '../common/utils/yaml-helper/yaml-helper';
-import { DataSourceManager, dataSourceManagerFactory, loadFileSync, properDruidRequesterFactory, dataSourceLoaderFactory, SourceListScan } from './utils/index';
+import { arraySum } from '../common/utils/general/general';
+import { Cluster, DataSource, SupportedType, AppSettings } from '../common/models/index';
+import { clusterToYAML, dataSourceToYAML } from '../common/utils/yaml-helper/yaml-helper';
+import { ServerSettings, ServerSettingsJS } from './models/server-settings/server-settings';
+import { loadFileSync, SettingsManager, SettingsLocation, CONSOLE_LOGGER, NULL_LOGGER } from './utils/index';
 
+const AUTH_MODULE_VERSION = 1;
+const PACKAGE_FILE = path.join(__dirname, '../../package.json');
 
-export interface ServerConfig {
-  iframe?: "allow" | "deny";
+function exitWithMessage(message: string): void {
+  console.log(message);
+
+  // Hack: load the package file for no reason other than to make some time for console.log to flush
+  try { loadFileSync(PACKAGE_FILE, 'json'); } catch (e) { }
+
+  process.exit();
 }
 
-export interface PivotConfig {
-  port?: number;
-  verbose?: boolean;
-  brokerHost?: string;
-  druidHost?: string;
-  timeout?: number;
-  introspectionStrategy?: string;
-
-  pageMustLoadTimeout?: number;
-  sourceListScan?: SourceListScan;
-  sourceListRefreshOnLoad?: boolean;
-  sourceListRefreshInterval?: number;
-  sourceReintrospectOnLoad?: boolean;
-  sourceReintrospectInterval?: number;
-
-  auth?: string;
-  druidRequestDecorator?: string;
-  dataSources?: DataSourceJS[];
-  linkViewConfig?: LinkViewConfigJS;
-  serverConfig?: ServerConfig;
-
-  customization?: Customization;
-}
-
-export interface RequestDecoratorFactoryOptions {
-  config: any;
-}
-
-export interface DruidRequestDecoratorModule {
-  druidRequestDecorator: (log: (line: string) => void, options: RequestDecoratorFactoryOptions) => DruidRequestDecorator;
-}
-
-function errorExit(message: string): void {
+function exitWithError(message: string): void {
   console.error(message);
   process.exit(1);
+}
+
+function zeroOne(thing: any): number {
+  return Number(Boolean(thing));
 }
 
 
 var packageObj: any = null;
 try {
-  packageObj = loadFileSync(path.join(__dirname, '../../package.json'), 'json');
+  packageObj = loadFileSync(PACKAGE_FILE, 'json');
 } catch (e) {
-  errorExit(`Could not read package.json: ${e.message}`);
+  exitWithError(`Could not read package.json: ${e.message}`);
 }
 export const VERSION = packageObj.version;
 
-function printUsage() {
-  console.log(`
+const USAGE = `
 Usage: pivot [options]
 
 Possible usage:
 
-  pivot --example wiki
+  pivot --examples
   pivot --druid your.broker.host:8082
+
+General arguments:
 
       --help                   Print this help message
       --version                Display the version number
   -v, --verbose                Display the DB queries that are being made
-  -p, --port                   The port pivot will run on
-      --example                Start pivot with some example data (overrides all other options)
-  -c, --config                 The configuration YAML files to use
 
+Server arguments:
+
+  -p, --port <port-number>     The port pivot will run on (default: ${ServerSettings.DEFAULT_PORT})
+      
+Data connection options:      
+  
+  Exactly one data connection option must be provided. 
+  
+  -c, --config <path>          Use this local configuration (YAML) file
+      --examples               Start Pivot with some example data for testing / demo  
+  -f, --file <path>            Start Pivot on top of this file based data source (must be JSON, CSV, or TSV)
+  -d, --druid <host>           The Druid broker node to connect to
+      --postgres <host>        The Postgres cluster to connect to
+      --mysql <host>           The MySQL cluster to connect to
+      
+      --user <string>          The cluster 'user' (if needed)
+      --password <string>      The cluster 'password' (if needed)
+      --database <string>      The cluster 'database' (if needed)
+
+Configuration printing utilities:      
+      
       --print-config           Prints out the auto generated config
       --with-comments          Adds comments when printing the auto generated config
-      --data-sources-only      Only print the data sources in the auto generated config
-
-  -f, --file                   Start pivot on top of this file based data source (must be JSON, CSV, or TSV)
-
-  -d, --druid                  The Druid broker node to connect to
-      --introspection-strategy Druid introspection strategy
-          Possible values:
-          * segment-metadata-fallback - (default) use the segmentMetadata and fallback to GET route
-          * segment-metadata-only     - only use the segmentMetadata query
-          * datasource-get            - only use GET /druid/v2/datasources/DATASOURCE route
-`
-  );
-}
+`;
 
 function parseArgs() {
   return nopt(
@@ -96,17 +82,21 @@ function parseArgs() {
       "version": Boolean,
       "verbose": Boolean,
       "port": Number,
-      "example": String,
+      "examples": Boolean,
+      "example": String, // deprecated
       "config": String,
 
       "print-config": Boolean,
       "with-comments": Boolean,
-      "data-sources-only": Boolean,
 
       "file": String,
-
       "druid": String,
-      "introspection-strategy": String
+      "postgres": String,
+      "mysql": String,
+
+      "user": String,
+      "password": String,
+      "database": String
     },
     {
       "v": ["--verbose"],
@@ -123,200 +113,154 @@ var parsedArgs = parseArgs();
 //console.log(parsedArgs);
 
 if (parsedArgs['help']) {
-  printUsage();
-  process.exit();
+  exitWithMessage(USAGE);
 }
 
 if (parsedArgs['version']) {
-  console.log(VERSION);
-  process.exit();
+  exitWithMessage(VERSION);
 }
 
-const DEFAULT_CONFIG: PivotConfig = {
-  port: 9090,
-  sourceListScan: 'auto',
-  sourceListRefreshInterval: 10000,
-  dataSources: []
-};
-
-if (!parsedArgs['example'] && !parsedArgs['config'] && !parsedArgs['druid'] && !parsedArgs['file']) {
-  printUsage();
-  process.exit();
-}
-
-var exampleConfig: PivotConfig = null;
 if (parsedArgs['example']) {
-  delete parsedArgs['druid'];
-  var example = parsedArgs['example'];
-  if (example === 'wiki') {
-    try {
-      exampleConfig = loadFileSync(path.join(__dirname, `../../config-example-${example}.yaml`), 'yaml');
-    } catch (e) {
-      errorExit(`Could not load example config for '${example}': ${e.message}`);
-    }
-  } else {
-    console.log(`Unknown example '${example}'. Possible examples are: wiki`);
-    process.exit();
-  }
+  delete parsedArgs['example'];
+  parsedArgs['examples'] = true;
 }
 
-var configFilePath = parsedArgs['config'];
-var configFileDir: string = null;
-var config: PivotConfig;
-if (configFilePath) {
-  configFileDir = path.dirname(configFilePath);
-  try {
-    config = loadFileSync(configFilePath, 'yaml');
-    console.log(`Using config ${configFilePath}`);
-  } catch (e) {
-    errorExit(`Could not load config from '${configFilePath}': ${e.message}`);
-  }
-} else {
-  config = DEFAULT_CONFIG;
+const SETTINGS_INPUTS = ['config', 'examples', 'file', 'druid', 'postgres', 'mysql'];
+
+var numSettingsInputs = arraySum(SETTINGS_INPUTS.map((input) => zeroOne(parsedArgs[input])));
+
+if (numSettingsInputs === 0) {
+  exitWithMessage(USAGE);
 }
 
-// If there is an example config take its dataSources
-if (exampleConfig && Array.isArray(exampleConfig.dataSources)) {
-  config.dataSources = exampleConfig.dataSources;
-}
-
-// If a file is specified add it as a dataSource
-var file = parsedArgs['file'];
-if (file) {
-  config.dataSources.push({
-    name: path.basename(file, path.extname(file)),
-    engine: 'native',
-    source: file
-  });
+if (numSettingsInputs > 1) {
+  exitWithError(`only one of --${SETTINGS_INPUTS.join(', --')} can be given on the command line`);
 }
 
 export const PRINT_CONFIG = Boolean(parsedArgs['print-config']);
 export const START_SERVER = !PRINT_CONFIG;
-export const VERBOSE = Boolean(parsedArgs['verbose'] || config.verbose);
 
-export const PORT = parseInt(parsedArgs['port'] || config.port, 10) || 9090;
-export const SERVER_ROOT: string = (config as any).serverRoot;
-export const DRUID_HOST = parsedArgs['druid'] || config.brokerHost || config.druidHost;
-export const TIMEOUT = parseInt(<any>config.timeout, 10) || 30000;
+const LOGGER = START_SERVER ? CONSOLE_LOGGER : NULL_LOGGER;
 
-export const INTROSPECTION_STRATEGY = String(parsedArgs["introspection-strategy"] || config.introspectionStrategy || 'segment-metadata-fallback');
-export const PAGE_MUST_LOAD_TIMEOUT = START_SERVER ? (parseInt(<any>config.pageMustLoadTimeout, 10) || 800) : 0;
-export const SOURCE_LIST_SCAN: SourceListScan = config.sourceListScan;
-
-export const SOURCE_LIST_REFRESH_ON_LOAD = START_SERVER ? Boolean(<any>config.sourceListRefreshOnLoad) : false;
-export const SOURCE_LIST_REFRESH_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceListRefreshInterval, 10) || 15000) : 0;
-if (SOURCE_LIST_REFRESH_INTERVAL && SOURCE_LIST_REFRESH_INTERVAL < 1000) {
-  errorExit(`can not set sourceListRefreshInterval to < 1000 (is ${SOURCE_LIST_REFRESH_INTERVAL})`);
+if (START_SERVER) {
+  LOGGER.log(`Starting Pivot v${VERSION}`);
 }
 
-export const SOURCE_REINTROSPECT_ON_LOAD = START_SERVER ? Boolean(<any>config.sourceReintrospectOnLoad) : false;
-export const SOURCE_REINTROSPECT_INTERVAL = START_SERVER ? (parseInt(<any>config.sourceReintrospectInterval, 10) || 0) : 0;
-if (SOURCE_REINTROSPECT_INTERVAL && SOURCE_REINTROSPECT_INTERVAL < 1000) {
-  errorExit(`can not set sourceReintrospectInterval to < 1000 (is ${SOURCE_REINTROSPECT_INTERVAL})`);
+var serverSettingsFilePath = parsedArgs['config'];
+
+if (parsedArgs['examples']) {
+  serverSettingsFilePath = path.join(__dirname, `../../config-examples.yaml`);
 }
 
+var anchorPath: string;
+var serverSettingsJS: any;
+if (serverSettingsFilePath) {
+  anchorPath = path.dirname(serverSettingsFilePath);
+  try {
+    serverSettingsJS = loadFileSync(serverSettingsFilePath, 'yaml');
+    console.log(`Using config ${serverSettingsFilePath}`);
+  } catch (e) {
+    exitWithError(`Could not load config from '${serverSettingsFilePath}': ${e.message}`);
+  }
+} else {
+  anchorPath = process.cwd();
+  serverSettingsJS = {};
+}
 
-var auth = config.auth;
+if (parsedArgs['port']) {
+  serverSettingsJS.port = parsedArgs['port'];
+}
+
+export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS, anchorPath);
+
+// --- Auth -------------------------------
+
+var auth = serverSettingsJS.auth;
 var authModule: any = null;
 if (auth) {
-  auth = path.resolve(configFileDir, auth);
-  console.log(`Using auth ${auth}`);
+  auth = path.resolve(anchorPath, auth);
+  LOGGER.log(`Using auth ${auth}`);
   try {
     authModule = require(auth);
   } catch (e) {
-    errorExit(`error loading auth module: ${e.message}`);
+    exitWithError(`error loading auth module: ${e.message}`);
   }
-  if (typeof authModule.auth !== 'function') errorExit('Invalid auth module');
+
+  if (authModule.version !== AUTH_MODULE_VERSION) {
+    exitWithError(`incorrect auth module version ${authModule.version} needed ${AUTH_MODULE_VERSION}`);
+  }
+  if (typeof authModule.auth !== 'function') exitWithError('Invalid auth module');
 }
 export const AUTH = authModule;
 
+// --- Location -------------------------------
 
-var druidRequestDecorator = config.druidRequestDecorator;
-var druidRequestDecoratorModule: DruidRequestDecoratorModule = null;
-if (druidRequestDecorator) {
-  druidRequestDecorator = path.resolve(configFileDir, druidRequestDecorator);
-  console.log(`Using druidRequestDecorator ${druidRequestDecorator}`);
-  try {
-    druidRequestDecoratorModule = require(druidRequestDecorator);
-  } catch (e) {
-    errorExit(`error loading druidRequestDecorator module: ${e.message}`);
+const CLUSTER_TYPES: SupportedType[] = ['druid', 'postgres', 'mysql'];
+
+var settingsLocation: SettingsLocation = null;
+if (serverSettingsFilePath) {
+  settingsLocation = {
+    location: 'local',
+    readOnly: false, // ToDo: this should be true
+    uri: serverSettingsFilePath
+  };
+} else {
+  var initAppSettings = AppSettings.BLANK;
+
+  // If a file is specified add it as a dataSource
+  var fileToLoad = parsedArgs['file'];
+  if (fileToLoad) {
+    initAppSettings = initAppSettings.addDataSource(new DataSource({
+      name: path.basename(fileToLoad, path.extname(fileToLoad)),
+      engine: 'native',
+      source: fileToLoad
+    }));
   }
-  if (typeof druidRequestDecoratorModule.druidRequestDecorator !== 'function') errorExit('Invalid druidRequestDecorator module');
+
+  for (var clusterType of CLUSTER_TYPES) {
+    var host = parsedArgs[clusterType];
+    if (host) {
+      initAppSettings = initAppSettings.addCluster(new Cluster({
+        name: clusterType,
+        type: clusterType,
+        host: host,
+        sourceListScan: 'auto',
+        sourceListRefreshInterval: 15000,
+
+        user: parsedArgs['user'],
+        password: parsedArgs['password'],
+        database: parsedArgs['database']
+      }));
+    }
+  }
+
+  settingsLocation = {
+    location: 'transient',
+    readOnly: false,
+    initAppSettings
+  };
 }
-export const DRUID_REQUEST_DECORATOR = druidRequestDecoratorModule;
 
+export const VERBOSE = Boolean(parsedArgs['verbose'] || serverSettingsJS.verbose);
 
-export const DATA_SOURCES: DataSource[] = (config.dataSources || []).map((dataSourceJS: DataSourceJS, i: number) => {
-  if (typeof dataSourceJS !== 'object') errorExit(`DataSource ${i} is not valid`);
-  var dataSourceName = dataSourceJS.name;
-  if (typeof dataSourceName !== 'string') errorExit(`DataSource ${i} must have a name`);
-
-  // Convert maxTime into refreshRule if a maxTime exists
-  if (dataSourceJS.maxTime && (typeof dataSourceJS.maxTime === 'string' || (<any>dataSourceJS.maxTime).toISOString)) {
-    dataSourceJS.refreshRule = { rule: 'fixed', time: <any>dataSourceJS.maxTime };
-    console.warn('maxTime found in config, this is deprecated please convert it to a refreshRule like so:', dataSourceJS.refreshRule);
-    delete dataSourceJS.maxTime;
-  }
-
-  try {
-    return DataSource.fromJS(dataSourceJS);
-  } catch (e) {
-    errorExit(`Could not parse data source '${dataSourceJS.name}': ${e.message}`);
-    return;
-  }
+export const SETTINGS_MANAGER = new SettingsManager(settingsLocation, {
+  logger: LOGGER,
+  verbose: VERBOSE,
+  anchorPath,
+  initialLoadTimeout: SERVER_SETTINGS.pageMustLoadTimeout
 });
 
-export const LINK_VIEW_CONFIG = config.linkViewConfig || null;
-export const SERVER_CONFIG = config.serverConfig || {};
-export const CUSTOMIZATION = config.customization ? Customization.fromJS(config.customization) : null;
-
-
-var druidRequester: Requester.PlywoodRequester<any> = null;
-if (DRUID_HOST) {
-  var requestDecorator: DruidRequestDecorator = null;
-  if (druidRequestDecoratorModule) {
-    var logger = (str: string) => console.log(str);
-    requestDecorator = druidRequestDecoratorModule.druidRequestDecorator(logger, {
-      config
-    });
-  }
-
-  druidRequester = properDruidRequesterFactory({
-    druidHost: DRUID_HOST,
-    timeout: TIMEOUT,
-    verbose: VERBOSE,
-    concurrentLimit: 5,
-    requestDecorator
-  });
-}
-
-var configDirectory = configFileDir || path.join(__dirname, '../..');
-
-if (!PRINT_CONFIG) {
-  console.log(`Starting Pivot v${VERSION}`);
-}
-
-export const DATA_SOURCE_MANAGER: DataSourceManager = dataSourceManagerFactory({
-  dataSources: DATA_SOURCES,
-  druidRequester,
-  dataSourceLoader: dataSourceLoaderFactory(druidRequester, configDirectory, TIMEOUT, INTROSPECTION_STRATEGY),
-
-  pageMustLoadTimeout: PAGE_MUST_LOAD_TIMEOUT,
-  sourceListScan: SOURCE_LIST_SCAN,
-  sourceListRefreshOnLoad: SOURCE_LIST_REFRESH_ON_LOAD,
-  sourceListRefreshInterval: SOURCE_LIST_REFRESH_INTERVAL,
-  sourceReintrospectOnLoad: SOURCE_REINTROSPECT_ON_LOAD,
-  sourceReintrospectInterval: SOURCE_REINTROSPECT_INTERVAL,
-
-  log: PRINT_CONFIG ? null : (line: string) => console.log(line)
-});
+// --- Printing -------------------------------
 
 if (PRINT_CONFIG) {
   var withComments = Boolean(parsedArgs['with-comments']);
-  var dataSourcesOnly = Boolean(parsedArgs['data-sources-only']);
 
-  DATA_SOURCE_MANAGER.getQueryableDataSources().then((dataSources) => {
-    if (!dataSources.length) throw new Error('Could not find any data sources please verify network connectivity');
+  SETTINGS_MANAGER.getSettings({
+    timeout: 10000
+  }).then(appSettings => {
+    var { dataSources, clusters } = appSettings;
+
+    if (!dataSources.length) throw new Error('Could not find any data sources, please verify network connectivity');
 
     var lines = [
       `# generated by Pivot version ${VERSION}`,
@@ -324,49 +268,26 @@ if (PRINT_CONFIG) {
       ''
     ];
 
-    if (!dataSourcesOnly) {
-      if (VERBOSE) {
-        if (withComments) {
-          lines.push("# Run Pivot in verbose mode so it prints out the queries that it issues");
-        }
-        lines.push(`verbose: true`, '');
-      }
-
+    if (VERBOSE) {
       if (withComments) {
-        lines.push("# The port on which the Pivot server will listen on");
+        lines.push("# Run Pivot in verbose mode so it prints out the queries that it issues");
       }
-      lines.push(`port: ${PORT}`, '');
-
-      if (DRUID_HOST) {
-        if (withComments) {
-          lines.push("# A Druid broker node that can serve data (only used if you have Druid based data source)");
-        }
-        lines.push(`druidHost: ${DRUID_HOST}`, '');
-
-        if (withComments) {
-          lines.push("# A timeout for the Druid queries in ms (default: 30000 = 30 seconds)");
-          lines.push("#timeout: 30000", '');
-        }
-      }
-
-      if (INTROSPECTION_STRATEGY !== 'segment-metadata-fallback') {
-        if (withComments) {
-          lines.push("# The introspection strategy for the Druid external");
-        }
-        lines.push(`introspectionStrategy: ${INTROSPECTION_STRATEGY}`, '');
-      }
-
-      if (withComments) {
-        lines.push("# Should new datasources automatically be added?");
-      }
-      lines.push(`sourceListScan: disable`, '');
+      lines.push(`verbose: true`, '');
     }
+
+    if (withComments) {
+      lines.push("# The port on which the Pivot server will listen on");
+    }
+    lines.push(`port: ${SERVER_SETTINGS.port}`, '');
+
+    lines.push('clusters:');
+    lines = lines.concat.apply(lines, clusters.map(c => clusterToYAML(c, withComments)));
 
     lines.push('dataSources:');
     lines = lines.concat.apply(lines, dataSources.map(d => dataSourceToYAML(d, withComments)));
 
     console.log(lines.join('\n'));
   }).catch((e: Error) => {
-    console.error("There was an error generating a config: " + e.message);
+    exitWithError("There was an error generating a config: " + e.message);
   });
 }

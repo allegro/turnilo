@@ -11,6 +11,7 @@ export * from './filter/filter';
 export * from './split-combine/split-combine';
 export * from './splits/splits';
 export * from './highlight/highlight';
+export * from './cluster/cluster';
 export * from './data-source/data-source';
 export * from './sort-on/sort-on';
 export * from './colors/colors';
@@ -25,3 +26,5 @@ export * from './customization/customization';
 export * from './external-view/external-view';
 export * from './drag-position/drag-position';
 export * from './granularity/granularity';
+
+export * from './app-settings/app-settings';

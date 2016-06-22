@@ -1,11 +1,10 @@
 import * as express from 'express';
-import { Request, Response } from 'express';
+import { Request, Response, Router, Handler } from 'express';
 
 import * as path from 'path';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import * as compress from 'compression';
-import { $, Expression, Datum, Dataset } from 'plywood';
 
 import { Timezone, WallTime } from 'chronoshift';
 // Init chronoshift
@@ -14,64 +13,57 @@ if (!WallTime.rules) {
   WallTime.init(tzData.rules, tzData.zones);
 }
 
+import { GetSettingsOptions } from '../server/utils/settings-manager/settings-manager';
 import { PivotRequest } from './utils/index';
-import { VERSION, DATA_SOURCE_MANAGER, AUTH, SERVER_CONFIG, SERVER_ROOT } from './config';
+import { VERSION, AUTH, SERVER_SETTINGS, SETTINGS_MANAGER } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
 import * as plyqlRoutes from './routes/plyql/plyql';
 import * as pivotRoutes from './routes/pivot/pivot';
+import * as settingsRoutes from './routes/settings/settings';
 import * as healthRoutes from './routes/health/health';
 import { errorLayout } from './views';
-
-var serverRoot = '/pivot';
-if (SERVER_ROOT) {
-  var serverRoot = SERVER_ROOT;
-  if (serverRoot[0] !== '/') serverRoot = '/' + serverRoot;
-}
 
 var app = express();
 app.disable('x-powered-by');
 
+function addRoutes(attach: string, router: Router | Handler): void {
+  app.use(attach, router);
+  app.use(SERVER_SETTINGS.serverRoot + attach, router);
+}
+
 app.use(compress());
 app.use(logger('dev'));
 
-app.use('/', express.static(path.join(__dirname, '../../build/public')));
-app.use(serverRoot, express.static(path.join(__dirname, '../../build/public')));
+addRoutes('/', express.static(path.join(__dirname, '../../build/public')));
+addRoutes('/', express.static(path.join(__dirname, '../../assets')));
 
-app.use('/', express.static(path.join(__dirname, '../../assets')));
-app.use(serverRoot, express.static(path.join(__dirname, '../../assets')));
+app.use((req: PivotRequest, res: Response, next: Function) => {
+  req.user = null;
+  req.version = VERSION;
+  req.getSettings = (opts: GetSettingsOptions = {}) => {
+    return SETTINGS_MANAGER.getSettings(opts);
+  };
+  next();
+});
 
 if (AUTH) {
   app.use(AUTH.auth({
-    version: VERSION,
-    dataSourceManager: DATA_SOURCE_MANAGER
+    version: VERSION
   }));
 
-  app.use((req: PivotRequest, res: Response, next: Function) => {
-    if (!req.dataSourceManager) {
-      return next(new Error('no dataSourceManager'));
-    }
-    next();
-  });
-
-} else {
-  app.use((req: PivotRequest, res: Response, next: Function) => {
-    req.user = null;
-    req.dataSourceManager = DATA_SOURCE_MANAGER;
-    next();
-  });
 }
 
 app.use(bodyParser.json());
 
-// Data routes
-app.use('/plywood', plywoodRoutes);
-app.use(serverRoot + '/plywood', plywoodRoutes);
+addRoutes('/health', healthRoutes);
 
-app.use('/plyql', plyqlRoutes);
-app.use(serverRoot + '/plyql', plyqlRoutes);
+// Data routes
+addRoutes('/plywood', plywoodRoutes);
+addRoutes('/plyql', plyqlRoutes);
+addRoutes('/settings', settingsRoutes);
 
 // View routes
-if (SERVER_CONFIG.iframe === 'deny') {
+if (SERVER_SETTINGS.iframe === 'deny') {
   app.use((req: PivotRequest, res: Response, next: Function) => {
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
@@ -79,11 +71,7 @@ if (SERVER_CONFIG.iframe === 'deny') {
   });
 }
 
-app.use('/', pivotRoutes);
-app.use(serverRoot, pivotRoutes);
-
-app.use('/health', healthRoutes);
-app.use(serverRoot + '/health', healthRoutes);
+addRoutes('/', pivotRoutes);
 
 // Catch 404 and redirect to /
 app.use((req: Request, res: Response, next: Function) => {

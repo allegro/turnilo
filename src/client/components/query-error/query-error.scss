@@ -12,7 +12,7 @@ $container-height: 50px;
     opacity: 0.5;
   }
 
-  .container {
+  .error-container {
     @include center($container-width, $container-height);
     color: $red;
     text-align: left;

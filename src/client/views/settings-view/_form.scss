@@ -1,0 +1,14 @@
+form {
+  width: 448px;
+
+  &.vertical {
+    > * {
+      display: block;
+    }
+  }
+
+  input {
+    @extend %default-input;
+    margin-bottom: 25px;
+  }
+}

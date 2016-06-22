@@ -3,8 +3,6 @@ import { $, Expression, ChainExpression, RefExpression, External, Datum, Dataset
 import { Timezone, WallTime, Duration } from 'chronoshift';
 
 import { PivotRequest } from '../../utils/index';
-import { VERSION } from '../../config';
-import { DataSource } from '../../../common/models/index';
 
 var router = Router();
 
@@ -24,7 +22,7 @@ var outputFunctions: PlyqlOutputFunctions = {
 router.post('/', (req: PivotRequest, res: Response) => {
   var { version, outputType, query } = req.body;
 
-  if (version && version !== VERSION) {
+  if (version && version !== req.version) {
     res.status(400).send({
       error: 'incorrect version',
       action: 'reload'
@@ -59,22 +57,24 @@ router.post('/', (req: PivotRequest, res: Response) => {
   }
 
   var parsedQuery = parsedSQL.expression;
-  var dataSourceName = parsedSQL.table;
-  if (!dataSourceName) {
+  var dataSource = parsedSQL.table;
+  if (!dataSource) {
     var errmsg = "Could not determine data source name";
     res.status(400).send(errmsg);
     return;
   }
 
   parsedQuery = parsedQuery.substitute((ex) => {
-    if (ex instanceof RefExpression && ex.name === dataSourceName) {
+    if (ex instanceof RefExpression && ex.name === dataSource) {
       return $("main");
     }
     return null;
   });
 
-  req.dataSourceManager.getQueryableDataSource(dataSourceName)
-    .then((myDataSource) => {
+  req.getSettings(dataSource)
+    .then((appSettings) => {
+      var myDataSource = appSettings.getDataSource(dataSource);
+
       if (!myDataSource) {
         res.status(400).send({ error: 'unknown data source' });
         return;

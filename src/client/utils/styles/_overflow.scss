@@ -1,0 +1,41 @@
+%overflow {
+  @extend %dimension-item;
+  @extend %dimension-item-h;
+  position: absolute;
+  left: 0;
+  padding: 0 10px;
+  width: 40px;
+
+  &.all-continuous {
+    background: $item-continuous;
+  }
+
+  .count {
+    pointer-events: none;
+    white-space: nowrap;
+    height: 16px;
+    margin-top: 7px;
+  }
+}
+
+%overflow-menu {
+  .split,
+  .filter {
+    @extend %dimension-item;
+    position: absolute;
+    left: 8px;
+    top: 0; // It gets vertical position from the JS
+    height: 29px;
+
+    &.from-highlight {
+      border: 1px dashed $highlight-border;
+      background: rgba($item-categorical, 0.5);
+
+      &.type-time,
+      &.type-number {
+        border: 1px dashed hsl(130, 39%, 44%);
+        background: rgba($item-continuous, 0.5);
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+%button-base {
+  display: inline-block;
+  padding: 6px 16px;
+  font-size: 13px;
+  min-width: 46px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 2px;
+  outline: none;
+  height: $input-height;
+
+  //transition-property: all;
+  //transition-duration: $duration;
+
+  &.active,
+  &:active {
+    //transition-duration: 0s;
+  }
+
+  &.disabled,
+  &[disabled] {
+    opacity: .60;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+%button-primary {
+  @extend %button-base;
+  background: $brand;
+  color: $white;
+
+  svg path {
+    fill: $white;
+  }
+
+  &:hover {
+    background: darken($brand, 5%);
+  }
+
+  &.active,
+  &:active {
+    background: darken($brand, 10%);
+    color: darken($white, 12%);
+
+    svg path {
+      fill: darken($white, 12%);
+    }
+  }
+}
+
+%button-secondary {
+  @extend %button-base;
+  background: rgba($brand, 0.22);
+  color: $brand;
+
+  svg path {
+    fill: $brand;
+  }
+
+  &:hover {
+    background: rgba($brand, 0.3);
+  }
+
+  &.active,
+  &:active {
+    background: rgba($brand, 0.38);
+  }
+}
+
+%button-light {
+  color: $text-standard;
+  background-color: transparent;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $hover;
+  }
+
+  &.active, &:active {
+    background-color: $highlight;
+  }
+}

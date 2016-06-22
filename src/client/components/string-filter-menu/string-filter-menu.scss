@@ -8,7 +8,7 @@ $checkbox-width: 20px;
     background: $white;
     color: $text-standard;
 
-    &:after {
+    &::after {
       @include unpin-full(0, -14px, 0, -14px);
     }
 

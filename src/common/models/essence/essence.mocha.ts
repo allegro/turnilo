@@ -3,8 +3,9 @@ import { testImmutableClass } from 'immutable-class/build/tester';
 import { List } from 'immutable';
 
 import { $, Expression } from 'plywood';
+import { Manifest } from "../manifest/manifest";
 import { Essence, EssenceJS } from './essence';
-import { DataSource } from "../data-source/data-source";
+import { DataSource, Introspection } from "../data-source/data-source";
 
 describe('Essence', () => {
   var dataSourceJS = {
@@ -12,7 +13,7 @@ describe('Essence', () => {
     title: 'Twitter',
     engine: 'druid',
     source: 'twitter',
-    introspection: 'none',
+    introspection: ('none' as Introspection),
     dimensions: [
       {
         kind: 'time',
@@ -48,7 +49,7 @@ describe('Essence', () => {
 
   var dataSource = DataSource.fromJS(dataSourceJS);
 
-  var visualizations: any = List([
+  var visualizations: Manifest[] = [
     {
       id: 'vis1',
       title: 'vis1',
@@ -63,7 +64,7 @@ describe('Essence', () => {
         return { 'isAutomatic': () => false };
       }
     }
-  ]);
+  ];
 
   var context = { dataSource, visualizations };
 
@@ -75,7 +76,6 @@ describe('Essence', () => {
         filter: {
           op: "literal",
           value: true
-
         },
         pinnedDimensions: [],
         singleMeasure: 'count',

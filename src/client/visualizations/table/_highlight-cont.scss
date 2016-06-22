@@ -12,7 +12,7 @@
     margin-top: -1px;
     border: 1px solid $hover;
 
-    &:after {
+    &::after {
       @include unpin-full(-1px);
       content: '';
       border: 1px dashed $highlight-border;

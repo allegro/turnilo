@@ -17,6 +17,7 @@ export interface CustomizationJS {
 
 var check: Class<CustomizationValue, CustomizationJS>;
 export class Customization implements Instance<CustomizationValue, CustomizationJS> {
+  static DEFAULT_TITLE = 'Pivot (%v)';
 
   static isCustomization(candidate: any): candidate is Customization {
     return isInstanceOf(candidate, Customization);
@@ -43,7 +44,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   public externalViews: ExternalView[];
 
   constructor(parameters: CustomizationValue) {
-    this.title = parameters.title || null;
+    this.title = parameters.title || Customization.DEFAULT_TITLE;
     this.headerBackground = parameters.headerBackground || null;
     this.customLogoSvg = parameters.customLogoSvg || null;
     if (parameters.externalViews) this.externalViews = parameters.externalViews;
@@ -61,7 +62,7 @@ export class Customization implements Instance<CustomizationValue, Customization
 
   public toJS(): CustomizationJS {
     var js: CustomizationJS = {};
-    if (this.title) js.title = this.title;
+    if (this.title !== Customization.DEFAULT_TITLE) js.title = this.title;
     if (this.headerBackground) js.headerBackground = this.headerBackground;
     if (this.customLogoSvg) js.customLogoSvg = this.customLogoSvg;
     if (this.externalViews) {
@@ -84,6 +85,18 @@ export class Customization implements Instance<CustomizationValue, Customization
       this.headerBackground === other.headerBackground &&
       this.customLogoSvg === other.customLogoSvg &&
       immutableArraysEqual(this.externalViews, other.externalViews);
+  }
+
+  public getTitle(version: string): string {
+    return this.title.replace(/%v/g, version);
+  }
+
+  public changeTitle(title: string): Customization {
+    var value = this.valueOf();
+
+    value.title = title;
+
+    return new Customization(value);
   }
 }
 

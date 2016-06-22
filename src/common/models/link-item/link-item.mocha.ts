@@ -3,8 +3,9 @@ import { testImmutableClass } from 'immutable-class/build/tester';
 import { List } from 'immutable';
 
 import { $, Expression } from 'plywood';
+import { DataSource, Introspection } from "../data-source/data-source";
+import { Manifest } from "../manifest/manifest";
 import { LinkItem } from './link-item';
-import { DataSource } from "../data-source/data-source";
 
 describe('LinkItem', () => {
   var dataSourceJS = {
@@ -12,7 +13,7 @@ describe('LinkItem', () => {
     title: 'Twitter',
     engine: 'druid',
     source: 'twitter',
-    introspection: 'none',
+    introspection: ('none' as Introspection),
     dimensions: [
       {
         expression: {
@@ -51,7 +52,7 @@ describe('LinkItem', () => {
 
   var dataSources = List([DataSource.fromJS(dataSourceJS)]);
 
-  var visualizations: any = List([
+  var visualizations: Manifest[] = [
     {
       id: 'vis1',
       title: 'vis1',
@@ -59,7 +60,7 @@ describe('LinkItem', () => {
         return { 'isAutomatic': () => false };
       }
     }
-  ]);
+  ];
 
   var context = { dataSources, visualizations };
 

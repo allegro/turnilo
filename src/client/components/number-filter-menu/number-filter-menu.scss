@@ -15,7 +15,7 @@
   }
 
   input {
-    @extend %input-field;
+    @extend %default-input;
     margin-top: 6px;
 
     &.gray {

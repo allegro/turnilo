@@ -4,8 +4,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 export interface BodyPortalProps extends React.Props<any> {
-  left?: number;
-  top?: number;
+  left?: number | string;
+  top?: number | string;
   fullSize?: boolean;
   disablePointerEvents?: boolean;
 }
@@ -32,11 +32,16 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
   updateStyle() {
     var { left, top, disablePointerEvents } = this.props;
     var style = this._target.style;
+
     if (typeof left === 'number') {
       style.left = Math.round(left) + 'px';
+    } else if (typeof left === 'string') {
+      style.left = left;
     }
     if (typeof top === 'number') {
       style.top = Math.round(top) + 'px';
+    } else if (typeof top === 'string') {
+      style.top = top;
     }
     style['z-index'] = disablePointerEvents ? 200 : 201;
     style['pointer-events'] = disablePointerEvents ? 'none' : 'auto';

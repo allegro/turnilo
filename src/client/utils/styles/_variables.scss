@@ -1,0 +1,69 @@
+// Fonts -------------------
+
+$bold: 600;
+
+// Base Colors
+
+$white: #ffffff;
+$red: #ff0000;
+$black: #000000;
+$gray: #cccccc;
+$danger: #e24c4c;
+
+// Colors -------------------
+
+$brand:                   hsl(200, 80%, 51%);
+
+$error:                   hsla(0, 72%, 59%, 1.00);
+
+$border-super-light:      #e6e6e6;
+$border-extra-light:      hsl(0, 0%, 87%);
+$border-light:            hsl(0, 0%, 82%);
+$border-medium:           hsl(0, 0%, 73%);
+$border-dark:             hsl(0, 0%, 60%);
+$border-darker:           hsl(0, 0%, 40%);
+
+$background-base:         #e1e1e1;
+$background-light:        hsl(0, 0%, 93%);
+$background-lighter:      hsl(0, 0%, 95%);
+$background-lightest:     hsl(0, 0%, 96%);
+$background-medium:       hsl(0, 0%, 87%);
+$background-dark:         hsl(0, 0%, 55%);
+
+$background-brand:        $brand;
+$background-brand-light:  hsl(198, 82%, 65%);
+
+
+$text-standard:           hsl(0, 0%, 0%);
+$text-medium:             hsl(0, 0%, 40%);
+$text-light:              #999;
+$text-lighterish:         #a6a6a6;
+$text-lighter:            hsl(0, 0%, 73%);
+$text-lightest:           hsl(0, 0%, 85%);
+$text-link:               $brand;
+
+// other
+
+$hover:                   lighten($brand, 43);
+$highlight:               darken($hover, 7%);
+$highlight-border:        darken($brand, 8%);
+
+$input-height:            30px;
+$input-height-mini:       28px;
+$form-spacing-compact:    14px;
+
+// dimension items
+
+$item-categorical:        hsl(201, 92%, 85%);
+$item-continuous:         hsl(122, 49%, 84%);
+
+// Vis
+
+$main-time-line:          $brand;
+$main-time-area:          rgba($brand, 0.14);
+$grid-line-color:         hsl(0, 0%, 92%);
+
+// Transitions ----------------
+
+$duration: .2s;
+$corner: 2px;

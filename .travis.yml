@@ -1,7 +1,7 @@
 language: node_js
 node_js:
   - "4.0"
-  - "5.5"
+  - "6.1"
 
 script: "./travis-test"
 before_install:

@@ -1,13 +1,12 @@
-import { List } from 'immutable';
 import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
-import { $, Expression } from 'plywood';
-import { immutableListsEqual } from '../../utils/general/general';
+import { helper } from 'plywood';
 
+import { Manifest } from '../manifest/manifest';
 import { LinkItem, LinkItemJS, LinkItemContext } from '../link-item/link-item';
 
 export interface LinkViewConfigValue {
   title: string;
-  linkItems: List<LinkItem>;
+  linkItems: LinkItem[];
 }
 
 export interface LinkViewConfigJS {
@@ -25,12 +24,12 @@ export class LinkViewConfig implements Instance<LinkViewConfigValue, LinkViewCon
   static fromJS(parameters: LinkViewConfigJS, context?: LinkItemContext): LinkViewConfig {
     return new LinkViewConfig({
       title: parameters.title,
-      linkItems: List(parameters.linkItems.map(linkItem => LinkItem.fromJS(linkItem, context)))
+      linkItems: parameters.linkItems.map(linkItem => LinkItem.fromJS(linkItem, context))
     });
   }
 
   public title: string;
-  public linkItems: List<LinkItem>;
+  public linkItems: LinkItem[];
 
   constructor(parameters: LinkViewConfigValue) {
     this.title = parameters.title;
@@ -47,7 +46,7 @@ export class LinkViewConfig implements Instance<LinkViewConfigValue, LinkViewCon
   public toJS(): LinkViewConfigJS {
     return {
       title: this.title,
-      linkItems: this.linkItems.toArray().map(linkItem => linkItem.toJS())
+      linkItems: this.linkItems.map(linkItem => linkItem.toJS())
     };
   }
 
@@ -62,15 +61,21 @@ export class LinkViewConfig implements Instance<LinkViewConfigValue, LinkViewCon
   public equals(other: LinkViewConfig): boolean {
     return LinkViewConfig.isLinkViewConfig(other) &&
       this.title === other.title &&
-      immutableListsEqual(this.linkItems, other.linkItems);
+      immutableArraysEqual(this.linkItems, other.linkItems);
   }
 
   public defaultLinkItem(): LinkItem {
-    return this.linkItems.first();
+    return this.linkItems[0];
   }
 
   public findByName(name: string): LinkItem {
-    return this.linkItems.find(li => li.name === name);
+    return helper.findByName(this.linkItems, name);
+  }
+
+  public attachVisualizations(visualizations: Manifest[]): LinkViewConfig {
+    var value = this.valueOf();
+    value.linkItems = value.linkItems.map(linkItem => linkItem.attachVisualizations(visualizations));
+    return new LinkViewConfig(value);
   }
 
 }

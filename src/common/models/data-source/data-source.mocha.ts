@@ -3,10 +3,19 @@ import { testImmutableClass } from 'immutable-class/build/tester';
 import * as Q from 'q';
 
 import { $, Expression, AttributeInfo } from 'plywood';
+import { Cluster } from "../cluster/cluster";
 import { DataSource, DataSourceJS } from './data-source';
 import { DataSourceMock} from './data-source.mock';
 
 describe('DataSource', () => {
+  var druidCluster = Cluster.fromJS({
+    name: 'druid',
+    type: 'druid'
+  });
+
+  var context = {
+    cluster: druidCluster
+  };
 
   it('is an immutable class', () => {
     testImmutableClass<DataSourceJS>(DataSource, [
@@ -177,7 +186,7 @@ describe('DataSource', () => {
             "expression": "$main.countDistinct($unique_user)"
           }
         ]
-      });
+      }, context);
 
       expect(AttributeInfo.toJSs(dataSource.deduceAttributes())).to.deep.equal([
         {
@@ -556,7 +565,7 @@ describe('DataSource', () => {
   });
 
 
-  describe("#introspection", () => {
+  describe("#addAttributes (new dim)", () => {
     var dataSource = DataSource.fromJS({
       name: 'wiki',
       title: 'Wiki',
@@ -572,132 +581,72 @@ describe('DataSource', () => {
       }
     });
 
-    it('adds new dimensions', (testComplete) => {
-      var columns: any = {
-        "__time": {
-          "type": "LONG",
-          "hasMultipleValues": false,
-          "size": 0,
-          "cardinality": null,
-          "errorMessage": null
+    it('adds new dimensions', () => {
+      var columns: any = [
+        { "name": "__time", "type": "TIME" },
+        { "name": "added", "makerAction": { "action": "sum", "expression": { "name": "added", "op": "ref" }}, "type": "NUMBER", "unsplitable": true },
+        { "name": "count", "makerAction": { "action": "count"}, "type": "NUMBER", "unsplitable": true },
+        { "name": "delta_hist", "special": "histogram", "type": "NUMBER" },
+        { "name": "page", "type": "STRING" },
+        { "name": "page_unique", "special": "unique", "type": "STRING" }
+      ];
+
+      var dataSource1 = dataSource.addAttributes(AttributeInfo.fromJSs(columns));
+
+      expect(dataSource1.toJS().dimensions).to.deep.equal([
+        {
+          "expression": {
+            "name": "__time",
+            "op": "ref"
+          },
+          "kind": "time",
+          "name": "__time",
+          "title": "Time"
         },
-        "added": {
-          "type": "LONG",
-          "hasMultipleValues": false,
-          "size": 0,
-          "cardinality": null,
-          "errorMessage": null
-        },
-        "count": {
-          "type": "LONG",
-          "hasMultipleValues": false,
-          "size": 0,
-          "cardinality": null,
-          "errorMessage": null
-        },
-        "delta_hist": {
-          "type": "approximateHistogram",
-          "hasMultipleValues": false,
-          "size": 0,
-          "cardinality": null,
-          "errorMessage": null
-        },
-        "page": {
-          "type": "STRING",
-          "hasMultipleValues": false,
-          "size": 0,
-          "cardinality": 0,
-          "errorMessage": null
-        },
-        "page_unique": {
-          "type": "hyperUnique",
-          "hasMultipleValues": false,
-          "size": 0,
-          "cardinality": null,
-          "errorMessage": null
+        {
+          "expression": {
+            "name": "page",
+            "op": "ref"
+          },
+          "kind": "string",
+          "name": "page",
+          "title": "Page"
         }
-      };
+      ]);
 
-      var run = 0;
-      function requester({query}) {
-        return Q.fcall(() => {
-          if (query.queryType === 'status') return { version: '0.8.3' };
-          if (query.queryType !== 'segmentMetadata') throw new Error(`what is ${query.queryType}`);
-          run++;
+      columns.push({ "name": "channel", "type": "STRING" });
+      var dataSource2 = dataSource1.addAttributes(AttributeInfo.fromJSs(columns));
 
-          if (run > 1) {
-            columns.channel = {
-              "type": "STRING",
-              "hasMultipleValues": false,
-              "size": 0,
-              "cardinality": 0,
-              "errorMessage": null
-            };
-          }
+      expect(dataSource2.toJS().dimensions).to.deep.equal([
+        {
+          "expression": {
+            "name": "__time",
+            "op": "ref"
+          },
+          "kind": "time",
+          "name": "__time",
+          "title": "Time"
+        },
+        {
+          "expression": {
+            "name": "page",
+            "op": "ref"
+          },
+          "kind": "string",
+          "name": "page",
+          "title": "Page"
+        },
+        {
+          "expression": {
+            "name": "channel",
+            "op": "ref"
+          },
+          "kind": "string",
+          "name": "channel",
+          "title": "Channel"
+        }
+      ]);
 
-          return [{ columns }];
-        });
-      }
-
-      dataSource = dataSource.createExternal(requester, null, 10000);
-
-      dataSource.introspect()
-        .then(ds1 => {
-          expect(ds1.toJS().dimensions).to.deep.equal([
-            {
-              "expression": {
-                "name": "__time",
-                "op": "ref"
-              },
-              "kind": "time",
-              "name": "__time",
-              "title": "Time"
-            },
-            {
-              "expression": {
-                "name": "page",
-                "op": "ref"
-              },
-              "kind": "string",
-              "name": "page",
-              "title": "Page"
-            }
-          ]);
-          return dataSource.introspect();
-        })
-        .then(ds1 => {
-          expect(ds1.toJS().dimensions).to.deep.equal([
-            {
-              "expression": {
-                "name": "__time",
-                "op": "ref"
-              },
-              "kind": "time",
-              "name": "__time",
-              "title": "Time"
-            },
-            {
-              "expression": {
-                "name": "page",
-                "op": "ref"
-              },
-              "kind": "string",
-              "name": "page",
-              "title": "Page"
-            },
-            {
-              "expression": {
-                "name": "channel",
-                "op": "ref"
-              },
-              "kind": "string",
-              "name": "channel",
-              "title": "Channel"
-            }
-          ]);
-          testComplete();
-        })
-        .done();
     });
 
   });

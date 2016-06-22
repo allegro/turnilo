@@ -3,7 +3,7 @@
 .vis-selector {
   @extend %module;
 
-  &:before {
+  &::before {
     @include pin-full;
     content: '';
     z-index: 6;
@@ -13,7 +13,7 @@
     //transition: opacity $duration ease;
   }
 
-  &:after {
+  &::after {
     @include triangle(down, 7px, 9px, $text-medium);
     content: '';
     z-index: 7;
@@ -29,7 +29,7 @@
 
   &:hover,
   &.active {
-    &:after, &:before {
+    &::after, &::before {
       opacity: 1;
     }
   }

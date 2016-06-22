@@ -2,9 +2,9 @@ import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
 import { Duration, Timezone, minute, second } from 'chronoshift';
-import { $, ply, r, Expression, ExpressionJS, Executor, External, DruidExternal, RefExpression, basicExecutorFactory, Dataset,
+import { $, ply, r, Expression, ExpressionJS, Executor, External, RefExpression, basicExecutorFactory, Dataset,
   Attributes, AttributeInfo, AttributeJSs, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
-  CustomDruidAggregations, helper } from 'plywood';
+  CustomDruidAggregations, ExternalValue, helper } from 'plywood';
 import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
 import { getWallTimeString } from '../../utils/time/time';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -13,6 +13,7 @@ import { Filter, FilterJS } from '../filter/filter';
 import { SplitsJS } from '../splits/splits';
 import { MaxTime, MaxTimeJS } from '../max-time/max-time';
 import { RefreshRule, RefreshRuleJS } from '../refresh-rule/refresh-rule';
+import { Cluster } from '../cluster/cluster';
 
 function formatTimeDiff(diff: number): string {
   diff = Math.round(Math.abs(diff) / 1000); // turn to seconds
@@ -51,6 +52,8 @@ function makeUniqueMeasureList(measures: Measure[]): List<Measure> {
 }
 
 
+export type Introspection = 'none' | 'no-autofill' | 'autofill-dimensions-only' | 'autofill-measures-only' | 'autofill-all';
+
 export interface DataSourceValue {
   name: string;
   title?: string;
@@ -59,24 +62,24 @@ export interface DataSourceValue {
   subsetFilter?: Expression;
   rollup?: boolean;
   options?: DataSourceOptions;
-  introspection: string;
-  attributeOverrides: Attributes;
-  attributes: Attributes;
+  introspection?: Introspection;
+  attributeOverrides?: Attributes;
+  attributes?: Attributes;
   derivedAttributes?: Lookup<Expression>;
 
-  dimensions: List<Dimension>;
-  measures: List<Measure>;
-  timeAttribute: RefExpression;
-  defaultTimezone: Timezone;
-  defaultFilter: Filter;
-  defaultDuration: Duration;
-  defaultSortMeasure: string;
+  dimensions?: List<Dimension>;
+  measures?: List<Measure>;
+  timeAttribute?: RefExpression;
+  defaultTimezone?: Timezone;
+  defaultFilter?: Filter;
+  defaultDuration?: Duration;
+  defaultSortMeasure?: string;
   defaultSelectedMeasures?: OrderedSet<string>;
   defaultPinnedDimensions?: OrderedSet<string>;
-  refreshRule: RefreshRule;
+  refreshRule?: RefreshRule;
   maxTime?: MaxTime;
 
-  external?: External;
+  cluster?: Cluster;
   executor?: Executor;
 }
 
@@ -88,10 +91,11 @@ export interface DataSourceJS {
   subsetFilter?: ExpressionJS;
   rollup?: boolean;
   options?: DataSourceOptions;
-  introspection?: string;
+  introspection?: Introspection;
   attributeOverrides?: AttributeJSs;
   attributes?: AttributeJSs;
   derivedAttributes?: Lookup<ExpressionJS>;
+
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
   timeAttribute?: string;
@@ -119,8 +123,8 @@ export interface DataSourceOptions {
 }
 
 export interface DataSourceContext {
+  cluster?: Cluster;
   executor?: Executor;
-  external?: External;
 }
 
 export interface LongForm {
@@ -179,8 +183,8 @@ function filterFromLongFrom(longForm: LongForm): Expression {
 
 var check: Class<DataSourceValue, DataSourceJS>;
 export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
-  static DEFAULT_INTROSPECTION = 'autofill-all';
-  static INTROSPECTION_VALUES = ['none', 'no-autofill', 'autofill-dimensions-only', 'autofill-measures-only', 'autofill-all'];
+  static DEFAULT_INTROSPECTION: Introspection = 'autofill-all';
+  static INTROSPECTION_VALUES: Introspection[] = ['none', 'no-autofill', 'autofill-dimensions-only', 'autofill-measures-only', 'autofill-all'];
   static DEFAULT_TIMEZONE = Timezone.UTC;
   static DEFAULT_DURATION = Duration.fromJS('P1D');
 
@@ -204,8 +208,19 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     });
   }
 
+  static fromClusterAndExternal(name: string, cluster: Cluster, external: External): DataSource {
+    var dataSource = DataSource.fromJS({
+      name,
+      engine: cluster.name,
+      source: String(external.source),
+      refreshRule: RefreshRule.query().toJS()
+    });
+
+    return dataSource.updateCluster(cluster).updateWithExternal(external);
+  }
+
   static fromJS(parameters: DataSourceJS, context: DataSourceContext = {}): DataSource {
-    const { executor, external } = context;
+    const { cluster, executor } = context;
     var engine = parameters.engine;
     var introspection = parameters.introspection;
     var attributeOverrideJSs = parameters.attributeOverrides;
@@ -235,15 +250,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       throw new Error(`invalid introspection value ${introspection}, must be one of ${DataSource.INTROSPECTION_VALUES.join(', ')}`);
     }
 
-    var refreshRule = parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : RefreshRule.query();
+    var refreshRule = parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : null;
 
     var maxTime = parameters.maxTime ? MaxTime.fromJS(parameters.maxTime) : null;
-    if (!maxTime && refreshRule.isRealtime()) {
-      maxTime = MaxTime.fromNow();
-    }
 
     var timeAttributeName = parameters.timeAttribute;
-    if (engine === 'druid' && !timeAttributeName) {
+    if (cluster && cluster.type === 'druid' && !timeAttributeName) {
       timeAttributeName = '__time';
     }
     var timeAttribute = timeAttributeName ? $(timeAttributeName) : null;
@@ -294,16 +306,19 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       dimensions,
       measures,
       timeAttribute,
-      defaultTimezone: parameters.defaultTimezone ? Timezone.fromJS(parameters.defaultTimezone) : DataSource.DEFAULT_TIMEZONE,
-      defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : Filter.EMPTY,
-      defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : DataSource.DEFAULT_DURATION,
+      defaultTimezone: parameters.defaultTimezone ? Timezone.fromJS(parameters.defaultTimezone) : null,
+      defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : null,
+      defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : null,
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
       defaultSelectedMeasures: parameters.defaultSelectedMeasures ? OrderedSet(parameters.defaultSelectedMeasures) : null,
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : null,
       refreshRule,
       maxTime
     };
-    if (external) value.external = external;
+    if (cluster) {
+      if (engine !== cluster.name) throw new Error(`Engine '${engine}' was given but '${cluster.name}' cluster was supplied (must match)`);
+      value.cluster = cluster;
+    }
     if (executor) value.executor = executor;
     return new DataSource(value);
   }
@@ -316,7 +331,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public subsetFilter: Expression;
   public rollup: boolean;
   public options: DataSourceOptions;
-  public introspection: string;
+  public introspection: Introspection;
   public attributes: Attributes;
   public attributeOverrides: Attributes;
   public derivedAttributes: Lookup<Expression>;
@@ -332,13 +347,15 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public refreshRule: RefreshRule;
   public maxTime: MaxTime;
 
+  public cluster: Cluster;
   public executor: Executor;
-  public external: External;
 
   constructor(parameters: DataSourceValue) {
     var name = parameters.name;
+    if (typeof name !== 'string') throw new Error(`DataSource must have a name`);
     verifyUrlSafeName(name);
     this.name = name;
+
     this.title = parameters.title || makeTitle(name);
     this.engine = parameters.engine || 'druid';
     this.source = parameters.source || name;
@@ -352,17 +369,19 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.dimensions = parameters.dimensions || List([]);
     this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
-    this.defaultTimezone = parameters.defaultTimezone;
-    this.defaultFilter = parameters.defaultFilter;
-    this.defaultDuration = parameters.defaultDuration;
+    this.defaultTimezone = parameters.defaultTimezone || DataSource.DEFAULT_TIMEZONE;
+    this.defaultFilter = parameters.defaultFilter || Filter.EMPTY;
+    this.defaultDuration = parameters.defaultDuration || DataSource.DEFAULT_DURATION;
     this.defaultSortMeasure = parameters.defaultSortMeasure;
     this.defaultSelectedMeasures = parameters.defaultSelectedMeasures;
     this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
-    this.refreshRule = parameters.refreshRule;
-    this.maxTime = parameters.maxTime;
 
+    var refreshRule = parameters.refreshRule || RefreshRule.query();
+    this.refreshRule = refreshRule;
+    this.maxTime = parameters.maxTime || (refreshRule.isRealtime() ? MaxTime.fromNow() : null);
+
+    this.cluster = parameters.cluster;
     this.executor = parameters.executor;
-    this.external = parameters.external;
 
     this._validateDefaults();
   }
@@ -392,8 +411,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       refreshRule: this.refreshRule,
       maxTime: this.maxTime
     };
+    if (this.cluster) value.cluster = this.cluster;
     if (this.executor) value.executor = this.executor;
-    if (this.external) value.external = this.external;
     return value;
   }
 
@@ -476,7 +495,45 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     }
   }
 
-  public getMainTypeContext(): DatasetFullType { // ToDo: use external getFullType instead
+  public toExternal(): External {
+    if (this.engine === 'native') throw new Error(`there is no external on a native data source`);
+    const { cluster } = this;
+    if (!cluster) throw new Error('must have a cluster');
+
+
+
+    var externalValue: ExternalValue = {
+      engine: cluster.type,
+      suppress: true,
+      source: this.source,
+      version: cluster.version,
+      derivedAttributes: this.derivedAttributes,
+      customAggregations: this.options.customAggregations,
+      filter: this.subsetFilter
+    };
+
+    if (cluster.type === 'druid') {
+      externalValue.rollup = this.rollup;
+      externalValue.timeAttribute = this.timeAttribute.name;
+      externalValue.introspectionStrategy = cluster.introspectionStrategy;
+      externalValue.allowSelectQueries = true;
+      externalValue.context = {
+        timeout: cluster.timeout
+      };
+    }
+
+    if (this.introspection === 'none') {
+      externalValue.attributes = AttributeInfo.override(this.deduceAttributes(), this.attributeOverrides);
+      externalValue.derivedAttributes = this.derivedAttributes;
+    } else {
+      // ToDo: else if (we know that it will GET introspect) and there are no overrides apply special attributes as overrides
+      externalValue.attributeOverrides = this.attributeOverrides;
+    }
+
+    return External.fromValue(externalValue);
+  }
+
+  public getMainTypeContext(): DatasetFullType {
     var { attributes, derivedAttributes } = this;
     if (!attributes) return null;
 
@@ -535,85 +592,30 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return issues;
   }
 
-  public createExternal(requester: Requester.PlywoodRequester<any>, introspectionStrategy: string, timeout: number): DataSource {
-    if (this.engine !== 'druid') return; // Only Druid supported for now.
+  public updateCluster(cluster: Cluster): DataSource {
     var value = this.valueOf();
-
-    var context = {
-      timeout
-    };
-
-    if (this.introspection === 'none') {
-      value.external = new DruidExternal({
-        suppress: true,
-        dataSource: this.source,
-        rollup: this.rollup,
-        timeAttribute: this.timeAttribute.name,
-        customAggregations: this.options.customAggregations,
-        attributes: AttributeInfo.override(this.deduceAttributes(), this.attributeOverrides),
-        derivedAttributes: this.derivedAttributes,
-        introspectionStrategy,
-        filter: this.subsetFilter,
-        allowSelectQueries: true,
-        context,
-        requester
-      });
-    } else {
-      value.external = new DruidExternal({
-        suppress: true,
-        dataSource: this.source,
-        rollup: this.rollup,
-        timeAttribute: this.timeAttribute.name,
-        attributeOverrides: this.attributeOverrides,
-        derivedAttributes: this.derivedAttributes,
-        customAggregations: this.options.customAggregations,
-        introspectionStrategy,
-        filter: this.subsetFilter,
-        allowSelectQueries: true,
-        context,
-        requester
-      });
-    }
-
+    value.cluster = cluster;
     return new DataSource(value);
   }
 
-  public introspect(): Q.Promise<DataSource> {
-    var { external } = this;
-    if (this.engine === 'native') return Q(this);
-    if (!external) throw new Error(`must have external to introspect in ${this.name}`);
+  public updateWithDataset(dataset: Dataset): DataSource {
+    if (this.engine !== 'native') throw new Error('must be native to have a dataset');
 
-    var countDistinctReferences: string[] = [];
-    if (this.measures) {
-      countDistinctReferences = [].concat.apply([], this.measures.toArray().map((measure) => {
-        return Measure.getCountDistinctReferences(measure.expression);
-      }));
-    }
+    var executor = basicExecutorFactory({
+      datasets: { main: dataset }
+    });
 
-    return external.introspect()
-      .then((introspectedExternal) => {
-        if (immutableArraysEqual(external.attributes, introspectedExternal.attributes)) return this;
+    return this.addAttributes(dataset.attributes).attachExecutor(executor);
+  }
 
-        if (!countDistinctReferences) {
-          var attributes = introspectedExternal.attributes;
-          for (var attribute of attributes) {
-            // This is a metric that should really be a HLL
-            if (attribute.type === 'NUMBER' && countDistinctReferences.indexOf(attribute.name) !== -1) {
-              introspectedExternal = introspectedExternal.updateAttribute(AttributeInfo.fromJS({
-                name: attribute.name,
-                special: 'unique'
-              }));
-            }
-          }
-        }
+  public updateWithExternal(external: External): DataSource {
+    if (this.engine === 'native') throw new Error('can not be native and have an external');
 
-        var value = this.addAttributes(introspectedExternal.attributes).valueOf();
-        value.external = introspectedExternal;
-        value.executor = basicExecutorFactory({
-          datasets: { main: introspectedExternal }
-        });
-        return new DataSource(value);
-      });
+    var executor = basicExecutorFactory({
+      datasets: { main: external }
+    });
+
+    return this.addAttributes(external.attributes).attachExecutor(executor);
   }
 
   public attachExecutor(executor: Executor): DataSource {
@@ -638,6 +640,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     // No need for the overrides
     value.attributeOverrides = null;
+
+    value.options = null;
 
     return new DataSource(value);
   }
@@ -866,10 +870,27 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return new DataSource(value);
   }
 
+  change(propertyName: string, newValue: any): DataSource {
+    var v = this.valueOf();
+
+    if (!v.hasOwnProperty(propertyName)) {
+      throw new Error(`Unknown property : ${propertyName}`);
+    }
+
+    (v as any)[propertyName] = newValue;
+    return new DataSource(v);
+  }
+
   public changeMaxTime(maxTime: MaxTime) {
-    var value = this.valueOf();
-    value.maxTime = maxTime;
-    return new DataSource(value);
+    return this.change('maxTime', maxTime);
+  }
+
+  public changeTitle(title: string) {
+    return this.change('title', title);
+  }
+
+  public changeMeasures(measures: List<Measure>) {
+    return this.change('measures', measures);
   }
 
   public getDefaultSortAction(): SortAction {

@@ -113,8 +113,23 @@ export function getNumberOfWholeDigits(n: number) {
   return Math.max(Math.floor(log10(Math.abs(n))), 0) + 1;
 }
 
+// replaces things like %{PORT_NAME}% with the value of vs.PORT_NAME
+export function inlineVars(obj: any, vs: Lookup<string>): any {
+  return JSON.parse(JSON.stringify(obj).replace(/%\{[\w\-]+\}%/g, (varName) => {
+    varName = varName.substr(2, varName.length - 4);
+    var v = vs[varName];
+    if (typeof v !== 'string') throw new Error(`could not find variable '${varName}'`);
+    var v = JSON.stringify(v);
+    return v.substr(1, v.length - 2);
+  }));
+}
 
-export function rangeEquals(v1: PlywoodRange, v2: PlywoodRange) {
-  if (v1 instanceof TimeRange) return (v1 as TimeRange).equals(v2 as TimeRange);
-  return (v1 as NumberRange).equals(v2 as NumberRange);
+export function ensureOneOf(value: string, values: string[], messagePrefix: string): void {
+  if (values.indexOf(value) !== -1) return;
+  var isMessage = typeof value === 'undefined' ? 'not defined' : `'${value}'`;
+  throw new Error(`${messagePrefix} must be on of '${values.join("', '")}' (is ${isMessage})`);
+}
+
+export function pluralIfNeeded(n: number, thing: string): string {
+  return `${n} ${thing}${n === 1 ? '' : 's'}`;
 }

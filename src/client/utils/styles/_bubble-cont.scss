@@ -1,0 +1,77 @@
+%bubble-cont {
+  @extend %menu-cont;
+  z-index: 31;
+
+  .shpitz {
+    $shpitz-size: 12px;
+    $clip-size: 60px;
+    position: absolute;
+    width: $clip-size;
+    height: $clip-size;
+    overflow: hidden;
+    pointer-events: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: $shpitz-size;
+      height: $shpitz-size;
+      transform: rotate(45deg);
+      background: $white;
+      box-shadow: 0 0 4px 0 rgba($black, 0.35);
+    }
+
+    &.top {
+      top: $clip-size * -1;
+      left: 50%;
+      margin-left: $clip-size * -0.5;
+
+      &::after {
+        bottom: 0;
+        left: 50%;
+        margin-left: $shpitz-size * -0.5;
+        margin-bottom: $shpitz-size * -0.5;
+      }
+    }
+
+    &.bottom {
+      bottom: $clip-size * -1;
+      left: 50%;
+      margin-left: $clip-size * -0.5;
+
+      &::after {
+        top: 0;
+        left: 50%;
+        margin-left: $shpitz-size * -0.5;
+        margin-top: $shpitz-size * -0.5;
+      }
+    }
+
+    &.left {
+      left: $clip-size * -1;
+      top: 50%;
+      margin-top: $clip-size * -0.5;
+
+      &::after {
+        right: 0;
+        top: 50%;
+        margin-top: $shpitz-size * -0.5;
+        margin-right: $shpitz-size * -0.5;
+      }
+    }
+
+    &.right {
+      right: $clip-size * -1;
+      top: 50%;
+      margin-top: $clip-size * -0.5;
+
+      &::after {
+        left: 0;
+        top: 50%;
+        margin-top: $shpitz-size * -0.5;
+        margin-left: $shpitz-size * -0.5;
+      }
+    }
+  }
+
+}

@@ -23,7 +23,7 @@ describe('mockReactComponent', () => {
   });
 
   // This is not ideal since it relies on the previous test to have ran
-  // However it's important to demonstrate the mocking is class-nbased and not
+  // However it's important to demonstrate the mocking is class-based and not
   // scope based.
   it('should restore render and componentDidMount', () => {
     (TestClass as any).restore();

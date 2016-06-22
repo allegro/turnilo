@@ -2,7 +2,6 @@ require('./side-drawer.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { List } from 'immutable';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { isInside, escapeKey } from '../../utils/dom/dom';
@@ -13,7 +12,7 @@ import { NavList } from '../nav-list/nav-list';
 
 export interface SideDrawerProps extends React.Props<any> {
   selectedDataSource: DataSource;
-  dataSources: List<DataSource>;
+  dataSources: DataSource[];
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
@@ -72,7 +71,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   render() {
     var { onClose, selectedDataSource, dataSources, onOpenAbout, customization } = this.props;
 
-    var navLinks = dataSources.toArray().map(ds => {
+    var navLinks = dataSources.map(ds => {
       return {
         name: ds.name,
         title: ds.title,

@@ -61,7 +61,7 @@
   }
 
   .measure-bar-chart {
-    &:after {
+    &::after {
       content: '';
       position: absolute;
       top: 0;
@@ -72,7 +72,7 @@
       border-right: 1px solid $gray;
     }
 
-    &:first-child:after {
+    &:first-child::after {
       top: 10px;
     }
 

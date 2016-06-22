@@ -13,7 +13,7 @@ $shpitz-clip-size: 40px;
   .rectangle {
     position: absolute;
 
-    &:after {
+    &::after {
       content: '';
       position: absolute;
       width: $shpitz-size;

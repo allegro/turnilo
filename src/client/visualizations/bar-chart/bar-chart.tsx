@@ -894,7 +894,6 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
       scrollerLayout = this.getScrollerLayout(chartStage, xAxisStage, yAxisStage);
       rightGutter = this.renderRightGutter(measures, chartStage, yAxes);
-
     }
 
     return <div className="internals measure-bar-charts" style={{maxHeight: stage.height}}>

@@ -1,11 +1,11 @@
 require('./chart-line.css');
 
+import { immutableEqual } from 'immutable-class';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import { $, Expression, Executor, Dataset, Datum, TimeRange, PlywoodRange, NumberRange } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
-import { rangeEquals } from '../../../common/utils/general/general';
 
 const lineFn = d3.svg.line();
 
@@ -62,7 +62,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
       var y = scaleY(measureValue);
       var dataPoint: [number, number] = [scaleX(rangeMidpoint), isNaN(y) ? 0 : y];
       dataPoints.push(dataPoint);
-      if (hoverRange && rangeEquals(hoverRange, range)) {
+      if (hoverRange && immutableEqual(hoverRange, range)) {
         hoverDataPoint = dataPoint;
       }
 

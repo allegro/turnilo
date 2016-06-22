@@ -1,8 +1,9 @@
 require('./modal.css');
 
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { Fn } from '../../../common/utils/general/general';
-import { isInside, escapeKey, uniqueId, classNames } from '../../utils/dom/dom';
+import { isInside, escapeKey, enterKey, uniqueId, classNames } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { GoldenCenter } from '../golden-center/golden-center';
@@ -13,6 +14,8 @@ export interface ModalProps extends React.Props<any> {
   title?: string;
   mandatory?: boolean;
   onClose: Fn;
+  onEnter?: Fn;
+  startUpFocusOn?: string;
 }
 
 export interface ModalState {
@@ -20,6 +23,7 @@ export interface ModalState {
 }
 
 export class Modal extends React.Component<ModalProps, ModalState> {
+  private focusAlreadyGiven =  false;
 
   constructor() {
     super();
@@ -41,11 +45,52 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   componentDidMount() {
     window.addEventListener('mousedown', this.globalMouseDownListener);
     window.addEventListener('keydown', this.globalKeyDownListener);
+
+    this.maybeFocus();
+  }
+
+  componentDidUpdate() {
+    this.maybeFocus();
   }
 
   componentWillUnmount() {
     window.removeEventListener('mousedown', this.globalMouseDownListener);
     window.removeEventListener('keydown', this.globalKeyDownListener);
+  }
+
+  getChildByID(children: NodeList, id: string): HTMLElement {
+    if (!children) return null;
+
+    const n = children.length;
+
+    for (let i = 0; i < n; i++) {
+      let child = children[i] as HTMLElement;
+
+      if (child.getAttribute && child.getAttribute('id') === id) return child;
+
+      if (child.childNodes) {
+        let foundChild = this.getChildByID(child.childNodes, id);
+        if (foundChild) return foundChild;
+      }
+    }
+
+    return null;
+  }
+
+  maybeFocus() {
+    if (this.props.startUpFocusOn) {
+      var myElement = document.getElementById(this.state.id) as Element;
+
+      let target = this.getChildByID(
+        myElement.childNodes,
+        this.props.startUpFocusOn
+      );
+
+      if (!this.focusAlreadyGiven && !!target) {
+        target.focus();
+        this.focusAlreadyGiven = true;
+      }
+    }
   }
 
   globalMouseDownListener(e: MouseEvent) {
@@ -63,6 +108,8 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
+    if (enterKey(e) && this.props.onEnter) this.props.onEnter();
+
     if (!escapeKey(e)) return;
     var { onClose, mandatory } = this.props;
     if (mandatory) return;

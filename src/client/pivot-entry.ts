@@ -3,7 +3,7 @@ require('./pivot-entry.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { addErrorMonitor } from './utils/error-monitor/error-monitor';
-import { DataSourceJS, CustomizationJS } from '../common/models/index';
+import { DataSource, AppSettingsJS } from '../common/models/index';
 
 import { Loader } from './components/loader/loader';
 
@@ -18,26 +18,36 @@ ReactDOM.render(
   container
 );
 
-var config: any = (window as any)['__CONFIG__'];
-if (!config || !Array.isArray(config.dataSources)) throw new Error('config not found');
+interface Config {
+  version: string;
+  user: any;
+  appSettings: AppSettingsJS;
+  readOnly: boolean;
+}
 
-if (config.dataSources.length) {
-  var version = config.version || '0.0.0';
+var config: Config = (window as any)['__CONFIG__'];
+if (!config || !config.version || !config.appSettings || !config.appSettings.dataSources) {
+  throw new Error('config not found');
+}
+
+if (config.appSettings.dataSources.length) {
+  var version = config.version;
 
   require.ensure([
-    'immutable',
     'chronoshift',
     'chronoshift/lib/walltime/walltime-data.js',
     './utils/ajax/ajax',
     '../common/models/index',
-    './components/pivot-application/pivot-application'
+    './views/pivot-application/pivot-application'
   ], (require) => {
-    var List = require('immutable').List;
     var WallTime = require('chronoshift').WallTime;
     var queryUrlExecutorFactory = require('./utils/ajax/ajax').queryUrlExecutorFactory;
-    var DataSource = require('../common/models/index').DataSource;
-    var Customization = require('../common/models/index').Customization;
-    var PivotApplication = require('./components/pivot-application/pivot-application').PivotApplication;
+    var AppSettings = require('../common/models/index').AppSettings;
+    var PivotApplication = require('./views/pivot-application/pivot-application').PivotApplication;
+
+    var appSettings = AppSettings.fromJS(config.appSettings).attachExecutors((dataSource: DataSource) => {
+      return queryUrlExecutorFactory(dataSource.name, 'plywood', version);
+    });
 
     // Init chronoshift
     if (!WallTime.rules) {
@@ -45,20 +55,14 @@ if (config.dataSources.length) {
       WallTime.init(tzData.rules, tzData.zones);
     }
 
-    var dataSources = List(config.dataSources.map((dataSourceJS: DataSourceJS) => {
-      var executor = queryUrlExecutorFactory(dataSourceJS.name, 'plywood', version);
-      return DataSource.fromJS(dataSourceJS, { executor });
-    }));
-
     ReactDOM.render(
       React.createElement(
         PivotApplication,
         {
           version,
           user: config.user,
-          dataSources,
-          linkViewConfig: config.linkViewConfig,
-          customization: config.customization ? Customization.fromJS(config.customization) : null
+          appSettings,
+          readOnly: config.readOnly
         }
       ),
       container

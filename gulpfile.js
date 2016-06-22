@@ -52,11 +52,11 @@ gulp.task('watch', ['all-minus-bundle'], function() {
   gulp.watch('./src/client/**/*.svg', ['icons']);
 
   if (process.env['NO_GULP_WATCH_TEST']) {
-    gulp.watch(['./src/common/**/*.ts', './src/client/**/*.{ts,tsx}', './assets/icons/**'], function() {
-      runSequence('client:tsc', ['client:test', 'common:test']);
-    });
-  } else {
     gulp.watch(['./src/common/**/*.ts', './src/client/**/*.{ts,tsx}', './assets/icons/**'], ['client:tsc']);
+  } else {
+    gulp.watch(['./src/common/**/*.ts', './src/client/**/*.{ts,tsx}', './assets/icons/**'], function() {
+      runSequence('client:tsc', 'client:test', 'common:test', 'server:test');
+    });
   }
 
   gulp.watch(['./src/common/**/*.ts', './src/server/**'], ['server:tsc']);

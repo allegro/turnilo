@@ -1,0 +1,12 @@
+%indicator-field {
+  @include ellipsis;
+  height: $input-height;
+  line-height: $input-height - 2px;
+  //border: 1px solid #dfdfdf;
+  background: #f2f2f2;
+  border-radius: $corner;
+  color: #909090;
+  text-align: center;
+  padding-left: 8px;
+  padding-right: 8px;
+}

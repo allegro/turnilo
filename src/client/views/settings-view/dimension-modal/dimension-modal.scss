@@ -1,0 +1,17 @@
+@import '../../../imports';
+
+.dimension-modal {
+  @import '../form';
+
+  form {
+    width: 100%;
+  }
+
+  .button-group {
+    margin-top: 30px;
+
+    > *:not(:last-child) {
+      margin-right: 10px;
+    }
+  }
+}

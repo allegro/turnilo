@@ -26,7 +26,7 @@ export interface LinkItemJS {
 
 export interface LinkItemContext {
   dataSources: List<DataSource>;
-  visualizations: List<Manifest>;
+  visualizations: Manifest[];
 }
 
 var check: Class<LinkItemValue, LinkItemJS>;
@@ -112,6 +112,12 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
       this.group === other.group &&
       this.dataSource.equals(other.dataSource) &&
       this.essence.equals(other.essence);
+  }
+
+  public attachVisualizations(visualizations: Manifest[]): LinkItem {
+    var value = this.valueOf();
+    value.essence = value.essence.attachVisualizations(visualizations);
+    return new LinkItem(value);
   }
 
 }

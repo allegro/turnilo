@@ -37,10 +37,12 @@ key `headers` where you can set whatever headers you want.
 Here is an example decorator:
 
 ```javascript
-// logger - is just a function that you cna use instead of console.log to have your logs included with the Pivot logs
+exports.version = 1;
+
+// logger - is just a collection of functions that you should use instead of console to have your logs included with the Pivot logs
 // options - is an object with the following keys:
-//   * config: Object - the JSON config that was parsed
-exports.druidRequestDecorator = function (logger, options) {
+//   * cluster: Cluster - the cluster object
+exports.druidRequestDecoratorFactory = function (logger, options) {
   var config = options.config;
   var myUsername = config.myUsername; // pretend we store the username and password
   var myPassword = config.myPassword; // in the config
@@ -48,7 +50,7 @@ exports.druidRequestDecorator = function (logger, options) {
   if (!myUsername) throw new Error('must have username');
   if (!myPassword) throw new Error('must have password');
 
-  logger("Decorator init for username: " + myUsername);
+  logger.log("Decorator init for username: " + myUsername);
 
   var auth = "Basic " + Buffer(myUsername + ":" + myPassword).toString('base64');
 
@@ -56,7 +58,7 @@ exports.druidRequestDecorator = function (logger, options) {
   //   * method: string - the method that is used (POST or GET)
   //   * url: string -
   //   * query: Druid.Query -
-  return (decoratorRequest) => {
+  return function (decoratorRequest) {
     
     var decoration = {
       headers: {

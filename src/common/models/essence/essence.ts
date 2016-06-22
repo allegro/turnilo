@@ -2,7 +2,7 @@ import { List, OrderedSet, Iterable } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, isInstanceOf, immutableEqual } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
-import { $, Expression, RefExpression, TimeRange, ApplyAction, SortAction, Set } from 'plywood';
+import { $, Expression, RefExpression, TimeRange, ApplyAction, SortAction, Set, helper } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataSource } from '../data-source/data-source';
 import { Filter, FilterJS } from '../filter/filter';
@@ -46,7 +46,7 @@ export enum VisStrategy {
 }
 
 export interface EssenceValue {
-  visualizations?: List<Manifest>;
+  visualizations?: Manifest[];
   dataSource?: DataSource;
 
   visualization: Manifest;
@@ -80,7 +80,7 @@ export interface EssenceJS {
 
 export interface EssenceContext {
   dataSource: DataSource;
-  visualizations: List<Manifest>;
+  visualizations: Manifest[];
 }
 
 var check: Class<EssenceValue, EssenceJS>;
@@ -89,8 +89,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return isInstanceOf(candidate, Essence);
   }
 
-  static getBestVisualization(visualizations: List<Manifest>, dataSource: DataSource, splits: Splits, colors: Colors, currentVisualization: Manifest): VisualizationAndResolve {
-    var visAndResolves = visualizations.toArray().map((visualization) => {
+  static getBestVisualization(visualizations: Manifest[], dataSource: DataSource, splits: Splits, colors: Colors, currentVisualization: Manifest): VisualizationAndResolve {
+    var visAndResolves = visualizations.map((visualization) => {
       return {
         visualization,
         resolve: visualization.handleCircumstance(dataSource, splits, colors, visualization === currentVisualization)
@@ -124,8 +124,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var jsArrayLength = jsArray.length;
     if (!(8 <= jsArrayLength && jsArrayLength <= 11)) return null;
 
-
-    if (visualization === 'time-series') visualization = 'line-chart'; // Back compat (used to be named time-series)
     var essence: Essence;
     try {
       essence = Essence.fromJS({
@@ -188,7 +186,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     const { dataSource, visualizations } = context;
 
     var visualizationID = parameters.visualization;
-    var visualization = visualizations.find(v => v.id === visualizationID);
+    if (visualizationID === 'time-series') visualizationID = 'line-chart'; // Back compat (used to be named time-series)
+    var visualization = helper.find(visualizations, v => v.id === visualizationID);
 
     var timezone = parameters.timezone ? Timezone.fromJS(parameters.timezone) : null;
     var filter = parameters.filter ? Filter.fromJS(parameters.filter).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute) : null;
@@ -239,7 +238,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
 
   public dataSource: DataSource;
-  public visualizations: List<Manifest>;
+  public visualizations: Manifest[];
 
   public visualization: Manifest;
   public timezone: Timezone;
@@ -272,7 +271,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       pinnedSort,
       compare,
       highlight
-      } = parameters;
+    } = parameters;
 
     if (!dataSource) throw new Error('Essence must have a dataSource');
 
@@ -300,22 +299,24 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       highlight = null;
     }
 
-    // Place vis here because it needs to know about splits and colors (and maybe later other things)
-    if (!visualization) {
-      var visAndResolve = Essence.getBestVisualization(visualizations, dataSource, splits, colors, null);
-      visualization = visAndResolve.visualization;
-    }
+    if (visualizations) {
+      // Place vis here because it needs to know about splits and colors (and maybe later other things)
+      if (!visualization) {
+        var visAndResolve = Essence.getBestVisualization(visualizations, dataSource, splits, colors, null);
+        visualization = visAndResolve.visualization;
+      }
 
-    var visResolve = visualization.handleCircumstance(dataSource, splits, colors, true);
-    if (visResolve.isAutomatic()) {
-      var adjustment = visResolve.adjustment;
-      splits = adjustment.splits;
-      colors = adjustment.colors || null;
-      visResolve = visualization.handleCircumstance(dataSource, splits, colors, true);
+      var visResolve = visualization.handleCircumstance(dataSource, splits, colors, true);
+      if (visResolve.isAutomatic()) {
+        var adjustment = visResolve.adjustment;
+        splits = adjustment.splits;
+        colors = adjustment.colors || null;
+        visResolve = visualization.handleCircumstance(dataSource, splits, colors, true);
 
-      if (!visResolve.isReady()) {
-        console.log(visResolve);
-        throw new Error(visualization.title + ' must be ready after automatic adjustment');
+        if (!visResolve.isReady()) {
+          console.log(visResolve);
+          throw new Error(visualization.title + ' must be ready after automatic adjustment');
+        }
       }
     }
 
@@ -649,6 +650,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       value.highlight = value.highlight.constrainToDimensions(newDataSource.dimensions, newDataSource.timeAttribute);
     }
 
+    return new Essence(value);
+  }
+
+  public attachVisualizations(visualizations: Manifest[]): Essence {
+    var value = this.valueOf();
+    value.visualizations = visualizations;
     return new Essence(value);
   }
 

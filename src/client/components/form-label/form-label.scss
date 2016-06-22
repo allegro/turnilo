@@ -1,0 +1,60 @@
+@import '../../imports';
+
+.form-label {
+  height: 20px;
+
+  .label {
+    @extend %input-top-label;
+  }
+
+  .icon-container {
+    position: absolute;
+    right: 0;
+    top: -5px;
+
+    width: 20px;
+    height: 20px;
+
+    cursor: pointer;
+
+    .icon {
+      position: absolute;
+      top: 0;
+
+      &.hover {
+        opacity: 0;
+      }
+    }
+
+    &:hover {
+      .icon.hover {
+        opacity: 1;
+      }
+
+      .icon:not(.hover) {
+        opacity: 0;
+      }
+    }
+  }
+
+  .additional-text {
+    position: absolute;
+    left: calc(100% + 20px);
+    top: -2px;
+    width: 100%;
+
+    font-size: 13px;
+    color: $text-lighterish;
+
+    .error-text {
+      color: $error;
+      margin-bottom: 10px;
+    }
+  }
+
+  &.error {
+    .icon path {
+      fill: $error;
+    }
+  }
+}

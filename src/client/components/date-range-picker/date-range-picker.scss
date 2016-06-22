@@ -92,7 +92,7 @@
           }
 
           &:hover:not(.selectable) {
-            &:after {
+            &::after {
               @include pin-full;
               content: '';
               pointer-events: none;
@@ -100,14 +100,14 @@
             }
 
             &.beyond-max-range {
-              &:after {
+              &::after {
                 background: rgba($black, 0.1);
               }
             }
           }
 
           &.beyond-max-range {
-            &:after {
+            &::after {
               @include pin-full;
               content: '';
               pointer-events: none;

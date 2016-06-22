@@ -1,0 +1,11 @@
+%side-by-side {
+  display: flex;
+
+  & > * {
+    margin-right: 5px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}

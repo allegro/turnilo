@@ -1,0 +1,108 @@
+// __________________
+// |_________D______|
+// |   |_____B______|
+// | A |            |
+// |   |     C      |
+// |   |            |
+// |   |            |
+// ------------------
+//
+// A : left-panel
+// B : title-bar
+// B + C : main-panel
+// C : content (mostly up to the subviews)
+// D : home-header-bar
+
+.home-header-bar {
+  @include pin-top($header-height);
+}
+
+
+.left-panel {
+  @include unpin-top($header-height);
+
+  width: $left-panel-width;
+  padding: 10px 5px;
+
+  background-color: $background-brand-light;
+
+  button {
+    background-color: transparent;
+    display: block;
+    width: 100%;
+    height: 35px;
+    text-align: left;
+
+    &.icon {
+      padding-left: 38px;
+
+      .svg-icon {
+        position: absolute;
+        top: 8px;
+        left: 12px;
+
+        path {
+          fill: $white;
+        }
+      }
+    }
+
+    &:hover {
+      background-color: rgba($brand, 0.4);
+    }
+
+    &.active,
+    &:active {
+      background-color: $brand;
+      color: $white;
+    }
+  }
+}
+
+.main-panel {
+  @include unpin-top($header-height);
+  left: $left-panel-width;
+  background-color: $white;
+}
+
+.title-bar {
+  height: $title-bar-height;
+  background-color: $white;
+  border-bottom: 1px solid $border-extra-light;
+  padding-left: 24px;
+
+  .title {
+    font-size: 17px;
+    margin-top: 18px;
+  }
+
+  // Allows placement of one single button or of a group
+  > .button-group,
+  > .button.save,
+  > .button.cancel {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+  }
+
+  .button-group .button:not(:last-child) {
+    margin-right: 10px;
+  }
+
+  .button.back {
+    cursor: pointer;
+    width: 30px;
+    margin-top: 12px;
+    margin-right: 15px;
+  }
+
+  > * {
+    display: inline-block;
+  }
+}
+
+.content {
+  @include unpin-top($title-bar-height);
+
+  padding: 24px 24px;
+}

@@ -2,6 +2,16 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.1
+
+- Complete refactor of settings architecture
+- Settings can be updated at runtime
+- Pivot can connect to multiple clusters
+- Pivot can connect to Postgres and MySQL
+- Full support of Druid 0.9.1
+- Auth module versioning
+- Druid Request decorator versioning
+
 ## 0.8.42
 
 - Fixed bug in Print config and added CLI tests

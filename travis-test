@@ -25,3 +25,5 @@ if grep -rq '\.\./server/' ./src/common
 fi
 
 gulp all
+
+mocha test

@@ -78,9 +78,9 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     var { essence } = this.props;
     var { visualizations } = essence;
 
-    var visItems: Array<JSX.Element> = null;
+    var visItems: JSX.Element[] = null;
     if (visualizations) {
-      visItems = visualizations.toArray().map(v => {
+      visItems = visualizations.map(v => {
         return this.renderVisItem(v);
       });
     }

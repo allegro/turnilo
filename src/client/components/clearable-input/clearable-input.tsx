@@ -4,7 +4,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
-// import { ... } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
 function focusOnInput(component: React.DOMComponent<React.HTMLAttributes>): void {
@@ -29,7 +28,6 @@ export class ClearableInput extends React.Component<ClearableInputProps, Clearab
 
   constructor() {
     super();
-
   }
 
   onChange(e: KeyboardEvent) {

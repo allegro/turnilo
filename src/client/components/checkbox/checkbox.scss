@@ -34,7 +34,7 @@ $checkbox-size: 15px;
   }
 
   &.selected.radio {
-    .checkbox-body:after {
+    .checkbox-body::after {
       content: '';
       position: absolute;
       top: 5px;

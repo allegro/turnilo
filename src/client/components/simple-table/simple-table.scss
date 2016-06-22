@@ -1,0 +1,83 @@
+@import '../../imports';
+
+.simple-table {
+  width: 100%;
+  height: 100%;
+
+  .scroller {
+    height: 100%;
+
+    .column-headers {
+      font-size: 12px;
+      text-transform: uppercase;
+      border-bottom: 1px solid $border-super-light;
+      height: 100%;
+
+      .header {
+      }
+
+      background-color: $white;
+
+      > * {
+        display: inline-block;
+      }
+
+      .sort-arrow {
+        width: 8px;
+        margin-left: 10px;
+
+        &.ascending {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    .top-right-corner {
+      border-bottom: 1px solid $border-super-light;
+      background-color: $white;
+    }
+
+    .row {
+      border-bottom: 1px solid $border-super-light;
+      white-space: nowrap;
+
+      > * {
+        display: inline-block;
+      }
+
+      .cell {
+        @include ellipsis;
+        padding: 14px 10px 5px 0;
+
+        &.has-icon {
+          padding-left: 34px;
+        }
+
+        .icon {
+          position: absolute;
+          top: 10px;
+          left: 6px;
+          width: 19px;
+          height: 19px;
+
+          path {
+            fill: $brand;
+          }
+        }
+      }
+
+      &.action {
+        padding: 10px;
+
+        .svg-icon {
+          width: 19px;
+          height: 19px;
+
+          path {
+            fill: $brand;
+          }
+        }
+      }
+    }
+  }
+}

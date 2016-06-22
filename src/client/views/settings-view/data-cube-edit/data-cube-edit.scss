@@ -1,0 +1,102 @@
+@import '../../../imports';
+
+.data-cube-edit {
+  $tabs-column-width: 190px;
+  height: 100%;
+
+  .content {
+    padding: 0;
+
+    .tabs {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: $tabs-column-width;
+
+      border-right: 1px solid $border-super-light;
+
+      padding: 10px 5px;
+
+      button,
+      .button {
+        @extend %button-light;
+
+        display: block;
+        width: 100%;
+        padding: 10px 15px;
+        text-align: left;
+      }
+    }
+
+    .tab-content {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: $tabs-column-width;
+      right: 0;
+
+      .dimensions-list,
+      .measures-list {
+        $list-title-height: 44px;
+
+        position: absolute;
+        top: 5px;
+        bottom: 5px;
+        left: 24px;
+        right: 0;
+
+        .list-title {
+          display: flex;
+          height: $list-title-height;
+          padding-top: 12px;
+          width: 400px;
+          border-bottom: 1px solid $border-super-light;
+
+          .label {
+            flex: 1 1;
+            padding: 6px 0;
+
+            color: $text-lighter;
+            font-size: 12px;
+            text-transform: uppercase;
+          }
+
+          .actions {
+            button {
+              @extend %button-light;
+              font-size: 12px;
+              text-transform: uppercase;
+              color: $brand;
+              padding: 6px;
+              border-radius: 2px;
+
+              &:not(:last-child) {
+                margin-right: 15px;
+              }
+            }
+          }
+        }
+
+        .simple-list {
+          position: absolute;
+          top: $list-title-height;
+          bottom: 0;
+          left: 0;
+          right: 0;
+
+          .row {
+            width: 400px;
+          }
+        }
+      }
+
+      form {
+        width: 448px;
+        padding: 24px 24px;
+      }
+
+
+    }
+  }
+
+}

@@ -2,7 +2,7 @@ import * as debugModule from 'debug';
 import * as http from 'http';
 
 import * as app from './app';
-import { START_SERVER, PORT } from './config';
+import { START_SERVER, SERVER_SETTINGS } from './config';
 
 if (START_SERVER) {
   var debug = debugModule('pivot:www');
@@ -16,12 +16,12 @@ if (START_SERVER) {
     // handle specific listen errors with friendly messages
     switch (error.code) {
       case 'EACCES':
-        console.error(`Port ${PORT} requires elevated privileges`);
+        console.error(`Port ${SERVER_SETTINGS.port} requires elevated privileges`);
         process.exit(1);
         break;
 
       case 'EADDRINUSE':
-        console.error(`Port ${PORT} is already in use`);
+        console.error(`Port ${SERVER_SETTINGS.port} is already in use`);
         process.exit(1);
         break;
 
@@ -32,10 +32,10 @@ if (START_SERVER) {
 
   server.on('listening', () => {
     var address = server.address();
-    console.log('Listening on ' + address.port);
-    debug('Listening on ' + address.port);
+    console.log(`Pivot is listening on address ${address.address} port ${address.port}`);
+    debug(`Pivot is listening on address ${address.address} port ${address.port}`);
   });
 
-  app.set('port', PORT);
-  server.listen(PORT);
+  app.set('port', SERVER_SETTINGS.port);
+  server.listen(SERVER_SETTINGS.port, SERVER_SETTINGS.serverHost);
 }

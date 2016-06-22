@@ -18,7 +18,7 @@ export class EssenceMock {
 
     var context: EssenceContext = {
       dataSource: DataSourceMock.wiki(),
-      visualizations: List([
+      visualizations: [
         {
           id: 'vis1',
           title: 'vis1',
@@ -27,7 +27,7 @@ export class EssenceMock {
             return handler.evaluate.apply(handler, arguments);
           }
         }
-      ])
+      ]
     };
 
     return Essence.fromJS(vis, context);

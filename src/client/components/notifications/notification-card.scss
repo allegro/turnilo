@@ -1,0 +1,40 @@
+@import '../../imports';
+
+.notification-card {
+  @include bounce(top);
+
+  position: absolute;
+  height: 60px;
+  min-width: 250px;
+  padding: 10px 20px;
+  transform: translate(-50%, 0);
+
+  background-color: $background-brand-light;
+  color: $white;
+  box-shadow: 1px 1px 1px 1px hsla(200, 8%, 15%, 0.2);
+
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 0 1px 1px hsla(200, 8%, 15%, 0.2);
+  }
+
+  &.success {
+    background-color: hsla(131, 56%, 61%, 1.00);
+  }
+
+  &.failure {
+    background-color: $error;
+  }
+
+  .title {
+    margin-bottom: 10px;
+  }
+
+  .description {
+    font-style: italic;
+  }
+
+
+}

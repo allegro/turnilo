@@ -1,0 +1,56 @@
+@import '../../imports';
+
+.simple-list {
+  overflow: auto;
+
+  .row {
+    display: flex;
+    padding: 10px 4px;
+
+    &:not(:first-child) {
+      border-top: 1px solid $border-super-light;
+    }
+
+    > * {
+
+    }
+
+    .svg-icon {
+      width: 19px;
+      height: 19px;
+      margin: 6px;
+
+      path {
+        fill: $brand;
+      }
+    }
+
+    .text {
+      flex: 1 1;
+      padding: 0 10px;
+      overflow: hidden;
+
+      > * {
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .title {
+        color: $text-medium;
+        margin-bottom: 4px;
+      }
+
+      .description {
+        color: $text-lighter;
+        font-size: 12px;
+      }
+    }
+
+    .actions {
+      button {
+        @extend %button-light;
+        border-radius: 20px;
+      }
+    }
+  }
+}

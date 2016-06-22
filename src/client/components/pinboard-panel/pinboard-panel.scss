@@ -19,7 +19,7 @@
   .drop-indicator-tile {
     pointer-events: none;
 
-    &:after {
+    &::after {
       @include unpin-full(4px, 0, 4px, 0);
       content: '';
       border: 1px dashed $border-darker;
@@ -35,7 +35,7 @@
     flex: 1;
     pointer-events: none;
 
-    &:after {
+    &::after {
       @include unpin-full(10px);
       content: '';
       border: 1px dashed $border-medium;

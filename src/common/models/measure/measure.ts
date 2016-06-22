@@ -208,5 +208,12 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
   public formatDatum(datum: Datum): string {
     return this.formatFn(datum[this.name] as number);
   }
+
+  public changeTitle(title: string): Measure {
+    var value = this.valueOf();
+    value.title = title;
+
+    return new Measure(value);
+  }
 }
 check = Measure;
