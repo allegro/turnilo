@@ -13,45 +13,140 @@ function yamlObject(lines: string[], indent: number): string[] {
   });
 }
 
+interface PropAdderOptions {
+  object: any;
+  propName: string;
+  comment?: string;
+  defaultValue?: any;
+}
+
+function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdderOptions): void {
+  const { object, propName, defaultValue, comment } = options;
+
+  var value = object[propName];
+  if (value == null) {
+    if (withComments && typeof defaultValue !== "undefined") {
+      lines.push(
+        null,
+        `# ${comment}`,
+        `#${propName}: ${defaultValue} # <- default`
+      );
+    }
+  } else {
+    if (withComments) lines.push(
+      null,
+      `# ${comment}`
+    );
+    lines.push(`${propName}: ${value}`);
+  }
+}
+
 export function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
   var lines: string[] = [
-    `name: ${cluster.name}`,
-    `type: ${cluster.type}`
+    `name: ${cluster.name}`
   ];
 
-  if (withComments) {
-    lines.push("# The host to which to connect");
-  }
-  lines.push(`host: ${cluster.host}`, null);
+  yamlPropAdder(lines, withComments, {
+    object: cluster,
+    propName: 'type',
+    comment: 'The type of the data store can be (druid, mysql, or postgres)'
+  });
+
+  yamlPropAdder(lines, withComments, {
+    object: cluster,
+    propName: 'host',
+    comment: 'The host (hostname:port) of the cluster. In the Druid case this must be the broker.'
+  });
+
+  yamlPropAdder(lines, withComments, {
+    object: cluster,
+    propName: 'version',
+    comment: 'The explicit version to use for this cluster.'
+  });
+
+  yamlPropAdder(lines, withComments, {
+    object: cluster,
+    propName: 'timeout',
+    comment: 'The timeout to set on the queries in ms.',
+    defaultValue: Cluster.DEFAULT_TIMEOUT
+  });
+
+  yamlPropAdder(lines, withComments, {
+    object: cluster,
+    propName: 'sourceListScan',
+    comment: 'Should the sources of this cluster be automatically scanned and new sources added as data sources.',
+    defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN
+  });
+
+  yamlPropAdder(lines, withComments, {
+    object: cluster,
+    propName: 'sourceListRefreshOnLoad',
+    comment: 'Should the list of sources be reloaded every time that Pivot is loaded.',
+    defaultValue: false
+  });
+
+  yamlPropAdder(lines, withComments, {
+    object: cluster,
+    propName: 'sourceListRefreshInterval',
+    comment: 'How often should sources be reloaded in ms.',
+    defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL
+  });
+
+  yamlPropAdder(lines, withComments, {
+    object: cluster,
+    propName: 'sourceReintrospectOnLoad',
+    comment: 'Should sources be scanned for additional dimensions every time that Pivot is loaded.',
+    defaultValue: false
+  });
+
+  yamlPropAdder(lines, withComments, {
+    object: cluster,
+    propName: 'sourceReintrospectInterval',
+    comment: 'How often should source schema be reloaded in ms.',
+    defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL
+  });
 
   if (withComments) {
-    lines.push("# A timeout for queries in ms (default: 30000 = 30 seconds)");
-    lines.push("#timeout: 30000", '');
-  }
-
-  if (withComments) {
-    lines.push("# Should new datasources automatically be added?");
-  }
-  lines.push(`sourceListScan: disable`, null);
-
-  if (withComments) {
-    lines.push("# Database specific");
+    lines.push(
+      null,
+      `# Database specific (${cluster.type}) ===============`
+    );
   }
   switch (cluster.type) {
     case 'druid':
-      if (cluster.introspectionStrategy !== Cluster.DEFAULT_INTROSPECTION_STRATEGY) {
-        if (withComments) {
-          lines.push("# The introspection strategy for the Druid external");
-        }
-        lines.push(`introspectionStrategy: ${cluster.introspectionStrategy}`, null);
-      }
+      yamlPropAdder(lines, withComments, {
+        object: cluster,
+        propName: 'introspectionStrategy',
+        comment: 'The introspection strategy for the Druid external.',
+        defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY
+      });
+
+      yamlPropAdder(lines, withComments, {
+        object: cluster,
+        propName: 'requestDecorator',
+        comment: 'The request decorator module filepath to load.'
+      });
       break;
 
     case 'postgres':
     case 'mysql':
-      if (cluster.database) lines.push(`database: ${cluster.database}`);
-      if (cluster.user) lines.push(`user: ${cluster.user}`);
-      if (cluster.password) lines.push(`password: ${cluster.password}`);
+      yamlPropAdder(lines, withComments, {
+        object: cluster,
+        propName: 'database',
+        comment: 'The database to which to connect to.'
+      });
+
+      yamlPropAdder(lines, withComments, {
+        object: cluster,
+        propName: 'user',
+        comment: 'The user to connect as. This user needs no permissions other than SELECT.'
+      });
+
+      yamlPropAdder(lines, withComments, {
+        object: cluster,
+        propName: 'password',
+        comment: 'The password to use with the provided user.'
+      });
       break;
   }
 

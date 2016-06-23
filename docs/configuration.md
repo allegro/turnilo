@@ -60,7 +60,7 @@ The database type of the cluster
 
 **host** (string)
 
-The host (hostname:port) of the cluster. In the Druid case this must be the broker IP.
+The host (hostname:port) of the cluster. In the Druid case this must be the broker.
 
 **version** (string)
 
@@ -97,11 +97,11 @@ How often should source schema be reloaded in ms.
 
 **introspectionStrategy** (string)
 
-Which introspection method to use.
+The introspection strategy for the Druid external.
 
 **requestDecorator** (string)
 
-A potential request decorator file to load.
+The request decorator module filepath to load.
 
 **decoratorOptions** (any)
 
@@ -111,11 +111,11 @@ Options passed to the request decorator module
 
 **database** (string)
 
-Which database to connect to
+The database to which to connect to.
 
 **user** (string)
 
-The user to connect as. This user needs no permissions other than 'SELECT'.
+The user to connect as. This user needs no permissions other than SELECT.
 
 **password** (string)
 
