@@ -2,9 +2,9 @@ require('./settings-view.css');
 
 import * as React from 'react';
 import * as Qajax from 'qajax';
-import { User, Customization } from '../../../common/models/index';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { DataSource, User, Customization } from '../../../common/models/index';
+import { MANIFESTS } from '../../../common/manifests/index';
 import { STRINGS } from '../../config/constants';
 import { Fn } from '../../../common/utils/general/general';
 import { queryUrlExecutorFactory } from '../../utils/ajax/ajax';
@@ -71,7 +71,7 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
           this.setState({
             errorText: '',
             messageText: '',
-            settings: AppSettings.fromJS(resp.appSettings)
+            settings: AppSettings.fromJS(resp.appSettings, { visualizations: MANIFESTS })
           });
         },
         (xhr: XMLHttpRequest) => {

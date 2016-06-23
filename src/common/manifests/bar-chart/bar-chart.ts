@@ -1,9 +1,9 @@
 import { $, SortAction } from 'plywood';
-import { List } from 'immutable';
-import { Splits, DataSource, Resolve, SplitCombine, Colors, Dimension } from '../../../common/models/index';
-import { CircumstancesHandler } from '../../../common/utils/circumstances-handler/circumstances-handler';
+import { Splits, DataSource, SplitCombine, Colors, Dimension } from '../../models/index';
+import { Manifest, Resolve } from '../../models/manifest/manifest';
+import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
 
-export default CircumstancesHandler.EMPTY()
+var handler = CircumstancesHandler.EMPTY()
   .needsAtLeastOneSplit('The Bar Chart requires at least one split')
 
   .when(CircumstancesHandler.areExactSplitKinds('*'))
@@ -86,3 +86,10 @@ export default CircumstancesHandler.EMPTY()
       );
     }
   );
+
+
+export const BAR_CHART_MANIFEST = new Manifest(
+  'bar-chart',
+  'Bar Chart',
+  handler.evaluate.bind(handler)
+);

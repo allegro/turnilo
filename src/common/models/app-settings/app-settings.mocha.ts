@@ -7,19 +7,22 @@ import { AppSettings } from './app-settings';
 import { AppSettingsMock } from './app-settings.mock';
 
 describe('AppSettings', () => {
+  var context = AppSettingsMock.getContext();
+
   it('is an immutable class', () => {
     testImmutableClass(AppSettings, [
       AppSettingsMock.wikiOnlyJS(),
-      AppSettingsMock.wikiTwitterJS()
-    ]);
+      AppSettingsMock.wikiTwitterJS(),
+      AppSettingsMock.wikiWithLinkViewJS()
+    ], { context });
   });
 
 
   describe("errors", () => {
-    it("errors if there is no good cluster", () => {
+    it("errors if there is no matching cluster", () => {
       var js = AppSettingsMock.wikiOnlyJS();
       js.clusters = [];
-      expect(() => AppSettings.fromJS(js)).to.throw("Can not find cluster 'druid' for data source 'wiki'");
+      expect(() => AppSettings.fromJS(js, context)).to.throw("Can not find cluster 'druid' for data source 'wiki'");
     });
 
   });
@@ -40,7 +43,7 @@ describe('AppSettings', () => {
         ]
       };
 
-      expect(AppSettings.fromJS(oldJS).toJS().clusters).to.deep.equal([
+      expect(AppSettings.fromJS(oldJS, context).toJS().clusters).to.deep.equal([
         {
           "name": "druid",
           "type": "druid",
@@ -63,7 +66,7 @@ describe('AppSettings', () => {
         ]
       };
 
-      expect(AppSettings.fromJS(oldJS).toJS().clusters).to.deep.equal([
+      expect(AppSettings.fromJS(oldJS, context).toJS().clusters).to.deep.equal([
         {
           "host": "192.168.99.100",
           "name": "druid",

@@ -22,7 +22,7 @@ describe('MeasuresTile', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <MeasuresTile
         clicker={fakeClicker}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
       />
     );
 

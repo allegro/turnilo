@@ -6,8 +6,9 @@ import { Expression, Dataset } from 'plywood';
 import { Timezone } from 'chronoshift';
 import { Fn } from '../../../common/utils/general/general';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
-import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Manifest, Measure,
-  SplitCombine, Splits, VisStrategy, VisualizationProps, User, Customization} from '../../../common/models/index';
+import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Measure,
+  SplitCombine, Splits, VisStrategy, VisualizationProps, User, Customization, Manifest } from '../../../common/models/index';
+import { MANIFESTS } from '../../../common/manifests/index';
 
 import { CubeHeaderBar } from '../../components/cube-header-bar/cube-header-bar';
 import { DimensionMeasurePanel } from '../../components/dimension-measure-panel/dimension-measure-panel';
@@ -20,7 +21,7 @@ import { PinboardPanel } from '../../components/pinboard-panel/pinboard-panel';
 import { RawDataModal } from '../../components/raw-data-modal/raw-data-modal';
 import { ResizeHandle } from '../../components/resize-handle/resize-handle';
 
-import { visualizations } from '../../visualizations/index';
+import { getVisualizationComponent } from '../../visualizations/index';
 import * as localStorage from '../../utils/local-storage/local-storage';
 
 export interface CubeViewLayout {
@@ -219,14 +220,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   getEssenceFromDataSource(dataSource: DataSource): Essence {
-    const essence = Essence.fromDataSource(dataSource, { dataSource: dataSource, visualizations });
+    const essence = Essence.fromDataSource(dataSource, { dataSource: dataSource, visualizations: MANIFESTS });
     return essence.multiMeasureMode !== Boolean(localStorage.get('is-multi-measure')) ? essence.toggleMultiMeasureMode() : essence;
   }
 
   getEssenceFromHash(hash: string): Essence {
     if (!hash) return null;
     var { dataSource } = this.props;
-    return Essence.fromHash(hash, { dataSource: dataSource, visualizations });
+    return Essence.fromHash(hash, { dataSource: dataSource, visualizations: MANIFESTS });
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
@@ -358,7 +359,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         registerDownloadableDataset: (dataset: Dataset) => { this.downloadableDataset = dataset; }
       };
 
-      visElement = React.createElement(visualization as any, visProps);
+      visElement = React.createElement(getVisualizationComponent(visualization), visProps);
     }
 
     var manualFallback: JSX.Element = null;

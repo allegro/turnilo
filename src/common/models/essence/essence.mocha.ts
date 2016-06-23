@@ -1,9 +1,8 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
-import { List } from 'immutable';
 
 import { $, Expression } from 'plywood';
-import { Manifest } from "../manifest/manifest";
+import { MANIFESTS } from "../../manifests/index";
 import { Essence, EssenceJS } from './essence';
 import { DataSource, Introspection } from "../data-source/data-source";
 
@@ -49,29 +48,12 @@ describe('Essence', () => {
 
   var dataSource = DataSource.fromJS(dataSourceJS);
 
-  var visualizations: Manifest[] = [
-    {
-      id: 'vis1',
-      title: 'vis1',
-      handleCircumstance(): any {
-        return { 'isAutomatic': () => false };
-      }
-    },
-    {
-      id: 'line-chart',
-      title: 'my line chart',
-      handleCircumstance(): any {
-        return { 'isAutomatic': () => false };
-      }
-    }
-  ];
-
-  var context = { dataSource, visualizations };
+  var context = { dataSource, visualizations: MANIFESTS };
 
   it('is an immutable class', () => {
     testImmutableClass<EssenceJS>(Essence, [
       {
-        visualization: 'vis1',
+        visualization: 'totals',
         timezone: 'Etc/UTC',
         filter: {
           op: "literal",
@@ -83,7 +65,7 @@ describe('Essence', () => {
         splits: []
       },
       {
-        visualization: 'vis1',
+        visualization: 'totals',
         timezone: 'Etc/UTC',
         filter: $('twitterHandle').overlap(['A', 'B', 'C']).toJS(),
         pinnedDimensions: ['twitterHandle'],
@@ -108,7 +90,7 @@ describe('Essence', () => {
   describe('upgrades', () => {
     it('works in the base case', () => {
       var essence = Essence.fromJS({
-        visualization: 'vis1',
+        visualization: 'totals',
         timezone: 'Etc/UTC',
         pinnedDimensions: [],
         selectedMeasures: [],
@@ -144,13 +126,13 @@ describe('Essence', () => {
         "selectedMeasures": [],
         "splits": [],
         "timezone": "Etc/UTC",
-        "visualization": "vis1"
+        "visualization": "totals"
       });
     });
 
     it('adds timezone', () => {
       var linkItem = Essence.fromJS({
-        visualization: 'vis1',
+        visualization: 'totals',
         pinnedDimensions: ['statusCode'],
         selectedMeasures: ['count'],
         splits: [],
@@ -170,7 +152,7 @@ describe('Essence', () => {
         ],
         "splits": [],
         "timezone": "Etc/UTC",
-        "visualization": "vis1"
+        "visualization": "totals"
       });
     });
 
@@ -229,7 +211,7 @@ describe('Essence', () => {
         ],
         "splits": [],
         "timezone": "Etc/UTC",
-        "visualization": "vis1"
+        "visualization": "totals"
       });
     });
 
@@ -239,7 +221,7 @@ describe('Essence', () => {
   describe('.toHash / #fromHash', () => {
     it("is symmetric", () => {
       var essence1 = Essence.fromJS({
-        visualization: 'vis1',
+        visualization: 'totals',
         timezone: 'Etc/UTC',
         filter: {
           op: "literal",

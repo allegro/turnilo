@@ -1,12 +1,10 @@
-import { List } from 'immutable';
 import { Expression } from 'plywood';
-import { DataSource } from '../data-source/data-source';
+import { Manifest } from '../manifest/manifest';
 import { Filter } from '../filter/filter';
 import { SplitCombine } from '../split-combine/split-combine';
 import { Splits } from '../splits/splits';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
-import { Manifest } from '../manifest/manifest';
 import { Colors } from '../colors/colors';
 import { VisStrategy } from '../essence/essence';
 

@@ -1,14 +1,13 @@
 require('./line-chart.css');
 
-import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
-
 import { immutableEqual } from 'immutable-class';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
-import { r, $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction, SortAction,
-  PlywoodRange, NumberRangeJS, NumberRange, LiteralExpression, Set, Range, NumberBucketAction } from 'plywood';
-import { Splits, Colors, FilterClause, Dimension, Stage, Filter, Measure, DataSource, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
+import { r, $, ply, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction, SortAction,
+  PlywoodRange, NumberRangeJS, NumberRange, Range, NumberBucketAction } from 'plywood';
+import { Splits, Colors, FilterClause, Dimension, Stage, Filter, Measure, DataSource, VisualizationProps, DatasetLoad } from '../../../common/models/index';
+import { LINE_CHART_MANIFEST } from '../../../common/manifests/line-chart/line-chart';
 import { DisplayYear } from '../../../common/utils/time/time';
 import { formatValue } from '../../../common/utils/formatter/formatter';
 
@@ -25,7 +24,7 @@ import { Highlighter } from '../../components/highlighter/highlighter';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 import { HoverMultiBubble, ColorEntry } from '../../components/hover-multi-bubble/hover-multi-bubble';
 
-import handler from './circumstances';
+import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
 
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
@@ -74,10 +73,7 @@ export interface LineChartState extends BaseVisualizationState {
 
 
 export class LineChart extends BaseVisualization<LineChartState> {
-  public static id = 'line-chart';
-  public static title = 'Line Chart';
-
-  public static handleCircumstance = handler.evaluate.bind(handler);
+  public static id = LINE_CHART_MANIFEST.name;
 
   constructor() {
     super();

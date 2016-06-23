@@ -15,7 +15,7 @@ describe.skip('HilukMenu', () => {
 
     var renderedComponent = TestUtils.renderIntoDocument(
       <HilukMenu
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
         onClose={null}
         openOn={openOn}
         getUrlPrefix={() => { return 'http://stackoverflow.com/'; }}

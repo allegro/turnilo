@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { DataSource } from '../data-source/data-source';
-import { Splits } from '../splits/splits';
-import { Colors } from '../colors/colors';
+import { DataSource, Splits, Colors } from '../index';
 
 export interface Adjustment {
   splits: Splits;
@@ -69,12 +67,20 @@ export class Resolve {
   }
 }
 
-
+export type HandleCircumstance = (dataSource: DataSource, splits: Splits, colors: Colors, selected: boolean) => Resolve;
 export type MeasureModeNeeded = 'any' | 'single' | 'multi';
 
-export interface Manifest {
-  id: string;
-  title: string;
-  measureModeNeed?: MeasureModeNeeded;
-  handleCircumstance: (dataSource: DataSource, splits: Splits, colors: Colors, selected: boolean) => Resolve;
+
+export class Manifest {
+  public name: string;
+  public title: string;
+  public handleCircumstance: HandleCircumstance;
+  public measureModeNeed: MeasureModeNeeded;
+
+  constructor(name: string, title: string, handleCircumstance: HandleCircumstance, measureModeNeed: MeasureModeNeeded = 'any') {
+    this.name = name;
+    this.title = title;
+    this.handleCircumstance = handleCircumstance;
+    this.measureModeNeed = measureModeNeed;
+  }
 }

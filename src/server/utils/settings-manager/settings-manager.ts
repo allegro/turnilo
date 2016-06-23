@@ -2,6 +2,7 @@ import * as Q from 'q';
 import { External, Dataset, basicExecutorFactory } from 'plywood';
 import { inlineVars, pluralIfNeeded } from '../../../common/utils/general/general';
 import { AppSettings, Cluster, DataSource } from '../../../common/models/index';
+import { MANIFESTS } from '../../../common/manifests/index';
 import { Logger } from '../logger/logger';
 import { loadFileSync } from '../file/file';
 import { FileManager } from '../file-manager/file-manager';
@@ -60,7 +61,7 @@ export class SettingsManager {
         this.currentWork = Q.fcall(() => {
           var appSettingsJS = loadFileSync(settingsLocation.uri, 'yaml');
           appSettingsJS = inlineVars(appSettingsJS, process.env);
-          return AppSettings.fromJS(appSettingsJS);
+          return AppSettings.fromJS(appSettingsJS, { visualizations: MANIFESTS });
         })
           .then((appSettings) => {
             return this.reviseSettings(appSettings);

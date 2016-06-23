@@ -1,7 +1,5 @@
 require('./bar-chart.css');
 
-import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
-
 import * as React from 'react';
 import { List } from 'immutable';
 import { r, Range, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, TimeRange } from 'plywood';
@@ -16,9 +14,10 @@ import {
   VisualizationProps,
   DatasetLoad
 } from '../../../common/models/index';
+import { BAR_CHART_MANIFEST } from '../../../common/manifests/bar-chart/bar-chart';
 
 import { SPLIT, VIS_H_PADDING } from '../../config/constants';
-import { roundToPx, roundToHalfPx, classNames } from '../../utils/dom/dom';
+import { roundToPx, classNames } from '../../utils/dom/dom';
 import { VisMeasureLabel } from '../../components/vis-measure-label/vis-measure-label';
 import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
 import { BucketMarks } from '../../components/bucket-marks/bucket-marks';
@@ -26,9 +25,8 @@ import { GridLines } from '../../components/grid-lines/grid-lines';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 import { Scroller, ScrollerLayout } from '../../components/scroller/scroller';
 
+import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
 import { BarCoordinates } from './bar-coordinates';
-
-import handler from './circumstances';
 
 const X_AXIS_HEIGHT = 84;
 const Y_AXIS_WIDTH = 60;
@@ -74,10 +72,7 @@ function getFilterFromDatum(splits: Splits, dataPath: Datum[], dataSource: DataS
 }
 
 export class BarChart extends BaseVisualization<BarChartState> {
-  public static id = 'bar-chart';
-  public static title = 'Bar Chart';
-
-  public static handleCircumstance = handler.evaluate.bind(handler);
+  public static id = BAR_CHART_MANIFEST.name;
 
   private coordinatesCache: BarCoordinates[][] = [];
 

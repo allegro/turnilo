@@ -1,12 +1,7 @@
 require('./manual-fallback.css');
 
-import { List } from 'immutable';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-// import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Executor, Dataset } from 'plywood';
-// import { ... } from '../../config/constants';
-import { Stage, Clicker, Essence, Resolution, VisStrategy } from '../../../common/models/index';
+import { Clicker, Essence, VisStrategy, Resolution } from '../../../common/models/index';
 
 
 export interface ManualFallbackProps extends React.Props<any> {

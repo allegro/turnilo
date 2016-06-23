@@ -1,8 +1,7 @@
-import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { $, Expression } from 'plywood';
+import { helper } from 'plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
-import { DataSource, DataSourceJS } from '../data-source/data-source';
+import { DataSource } from '../data-source/data-source';
 import { Essence, EssenceJS } from '../essence/essence';
 import { Manifest } from '../manifest/manifest';
 
@@ -25,8 +24,8 @@ export interface LinkItemJS {
 }
 
 export interface LinkItemContext {
-  dataSources: List<DataSource>;
-  visualizations: Manifest[];
+  dataSources: DataSource[];
+  visualizations?: Manifest[];
 }
 
 var check: Class<LinkItemValue, LinkItemJS>;
@@ -37,11 +36,11 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
   }
 
   static fromJS(parameters: LinkItemJS, context?: LinkItemContext): LinkItem {
-    if (!context) throw new Error('must have context');
+    if (!context) throw new Error('LinkItem must have context');
     const { dataSources, visualizations } = context;
 
     var dataSourceName = parameters.dataSource;
-    var dataSource = dataSources.find(d => d.name === dataSourceName);
+    var dataSource = helper.find(dataSources, d => d.name === dataSourceName);
     if (!dataSource) throw new Error(`can not find dataSource '${dataSourceName}'`);
 
     var essence = Essence.fromJS(parameters.essence, { dataSource, visualizations }).updateSplitsWithFilter();
@@ -112,12 +111,6 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
       this.group === other.group &&
       this.dataSource.equals(other.dataSource) &&
       this.essence.equals(other.essence);
-  }
-
-  public attachVisualizations(visualizations: Manifest[]): LinkItem {
-    var value = this.valueOf();
-    value.essence = value.essence.attachVisualizations(visualizations);
-    return new LinkItem(value);
   }
 
 }

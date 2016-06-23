@@ -286,8 +286,10 @@ if (PRINT_CONFIG) {
     }
     lines.push(`port: ${SERVER_SETTINGS.port}`, '');
 
-    lines.push('clusters:');
-    lines = lines.concat.apply(lines, clusters.map(c => clusterToYAML(c, withComments)));
+    if (clusters.length) {
+      lines.push('clusters:');
+      lines = lines.concat.apply(lines, clusters.map(c => clusterToYAML(c, withComments)));
+    }
 
     lines.push('dataSources:');
     lines = lines.concat.apply(lines, dataSources.map(d => dataSourceToYAML(d, withComments)));

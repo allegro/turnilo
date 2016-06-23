@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { helper } from 'plywood';
 
-import { DataSource, LinkViewConfig, AppSettings, User } from '../../../common/models/index';
+import { DataSource, AppSettings, User } from '../../../common/models/index';
 
 import { AboutModal } from '../../components/about-modal/about-modal';
 import { SideDrawer } from '../../components/side-drawer/side-drawer';
@@ -14,8 +14,6 @@ import { HomeView } from '../home-view/home-view';
 import { LinkView } from '../link-view/link-view';
 import { CubeView } from '../cube-view/cube-view';
 import { SettingsView } from '../settings-view/settings-view';
-
-import { visualizations } from '../../visualizations/index';
 
 export interface PivotApplicationProps extends React.Props<any> {
   version: string;
@@ -37,7 +35,6 @@ export interface PivotApplicationState {
   selectedDataSource?: DataSource;
   viewType?: ViewType;
   viewHash?: string;
-  linkViewConfig?: LinkViewConfig;
   showAboutModal?: boolean;
 }
 
@@ -59,7 +56,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       selectedDataSource: null,
       viewType: null,
       viewHash: null,
-      linkViewConfig: null,
       showAboutModal: false
     };
     this.globalHashChangeListener = this.globalHashChangeListener.bind(this);
@@ -90,8 +86,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       viewType,
       viewHash,
       selectedDataSource,
-      appSettings,
-      linkViewConfig: appSettings.linkViewConfig ? appSettings.linkViewConfig.attachVisualizations(visualizations) : null
+      appSettings
     });
   }
 
@@ -274,8 +269,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   render() {
     var { maxFilters, maxSplits, user, version } = this.props;
-    var { viewType, viewHash, selectedDataSource, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync, appSettings, linkViewConfig } = this.state;
-    var { dataSources, customization } = appSettings;
+    var { viewType, viewHash, selectedDataSource, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync, appSettings } = this.state;
+    var { dataSources, customization, linkViewConfig } = appSettings;
 
     var sideDrawer: JSX.Element = null;
     if (drawerOpen && SideDrawerAsync) {

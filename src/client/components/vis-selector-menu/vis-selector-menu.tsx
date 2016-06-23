@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom';
 import { Fn } from '../../../common/utils/general/general';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
-import { Clicker, Essence, Measure, Manifest } from '../../../common/models/index';
+import { Clicker, Essence, Manifest } from '../../../common/models/index';
 
 export interface VisSelectorMenuProps extends React.Props<any> {
   clicker: Clicker;
@@ -65,11 +65,11 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     var { visualization } = essence;
 
     return <div
-      className={classNames('vis-item', (v.id === visualization.id ? 'selected' : 'not-selected'))}
-      key={v.id}
+      className={classNames('vis-item', (v.name === visualization.name ? 'selected' : 'not-selected'))}
+      key={v.name}
       onClick={this.onVisSelect.bind(this, v)}
     >
-      <SvgIcon svg={require('../../icons/vis-' + v.id + '.svg')}/>
+      <SvgIcon svg={require('../../icons/vis-' + v.name + '.svg')}/>
       <div className="vis-title">{v.title}</div>
     </div>;
   }

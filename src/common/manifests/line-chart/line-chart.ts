@@ -1,9 +1,10 @@
-import { $, SortAction } from 'plywood';
 import { List } from 'immutable';
-import { Splits, DataSource, Resolve, SplitCombine, Colors } from '../../../common/models/index';
-import { CircumstancesHandler } from '../../../common/utils/circumstances-handler/circumstances-handler';
+import { $, SortAction } from 'plywood';
+import { Splits, DataSource, SplitCombine, Colors, Dimension } from '../../models/index';
+import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
+import { Manifest, Resolve } from '../../models/manifest/manifest';
 
-export default CircumstancesHandler.EMPTY()
+var handler = CircumstancesHandler.EMPTY()
 
   .when((splits: Splits, dataSource: DataSource) => !(dataSource.getDimensionByKind('time') || dataSource.getDimensionByKind('number')))
   .then(() => Resolve.NEVER)
@@ -165,3 +166,10 @@ export default CircumstancesHandler.EMPTY()
       );
     }
   );
+
+
+export const LINE_CHART_MANIFEST = new Manifest(
+  'line-chart',
+  'Line Chart',
+  handler.evaluate.bind(handler)
+);

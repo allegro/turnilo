@@ -1,109 +1,17 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
-import { List } from 'immutable';
 
 import { $, Expression } from 'plywood';
-import { DataSource, Introspection } from "../data-source/data-source";
-import { Manifest } from "../manifest/manifest";
+import { LinkItemMock } from './link-item.mock';
 import { LinkItem } from './link-item';
 
 describe('LinkItem', () => {
-  var dataSourceJS = {
-    name: 'twitter',
-    title: 'Twitter',
-    engine: 'druid',
-    source: 'twitter',
-    introspection: ('none' as Introspection),
-    dimensions: [
-      {
-        expression: {
-          name: 'time',
-          op: 'ref'
-        },
-        kind: 'time',
-        name: 'time'
-      },
-      {
-        expression: '$statusCode',
-        kind: 'string',
-        name: 'statusCode'
-      }
-    ],
-    measures: [
-      {
-        name: 'count',
-        expression: '$main.count()'
-      },
-      {
-        name: 'uniqueIp',
-        expression: '$main.countDistinct($ip)'
-      }
-    ],
-    timeAttribute: 'time',
-    defaultTimezone: 'Etc/UTC',
-    defaultFilter: { op: 'literal', value: true },
-    defaultDuration: 'P3D',
-    defaultSortMeasure: 'count',
-    refreshRule: {
-      rule: "fixed",
-      time: new Date('2015-09-13T00:00:00Z')
-    }
-  };
-
-  var dataSources = List([DataSource.fromJS(dataSourceJS)]);
-
-  var visualizations: Manifest[] = [
-    {
-      id: 'vis1',
-      title: 'vis1',
-      handleCircumstance(): any {
-        return { 'isAutomatic': () => false };
-      }
-    }
-  ];
-
-  var context = { dataSources, visualizations };
+  var context = LinkItemMock.getContext();
 
   it('is an immutable class', () => {
     testImmutableClass(LinkItem, [
-      {
-        name: 'test1',
-        title: 'Test One',
-        description: 'I like testing',
-        group: 'Tests',
-        dataSource: 'twitter',
-        essence: {
-          visualization: 'vis1',
-          timezone: 'Etc/UTC',
-          filter: {
-            op: "literal",
-            value: true
-          },
-          pinnedDimensions: ['statusCode'],
-          singleMeasure: "count",
-          selectedMeasures: ['count'],
-          splits: []
-        }
-      },
-      {
-        name: 'test1',
-        title: 'Test One',
-        description: 'I like testing',
-        group: 'Tests',
-        dataSource: 'twitter',
-        essence: {
-          visualization: 'vis1',
-          timezone: 'Etc/UTC',
-          filter: {
-            op: "literal",
-            value: true
-          },
-          pinnedDimensions: ['statusCode'],
-          singleMeasure: "count",
-          selectedMeasures: ['count', 'uniqueIp'],
-          splits: []
-        }
-      }
+      LinkItemMock.testOneJS(),
+      LinkItemMock.testTwoJS()
     ], { context });
   });
 
@@ -124,10 +32,10 @@ describe('LinkItem', () => {
         title: 'Test One',
         description: 'I like testing',
         group: 'Tests',
-        dataSource: 'twitter',
+        dataSource: 'wiki',
         essence: {
-          visualization: 'vis1',
-          pinnedDimensions: ['statusCode'],
+          visualization: 'line-chart',
+          pinnedDimensions: ['articleName'],
           singleMeasure: "count",
           selectedMeasures: ['count'],
           splits: 'time'
@@ -135,7 +43,7 @@ describe('LinkItem', () => {
       }, context);
 
       expect(linkItem.toJS()).to.deep.equal({
-        "dataSource": "twitter",
+        "dataSource": "wiki",
         "description": "I like testing",
         "essence": {
           "filter": {
@@ -161,7 +69,7 @@ describe('LinkItem', () => {
             "op": "chain"
           },
           "pinnedDimensions": [
-            "statusCode"
+            "articleName"
           ],
           "singleMeasure": "count",
           "selectedMeasures": [
@@ -176,11 +84,19 @@ describe('LinkItem', () => {
               "expression": {
                 "name": "time",
                 "op": "ref"
+              },
+              "sortAction": {
+                "action": "sort",
+                "direction": "ascending",
+                "expression": {
+                  "name": "time",
+                  "op": "ref"
+                }
               }
             }
           ],
           "timezone": "Etc/UTC",
-          "visualization": "vis1"
+          "visualization": "line-chart"
         },
         "group": "Tests",
         "name": "test1",

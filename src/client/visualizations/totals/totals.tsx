@@ -1,26 +1,17 @@
 require('./totals.css');
 
-import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
-
 import * as React from 'react';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';
-import { MeasureModeNeeded, Stage, Essence, Splits, SplitCombine, Filter, Dimension, Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve } from '../../../common/models/index';
+import { TOTALS_MANIFEST } from '../../../common/manifests/totals/totals';
+import { Stage, Essence, VisualizationProps, DatasetLoad } from '../../../common/models/index';
+
+import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
 
 const PADDING_H = 60;
 const TOTAL_WIDTH = 176;
 
 export class Totals extends BaseVisualization<BaseVisualizationState> {
-  public static id = 'totals';
-  public static title = 'Totals';
-
-  // For some reason, tsc absolutely wants a typing here, otherwise it throws a
-  // weird TS2322 error...
-  public static measureModeNeed: MeasureModeNeeded = 'multi';
-
-  public static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
-    if (!splits.length()) return Resolve.ready(10);
-    return Resolve.automatic(3, { splits: Splits.EMPTY });
-  }
+  public static id = TOTALS_MANIFEST.name;
 
   constructor() {
     super();

@@ -1,19 +1,8 @@
 require('./base-visualization.css');
 
 import * as React from 'react';
-import { $, ply, TimeRange, Expression, Dataset, LimitAction } from 'plywood';
-import {
-  MeasureModeNeeded,
-  Manifest,
-  Measure,
-  VisualizationProps,
-  DatasetLoad,
-  Splits,
-  DataSource,
-  Colors,
-  Resolve,
-  Essence
-} from '../../../common/models/index';
+import { $, ply, Expression, Dataset } from 'plywood';
+import { Measure, VisualizationProps, DatasetLoad, Essence } from '../../../common/models/index';
 
 import { SPLIT } from '../../config/constants';
 
@@ -29,19 +18,8 @@ export interface BaseVisualizationState {
   hoverMeasure?: Measure;
 }
 
-export class BaseVisualization<S extends BaseVisualizationState>
-  extends React.Component<VisualizationProps, S> {
-
+export class BaseVisualization<S extends BaseVisualizationState> extends React.Component<VisualizationProps, S> {
   public static id = 'base-visualization';
-  public static title = 'Base Visualization';
-
-  public static measureModeNeed: MeasureModeNeeded = 'any';
-
-  public static handleCircumstance(
-    dataSource: DataSource, splits: Splits, colors: Colors, current: boolean
-  ): Resolve {
-    return Resolve.NEVER;
-  }
 
   // isMounted was already taken by the superclass
   protected _isMounted: boolean;

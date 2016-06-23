@@ -14,7 +14,7 @@ describe('NumberRangePicker', () => {
         start={2}
         end={10}
         onRangeStartChange={null}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
         dimension={DimensionMock.countryURL()}
         onRangeEndChange={null}
       />

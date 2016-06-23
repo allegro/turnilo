@@ -18,7 +18,7 @@ describe('SplitTile', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <SplitTile
         clicker={null}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
         menuStage={null}
       />
     );

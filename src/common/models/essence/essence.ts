@@ -182,12 +182,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   static fromJS(parameters: EssenceJS, context?: EssenceContext): Essence {
-    if (!context) throw new Error('must have context');
+    if (!context) throw new Error('Essence must have context');
     const { dataSource, visualizations } = context;
 
-    var visualizationID = parameters.visualization;
-    if (visualizationID === 'time-series') visualizationID = 'line-chart'; // Back compat (used to be named time-series)
-    var visualization = helper.find(visualizations, v => v.id === visualizationID);
+    var visualizationName = parameters.visualization;
+    if (visualizationName === 'time-series') visualizationName = 'line-chart'; // Back compat (used to be named time-series)
+    var visualization = helper.findByName(visualizations, visualizationName);
 
     var timezone = parameters.timezone ? Timezone.fromJS(parameters.timezone) : null;
     var filter = parameters.filter ? Filter.fromJS(parameters.filter).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute) : null;
@@ -360,7 +360,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public toJS(): EssenceJS {
     var js: EssenceJS = {
-      visualization: this.visualization.id,
+      visualization: this.visualization.name,
       timezone: this.timezone.toJS(),
       filter: this.filter.toJS(),
       splits: this.splits.toJS(),
@@ -388,7 +388,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   public equals(other: Essence): boolean {
     return Essence.isEssence(other) &&
       this.dataSource.equals(other.dataSource) &&
-      this.visualization.id === other.visualization.id &&
+      this.visualization.name === other.visualization.name &&
       this.timezone.equals(other.timezone) &&
       this.filter.equals(other.filter) &&
       this.splits.equals(other.splits) &&
@@ -650,12 +650,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       value.highlight = value.highlight.constrainToDimensions(newDataSource.dimensions, newDataSource.timeAttribute);
     }
 
-    return new Essence(value);
-  }
-
-  public attachVisualizations(visualizations: Manifest[]): Essence {
-    var value = this.valueOf();
-    value.visualizations = visualizations;
     return new Essence(value);
   }
 

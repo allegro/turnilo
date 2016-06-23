@@ -13,7 +13,7 @@ describe('NumberFilterMenu', () => {
       <NumberFilterMenu
         clicker={null}
         dimension={DimensionMock.time()}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
         onClose={null}
       />
     );

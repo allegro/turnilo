@@ -19,7 +19,7 @@ describe('DimensionTile', () => {
         clicker={null}
         dimension={DimensionMock.countryURL()}
         sortOn={SortOnMock.defaultA()}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
       />
     );
 

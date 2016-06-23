@@ -27,7 +27,7 @@ describe('DimensionMeasurePanel', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <DimensionMeasurePanel
         clicker={clickyMcClickFace}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
         menuStage={null}
         triggerFilterMenu={null}
         triggerSplitMenu={null}

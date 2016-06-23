@@ -5,6 +5,7 @@ import { Cluster, ClusterJS } from '../cluster/cluster';
 import { Customization, CustomizationJS } from '../customization/customization';
 import { DataSource, DataSourceJS } from  '../data-source/data-source';
 import { LinkViewConfig, LinkViewConfigJS } from '../link-view-config/link-view-config';
+import { Manifest } from '../manifest/manifest';
 
 export interface AppSettingsValue {
   clusters?: Cluster[];
@@ -20,15 +21,20 @@ export interface AppSettingsJS {
   linkViewConfig?: LinkViewConfigJS;
 }
 
+export interface AppSettingsContext {
+  visualizations: Manifest[];
+}
+
 var check: Class<AppSettingsValue, AppSettingsJS>;
 export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
-  static BLANK = AppSettings.fromJS({});
+  static BLANK = AppSettings.fromJS({}, { visualizations: [] });
 
   static isAppSettings(candidate: any): candidate is AppSettings {
     return isInstanceOf(candidate, AppSettings);
   }
 
-  static fromJS(parameters: AppSettingsJS): AppSettings {
+  static fromJS(parameters: AppSettingsJS, context?: AppSettingsContext): AppSettings {
+    if (!context) throw new Error('AppSettings must have context');
     var clusters: Cluster[];
     if (parameters.clusters) {
       clusters = parameters.clusters.map(cluster => Cluster.fromJS(cluster));
@@ -57,7 +63,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       clusters,
       customization: Customization.fromJS(parameters.customization || {}),
       dataSources,
-      linkViewConfig: parameters.linkViewConfig ? LinkViewConfig.fromJS(parameters.linkViewConfig) : null
+      linkViewConfig: parameters.linkViewConfig ? LinkViewConfig.fromJS(parameters.linkViewConfig, { dataSources, visualizations: context.visualizations }) : null
     };
 
     return new AppSettings(value);

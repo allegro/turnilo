@@ -17,7 +17,7 @@ describe('ManualFallback', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <ManualFallback
         clicker={null}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiLineChartNoSplit()}
       />
     );
 

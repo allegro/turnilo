@@ -16,7 +16,7 @@ import { PinboardMeasureTile } from './pinboard-measure-tile';
 describe('PinboardMeasureTile', () => {
   it('adds the correct class', () => {
 
-    var essence = EssenceMock.wiki();
+    var essence = EssenceMock.wikiTotals();
     var sortOn = new SortOn({dimension: essence.dataSource.getDimension('articleName')});
 
     var renderedComponent = TestUtils.renderIntoDocument(

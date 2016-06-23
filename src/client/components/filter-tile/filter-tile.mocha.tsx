@@ -15,7 +15,7 @@ describe('FilterTile', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <FilterTile
         clicker={null}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
         menuStage={null}
       />
     );

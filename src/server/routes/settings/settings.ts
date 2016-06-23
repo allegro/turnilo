@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
 import { Timezone, WallTime, Duration } from 'chronoshift';
 import { AppSettings } from '../../../common/models/index';
+import { MANIFESTS } from '../../../common/manifests/index';
 
 import { PivotRequest } from '../../utils/index';
 import { VERSION, SETTINGS_MANAGER } from '../../config';
@@ -41,7 +42,7 @@ router.post('/', (req: PivotRequest, res: Response) => {
   }
 
   try {
-    var appSettingsObject = AppSettings.fromJS(appSettings);
+    var appSettingsObject = AppSettings.fromJS(appSettings, { visualizations: MANIFESTS });
   } catch (e) {
     res.status(400).send({
       error: 'bad settings',

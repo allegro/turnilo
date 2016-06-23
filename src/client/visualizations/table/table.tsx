@@ -1,21 +1,19 @@
 require('./table.css');
 
-import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
-
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction } from 'plywood';
 import { formatterFromData, Formatter } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
-  Measure, Colors, DataSource, VisualizationProps, DatasetLoad, Resolve, MeasureModeNeeded } from '../../../common/models/index';
-import { SPLIT } from '../../config/constants';
+  Measure, Colors, DataSource, VisualizationProps, DatasetLoad } from '../../../common/models/index';
+import { TABLE_MANIFEST } from '../../../common/manifests/table/table';
 import { getXFromEvent, getYFromEvent, classNames } from '../../utils/dom/dom';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
 import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
 import { Scroller, ScrollerLayout } from '../../components/scroller/scroller';
 
-import { CircumstancesHandler } from '../../../common/utils/circumstances-handler/circumstances-handler';
+import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 300;
@@ -61,44 +59,7 @@ export interface TableState extends BaseVisualizationState {
 }
 
 export class Table extends BaseVisualization<TableState> {
-  public static id = 'table';
-  public static title = 'Table';
-
-  private static handler = CircumstancesHandler.EMPTY()
-    .needsAtLeastOneSplit('The Table requires at least one split')
-    .otherwise(
-      (splits: Splits, dataSource: DataSource, colors: Colors, current: boolean) => {
-        var autoChanged = false;
-        splits = splits.map((split, i) => {
-          if (!split.sortAction) {
-            split = split.changeSortAction(dataSource.getDefaultSortAction());
-            autoChanged = true;
-          }
-
-          var splitDimension = splits.get(0).getDimension(dataSource.dimensions);
-
-          // ToDo: review this
-          if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
-            split = split.changeLimit(i ? 5 : 50);
-            autoChanged = true;
-          }
-
-          return split;
-        });
-
-        if (colors) {
-          colors = null;
-          autoChanged = true;
-        }
-
-        return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(current ? 10 : 8);
-      }
-    );
-
-  public static handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
-    return this.handler.evaluate(dataSource, splits, colors, current);
-  }
-
+  public static id = TABLE_MANIFEST.name;
 
   constructor() {
     super();

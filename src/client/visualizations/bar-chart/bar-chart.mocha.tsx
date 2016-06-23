@@ -15,7 +15,7 @@ describe.skip('BarChart', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <BarChart
         clicker={null}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
         stage={StageMock.defaultA()}
       />
     );

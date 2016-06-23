@@ -14,7 +14,7 @@ describe('LineChart', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <LineChart
         clicker={null}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiLineChart()}
         stage={StageMock.defaultA()}
       />
     );

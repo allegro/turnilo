@@ -14,6 +14,8 @@ export interface LinkViewConfigJS {
   linkItems: LinkItemJS[];
 }
 
+export type LinkViewConfigContext = LinkItemContext;
+
 var check: Class<LinkViewConfigValue, LinkViewConfigJS>;
 export class LinkViewConfig implements Instance<LinkViewConfigValue, LinkViewConfigJS> {
 
@@ -21,7 +23,8 @@ export class LinkViewConfig implements Instance<LinkViewConfigValue, LinkViewCon
     return isInstanceOf(candidate, LinkViewConfig);
   }
 
-  static fromJS(parameters: LinkViewConfigJS, context?: LinkItemContext): LinkViewConfig {
+  static fromJS(parameters: LinkViewConfigJS, context?: LinkViewConfigContext): LinkViewConfig {
+    if (!context) throw new Error('LinkViewConfig must have context');
     return new LinkViewConfig({
       title: parameters.title,
       linkItems: parameters.linkItems.map(linkItem => LinkItem.fromJS(linkItem, context))
@@ -70,12 +73,6 @@ export class LinkViewConfig implements Instance<LinkViewConfigValue, LinkViewCon
 
   public findByName(name: string): LinkItem {
     return helper.findByName(this.linkItems, name);
-  }
-
-  public attachVisualizations(visualizations: Manifest[]): LinkViewConfig {
-    var value = this.valueOf();
-    value.linkItems = value.linkItems.map(linkItem => linkItem.attachVisualizations(visualizations));
-    return new LinkViewConfig(value);
   }
 
 }

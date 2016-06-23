@@ -1,6 +1,8 @@
 import { $, Executor, Dataset, basicExecutorFactory } from 'plywood';
+import { MANIFESTS } from '../../../common/manifests/index';
 import { DataSourceMock } from '../data-source/data-source.mock';
-import { AppSettings, AppSettingsJS } from './app-settings';
+import { LinkViewConfigMock } from '../link-view-config/link-view-config.mock';
+import { AppSettings, AppSettingsJS, AppSettingsContext } from './app-settings';
 
 const SMALL_WIKI_DATA = [
   {
@@ -293,6 +295,34 @@ export class AppSettingsMock {
     };
   }
 
+  public static wikiWithLinkViewJS(): AppSettingsJS {
+    return {
+      customization: {
+        title: "Hello World",
+        headerBackground: "brown",
+        customLogoSvg: "ansvgstring"
+      },
+      clusters: [
+        {
+          name: 'druid',
+          type: 'druid',
+          host: '192.168.99.100',
+          version: '0.9.1',
+          timeout: 30000,
+          sourceListScan: 'auto',
+          sourceListRefreshInterval: 10000,
+          sourceReintrospectInterval: 10000,
+
+          introspectionStrategy: 'segment-metadata-fallback'
+        }
+      ],
+      dataSources: [
+        DataSourceMock.WIKI_JS
+      ],
+      linkViewConfig: LinkViewConfigMock.testOneTwoJS()
+    };
+  }
+
   public static wikiTwitterJS(): AppSettingsJS {
     return {
       customization: {
@@ -319,8 +349,14 @@ export class AppSettingsMock {
     };
   }
 
+  static getContext(): AppSettingsContext {
+    return {
+      visualizations: MANIFESTS
+    };
+  }
+
   static wikiOnly() {
-    return AppSettings.fromJS(AppSettingsMock.wikiOnlyJS());
+    return AppSettings.fromJS(AppSettingsMock.wikiOnlyJS(), AppSettingsMock.getContext());
   }
 
   static wikiOnlyWithExecutor() {
@@ -334,6 +370,6 @@ export class AppSettingsMock {
   }
 
   static wikiTwitter() {
-    return AppSettings.fromJS(AppSettingsMock.wikiTwitterJS());
+    return AppSettings.fromJS(AppSettingsMock.wikiTwitterJS(), AppSettingsMock.getContext());
   }
 }

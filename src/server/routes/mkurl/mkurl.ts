@@ -1,27 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { Timezone, WallTime, Duration } from 'chronoshift';
-import { Essence, Manifest, MeasureModeNeeded } from '../../../common/models/index';
+import { Essence } from '../../../common/models/index';
+import { MANIFESTS } from '../../../common/manifests';
 import { PivotRequest } from '../../utils/index';
 
 var router = Router();
-
-function mkVisMock(id: string, measureModeNeed: MeasureModeNeeded = null) {
-  return {
-    id,
-    title: 'Title',
-    measureModeNeed,
-    handleCircumstance(): any {
-      return { 'isAutomatic': () => false };
-    }
-  };
-}
-
-var mockVisualizations: Manifest[] = [
-  mkVisMock('totals', 'multi'),
-  mkVisMock('table'),
-  mkVisMock('line-chart'),
-  mkVisMock('bar-chart')
-];
 
 router.post('/', (req: PivotRequest, res: Response) => {
   var { domain, dataSource, essence } = req.body;
@@ -58,7 +41,7 @@ router.post('/', (req: PivotRequest, res: Response) => {
       try {
         var essenceObj = Essence.fromJS(essence, {
           dataSource: myDataSource,
-          visualizations: mockVisualizations
+          visualizations: MANIFESTS
         });
       } catch (e) {
         res.status(400).send({

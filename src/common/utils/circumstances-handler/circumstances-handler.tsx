@@ -1,5 +1,5 @@
-import { r, $, ply, Executor, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction, SortAction } from 'plywood';
-import { Dimension, Essence, Splits, SplitCombine, Filter, FilterClause, Measure, DataSource, Resolve, Resolution, Colors } from '../../models/index';
+import { Dimension, Essence, Splits, SplitCombine, Filter, FilterClause, Measure, DataSource, Colors } from '../../models/index';
+import { Resolve, Resolution } from '../../models/manifest/manifest';
 
 export type Configuration = (splits: Splits, dataSource?: DataSource) => boolean;
 export type Action = (splits?: Splits, dataSource?: DataSource, colors?: Colors, current?: boolean) => Resolve;
@@ -38,7 +38,7 @@ export class CircumstancesHandler {
       var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataSource.dimensions).kind);
       return CircumstancesHandler.strictCompare(selectors, kinds);
     };
-  }
+  };
 
   public static haveAtLeastSplitKinds = (...kinds: string[]) => {
     return (splits: Splits, dataSource: DataSource): boolean => {
@@ -48,7 +48,7 @@ export class CircumstancesHandler {
 
       return kinds.every((kind) => actualKinds.indexOf(kind) > -1);
     };
-  }
+  };
 
   public static EMPTY() {
     return new CircumstancesHandler();

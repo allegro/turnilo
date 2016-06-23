@@ -1,12 +1,9 @@
 require('./vis-selector.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { List } from 'immutable';
-import { $, Expression, Executor, Dataset } from 'plywood';
 import { findParentWithClass, classNames } from '../../utils/dom/dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { Clicker, Essence, Measure, Manifest } from '../../../common/models/index';
+import { Clicker, Essence } from '../../../common/models/index';
 import { VisSelectorMenu } from '../vis-selector-menu/vis-selector-menu';
 
 export interface VisSelectorProps extends React.Props<any> {
@@ -63,7 +60,7 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
 
     return <div className={classNames('vis-selector', { active: menuOpenOn })} onClick={this.openMenu.bind(this)}>
       <div className="vis-item selected">
-        <SvgIcon svg={require('../../icons/vis-' + visualization.id + '.svg')}/>
+        <SvgIcon svg={require('../../icons/vis-' + visualization.name + '.svg')}/>
         <div className="vis-title">{visualization.title}</div>
       </div>
       {menu}

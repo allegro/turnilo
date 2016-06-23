@@ -16,7 +16,7 @@ describe('CubeHeaderBar', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <CubeHeaderBar
         clicker={null}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
         onNavClick={null}
       />
     );

@@ -17,7 +17,7 @@ describe('DimensionListTile', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <DimensionListTile
         clicker={null}
-        essence={EssenceMock.wiki()}
+        essence={EssenceMock.wikiTotals()}
         menuStage={null}
         triggerFilterMenu={null}
         triggerSplitMenu={null}
