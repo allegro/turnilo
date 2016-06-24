@@ -137,7 +137,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var viewHash = this.getViewHashFromHash(hash);
     var newState: PivotApplicationState = {
       viewType,
-      viewHash
+      viewHash,
+      drawerOpen: false
     };
 
     if (viewType === CUBE) {
@@ -149,7 +150,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     }
 
     this.setState(newState);
-    this.sideDrawerOpen(false);
   }
 
   parseHash(hash: string): string[] {
@@ -340,6 +340,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       case SETTINGS:
         view = <SettingsView
           user={user}
+          hash={window.location.hash}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           onSettingsChange={this.onSettingsChange.bind(this)}
           customization={customization}

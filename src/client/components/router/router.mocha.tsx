@@ -34,18 +34,21 @@ class Fake extends React.Component<FakeProps, FakeState> {
 // -- end of Fake class
 
 describe('Router', () => {
+  var children: JSX.Element[];
   var component: React.Component<any, any>;
+  var node: any;
 
   var updateHash: (newHash: string) => void;
   var isActiveRoute: (route: string) => void;
 
   beforeEach(() => {
     updateHash = (newHash: string) => {
+
       window.location.hash = newHash;
 
-      var event = document.createEvent('HashChangeEvent');
-      event.initEvent('hashchange', true, true);
-      window.dispatchEvent(event);
+      component = ReactDOM.render(<Router rootFragment="root" hash={newHash}>
+        {children}
+      </Router>, node);
     };
 
     isActiveRoute = (route: string) => {
@@ -55,36 +58,35 @@ describe('Router', () => {
 
   describe('with initial location', () => {
     beforeEach(() => {
-      window.location.hash = 'root/bar';
+      node = window.document.createElement('div');
 
-      component = TestUtils.renderIntoDocument(
-        <Router rootFragment="root">
-          <Route fragment="foo">
-            <div className="foo-class">foo</div>
-            <Route fragment="foo-0">
-              <div className="foo-0-class">foo-0</div>
-            </Route>
-            <Route fragment="foo-1">
-              <div className="foo-1-class">foo-1</div>
-            </Route>
+      children = [
+        <Route fragment="foo">
+          <div className="foo-class">foo</div>
+          <Route fragment="foo-0">
+            <div className="foo-0-class">foo-0</div>
           </Route>
-
-          <Route fragment="bar">
-            <div className="bar-class">bar</div>
+          <Route fragment="foo-1">
+            <div className="foo-1-class">foo-1</div>
           </Route>
+        </Route>,
 
-          <Route fragment="baz">
-            <div className="baz-class">baz</div>
-            <Route fragment=":itemId"><Fake/></Route> // Fake is gonna get passed whatever replaces :bazId in the hash
-          </Route>
+        <Route fragment="bar">
+          <div className="bar-class">bar</div>
+        </Route>,
 
-          <Route fragment="qux">
-            <div className="qux-class">qux</div>
-            <Route fragment=":itemId/:action=edit"><Fake/></Route> // default value for variable
-          </Route>
+        <Route fragment="baz">
+          <div className="baz-class">baz</div>
+          <Route fragment=":itemId"><Fake/></Route> // Fake is gonna get passed whatever replaces :bazId in the hash
+        </Route>,
 
-        </Router>
-      );
+        <Route fragment="qux">
+          <div className="qux-class">qux</div>
+          <Route fragment=":itemId/:action=edit"><Fake/></Route> // default value for variable
+        </Route>
+      ];
+
+      updateHash('root/bar');
     });
 
 
@@ -151,23 +153,23 @@ describe('Router', () => {
   describe('without initial location', () => {
 
     beforeEach(() => {
-      window.location.hash = 'root';
+      node = window.document.createElement('div');
 
-      component = TestUtils.renderIntoDocument(
-        <Router rootFragment="root">
-          <Route fragment="foo">
-            <div className="foo-class">foo</div>
-          </Route>
+      children = [
+        <Route fragment="foo">
+          <div className="foo-class">foo</div>
+        </Route>,
 
-          <Route fragment="bar">
-            <div className="bar-class">bar</div>
-          </Route>
+        <Route fragment="bar">
+          <div className="bar-class">bar</div>
+        </Route>,
 
-          <Route fragment="baz">
-            <div className="baz-class">baz</div>
-          </Route>
-        </Router>
-      );
+        <Route fragment="baz">
+          <div className="baz-class">baz</div>
+        </Route>
+      ];
+
+      updateHash('root');
     });
 
 

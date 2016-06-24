@@ -6,22 +6,9 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
-export interface RouteProps extends React.Props<any> {
-  fragment: string;
-}
-
-export interface RouteState {
-}
-
-export class Route extends React.Component<RouteProps, RouteState> {
-  constructor() {
-    super();
-  }
-
-  render() {
-    return this.props.children as JSX.Element || null;
-  }
-}
+export interface RouteProps extends React.Props<any> { fragment: string; }
+export interface RouteState {}
+export class Route extends React.Component<RouteProps, RouteState> {}
 
 
 export interface QualifiedPath {
@@ -32,6 +19,7 @@ export interface QualifiedPath {
 }
 
 export interface RouterProps extends React.Props<any> {
+  hash: string;
   onURLChange?: (breadCrumbs: string[]) => void;
   rootFragment?: string;
 }
@@ -47,19 +35,15 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
   constructor() {
     super();
-
     this.state = {};
-
-    this.onHashChange = this.onHashChange.bind(this);
   }
 
   componentDidMount() {
-    this.onHashChange();
-    window.addEventListener('hashchange', this.onHashChange);
+    this.onHashChange(window.location.hash);
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('hashchange', this.onHashChange);
+  componentWillReceiveProps(nextProps: RouterProps) {
+    if (this.props.hash !== nextProps.hash) this.onHashChange(nextProps.hash);
   }
 
   parseHash(hash: string): string[] {
@@ -87,7 +71,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     // Acts like window.location.hash = newHash but doesn't clutter the history
     // See http://stackoverflow.com/a/23924886/863119
     window.history.replaceState(undefined, undefined, newHash);
-    this.onHashChange();
+    this.onHashChange(newHash);
   }
 
   hasExtraFragments(route: QualifiedPath): boolean {
@@ -110,9 +94,8 @@ export class Router extends React.Component<RouterProps, RouterState> {
     this.replaceHash('#' + strippedCrumbs.join('/'));
   }
 
-  onHashChange() {
+  onHashChange(hash: string) {
     const { rootFragment } = this.props;
-    const hash = window.location.hash;
 
     var safeHash = this.sanitizeHash(hash);
     if (hash !== safeHash) {
@@ -265,7 +248,6 @@ export class Router extends React.Component<RouterProps, RouterState> {
     const crumbs = this.parseHash(hash);
     if (!crumbs || !crumbs.length) return null;
 
-    var qualifiedChild = this.getQualifiedChild(children as JSX.Element[], crumbs);
-    return qualifiedChild ? qualifiedChild : null;
+    return this.getQualifiedChild(children as JSX.Element[], crumbs);
   }
 }

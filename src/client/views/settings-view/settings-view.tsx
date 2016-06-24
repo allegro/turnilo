@@ -29,6 +29,7 @@ import { DataCubeEdit } from './data-cube-edit/data-cube-edit';
 
 export interface SettingsViewProps extends React.Props<any> {
   version: string;
+  hash?: string;
   user?: User;
   customization?: Customization;
   onNavClick?: Fn;
@@ -145,7 +146,7 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
   }
 
   render() {
-    const { user, onNavClick, customization } = this.props;
+    const { user, onNavClick, customization, hash } = this.props;
     const { errorText, messageText, settings, breadCrumbs } = this.state;
 
     return <div className="settings-view">
@@ -164,6 +165,7 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
        <Router
          onURLChange={this.onURLChange.bind(this)}
          rootFragment="settings"
+         hash={hash}
        >
 
          <Route fragment="general">
