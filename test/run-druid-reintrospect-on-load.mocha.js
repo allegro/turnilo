@@ -56,7 +56,7 @@ var segmentMetadataResponse = [
   }
 ];
 
-describe('run druid', function () {
+describe('run druid reintrospect on load', function () {
   this.timeout(5000);
 
   var runSegmentMetadataRunNumber = 0;

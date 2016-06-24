@@ -1,7 +1,7 @@
 clusters:
   - name: druid
     type: druid
-    druidHost: 11.22.33.44:5555
+    host: "%{DRUID_HOST}%"
     timeout: 30000
 
 dataSources:

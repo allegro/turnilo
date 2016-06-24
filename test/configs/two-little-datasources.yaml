@@ -1,0 +1,33 @@
+clusters:
+  - name: druid
+    type: druid
+    host: "%{DRUID_HOST}%"
+    timeout: 30000
+    sourceListRefreshOnLoad: true
+    sourceReintrospectOnLoad: true
+
+dataSources:
+  - name: wiki
+    title: Wikipedia Edits
+    engine: druid
+    source: wikipedia
+
+    dimensions:
+      - name: language
+        expression: $language
+
+    measures:
+      - name: count
+
+
+  - name: twitter
+    title: Twitter
+    engine: druid
+    source: twitter
+
+    dimensions:
+      - name: tweet
+        expression: $tweet
+
+    measures:
+      - name: count

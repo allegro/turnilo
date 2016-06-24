@@ -1,12 +1,6 @@
 const expect = require('chai').expect;
 const exec = require('child_process').exec;
-
-function extend(obj1, obj2) {
-  var newObj = {};
-  for (var k in obj1) newObj[k] = obj1[k];
-  for (var k in obj2) newObj[k] = obj2[k];
-  return newObj;
-}
+const extend = require('./utils/extend');
 
 describe('basics', function () {
   this.timeout(5000);

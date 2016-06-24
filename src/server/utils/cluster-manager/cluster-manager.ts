@@ -249,7 +249,7 @@ export class ClusterManager {
             if (existingExternalsForSource.length) {
               if (verbose) logger.log(`Cluster '${cluster.name}' already has an external for '${source}' ('${existingExternalsForSource[0].name}')`);
             } else {
-              if (verbose) logger.log(`Cluster '${cluster.name}' making external for '${source}'`);
+              logger.log(`Cluster '${cluster.name}' making external for '${source}'`);
               var external = cluster.makeExternalFromSourceName(source, this.version).attachRequester(this.requester);
               var newManagedExternal: ManagedExternal = {
                 name: this.generateExternalName(external),

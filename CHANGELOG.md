@@ -2,6 +2,14 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.4
+
+- Exclusion filters
+
+## 0.9.3
+
+- Removed tests, docs, resources, e.t.c from npm module
+
 ## 0.9.2
 
 - Change sourceListScan back to default to auto

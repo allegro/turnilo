@@ -135,6 +135,7 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Exclusion filters
 - Full support of Druid 0.9.1
 - Pivot can connect to multiple clusters, also Postgres and MySQL
 - Continuous dimension filtering and splitting
@@ -143,7 +144,6 @@ Running `gulp watch` will build the project and start all the automated watchers
 - Side panel resizing
 - Ability to define custom granularities for bucketing
 - Timezone support
-- Date range picker
 
 For a full list of changes see our [CHANGELOG](CHANGELOG.md)
 

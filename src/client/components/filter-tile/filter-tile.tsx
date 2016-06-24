@@ -433,7 +433,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       FILTER_CLASS_NAME,
       'type-' + dimension.className,
       source,
-      clause.exclude ? 'excluded' : 'included',
+      (clause && clause.exclude) ? 'excluded' : 'included',
       dimension === menuDimension ? 'selected' : undefined
     ].filter(Boolean).join(' ');
 

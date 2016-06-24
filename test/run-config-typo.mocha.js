@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
 const spawn = require('child_process').spawn;
 const request = require('request');
+const extend = require('./utils/extend');
 
 const TEST_PORT = 18082;
 
@@ -13,7 +14,11 @@ describe('run config typo', function () {
   this.timeout(5000);
 
   before((done) => {
-    child = spawn('bin/pivot', `--config test/configs/no-such-druid-config.yaml -p ${TEST_PORT}`.split(' '));
+    child = spawn('bin/pivot', `--config test/configs/one-little-datasource.yaml -p ${TEST_PORT}`.split(' '), {
+      env: extend(process.env, {
+        DRUID_HOST: '11.22.33.44:5555'
+      })
+    });
 
     child.stderr.on('data', (data) => {
       stderr += data.toString();
