@@ -15,5 +15,6 @@ fi
 echo "Trying to publish..."
 
 gulp all
+mocha test
 script/version-bump
 npm publish
