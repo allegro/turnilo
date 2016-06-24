@@ -4,15 +4,18 @@ import * as React from 'react';
 import { $, ply, r, Expression, Executor, Dataset, SortAction, Set } from 'plywood';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, Measure, Colors, DragPosition } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, FilterMode, Dimension, Measure, Colors, DragPosition } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
 import { enterKey } from '../../utils/dom/dom';
 import { ClearableInput } from '../clearable-input/clearable-input';
-import { Checkbox } from '../checkbox/checkbox';
+import { Checkbox, CheckboxType } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
 import { HighlightString } from '../highlight-string/highlight-string';
 import { Button } from '../button/button';
+import { Dropdown, DropdownProps } from "../dropdown/dropdown";
+import { SvgIcon } from '../svg-icon/svg-icon';
+import { FilterOptionsDropdown } from '../filter-options-dropdown/filter-options-dropdown';
 
 const TOP_N = 100;
 
@@ -32,6 +35,7 @@ export interface StringFilterMenuState {
   searchText?: string;
   selectedValues?: Set;
   colors?: Colors;
+  filterMode?: FilterMode;
 }
 
 export class StringFilterMenu extends React.Component<StringFilterMenuProps, StringFilterMenuState> {
@@ -116,8 +120,17 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     });
 
     this.fetchData(essence, dimension);
+
+    if (colors) {
+      this.setState({filterMode: Filter.INCLUDED});
+    } else {
+      var filterMode = essence.filter.getModeForDimension(dimension);
+      if (filterMode) this.setState({filterMode});
+    }
   }
 
+  // This is never called : either the component is open and nothing else can update its props,
+  // or it's closed and doesn't exist.
   componentWillReceiveProps(nextProps: StringFilterMenuProps) {
     var { essence, dimension } = this.props;
     var nextEssence = nextProps.essence;
@@ -149,13 +162,14 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
 
   constructFilter(): Filter {
     var { essence, dimension, changePosition } = this.props;
-    var { selectedValues } = this.state;
+    var { selectedValues, filterMode } = this.state;
     var { filter } = essence;
 
     if (selectedValues.size()) {
       var clause = new FilterClause({
         expression: dimension.expression,
-        selection: r(selectedValues)
+        selection: r(selectedValues),
+        exclude: filterMode === Filter.EXCLUDED
       });
       if (changePosition) {
         if (changePosition.isInsert()) {
@@ -231,8 +245,12 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     return !essence.filter.equals(this.constructFilter());
   }
 
+  onSelectFilterOption(filterMode: FilterMode) {
+    this.setState({filterMode});
+  }
+
   renderTable() {
-    var { loading, dataset, error, fetchQueued, searchText, selectedValues } = this.state;
+    var { loading, dataset, error, fetchQueued, searchText, selectedValues, filterMode } = this.state;
     var { dimension } = this.props;
 
     var rows: Array<JSX.Element> = [];
@@ -248,6 +266,8 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
         });
       }
 
+      var checkboxType = filterMode === Filter.EXCLUDED ? 'cross' : 'check';
+
       rows = rowData.map((d) => {
         var segmentValue = d[dimension.name];
         var segmentValueStr = String(segmentValue);
@@ -260,7 +280,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
           onClick={this.onValueClick.bind(this, segmentValue)}
         >
           <div className="row-wrapper">
-            <Checkbox selected={selected}/>
+            <Checkbox type={checkboxType as CheckboxType} selected={selected}/>
             <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
           </div>
         </div>;
@@ -278,13 +298,19 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     ].join(' ');
 
     return <div className={className}>
-      <div className="search-box">
-        <ClearableInput
-          placeholder="Search"
-          focusOnMount={true}
-          value={searchText}
-          onChange={this.onSearchChange.bind(this)}
+      <div className="side-by-side">
+        <FilterOptionsDropdown
+          selectedOption={filterMode}
+          onSelectOption={this.onSelectFilterOption.bind(this)}
         />
+        <div className="search-box">
+          <ClearableInput
+            placeholder="Search"
+            focusOnMount={true}
+            value={searchText}
+            onChange={this.onSearchChange.bind(this)}
+          />
+        </div>
       </div>
       <div className="rows">
         {rows}

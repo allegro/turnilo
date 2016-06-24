@@ -25,12 +25,16 @@ function dateToFileString(date: Date): string {
     .replace('.000', '');
 }
 
+export type FilterMode = 'exclude' | 'include';
 export type FilterValue = List<FilterClause>;
 export type FilterJS = ExpressionJS | string;
 
 var check: Class<FilterValue, FilterJS>;
 export class Filter implements Instance<FilterValue, FilterJS> {
   static EMPTY: Filter;
+
+  static EXCLUDED: FilterMode = 'exclude';
+  static INCLUDED: FilterMode = 'include';
 
   static isFilter(candidate: any): candidate is Filter {
     return isInstanceOf(candidate, Filter);
@@ -247,6 +251,23 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return clauses.get(index).getLiteralSet();
   }
 
+  public getClausesForDimension(dimension: Dimension): List<FilterClause> {
+     return this.clauses.filter((clause) => {
+      return clause.expression.equals(dimension.expression);
+    }) as List<FilterClause>;
+  }
+
+  public getModeForDimension(dimension: Dimension): FilterMode {
+    var dimensionClauses = this.getClausesForDimension(dimension);
+
+    if (dimensionClauses.size > 0) {
+      let isExcluded = dimensionClauses.every(clause => clause.exclude);
+      return isExcluded ? 'exclude' : 'include';
+    }
+
+    return undefined;
+  }
+
   public setClause(expression: FilterClause): Filter {
     var expressionAttribute = expression.expression;
     var added = false;
@@ -328,6 +349,15 @@ export class Filter implements Instance<FilterValue, FilterJS> {
         return clause;
       }
     }));
+  }
+
+  public setExclusionforDimension(exclusion: boolean, dimension: Dimension): Filter {
+    var clauses = this.clauses.map((clause: FilterClause) => {
+      if (!clause.expression.equals(dimension.expression)) return clause;
+      return clause.changeExclude(exclusion);
+    });
+
+    return new Filter(clauses as List<FilterClause>);
   }
 }
 check = Filter;

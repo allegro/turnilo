@@ -251,26 +251,6 @@ export class BarChart extends BaseVisualization<BarChartState> {
     });
   }
 
-  // hasVerticalScroll(): boolean {
-  //   const { essence, stage } = this.props;
-
-  //   const measures = essence.getEffectiveMeasures();
-  //   const availableHeight = stage.height - X_AXIS_HEIGHT;
-
-  //   return Math.floor(availableHeight / measures.size) < MIN_CHART_HEIGHT;
-  // }
-
-  // hasHorizontalScroll(): boolean {
-  //   const xScale = this.getPrimaryXScale();
-  //   const { essence, stage } = this.props;
-
-  //   const { stepWidth } = this.getBarDimensions(xScale.rangeBand());
-  //   const xTicks = xScale.domain();
-  //   const width = roundToPx(xScale(xTicks[xTicks.length - 1])) + stepWidth;
-
-  //   return width > stage.width - Y_AXIS_WIDTH - VIS_H_PADDING * 2;
-  // }
-
   getOuterChartHeight(chartStage: Stage): number {
     return chartStage.height + CHART_TOP_PADDING + CHART_BOTTOM_PADDING;
   }

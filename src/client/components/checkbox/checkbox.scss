@@ -27,6 +27,7 @@ $checkbox-size: 15px;
   }
 
   &.selected.check,
+  &.selected.cross,
   &.selected.radio {
     .checkbox-body {
       background: hsla(0, 0, 0, 0.45);

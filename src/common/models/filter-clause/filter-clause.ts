@@ -163,6 +163,12 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     return new FilterClause(value);
   }
 
+  public changeExclude(exclude: boolean): FilterClause {
+    var value = this.valueOf();
+    value.exclude = exclude;
+    return new FilterClause(value);
+  }
+
   public evaluate(now: Date, maxTime: Date, timezone: Timezone): FilterClause {
     if (!this.relative) return this;
     return this.changeSelection(r(FilterClause.evaluate(this.selection, now, maxTime, timezone)));

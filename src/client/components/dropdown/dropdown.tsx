@@ -14,9 +14,11 @@ function simpleEqual(item1: any, item2: any): boolean {
 export interface DropdownProps<T> {
   label?: string;
   items: T[];
+  className?: string;
   selectedItem?: T;
   equal?: (item1: T, item2: T) => boolean;
-  renderItem?: (item: T) => string;
+  renderItem?: (item: T) => (string | JSX.Element);
+  renderSelectedItem?: (item: T) => (string | JSX.Element);
   keyItem?: (item: T) => string;
   onSelect?: (item: T) => void;
   direction?: string;
@@ -73,10 +75,10 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
   }
 
   renderMenu() {
-    var { items, renderItem, keyItem, selectedItem, equal, onSelect } = this.props;
+    var { items, renderItem, keyItem, selectedItem, equal, onSelect, className } = this.props;
     if (!items || !items.length) return null;
     if (!renderItem) renderItem = String;
-    if (!keyItem) keyItem = renderItem;
+    if (!keyItem) keyItem = renderItem as (item: T) => string;
     if (!equal) equal = simpleEqual;
     var itemElements = items.map((item) => {
       return <div
@@ -88,16 +90,17 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
       </div>;
     });
 
-    return <div className="dropdown-menu">
+    return <div className={classNames('dropdown-menu', className)}>
       {itemElements}
     </div>;
   }
 
   render() {
-    var { label, renderItem, selectedItem, direction } = this.props;
+    var { label, renderItem, selectedItem, direction, renderSelectedItem } = this.props;
     var { open } = this.state;
     if (!renderItem) renderItem = String;
     if (!direction) direction = 'down';
+    if (!renderSelectedItem) renderSelectedItem = renderItem as (item: T) => string;
 
     var labelElement: JSX.Element = null;
     if (label) {
@@ -106,7 +109,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
 
     return <div className={classNames('dropdown', direction)} onClick={this.onClick.bind(this)}>
       {labelElement}
-      <div className="selected-item">{renderItem(selectedItem)}
+      <div className={classNames('selected-item', { active : open })}>{renderSelectedItem(selectedItem)}
         <SvgIcon className="caret-icon" svg={require('../../icons/dropdown-caret.svg')}/>
       </div>
       { open ? this.renderMenu() : null }

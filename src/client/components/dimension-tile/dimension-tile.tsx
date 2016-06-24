@@ -3,17 +3,18 @@ require('./dimension-tile.css');
 import * as React from 'react';
 
 import { Duration } from 'chronoshift';
+import { List } from 'immutable';
 import { $, r, Dataset, SortAction, TimeRange, RefExpression, Expression, TimeBucketAction, NumberBucketAction } from 'plywood';
 
 import { formatterFromData, collect, formatGranularity, formatTimeBasedOnGranularity } from '../../../common/utils/index';
 import { Fn } from '../../../common/utils/general/general';
-import { Clicker, Essence, VisStrategy, Dimension, SortOn, SplitCombine,
+import { Clicker, Essence, VisStrategy, Dimension, SortOn, SplitCombine, Filter, FilterClause, FilterMode,
   Colors, Granularity, ContinuousDimensionKind, getBestGranularityForRange, granularityEquals,
   granularityToString, getDefaultGranularityForKind, getGranularities } from '../../../common/models/index';
 
 import { setDragGhost, classNames } from '../../utils/dom/dom';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
-import { getLocale } from '../../config/constants';
+import { STRINGS, getLocale } from '../../config/constants';
 import { PIN_TITLE_HEIGHT, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 
 import { SvgIcon } from '../svg-icon/svg-icon';
@@ -21,7 +22,7 @@ import { Checkbox } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
 import { HighlightString } from '../highlight-string/highlight-string';
-import { SearchableTile } from '../searchable-tile/searchable-tile';
+import { SearchableTile, TileAction } from '../searchable-tile/searchable-tile';
 
 const TOP_N = 100;
 const FOLDER_BOX_HEIGHT = 30;
@@ -46,6 +47,7 @@ export interface DimensionTileState {
   showSearch?: boolean;
   searchText?: string;
   selectedGranularity?: Granularity;
+  filterMode?: FilterMode;
 }
 
 export class DimensionTile extends React.Component<DimensionTileProps, DimensionTileState> {
@@ -84,6 +86,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (unfolded && dimension !== essence.getTimeDimension()) {
       filter = filter.remove(dimension.expression);
     }
+
+    filter = filter.setExclusionforDimension(false, dimension);
 
     var filterExpression = filter.toExpression();
 
@@ -213,10 +217,23 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     ) {
       this.fetchData(nextEssence, nextDimension, nextSortOn, unfolded, persistedGranularity);
     }
+
+    this.setFilterModeFromProps(nextProps);
+  }
+
+  setFilterModeFromProps(props: DimensionTileProps) {
+    if (props.colors) {
+      this.setState({filterMode: Filter.INCLUDED});
+    } else {
+      var filterMode = props.essence.filter.getModeForDimension(props.dimension);
+      if (filterMode) this.setState({filterMode});
+    }
   }
 
   componentDidMount() {
     this.mounted = true;
+
+    this.setFilterModeFromProps(this.props);
   }
 
   componentWillUnmount() {
@@ -225,7 +242,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   onRowClick(value: any, e: MouseEvent) {
     var { clicker, essence, dimension, colors } = this.props;
-    var { dataset } = this.state;
+    var { dataset, filterMode } = this.state;
     var { filter } = essence;
 
     if (colors && colors.dimension === dimension.name) {
@@ -244,7 +261,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     } else {
       if (e.altKey || e.ctrlKey || e.metaKey) {
-        if (filter.filteredOnValue(dimension.expression, value) && filter.getLiteralSet(dimension.expression).size() === 1) {
+        let filteredOnMe = filter.filteredOnValue(dimension.expression, value);
+        let singleFilter = filter.getLiteralSet(dimension.expression).size() === 1;
+
+        if (filteredOnMe && singleFilter) {
           filter = filter.remove(dimension.expression);
         } else {
           filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
@@ -259,8 +279,35 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         this.setState({ unfolded: true });
       }
 
-      clicker.changeFilter(filter);
+      clicker.changeFilter(filter.setExclusionforDimension(filterMode === Filter.EXCLUDED, dimension));
     }
+  }
+
+  changeFilterMode(value: FilterMode) {
+    const { clicker, essence, dimension } = this.props;
+    this.setState({filterMode: value}, () => {
+      clicker.changeFilter(essence.filter.setExclusionforDimension(value === Filter.EXCLUDED, dimension));
+    });
+  }
+
+  getFilterActions(): TileAction[] {
+    const { essence, dimension } = this.props;
+    const { filterMode } = this.state;
+
+    if (!essence || !dimension) return null;
+
+    const filter: Filter = essence.filter;
+
+    const options: FilterMode[] = [Filter.INCLUDED, Filter.EXCLUDED];
+
+    return options.map((value) => {
+      return {
+        selected: filterMode === value,
+        onSelect: this.changeFilterMode.bind(this, value),
+        displayValue: STRINGS[value],
+        keyString: value
+      };
+    });
   }
 
   toggleFold() {
@@ -330,7 +377,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.fetchData(essence, dimension, sortOn, unfolded, selectedGranularity);
   }
 
-  getGranularityActions() {
+  getGranularityActions(): TileAction[] {
     const { dimension } = this.props;
     const { selectedGranularity } = this.state;
     var granularities = dimension.granularities || getGranularities(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy, true);
@@ -346,15 +393,16 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   render() {
-    var { clicker, essence, dimension, sortOn, colors, onClose } = this.props;
-    var { loading, dataset, error, showSearch, unfolded, foldable, fetchQueued, searchText, selectedGranularity } = this.state;
+    const { clicker, essence, dimension, sortOn, colors, onClose } = this.props;
+    const { loading, dataset, error, showSearch, unfolded, foldable, fetchQueued, searchText, selectedGranularity, filterMode } = this.state;
 
-    var measure = sortOn.measure;
-    var measureName = measure ? measure.name : null;
-    var filterSet = essence.filter.getLiteralSet(dimension.expression);
+    const measure = sortOn.measure;
+    const measureName = measure ? measure.name : null;
+    const filterSet = essence.filter.getLiteralSet(dimension.expression);
+    const continuous = dimension.isContinuous();
+    const excluded = filterMode === Filter.EXCLUDED;
+
     var maxHeight = PIN_TITLE_HEIGHT;
-    var continuous = dimension.isContinuous();
-
 
     var rows: Array<JSX.Element> = [];
     var folder: JSX.Element = null;
@@ -407,6 +455,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           }
           checkbox = <Checkbox
             selected={selected}
+            type={excluded ? 'cross' : 'check'}
             color={colorValues ? colorValues[i] : null}
           />;
         }
@@ -458,6 +507,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const className = classNames(
       'dimension-tile',
+      filterMode,
       (folder ? 'has-folder' : 'no-folder'),
       (colors ? 'has-colors' : 'no-colors'),
       {continuous}
@@ -468,18 +518,25 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     };
 
     var icons = [{
-        name: 'search',
-        ref: 'search',
-        onClick: this.toggleSearch.bind(this),
-        svg: require('../../icons/full-search.svg'),
-        active: showSearch
-      },
-      {
-        name: 'close',
-        onClick: onClose,
-        svg: require('../../icons/full-remove.svg')
-      }
-    ];
+      name: 'search',
+      ref: 'search',
+      onClick: this.toggleSearch.bind(this),
+      svg: require('../../icons/full-search.svg'),
+      active: showSearch
+    },
+    {
+      name: 'close',
+      onClick: onClose,
+      svg: require('../../icons/full-remove.svg')
+    }];
+
+    var actions: TileAction[] = null;
+
+    if (continuous) {
+      actions = this.getGranularityActions();
+    } else if (!essence.colors) {
+      actions = this.getFilterActions();
+    }
 
     return <SearchableTile
       style={style}
@@ -491,7 +548,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       showSearch={showSearch}
       icons={icons}
       className={className}
-      actions={continuous ? this.getGranularityActions() : null}
+      actions={actions}
       >
       <div className="rows">
         {rows}

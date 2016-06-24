@@ -23,7 +23,7 @@ export const SPLIT = 'SPLIT';
 export const MAX_SEARCH_LENGTH = 300;
 export const SEARCH_WAIT = 900;
 
-export const STRINGS = {
+export const STRINGS: any = {
   home: 'Home',
   settings: 'Settings',
   dimensions: 'Dimensions',
@@ -67,7 +67,12 @@ export const STRINGS = {
   timezone: 'Timezone',
   splitDelimiter: 'by',
   any: 'any',
-  noQueryableDataSources: 'There are no queryable data sources configured'
+  noQueryableDataSources: 'There are no queryable data sources configured',
+  include: 'Include',
+  exclude: 'Exclude',
+  intersection: 'Intersection',
+  stringSearch: 'String search',
+  regex: 'Regex'
 };
 
 

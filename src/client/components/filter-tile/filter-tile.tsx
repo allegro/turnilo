@@ -429,10 +429,13 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { dimension, clause, source } = itemBlank;
     var dimensionName = dimension.name;
 
-    var classNames = [FILTER_CLASS_NAME, 'type-' + dimension.className, source];
-    if (dimension === menuDimension) classNames.push('selected');
-
-    var className = classNames.join(' ');
+    var className = [
+      FILTER_CLASS_NAME,
+      'type-' + dimension.className,
+      source,
+      clause.exclude ? 'excluded' : 'included',
+      dimension === menuDimension ? 'selected' : undefined
+    ].filter(Boolean).join(' ');
 
     var evaluatedClause = dimension.kind === 'time' ? essence.evaluateClause(clause) : clause;
     var timezone = essence.timezone;

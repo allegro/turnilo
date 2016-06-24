@@ -31,8 +31,6 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
 
   constructor() {
     super();
-    //this.state = {};
-
   }
 
   render() {
@@ -47,10 +45,22 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
       </div>;
     }
 
+    var actionsElement: JSX.Element = null;
+
+    if (clicker) {
+      actionsElement = <SegmentActionButtons
+        clicker={clicker}
+        dimension={dimension}
+        segmentLabel={segmentLabel}
+        openRawDataModal={openRawDataModal}
+        onClose={onClose}
+      />;
+    }
+
     return <BodyPortal left={left} top={top + OFFSET_V} disablePointerEvents={!clicker}>
       <div className="segment-bubble" ref="bubble">
         {textElement}
-        {clicker ? <SegmentActionButtons clicker={clicker} dimension={dimension} segmentLabel={segmentLabel} openRawDataModal={openRawDataModal} onClose={onClose}/> : null}
+        {actionsElement}
         <Shpitz direction="up"/>
       </div>
     </BodyPortal>;

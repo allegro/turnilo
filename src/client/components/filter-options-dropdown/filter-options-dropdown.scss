@@ -1,0 +1,40 @@
+@import '../../imports';
+
+.filter-options-dropdown {
+  .selected-item {
+    padding: 8px 16px 0 4px;
+
+    .icon {
+      padding: 0;
+      bottom: 4px;
+    }
+
+    .caret-icon {
+      right: 6px;
+    }
+  }
+
+  .dropdown-menu {
+    width: 180px;
+
+    .filter-option {
+      display: block;
+
+      .option-label {
+        display: inline-block;
+        padding: 2px 10px;
+      }
+    }
+  }
+
+  svg.icon {
+    display: inline-block;
+    padding: 5px 0;
+    cursor: pointer;
+    width: 19px;
+
+    path {
+      fill: #888;
+    }
+  }
+}
