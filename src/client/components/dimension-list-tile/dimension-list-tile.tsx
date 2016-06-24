@@ -2,7 +2,7 @@ require('./dimension-list-tile.css');
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';
-import { STRINGS, TITLE_HEIGHT, DIMENSION_HEIGHT, MAX_SEARCH_LENGTH, PIN_TITLE_HEIGHT, PIN_PADDING_BOTTOM } from '../../config/constants';
+import { STRINGS, DIMENSION_HEIGHT, MAX_SEARCH_LENGTH } from '../../config/constants';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { findParentWithClass, setDragGhost, transformStyle, classNames } from '../../utils/dom/dom';
 import { Stage, Clicker, Essence, VisStrategy, Dimension, SplitCombine } from '../../../common/models/index';
@@ -21,6 +21,7 @@ export interface DimensionListTileProps extends React.Props<any> {
   triggerFilterMenu: Fn;
   triggerSplitMenu: Fn;
   getUrlPrefix?: () => string;
+  style?: React.CSSProperties;
 }
 
 export interface DimensionListTileState {
@@ -147,20 +148,19 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   render() {
-    var { essence } = this.props;
+    var { essence, style } = this.props;
     var { menuDimension, highlightDimension, showSearch, searchText } = this.state;
     var { dataSource } = essence;
-    var totalDimensions = dataSource.dimensions;
-    var rowData = totalDimensions.toArray();
+    var shownDimensions = dataSource.dimensions.toArray();
     var itemY = 0;
 
     if (searchText) {
-      rowData = rowData.filter((r) => {
+      shownDimensions = shownDimensions.filter((r) => {
         return r.title.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
       });
     }
 
-    const dimensionItems = rowData.map((dimension, i) => {
+    const dimensionItems = shownDimensions.map((dimension) => {
       var className = classNames(
         DIMENSION_CLASS_NAME,
         'type-' + dimension.className,
@@ -196,12 +196,6 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
     if (searchText && !dimensionItems.length) {
       message = <div className="message">{`No ${ STRINGS.dimensions.toLowerCase() } for "${searchText}"`}</div>;
     }
-    var maxHeight = PIN_TITLE_HEIGHT;
-    maxHeight += (totalDimensions.size + 2) * DIMENSION_HEIGHT + PIN_PADDING_BOTTOM;
-    const style = {
-      flex: totalDimensions.size + 2,
-      maxHeight
-    };
 
     var icons: TileHeaderIcon[] = [
       //{ name: 'more', onClick: null, svg: require('../../icons/full-more-mini.svg') }

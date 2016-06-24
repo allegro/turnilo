@@ -15,6 +15,7 @@ import { SearchableTile } from '../searchable-tile/searchable-tile';
 export interface MeasuresTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
+  style?: React.CSSProperties;
 }
 
 export interface MeasuresTileState {
@@ -66,24 +67,22 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
   }
 
   render() {
-    var { essence } = this.props;
+    var { essence, style } = this.props;
     var { showSearch, searchText } = this.state;
     var { dataSource } = essence;
     var multiMeasureMode = essence.getEffectiveMultiMeasureMode();
     var selectedMeasures = essence.getEffectiveSelectedMeasure();
 
-    var maxHeight = PIN_TITLE_HEIGHT;
-
     var checkboxType: CheckboxType = multiMeasureMode ? 'check' : 'radio';
-    const totalMeasures = dataSource.measures;
-    var rowData = totalMeasures.toArray();
+
+    var shownMeasures = dataSource.measures.toArray();
     if (searchText) {
-      rowData = rowData.filter((r) => {
+      shownMeasures = shownMeasures.filter((r) => {
         return r.title.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
       });
     }
-    var message: JSX.Element = null;
-    var rows = rowData.map(measure => {
+
+    var rows = shownMeasures.map(measure => {
       var measureName = measure.name;
       var selected = selectedMeasures.has(measureName);
       return <div
@@ -95,15 +94,11 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
         <HighlightString className="label" text={measure.title} highlightText={searchText}/>
       </div>;
     });
+
+    var message: JSX.Element = null;
     if (searchText && !rows.length) {
       message = <div className="message">{`No ${ STRINGS.measures.toLowerCase() } for "${searchText}"`}</div>;
     }
-
-    maxHeight += (totalMeasures.size + 2) * MEASURE_HEIGHT + PIN_PADDING_BOTTOM;
-    const style = {
-      flex: totalMeasures.size + 2,
-      maxHeight
-    };
 
     var icons: TileHeaderIcon[] = [];
 

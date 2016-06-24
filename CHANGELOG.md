@@ -16,6 +16,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 - Ability to configure `serverHost`
 - Auto refresh icon rotation
 - Pivot is npm shrinkwrapped
+- Better dimension / measure panel scaling 
 
 ## 0.8.42
 
