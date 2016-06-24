@@ -16,6 +16,7 @@ import { PinboardPanel } from '../../components/pinboard-panel/pinboard-panel';
 import { ButtonGroup } from '../../components/button-group/button-group';
 import { Preset } from '../../components/time-filter-menu/time-filter-menu';
 import { ResizeHandle } from '../../components/resize-handle/resize-handle';
+import { getVisualizationComponent } from '../../visualizations/index';
 
 var $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
 var latestPresets: Preset[] = [
@@ -274,7 +275,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
         stage: visualizationStage
       };
 
-      visElement = React.createElement(visualization as any, visProps);
+      visElement = React.createElement(getVisualizationComponent(visualization), visProps);
     }
 
     var manualFallback: JSX.Element = null;

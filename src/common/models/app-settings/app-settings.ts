@@ -23,6 +23,7 @@ export interface AppSettingsJS {
 
 export interface AppSettingsContext {
   visualizations: Manifest[];
+  executorFactory?: (dataSource: DataSource) => Executor;
 }
 
 var check: Class<AppSettingsValue, AppSettingsJS>;
@@ -50,13 +51,20 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       clusters = [];
     }
 
+    var executorFactory = context.executorFactory;
     var dataSources = (parameters.dataSources || []).map(dataSource => {
       var dataSourceEngine = dataSource.engine;
       if (dataSourceEngine !== 'native') {
         var cluster = helper.findByName(clusters, dataSourceEngine);
         if (!cluster) throw new Error(`Can not find cluster '${dataSourceEngine}' for data source '${dataSource.name}'`);
       }
-      return DataSource.fromJS(dataSource, { cluster });
+
+      var dataSourceObject = DataSource.fromJS(dataSource, { cluster });
+      if (executorFactory) {
+        var executor = executorFactory(dataSourceObject);
+        if (executor) dataSourceObject = dataSourceObject.attachExecutor(executor);
+      }
+      return dataSourceObject;
     });
 
     var value: AppSettingsValue = {

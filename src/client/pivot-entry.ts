@@ -48,9 +48,10 @@ if (config.appSettings.dataSources.length) {
     const PivotApplication = require('./views/pivot-application/pivot-application').PivotApplication;
 
     var appSettings = AppSettings.fromJS(config.appSettings, {
-      visualizations: MANIFESTS
-    }).attachExecutors((dataSource: DataSource) => {
-      return queryUrlExecutorFactory(dataSource.name, 'plywood', version);
+      visualizations: MANIFESTS,
+      executorFactory: (dataSource: DataSource) => {
+        return queryUrlExecutorFactory(dataSource.name, 'plywood', version);
+      }
     });
 
     // Init chronoshift

@@ -32,10 +32,12 @@
       }
 
       .link-item {
+        @include ellipsis;
         height: 25px;
         line-height: 25px;
-        padding: 0 18px 0 38px;
+        padding: 0 4px 0 38px;
         cursor: pointer;
+        overflow: hidden;
 
         &.selected {
           background: rgba($brand, 0.16);
@@ -65,13 +67,18 @@
       border-bottom: 1px solid #eee;
 
       .link-title {
+        @include ellipsis;
         font-size: 17px;
         margin-bottom: 8px;
+        padding-right: 152px;
       }
 
       .link-description {
-        font-size: 13px;
+        line-height: 13px;
+        max-height: 26px;
+        overflow: hidden;
         color: #999;
+        padding-right: 152px;
       }
 
       .right-align {
