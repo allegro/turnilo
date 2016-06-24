@@ -11,10 +11,24 @@ export interface NoDataSourcesApplicationState {
 }
 
 export class NoDataSourcesApplication extends React.Component<NoDataSourcesApplicationProps, NoDataSourcesApplicationState> {
+  private refreshTimer: any;
 
   constructor() {
     super();
 
+  }
+
+  componentDidMount() {
+    this.refreshTimer = setInterval(() => {
+      window.location.reload(true);
+    }, 10000);
+  }
+
+  componentWillUnmount() {
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+      this.refreshTimer = null;
+    }
   }
 
   render() {

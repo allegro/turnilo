@@ -154,7 +154,7 @@ export class ClusterManager {
         this.sourceListRefreshTimer = null;
       }
 
-      if (this.sourceListRefreshInterval) {
+      if (this.sourceListRefreshInterval && cluster.shouldScanSources()) {
         logger.log(`Setting up sourceListRefresh timer in cluster '${cluster.name}' (every ${this.sourceListRefreshInterval}ms)`);
         this.sourceListRefreshTimer = setInterval(() => {
           this.scanSourceList();
@@ -190,10 +190,9 @@ export class ClusterManager {
     const { logger, cluster } = this;
 
     return Q(null)
-    //.delay(30000)
+      //.delay(30000)
       .then(() => {
         if (this.version) return this.version;
-        if (cluster.type !== 'druid') return '1.2.3-' + cluster.type; // ToDo: hack!
         return (External.getConstructorFor(cluster.type) as any).getVersion(this.requester)
           .then(
             (version: string) => {
@@ -202,7 +201,7 @@ export class ClusterManager {
               return version;
             },
             (e: Error) => {
-              logger.error(`Field to get version from cluster ${cluster.name} because ${e.message}`);
+              logger.error(`Failed to get version from cluster ${cluster.name} because ${e.message}`);
             }
           );
       })

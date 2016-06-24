@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.2
+
+- Change sourceListScan back to default to auto
+- Typos and misc error message improvements
+
 ## 0.9.1
 
 - Complete refactor of settings architecture

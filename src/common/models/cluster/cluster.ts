@@ -58,7 +58,7 @@ export class Cluster implements Instance<ClusterValue, ClusterJS> {
   static DEFAULT_SOURCE_LIST_REFRESH_INTERVAL = 15000;
   static DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 120000;
   static DEFAULT_INTROSPECTION_STRATEGY = 'segment-metadata-fallback';
-  static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = 'disable';
+  static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = 'auto';
   static SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ['disable', 'auto'];
 
   static isCluster(candidate: any): candidate is Cluster {
@@ -88,7 +88,7 @@ export class Cluster implements Instance<ClusterValue, ClusterJS> {
     var value: ClusterValue = {
       name,
       type,
-      host,
+      host: host || (parameters as any).druidHost || (parameters as any).brokerHost,
       version,
       timeout: parseIntFromPossibleString(timeout),
       sourceListScan: sourceListScan,
@@ -166,7 +166,6 @@ export class Cluster implements Instance<ClusterValue, ClusterJS> {
 
       case 'mysql':
       case 'postgres':
-        if (!parameters.database) throw new Error(`cluster '${name}' must specify a database`);
         this.database = parameters.database;
         this.user = parameters.user;
         this.password = parameters.password;
