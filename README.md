@@ -10,7 +10,6 @@ Alternatively nightly standalone Pivot versions can be installed through npm.
 The project is currently undergoing rapid development.
 Internal and external APIs may change with little notice.
 
-
 ## Features
 
 **Drag-and-drop UI**
@@ -52,7 +51,7 @@ npm i -g imply-pivot
 Start off by running an example (static) dataset:
 
 ```
-pivot --example wiki
+pivot --examples
 ```
 
 ### Run with Druid
@@ -72,20 +71,21 @@ You will have to provide Pivot with a config file as in the nest section.
 ### Create a config
 
 In general Pivot will never know your schema as well as you.
-To get a better experience you should create a config and provide it to Pivot.
+To get a better experience you should create a [config](https://github.com/implydata/pivot/blob/master/docs/configuration.md) and provide it to Pivot.
 The fastest way to create a config is to have Pivot do it for you.
 
 ```
 pivot --druid your.druid.broker.host:8082 --print-config --with-comments > config.yaml
 ```
 
-The `--print-config` option will make Pivot run through its regular introspection and then, instead of spinning up a server, dump the YAML onto the stdout and exit.  
+The `--print-config` option will make Pivot run through its regular introspection and then, instead of tarting a server, dump the YAML onto the stdout and exit.  
 
 ```
 pivot --config config.yaml
 ```
 
-The next step is to examine and tweak the config using your favorite editor `nano config.yaml`.
+Now open the config in your favorite editor and adjust to taste.
+Make sure to read through the [documentation](https://github.com/implydata/pivot/blob/master/docs/configuration.md) about the possible configuration options.
 
 ## Development
 
@@ -135,6 +135,8 @@ Running `gulp watch` will build the project and start all the automated watchers
 
 **Recent improvements:**
 
+- Full support of Druid 0.9.1
+- Pivot can connect to multiple clusters, also Postgres and MySQL
 - Continuous dimension filtering and splitting
 - Support for Druid Theta sketches (for countDistinct())
 - Horizontal bars in Table
@@ -142,8 +144,6 @@ Running `gulp watch` will build the project and start all the automated watchers
 - Ability to define custom granularities for bucketing
 - Timezone support
 - Date range picker
-- Export data to CSV
-- Raw data modal allows you to see the raw data in the selected segment
 
 For a full list of changes see our [CHANGELOG](CHANGELOG.md)
 
