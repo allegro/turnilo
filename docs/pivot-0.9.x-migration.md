@@ -11,7 +11,7 @@ The cluster information used to live in the root of the config file.
 
 ```yaml
 # Old style config
-druidHost: your.druid.broker:8082
+druidHost: localhost:8082
 timeout: 30000
 sourceListScan: auto
 sourceListRefreshOnLoad: true
@@ -25,8 +25,8 @@ In 0.9.x style configs the cluster information needs to be defined as an element
 # New style config
 clusters:
   - name: druid
-    type: druid # can be druid, postgres, or mysql
-    host: your.druid.broker:8082 # 'druidHost' becomes 'host'
+    type: druid
+    host: localhost:8082 # 'druidHost' becomes 'host'
     timeout: 30000
     sourceListScan: auto
     sourceListRefreshOnLoad: true

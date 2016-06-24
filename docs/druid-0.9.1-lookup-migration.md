@@ -4,72 +4,61 @@ Druid 0.9.1 introduces a new way of making query time lookups (QTLs).
 The [new](http://druid.io/docs/0.9.1-rc4/development/extensions-core/lookups-cached-global.html) and [old](http://druid.io/docs/0.9.1-rc4/development/extensions-core/namespaced-lookup.html) lookups are incompatible.
 To facilitate a rolling migration [Druid 0.9.1 supports both styles of lookup](https://github.com/druid-io/druid/issues/2999).
 
-If you are using Pivot with QTLs (`.lookup(...)` actions) and desire to have uninterrupted service,
+If you are using Pivot with QTLs (`.lookup('...')` actions) and desire to have uninterrupted service,
 you will need to follow the following steps.
+
+**Note:** these steps assume that Pivot is collocated with the broker node as it is configured in the Imply Analytics Platform.
+If you are running Pivot on stock Druid you should consider switching to the Imply Analytics Platform instead.
 
 ### Step 1
 
-Ensure you have Pivot 0.9.x that supports all of the Druid 0.9.1 features including the lookups.
-
-Please migrate your config to the new style config by following the [migration instructions](./pivot-0.9.x-migration.md) for Pivot 0.9.x.
+Update the IAP Data Nodes to 1.3.0 first.
 
 ### Step 2
 
-Update the 'druid' cluster in the Pivot config and explicitly set the `version` to `0.9.0` (or whatever your Druid version is) like so:
+For the Query Node, as you roll out 1.3.0, update the Pivot config as follows:
+
+Your config will go from looking like:
 
 ```yaml
+# Old style config
+druidHost: localhost:8082
+timeout: 30000
+sourceListScan: auto
+sourceListRefreshOnLoad: true
+
+# ...
+```
+
+To this:
+
+```yaml
+# New style config
 clusters:
   - name: druid
     type: druid
-    host: your.broker.host
-    version: 0.9.0
+    host: localhost:8082 # 'druidHost' becomes 'host'
+    version: 0.9.1-legacy-lookups
+    timeout: 30000
+    sourceListScan: auto
+    sourceListRefreshOnLoad: true
+
+# ...
 ```
-
-Make sure to restart Pivot.
-
-By fixing the version you will prevent Pivot form auto-detecting the new Druid version as you start your upgrade.
-This is necessary since is Pivot auto-detects the Druid version as 0.9.1 once the update in Step 3 finishes it will
-automatically switch to using the new lookup syntax.
+In this configuration all the Druid 0.9.1 features will be used except the new lookups.
+Read more about this in the [general migration instructions](./pivot-0.9.x-migration.md).
 
 ### Step 3
 
-Roll out Druid 0.9.1 to your cluster.
-
-### Step 4 *(optional)*
-
-Update the 'druid' cluster in the Pivot config and explicitly set the `version` to `0.9.1-legacy-lookups` like so:
-
-```yaml
-clusters:
-  - name: druid
-    type: druid
-    host: your.broker.host
-    version: 0.9.1-legacy-lookups
-```
-
-Make sure to restart Pivot.
-
-In this configuration all the Druid 0.9.1 features will be used except the new lookups.
-You can also skip this step and leave the Druid version in Pivot set to `0.9.0` (or lower).
-
-### Step 5
-
 Follow the [instructions](http://druid.io/docs/0.9.1-rc4/development/extensions-core/namespaced-lookup.html#transitioning-to-lookups-cached-global) and add the new style lookups alongside the legacy lookups to Druid.
 
-### Step 6
+### Step 4
 
-Remove the explicit version pinning from the Pivot config. (Alternatively you can set it to `0.9.1`).
+Remove the explicit version pinning from the Pivot config.
+Pivot will now auto detect your druid version as `0.9.1`.
+Make sure to restart the Data Node.
 
-```yaml
-clusters:
-  - name: druid
-    type: druid
-    host: your.broker.host
-```
-
-Make sure to restart Pivot.
-
-### Step 7
+### Step 5
 
 Remove old lookup definitions from Druid.
 
