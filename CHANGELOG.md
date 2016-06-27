@@ -5,6 +5,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 ## 0.9.4
 
 - Exclusion filters
+- Ensure cluster connection prior to starting introspection
 
 ## 0.9.3
 
