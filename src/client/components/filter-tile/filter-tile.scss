@@ -31,6 +31,16 @@ $overflow-width: 40px;
           background: rgba($item-continuous, 0.5);
         }
       }
+
+      .dimension-title {
+        margin-right: 5px;
+      }
+
+      &.excluded {
+        .values {
+          text-decoration: line-through;
+        }
+      }
     }
   }
 

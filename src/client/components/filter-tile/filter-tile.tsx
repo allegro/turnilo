@@ -6,7 +6,7 @@ import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, DragPosition } from '../../../common/models/index';
-import { formatFilterClause } from '../../../common/utils/formatter/formatter';
+import { getFormattedClause } from '../../../common/utils/formatter/formatter';
 import { getMaxItems, SECTION_WIDTH } from '../../utils/pill-tile/pill-tile';
 
 import {
@@ -422,6 +422,15 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     </div>;
   }
 
+  renderItemLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): JSX.Element {
+    var { title, values } = getFormattedClause(dimension, clause, timezone);
+
+    return <div className="reading">
+      {title ? <span className="dimension-title">{title}</span> : null}
+      <span className="values">{values}</span>
+    </div>;
+  }
+
   renderItemBlank(itemBlank: ItemBlank, style: any): JSX.Element {
     var { essence, clicker } = this.props;
     var { menuDimension } = this.state;
@@ -448,7 +457,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onClick={clicker.acceptHighlight.bind(clicker)}
         style={style}
       >
-        <div className="reading">{formatFilterClause(dimension, evaluatedClause, timezone)}</div>
+        {this.renderItemLabel(dimension, evaluatedClause, timezone)}
         {this.renderRemoveButton(itemBlank)}
       </div>;
     }
@@ -463,7 +472,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onDragStart={this.dragStart.bind(this, dimension, clause)}
         style={style}
       >
-        <div className="reading">{formatFilterClause(dimension, evaluatedClause, timezone)}</div>
+        {this.renderItemLabel(dimension, evaluatedClause, timezone)}
         {this.renderRemoveButton(itemBlank)}
       </div>;
     } else {

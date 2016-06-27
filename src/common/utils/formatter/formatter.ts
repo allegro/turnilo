@@ -83,26 +83,40 @@ export function formatValue(value: any, timezone?: Timezone, displayYear?: Displ
 }
 
 export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone, verbose?: boolean): string {
-  var label = dimension.title;
+  var { title, values } = this.getFormattedClause(dimension, clause, timezone, verbose);
+  return title ? `${title} ${values}` : values;
+}
+
+export function getFormattedClause(dimension: Dimension, clause: FilterClause, timezone: Timezone, verbose?: boolean): {title: string, values: string} {
+  var title = dimension.title;
+  var values: string;
 
   switch (dimension.kind) {
     case 'boolean':
     case 'number':
     case 'string':
       if (verbose) {
-        label += `: ${clause.getLiteralSet().toString()}`;
+        title += ':';
+        values = clause.getLiteralSet().toString();
       } else {
         var setElements = clause.getLiteralSet().elements;
-        label += setElements.length > 1 ? ` (${setElements.length})` : `: ${formatValue(setElements[0])}`;
+        if (setElements.length > 1) {
+          values = `(${setElements.length})`;
+        } else {
+          title += ':';
+          values = formatValue(setElements[0]);
+        }
       }
       break;
 
     case 'time':
       var timeRange = (clause.selection as LiteralExpression).value as TimeRange;
       if (verbose) {
-        label += `: ${formatTimeRange(timeRange, timezone, DisplayYear.IF_DIFF)}`;
+        title += ':';
+        values = formatTimeRange(timeRange, timezone, DisplayYear.IF_DIFF);
       } else {
-        label = formatTimeRange(timeRange, timezone, DisplayYear.IF_DIFF);
+        title = '';
+        values = formatTimeRange(timeRange, timezone, DisplayYear.IF_DIFF);
       }
       break;
 
@@ -110,6 +124,6 @@ export function formatFilterClause(dimension: Dimension, clause: FilterClause, t
       throw new Error(`unknown kind ${dimension.kind}`);
   }
 
-  return label;
+  return {title, values};
 }
 
