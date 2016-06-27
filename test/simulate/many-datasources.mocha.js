@@ -9,8 +9,7 @@ const TEST_PORT = 18082;
 
 var child;
 var ready = false;
-var stdout = '';
-var stderr = '';
+var stdall = '';
 
 var wikipediaSegmentMetadataResponse = [
   {
@@ -108,6 +107,12 @@ function startDruid() {
       }
     },
     onQuery: function(query) {
+      if (!hasData) {
+        return {
+          json: []
+        }
+      }
+
       switch (query.queryType) {
         case 'segmentMetadata':
           switch (query.dataSource) {
@@ -146,8 +151,8 @@ function startDruid() {
   });
 }
 
-describe('druid', function () {
-  this.timeout(5000);
+describe('many datasources', function () {
+  this.timeout(30000);
 
   before((done) => {
     child = spawn('bin/pivot', `-c test/configs/two-little-datasources.yaml -p ${TEST_PORT}`.split(' '), {
@@ -157,12 +162,12 @@ describe('druid', function () {
     });
 
     child.stderr.on('data', (data) => {
-      stderr += data.toString();
+      stdall += data.toString();
     });
 
     child.stdout.on('data', (data) => {
-      stdout += data.toString();
-      if (!ready && stdout.indexOf(`Pivot is listening on address`) !== -1) {
+      stdall += data.toString();
+      if (!ready && stdall.indexOf(`Pivot is listening on address`) !== -1) {
         ready = true;
         done();
       }
@@ -187,20 +192,9 @@ describe('druid', function () {
   });
 
   it('works with GET / after Druid start (no data)', (testComplete) => {
-    startDruid().then(() => {
-      request.get(`http://localhost:${TEST_PORT}/`, (err, response, body) => {
-        expect(err).to.equal(null);
-        expect(response.statusCode).to.equal(200);
-        expect(body).to.contain('<!DOCTYPE html>');
-        expect(body).to.contain('<title>Pivot');
-        expect(body).to.contain('<div class="app-container"></div>');
-        expect(body).to.contain('</html>');
-
-        var config = extractConfig(body);
-        expect(config.appSettings.dataSources.map((d) => d.name)).to.deep.equal(["wiki"]);
-
-        hasData = true;
-
+    startDruid()
+      .delay(21000) // needed for now because pivot only check connectivity every 20s
+      .then(() => {
         request.get(`http://localhost:${TEST_PORT}/`, (err, response, body) => {
           expect(err).to.equal(null);
           expect(response.statusCode).to.equal(200);
@@ -210,13 +204,26 @@ describe('druid', function () {
           expect(body).to.contain('</html>');
 
           var config = extractConfig(body);
-          expect(config.appSettings.dataSources.map((d) => d.name)).to.deep.equal(["wiki", "github"]);
+          expect(config.appSettings.dataSources.map((d) => d.name)).to.deep.equal([]);
 
-          testComplete();
+          hasData = true;
+
+          request.get(`http://localhost:${TEST_PORT}/`, (err, response, body) => {
+            expect(err).to.equal(null);
+            expect(response.statusCode).to.equal(200);
+            expect(body).to.contain('<!DOCTYPE html>');
+            expect(body).to.contain('<title>Pivot');
+            expect(body).to.contain('<div class="app-container"></div>');
+            expect(body).to.contain('</html>');
+
+            var config = extractConfig(body);
+            expect(config.appSettings.dataSources.map((d) => d.name)).to.deep.equal(["wiki", "github"]);
+
+            testComplete();
+          });
         });
-      });
 
-    })
+      });
   });
 
   after(() => {

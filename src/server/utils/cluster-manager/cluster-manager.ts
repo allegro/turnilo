@@ -6,7 +6,7 @@ import { properRequesterFactory } from '../requester/requester';
 import { Cluster } from '../../../common/models/index';
 import { Logger } from '../logger/logger';
 
-const CONNECTION_RETRY_TIMEOUT = 30000;
+const CONNECTION_RETRY_TIMEOUT = 20000;
 const DRUID_REQUEST_DECORATOR_MODULE_VERSION = 1;
 
 export interface RequestDecoratorFactoryParams {
@@ -239,7 +239,7 @@ export class ClusterManager {
           (e: Error) => {
             var msSinceLastTry = Date.now() - lastTryAt;
             var msToWait = Math.max(1, CONNECTION_RETRY_TIMEOUT - msSinceLastTry);
-            logger.error(`Failed to connect to cluster '${cluster.name}' because ${e.message} (will retry in ${msToWait}ms)`);
+            logger.error(`Failed to connect to cluster '${cluster.name}' because: ${e.message} (will retry in ${msToWait}ms)`);
             this.initialConnectionTimer = setTimeout(attemptConnection, msToWait);
           }
         );
@@ -253,6 +253,7 @@ export class ClusterManager {
   private onConnectionEstablished(): void {
     const { logger, cluster } = this;
     logger.log(`Connected to cluster '${cluster.name}'`);
+    this.initialConnectionEstablished = true;
 
     this.updateSourceListRefreshTimer();
     this.updateSourceReintrospectTimer();
@@ -325,13 +326,17 @@ export class ClusterManager {
           return Q.all(introspectionTasks);
         },
         (e: Error) => {
-          logger.error(`Failed to get source list from cluster '${cluster.name}' because ${e.message}`);
+          logger.error(`Failed to get source list from cluster '${cluster.name}' because: ${e.message}`);
         }
       );
   }
 
   // See if any new dimensions or measures were added to the existing externals
   public introspectSources(): Q.Promise<any> {
+    const { logger, cluster } = this;
+
+    logger.log(`Introspecting all sources in cluster '${cluster.name}'`);
+
     return Q.all(this.managedExternals.map((managedExternal) => {
       return this.introspectManagedExternal(managedExternal);
     }));
@@ -339,8 +344,9 @@ export class ClusterManager {
 
   // Refresh the cluster now, will trigger onExternalUpdate and then return an empty promise when done
   public refresh(): Q.Promise<any> {
-    const { cluster } = this;
+    const { cluster, initialConnectionEstablished } = this;
     var process = Q(null);
+    if (!initialConnectionEstablished) return process;
 
     if (cluster.sourceReintrospectOnLoad) {
       process = process.then(() => this.introspectSources());

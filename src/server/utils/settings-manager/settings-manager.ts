@@ -143,6 +143,12 @@ export class SettingsManager {
   getSettings(opts: GetSettingsOptions = {}): Q.Promise<AppSettings> {
     var currentWork = this.currentWork;
 
+    // Refresh all clusters
+    var currentWork = currentWork.then(() => {
+      // ToDo: utilize dataSourceOfInterest
+      return Q.all(this.clusterManagers.map(clusterManager => clusterManager.refresh())) as any;
+    });
+
     var timeout = opts.timeout || this.initialLoadTimeout;
     if (timeout !== 0) {
       currentWork = currentWork.timeout(timeout)
@@ -151,12 +157,7 @@ export class SettingsManager {
         });
     }
 
-    return currentWork
-      .then(() => {
-        // ToDo: utilize dataSourceOfInterest
-        return Q.all(this.clusterManagers.map(clusterManager => clusterManager.refresh()));
-      })
-      .then(() => this.appSettings);
+    return currentWork.then(() => this.appSettings);
   }
 
   reviseSettings(newSettings: AppSettings): Q.Promise<any> {

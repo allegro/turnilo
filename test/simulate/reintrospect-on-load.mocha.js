@@ -2,6 +2,7 @@ const expect = require('chai').expect;
 const spawn = require('child_process').spawn;
 const request = require('request');
 const mockDruid = require('../utils/mock-druid');
+const extend = require('../utils/extend');
 const extractConfig = require('../utils/extract-config');
 
 const TEST_PORT = 18082;
@@ -56,7 +57,7 @@ var segmentMetadataResponse = [
   }
 ];
 
-describe('druid reintrospect on load', function () {
+describe('reintrospect on load', function () {
   this.timeout(5000);
 
   var runSegmentMetadataRunNumber = 0;
@@ -97,7 +98,11 @@ describe('druid reintrospect on load', function () {
         }
       }
     }).then(function() {
-      child = spawn('bin/pivot', `-c test/configs/mock-druid-reintrospect-on-load.yaml -p ${TEST_PORT}`.split(' '));
+      child = spawn('bin/pivot', `-c test/configs/reintrospect-on-load.yaml -p ${TEST_PORT}`.split(' '), {
+        env: extend(process.env, {
+          DRUID_HOST: 'localhost:28082'
+        })
+      });
 
       child.stderr.on('data', (data) => {
         stderr += data.toString();

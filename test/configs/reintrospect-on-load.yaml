@@ -1,7 +1,7 @@
 clusters:
-  - name: c1
+  - name: druid
     type: druid
-    host: localhost:28082
+    host: "%{DRUID_HOST}%"
     version: 0.9.1
     sourceReintrospectOnLoad: true
     sourceListRefreshInterval: 0

@@ -164,7 +164,7 @@ if (serverSettingsFilePath) {
   anchorPath = path.dirname(serverSettingsFilePath);
   try {
     serverSettingsJS = loadFileSync(serverSettingsFilePath, 'yaml');
-    console.log(`Using config ${serverSettingsFilePath}`);
+    LOGGER.log(`Using config ${serverSettingsFilePath}`);
   } catch (e) {
     exitWithError(`Could not load config from '${serverSettingsFilePath}': ${e.message}`);
   }

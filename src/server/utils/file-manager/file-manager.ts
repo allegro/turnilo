@@ -74,7 +74,7 @@ export class FileManager {
           this.onDatasetChange(dataset);
         },
         (e) => {
-          logger.error(`Failed to load file ${filePath} because ${e.message}`);
+          logger.error(`Failed to load file ${filePath} because: ${e.message}`);
         }
       );
   }
