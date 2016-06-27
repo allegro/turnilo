@@ -1,6 +1,6 @@
 {
   "name": "imply-pivot",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "dependencies": {
     "abab": {
       "version": "1.0.3",
