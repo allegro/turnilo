@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const spawn = require('child_process').spawn;
 const request = require('request');
-const extend = require('./utils/extend');
+const extend = require('../utils/extend');
 
 const TEST_PORT = 18082;
 
@@ -10,7 +10,7 @@ var ready = false;
 var stdout = '';
 var stderr = '';
 
-describe('run config typo', function () {
+describe('config typo', function () {
   this.timeout(5000);
 
   before((done) => {
@@ -36,7 +36,7 @@ describe('run config typo', function () {
   it('works with GET /', (testComplete) => {
     request.get(`http://localhost:${TEST_PORT}/`, (err, response, body) => {
       expect(err).to.equal(null);
-      expect(stderr).to.contain('Initial load timeout hit, continuing');
+      expect(stderr).to.contain('Settings load timeout hit, continuing');
       expect(response.statusCode).to.equal(200);
       expect(body).to.contain('<!DOCTYPE html>');
       expect(body).to.contain('<title>Pivot');

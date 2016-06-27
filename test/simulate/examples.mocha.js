@@ -11,7 +11,7 @@ const TEST_PORT = 18082;
 
 var child;
 
-describe('run examples', function () {
+describe('examples', function () {
   this.timeout(5000);
 
   before((done) => {

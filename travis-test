@@ -26,4 +26,4 @@ fi
 
 gulp all
 
-mocha test
+mocha test/basic test/simulate

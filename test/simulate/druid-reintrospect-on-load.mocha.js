@@ -1,8 +1,8 @@
 const expect = require('chai').expect;
 const spawn = require('child_process').spawn;
 const request = require('request');
-const mockDruid = require('./utils/mock-druid');
-const extractConfig = require('./utils/extract-config');
+const mockDruid = require('../utils/mock-druid');
+const extractConfig = require('../utils/extract-config');
 
 const TEST_PORT = 18082;
 
@@ -56,7 +56,7 @@ var segmentMetadataResponse = [
   }
 ];
 
-describe('run druid reintrospect on load', function () {
+describe('druid reintrospect on load', function () {
   this.timeout(5000);
 
   var runSegmentMetadataRunNumber = 0;

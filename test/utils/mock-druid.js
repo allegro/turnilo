@@ -4,6 +4,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 
 function mockDruid(port, options) {
+  var version = options.version || '0.9.1';
+
   var app = express();
   app.disable('x-powered-by');
 
@@ -13,7 +15,9 @@ function mockDruid(port, options) {
         res.status(r.status || 200).json(r.json);
       });
     } else {
-      throw new Error('should not GET /status');
+      res.json({
+        version
+      });
     }
   });
 

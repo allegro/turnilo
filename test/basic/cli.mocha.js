@@ -1,8 +1,8 @@
 const expect = require('chai').expect;
 const exec = require('child_process').exec;
-const extend = require('./utils/extend');
+const extend = require('./../utils/extend');
 
-describe('basics', function () {
+describe('cli', function () {
   this.timeout(5000);
 
   it('shows help', (testComplete) => {

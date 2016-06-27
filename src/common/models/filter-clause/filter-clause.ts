@@ -45,7 +45,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
 
   static evaluate(selection: Expression, now: Date, maxTime: Date, timezone: Timezone): TimeRange {
     if (!selection) return null;
-    var maxTimeMinuteTop = minute.shift(minute.floor(maxTime, timezone), timezone, 1);
+    var maxTimeMinuteTop = minute.shift(minute.floor(maxTime || now, timezone), timezone, 1);
     var datum: Datum = {};
     datum[FilterClause.NOW_REF_NAME] = now;
     datum[FilterClause.MAX_TIME_REF_NAME] = maxTimeMinuteTop;

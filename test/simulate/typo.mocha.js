@@ -9,7 +9,7 @@ var ready = false;
 var stdout = '';
 var stderr = '';
 
-describe('run typo', function () {
+describe('typo', function () {
   this.timeout(5000);
 
   before((done) => {
@@ -31,7 +31,7 @@ describe('run typo', function () {
   it('works with GET /', (testComplete) => {
     request.get(`http://localhost:${TEST_PORT}/`, (err, response, body) => {
       expect(err).to.equal(null);
-      expect(stderr).to.contain('Initial load timeout hit, continuing');
+      expect(stderr).to.contain('Settings load timeout hit, continuing');
       expect(response.statusCode).to.equal(200);
       expect(body).to.contain('<!DOCTYPE html>');
       expect(body).to.contain('<title>Pivot');

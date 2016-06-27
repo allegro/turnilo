@@ -147,7 +147,7 @@ export class SettingsManager {
     if (timeout !== 0) {
       currentWork = currentWork.timeout(timeout)
         .catch(e => {
-          this.logger.error(`Initial load timeout hit, continuing`);
+          this.logger.error(`Settings load timeout hit, continuing`);
         });
     }
 
@@ -259,24 +259,27 @@ export class SettingsManager {
   onDatasetChange(dataSourceName: string, changedDataset: Dataset): void {
     const { logger, verbose } = this;
 
-    if (verbose) logger.log(`Got native dataset update for ${dataSourceName}`);
+    logger.log(`Got native dataset update for ${dataSourceName}`);
 
     var dataSource = this.appSettings.getDataSource(dataSourceName);
     if (!dataSource) throw new Error(`Unknown dataset ${dataSourceName}`);
     this.appSettings = this.appSettings.addOrUpdateDataSource(dataSource.updateWithDataset(changedDataset));
   }
 
-  onExternalChange(cluster: Cluster, dataSourceName: string, changedExternal: External): void {
-    if (!changedExternal.attributes) return;
+  onExternalChange(cluster: Cluster, dataSourceName: string, changedExternal: External): Q.Promise<any> {
+    if (!changedExternal.attributes || !changedExternal.requester) return;
     const { logger, verbose } = this;
 
-    if (verbose) logger.log(`Got external dataset update for ${dataSourceName} in cluster ${cluster.name}`);
+    logger.log(`Got queryable external dataset update for ${dataSourceName} in cluster ${cluster.name}`);
 
     var dataSource = this.appSettings.getDataSource(dataSourceName);
     if (!dataSource) {
-       dataSource = DataSource.fromClusterAndExternal(dataSourceName, cluster, changedExternal);
+      logger.log(`Adding Data Cube: '${dataSourceName}'`);
+      dataSource = DataSource.fromClusterAndExternal(dataSourceName, cluster, changedExternal);
     }
-    this.appSettings = this.appSettings.addOrUpdateDataSource(dataSource.updateWithExternal(changedExternal));
+    dataSource = dataSource.updateWithExternal(changedExternal);
+    this.appSettings = this.appSettings.addOrUpdateDataSource(dataSource);
+    return this.updateDataSourceMaxTime(dataSource);
   }
 
   makeMaxTimeCheckTimer() {
@@ -285,20 +288,28 @@ export class SettingsManager {
     // Periodically check if max time needs to be updated
     setInterval(() => {
       this.appSettings.dataSources.forEach((dataSource) => {
-        if (dataSource.refreshRule.isQuery() && dataSource.shouldUpdateMaxTime()) {
-          DataSource.updateMaxTime(dataSource)
-            .then(
-              (updatedDataSource) => {
-                logger.log(`Getting the latest MaxTime for '${updatedDataSource.name}'`);
-                this.appSettings = this.appSettings.addOrUpdateDataSource(updatedDataSource);
-              },
-              (e) => {
-                logger.error(`Error getting MaxTime for ${dataSource.name}: ${e.message}`);
-              }
-            );
-        }
+        this.updateDataSourceMaxTime(dataSource);
       });
     }, 1000).unref();
+  }
+
+  updateDataSourceMaxTime(dataSource: DataSource): Q.Promise<any> {
+    const { logger, verbose } = this;
+
+    if (dataSource.refreshRule.isQuery() && dataSource.shouldUpdateMaxTime()) {
+      return DataSource.updateMaxTime(dataSource)
+        .then(
+          (updatedDataSource) => {
+            logger.log(`Getting the latest MaxTime for '${updatedDataSource.name}'`);
+            this.appSettings = this.appSettings.addOrUpdateDataSource(updatedDataSource);
+          },
+          (e) => {
+            logger.error(`Error getting MaxTime for ${dataSource.name}: ${e.message}`);
+          }
+        );
+    } else {
+      return Q(null);
+    }
   }
 
 }
