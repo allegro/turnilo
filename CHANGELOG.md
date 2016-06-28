@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.6
+
+- Fix sourceListScan introspection to introspect unknown sources as they appear
+
 ## 0.9.5
 
 - Fixed display of exclusion filters 
