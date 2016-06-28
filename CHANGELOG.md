@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.8
+
+- Early detection of (invalid) data sources that have a measure and dimension of the same name
+- Prevention of making data sources with measures and dimensions of the same name 
+
 ## 0.9.7
 
 - Tiny style fix
