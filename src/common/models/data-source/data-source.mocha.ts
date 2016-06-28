@@ -79,6 +79,96 @@ describe('DataSource', () => {
         });
       }).to.throw("can not find defaultSortMeasure 'gaga'");
     });
+
+    it("throws an error if duplicate name is used across measures and dimensions", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'articleName',
+              expression: '$articleName'
+            }
+          ],
+          measures: [
+            {
+              name: 'articleName',
+              expression: '$main.sum($count)'
+            }
+          ]
+        });
+      }).to.throw("name 'articleName' found in both dimensions and measures in data source: 'wiki'");
+    });
+
+    it("throws an error if duplicate name is used in measures", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'notArticleName',
+              expression: '$notArticleName'
+            }
+          ],
+          measures: [
+            {
+              name: 'articleName',
+              expression: '$main.sum($count)'
+            },
+            {
+              name: 'articleName',
+              expression: '$articleName'
+            }
+          ]
+        });
+      }).to.throw("duplicate measure name 'articleName' found in data source: 'wiki'");
+    });
+
+    it("throws an error if duplicate name is used in dimensions", () => {
+      expect(() => {
+        DataSource.fromJS({
+          name: 'wiki',
+          engine: 'druid',
+          source: 'wiki',
+          attributes: [
+            { name: '__time', type: 'TIME' },
+            { name: 'articleName', type: 'STRING' },
+            { name: 'count', type: 'NUMBER' }
+          ],
+          dimensions: [
+            {
+              name: 'articleName',
+              expression: '$articleName'
+            },
+            {
+              name: 'articleName',
+              expression: '$articleName.substr(0,2)'
+            }
+          ],
+          measures: [
+            {
+              name: 'articleName',
+              expression: '$main.sum($count)'
+            }
+          ]
+        });
+      }).to.throw("duplicate dimension name 'articleName' found in data source: 'wiki'");
+    });
+
   });
 
   describe("#getIssues", () => {

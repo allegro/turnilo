@@ -31,26 +31,27 @@ function formatTimeDiff(diff: number): string {
   return diff + ' days';
 }
 
-function makeUniqueDimensionList(dimensions: Dimension[]): List<Dimension> {
-  var seen: Lookup<number> = {};
-  return List(dimensions.filter((dimension) => {
-    var dimensionName = dimension.name.toLowerCase();
-    if (seen[dimensionName]) return false;
-    seen[dimensionName] = 1;
-    return true;
-  }));
-}
+function checkUnique(dimensions: List<Dimension>, measures: List<Measure>, dataSourceName: string) {
+  var seenDimensions: Lookup<number> = {};
+  var seenMeasures: Lookup<number> = {};
 
-function makeUniqueMeasureList(measures: Measure[]): List<Measure> {
-  var seen: Lookup<number> = {};
-  return List(measures.filter((measure) => {
-    var measureName = measure.name.toLowerCase();
-    if (seen[measureName]) return false;
-    seen[measureName] = 1;
-    return true;
-  }));
-}
+  if (dimensions) {
+    dimensions.forEach((d) => {
+      var dimensionName = d.name.toLowerCase();
+      if (seenDimensions[dimensionName]) throw new Error(`duplicate dimension name '${d.name}' found in data source: '${dataSourceName}'`);
+      seenDimensions[dimensionName] = 1;
+    });
+  }
 
+  if (measures) {
+    measures.forEach((m) => {
+      var measureName = m.name.toLowerCase();
+      if (seenMeasures[measureName]) throw new Error(`duplicate measure name '${m.name}' found in data source: '${dataSourceName}'`);
+      if (seenDimensions[measureName]) throw new Error(`name '${m.name}' found in both dimensions and measures in data source: '${dataSourceName}'`);
+      seenMeasures[measureName] = 1;
+    });
+  }
+}
 
 export type Introspection = 'none' | 'no-autofill' | 'autofill-dimensions-only' | 'autofill-measures-only' | 'autofill-all';
 
@@ -267,8 +268,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       derivedAttributes = helper.expressionLookupFromJS(parameters.derivedAttributes);
     }
 
-    var dimensions = makeUniqueDimensionList((parameters.dimensions || []).map((d) => Dimension.fromJS(d)));
-    var measures = makeUniqueMeasureList((parameters.measures || []).map((m) => Measure.fromJS(m)));
+    var dimensions = List((parameters.dimensions || []).map((d) => Dimension.fromJS(d)));
+    var measures = List((parameters.measures || []).map((m) => Measure.fromJS(m)));
 
     if (timeAttribute && !Dimension.getDimensionByExpression(dimensions, timeAttribute)) {
       dimensions = dimensions.unshift(new Dimension({
@@ -366,8 +367,6 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.attributes = parameters.attributes || [];
     this.attributeOverrides = parameters.attributeOverrides || [];
     this.derivedAttributes = parameters.derivedAttributes;
-    this.dimensions = parameters.dimensions || List([]);
-    this.measures = parameters.measures || List([]);
     this.timeAttribute = parameters.timeAttribute;
     this.defaultTimezone = parameters.defaultTimezone || DataSource.DEFAULT_TIMEZONE;
     this.defaultFilter = parameters.defaultFilter || Filter.EMPTY;
@@ -382,6 +381,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     this.cluster = parameters.cluster;
     this.executor = parameters.executor;
+
+    var dimensions = parameters.dimensions;
+    var measures = parameters.measures;
+    checkUnique(dimensions, measures, name);
+
+    this.dimensions = dimensions || List([]);
+    this.measures = measures || List([]);
 
     this._validateDefaults();
   }
