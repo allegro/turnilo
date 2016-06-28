@@ -499,3 +499,19 @@ These custom links will appear in the share menu.
 ![custom-link](./images/custom-link.png)
 
 By default, external views are opened in a new tab but you can disable this by setting `sameWindow: true`
+
+### Timezones
+
+You can customize the timezones that appear in the header bar dropdown by providing an array of timezone strings.
+
+For example:
+
+```yaml
+  customization:
+    timezones: ['Pacific/Niue', 'Pacific/Marquesas', 'America/Tijuana']
+```
+
+These timezones will appear in the dropdown instead of the default, which are
+
+`['America/Juneau', 'America/Los_Angeles', 'America/Yellowknife', 'America/Phoenix', 'America/Denver', 'America/Mexico_City', 'America/Chicago', 'America/New_York', 'America/Argentina/Buenos_Aires', 'Etc/UTC', 
+'Asia/Jerusalem', 'Europe/Paris', 'Asia/Kathmandu', 'Asia/Hong_Kong', 'Asia/Seoul', 'Pacific/Guam']`

@@ -230,12 +230,13 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderSettingsMenu() {
-    const { changeTimezone, timezone } = this.props;
+    const { changeTimezone, timezone, customization } = this.props;
     const { settingsMenuOpen } = this.state;
     if (!settingsMenuOpen) return null;
 
     return <SettingsMenu
       timezone={timezone}
+      timezones={customization.getTimezones()}
       changeTimezone={changeTimezone}
       openOn={settingsMenuOpen}
       onClose={this.onSettingsMenuClose.bind(this)}
