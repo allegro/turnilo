@@ -652,6 +652,43 @@ describe('DataSource', () => {
       });
     });
 
+    it("works with existing dimension", () => {
+      var attributes1 = AttributeInfo.fromJSs([
+        { name: '__time', type: 'TIME' },
+        { name: 'added', type: 'NUMBER' },
+        { name: 'added!!!', type: 'NUMBER' },
+        { name: 'deleted', type: 'NUMBER' }
+      ]);
+
+      var dataSourceWithDim = DataSource.fromJS({
+        name: 'wiki',
+        title: 'Wiki',
+        engine: 'druid',
+        source: 'wiki',
+        subsetFilter: null,
+        introspection: 'autofill-all',
+        defaultTimezone: 'Etc/UTC',
+        defaultFilter: { op: 'literal', value: true },
+        refreshRule: {
+          refresh: "PT1M",
+          rule: "fixed"
+        },
+        dimensions: [
+          {
+            name: 'added',
+            expression: '$added'
+          },
+          {
+            name: 'added_',
+            expression: '${added!!!}'
+          }
+        ]
+      });
+
+      var dataSource = dataSourceWithDim.addAttributes(attributes1);
+      expect(dataSource.toJS().measures.map(m => m.name)).to.deep.equal(['deleted']);
+    });
+
   });
 
 

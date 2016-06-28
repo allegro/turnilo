@@ -778,8 +778,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     for (var newAttribute of newAttributes) {
       var { name, type, special } = newAttribute;
 
-      // Already exists
+      // Already exists as a current attribute
       if (attributes && helper.findByName(attributes, name)) continue;
+
+      // Already exists as a current dimension or a measure
+      var urlSafeName = makeUrlSafeName(name);
+      if (this.getDimension(urlSafeName) || this.getMeasure(urlSafeName)) continue;
 
       var expression: Expression;
       switch (type) {
@@ -789,7 +793,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           if (this.getDimensionByExpression(expression)) continue;
           // Add to the start
           dimensions = dimensions.unshift(new Dimension({
-            name: makeUrlSafeName(name),
+            name: urlSafeName,
             kind: 'time',
             expression
           }));
@@ -809,7 +813,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
             expression = $(name);
             if (this.getDimensionByExpression(expression)) continue;
             dimensions = dimensions.push(new Dimension({
-              name: makeUrlSafeName(name),
+              name: urlSafeName,
               expression
             }));
           }
@@ -820,7 +824,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           expression = $(name);
           if (this.getDimensionByExpression(expression)) continue;
           dimensions = dimensions.push(new Dimension({
-            name: makeUrlSafeName(name),
+            name: urlSafeName,
             expression
           }));
           break;
@@ -830,7 +834,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           expression = $(name);
           if (this.getDimensionByExpression(expression)) continue;
           dimensions = dimensions.push(new Dimension({
-            name: makeUrlSafeName(name),
+            name: urlSafeName,
             kind: 'boolean',
             expression
           }));
