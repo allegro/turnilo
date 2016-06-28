@@ -1,0 +1,21 @@
+clusters:
+  - name: druid
+    type: druid
+    host: "%{DRUID_HOST}%"
+    version: 0.9.1
+    sourceListRefreshOnLoad: true
+    sourceListRefreshInterval: 0
+    sourceReintrospectInterval: 0
+
+dataSources:
+  - name: wiki
+    title: Wikipedia Edits
+    engine: druid
+    source: wikipedia
+
+    dimensions:
+      - name: channel
+        expression: $channel
+
+    measures:
+      - name: count

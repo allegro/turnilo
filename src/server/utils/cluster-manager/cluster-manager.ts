@@ -48,6 +48,7 @@ export class ClusterManager {
   public anchorPath: string;
   public cluster: Cluster;
   public initialConnectionEstablished: boolean;
+  public introspectedSources: Lookup<boolean>;
   public version: string;
   public requester: Requester.PlywoodRequester<any>;
   public managedExternals: ManagedExternal[] = [];
@@ -69,6 +70,7 @@ export class ClusterManager {
     this.anchorPath = options.anchorPath;
     this.cluster = cluster;
     this.initialConnectionEstablished = false;
+    this.introspectedSources = {};
     this.version = cluster.version;
     this.managedExternals = options.initialExternals || [];
     this.onExternalChange = options.onExternalChange || noop;
@@ -207,7 +209,7 @@ export class ClusterManager {
       if (this.sourceReintrospectInterval) {
         logger.log(`Setting up sourceReintrospect timer in cluster '${cluster.name}' (every ${this.sourceReintrospectInterval}ms)`);
         this.sourceReintrospectTimer = setInterval(() => {
-          this.scanSourceList();
+          this.introspectSources();
         }, this.sourceReintrospectInterval);
         this.sourceReintrospectTimer.unref();
       }
@@ -284,6 +286,7 @@ export class ClusterManager {
     return managedExternal.external.introspect()
       .then(
         (introspectedExternal) => {
+          this.introspectedSources[String(introspectedExternal.source)] = true;
           return this.updateManagedExternal(managedExternal, introspectedExternal);
         },
         (e: Error) => {
@@ -306,8 +309,17 @@ export class ClusterManager {
           var introspectionTasks: Q.Promise<any>[] = [];
           sources.forEach((source) => {
             var existingExternalsForSource = this.managedExternals.filter(managedExternal => getSourceFromExternal(managedExternal.external) === source);
+
             if (existingExternalsForSource.length) {
               if (verbose) logger.log(`Cluster '${cluster.name}' already has an external for '${source}' ('${existingExternalsForSource[0].name}')`);
+              if (!this.introspectedSources[source]) {
+                // If this source has never been introspected introspect all of its externals
+                logger.log(`Cluster '${cluster.name}' has never seen '${source}' and will introspect '${existingExternalsForSource[0].name}'`);
+                existingExternalsForSource.forEach(existingExternalForSource => {
+                  introspectionTasks.push(this.introspectManagedExternal(existingExternalForSource));
+                });
+              }
+
             } else {
               logger.log(`Cluster '${cluster.name}' making external for '${source}'`);
               var external = cluster.makeExternalFromSourceName(source, this.version).attachRequester(this.requester);
@@ -320,6 +332,7 @@ export class ClusterManager {
                 this.addManagedExternal(newManagedExternal)
                   .then(() => this.introspectManagedExternal(newManagedExternal))
               );
+
             }
           });
 
