@@ -518,7 +518,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
         labels.push(<div
           className="slanty-label continuous"
-          key={segmentValueStr}
+          key={i}
           style={{ right: xAxisStage.width - coordinate.x }}
         >{segmentValueStr}</div>);
 
@@ -526,7 +526,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
           segmentValueStr = String(Range.isRange(segmentValue) ? (segmentValue as any)[rightThing] : '');
           labels.push(<div
             className="slanty-label continuous"
-            key={segmentValueStr}
+            key="last-one"
             style={{ right: xAxisStage.width - (coordinate.x + coordinate.stepWidth) }}
           >{segmentValueStr}</div>);
         }
