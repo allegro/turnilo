@@ -4,9 +4,9 @@ import * as React from 'react';
 
 import { Duration } from 'chronoshift';
 import { List } from 'immutable';
-import { $, r, Dataset, SortAction, TimeRange, RefExpression, Expression, TimeBucketAction, NumberBucketAction } from 'plywood';
+import { $, r, Dataset, SortAction, TimeRange, RefExpression, Expression, TimeBucketAction, NumberRange } from 'plywood';
 
-import { formatterFromData, collect, formatGranularity, formatTimeBasedOnGranularity } from '../../../common/utils/index';
+import { formatterFromData, collect, formatGranularity, formatTimeBasedOnGranularity, formatNumberRange } from '../../../common/utils/index';
 import { Fn } from '../../../common/utils/general/general';
 import { Clicker, Essence, VisStrategy, Dimension, SortOn, SplitCombine, Filter, FilterClause, FilterMode,
   Colors, Granularity, ContinuousDimensionKind, getBestGranularityForRange, granularityEquals,
@@ -462,6 +462,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
         if (segmentValue instanceof TimeRange) {
           segmentValueStr = formatTimeBasedOnGranularity(segmentValue, (selectedGranularity as TimeBucketAction).duration, essence.timezone, getLocale());
+        } else if (segmentValue instanceof NumberRange) {
+          segmentValueStr = formatNumberRange(segmentValue);
         }
 
         var measureValueElement: JSX.Element = null;

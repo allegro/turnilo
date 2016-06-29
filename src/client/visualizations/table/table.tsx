@@ -3,8 +3,8 @@ require('./table.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction } from 'plywood';
-import { formatterFromData, Formatter } from '../../../common/utils/formatter/formatter';
+import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction, NumberRange } from 'plywood';
+import { formatterFromData, formatNumberRange, Formatter } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
   Measure, Colors, DataSource, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 import { TABLE_MANIFEST } from '../../../common/manifests/table/table';
@@ -22,12 +22,13 @@ const MEASURE_WIDTH = 130;
 const ROW_HEIGHT = 30;
 const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
-const BODY_PADDING_BOTTOM = 90;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
 function formatSegment(value: any): string {
   if (TimeRange.isTimeRange(value)) {
     return value.start.toISOString();
+  } else if (NumberRange.isNumberRange(value)) {
+    return formatNumberRange(value);
   }
   return String(value);
 }

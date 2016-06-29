@@ -71,10 +71,13 @@ export function formatterFromData(values: number[], format: string): Formatter {
   }
 }
 
+export function formatNumberRange(value: NumberRange) {
+  return `${formatValue(value.start)}-${formatValue(value.end)}`;
+}
 
 export function formatValue(value: any, timezone?: Timezone, displayYear?: DisplayYear): string {
   if (NumberRange.isNumberRange(value)) {
-    return `${formatValue(value.start)}-${formatValue(value.end)}`;
+    return formatNumberRange(value);
   } else if (TimeRange.isTimeRange(value)) {
     return formatTimeRange(value, timezone, displayYear);
   } else {

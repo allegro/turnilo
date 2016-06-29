@@ -15,6 +15,8 @@ import {
   DatasetLoad
 } from '../../../common/models/index';
 import { BAR_CHART_MANIFEST } from '../../../common/manifests/bar-chart/bar-chart';
+import { formatValue } from '../../../common/utils/formatter/formatter';
+import { DisplayYear } from '../../../common/utils/time/time';
 
 import { SPLIT, VIS_H_PADDING } from '../../config/constants';
 import { roundToPx, classNames } from '../../utils/dom/dom';
@@ -408,6 +410,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     path: Datum[] = []
   ): {bars: JSX.Element[], highlight: JSX.Element } {
     const { essence } = this.props;
+    const { timezone } = essence;
 
     var bars: any[] = [];
     var highlight: JSX.Element;
@@ -417,7 +420,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     data.forEach((d, i) => {
       let segmentValue = d[dimension.name];
-      let segmentValueStr = String(segmentValue);
+      let segmentValueStr = formatValue(segmentValue, timezone, DisplayYear.NEVER);
       let subPath = path.concat(d);
 
       let bar: any;
@@ -458,7 +461,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
         bar = <g
           className={classNames('bar', { selected: selected, 'not-selected': (!selected && faded), isHovered })}
-          key={segmentValueStr}
+          key={String(segmentValue)}
           transform={`translate(${roundToPx(x)}, 0)`}
           >
           <rect
