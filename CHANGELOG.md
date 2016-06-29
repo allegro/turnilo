@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.11
+
+- Do not shrinkwrap npm modules
+
 ## 0.9.10
 
 - Fix sort ordering of granularities in the granularity picker
