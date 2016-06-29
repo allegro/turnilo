@@ -270,18 +270,26 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
   lines.push(`    defaultSortMeasure: ${defaultSortMeasure}`, '');
 
 
-  var defaultSelectedMeasures = dataSource.defaultSelectedMeasures ? dataSource.defaultSelectedMeasures.toArray() : [];
+  var defaultSelectedMeasures = dataSource.defaultSelectedMeasures ? dataSource.defaultSelectedMeasures.toArray() : null;
   if (withComments) {
     lines.push("    # The names of measures that are selected by default");
   }
-  lines.push(`    defaultSelectedMeasures: ${JSON.stringify(defaultSelectedMeasures)}`, '');
+  if (defaultSelectedMeasures) {
+    lines.push(`    defaultSelectedMeasures: ${JSON.stringify(defaultSelectedMeasures)}`, '');
+  } else if (withComments) {
+    lines.push(`    #defaultSelectedMeasures: []`, '');
+  }
 
 
-  var defaultPinnedDimensions = dataSource.defaultPinnedDimensions ? dataSource.defaultPinnedDimensions.toArray() : [];
+  var defaultPinnedDimensions = dataSource.defaultPinnedDimensions ? dataSource.defaultPinnedDimensions.toArray() : null;
   if (withComments) {
     lines.push("    # The names of dimensions that are pinned by default (in order that they will appear in the pin bar)");
   }
-  lines.push(`    defaultPinnedDimensions: ${JSON.stringify(defaultPinnedDimensions)}`, '');
+  if (defaultPinnedDimensions) {
+    lines.push(`    defaultPinnedDimensions: ${JSON.stringify(defaultPinnedDimensions)}`, '');
+  } else if (withComments) {
+    lines.push(`    #defaultPinnedDimensions: []`, '');
+  }
 
 
   var introspection = dataSource.introspection;

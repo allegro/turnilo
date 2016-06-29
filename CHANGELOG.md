@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.9
+
+- Auto generated config links to a github tag
+- Fix config auto-generator printing out `defaultSelectedMeasures: []` 
+
 ## 0.9.8
 
 - Early detection of (invalid) data sources that have a measure and dimension of the same name
