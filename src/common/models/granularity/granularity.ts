@@ -107,8 +107,8 @@ export class TimeHelper {
     makeCheckpoint(minutes(30), 'PT5M')
   ];
 
-  static defaultGranularities = TimeHelper.checkers.map((c) => { return granularityFromJS(c.returnValue); }).concat(TimeHelper.minGranularity);
-  static coarseGranularities = TimeHelper.coarseCheckers.map((c) => { return granularityFromJS(c.returnValue); }).concat(TimeHelper.minGranularity);
+  static defaultGranularities = TimeHelper.checkers.map((c) => { return granularityFromJS(c.returnValue); }).concat(TimeHelper.minGranularity).reverse();
+  static coarseGranularities = TimeHelper.coarseCheckers.map((c) => { return granularityFromJS(c.returnValue); }).concat(TimeHelper.minGranularity).reverse();
 }
 
 export class NumberHelper {
