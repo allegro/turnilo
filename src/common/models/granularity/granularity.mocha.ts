@@ -202,12 +202,12 @@ describe('Granularity', () => {
 
   it('getGranularities appropriately for time', () => {
     var defaults = getGranularities('time');
-    var expectedDefaults = ['P1W', 'P1D', 'PT1H', 'PT5M', 'PT1M'].map(granularityFromJS);
+    var expectedDefaults = ['PT1M', 'PT5M', 'PT1H', 'P1D', 'P1W'].map(granularityFromJS);
 
     expect(immutableArraysEqual(defaults, expectedDefaults), 'time defaults are returned').to.equal(true);
 
     var coarse = getGranularities('time', null, true);
-    var expectedCoarseDefaults = ['P1M', 'P1W', 'P1D', 'PT12H', 'PT6H', 'PT1H', 'PT5M', 'PT1M'].map(granularityFromJS);
+    var expectedCoarseDefaults = ['PT1M', 'PT5M', 'PT1H', 'PT6H', 'PT12H', 'P1D', 'P1W', 'P1M'].map(granularityFromJS);
 
     expect(immutableArraysEqual(coarse, expectedCoarseDefaults), 'coarse time defaults are returned').to.equal(true);
 
