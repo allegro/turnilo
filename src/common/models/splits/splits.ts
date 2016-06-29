@@ -213,6 +213,22 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return this.splitCombines.some((splitCombine) => splitCombine.timezoneDependant());
   }
 
+  public changeSortIfOnMeasure(fromMeasure: string, toMeasure: string): Splits {
+    var changed = false;
+    var newSplitCombines = <List<SplitCombine>>this.splitCombines.map((splitCombine) => {
+      const { sortAction } = splitCombine;
+      if (!sortAction || sortAction.refName() !== fromMeasure) return splitCombine;
+
+      changed = true;
+      return splitCombine.changeSortAction(new SortAction({
+        expression: $(toMeasure),
+        direction: sortAction.direction
+      }));
+    });
+
+    return changed ? new Splits(newSplitCombines) : this;
+  }
+
 }
 check = Splits;
 

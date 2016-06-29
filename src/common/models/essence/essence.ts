@@ -787,6 +787,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (measure.name === this.singleMeasure) return this;
     var value = this.valueOf();
     value.singleMeasure = measure.name;
+    value.splits = value.splits.changeSortIfOnMeasure(this.singleMeasure, measure.name);
     value.pinnedSort = measure.name;
     return new Essence(value);
   }
