@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 if grep -rq 'describe\.only' ./build
   then
