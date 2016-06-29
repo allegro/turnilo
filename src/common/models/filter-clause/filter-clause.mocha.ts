@@ -137,4 +137,39 @@ describe('FilterClause', () => {
       });
     });
   });
+
+  describe("isLessThanFullDay", () => {
+    it("works with less than full day", () => {
+      var clause = FilterClause.fromJS({
+        expression: { op: 'ref', name: 'time' },
+        selection: {
+          op: 'literal',
+          value: {
+            "setType": "TIME_RANGE",
+            "elements": [{ start: new Date('2015-01-26T01:00:00Z'), end: new Date('2015-01-26T04:00:00Z') }]
+          },
+          "type": "SET"
+        }
+      });
+      expect(clause.isLessThanFullDay()).to.equal(true);
+    });
+
+    it("returns false for exactly one day", () => {
+      var clause = FilterClause.fromJS({
+        expression: { op: 'ref', name: 'time' },
+        selection: {
+          op: 'literal',
+          value: {
+            "setType": "TIME_RANGE",
+            "elements": [{ start: new Date('2015-01-26T01:00:00Z'), end: new Date('2015-01-27T01:00:00Z') }],
+            "bounds": "()"
+          },
+          "type": "SET"
+        }
+      });
+      expect(clause.isLessThanFullDay()).to.equal(false);
+    });
+
+  });
+
 });

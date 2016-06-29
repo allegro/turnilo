@@ -1,5 +1,5 @@
 import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { Timezone, Duration, minute } from 'chronoshift';
+import { Timezone, Duration, minute, day } from 'chronoshift';
 import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS, ChainExpression, NotAction, OverlapAction, InAction, Range, TimeRange, Datum, NumberRange } from 'plywood';
 
 // Basically these represent
@@ -155,6 +155,12 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   public getExtent(): Range<any> {
     var mySet = this.getLiteralSet();
     return mySet ? mySet.extent() : null;
+  }
+
+  public isLessThanFullDay(): boolean {
+    var extent = this.getExtent();
+    if (!extent) return false;
+    return extent.end.valueOf() - extent.start.valueOf() < day.canonicalLength;
   }
 
   public changeSelection(selection: Expression) {
