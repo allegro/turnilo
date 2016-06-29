@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.10
+
+- Fix sort ordering of granularities in the granularity picker
+- Single measure mode will re-sort on click
+
 ## 0.9.9
 
 - Auto generated config links to a github tag
