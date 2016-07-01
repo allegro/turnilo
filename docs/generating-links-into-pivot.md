@@ -16,155 +16,139 @@ The dataSource name to be used in the link
 
 The essence JSON that describes the state
 
+## Examples
+
+Here are a few examples that you can try out by yourself.
+All the examples run on the built in example dataset that comes with pivot.
+
+To follow along please start pivot in `--examples` mode like so:
+ 
+```bash
+pivot --examples
+```
+
+Each example can be 'run' using curl like so:
+
+```bash
+curl -X POST --header "Content-Type:application/json" --data '
+{
+  "domain": "http://localhost:9090",
+  "dataSource": "wiki",
+  "essence": {
+    ...
+  }
+}
+' localhost:9090/mkurl
+```
+
 ### Example 1
 
-Here is an example that will show the `totals` visualization filtered on the year 2015 with `count` and `added` metrics selected,
+Here is an example that will show the `totals` visualization filtered on `2015-09-10Z` - `2015-09-20Z` with `count` and `added` metrics selected,
 the `page` dimension pinned.
 
 ```json
 {
-  "domain": "http://my.pivot.host",
+  "domain": "http://localhost:9090",
   "dataSource": "wiki",
   "essence": {
-    "visualization": "totals",
+    "visualization": "line-chart",
     "timezone": "Etc/UTC",
-    "filter": {
-      "op": "chain",
+    "filter": "$time.in(\"2015-09-10Z\", \"2015-09-20Z\")",
+    "splits": [{
       "expression": {
         "op": "ref",
         "name": "time"
       },
-      "action": {
-        "action": "in",
-        "expression": {
-          "op": "literal",
-          "value": {
-            "start": "2015-01-01T00:00:00.000Z",
-            "end": "2016-01-01T00:00:00.000Z"
-          },
-          "type": "TIME_RANGE"
-        }
+      "bucketAction": {
+        "action": "timeBucket",
+        "duration": "PT1H"
       }
-    },
-    "pinnedDimensions": [
-      "page"
-    ],
+    }],
     "singleMeasure": "count",
-    "selectedMeasures": [
-      "count",
-      "added"
-    ],
-    "splits": []
+    "selectedMeasures": ["count", "added", "deleted", "delta"],
+    "pinnedDimensions": [],
+    "multiMeasureMode": true
   }
 }
 ```
 
-Posting this will reply with:
+Posting this will produce:
 
 ```json
 {
-  "url": "http://my.pivot.host#wiki/totals/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwA..."
+  "url": "http://localhost:9090#wiki/line-chart/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwApgB5YBO1Azs6RpbutnsEwGZVyxALbVeYUmOABfZMGIRJHPOkXLOwClTqMWbFV0w58AG1JhqDYqaoA3GwFdxR5mGIMwvAEwAGAIwArAC0vgCcwf6+cL6+uLHxvgB0sb4AWjrkACY+ASHhwX4xcQmxKbEZcsBgAJ5YLsBwAJIAsiAA+gBKAIIAcgDiILIycgDa6LpMrOyc3CZ81ILywtL4ktJVAEaOEADW1GDdSjOqCseG1VLUAEI7+17yWY7WGrwACnD+ABKy8swYniOryM6hO+H+nh09CmBlmxl4AiEoga63EVSypCY500xGYEGo2QoAHNhgBdZBgBjOeQQDCOcgPUYEOkMqjELJZag5R7UUwHLlUTmmdzAcmjcnkRymUxAA="
 }
 ```
 
 
 ### Example 2
 
-Here is an example that will show the `line-chart` visualization filtered on the last day of data, 
-split on `time` (bucketed by hour), with `count`, `added`, `deleted`, and `delta` measures selected.
+Here is an example that will show the `line-chart` visualization filtered on the last 3 days of data (`P3D`), 
+split on `time` (bucketed by hour - `PT1H`), with `count`, `added`, `deleted`, and `delta` measures selected.
 
 ```json
 {
-  "domain": "http://my.pivot.host",
+  "domain": "http://localhost:9090",
   "dataSource": "wiki",
   "essence": {
     "visualization": "line-chart",
     "timezone": "Etc/UTC",
-    "filter": {
-      "op": "chain",
-      "expression": {
-        "op": "ref",
-        "name": "__time"
-      },
-      "action": {
-        "action": "in",
-        "expression": {
-          "op": "chain",
-          "expression": {
-            "op": "ref",
-            "name": "m"
-          },
-          "action": {
-            "action": "timeRange",
-            "duration": "P1D",
-            "step": -1
-          }
-        }
-      }
-    },
+    "filter": "$time.in($m.timeRange(P3D, -1))",
     "splits": [
       {
         "expression": {
           "op": "ref",
-          "name": "__time"
+          "name": "time"
         },
         "bucketAction": {
           "action": "timeBucket",
           "duration": "PT1H"
-        },
-        "sortAction": {
-          "action": "sort",
-          "expression": {
-            "op": "ref",
-            "name": "__time"
-          },
-          "direction": "ascending"
         }
       }
     ],
     "singleMeasure": "count",
-    "selectedMeasures": [
-      "count",
-      "added",
-      "deleted",
-      "delta"
-    ],
+    "selectedMeasures": ["count", "added", "deleted", "delta"],
     "pinnedDimensions": [],
     "multiMeasureMode": true
   }
 }
 ```
 
-Posting this will reply with:
+Posting this will produce:
 
 ```json
 {
-  "url": "http://my.pivot.host#wiki/line-chart/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwA..."
+  "url": "http://localhost:9090#wiki/line-chart/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwApgB5YBO1Azs6RpbutnsE..."
 }
 ```
 
-#### Tip
+*Note*: the `$m` variable represents maxTime - the timestamp of the latest data point. In contrast `$n` represents 'now' 
 
-If you don't want to write out the full json of the filter you can write a [Plywood](https://github.com/implydata/plywood) expression and call `.toJS()` in the filter entry like so.
+### Example 3
+
+Here is an example that will auto determine the visualization using the same rules as when a dimension is selected in the UI.
+It will also be filtered on two specific channels, split on `page` (bucketed by hour - `PT1H`).
 
 ```json
 {
-  "domain": "http://my.pivot.host",
+  "domain": "http://localhost:9090",
   "dataSource": "wiki",
   "essence": {
-    "visualization": "line-chart",
     "timezone": "Etc/UTC",
-    "filter": "$('time').in(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS()",
-    "splits": [],
+    "filter": "$time.in($m.timeRange(P1D, -1)).and($channel.in([\"en\", \"fr\"]))",
+    "splits": ["page"],
     "singleMeasure": "count",
-    "selectedMeasures": [
-      "count",
-      "added",
-      "deleted",
-      "delta"
-    ],
+    "selectedMeasures": ["count", "added", "deleted", "delta"],
     "pinnedDimensions": [],
     "multiMeasureMode": true
   }
+}
+```
+
+Posting this will produce:
+
+```json
+{
+  "url": "http://localhost:9090#wiki/table/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwApgB5YBO1Azs..."
 }
 ```

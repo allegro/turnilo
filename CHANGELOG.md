@@ -10,6 +10,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
 - Fix sort ordering of granularities in the granularity picker
 - Single measure mode will re-sort on click
+- Configurable timezones
 
 ## 0.9.9
 
