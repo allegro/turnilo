@@ -39,15 +39,15 @@
     "morgan": "1.7.0",
     "nopt": "3.0.6",
     "numeral": "1.5.3",
-    "plywood": "0.11.4",
+    "plywood": "0.11.5",
     "plywood-druid-requester": "1.4.4",
     "plywood-mysql-requester": "1.2.5",
     "plywood-postgres-requester": "0.8.7",
     "q": "1.4.1",
     "qajax": "1.3.0",
-    "react": "15.1.0",
-    "react-addons-css-transition-group": "15.1.0",
-    "react-dom": "15.1.0"
+    "react": "15.2.0",
+    "react-addons-css-transition-group": "15.2.0",
+    "react-dom": "15.2.0"
   },
   "devDependencies": {
     "chai": "3.5.0",
@@ -58,10 +58,10 @@
     "laborer": "2.5.17",
     "mkdirp": "0.5.1",
     "mocha": "2.5.3",
-    "react-addons-test-utils": "15.1.0",
+    "react-addons-test-utils": "15.2.0",
     "replace": "0.3.0",
-    "rewire": "2.5.1",
-    "run-sequence": "1.2.1",
+    "rewire": "2.5.2",
+    "run-sequence": "1.2.2",
     "sinon": "1.17.4",
     "supertest": "1.2.0",
     "underscore": "1.8.3"

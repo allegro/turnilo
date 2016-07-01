@@ -551,7 +551,7 @@
     },
     "fbjs": {
       "version": "0.8.3",
-      "from": "fbjs@>=0.8.0 <0.9.0",
+      "from": "fbjs@>=0.8.1 <0.9.0",
       "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.3.tgz"
     },
     "fileset": {
@@ -1469,9 +1469,9 @@
       "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-2.0.1.tgz"
     },
     "plywood": {
-      "version": "0.11.4",
-      "from": "plywood@0.11.4",
-      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.11.4.tgz"
+      "version": "0.11.5",
+      "from": "plywood@0.11.5",
+      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.11.5.tgz"
     },
     "plywood-druid-requester": {
       "version": "1.4.4",
@@ -1564,19 +1564,19 @@
       "resolved": "https://registry.npmjs.org/raw-body/-/raw-body-2.1.7.tgz"
     },
     "react": {
-      "version": "15.1.0",
-      "from": "react@15.1.0",
-      "resolved": "https://registry.npmjs.org/react/-/react-15.1.0.tgz"
+      "version": "15.2.0",
+      "from": "react@15.2.0",
+      "resolved": "https://registry.npmjs.org/react/-/react-15.2.0.tgz"
     },
     "react-addons-css-transition-group": {
-      "version": "15.1.0",
-      "from": "react-addons-css-transition-group@15.1.0",
-      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.1.0.tgz"
+      "version": "15.2.0",
+      "from": "react-addons-css-transition-group@15.2.0",
+      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.2.0.tgz"
     },
     "react-dom": {
-      "version": "15.1.0",
-      "from": "react-dom@15.1.0",
-      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.1.0.tgz"
+      "version": "15.2.0",
+      "from": "react-dom@15.2.0",
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.2.0.tgz"
     },
     "read-pkg": {
       "version": "1.1.0",
@@ -1865,9 +1865,9 @@
       "resolved": "https://registry.npmjs.org/time-stamp/-/time-stamp-1.0.1.tgz"
     },
     "tiny-emitter": {
-      "version": "1.0.2",
+      "version": "1.1.0",
       "from": "tiny-emitter@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-1.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-1.1.0.tgz"
     },
     "to-iso-string": {
       "version": "0.0.2",

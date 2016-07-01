@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.12
+
+- New plywood fixes bugs
+
 ## 0.9.11
 
 - Do not shrinkwrap npm modules
