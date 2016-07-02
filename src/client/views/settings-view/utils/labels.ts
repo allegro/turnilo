@@ -26,6 +26,10 @@ export const CUBE_EDIT = {
     error: 'The title should not be empty',
     help: 'What will appear as the tab\'s title in your browser. Use \'%v\' as a placeholder for Pivot\'s version.'
   },
+  description: {
+    error: '',
+    help: 'The cube\'s description'
+  },
   engine: {
     error: 'The engine should not be empty',
     help: 'The cube\'s cluster, really.'

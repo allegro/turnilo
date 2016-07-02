@@ -155,6 +155,18 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
       />
 
       <FormLabel
+        label="Description"
+        helpText={LABELS.description.help}
+        errorText={errors.description ? LABELS.description.error : undefined}
+      />
+      <ImmutableInput
+        instance={tempCube}
+        path={'description'}
+        onChange={this.onSimpleChange.bind(this)}
+        validator={/^.+$/}
+      />
+
+      <FormLabel
         label="Engine"
         helpText={LABELS.engine.help}
         errorText={errors.engine ? LABELS.engine.error : undefined}

@@ -1,20 +1,27 @@
 @import '../../imports';
 
 .side-drawer {
+  $drawer-v-padding: 10px;
+
   @include pin-left($side-drawer-width);
   background: $white;
   font-size: 13px;
   box-shadow: 1px 0 2px 0 hsla(0, 0, 0, 0.13), 2px 0 12px 0 hsla(0, 0, 0, 0.26);
   overflow: auto;
 
+  .home-container {
+    padding-top: $drawer-v-padding;
+    padding-bottom: $drawer-v-padding;
+    border-top: 1px solid #ddd;
+  }
+
   .home-link {
     line-height: 34px;
-    padding-left: $nav-padding;
-    padding-right: $nav-padding;
+    padding: 0 $nav-padding;
     cursor: pointer;
-    border-top: 1px solid #ddd;
 
-    svg {
+    .svg-icon {
+      opacity: 0.6;
       height: 19px;
       width: 19px;
       display: inline-block;
@@ -23,28 +30,45 @@
       margin-right: 9px;
 
       path {
-        fill: rgba($black, 0.26);
+        fill: $brand;
       }
     }
 
-    &:hover {
+    &:hover,
+    &.selected {
       background: rgba($brand, 0.12);
 
+      .svg-icon {
+        opacity: 1;
+      }
+    }
+
+    &.selected {
       svg path {
-        fill: #888;
+        fill: $brand;
       }
     }
   }
 
-  .items {
-    .item {
-      .icon svg path {
-        fill: rgba($black, 0.26);
-      }
+  .nav-list {
+    padding-top: $drawer-v-padding;
+    padding-bottom: $drawer-v-padding;
 
-      &.selected {
-        .icon svg path {
-          fill: $brand;
+    .items {
+      .item {
+        .icon {
+          opacity: 0.6;
+
+          svg path {
+            fill: $brand;
+          }
+        }
+
+        &:hover,
+        &.selected {
+          .icon {
+            opacity: 1;
+          }
         }
       }
     }

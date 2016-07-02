@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
-import { isInside, escapeKey } from '../../utils/dom/dom';
+import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
 import { DataSource, Customization } from '../../../common/models/index';
 import { NavLogo } from '../nav-logo/nav-logo';
 import { SvgIcon } from '../svg-icon/svg-icon';
@@ -16,7 +16,9 @@ export interface SideDrawerProps extends React.Props<any> {
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
-  showOverviewLink?: boolean;
+  isHome?: boolean;
+  isCube?: boolean;
+  isLink?: boolean;
 }
 
 export interface SideDrawerState {
@@ -26,7 +28,6 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
   constructor() {
     super();
-    //this.state = {};
 
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
@@ -60,11 +61,15 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   renderOverviewLink() {
-    const { showOverviewLink } = this.props;
-    if (!showOverviewLink) return null;
-    return <div className="home-link" onClick={this.onHomeClick.bind(this)}>
-      <SvgIcon svg={require('../../icons/home.svg')}/>
-      <span>Overview</span>
+    const { isHome, isCube, isLink } = this.props;
+
+    if (!isCube && !isLink && !isHome) return null;
+
+    return <div className="home-container">
+      <div className={classNames('home-link', {selected: isHome})} onClick={this.onHomeClick.bind(this)}>
+        <SvgIcon svg={require('../../icons/home.svg')}/>
+        <span>{isCube || isHome ? 'Home' : 'Overview'}</span>
+      </div>
     </div>;
   }
 
@@ -97,7 +102,6 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       <NavLogo customLogoSvg={customLogoSvg} onClick={onClose}/>
       {this.renderOverviewLink()}
       <NavList
-        title="Data Cubes"
         selected={selectedDataSource ? selectedDataSource.name : null}
         navLinks={navLinks}
         iconSvg={require('../../icons/full-cube.svg')}

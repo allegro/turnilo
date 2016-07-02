@@ -2,14 +2,9 @@
 
 .nav-list {
   border-top: 1px solid #ddd;
-  padding-bottom: 18px;
 
   &:first-child {
     border-top: 0;
-  }
-
-  &.no-title {
-    padding-top: 8px;
   }
 
   svg {

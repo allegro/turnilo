@@ -6,23 +6,29 @@
   }
 
   .container {
-    @include unpin-top($header-height);
-    overflow: scroll;
-  }
+    @include unpin-top($header-height + 36px);
+    padding: 0 12%;
 
-  .golden-center {
-    width: 100%;
-    min-height: 100%;
-  }
+    .datacubes {
+      > .title {
+        text-transform: uppercase;
+        color: $brand;
+        margin-bottom: 10px;
+        font-size: 15px;
+      }
 
-  .home {
-    @extend %menu-cont;
-    width: 460px;
+      .cubes-container {
+        display: flex;
+        flex-wrap: wrap;
 
-    .items {
-      .item {
-        .icon svg path {
-          fill: $brand;
+        .item-card {
+          flex: 1 0;
+          min-width: 310px;
+
+          &.empty {
+            height: 0;
+            opacity: 0;
+          }
         }
       }
     }

@@ -204,6 +204,7 @@ describe('AppSettings', () => {
             "source": "wiki",
             "subsetFilter": null,
             "timeAttribute": "time",
+            "description": "Wiki description",
             "title": "Wiki"
           }
         ]

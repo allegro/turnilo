@@ -13,6 +13,7 @@ export class DataSourceMock {
     return {
       name: 'wiki',
       title: 'Wiki',
+      description: 'Wiki description',
       engine: 'druid',
       source: 'wiki',
       subsetFilter: null,
@@ -72,6 +73,7 @@ export class DataSourceMock {
     return {
       name: 'twitter',
       title: 'Twitter',
+      description: 'Twitter description should go here',
       engine: 'druid',
       source: 'twitter',
       subsetFilter: null,
