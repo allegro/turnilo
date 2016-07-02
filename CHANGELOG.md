@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.13
+
+- New plywood with fix for: https://github.com/implydata/plywood/pull/121
+
 ## 0.9.12
 
 - New plywood fixes bugs
