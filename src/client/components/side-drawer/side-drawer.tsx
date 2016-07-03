@@ -80,6 +80,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       return {
         name: ds.name,
         title: ds.title,
+        tooltip: ds.description,
         href: '#' + ds.name
       };
     });
@@ -87,6 +88,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     var infoAndFeedback = [{
       name: 'info',
       title: STRINGS.infoAndFeedback,
+      tooltip: 'Learn more about Pivot',
       onClick: () => {
         onClose();
         onOpenAbout();

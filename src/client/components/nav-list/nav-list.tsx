@@ -8,6 +8,7 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 export interface NavLink {
   name: string;
   title: string;
+  tooltip?: string;
   href?: string;
   newTab?: boolean;
   onClick?: Fn;
@@ -40,6 +41,7 @@ export class NavList extends React.Component< NavListProps, NavListState> {
         {
           className: classNames('item', { selected: selected && selected === navLink.name }),
           key: navLink.name,
+          title: navLink.tooltip,
           href: navLink.href,
           target: navLink.newTab ? '_blank' : null,
           onClick: navLink.onClick

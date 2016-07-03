@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.14
+
+- New home view
+- Added descriptions to data sources
+
 ## 0.9.13
 
 - New plywood with fix for: https://github.com/implydata/plywood/pull/121

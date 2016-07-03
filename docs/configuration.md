@@ -146,6 +146,10 @@ The cluster that the dataSource belongs to (or native if this is a file based da
 
 The user visible name that will be used to describe this data source in the UI. It is always safe to change this.
 
+**description** (string)
+
+The description of the data source shown in the homepage.
+
 **defaultDuration** (duration string)
 
 The time period, expressed as an [ISO 8601 Duration](https://en.wikipedia.org/wiki/ISO_8601#Durations),
