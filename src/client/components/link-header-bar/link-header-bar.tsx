@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { User, Customization } from '../../../common/models/index';
+import { UserMenu } from '../user-menu/user-menu';
 
 export interface LinkHeaderBarProps extends React.Props<any> {
   title: string;
@@ -15,13 +16,44 @@ export interface LinkHeaderBarProps extends React.Props<any> {
 }
 
 export interface LinkHeaderBarState {
+  userMenuOpenOn?: Element;
 }
 
 export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeaderBarState> {
 
   constructor() {
     super();
-    //this.state = {};
+    this.state = {
+      userMenuOpenOn: null
+    };
+  }
+
+  // User menu
+
+  onUserMenuClick(e: MouseEvent) {
+    const { userMenuOpenOn } = this.state;
+    if (userMenuOpenOn) return this.onUserMenuClose();
+    this.setState({
+      userMenuOpenOn: e.target as Element
+    });
+  }
+
+  onUserMenuClose() {
+    this.setState({
+      userMenuOpenOn: null
+    });
+  }
+
+  renderUserMenu() {
+    const { user } = this.props;
+    const { userMenuOpenOn } = this.state;
+    if (!userMenuOpenOn) return null;
+
+    return <UserMenu
+      openOn={userMenuOpenOn}
+      onClose={this.onUserMenuClose.bind(this)}
+      user={user}
+    />;
   }
 
   render() {
@@ -29,7 +61,7 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
 
     var userButton: JSX.Element = null;
     if (user) {
-      userButton = <div className="icon-button">
+      userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
         <SvgIcon svg={require('../../icons/full-user.svg')}/>
       </div>;
     }
@@ -55,6 +87,7 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
         </a>
         {userButton}
       </div>
+      {this.renderUserMenu()}
     </header>;
   }
 }

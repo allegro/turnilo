@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';
 import { Stage, Clicker, User, Customization } from '../../../common/models/index';
 import { SvgIcon } from '../svg-icon/svg-icon';
+import { UserMenu } from '../user-menu/user-menu';
 
 export interface HomeHeaderBarProps extends React.Props<any> {
   user?: User;
@@ -13,10 +14,44 @@ export interface HomeHeaderBarProps extends React.Props<any> {
 }
 
 export interface HomeHeaderBarState {
+  userMenuOpenOn?: Element;
 }
 
 export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeaderBarState> {
+  constructor() {
+    super();
+    this.state = {
+      userMenuOpenOn: null
+    };
+  }
 
+  // User menu
+
+  onUserMenuClick(e: MouseEvent) {
+    const { userMenuOpenOn } = this.state;
+    if (userMenuOpenOn) return this.onUserMenuClose();
+    this.setState({
+      userMenuOpenOn: e.target as Element
+    });
+  }
+
+  onUserMenuClose() {
+    this.setState({
+      userMenuOpenOn: null
+    });
+  }
+
+  renderUserMenu() {
+    const { user } = this.props;
+    const { userMenuOpenOn } = this.state;
+    if (!userMenuOpenOn) return null;
+
+    return <UserMenu
+      openOn={userMenuOpenOn}
+      onClose={this.onUserMenuClose.bind(this)}
+      user={user}
+    />;
+  }
 
   render() {
     var { user, onNavClick, customization, title } = this.props;
@@ -28,7 +63,7 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
 
     var userButton: JSX.Element = null;
     if (user) {
-      userButton = <div className="icon-button">
+      userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
         <SvgIcon svg={require('../../icons/full-user.svg')}/>
       </div>;
     }
@@ -51,6 +86,7 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
         {this.props.children}
         {userButton}
       </div>
+      {this.renderUserMenu()}
     </header>;
   }
 }

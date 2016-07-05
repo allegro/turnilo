@@ -199,5 +199,11 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     return this.changeDataSources(helper.overrideByName(this.dataSources, dataSource));
   }
 
+  filterDataSources(fn: (dataSource: DataSource, index?: number, dataSources?: DataSource[]) => boolean): AppSettings {
+    var value = this.valueOf();
+    value.dataSources = value.dataSources.filter(fn);
+    return new AppSettings(value);
+  }
+
 }
 check = AppSettings;

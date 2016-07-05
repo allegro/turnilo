@@ -4,7 +4,7 @@ import { arraySum } from '../common/utils/general/general';
 import { Cluster, DataSource, SupportedType, AppSettings } from '../common/models/index';
 import { clusterToYAML, dataSourceToYAML } from '../common/utils/yaml-helper/yaml-helper';
 import { ServerSettings, ServerSettingsJS } from './models/server-settings/server-settings';
-import { loadFileSync, SettingsManager, SettingsLocation, CONSOLE_LOGGER, NULL_LOGGER } from './utils/index';
+import { loadFileSync, SettingsManager, SettingsLocation, Logger, CONSOLE_LOGGER, NULL_LOGGER } from './utils/index';
 
 const AUTH_MODULE_VERSION = 1;
 const PACKAGE_FILE = path.join(__dirname, '../../package.json');
@@ -146,7 +146,7 @@ if (numSettingsInputs > 1) {
 export const PRINT_CONFIG = Boolean(parsedArgs['print-config']);
 export const START_SERVER = !PRINT_CONFIG;
 
-const LOGGER = START_SERVER ? CONSOLE_LOGGER : NULL_LOGGER;
+export const LOGGER: Logger = START_SERVER ? CONSOLE_LOGGER : NULL_LOGGER;
 
 if (START_SERVER) {
   LOGGER.log(`Starting Pivot v${VERSION}`);
@@ -177,17 +177,18 @@ if (parsedArgs['port']) {
   serverSettingsJS.port = parsedArgs['port'];
 }
 
+export const VERBOSE = Boolean(parsedArgs['verbose'] || serverSettingsJS.verbose);
 export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS, anchorPath);
 
 // --- Auth -------------------------------
 
 var auth = serverSettingsJS.auth;
-var authModule: any = null;
+var authMiddleware: any = null;
 if (auth) {
   auth = path.resolve(anchorPath, auth);
   LOGGER.log(`Using auth ${auth}`);
   try {
-    authModule = require(auth);
+    var authModule = require(auth);
   } catch (e) {
     exitWithError(`error loading auth module: ${e.message}`);
   }
@@ -195,9 +196,14 @@ if (auth) {
   if (authModule.version !== AUTH_MODULE_VERSION) {
     exitWithError(`incorrect auth module version ${authModule.version} needed ${AUTH_MODULE_VERSION}`);
   }
-  if (typeof authModule.auth !== 'function') exitWithError('Invalid auth module');
+  if (typeof authModule.auth !== 'function') exitWithError(`Invalid auth module (must export 'auth' function`);
+  authMiddleware = authModule.auth({
+    logger: LOGGER,
+    verbose: VERBOSE,
+    version: VERSION
+  });
 }
-export const AUTH = authModule;
+export const AUTH = authMiddleware;
 
 // --- Location -------------------------------
 
@@ -246,8 +252,6 @@ if (serverSettingsFilePath) {
     initAppSettings
   };
 }
-
-export const VERBOSE = Boolean(parsedArgs['verbose'] || serverSettingsJS.verbose);
 
 export const SETTINGS_MANAGER = new SettingsManager(settingsLocation, {
   logger: LOGGER,

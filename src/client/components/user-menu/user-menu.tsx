@@ -34,12 +34,11 @@ export class UserMenu extends React.Component<UserMenuProps, UserMenuState> {
     >
       <ul className="bubble-list">
         <li
-          className="user-name"
-        >{user.name}</li>
+          className="display-name"
+        >{user.displayName}</li>
         <li
-          className="copy-static-url clipboard"
-          onClick={onClose}
-        >{STRINGS.logout}</li>
+          className="logout"
+        ><a href="logout">{STRINGS.logout}</a></li>
       </ul>
     </BubbleMenu>;
   }

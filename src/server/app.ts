@@ -15,7 +15,7 @@ if (!WallTime.rules) {
 
 import { GetSettingsOptions } from '../server/utils/settings-manager/settings-manager';
 import { PivotRequest } from './utils/index';
-import { VERSION, AUTH, SERVER_SETTINGS, SETTINGS_MANAGER } from './config';
+import { VERSION, AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, LOGGER } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
 import * as plyqlRoutes from './routes/plyql/plyql';
 import * as pivotRoutes from './routes/pivot/pivot';
@@ -35,8 +35,15 @@ function addRoutes(attach: string, router: Router | Handler): void {
 app.use(compress());
 app.use(logger('dev'));
 
+addRoutes('/health', healthRoutes);
+
 addRoutes('/', express.static(path.join(__dirname, '../../build/public')));
 addRoutes('/', express.static(path.join(__dirname, '../../assets')));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 app.use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
@@ -48,15 +55,8 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
 });
 
 if (AUTH) {
-  app.use(AUTH.auth({
-    version: VERSION
-  }));
-
+  app.use(AUTH);
 }
-
-app.use(bodyParser.json());
-
-addRoutes('/health', healthRoutes);
 
 // Data routes
 addRoutes('/plywood', plywoodRoutes);
@@ -89,6 +89,8 @@ app.use((req: Request, res: Response, next: Function) => {
 // will print stacktrace
 if (app.get('env') === 'development') { // NODE_ENV
   app.use((err: any, req: Request, res: Response, next: Function) => {
+    LOGGER.error(`Server Error: ${err.message}`);
+    LOGGER.error(err.stack);
     res.status(err.status || 500);
     res.send(errorLayout({ version: VERSION, title: 'Error' }, err.message, err));
   });
@@ -97,6 +99,8 @@ if (app.get('env') === 'development') { // NODE_ENV
 // production error handler
 // no stacktraces leaked to user
 app.use((err: any, req: Request, res: Response, next: Function) => {
+  LOGGER.error(`Server Error: ${err.message}`);
+  LOGGER.error(err.stack);
   res.status(err.status || 500);
   res.send(errorLayout({ version: VERSION, title: 'Error' }, err.message));
 });
