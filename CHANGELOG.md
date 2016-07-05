@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.15
+
+- Allow continuous dimension in two split line chart
+- User menu everywhere
+
 ## 0.9.14
 
 - New home view
