@@ -6,7 +6,7 @@ import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import { r, $, ply, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction, SortAction,
   PlywoodRange, NumberRangeJS, NumberRange, Range, NumberBucketAction } from 'plywood';
-import { Splits, Colors, FilterClause, Dimension, Stage, Filter, Measure, DataSource, VisualizationProps, DatasetLoad } from '../../../common/models/index';
+import { Essence, Splits, Colors, FilterClause, Dimension, Stage, Filter, Measure, DataSource, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 import { LINE_CHART_MANIFEST } from '../../../common/manifests/line-chart/line-chart';
 import { DisplayYear } from '../../../common/utils/time/time';
 import { formatValue } from '../../../common/utils/formatter/formatter';
@@ -537,17 +537,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         newState.continuousDimension = continuousDimension;
 
         var axisRange = essence.getEffectiveFilter(LineChart.id).getExtent(continuousDimension.expression) as PlywoodRange;
-
-        // Not filtered on time or has unbounded filter
-        if ((!axisRange && dataset) || (dataset && (!axisRange.start || !axisRange.end))) {
-          var myDataset = dataset.data[0]['SPLIT'] as Dataset;
-
-          var start = (myDataset.data[0][continuousDimension.name] as NumberRange | TimeRange).start;
-          var end = (myDataset.data[myDataset.data.length - 1][continuousDimension.name] as NumberRange | TimeRange).end;
-
-          // right now dataset might not be sorted properly
-          if (start < end ) axisRange = Range.fromJS({start, end});
-        }
+        axisRange = axisRange ? axisRange : this.getXAxisRange(essence, continuousDimension, dataset);
 
         if (axisRange) {
           newState.axisRange = axisRange;
@@ -567,6 +557,28 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
 
     this.setState(newState);
+  }
+
+  getXAxisRange(essence: Essence, continuousDimension: Dimension, dataset: Dataset): PlywoodRange {
+    if (!dataset) return null;
+
+    const key = continuousDimension.name;
+
+    if (dataset.data[0]['SPLIT']) {
+      return (dataset.data[0]['SPLIT'] as Dataset).data
+        .map(d => this.getXAxisRange(essence, continuousDimension, d['SPLIT'] as Dataset))
+        .reduce((a: PlywoodRange, b: PlywoodRange) => a ? a.union(b) : b);
+
+    } else {
+      let myDataset = dataset.data;
+      let start = (myDataset[0][key] as NumberRange | TimeRange).start;
+      let end = (myDataset[myDataset.length - 1][key] as NumberRange | TimeRange).end;
+
+      // right now dataset might not be sorted properly
+      if (start < end ) return Range.fromJS({start, end});
+    }
+
+    return null;
   }
 
   renderInternals() {

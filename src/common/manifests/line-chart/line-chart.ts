@@ -99,6 +99,7 @@ var handler = CircumstancesHandler.EMPTY()
   })
 
   .when(CircumstancesHandler.areExactSplitKinds('*', 'time'))
+  .or(CircumstancesHandler.areExactSplitKinds('*', 'number'))
   .then((splits: Splits, dataSource: DataSource, colors: Colors) => {
     var timeSplit = splits.get(1);
     var timeDimension = timeSplit.getDimension(dataSource.dimensions);
