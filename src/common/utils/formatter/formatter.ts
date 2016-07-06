@@ -72,7 +72,7 @@ export function formatterFromData(values: number[], format: string): Formatter {
 }
 
 export function formatNumberRange(value: NumberRange) {
-  return `${formatValue(value.start)} to ${formatValue(value.end)}`;
+  return `${formatValue(value.start || `any`)} to ${formatValue(value.end  || `any`)}`;
 }
 
 export function formatValue(value: any, timezone?: Timezone, displayYear?: DisplayYear): string {
