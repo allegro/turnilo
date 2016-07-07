@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.16
+
+- Selected filtered items appear at top of menu
+
 ## 0.9.15
 
 - Allow continuous dimension in two split line chart

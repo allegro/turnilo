@@ -1,12 +1,12 @@
 require('./string-filter-menu.css');
 
 import * as React from 'react';
-import { $, ply, r, Expression, Executor, Dataset, SortAction, Set } from 'plywood';
+import { $, ply, r, Expression, Executor, Dataset, SortAction, Set, Datum } from 'plywood';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
 import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, FilterMode, Dimension, Measure, Colors, DragPosition } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
-import { enterKey } from '../../utils/dom/dom';
+import { enterKey, classNames } from '../../utils/dom/dom';
 import { ClearableInput } from '../clearable-input/clearable-input';
 import { Checkbox, CheckboxType } from '../checkbox/checkbox';
 import { Loader } from '../loader/loader';
@@ -34,6 +34,7 @@ export interface StringFilterMenuState {
   fetchQueued?: boolean;
   searchText?: string;
   selectedValues?: Set;
+  promotedValues?: Set; // initial selected values
   colors?: Colors;
   filterMode?: FilterMode;
 }
@@ -51,6 +52,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       fetchQueued: false,
       searchText: '',
       selectedValues: null,
+      promotedValues: null,
       colors: null
     };
 
@@ -114,8 +116,10 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     var myColors = (colors && colors.dimension === dimension.name ? colors : null);
 
     var valueSet = filter.getLiteralSet(dimension.expression);
+    var selectedValues = valueSet || (myColors ? myColors.toSet() : null) || Set.EMPTY;
     this.setState({
-      selectedValues: valueSet || (myColors ? myColors.toSet() : null) || Set.EMPTY,
+      selectedValues: selectedValues,
+      promotedValues: selectedValues,
       colors: myColors
     });
 
@@ -250,40 +254,43 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   renderTable() {
-    var { loading, dataset, error, fetchQueued, searchText, selectedValues, filterMode } = this.state;
+    var { loading, dataset, error, fetchQueued, searchText, selectedValues, promotedValues, filterMode } = this.state;
     var { dimension } = this.props;
 
     var rows: Array<JSX.Element> = [];
     var hasMore = false;
     if (dataset) {
       hasMore = dataset.data.length > TOP_N;
-      var rowData = dataset.data.slice(0, TOP_N);
+      var promotedElements = promotedValues ? promotedValues.elements : [];
+      var rowData = dataset.data.slice(0, TOP_N).filter((d) => {
+        return promotedElements.indexOf(d[dimension.name]) === -1;
+      });
+      var rowStrings = promotedElements.concat(rowData.map((d) => d[dimension.name]));
 
       if (searchText) {
         var searchTextLower = searchText.toLowerCase();
-        rowData = rowData.filter((d) => {
-          return String(d[dimension.name]).toLowerCase().indexOf(searchTextLower) !== -1;
+        rowStrings = rowStrings.filter((d) => {
+          return String(d).toLowerCase().indexOf(searchTextLower) !== -1;
         });
       }
 
       var checkboxType = filterMode === Filter.EXCLUDED ? 'cross' : 'check';
 
-      rows = rowData.map((d) => {
-        var segmentValue = d[dimension.name];
-        var segmentValueStr = String(segmentValue);
-        var selected = selectedValues && selectedValues.contains(segmentValue);
+      rows = rowStrings.map((segmentValue) => {
+          var segmentValueStr = String(segmentValue);
+          var selected = selectedValues && selectedValues.contains(segmentValue);
 
-        return <div
-          className={'row' + (selected ? ' selected' : '')}
-          key={segmentValueStr}
-          title={segmentValueStr}
-          onClick={this.onValueClick.bind(this, segmentValue)}
-        >
-          <div className="row-wrapper">
-            <Checkbox type={checkboxType as CheckboxType} selected={selected}/>
-            <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
-          </div>
-        </div>;
+          return <div
+            className={classNames('row', { 'selected': selected })}
+            key={segmentValueStr}
+            title={segmentValueStr}
+            onClick={this.onValueClick.bind(this, segmentValue)}
+          >
+            <div className="row-wrapper">
+              <Checkbox type={checkboxType as CheckboxType} selected={selected}/>
+              <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
+            </div>
+          </div>;
       });
     }
 
@@ -292,12 +299,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       message = <div className="message">{'No results for "' + searchText + '"'}</div>;
     }
 
-    var className = [
-      'menu-table',
-      (hasMore ? 'has-more' : 'no-more')
-    ].join(' ');
-
-    return <div className={className}>
+    return <div className={classNames('menu-table', hasMore ? 'has-more' : 'no-more')}>
       <div className="side-by-side">
         <FilterOptionsDropdown
           selectedOption={filterMode}
