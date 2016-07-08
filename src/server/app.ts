@@ -22,6 +22,8 @@ import * as pivotRoutes from './routes/pivot/pivot';
 import * as settingsRoutes from './routes/settings/settings';
 import * as mkurlRoutes from './routes/mkurl/mkurl';
 import * as healthRoutes from './routes/health/health';
+import * as errorRoutes from './routes/error/error';
+
 import { errorLayout } from './views';
 
 var app = express();
@@ -62,6 +64,8 @@ if (AUTH) {
 addRoutes('/plywood', plywoodRoutes);
 addRoutes('/plyql', plyqlRoutes);
 addRoutes('/mkurl', mkurlRoutes);
+addRoutes('/error', errorRoutes);
+
 
 if (process.env['PIVOT_ENABLE_SETTINGS']) {
   addRoutes('/settings', settingsRoutes);

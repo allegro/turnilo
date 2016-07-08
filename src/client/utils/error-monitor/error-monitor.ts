@@ -1,3 +1,5 @@
+import * as Qajax from 'qajax';
+
 export function addErrorMonitor() {
   var originalOnError = window.onerror;
   window.onerror = (message, file, line, column, errorObject) => {
@@ -16,6 +18,12 @@ export function addErrorMonitor() {
       console.log('An error has occurred. Please include the below information in the issue:');
       console.log(JSON.stringify(err));
     }
+
+    Qajax({
+      method: "POST",
+      url: 'error',
+      data: err
+    });
 
     window.onerror = originalOnError; // only trigger once
 
