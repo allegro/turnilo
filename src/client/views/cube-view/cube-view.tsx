@@ -49,6 +49,7 @@ export interface CubeViewState {
   showRawDataModal?: boolean;
   RawDataModalAsync?: typeof RawDataModal;
   layout?: CubeViewLayout;
+  deviceSize?: string;
   updatingMaxTime?: boolean;
 }
 
@@ -239,7 +240,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     var containerDOM = ReactDOM.findDOMNode(container);
     var visualizationDOM = ReactDOM.findDOMNode(visualization);
     if (!containerDOM || !visualizationDOM) return;
+
+    let deviceSize = 'large';
+    if (window.innerWidth <= 1250) deviceSize = 'medium';
+    if (window.innerWidth <= 1080) deviceSize = 'small';
+
     this.setState({
+      deviceSize,
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
       visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect())
     });
@@ -343,7 +350,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     var clicker = this.clicker;
 
     var { getUrlPrefix, onNavClick, user, customization } = this.props;
-    var { layout, essence, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
+    var { deviceSize, layout, essence, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
 
     if (!essence) return null;
 
@@ -376,6 +383,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       pinboardPanel: {width: layout.pinboardWidth}
     };
 
+    if (deviceSize === 'small') {
+      styles = {
+        dimensionMeasurePanel: {width: 200},
+        centerPanel: {left: 200, right: 200},
+        pinboardPanel: {width: 200}
+      };
+    }
+
     return <div className='cube-view'>
       <CubeHeaderBar
         clicker={clicker}
@@ -402,14 +417,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           getUrlPrefix={getUrlPrefix}
         />
 
-        <ResizeHandle
+        {deviceSize !== 'small' ? <ResizeHandle
           side="left"
           initialValue={layout.dimensionPanelWidth}
           onResize={this.onDimensionPanelResize.bind(this)}
           onResizeEnd={this.onPanelResizeEnd.bind(this)}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
-        />
+        /> : null}
 
         <div className='center-panel' style={styles.centerPanel}>
           <div className='center-top-bar'>
@@ -447,14 +462,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           </div>
         </div>
 
-        <ResizeHandle
+        {deviceSize !== 'small' ? <ResizeHandle
           side="right"
           initialValue={layout.pinboardWidth}
           onResize={this.onPinboardPanelResize.bind(this)}
           onResizeEnd={this.onPanelResizeEnd.bind(this)}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
-        />
+        /> : null}
 
         <PinboardPanel
           style={styles.pinboardPanel}

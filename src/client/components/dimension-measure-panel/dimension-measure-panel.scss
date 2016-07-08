@@ -1,7 +1,13 @@
 @import '../../imports';
 
 .dimension-measure-panel {
+  @include for-small-screens {
+    padding: 0 1px 0 0;
+    font-size: 0.9em;
+  }
+
   padding: $tile-margin-v $tile-margin-h;
+
   display: flex;
   flex-direction: column;
 

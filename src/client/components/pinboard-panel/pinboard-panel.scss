@@ -1,9 +1,15 @@
 @import '../../imports';
 
 .pinboard-panel {
+  @include for-small-screens {
+    padding: 0 0 0 1px;
+    font-size: 0.9em;
+  }
+
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+
   padding: $tile-margin-v $tile-margin-h 0 $tile-margin-h;
 
   .dimension-tile,

@@ -1,0 +1,20 @@
+$small-screen: 1080px;
+$medium-screen: 1250px;
+
+@mixin for-large-screens {
+  @media only screen and (min-width: $medium-screen) {
+    @content;
+  }
+}
+
+@mixin for-medium-screens {
+  @media only screen and (max-width: $medium-screen) {
+    @content;
+  }
+}
+
+@mixin for-small-screens {
+  @media only screen and (max-width: $small-screen) {
+    @content;
+  }
+}
