@@ -13,7 +13,6 @@ import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
 import { HighlightString } from '../highlight-string/highlight-string';
 import { Button } from '../button/button';
-import { Dropdown, DropdownProps } from "../dropdown/dropdown";
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { FilterOptionsDropdown } from '../filter-options-dropdown/filter-options-dropdown';
 

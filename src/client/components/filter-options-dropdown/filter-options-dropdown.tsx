@@ -5,7 +5,7 @@ import { STRINGS } from '../../config/constants';
 
 import { Filter, FilterMode } from '../../../common/models/index';
 
-import { Dropdown, DropdownProps } from "../dropdown/dropdown";
+import { Dropdown } from "../dropdown/dropdown";
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { CheckboxType } from '../checkbox/checkbox';
 
@@ -58,20 +58,21 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
 
   render() {
     var { selectedOption, onSelectOption } = this.props;
+    const FilterDropdown = Dropdown.specialize<FilterOption>();
 
     var selectedItem = FILTER_OPTIONS.filter(o => o.value === selectedOption)[0] || FILTER_OPTIONS[0];
 
-    var dropdown = React.createElement(Dropdown, {
-      className: 'filter-options',
-      items: FILTER_OPTIONS,
-      selectedItem: selectedItem,
-      equal: (a, b) => a.value === b.value,
-      keyItem: (d) => d.value,
-      renderItem: this.renderFilterOption.bind(this),
-      renderSelectedItem: (d) => <SvgIcon className="icon" svg={d.svg}/>,
-      onSelect: this.onSelectOption.bind(this)
-    } as DropdownProps<FilterOption>);
-
-    return <div className="filter-options-dropdown">{dropdown}</div>;
+    return <div className="filter-options-dropdown">
+      <FilterDropdown
+        menuClassName="filter-options"
+        items={FILTER_OPTIONS}
+        selectedItem={selectedItem}
+        equal={(a, b) => a.value === b.value}
+        keyItem={(d) => d.value}
+        renderItem={this.renderFilterOption.bind(this)}
+        renderSelectedItem={(d) => <SvgIcon className="icon" svg={d.svg}/>}
+        onSelect={this.onSelectOption.bind(this)}
+      />
+    </div>;
   }
 }

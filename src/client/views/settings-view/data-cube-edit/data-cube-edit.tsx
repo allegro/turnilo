@@ -11,12 +11,13 @@ import { Button } from '../../../components/button/button';
 import { SimpleList } from '../../../components/simple-list/simple-list';
 import { ImmutableInput } from '../../../components/immutable-input/immutable-input';
 import { ImmutableList } from '../../../components/immutable-list/immutable-list';
-import { Dropdown, DropdownProps } from '../../../components/dropdown/dropdown';
+import { ImmutableDropdown } from '../../../components/immutable-dropdown/immutable-dropdown';
 
 import { DimensionModal } from '../dimension-modal/dimension-modal';
 import { MeasureModal } from '../measure-modal/measure-modal';
 
-import { AppSettings, Cluster, DataSource, Dimension, DimensionJS, Measure, MeasureJS } from '../../../../common/models/index';
+import { AppSettings, ListItem, Cluster, DataSource, Dimension, DimensionJS, Measure, MeasureJS } from '../../../../common/models/index';
+import { SupportedType as ClusterType } from '../../../../common/models/index';
 
 import { CUBE_EDIT as LABELS } from '../utils/labels';
 
@@ -141,6 +142,10 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     const helpTexts: any = {};
     const { tempCube, errors } = this.state;
 
+    const EngineDropDown = ImmutableDropdown.specialize<ListItem>();
+
+    const engineTypes = Cluster.TYPE_VALUES.map(type => {return {value: type, label: type}; });
+
     return <form className="general vertical">
       <FormLabel
         label="Title"
@@ -167,15 +172,18 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
       />
 
       <FormLabel
-        label="Engine"
+        label="Cluster"
         helpText={LABELS.engine.help}
         errorText={errors.engine ? LABELS.engine.error : undefined}
       />
-      <ImmutableInput
+      <EngineDropDown
+        items={engineTypes}
         instance={tempCube}
         path={'engine'}
+        equal={(a: ListItem, b: ListItem) => a.value === b.value}
+        renderItem={(a: ListItem) => a.label}
+        keyItem={(a: ListItem) => a.value}
         onChange={this.onSimpleChange.bind(this)}
-        validator={/^.+$/}
       />
 
       <FormLabel
@@ -218,6 +226,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     const DimensionsList = ImmutableList.specialize<Dimension>();
 
     return <DimensionsList
+      label="Dimensions"
       items={tempCube.dimensions}
       onChange={onChange.bind(this)}
       getModal={getModal}
@@ -251,6 +260,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     const MeasuresList = ImmutableList.specialize<Measure>();
 
     return <MeasuresList
+      label="Measures"
       items={tempCube.measures}
       onChange={onChange.bind(this)}
       getModal={getModal}

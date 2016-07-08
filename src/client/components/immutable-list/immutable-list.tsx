@@ -11,6 +11,7 @@ import { FormLabel } from '../form-label/form-label';
 import { SimpleList, SimpleRow } from '../simple-list/simple-list';
 
 export interface ImmutableListProps<T> extends React.Props<any> {
+  label?: string;
   items: List<T>;
   onChange: (newItems: List<T>) => void;
   getNewItem: (name: string) => T;
@@ -69,25 +70,25 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
     this.props.onChange(this.state.tempItems);
   }
 
-  renderEditModal(dimensionIndex: number): JSX.Element {
+  renderEditModal(itemIndex: number): JSX.Element {
     const { tempItems } = this.state;
 
-    var dimension = tempItems.get(dimensionIndex);
+    var item = tempItems.get(itemIndex);
 
-    var onSave = (newDimension: T) => {
-      const newItems = tempItems.update(dimensionIndex, () => newDimension);
+    var onSave = (newItem: T) => {
+      const newItems = tempItems.update(itemIndex, () => newItem);
       this.setState({tempItems: newItems, editedIndex: undefined}, this.onChange);
     };
 
     var onClose = () => this.setState({editedIndex: undefined});
 
-    return React.cloneElement(this.props.getModal(dimension), {onSave, onClose});
+    return React.cloneElement(this.props.getModal(item), {onSave, onClose});
   }
 
-  renderAddModal(dimension: T): JSX.Element {
-    var onSave = (newDimension: T) => {
+  renderAddModal(item: T): JSX.Element {
+    var onSave = (newItem: T) => {
       const { tempItems } = this.state;
-      const newItems = tempItems.push(newDimension);
+      const newItems = tempItems.push(newItem);
 
       this.setState(
         {tempItems: newItems, pendingAddItem: null},
@@ -97,7 +98,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
 
     var onClose = () => this.setState({pendingAddItem: null});
 
-    return React.cloneElement(this.props.getModal(dimension), {onSave, onClose});
+    return React.cloneElement(this.props.getModal(item), {onSave, onClose});
   }
 
   renderNameModal(): JSX.Element {
@@ -119,8 +120,8 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
     const onCancel = () => this.setState({nameNeeded: false, tempName: ''});
 
     return <Modal
-      className="dimension-modal"
-      title="Please give a name to this new dimension"
+      className="name-modal"
+      title="Please give enter a name"
       onClose={onCancel}
       onEnter={onOk}
       startUpFocusOn={'focus-me'}
@@ -139,14 +140,14 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   }
 
   render() {
-    const { items, getRows } = this.props;
+    const { items, getRows, label } = this.props;
     const { editedIndex, pendingAddItem, nameNeeded } = this.state;
 
     if (!items) return null;
 
-    return <div className="dimensions-list">
+    return <div className="immutable-list">
       <div className="list-title">
-        <div className="label">Dimensions</div>
+        <div className="label">{label}</div>
         <div className="actions">
           <button>Introspect</button>
           <button onClick={this.addItem.bind(this)}>Add item</button>

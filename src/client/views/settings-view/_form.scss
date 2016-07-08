@@ -9,6 +9,9 @@ form {
 
   input {
     @extend %default-input;
+  }
+
+  input, .input {
     margin-bottom: 25px;
   }
 }

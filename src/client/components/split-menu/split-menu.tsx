@@ -23,7 +23,7 @@ import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { Dropdown, DropdownProps } from "../dropdown/dropdown";
+import { Dropdown } from "../dropdown/dropdown";
 import { ButtonGroup } from "../button-group/button-group";
 
 function formatLimit(limit: number | string): string {
@@ -175,18 +175,19 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   renderSortDropdown() {
     var { essence, dimension } = this.props;
 
-    var mds = [SortOn.fromDimension(dimension)].concat(essence.dataSource.measures.toArray().map(SortOn.fromMeasure));
-    var md = this.getSortOn();
+    var sortOns = [SortOn.fromDimension(dimension)].concat(essence.dataSource.measures.toArray().map(SortOn.fromMeasure));
 
-    return React.createElement(Dropdown, {
-      label: STRINGS.sortBy,
-      items: mds,
-      selectedItem: md,
-      equal: SortOn.equal,
-      renderItem: SortOn.getTitle,
-      keyItem: SortOn.getName,
-      onSelect: this.onSelectSortOn.bind(this)
-    } as DropdownProps<SortOn>);
+    const SortOnDropdown = Dropdown.specialize<SortOn>();
+
+    return <SortOnDropdown
+      label={STRINGS.sortBy}
+      items={sortOns}
+      selectedItem={this.getSortOn()}
+      equal={SortOn.equal}
+      renderItem={SortOn.getTitle}
+      keyItem={SortOn.getName}
+      onSelect={this.onSelectSortOn.bind(this)}
+    />;
   }
 
   renderSortDirection() {
@@ -214,13 +215,16 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     }
 
     if (includeNone) items.unshift(null);
-    return React.createElement(Dropdown, {
-      label: STRINGS.limit,
-      items,
-      selectedItem,
-      renderItem: formatLimit,
-      onSelect: this.onSelectLimit.bind(this)
-    } as DropdownProps<number | string>);
+
+    const MyDropdown = Dropdown.specialize<number | string>();
+
+    return <MyDropdown
+      label={STRINGS.limit}
+      items={items}
+      selectedItem={selectedItem}
+      renderItem={formatLimit}
+      onSelect={this.onSelectLimit.bind(this)}
+    />;
   }
 
   renderTimeControls() {

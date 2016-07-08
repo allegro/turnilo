@@ -2,8 +2,8 @@ require('./clusters.css');
 
 import * as React from 'react';
 import { Fn } from '../../../../common/utils/general/general';
+import { firstUp } from '../../../../common/utils/string/string';
 import { classNames } from '../../../utils/dom/dom';
-import { firstUp } from '../../../utils/string/string';
 
 import { SvgIcon } from '../../../components/svg-icon/svg-icon';
 import { FormLabel } from '../../../components/form-label/form-label';

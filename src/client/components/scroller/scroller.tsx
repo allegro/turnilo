@@ -3,7 +3,7 @@ require('./scroller.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { clamp, classNames, getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
-import { firstUp } from '../../utils/string/string';
+import { firstUp } from '../../../common/utils/string/string';
 
 export type XSide = 'left' | 'right';
 export type YSide = 'top' | 'bottom';

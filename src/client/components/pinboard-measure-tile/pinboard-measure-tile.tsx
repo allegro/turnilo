@@ -2,8 +2,7 @@ require('./pinboard-measure-tile.css');
 
 import * as React from 'react';
 import { Stage, Essence, DataSource, Filter, Dimension, Measure, SortOn } from '../../../common/models/index';
-// import { ... } from '../../config/constants';
-import { Dropdown, DropdownProps } from '../dropdown/dropdown';
+import { Dropdown } from '../dropdown/dropdown';
 
 export interface PinboardMeasureTileProps extends React.Props<any> {
   essence: Essence;
@@ -28,18 +27,18 @@ export class PinboardMeasureTile extends React.Component<PinboardMeasureTileProp
       essence.dataSource.measures.toArray().map(SortOn.fromMeasure)
     );
 
-    var dropdown = React.createElement(Dropdown, {
-      items: sortOns,
-      selectedItem: sortOn,
-      equal: SortOn.equal,
-      renderItem: SortOn.getTitle,
-      keyItem: SortOn.getName,
-      onSelect: onSelect
-    } as DropdownProps<SortOn>);
+    const SortOnDropdown = Dropdown.specialize<SortOn>();
 
     return <div className="pinboard-measure-tile">
       <div className="title">{title}</div>
-      {dropdown}
+      <SortOnDropdown
+        items={sortOns}
+        selectedItem={sortOn}
+        equal={SortOn.equal}
+        renderItem={SortOn.getTitle}
+        keyItem={SortOn.getName}
+        onSelect={onSelect}
+      />
     </div>;
   }
 }

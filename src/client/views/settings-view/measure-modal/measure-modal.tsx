@@ -10,7 +10,6 @@ import { FormLabel } from '../../../components/form-label/form-label';
 import { Button } from '../../../components/button/button';
 import { ImmutableInput } from '../../../components/immutable-input/immutable-input';
 import { Modal } from '../../../components/modal/modal';
-import { Dropdown, DropdownProps } from '../../../components/dropdown/dropdown';
 
 import { Measure } from '../../../../common/models/index';
 

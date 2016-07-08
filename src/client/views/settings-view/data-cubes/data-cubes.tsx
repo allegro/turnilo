@@ -3,7 +3,6 @@ require('./data-cubes.css');
 import * as React from 'react';
 import { Fn } from '../../../../common/utils/general/general';
 import { classNames } from '../../../utils/dom/dom';
-import { firstUp } from '../../../utils/string/string';
 
 import { SvgIcon } from '../../../components/svg-icon/svg-icon';
 import { FormLabel } from '../../../components/form-label/form-label';

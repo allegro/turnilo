@@ -55,13 +55,15 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
   renderRefreshIntervalDropdown() {
     const { autoRefreshRate, setAutoRefreshRate } = this.props;
 
-    return React.createElement(Dropdown, {
-      label: STRINGS.autoUpdate,
-      items: REFRESH_DURATIONS,
-      selectedItem: autoRefreshRate,
-      renderItem: (d) => AUTO_REFRESH_LABELS[String(d)] || `Custom ${d}`,
-      onSelect: setAutoRefreshRate
-    } as DropdownProps<Duration>);
+    const DurationDropdown = Dropdown.specialize<Duration>();
+
+    return <DurationDropdown
+      label={STRINGS.autoUpdate}
+      items={REFRESH_DURATIONS}
+      selectedItem={autoRefreshRate}
+      renderItem={(d) => AUTO_REFRESH_LABELS[String(d)] || `Custom ${d}`}
+      onSelect={setAutoRefreshRate}
+    />;
   }
 
   render() {
