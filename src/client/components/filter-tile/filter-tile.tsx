@@ -446,7 +446,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dimension === menuDimension ? 'selected' : undefined
     ].filter(Boolean).join(' ');
 
-    var evaluatedClause = dimension.kind === 'time' ? essence.evaluateClause(clause) : clause;
+    var evaluatedClause = dimension.kind === 'time' && clause ? essence.evaluateClause(clause) : clause;
     var timezone = essence.timezone;
 
     if (source === 'from-highlight') {
