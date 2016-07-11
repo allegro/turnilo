@@ -395,6 +395,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
         className="drag-mask"
         onDragOver={this.dragOver.bind(this)}
         onDragLeave={this.dragLeave.bind(this)}
+        onDragExit={this.dragLeave.bind(this)}
         onDrop={this.drop.bind(this)}
       /> : null}
       {this.renderMenu()}

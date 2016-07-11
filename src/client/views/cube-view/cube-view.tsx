@@ -457,6 +457,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
               className="drag-mask"
               onDragOver={this.dragOver.bind(this)}
               onDragLeave={this.dragLeave.bind(this)}
+              onDragExit={this.dragLeave.bind(this)}
               onDrop={this.drop.bind(this)}
             /> : null}
           </div>
