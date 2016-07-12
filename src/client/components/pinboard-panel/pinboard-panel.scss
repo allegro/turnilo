@@ -44,7 +44,7 @@
     &::after {
       @include unpin-full(4px, 0, 4px, 0);
       content: '';
-      border: 1px dashed $border-darker;
+      background: rgba($border-darker, 0.14);
       border-radius: $corner;
     }
   }
@@ -60,7 +60,7 @@
     &::after {
       @include unpin-full(10px);
       content: '';
-      border: 1px dashed $border-medium;
+      //border: 1px dashed $border-medium;
       border-radius: 5px;
     }
 

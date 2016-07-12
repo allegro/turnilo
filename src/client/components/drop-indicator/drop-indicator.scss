@@ -16,32 +16,28 @@
 
 @import '../../imports';
 
-$action-padding: 16px;
+$action-padding: 12px;
 $icon-size: 30px;
 
 .drop-indicator {
   .white-out {
-    @include pin-full;
-    background: $white;
-    opacity: .65;
+    @include unpin-full(8px);
+    background: rgba($border-darker, 0.14);
+    border-radius: 4px;
   }
 
   .action {
     position: absolute;
-    top: $action-padding;
-    bottom: $action-padding;
-    left: $action-padding;
-    right: $action-padding;
-    border-radius: $corner * 3;
-    border: 1px dashed $border-darker;
+    display: inline-block;
+    padding: 7px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba($white, 1);
+    border-radius: 4px;
 
     svg {
-      position: absolute;
       width: $icon-size;
-      top: 50%;
-      left: 50%;
-      margin-left: -$icon-size / 2;
-      margin-top: -$icon-size / 2;
     }
 
     path {

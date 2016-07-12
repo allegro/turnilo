@@ -54,10 +54,13 @@ svg {
   left: 0;
   z-index: -10;
 
-  padding: 3px 10px;
-  border: 1px solid $black;
-  background: $white;
-  border-radius: 5px;
+  margin: 10px;
+  padding: 4px 8px;
+  //border: 1px solid $black;
+  background: #004584;
+  color: $white;
+  border-radius: 3px;
+  //box-shadow: 0 3px 10px 0 hsla(0, 0, 0, 0.26), 0 0 3px 0 hsla(0, 0, 0, 0.16);
 }
 
 //.drag-mask { // uncomment if you want to see the drag masks

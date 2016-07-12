@@ -27,7 +27,8 @@ $arrow-width: 16px;
     top: $control-padding-v;
     bottom: $control-padding-v;
     width: $item-width;
-    border: 1px dashed $border-darker;
+    //border: 2px solid rgba($border-darker, 0.14);
+    background: rgba($border-darker, 0.14);
     border-radius: 4px;
   }
 

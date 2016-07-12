@@ -71,6 +71,8 @@ $header-padding-top: 12px;
 
     .left-gutter, .top-left-corner {
       background-color: $white;
+      border-top-left-radius: $corner;
+      border-bottom-left-radius: $corner;
     }
 
     .corner {
