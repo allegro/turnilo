@@ -143,6 +143,9 @@ export interface DataSourceOptions {
   skipIntrospection?: boolean;
   disableAutofill?: boolean;
   attributeOverrides?: AttributeJSs;
+
+  // Whatever
+  [thing: string]: any;
 }
 
 export interface DataSourceContext {
