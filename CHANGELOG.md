@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.18
+
+- `DataSource#engine` renamed to `DataSource#clusterName`
+- Cleaned up integration tests
+
 ## 0.9.17
 
 - Added better small screen support
