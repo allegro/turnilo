@@ -251,6 +251,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   dragEnter(e: DragEvent) {
     if (!this.canDrop(e)) return;
+    e.preventDefault();
     var dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
     this.setState({ dragPosition });

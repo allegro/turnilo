@@ -195,6 +195,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   dragEnter(e: DragEvent) {
     if (!this.canDrop(e)) return;
+    e.preventDefault();
     this.setState({
       dragPosition: this.calculateDragPosition(e)
     });

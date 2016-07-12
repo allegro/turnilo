@@ -258,6 +258,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   dragEnter(e: DragEvent) {
     if (!this.canDrop(e)) return;
+    e.preventDefault();
     this.setState({ dragOver: true });
   }
 

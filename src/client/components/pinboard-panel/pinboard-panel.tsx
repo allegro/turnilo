@@ -40,6 +40,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   dragEnter(e: DragEvent) {
     if (!this.canDrop(e)) return;
+    e.preventDefault();
     this.setState({ dragOver: true });
   }
 

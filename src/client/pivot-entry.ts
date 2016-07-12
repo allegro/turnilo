@@ -92,7 +92,7 @@ if (config.appSettings.dataSources.length) {
 // from https://github.com/reppners/ios-html5-drag-drop-shim/tree/effectAllowed_dropEffect
 // /polyfill/mobile-drag-and-drop-polyfill/mobile-drag-and-drop-polyfill.js
 
-// From ../../assets/polyfill/ios-drag-drop.js
+// From ../../assets/polyfill/drag-drop-polyfill.js
 var div = document.createElement('div');
 var dragDiv = 'draggable' in div;
 var evts = 'ondragstart' in div && 'ondrop' in div;
@@ -100,7 +100,9 @@ var evts = 'ondragstart' in div && 'ondrop' in div;
 var needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
 
 if (needsPatch) {
-  require.ensure(['../../lib/polyfill/ios-drag-drop.js'], (require) => {
-    require('../../lib/polyfill/ios-drag-drop.js');
+  require.ensure(['../../lib/polyfill/drag-drop-polyfill.min.js'], (require) => {
+    var DragDropPolyfill = require('../../lib/polyfill/drag-drop-polyfill.min.js');
+    require('../../lib/polyfill/drag-drop-polyfill.css');
+    DragDropPolyfill.Initialize({});
   }, 'ios-drag-drop');
 }
