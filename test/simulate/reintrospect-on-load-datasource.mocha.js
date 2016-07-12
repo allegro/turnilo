@@ -15,17 +15,14 @@
  */
 
 const expect = require('chai').expect;
-const spawn = require('child_process').spawn;
 const request = require('request');
 const mockDruid = require('../utils/mock-druid');
 const extend = require('../utils/extend');
+const spawnServer = require('../utils/spawn-server');
 const extractConfig = require('../utils/extract-config');
 
 const TEST_PORT = 18082;
-
-var child;
-var ready = false;
-var stdall = '';
+var pivotServer;
 
 var segmentMetadataResponse = [
   {
@@ -116,23 +113,13 @@ describe('reintrospect on load with datasource', function () {
         }
       }
     }).then(function() {
-      child = spawn('bin/pivot', `-c test/configs/reintrospect-on-load-datasource.yaml -p ${TEST_PORT}`.split(' '), {
-        env: extend(process.env, {
+      pivotServer = spawnServer(`bin/pivot -c test/configs/reintrospect-on-load-datasource.yaml -p ${TEST_PORT}`, {
+        env: {
           DRUID_HOST: 'localhost:28089'
-        })
-      });
-
-      child.stderr.on('data', (data) => {
-        stdall += data.toString();
-      });
-
-      child.stdout.on('data', (data) => {
-        stdall += data.toString();
-        if (!ready && stdall.indexOf(`Cluster 'druid' could not introspect 'wiki' because: No such datasource`) !== -1) {
-          ready = true;
-          done();
         }
       });
+
+      pivotServer.onHook(`Cluster 'druid' could not introspect 'wiki' because: No such datasource`, done);
     });
   });
 
@@ -171,7 +158,7 @@ describe('reintrospect on load with datasource', function () {
   });
 
   after(() => {
-    child.kill('SIGHUP');
+    pivotServer.kill();
   });
 
 });

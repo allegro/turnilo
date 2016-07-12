@@ -71,7 +71,7 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
     var dataSources = this.state.newSettings.dataSources;
     dataSources.push(DataSource.fromJS({
       name: 'new-datacube',
-      engine: 'druid',
+      clusterName: 'druid',
       source: 'new-source'
     }));
 

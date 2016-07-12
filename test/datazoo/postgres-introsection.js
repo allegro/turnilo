@@ -15,42 +15,27 @@
  */
 
 const expect = require('chai').expect;
-const spawn = require('child_process').spawn;
 const request = require('request');
 const extend = require('../utils/extend');
+const spawnServer = require('../utils/spawn-server');
 const extractConfig = require('../utils/extract-config');
 const basicString = require('../utils/basic-string');
 
 const TEST_PORT = 18082;
-
-var child;
-var ready = false;
-var stdout = '';
-var stderr = '';
+var pivotServer;
 
 describe('datazoo postgres introspection', function () {
   this.timeout(5000);
 
   before((done) => {
-    child = spawn('bin/pivot', `--postgres 192.168.99.100 --database datazoo --user root --password datazoo -p ${TEST_PORT}`.split(' '));
-
-    child.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
-
-    child.stdout.on('data', (data) => {
-      stdout += data.toString();
-      if (!ready && stdout.indexOf(`Pivot is listening on address`) !== -1) {
-        ready = true;
-        done();
-      }
-    });
+    pivotServer = spawnServer(`bin/pivot --postgres 192.168.99.100 --database datazoo --user root --password datazoo -p ${TEST_PORT}`);
+    pivotServer.onHook('Pivot is listening on address', done);
   });
 
   it('works with GET /', (testComplete) => {
     request.get(`http://localhost:${TEST_PORT}/`, (err, response, body) => {
       expect(err).to.equal(null);
-      expect(stderr).to.equal('');
+      expect(pivotServer.getStderr()).to.equal('');
       expect(response.statusCode).to.equal(200);
       expect(body).to.contain('<!DOCTYPE html>');
       expect(body).to.contain('<title>Pivot');
@@ -60,7 +45,7 @@ describe('datazoo postgres introspection', function () {
       var config = extractConfig(body);
       var dataSources = config.appSettings.dataSources;
       expect(dataSources).to.have.length(2);
-      var wikiDataSource = dataSources[1];
+      var wikiDataSource = dataSources[0].name === 'wikipedia' ? dataSources[0] : dataSources[1];
 
       expect(wikiDataSource.name).to.equal('wikipedia');
 
@@ -70,6 +55,7 @@ describe('datazoo postgres introspection', function () {
         "channel ~ $channel",
         "cityName ~ $cityName",
         "comment ~ $comment",
+        "commentLengthStr ~ $commentLengthStr",
         "countryIsoCode ~ $countryIsoCode",
         "countryName ~ $countryName",
         "isAnonymous ~ $isAnonymous",
@@ -103,7 +89,7 @@ describe('datazoo postgres introspection', function () {
   });
 
   after(() => {
-    child.kill('SIGHUP');
+    pivotServer.kill();
   });
 
 });

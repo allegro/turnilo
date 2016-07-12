@@ -26,7 +26,7 @@ describe('Essence', () => {
   var dataSourceJS = {
     name: 'twitter',
     title: 'Twitter',
-    engine: 'druid',
+    clusterName: 'druid',
     source: 'twitter',
     introspection: ('none' as Introspection),
     dimensions: [

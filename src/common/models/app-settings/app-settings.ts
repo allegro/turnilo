@@ -68,14 +68,14 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     }
 
     var executorFactory = context.executorFactory;
-    var dataSources = (parameters.dataSources || []).map(dataSource => {
-      var dataSourceEngine = dataSource.engine;
-      if (dataSourceEngine !== 'native') {
-        var cluster = helper.findByName(clusters, dataSourceEngine);
-        if (!cluster) throw new Error(`Can not find cluster '${dataSourceEngine}' for data source '${dataSource.name}'`);
+    var dataSources = (parameters.dataSources || []).map(dataSourceJS => {
+      var dataSourceClusterName = dataSourceJS.clusterName || (dataSourceJS as any).engine;
+      if (dataSourceClusterName !== 'native') {
+        var cluster = helper.findByName(clusters, dataSourceClusterName);
+        if (!cluster) throw new Error(`Can not find cluster '${dataSourceClusterName}' for data source '${dataSourceJS.name}'`);
       }
 
-      var dataSourceObject = DataSource.fromJS(dataSource, { cluster });
+      var dataSourceObject = DataSource.fromJS(dataSourceJS, { cluster });
       if (executorFactory) {
         var executor = executorFactory(dataSourceObject);
         if (executor) dataSourceObject = dataSourceObject.attachExecutor(executor);
@@ -107,9 +107,9 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     } = parameters;
 
     for (var dataSource of dataSources) {
-      if (dataSource.engine === 'native') continue;
-      if (!helper.findByName(clusters, dataSource.engine)) {
-        throw new Error(`data source ${dataSource.name} refers to an unknown cluster ${dataSource.engine}`);
+      if (dataSource.clusterName === 'native') continue;
+      if (!helper.findByName(clusters, dataSource.clusterName)) {
+        throw new Error(`data source ${dataSource.name} refers to an unknown cluster ${dataSource.clusterName}`);
       }
     }
 
@@ -166,7 +166,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   public getDataSourcesForCluster(clusterName: string): DataSource[] {
-    return this.dataSources.filter(dataSource => dataSource.engine === clusterName);
+    return this.dataSources.filter(dataSource => dataSource.clusterName === clusterName);
   }
 
   public getDataSource(dataSourceName: string): DataSource {

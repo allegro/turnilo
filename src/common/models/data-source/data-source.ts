@@ -25,8 +25,9 @@ import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutabl
 import { getWallTimeString } from '../../utils/time/time';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
+import { FilterClause } from '../filter-clause/filter-clause';
 import { Filter, FilterJS } from '../filter/filter';
-import { SplitsJS } from '../splits/splits';
+import { Splits, SplitsJS } from '../splits/splits';
 import { MaxTime, MaxTimeJS } from '../max-time/max-time';
 import { RefreshRule, RefreshRuleJS } from '../refresh-rule/refresh-rule';
 import { Cluster } from '../cluster/cluster';
@@ -75,7 +76,7 @@ export interface DataSourceValue {
   name: string;
   title?: string;
   description?: string;
-  engine: string;
+  clusterName: string;
   source: string;
   subsetFilter?: Expression;
   rollup?: boolean;
@@ -90,6 +91,7 @@ export interface DataSourceValue {
   timeAttribute?: RefExpression;
   defaultTimezone?: Timezone;
   defaultFilter?: Filter;
+  defaultSplits?: Splits;
   defaultDuration?: Duration;
   defaultSortMeasure?: string;
   defaultSelectedMeasures?: OrderedSet<string>;
@@ -105,7 +107,7 @@ export interface DataSourceJS {
   name: string;
   title?: string;
   description?: string;
-  engine: string;
+  clusterName: string;
   source: string;
   subsetFilter?: ExpressionJS;
   rollup?: boolean;
@@ -120,6 +122,7 @@ export interface DataSourceJS {
   timeAttribute?: string;
   defaultTimezone?: string;
   defaultFilter?: FilterJS;
+  defaultSplits?: SplitsJS;
   defaultDuration?: string;
   defaultSortMeasure?: string;
   defaultSelectedMeasures?: string[];
@@ -132,9 +135,10 @@ export interface DataSourceJS {
 
 export interface DataSourceOptions {
   customAggregations?: CustomDruidAggregations;
-  defaultSplits?: SplitsJS;
+  priority?: number;
 
   // Deprecated
+  defaultSplits?: SplitsJS;
   defaultSplitDimension?: string;
   skipIntrospection?: boolean;
   disableAutofill?: boolean;
@@ -200,7 +204,7 @@ function measuresFromLongForm(longForm: LongForm): Measure[] {
   return measures;
 }
 
-function filterFromLongFrom(longForm: LongForm): Expression {
+function filterFromLongForm(longForm: LongForm): Expression {
   var { metricColumn, values } = longForm;
   return $(metricColumn).in(values.map(v => v.value)).simplify();
 }
@@ -209,8 +213,10 @@ var check: Class<DataSourceValue, DataSourceJS>;
 export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   static DEFAULT_INTROSPECTION: Introspection = 'autofill-all';
   static INTROSPECTION_VALUES: Introspection[] = ['none', 'no-autofill', 'autofill-dimensions-only', 'autofill-measures-only', 'autofill-all'];
-  static DEFAULT_TIMEZONE = Timezone.UTC;
-  static DEFAULT_DURATION = Duration.fromJS('P1D');
+  static DEFAULT_DEFAULT_TIMEZONE = Timezone.UTC;
+  static DEFAULT_DEFAULT_FILTER = Filter.EMPTY;
+  static DEFAULT_DEFAULT_SPLITS = Splits.EMPTY;
+  static DEFAULT_DEFAULT_DURATION = Duration.fromJS('P1D');
 
   static isDataSource(candidate: any): candidate is DataSource {
     return isInstanceOf(candidate, DataSource);
@@ -235,7 +241,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   static fromClusterAndExternal(name: string, cluster: Cluster, external: External): DataSource {
     var dataSource = DataSource.fromJS({
       name,
-      engine: cluster.name,
+      clusterName: cluster.name,
       source: String(external.source),
       refreshRule: RefreshRule.query().toJS()
     });
@@ -245,11 +251,16 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
   static fromJS(parameters: DataSourceJS, context: DataSourceContext = {}): DataSource {
     const { cluster, executor } = context;
-    var engine = parameters.engine;
+    var clusterName = parameters.clusterName;
     var introspection = parameters.introspection;
+    var defaultSplitsJS = parameters.defaultSplits;
     var attributeOverrideJSs = parameters.attributeOverrides;
 
     // Back compat.
+    if (!clusterName) {
+      clusterName = (parameters as any).engine;
+    }
+
     var options = parameters.options || {};
     if (options.skipIntrospection) {
       if (!introspection) introspection = 'none';
@@ -267,10 +278,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       options.defaultSplits = options.defaultSplitDimension;
       delete options.defaultSplitDimension;
     }
+    if (options.defaultSplits) {
+      if (!defaultSplitsJS) defaultSplitsJS = options.defaultSplits;
+      delete options.defaultSplits;
+    }
     // End Back compat.
 
-    introspection = introspection || DataSource.DEFAULT_INTROSPECTION;
-    if (DataSource.INTROSPECTION_VALUES.indexOf(introspection) === -1) {
+    if (introspection && DataSource.INTROSPECTION_VALUES.indexOf(introspection) === -1) {
       throw new Error(`invalid introspection value ${introspection}, must be one of ${DataSource.INTROSPECTION_VALUES.join(', ')}`);
     }
 
@@ -310,7 +324,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
       if (longForm.addSubsetFilter) {
         if (!subsetFilter) subsetFilter = Expression.TRUE;
-        subsetFilter = subsetFilter.and(filterFromLongFrom(longForm)).simplify();
+        subsetFilter = subsetFilter.and(filterFromLongForm(longForm)).simplify();
       }
     }
 
@@ -319,7 +333,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       name: parameters.name,
       title: parameters.title,
       description: parameters.description,
-      engine,
+      clusterName,
       source: parameters.source,
       subsetFilter,
       rollup: parameters.rollup,
@@ -333,6 +347,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       timeAttribute,
       defaultTimezone: parameters.defaultTimezone ? Timezone.fromJS(parameters.defaultTimezone) : null,
       defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : null,
+      defaultSplits: defaultSplitsJS ? Splits.fromJS(defaultSplitsJS, { dimensions }) : null,
       defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : null,
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
       defaultSelectedMeasures: parameters.defaultSelectedMeasures ? OrderedSet(parameters.defaultSelectedMeasures) : null,
@@ -341,7 +356,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       maxTime
     };
     if (cluster) {
-      if (engine !== cluster.name) throw new Error(`Engine '${engine}' was given but '${cluster.name}' cluster was supplied (must match)`);
+      if (clusterName !== cluster.name) throw new Error(`Cluster name '${clusterName}' was given but '${cluster.name}' cluster was supplied (must match)`);
       value.cluster = cluster;
     }
     if (executor) value.executor = executor;
@@ -352,7 +367,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public name: string;
   public title: string;
   public description: string;
-  public engine: string;
+  public clusterName: string;
   public source: string;
   public subsetFilter: Expression;
   public rollup: boolean;
@@ -366,6 +381,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public timeAttribute: RefExpression;
   public defaultTimezone: Timezone;
   public defaultFilter: Filter;
+  public defaultSplits: Splits;
   public defaultDuration: Duration;
   public defaultSortMeasure: string;
   public defaultSelectedMeasures: OrderedSet<string>;
@@ -384,19 +400,20 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     this.title = parameters.title || makeTitle(name);
     this.description = parameters.description || '';
-    this.engine = parameters.engine || 'druid';
+    this.clusterName = parameters.clusterName || 'druid';
     this.source = parameters.source || name;
     this.subsetFilter = parameters.subsetFilter;
     this.rollup = Boolean(parameters.rollup);
     this.options = parameters.options || {};
-    this.introspection = parameters.introspection || DataSource.DEFAULT_INTROSPECTION;
+    this.introspection = parameters.introspection;
     this.attributes = parameters.attributes || [];
     this.attributeOverrides = parameters.attributeOverrides || [];
     this.derivedAttributes = parameters.derivedAttributes;
     this.timeAttribute = parameters.timeAttribute;
-    this.defaultTimezone = parameters.defaultTimezone || DataSource.DEFAULT_TIMEZONE;
-    this.defaultFilter = parameters.defaultFilter || Filter.EMPTY;
-    this.defaultDuration = parameters.defaultDuration || DataSource.DEFAULT_DURATION;
+    this.defaultTimezone = parameters.defaultTimezone;
+    this.defaultFilter = parameters.defaultFilter;
+    this.defaultSplits = parameters.defaultSplits;
+    this.defaultDuration = parameters.defaultDuration;
     this.defaultSortMeasure = parameters.defaultSortMeasure;
     this.defaultSelectedMeasures = parameters.defaultSelectedMeasures;
     this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
@@ -423,7 +440,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       name: this.name,
       title: this.title,
       description: this.description,
-      engine: this.engine,
+      clusterName: this.clusterName,
       source: this.source,
       subsetFilter: this.subsetFilter,
       rollup: this.rollup,
@@ -437,6 +454,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       timeAttribute: this.timeAttribute,
       defaultTimezone: this.defaultTimezone,
       defaultFilter: this.defaultFilter,
+      defaultSplits: this.defaultSplits,
       defaultDuration: this.defaultDuration,
       defaultSortMeasure: this.defaultSortMeasure,
       defaultSelectedMeasures: this.defaultSelectedMeasures,
@@ -454,18 +472,19 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       name: this.name,
       title: this.title,
       description: this.description,
-      engine: this.engine,
+      clusterName: this.clusterName,
       source: this.source,
       subsetFilter: this.subsetFilter ? this.subsetFilter.toJS() : null,
-      introspection: this.introspection,
       dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
       measures: this.measures.toArray().map(measure => measure.toJS()),
-      defaultTimezone: this.defaultTimezone.toJS(),
-      defaultFilter: this.defaultFilter.toJS(),
-      defaultDuration: this.defaultDuration.toJS(),
-      defaultSortMeasure: this.defaultSortMeasure,
       refreshRule: this.refreshRule.toJS()
     };
+    if (this.introspection) js.introspection = this.introspection;
+    if (this.defaultTimezone) js.defaultTimezone = this.defaultTimezone.toJS();
+    if (this.defaultFilter) js.defaultFilter = this.defaultFilter.toJS();
+    if (this.defaultSplits) js.defaultSplits = this.defaultSplits.toJS();
+    if (this.defaultDuration) js.defaultDuration = this.defaultDuration.toJS();
+    if (this.defaultSortMeasure) js.defaultSortMeasure = this.defaultSortMeasure;
     if (this.defaultSelectedMeasures) js.defaultSelectedMeasures = this.defaultSelectedMeasures.toArray();
     if (this.defaultPinnedDimensions) js.defaultPinnedDimensions = this.defaultPinnedDimensions.toArray();
     if (this.rollup) js.rollup = true;
@@ -497,7 +516,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.name === other.name &&
       this.title === other.title &&
       this.description === other.description &&
-      this.engine === other.engine &&
+      this.clusterName === other.clusterName &&
       this.source === other.source &&
       immutableEqual(this.subsetFilter, other.subsetFilter) &&
       this.rollup === other.rollup &&
@@ -509,9 +528,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       immutableListsEqual(this.dimensions, other.dimensions) &&
       immutableListsEqual(this.measures, other.measures) &&
       immutableEqual(this.timeAttribute, other.timeAttribute) &&
-      this.defaultTimezone.equals(other.defaultTimezone) &&
-      this.defaultFilter.equals(other.defaultFilter) &&
-      this.defaultDuration.equals(other.defaultDuration) &&
+      immutableEqual(this.defaultTimezone, other.defaultTimezone) &&
+      immutableEqual(this.defaultFilter, other.defaultFilter) &&
+      immutableEqual(this.defaultSplits, other.defaultSplits) &&
+      immutableEqual(this.defaultDuration, other.defaultDuration) &&
       this.defaultSortMeasure === other.defaultSortMeasure &&
       Boolean(this.defaultSelectedMeasures) === Boolean(other.defaultSelectedMeasures) &&
       (!this.defaultSelectedMeasures || this.defaultSelectedMeasures.equals(other.defaultSelectedMeasures)) &&
@@ -531,8 +551,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public toExternal(): External {
-    if (this.engine === 'native') throw new Error(`there is no external on a native data source`);
-    const { cluster } = this;
+    if (this.clusterName === 'native') throw new Error(`there is no external on a native data source`);
+    const { cluster, options } = this;
     if (!cluster) throw new Error('must have a cluster');
 
     var externalValue: ExternalValue = {
@@ -541,7 +561,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       source: this.source,
       version: cluster.version,
       derivedAttributes: this.derivedAttributes,
-      customAggregations: this.options.customAggregations,
+      customAggregations: options.customAggregations,
       filter: this.subsetFilter
     };
 
@@ -550,9 +570,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       externalValue.timeAttribute = this.timeAttribute.name;
       externalValue.introspectionStrategy = cluster.getIntrospectionStrategy();
       externalValue.allowSelectQueries = true;
-      externalValue.context = {
+
+      var externalContext: Lookup<any> = {
         timeout: cluster.getTimeout()
       };
+      if (options.priority) externalContext['priority'] = options.priority;
+      externalValue.context = externalContext;
     }
 
     if (this.introspection === 'none') {
@@ -632,7 +655,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public updateWithDataset(dataset: Dataset): DataSource {
-    if (this.engine !== 'native') throw new Error('must be native to have a dataset');
+    if (this.clusterName !== 'native') throw new Error('must be native to have a dataset');
 
     var executor = basicExecutorFactory({
       datasets: { main: dataset }
@@ -642,7 +665,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public updateWithExternal(external: External): DataSource {
-    if (this.engine === 'native') throw new Error('can not be native and have an external');
+    if (this.clusterName === 'native') throw new Error('can not be native and have an external');
 
     var executor = basicExecutorFactory({
       datasets: { main: external }
@@ -663,8 +686,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     // Do not reveal the subset filter to the client
     value.subsetFilter = null;
 
-    // No need for any introspection on the client
-    value.introspection = 'none';
+    // No need for any introspection information on the client
+    value.introspection = null;
 
     // No point sending over the maxTime
     if (this.refreshRule.isRealtime()) {
@@ -749,7 +772,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public rolledUp(): boolean {
-    return this.engine === 'druid';
+    return this.clusterName === 'druid';
   }
 
   /**
@@ -796,7 +819,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public addAttributes(newAttributes: Attributes): DataSource {
-    var { introspection, dimensions, measures, attributes } = this;
+    var { dimensions, measures, attributes } = this;
+    const introspection = this.getIntrospection();
     if (introspection === 'none') return this;
 
     var autofillDimensions = introspection === 'autofill-dimensions-only' || introspection === 'autofill-all';
@@ -900,11 +924,50 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       value.defaultSortMeasure = measures.size ? measures.first().name : null;
     }
 
-    if (!value.timeAttribute && dimensions.first().kind === 'time') {
+    if (!value.timeAttribute && dimensions.size && dimensions.first().kind === 'time') {
       value.timeAttribute = <RefExpression>dimensions.first().expression;
     }
 
     return new DataSource(value);
+  }
+
+  public getIntrospection(): Introspection {
+    return this.introspection || DataSource.DEFAULT_INTROSPECTION;
+  }
+
+  public getDefaultTimezone(): Timezone {
+    return this.defaultTimezone || DataSource.DEFAULT_DEFAULT_TIMEZONE;
+  }
+
+  public getDefaultFilter(): Filter {
+    var filter = this.defaultFilter || DataSource.DEFAULT_DEFAULT_FILTER;
+    if (this.timeAttribute) {
+      filter = filter.setSelection(
+        this.timeAttribute,
+        $(FilterClause.MAX_TIME_REF_NAME).timeRange(this.getDefaultDuration(), -1)
+      );
+    }
+    return filter;
+  }
+
+  public getDefaultSplits(): Splits {
+    return this.defaultSplits || DataSource.DEFAULT_DEFAULT_SPLITS;
+  }
+
+  public getDefaultDuration(): Duration {
+    return this.defaultDuration || DataSource.DEFAULT_DEFAULT_DURATION;
+  }
+
+  public getDefaultSortMeasure(): string {
+    return this.defaultSortMeasure || this.measures.first().name;
+  }
+
+  public getDefaultSelectedMeasures(): OrderedSet<string> {
+    return this.defaultSelectedMeasures || (OrderedSet(this.measures.slice(0, 4).map(m => m.name)) as any);
+  }
+
+  public getDefaultPinnedDimensions(): OrderedSet<string> {
+    return this.defaultPinnedDimensions || (OrderedSet([]) as any);
   }
 
   change(propertyName: string, newValue: any): DataSource {

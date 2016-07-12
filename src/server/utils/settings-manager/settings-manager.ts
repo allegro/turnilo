@@ -70,7 +70,14 @@ export class SettingsManager {
 
     switch (settingsLocation.location) {
       case 'transient':
-        this.currentWork = settingsLocation.initAppSettings ? this.reviseSettings(settingsLocation.initAppSettings) : Q(null);
+        this.currentWork = Q(null)
+          .then(() => {
+            return settingsLocation.initAppSettings ? this.reviseSettings(settingsLocation.initAppSettings) : null;
+          })
+          .catch(e => {
+            logger.error(`Fatal settings initialization error: ${e.message}`);
+            throw e;
+          });
         break;
 
       case 'local':
@@ -103,7 +110,7 @@ export class SettingsManager {
       return {
         name: dataSource.name,
         external: dataSource.toExternal(),
-        suppressIntrospection: dataSource.introspection === 'none'
+        suppressIntrospection: dataSource.getIntrospection() === 'none'
       };
     });
 
@@ -131,7 +138,7 @@ export class SettingsManager {
   }
 
   private addFileManager(dataSource: DataSource): Q.Promise<any> {
-    if (dataSource.engine !== 'native') throw new Error(`data source '${dataSource.name}' must be native to have a file manager`);
+    if (dataSource.clusterName !== 'native') throw new Error(`data source '${dataSource.name}' must be native to have a file manager`);
     const { verbose, logger, anchorPath } = this;
 
     var fileManager = new FileManager({
@@ -147,7 +154,7 @@ export class SettingsManager {
   }
 
   private removeFileManager(dataSource: DataSource): void {
-    if (dataSource.engine !== 'native') throw new Error(`data source '${dataSource.name}' must be native to have a file manager`);
+    if (dataSource.clusterName !== 'native') throw new Error(`data source '${dataSource.name}' must be native to have a file manager`);
 
     this.fileManagers = this.fileManagers.filter((fileManager) => {
       if (fileManager.uri !== dataSource.source) return true;
@@ -215,7 +222,7 @@ export class SettingsManager {
     var newNativeDataSources = newSettings.getDataSourcesForCluster('native');
     updater(oldNativeDataSources, newNativeDataSources, {
       onExit: (oldDataSource) => {
-        if (oldDataSource.engine === 'native') {
+        if (oldDataSource.clusterName === 'native') {
           this.removeFileManager(oldDataSource);
         } else {
           throw new Error(`only native datasources work for now`); // ToDo: fix
@@ -225,7 +232,7 @@ export class SettingsManager {
         logger.log(`${newDataSource.name} UPDATED datasource`);
       },
       onEnter: (newDataSource) => {
-        if (newDataSource.engine === 'native') {
+        if (newDataSource.clusterName === 'native') {
           tasks.push(this.addFileManager(newDataSource));
         } else {
           throw new Error(`only native datasources work for now`); // ToDo: fix
@@ -241,11 +248,11 @@ export class SettingsManager {
 
     var clusterManagers = this.clusterManagers;
     this.appSettings = newSettings.attachExecutors((dataSource) => {
-      if (dataSource.engine === 'native') {
+      if (dataSource.clusterName === 'native') {
         return null; // ToDo: fix this.
       } else {
         for (var clusterManager of clusterManagers) {
-          if (clusterManager.cluster.name === dataSource.engine) {
+          if (clusterManager.cluster.name === dataSource.clusterName) {
             var external = clusterManager.getExternalByName(dataSource.name);
             if (!external) return null;
             return basicExecutorFactory({
@@ -291,7 +298,6 @@ export class SettingsManager {
 
     var dataSource = this.appSettings.getDataSource(dataSourceName);
     if (!dataSource) {
-      logger.log(`Adding Data Cube: '${dataSourceName}'`);
       dataSource = DataSource.fromClusterAndExternal(dataSourceName, cluster, changedExternal);
     }
     dataSource = dataSource.updateWithExternal(changedExternal);

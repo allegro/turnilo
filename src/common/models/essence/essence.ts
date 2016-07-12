@@ -164,8 +164,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   static fromDataSource(dataSource: DataSource, context: EssenceContext): Essence {
-    var timezone = dataSource.defaultTimezone;
-
     var splits = Splits.EMPTY;
     var { defaultSplits } = dataSource.options;
     if (defaultSplits) {
@@ -177,15 +175,15 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       visualizations: context.visualizations,
 
       visualization: null,
-      timezone,
+      timezone: dataSource.getDefaultTimezone(),
       filter: null,
       splits,
       multiMeasureMode: false,
-      singleMeasure: dataSource.defaultSortMeasure,
-      selectedMeasures: dataSource.defaultSelectedMeasures || OrderedSet(dataSource.measures.toArray().slice(0, 4).map(m => m.name)),
-      pinnedDimensions: dataSource.defaultPinnedDimensions || OrderedSet([]),
+      singleMeasure: dataSource.getDefaultSortMeasure(),
+      selectedMeasures: dataSource.getDefaultSelectedMeasures(),
+      pinnedDimensions: dataSource.getDefaultPinnedDimensions(),
       colors: null,
-      pinnedSort: dataSource.defaultSortMeasure,
+      pinnedSort: dataSource.getDefaultSortMeasure(),
       compare: null,
       highlight: null
     });
@@ -209,7 +207,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var filter = parameters.filter ? Filter.fromJS(parameters.filter).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute) : null;
     var splits = Splits.fromJS(parameters.splits || [], dataSource).constrainToDimensions(dataSource.dimensions);
 
-    var defaultSortMeasureName = dataSource.defaultSortMeasure;
+    var defaultSortMeasureName = dataSource.getDefaultSortMeasure();
 
     var multiMeasureMode = hasOwnProperty(parameters, 'multiMeasureMode') ? parameters.multiMeasureMode : !hasOwnProperty(parameters, 'singleMeasure');
     var singleMeasure = dataSource.getMeasure(parameters.singleMeasure) ? parameters.singleMeasure : defaultSortMeasureName;
@@ -294,14 +292,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     timezone = timezone || Timezone.UTC;
 
     if (!filter) {
-      if (dataSource.timeAttribute) {
-        filter = dataSource.defaultFilter.setSelection(
-          dataSource.timeAttribute,
-          $(FilterClause.MAX_TIME_REF_NAME).timeRange(dataSource.defaultDuration, -1)
-        );
-      } else {
-        filter = Filter.EMPTY;
-      }
+      filter = dataSource.getDefaultFilter();
     }
 
     multiMeasureMode = Boolean(multiMeasureMode);
@@ -386,7 +377,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     };
     if (this.multiMeasureMode) js.multiMeasureMode = true;
     if (this.colors) js.colors = this.colors.toJS();
-    var defaultSortMeasure = this.dataSource.defaultSortMeasure;
+    var defaultSortMeasure = this.dataSource.getDefaultSortMeasure();
     if (this.pinnedSort !== defaultSortMeasure) js.pinnedSort = this.pinnedSort;
     if (this.compare) js.compare = this.compare.toJS();
     if (this.highlight) js.highlight = this.highlight.toJS();
@@ -655,8 +646,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       value.colors = null;
     }
 
-    var defaultSortMeasureName = newDataSource.defaultSortMeasure;
-    if (!newDataSource.getMeasure(value.pinnedSort)) value.pinnedSort = defaultSortMeasureName;
+    if (!newDataSource.getMeasure(value.pinnedSort)) value.pinnedSort = newDataSource.getDefaultSortMeasure();
 
     if (value.compare) {
       value.compare = value.compare.constrainToDimensions(newDataSource.dimensions, newDataSource.timeAttribute);

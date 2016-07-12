@@ -46,8 +46,8 @@ export const CUBE_EDIT = {
     error: '',
     help: 'The cube\'s description'
   },
-  engine: {
-    error: 'The engine should not be empty',
+  clusterName: {
+    error: 'The cluster name should not be empty',
     help: 'The cube\'s cluster, really.'
   },
   source: {

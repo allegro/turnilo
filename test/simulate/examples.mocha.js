@@ -15,34 +15,23 @@
  */
 
 const expect = require('chai').expect;
-const spawn = require('child_process').spawn;
 const request = require('request');
 const plywood = require('plywood');
+const spawnServer = require('../utils/spawn-server');
 
 const $ = plywood.$;
 const ply = plywood.ply;
 const r = plywood.r;
 
 const TEST_PORT = 18082;
-
-var child;
+var pivotServer;
 
 describe('examples', function () {
   this.timeout(5000);
 
   before((done) => {
-    child = spawn('bin/pivot', `--examples -p ${TEST_PORT}`.split(' '));
-
-    child.stderr.on('data', (data) => {
-      throw new Error(data.toString());
-    });
-
-    child.stdout.on('data', (data) => {
-      data = data.toString();
-      if (data.indexOf(`Pivot is listening on address`) !== -1) {
-        done();
-      }
-    });
+    pivotServer = spawnServer(`bin/pivot --examples -p ${TEST_PORT}`);
+    pivotServer.onHook('Pivot is listening on address', done);
   });
 
   it('works with GET /health', (testComplete) => {
@@ -132,7 +121,7 @@ describe('examples', function () {
   });
 
   after(() => {
-    child.kill('SIGHUP');
+    pivotServer.kill();
   });
 
 });

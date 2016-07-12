@@ -40,7 +40,7 @@ describe('ImmutableInput', () => {
     component = TestUtils.renderIntoDocument(
       <ImmutableInput
         instance={DataSourceMock.twitter()}
-        path={'engine'}
+        path={'clusterName'}
         validator={/^[a-z]+$/}
         onChange={onChange}
         onInvalid={onInvalid}
@@ -56,7 +56,7 @@ describe('ImmutableInput', () => {
   });
 
   it('works for valid values', () => {
-    node.value = 'giraffe'; // Giraffes are the best engines
+    node.value = 'giraffe';
     TestUtils.Simulate.change(node);
 
     expect(onInvalid.callCount).to.equal(0);
@@ -65,11 +65,11 @@ describe('ImmutableInput', () => {
     const args = onChange.args[0];
 
     expect(args[0]).to.be.instanceOf(DataSource);
-    expect(args[0].engine).to.equal('giraffe');
+    expect(args[0].clusterName).to.equal('giraffe');
 
     expect(args[1]).to.equal(true);
 
-    expect(args[2]).to.equal('engine');
+    expect(args[2]).to.equal('clusterName');
   });
 
   it('works for invalid values', () => {
@@ -83,11 +83,11 @@ describe('ImmutableInput', () => {
     const args = onChange.args[0];
 
     expect(args[0]).to.be.instanceOf(DataSource);
-    expect(args[0].engine).to.equal(DataSourceMock.twitter().engine);
+    expect(args[0].clusterName).to.equal(DataSourceMock.twitter().clusterName);
 
     expect(args[1]).to.equal(false);
 
-    expect(args[2]).to.equal('engine');
+    expect(args[2]).to.equal('clusterName');
 
     expect(node.value).to.equal('123');
   });

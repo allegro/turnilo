@@ -240,7 +240,7 @@ if (serverSettingsFilePath) {
   if (fileToLoad) {
     initAppSettings = initAppSettings.addDataSource(new DataSource({
       name: path.basename(fileToLoad, path.extname(fileToLoad)),
-      engine: 'native',
+      clusterName: 'native',
       source: fileToLoad
     }));
   }

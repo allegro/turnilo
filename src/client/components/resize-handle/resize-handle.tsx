@@ -17,7 +17,6 @@
 require('./resize-handle.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 import { clamp } from '../../utils/dom/dom';
 
@@ -43,8 +42,6 @@ export interface ResizeHandleState {
 }
 
 export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandleState> {
-  public mounted: boolean;
-
   private offset = 0;
 
   constructor() {
@@ -60,11 +57,6 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     this.setState({
       currentValue: this.constrainValue(this.props.initialValue)
     });
-    this.mounted = true;
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
   }
 
   onMouseDown(event: MouseEvent) {

@@ -38,17 +38,17 @@ describe('ImmutableDropdown', () => {
 
     var MyDropdown = ImmutableDropdown.specialize<ListItem>();
 
-    const engineTypes = Cluster.TYPE_VALUES.map(type => {return {value: type, label: type}; });
+    const clusterNames = Cluster.TYPE_VALUES.map(type => {return {value: type, label: type}; });
 
     component = TestUtils.renderIntoDocument(
       <MyDropdown
         instance={DataSourceMock.twitter()}
-        path={'engine'}
+        path={'clusterName'}
         label="Cluster"
 
         onChange={onChange}
 
-        items={engineTypes}
+        items={clusterNames}
 
         equal={(a: ListItem, b: ListItem) => a.value === b.value}
         renderItem={(a: ListItem) => a.label}
@@ -79,11 +79,11 @@ describe('ImmutableDropdown', () => {
     const args = onChange.args[0];
 
     expect(args[0]).to.be.instanceOf(DataSource);
-    expect(args[0].engine).to.equal(Cluster.TYPE_VALUES[1]);
+    expect(args[0].clusterName).to.equal(Cluster.TYPE_VALUES[1]);
 
     expect(args[1]).to.equal(true);
 
-    expect(args[2]).to.equal('engine');
+    expect(args[2]).to.equal('clusterName');
   });
 
 });

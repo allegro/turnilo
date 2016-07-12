@@ -46,6 +46,10 @@ describe('AppSettings', () => {
 
   describe("upgrades", () => {
     it("deals with old config style", () => {
+      var wikiDataSourceJS = DataSourceMock.WIKI_JS;
+      delete wikiDataSourceJS.clusterName;
+      (wikiDataSourceJS as any).engine = 'druid';
+
       var oldJS: any = {
         customization: {},
         druidHost: '192.168.99.100',
@@ -55,7 +59,7 @@ describe('AppSettings', () => {
         sourceReintrospectInterval: 10002,
         sourceReintrospectOnLoad: true,
         dataSources: [
-          DataSourceMock.WIKI_JS
+          wikiDataSourceJS
         ]
       };
 
@@ -139,6 +143,7 @@ describe('AppSettings', () => {
                 "unsplitable": true
               }
             ],
+            "clusterName": "druid",
             "defaultDuration": "P3D",
             "defaultFilter": {
               "op": "literal",
@@ -172,7 +177,6 @@ describe('AppSettings', () => {
                 "title": "Article Name"
               }
             ],
-            "engine": "druid",
             "introspection": "none",
             "measures": [
               {

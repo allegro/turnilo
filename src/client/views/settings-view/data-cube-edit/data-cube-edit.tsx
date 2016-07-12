@@ -189,13 +189,13 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
 
       <FormLabel
         label="Cluster"
-        helpText={LABELS.engine.help}
-        errorText={errors.engine ? LABELS.engine.error : undefined}
+        helpText={LABELS.clusterName.help}
+        errorText={errors.clusterName ? LABELS.clusterName.error : undefined}
       />
       <EngineDropDown
         items={engineTypes}
         instance={tempCube}
-        path={'engine'}
+        path={'clusterName'}
         equal={(a: ListItem, b: ListItem) => a.value === b.value}
         renderItem={(a: ListItem) => a.label}
         keyItem={(a: ListItem) => a.value}
