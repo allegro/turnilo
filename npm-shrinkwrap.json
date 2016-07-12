@@ -218,16 +218,9 @@
       "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz"
     },
     "chronoshift": {
-      "version": "0.4.5",
-      "from": "chronoshift@0.4.5",
-      "resolved": "https://registry.npmjs.org/chronoshift/-/chronoshift-0.4.5.tgz",
-      "dependencies": {
-        "immutable-class": {
-          "version": "0.4.3",
-          "from": "immutable-class@0.4.3",
-          "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.4.3.tgz"
-        }
-      }
+      "version": "0.4.6",
+      "from": "chronoshift@0.4.6",
+      "resolved": "https://registry.npmjs.org/chronoshift/-/chronoshift-0.4.6.tgz"
     },
     "clipboard": {
       "version": "1.5.12",
@@ -687,7 +680,7 @@
     },
     "glob": {
       "version": "7.0.5",
-      "from": "glob@^7.0.0",
+      "from": "glob@^7.0.5",
       "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.5.tgz"
     },
     "glob-stream": {
@@ -869,9 +862,9 @@
       "resolved": "https://registry.npmjs.org/immutable/-/immutable-3.8.1.tgz"
     },
     "immutable-class": {
-      "version": "0.4.5",
-      "from": "immutable-class@0.4.5",
-      "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.4.5.tgz"
+      "version": "0.4.6",
+      "from": "immutable-class@0.4.6",
+      "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.4.6.tgz"
     },
     "indent-string": {
       "version": "2.1.0",
@@ -1156,9 +1149,9 @@
       "resolved": "https://registry.npmjs.org/loose-envify/-/loose-envify-1.2.0.tgz"
     },
     "loud-rejection": {
-      "version": "1.5.0",
+      "version": "1.6.0",
       "from": "loud-rejection@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/loud-rejection/-/loud-rejection-1.5.0.tgz"
+      "resolved": "https://registry.npmjs.org/loud-rejection/-/loud-rejection-1.6.0.tgz"
     },
     "lru-cache": {
       "version": "2.7.3",
@@ -1439,9 +1432,9 @@
       "resolved": "https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-0.1.3.tgz"
     },
     "pg-pool": {
-      "version": "1.3.0",
+      "version": "1.3.1",
       "from": "pg-pool@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/pg-pool/-/pg-pool-1.3.0.tgz"
+      "resolved": "https://registry.npmjs.org/pg-pool/-/pg-pool-1.3.1.tgz"
     },
     "pg-types": {
       "version": "1.11.0",
@@ -1469,9 +1462,9 @@
       "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-2.0.1.tgz"
     },
     "plywood": {
-      "version": "0.11.6",
-      "from": "plywood@0.11.6",
-      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.11.6.tgz"
+      "version": "0.11.8",
+      "from": "plywood@0.11.8",
+      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.11.8.tgz"
     },
     "plywood-druid-requester": {
       "version": "1.4.4",
@@ -1499,9 +1492,9 @@
       "resolved": "https://registry.npmjs.org/postgres-bytea/-/postgres-bytea-1.0.0.tgz"
     },
     "postgres-date": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "from": "postgres-date@>=1.0.0 <1.1.0",
-      "resolved": "https://registry.npmjs.org/postgres-date/-/postgres-date-1.0.2.tgz"
+      "resolved": "https://registry.npmjs.org/postgres-date/-/postgres-date-1.0.3.tgz"
     },
     "postgres-date-utc": {
       "version": "1.0.3",
@@ -1564,19 +1557,19 @@
       "resolved": "https://registry.npmjs.org/raw-body/-/raw-body-2.1.7.tgz"
     },
     "react": {
-      "version": "15.2.0",
-      "from": "react@15.2.0",
-      "resolved": "https://registry.npmjs.org/react/-/react-15.2.0.tgz"
+      "version": "15.2.1",
+      "from": "react@15.2.1",
+      "resolved": "https://registry.npmjs.org/react/-/react-15.2.1.tgz"
     },
     "react-addons-css-transition-group": {
-      "version": "15.2.0",
-      "from": "react-addons-css-transition-group@15.2.0",
-      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.2.0.tgz"
+      "version": "15.2.1",
+      "from": "react-addons-css-transition-group@15.2.1",
+      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.2.1.tgz"
     },
     "react-dom": {
-      "version": "15.2.0",
-      "from": "react-dom@15.2.0",
-      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.2.0.tgz"
+      "version": "15.2.1",
+      "from": "react-dom@15.2.1",
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.2.1.tgz"
     },
     "read-pkg": {
       "version": "1.1.0",
@@ -1646,9 +1639,9 @@
       "resolved": "https://registry.npmjs.org/right-align/-/right-align-0.1.3.tgz"
     },
     "rimraf": {
-      "version": "2.5.2",
+      "version": "2.5.3",
       "from": "rimraf@^2.2.8",
-      "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.5.2.tgz"
+      "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.5.3.tgz"
     },
     "samsam": {
       "version": "1.1.2",
@@ -1920,9 +1913,9 @@
       "resolved": "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.10.tgz"
     },
     "uglify-js": {
-      "version": "2.6.4",
+      "version": "2.7.0",
       "from": "uglify-js@>=2.6.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.6.4.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.7.0.tgz",
       "dependencies": {
         "async": {
           "version": "0.2.10",

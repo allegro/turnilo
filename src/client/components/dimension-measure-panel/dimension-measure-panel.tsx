@@ -7,8 +7,8 @@ import { clamp } from '../../utils/dom/dom';
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
 import { MeasuresTile } from '../measures-tile/measures-tile';
 
-const TOTAL_FLEXES = 7;
-const MIN_FLEX = 1;
+const TOTAL_FLEXES = 100;
+const MIN_FLEX = 20;
 const MIN_HEIGHT = 150;
 
 export interface DimensionMeasurePanelProps extends React.Props<any> {

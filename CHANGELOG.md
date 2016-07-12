@@ -2,6 +2,12 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.17
+
+- Added better small screen support
+- Fixed dragging polyfill (on touch devices)
+- Added file notices
+
 ## 0.9.16
 
 - Selected filtered items appear at top of menu

@@ -52,7 +52,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
         var prevRange = getX(prevDatum) as PlywoodRange;
         if (prevRange.end.valueOf() !== range.start.valueOf()) {
           dataPoints.push([
-            scaleX(rangeMidpoint.valueOf() - (range.end.valueOf() - range.start.valueOf())),
+            scaleX(rangeMidpoint.valueOf() - ((range.end.valueOf() as any) - (range.start.valueOf() as any))),
             scaleY(0)
           ]);
         }
@@ -72,7 +72,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
         var nextRange = getX(nextDatum) as PlywoodRange;
         if (range.end.valueOf() !== nextRange.start.valueOf()) {
           dataPoints.push([
-            scaleX(rangeMidpoint.valueOf() + (range.end.valueOf() - range.start.valueOf())),
+            scaleX(rangeMidpoint.valueOf() + ((range.end.valueOf() as any) - (range.start.valueOf() as any))),
             scaleY(0)
           ]);
         }
