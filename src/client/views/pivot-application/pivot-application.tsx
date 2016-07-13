@@ -22,6 +22,7 @@ import { helper } from 'plywood';
 
 import { DataSource, AppSettings, User } from '../../../common/models/index';
 
+import { createFunctionSlot, FunctionSlot } from '../../utils/function-slot/function-slot';
 import { AboutModal } from '../../components/about-modal/about-modal';
 import { SideDrawer } from '../../components/side-drawer/side-drawer';
 import { Notifications, Notifier } from '../../components/notifications/notifications';
@@ -63,9 +64,11 @@ export const SETTINGS: ViewType = "settings";
 
 export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
   private hashUpdating: boolean = false;
+  private sideBarHrefFn: FunctionSlot<string>;
 
   constructor() {
     super();
+    this.sideBarHrefFn = createFunctionSlot<string>();
     this.state = {
       appSettings: null,
       drawerOpen: false,
@@ -298,6 +301,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         onOpenAbout={this.openAboutModal.bind(this)}
         onClose={closeSideDrawer}
         customization={customization}
+        itemHrefFn={this.sideBarHrefFn}
         isCube={viewType === CUBE && !linkViewConfig}
         isLink={viewType === LINK || !!linkViewConfig}
         isHome={viewType === HOME}
@@ -339,6 +343,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           maxSplits={maxSplits}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           customization={customization}
+          transitionFnSlot={this.sideBarHrefFn}
         />;
         break;
 

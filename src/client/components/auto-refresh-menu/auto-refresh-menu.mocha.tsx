@@ -30,6 +30,8 @@ describe('AutoRefreshMenu', () => {
   it('adds the correct class', () => {
     var openOn = document.createElement('div');
 
+    var dataSource = DataSourceMock.wiki();
+
     var renderedComponent = TestUtils.renderIntoDocument(
       <AutoRefreshMenu
         onClose={null}
@@ -37,7 +39,8 @@ describe('AutoRefreshMenu', () => {
         autoRefreshRate={null}
         setAutoRefreshRate={null}
         refreshMaxTime={null}
-        dataSource={DataSourceMock.wiki()}
+        dataSource={dataSource}
+        timezone={dataSource.getDefaultTimezone()}
       />
     );
 

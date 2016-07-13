@@ -192,6 +192,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       setAutoRefreshRate={this.setAutoRefreshRate.bind(this)}
       refreshMaxTime={refreshMaxTime}
       dataSource={essence.dataSource}
+      timezone={essence.timezone}
     />;
   }
 

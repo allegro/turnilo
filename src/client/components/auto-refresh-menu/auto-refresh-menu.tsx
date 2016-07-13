@@ -17,7 +17,7 @@
 require('./auto-refresh-menu.css');
 
 import * as React from 'react';
-import { Duration } from 'chronoshift';
+import { Duration, Timezone } from 'chronoshift';
 import { Fn } from '../../../common/utils/general/general';
 import { Stage, DataSource } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
@@ -51,6 +51,7 @@ export interface AutoRefreshMenuProps extends React.Props<any> {
   setAutoRefreshRate: Fn;
   refreshMaxTime: Fn;
   dataSource: DataSource;
+  timezone: Timezone;
 }
 
 export interface AutoRefreshMenuState {
@@ -83,7 +84,7 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
   }
 
   render() {
-    var { openOn, onClose, dataSource } = this.props;
+    var { openOn, onClose, dataSource, timezone } = this.props;
 
     var stage = Stage.fromSize(240, 200);
     return <BubbleMenu
@@ -95,7 +96,7 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
     >
       {this.renderRefreshIntervalDropdown()}
       <button className="update-now-button" onClick={this.onRefreshNowClick.bind(this)}>Update now</button>
-      <div className="update-info">{dataSource.updatedText()}</div>
+      <div className="update-info">{dataSource.updatedText(timezone)}</div>
     </BubbleMenu>;
   }
 }

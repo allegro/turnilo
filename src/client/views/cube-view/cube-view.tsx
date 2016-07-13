@@ -21,6 +21,7 @@ import * as ReactDOM from 'react-dom';
 import { Expression, Dataset } from 'plywood';
 import { Timezone } from 'chronoshift';
 import { Fn } from '../../../common/utils/general/general';
+import { FunctionSlot } from '../../utils/function-slot/function-slot';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Measure,
   SplitCombine, Splits, VisStrategy, VisualizationProps, User, Customization, Manifest } from '../../../common/models/index';
@@ -55,6 +56,7 @@ export interface CubeViewProps extends React.Props<any> {
   dataSource: DataSource;
   onNavClick?: Fn;
   customization?: Customization;
+  transitionFnSlot?: FunctionSlot<string>;
 }
 
 export interface CubeViewState {
@@ -182,7 +184,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   componentWillMount() {
     var { hash, dataSource, updateViewHash } = this.props;
-    var essence = this.getEssenceFromHash(hash);
+    var essence = this.getEssenceFromHash(dataSource, hash);
     if (!essence) {
       if (!dataSource) throw new Error('must have data source');
       essence = this.getEssenceFromDataSource(dataSource);
@@ -192,11 +194,23 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentDidMount() {
+    const { transitionFnSlot } = this.props;
+
     this.mounted = true;
     DragManager.init();
     window.addEventListener('resize', this.globalResizeListener);
     window.addEventListener('keydown', this.globalKeyDownListener);
     this.globalResizeListener();
+
+    if (transitionFnSlot) {
+      transitionFnSlot.fill((oldDataSource: DataSource, newDataSource: DataSource) => {
+        if (newDataSource === oldDataSource || !newDataSource.sameGroup(oldDataSource)) return null;
+        const { essence } = this.state;
+        if (!essence) return null;
+        return '#' + newDataSource.name + '/' + essence.updateDataSource(newDataSource).toHash();
+      });
+    }
+
     require.ensure(['../../components/raw-data-modal/raw-data-modal'], (require) => {
       this.setState({
         RawDataModalAsync: require('../../components/raw-data-modal/raw-data-modal').RawDataModal
@@ -208,17 +222,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { hash, dataSource, updateViewHash } = this.props;
     if (!nextProps.dataSource) throw new Error('must have data source');
 
-    if (hash !== nextProps.hash) {
-      var hashEssence = this.getEssenceFromHash(nextProps.hash);
+    if (dataSource.name !== nextProps.dataSource.name || hash !== nextProps.hash) {
+      var hashEssence = this.getEssenceFromHash(nextProps.dataSource, nextProps.hash);
       if (!hashEssence) {
         hashEssence = this.getEssenceFromDataSource(nextProps.dataSource);
         updateViewHash(hashEssence.toHash(), true);
       }
 
       this.setState({ essence: hashEssence });
-    } else if (!dataSource.equals(nextProps.dataSource)) {
-      var newEssence = this.getEssenceFromDataSource(nextProps.dataSource);
-      this.setState({ essence: newEssence });
     }
   }
 
@@ -231,9 +242,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillUnmount() {
+    const { transitionFnSlot } = this.props;
+
     this.mounted = false;
     window.removeEventListener('resize', this.globalResizeListener);
     window.removeEventListener('keydown', this.globalKeyDownListener);
+    if (transitionFnSlot) transitionFnSlot.clear();
   }
 
   getEssenceFromDataSource(dataSource: DataSource): Essence {
@@ -241,9 +255,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return essence.multiMeasureMode !== Boolean(localStorage.get('is-multi-measure')) ? essence.toggleMultiMeasureMode() : essence;
   }
 
-  getEssenceFromHash(hash: string): Essence {
-    if (!hash) return null;
-    var { dataSource } = this.props;
+  getEssenceFromHash(dataSource: DataSource, hash: string): Essence {
+    if (!dataSource || !hash) return null;
     return Essence.fromHash(hash, { dataSource: dataSource, visualizations: MANIFESTS });
   }
 

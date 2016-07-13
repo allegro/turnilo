@@ -628,11 +628,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       return new Essence(value);
     }
 
-    if (dataSource.name !== newDataSource.name) return Essence.fromDataSource(newDataSource, {
-      dataSource: newDataSource,
-      visualizations
-    });
-
     var value = this.valueOf();
     value.dataSource = newDataSource;
 

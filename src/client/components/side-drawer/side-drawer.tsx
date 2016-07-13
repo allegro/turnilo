@@ -32,6 +32,7 @@ export interface SideDrawerProps extends React.Props<any> {
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
+  itemHrefFn?: (oldDataSource?: DataSource, newDataSource?: DataSource) => string;
   isHome?: boolean;
   isCube?: boolean;
   isLink?: boolean;
@@ -90,14 +91,16 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   render() {
-    var { onClose, selectedDataSource, dataSources, onOpenAbout, customization } = this.props;
+    var { onClose, selectedDataSource, dataSources, onOpenAbout, customization, itemHrefFn } = this.props;
 
     var navLinks = dataSources.map(ds => {
+      var href = (itemHrefFn && itemHrefFn(selectedDataSource, ds)) || ('#' + ds.name);
+
       return {
         name: ds.name,
         title: ds.title,
         tooltip: ds.description,
-        href: '#' + ds.name
+        href: href
       };
     });
 

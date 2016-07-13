@@ -78,6 +78,7 @@ export interface DataSourceValue {
   description?: string;
   clusterName: string;
   source: string;
+  group?: string;
   subsetFilter?: Expression;
   rollup?: boolean;
   options?: DataSourceOptions;
@@ -109,6 +110,7 @@ export interface DataSourceJS {
   description?: string;
   clusterName: string;
   source: string;
+  group?: string;
   subsetFilter?: ExpressionJS;
   rollup?: boolean;
   options?: DataSourceOptions;
@@ -338,6 +340,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       description: parameters.description,
       clusterName,
       source: parameters.source,
+      group: parameters.group,
       subsetFilter,
       rollup: parameters.rollup,
       options,
@@ -372,6 +375,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public description: string;
   public clusterName: string;
   public source: string;
+  public group: string;
   public subsetFilter: Expression;
   public rollup: boolean;
   public options: DataSourceOptions;
@@ -405,6 +409,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this.description = parameters.description || '';
     this.clusterName = parameters.clusterName || 'druid';
     this.source = parameters.source || name;
+    this.group = parameters.group || null;
     this.subsetFilter = parameters.subsetFilter;
     this.rollup = Boolean(parameters.rollup);
     this.options = parameters.options || {};
@@ -445,6 +450,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       description: this.description,
       clusterName: this.clusterName,
       source: this.source,
+      group: this.group,
       subsetFilter: this.subsetFilter,
       rollup: this.rollup,
       options: this.options,
@@ -482,6 +488,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       measures: this.measures.toArray().map(measure => measure.toJS()),
       refreshRule: this.refreshRule.toJS()
     };
+    if (this.group) js.group = this.group;
     if (this.introspection) js.introspection = this.introspection;
     if (this.defaultTimezone) js.defaultTimezone = this.defaultTimezone.toJS();
     if (this.defaultFilter) js.defaultFilter = this.defaultFilter.toJS();
@@ -521,6 +528,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       this.description === other.description &&
       this.clusterName === other.clusterName &&
       this.source === other.source &&
+      this.group === other.group &&
       immutableEqual(this.subsetFilter, other.subsetFilter) &&
       this.rollup === other.rollup &&
       JSON.stringify(this.options) === JSON.stringify(other.options) &&
@@ -719,12 +727,12 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return second.ceil(maxTime.time, Timezone.UTC);
   }
 
-  public updatedText(): string {
+  public updatedText(timezone: Timezone): string {
     var { refreshRule } = this;
     if (refreshRule.isRealtime()) {
       return 'Updated ~1 second ago';
     } else if (refreshRule.isFixed()) {
-      return `Fixed to ${getWallTimeString(refreshRule.time, this.defaultTimezone, true)}`;
+      return `Fixed to ${getWallTimeString(refreshRule.time, timezone, true)}`;
     } else { // refreshRule is query
       var { maxTime } = this;
       if (maxTime) {
@@ -1005,6 +1013,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       expression: $(this.defaultSortMeasure),
       direction: SortAction.DESCENDING
     });
+  }
+
+  public sameGroup(otherDataSource: DataSource): boolean {
+    return Boolean(this.group && this.group === otherDataSource.group);
   }
 }
 check = DataSource;
