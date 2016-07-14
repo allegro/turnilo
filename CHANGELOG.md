@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.19
+
+- Fixes for data source transitions
+
 ## 0.9.18
 
 - `DataSource#engine` renamed to `DataSource#clusterName`
