@@ -205,7 +205,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var timezone = parameters.timezone ? Timezone.fromJS(parameters.timezone) : null;
     var filter = parameters.filter ? Filter.fromJS(parameters.filter).constrainToDimensions(dataSource.dimensions, dataSource.timeAttribute) : null;
-    var splits = Splits.fromJS(parameters.splits || [], dataSource).constrainToDimensions(dataSource.dimensions);
+    var splits = Splits.fromJS(parameters.splits || [], dataSource).constrainToDimensionsAndMeasures(dataSource.dimensions, dataSource.measures);
 
     var defaultSortMeasureName = dataSource.getDefaultSortMeasure();
 
@@ -633,8 +633,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     // Make sure that all the elements of state are still valid
     value.filter = value.filter.constrainToDimensions(newDataSource.dimensions, newDataSource.timeAttribute, dataSource.timeAttribute);
-    value.splits = value.splits.constrainToDimensions(newDataSource.dimensions);
+    value.splits = value.splits.constrainToDimensionsAndMeasures(newDataSource.dimensions, newDataSource.measures);
     value.selectedMeasures = constrainMeasures(value.selectedMeasures, newDataSource);
+    if (value.selectedMeasures.size === 0) {
+      value.selectedMeasures = newDataSource.getDefaultSelectedMeasures();
+    }
+
     value.pinnedDimensions = constrainDimensions(value.pinnedDimensions, newDataSource);
 
     if (value.colors && !newDataSource.getDimension(value.colors.dimension)) {

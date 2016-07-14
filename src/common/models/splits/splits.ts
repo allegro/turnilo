@@ -20,6 +20,7 @@ import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction, NumberRange, Range } from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
+import { Measure } from '../measure/measure';
 import { Filter } from '../filter/filter';
 import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
 import { NumberBucketAction } from "plywood";
@@ -210,11 +211,19 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return changed ? new Splits(newSplitCombines) : this;
   }
 
-  public constrainToDimensions(dimensions: List<Dimension>): Splits {
+  public constrainToDimensionsAndMeasures(dimensions: List<Dimension>, measures: List<Measure>): Splits {
+    function validSplit(split: SplitCombine): boolean {
+      if (!split.getDimension(dimensions)) return false;
+      if (!split.sortAction) return true;
+      var sortRef = split.sortAction.refName();
+      if (!dimensions.find(d => d.name === sortRef) && !measures.find(m => m.name === sortRef)) return false;
+      return true;
+    }
+
     var changed = false;
     var splitCombines: SplitCombine[] = [];
     this.splitCombines.forEach((split) => {
-      if (split.getDimension(dimensions)) {
+      if (validSplit(split)) {
         splitCombines.push(split);
       } else {
         changed = true;

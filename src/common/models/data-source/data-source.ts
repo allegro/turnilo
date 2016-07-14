@@ -159,59 +159,63 @@ export interface LongForm {
   metricColumn: string;
   possibleAggregates: Lookup<any>;
   addSubsetFilter?: boolean;
-  values: LongFormValue[];
+  measures: Array<MeasureJS | LongFormMeasure>;
 }
 
-export interface LongFormValue {
-  aggregates: string[];
+export interface LongFormMeasure {
+  aggregate: string;
   value: string;
   title: string;
 }
 
 function measuresFromLongForm(longForm: LongForm): Measure[] {
-  const { metricColumn, values, possibleAggregates } = longForm;
+  const { metricColumn, measures, possibleAggregates } = longForm;
   var myPossibleAggregates: Lookup<Expression> = {};
   for (var agg in possibleAggregates) {
     if (!hasOwnProperty(possibleAggregates, agg)) continue;
     myPossibleAggregates[agg] = Expression.fromJSLoose(possibleAggregates[agg]);
   }
 
-  var measures: Measure[] = [];
-  for (var value of values) {
-    var title = value.title;
+  return measures.map((measure) => {
+    if (hasOwnProperty(measure, 'name')) {
+      return Measure.fromJS(measure as MeasureJS);
+    }
+
+    var title = measure.title;
     if (!title) {
       throw new Error('must have title in longForm value');
     }
 
-    var aggregates = value.aggregates;
-    if (!Array.isArray(aggregates)) {
+    var value = (measure as LongFormMeasure).value;
+    var aggregate = (measure as LongFormMeasure).aggregate;
+    if (!aggregate) {
       throw new Error('must have aggregates in longForm value');
     }
 
-    for (var aggregate of aggregates) {
-      var myExpression = myPossibleAggregates[aggregate];
-      if (!myExpression) throw new Error(`can not find aggregate ${aggregate} for value ${value.value}`);
+    var myExpression = myPossibleAggregates[aggregate];
+    if (!myExpression) throw new Error(`can not find aggregate ${aggregate} for value ${value}`);
 
-      var name = makeUrlSafeName(`${aggregate}_${value.value}`);
-      measures.push(new Measure({
-        name,
-        title: title.replace(/%a/g, aggregate),
-        expression: myExpression.substitute((ex) => {
-          if (ex instanceof RefExpression && ex.name === 'filtered') {
-            return $('main').filter($(metricColumn).is(r(value.value)));
-          }
-          return null;
-        })
-      }));
-    }
-  }
-
-  return measures;
+    var name = makeUrlSafeName(`${aggregate}_${value}`);
+    return new Measure({
+      name,
+      title: title,
+      expression: myExpression.substitute((ex) => {
+        if (ex instanceof RefExpression && ex.name === 'filtered') {
+          return $('main').filter($(metricColumn).is(r(value)));
+        }
+        return null;
+      })
+    });
+  });
 }
 
 function filterFromLongForm(longForm: LongForm): Expression {
-  var { metricColumn, values } = longForm;
-  return $(metricColumn).in(values.map(v => v.value)).simplify();
+  var { metricColumn, measures } = longForm;
+  var values: string[] = [];
+  for (var measure of measures) {
+    if (hasOwnProperty(measure, 'aggregate')) values.push((measure as LongFormMeasure).value);
+  }
+  return $(metricColumn).in(values).simplify();
 }
 
 var check: Class<DataSourceValue, DataSourceJS>;
