@@ -605,17 +605,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public getCommonSort(): SortAction {
-    var splits = this.splits.toArray();
-    var commonSort: SortAction = null;
-    for (var split of splits) {
-      var sort = split.sortAction;
-      if (commonSort) {
-        if (!commonSort.equals(sort)) return null;
-      } else {
-        commonSort = sort;
-      }
-    }
-    return commonSort;
+    return this.splits.getCommonSort(this.dataSource.dimensions);
   }
 
   public updateDataSource(newDataSource: DataSource): Essence {

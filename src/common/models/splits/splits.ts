@@ -116,6 +116,10 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSortAction(sort)));
   }
 
+  public changeSortActionFromNormalized(sort: SortAction, dimensions: List<Dimension>): Splits {
+    return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSortActionFromNormalized(sort, dimensions)));
+  }
+
   public getTitle(dimensions: List<Dimension>): string {
     return this.splitCombines.map(s => s.getDimension(dimensions).title).join(', ');
   }
@@ -252,6 +256,20 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     });
 
     return changed ? new Splits(newSplitCombines) : this;
+  }
+
+  public getCommonSort(dimensions: List<Dimension>): SortAction {
+    var splitCombines = this.splitCombines.toArray();
+    var commonSort: SortAction = null;
+    for (var splitCombine of splitCombines) {
+      var sort = splitCombine.getNormalizedSortAction(dimensions);
+      if (commonSort) {
+        if (!commonSort.equals(sort)) return null;
+      } else {
+        commonSort = sort;
+      }
+    }
+    return commonSort;
   }
 
 }

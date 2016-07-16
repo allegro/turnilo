@@ -101,6 +101,7 @@ function parseArgs() {
       "examples": Boolean,
       "example": String, // deprecated
       "config": String,
+      "auth": String,
 
       "print-config": Boolean,
       "with-comments": Boolean,
@@ -198,9 +199,9 @@ export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS, anchorPat
 
 // --- Auth -------------------------------
 
-var auth = serverSettingsJS.auth;
+var auth = parsedArgs['auth'] || serverSettingsJS.auth;
 var authMiddleware: any = null;
-if (auth) {
+if (auth && auth !== 'none') {
   auth = path.resolve(anchorPath, auth);
   LOGGER.log(`Using auth ${auth}`);
   try {

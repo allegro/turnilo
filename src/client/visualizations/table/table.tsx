@@ -121,16 +121,14 @@ export class Table extends BaseVisualization<TableState> {
     var { splits, dataSource } = essence;
     var pos = this.calculateMousePosition(x, y);
 
-    var splitDimension = splits.get(0).getDimension(dataSource.dimensions);
-
     if (pos.what === 'corner' || pos.what === 'header') {
-      var sortExpression = $(pos.what === 'corner' ? splitDimension.name : pos.measure.name);
+      var sortExpression = $(pos.what === 'corner' ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : pos.measure.name);
       var commonSort = essence.getCommonSort();
       var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === SortAction.DESCENDING);
-      clicker.changeSplits(essence.splits.changeSortAction(new SortAction({
+      clicker.changeSplits(essence.splits.changeSortActionFromNormalized(new SortAction({
         expression: sortExpression,
         direction: myDescending ? SortAction.ASCENDING : SortAction.DESCENDING
-      })), VisStrategy.KeepAlways);
+      }), essence.dataSource.dimensions), VisStrategy.KeepAlways);
 
     } else if (pos.what === 'row') {
       var rowHighlight = getFilterFromDatum(essence.splits, pos.row, dataSource);
@@ -297,14 +295,9 @@ export class Table extends BaseVisualization<TableState> {
 
   renderCornerSortArrow(essence: Essence): JSX.Element {
     var commonSort = essence.getCommonSort();
+    if (!commonSort) return null;
 
-    if (!commonSort) {
-      return null;
-    }
-
-    var { splits, dataSource } = essence;
-    var splitDimension = splits.get(0).getDimension(dataSource.dimensions);
-    if ((commonSort.expression as RefExpression).name === splitDimension.name) {
+    if (commonSort.refName() === SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER) {
       return <SvgIcon
         svg={require('../../icons/sort-arrow.svg')}
         className={'sort-arrow ' + commonSort.direction}
