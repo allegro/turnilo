@@ -17,7 +17,7 @@
 require('./home-view.css');
 
 import * as React from 'react';
-import { Stage, DataSource, User, Customization } from '../../../common/models/index';
+import { Stage, DataCube, User, Customization } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { Fn } from '../../../common/utils/general/general';
 
@@ -26,7 +26,7 @@ import { SvgIcon } from '../../components/svg-icon/svg-icon';
 import { ItemCard } from './item-card/item-card';
 
 export interface HomeViewProps extends React.Props<any> {
-  dataSources?: DataSource[];
+  dataCubes?: DataCube[];
   user?: User;
   onNavClick?: Fn;
   onOpenAbout: Fn;
@@ -38,11 +38,11 @@ export interface HomeViewState {
 
 export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
 
-  goToCube(cube: DataSource) {
+  goToCube(cube: DataCube) {
     window.location.hash = '#' + cube.name;
   }
 
-  renderCube(cube: DataSource): JSX.Element {
+  renderCube(cube: DataCube): JSX.Element {
     return <ItemCard
       key={cube.name}
       title={cube.title}
@@ -52,9 +52,9 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
     />;
   }
 
-  renderCubes(cubes: DataSource[]): JSX.Element {
+  renderCubes(cubes: DataCube[]): JSX.Element {
     return <div className="datacubes">
-      <div className="title">{STRINGS.dataSources}</div>
+      <div className="title">{STRINGS.dataCubes}</div>
       <div className="cubes-container">
         {cubes.map(this.renderCube, this)}
 
@@ -68,7 +68,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
   }
 
   render() {
-    const { user, dataSources, onNavClick, onOpenAbout, customization } = this.props;
+    const { user, dataCubes, onNavClick, onOpenAbout, customization } = this.props;
 
     return <div className="home-view">
       <HomeHeaderBar
@@ -83,7 +83,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
       </HomeHeaderBar>
 
       <div className="container">
-        {this.renderCubes(dataSources)}
+        {this.renderCubes(dataCubes)}
       </div>
 
     </div>;

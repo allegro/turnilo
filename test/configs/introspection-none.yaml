@@ -3,7 +3,7 @@ clusters:
     type: druid
     host: "%{DRUID_HOST}%"
 
-dataSources:
+dataCubes:
   - name: wiki
     title: Wikipedia Edits
     engine: druid # Set the engine to druid

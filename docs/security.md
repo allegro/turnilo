@@ -7,8 +7,8 @@ Pivot can act as a 'gatekeeper' for Druid or any supported datasource via the co
 
 ### Data source level access
 
-It is possible to restrict which data sources users have access to by explicitly defining in the config all the data sources that you want the users to see and disabling source discovery.
-This will prevent any data sources not explicitly defined from being queried through Pivot.
+It is possible to restrict which data cubes users have access to by explicitly defining in the config all the data cubes that you want the users to see and disabling source discovery.
+This will prevent any data cube not explicitly defined from being queried through Pivot.
 
 ### Column level access
 
@@ -17,8 +17,8 @@ Any query asking for a column that was not explicitly defined in the dimensions 
 
 ### Row level access
 
-A Pivot dataSource can define a `subsetFilter` that is a boolean Plywood filter clause that will be silently applied to all queries made to that data source.
-For example if you wanted your users to only see the data for "United States" you could add `subsetFilter: $country == "United States"` to the data source definition.
+A Pivot dataSource can define a `subsetFilter` that is a boolean Plywood filter clause that will be silently applied to all queries made to that data cube.
+For example if you wanted your users to only see the data for "United States" you could add `subsetFilter: $country == "United States"` to the data cube definition.
 
 
 ## Authentication

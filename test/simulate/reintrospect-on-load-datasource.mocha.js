@@ -133,7 +133,7 @@ describe('reintrospect on load with datasource', function () {
       expect(body).to.contain('</html>');
 
       var config = extractConfig(body);
-      expect(config.appSettings.dataSources.map((ds) => ds.name)).to.deep.equal([]);
+      expect(config.appSettings.dataCubes.map((ds) => ds.name)).to.deep.equal([]);
 
       testComplete();
     });
@@ -151,7 +151,7 @@ describe('reintrospect on load with datasource', function () {
       expect(body).to.contain('</html>');
 
       var config = extractConfig(body);
-      expect(config.appSettings.dataSources.map((ds) => ds.name)).to.deep.equal(['wiki']);
+      expect(config.appSettings.dataCubes.map((ds) => ds.name)).to.deep.equal(['wiki']);
 
       testComplete();
     });

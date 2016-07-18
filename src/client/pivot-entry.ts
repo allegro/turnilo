@@ -19,7 +19,7 @@ require('./pivot-entry.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { addErrorMonitor } from './utils/error-monitor/error-monitor';
-import { DataSource, AppSettingsJS } from '../common/models/index';
+import { DataCube, AppSettingsJS } from '../common/models/index';
 
 import { Loader } from './components/loader/loader';
 
@@ -42,11 +42,11 @@ interface Config {
 }
 
 var config: Config = (window as any)['__CONFIG__'];
-if (!config || !config.version || !config.appSettings || !config.appSettings.dataSources) {
+if (!config || !config.version || !config.appSettings || !config.appSettings.dataCubes) {
   throw new Error('config not found');
 }
 
-if (config.appSettings.dataSources.length) {
+if (config.appSettings.dataCubes.length) {
   var version = config.version;
 
   require.ensure([
@@ -65,8 +65,8 @@ if (config.appSettings.dataSources.length) {
 
     var appSettings = AppSettings.fromJS(config.appSettings, {
       visualizations: MANIFESTS,
-      executorFactory: (dataSource: DataSource) => {
-        return queryUrlExecutorFactory(dataSource.name, 'plywood', version);
+      executorFactory: (dataCube: DataCube) => {
+        return queryUrlExecutorFactory(dataCube.name, 'plywood', version);
       }
     });
 
@@ -92,21 +92,19 @@ if (config.appSettings.dataSources.length) {
 
 } else {
   require.ensure([
-    './components/no-data-sources-application/no-data-sources-application'
+    './components/no-data-cubes-application/no-data-cubes-application'
   ], (require) => {
-    var NoDataSourcesApplication = require('./components/no-data-sources-application/no-data-sources-application').NoDataSourcesApplication;
+    var NoDataCubesApplication = require('./components/no-data-cubes-application/no-data-cubes-application').NoDataCubesApplication;
 
     ReactDOM.render(
-      React.createElement(NoDataSourcesApplication, {}),
+      React.createElement(NoDataCubesApplication, {}),
       container
     );
-  }, 'no-data-sources');
+  }, 'no-data-cubes');
 }
 
 
-// Polyfill
-// from https://github.com/reppners/ios-html5-drag-drop-shim/tree/effectAllowed_dropEffect
-// /polyfill/mobile-drag-and-drop-polyfill/mobile-drag-and-drop-polyfill.js
+// Polyfill =====================================
 
 // From ../../assets/polyfill/drag-drop-polyfill.js
 var div = document.createElement('div');

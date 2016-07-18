@@ -48,7 +48,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
-      nextEssence.differentDataSource(essence) ||
+      nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, Totals.id) ||
       nextEssence.newEffectiveMeasures(essence)
     ) {

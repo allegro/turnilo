@@ -29,7 +29,7 @@ export * from './split-combine/split-combine';
 export * from './splits/splits';
 export * from './highlight/highlight';
 export * from './cluster/cluster';
-export * from './data-source/data-source';
+export * from './data-cube/data-cube';
 export * from './sort-on/sort-on';
 export * from './colors/colors';
 export * from './visualization-props/visualization-props';

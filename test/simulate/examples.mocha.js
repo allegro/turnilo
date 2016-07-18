@@ -61,7 +61,7 @@ describe('examples', function () {
       method: 'POST',
       url: `http://localhost:${TEST_PORT}/plywood`,
       json: {
-        dataSource: 'wiki',
+        dataCube: 'wiki',
         timezone: 'Etc/UTC',
         expression: $('main').split('$channel', 'Channel')
           .apply('Added', '$main.sum($added)')
@@ -97,7 +97,7 @@ describe('examples', function () {
       url: `http://localhost:${TEST_PORT}/mkurl`,
       json: {
         domain: 'http://localhost:9090',
-        dataSource: 'wiki',
+        dataCube: 'wiki',
         essence: {
           visualization: 'totals',
           timezone: 'Etc/UTC',

@@ -30,14 +30,14 @@ function formatFnFactory(format: string): (n: number) => string {
 export interface MeasureValue {
   name: string;
   title?: string;
-  expression?: Expression;
+  formula?: string;
   format?: string;
 }
 
 export interface MeasureJS {
   name: string;
   title?: string;
-  expression?: ExpressionJS | string;
+  formula?: string;
   format?: string;
 }
 
@@ -106,18 +106,14 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
         return [
           new Measure({
             name: makeUrlSafeName(name),
-            expression: $main.countDistinct(ref)
+            formula: $main.countDistinct(ref).toString()
           })
         ];
       } else if (special === 'histogram') {
         return [
           new Measure({
-            name: makeUrlSafeName(name + '_p95'),
-            expression: $main.quantile(ref, 0.95)
-          }),
-          new Measure({
-            name: makeUrlSafeName(name + '_p99'),
-            expression: $main.quantile(ref, 0.99)
+            name: makeUrlSafeName(name + '_p98'),
+            formula: $main.quantile(ref, 0.98).toString()
           })
         ];
       }
@@ -141,16 +137,17 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
 
     return [new Measure({
       name: makeUrlSafeName(name),
-      expression
+      formula: expression.toString()
     })];
   }
 
   static fromJS(parameters: MeasureJS): Measure {
     var name = parameters.name;
+    var parameterExpression = (parameters as any).expression; // Back compat
     return new Measure({
       name,
       title: parameters.title,
-      expression: parameters.expression ? Expression.fromJSLoose(parameters.expression) : $('main').sum($(name)),
+      formula: parameters.formula || (typeof parameterExpression === 'string' ? parameterExpression : null) || $('main').sum($(name)).toString(),
       format: parameters.format
     });
   }
@@ -158,6 +155,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
 
   public name: string;
   public title: string;
+  public formula: string;
   public expression: Expression;
   public format: string;
   public formatFn: (n: number) => string;
@@ -168,9 +166,10 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     this.name = name;
     this.title = parameters.title || makeTitle(name);
 
-    var expression = parameters.expression;
-    if (!expression) throw new Error('measure must have expression');
-    this.expression = expression;
+    var formula = parameters.formula;
+    if (!formula) throw new Error('measure must have formula');
+    this.formula = formula;
+    this.expression = Expression.parse(formula);
 
     var format = parameters.format || Measure.DEFAULT_FORMAT;
     if (format[0] === '(') throw new Error('can not have format that uses ( )');
@@ -182,7 +181,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return {
       name: this.name,
       title: this.title,
-      expression: this.expression,
+      formula: this.formula,
       format: this.format
     };
   }
@@ -191,7 +190,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     var js: MeasureJS = {
       name: this.name,
       title: this.title,
-      expression: this.expression.toJS()
+      formula: this.formula
     };
     if (this.format !== Measure.DEFAULT_FORMAT) js.format = this.format;
     return js;
@@ -209,7 +208,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return Measure.isMeasure(other) &&
       this.name === other.name &&
       this.title === other.title &&
-      this.expression.equals(other.expression) &&
+      this.formula === other.formula &&
       this.format === other.format;
   }
 
@@ -225,11 +224,24 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return this.formatFn(datum[this.name] as number);
   }
 
-  public changeTitle(title: string): Measure {
-    var value = this.valueOf();
-    value.title = title;
+  public change(propertyName: string, newValue: any): Measure {
+    var v = this.valueOf();
 
-    return new Measure(value);
+    if (!v.hasOwnProperty(propertyName)) {
+      throw new Error(`Unknown property : ${propertyName}`);
+    }
+
+    (v as any)[propertyName] = newValue;
+    return new Measure(v);
   }
+
+  public changeTitle(newTitle: string): Measure {
+    return this.change('title', newTitle);
+  }
+
+  public changeFormula(newFormula: string): Measure {
+    return this.change('formula', newFormula);
+  }
+
 }
 check = Measure;

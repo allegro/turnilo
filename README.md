@@ -118,7 +118,6 @@ Finally you have to create a `config.yaml` file. (or use the sample)
 ```
 
 The `--with-comments` flag adds docs about what goes into the config.
-Alternatively you can read the comments in the [sample config file](/config.yaml.sample).
 
 Then you are ready to
 

@@ -6,7 +6,7 @@ clusters:
     sourceListRefreshOnLoad: true
     sourceReintrospectOnLoad: true
 
-dataSources:
+dataCubes:
   - name: wiki
     title: Wikipedia Edits
     engine: druid

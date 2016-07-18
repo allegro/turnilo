@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-require('./no-data-sources-application.css');
+require('./no-data-cubes-application.css');
 
 import * as React from 'react';
 import { STRINGS } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
-export interface NoDataSourcesApplicationProps extends React.Props<any> {
+export interface NoDataCubesApplicationProps extends React.Props<any> {
 }
 
-export interface NoDataSourcesApplicationState {
+export interface NoDataCubesApplicationState {
 }
 
-export class NoDataSourcesApplication extends React.Component<NoDataSourcesApplicationProps, NoDataSourcesApplicationState> {
+export class NoDataCubesApplication extends React.Component<NoDataCubesApplicationProps, NoDataCubesApplicationState> {
   private refreshTimer: any;
 
   constructor() {
@@ -48,11 +48,11 @@ export class NoDataSourcesApplication extends React.Component<NoDataSourcesAppli
   }
 
   render() {
-    return <div className="no-data-sources-application">
+    return <div className="no-data-cubes-application">
       <div className="icon">
-        <SvgIcon svg={require('../../icons/datasources.svg')}/>
+        <SvgIcon svg={require('../../icons/data-cubes.svg')}/>
       </div>
-      <p>{STRINGS.noQueryableDataSources}</p>
+      <p>{STRINGS.noQueryableDataCubes}</p>
     </div>;
   }
 }

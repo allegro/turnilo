@@ -16,7 +16,7 @@
 
 import { $, Executor, Dataset, basicExecutorFactory } from 'plywood';
 import { MANIFESTS } from '../../../common/manifests/index';
-import { DataSourceMock } from '../data-source/data-source.mock';
+import { DataCubeMock } from '../data-cube/data-cube.mock';
 import { LinkViewConfigMock } from '../link-view-config/link-view-config.mock';
 import { AppSettings, AppSettingsJS, AppSettingsContext } from './app-settings';
 
@@ -305,8 +305,8 @@ export class AppSettingsMock {
           introspectionStrategy: 'segment-metadata-fallback'
         }
       ],
-      dataSources: [
-        DataSourceMock.WIKI_JS
+      dataCubes: [
+        DataCubeMock.WIKI_JS
       ]
     };
   }
@@ -332,8 +332,8 @@ export class AppSettingsMock {
           introspectionStrategy: 'segment-metadata-fallback'
         }
       ],
-      dataSources: [
-        DataSourceMock.WIKI_JS
+      dataCubes: [
+        DataCubeMock.WIKI_JS
       ],
       linkViewConfig: LinkViewConfigMock.testOneTwoJS()
     };
@@ -358,9 +358,9 @@ export class AppSettingsMock {
           introspectionStrategy: "segment-metadata-fallback"
         }
       ],
-      dataSources: [
-        DataSourceMock.WIKI_JS,
-        DataSourceMock.TWITTER_JS
+      dataCubes: [
+        DataCubeMock.WIKI_JS,
+        DataCubeMock.TWITTER_JS
       ]
     };
   }

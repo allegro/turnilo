@@ -20,10 +20,10 @@ import * as Q from 'q';
 
 import { $, Expression, AttributeInfo } from 'plywood';
 import { Cluster } from "../cluster/cluster";
-import { DataSource, DataSourceJS } from './data-source';
-import { DataSourceMock} from './data-source.mock';
+import { DataCube, DataCubeJS } from './data-cube';
+import { DataCubeMock} from './data-cube.mock';
 
-describe('DataSource', () => {
+describe('DataCube', () => {
   var druidCluster = Cluster.fromJS({
     name: 'druid',
     type: 'druid'
@@ -34,16 +34,16 @@ describe('DataSource', () => {
   };
 
   it('is an immutable class', () => {
-    testImmutableClass<DataSourceJS>(DataSource, [
-      DataSourceMock.TWITTER_JS,
-      DataSourceMock.WIKI_JS
+    testImmutableClass<DataCubeJS>(DataCube, [
+      DataCubeMock.TWITTER_JS,
+      DataCubeMock.WIKI_JS
     ]);
   });
 
   describe("validates", () => {
     it("throws an error if bad name is used", () => {
       expect(() => {
-        DataSource.fromJS({
+        DataCube.fromJS({
           name: 'wiki hello',
           clusterName: 'druid',
           source: 'wiki',
@@ -55,13 +55,13 @@ describe('DataSource', () => {
           dimensions: [
             {
               name: 'articleName',
-              expression: '$articleName'
+              formula: '$articleName'
             }
           ],
           measures: [
             {
               name: 'count',
-              expression: '$main.sum($count)'
+              formula: '$main.sum($count)'
             }
           ]
         });
@@ -70,7 +70,7 @@ describe('DataSource', () => {
 
     it("throws an error if the defaultSortMeasure can not be found", () => {
       expect(() => {
-        DataSource.fromJS({
+        DataCube.fromJS({
           name: 'wiki',
           clusterName: 'druid',
           source: 'wiki',
@@ -83,13 +83,13 @@ describe('DataSource', () => {
           dimensions: [
             {
               name: 'articleName',
-              expression: '$articleName'
+              formula: '$articleName'
             }
           ],
           measures: [
             {
               name: 'count',
-              expression: '$main.sum($count)'
+              formula: '$main.sum($count)'
             }
           ]
         });
@@ -98,7 +98,7 @@ describe('DataSource', () => {
 
     it("throws an error if duplicate name is used across measures and dimensions", () => {
       expect(() => {
-        DataSource.fromJS({
+        DataCube.fromJS({
           name: 'wiki',
           clusterName: 'druid',
           source: 'wiki',
@@ -110,22 +110,22 @@ describe('DataSource', () => {
           dimensions: [
             {
               name: 'articleName',
-              expression: '$articleName'
+              formula: '$articleName'
             }
           ],
           measures: [
             {
               name: 'articleName',
-              expression: '$main.sum($count)'
+              formula: '$main.sum($count)'
             }
           ]
         });
-      }).to.throw("name 'articleName' found in both dimensions and measures in data source: 'wiki'");
+      }).to.throw("name 'articleName' found in both dimensions and measures in data cube: 'wiki'");
     });
 
     it("throws an error if duplicate name is used in measures", () => {
       expect(() => {
-        DataSource.fromJS({
+        DataCube.fromJS({
           name: 'wiki',
           clusterName: 'druid',
           source: 'wiki',
@@ -137,26 +137,26 @@ describe('DataSource', () => {
           dimensions: [
             {
               name: 'notArticleName',
-              expression: '$notArticleName'
+              formula: '$notArticleName'
             }
           ],
           measures: [
             {
               name: 'articleName',
-              expression: '$main.sum($count)'
+              formula: '$main.sum($count)'
             },
             {
               name: 'articleName',
-              expression: '$articleName'
+              formula: '$articleName'
             }
           ]
         });
-      }).to.throw("duplicate measure name 'articleName' found in data source: 'wiki'");
+      }).to.throw("duplicate measure name 'articleName' found in data cube: 'wiki'");
     });
 
     it("throws an error if duplicate name is used in dimensions", () => {
       expect(() => {
-        DataSource.fromJS({
+        DataCube.fromJS({
           name: 'wiki',
           clusterName: 'druid',
           source: 'wiki',
@@ -168,28 +168,28 @@ describe('DataSource', () => {
           dimensions: [
             {
               name: 'articleName',
-              expression: '$articleName'
+              formula: '$articleName'
             },
             {
               name: 'articleName',
-              expression: '$articleName.substr(0,2)'
+              formula: '$articleName.substr(0,2)'
             }
           ],
           measures: [
             {
               name: 'articleName',
-              expression: '$main.sum($count)'
+              formula: '$main.sum($count)'
             }
           ]
         });
-      }).to.throw("duplicate dimension name 'articleName' found in data source: 'wiki'");
+      }).to.throw("duplicate dimension name 'articleName' found in data cube: 'wiki'");
     });
 
   });
 
   describe("#getIssues", () => {
     it("raises issues", () => {
-      var dataSource = DataSource.fromJS({
+      var dataCube = DataCube.fromJS({
         name: 'wiki',
         clusterName: 'druid',
         source: 'wiki',
@@ -201,38 +201,38 @@ describe('DataSource', () => {
         dimensions: [
           {
             name: 'gaga',
-            expression: '$gaga'
+            formula: '$gaga'
           },
           {
             name: 'bucketArticleName',
-            expression: $('articleName').numberBucket(5).toJS()
+            formula: '$articleName.numberBucket(5)'
           }
         ],
         measures: [
           {
             name: 'count',
-            expression: '$main.sum($count)'
+            formula: '$main.sum($count)'
           },
           {
             name: 'added',
-            expression: '$main.sum($added)'
+            formula: '$main.sum($added)'
           },
           {
             name: 'sumArticleName',
-            expression: '$main.sum($articleName)'
+            formula: '$main.sum($articleName)'
           },
           {
             name: 'koalaCount',
-            expression: '$koala.sum($count)'
+            formula: '$koala.sum($count)'
           },
           {
             name: 'countByThree',
-            expression: '$count / 3'
+            formula: '$count / 3'
           }
         ]
       });
 
-      expect(dataSource.getIssues()).to.deep.equal([
+      expect(dataCube.getIssues()).to.deep.equal([
         "failed to validate dimension 'gaga': could not resolve $gaga",
         "failed to validate dimension 'bucketArticleName': numberBucket must have input of type NUMBER or NUMBER_RANGE (is STRING)",
         "failed to validate measure 'added': could not resolve $added",
@@ -244,9 +244,9 @@ describe('DataSource', () => {
   });
 
 
-  describe.only("back compat", () => {
+  describe("back compat", () => {
     it("works in a generic case", () => {
-      var legacyDataSourceJS: any = {
+      var legacyDataCubeJS: any = {
         "name": "wiki",
         "engine": "druid",
         "source": "wiki",
@@ -255,7 +255,7 @@ describe('DataSource', () => {
           {
             "kind": "time",
             "name": "__time",
-            "expression": "$__time"
+            "formula": "$__time"
           },
           {
             "name": "page"
@@ -264,7 +264,7 @@ describe('DataSource', () => {
         "measures": [
           {
             "name": "added",
-            "expression": "$main.sum($added)"
+            "formula": "$main.sum($added)"
           }
         ],
         "options": {
@@ -280,9 +280,9 @@ describe('DataSource', () => {
         }
       };
 
-      var dataSource = DataSource.fromJS(legacyDataSourceJS, context);
+      var dataCube = DataCube.fromJS(legacyDataCubeJS, context);
 
-      expect(dataSource.toJS()).to.deep.equal({
+      expect(dataCube.toJS()).to.deep.equal({
         "attributeOverrides": [
           {
             "name": "page",
@@ -302,43 +302,24 @@ describe('DataSource', () => {
         "description": "",
         "dimensions": [
           {
-            "expression": {
-              "name": "__time",
-              "op": "ref"
-            },
             "kind": "time",
             "name": "__time",
-            "title": "Time"
+            "title": "Time",
+            "formula": "$__time"
           },
           {
-            "expression": {
-              "name": "page",
-              "op": "ref"
-            },
             "kind": "string",
             "name": "page",
-            "title": "Page"
+            "title": "Page",
+            "formula": "$page"
           }
         ],
         "introspection": "none",
         "measures": [
           {
-            "expression": {
-              "action": {
-                "action": "sum",
-                "expression": {
-                  "name": "added",
-                  "op": "ref"
-                }
-              },
-              "expression": {
-                "name": "main",
-                "op": "ref"
-              },
-              "op": "chain"
-            },
             "name": "added",
-            "title": "Added"
+            "title": "Added",
+            "formula": "$main.sum($added)"
           }
         ],
         "name": "wiki",
@@ -362,13 +343,12 @@ describe('DataSource', () => {
 
   describe("#deduceAttributes", () => {
     it("works in a generic case", () => {
-      var dataSource = DataSource.fromJS({
+      var dataCube = DataCube.fromJS({
         "name": "wiki",
         "clusterName": "druid",
         "source": "wiki",
         "subsetFilter": null,
         introspection: 'autofill-all',
-        "defaultDuration": "P1D",
         "defaultFilter": { "op": "literal", "value": true },
         "defaultSortMeasure": "added",
         "defaultTimezone": "Etc/UTC",
@@ -376,41 +356,41 @@ describe('DataSource', () => {
           {
             "kind": "time",
             "name": "__time",
-            "expression": "$__time"
+            "formula": "$__time"
           },
           {
             "name": "page"
           },
           {
             "name": "pageInBrackets",
-            "expression": "'[' ++ $page ++ ']'"
+            "formula": "'[' ++ $page ++ ']'"
           },
           {
             "name": "userInBrackets",
-            "expression": "'[' ++ $user ++ ']'"
+            "formula": "'[' ++ $user ++ ']'"
           },
           {
             "name": "languageLookup",
-            "expression": "$language.lookup(wiki_language_lookup)"
+            "formula": "$language.lookup(wiki_language_lookup)"
           }
         ],
         "measures": [
           {
             "name": "added",
-            "expression": "$main.sum($added)"
+            "formula": "$main.sum($added)"
           },
           {
             "name": "addedByDeleted",
-            "expression": "$main.sum($added) / $main.sum($deleted)"
+            "formula": "$main.sum($added) / $main.sum($deleted)"
           },
           {
             "name": "unique_user",
-            "expression": "$main.countDistinct($unique_user)"
+            "formula": "$main.countDistinct($unique_user)"
           }
         ]
       }, context);
 
-      expect(AttributeInfo.toJSs(dataSource.deduceAttributes())).to.deep.equal([
+      expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
         {
           "name": "__time",
           "type": "TIME"
@@ -448,7 +428,7 @@ describe('DataSource', () => {
 
 
   describe("#addAttributes", () => {
-    var dataSourceStub = DataSource.fromJS({
+    var dataCubeStub = DataCube.fromJS({
       name: 'wiki',
       title: 'Wiki',
       clusterName: 'druid',
@@ -471,8 +451,8 @@ describe('DataSource', () => {
         { name: 'unique_user', special: 'unique' }
       ]);
 
-      var dataSource1 = dataSourceStub.addAttributes(attributes1);
-      expect(dataSource1.toJS()).to.deep.equal({
+      var dataCube1 = dataCubeStub.addAttributes(attributes1);
+      expect(dataCube1.toJS()).to.deep.equal({
         "name": "wiki",
         "title": "Wiki",
         "description": "",
@@ -484,7 +464,6 @@ describe('DataSource', () => {
         },
         "subsetFilter": null,
         introspection: 'autofill-all',
-        "defaultDuration": "P1D",
         "defaultFilter": { "op": "literal", "value": true },
         "defaultSortMeasure": "added",
         "defaultTimezone": "Etc/UTC",
@@ -497,60 +476,28 @@ describe('DataSource', () => {
         ],
         "dimensions": [
           {
-            "expression": {
-              "name": "__time",
-              "op": "ref"
-            },
             "kind": "time",
             "name": "__time",
-            "title": "Time"
+            "title": "Time",
+            "formula": "$__time"
           },
           {
-            "expression": {
-              "name": "page",
-              "op": "ref"
-            },
             "kind": "string",
             "name": "page",
-            "title": "Page"
+            "title": "Page",
+            "formula": "$page"
           }
         ],
         "measures": [
           {
-            "expression": {
-              "action": {
-                "action": "sum",
-                "expression": {
-                  "name": "added",
-                  "op": "ref"
-                }
-              },
-              "expression": {
-                "name": "main",
-                "op": "ref"
-              },
-              "op": "chain"
-            },
             "name": "added",
-            "title": "Added"
+            "title": "Added",
+            "formula": "$main.sum($added)"
           },
           {
-            "expression": {
-              "action": {
-                "action": "countDistinct",
-                "expression": {
-                  "name": "unique_user",
-                  "op": "ref"
-                }
-              },
-              "expression": {
-                "name": "main",
-                "op": "ref"
-              },
-              "op": "chain"
-            },
             "name": "unique_user",
-            "title": "Unique User"
+            "title": "Unique User",
+            "formula": "$main.countDistinct($unique_user)"
           }
         ]
       });
@@ -564,8 +511,8 @@ describe('DataSource', () => {
         { name: 'user', type: 'STRING' }
       ]);
 
-      var dataSource2 = dataSource1.addAttributes(attributes2);
-      expect(dataSource2.toJS()).to.deep.equal({
+      var dataCube2 = dataCube1.addAttributes(attributes2);
+      expect(dataCube2.toJS()).to.deep.equal({
         "name": "wiki",
         "title": "Wiki",
         "description": "",
@@ -577,7 +524,6 @@ describe('DataSource', () => {
         },
         "subsetFilter": null,
         introspection: 'autofill-all',
-        "defaultDuration": "P1D",
         "defaultFilter": { "op": "literal", "value": true },
         "defaultSortMeasure": "added",
         "defaultTimezone": "Etc/UTC",
@@ -592,87 +538,39 @@ describe('DataSource', () => {
         ],
         "dimensions": [
           {
-            "expression": {
-              "name": "__time",
-              "op": "ref"
-            },
             "kind": "time",
             "name": "__time",
-            "title": "Time"
+            "title": "Time",
+            "formula": "$__time"
           },
           {
-            "expression": {
-              "name": "page",
-              "op": "ref"
-            },
             "kind": "string",
             "name": "page",
-            "title": "Page"
+            "title": "Page",
+            "formula": "$page"
           },
           {
-            "expression": {
-              "name": "user",
-              "op": "ref"
-            },
             "kind": "string",
             "name": "user",
-            "title": "User"
+            "title": "User",
+            "formula": "$user"
           }
         ],
         "measures": [
           {
-            "expression": {
-              "action": {
-                "action": "sum",
-                "expression": {
-                  "name": "added",
-                  "op": "ref"
-                }
-              },
-              "expression": {
-                "name": "main",
-                "op": "ref"
-              },
-              "op": "chain"
-            },
             "name": "added",
-            "title": "Added"
+            "title": "Added",
+            "formula": "$main.sum($added)"
           },
           {
-            "expression": {
-              "action": {
-                "action": "countDistinct",
-                "expression": {
-                  "name": "unique_user",
-                  "op": "ref"
-                }
-              },
-              "expression": {
-                "name": "main",
-                "op": "ref"
-              },
-              "op": "chain"
-            },
             "name": "unique_user",
-            "title": "Unique User"
+            "title": "Unique User",
+            "formula": "$main.countDistinct($unique_user)"
           },
           {
-            "expression": {
-              "action": {
-                "action": "sum",
-                "expression": {
-                  "name": "deleted",
-                  "op": "ref"
-                }
-              },
-              "expression": {
-                "name": "main",
-                "op": "ref"
-              },
-              "op": "chain"
-            },
             "name": "deleted",
-            "title": "Deleted"
+            "title": "Deleted",
+            "formula": "$main.sum($deleted)"
           }
         ]
       });
@@ -686,8 +584,8 @@ describe('DataSource', () => {
         { name: 'unique_user:#love$', special: 'unique' }
       ]);
 
-      var dataSource = dataSourceStub.addAttributes(attributes1);
-      expect(dataSource.toJS()).to.deep.equal({
+      var dataCube = dataCubeStub.addAttributes(attributes1);
+      expect(dataCube.toJS()).to.deep.equal({
         "attributes": [
           {
             "name": "__time",
@@ -707,7 +605,7 @@ describe('DataSource', () => {
             "type": "STRING"
           }
         ],
-        "defaultDuration": "P1D",
+        "clusterName": "druid",
         "defaultFilter": {
           "op": "literal",
           "value": true
@@ -716,62 +614,29 @@ describe('DataSource', () => {
         "defaultTimezone": "Etc/UTC",
         "dimensions": [
           {
-            "expression": {
-              "name": "__time",
-              "op": "ref"
-            },
             "kind": "time",
             "name": "__time",
-            "title": "Time"
+            "title": "Time",
+            "formula": "$__time"
           },
           {
-            "expression": {
-              "name": "page:#love$",
-              "op": "ref"
-            },
             "kind": "string",
             "name": "page_love_",
-            "title": "Page Love"
+            "title": "Page Love",
+            "formula": "${page:#love$}"
           }
         ],
-        "engine": "druid",
         "introspection": "autofill-all",
         "measures": [
           {
-            "expression": {
-              "action": {
-                "action": "sum",
-                "expression": {
-                  "name": "added:#love$",
-                  "op": "ref"
-                }
-              },
-              "expression": {
-                "name": "main",
-                "op": "ref"
-              },
-              "op": "chain"
-            },
             "name": "added_love_",
-            "title": "Added Love"
+            "title": "Added Love",
+            "formula": "$main.sum(${added:#love$})"
           },
           {
-            "expression": {
-              "action": {
-                "action": "countDistinct",
-                "expression": {
-                  "name": "unique_user:#love$",
-                  "op": "ref"
-                }
-              },
-              "expression": {
-                "name": "main",
-                "op": "ref"
-              },
-              "op": "chain"
-            },
             "name": "unique_user_love_",
-            "title": "Unique User Love"
+            "title": "Unique User Love",
+            "formula": "$main.countDistinct(${unique_user:#love$})"
           }
         ],
         "name": "wiki",
@@ -795,7 +660,7 @@ describe('DataSource', () => {
         { name: 'deleted', type: 'NUMBER' }
       ]);
 
-      var dataSourceWithDim = DataSource.fromJS({
+      var dataCubeWithDim = DataCube.fromJS({
         name: 'wiki',
         title: 'Wiki',
         clusterName: 'druid',
@@ -811,24 +676,24 @@ describe('DataSource', () => {
         dimensions: [
           {
             name: 'added',
-            expression: '$added'
+            formula: '$added'
           },
           {
             name: 'added_',
-            expression: '${added!!!}'
+            formula: '${added!!!}'
           }
         ]
       });
 
-      var dataSource = dataSourceWithDim.addAttributes(attributes1);
-      expect(dataSource.toJS().measures.map(m => m.name)).to.deep.equal(['deleted']);
+      var dataCube = dataCubeWithDim.addAttributes(attributes1);
+      expect(dataCube.toJS().measures.map(m => m.name)).to.deep.equal(['deleted']);
     });
 
   });
 
 
   describe("#addAttributes (new dim)", () => {
-    var dataSource = DataSource.fromJS({
+    var dataCube = DataCube.fromJS({
       name: 'wiki',
       title: 'Wiki',
       clusterName: 'druid',
@@ -853,59 +718,44 @@ describe('DataSource', () => {
         { "name": "page_unique", "special": "unique", "type": "STRING" }
       ];
 
-      var dataSource1 = dataSource.addAttributes(AttributeInfo.fromJSs(columns));
+      var dataCube1 = dataCube.addAttributes(AttributeInfo.fromJSs(columns));
 
-      expect(dataSource1.toJS().dimensions).to.deep.equal([
+      expect(dataCube1.toJS().dimensions).to.deep.equal([
         {
-          "expression": {
-            "name": "__time",
-            "op": "ref"
-          },
           "kind": "time",
           "name": "__time",
-          "title": "Time"
+          "title": "Time",
+          "formula": "$__time"
         },
         {
-          "expression": {
-            "name": "page",
-            "op": "ref"
-          },
           "kind": "string",
           "name": "page",
-          "title": "Page"
+          "title": "Page",
+          "formula": "$page"
         }
       ]);
 
       columns.push({ "name": "channel", "type": "STRING" });
-      var dataSource2 = dataSource1.addAttributes(AttributeInfo.fromJSs(columns));
+      var dataCube2 = dataCube1.addAttributes(AttributeInfo.fromJSs(columns));
 
-      expect(dataSource2.toJS().dimensions).to.deep.equal([
+      expect(dataCube2.toJS().dimensions).to.deep.equal([
         {
-          "expression": {
-            "name": "__time",
-            "op": "ref"
-          },
           "kind": "time",
           "name": "__time",
-          "title": "Time"
+          "title": "Time",
+          "formula": "$__time"
         },
         {
-          "expression": {
-            "name": "page",
-            "op": "ref"
-          },
           "kind": "string",
           "name": "page",
-          "title": "Page"
+          "title": "Page",
+          "formula": "$page"
         },
         {
-          "expression": {
-            "name": "channel",
-            "op": "ref"
-          },
           "kind": "string",
           "name": "channel",
-          "title": "Channel"
+          "title": "Channel",
+          "formula": "$channel"
         }
       ]);
 

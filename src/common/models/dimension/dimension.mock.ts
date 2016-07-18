@@ -20,11 +20,7 @@ export class DimensionMock {
     return {
       name: 'country',
       title: 'important countries',
-      'expression': {
-        'op': 'literal',
-        'value': { 'setType': 'STRING', 'elements': ['en'] },
-        'type': 'SET'
-      },
+      formula: '$country',
       kind: 'string'
     };
   }
@@ -33,11 +29,7 @@ export class DimensionMock {
     return {
       name: 'country',
       title: 'important countries',
-      'expression': {
-        'op': 'literal',
-        'value': { 'setType': 'STRING', 'elements': ['en'] },
-        'type': 'SET'
-      },
+      formula: '$country',
       kind: 'string',
       url: 'https://www.country.com/%s' // country.com redirects to a CMT.com. Could've been worse.
     };
@@ -47,11 +39,7 @@ export class DimensionMock {
     return {
       name: 'time',
       title: 'time',
-      'expression': {
-        'op': 'literal',
-        'value': { 'start': new Date('2013-02-26T19:00:00.000Z'), 'end': new Date('2013-02-26T22:00:00.000Z') },
-        'type': 'TIME_RANGE'
-      },
+      formula: '$time',
       kind: 'time',
       url: 'http://www.time.com/%s'
     };
@@ -61,11 +49,7 @@ export class DimensionMock {
     return {
       name: 'numeric',
       title: 'Numeric',
-      'expression': {
-        'op': 'literal',
-        'value': { 'setType': 'NUMBER', 'elements': [1] },
-        'type': 'SET'
-      },
+      formula: '$n',
       kind: 'number'
     };
   }

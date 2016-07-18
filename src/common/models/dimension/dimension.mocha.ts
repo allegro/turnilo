@@ -25,22 +25,14 @@ describe('Dimension', () => {
       {
         name: 'country',
         title: 'important countries',
-        'expression': {
-          'op': 'literal',
-          'value': { 'setType': 'STRING', 'elements': ['en'] },
-          'type': 'SET'
-        },
+        formula: '$country',
         kind: 'string',
         granularities: [5, 50, 500, 800, 1000]
       },
       {
         name: 'country',
         title: 'important countries',
-        'expression': {
-          'op': 'literal',
-          'value': { 'setType': 'STRING', 'elements': ['en'] },
-          'type': 'SET'
-        },
+        formula: '$country',
         kind: 'string',
         url: 'https://www.country.com/%s',
         bucketedBy: 1
@@ -48,11 +40,7 @@ describe('Dimension', () => {
       {
         name: 'time',
         title: 'time',
-        'expression': {
-          'op': 'literal',
-          'value': { 'start': new Date('2013-02-26T19:00:00.000Z'), 'end': new Date('2013-02-26T22:00:00.000Z') },
-          'type': 'TIME_RANGE'
-        },
+        formula: '$time',
         kind: 'time',
         url: 'http://www.time.com/%s',
         granularities: ['PT1M', { action: 'timeBucket', duration: 'P6M', timezone: 'Etc/UTC' }, 'PT6H', 'P1D', 'P1W']
@@ -60,11 +48,7 @@ describe('Dimension', () => {
       {
         name: 'time',
         title: 'time',
-        'expression': {
-          'op': 'literal',
-          'value': { 'start': new Date('2013-02-26T19:00:00.000Z'), 'end': new Date('2013-02-26T22:00:00.000Z') },
-          'type': 'TIME_RANGE'
-        },
+        formula: '$time',
         kind: 'time',
         url: 'http://www.time.com/%s',
         granularities: ['PT1M', 'P6M', 'PT6H', 'P1D', 'P1W'],

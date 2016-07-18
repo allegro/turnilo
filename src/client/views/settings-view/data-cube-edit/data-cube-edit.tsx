@@ -32,7 +32,7 @@ import { ImmutableDropdown } from '../../../components/immutable-dropdown/immuta
 import { DimensionModal } from '../dimension-modal/dimension-modal';
 import { MeasureModal } from '../measure-modal/measure-modal';
 
-import { AppSettings, ListItem, Cluster, DataSource, Dimension, DimensionJS, Measure, MeasureJS } from '../../../../common/models/index';
+import { AppSettings, ListItem, Cluster, DataCube, Dimension, DimensionJS, Measure, MeasureJS } from '../../../../common/models/index';
 import { SupportedType as ClusterType } from '../../../../common/models/index';
 
 import { CUBE_EDIT as LABELS } from '../utils/labels';
@@ -46,9 +46,9 @@ export interface DataCubeEditProps extends React.Props<any> {
 }
 
 export interface DataCubeEditState {
-  tempCube?: DataSource;
+  tempCube?: DataCube;
   hasChanged?: boolean;
-  cube?: DataSource;
+  cube?: DataCube;
   tab?: any;
   canSave?: boolean;
   errors?: any;
@@ -81,7 +81,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
   }
 
   initFromProps(props: DataCubeEditProps) {
-    let cube = props.settings.dataSources.filter((d) => d.name === props.cubeId)[0];
+    let cube = props.settings.dataCubes.filter((d) => d.name === props.cubeId)[0];
 
     this.setState({
       tempCube: cube,
@@ -116,9 +116,9 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     const { settings } = this.props;
     const { tempCube, cube } = this.state;
 
-    var newCubes = settings.dataSources;
+    var newCubes = settings.dataCubes;
     newCubes[newCubes.indexOf(cube)] = tempCube;
-    var newSettings = settings.changeDataSources(newCubes);
+    var newSettings = settings.changeDataCubes(newCubes);
 
     if (this.props.onSave) {
       this.props.onSave(newSettings);
@@ -131,7 +131,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     window.location.hash = hash.replace(`/${cubeId}/${tab}`, '');
   }
 
-  onSimpleChange(newCube: DataSource, isValid: boolean, path: string) {
+  onSimpleChange(newCube: DataCube, isValid: boolean, path: string) {
     const { cube, errors } = this.state;
 
     errors[path] = !isValid;

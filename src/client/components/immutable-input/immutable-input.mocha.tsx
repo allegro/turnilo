@@ -20,8 +20,8 @@ import * as React from 'react';
 import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 
-import { DataSource } from '../../../common/models/index';
-import { DataSourceMock } from '../../../common/models/mocks';
+import { DataCube } from '../../../common/models/index';
+import { DataCubeMock } from '../../../common/models/mocks';
 
 import { findDOMNode } from '../../utils/test-utils/index';
 
@@ -39,7 +39,7 @@ describe('ImmutableInput', () => {
 
     component = TestUtils.renderIntoDocument(
       <ImmutableInput
-        instance={DataSourceMock.twitter()}
+        instance={DataCubeMock.twitter()}
         path={'clusterName'}
         validator={/^[a-z]+$/}
         onChange={onChange}
@@ -64,7 +64,7 @@ describe('ImmutableInput', () => {
     expect(onChange.callCount).to.equal(1);
     const args = onChange.args[0];
 
-    expect(args[0]).to.be.instanceOf(DataSource);
+    expect(args[0]).to.be.instanceOf(DataCube);
     expect(args[0].clusterName).to.equal('giraffe');
 
     expect(args[1]).to.equal(true);
@@ -82,8 +82,8 @@ describe('ImmutableInput', () => {
     expect(onChange.callCount).to.equal(1);
     const args = onChange.args[0];
 
-    expect(args[0]).to.be.instanceOf(DataSource);
-    expect(args[0].clusterName).to.equal(DataSourceMock.twitter().clusterName);
+    expect(args[0]).to.be.instanceOf(DataCube);
+    expect(args[0].clusterName).to.equal(DataCubeMock.twitter().clusterName);
 
     expect(args[1]).to.equal(false);
 

@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { DataSourceMock } from '../data-source/data-source.mock';
+import { DataCubeMock } from '../data-cube/data-cube.mock';
 import { AppSettings } from './app-settings';
 import { AppSettingsMock } from './app-settings.mock';
 
@@ -38,17 +38,24 @@ describe('AppSettings', () => {
     it("errors if there is no matching cluster", () => {
       var js = AppSettingsMock.wikiOnlyJS();
       js.clusters = [];
-      expect(() => AppSettings.fromJS(js, context)).to.throw("Can not find cluster 'druid' for data source 'wiki'");
+      expect(() => AppSettings.fromJS(js, context)).to.throw("Can not find cluster 'druid' for data cube 'wiki'");
     });
 
   });
 
 
-  describe("upgrades", () => {
+  describe("back compat", () => {
+    it("works with dataSources", () => {
+      var oldJS: any = AppSettingsMock.wikiOnlyJS();
+      oldJS.dataSources = oldJS.dataCubes;
+      delete oldJS.dataCubes;
+      expect(AppSettings.fromJS(oldJS, context).toJS()).to.deep.equal(AppSettingsMock.wikiOnlyJS());
+    });
+
     it("deals with old config style", () => {
-      var wikiDataSourceJS = DataSourceMock.WIKI_JS;
-      delete wikiDataSourceJS.clusterName;
-      (wikiDataSourceJS as any).engine = 'druid';
+      var wikiDataCubeJS = DataCubeMock.WIKI_JS;
+      delete wikiDataCubeJS.clusterName;
+      (wikiDataCubeJS as any).engine = 'druid';
 
       var oldJS: any = {
         customization: {},
@@ -59,7 +66,7 @@ describe('AppSettings', () => {
         sourceReintrospectInterval: 10002,
         sourceReintrospectOnLoad: true,
         dataSources: [
-          wikiDataSourceJS
+          wikiDataCubeJS
         ]
       };
 
@@ -82,7 +89,7 @@ describe('AppSettings', () => {
         druidHost: '192.168.99.100',
         sourceListScan: 'disable',
         dataSources: [
-          DataSourceMock.WIKI_JS
+          DataCubeMock.WIKI_JS
         ]
       };
 
@@ -104,7 +111,7 @@ describe('AppSettings', () => {
       expect(AppSettings.BLANK.toJS()).to.deep.equal({
         "clusters": [],
         "customization": {},
-        "dataSources": []
+        "dataCubes": []
       });
     });
 
@@ -123,7 +130,7 @@ describe('AppSettings', () => {
           "headerBackground": "brown",
           "title": "Hello World"
         },
-        "dataSources": [
+        "dataCubes": [
           {
             "attributes": [
               {
@@ -157,61 +164,29 @@ describe('AppSettings', () => {
             ],
             "defaultSortMeasure": "count",
             "defaultTimezone": "Etc/UTC",
+            "description": "Wiki description",
             "dimensions": [
               {
-                "expression": {
-                  "name": "time",
-                  "op": "ref"
-                },
+                "formula": "$time",
                 "kind": "time",
                 "name": "time",
                 "title": "Time"
               },
               {
-                "expression": {
-                  "name": "articleName",
-                  "op": "ref"
-                },
+                "formula": "$articleName",
                 "kind": "string",
                 "name": "articleName",
                 "title": "Article Name"
               }
             ],
-            "introspection": "none",
             "measures": [
               {
-                "expression": {
-                  "action": {
-                    "action": "sum",
-                    "expression": {
-                      "name": "count",
-                      "op": "ref"
-                    }
-                  },
-                  "expression": {
-                    "name": "main",
-                    "op": "ref"
-                  },
-                  "op": "chain"
-                },
+                "formula": "$main.sum($count)",
                 "name": "count",
                 "title": "Count"
               },
               {
-                "expression": {
-                  "action": {
-                    "action": "sum",
-                    "expression": {
-                      "name": "added",
-                      "op": "ref"
-                    }
-                  },
-                  "expression": {
-                    "name": "main",
-                    "op": "ref"
-                  },
-                  "op": "chain"
-                },
+                "formula": "$main.sum($added)",
                 "name": "added",
                 "title": "Added"
               }
@@ -224,7 +199,6 @@ describe('AppSettings', () => {
             "source": "wiki",
             "subsetFilter": null,
             "timeAttribute": "time",
-            "description": "Wiki description",
             "title": "Wiki"
           }
         ]

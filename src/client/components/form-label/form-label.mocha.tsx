@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 
-import { DataSourceMock, EssenceMock } from '../../../common/models/mocks';
+import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
 
 import { findDOMNode } from '../../utils/test-utils/index';
 

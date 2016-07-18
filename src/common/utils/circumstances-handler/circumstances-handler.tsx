@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Dimension, Essence, Splits, SplitCombine, Filter, FilterClause, Measure, DataSource, Colors } from '../../models/index';
+import { Dimension, Essence, Splits, SplitCombine, Filter, FilterClause, Measure, DataCube, Colors } from '../../models/index';
 import { Resolve, Resolution } from '../../models/manifest/manifest';
 
-export type Configuration = (splits: Splits, dataSource?: DataSource) => boolean;
-export type Action = (splits?: Splits, dataSource?: DataSource, colors?: Colors, current?: boolean) => Resolve;
+export type Configuration = (splits: Splits, dataCube?: DataCube) => boolean;
+export type Action = (splits?: Splits, dataCube?: DataCube, colors?: Colors, current?: boolean) => Resolve;
 
 export class CircumstancesHandler {
   public static noSplits() {
@@ -50,15 +50,15 @@ export class CircumstancesHandler {
   }
 
   public static areExactSplitKinds = (...selectors: string[]) => {
-    return (splits: Splits, dataSource: DataSource): boolean => {
-      var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataSource.dimensions).kind);
+    return (splits: Splits, dataCube: DataCube): boolean => {
+      var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataCube.dimensions).kind);
       return CircumstancesHandler.strictCompare(selectors, kinds);
     };
   };
 
   public static haveAtLeastSplitKinds = (...kinds: string[]) => {
-    return (splits: Splits, dataSource: DataSource): boolean => {
-      let getKind = (split: SplitCombine) => split.getDimension(dataSource.dimensions).kind;
+    return (splits: Splits, dataCube: DataCube): boolean => {
+      let getKind = (split: SplitCombine) => split.getDimension(dataCube.dimensions).kind;
 
       let actualKinds = splits.toArray().map(getKind);
 
@@ -108,8 +108,8 @@ export class CircumstancesHandler {
   public needsAtLeastOneSplit(message?: string): CircumstancesHandler {
     return this
       .when(CircumstancesHandler.noSplits())
-      .then((splits: Splits, dataSource: DataSource) => {
-        var someDimensions = dataSource.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
+      .then((splits: Splits, dataCube: DataCube) => {
+        var someDimensions = dataCube.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
         return Resolve.manual(4, message,
           someDimensions.map((someDimension) => {
             return {
@@ -124,15 +124,15 @@ export class CircumstancesHandler {
     );
   }
 
-  public evaluate(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
+  public evaluate(dataCube: DataCube, splits: Splits, colors: Colors, current: boolean): Resolve {
     for (let i = 0; i < this.configurations.length; i++) {
       let confs = this.configurations[i];
 
-      if (confs.some((c) => c(splits, dataSource))) {
-        return this.actions[i](splits, dataSource, colors, current);
+      if (confs.some((c) => c(splits, dataCube))) {
+        return this.actions[i](splits, dataCube, colors, current);
       }
     }
 
-    return this.otherwiseAction(splits, dataSource, colors, current);
+    return this.otherwiseAction(splits, dataCube, colors, current);
   }
 }

@@ -52,7 +52,7 @@ Each cluster has the following properties:
 
 **name** (string)
 
-The name of the cluster (to be referenced later from the data sources)
+The name of the cluster (to be referenced later from the data cube)
 
 **type** ('druid' | 'mysql' | 'postgres')
 
@@ -73,7 +73,7 @@ The timeout to set on the queries in ms. Default: 40000
 
 **sourceListScan** ('disable' | 'auto')
 
-Should the sources of this cluster be automatically scanned and new sources added as data sources. Default: 'disable'
+Should the sources of this cluster be automatically scanned and new sources added as data cubes. Default: 'disable'
 
 **sourceListRefreshOnLoad** (boolean)
 
@@ -124,31 +124,31 @@ The password to use with the provided user.
 
 ## Configuring the DataSources
 
-The top level `dataSources:` key that holds the data sources that will be loaded into Pivot.
-The order of the data sources in the config will define the ordering seen in the UI.
+The top level `dataCubes:` key that holds the data cubes that will be loaded into Pivot.
+The order of the data cubes in the config will define the ordering seen in the UI.
 
 
-### Basic data source properties
+### Basic data cube properties
 
 Described here are only the properties which you might want to change.
 
 **name** (string)
 
-The name of the data source as used internally in Pivot and used in the URLs. This should be a URL safe string.
-Changing this property for a given data source will break any URLs that someone might have generated for that data
-source in the past.
+The name of the data cube as used internally in Pivot and used in the URLs. This should be a URL safe string.
+Changing this property for a given data cube will break any URLs that someone might have generated for that data
+cube in the past.
 
-**engine** (string)
+**clusterName** (string)
 
-The cluster that the dataSource belongs to (or native if this is a file based dataSource)
+The cluster that the data cube belongs to (or `'native'` if this is a file based data cube)
 
 **title** (string)
 
-The user visible name that will be used to describe this data source in the UI. It is always safe to change this.
+The user visible name that will be used to describe this data cube in the UI. It is always safe to change this.
 
 **description** (string)
 
-The description of the data source shown in the homepage.
+The description of the data cube shown in the homepage.
 
 **defaultDuration** (duration string)
 
@@ -171,8 +171,8 @@ The names of the dimensions (in order) that will appear *pinned* by default on t
 
 ### Attribute Overrides
 
-While Pivot tries to learn as much as it can from your data source from Druid directly.
-It can not (yet) do a perfect job. The `attributeOverrides:` section of the data source is there for you to fix that.
+While Pivot tries to learn as much as it can from your data cube from Druid directly.
+It can not (yet) do a perfect job. The `attributeOverrides:` section of the data cube is there for you to fix that.
 
 **name** (string)
 
@@ -439,7 +439,7 @@ But the above will not work because, as of this writing, [Druid can not filter o
 Instead you can leverage [Custom aggregations](#custom-aggregations) and the `javascript` aggregation to achieve essentially the same thing:
 
 ```yaml
-    # Add this to the data source options
+    # Add this to the data cube options
     options:
       customAggregations:
         revenueSplice:
@@ -483,7 +483,7 @@ Can customize the header background color and logo icon by supplying a color str
 
 ### External links
 
-Pivot supports defining external view links with access to `dataSource`, `filter`, `splits`, and `timezone` objects at link generation time.
+Pivot supports defining external view links with access to `dataCube`, `filter`, `splits`, and `timezone` objects at link generation time.
 This is done by defining a function body in the configuration file.
 
 For example:

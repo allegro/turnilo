@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Splits, DataSource, SplitCombine, Colors, Dimension } from '../../models/index';
+import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 
-function handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
+function handleCircumstance(dataCube: DataCube, splits: Splits, colors: Colors, current: boolean): Resolve {
   return Resolve.manual(0, 'The Geo visualization is not ready, please select another visualization.', []);
 }
 

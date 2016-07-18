@@ -26,12 +26,12 @@ describe('Measure', () => {
       {
         name: 'price',
         title: 'Price',
-        expression: $('main').sum('$price').toJS()
+        formula: '$main.sum($price)'
       },
       {
         name: 'avg_price',
         title: 'Average Price',
-        expression: $('main').average('$price').toJS()
+        formula: '$main.average($price)'
       }
     ]);
   });
@@ -53,22 +53,9 @@ describe('Measure', () => {
       var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
-          "expression": {
-            "action": {
-              "action": "sum",
-              "expression": {
-                "name": "price",
-                "op": "ref"
-              }
-            },
-            "expression": {
-              "name": "main",
-              "op": "ref"
-            },
-            "op": "chain"
-          },
           "name": "price",
-          "title": "Price"
+          "title": "Price",
+          "formula": "$main.sum($price)"
         }
       ]);
     });
@@ -89,22 +76,9 @@ describe('Measure', () => {
       var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
-          "expression": {
-            "action": {
-              "action": "min",
-              "expression": {
-                "name": "price",
-                "op": "ref"
-              }
-            },
-            "expression": {
-              "name": "main",
-              "op": "ref"
-            },
-            "op": "chain"
-          },
           "name": "price",
-          "title": "Price"
+          "title": "Price",
+          "formula": "$main.min($price)"
         }
       ]);
     });
@@ -126,22 +100,9 @@ describe('Measure', () => {
       var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
-          "expression": {
-            "action": {
-              "action": "max",
-              "expression": {
-                "name": "price",
-                "op": "ref"
-              }
-            },
-            "expression": {
-              "name": "main",
-              "op": "ref"
-            },
-            "op": "chain"
-          },
           "name": "price",
-          "title": "Price"
+          "title": "Price",
+          "formula": "$main.max($price)"
         }
       ]);
     });
@@ -156,42 +117,9 @@ describe('Measure', () => {
       var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
-          "expression": {
-            "action": {
-              "action": "quantile",
-              "expression": {
-                "name": "delta_hist",
-                "op": "ref"
-              },
-              "quantile": 0.95
-            },
-            "expression": {
-              "name": "main",
-              "op": "ref"
-            },
-            "op": "chain"
-          },
-          "name": "delta_hist_p95",
-          "title": "Delta Hist P95"
-        },
-        {
-          "expression": {
-            "action": {
-              "action": "quantile",
-              "expression": {
-                "name": "delta_hist",
-                "op": "ref"
-              },
-              "quantile": 0.99
-            },
-            "expression": {
-              "name": "main",
-              "op": "ref"
-            },
-            "op": "chain"
-          },
-          "name": "delta_hist_p99",
-          "title": "Delta Hist P99"
+          "name": "delta_hist_p98",
+          "title": "Delta Hist P98",
+          "formula": "$main.quantile($delta_hist,0.98)"
         }
       ]);
     });
@@ -205,22 +133,9 @@ describe('Measure', () => {
       var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
-          "expression": {
-            "action": {
-              "action": "countDistinct",
-              "expression": {
-                "name": "unique_page",
-                "op": "ref"
-              }
-            },
-            "expression": {
-              "name": "main",
-              "op": "ref"
-            },
-            "op": "chain"
-          },
           "name": "unique_page",
-          "title": "Unique Page"
+          "title": "Unique Page",
+          "formula": "$main.countDistinct($unique_page)"
         }
       ]);
     });
@@ -234,22 +149,9 @@ describe('Measure', () => {
       var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
-          "expression": {
-            "action": {
-              "action": "countDistinct",
-              "expression": {
-                "name": "page_theta",
-                "op": "ref"
-              }
-            },
-            "expression": {
-              "name": "main",
-              "op": "ref"
-            },
-            "op": "chain"
-          },
           "name": "page_theta",
-          "title": "Page Theta"
+          "title": "Page Theta",
+          "formula": "$main.countDistinct($page_theta)"
         }
       ]);
     });

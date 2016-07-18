@@ -23,7 +23,8 @@ import { PivotRequest } from '../../utils/index';
 var router = Router();
 
 router.post('/', (req: PivotRequest, res: Response) => {
-  var { domain, dataSource, essence } = req.body;
+  var { domain, dataCube, dataSource, essence } = req.body;
+  dataCube = dataCube || dataSource; // back compat
 
   if (typeof domain !== 'string') {
     res.status(400).send({
@@ -32,9 +33,9 @@ router.post('/', (req: PivotRequest, res: Response) => {
     return;
   }
 
-  if (typeof dataSource !== 'string') {
+  if (typeof dataCube !== 'string') {
     res.status(400).send({
-      error: 'must have a dataSource'
+      error: 'must have a dataCube'
     });
     return;
   }
@@ -46,17 +47,17 @@ router.post('/', (req: PivotRequest, res: Response) => {
     return;
   }
 
-  req.getSettings(dataSource)
+  req.getSettings(dataCube)
     .then((appSettings) => {
-      var myDataSource = appSettings.getDataSource(dataSource);
-      if (!myDataSource) {
-        res.status(400).send({ error: 'unknown data source' });
+      var myDataCube = appSettings.getDataCube(dataCube);
+      if (!myDataCube) {
+        res.status(400).send({ error: 'unknown data cube' });
         return;
       }
 
       try {
         var essenceObj = Essence.fromJS(essence, {
-          dataSource: myDataSource,
+          dataCube: myDataCube,
           visualizations: MANIFESTS
         });
       } catch (e) {
@@ -68,7 +69,7 @@ router.post('/', (req: PivotRequest, res: Response) => {
       }
 
       res.json({
-        url: essenceObj.getURL(`${domain}#${myDataSource.name}/`)
+        url: essenceObj.getURL(`${domain}#${myDataCube.name}/`)
       });
     })
     .done();

@@ -15,22 +15,22 @@
  */
 
 import { $, SortAction } from 'plywood';
-import { Splits, DataSource, SplitCombine, Colors, Dimension } from '../../models/index';
+import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
 import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 
 var handler = CircumstancesHandler.EMPTY()
   .needsAtLeastOneSplit('The Table requires at least one split')
   .otherwise(
-    (splits: Splits, dataSource: DataSource, colors: Colors, current: boolean) => {
+    (splits: Splits, dataCube: DataCube, colors: Colors, current: boolean) => {
       var autoChanged = false;
       splits = splits.map((split, i) => {
         if (!split.sortAction) {
-          split = split.changeSortAction(dataSource.getDefaultSortAction());
+          split = split.changeSortAction(dataCube.getDefaultSortAction());
           autoChanged = true;
         }
 
-        var splitDimension = splits.get(0).getDimension(dataSource.dimensions);
+        var splitDimension = splits.get(0).getDimension(dataCube.dimensions);
 
         // ToDo: review this
         if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {

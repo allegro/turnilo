@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { helper } from 'plywood';
 
-import { DataSource, AppSettings, User } from '../../../common/models/index';
+import { DataCube, AppSettings, User } from '../../../common/models/index';
 
 import { createFunctionSlot, FunctionSlot } from '../../utils/function-slot/function-slot';
 import { AboutModal } from '../../components/about-modal/about-modal';
@@ -49,7 +49,7 @@ export interface PivotApplicationState {
 
   appSettings?: AppSettings;
   drawerOpen?: boolean;
-  selectedDataSource?: DataSource;
+  selectedDataCube?: DataCube;
   viewType?: ViewType;
   viewHash?: string;
   showAboutModal?: boolean;
@@ -72,7 +72,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     this.state = {
       appSettings: null,
       drawerOpen: false,
-      selectedDataSource: null,
+      selectedDataCube: null,
       viewType: null,
       viewHash: null,
       showAboutModal: false
@@ -82,29 +82,29 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   componentWillMount() {
     var { appSettings } = this.props;
-    var { dataSources } = appSettings;
-    if (!dataSources.length) throw new Error('must have data sources');
+    var { dataCubes } = appSettings;
+    if (!dataCubes.length) throw new Error('must have data cubes');
 
     var hash = window.location.hash;
     var viewType = this.getViewTypeFromHash(hash);
-    var selectedDataSource = this.getDataSourceFromHash(appSettings.dataSources, hash);
+    var selectedDataCube = this.getDataCubeFromHash(appSettings.dataCubes, hash);
     var viewHash = this.getViewHashFromHash(hash);
 
-    // If datasource does not exit bounce to home
-    if (viewType === CUBE && !selectedDataSource) {
+    // If data cube does not exit bounce to home
+    if (viewType === CUBE && !selectedDataCube) {
       this.changeHash('');
       viewType = HOME;
     }
 
-    if (viewType === HOME && dataSources.length === 1) {
+    if (viewType === HOME && dataCubes.length === 1) {
       viewType = CUBE;
-      selectedDataSource = dataSources[0];
+      selectedDataCube = dataCubes[0];
     }
 
     this.setState({
       viewType,
       viewHash,
-      selectedDataSource,
+      selectedDataCube,
       appSettings
     });
   }
@@ -151,7 +151,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   hashToState(hash: string) {
-    const { dataSources } = this.state.appSettings;
+    const { dataCubes } = this.state.appSettings;
     var viewType = this.getViewTypeFromHash(hash);
     var viewHash = this.getViewHashFromHash(hash);
     var newState: PivotApplicationState = {
@@ -161,11 +161,11 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     };
 
     if (viewType === CUBE) {
-      var dataSource = this.getDataSourceFromHash(dataSources, hash);
-      if (!dataSource) dataSource = dataSources[0];
-      newState.selectedDataSource = dataSource;
+      var dataCube = this.getDataCubeFromHash(dataCubes, hash);
+      if (!dataCube) dataCube = dataCubes[0];
+      newState.selectedDataCube = dataCube;
     } else {
-      newState.selectedDataSource = null;
+      newState.selectedDataCube = null;
     }
 
     this.setState(newState);
@@ -186,11 +186,11 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     return CUBE;
   }
 
-  getDataSourceFromHash(dataSources: DataSource[], hash: string): DataSource {
+  getDataCubeFromHash(dataCubes: DataCube[], hash: string): DataCube {
     // can change header from hash
     var parts = this.parseHash(hash);
-    var dataSourceName = parts.shift();
-    return helper.findByName(dataSources, dataSourceName);
+    var dataCubeName = parts.shift();
+    return helper.findByName(dataCubes, dataCubeName);
   }
 
   getViewHashFromHash(hash: string): string {
@@ -225,7 +225,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
     var newHash: string;
     if (viewType === CUBE) {
-      newHash = `${this.state.selectedDataSource.name}/${viewHash}`;
+      newHash = `${this.state.selectedDataCube.name}/${viewHash}`;
     } else if (viewType === LINK) {
       newHash = `${viewType}/${viewHash}`;
     } else {
@@ -243,7 +243,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
     var newPrefix: string;
     if (viewType === CUBE) {
-      newPrefix = `${this.state.selectedDataSource.name}/`;
+      newPrefix = `${this.state.selectedDataCube.name}/`;
     } else {
       newPrefix = viewType;
     }
@@ -288,16 +288,16 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   render() {
     var { maxFilters, maxSplits, user, version } = this.props;
-    var { viewType, viewHash, selectedDataSource, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync, appSettings } = this.state;
-    var { dataSources, customization, linkViewConfig } = appSettings;
+    var { viewType, viewHash, selectedDataCube, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync, appSettings } = this.state;
+    var { dataCubes, customization, linkViewConfig } = appSettings;
 
     var sideDrawer: JSX.Element = null;
     if (drawerOpen && SideDrawerAsync) {
       var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
       sideDrawer = <SideDrawerAsync
         key='drawer'
-        selectedDataSource={selectedDataSource}
-        dataSources={dataSources}
+        selectedDataCube={selectedDataCube}
+        dataCubes={dataCubes}
         onOpenAbout={this.openAboutModal.bind(this)}
         onClose={closeSideDrawer}
         customization={customization}
@@ -325,7 +325,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       case HOME:
         view = <HomeView
           user={user}
-          dataSources={dataSources}
+          dataCubes={dataCubes}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           onOpenAbout={this.openAboutModal.bind(this)}
           customization={customization}
@@ -335,7 +335,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       case CUBE:
         view = <CubeView
           user={user}
-          dataSource={selectedDataSource}
+          dataCube={selectedDataCube}
           hash={viewHash}
           updateViewHash={this.updateViewHash.bind(this)}
           getUrlPrefix={this.getUrlPrefix.bind(this)}

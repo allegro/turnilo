@@ -19,7 +19,7 @@ require('./settings-view.css');
 import * as React from 'react';
 import * as Qajax from 'qajax';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { DataSource, User, Customization } from '../../../common/models/index';
+import { DataCube, User, Customization } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
 import { STRINGS } from '../../config/constants';
 import { Fn } from '../../../common/utils/general/general';
@@ -126,8 +126,8 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
           Notifier.success(okMessage ? okMessage : 'Settings saved');
 
           if (onSettingsChange) {
-            onSettingsChange(settings.toClientSettings().attachExecutors((dataSource: DataSource) => {
-              return queryUrlExecutorFactory(dataSource.name, 'plywood', version);
+            onSettingsChange(settings.toClientSettings().attachExecutors((dataCube: DataCube) => {
+              return queryUrlExecutorFactory(dataCube.name, 'plywood', version);
             }));
           }
         },

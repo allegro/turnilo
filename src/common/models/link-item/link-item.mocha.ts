@@ -48,7 +48,7 @@ describe('LinkItem', () => {
         title: 'Test One',
         description: 'I like testing',
         group: 'Tests',
-        dataSource: 'wiki',
+        dataCube: 'wiki',
         essence: {
           visualization: 'line-chart',
           pinnedDimensions: ['articleName'],
@@ -59,7 +59,7 @@ describe('LinkItem', () => {
       }, context);
 
       expect(linkItem.toJS()).to.deep.equal({
-        "dataSource": "wiki",
+        "dataCube": "wiki",
         "description": "I like testing",
         "essence": {
           "filter": {

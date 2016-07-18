@@ -19,27 +19,27 @@ import { Executor, helper } from 'plywood';
 import { hasOwnProperty } from '../../utils/general/general';
 import { Cluster, ClusterJS } from '../cluster/cluster';
 import { Customization, CustomizationJS } from '../customization/customization';
-import { DataSource, DataSourceJS } from  '../data-source/data-source';
+import { DataCube, DataCubeJS } from  '../data-cube/data-cube';
 import { LinkViewConfig, LinkViewConfigJS } from '../link-view-config/link-view-config';
 import { Manifest } from '../manifest/manifest';
 
 export interface AppSettingsValue {
   clusters?: Cluster[];
   customization?: Customization;
-  dataSources?: DataSource[];
+  dataCubes?: DataCube[];
   linkViewConfig?: LinkViewConfig;
 }
 
 export interface AppSettingsJS {
   clusters?: ClusterJS[];
   customization?: CustomizationJS;
-  dataSources?: DataSourceJS[];
+  dataCubes?: DataCubeJS[];
   linkViewConfig?: LinkViewConfigJS;
 }
 
 export interface AppSettingsContext {
   visualizations: Manifest[];
-  executorFactory?: (dataSource: DataSource) => Executor;
+  executorFactory?: (dataCube: DataCube) => Executor;
 }
 
 var check: Class<AppSettingsValue, AppSettingsJS>;
@@ -68,26 +68,26 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     }
 
     var executorFactory = context.executorFactory;
-    var dataSources = (parameters.dataSources || []).map(dataSourceJS => {
-      var dataSourceClusterName = dataSourceJS.clusterName || (dataSourceJS as any).engine;
-      if (dataSourceClusterName !== 'native') {
-        var cluster = helper.findByName(clusters, dataSourceClusterName);
-        if (!cluster) throw new Error(`Can not find cluster '${dataSourceClusterName}' for data source '${dataSourceJS.name}'`);
+    var dataCubes = (parameters.dataCubes || (parameters as any).dataSources || []).map((dataCubeJS: DataCubeJS) => {
+      var dataCubeClusterName = dataCubeJS.clusterName || (dataCubeJS as any).engine;
+      if (dataCubeClusterName !== 'native') {
+        var cluster = helper.findByName(clusters, dataCubeClusterName);
+        if (!cluster) throw new Error(`Can not find cluster '${dataCubeClusterName}' for data cube '${dataCubeJS.name}'`);
       }
 
-      var dataSourceObject = DataSource.fromJS(dataSourceJS, { cluster });
+      var dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
       if (executorFactory) {
-        var executor = executorFactory(dataSourceObject);
-        if (executor) dataSourceObject = dataSourceObject.attachExecutor(executor);
+        var executor = executorFactory(dataCubeObject);
+        if (executor) dataCubeObject = dataCubeObject.attachExecutor(executor);
       }
-      return dataSourceObject;
+      return dataCubeObject;
     });
 
     var value: AppSettingsValue = {
       clusters,
       customization: Customization.fromJS(parameters.customization || {}),
-      dataSources,
-      linkViewConfig: parameters.linkViewConfig ? LinkViewConfig.fromJS(parameters.linkViewConfig, { dataSources, visualizations: context.visualizations }) : null
+      dataCubes,
+      linkViewConfig: parameters.linkViewConfig ? LinkViewConfig.fromJS(parameters.linkViewConfig, { dataCubes, visualizations: context.visualizations }) : null
     };
 
     return new AppSettings(value);
@@ -95,27 +95,27 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
   public clusters: Cluster[];
   public customization: Customization;
-  public dataSources: DataSource[];
+  public dataCubes: DataCube[];
   public linkViewConfig: LinkViewConfig;
 
   constructor(parameters: AppSettingsValue) {
     const {
       clusters,
       customization,
-      dataSources,
+      dataCubes,
       linkViewConfig
     } = parameters;
 
-    for (var dataSource of dataSources) {
-      if (dataSource.clusterName === 'native') continue;
-      if (!helper.findByName(clusters, dataSource.clusterName)) {
-        throw new Error(`data source ${dataSource.name} refers to an unknown cluster ${dataSource.clusterName}`);
+    for (var dataCube of dataCubes) {
+      if (dataCube.clusterName === 'native') continue;
+      if (!helper.findByName(clusters, dataCube.clusterName)) {
+        throw new Error(`data cube ${dataCube.name} refers to an unknown cluster ${dataCube.clusterName}`);
       }
     }
 
     this.clusters = clusters;
     this.customization = customization;
-    this.dataSources = dataSources;
+    this.dataCubes = dataCubes;
     this.linkViewConfig = linkViewConfig;
   }
 
@@ -123,7 +123,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     return {
       clusters: this.clusters,
       customization: this.customization,
-      dataSources: this.dataSources,
+      dataCubes: this.dataCubes,
       linkViewConfig: this.linkViewConfig
     };
   }
@@ -132,7 +132,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     var js: AppSettingsJS = {};
     js.clusters = this.clusters.map(cluster => cluster.toJS());
     js.customization = this.customization.toJS();
-    js.dataSources = this.dataSources.map(dataSource => dataSource.toJS());
+    js.dataCubes = this.dataCubes.map(dataCube => dataCube.toJS());
     if (this.linkViewConfig) js.linkViewConfig = this.linkViewConfig.toJS();
     return js;
   }
@@ -142,14 +142,14 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   public toString(): string {
-    return `[AppSettings dataSources=${this.dataSources.length}]`;
+    return `[AppSettings dataCubes=${this.dataCubes.length}]`;
   }
 
   public equals(other: AppSettings): boolean {
     return AppSettings.isAppSettings(other) &&
       immutableArraysEqual(this.clusters, other.clusters) &&
       immutableEqual(this.customization, other.customization) &&
-      immutableArraysEqual(this.dataSources, other.dataSources) &&
+      immutableArraysEqual(this.dataCubes, other.dataCubes) &&
       Boolean(this.linkViewConfig) === Boolean(other.linkViewConfig);
   }
 
@@ -158,30 +158,30 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
     value.clusters = value.clusters.map((c) => c.toClientCluster());
 
-    value.dataSources = value.dataSources
+    value.dataCubes = value.dataCubes
       .filter((ds) => ds.isQueryable())
-      .map((ds) => ds.toClientDataSource());
+      .map((ds) => ds.toClientDataCube());
 
     return new AppSettings(value);
   }
 
-  public getDataSourcesForCluster(clusterName: string): DataSource[] {
-    return this.dataSources.filter(dataSource => dataSource.clusterName === clusterName);
+  public getDataCubesForCluster(clusterName: string): DataCube[] {
+    return this.dataCubes.filter(dataCube => dataCube.clusterName === clusterName);
   }
 
-  public getDataSource(dataSourceName: string): DataSource {
-    return helper.findByName(this.dataSources, dataSourceName);
+  public getDataCube(dataCubeName: string): DataCube {
+    return helper.findByName(this.dataCubes, dataCubeName);
   }
 
-  public addOrUpdateDataSource(dataSource: DataSource): AppSettings {
+  public addOrUpdateDataCube(dataCube: DataCube): AppSettings {
     var value = this.valueOf();
-    value.dataSources = helper.overrideByName(value.dataSources, dataSource);
+    value.dataCubes = helper.overrideByName(value.dataCubes, dataCube);
     return new AppSettings(value);
   }
 
-  public attachExecutors(executorFactory: (dataSource: DataSource) => Executor): AppSettings {
+  public attachExecutors(executorFactory: (dataCube: DataCube) => Executor): AppSettings {
     var value = this.valueOf();
-    value.dataSources = value.dataSources.map((ds) => {
+    value.dataCubes = value.dataCubes.map((ds) => {
       var executor = executorFactory(ds);
       if (executor) ds = ds.attachExecutor(executor);
       return ds;
@@ -205,19 +205,19 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     return this.changeClusters(helper.overrideByName(this.clusters, cluster));
   }
 
-  changeDataSources(dataSources: DataSource[]): AppSettings {
+  changeDataCubes(dataCubes: DataCube[]): AppSettings {
     var value = this.valueOf();
-    value.dataSources = dataSources;
+    value.dataCubes = dataCubes;
     return new AppSettings(value);
   }
 
-  addDataSource(dataSource: DataSource): AppSettings {
-    return this.changeDataSources(helper.overrideByName(this.dataSources, dataSource));
+  addDataCube(dataCube: DataCube): AppSettings {
+    return this.changeDataCubes(helper.overrideByName(this.dataCubes, dataCube));
   }
 
-  filterDataSources(fn: (dataSource: DataSource, index?: number, dataSources?: DataSource[]) => boolean): AppSettings {
+  filterDataCubes(fn: (dataCube: DataCube, index?: number, dataCubes?: DataCube[]) => boolean): AppSettings {
     var value = this.valueOf();
-    value.dataSources = value.dataSources.filter(fn);
+    value.dataCubes = value.dataCubes.filter(fn);
     return new AppSettings(value);
   }
 

@@ -20,8 +20,8 @@ import * as React from 'react';
 import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 
-import { DataSourceMock } from '../../../common/models/mocks';
-import { DataSource, ListItem, Cluster } from '../../../common/models/index';
+import { DataCubeMock } from '../../../common/models/mocks';
+import { DataCube, ListItem, Cluster } from '../../../common/models/index';
 
 import { findDOMNode } from '../../utils/test-utils/index';
 
@@ -42,7 +42,7 @@ describe('ImmutableDropdown', () => {
 
     component = TestUtils.renderIntoDocument(
       <MyDropdown
-        instance={DataSourceMock.twitter()}
+        instance={DataCubeMock.twitter()}
         path={'clusterName'}
         label="Cluster"
 
@@ -78,7 +78,7 @@ describe('ImmutableDropdown', () => {
 
     const args = onChange.args[0];
 
-    expect(args[0]).to.be.instanceOf(DataSource);
+    expect(args[0]).to.be.instanceOf(DataCube);
     expect(args[0].clusterName).to.equal(Cluster.TYPE_VALUES[1]);
 
     expect(args[1]).to.equal(true);

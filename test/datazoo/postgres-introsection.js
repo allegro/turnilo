@@ -43,9 +43,9 @@ describe('datazoo postgres introspection', function () {
       expect(body).to.contain('</html>');
 
       var config = extractConfig(body);
-      var dataSources = config.appSettings.dataSources;
-      expect(dataSources).to.have.length(2);
-      var wikiDataSource = dataSources[0].name === 'wikipedia' ? dataSources[0] : dataSources[1];
+      var dataCubes = config.appSettings.dataCubes;
+      expect(dataCubes).to.have.length(2);
+      var wikiDataSource = dataCubes[0].name === 'wikipedia' ? dataCubes[0] : dataCubes[1];
 
       expect(wikiDataSource.name).to.equal('wikipedia');
 

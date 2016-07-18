@@ -21,7 +21,7 @@ import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 import { findDOMNode } from '../../utils/test-utils/index';
 
-import { DataSourceMock } from '../../../common/models/mocks';
+import { DataCubeMock } from '../../../common/models/mocks';
 
 import { $, Expression } from 'plywood';
 import { AutoRefreshMenu } from './auto-refresh-menu';
@@ -30,7 +30,7 @@ describe('AutoRefreshMenu', () => {
   it('adds the correct class', () => {
     var openOn = document.createElement('div');
 
-    var dataSource = DataSourceMock.wiki();
+    var dataCube = DataCubeMock.wiki();
 
     var renderedComponent = TestUtils.renderIntoDocument(
       <AutoRefreshMenu
@@ -39,8 +39,8 @@ describe('AutoRefreshMenu', () => {
         autoRefreshRate={null}
         setAutoRefreshRate={null}
         refreshMaxTime={null}
-        dataSource={dataSource}
-        timezone={dataSource.getDefaultTimezone()}
+        dataCube={dataCube}
+        timezone={dataCube.getDefaultTimezone()}
       />
     );
 

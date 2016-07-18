@@ -22,7 +22,7 @@ import { mockRequireEnsure, mockReactComponent } from '../../utils/test-utils/in
 
 import * as TestUtils from 'react-addons-test-utils';
 
-import { DataSourceMock } from '../../../common/models/mocks';
+import { DataCubeMock } from '../../../common/models/mocks';
 
 import { $, Expression } from 'plywood';
 
@@ -56,7 +56,7 @@ describe('CubeView', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
-        dataSource={DataSourceMock.wiki()}
+        dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
       />
     );
@@ -74,7 +74,7 @@ describe('CubeView', () => {
     var initialCubeView = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
-        dataSource={DataSourceMock.wiki()}
+        dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
       />
     );
@@ -87,7 +87,7 @@ describe('CubeView', () => {
     var wikiCubeView = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
-        dataSource={DataSourceMock.wiki()}
+        dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
       />
     );
@@ -101,7 +101,7 @@ describe('CubeView', () => {
     var wikiCubeView2 = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
-        dataSource={DataSourceMock.wiki()}
+        dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
       />
     );

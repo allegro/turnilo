@@ -48,14 +48,14 @@ function formatTimeDiff(diff: number): string {
   return diff + ' days';
 }
 
-function checkUnique(dimensions: List<Dimension>, measures: List<Measure>, dataSourceName: string) {
+function checkUnique(dimensions: List<Dimension>, measures: List<Measure>, dataCubeName: string) {
   var seenDimensions: Lookup<number> = {};
   var seenMeasures: Lookup<number> = {};
 
   if (dimensions) {
     dimensions.forEach((d) => {
       var dimensionName = d.name.toLowerCase();
-      if (seenDimensions[dimensionName]) throw new Error(`duplicate dimension name '${d.name}' found in data source: '${dataSourceName}'`);
+      if (seenDimensions[dimensionName]) throw new Error(`duplicate dimension name '${d.name}' found in data cube: '${dataCubeName}'`);
       seenDimensions[dimensionName] = 1;
     });
   }
@@ -63,8 +63,8 @@ function checkUnique(dimensions: List<Dimension>, measures: List<Measure>, dataS
   if (measures) {
     measures.forEach((m) => {
       var measureName = m.name.toLowerCase();
-      if (seenMeasures[measureName]) throw new Error(`duplicate measure name '${m.name}' found in data source: '${dataSourceName}'`);
-      if (seenDimensions[measureName]) throw new Error(`name '${m.name}' found in both dimensions and measures in data source: '${dataSourceName}'`);
+      if (seenMeasures[measureName]) throw new Error(`duplicate measure name '${m.name}' found in data cube: '${dataCubeName}'`);
+      if (seenDimensions[measureName]) throw new Error(`name '${m.name}' found in both dimensions and measures in data cube: '${dataCubeName}'`);
       seenMeasures[measureName] = 1;
     });
   }
@@ -72,7 +72,7 @@ function checkUnique(dimensions: List<Dimension>, measures: List<Measure>, dataS
 
 export type Introspection = 'none' | 'no-autofill' | 'autofill-dimensions-only' | 'autofill-measures-only' | 'autofill-all';
 
-export interface DataSourceValue {
+export interface DataCubeValue {
   name: string;
   title?: string;
   description?: string;
@@ -81,7 +81,7 @@ export interface DataSourceValue {
   group?: string;
   subsetFilter?: Expression;
   rollup?: boolean;
-  options?: DataSourceOptions;
+  options?: DataCubeOptions;
   introspection?: Introspection;
   attributeOverrides?: Attributes;
   attributes?: Attributes;
@@ -104,7 +104,7 @@ export interface DataSourceValue {
   executor?: Executor;
 }
 
-export interface DataSourceJS {
+export interface DataCubeJS {
   name: string;
   title?: string;
   description?: string;
@@ -113,7 +113,7 @@ export interface DataSourceJS {
   group?: string;
   subsetFilter?: ExpressionJS;
   rollup?: boolean;
-  options?: DataSourceOptions;
+  options?: DataCubeOptions;
   introspection?: Introspection;
   attributeOverrides?: AttributeJSs;
   attributes?: AttributeJSs;
@@ -135,7 +135,7 @@ export interface DataSourceJS {
   longForm?: LongForm;
 }
 
-export interface DataSourceOptions {
+export interface DataCubeOptions {
   customAggregations?: CustomDruidAggregations;
   priority?: number;
 
@@ -150,7 +150,7 @@ export interface DataSourceOptions {
   [thing: string]: any;
 }
 
-export interface DataSourceContext {
+export interface DataCubeContext {
   cluster?: Cluster;
   executor?: Executor;
 }
@@ -199,12 +199,12 @@ function measuresFromLongForm(longForm: LongForm): Measure[] {
     return new Measure({
       name,
       title: title,
-      expression: myExpression.substitute((ex) => {
+      formula: myExpression.substitute((ex) => {
         if (ex instanceof RefExpression && ex.name === 'filtered') {
           return $('main').filter($(metricColumn).is(r(value)));
         }
         return null;
-      })
+      }).toString()
     });
   });
 }
@@ -218,8 +218,8 @@ function filterFromLongForm(longForm: LongForm): Expression {
   return $(metricColumn).in(values).simplify();
 }
 
-var check: Class<DataSourceValue, DataSourceJS>;
-export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
+var check: Class<DataCubeValue, DataCubeJS>;
+export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   static DEFAULT_INTROSPECTION: Introspection = 'autofill-all';
   static INTROSPECTION_VALUES: Introspection[] = ['none', 'no-autofill', 'autofill-dimensions-only', 'autofill-measures-only', 'autofill-all'];
   static DEFAULT_DEFAULT_TIMEZONE = Timezone.UTC;
@@ -227,38 +227,38 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   static DEFAULT_DEFAULT_SPLITS = Splits.EMPTY;
   static DEFAULT_DEFAULT_DURATION = Duration.fromJS('P1D');
 
-  static isDataSource(candidate: any): candidate is DataSource {
-    return isInstanceOf(candidate, DataSource);
+  static isDataCube(candidate: any): candidate is DataCube {
+    return isInstanceOf(candidate, DataCube);
   }
 
-  static updateMaxTime(dataSource: DataSource): Q.Promise<DataSource> {
-    if (dataSource.refreshRule.isRealtime()) {
-      return Q(dataSource.changeMaxTime(MaxTime.fromNow()));
+  static updateMaxTime(dataCube: DataCube): Q.Promise<DataCube> {
+    if (dataCube.refreshRule.isRealtime()) {
+      return Q(dataCube.changeMaxTime(MaxTime.fromNow()));
     }
 
-    var ex = ply().apply('maxTime', $('main').max(dataSource.timeAttribute));
+    var ex = ply().apply('maxTime', $('main').max(dataCube.timeAttribute));
 
-    return dataSource.executor(ex).then((dataset: Dataset) => {
+    return dataCube.executor(ex).then((dataset: Dataset) => {
       var maxTimeDate = <Date>dataset.data[0]['maxTime'];
       if (!isNaN(maxTimeDate as any)) {
-        return dataSource.changeMaxTime(MaxTime.fromDate(maxTimeDate));
+        return dataCube.changeMaxTime(MaxTime.fromDate(maxTimeDate));
       }
-      return dataSource;
+      return dataCube;
     });
   }
 
-  static fromClusterAndExternal(name: string, cluster: Cluster, external: External): DataSource {
-    var dataSource = DataSource.fromJS({
+  static fromClusterAndExternal(name: string, cluster: Cluster, external: External): DataCube {
+    var dataCube = DataCube.fromJS({
       name,
       clusterName: cluster.name,
       source: String(external.source),
       refreshRule: RefreshRule.query().toJS()
     });
 
-    return dataSource.updateCluster(cluster).updateWithExternal(external);
+    return dataCube.updateCluster(cluster).updateWithExternal(external);
   }
 
-  static fromJS(parameters: DataSourceJS, context: DataSourceContext = {}): DataSource {
+  static fromJS(parameters: DataCubeJS, context: DataCubeContext = {}): DataCube {
     const { cluster, executor } = context;
     var clusterName = parameters.clusterName;
     var introspection = parameters.introspection;
@@ -293,8 +293,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     }
     // End Back compat.
 
-    if (introspection && DataSource.INTROSPECTION_VALUES.indexOf(introspection) === -1) {
-      throw new Error(`invalid introspection value ${introspection}, must be one of ${DataSource.INTROSPECTION_VALUES.join(', ')}`);
+    if (introspection && DataCube.INTROSPECTION_VALUES.indexOf(introspection) === -1) {
+      throw new Error(`invalid introspection value ${introspection}, must be one of ${DataCube.INTROSPECTION_VALUES.join(', ')}`);
     }
 
     var refreshRule = parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : null;
@@ -320,8 +320,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (timeAttribute && !Dimension.getDimensionByExpression(dimensions, timeAttribute)) {
       dimensions = dimensions.unshift(new Dimension({
         name: timeAttributeName,
-        expression: timeAttribute,
-        kind: 'time'
+        kind: 'time',
+        formula: timeAttribute.toString()
       }));
     }
 
@@ -337,7 +337,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       }
     }
 
-    var value: DataSourceValue = {
+    var value: DataCubeValue = {
       executor: null,
       name: parameters.name,
       title: parameters.title,
@@ -370,7 +370,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       value.cluster = cluster;
     }
     if (executor) value.executor = executor;
-    return new DataSource(value);
+    return new DataCube(value);
   }
 
 
@@ -382,7 +382,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public group: string;
   public subsetFilter: Expression;
   public rollup: boolean;
-  public options: DataSourceOptions;
+  public options: DataCubeOptions;
   public introspection: Introspection;
   public attributes: Attributes;
   public attributeOverrides: Attributes;
@@ -403,9 +403,9 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   public cluster: Cluster;
   public executor: Executor;
 
-  constructor(parameters: DataSourceValue) {
+  constructor(parameters: DataCubeValue) {
     var name = parameters.name;
-    if (typeof name !== 'string') throw new Error(`DataSource must have a name`);
+    if (typeof name !== 'string') throw new Error(`DataCube must have a name`);
     verifyUrlSafeName(name);
     this.name = name;
 
@@ -447,8 +447,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     this._validateDefaults();
   }
 
-  public valueOf(): DataSourceValue {
-    var value: DataSourceValue = {
+  public valueOf(): DataCubeValue {
+    var value: DataCubeValue = {
       name: this.name,
       title: this.title,
       description: this.description,
@@ -480,8 +480,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return value;
   }
 
-  public toJS(): DataSourceJS {
-    var js: DataSourceJS = {
+  public toJS(): DataCubeJS {
+    var js: DataCubeJS = {
       name: this.name,
       title: this.title,
       description: this.description,
@@ -511,22 +511,22 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return js;
   }
 
-  public toJSON(): DataSourceJS {
+  public toJSON(): DataCubeJS {
     return this.toJS();
   }
 
   public toString(): string {
-    return `[DataSource: ${this.name}]`;
+    return `[DataCube: ${this.name}]`;
   }
 
-  public equals(other: DataSource): boolean {
+  public equals(other: DataCube): boolean {
     return this.equalsWithoutMaxTime(other) &&
       Boolean(this.maxTime) === Boolean(other.maxTime) &&
       (!this.maxTime || this.maxTime.equals(other.maxTime));
   }
 
-  public equalsWithoutMaxTime(other: DataSource): boolean {
-    return DataSource.isDataSource(other) &&
+  public equalsWithoutMaxTime(other: DataCube): boolean {
+    return DataCube.isDataCube(other) &&
       this.name === other.name &&
       this.title === other.title &&
       this.description === other.description &&
@@ -560,13 +560,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     if (defaultSortMeasure) {
       if (!measures.find((measure) => measure.name === defaultSortMeasure)) {
-        throw new Error(`can not find defaultSortMeasure '${defaultSortMeasure}' in data source '${this.name}'`);
+        throw new Error(`can not find defaultSortMeasure '${defaultSortMeasure}' in data cube '${this.name}'`);
       }
     }
   }
 
   public toExternal(): External {
-    if (this.clusterName === 'native') throw new Error(`there is no external on a native data source`);
+    if (this.clusterName === 'native') throw new Error(`there is no external on a native data cube`);
     const { cluster, options } = this;
     if (!cluster) throw new Error('must have a cluster');
 
@@ -663,13 +663,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return issues;
   }
 
-  public updateCluster(cluster: Cluster): DataSource {
+  public updateCluster(cluster: Cluster): DataCube {
     var value = this.valueOf();
     value.cluster = cluster;
-    return new DataSource(value);
+    return new DataCube(value);
   }
 
-  public updateWithDataset(dataset: Dataset): DataSource {
+  public updateWithDataset(dataset: Dataset): DataCube {
     if (this.clusterName !== 'native') throw new Error('must be native to have a dataset');
 
     var executor = basicExecutorFactory({
@@ -679,7 +679,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return this.addAttributes(dataset.attributes).attachExecutor(executor);
   }
 
-  public updateWithExternal(external: External): DataSource {
+  public updateWithExternal(external: External): DataCube {
     if (this.clusterName === 'native') throw new Error('can not be native and have an external');
 
     var executor = basicExecutorFactory({
@@ -689,13 +689,13 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return this.addAttributes(external.attributes).attachExecutor(executor);
   }
 
-  public attachExecutor(executor: Executor): DataSource {
+  public attachExecutor(executor: Executor): DataCube {
     var value = this.valueOf();
     value.executor = executor;
-    return new DataSource(value);
+    return new DataCube(value);
   }
 
-  public toClientDataSource(): DataSource {
+  public toClientDataCube(): DataCube {
     var value = this.valueOf();
 
     // Do not reveal the subset filter to the client
@@ -714,7 +714,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
 
     value.options = null;
 
-    return new DataSource(value);
+    return new DataCube(value);
   }
 
   public isQueryable(): boolean {
@@ -780,10 +780,10 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return this.measures.find(measure => measure.expression.equals(expression));
   }
 
-  public changeDimensions(dimensions: List<Dimension>): DataSource {
+  public changeDimensions(dimensions: List<Dimension>): DataCube {
     var value = this.valueOf();
     value.dimensions = dimensions;
-    return new DataSource(value);
+    return new DataCube(value);
   }
 
   public rolledUp(): boolean {
@@ -791,7 +791,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   /**
-   * This function tries to deduce the structure of the dataSource based on the dimensions and measures defined within.
+   * This function tries to deduce the structure of the dataCube based on the dimensions and measures defined within.
    * It should only be used when, for some reason, introspection if not available.
    */
   public deduceAttributes(): Attributes {
@@ -833,7 +833,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return attributes;
   }
 
-  public addAttributes(newAttributes: Attributes): DataSource {
+  public addAttributes(newAttributes: Attributes): DataCube {
     var { dimensions, measures, attributes } = this;
     const introspection = this.getIntrospection();
     if (introspection === 'none') return this;
@@ -863,7 +863,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           dimensions = dimensions.unshift(new Dimension({
             name: urlSafeName,
             kind: 'time',
-            expression
+            formula: expression.toString()
           }));
           break;
 
@@ -882,7 +882,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
             if (this.getDimensionByExpression(expression)) continue;
             dimensions = dimensions.push(new Dimension({
               name: urlSafeName,
-              expression
+              formula: expression.toString()
             }));
           }
           break;
@@ -893,7 +893,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           if (this.getDimensionByExpression(expression)) continue;
           dimensions = dimensions.push(new Dimension({
             name: urlSafeName,
-            expression
+            formula: expression.toString()
           }));
           break;
 
@@ -904,7 +904,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
           dimensions = dimensions.push(new Dimension({
             name: urlSafeName,
             kind: 'boolean',
-            expression
+            formula: expression.toString()
           }));
           break;
 
@@ -926,7 +926,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     if (!this.rolledUp() && !measures.find(m => m.name === 'count')) {
       measures = measures.unshift(new Measure({
         name: 'count',
-        expression: $main.count()
+        formula: $main.count().toString()
       }));
     }
 
@@ -943,19 +943,19 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
       value.timeAttribute = <RefExpression>dimensions.first().expression;
     }
 
-    return new DataSource(value);
+    return new DataCube(value);
   }
 
   public getIntrospection(): Introspection {
-    return this.introspection || DataSource.DEFAULT_INTROSPECTION;
+    return this.introspection || DataCube.DEFAULT_INTROSPECTION;
   }
 
   public getDefaultTimezone(): Timezone {
-    return this.defaultTimezone || DataSource.DEFAULT_DEFAULT_TIMEZONE;
+    return this.defaultTimezone || DataCube.DEFAULT_DEFAULT_TIMEZONE;
   }
 
   public getDefaultFilter(): Filter {
-    var filter = this.defaultFilter || DataSource.DEFAULT_DEFAULT_FILTER;
+    var filter = this.defaultFilter || DataCube.DEFAULT_DEFAULT_FILTER;
     if (this.timeAttribute) {
       filter = filter.setSelection(
         this.timeAttribute,
@@ -966,11 +966,11 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
   }
 
   public getDefaultSplits(): Splits {
-    return this.defaultSplits || DataSource.DEFAULT_DEFAULT_SPLITS;
+    return this.defaultSplits || DataCube.DEFAULT_DEFAULT_SPLITS;
   }
 
   public getDefaultDuration(): Duration {
-    return this.defaultDuration || DataSource.DEFAULT_DEFAULT_DURATION;
+    return this.defaultDuration || DataCube.DEFAULT_DEFAULT_DURATION;
   }
 
   public getDefaultSortMeasure(): string {
@@ -985,7 +985,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     return this.defaultPinnedDimensions || (OrderedSet([]) as any);
   }
 
-  change(propertyName: string, newValue: any): DataSource {
+  change(propertyName: string, newValue: any): DataCube {
     var v = this.valueOf();
 
     if (!v.hasOwnProperty(propertyName)) {
@@ -993,7 +993,7 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     }
 
     (v as any)[propertyName] = newValue;
-    return new DataSource(v);
+    return new DataCube(v);
   }
 
   public changeMaxTime(maxTime: MaxTime) {
@@ -1019,8 +1019,8 @@ export class DataSource implements Instance<DataSourceValue, DataSourceJS> {
     });
   }
 
-  public sameGroup(otherDataSource: DataSource): boolean {
-    return Boolean(this.group && this.group === otherDataSource.group);
+  public sameGroup(otherDataCube: DataCube): boolean {
+    return Boolean(this.group && this.group === otherDataCube.group);
   }
 }
-check = DataSource;
+check = DataCube;

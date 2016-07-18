@@ -18,7 +18,7 @@ require('./dimension-measure-panel.css');
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';
-import { Stage, Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
 import { clamp } from '../../utils/dom/dom';
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
 import { MeasuresTile } from '../measures-tile/measures-tile';
@@ -49,11 +49,11 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
 
   render() {
     const { clicker, essence, menuStage, triggerFilterMenu, triggerSplitMenu, getUrlPrefix, style } = this.props;
-    const { dataSource } = essence;
+    const { dataCube } = essence;
 
     // Compute relative sizes by diving up TOTAL_FLEXES
-    var numDimensions = dataSource.dimensions.size;
-    var numMeasures = dataSource.measures.size;
+    var numDimensions = dataCube.dimensions.size;
+    var numMeasures = dataCube.measures.size;
 
     var dimensionsFlex = clamp(
       Math.ceil(TOTAL_FLEXES * numDimensions / (numDimensions + numMeasures)),

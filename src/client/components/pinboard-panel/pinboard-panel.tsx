@@ -83,13 +83,13 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   getColorsSortOn(): SortOn {
     var { essence } = this.props;
-    var { dataSource, splits, colors } = essence;
+    var { dataCube, splits, colors } = essence;
     if (colors) {
-      var dimension = dataSource.getDimension(colors.dimension);
+      var dimension = dataCube.getDimension(colors.dimension);
       if (dimension) {
         var split = splits.findSplitForDimension(dimension);
         if (split) {
-          return SortOn.fromSortAction(split.sortAction, dataSource, dimension);
+          return SortOn.fromSortAction(split.sortAction, dataCube, dimension);
         }
       }
     }
@@ -98,9 +98,9 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   onLegendSortOnSelect(sortOn: SortOn) {
     var { clicker, essence } = this.props;
-    var { dataSource, splits, colors } = essence;
+    var { dataCube, splits, colors } = essence;
     if (colors) {
-      var dimension = dataSource.getDimension(colors.dimension);
+      var dimension = dataCube.getDimension(colors.dimension);
       if (dimension) {
         var split = splits.findSplitForDimension(dimension);
         if (split) {
@@ -125,10 +125,10 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   onRemoveLegend() {
     var { clicker, essence } = this.props;
-    var { dataSource, splits, colors } = essence;
+    var { dataCube, splits, colors } = essence;
 
     if (colors) {
-      var dimension = dataSource.getDimension(colors.dimension);
+      var dimension = dataCube.getDimension(colors.dimension);
       if (dimension) {
         var split = splits.findSplitForDimension(dimension);
         if (split) {
@@ -141,13 +141,13 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   render() {
     var { clicker, essence, getUrlPrefix, style } = this.props;
     var { dragOver } = this.state;
-    var { dataSource, pinnedDimensions, colors } = essence;
+    var { dataCube, pinnedDimensions, colors } = essence;
 
     var legendMeasureSelector: JSX.Element = null;
     var legendDimensionTile: JSX.Element = null;
     var colorDimension = colors ? colors.dimension : null;
     if (colorDimension) {
-      var dimension = dataSource.getDimension(colorDimension);
+      var dimension = dataCube.getDimension(colorDimension);
       if (dimension) {
         var colorsSortOn = this.getColorsSortOn();
 
@@ -174,7 +174,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var pinnedSortSortOn = SortOn.fromMeasure(essence.getPinnedSortMeasure());
     var dimensionTiles: JSX.Element[] = [];
     pinnedDimensions.forEach((dimensionName) => {
-      var dimension = dataSource.getDimension(dimensionName);
+      var dimension = dataCube.getDimension(dimensionName);
       if (!dimension) return null;
 
       dimensionTiles.push(<DimensionTile

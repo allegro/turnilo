@@ -24,7 +24,7 @@ import { SvgIcon } from '../../../components/svg-icon/svg-icon';
 import { FormLabel } from '../../../components/form-label/form-label';
 import { Button } from '../../../components/button/button';
 
-import { AppSettings, Cluster, DataSource} from '../../../../common/models/index';
+import { AppSettings, Cluster, DataCube} from '../../../../common/models/index';
 
 import { SimpleTable, SimpleTableColumn, SimpleTableAction } from '../../../components/simple-table/simple-table';
 
@@ -51,32 +51,32 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
     });
   }
 
-  editCube(cube: DataSource) {
+  editCube(cube: DataCube) {
     window.location.hash += `/${cube.name}`;
   }
 
-  removeCube(cube: DataSource) {
-    // var index = this.state.newSettings.dataSources.indexOf(cube);
+  removeCube(cube: DataCube) {
+    // var index = this.state.newSettings.dataCubes.indexOf(cube);
 
     // if (index < 0) return;
 
-    // var newCubes = this.state.newSettings.dataSources.splice(index, 1);
+    // var newCubes = this.state.newSettings.dataCubes.splice(index, 1);
 
     // this.setState({
-    //   newSettings: this.state.newSettings.changedDataSources(newCubes)
+    //   newSettings: this.state.newSettings.changedDataCubes(newCubes)
     // })
   }
 
   createCube() {
-    var dataSources = this.state.newSettings.dataSources;
-    dataSources.push(DataSource.fromJS({
+    var dataCubes = this.state.newSettings.dataCubes;
+    dataCubes.push(DataCube.fromJS({
       name: 'new-datacube',
       clusterName: 'druid',
       source: 'new-source'
     }));
 
     this.props.onSave(
-      this.state.newSettings.changeDataSources(dataSources),
+      this.state.newSettings.changeDataCubes(dataCubes),
       'Cube added'
     );
   }
@@ -89,8 +89,8 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
     const columns: SimpleTableColumn[] = [
       {label: 'Name', field: 'title', width: 170, cellIcon: 'full-cube'},
       {label: 'Source', field: 'source', width: 400},
-      {label: 'Dimensions', field: (cube: DataSource) => cube.dimensions.size, width: 120},
-      {label: 'Measures', field: (cube: DataSource) => cube.measures.size, width: 80}
+      {label: 'Dimensions', field: (cube: DataCube) => cube.dimensions.size, width: 120},
+      {label: 'Measures', field: (cube: DataCube) => cube.measures.size, width: 80}
     ];
 
     const actions: SimpleTableAction[] = [
@@ -106,7 +106,7 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
       <div className="content">
       <SimpleTable
         columns={columns}
-        rows={newSettings.dataSources}
+        rows={newSettings.dataCubes}
         actions={actions}
         onRowClick={this.editCube.bind(this)}
       ></SimpleTable>

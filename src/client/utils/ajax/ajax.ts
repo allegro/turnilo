@@ -45,7 +45,7 @@ export function queryUrlExecutorFactory(name: string, url: string, version: stri
       url: url + '?by=' + getSplitsDescription(ex),
       data: {
         version: version,
-        dataSource: name,
+        dataCube: name,
         expression: ex.toJS(),
         timezone: env ? env.timezone : null
       }

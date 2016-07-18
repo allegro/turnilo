@@ -1,0 +1,4 @@
+#!/bin/bash -e
+
+./travis-test
+mocha test/datazoo

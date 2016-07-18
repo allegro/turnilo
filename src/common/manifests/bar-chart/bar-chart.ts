@@ -15,7 +15,7 @@
  */
 
 import { $, SortAction } from 'plywood';
-import { Splits, DataSource, SplitCombine, Colors, Dimension } from '../../models/index';
+import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
 
@@ -24,14 +24,14 @@ var handler = CircumstancesHandler.EMPTY()
 
   .when(CircumstancesHandler.areExactSplitKinds('*'))
   .or(CircumstancesHandler.areExactSplitKinds('*', '*'))
-  .then((splits: Splits, dataSource: DataSource, colors: Colors, current: boolean) => {
+  .then((splits: Splits, dataCube: DataCube, colors: Colors, current: boolean) => {
     var continuousBoost = 0;
 
     // Auto adjustment
     var autoChanged = false;
 
     splits = splits.map((split: SplitCombine) => {
-      var splitDimension = dataSource.getDimensionByExpression(split.expression);
+      var splitDimension = dataCube.getDimensionByExpression(split.expression);
 
       if (!split.sortAction) {
         // Must sort boolean in deciding order!
@@ -47,7 +47,7 @@ var handler = CircumstancesHandler.EMPTY()
               direction: SortAction.ASCENDING
             }));
           } else {
-            split = split.changeSortAction(dataSource.getDefaultSortAction());
+            split = split.changeSortAction(dataCube.getDefaultSortAction());
           }
         }
         autoChanged = true;
@@ -85,8 +85,8 @@ var handler = CircumstancesHandler.EMPTY()
   })
 
   .otherwise(
-    (splits: Splits, dataSource: DataSource) => {
-      let categoricalDimensions = dataSource.dimensions.filter((d) => d.kind !== 'time');
+    (splits: Splits, dataCube: DataCube) => {
+      let categoricalDimensions = dataCube.dimensions.filter((d) => d.kind !== 'time');
 
       return Resolve.manual(
         3,

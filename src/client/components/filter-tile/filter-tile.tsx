@@ -21,7 +21,7 @@ import * as ReactDOM from 'react-dom';
 import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, Dimension, DragPosition } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataCube, Filter, FilterClause, Dimension, DragPosition } from '../../../common/models/index';
 import { getFormattedClause } from '../../../common/utils/formatter/formatter';
 import { getMaxItems, SECTION_WIDTH } from '../../utils/pill-tile/pill-tile';
 
@@ -290,7 +290,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (!this.canDrop(e)) return;
     e.preventDefault();
     var { clicker, essence } = this.props;
-    var { filter, dataSource } = essence;
+    var { filter, dataCube } = essence;
 
     var newState: FilterTileState = {
       dragPosition: null
@@ -303,7 +303,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       var tryingToReplaceTime = false;
       if (dragPosition.replace !== null) {
         var targetClause = filter.clauses.get(dragPosition.replace);
-        tryingToReplaceTime = targetClause && targetClause.expression.equals(dataSource.timeAttribute);
+        tryingToReplaceTime = targetClause && targetClause.expression.equals(dataCube.timeAttribute);
       }
 
       var existingClause = filter.clauseForExpression(dimension.expression);
@@ -432,8 +432,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   renderRemoveButton(itemBlank: ItemBlank) {
     var { essence } = this.props;
-    var dataSource = essence.dataSource;
-    if (itemBlank.dimension.expression.equals(dataSource.timeAttribute)) return null;
+    var dataCube = essence.dataCube;
+    if (itemBlank.dimension.expression.equals(dataCube.timeAttribute)) return null;
     return <div className="remove" onClick={this.removeFilter.bind(this, itemBlank)}>
       <SvgIcon svg={require('../../icons/x.svg')}/>
     </div>;
@@ -509,11 +509,11 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     var { essence } = this.props;
     var { possibleDimension, possiblePosition, maxItems } = this.state;
 
-    var { dataSource, filter, highlight } = essence;
+    var { dataCube, filter, highlight } = essence;
 
     var itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
-        var dimension = dataSource.getDimensionByExpression(clause.expression);
+        var dimension = dataCube.getDimensionByExpression(clause.expression);
         if (!dimension) return null;
         return {
           dimension,
@@ -539,7 +539,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           }
         });
         if (!added) {
-          var dimension = dataSource.getDimensionByExpression(clause.expression);
+          var dimension = dataCube.getDimensionByExpression(clause.expression);
           if (dimension) {
             itemBlanks.push({
               dimension,

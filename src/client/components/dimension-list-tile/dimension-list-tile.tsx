@@ -166,8 +166,8 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   render() {
     var { essence, style } = this.props;
     var { menuDimension, highlightDimension, showSearch, searchText } = this.state;
-    var { dataSource } = essence;
-    var shownDimensions = dataSource.dimensions.toArray();
+    var { dataCube } = essence;
+    var shownDimensions = dataCube.dimensions.toArray();
     var itemY = 0;
 
     if (searchText) {

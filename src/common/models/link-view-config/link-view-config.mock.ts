@@ -15,7 +15,7 @@
  */
 
 import { $ } from 'plywood';
-import { DataSourceMock } from "../data-source/data-source.mock";
+import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { LinkItemMock } from "../link-item/link-item.mock";
 import { LinkViewConfig, LinkViewConfigJS, LinkViewConfigContext } from './link-view-config';
 

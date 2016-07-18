@@ -34,7 +34,7 @@ function typeToKind(type: string): string {
 export interface DimensionValue {
   name: string;
   title?: string;
-  expression?: Expression;
+  formula?: string;
   kind?: string;
   url?: string;
   granularities?: Granularity[];
@@ -44,7 +44,7 @@ export interface DimensionValue {
 export interface DimensionJS {
   name: string;
   title?: string;
-  expression?: ExpressionJS | string;
+  formula?: string;
   kind?: string;
   url?: string;
   granularities?: GranularityJS[];
@@ -68,10 +68,11 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   static fromJS(parameters: DimensionJS): Dimension {
+    var parameterExpression = (parameters as any).expression; // Back compat
     var value: DimensionValue = {
       name: parameters.name,
       title: parameters.title,
-      expression: parameters.expression ? Expression.fromJSLoose(parameters.expression) : null,
+      formula: parameters.formula || (typeof parameterExpression === 'string' ? parameterExpression : null),
       kind: parameters.kind || typeToKind((parameters as any).type),
       url: parameters.url
     };
@@ -100,6 +101,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
 
   public name: string;
   public title: string;
+  public formula: string;
   public expression: Expression;
   public kind: string;
   public className: string;
@@ -112,7 +114,11 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
-    this.expression = parameters.expression || $(name);
+
+    var formula = parameters.formula || $(name).toString();
+    this.formula = formula;
+    this.expression = Expression.parse(formula);
+
     var kind = parameters.kind || typeToKind(this.expression.type) || 'string';
     this.kind = kind;
 
@@ -136,7 +142,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     return {
       name: this.name,
       title: this.title,
-      expression: this.expression,
+      formula: this.formula,
       kind: this.kind,
       url: this.url,
       granularities: this.granularities,
@@ -148,7 +154,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     var js: DimensionJS = {
       name: this.name,
       title: this.title,
-      expression: this.expression.toJS(),
+      formula: this.formula,
       kind: this.kind
     };
     if (this.url) js.url = this.url;
@@ -169,7 +175,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     return Dimension.isDimension(other) &&
       this.name === other.name &&
       this.title === other.title &&
-      this.expression.equals(other.expression) &&
+      this.formula === other.formula &&
       this.kind === other.kind &&
       this.url === other.url &&
       immutableArraysEqual(this.granularities, other.granularities) &&
@@ -202,6 +208,10 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
 
   changeTitle(newTitle: string): Dimension {
     return this.change('title', newTitle);
+  }
+
+  public changeFormula(newFormula: string): Dimension {
+    return this.change('formula', newFormula);
   }
 
 }

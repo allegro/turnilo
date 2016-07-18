@@ -36,7 +36,7 @@ var appSettings: AppSettings = AppSettingsMock.wikiOnlyWithExecutor();
 app.use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = '0.9.4';
-  req.getSettings = (dataSourceOfInterest?: string) => Q(appSettings);
+  req.getSettings = (dataCubeOfInterest?: string) => Q(appSettings);
   next();
 });
 
@@ -49,7 +49,7 @@ describe('mkurl router', () => {
       .set('Content-Type', "application/json")
       .send({
         domain: 'http://localhost:9090',
-        dataSource: 'wiki',
+        dataCube: 'wiki',
         essence: {
           visualization: 'totals',
           timezone: 'Etc/UTC',
@@ -76,7 +76,7 @@ describe('mkurl router', () => {
       .set('Content-Type', "application/json")
       .send({
         domain: 'http://localhost:9090',
-        dataSource: 'wiki',
+        dataCube: 'wiki',
         essence: {
           visualization: 'totals',
           timezone: 'Etc/UTC',
@@ -102,7 +102,7 @@ describe('mkurl router', () => {
       .set('Content-Type', "application/json")
       .send({
         domain: 'http://localhost:9090',
-        dataSource: 'wiki',
+        dataCube: 'wiki',
         essence: {
           visualization: 'totals',
           timezone: 'Etc/UTC',
@@ -128,7 +128,7 @@ describe('mkurl router', () => {
       .set('Content-Type', "application/json")
       .send({
         domain: 'http://localhost:9090',
-        dataSource: 'wiki',
+        dataSource: 'wiki', // back compat
         essence: {
           visualization: 'totals',
           timezone: 'Etc/UTC',

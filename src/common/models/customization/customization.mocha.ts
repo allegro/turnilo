@@ -44,7 +44,7 @@ describe('Customization', () => {
             sameWindow: true
           }, {
             title: "google docs",
-            linkGenerator: "{ return 'http://182.343.32.2273:8080/'+dataSource.name }"
+            linkGenerator: "{ return 'http://182.343.32.2273:8080/'+dataCube.name }"
           }, {
             title: "google docs",
             linkGenerator: "{ return 'http://182.343.32.2273:8080/'+timezone.timezone }"

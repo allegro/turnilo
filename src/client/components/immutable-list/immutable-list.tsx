@@ -137,7 +137,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
 
     return <Modal
       className="name-modal"
-      title="Please give enter a name"
+      title="Please enter a name"
       onClose={onCancel}
       onEnter={onOk}
       startUpFocusOn={'focus-me'}

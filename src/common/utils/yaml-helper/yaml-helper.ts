@@ -15,7 +15,7 @@
  */
 
 import { $, AttributeInfo, RefExpression } from 'plywood';
-import { DataSource, Dimension, Measure, Cluster } from '../../../common/models/index';
+import { DataCube, Dimension, Measure, Cluster } from '../../../common/models/index';
 
 function spaces(n: number) {
   return (new Array(n + 1)).join(' ');
@@ -90,7 +90,7 @@ export function clusterToYAML(cluster: Cluster, withComments: boolean): string[]
   yamlPropAdder(lines, withComments, {
     object: cluster,
     propName: 'sourceListScan',
-    comment: 'Should the sources of this cluster be automatically scanned and new sources added as data sources.',
+    comment: 'Should the sources of this cluster be automatically scanned and new sources added as data cubes.',
     defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN
   });
 
@@ -195,7 +195,7 @@ export function dimensionToYAML(dimension: Dimension): string[] {
     lines.push(`kind: ${dimension.kind}`);
   }
 
-  lines.push(`expression: ${dimension.expression.toString()}`);
+  lines.push(`formula: ${dimension.formula}`);
 
   lines.push('');
   return yamlObject(lines);
@@ -207,8 +207,7 @@ export function measureToYAML(measure: Measure): string[] {
     `title: ${measure.title}`
   ];
 
-  var ex = measure.expression;
-  lines.push(`expression: ${ex.toString()}`);
+  lines.push(`formula: ${measure.formula}`);
 
   var format = measure.format;
   if (format !== Measure.DEFAULT_FORMAT) {
@@ -219,27 +218,27 @@ export function measureToYAML(measure: Measure): string[] {
   return yamlObject(lines);
 }
 
-export function dataSourceToYAML(dataSource: DataSource, withComments: boolean): string[] {
+export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
   var lines: string[] = [
-    `name: ${dataSource.name}`,
-    `title: ${dataSource.title}`,
-    `clusterName: ${dataSource.clusterName}`,
-    `source: ${dataSource.source}`
+    `name: ${dataCube.name}`,
+    `title: ${dataCube.title}`,
+    `clusterName: ${dataCube.clusterName}`,
+    `source: ${dataCube.source}`
   ];
 
-  var timeAttribute = dataSource.timeAttribute;
-  if (timeAttribute && !(dataSource.clusterName === 'druid' && timeAttribute.name === '__time')) {
+  var timeAttribute = dataCube.timeAttribute;
+  if (timeAttribute && !(dataCube.clusterName === 'druid' && timeAttribute.name === '__time')) {
     if (withComments) {
       lines.push(`# The primary time attribute of the data refers to the attribute that must always be filtered on`);
-      lines.push(`# This is particularly useful for Druid data sources as they must always have a time filter.`);
+      lines.push(`# This is particularly useful for Druid data cubes as they must always have a time filter.`);
     }
     lines.push(`timeAttribute: ${timeAttribute.name}`, '');
   }
 
 
-  var refreshRule = dataSource.refreshRule;
+  var refreshRule = dataCube.refreshRule;
   if (withComments) {
-    lines.push("# The refresh rule describes how often the data source looks for new data. Default: 'query'/PT1M (every minute)");
+    lines.push("# The refresh rule describes how often the data cube looks for new data. Default: 'query'/PT1M (every minute)");
   }
   lines.push(`refreshRule:`);
   lines.push(`  rule: ${refreshRule.rule}`);
@@ -252,27 +251,27 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
   lines.push('');
 
   yamlPropAdder(lines, withComments, {
-    object: dataSource,
+    object: dataCube,
     propName: 'defaultTimezone',
     comment: 'The default timezone for this dataset to operate in defaults to UTC',
-    defaultValue: DataSource.DEFAULT_DEFAULT_TIMEZONE
+    defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE
   });
 
   yamlPropAdder(lines, withComments, {
-    object: dataSource,
+    object: dataCube,
     propName: 'defaultDuration',
     comment: 'The default duration for the time filter',
-    defaultValue: DataSource.DEFAULT_DEFAULT_DURATION
+    defaultValue: DataCube.DEFAULT_DEFAULT_DURATION
   });
 
   yamlPropAdder(lines, withComments, {
-    object: dataSource,
+    object: dataCube,
     propName: 'defaultSortMeasure',
     comment: 'The default sort measure name (if not set the first measure name is used)',
-    defaultValue: dataSource.getDefaultSortMeasure()
+    defaultValue: dataCube.getDefaultSortMeasure()
   });
 
-  var defaultSelectedMeasures = dataSource.defaultSelectedMeasures ? dataSource.defaultSelectedMeasures.toArray() : null;
+  var defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures.toArray() : null;
   if (withComments) {
     lines.push('', "# The names of measures that are selected by default");
   }
@@ -283,7 +282,7 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
   }
 
 
-  var defaultPinnedDimensions = dataSource.defaultPinnedDimensions ? dataSource.defaultPinnedDimensions.toArray() : null;
+  var defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions.toArray() : null;
   if (withComments) {
     lines.push('', "# The names of dimensions that are pinned by default (in order that they will appear in the pin bar)");
   }
@@ -294,7 +293,7 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
   }
 
 
-  var introspection = dataSource.getIntrospection();
+  var introspection = dataCube.getIntrospection();
   if (withComments) {
     lines.push(
       "",
@@ -310,7 +309,7 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
   lines.push(`introspection: ${introspection}`);
 
 
-  var attributeOverrides = dataSource.attributeOverrides;
+  var attributeOverrides = dataCube.attributeOverrides;
   if (withComments) {
     lines.push('', "# The list of attribute overrides in case introspection get something wrong");
   }
@@ -333,7 +332,7 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
   lines = lines.concat.apply(lines, attributeOverrides.map(attributeToYAML));
 
 
-  var dimensions = dataSource.dimensions.toArray();
+  var dimensions = dataCube.dimensions.toArray();
   if (withComments) {
     lines.push('', "# The list of dimensions defined in the UI. The order here will be reflected in the UI");
   }
@@ -351,7 +350,7 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
       "  # kind: string",
       "  # ^ (optional) the kind of the dimension. Can be 'string', 'time', 'number', or 'boolean'. Defaults to 'string'",
       "  #",
-      "  # expression: $channel",
+      "  # formula: $channel",
       "  # ^ (optional) the Plywood bucketing expression for this dimension. Defaults to '$name'",
       "  #   if, say, channel was called 'cnl' in the data you would put '$cnl' here",
       "  #   See also the expressions API reference: https://plywood.imply.io/expressions",
@@ -371,16 +370,16 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
       "  #",
       "  # - name: is_usa",
       "  #   title: Is USA?",
-      "  #   expression: $country == 'United States'",
+      "  #   formula: $country == 'United States'",
       "  #",
       "  # - name: file_version",
-      "  #   expression: $filename.extract('(\\d+\\.\\d+\\.\\d+)')",
+      "  #   formula: $filename.extract('(\\d+\\.\\d+\\.\\d+)')",
       ""
     );
   }
 
 
-  var measures = dataSource.measures.toArray();
+  var measures = dataCube.measures.toArray();
   if (withComments) {
     lines.push('', "# The list of measures defined in the UI. The order here will be reflected in the UI");
   }
@@ -395,7 +394,7 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
       "  # title: Average Revenue",
       "  # ^ (optional) the human readable title. If not set a title is generated from the 'name'",
       "  #",
-      "  # expression: $main.sum($revenue) / $main.sum($volume) * 10",
+      "  # formula: $main.sum($revenue) / $main.sum($volume) * 10",
       "  # ^ (optional) the Plywood bucketing expression for this dimension.",
       "  #   Usually defaults to '$main.sum($name)' but if the name contains 'min' or 'max' will use that as the aggregate instead of sum.",
       "  #   this is the place to define your fancy formulas",
@@ -411,11 +410,11 @@ export function dataSourceToYAML(dataSource: DataSource, withComments: boolean):
       "  #",
       "  # - name: ecpm",
       "  #   title: eCPM",
-      "  #   expression: $main.sum($revenue) / $main.sum($impressions) * 1000",
+      "  #   formula: $main.sum($revenue) / $main.sum($impressions) * 1000",
       "  #",
       "  # - name: usa_revenue",
       "  #   title: USA Revenue",
-      "  #   expression: $main.filter($country == 'United States').sum($revenue)",
+      "  #   formula: $main.filter($country == 'United States').sum($revenue)",
       ""
     );
   }

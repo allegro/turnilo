@@ -220,7 +220,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     </div>;
 
     return <div className="cont">
-      { essence.dataSource.isTimeAttribute(dimension.expression) ? maxTimeBasedPresets : null}
+      { essence.dataCube.isTimeAttribute(dimension.expression) ? maxTimeBasedPresets : null}
       <div className="type">{STRINGS.current}</div>
       <div className="buttons">{currentPresets.map(presetToButton)}</div>
       <div className="type">{STRINGS.previous}</div>
@@ -246,7 +246,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       <DateRangePicker
         startTime={startTime}
         endTime={endTime}
-        maxTime={essence.dataSource.getMaxTimeDate()}
+        maxTime={essence.dataCube.getMaxTimeDate()}
         timezone={essence.timezone}
         onStartChange={this.onStartChange.bind(this)}
         onEndChange={this.onEndChange.bind(this)}

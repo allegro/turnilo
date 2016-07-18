@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { DataSource, Splits, Colors } from '../index';
+import { DataCube, Splits, Colors } from '../index';
 
 export interface Adjustment {
   splits: Splits;
@@ -83,7 +83,7 @@ export class Resolve {
   }
 }
 
-export type HandleCircumstance = (dataSource: DataSource, splits: Splits, colors: Colors, selected: boolean) => Resolve;
+export type HandleCircumstance = (dataCube: DataCube, splits: Splits, colors: Colors, selected: boolean) => Resolve;
 export type MeasureModeNeeded = 'any' | 'single' | 'multi';
 
 

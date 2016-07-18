@@ -43,9 +43,9 @@ describe('datazoo druid introspection', function () {
       expect(body).to.contain('</html>');
 
       var config = extractConfig(body);
-      var dataSources = config.appSettings.dataSources;
-      expect(dataSources).to.have.length(2);
-      var wikiDataSource = dataSources[0].name === 'wikipedia' ? dataSources[0] : dataSources[1];
+      var dataCubes = config.appSettings.dataCubes;
+      expect(dataCubes).to.have.length(2);
+      var wikiDataSource = dataCubes[0].name === 'wikipedia' ? dataCubes[0] : dataCubes[1];
 
       expect(wikiDataSource.name).to.equal('wikipedia');
 
@@ -80,8 +80,7 @@ describe('datazoo druid introspection', function () {
         "deleted ~ $main.sum($deleted)",
         "delta ~ $main.sum($delta)",
         "deltaByTen ~ $main.sum($deltaByTen)",
-        "delta_hist_p95 ~ $main.quantile($delta_hist,0.95)",
-        "delta_hist_p99 ~ $main.quantile($delta_hist,0.99)",
+        "delta_hist_p98 ~ $main.quantile($delta_hist,0.98)",
         "max_delta ~ $main.max($max_delta)",
         "min_delta ~ $main.min($min_delta)",
         "page_unique ~ $main.countDistinct($page_unique)",

@@ -36,7 +36,7 @@ var appSettings: AppSettings = AppSettingsMock.wikiOnlyWithExecutor();
 app.use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = '0.9.4';
-  req.getSettings = (dataSourceOfInterest?: string) => Q(appSettings);
+  req.getSettings = (dataCubeOfInterest?: string) => Q(appSettings);
   next();
 });
 

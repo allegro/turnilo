@@ -187,7 +187,7 @@ describe('many datasources', function () {
       expect(body).to.contain('</html>');
 
       var config = extractConfig(body);
-      expect(config.appSettings.dataSources.length);
+      expect(config.appSettings.dataCubes.length);
 
       testComplete();
     });
@@ -206,7 +206,7 @@ describe('many datasources', function () {
           expect(body).to.contain('</html>');
 
           var config = extractConfig(body);
-          expect(config.appSettings.dataSources.map((d) => d.name)).to.deep.equal([]);
+          expect(config.appSettings.dataCubes.map((d) => d.name)).to.deep.equal([]);
 
           hasData = true;
 
@@ -219,7 +219,7 @@ describe('many datasources', function () {
             expect(body).to.contain('</html>');
 
             var config = extractConfig(body);
-            expect(config.appSettings.dataSources.map((d) => d.name)).to.deep.equal(["wiki", "github"]);
+            expect(config.appSettings.dataCubes.map((d) => d.name)).to.deep.equal(["wiki", "github"]);
 
             testComplete();
           });

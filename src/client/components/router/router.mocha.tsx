@@ -23,7 +23,7 @@ import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 
-import { DataSourceMock, EssenceMock } from '../../../common/models/mocks';
+import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
 
 
 import { Router, Route } from './router';

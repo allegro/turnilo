@@ -17,7 +17,7 @@
 import { $ } from 'plywood';
 
 import { MANIFESTS } from "../../manifests/index";
-import { DataSourceMock } from "../data-source/data-source.mock";
+import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { LinkItem, LinkItemJS, LinkItemContext } from './link-item';
 
 export class LinkItemMock {
@@ -27,7 +27,7 @@ export class LinkItemMock {
       title: 'Test One',
       description: 'I like testing',
       group: 'Tests',
-      dataSource: 'wiki',
+      dataCube: 'wiki',
       essence: {
         visualization: 'totals',
         timezone: 'Etc/UTC',
@@ -49,7 +49,7 @@ export class LinkItemMock {
       title: 'Test Two',
       description: 'I like testing',
       group: 'Tests',
-      dataSource: 'wiki',
+      dataCube: 'wiki',
       essence: {
         visualization: 'totals',
         timezone: 'Etc/UTC',
@@ -64,7 +64,7 @@ export class LinkItemMock {
 
   static getContext(): LinkItemContext {
     return {
-      dataSources: [DataSourceMock.wiki()],
+      dataCubes: [DataCubeMock.wiki()],
       visualizations: MANIFESTS
     };
   }

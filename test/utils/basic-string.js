@@ -17,7 +17,7 @@
 const Expression = require('plywood').Expression;
 
 function basicString(thing) {
-  return thing.name + ' ~ ' + Expression.fromJS(thing.expression).toString();
+  return thing.name + ' ~ ' + thing.formula;
 }
 
 module.exports = basicString;

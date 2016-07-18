@@ -4,7 +4,7 @@ clusters:
     host: "%{DRUID_HOST}%"
     timeout: 30000
 
-dataSources:
+dataCubes:
   - name: wiki
     title: Wikipedia Edits
     engine: druid

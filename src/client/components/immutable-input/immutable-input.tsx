@@ -87,13 +87,18 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
     var invalidValue: string;
 
     if (validator && !validator.test(newValue)) {
-      newInstance = this.props.instance;
+      newInstance = instance;
       invalidValue = newValue;
-
       if (onInvalid) onInvalid(newValue);
 
     } else {
-      newInstance = ImmutableUtils.setProperty(instance, path, newValue);
+      try {
+        newInstance = ImmutableUtils.setProperty(instance, path, newValue);
+      } catch (e) {
+        newInstance = instance;
+        invalidValue = newValue;
+        if (onInvalid) onInvalid(newValue);
+      }
     }
 
     this.setState({newInstance, invalidValue});
@@ -113,7 +118,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
       className={classNames('immutable-input', {error: invalidValue !== undefined})}
       ref='me'
       type="text"
-      value={invalidValue !== undefined ? invalidValue : value}
+      value={(invalidValue !== undefined ? invalidValue : value) || ''}
       onChange={this.onChange.bind(this)}
     />;
   }

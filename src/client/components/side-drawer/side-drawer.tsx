@@ -21,18 +21,18 @@ import * as ReactDOM from 'react-dom';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
-import { DataSource, Customization } from '../../../common/models/index';
+import { DataCube, Customization } from '../../../common/models/index';
 import { NavLogo } from '../nav-logo/nav-logo';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { NavList } from '../nav-list/nav-list';
 
 export interface SideDrawerProps extends React.Props<any> {
-  selectedDataSource: DataSource;
-  dataSources: DataSource[];
+  selectedDataCube: DataCube;
+  dataCubes: DataCube[];
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
-  itemHrefFn?: (oldDataSource?: DataSource, newDataSource?: DataSource) => string;
+  itemHrefFn?: (oldDataCube?: DataCube, newDataCube?: DataCube) => string;
   isHome?: boolean;
   isCube?: boolean;
   isLink?: boolean;
@@ -91,10 +91,10 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   render() {
-    var { onClose, selectedDataSource, dataSources, onOpenAbout, customization, itemHrefFn } = this.props;
+    var { onClose, selectedDataCube, dataCubes, onOpenAbout, customization, itemHrefFn } = this.props;
 
-    var navLinks = dataSources.map(ds => {
-      var href = (itemHrefFn && itemHrefFn(selectedDataSource, ds)) || ('#' + ds.name);
+    var navLinks = dataCubes.map(ds => {
+      var href = (itemHrefFn && itemHrefFn(selectedDataCube, ds)) || ('#' + ds.name);
 
       return {
         name: ds.name,
@@ -123,7 +123,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       <NavLogo customLogoSvg={customLogoSvg} onClick={onClose}/>
       {this.renderOverviewLink()}
       <NavList
-        selected={selectedDataSource ? selectedDataSource.name : null}
+        selected={selectedDataCube ? selectedDataCube.name : null}
         navLinks={navLinks}
         iconSvg={require('../../icons/full-cube.svg')}
       />

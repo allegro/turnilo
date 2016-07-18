@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Splits, DataSource, SplitCombine, Colors, Dimension } from '../../models/index';
+import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 
-function handleCircumstance(dataSource: DataSource, splits: Splits, colors: Colors, current: boolean): Resolve {
+function handleCircumstance(dataCube: DataCube, splits: Splits, colors: Colors, current: boolean): Resolve {
   if (!splits.length()) return Resolve.ready(10);
   return Resolve.automatic(3, { splits: Splits.EMPTY });
 }

@@ -23,18 +23,18 @@ import * as TestUtils from 'react-addons-test-utils';
 import '../../utils/test-utils/index';
 
 import { $, Expression } from 'plywood';
-import { NoDataSourcesApplication } from './no-data-sources-application';
+import { NoDataCubesApplication } from './no-data-cubes-application';
 
-describe('NoDataSourcesApplication', () => {
+describe('NoDataCubesApplication', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <NoDataSourcesApplication
+      <NoDataCubesApplication
 
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('no-data-sources-application');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('no-data-cubes-application');
   });
 
 });

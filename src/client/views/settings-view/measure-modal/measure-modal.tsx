@@ -119,6 +119,15 @@ export class MeasureModal extends React.Component<MeasureModalProps, MeasureModa
           onChange={this.onChange.bind(this)}
           validator={/^.+$/}
         />
+
+        <FormLabel label="Formula"></FormLabel>
+        <ImmutableInput
+          instance={newMeasure}
+          path={'formula'}
+          onChange={this.onChange.bind(this)}
+          validator={/^.+$/}
+        />
+
       </form>
 
       <div className="button-group">

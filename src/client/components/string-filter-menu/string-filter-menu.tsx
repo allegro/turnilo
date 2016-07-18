@@ -20,7 +20,7 @@ import * as React from 'react';
 import { $, ply, r, Expression, Executor, Dataset, SortAction, Set, Datum } from 'plywood';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS, MAX_SEARCH_LENGTH, SEARCH_WAIT } from '../../config/constants';
-import { Stage, Clicker, Essence, DataSource, Filter, FilterClause, FilterMode, Dimension, Measure, Colors, DragPosition } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataCube, Filter, FilterClause, FilterMode, Dimension, Measure, Colors, DragPosition } from '../../../common/models/index';
 import { collect } from '../../../common/utils/general/general';
 import { enterKey, classNames } from '../../utils/dom/dom';
 import { ClearableInput } from '../clearable-input/clearable-input';
@@ -82,8 +82,8 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
 
   fetchData(essence: Essence, dimension: Dimension): void {
     var { searchText } = this.state;
-    var { dataSource } = essence;
-    var nativeCount = dataSource.getMeasure('count');
+    var { dataCube } = essence;
+    var nativeCount = dataCube.getMeasure('count');
     var measureExpression = nativeCount ? nativeCount.expression : $('main').count();
 
     var filterExpression = essence.getEffectiveFilter(null, dimension).toExpression();
@@ -103,7 +103,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
       loading: true,
       fetchQueued: false
     });
-    dataSource.executor(query, { timezone: essence.timezone })
+    dataCube.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;
@@ -156,7 +156,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     var nextDimension = nextProps.dimension;
 
     if (
-      essence.differentDataSource(nextEssence) ||
+      essence.differentDataCube(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, null, nextDimension) || !dimension.equals(nextDimension)
     ) {
       this.fetchData(nextEssence, nextDimension);

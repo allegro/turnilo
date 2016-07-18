@@ -72,17 +72,17 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
 
   onExport() {
     const { onClose, getDownloadableDataset, essence } = this.props;
-    const { dataSource, splits } = essence;
+    const { dataCube, splits } = essence;
     if (!getDownloadableDataset) return;
 
-    const filters = essence.getEffectiveFilter().getFileString(dataSource.timeAttribute);
+    const filters = essence.getEffectiveFilter().getFileString(dataCube.timeAttribute);
     var splitsString = splits.toArray().map((split) => {
-      var dimension = split.getDimension(dataSource.dimensions);
+      var dimension = split.getDimension(dataCube.dimensions);
       if (!dimension) return '';
       return `${STRINGS.splitDelimiter}_${dimension.name}`;
     }).join("_");
 
-    download(getDownloadableDataset(), makeFileName(dataSource.name, filters, splitsString), 'csv');
+    download(getDownloadableDataset(), makeFileName(dataCube.name, filters, splitsString), 'csv');
     onClose();
   }
 
@@ -124,7 +124,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
 
     if (externalViews) {
       externalViews.forEach((externalView: ExternalView, i: number) => {
-        const url = externalView.linkGeneratorFn(essence.dataSource, essence.timezone, essence.filter, essence.splits);
+        const url = externalView.linkGeneratorFn(essence.dataCube, essence.timezone, essence.filter, essence.splits);
         if (typeof url !== "string") return;
         var title = `${STRINGS.openIn} ${externalView.title}`;
         var target = externalView.sameWindow ? "_self" : "_blank";

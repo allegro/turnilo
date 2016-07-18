@@ -192,7 +192,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     var { changeHash, getUrlPrefix } = this.props;
     var { essence } = this.state;
 
-    changeHash(`${essence.dataSource.name}/${essence.toHash()}`, true);
+    changeHash(`${essence.dataCube.name}/${essence.toHash()}`, true);
   }
 
   getStoredLayout(): LinkViewLayout {

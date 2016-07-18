@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.21
+
+- Renamed `DataSource` to `DataCube`
+- Changed Dimension and Measure `expression` to `formula`
+
 ## 0.9.20
 
 - Fixes for sorting on dimension when there are multiple splits

@@ -16,7 +16,7 @@
 
 import { MANIFESTS } from "../../manifests/index";
 import { Essence, EssenceJS, EssenceContext } from './essence';
-import { DataSourceMock } from "../data-source/data-source.mock";
+import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { SplitCombineMock } from "../split-combine/split-combine.mock";
 
 export class EssenceMock {
@@ -52,7 +52,7 @@ export class EssenceMock {
 
   static getContext(): EssenceContext {
     return {
-      dataSource: DataSourceMock.wiki(),
+      dataCube: DataCubeMock.wiki(),
       visualizations: MANIFESTS
     };
   }

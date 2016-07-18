@@ -23,7 +23,7 @@ import { Timezone } from 'chronoshift';
 import { Fn } from '../../../common/utils/general/general';
 import { FunctionSlot } from '../../utils/function-slot/function-slot';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
-import { Colors, Clicker, DataSource, Dimension, Essence, Filter, Stage, Measure,
+import { Colors, Clicker, DataCube, Dimension, Essence, Filter, Stage, Measure,
   SplitCombine, Splits, VisStrategy, VisualizationProps, User, Customization, Manifest } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
 
@@ -53,7 +53,7 @@ export interface CubeViewProps extends React.Props<any> {
   hash: string;
   updateViewHash: (newHash: string, force?: boolean) => void;
   getUrlPrefix?: () => string;
-  dataSource: DataSource;
+  dataCube: DataCube;
   onNavClick?: Fn;
   customization?: Customization;
   transitionFnSlot?: FunctionSlot<string>;
@@ -172,22 +172,22 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   refreshMaxTime() {
     var { essence } = this.state;
-    var { dataSource } = essence;
+    var { dataCube } = essence;
     this.setState({ updatingMaxTime: true });
 
-    DataSource.updateMaxTime(dataSource)
-      .then((updatedDataSource) => {
+    DataCube.updateMaxTime(dataCube)
+      .then((updatedDataCube) => {
         if (!this.mounted) return;
-        this.setState({ essence: essence.updateDataSource(updatedDataSource), updatingMaxTime: false  });
+        this.setState({ essence: essence.updateDataCube(updatedDataCube), updatingMaxTime: false  });
       });
   }
 
   componentWillMount() {
-    var { hash, dataSource, updateViewHash } = this.props;
-    var essence = this.getEssenceFromHash(dataSource, hash);
+    var { hash, dataCube, updateViewHash } = this.props;
+    var essence = this.getEssenceFromHash(dataCube, hash);
     if (!essence) {
-      if (!dataSource) throw new Error('must have data source');
-      essence = this.getEssenceFromDataSource(dataSource);
+      if (!dataCube) throw new Error('must have data cube');
+      essence = this.getEssenceFromDataCube(dataCube);
       updateViewHash(essence.toHash(), true);
     }
     this.setState({ essence });
@@ -203,11 +203,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.globalResizeListener();
 
     if (transitionFnSlot) {
-      transitionFnSlot.fill((oldDataSource: DataSource, newDataSource: DataSource) => {
-        if (newDataSource === oldDataSource || !newDataSource.sameGroup(oldDataSource)) return null;
+      transitionFnSlot.fill((oldDataCube: DataCube, newDataCube: DataCube) => {
+        if (newDataCube === oldDataCube || !newDataCube.sameGroup(oldDataCube)) return null;
         const { essence } = this.state;
         if (!essence) return null;
-        return '#' + newDataSource.name + '/' + essence.updateDataSource(newDataSource).toHash();
+        return '#' + newDataCube.name + '/' + essence.updateDataCube(newDataCube).toHash();
       });
     }
 
@@ -219,13 +219,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillReceiveProps(nextProps: CubeViewProps) {
-    const { hash, dataSource, updateViewHash } = this.props;
-    if (!nextProps.dataSource) throw new Error('must have data source');
+    const { hash, dataCube, updateViewHash } = this.props;
+    if (!nextProps.dataCube) throw new Error('must have data cube');
 
-    if (dataSource.name !== nextProps.dataSource.name || hash !== nextProps.hash) {
-      var hashEssence = this.getEssenceFromHash(nextProps.dataSource, nextProps.hash);
+    if (dataCube.name !== nextProps.dataCube.name || hash !== nextProps.hash) {
+      var hashEssence = this.getEssenceFromHash(nextProps.dataCube, nextProps.hash);
       if (!hashEssence) {
-        hashEssence = this.getEssenceFromDataSource(nextProps.dataSource);
+        hashEssence = this.getEssenceFromDataCube(nextProps.dataCube);
         updateViewHash(hashEssence.toHash(), true);
       }
 
@@ -250,14 +250,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     if (transitionFnSlot) transitionFnSlot.clear();
   }
 
-  getEssenceFromDataSource(dataSource: DataSource): Essence {
-    const essence = Essence.fromDataSource(dataSource, { dataSource: dataSource, visualizations: MANIFESTS });
+  getEssenceFromDataCube(dataCube: DataCube): Essence {
+    const essence = Essence.fromDataCube(dataCube, { dataCube: dataCube, visualizations: MANIFESTS });
     return essence.multiMeasureMode !== Boolean(localStorage.get('is-multi-measure')) ? essence.toggleMultiMeasureMode() : essence;
   }
 
-  getEssenceFromHash(dataSource: DataSource, hash: string): Essence {
-    if (!dataSource || !hash) return null;
-    return Essence.fromHash(hash, { dataSource: dataSource, visualizations: MANIFESTS });
+  getEssenceFromHash(dataCube: DataCube, hash: string): Essence {
+    if (!dataCube || !hash) return null;
+    return Essence.fromHash(hash, { dataCube: dataCube, visualizations: MANIFESTS });
   }
 
   globalKeyDownListener(e: KeyboardEvent) {

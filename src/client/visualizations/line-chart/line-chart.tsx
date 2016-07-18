@@ -22,7 +22,7 @@ import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import { r, $, ply, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction, SortAction,
   PlywoodRange, NumberRangeJS, NumberRange, Range, NumberBucketAction } from 'plywood';
-import { Essence, Splits, Colors, FilterClause, Dimension, Stage, Filter, Measure, DataSource, VisualizationProps, DatasetLoad } from '../../../common/models/index';
+import { Essence, Splits, Colors, FilterClause, Dimension, Stage, Filter, Measure, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 import { LINE_CHART_MANIFEST } from '../../../common/manifests/line-chart/line-chart';
 import { DisplayYear } from '../../../common/utils/time/time';
 import { formatValue } from '../../../common/utils/formatter/formatter';
@@ -310,7 +310,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       var segmentLabel = formatValue(bubbleRange, timezone, DisplayYear.NEVER);
 
       if (colors) {
-        var categoryDimension = essence.splits.get(0).getDimension(essence.dataSource.dimensions);
+        var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
         var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(bubbleRange.end);
 
         var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(continuousDimension.name, bubbleRange));
@@ -354,7 +354,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       var segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
 
       if (colors) {
-        var categoryDimension = essence.splits.get(0).getDimension(essence.dataSource.dimensions);
+        var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
         var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(continuousDimension.name, hoverRange));
         var colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
         var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
@@ -469,7 +469,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         />);
       } else {
         var colorValues: string[] = null;
-        var categoryDimension = essence.splits.get(0).getDimension(essence.dataSource.dimensions);
+        var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
 
         if (colors) colorValues = colors.getColors(mySplitDataset.data.map(d => d[categoryDimension.name]));
 
@@ -548,7 +548,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       }
 
       var continuousSplit = splits.length() === 1 ? splits.get(0) : splits.get(1);
-      var continuousDimension = continuousSplit.getDimension(essence.dataSource.dimensions);
+      var continuousDimension = continuousSplit.getDimension(essence.dataCube.dimensions);
       if (continuousDimension) {
         newState.continuousDimension = continuousDimension;
 

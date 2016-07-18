@@ -36,7 +36,7 @@ var appSettings: AppSettings = AppSettingsMock.wikiOnlyWithExecutor();
 app.use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = '0.9.4';
-  req.getSettings = (dataSourceOfInterest?: string) => Q(appSettings);
+  req.getSettings = (dataCubeOfInterest?: string) => Q(appSettings);
   next();
 });
 
@@ -59,7 +59,7 @@ describe('plywood router', () => {
       }, testComplete);
   });
 
-  it('must have dataSource', (testComplete) => {
+  it('must have dataCube', (testComplete) => {
     supertest(app)
       .post('/')
       .set('Content-Type', "application/json")
@@ -70,7 +70,7 @@ describe('plywood router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(400)
       .expect({
-        "error": "must have a dataSource"
+        "error": "must have a dataCube"
       }, testComplete);
   });
 
@@ -81,7 +81,7 @@ describe('plywood router', () => {
       .send({
         version: '0.9.4',
         expression: $('main').count().toJS(),
-        dataSource: 'wiki'
+        dataCube: 'wiki'
       })
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
@@ -102,7 +102,7 @@ describe('plywood router', () => {
           .sort('$Count', 'descending')
           .limit(2)
           .toJS(),
-        dataSource: 'wiki'
+        dataSource: 'wiki' // back compat
       })
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)

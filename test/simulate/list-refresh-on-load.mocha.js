@@ -132,7 +132,7 @@ describe('list refresh on load with datasource', function () {
       expect(body).to.contain('</html>');
 
       var config = extractConfig(body);
-      expect(config.appSettings.dataSources.map((ds) => ds.name)).to.deep.equal([]);
+      expect(config.appSettings.dataCubes.map((ds) => ds.name)).to.deep.equal([]);
 
       testComplete();
     });
@@ -152,7 +152,7 @@ describe('list refresh on load with datasource', function () {
       expect(pivotServer.getStdall()).to.contain("Cluster 'druid' has never seen 'wikipedia' and will introspect 'wiki");
 
       var config = extractConfig(body);
-      expect(config.appSettings.dataSources.map((ds) => ds.name)).to.deep.equal(['wiki']);
+      expect(config.appSettings.dataCubes.map((ds) => ds.name)).to.deep.equal(['wiki']);
 
       testComplete();
     });

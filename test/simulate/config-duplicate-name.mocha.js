@@ -36,7 +36,7 @@ describe('config duplicate names', function () {
   });
 
   it('throws correct error', (testComplete) => {
-    expect(pivotServer.getStderr()).to.contain(`Fatal settings load error: name 'language' found in both dimensions and measures in data source: 'wiki'`);
+    expect(pivotServer.getStderr()).to.contain(`Fatal settings load error: name 'language' found in both dimensions and measures in data cube: 'wiki'`);
     testComplete();
   });
 

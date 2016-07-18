@@ -18,8 +18,8 @@
 /typings/
 /.travis.yml
 /travis-test
+/full-test
 /run
 /run-coverage
 /CONTRIBUTING.md
-/config.yaml.sample
 /gulpfile.js

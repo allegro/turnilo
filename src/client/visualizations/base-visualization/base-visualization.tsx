@@ -73,7 +73,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   protected makeQuery(essence: Essence): Expression {
-    var { splits, colors, dataSource } = essence;
+    var { splits, colors, dataCube } = essence;
     var measures = essence.getEffectiveMeasures();
 
     var $main = $('main');
@@ -87,7 +87,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
     function makeSubQuery(i: number): Expression {
       var split = splits.get(i);
-      var splitDimension = dataSource.getDimensionByExpression(split.expression);
+      var splitDimension = dataCube.getDimensionByExpression(split.expression);
       var { sortAction, limitAction } = split;
       if (!sortAction) {
         throw new Error('something went wrong during query generation');
@@ -139,7 +139,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     let query = this.makeQuery(essence);
 
     this.precalculate(this.props, { loading: true });
-    essence.dataSource.executor(query, { timezone: essence.timezone })
+    essence.dataCube.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this._isMounted) return;
@@ -182,7 +182,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
-      nextEssence.differentDataSource(essence) ||
+      nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, this.id) ||
       nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.differentColors(essence) ||

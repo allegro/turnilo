@@ -33,7 +33,7 @@ describe('PinboardMeasureTile', () => {
   it('adds the correct class', () => {
 
     var essence = EssenceMock.wikiTotals();
-    var sortOn = new SortOn({dimension: essence.dataSource.getDimension('articleName')});
+    var sortOn = new SortOn({dimension: essence.dataCube.getDimension('articleName')});
 
     var renderedComponent = TestUtils.renderIntoDocument(
       <PinboardMeasureTile

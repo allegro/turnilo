@@ -20,7 +20,7 @@ import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { STRINGS } from '../../config/constants';
-import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
+import { Stage, Clicker, Essence, VisStrategy, DataCube, Filter, Dimension, Measure, SplitCombine } from '../../../common/models/index';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 const ACTION_SIZE = 60;

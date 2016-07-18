@@ -18,7 +18,7 @@ import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { $, Expression, RefExpression, SortAction } from 'plywood';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
-import { DataSource } from '../data-source/data-source';
+import { DataCube } from '../data-cube/data-cube';
 
 export interface SortOnValue {
   dimension?: Dimension;
@@ -57,10 +57,10 @@ export class SortOn implements Instance<SortOnValue, SortOnJS> {
     return new SortOn({ measure });
   }
 
-  static fromSortAction(sortAction: SortAction, dataSource: DataSource, fallbackDimension: Dimension): SortOn {
+  static fromSortAction(sortAction: SortAction, dataCube: DataCube, fallbackDimension: Dimension): SortOn {
     if (!sortAction) return SortOn.fromDimension(fallbackDimension);
     var sortOnName = (sortAction.expression as RefExpression).name;
-    var measure = dataSource.getMeasure(sortOnName);
+    var measure = dataCube.getMeasure(sortOnName);
     if (measure) return SortOn.fromMeasure(measure);
     return SortOn.fromDimension(fallbackDimension);
   }

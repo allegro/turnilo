@@ -136,45 +136,26 @@ describe('reintrospect on load', function () {
       expect(runSegmentMetadataRunNumber).to.equal(2);
 
       var config = extractConfig(body);
-      expect(config.appSettings.dataSources[0].dimensions).to.deep.equal([
+      expect(config.appSettings.dataCubes[0].dimensions).to.deep.equal([
         {
-          "expression": {
-            "name": "__time",
-            "op": "ref"
-          },
+          "formula": "$__time",
           "kind": "time",
           "name": "__time",
           "title": "Time"
         },
         {
-          "expression": {
-            "name": "channel",
-            "op": "ref"
-          },
+          "formula": "$channel",
           "kind": "string",
           "name": "channel",
           "title": "Channel"
         }
       ]);
 
-      expect(config.appSettings.dataSources[0].measures).to.deep.equal([
+      expect(config.appSettings.dataCubes[0].measures).to.deep.equal([
         {
-          "expression": {
-            "action": {
-              "action": "sum",
-              "expression": {
-                "name": "count",
-                "op": "ref"
-              }
-            },
-            "expression": {
-              "name": "main",
-              "op": "ref"
-            },
-            "op": "chain"
-          },
           "name": "count",
-          "title": "Count"
+          "title": "Count",
+          "formula": "$main.sum($count)"
         }
       ]);
 
@@ -214,72 +195,37 @@ describe('reintrospect on load', function () {
       expect(runSegmentMetadataRunNumber).to.equal(3);
 
       var config = extractConfig(body);
-      expect(config.appSettings.dataSources[0].dimensions).to.deep.equal([
+      expect(config.appSettings.dataCubes[0].dimensions).to.deep.equal([
         {
-          "expression": {
-            "name": "__time",
-            "op": "ref"
-          },
+          "formula": "$__time",
           "kind": "time",
           "name": "__time",
           "title": "Time"
         },
         {
-          "expression": {
-            "name": "channel",
-            "op": "ref"
-          },
+          "formula": "$channel",
           "kind": "string",
           "name": "channel",
           "title": "Channel"
         },
         {
-          "expression": {
-            "name": "page",
-            "op": "ref"
-          },
+          "formula": "$page",
           "kind": "string",
           "name": "page",
           "title": "Page"
         }
       ]);
 
-      expect(config.appSettings.dataSources[0].measures).to.deep.equal([
+      expect(config.appSettings.dataCubes[0].measures).to.deep.equal([
         {
-          "expression": {
-            "action": {
-              "action": "sum",
-              "expression": {
-                "name": "count",
-                "op": "ref"
-              }
-            },
-            "expression": {
-              "name": "main",
-              "op": "ref"
-            },
-            "op": "chain"
-          },
           "name": "count",
-          "title": "Count"
+          "title": "Count",
+          "formula": "$main.sum($count)"
         },
         {
-          "expression": {
-            "action": {
-              "action": "sum",
-              "expression": {
-                "name": "added",
-                "op": "ref"
-              }
-            },
-            "expression": {
-              "name": "main",
-              "op": "ref"
-            },
-            "op": "chain"
-          },
           "name": "added",
-          "title": "Added"
+          "title": "Added",
+          "formula": "$main.sum($added)"
         }
       ]);
 

@@ -77,11 +77,11 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   componentWillMount() {
     var { essence, split } = this.props;
-    var { dataSource, colors } = essence;
+    var { dataCube, colors } = essence;
 
     var myColors: Colors = null;
     if (colors) {
-      var colorDimension = dataSource.getDimension(colors.dimension);
+      var colorDimension = dataCube.getDimension(colors.dimension);
       if (colorDimension.expression.equals(split.expression)) {
         myColors = colors;
       }
@@ -167,7 +167,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   getSortOn(): SortOn {
     var { essence, dimension } = this.props;
     var { split } = this.state;
-    return SortOn.fromSortAction(split.sortAction, essence.dataSource, dimension);
+    return SortOn.fromSortAction(split.sortAction, essence.dataCube, dimension);
   }
 
   renderGranularityPicker(type: ContinuousDimensionKind) {
@@ -191,7 +191,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   renderSortDropdown() {
     var { essence, dimension } = this.props;
 
-    var sortOns = [SortOn.fromDimension(dimension)].concat(essence.dataSource.measures.toArray().map(SortOn.fromMeasure));
+    var sortOns = [SortOn.fromDimension(dimension)].concat(essence.dataCube.measures.toArray().map(SortOn.fromMeasure));
 
     const SortOnDropdown = Dropdown.specialize<SortOn>();
 

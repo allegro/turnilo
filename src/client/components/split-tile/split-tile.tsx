@@ -22,7 +22,7 @@ import * as Q from 'q';
 
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, VisStrategy, DataSource, Filter, SplitCombine, Dimension, DragPosition } from '../../../common/models/index';
+import { Stage, Clicker, Essence, VisStrategy, DataCube, Filter, SplitCombine, Dimension, DragPosition } from '../../../common/models/index';
 import {
   findParentWithClass, setDragGhost, transformStyle, getXFromEvent, isInside, uniqueId,
   classNames
@@ -333,12 +333,12 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   renderOverflow(items: SplitCombine[], itemX: number): JSX.Element {
     var { essence } = this.props;
-    var { dataSource } = essence;
+    var { dataCube } = essence;
 
     var style = transformStyle(itemX, 0);
 
     return <div
-      className={classNames('overflow', { 'all-continuous': items.every(item => item.getDimension(dataSource.dimensions).isContinuous()) })}
+      className={classNames('overflow', { 'all-continuous': items.every(item => item.getDimension(dataCube.dimensions).isContinuous()) })}
       ref="overflow"
       key="overflow"
       style={style}
@@ -352,9 +352,9 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   renderSplit(split: SplitCombine, style: React.CSSProperties, i: number) {
     var { essence } = this.props;
     var { menuDimension } = this.state;
-    var { dataSource } = essence;
+    var { dataCube } = essence;
 
-    var dimension = split.getDimension(dataSource.dimensions);
+    var dimension = split.getDimension(dataCube.dimensions);
     if (!dimension) throw new Error('dimension not found');
     var dimensionName = dimension.name;
 
@@ -372,7 +372,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       onDragStart={this.dragStart.bind(this, dimension, split, i)}
       style={style}
     >
-      <div className="reading">{split.getTitle(dataSource.dimensions)}</div>
+      <div className="reading">{split.getTitle(dataCube.dimensions)}</div>
       <div className="remove" onClick={this.removeSplit.bind(this, split)}>
         <SvgIcon svg={require('../../icons/x.svg')}/>
       </div>

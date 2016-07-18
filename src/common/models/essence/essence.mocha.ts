@@ -20,10 +20,10 @@ import { testImmutableClass } from 'immutable-class/build/tester';
 import { $, Expression } from 'plywood';
 import { MANIFESTS } from "../../manifests/index";
 import { Essence, EssenceJS } from './essence';
-import { DataSource, Introspection } from "../data-source/data-source";
+import { DataCube, Introspection } from "../data-cube/data-cube";
 
 describe('Essence', () => {
-  var dataSourceJS = {
+  var dataCubeJS = {
     name: 'twitter',
     title: 'Twitter',
     clusterName: 'druid',
@@ -34,20 +34,20 @@ describe('Essence', () => {
         kind: 'time',
         name: 'time',
         title: 'Time',
-        expression: '$time'
+        formula: '$time'
       },
       {
         kind: 'string',
         name: 'twitterHandle',
         title: 'Twitter Handle',
-        expression: '$twitterHandle'
+        formula: '$twitterHandle'
       }
     ],
     measures: [
       {
         name: 'count',
         title: 'count',
-        expression: '$main.count()'
+        formula: '$main.count()'
       }
     ],
     timeAttribute: 'time',
@@ -62,9 +62,9 @@ describe('Essence', () => {
     }
   };
 
-  var dataSource = DataSource.fromJS(dataSourceJS);
+  var dataCube = DataCube.fromJS(dataCubeJS);
 
-  var context = { dataSource, visualizations: MANIFESTS };
+  var context = { dataCube, visualizations: MANIFESTS };
 
   it('is an immutable class', () => {
     testImmutableClass<EssenceJS>(Essence, [
@@ -191,9 +191,9 @@ describe('Essence', () => {
   });
 
 
-  describe('.fromDataSource', () => {
+  describe('.fromDataCube', () => {
     it('works in the base case', () => {
-      var essence = Essence.fromDataSource(dataSource, context);
+      var essence = Essence.fromDataCube(dataCube, context);
 
       expect(essence.toJS()).to.deep.equal({
         "filter": {

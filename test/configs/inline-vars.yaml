@@ -1,4 +1,4 @@
-dataSources:
+dataCubes:
   - name: "%{DS_NAME}%"
     title: "%{DS_TITLE}%"
     engine: native

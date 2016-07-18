@@ -22,7 +22,7 @@ import { r, Range, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, T
 
 import {
   Stage,
-  DataSource,
+  DataCube,
   Filter,
   FilterClause,
   Splits,
@@ -77,10 +77,10 @@ export interface BarChartState extends BaseVisualizationState {
   maxNumberOfLeaves?: number[];
 }
 
-function getFilterFromDatum(splits: Splits, dataPath: Datum[], dataSource: DataSource): Filter {
+function getFilterFromDatum(splits: Splits, dataPath: Datum[], dataCube: DataCube): Filter {
   return new Filter(List(dataPath.map((datum, i) => {
     var split = splits.get(i);
-    var segment: any = datum[split.getDimension(dataSource.dimensions).name];
+    var segment: any = datum[split.getDimension(dataCube.dimensions).name];
 
     return new FilterClause({
       expression: split.expression,
@@ -111,7 +111,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     var { essence } = this.props;
     var nextEssence = nextProps.essence;
     if (
-      nextEssence.differentDataSource(essence) ||
+      nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, BarChart.id) ||
       nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.newEffectiveMeasures(essence)
@@ -207,10 +207,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const { path, chartIndex } = selectionInfo;
 
-    const { splits, dataSource } = essence;
+    const { splits, dataCube } = essence;
     var measures = essence.getEffectiveMeasures().toArray();
 
-    var rowHighlight = getFilterFromDatum(splits, path, dataSource);
+    var rowHighlight = getFilterFromDatum(splits, path, dataCube);
 
     if (essence.highlightOn(BarChart.id, measures[chartIndex].name)) {
       if (rowHighlight.equals(essence.highlight.delta)) {
@@ -337,8 +337,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { measure, path, chartIndex, segmentLabel, coordinates } = hoverInfo;
     const chartStage = this.getSingleChartStage();
 
-    const { splits, dataSource } = essence;
-    const dimension = splits.get(hoverInfo.splitIndex).getDimension(dataSource.dimensions);
+    const { splits, dataCube } = essence;
+    const dimension = splits.get(hoverInfo.splitIndex).getDimension(dataCube.dimensions);
 
     const leftOffset = this.getBubbleLeftOffset(coordinates.middleX);
     const topOffset = this.getBubbleTopOffset(coordinates.y, chartIndex, chartStage);
@@ -381,12 +381,12 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   isSelected(path: Datum[], measure: Measure): boolean {
     const { essence } = this.props;
-    const { splits, dataSource } = essence;
+    const { splits, dataCube } = essence;
 
     if (essence.highlightOnDifferentMeasure(BarChart.id, measure.name)) return false;
 
     if (essence.highlightOn(BarChart.id, measure.name)) {
-      return essence.highlight.delta.equals(getFilterFromDatum(splits, path, dataSource));
+      return essence.highlight.delta.equals(getFilterFromDatum(splits, path, dataCube));
     }
 
     return false;
@@ -404,13 +404,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
   isHovered(path: Datum[], measure: Measure): boolean {
     const { essence } = this.props;
     const { hoverInfo } = this.state;
-    const { splits, dataSource } = essence;
+    const { splits, dataCube } = essence;
 
     if (this.hasAnySelectionGoingOn()) return false;
     if (!hoverInfo) return false;
     if (hoverInfo.measure !== measure) return false;
 
-    const filter = (p: Datum[]) => getFilterFromDatum(splits, p, dataSource);
+    const filter = (p: Datum[]) => getFilterFromDatum(splits, p, dataCube);
 
     return filter(hoverInfo.path).equals(filter(path));
   }
@@ -431,7 +431,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     var bars: any[] = [];
     var highlight: JSX.Element;
 
-    const dimension = essence.splits.get(splitIndex).getDimension(essence.dataSource.dimensions);
+    const dimension = essence.splits.get(splitIndex).getDimension(essence.dataCube.dimensions);
     const splitLength = essence.splits.length();
 
     data.forEach((d, i) => {
@@ -522,7 +522,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const xTicks = xScale.domain();
 
     const split = essence.splits.get(0);
-    const dimension = split.getDimension(essence.dataSource.dimensions);
+    const dimension = split.getDimension(essence.dataCube.dimensions);
 
     var labels: JSX.Element[] = [];
     if (dimension.isContinuous()) {
@@ -716,8 +716,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
     var data = (datasetLoad.dataset.data[0][SPLIT] as Dataset).data;
 
     const { essence } = this.props;
-    const { splits, dataSource} = essence;
-    const dimension = splits.get(0).getDimension(dataSource.dimensions);
+    const { splits, dataCube} = essence;
+    const dimension = splits.get(0).getDimension(dataCube.dimensions);
 
     var getX = (d: Datum) => d[dimension.name] as string;
 
@@ -766,11 +766,11 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const { essence } = this.props;
     const { datasetLoad } = this.state;
-    const { splits, dataSource} = essence;
+    const { splits, dataCube} = essence;
 
     const measure = essence.getEffectiveMeasures().toArray()[chartIndex];
     const dataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
-    const dimension = splits.get(0).getDimension(dataSource.dimensions);
+    const dimension = splits.get(0).getDimension(dataCube.dimensions);
 
     var chartStage = this.getSingleChartStage();
     var { yScale } = this.getYAxisStuff(dataset, measure, chartStage, chartIndex);
@@ -854,8 +854,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
   renderInternals() {
     const { essence, stage } = this.props;
     const { datasetLoad } = this.state;
-    const { splits, dataSource } = essence;
-    const dimension = splits.get(0).getDimension(dataSource.dimensions);
+    const { splits, dataCube } = essence;
+    const dimension = splits.get(0).getDimension(dataCube.dimensions);
 
     var scrollerLayout: ScrollerLayout;
     var measureCharts: JSX.Element[] = [];

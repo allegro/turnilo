@@ -73,30 +73,30 @@ router.post('/', (req: PivotRequest, res: Response) => {
   }
 
   var parsedQuery = parsedSQL.expression;
-  var dataSource = parsedSQL.table;
-  if (!dataSource) {
-    var errmsg = "Could not determine data source name";
+  var dataCube = parsedSQL.table;
+  if (!dataCube) {
+    var errmsg = "Could not determine data cube name";
     res.status(400).send(errmsg);
     return;
   }
 
   parsedQuery = parsedQuery.substitute((ex) => {
-    if (ex instanceof RefExpression && ex.name === dataSource) {
+    if (ex instanceof RefExpression && ex.name === dataCube) {
       return $("main");
     }
     return null;
   });
 
-  req.getSettings(dataSource)
+  req.getSettings(dataCube)
     .then((appSettings) => {
-      var myDataSource = appSettings.getDataSource(dataSource);
+      var myDataCube = appSettings.getDataCube(dataCube);
 
-      if (!myDataSource) {
-        res.status(400).send({ error: 'unknown data source' });
+      if (!myDataCube) {
+        res.status(400).send({ error: 'unknown data cube' });
         return;
       }
 
-      myDataSource.executor(parsedQuery).then(
+      myDataCube.executor(parsedQuery).then(
         (data: Dataset) => {
           res.type(outputType);
           res.send(outputFn(Dataset.fromJS(data.toJS())));

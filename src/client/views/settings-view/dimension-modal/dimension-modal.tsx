@@ -43,7 +43,7 @@ export interface DimensionModalState {
 }
 
 export class DimensionModal extends React.Component<DimensionModalProps, DimensionModalState> {
-  private kinds: ListItem[] = [
+  static KINDS: ListItem[] = [
     {label: 'Time', value: 'time'},
     {label: 'String', value: 'string'},
     {label: 'Boolean', value: 'boolean'},
@@ -52,7 +52,9 @@ export class DimensionModal extends React.Component<DimensionModalProps, Dimensi
 
   constructor() {
     super();
-    this.state = {canSave: false};
+    this.state = {
+      canSave: false
+    };
   }
 
   initStateFromProps(props: DimensionModalProps) {
@@ -72,16 +74,6 @@ export class DimensionModal extends React.Component<DimensionModalProps, Dimensi
     this.initStateFromProps(this.props);
   }
 
-  onKindChange(newKind: ListItem) {
-    var dimension = this.state.newDimension;
-    dimension = dimension.changeKind(newKind.value);
-
-    this.setState({
-      newDimension: dimension,
-      canSave: !this.props.dimension.equals(dimension)
-    });
-  }
-
   onChange(newDimension: Dimension, isValid: boolean) {
     if (isValid) {
       this.setState({
@@ -89,7 +81,9 @@ export class DimensionModal extends React.Component<DimensionModalProps, Dimensi
         canSave: !this.props.dimension.equals(newDimension)
       });
     } else {
-      this.setState({canSave: false});
+      this.setState({
+        canSave: false
+      });
     }
   }
 
@@ -124,13 +118,21 @@ export class DimensionModal extends React.Component<DimensionModalProps, Dimensi
 
         <FormLabel label="Kind"></FormLabel>
         <KindDropDown
-          items={this.kinds}
+          items={DimensionModal.KINDS}
           instance={newDimension}
           path={'kind'}
           equal={(a: ListItem, b: ListItem) => a.value === b.value}
           renderItem={(a: ListItem) => a.label}
           keyItem={(a: ListItem) => a.value}
           onChange={this.onChange.bind(this)}
+        />
+
+        <FormLabel label="Formula"></FormLabel>
+        <ImmutableInput
+          instance={newDimension}
+          path={'formula'}
+          onChange={this.onChange.bind(this)}
+          validator={/^.+$/}
         />
 
       </form>

@@ -19,7 +19,7 @@ require('./measures-tile.css');
 import * as React from 'react';
 
 import { STRINGS, PIN_TITLE_HEIGHT, MEASURE_HEIGHT, PIN_PADDING_BOTTOM, MAX_SEARCH_LENGTH } from '../../config/constants';
-import { Clicker, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
 import { classNames } from '../../utils/dom/dom';
 import * as localStorage from '../../utils/local-storage/local-storage';
 
@@ -85,13 +85,13 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
   render() {
     var { essence, style } = this.props;
     var { showSearch, searchText } = this.state;
-    var { dataSource } = essence;
+    var { dataCube } = essence;
     var multiMeasureMode = essence.getEffectiveMultiMeasureMode();
     var selectedMeasures = essence.getEffectiveSelectedMeasure();
 
     var checkboxType: CheckboxType = multiMeasureMode ? 'check' : 'radio';
 
-    var shownMeasures = dataSource.measures.toArray();
+    var shownMeasures = dataCube.measures.toArray();
     if (searchText) {
       shownMeasures = shownMeasures.filter((r) => {
         return r.title.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;

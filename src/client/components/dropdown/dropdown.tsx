@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Essence, DataSource, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Stage, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
 import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
 
 function simpleEqual(item1: any, item2: any): boolean {

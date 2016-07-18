@@ -95,7 +95,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   fetchData(essence: Essence, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Granularity): void {
     var { searchText } = this.state;
-    var { dataSource, colors } = essence;
+    var { dataCube, colors } = essence;
 
     var filter = essence.getEffectiveFilter();
     // don't remove filter if time
@@ -154,7 +154,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       loading: true,
       fetchQueued: false
     });
-    dataSource.executor(query, { timezone: essence.timezone })
+    dataCube.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;
@@ -224,7 +224,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     var persistedGranularity = differentTimeFilterSelection ? null : selectedGranularity;
 
     if (
-      essence.differentDataSource(nextEssence) ||
+      essence.differentDataCube(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, null, unfolded ? dimension : null) ||
       essence.differentColors(nextEssence) || !dimension.equals(nextDimension) || !sortOn.equals(nextSortOn) ||
       essence.differentTimezoneMatters(nextEssence) ||

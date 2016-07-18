@@ -7,7 +7,7 @@ clusters:
     sourceListRefreshInterval: 0
     sourceReintrospectInterval: 0
 
-dataSources:
+dataCubes:
   - name: wiki
     title: Wikipedia Edits
     engine: druid

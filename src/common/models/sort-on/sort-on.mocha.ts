@@ -28,38 +28,21 @@ describe('SortOn', () => {
         measure: {
           name: 'price',
           title: 'Price',
-          expression: $('main').min('$price').toJS()
+          formula: '$main.min($price)'
         }
       },
       {
         measure: {
-          expression: {
-            action: {
-              action: 'sum',
-              expression: {
-                name: 'price',
-                op: 'ref'
-              }
-            },
-            expression: {
-              name: 'main',
-              op: 'ref'
-            },
-            op: 'chain'
-          },
           name: 'price',
-          title: 'Price'
+          title: 'Price',
+          formula: '$main.sum($price)'
         }
       },
       {
         dimension: {
           name: 'country',
-          title: 'important countries',
-          'expression': {
-            'op': 'literal',
-            'value': { 'setType': 'STRING', 'elements': ['en'] },
-            'type': 'SET'
-          },
+          title: 'Country',
+          formula: '$country',
           kind: 'string'
         }
       }

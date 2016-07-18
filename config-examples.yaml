@@ -1,13 +1,13 @@
-# Only the dataSources key will be used from the exmaple config
-dataSources:
+# Only the dataCubes key will be used from the exmaple config
+dataCubes:
 
   - name: wiki
 
-    # This is the title that will grace this data source in the the menus
+    # This is the title that will grace this data cube in the the menus
     title: Wikipedia Example
 
     # Use the native engine, all calculations will be done in Node.JS. Good for up to 100k rows of data.
-    engine: native
+    clusterName: native
 
     # The file representing the datasource relative to repo root
     source: assets/data/wikiticker-2015-09-12-sampled.json
@@ -18,11 +18,11 @@ dataSources:
     # Run `assets/data/process-wikiticker-2015-09-12` to get the full example file
 
     # The primary time attribute of the data refers to the attribute that must always be filtered on
-    # This is particularly useful for Druid data sources as they must always have a time filter.
+    # This is particularly useful for Druid data cubes as they must always have a time filter.
     timeAttribute: time
 
-    # The refresh rule describes how often the data source looks for new data. Default: 'query'/PT1M (every minute)
-    # In this case it has to be fixed since this data source is static
+    # The refresh rule describes how often the data cube looks for new data. Default: 'query'/PT1M (every minute)
+    # In this case it has to be fixed since this data cube is static
     refreshRule:
       rule: fixed # also possible: 'query' and 'realtime'
       time: 2015-09-13T00:00:00Z
@@ -58,7 +58,7 @@ dataSources:
       - name: time
         type: TIME
         kind: time
-        expression: $time
+        formula: $time
 
     #  - name: sometimeLater
     #    title: Sometime Later
@@ -66,37 +66,37 @@ dataSources:
 
       - name: channel
         title: Channel
-        expression: $channel
+        formula: $channel
 
       - name: cityName
         title: City Name
-        expression: $cityName
+        formula: $cityName
 
       - name: comment
         title: Comment
-        expression: $comment
+        formula: $comment
 
       - name: commentLength
         title: Comment Length
-        expression: $commentLength
+        formula: $commentLength
         kind: number
 
       - name: commentLengthOver100
         title: Comment Length Over 100
-        expression: $commentLength > 100
+        formula: $commentLength > 100
         kind: boolean
 
       - name: countryIso
         title: Country ISO
-        expression: $countryIsoCode
+        formula: $countryIsoCode
 
       - name: countryName
         title: Country Name
-        expression: $countryName
+        formula: $countryName
 
       - name: deltaBucket100
         title: Delta Bucket
-        expression: $deltaBucket100
+        formula: $deltaBucket100
         kind: number
 
       - name: isAnonymous
@@ -117,58 +117,58 @@ dataSources:
 
       - name: isUnpatrolled
         title: Is Unpatrolled
-        expression: $isUnpatrolled
+        formula: $isUnpatrolled
 
       - name: metroCode
         title: Metro Code
-        expression: $metroCode
+        formula: $metroCode
 
       - name: namespace
         title: Namespace
-        expression: $namespace
+        formula: $namespace
 
       - name: page
         title: Page
-        expression: $page
+        formula: $page
 
       - name: regionIso
         title: Region ISO
-        expression: $regionIsoCode
+        formula: $regionIsoCode
 
       - name: regionName
         title: Region Name
-        expression: $regionName
+        formula: $regionName
 
       - name: user
         title: User
-        expression: $user
+        formula: $user
 
       - name: userChars
         title: User Chars
-        expression: $userChars
+        formula: $userChars
 
 
     measures:
 
       - name: count
         title: Rows
-        expression: $main.count()
+        formula: $main.count()
 
       - name: delta
 
       - name: avg_delta
-        expression: $main.average($delta)
+        formula: $main.average($delta)
 
       - name: added
 
       - name: avg_added
-        expression: $main.average($added)
+        formula: $main.average($added)
 
       - name: deleted
 
       - name: avg_deleted
-        expression: $main.average($deleted)
+        formula: $main.average($deleted)
 
       - name: unique_users
         title: Unique Users
-        expression: $main.countDistinct($user)
+        formula: $main.countDistinct($user)

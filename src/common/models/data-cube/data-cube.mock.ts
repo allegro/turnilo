@@ -15,7 +15,7 @@
  */
 
 import { $, Executor, Dataset, basicExecutorFactory } from 'plywood';
-import { DataSource, DataSourceJS } from './data-source';
+import { DataCube, DataCubeJS } from './data-cube';
 
 var executor = basicExecutorFactory({
   datasets: {
@@ -24,8 +24,8 @@ var executor = basicExecutorFactory({
   }
 });
 
-export class DataSourceMock {
-  public static get WIKI_JS(): DataSourceJS {
+export class DataCubeMock {
+  public static get WIKI_JS(): DataCubeJS {
     return {
       name: 'wiki',
       title: 'Wiki',
@@ -41,34 +41,28 @@ export class DataSourceMock {
       ],
       dimensions: [
         {
-          expression: {
-            name: 'time',
-            op: 'ref'
-          },
           kind: 'time',
           name: 'time',
-          title: 'Time'
+          title: 'Time',
+          formula: '$time'
         },
         {
-          expression: {
-            name: 'articleName',
-            op: 'ref'
-          },
           kind: 'string',
           name: 'articleName',
-          title: 'Article Name'
+          title: 'Article Name',
+          formula: '$articleName'
         }
       ],
       measures: [
         {
           name: 'count',
           title: 'Count',
-          expression: $('main').sum('$count').toJS()
+          formula: '$main.sum($count)'
         },
         {
           name: 'added',
           title: 'Added',
-          expression: $('main').sum('$added').toJS()
+          formula: '$main.sum($added)'
         }
       ],
       timeAttribute: 'time',
@@ -85,7 +79,7 @@ export class DataSourceMock {
     };
   }
 
-  public static get TWITTER_JS(): DataSourceJS {
+  public static get TWITTER_JS(): DataCubeJS {
     return {
       name: 'twitter',
       title: 'Twitter',
@@ -96,33 +90,23 @@ export class DataSourceMock {
       introspection: 'none',
       dimensions: [
         {
-          expression: {
-            name: 'time',
-            op: 'ref'
-          },
           kind: 'time',
           name: 'time',
-          title: 'Time'
+          title: 'Time',
+          formula: '$time'
         },
         {
-          expression: {
-            name: 'twitterHandle',
-            op: 'ref'
-          },
           kind: 'string',
           name: 'twitterHandle',
-          title: 'Twitter Handle'
+          title: 'Twitter Handle',
+          formula: '$twitterHandle'
         }
       ],
       measures: [
         {
           name: 'count',
           title: 'count',
-          expression: {
-            name: 'count',
-            op: 'ref'
-          }
-
+          formula: '$main.count()'
         }
       ],
       timeAttribute: 'time',
@@ -139,10 +123,10 @@ export class DataSourceMock {
   }
 
   static wiki() {
-    return DataSource.fromJS(DataSourceMock.WIKI_JS, { executor });
+    return DataCube.fromJS(DataCubeMock.WIKI_JS, { executor });
   }
 
   static twitter() {
-    return DataSource.fromJS(DataSourceMock.TWITTER_JS, { executor });
+    return DataCube.fromJS(DataCubeMock.TWITTER_JS, { executor });
   }
 }
