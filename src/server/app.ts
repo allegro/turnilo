@@ -42,12 +42,41 @@ import * as errorRoutes from './routes/error/error';
 
 import { errorLayout } from './views';
 
+function makeGuard(guard: string): Handler {
+  return (req: PivotRequest, res: Response, next: Function) => {
+    const user = req.user;
+    if (!user) {
+      next(new Error('no user'));
+      return;
+    }
+
+    const { allow } = user;
+    if (!allow) {
+      next(new Error('no user.allow'));
+      return;
+    }
+
+    if (!allow[guard]) {
+      next(new Error('not allowed'));
+      return;
+    }
+
+    next();
+  };
+}
+
 var app = express();
 app.disable('x-powered-by');
 
 function addRoutes(attach: string, router: Router | Handler): void {
   app.use(attach, router);
   app.use(SERVER_SETTINGS.serverRoot + attach, router);
+}
+
+function addGuardedRoutes(attach: string, guard: string, router: Router | Handler): void {
+  var guardHandler = makeGuard(guard);
+  app.use(attach, guardHandler, router);
+  app.use(SERVER_SETTINGS.serverRoot + attach, guardHandler, router);
 }
 
 app.use(compress());
@@ -64,7 +93,18 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use((req: PivotRequest, res: Response, next: Function) => {
-  req.user = null;
+  if (process.env['PIVOT_ENABLE_SETTINGS']) {
+    req.user = {
+      id: 'admin',
+      email: 'admin@admin.com',
+      displayName: 'Admin',
+      allow: {
+        settings: true
+      }
+    };
+  } else {
+    req.user = null;
+  }
   req.version = VERSION;
   req.getSettings = (opts: GetSettingsOptions = {}) => {
     return SETTINGS_MANAGER.getSettings(opts);
@@ -84,7 +124,7 @@ addRoutes('/error', errorRoutes);
 
 
 if (process.env['PIVOT_ENABLE_SETTINGS']) {
-  addRoutes('/settings', settingsRoutes);
+  addGuardedRoutes('/settings', 'settings', settingsRoutes);
 }
 
 // View routes
