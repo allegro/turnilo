@@ -150,10 +150,15 @@ The user visible name that will be used to describe this data cube in the UI. It
 
 The description of the data cube shown in the homepage.
 
-**defaultDuration** (duration string)
+**defaultTimezone** (string - timezone)
+
+The default timezone, expressed as an [Olsen Timezone](https://en.wikipedia.org/wiki/Tz_database),
+that will be selected when the user first opens this cube. Default `Etc/UTC`.
+
+**defaultDuration** (string - duration)
 
 The time period, expressed as an [ISO 8601 Duration](https://en.wikipedia.org/wiki/ISO_8601#Durations),
-that will be shown when the user first opens Pivot. Default `P1D` (1 day).
+that will be shown when the user first opens this cube. Default `P1D` (1 day).
 
 **defaultSortMeasure** (string)
 
@@ -213,7 +218,7 @@ You should add:
 
 To the `attributeOverrides` to tell Pivot that this is numeric.
 
-You can now use `$age` in numeric expressions. For example you could create a dimension with the expression
+You can now use `$age` in numeric expressions. For example you could create a dimension with the formula
 `$age / 2 + 7`.
 
 
@@ -253,10 +258,12 @@ If you mainly care about smaller intervals, you might want to set it to: `['PT1S
 
 Alternatively, if you mainly care about large intervals, you might want to try: `['P1D', 'P1W', 'P1M', 'P3M', 'P1Y']`
 
-**expression** (plywood expression)
+**formula** (string - plywood expression)
 
-The expression for this dimension. By default it is `$name` where *name* is the name of the dimension.
-You can create derived dimensions by using non-trivial expressions. Here are some common use cases for derived dimensions:
+The formula for this dimension. By default it is `$name` where *name* is the name of the dimension.
+You can create derived dimensions by using non-trivial formulas.
+
+Here are some common use cases for derived dimensions:
 
 #### Lookups
 
@@ -265,7 +272,7 @@ If you have a dimension that represents an ID that is a key into some other tabl
 
 ```yaml
       - name: correctValue
-        expression: $lookupKey.lookup('my_awesome_lookup')
+        formula: $lookupKey.lookup('my_awesome_lookup')
 ```
 
 Which would apply the lookup.
@@ -287,7 +294,7 @@ You could apply, for example, the `.extract` function by creating the following 
 
 ```yaml
       - name: resourceVersion
-        expression: $resourceName.extract('(\d+\.\d+\.\d+)')
+        formula: $resourceName.extract('(\d+\.\d+\.\d+)')
 ```
 
 Which would have values:
@@ -303,7 +310,7 @@ Let's say that you are responsible for all accounts in the United States as well
 
 ```yaml
       - name: myAccounts
-        expression: $country == 'United States' or $accountName.in(['Toyota', 'Honda'])
+        formula: $country == 'United States' or $accountName.in(['Toyota', 'Honda'])
 ```
 
 Now my account would represent a custom filter boolean diemension.
@@ -324,7 +331,7 @@ Changing this property will break any URLs that someone might have generated tha
 
 The title for this measure in the UI. Can be anything and is safe to change at any time.
 
-**expression** (plywood expression)
+**formula** (string - plywood expression)
 
 The [Plywood expression](http://plywood.imply.io/expressions) for this dimension. By default it is `$main.sum($name)` where *name* is the name of the measure.
 
@@ -341,7 +348,7 @@ Ratios are generally considered fun.
 ```yaml
       - name: ecpm
         title: eCPM
-        expression: $main.sum($revenue) / $main.sum($impressions) * 1000
+        formula: $main.sum($revenue) / $main.sum($impressions) * 1000
 ```
 
 
@@ -353,14 +360,14 @@ If, for example, your revenue in the US is a very important measure you could ex
 ```yaml
       - name: usa_revenue
         title: USA Revenue
-        expression: $main.filter($country == 'United States').sum($revenue)
+        formula: $main.filter($country == 'United States').sum($revenue)
 ```
 
 It is also common to express a ratio of something filtered vs unfiltered.
 
 ```yaml
       - name: errorRate
-        expression: $main.filter($statusCode == 500).sum($requests) / $main.sum($requests)
+        formula: $main.filter($statusCode == 500).sum($requests) / $main.sum($requests)
 ```
 
 
@@ -392,7 +399,7 @@ Then in the measures simply reference `addedMod1337` like so:
 ```yaml
       - name: addedMod
         title: Added Mod 1337
-        expression: $main.custom('addedMod1337')
+        formula: $main.custom('addedMod1337')
 ```
 
 This functionality can be used to access any custom aggregations that might be loaded via extensions.
@@ -410,7 +417,7 @@ Furthermore right now your users are using pivot with the measure:
 ```yaml
       - name: revenue
         title: Revenue
-        expression: $main.sum($revenue_in_dollars)
+        formula: $main.sum($revenue_in_dollars)
 ```
 
 If your data had a 'clean break' where all events have ether `revenue_in_dollars` or `revenue_in_cents` with no overlap you could use:
@@ -418,7 +425,7 @@ If your data had a 'clean break' where all events have ether `revenue_in_dollars
 ```yaml
       - name: revenue
         title: Revenue
-        expression: $main.sum($revenue_in_dollars) + $main.sum($revenue_in_cents) / 100
+        formula: $main.sum($revenue_in_dollars) + $main.sum($revenue_in_cents) / 100
 ```
 
 If instead there was a period where you were ingesting both metrics then the above solution would double count that interval.
@@ -429,7 +436,7 @@ Logically you should be able leverage the [Filtered aggregations](#filtered-aggr
 ```yaml
       - name: revenue  # DO NOT DO THIS IT WILL NOT WORK WITH DRUID < 0.9.2
         title: Revenue
-        expression: >
+        formula: >
           $main.filter(__time < '2016-04-04T00:00:00Z').sum($revenue_in_dollars) +
           $main.filter('2016-04-04T00:00:00Z' <= __time).sum($revenue_in_cents) / 100
 ```
@@ -456,7 +463,7 @@ Then in the measure definitions:
 ```yaml
       - name: revenue
         title: Revenue
-        expression: $main.custom('revenueSplice')
+        formula: $main.custom('revenueSplice')
 ```
 
 Note that whichever method you chose you should not change the `name` attribute of your original measure as it will preserve the function of any bookmarks.

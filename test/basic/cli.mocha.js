@@ -19,7 +19,7 @@ const exec = require('child_process').exec;
 const extend = require('./../utils/extend');
 
 describe('cli', function () {
-  this.timeout(5000);
+  this.timeout(10000);
 
   it('shows help', (testComplete) => {
     exec('bin/pivot', (error, stdout, stderr) => {
