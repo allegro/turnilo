@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.22
+
+- Moved default user
+
 ## 0.9.21
 
 - Renamed `DataSource` to `DataCube`

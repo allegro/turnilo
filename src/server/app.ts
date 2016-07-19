@@ -93,18 +93,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use((req: PivotRequest, res: Response, next: Function) => {
-  if (process.env['PIVOT_ENABLE_SETTINGS']) {
-    req.user = {
-      id: 'admin',
-      email: 'admin@admin.com',
-      displayName: 'Admin',
-      allow: {
-        settings: true
-      }
-    };
-  } else {
-    req.user = null;
-  }
+  req.user = null;
   req.version = VERSION;
   req.getSettings = (opts: GetSettingsOptions = {}) => {
     return SETTINGS_MANAGER.getSettings(opts);
@@ -114,6 +103,20 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
 
 if (AUTH) {
   app.use(AUTH);
+} else {
+  app.use((req: PivotRequest, res: Response, next: Function) => {
+    if (process.env['PIVOT_ENABLE_SETTINGS']) {
+      req.user = {
+        id: 'admin',
+        email: 'admin@admin.com',
+        displayName: 'Admin',
+        allow: {
+          settings: true
+        }
+      };
+    }
+    next();
+  });
 }
 
 // Data routes
