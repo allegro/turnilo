@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.23
+
+- Adding strictTransportSecurity to server options
+- Changing ServerSettings to follow new defaults pattern
+
 ## 0.9.22
 
 - Moved default user
