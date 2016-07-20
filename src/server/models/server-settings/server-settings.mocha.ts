@@ -29,6 +29,10 @@ describe('ServerSettings', () => {
         port: 9091
       },
       {
+        port: 9091,
+        trustProxy: "always"
+      },
+      {
         port: 9090,
         serverRoot: '/pivots',
         pageMustLoadTimeout: 900,

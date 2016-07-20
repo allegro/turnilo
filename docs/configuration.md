@@ -54,15 +54,13 @@ Content-Security-Policy: "frame-ancestors 'none'"
 This is used to prevent [Clickjacking](http://en.wikipedia.org/wiki/clickjacking).
 Learn more about it on [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options).
 
-**strictTransportSecurity** ("none" | "when-x-forwarded-proto" | "always")
+**trustProxy** ("none" | "always")
+
+Should the server trust the `X-Forwarded-*` headers.
+
+**strictTransportSecurity** ("none" | "always")
 
 Specify that Pivot should set the [StrictTransportSecurity](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security) header.
-
-The options are:
-
-- `none` (default): Do not set the StrictTransportSecurity header.
-- `when-x-forwarded-proto`: Only set it if `X-Forwarded-Proto` header is set on the request
-- `always`: Always set StrictTransportSecurity
 
 Note that Pivot can itself only run an http server.
 This option is intended to be used when when Pivot is running behind a HTTPS terminator like AWS ELB.

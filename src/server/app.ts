@@ -69,6 +69,10 @@ function makeGuard(guard: string): Handler {
 var app = express();
 app.disable('x-powered-by');
 
+if (SERVER_SETTINGS.getTrustProxy() === 'always') {
+  app.set('trust proxy', 1); // trust first proxy
+}
+
 function addRoutes(attach: string, router: Router | Handler): void {
   app.use(attach, router);
   app.use(SERVER_SETTINGS.getServerRoot() + attach, router);
@@ -83,32 +87,12 @@ function addGuardedRoutes(attach: string, guard: string, router: Router | Handle
 app.use(compress());
 app.use(logger('dev'));
 
-var strictTransportSecurity = SERVER_SETTINGS.getStrictTransportSecurity();
-switch (strictTransportSecurity) {
-  case "none":
-    break; // Do nothing
-
-  case "when-x-forwarded-proto":
-    app.use(hsts({
-      maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
-      includeSubDomains: true, // Must be enabled to be approved by Google
-      preload: true,
-      setIf: (req: Request, res: Response) => {
-        return typeof req.headers["X-Forwarded-Proto"] === 'string';
-      }
-    }));
-    break;
-
-  case "always":
-    app.use(hsts({
-      maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
-      includeSubDomains: true, // Must be enabled to be approved by Google
-      preload: true
-    }));
-    break;
-
-  default:
-    throw new Error(`unknown strictTransportSecurity ${strictTransportSecurity}`);
+if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
+  app.use(hsts({
+    maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
+    includeSubDomains: true, // Must be enabled to be approved by Google
+    preload: true
+  }));
 }
 
 addRoutes('/health', healthRoutes);

@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.24
+
+- Added trustProxy to server options
+- Removed 'when-x-forwarded-proto'
+
 ## 0.9.23
 
 - Adding strictTransportSecurity to server options
