@@ -53,5 +53,5 @@ if (START_SERVER) {
   });
 
   app.set('port', SERVER_SETTINGS.port);
-  server.listen(SERVER_SETTINGS.port, SERVER_SETTINGS.serverHost);
+  server.listen(SERVER_SETTINGS.port, SERVER_SETTINGS.getServerHost());
 }

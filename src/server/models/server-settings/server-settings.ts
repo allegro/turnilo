@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import * as path from 'path';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 
 export type Iframe = "allow" | "deny";
+export type StrictTransportSecurity = "none" | "when-x-forwarded-proto" | "always";
 
 export interface ServerSettingsValue {
   port?: number;
@@ -25,6 +25,7 @@ export interface ServerSettingsValue {
   serverRoot?: string;
   pageMustLoadTimeout?: number;
   iframe?: Iframe;
+  strictTransportSecurity?: StrictTransportSecurity;
 }
 
 export interface ServerSettingsJS {
@@ -33,6 +34,7 @@ export interface ServerSettingsJS {
   serverRoot?: string;
   pageMustLoadTimeout?: number;
   iframe?: Iframe;
+  strictTransportSecurity?: StrictTransportSecurity;
 }
 
 function parseIntFromPossibleString(x: any) {
@@ -44,7 +46,10 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
   static DEFAULT_PORT = 9090;
   static DEFAULT_SERVER_ROOT = '/pivot';
   static DEFAULT_PAGE_MUST_LOAD_TIMEOUT = 800;
+  static IFRAME_VALUES: Iframe[] = ["allow", "deny"];
   static DEFAULT_IFRAME: Iframe = "allow";
+  static STRICT_TRANSPORT_SECURITY_VALUES: StrictTransportSecurity[] = ["none", "when-x-forwarded-proto", "always"];
+  static DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
 
   static isServerSettings(candidate: any): candidate is ServerSettings {
     return isInstanceOf(candidate, ServerSettings);
@@ -56,7 +61,8 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       serverHost,
       serverRoot,
       pageMustLoadTimeout,
-      iframe
+      iframe,
+      strictTransportSecurity
     } = parameters;
 
     if (serverRoot && serverRoot[0] !== '/') serverRoot = '/' + serverRoot;
@@ -67,7 +73,8 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       serverHost,
       serverRoot,
       pageMustLoadTimeout,
-      iframe
+      iframe,
+      strictTransportSecurity
     });
   }
 
@@ -76,6 +83,7 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
   public serverRoot: string;
   public pageMustLoadTimeout: number;
   public iframe: Iframe;
+  public strictTransportSecurity: StrictTransportSecurity;
   public druidRequestDecorator: string;
 
   constructor(parameters: ServerSettingsValue) {
@@ -84,9 +92,10 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
     this.port = port;
 
     this.serverHost = parameters.serverHost;
-    this.serverRoot = parameters.serverRoot || ServerSettings.DEFAULT_SERVER_ROOT;
-    this.pageMustLoadTimeout = parameters.pageMustLoadTimeout || ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT;
-    this.iframe = parameters.iframe || ServerSettings.DEFAULT_IFRAME;
+    this.serverRoot = parameters.serverRoot;
+    this.pageMustLoadTimeout = parameters.pageMustLoadTimeout;
+    this.iframe = parameters.iframe;
+    this.strictTransportSecurity = parameters.strictTransportSecurity;
   }
 
   public valueOf(): ServerSettingsValue {
@@ -95,7 +104,8 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       serverHost: this.serverHost,
       serverRoot: this.serverRoot,
       pageMustLoadTimeout: this.pageMustLoadTimeout,
-      iframe: this.iframe
+      iframe: this.iframe,
+      strictTransportSecurity: this.strictTransportSecurity
     };
   }
 
@@ -104,9 +114,10 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       port: this.port
     };
     if (this.serverHost) js.serverHost = this.serverHost;
-    if (this.serverRoot !== ServerSettings.DEFAULT_SERVER_ROOT) js.serverRoot = this.serverRoot;
-    if (this.pageMustLoadTimeout !== ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT) js.pageMustLoadTimeout = this.pageMustLoadTimeout;
-    if (this.iframe !== ServerSettings.DEFAULT_IFRAME) js.iframe = this.iframe;
+    if (this.serverRoot) js.serverRoot = this.serverRoot;
+    if (this.pageMustLoadTimeout) js.pageMustLoadTimeout = this.pageMustLoadTimeout;
+    if (this.iframe) js.iframe = this.iframe;
+    if (this.strictTransportSecurity) js.strictTransportSecurity = this.strictTransportSecurity;
     return js;
   }
 
@@ -124,7 +135,28 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       this.serverHost === other.serverHost &&
       this.serverRoot === other.serverRoot &&
       this.pageMustLoadTimeout === other.pageMustLoadTimeout &&
-      this.iframe === other.iframe;
+      this.iframe === other.iframe &&
+      this.strictTransportSecurity === other.strictTransportSecurity;
+  }
+
+  public getServerHost(): string {
+    return this.serverHost;
+  }
+
+  public getServerRoot(): string {
+    return this.serverRoot || ServerSettings.DEFAULT_SERVER_ROOT;
+  }
+
+  public getPageMustLoadTimeout(): number {
+    return this.pageMustLoadTimeout || ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT;
+  }
+
+  public getIframe(): Iframe {
+    return this.iframe || ServerSettings.DEFAULT_IFRAME;
+  }
+
+  public getStrictTransportSecurity(): StrictTransportSecurity {
+    return this.strictTransportSecurity || ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY;
   }
 
 }

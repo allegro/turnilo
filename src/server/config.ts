@@ -217,7 +217,8 @@ if (auth && auth !== 'none') {
   authMiddleware = authModule.auth({
     logger: LOGGER,
     verbose: VERBOSE,
-    version: VERSION
+    version: VERSION,
+    serverSettings: SERVER_SETTINGS
   });
 }
 export const AUTH = authMiddleware;
@@ -274,7 +275,7 @@ export const SETTINGS_MANAGER = new SettingsManager(settingsLocation, {
   logger: LOGGER,
   verbose: VERBOSE,
   anchorPath,
-  initialLoadTimeout: SERVER_SETTINGS.pageMustLoadTimeout
+  initialLoadTimeout: SERVER_SETTINGS.getPageMustLoadTimeout()
 });
 
 // --- Printing -------------------------------

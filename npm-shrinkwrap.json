@@ -634,7 +634,14 @@
     "fs-promise": {
       "version": "0.5.0",
       "from": "fs-promise@0.5.0",
-      "resolved": "https://registry.npmjs.org/fs-promise/-/fs-promise-0.5.0.tgz"
+      "resolved": "https://registry.npmjs.org/fs-promise/-/fs-promise-0.5.0.tgz",
+      "dependencies": {
+        "fs-extra": {
+          "version": "0.26.7",
+          "from": "fs-extra@>=0.26.5 <0.27.0",
+          "resolved": "https://registry.npmjs.org/fs-extra/-/fs-extra-0.26.7.tgz"
+        }
+      }
     },
     "fs.realpath": {
       "version": "1.0.0",
@@ -840,6 +847,11 @@
       "version": "2.1.5",
       "from": "hosted-git-info@>=2.1.4 <3.0.0",
       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.1.5.tgz"
+    },
+    "hsts": {
+      "version": "1.0.0",
+      "from": "hsts@latest",
+      "resolved": "https://registry.npmjs.org/hsts/-/hsts-1.0.0.tgz"
     },
     "http-errors": {
       "version": "1.5.0",

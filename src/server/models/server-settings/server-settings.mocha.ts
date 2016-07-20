@@ -23,6 +23,12 @@ describe('ServerSettings', () => {
   it('is an immutable class', () => {
     testImmutableClass(ServerSettings, [
       {
+        port: 9090
+      },
+      {
+        port: 9091
+      },
+      {
         port: 9090,
         serverRoot: '/pivots',
         pageMustLoadTimeout: 900,

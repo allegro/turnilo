@@ -32,6 +32,7 @@
     "debug": "2.2.0",
     "express": "4.14.0",
     "fs-promise": "0.5.0",
+    "hsts": "1.0.0",
     "immutable": "3.8.1",
     "immutable-class": "0.4.6",
     "js-yaml": "3.6.1",

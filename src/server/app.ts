@@ -16,6 +16,7 @@
 
 import * as express from 'express';
 import { Request, Response, Router, Handler } from 'express';
+import * as hsts from 'hsts';
 
 import * as path from 'path';
 import * as logger from 'morgan';
@@ -70,17 +71,45 @@ app.disable('x-powered-by');
 
 function addRoutes(attach: string, router: Router | Handler): void {
   app.use(attach, router);
-  app.use(SERVER_SETTINGS.serverRoot + attach, router);
+  app.use(SERVER_SETTINGS.getServerRoot() + attach, router);
 }
 
 function addGuardedRoutes(attach: string, guard: string, router: Router | Handler): void {
   var guardHandler = makeGuard(guard);
   app.use(attach, guardHandler, router);
-  app.use(SERVER_SETTINGS.serverRoot + attach, guardHandler, router);
+  app.use(SERVER_SETTINGS.getServerRoot() + attach, guardHandler, router);
 }
 
 app.use(compress());
 app.use(logger('dev'));
+
+var strictTransportSecurity = SERVER_SETTINGS.getStrictTransportSecurity();
+switch (strictTransportSecurity) {
+  case "none":
+    break; // Do nothing
+
+  case "when-x-forwarded-proto":
+    app.use(hsts({
+      maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
+      includeSubDomains: true, // Must be enabled to be approved by Google
+      preload: true,
+      setIf: (req: Request, res: Response) => {
+        return typeof req.headers["X-Forwarded-Proto"] === 'string';
+      }
+    }));
+    break;
+
+  case "always":
+    app.use(hsts({
+      maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
+      includeSubDomains: true, // Must be enabled to be approved by Google
+      preload: true
+    }));
+    break;
+
+  default:
+    throw new Error(`unknown strictTransportSecurity ${strictTransportSecurity}`);
+}
 
 addRoutes('/health', healthRoutes);
 
@@ -131,7 +160,7 @@ if (process.env['PIVOT_ENABLE_SETTINGS']) {
 }
 
 // View routes
-if (SERVER_SETTINGS.iframe === 'deny') {
+if (SERVER_SETTINGS.getIframe() === 'deny') {
   app.use((req: PivotRequest, res: Response, next: Function) => {
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");

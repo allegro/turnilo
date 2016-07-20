@@ -41,6 +41,31 @@ A custom path to act as the server string. Default: `pivot`
 
 The Pivot UI will be served from `http://pivot-host:$port/` and `http://pivot-host:$port/$serverRoot`
 
+**iframe** ("allow" | "deny")
+
+Specify whether Pivot will be allowed to run in an iFrame.
+If set to 'deny' Pivot will set the following headers:
+
+```
+X-Frame-Options: "DENY"
+Content-Security-Policy: "frame-ancestors 'none'"
+```
+
+This is used to prevent [Clickjacking](http://en.wikipedia.org/wiki/clickjacking).
+Learn more about it on [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options).
+
+**strictTransportSecurity** ("none" | "when-x-forwarded-proto" | "always")
+
+Specify that Pivot should set the [StrictTransportSecurity](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security) header.
+
+The options are:
+
+- `none` (default): Do not set the StrictTransportSecurity header.
+- `when-x-forwarded-proto`: Only set it if `X-Forwarded-Proto` header is set on the request
+- `always`: Always set StrictTransportSecurity
+
+Note that Pivot can itself only run an http server.
+This option is intended to be used when when Pivot is running behind a HTTPS terminator like AWS ELB.
 
 ## Configuring the Clusters
 
@@ -524,5 +549,5 @@ For example:
 
 These timezones will appear in the dropdown instead of the default, which are
 
-`['America/Juneau', 'America/Los_Angeles', 'America/Yellowknife', 'America/Phoenix', 'America/Denver', 'America/Mexico_City', 'America/Chicago', 'America/New_York', 'America/Argentina/Buenos_Aires', 'Etc/UTC', 
+`['America/Juneau', 'America/Los_Angeles', 'America/Yellowknife', 'America/Phoenix', 'America/Denver', 'America/Mexico_City', 'America/Chicago', 'America/New_York', 'America/Argentina/Buenos_Aires', 'Etc/UTC',
 'Asia/Jerusalem', 'Europe/Paris', 'Asia/Kathmandu', 'Asia/Hong_Kong', 'Asia/Seoul', 'Pacific/Guam']`
