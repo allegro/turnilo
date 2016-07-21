@@ -88,7 +88,7 @@ The host (hostname:port) of the cluster. In the Druid case this must be the brok
 **version** (string)
 
 The explicit version to use for this cluster.
-This does not need to be defined as the version will naturally be determined through introspection.
+Define this to override the automatic version detection.
 
 **timeout** (number)
 
