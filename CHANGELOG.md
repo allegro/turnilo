@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.25
+
+- Settings progress
+
 ## 0.9.24
 
 - Added trustProxy to server options
