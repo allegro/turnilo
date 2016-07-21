@@ -15,6 +15,7 @@
  */
 
 import { Class, Instance, isInstanceOf, immutableArraysEqual, immutableEqual } from 'immutable-class';
+import { ImmutableUtils } from '../../utils/index';
 import { Executor, helper } from 'plywood';
 import { hasOwnProperty } from '../../utils/general/general';
 import { Cluster, ClusterJS } from '../cluster/cluster';
@@ -190,25 +191,23 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   changeCustomization(customization: Customization): AppSettings {
-    var value = this.valueOf();
-    value.customization = customization;
-    return new AppSettings(value);
+    return this.change('customization', customization);
   }
 
   changeClusters(clusters: Cluster[]): AppSettings {
-    var value = this.valueOf();
-    value.clusters = clusters;
-    return new AppSettings(value);
+    return this.change('clusters', clusters);
   }
 
   addCluster(cluster: Cluster): AppSettings {
     return this.changeClusters(helper.overrideByName(this.clusters, cluster));
   }
 
+  change(propertyName: string, newValue: any): AppSettings {
+    return ImmutableUtils.change(this, propertyName, newValue);
+  }
+
   changeDataCubes(dataCubes: DataCube[]): AppSettings {
-    var value = this.valueOf();
-    value.dataCubes = dataCubes;
-    return new AppSettings(value);
+    return this.change('dataCubes', dataCubes);
   }
 
   addDataCube(dataCube: DataCube): AppSettings {

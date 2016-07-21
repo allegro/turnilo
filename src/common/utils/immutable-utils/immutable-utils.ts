@@ -36,7 +36,13 @@ export class ImmutableUtils {
       let bit = bits.pop();
 
       currentObject = getLastObject();
-      lastObject = currentObject.change(bit, lastObject);
+      if (currentObject.change instanceof Function) {
+        lastObject = currentObject.change(bit, lastObject);
+      } else {
+        let message = 'Can\'t find \`change()\` method on ' + currentObject.constructor.name;
+        console.error(message); // Leaving this console statement because the error might be caught and obfuscated
+        throw new Error(message);
+      }
     }
 
     return lastObject;
@@ -49,5 +55,16 @@ export class ImmutableUtils {
     while (bit = bits.shift()) value = value[bit];
 
     return value as any;
+  }
+
+  public static change<T>(instance: T, propertyName: string, newValue: any): T {
+    var v = instance.valueOf();
+
+    if (!v.hasOwnProperty(propertyName)) {
+      throw new Error(`Unknown property : ${propertyName}`);
+    }
+
+    (v as any)[propertyName] = newValue;
+    return new (instance as any).constructor(v);
   }
 }

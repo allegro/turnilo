@@ -134,7 +134,10 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.url = parameters.url;
     }
 
-    if (parameters.granularities) this.granularities = parameters.granularities;
+    if (parameters.granularities) {
+      if (parameters.granularities.length !== 5) throw new Error('there must be exactly 5 granularities');
+      this.granularities = parameters.granularities;
+    }
     if (parameters.bucketedBy) this.bucketedBy = parameters.bucketedBy;
   }
 

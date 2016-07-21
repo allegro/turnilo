@@ -63,10 +63,19 @@ export class Clusters extends React.Component<ClustersProps, ClustersState> {
     window.location.hash += `/${cluster.name}`;
   }
 
+  renderEmpty(): JSX.Element {
+    return <div className="clusters empty">
+      <div className="title">No clusters</div>
+      <div className="subtitle">(the only data cube type available is 'native')</div>
+    </div>;
+  }
+
   render() {
     const { hasChanged, newSettings } = this.state;
 
     if (!newSettings) return null;
+
+    if (!newSettings.clusters.length) return this.renderEmpty();
 
     const columns: SimpleTableColumn[] = [
       {label: 'Name', field: 'name', width: 200, cellIcon: 'full-cluster'},
@@ -84,12 +93,12 @@ export class Clusters extends React.Component<ClustersProps, ClustersState> {
         {hasChanged ? <Button className="save" title="Save" type="primary" onClick={this.save.bind(this)}/> : null}
       </div>
       <div className="content">
-      <SimpleTable
-        columns={columns}
-        rows={newSettings.clusters}
-        actions={actions}
-        onRowClick={this.editCluster.bind(this)}
-      ></SimpleTable>
+        <SimpleTable
+          columns={columns}
+          rows={newSettings.clusters}
+          actions={actions}
+          onRowClick={this.editCluster.bind(this)}
+        ></SimpleTable>
       </div>
     </div>;
   }

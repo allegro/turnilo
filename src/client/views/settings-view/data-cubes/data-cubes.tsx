@@ -27,6 +27,7 @@ import { Button } from '../../../components/button/button';
 import { AppSettings, Cluster, DataCube} from '../../../../common/models/index';
 
 import { SimpleTable, SimpleTableColumn, SimpleTableAction } from '../../../components/simple-table/simple-table';
+import { RemoveModal } from '../remove-modal/remove-modal';
 
 export interface DataCubesProps extends React.Props<any> {
   settings?: AppSettings;
@@ -36,6 +37,7 @@ export interface DataCubesProps extends React.Props<any> {
 export interface DataCubesState {
   newSettings?: AppSettings;
   hasChanged?: boolean;
+  pendingDeletion?: DataCube;
 }
 
 export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
@@ -47,7 +49,9 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
 
   componentWillReceiveProps(nextProps: DataCubesProps) {
     if (nextProps.settings) this.setState({
-      newSettings: nextProps.settings
+      newSettings: nextProps.settings,
+      hasChanged: false,
+      pendingDeletion: undefined
     });
   }
 
@@ -55,36 +59,53 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
     window.location.hash += `/${cube.name}`;
   }
 
-  removeCube(cube: DataCube) {
-    // var index = this.state.newSettings.dataCubes.indexOf(cube);
+  askForCubeRemoval(cube: DataCube) {
+    this.setState({pendingDeletion: cube});
+  }
 
-    // if (index < 0) return;
+  cancelRemoval() {
+    this.setState({pendingDeletion: undefined});
+  }
 
-    // var newCubes = this.state.newSettings.dataCubes.splice(index, 1);
+  removeCube() {
+    var cube = this.state.pendingDeletion;
 
-    // this.setState({
-    //   newSettings: this.state.newSettings.changedDataCubes(newCubes)
-    // })
+    var settings: AppSettings = this.state.newSettings;
+    var index = settings.dataCubes.indexOf(cube);
+
+    if (index < 0) return;
+
+    var newCubes = settings.dataCubes;
+    newCubes.splice(index, 1);
+
+    this.props.onSave(settings.changeDataCubes(newCubes), 'Cube removed');
   }
 
   createCube() {
-    var dataCubes = this.state.newSettings.dataCubes;
-    dataCubes.push(DataCube.fromJS({
-      name: 'new-datacube',
-      clusterName: 'druid',
-      source: 'new-source'
-    }));
+    var settings: AppSettings = this.state.newSettings;
 
-    this.props.onSave(
-      this.state.newSettings.changeDataCubes(dataCubes),
-      'Cube added'
-    );
+    var newCube = DataCube.fromJS({
+      name: 'new-datacube',
+      clusterName: settings.clusters.length > 0 ? settings.clusters[0].name : 'native',
+      source: 'new-source'
+    });
+
+    this.props.onSave(settings.addDataCube(newCube), 'Cube added');
+  }
+
+  renderEmpty(): JSX.Element {
+    return <div className="data-cubes empty">
+      <div className="title">No data cubes</div>
+      <div className="subtitle actionable" onClick={this.createCube.bind(this)}>Create a new data cube</div>
+    </div>;
   }
 
   render() {
-    const { newSettings } = this.state;
+    const { newSettings, pendingDeletion } = this.state;
 
     if (!newSettings) return null;
+
+    if (!newSettings.dataCubes.length) return this.renderEmpty();
 
     const columns: SimpleTableColumn[] = [
       {label: 'Name', field: 'title', width: 170, cellIcon: 'full-cube'},
@@ -95,7 +116,7 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
 
     const actions: SimpleTableAction[] = [
       {icon: 'full-edit', callback: this.editCube.bind(this)},
-      {icon: 'full-remove', callback: this.removeCube.bind(this)}
+      {icon: 'full-remove', callback: this.askForCubeRemoval.bind(this)}
     ];
 
     return <div className="data-cubes">
@@ -104,13 +125,18 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
         <Button className="save" title="Add a cube" type="primary" onClick={this.createCube.bind(this)}/>
       </div>
       <div className="content">
-      <SimpleTable
-        columns={columns}
-        rows={newSettings.dataCubes}
-        actions={actions}
-        onRowClick={this.editCube.bind(this)}
-      ></SimpleTable>
+        <SimpleTable
+          columns={columns}
+          rows={newSettings.dataCubes}
+          actions={actions}
+          onRowClick={this.editCube.bind(this)}
+        ></SimpleTable>
       </div>
+      {pendingDeletion ? <RemoveModal
+        itemTitle={pendingDeletion.title}
+        onOK={this.removeCube.bind(this)}
+        onCancel={this.cancelRemoval.bind(this)}
+      /> : null}
     </div>;
   }
 }

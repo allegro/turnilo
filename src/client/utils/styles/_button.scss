@@ -84,6 +84,30 @@
   }
 }
 
+%button-warn {
+  @extend %button-base;
+  background: $error;
+  color: $white;
+
+  svg path {
+    fill: $white;
+  }
+
+  &:hover {
+    background: darken($error, 5%);
+  }
+
+  &.active,
+  &:active {
+    background: darken($error, 10%);
+    color: darken($white, 12%);
+
+    svg path {
+      fill: darken($white, 12%);
+    }
+  }
+}
+
 %button-light {
   color: $text-standard;
   background-color: transparent;
@@ -93,7 +117,7 @@
     background-color: $hover;
   }
 
-  &.active, &:active {
+  &.active {
     background-color: $highlight;
   }
 }

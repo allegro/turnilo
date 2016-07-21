@@ -1000,6 +1000,10 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return this.change('maxTime', maxTime);
   }
 
+  public changeDefaultSortMeasure(defaultSortMeasure: string) {
+    return this.change('defaultSortMeasure', defaultSortMeasure);
+  }
+
   public changeTitle(title: string) {
     return this.change('title', title);
   }

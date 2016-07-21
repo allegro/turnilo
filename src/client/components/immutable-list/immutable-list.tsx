@@ -30,7 +30,7 @@ export interface ImmutableListProps<T> extends React.Props<any> {
   label?: string;
   items: List<T>;
   onChange: (newItems: List<T>) => void;
-  getNewItem: (name: string) => T;
+  getNewItem: () => T;
   getModal: (item: T) => JSX.Element;
   getRows: (items: List<T>) => SimpleRow[];
 }
@@ -38,8 +38,6 @@ export interface ImmutableListProps<T> extends React.Props<any> {
 export interface ImmutableListState<T> {
   tempItems?: List<T>;
   editedIndex?: number;
-  nameNeeded?: boolean;
-  tempName?: string;
   pendingAddItem?: T;
 }
 
@@ -62,7 +60,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   }
 
   addItem() {
-    this.setState({nameNeeded: true, tempName: ''});
+    this.setState({pendingAddItem: this.props.getNewItem()});
   }
 
   componentWillReceiveProps(nextProps: ImmutableListProps<T>) {
@@ -114,50 +112,12 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
 
     var onClose = () => this.setState({pendingAddItem: null});
 
-    return React.cloneElement(this.props.getModal(item), {onSave, onClose});
-  }
-
-  renderNameModal(): JSX.Element {
-    var canSave = true;
-    const { tempName } = this.state;
-
-    const onChange = (e: React.FormEvent) => {
-      this.setState({tempName: (e.target as HTMLInputElement).value});
-    };
-
-    const onOk = () => {
-      this.setState({
-        tempName: '',
-        nameNeeded: false,
-        pendingAddItem: this.props.getNewItem(this.state.tempName)
-      });
-    };
-
-    const onCancel = () => this.setState({nameNeeded: false, tempName: ''});
-
-    return <Modal
-      className="name-modal"
-      title="Please enter a name"
-      onClose={onCancel}
-      onEnter={onOk}
-      startUpFocusOn={'focus-me'}
-    >
-      <form className="general vertical">
-        <FormLabel label="Name"></FormLabel>
-        <input id="focus-me" type="text" onChange={onChange} value={tempName}/>
-      </form>
-
-      <div className="button-group">
-        {canSave ? <Button className="ok" title="OK" type="primary" onClick={onOk}/> : null}
-        <Button className="cancel" title="Cancel" type="secondary" onClick={onCancel}/>
-      </div>
-
-    </Modal>;
+    return React.cloneElement(this.props.getModal(item), {onSave, onClose, isCreating: true});
   }
 
   render() {
     const { items, getRows, label } = this.props;
-    const { editedIndex, pendingAddItem, nameNeeded } = this.state;
+    const { editedIndex, pendingAddItem } = this.state;
 
     if (!items) return null;
 
@@ -165,7 +125,6 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
       <div className="list-title">
         <div className="label">{label}</div>
         <div className="actions">
-          <button>Introspect</button>
           <button onClick={this.addItem.bind(this)}>Add item</button>
         </div>
       </div>
@@ -176,7 +135,6 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
       />
       {editedIndex !== undefined ? this.renderEditModal(editedIndex) : null}
       {pendingAddItem ? this.renderAddModal(pendingAddItem) : null}
-      {nameNeeded ? this.renderNameModal() : null}
     </div>;
   }
 }

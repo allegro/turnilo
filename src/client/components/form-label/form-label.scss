@@ -25,46 +25,88 @@
 
   .icon-container {
     position: absolute;
-    right: 0;
-    top: -5px;
+    right: 1px;
+    top: -3px;
 
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
+    border-radius: 20px;
 
+    background: rgba($brand, .22);
     cursor: pointer;
 
-    .icon {
-      position: absolute;
-      top: 0;
+    &:hover {
+      background: rgba($brand, .3);
+    }
 
-      &.hover {
-        opacity: 0;
+    &.visible {
+      background: $brand;
+
+      .icon path {
+        fill: $white;
       }
     }
 
-    &:hover {
-      .icon.hover {
-        opacity: 1;
-      }
+    &.error {
+      background: $error;
 
-      .icon:not(.hover) {
-        opacity: 0;
+      .icon path {
+        fill: $white;
+      }
+    }
+
+    .icon {
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      width: 14px;
+      height: 14px;
+
+      path {
+        fill: darken($brand, 3);
       }
     }
   }
 
+  &.bubble .additional-text {
+    @extend %bubble-cont;
+    padding: 10px;
+    max-width: 300px;
+  }
+
   .additional-text {
     position: absolute;
-    left: calc(100% + 20px);
+    left: calc(100% + 10px);
     top: -2px;
     width: 100%;
+    max-width: 400px;
 
-    font-size: 13px;
-    color: $text-lighterish;
+    font-size: 12px;
+    line-height: 17px;
+    color: lighten($brand, 10);
 
     .error-text {
       color: $error;
       margin-bottom: 10px;
+    }
+
+    a {
+      &::after {
+        @include pin-top(15px);
+        content: '';
+        position: absolute;
+        border-bottom: 1px dotted;
+      }
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    code {
+      background: rgba($brand, 0.16);
+      border-radius: $corner;
+      padding: 0 4px;
     }
   }
 

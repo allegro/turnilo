@@ -21,7 +21,7 @@ import { ImmutableUtils } from '../../../common/utils/index';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
+import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure, ListItem } from '../../../common/models/index';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Dropdown } from '../dropdown/dropdown';
 
@@ -34,7 +34,7 @@ export interface ImmutableDropdownProps<T> extends React.Props<any> {
   equal: (a: T, b: T) => boolean;
   renderItem: (a: T) => string;
   keyItem: (a: T) => any;
-  onChange: (newItem: T, isValid: boolean, path: string) => void;
+  onChange: (newItem: any, isValid: boolean, path: string) => void;
 }
 
 export interface ImmutableDropdownState {
@@ -46,6 +46,22 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
   // then : <MyDropdown ... />
   static specialize<U>() {
     return ImmutableDropdown as { new (): ImmutableDropdown<U>; };
+  }
+
+  static simpleGenerator(instance: any, changeFn: (newItem: any, isValid: boolean, path: string) => void) {
+    return (name: string, items: ListItem[]) => {
+      let MyDropDown = ImmutableDropdown.specialize<ListItem>();
+
+      return <MyDropDown
+        items={items}
+        instance={instance}
+        path={name}
+        equal={(a: ListItem, b: ListItem) => a.value === b.value}
+        renderItem={(a: ListItem) => a.label}
+        keyItem={(a: ListItem) => a.value || 'default_value'}
+        onChange={changeFn}
+      />;
+    };
   }
 
   constructor() {

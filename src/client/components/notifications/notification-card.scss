@@ -37,7 +37,7 @@
   }
 
   &.success {
-    background-color: hsla(131, 56%, 61%, 1.00);
+    background-color: $dark;
   }
 
   &.failure {

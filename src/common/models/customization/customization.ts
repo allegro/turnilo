@@ -15,6 +15,7 @@
  */
 
 import { Class, Instance, isInstanceOf, isImmutableClass, immutableArraysEqual } from 'immutable-class';
+import { ImmutableUtils } from '../../utils/index';
 import { Timezone } from 'chronoshift';
 import { ExternalView, ExternalViewValue} from '../external-view/external-view';
 
@@ -152,12 +153,12 @@ export class Customization implements Instance<CustomizationValue, Customization
     return title.replace(/%v/g, version);
   }
 
+  change(propertyName: string, newValue: any): Customization {
+    return ImmutableUtils.change(this, propertyName, newValue);
+  }
+
   public changeTitle(title: string): Customization {
-    var value = this.valueOf();
-
-    value.title = title;
-
-    return new Customization(value);
+    return this.change('title', title);
   }
 
   public getTimezones() {

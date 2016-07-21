@@ -18,4 +18,16 @@
 
 .clusters {
   height: 100%;
+
+  &.empty {
+    margin-top: 280px;
+    text-align: center;
+    font-size: 16px;
+    color: $text-light;
+
+    .subtitle {
+      font-size: 12px;
+      margin-top: 10px;
+    }
+  }
 }

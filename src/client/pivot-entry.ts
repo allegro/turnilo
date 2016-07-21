@@ -46,7 +46,8 @@ if (!config || !config.version || !config.appSettings || !config.appSettings.dat
   throw new Error('config not found');
 }
 
-if (config.appSettings.dataCubes.length) {
+let view = window.location.hash.split(/\//)[0];
+if (config.appSettings.dataCubes.length || view === '#settings') {
   var version = config.version;
 
   require.ensure([

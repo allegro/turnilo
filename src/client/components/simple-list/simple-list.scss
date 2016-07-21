@@ -43,22 +43,25 @@
 
     .text {
       flex: 1 1;
+      overflow: auto;
       padding: 0 10px;
-      overflow: hidden;
 
       > * {
+        white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
       }
 
       .title {
         color: $text-medium;
-        margin-bottom: 4px;
+        line-height: 16px;
+        margin-bottom: 2px;
       }
 
       .description {
         color: $text-lighter;
         font-size: 12px;
+        line-height: 14px;
       }
     }
 

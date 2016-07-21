@@ -24,22 +24,46 @@ import { classNames } from '../../utils/dom/dom';
 
 import { firstUp } from '../../../common/utils/string/string';
 
+export type InputType = 'text' | 'textarea';
+
 export interface ImmutableInputProps extends React.Props<any> {
   instance: any;
   path: string;
   focusOnStartUp?: boolean;
-  onChange?: (newInstance: any, valid: boolean, path?: string) => void;
-  onInvalid?: (invalidValue: string) => void;
-  validator?: RegExp;
+  onChange?: (myInstance: any, valid: boolean, path?: string, error?: string) => void;
+  onInvalid?: (invalidString: string) => void;
+  validator?: RegExp | ((str: string) => boolean);
+  stringToValue?: (str: string) => any;
+  valueToString?: (value: any) => string;
+  type?: InputType;
 }
 
 export interface ImmutableInputState {
-  newInstance?: any;
-  invalidValue?: string;
+  myInstance?: any;
+  invalidString?: string;
+  validString?: string;
 }
 
 export class ImmutableInput extends React.Component<ImmutableInputProps, ImmutableInputState> {
-  private focusAlreadyGiven =  false;
+  static defaultProps = {
+    type: 'text',
+    stringToValue: String,
+    valueToString: (value: any) => value ? String(value) : ''
+  };
+
+  static simpleGenerator (instance: any, changeFn: (myInstance: any, valid: boolean, path?: string) => void) {
+    return (name: string, validator= /^.+$/, focusOnStartUp= false) => {
+      return <ImmutableInput
+        instance={instance}
+        path={name}
+        onChange={changeFn}
+        focusOnStartUp={focusOnStartUp}
+        validator={validator}
+      />;
+    };
+  };
+
+  private focusAlreadyGiven = false;
 
   constructor() {
     super();
@@ -49,14 +73,37 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
   initFromProps(props: ImmutableInputProps) {
     if (!props.instance || !props.path) return;
 
+    var validString: string;
+
+    if (this.state.validString === undefined) {
+      validString = props.valueToString(ImmutableUtils.getProperty(props.instance, props.path));
+    } else {
+      var currentCanonical = props.valueToString(props.stringToValue(this.state.validString));
+      var possibleCanonical = props.valueToString(ImmutableUtils.getProperty(props.instance, props.path));
+
+      validString = currentCanonical === possibleCanonical ? this.state.validString : possibleCanonical;
+    }
+
     this.setState({
-      newInstance: props.instance,
-      invalidValue: undefined
+      myInstance: props.instance,
+      invalidString: undefined,
+      validString
+    });
+  }
+
+  reset() {
+    this.setState({
+      invalidString: undefined,
+      validString: undefined
     });
   }
 
   componentWillReceiveProps(nextProps: ImmutableInputProps) {
-    if (nextProps.instance !== this.state.newInstance) {
+    if (nextProps.instance === undefined) {
+      this.reset();
+    }
+
+    if (this.state.invalidString === undefined && nextProps.instance !== this.state.myInstance) {
       this.initFromProps(nextProps);
     }
   }
@@ -78,47 +125,79 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
     }
   }
 
-  onChange(event: KeyboardEvent) {
-    const { path, onChange, instance, validator, onInvalid } = this.props;
+  isValueValid(value: string): boolean {
+    var { validator } = this.props;
 
-    var newValue: any = (event.target as HTMLInputElement).value;
+    if (!validator) return true;
 
-    var newInstance: any;
-    var invalidValue: string;
-
-    if (validator && !validator.test(newValue)) {
-      newInstance = instance;
-      invalidValue = newValue;
-      if (onInvalid) onInvalid(newValue);
-
-    } else {
-      try {
-        newInstance = ImmutableUtils.setProperty(instance, path, newValue);
-      } catch (e) {
-        newInstance = instance;
-        invalidValue = newValue;
-        if (onInvalid) onInvalid(newValue);
-      }
+    if (validator instanceof RegExp) {
+      return validator.test(value);
     }
 
-    this.setState({newInstance, invalidValue});
+    if (validator instanceof Function) {
+      return !!validator(value);
+    }
 
-    if (onChange) onChange(newInstance, invalidValue === undefined, path);
+    return true;
+  }
+
+  onChange(event: KeyboardEvent) {
+    const { path, onChange, instance, validator, onInvalid, stringToValue } = this.props;
+
+    var newString = (event.target as HTMLInputElement).value as string;
+
+    var myInstance: any;
+    var invalidString: string;
+    var validString: string;
+
+    var error = '';
+
+    try {
+      var newValue: any = stringToValue ? stringToValue(newString) : newString;
+
+      if (validator && !this.isValueValid(newString)) {
+        myInstance = instance;
+        invalidString = newString;
+        if (onInvalid) onInvalid(newValue);
+
+      } else {
+        myInstance = ImmutableUtils.setProperty(instance, path, newValue);
+        validString = newString;
+      }
+    } catch (e) {
+      myInstance = instance;
+      invalidString = newString;
+      error = (e as Error).message;
+      if (onInvalid) onInvalid(newValue);
+    }
+
+    this.setState({myInstance, invalidString, validString}, () => {
+      if (onChange) onChange(myInstance, invalidString === undefined, path, error);
+    });
   }
 
   render() {
-    const { path } = this.props;
-    const { newInstance, invalidValue } = this.state;
+    const { path, valueToString, type } = this.props;
+    const { myInstance, invalidString, validString } = this.state;
+    const isInvalid = invalidString !== undefined;
 
-    if (!path || !newInstance) return null;
+    if (!path || !myInstance) return null;
 
-    const value = ImmutableUtils.getProperty(newInstance, path);
+    if (type === 'textarea') {
+      return <textarea
+        className={classNames('immutable-input', {error: isInvalid})}
+        ref='me'
+        type="text"
+        value={(isInvalid ? invalidString : validString) || ''}
+        onChange={this.onChange.bind(this)}
+      />;
+    }
 
     return <input
-      className={classNames('immutable-input', {error: invalidValue !== undefined})}
+      className={classNames('immutable-input', {error: isInvalid})}
       ref='me'
       type="text"
-      value={(invalidValue !== undefined ? invalidValue : value) || ''}
+      value={(isInvalid ? invalidString : validString) || ''}
       onChange={this.onChange.bind(this)}
     />;
   }

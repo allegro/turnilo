@@ -19,26 +19,32 @@ require('./measure-modal.css');
 import * as React from 'react';
 import { Fn } from '../../../../common/utils/general/general';
 import { classNames, enterKey } from '../../../utils/dom/dom';
-
+import { List } from 'immutable';
 
 import { SvgIcon } from '../../../components/svg-icon/svg-icon';
 import { FormLabel } from '../../../components/form-label/form-label';
 import { Button } from '../../../components/button/button';
 import { ImmutableInput } from '../../../components/immutable-input/immutable-input';
+import { ImmutableDropdown } from '../../../components/immutable-dropdown/immutable-dropdown';
 import { Modal } from '../../../components/modal/modal';
 
 import { Measure } from '../../../../common/models/index';
 
+import { MEASURE_EDIT as LABELS } from '../utils/labels';
+
 
 export interface MeasureModalProps extends React.Props<any> {
+  measures?: List<Measure>;
   measure?: Measure;
   onSave?: (measure: Measure) => void;
   onClose?: () => void;
+  isCreating?: boolean;
 }
 
 export interface MeasureModalState {
   newMeasure?: Measure;
   canSave?: boolean;
+  errors?: any;
 }
 
 export class MeasureModal extends React.Component<MeasureModalProps, MeasureModalState> {
@@ -46,15 +52,17 @@ export class MeasureModal extends React.Component<MeasureModalProps, MeasureModa
 
   constructor() {
     super();
-    this.state = {canSave: false};
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
+    this.state = {
+      canSave: false,
+      errors: {}
+    };
   }
 
   initStateFromProps(props: MeasureModalProps) {
     if (props.measure) {
       this.setState({
         newMeasure: new Measure(props.measure.valueOf()),
-        canSave: true
+        canSave: false
       });
     }
   }
@@ -65,11 +73,6 @@ export class MeasureModal extends React.Component<MeasureModalProps, MeasureModa
 
   componentDidMount() {
     this.initStateFromProps(this.props);
-    window.addEventListener('keydown', this.globalKeyDownListener);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.globalKeyDownListener);
   }
 
   componentDidUpdate() {
@@ -79,59 +82,73 @@ export class MeasureModal extends React.Component<MeasureModalProps, MeasureModa
     }
   }
 
-  globalKeyDownListener(e: KeyboardEvent) {
-    if (enterKey(e) && this.state.canSave) {
-      this.save();
-    }
-  }
+  onChange(newMeasure: Measure, isValid: boolean, path: string, error: string) {
+    var { errors } = this.state;
 
-  onChange(newMeasure: Measure, isValid: boolean) {
+    errors[path] = isValid ? false : error;
+
+    var canSave = true;
+    for (let key in errors) canSave = canSave && (errors[key] === false);
+
     if (isValid) {
       this.setState({
+        errors,
         newMeasure,
-        canSave: !this.props.measure.equals(newMeasure)
+        canSave: canSave && !this.props.measure.equals(newMeasure)
       });
     } else {
-      this.setState({canSave: false});
+      this.setState({
+        errors,
+        canSave: false
+      });
     }
   }
 
   save() {
+    if (!this.state.canSave) return;
     this.props.onSave(this.state.newMeasure);
   }
 
+  uniqueName(name: string): boolean {
+    const { measures } = this.props;
+
+    if (measures.find((m) => m.name === name)) {
+      throw new Error(`Another measure with this name already exists`);
+    }
+
+    return true;
+  }
+
   render(): JSX.Element {
-    const { newMeasure, canSave } = this.state;
+    const { isCreating, measure } = this.props;
+    const { newMeasure, canSave, errors } = this.state;
 
     if (!newMeasure) return null;
 
+    var makeLabel = FormLabel.simpleGenerator(LABELS, errors, true);
+    var makeTextInput = ImmutableInput.simpleGenerator(newMeasure, this.onChange.bind(this));
+    var makeDropDownInput = ImmutableDropdown.simpleGenerator(newMeasure, this.onChange.bind(this));
+
     return <Modal
       className="dimension-modal"
-      title={newMeasure.title}
+      title={measure.title}
       onClose={this.props.onClose}
+      onEnter={this.save.bind(this)}
     >
       <form className="general vertical">
-        <FormLabel label="Title"></FormLabel>
-        <ImmutableInput
-          focusOnStartUp={true}
-          instance={newMeasure}
-          path={'title'}
-          onChange={this.onChange.bind(this)}
-          validator={/^.+$/}
-        />
+        { isCreating ? makeLabel('name') : null }
+        { isCreating ? makeTextInput('name', this.uniqueName.bind(this), isCreating) : null }
 
-        <FormLabel label="Formula"></FormLabel>
-        <ImmutableInput
-          instance={newMeasure}
-          path={'formula'}
-          onChange={this.onChange.bind(this)}
-          validator={/^.+$/}
-        />
+        {makeLabel('title')}
+        {makeTextInput('title', /^.+$/, !isCreating)}
+
+        {makeLabel('formula')}
+        {makeTextInput('formula')}
 
       </form>
 
       <div className="button-group">
-        {canSave ? <Button className="save" title="Save" type="primary" onClick={this.save.bind(this)}/> : null}
+        <Button className={classNames("save", {disabled: !canSave})} title="Save" type="primary" onClick={this.save.bind(this)}/>
         <Button className="cancel" title="Cancel" type="secondary" onClick={this.props.onClose}/>
       </div>
 

@@ -23,6 +23,7 @@ import { firstUp } from '../../../common/utils/string/string';
 
 export type XSide = 'left' | 'right';
 export type YSide = 'top' | 'bottom';
+export type ScrollerPart = 'top-left-corner' | 'top-gutter' | 'top-right-corner' | 'left-gutter' | 'body' | 'right-gutter' | 'bottom-left-corner' | 'bottom-gutter' | 'bottom-right-corner';
 
 export interface ScrollerLayout {
   bodyWidth: number;
@@ -37,8 +38,8 @@ export interface ScrollerLayout {
 export interface ScrollerProps extends React.Props<any> {
   layout: ScrollerLayout;
 
-  onClick?: (x: number, y: number) => void;
-  onMouseMove?: (x: number, y: number) => void;
+  onClick?: (x: number, y: number, part: ScrollerPart) => void;
+  onMouseMove?: (x: number, y: number, part: ScrollerPart) => void;
   onMouseLeave?: () => void;
   onScroll?: (scrollTop: number, scrollLeft: number) => void;
 
@@ -64,6 +65,22 @@ export interface ScrollerState {
 }
 
 export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
+  static TOP_LEFT_CORNER: ScrollerPart = 'top-left-corner';
+  static TOP_GUTTER: ScrollerPart = 'top-gutter';
+  static TOP_RIGHT_CORNER: ScrollerPart = 'top-right-corner';
+  static LEFT_GUTTER: ScrollerPart = 'left-gutter';
+  static BODY: ScrollerPart = 'body';
+  static RIGHT_GUTTER: ScrollerPart = 'right-gutter';
+  static BOTTOM_LEFT_CORNER: ScrollerPart = 'bottom-left-corner';
+  static BOTTOM_GUTTER: ScrollerPart = 'bottom-gutter';
+  static BOTTOM_RIGHT_CORNER: ScrollerPart = 'bottom-right-corner';
+
+  static PARTS: ScrollerPart[][] = [
+    [Scroller.TOP_LEFT_CORNER, Scroller.TOP_GUTTER, Scroller.TOP_RIGHT_CORNER],
+    [Scroller.LEFT_GUTTER, Scroller.BODY, Scroller.RIGHT_GUTTER],
+    [Scroller.BOTTOM_LEFT_CORNER, Scroller.BOTTOM_GUTTER, Scroller.BOTTOM_RIGHT_CORNER]
+  ];
+
   constructor() {
     super();
     this.state = {
@@ -211,44 +228,51 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     }
   }
 
-  getRelativeMouseCoordinates(event: MouseEvent): {x: number, y: number} {
+  getRelativeMouseCoordinates(event: MouseEvent): {x: number, y: number, part: ScrollerPart} {
     const { top, left, bodyWidth, bodyHeight } = this.props.layout;
     const container = this.getDOMElement('eventContainer');
     const { scrollLeft, scrollTop, viewportHeight, viewportWidth } = this.state;
     const rect = container.getBoundingClientRect();
 
+    var i = 0;
+    var j = 0;
+
     var x = getXFromEvent(event) - rect.left;
     var y = getYFromEvent(event) - rect.top;
 
     if (x > left && x <= left + viewportWidth) {
+      j = 1;
       x += scrollLeft;
     } else if (x > left + viewportWidth) {
+      j = 2;
       x += bodyWidth - viewportWidth;
     }
 
     if (y > top && y <= top + viewportHeight) {
+      i = 1;
       y += scrollTop;
     } else if (y > top + viewportHeight) {
+      i = 2;
       y += bodyHeight - viewportHeight;
     }
 
-    return {x, y};
+    return {x, y, part: Scroller.PARTS[i][j]};
   }
 
   onClick(event: MouseEvent) {
     if (this.props.onClick === undefined) return;
 
-    const { x, y } = this.getRelativeMouseCoordinates(event);
+    const { x, y, part} = this.getRelativeMouseCoordinates(event);
 
-    this.props.onClick(x, y);
+    this.props.onClick(x, y, part);
   }
 
   onMouseMove(event: MouseEvent) {
     if (this.props.onMouseMove === undefined) return;
 
-    const { x, y } = this.getRelativeMouseCoordinates(event);
+    const { x, y, part } = this.getRelativeMouseCoordinates(event);
 
-    this.props.onMouseMove(x, y);
+    this.props.onMouseMove(x, y, part);
   }
 
   renderGutter(side: XSide | YSide): JSX.Element {

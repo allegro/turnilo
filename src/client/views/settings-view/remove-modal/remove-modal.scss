@@ -16,23 +16,14 @@
 
 @import '../../../imports';
 
-.data-cubes {
-  height: 100%;
+.remove-modal {
+  @import '../form';
 
-  &.empty {
-    margin-top: 280px;
-    text-align: center;
-    font-size: 16px;
-    color: $text-light;
+  .button-group {
+    margin-top: 40px;
 
-    .subtitle {
-      font-size: 12px;
-      margin-top: 10px;
-
-      &.actionable {
-        color: $brand;
-        cursor: pointer;
-      }
+    > *:not(:last-child) {
+      margin-right: 10px;
     }
   }
 }

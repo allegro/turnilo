@@ -55,7 +55,7 @@ gulp.task('watch', ['all-minus-bundle'], function() {
     gulp.watch(['./src/common/**/*.ts', './src/client/**/*.{ts,tsx}', './assets/icons/**'], ['client:tsc']);
   } else {
     gulp.watch(['./src/common/**/*.ts', './src/client/**/*.{ts,tsx}', './assets/icons/**'], function() {
-      runSequence('client:tsc', 'client:test', 'common:test', 'server:test');
+      runSequence('client:tsc', ['client:test', 'common:test', 'server:test']);
     });
   }
 

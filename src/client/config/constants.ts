@@ -93,6 +93,15 @@ export const STRINGS: any = {
   viewRawData: 'View raw data'
 };
 
+// Data cubes introspection strategies
+export const DATA_CUBES_STRATEGIES_LABELS = {
+  none: 'None',
+  'no-autofill': 'No autofill',
+  'autofill-dimensions-only': 'Autofill dimensions only',
+  'autofill-measures-only': 'Autofill measures only',
+  'autofill-all': 'Autofill all'
+};
+
 
 const EN_US: Locale = {
   shortDays: [ "S", "M", "T", "W", "T", "F", "S" ],

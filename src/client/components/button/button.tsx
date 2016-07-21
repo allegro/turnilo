@@ -21,7 +21,7 @@ import { Fn } from '../../../common/utils/general/general';
 import { classNames } from '../../utils/dom/dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
-export type ButtonType = "primary" | "secondary";
+export type ButtonType = "primary" | "secondary" | "warn";
 
 export interface ButtonProps extends React.Props<any> {
   type: ButtonType;

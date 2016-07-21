@@ -83,10 +83,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   componentWillMount() {
     var { appSettings } = this.props;
     var { dataCubes } = appSettings;
-    if (!dataCubes.length) throw new Error('must have data cubes');
 
     var hash = window.location.hash;
     var viewType = this.getViewTypeFromHash(hash);
+
+    if (viewType !== SETTINGS && !dataCubes.length) throw new Error('must have data cubes');
+
     var selectedDataCube = this.getDataCubeFromHash(appSettings.dataCubes, hash);
     var viewHash = this.getViewHashFromHash(hash);
 

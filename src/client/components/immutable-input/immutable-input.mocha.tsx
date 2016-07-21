@@ -41,7 +41,7 @@ describe('ImmutableInput', () => {
       <ImmutableInput
         instance={DataCubeMock.twitter()}
         path={'clusterName'}
-        validator={/^[a-z]+$/}
+        validator={/^.+$/}
         onChange={onChange}
         onInvalid={onInvalid}
       />
@@ -73,14 +73,14 @@ describe('ImmutableInput', () => {
   });
 
   it('works for invalid values', () => {
-    node.value = '123';
+    node.value = '';
     TestUtils.Simulate.change(node);
 
     expect(onInvalid.callCount).to.equal(1);
-    expect(onInvalid.args[0][0]).to.equal('123');
+    expect(onInvalid.args[0][0]).to.equal('');
 
     expect(onChange.callCount).to.equal(1);
-    const args = onChange.args[0];
+    var args = onChange.args[0];
 
     expect(args[0]).to.be.instanceOf(DataCube);
     expect(args[0].clusterName).to.equal(DataCubeMock.twitter().clusterName);
@@ -89,6 +89,66 @@ describe('ImmutableInput', () => {
 
     expect(args[2]).to.equal('clusterName');
 
-    expect(node.value).to.equal('123');
+    expect(node.value).to.equal('');
+
+
+    // Back to valid value
+
+    node.value = 'pouet';
+    TestUtils.Simulate.change(node);
+
+    expect(onInvalid.callCount).to.equal(1);
+
+    expect(onChange.callCount).to.equal(2);
+    args = onChange.args[1];
+
+    expect(args[0]).to.be.instanceOf(DataCube);
+    expect(args[0].clusterName).to.equal('pouet');
+
+    expect(args[1]).to.equal(true);
+
+    expect(args[2]).to.equal('clusterName');
+
+    expect(node.value).to.equal('pouet');
+  });
+
+  describe('with stringToValue/valueToString', () => {
+    beforeEach(() => {
+      let stringToValue = (str: string) => str.toLowerCase();
+      let valueToString = (str: string) => str.toUpperCase();
+
+      component = TestUtils.renderIntoDocument(
+        <ImmutableInput
+          instance={DataCubeMock.twitter()}
+          path={'clusterName'}
+          validator={/^.+$/}
+          onChange={onChange}
+          onInvalid={onInvalid}
+          stringToValue={stringToValue}
+          valueToString={valueToString}
+        />
+      );
+
+      node = findDOMNode(component) as any;
+    });
+
+    it('works for valid values', () => {
+      expect(node.value).to.equal('DRUID');
+
+      node.value = 'GIRAFFE';
+      TestUtils.Simulate.change(node);
+
+      expect(onInvalid.callCount).to.equal(0);
+
+      expect(onChange.callCount).to.equal(1);
+      const args = onChange.args[0];
+
+      expect(args[0]).to.be.instanceOf(DataCube);
+      expect(args[0].clusterName).to.equal('giraffe');
+
+      expect(args[1]).to.equal(true);
+
+      expect(args[2]).to.equal('clusterName');
+    });
   });
 });

@@ -24,7 +24,7 @@ import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '.
 import { classNames } from '../../utils/dom/dom';
 
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { Scroller } from '../scroller/scroller';
+import { Scroller, ScrollerPart } from '../scroller/scroller';
 
 export interface SimpleTableColumn {
   label: string;
@@ -49,6 +49,8 @@ export interface SimpleTableProps extends React.Props<any> {
 export interface SimpleTableState {
   sortColumn?: SimpleTableColumn;
   sortAscending?: boolean;
+  hoveredRowIndex?: number;
+  hoveredActionIndex?: number;
 }
 
 const ROW_HEIGHT = 42;
@@ -100,7 +102,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
         className='cell action'
         key={`action-${i}`}
         onClick={action.callback.bind(this, row)}
-      ><SvgIcon className="icon" svg={require(`../../icons/${action.icon}.svg`)}/></div>);
+      ><SvgIcon svg={require(`../../icons/${action.icon}.svg`)}/></div>);
     }
 
     return items;
@@ -115,12 +117,13 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   }
 
   renderRow(row: any, columns: SimpleTableColumn[], index: number): JSX.Element {
+    const { hoveredRowIndex } = this.state;
     var items: JSX.Element[] = [];
 
     for (let i = 0; i < columns.length; i++) {
       let col = columns[i];
 
-      let icon = col.cellIcon ? <SvgIcon className="icon" svg={require(`../../icons/${col.cellIcon}.svg`)}/> : null;
+      let icon = col.cellIcon ? <SvgIcon svg={require(`../../icons/${col.cellIcon}.svg`)}/> : null;
 
       items.push(<div
         className={classNames('cell', {'has-icon': !!col.cellIcon})}
@@ -129,7 +132,11 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
       >{icon}{this.labelizer(col)(row)}</div>);
     }
 
-    return <div className="row" key={`row-${index}`} style={{height: ROW_HEIGHT}}>
+    return <div
+      className={classNames('row', {hover: hoveredRowIndex === index})}
+      key={`row-${index}`}
+      style={{height: ROW_HEIGHT}}
+    >
       {items}
     </div>;
   }
@@ -200,51 +207,87 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   }
 
   renderActions(rows: any[], actions: SimpleTableAction[]): JSX.Element[] {
+    const { hoveredRowIndex, hoveredActionIndex } = this.state;
+
     const directActions = this.getDirectActions(actions);
 
     const generator = (row: any, i: number) => {
-      let icons = directActions.map((action, i) => {
-        return <div className="icon" key={`icon-${i}`} style={{width: ACTION_WIDTH}}>
-          <SvgIcon className="icon" svg={require(`../../icons/${action.icon}.svg`)}/>
+      let isRowHovered = i === hoveredRowIndex;
+
+      let icons = directActions.map((action, j) => {
+        return <div
+          className={classNames("icon", {hover: isRowHovered && j === hoveredActionIndex})}
+          key={`icon-${j}`}
+          style={{width: ACTION_WIDTH}}
+        >
+          <SvgIcon svg={require(`../../icons/${action.icon}.svg`)}/>
         </div>;
       });
 
-      return <div className="row action" key={`action-${i}`} style={{height: ROW_HEIGHT}}>{icons}</div>;
+      return <div
+        className={classNames("row action", {hover: isRowHovered})}
+        key={`action-${i}`}
+        style={{height: ROW_HEIGHT}}
+      >
+        {icons}
+      </div>;
     };
 
     return rows.map(generator);
   }
 
-  onClick(x: number, y: number) {
-    const { columns, rows, actions } = this.props;
-    const headerWidth = columns.reduce((a, b) => a + b.width, 0);
-
-    var columnIndex = -1; // -1 means right gutter
+  getRowIndex(y: number): number {
     var rowIndex = -1; // -1 means header
-
-    // Not in the right gutter
-    if (x < headerWidth) {
-      columnIndex = 0;
-      while ((x -= columns[columnIndex].width) > 0) columnIndex++;
-    }
 
     // Not in the header
     if (y > HEADER_HEIGHT) {
       rowIndex = Math.floor((y - HEADER_HEIGHT) / ROW_HEIGHT);
     }
 
-    // Corner
-    if (rowIndex === -1 && columnIndex === -1) return;
+    return rowIndex;
+  }
 
-    // Right gutter
-    if (columnIndex === -1) {
-      let action = actions[Math.floor((x - headerWidth) / ACTION_WIDTH)];
-      if (action) this.onActionClick(action, rows[rowIndex]);
-      return;
+  getActionIndex(x: number, headerWidth: number): number {
+    const { actions } = this.props;
+
+    return Math.floor((x - headerWidth) / ACTION_WIDTH);
+  }
+
+  getColumnIndex(x: number, headerWidth: number): number {
+    if (x >= headerWidth) return -1;
+
+    const { columns } = this.props;
+
+    var columnIndex = 0;
+    while ((x -= columns[columnIndex].width) > 0) columnIndex++;
+
+    return columnIndex;
+  }
+
+  getHeaderWidth(columns: SimpleTableColumn[]): number {
+    return columns.reduce((a, b) => a + b.width, 0);
+  }
+
+  onClick(x: number, y: number, part: ScrollerPart) {
+    const { columns, rows, actions } = this.props;
+
+    if (part === Scroller.TOP_RIGHT_CORNER) return;
+
+    const headerWidth = this.getHeaderWidth(columns);
+
+    var columnIndex = this.getColumnIndex(x, headerWidth); // -1 means right gutter
+    var rowIndex = this.getRowIndex(y); // -1 means header
+
+    if (part === Scroller.RIGHT_GUTTER) {
+      let action = actions[this.getActionIndex(x, headerWidth)];
+      if (action) {
+        this.onActionClick(action, rows[rowIndex]);
+        return;
+      }
     }
 
     // Header
-    if (rowIndex === -1) {
+    if (part === Scroller.TOP_GUTTER) {
       this.onHeaderClick(columns[columnIndex]);
       return;
     }
@@ -269,13 +312,32 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
     action.callback(row);
   }
 
+  onMouseMove(x: number, y: number, part: ScrollerPart) {
+    const { rows, columns } = this.props;
+    const headerWidth = this.getHeaderWidth(columns);
+
+    var rowIndex = this.getRowIndex(y);
+
+    this.setState({
+      hoveredRowIndex: rowIndex > rows.length ? undefined : rowIndex,
+      hoveredActionIndex: part === Scroller.RIGHT_GUTTER ? this.getActionIndex(x, headerWidth) : undefined
+    });
+  }
+
+  onMouseLeave() {
+    this.setState({
+      hoveredRowIndex: undefined,
+      hoveredActionIndex: undefined
+    });
+  }
+
   render() {
     const { columns, rows, actions } = this.props;
-    const { sortColumn, sortAscending } = this.state;
+    const { sortColumn, sortAscending, hoveredRowIndex } = this.state;
 
     if (!columns) return null;
 
-    return <div className="simple-table">
+    return <div className={classNames("simple-table", {clickable: hoveredRowIndex !== undefined})}>
       <Scroller
         ref="scroller"
         layout={this.getLayout(columns, rows, actions)}
@@ -287,15 +349,9 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
         body={this.renderRows(rows, columns, sortColumn, sortAscending)}
 
         onClick={this.onClick.bind(this)}
-        // onMouseMove={this.onMouseMove.bind(this)}
-        // onMouseLeave={this.onMouseLeave.bind(this)}
-        // onScroll={this.onSimpleScroll.bind(this)}
-
+        onMouseMove={this.onMouseMove.bind(this)}
+        onMouseLeave={this.onMouseLeave.bind(this)}
       />
-
-
-      {}
-      {}
     </div>;
   }
 }

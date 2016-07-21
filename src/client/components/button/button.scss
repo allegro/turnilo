@@ -26,6 +26,10 @@
     @extend %button-secondary;
   }
 
+  &.warn {
+    @extend %button-warn;
+  }
+
   &.mini {
     height: $input-height-mini;
     padding-left: 10px;

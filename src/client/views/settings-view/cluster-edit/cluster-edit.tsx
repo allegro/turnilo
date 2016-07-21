@@ -20,18 +20,22 @@ import * as React from 'react';
 import { List } from 'immutable';
 import { Fn } from '../../../../common/utils/general/general';
 import { classNames } from '../../../utils/dom/dom';
+import { firstUp } from '../../../../common/utils/string/string';
 
 import { FormLabel } from '../../../components/form-label/form-label';
 import { Button } from '../../../components/button/button';
 import { ImmutableInput } from '../../../components/immutable-input/immutable-input';
+import { ImmutableDropdown } from '../../../components/immutable-dropdown/immutable-dropdown';
 
-import { AppSettings, Cluster } from '../../../../common/models/index';
+import { AppSettings, Cluster, ListItem } from '../../../../common/models/index';
 
 import { CLUSTER_EDIT as LABELS } from '../utils/labels';
 
 // Shamelessly stolen from http://stackoverflow.com/a/10006499
 // (well, traded for an upvote)
 const IP_REGEX = /^(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))$/;
+
+const NUM_REGEX = /^\d+$/;
 
 export interface ClusterEditProps extends React.Props<any> {
   settings: AppSettings;
@@ -73,7 +77,8 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
   }
 
   cancel() {
-    this.initFromProps(this.props);
+    // Settings tempCluster to undefined resets the inputs
+    this.setState({tempCluster: undefined}, () => this.initFromProps(this.props));
   }
 
   save() {
@@ -95,23 +100,26 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
     window.location.hash = hash.replace(`/${clusterId}`, '');
   }
 
-  onSimpleChange(newCluster: Cluster, isValid: boolean, path: string) {
+  onSimpleChange(newCluster: Cluster, isValid: boolean, path: string, error: string) {
     const { cluster, errors } = this.state;
 
-    errors[path] = !isValid;
+    errors[path] = isValid ? false : error;
 
     const hasChanged = !isValid || !cluster.equals(newCluster);
+
+    var canSave = true;
+    for (let key in errors) canSave = canSave && (errors[key] === false);
 
     if (isValid) {
       this.setState({
         tempCluster: newCluster,
-        canSave: true,
+        canSave,
         errors,
         hasChanged
       });
     } else {
       this.setState({
-        canSave: false,
+        canSave,
         errors,
         hasChanged
       });
@@ -121,45 +129,84 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
   renderGeneral(): JSX.Element {
     const { tempCluster, errors } = this.state;
 
-    return <form className="general vertical">
-      <FormLabel
-        label="Host"
-        helpText={LABELS.host.help}
-        errorText={errors.host ? LABELS.host.error : undefined}
-      />
-      <ImmutableInput
-        instance={tempCluster}
-        path={'host'}
-        onChange={this.onSimpleChange.bind(this)}
-        focusOnStartUp={true}
-        validator={IP_REGEX}
-      />
-      <FormLabel
-        label="Timeout"
-        helpText={LABELS.timeout.help}
-        errorText={errors.timeout ? LABELS.timeout.error : undefined}
-      />
-      <ImmutableInput
-        instance={tempCluster}
-        path={'timeout'}
-        onChange={this.onSimpleChange.bind(this)}
-        validator={/^\d+$/}
-      />
+    var makeLabel = FormLabel.simpleGenerator(LABELS, errors);
+    var makeTextInput = ImmutableInput.simpleGenerator(tempCluster, this.onSimpleChange.bind(this));
+    var makeDropDownInput = ImmutableDropdown.simpleGenerator(tempCluster, this.onSimpleChange.bind(this));
 
-      <FormLabel
-        label="Refresh interval"
-        helpText={LABELS.sourceListRefreshInterval.help}
-        errorText={errors.sourceListRefreshInterval ? LABELS.sourceListRefreshInterval.error : undefined}
-      />
-      <ImmutableInput
-        instance={tempCluster}
-        path={'sourceListRefreshInterval'}
-        onChange={this.onSimpleChange.bind(this)}
-        validator={/^\d+$/}
-      />
+    var isDruid = tempCluster.type === 'druid';
+    var needsAuth = ['mysql', 'postgres'].indexOf(tempCluster.type) > -1;
+
+    return <form className="general vertical">
+      {makeLabel('host')}
+      {makeTextInput('host', IP_REGEX, true)}
+
+      {makeLabel('type')}
+      {makeDropDownInput('type', Cluster.TYPE_VALUES.map(type => {return {value: type, label: type}; }))}
+
+      {makeLabel('timeout')}
+      {makeTextInput('timeout', NUM_REGEX)}
+
+      {makeLabel('version')}
+      {makeTextInput('version')}
+
+      {makeLabel('sourceListScan')}
+      {makeDropDownInput('sourceListScan', [{value: 'disable', label: 'Disable'}, {value: 'auto', label: 'Auto'}])}
+
+      {makeLabel('sourceListRefreshOnLoad')}
+      {makeDropDownInput('sourceListRefreshOnLoad', [{value: true, label: 'Enabled'}, {value: false, label: 'Disabled'}])}
+
+      {makeLabel('sourceListRefreshInterval')}
+      {makeTextInput('sourceListRefreshInterval', NUM_REGEX)}
+
+      {makeLabel('sourceReintrospectOnLoad')}
+      {makeDropDownInput('sourceReintrospectOnLoad', [{value: true, label: 'Enabled'}, {value: false, label: 'Disabled'}])}
+
+      {makeLabel('sourceReintrospectInterval')}
+      {makeTextInput('sourceReintrospectInterval', NUM_REGEX)}
+
+      {isDruid ? makeLabel('introspectionStrategy') : null}
+      {isDruid ? makeTextInput('introspectionStrategy') : null}
+
+      {needsAuth ? makeLabel('database') : null}
+      {needsAuth ? makeTextInput('database') : null}
+
+      {needsAuth ? makeLabel('user') : null}
+      {needsAuth ? makeTextInput('user') : null}
+
+      {needsAuth ? makeLabel('password') : null}
+      {needsAuth ? makeTextInput('password') : null}
+
     </form>;
   }
 
+  renderButtons(): JSX.Element {
+    const { hasChanged, canSave } = this.state;
+
+    const cancelButton = <Button
+      className="cancel"
+      title="Revert changes"
+      type="secondary"
+      onClick={this.cancel.bind(this)}
+    />;
+
+    const saveButton = <Button
+      className={classNames("save", {disabled: !canSave || !hasChanged})}
+      title="Save"
+      type="primary"
+      onClick={this.save.bind(this)}
+    />;
+
+    if (!hasChanged) {
+      return <div className="button-group">
+        {saveButton}
+      </div>;
+    }
+
+    return <div className="button-group">
+      {cancelButton}
+      {saveButton}
+    </div>;
+  }
 
   render() {
     const { tempCluster, hasChanged, canSave } = this.state;
@@ -170,10 +217,7 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
       <div className="title-bar">
         <Button className="button back" type="secondary" svg={require('../../../icons/full-back.svg')} onClick={this.goBack.bind(this)}/>
         <div className="title">{tempCluster.name}</div>
-        {hasChanged ? <div className="button-group">
-          <Button className="cancel" title="Cancel" type="secondary" onClick={this.cancel.bind(this)}/>
-          <Button className={classNames("save", {disabled: !canSave})} title="Save" type="primary" onClick={this.save.bind(this)}/>
-        </div> : null}
+        {this.renderButtons()}
       </div>
       <div className="content">
         {this.renderGeneral()}

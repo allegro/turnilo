@@ -27,6 +27,7 @@
 
   .golden-center {
     @include pin-full;
+    overflow-y: auto;
   }
 
   .modal-window {
@@ -61,6 +62,11 @@
           fill: #bbb;
         }
       }
+    }
+
+    p {
+      line-height: 17px;
+      margin-bottom: 18px;
     }
   }
 
