@@ -32,7 +32,6 @@ export class DataCubeMock {
       description: 'Wiki description',
       clusterName: 'druid',
       source: 'wiki',
-      subsetFilter: null,
       introspection: 'none',
       attributes: [
         { name: 'time', type: 'TIME' },
@@ -86,7 +85,6 @@ export class DataCubeMock {
       description: 'Twitter description should go here',
       clusterName: 'druid',
       source: 'twitter',
-      subsetFilter: null,
       introspection: 'none',
       dimensions: [
         {

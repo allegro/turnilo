@@ -176,23 +176,28 @@ export const DATA_CUBE_EDIT = {
   },
   description: {
     label: 'Description',
-    help: 'The cube\'s description',
+    help: 'A description shown in the homepage',
     error: ''
   },
   introspection: {
     label: 'Introspection',
-    help: 'The cube\'s introspection strategy. Default is \'no-autofill\'.',
+    help: 'How will this cube be introspected. Default is \'no-autofill\'',
     error: ''
   },
   clusterName: {
-    label: 'Name',
-    help: 'The cube\'s cluster, really.',
+    label: 'Cluster',
+    help: 'The cluster that this cube comes from',
     error: 'The cluster name should not be empty'
   },
   source: {
     label: 'Source',
-    help: 'The cube\'s source ?',
+    help: 'The name of cube\'s source. The dataSource, table, of filename of the data for this cube',
     error: 'The source should not be empty'
+  },
+  subsetFormula: {
+    label: 'Subset Formula',
+    help: 'A row level filter that is applied to the cube. This filter is never represented in the UI',
+    error: ''
   },
   defaultDuration: {
     label: 'Default duration',

@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.26
+
+- DataCube `subsetFilter` -> `subsetFormula`
+- Settings fixes
+
 ## 0.9.25
 
 - Settings progress

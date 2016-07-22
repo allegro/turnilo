@@ -176,11 +176,18 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
   }
 
   renderGeneral(): JSX.Element {
+    const { settings } = this.props;
     const { myDataCube, errors } = this.state;
 
     var makeLabel = FormLabel.simpleGenerator(LABELS, errors);
     var makeTextInput = ImmutableInput.simpleGenerator(myDataCube, this.onChange.bind(this));
     var makeDropDownInput = ImmutableDropdown.simpleGenerator(myDataCube, this.onChange.bind(this));
+
+    var possibleClusters = [
+      { value: 'native', label: 'Load a file and serve it natively' }
+    ].concat(settings.clusters.map((cluster) => {
+      return { value: cluster.name, label: cluster.name };
+    }));
 
     return <form className="general vertical">
       {makeLabel('title')}
@@ -190,13 +197,16 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
       {makeTextInput('description')}
 
       {makeLabel('clusterName')}
-      {makeDropDownInput('clusterName', Cluster.TYPE_VALUES.map(type => {return {value: type, label: type}; }))}
+      {makeDropDownInput('clusterName', possibleClusters)}
 
       {makeLabel('introspection')}
       {makeDropDownInput('introspection', this.getIntrospectionStrategies())}
 
       {makeLabel('source')}
       {makeTextInput('source')}
+
+      {makeLabel('subsetFormula')}
+      {makeTextInput('subsetFormula')}
 
       {makeLabel('defaultDuration')}
       <ImmutableInput

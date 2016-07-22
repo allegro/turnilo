@@ -79,7 +79,7 @@ export interface DataCubeValue {
   clusterName: string;
   source: string;
   group?: string;
-  subsetFilter?: Expression;
+  subsetFormula?: string;
   rollup?: boolean;
   options?: DataCubeOptions;
   introspection?: Introspection;
@@ -111,7 +111,7 @@ export interface DataCubeJS {
   clusterName: string;
   source: string;
   group?: string;
-  subsetFilter?: ExpressionJS;
+  subsetFormula?: string;
   rollup?: boolean;
   options?: DataCubeOptions;
   introspection?: Introspection;
@@ -325,15 +325,15 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       }));
     }
 
-    var subsetFilter = parameters.subsetFilter ? Expression.fromJSLoose(parameters.subsetFilter) : null;
+    var subsetFormula = parameters.subsetFormula || (parameters as any).subsetFilter;
 
     var longForm = parameters.longForm;
     if (longForm) {
       measures = measures.concat(measuresFromLongForm(longForm)) as List<Measure>;
 
       if (longForm.addSubsetFilter) {
-        if (!subsetFilter) subsetFilter = Expression.TRUE;
-        subsetFilter = subsetFilter.and(filterFromLongForm(longForm)).simplify();
+        var subsetExpression = subsetFormula ? Expression.fromJSLoose(parameters.subsetFormula) : Expression.TRUE;
+        subsetFormula = subsetExpression.and(filterFromLongForm(longForm)).simplify().toString();
       }
     }
 
@@ -345,7 +345,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       clusterName,
       source: parameters.source,
       group: parameters.group,
-      subsetFilter,
+      subsetFormula,
       rollup: parameters.rollup,
       options,
       introspection,
@@ -380,7 +380,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public clusterName: string;
   public source: string;
   public group: string;
-  public subsetFilter: Expression;
+  public subsetFormula: string;
+  public subsetExpression: Expression;
   public rollup: boolean;
   public options: DataCubeOptions;
   public introspection: Introspection;
@@ -414,7 +415,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     this.clusterName = parameters.clusterName || 'druid';
     this.source = parameters.source || name;
     this.group = parameters.group || null;
-    this.subsetFilter = parameters.subsetFilter;
+    this.subsetFormula = parameters.subsetFormula;
+    this.subsetExpression = parameters.subsetFormula ? Expression.fromJSLoose(parameters.subsetFormula) : Expression.TRUE;
     this.rollup = Boolean(parameters.rollup);
     this.options = parameters.options || {};
     this.introspection = parameters.introspection;
@@ -455,7 +457,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       clusterName: this.clusterName,
       source: this.source,
       group: this.group,
-      subsetFilter: this.subsetFilter,
+      subsetFormula: this.subsetFormula,
       rollup: this.rollup,
       options: this.options,
       introspection: this.introspection,
@@ -487,13 +489,13 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       description: this.description,
       clusterName: this.clusterName,
       source: this.source,
-      subsetFilter: this.subsetFilter ? this.subsetFilter.toJS() : null,
       dimensions: this.dimensions.toArray().map(dimension => dimension.toJS()),
       measures: this.measures.toArray().map(measure => measure.toJS()),
       refreshRule: this.refreshRule.toJS()
     };
     if (this.group) js.group = this.group;
     if (this.introspection) js.introspection = this.introspection;
+    if (this.subsetFormula) js.subsetFormula = this.subsetFormula;
     if (this.defaultTimezone) js.defaultTimezone = this.defaultTimezone.toJS();
     if (this.defaultFilter) js.defaultFilter = this.defaultFilter.toJS();
     if (this.defaultSplits) js.defaultSplits = this.defaultSplits.toJS();
@@ -533,7 +535,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       this.clusterName === other.clusterName &&
       this.source === other.source &&
       this.group === other.group &&
-      immutableEqual(this.subsetFilter, other.subsetFilter) &&
+      this.subsetFormula === other.subsetFormula &&
       this.rollup === other.rollup &&
       JSON.stringify(this.options) === JSON.stringify(other.options) &&
       this.introspection === other.introspection &&
@@ -577,7 +579,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       version: cluster.version,
       derivedAttributes: this.derivedAttributes,
       customAggregations: options.customAggregations,
-      filter: this.subsetFilter
+      filter: this.subsetExpression
     };
 
     if (cluster.type === 'druid') {
@@ -699,7 +701,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     var value = this.valueOf();
 
     // Do not reveal the subset filter to the client
-    value.subsetFilter = null;
+    value.subsetFormula = null;
 
     // No need for any introspection information on the client
     value.introspection = null;

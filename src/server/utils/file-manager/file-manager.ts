@@ -44,7 +44,7 @@ export interface FileManagerOptions {
   verbose?: boolean;
   anchorPath: string;
   uri: string;
-  subsetFilter?: Expression;
+  subsetExpression?: Expression;
   onDatasetChange?: (dataset: Dataset) => void;
 }
 
@@ -56,7 +56,7 @@ export class FileManager {
   public anchorPath: string;
   public uri: string;
   public dataset: Dataset;
-  public subsetFilter: Expression;
+  public subsetExpression: Expression;
   public onDatasetChange: (dataset: Dataset) => void;
 
   constructor(options: FileManagerOptions) {
@@ -64,7 +64,7 @@ export class FileManager {
     this.verbose = Boolean(options.verbose);
     this.anchorPath = options.anchorPath;
     this.uri = options.uri;
-    this.subsetFilter = options.subsetFilter;
+    this.subsetExpression = options.subsetExpression;
     this.verbose = Boolean(options.verbose);
     this.onDatasetChange = options.onDatasetChange || noop;
   }
@@ -82,8 +82,8 @@ export class FileManager {
           logger.log(`Loaded file ${filePath} (rows = ${rawData.length})`);
           var dataset = Dataset.fromJS(rawData).hide();
 
-          if (this.subsetFilter) {
-            dataset = dataset.filter(this.subsetFilter.getFn(), {});
+          if (this.subsetExpression) {
+            dataset = dataset.filter(this.subsetExpression.getFn(), {});
           }
 
           this.dataset = dataset;

@@ -250,7 +250,7 @@ describe('DataCube', () => {
         "name": "wiki",
         "engine": "druid",
         "source": "wiki",
-        "subsetFilter": null,
+        "subsetFilter": "$page.in(['en', 'fr'])",
         "dimensions": [
           {
             "kind": "time",
@@ -331,7 +331,7 @@ describe('DataCube', () => {
           "rule": "query"
         },
         "source": "wiki",
-        "subsetFilter": null,
+        "subsetFormula": "$page.in(['en', 'fr'])",
         "timeAttribute": "__time",
         "title": "Wiki"
       });
@@ -347,7 +347,6 @@ describe('DataCube', () => {
         "name": "wiki",
         "clusterName": "druid",
         "source": "wiki",
-        "subsetFilter": null,
         introspection: 'autofill-all',
         "defaultFilter": { "op": "literal", "value": true },
         "defaultSortMeasure": "added",
@@ -433,7 +432,6 @@ describe('DataCube', () => {
       title: 'Wiki',
       clusterName: 'druid',
       source: 'wiki',
-      subsetFilter: null,
       introspection: 'autofill-all',
       defaultTimezone: 'Etc/UTC',
       defaultFilter: { op: 'literal', value: true },
@@ -462,7 +460,6 @@ describe('DataCube', () => {
           "refresh": "PT1M",
           "rule": "fixed"
         },
-        "subsetFilter": null,
         introspection: 'autofill-all',
         "defaultFilter": { "op": "literal", "value": true },
         "defaultSortMeasure": "added",
@@ -522,7 +519,6 @@ describe('DataCube', () => {
           "refresh": "PT1M",
           "rule": "fixed"
         },
-        "subsetFilter": null,
         introspection: 'autofill-all',
         "defaultFilter": { "op": "literal", "value": true },
         "defaultSortMeasure": "added",
@@ -645,7 +641,6 @@ describe('DataCube', () => {
           "rule": "fixed"
         },
         "source": "wiki",
-        "subsetFilter": null,
         "timeAttribute": "__time",
         "title": "Wiki",
         "description": ""
@@ -665,7 +660,7 @@ describe('DataCube', () => {
         title: 'Wiki',
         clusterName: 'druid',
         source: 'wiki',
-        subsetFilter: null,
+        subsetFormula: null,
         introspection: 'autofill-all',
         defaultTimezone: 'Etc/UTC',
         defaultFilter: { op: 'literal', value: true },
@@ -698,7 +693,7 @@ describe('DataCube', () => {
       title: 'Wiki',
       clusterName: 'druid',
       source: 'wiki',
-      subsetFilter: null,
+      subsetFormula: null,
       introspection: 'autofill-all',
       defaultTimezone: 'Etc/UTC',
       defaultFilter: { op: 'literal', value: true },

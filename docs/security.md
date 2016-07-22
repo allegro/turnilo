@@ -17,8 +17,8 @@ Any query asking for a column that was not explicitly defined in the dimensions 
 
 ### Row level access
 
-A Pivot dataSource can define a `subsetFilter` that is a boolean Plywood filter clause that will be silently applied to all queries made to that data cube.
-For example if you wanted your users to only see the data for "United States" you could add `subsetFilter: $country == "United States"` to the data cube definition.
+A Pivot dataSource can define a `subsetFormula` that is a boolean Plywood filter clause that will be silently applied to all queries made to that data cube.
+For example if you wanted your users to only see the data for "United States" you could add `subsetFormula: $country == "United States"` to the data cube definition.
 
 
 ## Authentication

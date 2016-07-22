@@ -197,7 +197,6 @@ describe('AppSettings', () => {
               "time": new Date('2016-04-30T12:39:51.350Z')
             },
             "source": "wiki",
-            "subsetFilter": null,
             "timeAttribute": "time",
             "title": "Wiki"
           }

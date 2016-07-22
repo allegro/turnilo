@@ -154,6 +154,7 @@ export class SettingsManager {
       verbose,
       anchorPath,
       uri: dataCube.source,
+      subsetExpression: dataCube.subsetExpression,
       onDatasetChange: this.onDatasetChange.bind(this, dataCube.name)
     });
 
