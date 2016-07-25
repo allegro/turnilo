@@ -60,15 +60,6 @@ function makeNumberBuckets(centerAround: number, count: number, coarse?: boolean
   return granularities;
 }
 
-
-function makeNumberBucketsSimple() {
-  var granularities: Granularity[] = [];
-  for (var i = 3; i > -2; i--) {
-    granularities.push(granularityFromJS(Math.pow(10, i)));
-  }
-  return granularities;
-}
-
 function days(count: number) {
   return count * day.canonicalLength;
 }
@@ -81,24 +72,13 @@ function minutes(count: number) {
   return count * minute.canonicalLength;
 }
 
-export interface Helper {
-  dimensionKind: ContinuousDimensionKind;
-  minGranularity: Granularity;
-  defaultGranularity: Granularity;
-  defaultGranularities: Granularity[];
-  supportedGranularities: Granularity[];
-  checkers: Checker[];
-  coarseCheckers?: Checker[];
-  coarseGranularities?: Granularity[];
-}
-
 export class TimeHelper {
   static dimensionKind: ContinuousDimensionKind = 'time';
 
   static minGranularity = granularityFromJS('PT1M');
   static defaultGranularity = granularityFromJS('P1D');
 
-  static supportedGranularities = function(bucketedBy: Granularity) {
+  static supportedGranularities = function() {
     return [
         'PT1S', 'PT1M', 'PT5M', 'PT15M',
         'PT1H', 'PT6H', 'PT8H', 'PT12H',

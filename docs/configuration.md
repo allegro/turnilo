@@ -281,6 +281,14 @@ If you mainly care about smaller intervals, you might want to set it to: `['PT1S
 
 Alternatively, if you mainly care about large intervals, you might want to try: `['P1D', 'P1W', 'P1M', 'P3M', 'P1Y']`
 
+**bucketingStrategy** ('alwaysBucket' | 'neverBucket')
+
+Specify whether or not the dimension should be bucketed. If unspecified defaults to 'alwaysBucket' for time and numeric dimensions.
+
+**sortStrategy** ('self' | `someMeasureName`)
+
+Specify a specific sort strategy for this dimension in visualizations. If unspecified defaults to best sort strategy based on the visualization.
+
 **formula** (string - plywood expression)
 
 The formula for this dimension. By default it is `$name` where *name* is the name of the dimension.

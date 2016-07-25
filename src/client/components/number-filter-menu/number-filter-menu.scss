@@ -32,10 +32,13 @@
 
   input {
     @extend %default-input;
-    margin-top: 6px;
 
     &.gray {
       color: $gray;
     }
+  }
+
+  input, .filter-options-dropdown {
+    margin-top: 6px;
   }
 }

@@ -27,7 +27,8 @@ describe('Dimension', () => {
         title: 'important countries',
         formula: '$country',
         kind: 'string',
-        granularities: [5, 50, 500, 800, 1000]
+        granularities: [5, 50, 500, 800, 1000],
+        sortStrategy: 'self'
       },
       {
         name: 'country',
@@ -35,7 +36,8 @@ describe('Dimension', () => {
         formula: '$country',
         kind: 'string',
         url: 'https://www.country.com/%s',
-        bucketedBy: 1
+        bucketedBy: 1,
+        bucketingStrategy: 'alwaysBucket'
       },
       {
         name: 'time',

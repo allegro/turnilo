@@ -31,6 +31,9 @@ function typeToKind(type: string): string {
   return type.toLowerCase().replace(/_/g, '-').replace(/-range$/, '');
 }
 
+const NEVER_BUCKET = 'neverBucket';
+export type BucketingStrategy = 'alwaysBucket' | 'neverBucket';
+
 export interface DimensionValue {
   name: string;
   title?: string;
@@ -39,6 +42,8 @@ export interface DimensionValue {
   url?: string;
   granularities?: Granularity[];
   bucketedBy?: Granularity;
+  bucketingStrategy?: BucketingStrategy;
+  sortStrategy?: string;
 }
 
 export interface DimensionJS {
@@ -49,6 +54,8 @@ export interface DimensionJS {
   url?: string;
   granularities?: GranularityJS[];
   bucketedBy?: GranularityJS;
+  bucketingStrategy?: BucketingStrategy;
+  sortStrategy?: string;
 }
 
 var check: Class<DimensionValue, DimensionJS>;
@@ -96,6 +103,16 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       value.bucketedBy = granularityFromJS(bucketedBy);
     }
 
+    var bucketingStrategy = parameters.bucketingStrategy;
+    if (bucketingStrategy) {
+      value.bucketingStrategy = bucketingStrategy;
+    }
+
+    var sortStrategy = parameters.sortStrategy;
+    if (sortStrategy) {
+      value.sortStrategy = sortStrategy;
+    }
+
     return new Dimension(value);
   }
 
@@ -108,6 +125,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public url: string;
   public granularities: Granularity[];
   public bucketedBy: Granularity;
+  public bucketingStrategy: BucketingStrategy;
+  public sortStrategy: string;
 
   constructor(parameters: DimensionValue) {
     var name = parameters.name;
@@ -139,6 +158,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.granularities = parameters.granularities;
     }
     if (parameters.bucketedBy) this.bucketedBy = parameters.bucketedBy;
+    if (parameters.bucketingStrategy) this.bucketingStrategy = parameters.bucketingStrategy;
+    if (parameters.sortStrategy) this.sortStrategy = parameters.sortStrategy;
   }
 
   public valueOf(): DimensionValue {
@@ -149,7 +170,9 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       kind: this.kind,
       url: this.url,
       granularities: this.granularities,
-      bucketedBy: this.bucketedBy
+      bucketedBy: this.bucketedBy,
+      bucketingStrategy: this.bucketingStrategy,
+      sortStrategy: this.sortStrategy
     };
   }
 
@@ -163,6 +186,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     if (this.url) js.url = this.url;
     if (this.granularities) js.granularities = this.granularities.map((g) => { return granularityToJS(g); });
     if (this.bucketedBy) js.bucketedBy = granularityToJS(this.bucketedBy);
+    if (this.bucketingStrategy) js.bucketingStrategy = this.bucketingStrategy;
+    if (this.sortStrategy) js.sortStrategy = this.sortStrategy;
     return js;
   }
 
@@ -182,7 +207,13 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.kind === other.kind &&
       this.url === other.url &&
       immutableArraysEqual(this.granularities, other.granularities) &&
-      granularityEquals(this.bucketedBy, other.bucketedBy);
+      granularityEquals(this.bucketedBy, other.bucketedBy) &&
+      this.bucketingStrategy === other.bucketingStrategy &&
+      this.sortStrategy === other.sortStrategy;
+  }
+
+  public canBucket(): boolean {
+    return this.isContinuous() && this.bucketingStrategy !== NEVER_BUCKET;
   }
 
   public isContinuous() {

@@ -47,11 +47,20 @@ var handler = CircumstancesHandler.EMPTY()
 
     var continuousSplit = splits.get(0);
     var continuousDimension = dataCube.getDimensionByExpression(continuousSplit.expression);
+    var sortStrategy = continuousDimension.sortStrategy;
 
-    var sortAction: SortAction = new SortAction({
-      expression: $(continuousDimension.name),
-      direction: SortAction.ASCENDING
-    });
+    var sortAction: SortAction = null;
+    if (sortStrategy && sortStrategy !== 'self') {
+      sortAction = new SortAction({
+        expression: $(sortStrategy),
+        direction: SortAction.ASCENDING
+      });
+    } else {
+      sortAction = new SortAction({
+        expression: $(continuousDimension.name),
+        direction: SortAction.ASCENDING
+      });
+    }
 
     let autoChanged = false;
 

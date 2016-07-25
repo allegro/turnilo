@@ -25,12 +25,28 @@ var handler = CircumstancesHandler.EMPTY()
     (splits: Splits, dataCube: DataCube, colors: Colors, current: boolean) => {
       var autoChanged = false;
       splits = splits.map((split, i) => {
+        var splitDimension = splits.get(0).getDimension(dataCube.dimensions);
+        var sortStrategy = splitDimension.sortStrategy;
+
         if (!split.sortAction) {
-          split = split.changeSortAction(dataCube.getDefaultSortAction());
-          autoChanged = true;
+          if (sortStrategy) {
+            if (sortStrategy === 'self') {
+              split = split.changeSortAction(new SortAction({
+                expression: $(splitDimension.name),
+                direction: SortAction.DESCENDING
+              }));
+            } else {
+              split = split.changeSortAction(new SortAction({
+                expression: $(sortStrategy),
+                direction: SortAction.DESCENDING
+              }));
+            }
+          } else {
+            split = split.changeSortAction(dataCube.getDefaultSortAction());
+            autoChanged = true;
+          }
         }
 
-        var splitDimension = splits.get(0).getDimension(dataCube.dimensions);
 
         // ToDo: review this
         if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {

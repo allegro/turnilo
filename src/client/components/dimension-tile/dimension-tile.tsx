@@ -120,7 +120,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     var sortExpression: Expression = null;
 
-    if (dimension.isContinuous()) {
+    if (dimension.canBucket()) {
       const dimensionExpression = dimension.expression as RefExpression;
       const attributeName = dimensionExpression.name;
 
@@ -550,9 +550,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     var actions: TileAction[] = null;
 
-    if (continuous) {
+    if (dimension.canBucket()) {
       actions = this.getGranularityActions();
-    } else if (!essence.colors) {
+    } else if (!continuous && !essence.colors) {
       actions = this.getFilterActions();
     }
 

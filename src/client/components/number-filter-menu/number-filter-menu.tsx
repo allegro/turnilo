@@ -19,13 +19,14 @@ require('./number-filter-menu.css');
 import * as React from 'react';
 import { Set, NumberRange, LiteralExpression } from 'plywood';
 
-import { FilterClause, Clicker, Essence, Filter, Dimension } from '../../../common/models/index';
+import { FilterClause, Clicker, Essence, Filter, Dimension, FilterMode } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { enterKey } from '../../utils/dom/dom';
 
 import { Button } from '../button/button';
 import { NumberRangePicker, ANY_VALUE } from '../number-range-picker/number-range-picker';
+import { FilterOptionsDropdown } from '../filter-options-dropdown/filter-options-dropdown';
 
 function numberOrAnyToString(start: number): string {
   if (start === ANY_VALUE) return STRINGS.any;
@@ -52,6 +53,7 @@ export interface NumberFilterMenuState {
   end?: number;
   endInput?: string;
   significantDigits?: number;
+  filterMode?: FilterMode;
 }
 
 export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, NumberFilterMenuState> {
@@ -73,21 +75,31 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
 
   componentWillMount() {
     var { essence, dimension } = this.props;
-    var valueSet = essence.filter.getLiteralSet(dimension.expression);
-    var hasRange = valueSet && valueSet.elements.length !== 0;
+
+    var filter = essence.filter;
+    var valueSet = filter.getLiteralSet(dimension.expression);
+    var hasFilter = valueSet && valueSet.elements.length !== 0;
     var start: number = null;
     var end: number = null;
-    if (hasRange) {
-      var range = valueSet.elements[0];
-      start = range.start;
-      end = range.end;
+
+    if (hasFilter) {
+      if (valueSet.setType === 'NUMBER_RANGE') {
+        var range = valueSet.elements[0];
+        start = range.start;
+        end = range.end;
+      } else if (valueSet.setType === 'NUMBER') {
+        var number = valueSet.elements[0];
+        start = number;
+        end = number;
+      }
     }
 
     this.setState({
       startInput: numberOrAnyToString(start),
       endInput: numberOrAnyToString(end),
       start,
-      end
+      end,
+      filterMode: filter.getModeForDimension(dimension) || Filter.INCLUDED
     });
   }
 
@@ -101,7 +113,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
 
   constructFilter(): Filter {
     var { essence, dimension } = this.props;
-    var { start, end } = this.state;
+    var { start, end, filterMode } = this.state;
     var { filter } = essence;
 
     var validFilter = false;
@@ -117,7 +129,8 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
       var newSet = Set.fromJS({ setType: "NUMBER_RANGE", elements: [NumberRange.fromJS({ start, end, bounds })] });
       var clause = new FilterClause({
         expression: dimension.expression,
-        selection: new LiteralExpression({ type: "SET/NUMBER_RANGE", value: newSet })
+        selection: new LiteralExpression({ type: "SET/NUMBER_RANGE", value: newSet }),
+        exclude: filterMode === Filter.EXCLUDED
       });
       return filter.setClause(clause);
     } else {
@@ -167,6 +180,10 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     this.setState({ endInput: numberOrAnyToString(newEnd), end: newEnd });
   }
 
+  onSelectFilterOption(filterMode: FilterMode) {
+    this.setState({filterMode});
+  }
+
   actionEnabled() {
     var { essence } = this.props;
     return !essence.filter.equals(this.constructFilter()) && Boolean(this.constructFilter());
@@ -174,10 +191,17 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
 
   render() {
     const { essence, dimension } = this.props;
-    const { endInput, startInput, end, start } = this.state;
+    const { endInput, startInput, end, start, filterMode } = this.state;
 
     return <div className="number-filter-menu" ref="number-filter-menu">
       <div className="side-by-side">
+        <div className="group">
+          <label className="input-top-label">Type</label>
+          <FilterOptionsDropdown
+            selectedOption={filterMode}
+            onSelectOption={this.onSelectFilterOption.bind(this)}
+          />
+        </div>
         <div className="group">
           <label className="input-top-label">Min</label>
           <input value={startInput} onChange={this.onRangeInputStartChange.bind(this)} />
