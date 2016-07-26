@@ -29,7 +29,7 @@ import { ImmutableDropdown } from '../../../components/immutable-dropdown/immuta
 
 import { AppSettings, Cluster, ListItem } from '../../../../common/models/index';
 
-import { CLUSTER_EDIT as LABELS } from '../utils/labels';
+import { CLUSTER as LABELS } from '../../../../common/models/labels';
 
 // Shamelessly stolen from http://stackoverflow.com/a/10006499
 // (well, traded for an upvote)
@@ -100,7 +100,7 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
     window.location.hash = hash.replace(`/${clusterId}`, '');
   }
 
-  onSimpleChange(newCluster: Cluster, isValid: boolean, path: string, error: string) {
+  onChange(newCluster: Cluster, isValid: boolean, path: string, error: string) {
     const { cluster, errors } = this.state;
 
     errors[path] = isValid ? false : error;
@@ -130,8 +130,8 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
     const { tempCluster, errors } = this.state;
 
     var makeLabel = FormLabel.simpleGenerator(LABELS, errors);
-    var makeTextInput = ImmutableInput.simpleGenerator(tempCluster, this.onSimpleChange.bind(this));
-    var makeDropDownInput = ImmutableDropdown.simpleGenerator(tempCluster, this.onSimpleChange.bind(this));
+    var makeTextInput = ImmutableInput.simpleGenerator(tempCluster, this.onChange.bind(this));
+    var makeDropDownInput = ImmutableDropdown.simpleGenerator(tempCluster, this.onChange.bind(this));
 
     var isDruid = tempCluster.type === 'druid';
     var needsAuth = ['mysql', 'postgres'].indexOf(tempCluster.type) > -1;

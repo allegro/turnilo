@@ -114,7 +114,11 @@ describe('ImmutableInput', () => {
 
   describe('with stringToValue/valueToString', () => {
     beforeEach(() => {
-      let stringToValue = (str: string) => str.toLowerCase();
+      let stringToValue = (str: string) => {
+        if (str === 'PLATYPUS') throw new Error(`It's not even like a real animal amirite`);
+        return str.toLowerCase();
+      };
+
       let valueToString = (str: string) => str.toUpperCase();
 
       component = TestUtils.renderIntoDocument(
@@ -149,6 +153,28 @@ describe('ImmutableInput', () => {
       expect(args[1]).to.equal(true);
 
       expect(args[2]).to.equal('clusterName');
+    });
+
+    it('works when an error is thrown', () => {
+      expect(node.value).to.equal('DRUID');
+
+      node.value = 'PLATYPUS';
+      TestUtils.Simulate.change(node);
+
+      expect(onInvalid.callCount).to.equal(1);
+      expect(onInvalid.args[0][0]).to.equal(undefined);
+
+      expect(onChange.callCount).to.equal(1);
+      var args = onChange.args[0];
+
+      expect(args[0]).to.be.instanceOf(DataCube);
+      expect(args[0].clusterName).to.equal(DataCubeMock.twitter().clusterName);
+
+      expect(args[1]).to.equal(false);
+
+      expect(args[2]).to.equal('clusterName');
+
+      expect(node.value).to.equal('PLATYPUS');
     });
   });
 });

@@ -26,7 +26,7 @@ import { FormLabel } from '../../../components/form-label/form-label';
 import { Button } from '../../../components/button/button';
 import { ImmutableInput } from '../../../components/immutable-input/immutable-input';
 
-import { GENERAL as LABELS } from '../utils/labels';
+import { GENERAL as LABELS } from '../../../../common/models/labels';
 
 import { AppSettings, AppSettingsJS } from '../../../../common/models/index';
 
@@ -56,11 +56,11 @@ export class General extends React.Component<GeneralProps, GeneralState> {
     });
   }
 
-  onChange(newSettings: AppSettings, isValid: boolean, path: string) {
+  onChange(newSettings: AppSettings, isValid: boolean, path: string, error: string) {
     const { errors } = this.state;
     const settings: AppSettings = this.props.settings;
 
-    errors[path] = !isValid;
+    errors[path] = isValid ? false : error;
 
     this.setState({
       newSettings,
@@ -85,6 +85,9 @@ export class General extends React.Component<GeneralProps, GeneralState> {
 
     if (!newSettings) return null;
 
+    var makeLabel = FormLabel.simpleGenerator(LABELS, errors);
+    var makeTextInput = ImmutableInput.simpleGenerator(newSettings, this.onChange.bind(this));
+
     return <div className="general">
       <div className="title-bar">
         <div className="title">General</div>
@@ -92,23 +95,10 @@ export class General extends React.Component<GeneralProps, GeneralState> {
       </div>
       <div className="content">
         <form className="vertical">
-          <FormLabel
-            label="Browser title"
-            helpText={LABELS.title.help}
-            errorText={errors['customization.title'] ? LABELS.title.error : undefined}
-          />
-          <ImmutableInput
-            instance={newSettings}
-            path={'customization.title'}
-            onChange={this.onChange.bind(this)}
-            focusOnStartUp={true}
-          />
+          {makeLabel('customization.title')}
+          {makeTextInput('customization.title', /^.+$/, true)}
 
-          <FormLabel
-            label="Timezones"
-            helpText={LABELS.timezones.help}
-            errorText={errors.timezones ? LABELS.timezones.error : undefined}
-          />
+          {makeLabel('customization.timezones')}
           <ImmutableInput
             instance={newSettings}
             path={'customization.timezones'}
@@ -117,6 +107,7 @@ export class General extends React.Component<GeneralProps, GeneralState> {
             valueToString={(value: any) => value ? value.join(', ') : undefined}
             stringToValue={this.parseTimezones.bind(this)}
           />
+
         </form>
       </div>
     </div>;

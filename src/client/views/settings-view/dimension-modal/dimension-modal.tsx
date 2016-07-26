@@ -30,7 +30,7 @@ import { ImmutableDropdown } from '../../../components/immutable-dropdown/immuta
 
 import { Dimension, ListItem, granularityFromJS, granularityToString } from '../../../../common/models/index';
 
-import { DIMENSION_EDIT as LABELS } from '../utils/labels';
+import { DIMENSION as LABELS } from '../../../../common/models/labels';
 
 
 export interface DimensionModalProps extends React.Props<any> {

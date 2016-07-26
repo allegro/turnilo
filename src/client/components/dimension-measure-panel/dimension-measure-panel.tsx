@@ -44,7 +44,6 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
 
   constructor() {
     super();
-
   }
 
   render() {

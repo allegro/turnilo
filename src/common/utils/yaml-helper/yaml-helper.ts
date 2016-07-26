@@ -16,6 +16,7 @@
 
 import { $, AttributeInfo, RefExpression } from 'plywood';
 import { DataCube, Dimension, Measure, Cluster } from '../../../common/models/index';
+import { DATA_CUBE, DIMENSION, MEASURE, CLUSTER } from '../../../common/models/labels';
 
 function spaces(n: number) {
   return (new Array(n + 1)).join(' ');
@@ -65,60 +66,60 @@ export function clusterToYAML(cluster: Cluster, withComments: boolean): string[]
   yamlPropAdder(lines, withComments, {
     object: cluster,
     propName: 'type',
-    comment: 'The type of the data store can be (druid, mysql, or postgres)'
+    comment: CLUSTER.type.description
   });
 
   yamlPropAdder(lines, withComments, {
     object: cluster,
     propName: 'host',
-    comment: 'The host (hostname:port) of the cluster. In the Druid case this must be the broker.'
+    comment: CLUSTER.host.description
   });
 
   yamlPropAdder(lines, withComments, {
     object: cluster,
     propName: 'version',
-    comment: 'The explicit version to use for this cluster.'
+    comment: CLUSTER.version.description
   });
 
   yamlPropAdder(lines, withComments, {
     object: cluster,
     propName: 'timeout',
-    comment: 'The timeout to set on the queries in ms.',
+    comment: CLUSTER.timeout.description,
     defaultValue: Cluster.DEFAULT_TIMEOUT
   });
 
   yamlPropAdder(lines, withComments, {
     object: cluster,
     propName: 'sourceListScan',
-    comment: 'Should the sources of this cluster be automatically scanned and new sources added as data cubes.',
+    comment: CLUSTER.sourceListScan.description,
     defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN
   });
 
   yamlPropAdder(lines, withComments, {
     object: cluster,
     propName: 'sourceListRefreshOnLoad',
-    comment: 'Should the list of sources be reloaded every time that Pivot is loaded.',
+    comment: CLUSTER.sourceListRefreshOnLoad.description,
     defaultValue: false
   });
 
   yamlPropAdder(lines, withComments, {
     object: cluster,
     propName: 'sourceListRefreshInterval',
-    comment: 'How often should sources be reloaded in ms.',
+    comment: CLUSTER.sourceListRefreshInterval.description,
     defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL
   });
 
   yamlPropAdder(lines, withComments, {
     object: cluster,
     propName: 'sourceReintrospectOnLoad',
-    comment: 'Should sources be scanned for additional dimensions every time that Pivot is loaded.',
+    comment: CLUSTER.sourceReintrospectOnLoad.description,
     defaultValue: false
   });
 
   yamlPropAdder(lines, withComments, {
     object: cluster,
     propName: 'sourceReintrospectInterval',
-    comment: 'How often should source schema be reloaded in ms.',
+    comment: CLUSTER.sourceReintrospectInterval.description,
     defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL
   });
 
@@ -253,21 +254,21 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   yamlPropAdder(lines, withComments, {
     object: dataCube,
     propName: 'defaultTimezone',
-    comment: 'The default timezone for this dataset to operate in defaults to UTC',
+    comment: DATA_CUBE.defaultTimezone.description,
     defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE
   });
 
   yamlPropAdder(lines, withComments, {
     object: dataCube,
     propName: 'defaultDuration',
-    comment: 'The default duration for the time filter',
+    comment: DATA_CUBE.defaultDuration.description,
     defaultValue: DataCube.DEFAULT_DEFAULT_DURATION
   });
 
   yamlPropAdder(lines, withComments, {
     object: dataCube,
     propName: 'defaultSortMeasure',
-    comment: 'The default sort measure name (if not set the first measure name is used)',
+    comment: DATA_CUBE.defaultSortMeasure.description,
     defaultValue: dataCube.getDefaultSortMeasure()
   });
 

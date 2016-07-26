@@ -1,9 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="build/server/www.js" application-parameters="--config ./config.yaml" working-dir="$PROJECT_DIR$">
     <browser start="true" url="http://localhost:9090/" />
-    <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSStartBrowserRunConfigurationExtension">
-      <browser start="true" url="http://localhost:9090/" />
-    </EXTENSION>
     <method />
   </configuration>
 </component>

@@ -56,7 +56,8 @@
         padding: 24px 24px;
 
         textarea {
-          height: 100%;
+          height: calc(100% - 10px);
+          outline: none;
         }
       }
 

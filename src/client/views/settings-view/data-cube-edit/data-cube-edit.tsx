@@ -39,7 +39,7 @@ import { MeasureModal } from '../measure-modal/measure-modal';
 
 import { AppSettings, ListItem, Cluster, DataCube, Dimension, DimensionJS, Measure, MeasureJS } from '../../../../common/models/index';
 
-import { DATA_CUBE_EDIT as LABELS } from '../utils/labels';
+import { DATA_CUBE as LABELS } from '../../../../common/models/labels';
 
 
 export interface DataCubeEditProps extends React.Props<any> {

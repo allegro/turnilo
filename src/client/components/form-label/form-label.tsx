@@ -42,8 +42,8 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
       return <FormLabel
         isBubble={isBubble}
         label={labels[name].label}
-        helpText={labels[name].help}
-        errorText={errors[name] ? (errors[name] || labels[name].error) : undefined}
+        helpText={labels[name].description}
+        errorText={errors[name]}
       />;
     };
   }

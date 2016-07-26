@@ -30,7 +30,7 @@ import { Modal } from '../../../components/modal/modal';
 
 import { Measure } from '../../../../common/models/index';
 
-import { MEASURE_EDIT as LABELS } from '../utils/labels';
+import { MEASURE as LABELS } from '../../../../common/models/labels';
 
 
 export interface MeasureModalProps extends React.Props<any> {
