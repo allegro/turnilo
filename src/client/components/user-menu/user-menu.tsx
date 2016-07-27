@@ -54,7 +54,7 @@ export class UserMenu extends React.Component<UserMenuProps, UserMenuState> {
         >{user.displayName}</li>
         <li
           className="logout"
-        ><a href="logout">{STRINGS.logout}</a></li>
+        ><a href="logout"><div>{STRINGS.logout}</div></a></li>
       </ul>
     </BubbleMenu>;
   }

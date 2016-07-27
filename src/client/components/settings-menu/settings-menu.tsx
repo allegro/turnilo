@@ -19,7 +19,7 @@ require('./settings-menu.css');
 import * as React from 'react';
 import { Timezone } from 'chronoshift';
 import { Fn } from '../../../common/utils/general/general';
-import { Stage, DataCube } from '../../../common/models/index';
+import { Stage, DataCube, User } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown } from '../dropdown/dropdown';
@@ -31,6 +31,7 @@ export interface SettingsMenuProps extends React.Props<any> {
   changeTimezone?: (timezone: Timezone) => void;
   timezone?: Timezone;
   timezones?: Timezone[];
+  user?: User;
 }
 
 export interface SettingsMenuState {
@@ -48,6 +49,17 @@ export class SettingsMenu extends React.Component<SettingsMenuProps, SettingsMen
     onClose();
   }
 
+  renderSettingsLinks() {
+    const { dataCube, user } = this.props;
+    if (!user || !user.allow['settings']) return null;
+
+    return <div>
+      <a href={`#settings/data_cubes/${dataCube.name}`}><div className="simple-item">{STRINGS.editThisCube}</div></a>
+      <a href="#settings"><div className="simple-item">{STRINGS.generalSettings}</div></a>
+      <div className="separator"/>
+    </div>;
+  }
+
   renderTimezonesDropdown() {
     const { timezone, timezones } = this.props;
     const TimezoneDropdown = Dropdown.specialize<Timezone>();
@@ -62,7 +74,7 @@ export class SettingsMenu extends React.Component<SettingsMenuProps, SettingsMen
   }
 
   render() {
-    const { openOn, onClose, dataCube } = this.props;
+    const { openOn, onClose } = this.props;
 
     var stage = Stage.fromSize(240, 200);
     return <BubbleMenu
@@ -72,9 +84,7 @@ export class SettingsMenu extends React.Component<SettingsMenuProps, SettingsMen
       openOn={openOn}
       onClose={onClose}
     >
-      <a href={`#settings/data_cubes/${dataCube.name}`}><div className="simple-item">Edit this cube</div></a>
-      <a href="#settings"><div className="simple-item">General settings</div></a>
-      <div className="separator"/>
+      {this.renderSettingsLinks()}
       {this.renderTimezonesDropdown()}
     </BubbleMenu>;
   }

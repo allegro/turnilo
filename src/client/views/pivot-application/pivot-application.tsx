@@ -182,7 +182,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     const appSettings = this.state.appSettings || this.props.appSettings;
     var viewType = this.parseHash(hash)[0];
     if (!viewType || viewType === HOME) return appSettings.linkViewConfig ? LINK : HOME;
-    if (viewType === SETTINGS && user.allow['settings']) return SETTINGS;
+    if (viewType === SETTINGS && user && user.allow['settings']) return SETTINGS;
     if (appSettings.linkViewConfig && viewType === LINK) return LINK;
     return CUBE;
   }
