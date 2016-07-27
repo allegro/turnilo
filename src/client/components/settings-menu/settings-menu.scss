@@ -17,5 +17,28 @@
 @import '../../imports';
 
 .settings-menu {
+  padding: $padding-compact 0;
 
+  .simple-item, .dropdown {
+    padding: 0 $padding-compact;
+  }
+
+  .simple-item {
+    cursor: pointer;
+    line-height: 25px;
+
+    &:hover {
+      background: rgba($brand, 0.12);
+    }
+
+    &.selected {
+      background: $background-light;
+    }
+  }
+
+  .separator {
+    height: 14px;
+    margin-top: 8px;
+    border-top: 1px solid $border-extra-light;
+  }
 }

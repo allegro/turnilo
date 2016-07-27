@@ -17,5 +17,10 @@
 @import '../../imports';
 
 .user-menu {
-
+  ul.bubble-list {
+    li.display-name {
+      pointer-events: none;
+      color: $text-lighterish;
+    }
+  }
 }

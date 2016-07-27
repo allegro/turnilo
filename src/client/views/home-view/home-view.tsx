@@ -42,6 +42,10 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
     window.location.hash = '#' + cube.name;
   }
 
+  goToSettings() {
+    window.location.hash = '#settings';
+  }
+
   renderCube(cube: DataCube): JSX.Element {
     return <ItemCard
       key={cube.name}
@@ -80,6 +84,9 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
         <button className="text-button" onClick={onOpenAbout}>
           {STRINGS.infoAndFeedback}
         </button>
+        <div className="icon-button" onClick={this.goToSettings.bind(this)}>
+         <SvgIcon svg={require('../../icons/full-settings.svg')}/>
+        </div>
       </HomeHeaderBar>
 
       <div className="container">

@@ -20,6 +20,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { Timezone } from 'chronoshift';
 import { SettingsMenu } from './settings-menu';
 import { findDOMNode } from '../../utils/test-utils/index';
+import { DataCubeMock } from '../../../common/models/mocks';
 
 
 describe('SettingsMenu', () => {
@@ -29,6 +30,7 @@ describe('SettingsMenu', () => {
 
     var renderedComponent = TestUtils.renderIntoDocument(
       <SettingsMenu
+        dataCube={DataCubeMock.twitter()}
         onClose={null}
         openOn={openOn}
         changeTimezone={() => {}}

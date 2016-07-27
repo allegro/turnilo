@@ -34,6 +34,7 @@ describe.skip('SideDrawer', () => {
         selectedDataCube={null}
         onOpenAbout={null}
         onClose={null}
+        viewType="cube"
       />
     );
 

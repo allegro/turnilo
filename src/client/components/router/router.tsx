@@ -126,7 +126,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     // Default route
     if (crumbs.length === 0) {
       let defaultFragment = this.getDefaultFragment(children);
-      window.location.hash = hash + '/' + defaultFragment;
+      this.replaceHash(hash + '/' + defaultFragment);
       return;
     }
 

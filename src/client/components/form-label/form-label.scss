@@ -35,16 +35,17 @@
     background: rgba($brand, .22);
     cursor: pointer;
 
-    &:hover {
-      background: rgba($brand, .3);
-    }
-
+    &:hover,
     &.visible {
       background: $brand;
 
       .icon path {
         fill: $white;
       }
+    }
+
+    &.visible:hover {
+      background: darken($brand, 6);
     }
 
     &.error {

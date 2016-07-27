@@ -33,9 +33,7 @@ export interface SideDrawerProps extends React.Props<any> {
   onClose: Fn;
   customization?: Customization;
   itemHrefFn?: (oldDataCube?: DataCube, newDataCube?: DataCube) => string;
-  isHome?: boolean;
-  isCube?: boolean;
-  isLink?: boolean;
+  viewType: 'home' | 'cube' | 'link' | 'settings';
 }
 
 export interface SideDrawerState {
@@ -77,15 +75,20 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     window.location.hash = '#';
   }
 
-  renderOverviewLink() {
-    const { isHome, isCube, isLink } = this.props;
+  onOpenSettings() {
+    window.location.hash = '#settings';
+  }
 
-    if (!isCube && !isLink && !isHome) return null;
+  renderOverviewLink() {
+    const { viewType } = this.props;
 
     return <div className="home-container">
-      <div className={classNames('home-link', {selected: isHome})} onClick={this.onHomeClick.bind(this)}>
+      <div
+        className={classNames('home-link', {selected: viewType === 'home'})}
+        onClick={this.onHomeClick.bind(this)}
+      >
         <SvgIcon svg={require('../../icons/home.svg')}/>
-        <span>{isCube || isHome ? 'Home' : 'Overview'}</span>
+        <span>{viewType === 'link' ? 'Overview' : 'Home'}</span>
       </div>
     </div>;
   }
@@ -104,15 +107,26 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       };
     });
 
-    var infoAndFeedback = [{
-      name: 'info',
-      title: STRINGS.infoAndFeedback,
-      tooltip: 'Learn more about Pivot',
-      onClick: () => {
-        onClose();
-        onOpenAbout();
+    var infoAndFeedback = [
+      {
+        name: 'settings',
+        title: STRINGS.settings,
+        tooltip: 'Settings',
+        onClick: () => {
+          onClose();
+          this.onOpenSettings();
+        }
+      },
+      {
+        name: 'info',
+        title: STRINGS.infoAndFeedback,
+        tooltip: 'Learn more about Pivot',
+        onClick: () => {
+          onClose();
+          onOpenAbout();
+        }
       }
-    }];
+    ];
 
     var customLogoSvg: string = null;
     if (customization && customization.customLogoSvg) {
@@ -127,9 +141,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
         navLinks={navLinks}
         iconSvg={require('../../icons/full-cube.svg')}
       />
-      <NavList
-        navLinks={infoAndFeedback}
-      />
+      <NavList navLinks={infoAndFeedback}/>
+
     </div>;
   }
 }

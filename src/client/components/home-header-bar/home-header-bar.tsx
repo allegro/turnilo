@@ -72,11 +72,6 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
   render() {
     var { user, onNavClick, customization, title } = this.props;
 
-    // One day
-    //<div className="icon-button" onClick={this.handleSettings.bind(this)}>
-    //  <SvgIcon className="not-implemented" svg={require('../../icons/full-settings.svg')}/>
-    //</div>
-
     var userButton: JSX.Element = null;
     if (user) {
       userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>

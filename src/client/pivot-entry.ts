@@ -38,7 +38,6 @@ interface Config {
   version: string;
   user: any;
   appSettings: AppSettingsJS;
-  readOnly: boolean;
 }
 
 var config: Config = (window as any)['__CONFIG__'];
@@ -83,8 +82,7 @@ if (config.appSettings.dataCubes.length || view === '#settings') {
         {
           version,
           user: config.user,
-          appSettings,
-          readOnly: config.readOnly
+          appSettings
         }
       ),
       container

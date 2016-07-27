@@ -37,7 +37,6 @@ export interface PivotApplicationProps extends React.Props<any> {
   user?: User;
   maxFilters?: number;
   maxSplits?: number;
-  readOnly?: boolean;
   appSettings: AppSettings;
 }
 
@@ -179,11 +178,11 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   getViewTypeFromHash(hash: string): ViewType {
-    const { readOnly } = this.props;
+    const { user } = this.props;
     const appSettings = this.state.appSettings || this.props.appSettings;
     var viewType = this.parseHash(hash)[0];
     if (!viewType || viewType === HOME) return appSettings.linkViewConfig ? LINK : HOME;
-    if (viewType === SETTINGS) return readOnly ? HOME : SETTINGS;
+    if (viewType === SETTINGS && user.allow['settings']) return SETTINGS;
     if (appSettings.linkViewConfig && viewType === LINK) return LINK;
     return CUBE;
   }
@@ -304,9 +303,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         onClose={closeSideDrawer}
         customization={customization}
         itemHrefFn={this.sideBarHrefFn}
-        isCube={viewType === CUBE && !linkViewConfig}
-        isLink={viewType === LINK || !!linkViewConfig}
-        isHome={viewType === HOME}
+        viewType={viewType}
       />;
     }
 
