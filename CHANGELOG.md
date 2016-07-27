@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.27
+
+- Added gear icon links to settings
+
 ## 0.9.26
 
 - DataCube `subsetFilter` -> `subsetFormula`
