@@ -24,21 +24,24 @@ const basicString = require('../utils/basic-string');
 
 const TEST_PORT = 18082;
 var pivotServer;
+var druidServer;
 
 describe('druid reintrospect on load', function () {
   this.timeout(5000);
 
   before((done) => {
-    mockDruid(28085, {
+    druidServer = mockDruid({
       onDataSources: function() {
         return {
           json: ['wikipedia']
         }
       }
-    }).then(function() {
+    }, function(err, port) {
+      if (err) return done(err);
+
       pivotServer = spawnServer(`bin/pivot -c test/configs/introspection-none.yaml -p ${TEST_PORT}`, {
         env: {
-          DRUID_HOST: 'localhost:28085'
+          DRUID_HOST: `localhost:${port}`
         }
       });
 
@@ -83,6 +86,7 @@ describe('druid reintrospect on load', function () {
 
   after(() => {
     pivotServer.kill();
+    druidServer.kill();
   });
 
 });

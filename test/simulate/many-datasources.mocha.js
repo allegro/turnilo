@@ -23,6 +23,7 @@ const extend = require('../utils/extend');
 
 const TEST_PORT = 18082;
 var pivotServer;
+var druidServer;
 
 var wikipediaSegmentMetadataResponse = [
   {
@@ -106,8 +107,8 @@ var githubSegmentMetadataResponse = [
 ];
 
 var hasData = false;
-function startDruid() {
-  return mockDruid(28083, {
+function startDruid(callback) {
+  return mockDruid({
     onDataSources: function() {
       if (hasData) {
         return {
@@ -161,7 +162,7 @@ function startDruid() {
           throw new Error(`unknown query ${query.queryType}`);
       }
     }
-  });
+  }, callback);
 }
 
 describe('many datasources', function () {
@@ -170,7 +171,7 @@ describe('many datasources', function () {
   before((done) => {
     pivotServer = spawnServer(`bin/pivot -c test/configs/two-little-datasources.yaml -p ${TEST_PORT}`, {
       env: {
-        DRUID_HOST: 'localhost:28083'
+        DRUID_HOST: 'localhost:28082'
       }
     });
 
@@ -194,9 +195,11 @@ describe('many datasources', function () {
   });
 
   it('works with GET / after Druid start (no data)', (testComplete) => {
-    startDruid()
-      .delay(21000) // needed for now because pivot only check connectivity every 20s
-      .then(() => {
+    druidServer = startDruid((err, port) => {
+      if (err) testComplete(err);
+
+      // timeout needed for now because pivot only check connectivity every 20s
+      setTimeout(() => {
         request.get(`http://localhost:${TEST_PORT}/`, (err, response, body) => {
           expect(err).to.equal(null);
           expect(response.statusCode).to.equal(200);
@@ -224,12 +227,14 @@ describe('many datasources', function () {
             testComplete();
           });
         });
+      }, 21000);
 
-      });
+    });
   });
 
   after(() => {
     pivotServer.kill();
+    druidServer.kill();
   });
 
 });

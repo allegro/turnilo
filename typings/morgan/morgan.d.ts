@@ -2,6 +2,7 @@
 // Project: https://github.com/expressjs/morgan
 // Definitions by: James Roland Cabresos <https://github.com/staticfunction>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Modified by: Vadim Ogievetsky
 
 /// <reference path="../express/express.d.ts" />
 declare module "morgan" {
@@ -10,6 +11,8 @@ declare module "morgan" {
 
     module morgan {
 
+        export function compile(format: string): any;
+        export function format(name: string, format: string): express.RequestHandler;
         export function token<T>(name: string, callback: (req: express.Request, res: express.Response) => T): express.RequestHandler;
 
         /***
@@ -87,7 +90,7 @@ declare module "morgan" {
      */
     function morgan(format: 'tiny', options?: morgan.Options): express.RequestHandler;
 
-    function morgan(custom: (req: express.Request, res: express.Response) => string): express.RequestHandler
+    function morgan(custom: (self: any, req: express.Request, res: express.Response) => string): express.RequestHandler
 
     export = morgan;
 }

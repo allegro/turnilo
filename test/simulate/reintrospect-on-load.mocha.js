@@ -23,6 +23,7 @@ const extractConfig = require('../utils/extract-config');
 
 const TEST_PORT = 18082;
 var pivotServer;
+var druidServer;
 
 var segmentMetadataResponse = [
   {
@@ -76,7 +77,7 @@ describe('reintrospect on load', function () {
   var expectedSegmentMetadataRunNumber = 1;
 
   before((done) => {
-    mockDruid(28082, {
+    druidServer = mockDruid({
       onDataSources: function() {
         return {
           json: ['wikipedia']
@@ -109,10 +110,12 @@ describe('reintrospect on load', function () {
             throw new Error(`unknown query ${query.queryType}`);
         }
       }
-    }).then(function() {
+    }, function(err, port) {
+      if (err) return done(err);
+
       pivotServer = spawnServer(`bin/pivot -c test/configs/reintrospect-on-load.yaml -p ${TEST_PORT}`, {
         env: {
-          DRUID_HOST: 'localhost:28082'
+          DRUID_HOST: `localhost:${port}`
         }
       });
 
@@ -235,6 +238,7 @@ describe('reintrospect on load', function () {
 
   after(() => {
     pivotServer.kill();
+    druidServer.kill();
   });
 
 });

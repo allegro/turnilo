@@ -42,13 +42,19 @@ describe('ServerSettings', () => {
         port: 9091,
         serverRoot: '/pivots',
         pageMustLoadTimeout: 901
-      }
-      ,
+      },
       {
         port: 9091,
         serverHost: '10.20.30.40',
         serverRoot: '/pivots',
         pageMustLoadTimeout: 901
+      },
+      {
+        port: 9091,
+        trackingUrl: 'http://mytracker-is-cool.io/trackz',
+        trackingContext: {
+          service: 'me'
+        }
       }
     ]);
   });

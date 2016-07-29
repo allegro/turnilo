@@ -23,6 +23,7 @@ const extractConfig = require('../utils/extract-config');
 
 const TEST_PORT = 18082;
 var pivotServer;
+var druidServer;
 
 var segmentMetadataResponse = [
   {
@@ -75,7 +76,7 @@ describe('list refresh on load with datasource', function () {
   var dataLoaded = false;
 
   before((done) => {
-    mockDruid(28090, {
+    druidServer = mockDruid({
       onDataSources: function() {
         return {
           json: dataLoaded ? ['wikipedia'] : []
@@ -112,12 +113,15 @@ describe('list refresh on load with datasource', function () {
             throw new Error(`unknown query ${query.queryType}`);
         }
       }
-    }).then(function() {
+    }, function(err, port) {
+      if (err) return done(err);
+
       pivotServer = spawnServer(`bin/pivot -c test/configs/list-refresh-on-load-datasource.yaml -p ${TEST_PORT}`, {
         env: {
-          DRUID_HOST: 'localhost:28090'
+          DRUID_HOST: `localhost:${port}`
         }
       });
+
       pivotServer.onHook(`Cluster 'druid' could not introspect 'wiki' because: No such datasource`, done);
     });
   });
@@ -160,6 +164,7 @@ describe('list refresh on load with datasource', function () {
 
   after(() => {
     pivotServer.kill();
+    druidServer.kill();
   });
 
 });

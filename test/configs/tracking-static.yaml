@@ -1,0 +1,26 @@
+trackingUrl: 'http://localhost:28090'
+trackingContext:
+  service: pivot/test
+  something: cool
+
+dataCubes:
+  - name: wiki
+    title: Wikipedia Static
+    clusterName: native
+    source: ../../assets/data/wikiticker-2015-09-12-sampled.json
+    timeAttribute: time
+    defaultDuration: P1D
+
+    introspection: autofill-all
+
+    dimensions:
+      - name: time
+        type: TIME
+        kind: time
+        formula: $time
+
+    measures:
+
+      - name: count
+        title: Rows
+        formula: $main.count()

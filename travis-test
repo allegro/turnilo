@@ -24,6 +24,12 @@ if grep -rq '\.\./server/' ./src/common
     exit 1
 fi
 
+if grep -rq 'fsevents' ./npm-shrinkwrap.json
+  then
+    echo "'fsevents' reference found in npm-shrinkwrap.json. Please fix"
+    exit 1
+fi
+
 gulp all
 
 mocha test/basic test/simulate

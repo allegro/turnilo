@@ -24,21 +24,16 @@ export interface ServerSettingsValue {
   port?: number;
   serverHost?: string;
   serverRoot?: string;
+  requestLogFormat?: string;
+  trackingUrl?: string;
+  trackingContext?: Lookup<string>;
   pageMustLoadTimeout?: number;
   iframe?: Iframe;
   trustProxy?: TrustProxy;
   strictTransportSecurity?: StrictTransportSecurity;
 }
 
-export interface ServerSettingsJS {
-  port?: number;
-  serverHost?: string;
-  serverRoot?: string;
-  pageMustLoadTimeout?: number;
-  iframe?: Iframe;
-  trustProxy?: TrustProxy;
-  strictTransportSecurity?: StrictTransportSecurity;
-}
+export type ServerSettingsJS = ServerSettingsValue;
 
 function parseIntFromPossibleString(x: any) {
   return typeof x === 'string' ? parseInt(x, 10) : x;
@@ -55,6 +50,7 @@ var check: Class<ServerSettingsValue, ServerSettingsJS>;
 export class ServerSettings implements Instance<ServerSettingsValue, ServerSettingsJS> {
   static DEFAULT_PORT = 9090;
   static DEFAULT_SERVER_ROOT = '/pivot';
+  static DEFAULT_REQUEST_LOG_FORMAT = 'common';
   static DEFAULT_PAGE_MUST_LOAD_TIMEOUT = 800;
   static IFRAME_VALUES: Iframe[] = ["allow", "deny"];
   static DEFAULT_IFRAME: Iframe = "allow";
@@ -72,6 +68,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       port,
       serverHost,
       serverRoot,
+      requestLogFormat,
+      trackingUrl,
+      trackingContext,
       pageMustLoadTimeout,
       iframe,
       trustProxy,
@@ -85,6 +84,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       port: parseIntFromPossibleString(port),
       serverHost,
       serverRoot,
+      requestLogFormat,
+      trackingUrl,
+      trackingContext,
       pageMustLoadTimeout,
       iframe,
       trustProxy,
@@ -95,6 +97,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
   public port: number;
   public serverHost: string;
   public serverRoot: string;
+  public requestLogFormat: string;
+  public trackingUrl: string;
+  public trackingContext: Lookup<string>;
   public pageMustLoadTimeout: number;
   public iframe: Iframe;
   public trustProxy: TrustProxy;
@@ -108,6 +113,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
 
     this.serverHost = parameters.serverHost;
     this.serverRoot = parameters.serverRoot;
+    this.requestLogFormat = parameters.requestLogFormat;
+    this.trackingUrl = parameters.trackingUrl;
+    this.trackingContext = parameters.trackingContext;
     this.pageMustLoadTimeout = parameters.pageMustLoadTimeout;
 
     this.iframe = parameters.iframe;
@@ -125,6 +133,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       port: this.port,
       serverHost: this.serverHost,
       serverRoot: this.serverRoot,
+      requestLogFormat: this.requestLogFormat,
+      trackingUrl: this.trackingUrl,
+      trackingContext: this.trackingContext,
       pageMustLoadTimeout: this.pageMustLoadTimeout,
       iframe: this.iframe,
       trustProxy: this.trustProxy,
@@ -138,6 +149,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
     };
     if (this.serverHost) js.serverHost = this.serverHost;
     if (this.serverRoot) js.serverRoot = this.serverRoot;
+    if (this.requestLogFormat) js.requestLogFormat = this.requestLogFormat;
+    if (this.trackingUrl) js.trackingUrl = this.trackingUrl;
+    if (this.trackingContext) js.trackingContext = this.trackingContext;
     if (this.pageMustLoadTimeout) js.pageMustLoadTimeout = this.pageMustLoadTimeout;
     if (this.iframe) js.iframe = this.iframe;
     if (this.trustProxy) js.trustProxy = this.trustProxy;
@@ -158,6 +172,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       this.port === other.port &&
       this.serverHost === other.serverHost &&
       this.serverRoot === other.serverRoot &&
+      this.requestLogFormat === other.requestLogFormat &&
+      this.trackingUrl === other.trackingUrl &&
+      Boolean(this.trackingContext) === Boolean(other.trackingContext) &&
       this.pageMustLoadTimeout === other.pageMustLoadTimeout &&
       this.iframe === other.iframe &&
       this.trustProxy === other.trustProxy &&
@@ -170,6 +187,18 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
 
   public getServerRoot(): string {
     return this.serverRoot || ServerSettings.DEFAULT_SERVER_ROOT;
+  }
+
+  public getRequestLogFormat(): string {
+    return this.requestLogFormat || ServerSettings.DEFAULT_REQUEST_LOG_FORMAT;
+  }
+
+  public getTrackingUrl(): string {
+    return this.trackingUrl || null;
+  }
+
+  public getTrackingContext(): Lookup<string> {
+    return this.trackingContext || null;
   }
 
   public getPageMustLoadTimeout(): number {

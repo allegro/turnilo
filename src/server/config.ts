@@ -20,7 +20,7 @@ import { arraySum } from '../common/utils/general/general';
 import { Cluster, DataCube, SupportedType, AppSettings } from '../common/models/index';
 import { clusterToYAML, dataCubeToYAML } from '../common/utils/yaml-helper/yaml-helper';
 import { ServerSettings, ServerSettingsJS } from './models/server-settings/server-settings';
-import { loadFileSync, SettingsManager, SettingsLocation, Logger, CONSOLE_LOGGER, NULL_LOGGER } from './utils/index';
+import { loadFileSync, SettingsManager, SettingsLocation, Logger, LOGGER, initLogger, Tracker, TRACKER, initTracker } from './utils/index';
 
 const AUTH_MODULE_VERSION = 1;
 const PACKAGE_FILE = path.join(__dirname, '../../package.json');
@@ -163,12 +163,9 @@ if (numSettingsInputs > 1) {
 export const PRINT_CONFIG = Boolean(parsedArgs['print-config']);
 export const START_SERVER = !PRINT_CONFIG;
 
-export const LOGGER: Logger = START_SERVER ? CONSOLE_LOGGER : NULL_LOGGER;
+if (START_SERVER) initLogger();
 
-if (START_SERVER) {
-  LOGGER.log(`Starting Pivot v${VERSION}`);
-}
-
+// Load server settings
 var serverSettingsFilePath = parsedArgs['config'];
 
 if (parsedArgs['examples']) {
@@ -222,6 +219,22 @@ if (auth && auth !== 'none') {
   });
 }
 export const AUTH = authMiddleware;
+
+// --- Tracker --------------------------------
+
+if (START_SERVER) {
+  var trackingUrl = SERVER_SETTINGS.getTrackingUrl();
+  if (trackingUrl) {
+    initTracker(VERSION, trackingUrl, SERVER_SETTINGS.getTrackingContext());
+  }
+
+  LOGGER.log(`Starting Pivot v${VERSION}`);
+  TRACKER.track({
+    eventType: 'pivot_init',
+    metric: 'init',
+    value: 1
+  });
+}
 
 // --- Location -------------------------------
 

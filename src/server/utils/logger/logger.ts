@@ -20,16 +20,16 @@ export interface Logger {
   error: (line: string) => void;
 }
 
-export const CONSOLE_LOGGER: Logger = {
-  log: console.log.bind(console),
-  warn: console.warn.bind(console),
-  error: console.error.bind(console)
-};
-
 function noop() {}
 
-export const NULL_LOGGER: Logger = {
+export const LOGGER: Logger = {
   log: noop,
   warn: noop,
   error: noop
 };
+
+export function initLogger(): void {
+  LOGGER.log = console.log.bind(console);
+  LOGGER.warn = console.warn.bind(console);
+  LOGGER.error = console.error.bind(console);
+}
