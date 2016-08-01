@@ -19,8 +19,8 @@ import * as nopt from 'nopt';
 import { arraySum } from '../common/utils/general/general';
 import { Cluster, DataCube, SupportedType, AppSettings } from '../common/models/index';
 import { clusterToYAML, dataCubeToYAML } from '../common/utils/yaml-helper/yaml-helper';
-import { ServerSettings, ServerSettingsJS } from './models/server-settings/server-settings';
-import { loadFileSync, SettingsManager, SettingsLocation, Logger, LOGGER, initLogger, Tracker, TRACKER, initTracker } from './utils/index';
+import { ServerSettings } from './models/index';
+import { loadFileSync, SettingsManager, SettingsLocation, LOGGER, initLogger, TRACKER, initTracker } from './utils/index';
 
 const AUTH_MODULE_VERSION = 1;
 const PACKAGE_FILE = path.join(__dirname, '../../package.json');
@@ -127,7 +127,6 @@ function parseArgs() {
 }
 
 var parsedArgs = parseArgs();
-//console.log(parsedArgs);
 
 if (parsedArgs['help']) {
   exitWithMessage(USAGE);
@@ -192,7 +191,7 @@ if (parsedArgs['port']) {
 }
 
 export const VERBOSE = Boolean(parsedArgs['verbose'] || serverSettingsJS.verbose);
-export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS, anchorPath);
+export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS);
 
 // --- Auth -------------------------------
 

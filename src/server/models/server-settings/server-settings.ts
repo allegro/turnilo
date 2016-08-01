@@ -63,7 +63,7 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
     return isInstanceOf(candidate, ServerSettings);
   }
 
-  static fromJS(parameters: ServerSettingsJS, configFileDir?: string): ServerSettings {
+  static fromJS(parameters: ServerSettingsJS): ServerSettings {
     var {
       port,
       serverHost,
@@ -104,7 +104,6 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
   public iframe: Iframe;
   public trustProxy: TrustProxy;
   public strictTransportSecurity: StrictTransportSecurity;
-  public druidRequestDecorator: string;
 
   constructor(parameters: ServerSettingsValue) {
     var port = parameters.port || ServerSettings.DEFAULT_PORT;

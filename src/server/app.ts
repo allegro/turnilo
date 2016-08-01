@@ -163,7 +163,7 @@ if (process.env['PIVOT_ENABLE_SETTINGS']) {
 
 // View routes
 if (SERVER_SETTINGS.getIframe() === 'deny') {
-  app.use((req: PivotRequest, res: Response, next: Function) => {
+  app.use((req: Request, res: Response, next: Function) => {
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("Content-Security-Policy", "frame-ancestors 'none'");
     next();

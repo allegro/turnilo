@@ -22,8 +22,6 @@ const spawnServer = require('../utils/spawn-server');
 const eventCollector = require('../utils/event-collector');
 
 const $ = plywood.$;
-const ply = plywood.ply;
-const r = plywood.r;
 
 const TEST_PORT = 18082;
 var pivotServer;
@@ -41,119 +39,118 @@ describe('tracking', function () {
     });
   });
 
-  it('sends the right events', (testComplete) => {
-    Q.nfcall(request.get, `http://localhost:${TEST_PORT}/health`)
-    .then((res) => {
-      var response = res[0];
-      expect(response.statusCode).to.equal(200);
-      return Q.nfcall(request.get, `http://localhost:${TEST_PORT}/`);
-    })
-    .then((res) => {
-      var response = res[0];
-      expect(response.statusCode).to.equal(200);
+  it('sends the right events', () => {
+    return Q.nfcall(request.get, `http://localhost:${TEST_PORT}/health`)
+      .then((res) => {
+        var response = res[0];
+        expect(response.statusCode).to.equal(200);
+        return Q.nfcall(request.get, `http://localhost:${TEST_PORT}/`);
+      })
+      .then((res) => {
+        var response = res[0];
+        expect(response.statusCode).to.equal(200);
 
-      var body = res[1];
-      expect(body).to.contain('<title>Pivot');
+        var body = res[1];
+        expect(body).to.contain('<title>Pivot');
 
-      return Q.nfcall(request.post, {
-        url: `http://localhost:${TEST_PORT}/plywood`,
-        json: {
-          dataCube: 'wiki',
-          timezone: 'Etc/UTC',
-          expression: $('main').split('$channel', 'Channel')
-            .apply('Added', '$main.sum($added)')
-            .sort('$Added', 'descending')
-            .limit(3)
-        }
-      });
-    })
-    .then((res) => {
-      var response = res[0];
-      expect(response.statusCode).to.equal(200);
-
-      return Q.nfcall(request.post, {
-        url: `http://localhost:${TEST_PORT}/mkurl`,
-        json: {
-          domain: 'http://localhost:9090',
-          dataCube: 'wiki',
-          essence: {
-            visualization: 'totals',
+        return Q.nfcall(request.post, {
+          url: `http://localhost:${TEST_PORT}/plywood`,
+          json: {
+            dataCube: 'wiki',
             timezone: 'Etc/UTC',
-            filter: $('time').in(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS(),
-            pinnedDimensions: ["page"],
-            singleMeasure: 'count',
-            selectedMeasures: ["count", "added"],
-            splits: []
+            expression: $('main').split('$channel', 'Channel')
+              .apply('Added', '$main.sum($added)')
+              .sort('$Added', 'descending')
+              .limit(3)
           }
-        }
-      });
-    })
-    .then((res) => {
-      var response = res[0];
-      expect(response.statusCode).to.equal(200);
-    })
-    .delay(10000)
-    .then(() => {
-      var events = eventCollectorServer.getEvents();
-      events = events.map(e => {
-        expect(isNaN(new Date(e.timestamp))).to.equal(false);
-        delete e.timestamp; // it is variable
+        });
+      })
+      .then((res) => {
+        var response = res[0];
+        expect(response.statusCode).to.equal(200);
 
-        expect(typeof e.value).to.equal('number');
-        delete e.value; // it is variable
+        return Q.nfcall(request.post, {
+          url: `http://localhost:${TEST_PORT}/mkurl`,
+          json: {
+            domain: 'http://localhost:9090',
+            dataCube: 'wiki',
+            essence: {
+              visualization: 'totals',
+              timezone: 'Etc/UTC',
+              filter: $('time').in(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS(),
+              pinnedDimensions: ["page"],
+              singleMeasure: 'count',
+              selectedMeasures: ["count", "added"],
+              splits: []
+            }
+          }
+        });
+      })
+      .then((res) => {
+        var response = res[0];
+        expect(response.statusCode).to.equal(200);
+      })
+      .delay(10000)
+      .then(() => {
+        var events = eventCollectorServer.getEvents();
+        events = events.map(e => {
+          expect(isNaN(new Date(e.timestamp))).to.equal(false);
+          delete e.timestamp; // it is variable
 
-        expect(typeof e.version).to.equal('string');
-        delete e.version; // it is variable
+          expect(typeof e.value).to.equal('number');
+          delete e.value; // it is variable
 
-        return e;
-      });
+          expect(typeof e.version).to.equal('string');
+          delete e.version; // it is variable
 
-      expect(events).to.deep.equal([
-        {
-          "metric": "init",
-          "service": "pivot/test",
-          "something": "cool",
-          "type": "pivot_init"
-        },
-        {
-          "method": "GET",
-          "metric": "request/time",
-          "service": "pivot/test",
-          "something": "cool",
-          "status": "200",
-          "type": "request",
-          "url": "/health"
-        },
-        {
-          "method": "GET",
-          "metric": "request/time",
-          "service": "pivot/test",
-          "something": "cool",
-          "status": "200",
-          "type": "request",
-          "url": "/"
-        },
-        {
-          "method": "POST",
-          "metric": "request/time",
-          "service": "pivot/test",
-          "something": "cool",
-          "status": "200",
-          "type": "request",
-          "url": "/plywood"
-        },
-        {
-          "method": "POST",
-          "metric": "request/time",
-          "service": "pivot/test",
-          "something": "cool",
-          "status": "200",
-          "type": "request",
-          "url": "/mkurl"
-        }
-      ]);
-      testComplete();
-    }).done();
+          return e;
+        });
+
+        expect(events).to.deep.equal([
+          {
+            "metric": "init",
+            "service": "pivot/test",
+            "something": "cool",
+            "type": "pivot_init"
+          },
+          {
+            "method": "GET",
+            "metric": "request/time",
+            "service": "pivot/test",
+            "something": "cool",
+            "status": "200",
+            "type": "request",
+            "url": "/health"
+          },
+          {
+            "method": "GET",
+            "metric": "request/time",
+            "service": "pivot/test",
+            "something": "cool",
+            "status": "200",
+            "type": "request",
+            "url": "/"
+          },
+          {
+            "method": "POST",
+            "metric": "request/time",
+            "service": "pivot/test",
+            "something": "cool",
+            "status": "200",
+            "type": "request",
+            "url": "/plywood"
+          },
+          {
+            "method": "POST",
+            "metric": "request/time",
+            "service": "pivot/test",
+            "something": "cool",
+            "status": "200",
+            "type": "request",
+            "url": "/mkurl"
+          }
+        ]);
+      })
 
   });
 

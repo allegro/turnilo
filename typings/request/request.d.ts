@@ -99,18 +99,18 @@ declare module 'request' {
 			//start(): void;
 			//abort(): void;
 			pipeDest(dest: any): void;
-			setHeader(name: string, value: string, clobber?: boolean): Request;
-			setHeaders(headers: Headers): Request;
-			qs(q: Object, clobber?: boolean): Request;
+			setHeader(name: string, value: string, clobber?: boolean): this;
+			setHeaders(headers: Headers): this;
+			qs(q: Object, clobber?: boolean): this;
 			form(): FormData.FormData;
-			form(form: any): Request;
-			multipart(multipart: RequestPart[]): Request;
-			json(val: any): Request;
-			aws(opts: AWSOptions, now?: boolean): Request;
-			oauth(oauth: OAuthOptions): Request;
-			jar(jar: CookieJar): Request;
+			form(form: any): this;
+			multipart(multipart: RequestPart[]): this;
+			json(val: any): this;
+			aws(opts: AWSOptions, now?: boolean): this;
+			oauth(oauth: OAuthOptions): this;
+			jar(jar: CookieJar): this;
 
-			on(event: string, listener: Function): Request;
+			on(event: string, listener: Function): this;
 
 			write(buffer: Buffer, cb?: Function): boolean;
 			write(str: string, cb?: Function): boolean;

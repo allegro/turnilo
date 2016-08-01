@@ -134,6 +134,7 @@ function trackerFactory(trackerFactoryOptions: TrackerFactoryOptions): Tracker {
 
       if (user) {
         event['user_id'] = user.id;
+        event['user_email'] = user.email;
       }
 
       event['timestamp'] = timestamp();
