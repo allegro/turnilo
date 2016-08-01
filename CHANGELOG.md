@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.29
+
+- New plywood + more back compat tests
+
 ## 0.9.28
 
 - Added basic request tracking ability
