@@ -333,7 +333,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
       if (longForm.addSubsetFilter) {
         var subsetExpression = subsetFormula ? Expression.fromJSLoose(parameters.subsetFormula) : Expression.TRUE;
-        subsetFormula = subsetExpression.and(filterFromLongForm(longForm)).simplify().toString();
+        subsetFormula = JSON.stringify(subsetExpression.and(filterFromLongForm(longForm)).simplify());
       }
     }
 
@@ -987,7 +987,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return this.defaultPinnedDimensions || (OrderedSet([]) as any);
   }
 
-  change(propertyName: string, newValue: any): DataCube {
+  public change(propertyName: string, newValue: any): DataCube {
     var v = this.valueOf();
 
     if (!v.hasOwnProperty(propertyName)) {

@@ -111,7 +111,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     } else if (isLiteral(selection)) {
       this.relative = false;
     } else {
-      throw new Error(`invalid expression ${selection.toString()}`);
+      throw new Error(`invalid expression ${selection}`);
     }
     this.selection = selection;
     this.exclude = parameters.exclude || false;

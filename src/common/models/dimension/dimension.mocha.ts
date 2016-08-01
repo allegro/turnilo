@@ -59,24 +59,44 @@ describe('Dimension', () => {
     ]);
   });
 
-  it('throws on invalid type', () => {
-    var dimJS = {
-        name: 'mixed granularities',
-        title: 'Mixed Granularities',
+  describe('back compat', () => {
+    it('upgrades expression to formula', () => {
+      expect(Dimension.fromJS({
+        name: 'country',
+        title: 'important countries',
+        expression: '$country',
+        kind: 'string'
+      } as any).toJS()).to.deep.equal({
+        name: 'country',
+        title: 'important countries',
+        formula: '$country',
+        kind: 'string'
+      });
+    });
+
+  });
+
+  describe('errors', () => {
+    it('throws on invalid type', () => {
+      var dimJS = {
+          name: 'mixed granularities',
+          title: 'Mixed Granularities',
+          kind: 'string',
+          granularities: [5, 50, 'P1W', 800, 1000]
+        };
+
+      expect(() => { Dimension.fromJS(dimJS); }).to.throw("granularities must have the same type of actions");
+
+      var dimJS2 = {
+        name: 'bad type',
+        title: 'Bad Type',
         kind: 'string',
-        granularities: [5, 50, 'P1W', 800, 1000]
+        granularities: [false, true, true, false, false]
       };
 
-    expect(() => { Dimension.fromJS(dimJS); }).to.throw("granularities must have the same type of actions");
+      expect(() => { Dimension.fromJS(dimJS2); }).to.throw("input should be of type number, string, or action");
 
-    var dimJS2 = {
-      name: 'bad type',
-      title: 'Bad Type',
-      kind: 'string',
-      granularities: [false, true, true, false, false]
-    };
-
-    expect(() => { Dimension.fromJS(dimJS2); }).to.throw("input should be of type number, string, or action");
+    });
 
   });
 

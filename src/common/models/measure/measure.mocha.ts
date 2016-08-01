@@ -36,6 +36,21 @@ describe('Measure', () => {
     ]);
   });
 
+  describe('back compat', () => {
+    it('upgrades expression to formula', () => {
+      expect(Measure.fromJS({
+        name: 'avg_price',
+        title: 'Average Price',
+        expression: '$main.average($price)'
+      } as any).toJS()).to.deep.equal({
+        name: 'avg_price',
+        title: 'Average Price',
+        formula: '$main.average($price)'
+      });
+    });
+
+  });
+
   describe('.measuresFromAttributeInfo', () => {
     it('works with sum', () => {
       var attribute = AttributeInfo.fromJS({
