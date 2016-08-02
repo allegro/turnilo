@@ -53,6 +53,7 @@ describe('Essence', () => {
     timeAttribute: 'time',
     defaultTimezone: 'Etc/UTC',
     defaultFilter: { op: 'literal', value: true },
+    defaultSplits: 'time',
     defaultDuration: 'P3D',
     defaultSortMeasure: 'count',
     defaultPinnedDimensions: ['twitterHandle'],
@@ -225,9 +226,28 @@ describe('Essence', () => {
         "selectedMeasures": [
           "count"
         ],
-        "splits": [],
+        "splits": [
+          {
+            "bucketAction": {
+              "action": "timeBucket",
+              "duration": "PT1H"
+            },
+            "expression": {
+              "name": "time",
+              "op": "ref"
+            },
+            "sortAction": {
+              "action": "sort",
+              "direction": "ascending",
+              "expression": {
+                "name": "time",
+                "op": "ref"
+              }
+            }
+          }
+        ],
         "timezone": "Etc/UTC",
-        "visualization": "totals"
+        "visualization": "line-chart"
       });
     });
 

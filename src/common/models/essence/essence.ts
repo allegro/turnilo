@@ -164,12 +164,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   static fromDataCube(dataCube: DataCube, context: EssenceContext): Essence {
-    var splits = Splits.EMPTY;
-    var { defaultSplits } = dataCube.options;
-    if (defaultSplits) {
-      splits = Splits.fromJS(defaultSplits, dataCube);
-    }
-
     var essence = new Essence({
       dataCube: context.dataCube,
       visualizations: context.visualizations,
@@ -177,7 +171,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       visualization: null,
       timezone: dataCube.getDefaultTimezone(),
       filter: null,
-      splits,
+      splits: dataCube.getDefaultSplits(),
       multiMeasureMode: false,
       singleMeasure: dataCube.getDefaultSortMeasure(),
       selectedMeasures: dataCube.getDefaultSelectedMeasures(),
@@ -188,11 +182,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       highlight: null
     });
 
-    if (defaultSplits) {
-      essence = essence.updateSplitsWithFilter();
-    }
-
-    return essence;
+    return essence.updateSplitsWithFilter();
   }
 
   static fromJS(parameters: EssenceJS, context?: EssenceContext): Essence {
@@ -725,7 +715,9 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public updateSplitsWithFilter(): Essence {
     var value = this.valueOf();
-    value.splits = value.splits.updateWithFilter(this.getEffectiveFilter(), this.dataCube.dimensions);
+    var newSplits = value.splits.updateWithFilter(this.getEffectiveFilter(), this.dataCube.dimensions);
+    if (value.splits === newSplits) return this;
+    value.splits = newSplits;
     return new Essence(value);
   }
 
