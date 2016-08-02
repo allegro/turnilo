@@ -18,28 +18,29 @@ require('./link-view.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Expression, $ } from 'plywood';
+import { Expression, $, helper } from 'plywood';
 import { classNames } from '../../utils/dom/dom';
 import { Fn } from '../../../common/utils/general/general';
 import { Colors, Clicker, Essence, Filter, FilterClause, Stage, Measure,
   VisualizationProps, LinkViewConfig, LinkItem, User, Customization } from '../../../common/models/index';
 
 import * as localStorage from '../../utils/local-storage/local-storage';
+import { STRINGS } from "../../config/constants";
 
 import { LinkHeaderBar } from '../../components/link-header-bar/link-header-bar';
 import { ManualFallback } from '../../components/manual-fallback/manual-fallback';
 import { PinboardPanel } from '../../components/pinboard-panel/pinboard-panel';
-import { ButtonGroup } from '../../components/button-group/button-group';
 import { Preset } from '../../components/time-filter-menu/time-filter-menu';
 import { ResizeHandle } from '../../components/resize-handle/resize-handle';
+import { Dropdown } from "../../components/dropdown/dropdown";
 import { getVisualizationComponent } from '../../visualizations/index';
 
 var $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
 var latestPresets: Preset[] = [
-  { name: '5M',  selection: $maxTime.timeRange('PT5M', -1) },
-  { name: '1H',  selection: $maxTime.timeRange('PT1H', -1) },
-  { name: '1D',  selection: $maxTime.timeRange('P1D', -1)  },
-  { name: '1W',  selection: $maxTime.timeRange('P1W', -1)  }
+  { name: STRINGS.last5Minutes,  selection: $maxTime.timeRange('PT5M', -1) },
+  { name: STRINGS.lastHour,  selection: $maxTime.timeRange('PT1H', -1) },
+  { name: STRINGS.lastDay,  selection: $maxTime.timeRange('P1D', -1)  },
+  { name: STRINGS.lastWeek,  selection: $maxTime.timeRange('P1W', -1)  }
 ];
 
 export interface LinkViewLayout {
@@ -223,18 +224,27 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     this.globalResizeListener();
   }
 
+  selectPreset(p: Preset) {
+    this.clicker.changeTimeSelection(p.selection);
+  }
+
   renderPresets() {
     const { essence } = this.state;
+    const PresetDropdown = Dropdown.specialize<Preset>();
 
-    var presetToButton = (preset: Preset) => {
-      return {
-        isSelected: preset.selection.equals(essence.getTimeSelection()),
-        title: preset.name,
-        onClick: this.clicker.changeTimeSelection.bind(this, preset.selection),
-        key: preset.name
-      };
-    };
-    return <ButtonGroup groupMembers={latestPresets.map(presetToButton)} />;
+    var selected = helper.find(latestPresets, p => p.selection.equals(essence.getTimeSelection()));
+    return <PresetDropdown
+      items={latestPresets}
+      selectedItem={selected}
+      equal={(a, b) => {
+          if (a === b) return true;
+          if (!a !== !b) return false;
+          return a.selection === b.selection;
+        }
+      }
+      renderItem={(p) => p ? p.name : ""}
+      onSelect={this.selectPreset.bind(this)}
+    />;
   }
 
   renderLinkPanel(style: React.CSSProperties) {

@@ -39,6 +39,7 @@ import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
 import { HighlightString } from '../highlight-string/highlight-string';
 import { SearchableTile, TileAction } from '../searchable-tile/searchable-tile';
+import { TileHeaderIcon } from "../tile-header/tile-header";
 
 const TOP_N = 100;
 const FOLDER_BOX_HEIGHT = 30;
@@ -535,18 +536,22 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       maxHeight
     };
 
-    var icons = [{
+    var icons: TileHeaderIcon[] = [{
       name: 'search',
       ref: 'search',
       onClick: this.toggleSearch.bind(this),
       svg: require('../../icons/full-search.svg'),
       active: showSearch
-    },
-    {
-      name: 'close',
-      onClick: onClose,
-      svg: require('../../icons/full-remove.svg')
     }];
+
+    if (onClose !== null) {
+      icons.push({
+        name: 'close',
+        ref: 'close',
+        onClick: onClose,
+        svg: require('../../icons/full-remove.svg')
+      });
+    }
 
     var actions: TileAction[] = null;
 
