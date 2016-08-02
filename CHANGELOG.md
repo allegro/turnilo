@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.32
+
+- Add `--server-host` command line var
+- Add `--server-root` command line var
+
 ## 0.9.31
 
 - Fix `defaultSplits` in `dataCube` 

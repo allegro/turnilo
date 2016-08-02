@@ -69,6 +69,8 @@ General arguments:
 Server arguments:
 
   -p, --port <port-number>     The port pivot will run on (default: ${ServerSettings.DEFAULT_PORT})
+      --server-host <host>     The host on which to listen on (default: all hosts)
+      --server-root <root>     A custom server root to listen on (default ${ServerSettings.DEFAULT_SERVER_ROOT}) 
       
 Data connection options:      
   
@@ -97,7 +99,11 @@ function parseArgs() {
       "help": Boolean,
       "version": Boolean,
       "verbose": Boolean,
+
       "port": Number,
+      "server-host": String,
+      "server-root": String,
+
       "examples": Boolean,
       "example": String, // deprecated
       "config": String,
@@ -188,6 +194,12 @@ if (serverSettingsFilePath) {
 
 if (parsedArgs['port']) {
   serverSettingsJS.port = parsedArgs['port'];
+}
+if (parsedArgs['server-host']) {
+  serverSettingsJS.serverHost = parsedArgs['server-host'];
+}
+if (parsedArgs['server-root']) {
+  serverSettingsJS.serverRoot = parsedArgs['server-root'];
 }
 
 export const VERBOSE = Boolean(parsedArgs['verbose'] || serverSettingsJS.verbose);
