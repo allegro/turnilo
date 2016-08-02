@@ -96,7 +96,7 @@ The timeout to set on the queries in ms. Default: 40000
 
 **sourceListScan** ('disable' | 'auto')
 
-Should the sources of this cluster be automatically scanned and new sources added as data cubes. Default: 'disable'
+Should the sources of this cluster be automatically scanned and new sources added as data cubes. Default: 'auto'
 
 **sourceListRefreshOnLoad** (boolean)
 
