@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.33
+
+- Fix CSS for small screens
+
 ## 0.9.32
 
 - Add `--server-host` command line var
