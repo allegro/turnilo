@@ -27,6 +27,10 @@
 
   .link-panel {
     @include pin-left($left-panel-width - $tile-margin-h);
+    @include for-small-screens {
+      padding: 0 1px 0 0;
+      font-size: 0.9em;
+    }
 
     padding: $tile-margin-v $tile-margin-h;
 
@@ -69,6 +73,11 @@
   }
 
   .center-panel {
+    @include for-small-screens {
+      top: 0;
+      bottom: 0;
+    }
+
     position: absolute;
     top: $tile-margin-v;
     bottom: $tile-margin-v;
@@ -109,6 +118,10 @@
     .center-main {
       @include unpin-top($control-tile-height + 1px + $control-tile-height + $small-tile-margin);
 
+      @include for-small-screens {
+        @include unpin-top($control-tile-height + 2px + $control-tile-height);
+      }
+
       .visualization {
         @extend %module;
         @include pin-full;
@@ -133,6 +146,10 @@
 
   .pinboard-panel {
     @include pin-right($pinboard-width);
+    @include for-small-screens {
+      margin-bottom: 0;
+    }
+
     margin-bottom: $tile-margin-v - 1px;
 
     .pinboard-measure-tile,

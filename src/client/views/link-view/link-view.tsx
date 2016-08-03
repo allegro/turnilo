@@ -65,6 +65,7 @@ export interface LinkViewState {
   visualizationStage?: Stage;
   menuStage?: Stage;
   layout?: LinkViewLayout;
+  deviceSize?: string;
 }
 
 const MIN_PANEL_WIDTH = 240;
@@ -169,7 +170,13 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     var containerDOM = ReactDOM.findDOMNode(container);
     var visualizationDOM = ReactDOM.findDOMNode(visualization);
     if (!containerDOM || !visualizationDOM) return;
+
+    let deviceSize = 'large';
+    if (window.innerWidth <= 1250) deviceSize = 'medium';
+    if (window.innerWidth <= 1080) deviceSize = 'small';
+
     this.setState({
+      deviceSize,
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
       visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect())
     });
@@ -287,7 +294,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     var clicker = this.clicker;
 
     var { getUrlPrefix, onNavClick, linkViewConfig, user, customization } = this.props;
-    var { linkItem, essence, visualizationStage, layout } = this.state;
+    var { deviceSize, linkItem, essence, visualizationStage, layout } = this.state;
 
     if (!linkItem) return null;
 
@@ -318,6 +325,14 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       pinboardPanel: {width: layout.pinboardWidth}
     };
 
+    if (deviceSize === 'small') {
+      styles = {
+        linkMeasurePanel: {width: 200},
+        centerPanel: {left: 200, right: 200},
+        pinboardPanel: {width: 200}
+      };
+    }
+
     return <div className='link-view'>
       <LinkHeaderBar
         title={linkViewConfig.title}
@@ -330,14 +345,14 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       <div className="container" ref='container'>
         {this.renderLinkPanel(styles.linkMeasurePanel)}
 
-        <ResizeHandle
+        {deviceSize !== 'small' ?  <ResizeHandle
           side="left"
           initialValue={layout.linkPanelWidth}
           onResize={this.onLinkPanelResize.bind(this)}
           onResizeEnd={this.onPanelResizeEnd.bind(this)}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
-        />
+        /> : null}
 
         <div className='center-panel' style={styles.centerPanel}>
           <div className='center-top-bar'>
@@ -353,14 +368,14 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
           </div>
         </div>
 
-        <ResizeHandle
+        {deviceSize !== 'small' ?  <ResizeHandle
           side="right"
           initialValue={layout.pinboardWidth}
           onResize={this.onPinboardPanelResize.bind(this)}
           onResizeEnd={this.onPanelResizeEnd.bind(this)}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
-        />
+        /> : null}
 
         <PinboardPanel
           style={styles.pinboardPanel}
