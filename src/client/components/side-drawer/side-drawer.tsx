@@ -21,7 +21,7 @@ import * as ReactDOM from 'react-dom';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
-import { DataCube, Customization } from '../../../common/models/index';
+import { DataCube, Customization, User } from '../../../common/models/index';
 import { NavLogo } from '../nav-logo/nav-logo';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { NavList } from '../nav-list/nav-list';
@@ -29,6 +29,7 @@ import { NavList } from '../nav-list/nav-list';
 export interface SideDrawerProps extends React.Props<any> {
   selectedDataCube: DataCube;
   dataCubes: DataCube[];
+  user: User;
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
@@ -94,7 +95,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   render() {
-    var { onClose, selectedDataCube, dataCubes, onOpenAbout, customization, itemHrefFn } = this.props;
+    var { onClose, selectedDataCube, dataCubes, onOpenAbout, customization, itemHrefFn, user } = this.props;
 
     var navLinks = dataCubes.map(ds => {
       var href = (itemHrefFn && itemHrefFn(selectedDataCube, ds)) || ('#' + ds.name);
@@ -107,8 +108,10 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       };
     });
 
-    var infoAndFeedback = [
-      {
+    var infoAndFeedback: any[] = [];
+
+    if (user && user.allow['settings']) {
+      infoAndFeedback.push({
         name: 'settings',
         title: STRINGS.settings,
         tooltip: 'Settings',
@@ -116,17 +119,18 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
           onClose();
           this.onOpenSettings();
         }
-      },
-      {
-        name: 'info',
-        title: STRINGS.infoAndFeedback,
-        tooltip: 'Learn more about Pivot',
-        onClick: () => {
-          onClose();
-          onOpenAbout();
-        }
+      });
+    }
+
+    infoAndFeedback.push({
+      name: 'info',
+      title: STRINGS.infoAndFeedback,
+      tooltip: 'Learn more about Pivot',
+      onClick: () => {
+        onClose();
+        onOpenAbout();
       }
-    ];
+    });
 
     var customLogoSvg: string = null;
     if (customization && customization.customLogoSvg) {

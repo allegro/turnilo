@@ -302,6 +302,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         onOpenAbout={this.openAboutModal.bind(this)}
         onClose={closeSideDrawer}
         customization={customization}
+        user={user}
         itemHrefFn={this.sideBarHrefFn}
         viewType={viewType}
       />;

@@ -30,6 +30,7 @@ describe.skip('SideDrawer', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <SideDrawer
+        user={null}
         dataCubes={null}
         selectedDataCube={null}
         onOpenAbout={null}
