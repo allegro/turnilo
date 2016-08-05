@@ -30,6 +30,7 @@ function formatFnFactory(format: string): (n: number) => string {
 export interface MeasureValue {
   name: string;
   title?: string;
+  units?: string;
   formula?: string;
   format?: string;
 }
@@ -37,6 +38,7 @@ export interface MeasureValue {
 export interface MeasureJS {
   name: string;
   title?: string;
+  units?: string;
   formula?: string;
   format?: string;
 }
@@ -147,6 +149,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return new Measure({
       name,
       title: parameters.title,
+      units: parameters.units,
       formula: parameters.formula || (typeof parameterExpression === 'string' ? parameterExpression : null) || $('main').sum($(name)).toString(),
       format: parameters.format
     });
@@ -155,6 +158,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
 
   public name: string;
   public title: string;
+  public units: string;
   public formula: string;
   public expression: Expression;
   public format: string;
@@ -165,6 +169,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
+    this.units = parameters.units;
 
     var formula = parameters.formula;
     if (!formula) throw new Error('measure must have formula');
@@ -181,6 +186,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return {
       name: this.name,
       title: this.title,
+      units: this.units,
       formula: this.formula,
       format: this.format
     };
@@ -192,6 +198,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
       title: this.title,
       formula: this.formula
     };
+    if (this.units) js.units = this.units;
     if (this.format !== Measure.DEFAULT_FORMAT) js.format = this.format;
     return js;
   }
@@ -208,6 +215,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return Measure.isMeasure(other) &&
       this.name === other.name &&
       this.title === other.title &&
+      this.units === other.units &&
       this.formula === other.formula &&
       this.format === other.format;
   }
@@ -224,7 +232,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return this.formatFn(datum[this.name] as number);
   }
 
-  public change(propertyName: string, newValue: any): Measure {
+  public change(propertyName: string, newValue: any): this {
     var v = this.valueOf();
 
     if (!v.hasOwnProperty(propertyName)) {
@@ -232,14 +240,26 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     }
 
     (v as any)[propertyName] = newValue;
-    return new Measure(v);
+    return (new Measure(v) as any);
   }
 
-  public changeTitle(newTitle: string): Measure {
+  public getTitle(): string {
+    return this.title;
+  }
+
+  public getTitleWithUnits(): string {
+    if (this.units) {
+      return `${this.title} (${this.units})`;
+    } else {
+      return this.title;
+    }
+  }
+
+  public changeTitle(newTitle: string): this {
     return this.change('title', newTitle);
   }
 
-  public changeFormula(newFormula: string): Measure {
+  public changeFormula(newFormula: string): this {
     return this.change('formula', newFormula);
   }
 

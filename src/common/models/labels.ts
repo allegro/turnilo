@@ -64,6 +64,10 @@ export const MEASURE = {
     description: `The title for this measure in the UI. Can be anything and is safe
     to change at any time.`
   },
+  units: {
+    label: `Units`,
+    description: `The units for this measure. To be shown alongside the title.`
+  },
   formula: {
     label: `Formula`,
     description: `The <a href="http://plywood.imply.io/expressions" target="_blank">

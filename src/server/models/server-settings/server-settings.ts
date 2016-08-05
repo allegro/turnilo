@@ -31,6 +31,8 @@ export interface ServerSettingsValue {
   iframe?: Iframe;
   trustProxy?: TrustProxy;
   strictTransportSecurity?: StrictTransportSecurity;
+  auth?: string;
+  settingsUri?: string;
 }
 
 export type ServerSettingsJS = ServerSettingsValue;
@@ -74,7 +76,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       pageMustLoadTimeout,
       iframe,
       trustProxy,
-      strictTransportSecurity
+      strictTransportSecurity,
+      auth,
+      settingsUri
     } = parameters;
 
     if (serverRoot && serverRoot[0] !== '/') serverRoot = '/' + serverRoot;
@@ -90,7 +94,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       pageMustLoadTimeout,
       iframe,
       trustProxy,
-      strictTransportSecurity
+      strictTransportSecurity,
+      auth,
+      settingsUri
     });
   }
 
@@ -104,6 +110,8 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
   public iframe: Iframe;
   public trustProxy: TrustProxy;
   public strictTransportSecurity: StrictTransportSecurity;
+  public auth: string;
+  public settingsUri: string;
 
   constructor(parameters: ServerSettingsValue) {
     var port = parameters.port || ServerSettings.DEFAULT_PORT;
@@ -125,6 +133,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
 
     this.strictTransportSecurity = parameters.strictTransportSecurity;
     ensureOneOfOrNull('strictTransportSecurity', this.strictTransportSecurity, ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES);
+
+    this.auth = parameters.auth;
+    this.settingsUri = parameters.settingsUri;
   }
 
   public valueOf(): ServerSettingsValue {
@@ -138,7 +149,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       pageMustLoadTimeout: this.pageMustLoadTimeout,
       iframe: this.iframe,
       trustProxy: this.trustProxy,
-      strictTransportSecurity: this.strictTransportSecurity
+      strictTransportSecurity: this.strictTransportSecurity,
+      auth: this.auth,
+      settingsUri: this.settingsUri
     };
   }
 
@@ -155,6 +168,8 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
     if (this.iframe) js.iframe = this.iframe;
     if (this.trustProxy) js.trustProxy = this.trustProxy;
     if (this.strictTransportSecurity) js.strictTransportSecurity = this.strictTransportSecurity;
+    if (this.auth) js.auth = this.auth;
+    if (this.settingsUri) js.settingsUri = this.settingsUri;
     return js;
   }
 
@@ -177,7 +192,9 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
       this.pageMustLoadTimeout === other.pageMustLoadTimeout &&
       this.iframe === other.iframe &&
       this.trustProxy === other.trustProxy &&
-      this.strictTransportSecurity === other.strictTransportSecurity;
+      this.strictTransportSecurity === other.strictTransportSecurity &&
+      this.auth === other.auth &&
+      this.settingsUri === other.settingsUri;
   }
 
   public getServerHost(): string {

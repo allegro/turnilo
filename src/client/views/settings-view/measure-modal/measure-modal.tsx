@@ -17,7 +17,6 @@
 require('./measure-modal.css');
 
 import * as React from 'react';
-import { Fn } from '../../../../common/utils/general/general';
 import { classNames, enterKey } from '../../../utils/dom/dom';
 import { List } from 'immutable';
 
@@ -141,6 +140,9 @@ export class MeasureModal extends React.Component<MeasureModalProps, MeasureModa
 
         {makeLabel('title')}
         {makeTextInput('title', /^.+$/, !isCreating)}
+
+        {makeLabel('units')}
+        {makeTextInput('units')}
 
         {makeLabel('formula')}
         {makeTextInput('formula')}

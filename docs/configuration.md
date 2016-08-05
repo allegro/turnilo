@@ -362,6 +362,10 @@ Changing this property will break any URLs that someone might have generated tha
 
 The title for this measure in the UI. Can be anything and is safe to change at any time.
 
+**units** (string)
+
+The units for this measure. To be shown alongside the title.
+
 **formula** (string - plywood expression)
 
 The [Plywood expression](http://plywood.imply.io/expressions) for this dimension. By default it is `$main.sum($name)` where *name* is the name of the measure.

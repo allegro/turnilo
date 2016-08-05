@@ -20,6 +20,7 @@ import { immutableEqual } from 'immutable-class';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
+import { Duration } from 'chronoshift';
 import { r, $, ply, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction, SortAction,
   PlywoodRange, NumberRangeJS, NumberRange, Range, NumberBucketAction } from 'plywood';
 import { Essence, Splits, Colors, FilterClause, Dimension, Stage, Filter, Measure, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';
@@ -528,7 +529,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
     const { registerDownloadableDataset, essence, stage } = props;
-    const { splits, timezone } = essence;
+    const { splits, timezone, dataCube } = essence;
 
     var existingDatasetLoad = this.state.datasetLoad;
     var newState: LineChartState = {};
@@ -553,7 +554,23 @@ export class LineChart extends BaseVisualization<LineChartState> {
         newState.continuousDimension = continuousDimension;
 
         var axisRange = essence.getEffectiveFilter(LineChart.id).getExtent(continuousDimension.expression) as PlywoodRange;
-        axisRange = axisRange ? axisRange : this.getXAxisRange(essence, continuousDimension, dataset);
+        if (axisRange) {
+          // Special treatment for realtime data, i.e. time data where the maxTime is within Duration of the filter end
+          var maxTime = dataCube.getMaxTimeDate();
+          var continuousBucketAction = continuousSplit.bucketAction;
+          if (maxTime && continuousBucketAction instanceof TimeBucketAction) {
+            var continuousDuration = continuousBucketAction.duration;
+            var axisRangeEnd = axisRange.end as Date;
+            var axisRangeEndFloor = continuousDuration.floor(axisRangeEnd, timezone);
+            var axisRangeEndCeil = continuousDuration.shift(axisRangeEndFloor, timezone);
+            if (maxTime && axisRangeEndFloor < maxTime && maxTime < axisRangeEndCeil) {
+              axisRange = Range.fromJS({ start: axisRange.start, end: axisRangeEndCeil });
+            }
+          }
+        } else {
+          // If there is no axis range: compute it from the data
+          axisRange = this.getXAxisRange(essence, continuousDimension, dataset);
+        }
 
         if (axisRange) {
           newState.axisRange = axisRange;
@@ -591,7 +608,9 @@ export class LineChart extends BaseVisualization<LineChartState> {
       let end = (myDataset[myDataset.length - 1][key] as NumberRange | TimeRange).end;
 
       // right now dataset might not be sorted properly
-      if (start < end ) return Range.fromJS({start, end});
+      if (start < end) {
+        return Range.fromJS({ start, end });
+      }
     }
 
     return null;

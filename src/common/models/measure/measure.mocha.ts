@@ -32,6 +32,12 @@ describe('Measure', () => {
         name: 'avg_price',
         title: 'Average Price',
         formula: '$main.average($price)'
+      },
+      {
+        name: 'latency',
+        title: 'Latency',
+        units: 'ms',
+        formula: '$main.sum($latency)'
       }
     ]);
   });

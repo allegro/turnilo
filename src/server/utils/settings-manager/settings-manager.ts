@@ -16,21 +16,13 @@
 
 import * as Q from 'q';
 import { External, Dataset, basicExecutorFactory, helper } from 'plywood';
-import { inlineVars, pluralIfNeeded } from '../../../common/utils/general/general';
+import { pluralIfNeeded } from '../../../common/utils/general/general';
 import { AppSettings, Cluster, DataCube } from '../../../common/models/index';
-import { MANIFESTS } from '../../../common/manifests/index';
 import { Logger } from '../logger/logger';
-import { loadFileSync } from '../file/file';
+import { SettingsStore } from '../settings-store/settings-store';
 import { FileManager } from '../file-manager/file-manager';
 import { ClusterManager } from '../cluster-manager/cluster-manager';
 import { updater } from '../updater/updater';
-
-export interface SettingsLocation {
-  location: 'local' | 'transient';
-  readOnly: boolean;
-  uri?: string;
-  initAppSettings?: AppSettings;
-}
 
 export interface SettingsManagerOptions {
   logger: Logger;
@@ -48,59 +40,40 @@ export class SettingsManager {
   public logger: Logger;
   public verbose: boolean;
   public anchorPath: string;
-  public settingsLocation: SettingsLocation;
+  public settingsStore: SettingsStore;
   public appSettings: AppSettings;
   public fileManagers: FileManager[];
   public clusterManagers: ClusterManager[];
   public currentWork: Q.Promise<any>;
   public initialLoadTimeout: number;
 
-  constructor(settingsLocation: SettingsLocation, options: SettingsManagerOptions) {
+  constructor(settingsStore: SettingsStore, options: SettingsManagerOptions) {
     var logger = options.logger;
     this.logger = logger;
     this.verbose = Boolean(options.verbose);
     this.anchorPath = options.anchorPath;
 
-    this.settingsLocation = settingsLocation;
+    this.settingsStore = settingsStore;
     this.fileManagers = [];
     this.clusterManagers = [];
 
     this.initialLoadTimeout = options.initialLoadTimeout || 30000;
     this.appSettings = AppSettings.BLANK;
 
-    switch (settingsLocation.location) {
-      case 'transient':
-        this.currentWork = Q(null)
-          .then(() => {
-            return settingsLocation.initAppSettings ? this.reviseSettings(settingsLocation.initAppSettings) : null;
-          })
-          .catch(e => {
-            logger.error(`Fatal settings initialization error: ${e.message}`);
-            throw e;
-          });
-        break;
-
-      case 'local':
-        this.currentWork = Q.fcall(() => {
-          var appSettingsJS = loadFileSync(settingsLocation.uri, 'yaml');
-          appSettingsJS = inlineVars(appSettingsJS, process.env);
-          return AppSettings.fromJS(appSettingsJS, { visualizations: MANIFESTS });
-        })
-          .then((appSettings) => {
-            return this.reviseSettings(appSettings);
-          })
-          .catch(e => {
-            logger.error(`Fatal settings load error: ${e.message}`);
-            throw e;
-          });
-
-        break;
-
-      default:
-        throw new Error(`unknown location ${settingsLocation.location}`);
-    }
+    this.currentWork = settingsStore.readSettings()
+      .then((appSettings) => {
+        return this.reviseSettings(appSettings);
+      })
+      .catch(e => {
+        logger.error(`Fatal settings load error: ${e.message}`);
+        throw e;
+      });
 
     this.makeMaxTimeCheckTimer();
+  }
+
+  public isWritable(): boolean {
+    return Boolean(this.settingsStore.writeSettings);
   }
 
   private getClusterManagerFor(clusterName: string): ClusterManager {
@@ -253,9 +226,9 @@ export class SettingsManager {
   }
 
   updateSettings(newSettings: AppSettings): Q.Promise<any> {
-    if (this.settingsLocation.readOnly) return Q.reject(new Error('must be writable'));
+    if (!this.settingsStore.writeSettings) return Q.reject(new Error('must be writable'));
 
-    this.appSettings = newSettings.attachExecutors((dataCube) => {
+    var loadedNewSettings = newSettings.attachExecutors((dataCube) => {
       if (dataCube.clusterName === 'native') {
         var fileManager = this.getFileManagerFor(dataCube.source);
         if (fileManager) {
@@ -280,7 +253,10 @@ export class SettingsManager {
       return null;
     });
 
-    return Q(null); // ToDo: actually save settings
+    return this.settingsStore.writeSettings(loadedNewSettings)
+      .then(() => {
+        this.appSettings = loadedNewSettings;
+      });
   }
 
   generateDataCubeName(external: External): string {

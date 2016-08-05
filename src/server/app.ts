@@ -133,11 +133,13 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
   next();
 });
 
+var hasSettings = SETTINGS_MANAGER.isWritable();
+
 if (AUTH) {
   app.use(AUTH);
 } else {
   app.use((req: PivotRequest, res: Response, next: Function) => {
-    if (process.env['PIVOT_ENABLE_SETTINGS']) {
+    if (hasSettings) {
       req.user = {
         id: 'admin',
         email: 'admin@admin.com',
@@ -157,7 +159,7 @@ addRoutes('/plyql', plyqlRoutes);
 addRoutes('/mkurl', mkurlRoutes);
 addRoutes('/error', errorRoutes);
 
-if (process.env['PIVOT_ENABLE_SETTINGS']) {
+if (hasSettings) {
   addGuardedRoutes('/settings', 'settings', settingsRoutes);
 }
 

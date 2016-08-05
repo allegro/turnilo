@@ -32,7 +32,7 @@ describe('config duplicate names', function () {
       }
     });
 
-    pivotServer.onHook([`Fatal settings load error:`, `Pivot is listening on address`], done);
+    pivotServer.onHook([`Fatal settings load error:`], done);
   });
 
   it('throws correct error', (testComplete) => {

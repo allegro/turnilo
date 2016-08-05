@@ -93,8 +93,8 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
 
     var shownMeasures = dataCube.measures.toArray();
     if (searchText) {
-      shownMeasures = shownMeasures.filter((r) => {
-        return r.title.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
+      shownMeasures = shownMeasures.filter((m) => {
+        return m.getTitleWithUnits().toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
       });
     }
 
@@ -107,7 +107,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
         onClick={this.measureClick.bind(this, measure)}
       >
         <Checkbox type={checkboxType} selected={selected}/>
-        <HighlightString className="label" text={measure.title} highlightText={searchText}/>
+        <HighlightString className="label" text={measure.getTitleWithUnits()} highlightText={searchText}/>
       </div>;
     });
 
