@@ -31,8 +31,8 @@ function typeToKind(type: string): string {
   return type.toLowerCase().replace(/_/g, '-').replace(/-range$/, '');
 }
 
-const NEVER_BUCKET = 'neverBucket';
-export type BucketingStrategy = 'alwaysBucket' | 'neverBucket';
+const DEFAULT_NO_BUCKET = 'defaultNoBucket';
+export type BucketingStrategy = 'defaultBucket' | 'defaultNoBucket';
 
 export interface DimensionValue {
   name: string;
@@ -85,17 +85,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     };
     var granularities = parameters.granularities;
     if (granularities) {
-      if (!Array.isArray(granularities) || granularities.length !== 5) {
-        throw new Error(`must have list of 5 granularities in dimension '${parameters.name}'`);
-      }
-
-      var runningActionType: string = null;
-      value.granularities = granularities.map((g) => {
-        var granularity = granularityFromJS(g);
-        if (runningActionType === null) runningActionType = granularity.action;
-        if (granularity.action !== runningActionType) throw new Error("granularities must have the same type of actions");
-        return granularity;
-      });
+      value.granularities = granularities.map(granularityFromJS);
     }
 
     var bucketedBy = parameters.bucketedBy;
@@ -105,6 +95,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
 
     var bucketingStrategy = parameters.bucketingStrategy;
     if (bucketingStrategy) {
+      if (bucketingStrategy === 'neverBucket') bucketingStrategy = 'defaultNoBucket';
+      if (bucketingStrategy === 'alwaysBucket') bucketingStrategy = 'defaultBucket';
       value.bucketingStrategy = bucketingStrategy;
     }
 
@@ -153,9 +145,17 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.url = parameters.url;
     }
 
-    if (parameters.granularities) {
-      if (parameters.granularities.length !== 5) throw new Error('there must be exactly 5 granularities');
-      this.granularities = parameters.granularities;
+    var granularities = parameters.granularities;
+    if (granularities) {
+      if (!Array.isArray(granularities) || granularities.length !== 5) {
+        throw new Error(`must have list of 5 granularities in dimension '${parameters.name}'`);
+      }
+      var runningActionType: string = null;
+      this.granularities = granularities.map((g) => {
+        if (runningActionType === null) runningActionType = g.action;
+        if (g.action !== runningActionType) throw new Error("granularities must have the same type of actions");
+        return g;
+      });
     }
     if (parameters.bucketedBy) this.bucketedBy = parameters.bucketedBy;
     if (parameters.bucketingStrategy) this.bucketingStrategy = parameters.bucketingStrategy;
@@ -212,8 +212,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.sortStrategy === other.sortStrategy;
   }
 
-  public canBucket(): boolean {
-    return this.isContinuous() && this.bucketingStrategy !== NEVER_BUCKET;
+  public canBucketByDefault(): boolean {
+    return this.isContinuous() && this.bucketingStrategy !== DEFAULT_NO_BUCKET;
   }
 
   public isContinuous() {

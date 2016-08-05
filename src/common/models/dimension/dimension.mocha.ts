@@ -37,7 +37,7 @@ describe('Dimension', () => {
         kind: 'string',
         url: 'https://www.country.com/%s',
         bucketedBy: 1,
-        bucketingStrategy: 'alwaysBucket'
+        bucketingStrategy: 'defaultBucket'
       },
       {
         name: 'time',
@@ -74,12 +74,44 @@ describe('Dimension', () => {
       });
     });
 
+    it('neverBucket -> default no bucket', () => {
+      expect(Dimension.fromJS({
+        name: 'country',
+        title: 'important countries',
+        expression: '$country',
+        kind: 'string',
+        bucketingStrategy: 'neverBucket'
+      } as any).toJS()).to.deep.equal({
+        name: 'country',
+        title: 'important countries',
+        formula: '$country',
+        kind: 'string',
+        bucketingStrategy: 'defaultNoBucket'
+      });
+    });
+
+    it('alwaysBucket -> default bucket', () => {
+      expect(Dimension.fromJS({
+        name: 'country',
+        title: 'important countries',
+        expression: '$country',
+        kind: 'string',
+        bucketingStrategy: 'alwaysBucket'
+      } as any).toJS()).to.deep.equal({
+        name: 'country',
+        title: 'important countries',
+        formula: '$country',
+        kind: 'string',
+        bucketingStrategy: 'defaultBucket'
+      });
+    });
+
   });
 
   describe('errors', () => {
     it('throws on invalid type', () => {
       var dimJS = {
-          name: 'mixed granularities',
+          name: 'mixed_granularities',
           title: 'Mixed Granularities',
           kind: 'string',
           granularities: [5, 50, 'P1W', 800, 1000]

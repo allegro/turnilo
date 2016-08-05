@@ -525,7 +525,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const dimension = split.getDimension(essence.dataCube.dimensions);
 
     var labels: JSX.Element[] = [];
-    if (dimension.canBucket()) {
+    if (dimension.canBucketByDefault()) {
       var lastIndex = data.length - 1;
       var ascending = split.sortAction.direction === SortAction.ASCENDING;
       var leftThing = ascending ? 'start' : 'end';
