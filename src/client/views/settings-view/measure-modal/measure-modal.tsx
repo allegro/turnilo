@@ -148,7 +148,7 @@ export class MeasureModal extends React.Component<MeasureModalProps, MeasureModa
       </form>
 
       <div className="buttons">
-        <Button className={classNames("save", {disabled: !canSave})} title="Save" type="primary" onClick={this.save.bind(this)}/>
+        <Button className={classNames("save", {disabled: !canSave})} title="OK" type="primary" onClick={this.save.bind(this)}/>
         <Button className="cancel" title="Cancel" type="secondary" onClick={this.props.onClose}/>
       </div>
 

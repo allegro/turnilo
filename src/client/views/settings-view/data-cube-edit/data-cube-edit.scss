@@ -58,6 +58,10 @@
         textarea {
           height: calc(100% - 10px);
           outline: none;
+          font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+          font-size: 13px;
+          line-height: 16px;
+          padding: 6px;
         }
       }
 
