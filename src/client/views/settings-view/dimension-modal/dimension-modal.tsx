@@ -55,6 +55,11 @@ export class DimensionModal extends React.Component<DimensionModalProps, Dimensi
     {label: 'String-geo', value: 'string-geo'}
   ];
 
+  static BUCKETING_STRATEGIES = [
+    {label: 'Bucket', value: Dimension.defaultBucket},
+    {label: 'Don’t Bucket', value: Dimension.defaultNoBucket}
+  ];
+
   constructor() {
     super();
     this.state = {
@@ -125,6 +130,7 @@ export class DimensionModal extends React.Component<DimensionModalProps, Dimensi
     if (!newDimension) return null;
 
     const isTime = newDimension.kind === 'time';
+    const isContinuous = newDimension.isContinuous();
 
     var makeLabel = FormLabel.simpleGenerator(LABELS, errors, true);
     var makeTextInput = ImmutableInput.simpleGenerator(newDimension, this.onChange.bind(this));
@@ -161,6 +167,9 @@ export class DimensionModal extends React.Component<DimensionModalProps, Dimensi
           valueToString={(value: any) => value ? value.map(granularityToString).join(', ') : undefined}
           stringToValue={(str: string) => str.split(/\s*,\s*/).map(granularityFromJS)}
         /> : null}
+
+        {isContinuous ? makeLabel('bucketingStrategy') : null}
+        {isContinuous ? makeDropDownInput('bucketingStrategy', DimensionModal.BUCKETING_STRATEGIES) : null}
 
       </form>
 

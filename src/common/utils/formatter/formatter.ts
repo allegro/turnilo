@@ -107,42 +107,48 @@ export function formatFilterClause(dimension: Dimension, clause: FilterClause, t
 }
 
 export function getFormattedClause(dimension: Dimension, clause: FilterClause, timezone: Timezone, verbose?: boolean): {title: string, values: string} {
-  var title = dimension.title;
+  var dimKind = dimension.kind;
   var values: string;
+  var clauseSet = clause.getLiteralSet();
 
-  switch (dimension.kind) {
+  function getClauseLabel() {
+    var dimTitle = dimension.title;
+    if (dimKind === 'time' && !verbose) return '';
+    if (clauseSet && clauseSet.elements.length > 1 && !verbose) return `${dimTitle}`;
+    return `${dimTitle}:`;
+  }
+
+  switch (dimKind) {
     case 'boolean':
     case 'number':
     case 'string':
       if (verbose) {
-        title += ':';
-        values = clause.getLiteralSet().toString();
+        values = clauseSet.toString();
       } else {
-        var setElements = clause.getLiteralSet().elements;
+        var setElements = clauseSet.elements;
         if (setElements.length > 1) {
           values = `(${setElements.length})`;
         } else {
-          title += ':';
           values = formatValue(setElements[0]);
         }
       }
       break;
 
     case 'time':
-      var timeRange = (clause.selection as LiteralExpression).value as TimeRange;
-      if (verbose) {
-        title += ':';
+      var selection = (clause.selection as LiteralExpression);
+      var selectionType = selection.type;
+      if (selectionType === 'TIME_RANGE') {
+        var timeRange = selection.value as TimeRange;
         values = formatTimeRange(timeRange, timezone, DisplayYear.IF_DIFF);
-      } else {
-        title = '';
-        values = formatTimeRange(timeRange, timezone, DisplayYear.IF_DIFF);
+      } else if (selectionType === "SET/TIME") {
+        values = clauseSet.toString();
       }
       break;
 
     default:
-      throw new Error(`unknown kind ${dimension.kind}`);
+      throw new Error(`unknown kind ${dimKind}`);
   }
 
-  return {title, values};
+  return {title: getClauseLabel(), values};
 }
 

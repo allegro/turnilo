@@ -18,7 +18,7 @@ require('./time-filter-menu.css');
 
 import * as React from 'react';
 import { Timezone, WallTime, Duration, second, minute, hour, day, week, month, year } from 'chronoshift';
-import { $, r, Expression, TimeRange } from 'plywood';
+import { $, r, Expression, LiteralExpression, TimeRange, Range, Set } from 'plywood';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { Clicker, Essence, Filter, FilterClause, Dimension } from '../../../common/models/index';
@@ -27,6 +27,10 @@ import { enterKey, classNames } from '../../utils/dom/dom';
 import { Button } from '../button/button';
 import { ButtonGroup } from '../button-group/button-group';
 import { DateRangePicker } from '../date-range-picker/date-range-picker';
+
+function makeDateIntoTimeRange(input: Date, timezone: Timezone): TimeRange {
+  return new TimeRange({ start: second.shift(input, timezone, - 1), end: second.shift(input, timezone, 1) });
+}
 
 export interface Preset {
   name: string;
@@ -98,6 +102,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     var timeSelection = filter.getSelection(dimensionExpression);
     var selectedTimeRangeSet = essence.getEffectiveFilter().getLiteralSet(dimensionExpression);
     var selectedTimeRange = (selectedTimeRangeSet && selectedTimeRangeSet.size() === 1) ? selectedTimeRangeSet.elements[0] : null;
+    if (selectedTimeRange && !Range.isRange(selectedTimeRange)) selectedTimeRange = makeDateIntoTimeRange(selectedTimeRange, timezone);
     var clause = filter.clauseForExpression(dimensionExpression);
 
     this.setState({
@@ -212,7 +217,18 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       >{preset.name}</button>;
     };
 
-    var previewTimeRange = essence.evaluateSelection(hoverPreset ? hoverPreset.selection : timeSelection);
+    var previewTimeRange: TimeRange = null;
+    if (timeSelection && timeSelection.type !== 'TIME_RANGE') {
+      let { value } = timeSelection as LiteralExpression;
+      if (!Set.isSet(value)) throw new Error(`Unrecognized filter value ${value}`);
+      if (value.size() !== 1) throw new Error(`Can only filter on one time`);
+
+      let time = value.elements[0];
+      previewTimeRange = makeDateIntoTimeRange(time, timezone);
+    } else {
+      previewTimeRange = essence.evaluateSelection(hoverPreset ? hoverPreset.selection : timeSelection);
+    }
+
     var previewText = previewTimeRange ? formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
     var maxTimeBasedPresets = <div>
       <div className="type">{STRINGS.latest}</div>

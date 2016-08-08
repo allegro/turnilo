@@ -281,9 +281,9 @@ If you mainly care about smaller intervals, you might want to set it to: `['PT1S
 
 Alternatively, if you mainly care about large intervals, you might want to try: `['P1D', 'P1W', 'P1M', 'P3M', 'P1Y']`
 
-**bucketingStrategy** ('alwaysBucket' | 'neverBucket')
+**bucketingStrategy** ('defaultBucket' | 'defaultNoBucket')
 
-Specify whether or not the dimension should be bucketed. If unspecified defaults to 'alwaysBucket' for time and numeric dimensions.
+Specify whether or not the dimension should be bucketed by default. If unspecified defaults to 'defaultBucket' for time and numeric dimensions.
 
 **sortStrategy** ('self' | `someMeasureName`)
 
