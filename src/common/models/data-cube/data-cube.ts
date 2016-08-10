@@ -166,6 +166,7 @@ export interface LongFormMeasure {
   aggregate: string;
   value: string;
   title: string;
+  units?: string;
 }
 
 function measuresFromLongForm(longForm: LongForm): Measure[] {
@@ -199,6 +200,7 @@ function measuresFromLongForm(longForm: LongForm): Measure[] {
     return new Measure({
       name,
       title: title,
+      units: measure.units,
       formula: myExpression.substitute((ex) => {
         if (ex instanceof RefExpression && ex.name === 'filtered') {
           return $('main').filter($(metricColumn).is(r(value)));

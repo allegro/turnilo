@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.35
+
+- Fixed unit forwarding
+
 ## 0.9.34
 
 - Added ability to customize `logoutHref`
