@@ -31,6 +31,7 @@ export interface CustomizationValue {
   customLogoSvg?: string;
   externalViews?: ExternalView[];
   timezones?: Timezone[];
+  logoutHref?: string;
 }
 
 export interface CustomizationJS {
@@ -39,6 +40,7 @@ export interface CustomizationJS {
   customLogoSvg?: string;
   externalViews?: ExternalViewValue[];
   timezones?: string[];
+  logoutHref?: string;
 }
 
 var check: Class<CustomizationValue, CustomizationJS>;
@@ -64,6 +66,8 @@ export class Customization implements Instance<CustomizationValue, Customization
     new Timezone("Pacific/Guam") // +10.0
   ];
 
+  static DEFAULT_LOGOUT_HREF = 'logout';
+
   static isCustomization(candidate: any): candidate is Customization {
     return isInstanceOf(candidate, Customization);
   }
@@ -72,8 +76,10 @@ export class Customization implements Instance<CustomizationValue, Customization
     var value: CustomizationValue = {
       title: parameters.title,
       headerBackground: parameters.headerBackground,
-      customLogoSvg: parameters.customLogoSvg
+      customLogoSvg: parameters.customLogoSvg,
+      logoutHref: parameters.logoutHref
     };
+
     var paramViewsJS = parameters.externalViews;
     var externalViews: ExternalView[] = null;
     if (Array.isArray(paramViewsJS)) {
@@ -96,6 +102,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   public externalViews: ExternalView[];
   public timezones: Timezone[];
   public title: string;
+  public logoutHref: string;
 
 
   constructor(parameters: CustomizationValue) {
@@ -104,6 +111,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     this.customLogoSvg = parameters.customLogoSvg || null;
     if (parameters.externalViews) this.externalViews = parameters.externalViews;
     if (parameters.timezones) this.timezones = parameters.timezones;
+    this.logoutHref = parameters.logoutHref;
   }
 
 
@@ -113,7 +121,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       headerBackground: this.headerBackground,
       customLogoSvg: this.customLogoSvg,
       externalViews: this.externalViews,
-      timezones: this.timezones
+      timezones: this.timezones,
+      logoutHref: this.logoutHref
     };
   }
 
@@ -128,6 +137,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     if (this.timezones) {
       js.timezones = this.timezones.map(tz => tz.toJS());
     }
+    if (this.logoutHref) js.logoutHref = this.logoutHref;
     return js;
   }
 
@@ -145,7 +155,8 @@ export class Customization implements Instance<CustomizationValue, Customization
       this.headerBackground === other.headerBackground &&
       this.customLogoSvg === other.customLogoSvg &&
       immutableArraysEqual(this.externalViews, other.externalViews) &&
-      immutableArraysEqual(this.timezones, other.timezones);
+      immutableArraysEqual(this.timezones, other.timezones) &&
+      this.logoutHref === other.logoutHref;
   }
 
   public getTitle(version: string): string {
@@ -163,6 +174,10 @@ export class Customization implements Instance<CustomizationValue, Customization
 
   public getTimezones() {
     return this.timezones || Customization.DEFAULT_TIMEZONES;
+  }
+
+  public getLogoutHref() {
+    return this.logoutHref || Customization.DEFAULT_LOGOUT_HREF;
   }
 }
 

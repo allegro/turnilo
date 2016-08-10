@@ -55,6 +55,12 @@ describe('Customization', () => {
         headerBackground: "green",
         externalViews: [],
         timezones: ["Pacific/Niue", "America/Los_Angeles"]
+      },
+      {
+        headerBackground: "green",
+        externalViews: [],
+        timezones: ["Pacific/Niue", "America/Los_Angeles"],
+        logoutHref: "/log-me-out-now"
       }
     ]);
   });

@@ -32,6 +32,7 @@ describe.skip('UserMenu', () => {
         onClose={null}
         openOn={null}
         user={null}
+        customization={null}
       />
     );
 

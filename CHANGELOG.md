@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.34
+
+- Added ability to customize `logoutHref`
+
 ## 0.9.33
 
 - Fix CSS for small screens

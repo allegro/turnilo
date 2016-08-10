@@ -213,7 +213,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderUserMenu() {
-    const { user } = this.props;
+    const { user, customization } = this.props;
     const { userMenuOpenOn } = this.state;
     if (!userMenuOpenOn) return null;
 
@@ -221,6 +221,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       openOn={userMenuOpenOn}
       onClose={this.onUserMenuClose.bind(this)}
       user={user}
+      customization={customization}
     />;
   }
 
