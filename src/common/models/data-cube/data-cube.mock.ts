@@ -98,6 +98,12 @@ export class DataCubeMock {
           name: 'twitterHandle',
           title: 'Twitter Handle',
           formula: '$twitterHandle'
+        },
+        {
+          kind: 'number',
+          name: 'tweetLength',
+          title: 'Tweet Length',
+          formula: '$tweetLength'
         }
       ],
       measures: [

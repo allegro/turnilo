@@ -17,7 +17,9 @@
 import { List } from 'immutable';
 import { $, SortAction } from 'plywood';
 import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
-import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
+import {
+  CircumstancesHandler
+} from '../../utils/circumstances-handler/circumstances-handler';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 
 var handler = CircumstancesHandler.EMPTY()
@@ -171,7 +173,7 @@ var handler = CircumstancesHandler.EMPTY()
   .when(CircumstancesHandler.haveAtLeastSplitKinds('time'))
   .then((splits: Splits, dataCube: DataCube) => {
     let timeSplit = splits.toArray().filter((split) => split.getDimension(dataCube.dimensions).kind === 'time')[0];
-    return Resolve.manual(3, 'Too many splits', [
+    return Resolve.manual(3, 'Too many splits on the line chart', [
       {
         description: `Remove all but the time split`,
         adjustment: {

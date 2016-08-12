@@ -595,26 +595,12 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   getXAxisRange(essence: Essence, continuousDimension: Dimension, dataset: Dataset): PlywoodRange {
     if (!dataset) return null;
-
     const key = continuousDimension.name;
 
-    if (dataset.data[0]['SPLIT']) {
-      return (dataset.data[0]['SPLIT'] as Dataset).data
-        .map(d => this.getXAxisRange(essence, continuousDimension, d['SPLIT'] as Dataset))
-        .reduce((a: PlywoodRange, b: PlywoodRange) => a ? a.union(b) : b);
-
-    } else {
-      let myDataset = dataset.data;
-      let start = (myDataset[0][key] as NumberRange | TimeRange).start;
-      let end = (myDataset[myDataset.length - 1][key] as NumberRange | TimeRange).end;
-
-      // right now dataset might not be sorted properly
-      if (start < end) {
-        return Range.fromJS({ start, end });
-      }
-    }
-
-    return null;
+    var firstDatum = dataset.data[0];
+    return (firstDatum['SPLIT'] as Dataset).data
+      .map(d => d['SPLIT'] ? this.getXAxisRange(essence, continuousDimension, d['SPLIT'] as Dataset) : (d as any)[key] as PlywoodRange)
+      .reduce((a: PlywoodRange, b: PlywoodRange) => a ? a.union(b) : b);
   }
 
   renderInternals() {

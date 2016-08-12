@@ -19,8 +19,15 @@ import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
 import { MANIFESTS } from "../../manifests/index";
-import { Essence, EssenceJS } from './essence';
+import { Essence, EssenceJS, VisStrategy } from './essence';
 import { DataCube, Introspection } from "../data-cube/data-cube";
+import { DataCubeMock } from "../data-cube/data-cube.mock";
+import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
+import { Splits } from "../splits/splits";
+import { SplitCombineMock } from "../split-combine/split-combine.mock";
+import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
+import { SplitCombine } from "../split-combine/split-combine";
+import { RefExpression } from "plywood";
 
 describe('Essence', () => {
   var dataCubeJS = {
@@ -273,6 +280,87 @@ describe('Essence', () => {
       var essence2 = Essence.fromHash(hash, context);
 
       expect(essence1.toJS()).to.deep.equal(essence2.toJS());
+    });
+  });
+
+  describe('vis picking', () => {
+
+    describe("#getBestVisualization", () => {
+      it("#getBestVisualization", () => {
+        var dimensions = DataCubeMock.twitter().dimensions;
+        var vis1 = Essence.getBestVisualization(MANIFESTS, DataCubeMock.twitter(), Splits.EMPTY, null, null);
+        expect(vis1.visualization.name).to.deep.equal("totals");
+
+        var vis2 = Essence.getBestVisualization(MANIFESTS, DataCubeMock.twitter(), Splits.fromJS(['tweetLength'], { dimensions }), null, TOTALS_MANIFEST);
+        expect(vis2.visualization.name).to.deep.equal("bar-chart");
+
+        var vis3 = Essence.getBestVisualization(MANIFESTS, DataCubeMock.twitter(), Splits.fromJS(['time'], { dimensions }), null, BAR_CHART_MANIFEST);
+        expect(vis3.visualization.name).to.deep.equal("line-chart");
+      });
+    });
+
+    describe("#changeSplits", () => {
+      var essence: Essence = null;
+
+      beforeEach(() => {
+        essence = Essence.fromJS({
+          visualization: null,
+          timezone: 'Etc/UTC',
+          pinnedDimensions: [],
+          selectedMeasures: [],
+          splits: []
+        }, {
+          dataCube: DataCubeMock.twitter(),
+          visualizations: MANIFESTS
+        });
+      });
+
+
+      var timeSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'time' }});
+      var tweetLengthSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'tweetLength' }});
+      var twitterHandleSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'twitterHandle' }});
+
+      it("defaults to bar chart with numeric dimension and is sorted on self", () => {
+        essence = essence.addSplit(tweetLengthSplit, VisStrategy.FairGame);
+        expect(essence.visualization.name).to.deep.equal("bar-chart");
+        expect((essence.splits.get(0).sortAction.expression as RefExpression).name).to.deep.equal('tweetLength');
+        expect(essence.visResolve.state).to.deep.equal("ready");
+      });
+
+      it("defaults to line chart with a time split", () => {
+        essence = essence.changeSplit(timeSplit, VisStrategy.FairGame);
+        expect(essence.visualization.name).to.deep.equal("line-chart");
+        expect(essence.visResolve.state).to.deep.equal("ready");
+      });
+
+      it("fall back with no splits", () => {
+        essence = essence.changeVisualization(BAR_CHART_MANIFEST);
+        expect(essence.visualization.name).to.deep.equal("bar-chart");
+        expect(essence.visResolve.state).to.deep.equal("manual");
+      });
+
+      it("in fair game, adding a string split to time split results in line chart", () => {
+        essence = essence.addSplit(timeSplit, VisStrategy.FairGame);
+        essence = essence.addSplit(twitterHandleSplit, VisStrategy.FairGame);
+        expect(essence.visualization.name).to.deep.equal("line-chart");
+        expect(essence.visResolve.state).to.deep.equal("ready");
+      });
+
+      it("gives existing vis a bonus", () => {
+        essence = essence.addSplit(timeSplit, VisStrategy.FairGame);
+        essence = essence.changeVisualization(BAR_CHART_MANIFEST);
+        expect(essence.visualization.name).to.deep.equal("bar-chart");
+        expect(essence.visResolve.state).to.deep.equal("ready");
+        essence = essence.addSplit(twitterHandleSplit, VisStrategy.UnfairGame);
+        expect(essence.visualization.name).to.deep.equal("bar-chart");
+        expect(essence.visResolve.state).to.deep.equal("ready");
+
+      });
+
+      it("falls back when can't handle measures", () => {
+        // todo
+      });
+
     });
   });
 });
