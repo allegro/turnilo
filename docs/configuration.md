@@ -524,7 +524,7 @@ Then in the measure definitions:
 ```yaml
       - name: revenue
         title: Revenue
-        formula: $main.custom('revenueSplice')
+        formula: $main.customAggregate('revenueSplice')
 ```
 
 Note that whichever method you chose you should not change the `name` attribute of your original measure as it will preserve the function of any bookmarks.
