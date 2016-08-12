@@ -40,6 +40,14 @@ $bar-height: 6px;
     }
   }
 
+  &.inverted {
+    .range-bar {
+      &.full { background-color: $brand; }
+      &.selected { background-color: $background-medium; }
+    }
+  }
+
+
   .range-handle {
     position: absolute;
   }

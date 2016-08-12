@@ -21,10 +21,10 @@ import * as ReactDOM from 'react-dom';
 
 import { $, Dataset, ply } from 'plywood';
 
-import { Essence, Dimension } from '../../../common/models/index';
+import { Essence, Dimension, Filter } from '../../../common/models/index';
 import { toSignificantDigits, getNumberOfWholeDigits } from '../../../common/utils/general/general';
 
-import { getXFromEvent, clamp } from '../../utils/dom/dom';
+import { getXFromEvent, clamp, classNames } from '../../utils/dom/dom';
 
 import { Loader } from '../loader/loader';
 import { QueryError } from '../query-error/query-error';
@@ -60,6 +60,7 @@ export interface NumberRangePickerProps extends React.Props<any> {
   dimension: Dimension;
   onRangeStartChange: (n: number) => void;
   onRangeEndChange: (n: number) => void;
+  exclude: boolean;
 }
 
 export interface NumberRangePickerState {
@@ -210,7 +211,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
   }
 
   render() {
-    const { start, end } = this.props;
+    const { start, end, exclude } = this.props;
     const { min, max, loading, error, step, rightBound, leftOffset } = this.state;
 
     var content: JSX.Element = null;
@@ -251,7 +252,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       </div>;
     }
 
-    return <div className="number-range-picker" ref="number-range-picker">
+    return <div className={classNames("number-range-picker", { 'inverted': exclude })} ref="number-range-picker">
       {content}
       {loading ? <Loader/> : null}
       {error ? <QueryError error={error}/> : null}

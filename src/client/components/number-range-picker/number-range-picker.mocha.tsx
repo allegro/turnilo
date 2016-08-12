@@ -33,6 +33,7 @@ describe('NumberRangePicker', () => {
         essence={EssenceMock.wikiTotals()}
         dimension={DimensionMock.countryURL()}
         onRangeEndChange={null}
+        exclude={false}
       />
     );
 

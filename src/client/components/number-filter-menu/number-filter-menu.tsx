@@ -219,6 +219,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
         end={end}
         dimension={dimension}
         essence={essence}
+        exclude={filterMode === Filter.EXCLUDED}
       />
 
       <div className="button-bar">
