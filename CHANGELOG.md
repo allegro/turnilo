@@ -5,6 +5,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 ## 0.9.36
 
 - Added ability to define custom extraction functions
+- Added ability to define custom druid context
 
 ## 0.9.35
 
