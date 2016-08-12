@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
+import * as yaml from 'js-yaml';
+
 import { $, AttributeInfo, RefExpression } from 'plywood';
-import { DataCube, Dimension, Measure, Cluster, AppSettings } from '../../../common/models/index';
-import { DATA_CUBE, DIMENSION, MEASURE, CLUSTER } from '../../../common/models/labels';
+import { DataCube, Dimension, Measure, Cluster, AppSettings, Collection, CollectionItem } from '../../../common/models/index';
+import { DATA_CUBE, DIMENSION, MEASURE, CLUSTER, COLLECTION, COLLECTION_ITEM } from '../../../common/models/labels';
 
 function spaces(n: number) {
   return (new Array(n + 1)).join(' ');
+}
+
+function extend(a: any, b: any): any {
+  for (let key in a) {
+    b[key] = a[key];
+  }
+
+  return b;
 }
 
 function yamlObject(lines: string[], indent = 2): string[] {
@@ -58,70 +68,49 @@ function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdde
   }
 }
 
+function getYamlPropAdder(object: any, labels: any, lines: string[], withComments = false) {
+  var adder = (propName: string, additionalOptions?: {defaultValue?: any}) => {
+    let propVerbiage = labels[propName];
+    let comment: string;
+
+    if (!propVerbiage) {
+      console.warn(`No labels for ${propName}, please fix this in 'common/models/labels.ts'`);
+      comment = '';
+    } else {
+      comment = propVerbiage.description;
+    }
+
+    let options = {object, propName, comment};
+
+    if (additionalOptions) options = extend(additionalOptions, options);
+
+    yamlPropAdder(lines, withComments, options);
+
+    return {add: adder};
+  };
+
+  return {add: adder};
+}
+
 export function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
   var lines: string[] = [
     `name: ${cluster.name}`
   ];
 
-  yamlPropAdder(lines, withComments, {
-    object: cluster,
-    propName: 'type',
-    comment: CLUSTER.type.description
-  });
+  var props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
 
-  yamlPropAdder(lines, withComments, {
-    object: cluster,
-    propName: 'host',
-    comment: CLUSTER.host.description
-  });
+  props
+    .add('type')
+    .add('host')
+    .add('version')
+    .add('timeout', {defaultValue: Cluster.DEFAULT_TIMEOUT})
+    .add('sourceListScan', {defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN})
+    .add('sourceListRefreshOnLoad', {defaultValue: false})
+    .add('sourceListRefreshInterval', {defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL})
+    .add('sourceReintrospectOnLoad', {defaultValue: false})
+    .add('sourceReintrospectInterval', {defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL})
+    ;
 
-  yamlPropAdder(lines, withComments, {
-    object: cluster,
-    propName: 'version',
-    comment: CLUSTER.version.description
-  });
-
-  yamlPropAdder(lines, withComments, {
-    object: cluster,
-    propName: 'timeout',
-    comment: CLUSTER.timeout.description,
-    defaultValue: Cluster.DEFAULT_TIMEOUT
-  });
-
-  yamlPropAdder(lines, withComments, {
-    object: cluster,
-    propName: 'sourceListScan',
-    comment: CLUSTER.sourceListScan.description,
-    defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN
-  });
-
-  yamlPropAdder(lines, withComments, {
-    object: cluster,
-    propName: 'sourceListRefreshOnLoad',
-    comment: CLUSTER.sourceListRefreshOnLoad.description,
-    defaultValue: false
-  });
-
-  yamlPropAdder(lines, withComments, {
-    object: cluster,
-    propName: 'sourceListRefreshInterval',
-    comment: CLUSTER.sourceListRefreshInterval.description,
-    defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL
-  });
-
-  yamlPropAdder(lines, withComments, {
-    object: cluster,
-    propName: 'sourceReintrospectOnLoad',
-    comment: CLUSTER.sourceReintrospectOnLoad.description,
-    defaultValue: false
-  });
-
-  yamlPropAdder(lines, withComments, {
-    object: cluster,
-    propName: 'sourceReintrospectInterval',
-    comment: CLUSTER.sourceReintrospectInterval.description,
-    defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL
-  });
 
   if (withComments) {
     lines.push(
@@ -131,41 +120,62 @@ export function clusterToYAML(cluster: Cluster, withComments: boolean): string[]
   }
   switch (cluster.type) {
     case 'druid':
-      yamlPropAdder(lines, withComments, {
-        object: cluster,
-        propName: 'introspectionStrategy',
-        comment: 'The introspection strategy for the Druid external.',
-        defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY
-      });
-
-      yamlPropAdder(lines, withComments, {
-        object: cluster,
-        propName: 'requestDecorator',
-        comment: 'The request decorator module filepath to load.'
-      });
+      props
+        .add('introspectionStrategy', {defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY})
+        .add('requestDecorator')
+        ;
       break;
 
     case 'postgres':
     case 'mysql':
-      yamlPropAdder(lines, withComments, {
-        object: cluster,
-        propName: 'database',
-        comment: 'The database to which to connect to.'
-      });
+      props
+        .add('database')
+        .add('user')
+        .add('password')
+        ;
 
-      yamlPropAdder(lines, withComments, {
-        object: cluster,
-        propName: 'user',
-        comment: 'The user to connect as. This user needs no permissions other than SELECT.'
-      });
-
-      yamlPropAdder(lines, withComments, {
-        object: cluster,
-        propName: 'password',
-        comment: 'The password to use with the provided user.'
-      });
       break;
   }
+
+  lines.push('');
+  return yamlObject(lines);
+}
+
+export function collectionToYAML(collection: Collection, withComments: boolean): string[] {
+  var lines: string[] = [
+    `name: ${collection.name}`
+  ];
+
+  var addProps = getYamlPropAdder(collection, COLLECTION, lines, withComments);
+
+  addProps
+    .add('title')
+    .add('description')
+    ;
+
+  lines.push('items:');
+  lines = lines.concat.apply(lines, collection.items.map(collectionItemToYAML));
+
+  lines.push('');
+  return yamlObject(lines);
+}
+
+export function collectionItemToYAML(item: CollectionItem): string[] {
+  var lines: string[] = [
+    `name: ${item.name}`
+  ];
+
+  var addProps = getYamlPropAdder(item, COLLECTION_ITEM, lines);
+
+  addProps
+    .add('title')
+    .add('description')
+    .add('group')
+    .add('dataCube')
+    ;
+
+  lines.push(`essence:`);
+  lines.push(yaml.safeDump(item.essence.toJSON()));
 
   lines.push('');
   return yamlObject(lines);
@@ -255,26 +265,14 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   }
   lines.push('');
 
-  yamlPropAdder(lines, withComments, {
-    object: dataCube,
-    propName: 'defaultTimezone',
-    comment: DATA_CUBE.defaultTimezone.description,
-    defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE
-  });
+  var addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
 
-  yamlPropAdder(lines, withComments, {
-    object: dataCube,
-    propName: 'defaultDuration',
-    comment: DATA_CUBE.defaultDuration.description,
-    defaultValue: DataCube.DEFAULT_DEFAULT_DURATION
-  });
+  addProps
+    .add('defaultTimezone', {defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE})
+    .add('defaultDuration', {defaultValue: DataCube.DEFAULT_DEFAULT_DURATION})
+    .add('defaultSortMeasure', {defaultValue: dataCube.getDefaultSortMeasure()})
+    ;
 
-  yamlPropAdder(lines, withComments, {
-    object: dataCube,
-    propName: 'defaultSortMeasure',
-    comment: DATA_CUBE.defaultSortMeasure.description,
-    defaultValue: dataCube.getDefaultSortMeasure()
-  });
 
   var defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures.toArray() : null;
   if (withComments) {
@@ -437,7 +435,7 @@ export interface Extra {
 }
 
 export function appSettingsToYAML(appSettings: AppSettings, withComments: boolean, extra: Extra = {}): string {
-  var { dataCubes, clusters } = appSettings;
+  var { dataCubes, clusters, collections } = appSettings;
 
   if (!dataCubes.length) throw new Error('Could not find any data cubes, please verify network connectivity');
 
@@ -472,6 +470,12 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
 
   lines.push('dataCubes:');
   lines = lines.concat.apply(lines, dataCubes.map(d => dataCubeToYAML(d, withComments)));
+
+  // if (collections.length) {
+  //   lines.push('collections:');
+  //   lines = lines.concat.apply(lines, collections.map(c => collectionToYAML(c, withComments)));
+
+  // }
 
   return lines.join('\n');
 }

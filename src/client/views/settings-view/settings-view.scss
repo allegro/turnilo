@@ -21,5 +21,8 @@
   $title-bar-height: 56px;
 
   @import './layout';
-  @import './form';
+
+  form {
+    @extend %form;
+  }
 }

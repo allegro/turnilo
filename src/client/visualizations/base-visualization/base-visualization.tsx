@@ -22,9 +22,7 @@ import { Measure, VisualizationProps, DatasetLoad, Essence } from '../../../comm
 
 import { SPLIT } from '../../config/constants';
 
-import { Loader } from '../../components/loader/loader';
-import { QueryError } from '../../components/query-error/query-error';
-
+import { Loader, GlobalEventListener, QueryError } from '../../components/index';
 
 export interface BaseVisualizationState {
   datasetLoad?: DatasetLoad;
@@ -44,10 +42,6 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     super();
 
     this.state = this.getDefaultState() as S;
-
-    this.globalMouseMoveListener = this.globalMouseMoveListener.bind(this);
-    this.globalMouseUpListener = this.globalMouseUpListener.bind(this);
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   getDefaultState(): BaseVisualizationState {
@@ -171,10 +165,6 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     this._isMounted = true;
     var { essence } = this.props;
     this.fetchData(essence);
-
-    window.addEventListener('keydown', this.globalKeyDownListener);
-    window.addEventListener('mousemove', this.globalMouseMoveListener);
-    window.addEventListener('mouseup', this.globalMouseUpListener);
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
@@ -194,10 +184,6 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   componentWillUnmount() {
     this._isMounted = false;
-
-    window.removeEventListener('keydown', this.globalKeyDownListener);
-    window.removeEventListener('mousemove', this.globalMouseMoveListener);
-    window.removeEventListener('mouseup', this.globalMouseUpListener);
   }
 
   protected globalMouseMoveListener(e: MouseEvent) {}
@@ -220,6 +206,11 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     }
 
     return <div className={'base-visualization ' + this.id}>
+      <GlobalEventListener
+        mouseMove={this.globalMouseMoveListener.bind(this)}
+        mouseUp={this.globalMouseUpListener.bind(this)}
+        keyDown={this.globalKeyDownListener.bind(this)}
+      />
       {this.lastRenderResult}
       {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
       {datasetLoad.loading ? <Loader/> : null}

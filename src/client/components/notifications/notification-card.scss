@@ -32,10 +32,6 @@
   text-align: center;
   cursor: pointer;
 
-  &:hover {
-    box-shadow: 0 0 1px 1px hsla(200, 8%, 15%, 0.2);
-  }
-
   &.success {
     background-color: $dark;
   }
@@ -52,5 +48,23 @@
     font-style: italic;
   }
 
+  .undo {
+    opacity: 0.7;
 
+    span {
+      border-bottom: 1px dashed;
+    }
+  }
+
+  &:hover {
+    box-shadow: 0 0 1px 1px hsla(200, 8%, 15%, 0.2);
+
+    .undo {
+      opacity: 1;
+
+      span {
+        border-bottom: 1px solid;
+      }
+    }
+  }
 }

@@ -18,10 +18,10 @@ import { $ } from 'plywood';
 
 import { MANIFESTS } from "../../manifests/index";
 import { DataCubeMock } from "../data-cube/data-cube.mock";
-import { LinkItem, LinkItemJS, LinkItemContext } from './link-item';
+import { CollectionItem, CollectionItemJS, CollectionItemContext } from './collection-item';
 
-export class LinkItemMock {
-  public static testOneJS(): LinkItemJS {
+export class CollectionItemMock {
+  public static testOneJS(): CollectionItemJS {
     return {
       name: 'test1',
       title: 'Test One',
@@ -43,7 +43,7 @@ export class LinkItemMock {
     };
   }
 
-  public static testTwoJS(): LinkItemJS {
+  public static testTwoJS(): CollectionItemJS {
     return {
       name: 'test2',
       title: 'Test Two',
@@ -62,7 +62,7 @@ export class LinkItemMock {
     };
   }
 
-  static getContext(): LinkItemContext {
+  static getContext(): CollectionItemContext {
     return {
       dataCubes: [DataCubeMock.wiki()],
       visualizations: MANIFESTS
@@ -70,10 +70,10 @@ export class LinkItemMock {
   }
 
   static testOne() {
-    return LinkItem.fromJS(LinkItemMock.testOneJS(), LinkItemMock.getContext());
+    return CollectionItem.fromJS(CollectionItemMock.testOneJS(), CollectionItemMock.getContext());
   }
 
   static testTwo() {
-    return LinkItem.fromJS(LinkItemMock.testTwoJS(), LinkItemMock.getContext());
+    return CollectionItem.fromJS(CollectionItemMock.testTwoJS(), CollectionItemMock.getContext());
   }
 }

@@ -66,6 +66,15 @@ $header-padding-top: 12px;
     right: 0;
 
     @import './header';
+
+    &.has-top-shadow {
+
+      .measure-name,
+      .corner {
+        border-bottom: 0;
+      }
+    }
+
     @import './body'; // actual values
     @import './highlight-cont'; // highlighter
 
@@ -74,6 +83,7 @@ $header-padding-top: 12px;
       border-top-left-radius: $corner;
       border-bottom-left-radius: $corner;
     }
+
 
     .corner {
       position: absolute;

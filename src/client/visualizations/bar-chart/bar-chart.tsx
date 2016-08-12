@@ -17,6 +17,7 @@
 require('./bar-chart.css');
 
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
 import { r, Range, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, TimeRange } from 'plywood';
 
@@ -36,12 +37,8 @@ import { DisplayYear } from '../../../common/utils/time/time';
 
 import { SPLIT, VIS_H_PADDING } from '../../config/constants';
 import { roundToPx, classNames } from '../../utils/dom/dom';
-import { VisMeasureLabel } from '../../components/vis-measure-label/vis-measure-label';
-import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
-import { BucketMarks } from '../../components/bucket-marks/bucket-marks';
-import { GridLines } from '../../components/grid-lines/grid-lines';
-import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
-import { Scroller, ScrollerLayout } from '../../components/scroller/scroller';
+
+import { VisMeasureLabel, VerticalAxis, BucketMarks, GridLines, SegmentBubble, Scroller, ScrollerLayout } from '../../components/index';
 
 import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
 import { BarCoordinates } from './bar-coordinates';
@@ -71,6 +68,8 @@ export interface BubbleInfo {
 export interface BarChartState extends BaseVisualizationState {
   hoverInfo?: BubbleInfo;
   selectionInfo?: BubbleInfo;
+  scrollerYPosition?: number;
+  scrollerXPosition?: number;
 
   // Precalculated stuff
   flatData?: PseudoDatum[];
@@ -117,6 +116,19 @@ export class BarChart extends BaseVisualization<BarChartState> {
       nextEssence.newEffectiveMeasures(essence)
     ) {
       this.fetchData(nextEssence);
+    }
+  }
+
+  componentDidUpdate() {
+    const { scrollerYPosition, scrollerXPosition } = this.state;
+
+    var node = ReactDOM.findDOMNode(this.refs['scroller']);
+    if (!node) return;
+
+    var rect = node.getBoundingClientRect();
+
+    if (scrollerYPosition !== rect.top || scrollerXPosition !== rect.left) {
+      this.setState({scrollerYPosition: rect.top, scrollerXPosition: rect.left});
     }
   }
 
@@ -176,7 +188,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return { path: [], coordinates: null };
   }
 
-  onSimpleScroll(scrollTop: number, scrollLeft: number) {
+  onScrollerScroll(scrollTop: number, scrollLeft: number) {
     this.setState({
       hoverInfo: null,
       scrollLeft,
@@ -193,11 +205,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   onClick(x: number, y: number) {
+    const { essence, clicker } = this.props;
+
+    if (!clicker.changeHighlight || !clicker.dropHighlight) return;
+
     const selectionInfo = this.calculateMousePosition(x, y);
 
     if (!selectionInfo) return;
-
-    const { essence, clicker } = this.props;
 
     if (!selectionInfo.coordinates) {
       clicker.dropHighlight();
@@ -251,7 +265,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   getSingleChartStage(): Stage {
     const xScale = this.getPrimaryXScale();
-    const { essence, stage } = this.props;
+    const { essence, stage, isThumbnail } = this.props;
 
     const { stepWidth } = this.getBarDimensions(xScale.rangeBand());
     const xTicks = xScale.domain();
@@ -259,7 +273,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const measures = essence.getEffectiveMeasures();
     const availableHeight = stage.height - X_AXIS_HEIGHT;
-    const height = Math.max(MIN_CHART_HEIGHT, Math.floor(availableHeight / measures.size));
+    const minHeight = isThumbnail ? 1 : MIN_CHART_HEIGHT;
+    const height = Math.max(minHeight, Math.floor(availableHeight / measures.size));
 
     return new Stage({
       x: 0,
@@ -307,27 +322,28 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   getBubbleTopOffset(y: number, chartIndex: number, chartStage: Stage): number {
-    const { scrollTop } = this.state;
+    const { scrollTop, scrollerYPosition } = this.state;
     const oneChartHeight = this.getOuterChartHeight(chartStage);
     const chartsAboveMe = oneChartHeight * chartIndex;
 
-    return chartsAboveMe - scrollTop + y - HOVER_BUBBLE_V_OFFSET + CHART_TOP_PADDING;
+    return chartsAboveMe - scrollTop + scrollerYPosition + y - HOVER_BUBBLE_V_OFFSET + CHART_TOP_PADDING;
   }
 
   getBubbleLeftOffset(x: number): number {
     const { stage } = this.props;
-    const { scrollLeft } = this.state;
+    const { scrollLeft, scrollerXPosition } = this.state;
 
-    return stage.x + VIS_H_PADDING + x - scrollLeft;
+    return scrollerXPosition + x - scrollLeft;
   }
 
   canShowBubble(leftOffset: number, topOffset: number): boolean {
     const { stage } = this.props;
+    const { scrollLeft, scrollerYPosition, scrollerXPosition } = this.state;
 
     if (topOffset <= 0) return false;
-    if (topOffset > stage.height - X_AXIS_HEIGHT) return false;
-    if (leftOffset - stage.x <= 0) return false;
-    if (leftOffset > stage.x + stage.width - Y_AXIS_WIDTH - VIS_H_PADDING) return false;
+    if (topOffset > scrollerYPosition + stage.height - X_AXIS_HEIGHT) return false;
+    if (leftOffset <= 0) return false;
+    if (leftOffset > scrollerXPosition + stage.width - Y_AXIS_WIDTH) return false;
 
     return true;
   }
@@ -347,7 +363,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     return <SegmentBubble
       left={leftOffset}
-      top={stage.y + topOffset}
+      top={topOffset}
       dimension={dimension}
       segmentLabel={segmentLabel}
       measureLabel={measure.formatDatum(path[path.length - 1])}
@@ -372,7 +388,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     if (!this.canShowBubble(leftOffset, topOffset)) return null;
 
     return <SegmentBubble
-      top={stage.y + topOffset}
+      top={topOffset}
       left={leftOffset}
       segmentLabel={segmentLabel}
       measureLabel={measure.formatDatum(path[path.length - 1])}
@@ -624,19 +640,21 @@ export class BarChart extends BaseVisualization<BarChartState> {
     chartStage: Stage,
     getX: any
   ): {yAxis: JSX.Element, chart: JSX.Element, highlight: JSX.Element} {
+    const { isThumbnail } = this.props;
     var mySplitDataset = dataset.data[0][SPLIT] as Dataset;
+
+    var measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]}/> : null;
 
     // Invalid data, early return
     if (!this.hasValidYExtent(measure, mySplitDataset.data)) {
       return {
         chart: <div className="measure-bar-chart" key={measure.name} style={{width: chartStage.width}}>
           <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}/>
-          <VisMeasureLabel measure={measure} datum={dataset.data[0]}/>
+          {measureLabel}
         </div>,
         yAxis: null,
         highlight: null
       };
-
     }
 
     let { xAxisStage } = this.getAxisStages(chartStage);
@@ -656,14 +674,14 @@ export class BarChart extends BaseVisualization<BarChartState> {
         {yGridLines}
         <g className="bars" transform={chartStage.getTransform()}>{bars}</g>
       </svg>
-      <VisMeasureLabel measure={measure} datum={dataset.data[0]}/>
+      {measureLabel}
     </div>;
 
     return {chart, yAxis, highlight};
   }
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
-    const { registerDownloadableDataset, essence, stage } = props;
+    const { registerDownloadableDataset, essence } = props;
     const { splits } = essence;
 
     this.coordinatesCache = [];
@@ -893,6 +911,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return <div className="internals measure-bar-charts" style={{maxHeight: stage.height}}>
        <Scroller
         layout={scrollerLayout}
+        ref="scroller"
 
         bottomGutter={xAxis}
         rightGutter={rightGutter}
@@ -903,8 +922,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
         onClick={this.onClick.bind(this)}
         onMouseMove={this.onMouseMove.bind(this)}
         onMouseLeave={this.onMouseLeave.bind(this)}
-        onScroll={this.onSimpleScroll.bind(this)}
-
+        onScroll={this.onScrollerScroll.bind(this)}
       />
     </div>;
   }

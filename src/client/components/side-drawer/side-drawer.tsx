@@ -21,20 +21,21 @@ import * as ReactDOM from 'react-dom';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
-import { DataCube, Customization, User } from '../../../common/models/index';
+import { DataCube, Customization, User, Collection } from '../../../common/models/index';
 import { NavLogo } from '../nav-logo/nav-logo';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { NavList } from '../nav-list/nav-list';
 
 export interface SideDrawerProps extends React.Props<any> {
-  selectedDataCube: DataCube;
-  dataCubes: DataCube[];
   user: User;
+  selectedItem: DataCube | Collection;
+  collections: Collection[];
+  dataCubes: DataCube[];
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
-  itemHrefFn?: (oldDataCube?: DataCube, newDataCube?: DataCube) => string;
-  viewType: 'home' | 'cube' | 'link' | 'settings';
+  itemHrefFn?: (oldItem?: DataCube | Collection, newItem?: DataCube | Collection) => string;
+  viewType: 'home' | 'cube' | 'collection' | 'link' | 'settings';
 }
 
 export interface SideDrawerState {
@@ -94,19 +95,29 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     </div>;
   }
 
-  render() {
-    var { onClose, selectedDataCube, dataCubes, onOpenAbout, customization, itemHrefFn, user } = this.props;
+  renderItems(items: (DataCube | Collection)[], icon: string, urlPrefix = ''): JSX.Element {
+    if (!items || items.length === 0) return null;
 
-    var navLinks = dataCubes.map(ds => {
-      var href = (itemHrefFn && itemHrefFn(selectedDataCube, ds)) || ('#' + ds.name);
+    var { itemHrefFn, selectedItem } = this.props;
 
+    var navLinks = items.map(item => {
       return {
-        name: ds.name,
-        title: ds.title,
-        tooltip: ds.description,
-        href: href
+        name: item.name,
+        title: item.title,
+        tooltip: item.description,
+        href: itemHrefFn(selectedItem, item) || `#${urlPrefix}${item.name}`
       };
     });
+
+    return <NavList
+      selected={selectedItem ? selectedItem.name : null}
+      navLinks={navLinks}
+      iconSvg={require(`../../icons/${icon}`)}
+    />;
+  }
+
+  render() {
+    var { onClose, selectedItem, collections, dataCubes, onOpenAbout, customization, itemHrefFn, user } = this.props;
 
     var infoAndFeedback: any[] = [];
 
@@ -140,11 +151,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     return <div className="side-drawer">
       <NavLogo customLogoSvg={customLogoSvg} onClick={onClose}/>
       {this.renderOverviewLink()}
-      <NavList
-        selected={selectedDataCube ? selectedDataCube.name : null}
-        navLinks={navLinks}
-        iconSvg={require('../../icons/full-cube.svg')}
-      />
+      {this.renderItems(dataCubes, 'full-cube.svg')}
+      {this.renderItems(collections, 'full-collection.svg', 'collection/')}
       <NavList navLinks={infoAndFeedback}/>
 
     </div>;

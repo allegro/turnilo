@@ -19,17 +19,18 @@ require('./modal.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Fn } from '../../../common/utils/general/general';
-import { isInside, escapeKey, enterKey, uniqueId, classNames } from '../../utils/dom/dom';
+import { isInside, uniqueId, classNames } from '../../utils/dom/dom';
 import { BodyPortal } from '../body-portal/body-portal';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { GoldenCenter } from '../golden-center/golden-center';
+import { GlobalEventListener } from '../global-event-listener/global-event-listener';
 
 export interface ModalProps extends React.Props<any> {
   className?: string;
   id?: string;
   title?: string;
   mandatory?: boolean;
-  onClose: Fn;
+  onClose?: Fn;
   onEnter?: Fn;
   startUpFocusOn?: string;
 }
@@ -46,8 +47,6 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     this.state = {
       id: null
     };
-    this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentWillMount() {
@@ -59,19 +58,11 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   }
 
   componentDidMount() {
-    window.addEventListener('mousedown', this.globalMouseDownListener);
-    window.addEventListener('keydown', this.globalKeyDownListener);
-
     this.maybeFocus();
   }
 
   componentDidUpdate() {
     this.maybeFocus();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('mousedown', this.globalMouseDownListener);
-    window.removeEventListener('keydown', this.globalKeyDownListener);
   }
 
   getChildByID(children: NodeList, id: string): HTMLElement {
@@ -109,7 +100,16 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     }
   }
 
-  globalMouseDownListener(e: MouseEvent) {
+  onEscape() {
+    var { onClose, mandatory } = this.props;
+    if (!mandatory) onClose();
+  }
+
+  onEnter() {
+    if (this.props.onEnter) this.props.onEnter();
+  }
+
+  onMouseDown(e: MouseEvent) {
     var { onClose, mandatory } = this.props;
     if (mandatory) return;
 
@@ -120,15 +120,6 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     var target = e.target as Element;
 
     if (isInside(target, myElement)) return;
-    onClose();
-  }
-
-  globalKeyDownListener(e: KeyboardEvent) {
-    if (enterKey(e) && this.props.onEnter) this.props.onEnter();
-
-    if (!escapeKey(e)) return;
-    var { onClose, mandatory } = this.props;
-    if (mandatory) return;
     onClose();
   }
 
@@ -148,6 +139,11 @@ export class Modal extends React.Component<ModalProps, ModalState> {
 
     return <BodyPortal fullSize={true}>
       <div className={classNames('modal', className)}>
+        <GlobalEventListener
+          enter={this.onEnter.bind(this)}
+          escape={this.onEscape.bind(this)}
+          mouseDown={this.onMouseDown.bind(this)}
+        />
         <div className="backdrop"></div>
         <GoldenCenter>
           <div className="modal-window" id={id}>

@@ -68,6 +68,29 @@
     }
   }
 
+  &.new-one {
+    opacity: 0.6;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    .inner-container {
+      text-align: center;
+      border: 2px dashed $text-lighter;
+      background-color: initial;
+      box-shadow: initial;
+
+      .svg-icon {
+        height: 100%;
+
+        path {
+          fill: $text-lighter;
+        }
+      }
+    }
+  }
+
   &:hover {
     z-index: 1;
 

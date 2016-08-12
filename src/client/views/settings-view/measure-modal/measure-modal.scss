@@ -17,9 +17,8 @@
 @import '../../../imports';
 
 .measure-modal {
-  @import '../form';
-
   form {
+    @extend %form;
     width: 100%;
   }
 

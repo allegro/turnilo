@@ -23,7 +23,8 @@ import * as d3 from 'd3';
 import { Duration } from 'chronoshift';
 import { r, $, ply, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction, SortAction,
   PlywoodRange, NumberRangeJS, NumberRange, Range, NumberBucketAction } from 'plywood';
-import { Essence, Splits, Colors, FilterClause, Dimension, Stage, Filter, Measure, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';
+import { Essence, Splits, Colors, FilterClause, Dimension, Stage,
+  Filter, Measure, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 import { LINE_CHART_MANIFEST } from '../../../common/manifests/line-chart/line-chart';
 import { DisplayYear } from '../../../common/utils/time/time';
 import { formatValue } from '../../../common/utils/formatter/formatter';
@@ -32,14 +33,9 @@ import { getLineChartTicks } from '../../../common/models/granularity/granularit
 
 import { SPLIT, VIS_H_PADDING } from '../../config/constants';
 import { getXFromEvent, escapeKey } from '../../utils/dom/dom';
-import { VisMeasureLabel } from '../../components/vis-measure-label/vis-measure-label';
-import { ChartLine } from '../../components/chart-line/chart-line';
-import { LineChartAxis } from '../../components/line-chart-axis/line-chart-axis';
-import { VerticalAxis } from '../../components/vertical-axis/vertical-axis';
-import { GridLines } from '../../components/grid-lines/grid-lines';
-import { Highlighter } from '../../components/highlighter/highlighter';
-import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
-import { HoverMultiBubble, ColorEntry } from '../../components/hover-multi-bubble/hover-multi-bubble';
+
+import { VisMeasureLabel, ChartLine, LineChartAxis, VerticalAxis, GridLines, Highlighter,
+  SegmentBubble, HoverMultiBubble, ColorEntry, GlobalEventListener } from '../../components/index';
 
 import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
 
@@ -80,6 +76,8 @@ export interface LineChartState extends BaseVisualizationState {
   dragRange?: PlywoodRange;
   roundDragRange?: PlywoodRange;
   hoverRange?: PlywoodRange;
+  containerYPosition?: number;
+  containerXPosition?: number;
 
   // Cached props
   continuousDimension?: Dimension;
@@ -87,7 +85,6 @@ export interface LineChartState extends BaseVisualizationState {
   scaleX?: any;
   xTicks?: continuousValueType[];
 }
-
 
 export class LineChart extends BaseVisualization<LineChartState> {
   public static id = LINE_CHART_MANIFEST.name;
@@ -106,6 +103,21 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return s;
   }
 
+  componentDidUpdate() {
+    const { containerYPosition, containerXPosition } = this.state;
+
+    var node = ReactDOM.findDOMNode(this.refs['container']);
+    if (!node) return;
+
+    var rect = node.getBoundingClientRect();
+
+    if (containerYPosition !== rect.top || containerXPosition !== rect.left) {
+      this.setState({
+        containerYPosition: rect.top,
+        containerXPosition: rect.left
+      });
+    }
+  }
 
   getMyEventX(e: MouseEvent): number {
     var myDOM = ReactDOM.findDOMNode(this);
@@ -114,8 +126,9 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   onMouseDown(measure: Measure, e: MouseEvent) {
+    const { clicker } = this.props;
     const { scaleX } = this.state;
-    if (!scaleX) return;
+    if (!scaleX || !clicker.dropHighlight || !clicker.changeHighlight) return;
 
     var dragStartValue = scaleX.invert(this.getMyEventX(e));
     this.setState({
@@ -202,7 +215,6 @@ export class LineChart extends BaseVisualization<LineChartState> {
         end: endFloored
       });
     }
-
   }
 
   globalMouseMoveListener(e: MouseEvent) {
@@ -294,16 +306,28 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return null;
   }
 
-  renderChartBubble(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage, extentY: number[], scaleY: any): JSX.Element {
+  renderChartBubble(
+    dataset: Dataset,
+    measure: Measure,
+    chartIndex: number,
+    containerStage: Stage,
+    chartStage: Stage,
+    extentY: number[],
+    scaleY: any
+  ): JSX.Element {
     const { clicker, essence, openRawDataModal } = this.props;
-    const { scrollTop, dragRange, roundDragRange, dragOnMeasure, hoverRange, hoverMeasure, scaleX, continuousDimension } = this.state;
     const { colors, timezone } = essence;
+
+    const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange }  = this.state;
+    const { dragOnMeasure, hoverRange, hoverMeasure, scaleX, continuousDimension } = this.state;
+
 
     if (essence.highlightOnDifferentMeasure(LineChart.id, measure.name)) return null;
 
     var topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
     if (topOffset < 0) return null;
-    topOffset += containerStage.y;
+
+    topOffset += containerYPosition;
 
     if ((dragRange && dragOnMeasure === measure) || (!dragRange && essence.highlightOn(LineChart.id, measure.name))) {
       var bubbleRange = dragRange || essence.getSingleHighlightSet().elements[0];
@@ -313,7 +337,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
       if (colors) {
         var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
-        var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(bubbleRange.end);
+        var leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.end);
 
         var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(continuousDimension.name, bubbleRange));
         var colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
@@ -337,7 +361,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           clicker={dragRange ? null : clicker}
         />;
       } else {
-        var leftOffset = containerStage.x + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
+        var leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
         var highlightDatum = dataset.findDatumByAttribute(continuousDimension.name, shownRange);
         var segmentLabel = formatValue(shownRange, timezone, DisplayYear.NEVER);
 
@@ -352,7 +376,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       }
 
     } else if (!dragRange && hoverRange && hoverMeasure === measure) {
-      var leftOffset = containerStage.x + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
+      var leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
       var segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
 
       if (colors) {
@@ -397,7 +421,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage): JSX.Element {
-    const { essence } = this.props;
+    const { essence, isThumbnail } = this.props;
+
     const { hoverRange, hoverMeasure, dragRange, scaleX, xTicks, continuousDimension } = this.state;
     const { splits, colors } = essence;
     var splitLength = splits.length();
@@ -521,7 +546,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           y2={chartStage.height - 0.5}
         />
       </svg>
-      <VisMeasureLabel measure={measure} datum={myDatum}/>
+      { !isThumbnail ? <VisMeasureLabel measure={measure} datum={myDatum}/> : null }
       {this.renderHighlighter()}
       {bubble}
     </div>;
@@ -603,6 +628,17 @@ export class LineChart extends BaseVisualization<LineChartState> {
       .reduce((a: PlywoodRange, b: PlywoodRange) => a ? a.union(b) : b);
   }
 
+  hideBubble() {
+    const { hoverRange, hoverMeasure } = this.state;
+
+    if (!hoverRange || !hoverMeasure) return;
+
+    this.setState({
+      hoverRange: null,
+      hoverMeasure: null
+    });
+  }
+
   renderInternals() {
     var { essence, stage } = this.props;
     var { datasetLoad, axisRange, scaleX, xTicks } = this.state;
@@ -648,7 +684,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
     };
 
     return <div className="internals line-chart-inner">
-      <div className="measure-line-charts" style={measureChartsStyle} onScroll={this.onScroll.bind(this)}>
+      <GlobalEventListener
+        scroll={this.hideBubble.bind(this)}
+      />
+      <div
+        className="measure-line-charts"
+        style={measureChartsStyle}
+        ref="container"
+      >
         {measureCharts}
       </div>
       {bottomAxis}

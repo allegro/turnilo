@@ -74,13 +74,6 @@ export class MeasureModal extends React.Component<MeasureModalProps, MeasureModa
     this.initStateFromProps(this.props);
   }
 
-  componentDidUpdate() {
-    if (!this.hasInitialized && !!this.refs['name-input']) {
-      (this.refs['name-input'] as any).focus();
-      this.hasInitialized = true;
-    }
-  }
-
   onChange(newMeasure: Measure, isValid: boolean, path: string, error: string) {
     var { errors } = this.state;
 

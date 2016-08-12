@@ -29,6 +29,12 @@
     @include pin-top($menu-title-bar-height);
   }
 
+  .bubble-list-title {
+    margin-left: -4px;
+    margin-bottom: 5px;
+    color: $text-light;
+  }
+
   ul.bubble-list {
     margin-left: -$padding-compact;
     margin-right: -$padding-compact;

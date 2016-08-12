@@ -70,25 +70,25 @@ Server arguments:
 
   -p, --port <port-number>     The port pivot will run on (default: ${ServerSettings.DEFAULT_PORT})
       --server-host <host>     The host on which to listen on (default: all hosts)
-      --server-root <root>     A custom server root to listen on (default ${ServerSettings.DEFAULT_SERVER_ROOT}) 
-      
-Data connection options:      
-  
-  Exactly one data connection option must be provided. 
-  
+      --server-root <root>     A custom server root to listen on (default ${ServerSettings.DEFAULT_SERVER_ROOT})
+
+Data connection options:
+
+  Exactly one data connection option must be provided.
+
   -c, --config <path>          Use this local configuration (YAML) file
-      --examples               Start Pivot with some example data for testing / demo  
+      --examples               Start Pivot with some example data for testing / demo
   -f, --file <path>            Start Pivot on top of this file based data cube (must be JSON, CSV, or TSV)
   -d, --druid <host>           The Druid broker node to connect to
       --postgres <host>        The Postgres cluster to connect to
       --mysql <host>           The MySQL cluster to connect to
-      
+
       --user <string>          The cluster 'user' (if needed)
       --password <string>      The cluster 'password' (if needed)
       --database <string>      The cluster 'database' (if needed)
 
-Configuration printing utilities:      
-      
+Configuration printing utilities:
+
       --print-config           Prints out the auto generated config
       --with-comments          Adds comments when printing the auto generated config
 `;
@@ -259,6 +259,7 @@ if (START_SERVER) {
 const CLUSTER_TYPES: SupportedType[] = ['druid', 'postgres', 'mysql'];
 
 var settingsStore: SettingsStore = null;
+
 if (serverSettingsFilePath) {
   if (SERVER_SETTINGS.settingsUri) {
     settingsStore = SettingsStore.fromWritableFile(path.resolve(anchorPath, SERVER_SETTINGS.settingsUri));

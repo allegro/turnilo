@@ -28,6 +28,7 @@ export type InputType = 'text' | 'textarea';
 
 export interface ImmutableInputProps extends React.Props<any> {
   instance: any;
+  className?: string;
   path: string;
   focusOnStartUp?: boolean;
   onChange?: (myInstance: any, valid: boolean, path?: string, error?: string) => void;
@@ -57,6 +58,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
         key={name}
         instance={instance}
         path={name}
+        className={name}
         onChange={changeFn}
         focusOnStartUp={focusOnStartUp}
         validator={validator}
@@ -116,7 +118,6 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
 
   componentDidMount() {
     this.initFromProps(this.props);
-
     this.maybeFocus();
   }
 
@@ -143,10 +144,8 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
     return true;
   }
 
-  onChange(event: KeyboardEvent) {
+  update(newString: string) {
     const { path, onChange, instance, validator, onInvalid, stringToValue } = this.props;
-
-    var newString = (event.target as HTMLInputElement).value as string;
 
     var myInstance: any;
     var invalidString: string;
@@ -178,8 +177,12 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
     });
   }
 
+  onChange(event: KeyboardEvent) {
+    this.update((event.target as HTMLInputElement).value as string);
+  }
+
   render() {
-    const { path, valueToString, type } = this.props;
+    const { path, valueToString, type, className } = this.props;
     const { myInstance, invalidString, validString } = this.state;
     const isInvalid = invalidString !== undefined;
 
@@ -187,7 +190,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
 
     if (type === 'textarea') {
       return <textarea
-        className={classNames('immutable-input', {error: isInvalid})}
+        className={classNames('immutable-input', className, {error: isInvalid})}
         ref='me'
         type="text"
         value={(isInvalid ? invalidString : validString) || ''}
@@ -196,7 +199,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
     }
 
     return <input
-      className={classNames('immutable-input', {error: isInvalid})}
+      className={classNames('immutable-input', className, {error: isInvalid})}
       ref='me'
       type="text"
       value={(isInvalid ? invalidString : validString) || ''}

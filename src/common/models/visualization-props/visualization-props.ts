@@ -16,9 +16,7 @@
 
 import { Dataset } from 'plywood';
 import { Fn } from '../../utils/general/general';
-import { Clicker } from '../clicker/clicker';
-import { Stage } from '../stage/stage';
-import { Essence } from '../essence/essence';
+import { Clicker, Stage, Essence, DeviceSize } from '../index';
 
 export interface VisualizationProps {
   clicker: Clicker;
@@ -26,6 +24,8 @@ export interface VisualizationProps {
   stage: Stage;
   openRawDataModal?: Fn;
   registerDownloadableDataset?: (dataset: Dataset) => void;
+  deviceSize?: DeviceSize;
+  isThumbnail?: boolean;
 }
 
 export interface DatasetLoad {

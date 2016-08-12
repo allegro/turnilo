@@ -17,7 +17,7 @@
 import { $, Executor, Dataset, basicExecutorFactory } from 'plywood';
 import { MANIFESTS } from '../../../common/manifests/index';
 import { DataCubeMock } from '../data-cube/data-cube.mock';
-import { LinkViewConfigMock } from '../link-view-config/link-view-config.mock';
+import { CollectionMock } from '../collection/collection.mock';
 import { AppSettings, AppSettingsJS, AppSettingsContext } from './app-settings';
 
 const SMALL_WIKI_DATA = [
@@ -335,7 +335,7 @@ export class AppSettingsMock {
       dataCubes: [
         DataCubeMock.WIKI_JS
       ],
-      linkViewConfig: LinkViewConfigMock.testOneTwoJS()
+      linkViewConfig: CollectionMock.testOneTwoJS()
     };
   }
 

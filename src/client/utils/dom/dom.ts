@@ -16,9 +16,17 @@
 
 import * as d3 from 'd3';
 import { hasOwnProperty } from '../../../common/utils/general/general';
+import { DeviceSize } from '../../../common/models/index';
 
 const DRAG_GHOST_OFFSET_X = -12;
 const DRAG_GHOST_OFFSET_Y = -12;
+
+const KEY_CODES: any = {
+  ENTER: 13,
+  ESCAPE: 27,
+  LEFT: 37,
+  RIGHT: 39
+};
 
 function convertDOMStringListToArray(list: any): any[] {
   var length = list.length;
@@ -69,11 +77,19 @@ export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
 }
 
 export function enterKey(e: KeyboardEvent): boolean {
-  return e.which === 13; // 13 is the code for enter
+  return e.which === KEY_CODES.ENTER;
 }
 
 export function escapeKey(e: KeyboardEvent): boolean {
-  return e.which === 27; // 27 is the code for escape
+  return e.which === KEY_CODES.ESCAPE;
+}
+
+export function leftKey(e: KeyboardEvent): boolean {
+  return e.which === KEY_CODES.LEFT;
+}
+
+export function rightKey(e: KeyboardEvent): boolean {
+  return e.which === KEY_CODES.RIGHT;
 }
 
 var lastID = 0;

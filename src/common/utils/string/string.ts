@@ -17,3 +17,25 @@
 export function firstUp(str: string): string {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : undefined;
 }
+
+export function pad(n: number, padding = 3): string {
+  var str = String(n);
+
+  if (str.length > padding) return str;
+
+  while (str.length < padding) str = '0' + str;
+
+  return str;
+}
+
+export function generateUniqueName(prefix: string, isUnique: (name: string) => boolean) {
+  var i = 0;
+
+  var name = prefix + pad(i);
+
+  while (!isUnique(name)) {
+    name = prefix + pad(++i);
+  }
+
+  return name;
+}

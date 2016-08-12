@@ -18,16 +18,16 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class/build/tester';
 
 import { $, Expression } from 'plywood';
-import { LinkItemMock } from './link-item.mock';
-import { LinkItem } from './link-item';
+import { CollectionItemMock } from './collection-item.mock';
+import { CollectionItem } from './collection-item';
 
-describe('LinkItem', () => {
-  var context = LinkItemMock.getContext();
+describe('CollectionItem', () => {
+  var context = CollectionItemMock.getContext();
 
   it('is an immutable class', () => {
-    testImmutableClass(LinkItem, [
-      LinkItemMock.testOneJS(),
-      LinkItemMock.testTwoJS()
+    testImmutableClass(CollectionItem, [
+      CollectionItemMock.testOneJS(),
+      CollectionItemMock.testTwoJS()
     ], { context });
   });
 
@@ -35,7 +35,7 @@ describe('LinkItem', () => {
   describe('errors', () => {
     it('must have context', () => {
       expect(() => {
-        LinkItem.fromJS({} as any);
+        CollectionItem.fromJS({} as any);
       }).to.throw('must have context');
     });
 
@@ -43,7 +43,7 @@ describe('LinkItem', () => {
 
   describe('upgrades', () => {
     it('must add filter and timezone', () => {
-      var linkItem = LinkItem.fromJS({
+      var linkItem = CollectionItem.fromJS({
         name: 'test1',
         title: 'Test One',
         description: 'I like testing',

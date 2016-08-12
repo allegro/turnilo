@@ -37,6 +37,12 @@ export interface FormLabelState {
 }
 
 export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
+  static dumbLabel(label: string) {
+    return <div className="form-label">
+      <div className="label">{label}</div>
+    </div>;
+  }
+
   static simpleGenerator(labels: any, errors: any, isBubble = false) {
     return (name: string) => {
       return <FormLabel

@@ -1,49 +1,19 @@
-# Only the dataCubes key will be used from the exmaple config
 dataCubes:
-
   - name: wiki
-
-    # This is the title that will grace this data cube in the the menus
     title: Wikipedia Example
-
-    # Use the native engine, all calculations will be done in Node.JS. Good for up to 100k rows of data.
     clusterName: native
-
-    # The file representing the datasource relative to repo root
     source: assets/data/wikiticker-2015-09-12-sampled.json
-    # This datasource was scraped using https://github.com/implydata/wikiticker
-    # GitHub does not like large files so only a sampled file is checked in
-    # There is also a non-sampled file with the filter: isAnonymous == true applied, to use it set:
-    # source: assets/data/wikiticker-2015-09-12-anonymous.json
-    # Run `assets/data/process-wikiticker-2015-09-12` to get the full example file
-
-    # The primary time attribute of the data refers to the attribute that must always be filtered on
-    # This is particularly useful for Druid data cubes as they must always have a time filter.
     timeAttribute: time
 
-    # The refresh rule describes how often the data cube looks for new data. Default: 'query'/PT1M (every minute)
-    # In this case it has to be fixed since this data cube is static
     refreshRule:
-      rule: fixed # also possible: 'query' and 'realtime'
-      time: 2015-09-13T00:00:00Z
+      rule: fixed
+      time: 2015-09-13T00:00:00.000Z
 
-    # The default duration for the time filter (if not set P1D is used)
     defaultDuration: P1D
-
-    # The default sort measure name (if not set the first measure name is used)
     defaultSortMeasure: delta
 
-    # The default filter in the UI, must be an AND of INs (or just a single IN)
-    #defaultFilter: $channel.in(["#en.wikipedia", "#de.wikipedia"])
-
-    # The names of dimensions that are pinned by default (in order that they will appear in the pin bar
-    defaultPinnedDimensions:
-      - channel
-      - namespace
-      - isRobot
-
+    defaultPinnedDimensions: ["channel","namespace","isRobot"]
     introspection: no-autofill
-
     attributeOverrides:
       - name: sometimeLater
         type: TIME
@@ -56,13 +26,9 @@ dataCubes:
 
     dimensions:
       - name: time
-        type: TIME
+        title: Time
         kind: time
         formula: $time
-
-    #  - name: sometimeLater
-    #    title: Sometime Later
-    #    kind: time
 
       - name: channel
         title: Channel
@@ -78,13 +44,13 @@ dataCubes:
 
       - name: commentLength
         title: Comment Length
-        formula: $commentLength
         kind: number
+        formula: $commentLength
 
       - name: commentLengthOver100
         title: Comment Length Over 100
-        formula: $commentLength > 100
         kind: boolean
+        formula: $commentLength > 100
 
       - name: countryIso
         title: Country ISO
@@ -96,24 +62,28 @@ dataCubes:
 
       - name: deltaBucket100
         title: Delta Bucket
-        formula: $deltaBucket100
         kind: number
+        formula: $deltaBucket100
 
       - name: isAnonymous
         title: Is Anonymous
         kind: boolean
+        formula: $isAnonymous
 
       - name: isMinor
         title: Is Minor
         kind: boolean
+        formula: $isMinor
 
       - name: isNew
         title: Is New
         kind: boolean
+        formula: $isNew
 
       - name: isRobot
         title: Is Robot
         kind: boolean
+        formula: $isRobot
 
       - name: isUnpatrolled
         title: Is Unpatrolled
@@ -147,28 +117,36 @@ dataCubes:
         title: User Chars
         formula: $userChars
 
-
     measures:
-
       - name: count
         title: Rows
         formula: $main.count()
 
       - name: delta
+        title: Delta
+        formula: $main.sum($delta)
 
       - name: avg_delta
+        title: Avg Delta
         formula: $main.average($delta)
 
       - name: added
+        title: Added
+        formula: $main.sum($added)
 
       - name: avg_added
+        title: Avg Added
         formula: $main.average($added)
 
       - name: deleted
+        title: Deleted
+        formula: $main.sum($deleted)
 
       - name: avg_deleted
+        title: Avg Deleted
         formula: $main.average($deleted)
 
       - name: unique_users
         title: Unique Users
         formula: $main.countDistinct($user)
+

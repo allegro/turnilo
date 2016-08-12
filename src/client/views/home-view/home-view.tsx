@@ -17,29 +17,44 @@
 require('./home-view.css');
 
 import * as React from 'react';
-import { Stage, DataCube, User, Customization } from '../../../common/models/index';
+import { Collection, Stage, DataCube, User, Customization } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { Fn } from '../../../common/utils/general/general';
 
-import { HomeHeaderBar } from '../../components/home-header-bar/home-header-bar';
-import { SvgIcon } from '../../components/svg-icon/svg-icon';
+import { HomeHeaderBar, SvgIcon, AddCollectionModal } from '../../components/index';
 import { ItemCard } from './item-card/item-card';
 
 export interface HomeViewProps extends React.Props<any> {
   dataCubes?: DataCube[];
+  collections?: Collection[];
   user?: User;
   onNavClick?: Fn;
   onOpenAbout: Fn;
   customization?: Customization;
+  collectionsDelegate?: {
+    addCollection: (collection: Collection) => void;
+  };
 }
 
 export interface HomeViewState {
+  showAddCollectionModal?: boolean;
 }
 
 export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
 
-  goToCube(cube: DataCube) {
-    window.location.hash = '#' + cube.name;
+  constructor() {
+    super();
+    this.state = {};
+  }
+
+  goToItem(item: DataCube | Collection) {
+    var fragments = item.name;
+
+    if (Collection.isCollection(item)) {
+      fragments = 'collection/' + fragments;
+    }
+
+    window.location.hash = '#' + fragments;
   }
 
   goToSettings() {
@@ -55,33 +70,58 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
     </div>;
   }
 
-  renderCube(cube: DataCube): JSX.Element {
+  renderItem(item: DataCube | Collection): JSX.Element {
     return <ItemCard
-      key={cube.name}
-      title={cube.title}
-      description={cube.description}
-      icon="full-cube"
-      onClick={this.goToCube.bind(this, cube)}
+      key={item.name}
+      title={item.title}
+      description={item.description}
+      icon={item instanceof DataCube ? 'full-cube' : 'full-collection'}
+      onClick={this.goToItem.bind(this, item)}
     />;
   }
 
-  renderCubes(cubes: DataCube[]): JSX.Element {
-    return <div className="datacubes">
-      <div className="title">{STRINGS.dataCubes}</div>
-      <div className="cubes-container">
-        {cubes.map(this.renderCube, this)}
+  renderItems(items: (DataCube | Collection)[], adder?: JSX.Element): JSX.Element {
+    return <div className="items-container">
+        {items.map(this.renderItem, this)}
 
         {/* So that the last item doesn't span on the entire row*/}
+        {adder || <div className="item-card empty"/>}
         <div className="item-card empty"/>
         <div className="item-card empty"/>
         <div className="item-card empty"/>
-        <div className="item-card empty"/>
-      </div>
-    </div>;
+      </div>;
+  }
+
+  createCollection() {
+    this.setState({
+      showAddCollectionModal: true
+    });
+  }
+
+  renderAddCollectionModal(): JSX.Element {
+    const { collections, collectionsDelegate } = this.props;
+
+    const closeModal = () => {
+      this.setState({
+        showAddCollectionModal: false
+      });
+    };
+
+    const addCollection = (collection: Collection) => {
+      closeModal();
+      collectionsDelegate.addCollection(collection);
+    };
+
+    return <AddCollectionModal
+      collections={collections}
+      onCancel={closeModal}
+      onSave={addCollection}
+    />;
   }
 
   render() {
-    const { user, dataCubes, onNavClick, onOpenAbout, customization } = this.props;
+    const { user, dataCubes, onNavClick, onOpenAbout, customization, collections } = this.props;
+    const { showAddCollectionModal } = this.state;
 
     return <div className="home-view">
       <HomeHeaderBar
@@ -97,9 +137,24 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
       </HomeHeaderBar>
 
       <div className="container">
-        {this.renderCubes(dataCubes)}
-      </div>
+        <div className="datacubes">
+          <div className="section-title">{STRINGS.dataCubes}</div>
+          {this.renderItems(dataCubes)}
+        </div>
 
+        { collections.length > 0 ? <div className="collections">
+          <div className="grid-row">
+            <div className="grid-col-90 section-title">{STRINGS.collections}</div>
+            <div className="grid-col-10 right actions">
+              <div className="add" onClick={this.createCollection.bind(this)}>
+                <SvgIcon svg={require('../../icons/full-add.svg')}/>
+              </div>
+            </div>
+          </div>
+          {this.renderItems(collections)}
+        </div> : null }
+      </div>
+      {showAddCollectionModal ? this.renderAddCollectionModal() : null}
     </div>;
   }
 }

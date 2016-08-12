@@ -31,8 +31,9 @@ describe.skip('SideDrawer', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <SideDrawer
         user={null}
+        collections={null}
         dataCubes={null}
-        selectedDataCube={null}
+        selectedItem={null}
         onOpenAbout={null}
         onClose={null}
         viewType="cube"

@@ -16,38 +16,40 @@
 
 import { $ } from 'plywood';
 import { DataCubeMock } from "../data-cube/data-cube.mock";
-import { LinkItemMock } from "../link-item/link-item.mock";
-import { LinkViewConfig, LinkViewConfigJS, LinkViewConfigContext } from './link-view-config';
+import { CollectionItemMock } from "../collection-item/collection-item.mock";
+import { Collection, CollectionJS, CollectionContext } from './collection';
 
-export class LinkViewConfigMock {
-  public static testOneOnlyJS(): LinkViewConfigJS {
+export class CollectionMock {
+  public static testOneOnlyJS(): CollectionJS {
     return {
       title: 'The Links Will Rise Again!',
-      linkItems: [
-        LinkItemMock.testOneJS()
+      name: 'the_links_will_rise_again',
+      items: [
+        CollectionItemMock.testOneJS()
       ]
     };
   }
 
-  public static testOneTwoJS(): LinkViewConfigJS {
+  public static testOneTwoJS(): CollectionJS {
     return {
       title: 'The Links Will Be Reloaded!',
-      linkItems: [
-        LinkItemMock.testOneJS(),
-        LinkItemMock.testTwoJS()
+      name: 'the_links_will_be_reloaded',
+      items: [
+        CollectionItemMock.testOneJS(),
+        CollectionItemMock.testTwoJS()
       ]
     };
   }
 
-  static getContext(): LinkViewConfigContext {
-    return LinkItemMock.getContext();
+  static getContext(): CollectionContext {
+    return CollectionItemMock.getContext();
   }
 
   static testOneOnly() {
-    return LinkViewConfig.fromJS(LinkViewConfigMock.testOneOnlyJS(), LinkViewConfigMock.getContext());
+    return Collection.fromJS(CollectionMock.testOneOnlyJS(), CollectionMock.getContext());
   }
 
   static testOneTwo() {
-    return LinkViewConfig.fromJS(LinkViewConfigMock.testOneTwoJS(), LinkViewConfigMock.getContext());
+    return Collection.fromJS(CollectionMock.testOneTwoJS(), CollectionMock.getContext());
   }
 }

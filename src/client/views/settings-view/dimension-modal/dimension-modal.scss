@@ -17,9 +17,9 @@
 @import '../../../imports';
 
 .dimension-modal {
-  @import '../form';
-
   form {
+    @extend %form;
+
     width: 100%;
   }
 

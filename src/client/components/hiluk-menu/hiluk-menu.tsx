@@ -33,6 +33,7 @@ export interface HilukMenuProps extends React.Props<any> {
   openRawDataModal: Fn;
   externalViews?: ExternalView[];
   getDownloadableDataset?: () => Dataset;
+  addEssenceToCollection?: () => void;
 }
 
 export interface HilukMenuState {
@@ -87,7 +88,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
   }
 
   render() {
-    const { openOn, onClose, externalViews, essence, getDownloadableDataset } = this.props;
+    const { openOn, onClose, externalViews, essence, getDownloadableDataset, addEssenceToCollection } = this.props;
     const { url, specificUrl } = this.state;
 
     var shareOptions: JSX.Element[] = [
@@ -129,12 +130,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
         var title = `${STRINGS.openIn} ${externalView.title}`;
         var target = externalView.sameWindow ? "_self" : "_blank";
         shareOptions.push(<li key={`custom-url-${i}`}>
-          <a
-            href={url}
-            target={target}
-          >
-            {title}
-          </a>
+          <a href={url} target={target}>{title}</a>
         </li>);
       });
     }
@@ -149,6 +145,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     >
       <ul className="bubble-list">
         {shareOptions}
+        <li className="add-to-collection" onClick={addEssenceToCollection}>{STRINGS.addToCollection}</li>
       </ul>
     </BubbleMenu>;
   }

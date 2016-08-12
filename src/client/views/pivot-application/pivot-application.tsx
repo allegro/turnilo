@@ -20,17 +20,19 @@ import * as React from 'react';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { findByName } from 'plywood';
 
-import { DataCube, AppSettings, User } from '../../../common/models/index';
+import { replaceHash } from '../../utils/url/url';
+import { DataCube, AppSettings, User, Collection, CollectionItem, Essence, ViewSupervisor } from '../../../common/models/index';
+import { STRINGS } from '../../config/constants';
 
 import { createFunctionSlot, FunctionSlot } from '../../utils/function-slot/function-slot';
-import { AboutModal } from '../../components/about-modal/about-modal';
-import { SideDrawer } from '../../components/side-drawer/side-drawer';
-import { Notifications, Notifier } from '../../components/notifications/notifications';
+import { AboutModal, SideDrawer, Notifications, Notifier, AddCollectionItemModal } from '../../components/index';
 
 import { HomeView } from '../home-view/home-view';
 import { LinkView } from '../link-view/link-view';
 import { CubeView } from '../cube-view/cube-view';
 import { SettingsView } from '../settings-view/settings-view';
+import { CollectionView } from '../collection-view/collection-view';
+import { CollectionViewDelegate } from './collection-view-delegate/collection-view-delegate';
 
 export interface PivotApplicationProps extends React.Props<any> {
   version: string;
@@ -48,30 +50,36 @@ export interface PivotApplicationState {
 
   appSettings?: AppSettings;
   drawerOpen?: boolean;
-  selectedDataCube?: DataCube;
+  selectedItem?: DataCube | Collection;
   viewType?: ViewType;
   viewHash?: string;
   showAboutModal?: boolean;
+  showAddCollectionModal?: boolean;
+  essenceToAddToACollection?: Essence;
+  cubeViewSupervisor?: ViewSupervisor;
 }
 
-export type ViewType = "home" | "cube" | "link" | "settings";
+export type ViewType = "home" | "cube" | "collection" | "link" | "settings";
 
 export const HOME: ViewType = "home";
 export const CUBE: ViewType = "cube";
+export const COLLECTION: ViewType = "collection";
 export const LINK: ViewType = "link";
 export const SETTINGS: ViewType = "settings";
 
 export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
   private hashUpdating: boolean = false;
   private sideBarHrefFn: FunctionSlot<string>;
+  private collectionViewDelegate: CollectionViewDelegate;
 
   constructor() {
     super();
+    this.collectionViewDelegate = new CollectionViewDelegate(this);
     this.sideBarHrefFn = createFunctionSlot<string>();
     this.state = {
       appSettings: null,
       drawerOpen: false,
-      selectedDataCube: null,
+      selectedItem: null,
       viewType: null,
       viewHash: null,
       showAboutModal: false
@@ -81,33 +89,46 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   componentWillMount() {
     var { appSettings } = this.props;
-    var { dataCubes } = appSettings;
+    var { dataCubes, collections } = appSettings;
 
     var hash = window.location.hash;
     var viewType = this.getViewTypeFromHash(hash);
 
     if (viewType !== SETTINGS && !dataCubes.length) throw new Error('must have data cubes');
 
-    var selectedDataCube = this.getDataCubeFromHash(appSettings.dataCubes, hash);
     var viewHash = this.getViewHashFromHash(hash);
 
-    // If data cube does not exit bounce to home
-    if (viewType === CUBE && !selectedDataCube) {
-      this.changeHash('');
-      viewType = HOME;
+    var selectedItem: DataCube | Collection;
+
+    if (this.viewTypeNeedsAnItem(viewType)) {
+      selectedItem = this.getSelectedItemFromHash(
+        viewType === CUBE ? dataCubes : collections,
+        hash,
+        viewType
+      );
+
+      // If datacube / collection does not exist, then bounce to home
+      if (!selectedItem) {
+        this.changeHash('');
+        viewType = HOME;
+      }
     }
 
-    if (viewType === HOME && dataCubes.length === 1) {
+    if (viewType === HOME && dataCubes.length === 1 && collections.length === 0) {
       viewType = CUBE;
-      selectedDataCube = dataCubes[0];
+      selectedItem = dataCubes[0];
     }
 
     this.setState({
       viewType,
       viewHash,
-      selectedDataCube,
+      selectedItem,
       appSettings
     });
+  }
+
+  viewTypeNeedsAnItem(viewType: ViewType): boolean {
+    return [CUBE, COLLECTION].indexOf(viewType) > -1;
   }
 
   componentDidMount() {
@@ -152,7 +173,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   hashToState(hash: string) {
-    const { dataCubes } = this.state.appSettings;
+    const { dataCubes, collections } = this.state.appSettings;
     var viewType = this.getViewTypeFromHash(hash);
     var viewHash = this.getViewHashFromHash(hash);
     var newState: PivotApplicationState = {
@@ -161,12 +182,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       drawerOpen: false
     };
 
-    if (viewType === CUBE) {
-      var dataCube = this.getDataCubeFromHash(dataCubes, hash);
-      if (!dataCube) dataCube = dataCubes[0];
-      newState.selectedDataCube = dataCube;
+    if (this.viewTypeNeedsAnItem(viewType)) {
+      let items = viewType === CUBE ? dataCubes : collections;
+      let item = this.getSelectedItemFromHash(items, hash, viewType);
+      newState.selectedItem = item ? item : items[0];
     } else {
-      newState.selectedDataCube = null;
+      newState.selectedItem = null;
     }
 
     this.setState(newState);
@@ -181,17 +202,24 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     const { user } = this.props;
     const appSettings = this.state.appSettings || this.props.appSettings;
     var viewType = this.parseHash(hash)[0];
+
     if (!viewType || viewType === HOME) return appSettings.linkViewConfig ? LINK : HOME;
+
     if (viewType === SETTINGS && user && user.allow['settings']) return SETTINGS;
+
     if (appSettings.linkViewConfig && viewType === LINK) return LINK;
+
+    if (viewType === COLLECTION) return COLLECTION;
+
     return CUBE;
   }
 
-  getDataCubeFromHash(dataCubes: DataCube[], hash: string): DataCube {
+  getSelectedItemFromHash(items: (DataCube | Collection)[], hash: string, viewType: ViewType): DataCube | Collection {
     // can change header from hash
     var parts = this.parseHash(hash);
-    var dataCubeName = parts.shift();
-    return findByName(dataCubes, dataCubeName);
+    var itemName = parts[viewType === COLLECTION ? 1 : 0];
+
+    return findByName(items, itemName);
   }
 
   getViewHashFromHash(hash: string): string {
@@ -210,7 +238,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
     // Hash initialization, no need to add the intermediary url in the history
     if (window.location.hash === `#${hash.split('/')[0]}`) {
-      window.history.replaceState(undefined, undefined, `#${hash}`);
+      replaceHash('#' + hash);
     } else {
       window.location.hash = `#${hash}`;
     }
@@ -226,7 +254,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
     var newHash: string;
     if (viewType === CUBE) {
-      newHash = `${this.state.selectedDataCube.name}/${viewHash}`;
+      newHash = `${this.state.selectedItem.name}/${viewHash}`;
+    } else if (viewType === COLLECTION) {
+      newHash = `collection/${this.state.selectedItem.name}`;
     } else if (viewType === LINK) {
       newHash = `${viewType}/${viewHash}`;
     } else {
@@ -243,8 +273,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     if (baseOnly) return urlBase;
 
     var newPrefix: string;
-    if (viewType === CUBE) {
-      newPrefix = `${this.state.selectedDataCube.name}/`;
+    if (this.viewTypeNeedsAnItem(viewType)) {
+      newPrefix = `${this.state.selectedItem.name}/`;
     } else {
       newPrefix = viewType;
     }
@@ -270,6 +300,48 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     });
   }
 
+  addEssenceToCollection(essence: Essence) {
+    this.setState({
+      essenceToAddToACollection: essence,
+      showAddCollectionModal: true
+    });
+  }
+
+  renderAddCollectionModal() {
+    const { appSettings, selectedItem, showAddCollectionModal, essenceToAddToACollection } = this.state;
+
+    if (!showAddCollectionModal) return null;
+
+    if (!DataCube.isDataCube(selectedItem)) {
+      throw new Error(`Can't call this method without a valid dataCube. It's
+        probably called from the wrong view.`);
+    }
+
+    const closeModal = () => {
+      this.setState({
+        showAddCollectionModal: false
+      });
+    };
+
+    const onSave = (_collection: Collection, collectionItem: CollectionItem) => {
+      closeModal();
+      this.collectionViewDelegate.addItem(_collection, collectionItem).then(url => {
+        Notifier.success('Item added', '', 3, {
+          label: 'View',
+          callback: () => window.location.hash = url
+        });
+      });
+    };
+
+    return <AddCollectionItemModal
+      collections={appSettings.collections}
+      essence={essenceToAddToACollection}
+      dataCube={selectedItem as DataCube}
+      onSave={onSave}
+      onCancel={closeModal}
+    />;
+  }
+
   renderAboutModal() {
     const { version } = this.props;
     const { AboutModalAsync, showAboutModal } = this.state;
@@ -289,15 +361,26 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   render() {
     var { maxFilters, maxSplits, user, version } = this.props;
-    var { viewType, viewHash, selectedDataCube, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync, appSettings } = this.state;
-    var { dataCubes, customization, linkViewConfig } = appSettings;
+    var {
+      viewType,
+      viewHash,
+      selectedItem,
+      ReactCSSTransitionGroupAsync,
+      drawerOpen,
+      SideDrawerAsync,
+      appSettings,
+      cubeViewSupervisor
+    } = this.state;
+
+    var { dataCubes, collections, customization, linkViewConfig } = appSettings;
 
     var sideDrawer: JSX.Element = null;
     if (drawerOpen && SideDrawerAsync) {
       var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
       sideDrawer = <SideDrawerAsync
         key='drawer'
-        selectedDataCube={selectedDataCube}
+        selectedItem={selectedItem}
+        collections={collections}
         dataCubes={dataCubes}
         onOpenAbout={this.openAboutModal.bind(this)}
         onClose={closeSideDrawer}
@@ -326,16 +409,18 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         view = <HomeView
           user={user}
           dataCubes={dataCubes}
+          collections={collections}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           onOpenAbout={this.openAboutModal.bind(this)}
           customization={customization}
+          collectionsDelegate={this.collectionViewDelegate}
         />;
         break;
 
       case CUBE:
         view = <CubeView
           user={user}
-          dataCube={selectedDataCube}
+          dataCube={selectedItem as DataCube}
           hash={viewHash}
           updateViewHash={this.updateViewHash.bind(this)}
           getUrlPrefix={this.getUrlPrefix.bind(this)}
@@ -344,6 +429,19 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           customization={customization}
           transitionFnSlot={this.sideBarHrefFn}
+          supervisor={cubeViewSupervisor}
+          addEssenceToCollection={this.addEssenceToCollection.bind(this)}
+        />;
+        break;
+
+      case COLLECTION:
+        view = <CollectionView
+          user={user}
+          collections={collections}
+          dataCubes={dataCubes}
+          onNavClick={this.sideDrawerOpen.bind(this, true)}
+          customization={customization}
+          delegate={this.collectionViewDelegate}
         />;
         break;
 
@@ -363,7 +461,6 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       case SETTINGS:
         view = <SettingsView
           user={user}
-          hash={window.location.hash}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           onSettingsChange={this.onSettingsChange.bind(this)}
           customization={customization}
@@ -379,6 +476,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       {view}
       {sideDrawerTransition}
       {this.renderAboutModal()}
+      {this.renderAddCollectionModal()}
       {this.renderNotifications()}
     </main>;
   }

@@ -26,10 +26,7 @@ import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, DataCube, User, Customization, ExternalView } from '../../../common/models/index';
 
-import { HilukMenu } from '../hiluk-menu/hiluk-menu';
-import { AutoRefreshMenu } from '../auto-refresh-menu/auto-refresh-menu';
-import { UserMenu } from '../user-menu/user-menu';
-import { SettingsMenu } from '../settings-menu/settings-menu';
+import { HilukMenu, AutoRefreshMenu, UserMenu, SettingsMenu, AddCollectionItemModal } from '../index';
 
 export interface CubeHeaderBarProps extends React.Props<any> {
   clicker: Clicker;
@@ -42,6 +39,7 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   openRawDataModal?: Fn;
   customization?: Customization;
   getDownloadableDataset?: () => Dataset;
+  addEssenceToCollection?: () => void;
   changeTimezone?: (timezone: Timezone) => void;
   timezone?: Timezone;
 }
@@ -144,7 +142,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderHilukMenu() {
-    const { essence, getUrlPrefix, customization, openRawDataModal, getDownloadableDataset } = this.props;
+    const { essence, getUrlPrefix, customization, openRawDataModal, getDownloadableDataset, addEssenceToCollection } = this.props;
     const { hilukMenuOpenOn } = this.state;
     if (!hilukMenuOpenOn) return null;
 
@@ -152,6 +150,13 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     if (customization && customization.externalViews) {
       externalViews = customization.externalViews;
     }
+
+    const onAddEssenceToCollectionClick = () => {
+      this.setState({
+        hilukMenuOpenOn: null
+      });
+      addEssenceToCollection();
+    };
 
     return <HilukMenu
       essence={essence}
@@ -161,6 +166,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       openRawDataModal={openRawDataModal}
       externalViews={externalViews}
       getDownloadableDataset={getDownloadableDataset}
+      addEssenceToCollection={onAddEssenceToCollectionClick}
     />;
   }
 

@@ -21,7 +21,7 @@ import { DataCube } from '../data-cube/data-cube';
 import { Essence, EssenceJS } from '../essence/essence';
 import { Manifest } from '../manifest/manifest';
 
-export interface LinkItemValue {
+export interface CollectionItemValue {
   name: string;
   title: string;
   description: string;
@@ -30,7 +30,7 @@ export interface LinkItemValue {
   essence: Essence;
 }
 
-export interface LinkItemJS {
+export interface CollectionItemJS {
   name: string;
   title?: string;
   description?: string;
@@ -39,20 +39,20 @@ export interface LinkItemJS {
   essence: EssenceJS;
 }
 
-export interface LinkItemContext {
+export interface CollectionItemContext {
   dataCubes: DataCube[];
   visualizations?: Manifest[];
 }
 
-var check: Class<LinkItemValue, LinkItemJS>;
-export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
+var check: Class<CollectionItemValue, CollectionItemJS>;
+export class CollectionItem implements Instance<CollectionItemValue, CollectionItemJS> {
 
-  static isLinkItem(candidate: any): candidate is LinkItem {
-    return isInstanceOf(candidate, LinkItem);
+  static isCollectionItem(candidate: any): candidate is CollectionItem {
+    return isInstanceOf(candidate, CollectionItem);
   }
 
-  static fromJS(parameters: LinkItemJS, context?: LinkItemContext): LinkItem {
-    if (!context) throw new Error('LinkItem must have context');
+  static fromJS(parameters: CollectionItemJS, context?: CollectionItemContext): CollectionItem {
+    if (!context) throw new Error('CollectionItem must have context');
     const { dataCubes, visualizations } = context;
 
     var dataCubeName = parameters.dataCube;
@@ -61,7 +61,7 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
 
     var essence = Essence.fromJS(parameters.essence, { dataCube, visualizations }).updateSplitsWithFilter();
 
-    return new LinkItem({
+    return new CollectionItem({
       name: parameters.name,
       title: parameters.title,
       description: parameters.description,
@@ -78,7 +78,7 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
   public dataCube: DataCube;
   public essence: Essence;
 
-  constructor(parameters: LinkItemValue) {
+  constructor(parameters: CollectionItemValue) {
     var name = parameters.name;
     verifyUrlSafeName(name);
     this.name = name;
@@ -89,7 +89,7 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
     this.essence = parameters.essence;
   }
 
-  public valueOf(): LinkItemValue {
+  public valueOf(): CollectionItemValue {
     return {
       name: this.name,
       title: this.title,
@@ -100,7 +100,7 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
     };
   }
 
-  public toJS(): LinkItemJS {
+  public toJS(): CollectionItemJS {
     return {
       name: this.name,
       title: this.title,
@@ -111,7 +111,7 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
     };
   }
 
-  public toJSON(): LinkItemJS {
+  public toJSON(): CollectionItemJS {
     return this.toJS();
   }
 
@@ -119,8 +119,8 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
     return `[LinkItem: ${this.name}]`;
   }
 
-  public equals(other: LinkItem): boolean {
-    return LinkItem.isLinkItem(other) &&
+  public equals(other: CollectionItem): boolean {
+    return CollectionItem.isCollectionItem(other) &&
       this.name === other.name &&
       this.title === other.title &&
       this.description === other.description &&
@@ -129,5 +129,20 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
       this.essence.equals(other.essence);
   }
 
+  public change(propertyName: string, newValue: any): CollectionItem {
+    var v = this.valueOf();
+
+    if (!v.hasOwnProperty(propertyName)) {
+      throw new Error(`Unknown property : ${propertyName}`);
+    }
+
+    (v as any)[propertyName] = newValue;
+    return new CollectionItem(v);
+  }
+
+  public changeEssence(essence: Essence) {
+    return this.change('essence', essence);
+  }
+
 }
-check = LinkItem;
+check = CollectionItem;

@@ -263,6 +263,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     if (this.props.onClick === undefined) return;
 
     const { x, y, part} = this.getRelativeMouseCoordinates(event);
+    if (y < 0 || x < 0) return;
 
     this.props.onClick(x, y, part);
   }
@@ -271,6 +272,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     if (this.props.onMouseMove === undefined) return;
 
     const { x, y, part } = this.getRelativeMouseCoordinates(event);
+    if (y < 0 || x < 0) return;
 
     this.props.onMouseMove(x, y, part);
   }
@@ -347,7 +349,22 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     let blockHorizontalScroll = bodyWidth <= viewportWidth;
     let blockVerticalScroll = bodyHeight <= viewportHeight;
 
-    return <div className="scroller" ref="Scroller">
+    const eventContainerClasses = classNames(
+      'event-container',
+      {
+        'no-x-scroll': blockHorizontalScroll,
+        'no-y-scroll': blockVerticalScroll
+      }
+    );
+
+    const scrollerClasses = classNames(
+      'scroller',
+      {
+        'has-top-shadow': this.shouldHaveShadow('top')
+      }
+    );
+
+    return <div className={scrollerClasses} ref="Scroller">
 
       <div className="body" style={this.getBodyStyle()}>{body}</div>
 
@@ -369,7 +386,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       { overlay ? <div className="overlay">{overlay}</div> : null }
 
       <div
-        className={classNames('event-container', {'no-x-scroll': blockHorizontalScroll, 'no-y-scroll': blockVerticalScroll})}
+        className={eventContainerClasses}
         ref="eventContainer"
         onScroll={this.onScroll.bind(this)}
         onClick={this.onClick.bind(this)}

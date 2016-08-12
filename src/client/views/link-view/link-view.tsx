@@ -22,7 +22,7 @@ import { Expression, $, find } from 'plywood';
 import { classNames } from '../../utils/dom/dom';
 import { Fn } from '../../../common/utils/general/general';
 import { Colors, Clicker, Essence, Filter, FilterClause, Stage, Measure,
-  VisualizationProps, LinkViewConfig, LinkItem, User, Customization } from '../../../common/models/index';
+  VisualizationProps, Collection, CollectionItem, User, Customization } from '../../../common/models/index';
 
 import * as localStorage from '../../utils/local-storage/local-storage';
 import { STRINGS } from "../../config/constants";
@@ -49,7 +49,7 @@ export interface LinkViewLayout {
 }
 
 export interface LinkViewProps extends React.Props<any> {
-  linkViewConfig: LinkViewConfig;
+  linkViewConfig: Collection;
   user?: User;
   hash: string;
   updateViewHash: (newHash: string) => void;
@@ -60,7 +60,7 @@ export interface LinkViewProps extends React.Props<any> {
 }
 
 export interface LinkViewState {
-  linkItem?: LinkItem;
+  linkItem?: CollectionItem;
   essence?: Essence;
   visualizationStage?: Stage;
   menuStage?: Stage;
@@ -129,7 +129,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
 
     var linkItem = linkViewConfig.findByName(hash);
     if (!linkItem) {
-      linkItem = linkViewConfig.defaultLinkItem();
+      linkItem = linkViewConfig.getDefaultItem();
       updateViewHash(linkItem.name);
     }
 
@@ -182,7 +182,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     });
   }
 
-  selectLinkItem(linkItem: LinkItem) {
+  selectLinkItem(linkItem: CollectionItem) {
     const { essence } = this.state;
     var newEssence = linkItem.essence;
 
@@ -261,7 +261,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     var groupId = 0;
     var lastGroup: string = null;
     var items: JSX.Element[] = [];
-    linkViewConfig.linkItems.forEach(li => {
+    linkViewConfig.items.forEach(li => {
       // Add a group header if needed
       if (lastGroup !== li.group) {
         items.push(<div

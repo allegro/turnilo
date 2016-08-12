@@ -31,6 +31,14 @@ export interface ItemCardState {
 }
 
 export class ItemCard extends React.Component< ItemCardProps, ItemCardState> {
+  static getNewItemCard(onClick: () => void): JSX.Element {
+    return <div className="item-card new-one" onClick={onClick}>
+      <div className="inner-container">
+        <SvgIcon svg={require('../../../icons/full-add.svg')}/>
+      </div>
+    </div>;
+  }
+
   render() {
     const { title, description, icon, onClick } = this.props;
 

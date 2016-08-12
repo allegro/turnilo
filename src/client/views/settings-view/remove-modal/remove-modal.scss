@@ -17,7 +17,9 @@
 @import '../../../imports';
 
 .remove-modal {
-  @import '../form';
+  form {
+    @extend %form;
+  }
 
   .buttons {
     margin-top: 40px;

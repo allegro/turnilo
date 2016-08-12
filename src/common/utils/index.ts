@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from './object/object';
 export * from './formatter/formatter';
 export * from './general/general';
 export * from './parser/parser';

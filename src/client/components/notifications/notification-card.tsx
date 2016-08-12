@@ -18,7 +18,8 @@ require('./notification-card.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { classNames } from '../../utils/dom/dom';
+import { STRINGS } from '../../config/constants';
+import { classNames, clamp } from '../../utils/dom/dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { BodyPortal } from '../body-portal/body-portal';
 
@@ -33,6 +34,8 @@ export interface NotificationCardState {
   appearing?: boolean;
   disappearing?: boolean;
 }
+
+const DEFAULT_DURATION = 1; // seconds
 
 export class NotificationCard extends React.Component<NotificationCardProps, NotificationCardState> {
   private timeoutID: number;
@@ -49,19 +52,23 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
   }
 
   appear() {
-    const { title, message, sticky } = this.props.model;
+    const { title, message, duration } = this.props.model;
 
-    if (sticky) {
+    var d = clamp(duration, -1, 10);
+
+    if (d === -1) {
       this.setState({appearing: false});
       return;
     }
 
     this.setState({appearing: false}, () => {
-      this.timeoutID = window.setTimeout(this.disappear.bind(this), title && message ? 2000 : 1000);
+      this.timeoutID = window.setTimeout(this.disappear.bind(this), (d ? d : DEFAULT_DURATION) * 1000 );
     });
   }
 
   disappear() {
+    if (this.timeoutID !== undefined) window.clearTimeout(this.timeoutID);
+
     this.setState({disappearing: true}, () => {
       this.timeoutID = window.setTimeout(this.removeMe.bind(this, this.props.model), 200);
     });
@@ -82,17 +89,25 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
 
     if (!model) return null;
 
+    const { title, message, priority, action } = model;
+
     if (appearing || disappearing) top = -100;
 
-    const height = model.title && model.message ? 60 : 30;
+    var height = 30 + [message, action].filter(Boolean).length * 30;
+
+    var onClick = () => {
+      action && action.callback();
+      this.disappear();
+    };
 
     return <div
       style={{top, height}}
-      onClick={this.disappear.bind(this)}
-      className={classNames(`notification-card ${model.priority}`, {appearing, disappearing})}
+      onClick={onClick}
+      className={classNames(`notification-card ${priority}`, {appearing, disappearing})}
      >
-      <div className="title">{model.title}</div>
-      <div className="message">{model.message}</div>
+      <div className="title">{title}</div>
+      <div className="message">{message}</div>
+      { action ? <div className="undo"><span>{action.label}</span></div> : null }
     </div>;
   }
 }

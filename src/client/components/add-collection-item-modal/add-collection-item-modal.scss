@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-form {
-  width: 448px;
+@import '../../imports';
 
-  &.vertical {
-    > * {
-      display: block;
-    }
+.add-collection-item-modal {
+  form {
+    @extend %form;
+    width: 100%;
   }
 
-  input {
-    @extend %default-input;
-  }
-
-  input, .input {
-    margin-bottom: 25px;
+  .new-collection {
+    margin: 5px 0 15px 1px;
+    font-size: 11px;
+    text-decoration: underline;
+    cursor: pointer;
+    color: $brand;
   }
 }

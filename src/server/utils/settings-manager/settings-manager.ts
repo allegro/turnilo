@@ -65,6 +65,7 @@ export class SettingsManager {
         return this.reviseSettings(appSettings);
       })
       .catch(e => {
+        logger.error(e.stack);
         logger.error(`Fatal settings load error: ${e.message}`);
         throw e;
       });

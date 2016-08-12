@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class/build/tester';
+export type DeviceSize = 'small' | 'medium' | 'large';
 
-import { LinkViewConfigMock } from './link-view-config.mock';
-import { LinkViewConfig } from './link-view-config';
+export class Device {
+  static getSize(): DeviceSize {
+    if (window.innerWidth <= 1080) return 'small';
+    if (window.innerWidth <= 1250) return 'medium';
 
-describe('LinkViewConfig', () => {
-  var context = LinkViewConfigMock.getContext();
-
-  it('is an immutable class', () => {
-    testImmutableClass(LinkViewConfig, [
-      LinkViewConfigMock.testOneOnlyJS(),
-      LinkViewConfigMock.testOneTwoJS()
-    ], { context });
-  });
-
-});
+    return 'large';
+  }
+}

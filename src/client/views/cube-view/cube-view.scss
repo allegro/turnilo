@@ -17,7 +17,8 @@
 @import '../../imports';
 
 .cube-view {
-  .cube-header-bar {
+  .cube-header-bar,
+  .supervised-cube-header-bar {
     @include pin-top($header-height);
   }
 

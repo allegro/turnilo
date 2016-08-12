@@ -35,7 +35,6 @@ export interface UserMenuState {
 export class UserMenu extends React.Component<UserMenuProps, UserMenuState> {
   constructor() {
     super();
-
   }
 
   render() {

@@ -1,0 +1,86 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../../imports';
+
+.collection-overview {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 50px;
+  padding-bottom: 40px;
+
+  .collection-item-card {
+    display: inline-block;
+    width: 33.3333333333%;
+    padding: 10px;
+
+    .content {
+      height: 12vw;
+    }
+  }
+}
+
+@media all and (max-width: 1800px) {
+  .collection-overview {
+    .collection-item-card {
+      width: 50%;
+
+      .content {
+        height: 20vw;
+      }
+    }
+  }
+}
+
+@media all and (max-width: 1080px) {
+  .collection-overview {
+    width: 86%;
+
+    .collection-item-card {
+      padding: 8px;
+
+      .content {
+        height: 24vw;
+      }
+    }
+  }
+}
+
+@media all and (max-width: 900px) {
+  .collection-overview {
+    width: 80%;
+
+    .collection-item-card {
+      width: 100%;
+
+      .content {
+        height: 40vw;
+      }
+    }
+  }
+}
+
+@media all and (max-width: 700px) {
+  .collection-overview {
+    width: 86%;
+
+    .collection-item-card {
+      width: 100%;
+    }
+  }
+}
+
