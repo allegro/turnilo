@@ -346,6 +346,32 @@ Let's say that you are responsible for all accounts in the United States as well
 
 Now my account would represent a custom filter boolean diemension.
 
+#### Custom transformations
+
+If no existing plywood function meets your needs, you could also define your own custom transformation.
+The transformation could be any supported [Druid extraction function](http://druid.io/docs/latest/querying/dimensionspecs.html).
+
+For example you could apply any number of javascript functions to a string.
+
+To use that in Pivot define:
+
+```yaml
+    options:
+      customTransforms:
+        stringFun:
+          extractionFn:
+            type: javascript
+            function: function(x) { return decodeURIComponent(x).trim().charCodeAt(0) }
+```
+
+Then in the dimensions simply reference `stringFun` like so:
+
+```yaml
+      - name: stringFun
+        title: String Fun
+        formula: $countryURL.customTransform('stringFun')
+```
+
 ### Measures
 
 In this section you can define the measures that users can *aggregate* on (*apply*) on in the UI.
@@ -434,7 +460,7 @@ Then in the measures simply reference `addedMod1337` like so:
 ```yaml
       - name: addedMod
         title: Added Mod 1337
-        formula: $main.custom('addedMod1337')
+        formula: $main.customAggregate('addedMod1337')
 ```
 
 This functionality can be used to access any custom aggregations that might be loaded via extensions.
