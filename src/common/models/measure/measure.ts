@@ -17,7 +17,7 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
-import { $, Expression, ExpressionJS, Datum, ApplyAction, AttributeInfo, ChainExpression, helper } from 'plywood';
+import { $, Expression, Datum, ApplyAction, AttributeInfo, ChainExpression, deduplicateSort } from 'plywood';
 import { verifyUrlSafeName, makeTitle, makeUrlSafeName } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
@@ -75,7 +75,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
         }
       }
     });
-    return helper.deduplicateSort(references);
+    return deduplicateSort(references);
   }
 
   /**
@@ -95,7 +95,7 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
         }
       }
     });
-    return helper.deduplicateSort(references);
+    return deduplicateSort(references);
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {

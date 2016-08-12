@@ -18,7 +18,7 @@ import { List, OrderedSet, Iterable } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, isInstanceOf, immutableEqual } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
-import { $, Expression, RefExpression, TimeRange, ApplyAction, SortAction, Set, helper } from 'plywood';
+import { $, Expression, RefExpression, TimeRange, ApplyAction, SortAction, Set, findByName } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataCube } from '../data-cube/data-cube';
 import { Filter, FilterJS } from '../filter/filter';
@@ -191,7 +191,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var visualizationName = parameters.visualization;
     if (visualizationName === 'time-series') visualizationName = 'line-chart'; // Back compat (used to be named time-series)
-    var visualization = helper.findByName(visualizations, visualizationName);
+    var visualization = findByName(visualizations, visualizationName);
 
     var timezone = parameters.timezone ? Timezone.fromJS(parameters.timezone) : null;
     var filter = parameters.filter ? Filter.fromJS(parameters.filter).constrainToDimensions(dataCube.dimensions, dataCube.timeAttribute) : null;

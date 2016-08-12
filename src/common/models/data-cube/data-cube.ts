@@ -17,10 +17,10 @@
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
 import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
-import { Duration, Timezone, minute, second } from 'chronoshift';
+import { Duration, Timezone, second } from 'chronoshift';
 import { $, ply, r, Expression, ExpressionJS, Executor, External, RefExpression, basicExecutorFactory, Dataset,
   Attributes, AttributeInfo, AttributeJSs, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
-  CustomDruidAggregations, ExternalValue, helper } from 'plywood';
+  CustomDruidAggregations, ExternalValue, findByName } from 'plywood';
 import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
 import { getWallTimeString } from '../../utils/time/time';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -313,7 +313,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     var attributes = AttributeInfo.fromJSs(parameters.attributes || []);
     var derivedAttributes: Lookup<Expression> = null;
     if (parameters.derivedAttributes) {
-      derivedAttributes = helper.expressionLookupFromJS(parameters.derivedAttributes);
+      derivedAttributes = Expression.expressionLookupFromJS(parameters.derivedAttributes);
     }
 
     var dimensions = List((parameters.dimensions || []).map((d) => Dimension.fromJS(d)));
@@ -509,7 +509,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     if (this.timeAttribute) js.timeAttribute = this.timeAttribute.name;
     if (this.attributeOverrides.length) js.attributeOverrides = AttributeInfo.toJSs(this.attributeOverrides);
     if (this.attributes.length) js.attributes = AttributeInfo.toJSs(this.attributes);
-    if (this.derivedAttributes) js.derivedAttributes = helper.expressionLookupToJS(this.derivedAttributes);
+    if (this.derivedAttributes) js.derivedAttributes = Expression.expressionLookupToJS(this.derivedAttributes);
     if (Object.keys(this.options).length) js.options = this.options;
     if (this.maxTime) js.maxTime = this.maxTime.toJS();
     return js;
@@ -811,7 +811,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       if (expression.equals(timeAttribute)) return;
       var references = expression.getFreeReferences();
       for (var reference of references) {
-        if (helper.findByName(attributes, reference)) continue;
+        if (findByName(attributes, reference)) continue;
         attributes.push(AttributeInfo.fromJS({ name: reference, type: 'STRING' }));
       }
     });
@@ -821,7 +821,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       var references = Measure.getAggregateReferences(expression);
       var countDistinctReferences = Measure.getCountDistinctReferences(expression);
       for (var reference of references) {
-        if (helper.findByName(attributes, reference)) continue;
+        if (findByName(attributes, reference)) continue;
         if (countDistinctReferences.indexOf(reference) !== -1) {
           attributes.push(AttributeInfo.fromJS({ name: reference, special: 'unique' }));
         } else {
@@ -851,7 +851,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       var { name, type, special } = newAttribute;
 
       // Already exists as a current attribute
-      if (attributes && helper.findByName(attributes, name)) continue;
+      if (attributes && findByName(attributes, name)) continue;
 
       // Already exists as a current dimension or a measure
       var urlSafeName = makeUrlSafeName(name);

@@ -15,7 +15,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { $, Expression, RefExpression, External, Datum, Dataset, PlywoodValue, TimeRange, basicExecutorFactory, Executor, AttributeJSs, helper } from 'plywood';
+import { $, Expression, RefExpression, External, Datum, Dataset, PlywoodValue, TimeRange, basicExecutorFactory, Executor, AttributeJSs } from 'plywood';
 import { Timezone, WallTime, Duration } from 'chronoshift';
 
 import { PivotRequest } from '../../utils/index';
@@ -70,12 +70,12 @@ router.post('/', (req: PivotRequest, res: Response) => {
       var myDataCube = appSettings.getDataCube(dataCube);
       if (!myDataCube) {
         res.status(400).send({ error: 'unknown data cube' });
-        return;
+        return null;
       }
 
       if (!myDataCube.executor) {
         res.status(400).send({ error: 'un queryable data cube' });
-        return;
+        return null;
       }
 
       return myDataCube.executor(ex, { timezone: queryTimezone }).then(

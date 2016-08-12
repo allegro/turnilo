@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -eu
 
 if [ `git symbolic-ref --short HEAD` != "master" ]
 then
@@ -15,6 +15,6 @@ fi
 echo "Trying to publish..."
 
 gulp all
-mocha test
+./travis-test
 script/version-bump
 npm publish

@@ -143,9 +143,9 @@
       "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz"
     },
     "chronoshift": {
-      "version": "0.4.6",
-      "from": "chronoshift@0.4.6",
-      "resolved": "https://registry.npmjs.org/chronoshift/-/chronoshift-0.4.6.tgz"
+      "version": "0.5.6",
+      "from": "chronoshift@0.5.6",
+      "resolved": "https://registry.npmjs.org/chronoshift/-/chronoshift-0.5.6.tgz"
     },
     "clipboard": {
       "version": "1.5.12",
@@ -350,7 +350,7 @@
     },
     "form-data": {
       "version": "1.0.0-rc4",
-      "from": "form-data@>=1.0.0-rc3 <1.1.0",
+      "from": "form-data@>=1.0.0-rc4 <1.1.0",
       "resolved": "https://registry.npmjs.org/form-data/-/form-data-1.0.0-rc4.tgz"
     },
     "forwarded": {
@@ -466,9 +466,9 @@
       "resolved": "https://registry.npmjs.org/immutable/-/immutable-3.8.1.tgz"
     },
     "immutable-class": {
-      "version": "0.4.6",
-      "from": "immutable-class@0.4.6",
-      "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.4.6.tgz"
+      "version": "0.5.2",
+      "from": "immutable-class@0.5.2",
+      "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.5.2.tgz"
     },
     "inflight": {
       "version": "1.0.5",
@@ -723,9 +723,9 @@
       "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-0.1.7.tgz"
     },
     "pg": {
-      "version": "6.0.1",
-      "from": "pg@6.0.1",
-      "resolved": "https://registry.npmjs.org/pg/-/pg-6.0.1.tgz"
+      "version": "6.1.0",
+      "from": "pg@6.1.0",
+      "resolved": "https://registry.npmjs.org/pg/-/pg-6.1.0.tgz"
     },
     "pg-connection-string": {
       "version": "0.1.3",
@@ -743,9 +743,9 @@
       "resolved": "https://registry.npmjs.org/pg-types/-/pg-types-1.11.0.tgz"
     },
     "pgpass": {
-      "version": "0.0.6",
-      "from": "pgpass@0.0.6",
-      "resolved": "https://registry.npmjs.org/pgpass/-/pgpass-0.0.6.tgz"
+      "version": "1.0.1",
+      "from": "pgpass@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/pgpass/-/pgpass-1.0.1.tgz"
     },
     "pinkie": {
       "version": "2.0.4",
@@ -758,36 +758,24 @@
       "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-2.0.1.tgz"
     },
     "plywood": {
-      "version": "0.11.9",
-      "from": "plywood@0.11.9",
-      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.11.9.tgz"
+      "version": "0.12.1",
+      "from": "plywood@0.12.1",
+      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.12.1.tgz"
     },
     "plywood-druid-requester": {
-      "version": "1.4.6",
-      "from": "plywood-druid-requester@1.4.6",
-      "resolved": "https://registry.npmjs.org/plywood-druid-requester/-/plywood-druid-requester-1.4.6.tgz",
-      "dependencies": {
-        "qs": {
-          "version": "6.1.0",
-          "from": "qs@>=6.1.0 <6.2.0",
-          "resolved": "https://registry.npmjs.org/qs/-/qs-6.1.0.tgz"
-        },
-        "request": {
-          "version": "2.72.0",
-          "from": "request@2.72.0",
-          "resolved": "https://registry.npmjs.org/request/-/request-2.72.0.tgz"
-        }
-      }
+      "version": "1.5.3",
+      "from": "plywood-druid-requester@1.5.3",
+      "resolved": "https://registry.npmjs.org/plywood-druid-requester/-/plywood-druid-requester-1.5.3.tgz"
     },
     "plywood-mysql-requester": {
-      "version": "1.2.6",
-      "from": "plywood-mysql-requester@1.2.6",
-      "resolved": "https://registry.npmjs.org/plywood-mysql-requester/-/plywood-mysql-requester-1.2.6.tgz"
+      "version": "1.3.1",
+      "from": "plywood-mysql-requester@1.3.1",
+      "resolved": "https://registry.npmjs.org/plywood-mysql-requester/-/plywood-mysql-requester-1.3.1.tgz"
     },
     "plywood-postgres-requester": {
-      "version": "0.8.8",
-      "from": "plywood-postgres-requester@0.8.8",
-      "resolved": "https://registry.npmjs.org/plywood-postgres-requester/-/plywood-postgres-requester-0.8.8.tgz"
+      "version": "0.9.1",
+      "from": "plywood-postgres-requester@0.9.1",
+      "resolved": "https://registry.npmjs.org/plywood-postgres-requester/-/plywood-postgres-requester-0.9.1.tgz"
     },
     "postgres-array": {
       "version": "1.0.0",
@@ -877,14 +865,7 @@
     "request": {
       "version": "2.74.0",
       "from": "request@2.74.0",
-      "resolved": "https://registry.npmjs.org/request/-/request-2.74.0.tgz",
-      "dependencies": {
-        "tough-cookie": {
-          "version": "2.3.1",
-          "from": "tough-cookie@>=2.3.0 <2.4.0",
-          "resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.3.1.tgz"
-        }
-      }
+      "resolved": "https://registry.npmjs.org/request/-/request-2.74.0.tgz"
     },
     "rimraf": {
       "version": "2.5.4",
@@ -994,9 +975,9 @@
       "resolved": "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-1.1.0.tgz"
     },
     "tough-cookie": {
-      "version": "2.2.2",
-      "from": "tough-cookie@>=2.2.0 <2.3.0",
-      "resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.2.2.tgz"
+      "version": "2.3.1",
+      "from": "tough-cookie@>=2.3.0 <2.4.0",
+      "resolved": "https://registry.npmjs.org/tough-cookie/-/tough-cookie-2.3.1.tgz"
     },
     "tunnel-agent": {
       "version": "0.4.3",
@@ -1047,6 +1028,11 @@
       "version": "1.3.6",
       "from": "verror@1.3.6",
       "resolved": "https://registry.npmjs.org/verror/-/verror-1.3.6.tgz"
+    },
+    "walltime-repack": {
+      "version": "0.2.4",
+      "from": "walltime-repack@0.2.4",
+      "resolved": "https://registry.npmjs.org/walltime-repack/-/walltime-repack-0.2.4.tgz"
     },
     "whatwg-fetch": {
       "version": "1.0.0",

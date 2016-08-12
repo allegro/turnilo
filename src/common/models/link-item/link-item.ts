@@ -15,7 +15,7 @@
  */
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { helper } from 'plywood';
+import { find } from 'plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 import { DataCube } from '../data-cube/data-cube';
 import { Essence, EssenceJS } from '../essence/essence';
@@ -56,7 +56,7 @@ export class LinkItem implements Instance<LinkItemValue, LinkItemJS> {
     const { dataCubes, visualizations } = context;
 
     var dataCubeName = parameters.dataCube;
-    var dataCube = helper.find(dataCubes, d => d.name === dataCubeName);
+    var dataCube = find(dataCubes, d => d.name === dataCubeName);
     if (!dataCube) throw new Error(`can not find dataCube '${dataCubeName}'`);
 
     var essence = Essence.fromJS(parameters.essence, { dataCube, visualizations }).updateSplitsWithFilter();

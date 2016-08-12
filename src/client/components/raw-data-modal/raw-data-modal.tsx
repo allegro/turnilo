@@ -19,7 +19,8 @@ require('./raw-data-modal.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
-import { $, Dataset, PlywoodValue, Datum, Set, AttributeInfo, isDate } from 'plywood';
+import { isDate } from 'chronoshift';
+import { $, Dataset, PlywoodValue, Datum, AttributeInfo } from 'plywood';
 import { Essence, Stage, DataCube } from '../../../common/models/index';
 
 import { Fn, makeTitle, arraySum } from '../../../common/utils/general/general';

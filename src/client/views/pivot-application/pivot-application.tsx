@@ -18,7 +18,7 @@ require('./pivot-application.css');
 
 import * as React from 'react';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { helper } from 'plywood';
+import { findByName } from 'plywood';
 
 import { DataCube, AppSettings, User } from '../../../common/models/index';
 
@@ -191,7 +191,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     // can change header from hash
     var parts = this.parseHash(hash);
     var dataCubeName = parts.shift();
-    return helper.findByName(dataCubes, dataCubeName);
+    return findByName(dataCubes, dataCubeName);
   }
 
   getViewHashFromHash(hash: string): string {

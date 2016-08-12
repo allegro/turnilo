@@ -1,9 +1,10 @@
-#!/bin/bash -e
+#!/bin/bash -eu
 
 # This script is used to quickly 'npm install plywood@super-latest' without having to publish plywood.
 # Assumes /pivot and /plywood are next to each other
 
 (cd ../plywood; ./compile )
+cp ../plywood/package.json ./node_modules/plywood
 cp -r ../plywood/package ./node_modules/plywood
 cp -r ../plywood/build ./node_modules/plywood
 cp -r ../plywood/src ./node_modules/plywood

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, helper } from 'plywood';
+import { $, retryRequesterFactory, verboseRequesterFactory, concurrentLimitRequesterFactory } from 'plywood';
 import { druidRequesterFactory, DruidRequestDecorator } from 'plywood-druid-requester';
 import { mySqlRequesterFactory } from 'plywood-mysql-requester';
 import { postgresRequesterFactory } from 'plywood-postgres-requester';
@@ -81,7 +81,7 @@ export function properRequesterFactory(options: ProperRequesterOptions): Request
   }
 
   if (retry) {
-    requester = helper.retryRequesterFactory({
+    requester = retryRequesterFactory({
       requester: requester,
       retry: retry,
       delay: 500,
@@ -90,13 +90,13 @@ export function properRequesterFactory(options: ProperRequesterOptions): Request
   }
 
   if (verbose) {
-    requester = helper.verboseRequesterFactory({
+    requester = verboseRequesterFactory({
       requester: requester
     });
   }
 
   if (concurrentLimit) {
-    requester = helper.concurrentLimitRequesterFactory({
+    requester = concurrentLimitRequesterFactory({
       requester: requester,
       concurrentLimit: concurrentLimit
     });

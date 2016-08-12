@@ -96,7 +96,7 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
         possibleDate.getUTCFullYear(), possibleDate.getUTCMonth(), day,
         possibleDate.getUTCHours(), possibleDate.getUTCMinutes(), possibleDate.getUTCSeconds(),
         possibleDate.getUTCMilliseconds()
-      );
+      ) as Date;
 
       onChange(possibleDate);
     }

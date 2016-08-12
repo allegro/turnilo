@@ -15,7 +15,7 @@
  */
 
 import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
-import { helper } from 'plywood';
+import { findByName } from 'plywood';
 
 import { Manifest } from '../manifest/manifest';
 import { LinkItem, LinkItemJS, LinkItemContext } from '../link-item/link-item';
@@ -88,7 +88,7 @@ export class LinkViewConfig implements Instance<LinkViewConfigValue, LinkViewCon
   }
 
   public findByName(name: string): LinkItem {
-    return helper.findByName(this.linkItems, name);
+    return findByName(this.linkItems, name);
   }
 
 }

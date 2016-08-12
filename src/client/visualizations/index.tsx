@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { helper } from 'plywood';
+import { find } from 'plywood';
 import { Manifest } from '../../common/models/manifest/manifest';
 import { BaseVisualization } from './base-visualization/base-visualization';
 
@@ -34,5 +34,5 @@ const VIS_COMPONENTS: Array<typeof BaseVisualization> = [
 
 export function getVisualizationComponent(manifest: Manifest): typeof BaseVisualization {
   var manifestName = manifest.name;
-  return helper.find(VIS_COMPONENTS, (v) => (v as any).id === manifestName);
+  return find(VIS_COMPONENTS, (v) => (v as any).id === manifestName);
 }

@@ -198,12 +198,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   openOverflowMenu(target: Element): Q.Promise<any> {
-    if (!target) return;
+    if (!target) return Q(null);
     var { overflowMenuOpenOn } = this.state;
 
     if (overflowMenuOpenOn === target) {
       this.closeOverflowMenu();
-      return;
+      return Q(null);
     }
 
     this.overflowMenuDeferred = Q.defer() as Q.Deferred<Element>;

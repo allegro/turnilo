@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as Q from 'q';
 import { Request } from 'express';
 import { User, AppSettings } from '../../../common/models/index';
 import { GetSettingsOptions } from '../settings-manager/settings-manager';

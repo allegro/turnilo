@@ -36,7 +36,7 @@ export class NoDataCubesApplication extends React.Component<NoDataCubesApplicati
 
   componentDidMount() {
     this.refreshTimer = setInterval(() => {
-      window.location.reload(true);
+      if (typeof window !== 'undefined') window.location.reload(true);
     }, 10000);
   }
 

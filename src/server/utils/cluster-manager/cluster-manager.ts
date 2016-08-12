@@ -16,7 +16,7 @@
 
 import * as path from 'path';
 import * as Q from 'q';
-import { External, helper } from 'plywood';
+import { External, findByName } from 'plywood';
 import { DruidRequestDecorator } from 'plywood-druid-requester';
 import { properRequesterFactory } from '../requester/requester';
 import { Cluster } from '../../../common/models/index';
@@ -139,7 +139,7 @@ export class ClusterManager {
   }
 
   private updateManagedExternal(managedExternal: ManagedExternal, newExternal: External): Q.Promise<any> {
-    if (managedExternal.external.equals(newExternal)) return;
+    if (managedExternal.external.equals(newExternal)) return null;
     managedExternal.external = newExternal;
     return Q(this.onExternalChange(managedExternal.name, managedExternal.external));
   }
@@ -393,7 +393,7 @@ export class ClusterManager {
   }
 
   public getExternalByName(name: string): External {
-    var managedExternal = helper.findByName(this.managedExternals, name);
+    var managedExternal = findByName(this.managedExternals, name);
     return managedExternal ? managedExternal.external : null;
   }
 

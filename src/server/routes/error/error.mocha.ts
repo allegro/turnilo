@@ -27,12 +27,17 @@ app.use(bodyParser.json());
 
 app.use('/', errorRouter);
 
-var consoleErr = "";
-console.error = function(t) {
-  consoleErr += t;
-};
-
 describe('error route', () => {
+  var originalConsoleError: any;
+  var consoleError = "";
+
+  before(() => {
+    originalConsoleError = console.error;
+    console.error = function(t) {
+      consoleError += t;
+    };
+  });
+
   var errorObj = {
     message: "Uncaught TypeError: Cannot read property 'start' of null",
     file: "http://localhost:9090/pivot-main.9dcd61eb37d2c3c22868.js",
@@ -49,7 +54,7 @@ describe('error route', () => {
       .send(errorObj)
       .expect(200)
       .end((err, res) => {
-        expect(consoleErr).to.deep.equal('Client Error: ' + JSON.stringify(errorObj));
+        expect(consoleError).to.deep.equal('Client Error: ' + JSON.stringify(errorObj));
         testComplete();
       });
   });
@@ -64,6 +69,10 @@ describe('error route', () => {
         expect(res.body.error).to.deep.equal('Error must have a message');
         testComplete();
       });
+  });
+
+  after(() => {
+    console.error = originalConsoleError;
   });
 
 });

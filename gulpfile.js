@@ -25,9 +25,6 @@ gulp.task('all', function(cb) {
     'clean' ,
     ['style', 'icons'],
     ['server:tsc', 'client:tsc'],
-    'common:test',
-    'server:test',
-    'client:test',
     'client:bundle',
     cb
   );

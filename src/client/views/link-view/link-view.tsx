@@ -18,7 +18,7 @@ require('./link-view.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Expression, $, helper } from 'plywood';
+import { Expression, $, find } from 'plywood';
 import { classNames } from '../../utils/dom/dom';
 import { Fn } from '../../../common/utils/general/general';
 import { Colors, Clicker, Essence, Filter, FilterClause, Stage, Measure,
@@ -239,7 +239,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     const { essence } = this.state;
     const PresetDropdown = Dropdown.specialize<Preset>();
 
-    var selected = helper.find(latestPresets, p => p.selection.equals(essence.getTimeSelection()));
+    var selected = find(latestPresets, p => p.selection.equals(essence.getTimeSelection()));
     return <PresetDropdown
       items={latestPresets}
       selectedItem={selected}

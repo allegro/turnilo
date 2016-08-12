@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -eu
 
 if grep -rq 'describe\.only' ./src
   then
@@ -32,4 +32,8 @@ fi
 
 gulp all
 
-mocha test/basic test/simulate
+node_modules/.bin/mocha \
+  build/**/*.mocha.js \
+  test/basic \
+  test/simulate \
+  ;

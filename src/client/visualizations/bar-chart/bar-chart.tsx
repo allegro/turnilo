@@ -127,8 +127,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
     var chartStage = this.getSingleChartStage();
     var chartHeight = this.getOuterChartHeight(chartStage);
 
-    if (y >= chartHeight * measures.length) return; // on x axis
-    if (x >= chartStage.width) return; // on y axis
+    if (y >= chartHeight * measures.length) return null; // on x axis
+    if (x >= chartStage.width) return null; // on y axis
 
 
     const xScale = this.getPrimaryXScale();

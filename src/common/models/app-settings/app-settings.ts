@@ -16,7 +16,7 @@
 
 import { Class, Instance, isInstanceOf, immutableArraysEqual, immutableEqual } from 'immutable-class';
 import { ImmutableUtils } from '../../utils/index';
-import { Executor, helper } from 'plywood';
+import { Executor, findByName, overrideByName } from 'plywood';
 import { hasOwnProperty } from '../../utils/general/general';
 import { Cluster, ClusterJS } from '../cluster/cluster';
 import { Customization, CustomizationJS } from '../customization/customization';
@@ -72,7 +72,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     var dataCubes = (parameters.dataCubes || (parameters as any).dataSources || []).map((dataCubeJS: DataCubeJS) => {
       var dataCubeClusterName = dataCubeJS.clusterName || (dataCubeJS as any).engine;
       if (dataCubeClusterName !== 'native') {
-        var cluster = helper.findByName(clusters, dataCubeClusterName);
+        var cluster = findByName(clusters, dataCubeClusterName);
         if (!cluster) throw new Error(`Can not find cluster '${dataCubeClusterName}' for data cube '${dataCubeJS.name}'`);
       }
 
@@ -109,7 +109,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
     for (var dataCube of dataCubes) {
       if (dataCube.clusterName === 'native') continue;
-      if (!helper.findByName(clusters, dataCube.clusterName)) {
+      if (!findByName(clusters, dataCube.clusterName)) {
         throw new Error(`data cube ${dataCube.name} refers to an unknown cluster ${dataCube.clusterName}`);
       }
     }
@@ -171,12 +171,12 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   public getDataCube(dataCubeName: string): DataCube {
-    return helper.findByName(this.dataCubes, dataCubeName);
+    return findByName(this.dataCubes, dataCubeName);
   }
 
   public addOrUpdateDataCube(dataCube: DataCube): AppSettings {
     var value = this.valueOf();
-    value.dataCubes = helper.overrideByName(value.dataCubes, dataCube);
+    value.dataCubes = overrideByName(value.dataCubes, dataCube);
     return new AppSettings(value);
   }
 
@@ -199,7 +199,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   addCluster(cluster: Cluster): AppSettings {
-    return this.changeClusters(helper.overrideByName(this.clusters, cluster));
+    return this.changeClusters(overrideByName(this.clusters, cluster));
   }
 
   change(propertyName: string, newValue: any): AppSettings {
@@ -211,7 +211,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   addDataCube(dataCube: DataCube): AppSettings {
-    return this.changeDataCubes(helper.overrideByName(this.dataCubes, dataCube));
+    return this.changeDataCubes(overrideByName(this.dataCubes, dataCube));
   }
 
   filterDataCubes(fn: (dataCube: DataCube, index?: number, dataCubes?: DataCube[]) => boolean): AppSettings {

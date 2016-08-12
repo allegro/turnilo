@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { TimeBucketAction, NumberBucketAction, ActionJS, Action, ActionValue, TimeRange, Duration, PlywoodRange, NumberRange } from 'plywood';
-import { day, hour, minute, Timezone } from 'chronoshift';
+import { TimeBucketAction, NumberBucketAction, ActionJS, Action, ActionValue, TimeRange, PlywoodRange, NumberRange } from 'plywood';
+import { day, hour, minute, Timezone, Duration } from 'chronoshift';
 
 import {
   hasOwnProperty, findFirstBiggerIndex, findExactIndex, findMaxValueIndex, findMinValueIndex,
@@ -258,11 +258,11 @@ export function updateBucketSize(existing: Granularity, newInput: Granularity): 
 }
 
 export function getGranularities(kind: ContinuousDimensionKind, bucketedBy?: Granularity, coarse?: boolean): Granularity[] {
-  var helper = getHelperForKind(kind);
-  var coarseGranularities = helper.coarseGranularities;
-  if (!bucketedBy) return coarse && coarseGranularities ? coarseGranularities : helper.defaultGranularities;
+  var kindHelper = getHelperForKind(kind);
+  var coarseGranularities = kindHelper.coarseGranularities;
+  if (!bucketedBy) return coarse && coarseGranularities ? coarseGranularities : kindHelper.defaultGranularities;
   // make list that makes most sense with bucket
-  var allGranularities = helper.supportedGranularities(bucketedBy);
+  var allGranularities = kindHelper.supportedGranularities(bucketedBy);
   return generateGranularitySet(allGranularities, bucketedBy);
 }
 
@@ -279,9 +279,9 @@ export function getBestGranularityForRange(inputRange: PlywoodRange, bigChecker:
 export function getBestBucketUnitForRange(inputRange: PlywoodRange, bigChecker: boolean, bucketedBy?: Granularity, customGranularities?: Granularity[]): BucketUnit {
   var rangeLength = Math.abs(endValue(inputRange) - startValue(inputRange));
 
-  var helper = getHelperForRange(inputRange);
+  var rangeHelper = getHelperForRange(inputRange);
   var bucketLength = bucketedBy ? getBucketSize(bucketedBy) : 0;
-  var checkPoints = bigChecker && helper.coarseCheckers ? helper.coarseCheckers : helper.checkers;
+  var checkPoints = bigChecker && rangeHelper.coarseCheckers ? rangeHelper.coarseCheckers : rangeHelper.checkers;
 
   for (var i = 0; i < checkPoints.length; i++) {
     var checkPoint = checkPoints[i].checkPoint;
@@ -289,10 +289,10 @@ export function getBestBucketUnitForRange(inputRange: PlywoodRange, bigChecker: 
     if (rangeLength > checkPoint || bucketLength > checkPoint) {
 
       if (bucketedBy) {
-        var granArray = customGranularities || getGranularities(helper.dimensionKind, bucketedBy);
+        var granArray = customGranularities || getGranularities(rangeHelper.dimensionKind, bucketedBy);
         var closest = findBiggerClosestToIdeal(granArray, bucketedBy, returnVal, getBucketSize);
         // this could happen if bucketedBy were very big or if custom granularities are smaller than maker action
-        if (closest === null) return getBucketUnit(helper.defaultGranularity);
+        if (closest === null) return getBucketUnit(rangeHelper.defaultGranularity);
         return getBucketUnit(closest);
       } else {
         if (!customGranularities) return getBucketUnit(returnVal);
@@ -301,7 +301,7 @@ export function getBestBucketUnitForRange(inputRange: PlywoodRange, bigChecker: 
     }
   }
 
-  var minBucket = customGranularities ? customGranularities[findMinValueIndex(customGranularities, getBucketSize)] : helper.minGranularity;
+  var minBucket = customGranularities ? customGranularities[findMinValueIndex(customGranularities, getBucketSize)] : rangeHelper.minGranularity;
   var granularity = bucketLength > getBucketSize(minBucket) ? bucketedBy : minBucket;
   return getBucketUnit(granularity);
 }
