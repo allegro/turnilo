@@ -8,8 +8,9 @@ var laborer = require('laborer');
 gulp.task('style', laborer.taskStyle());
 gulp.task('icons', laborer.taskIcons());
 
-gulp.task('client:tsc', laborer.taskClientTypeScript({ declaration: true }));
-gulp.task('server:tsc', laborer.taskServerTypeScript({ declaration: true }));
+var skipLibCheck = !process.env['DO_LIB_CHECK'];
+gulp.task('client:tsc', laborer.taskClientTypeScript({ declaration: true, skipLibCheck: skipLibCheck }));
+gulp.task('server:tsc', laborer.taskServerTypeScript({ declaration: true, skipLibCheck: skipLibCheck }));
 
 gulp.task('client:test', laborer.taskClientTest({reporter: 'progress'}));
 gulp.task('server:test', laborer.taskServerTest({reporter: 'progress'}));

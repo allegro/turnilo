@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.36
+
+- Added ability to define custom extraction functions
+
 ## 0.9.35
 
 - Fixed unit forwarding

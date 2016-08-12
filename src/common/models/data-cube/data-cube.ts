@@ -20,7 +20,7 @@ import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, im
 import { Duration, Timezone, second } from 'chronoshift';
 import { $, ply, r, Expression, ExpressionJS, Executor, External, RefExpression, basicExecutorFactory, Dataset,
   Attributes, AttributeInfo, AttributeJSs, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
-  CustomDruidAggregations, ExternalValue, findByName } from 'plywood';
+  CustomDruidAggregations, CustomDruidExtractionFns, ExternalValue, findByName } from 'plywood';
 import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
 import { getWallTimeString } from '../../utils/time/time';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -137,6 +137,8 @@ export interface DataCubeJS {
 
 export interface DataCubeOptions {
   customAggregations?: CustomDruidAggregations;
+  customExtractionFns?: CustomDruidExtractionFns;
+  druidContext?: Lookup<any>;
   priority?: number;
 
   // Deprecated
@@ -581,6 +583,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       version: cluster.version,
       derivedAttributes: this.derivedAttributes,
       customAggregations: options.customAggregations,
+      customExtractionFns: options.customExtractionFns,
       filter: this.subsetExpression
     };
 
@@ -590,9 +593,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       externalValue.introspectionStrategy = cluster.getIntrospectionStrategy();
       externalValue.allowSelectQueries = true;
 
-      var externalContext: Lookup<any> = {
-        timeout: cluster.getTimeout()
-      };
+      var externalContext: Lookup<any> = options.druidContext || {};
+      externalContext['timeout'] = cluster.getTimeout();
       if (options.priority) externalContext['priority'] = options.priority;
       externalValue.context = externalContext;
     }

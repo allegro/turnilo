@@ -30,6 +30,7 @@ if grep -rq 'fsevents' ./npm-shrinkwrap.json
     exit 1
 fi
 
+export DO_LIB_CHECK=1
 gulp all
 
 node_modules/.bin/mocha \
