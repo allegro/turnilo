@@ -20,7 +20,7 @@ import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, im
 import { Duration, Timezone, second } from 'chronoshift';
 import { $, ply, r, Expression, ExpressionJS, Executor, External, RefExpression, basicExecutorFactory, Dataset,
   Attributes, AttributeInfo, AttributeJSs, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
-  CustomDruidAggregations, CustomDruidExtractionFns, ExternalValue, findByName } from 'plywood';
+  CustomDruidAggregations, CustomDruidTransforms, ExternalValue, findByName } from 'plywood';
 import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
 import { getWallTimeString } from '../../utils/time/time';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -137,7 +137,7 @@ export interface DataCubeJS {
 
 export interface DataCubeOptions {
   customAggregations?: CustomDruidAggregations;
-  customExtractionFns?: CustomDruidExtractionFns;
+  customTransforms?: CustomDruidTransforms;
   druidContext?: Lookup<any>;
   priority?: number;
 
@@ -583,7 +583,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       version: cluster.version,
       derivedAttributes: this.derivedAttributes,
       customAggregations: options.customAggregations,
-      customExtractionFns: options.customExtractionFns,
+      customTransforms: options.customTransforms,
       filter: this.subsetExpression
     };
 

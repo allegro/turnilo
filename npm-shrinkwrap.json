@@ -758,9 +758,9 @@
       "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-2.0.1.tgz"
     },
     "plywood": {
-      "version": "0.12.1",
-      "from": "plywood@0.12.1",
-      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.12.1.tgz"
+      "version": "0.12.2",
+      "from": "plywood@0.12.2",
+      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.12.2.tgz"
     },
     "plywood-druid-requester": {
       "version": "1.5.3",
