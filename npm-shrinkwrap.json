@@ -962,7 +962,7 @@
     "thenify-all": {
       "version": "1.6.0",
       "from": "thenify-all@>=1.6.0 <2.0.0",
-      "resolved": "http://registry.nodejitsu.com/thenify-all/-/thenify-all-1.6.0.tgz"
+      "resolved": "http://registry.npmjs.org/thenify-all/-/thenify-all-1.6.0.tgz"
     },
     "through": {
       "version": "2.3.8",
