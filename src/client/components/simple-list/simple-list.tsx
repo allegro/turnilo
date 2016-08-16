@@ -155,9 +155,12 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
   }
 
   render() {
-    const rows = this.renderRows(this.props.rows);
-    return <div className="simple-list" ref="list" onDragEnd={this.dragEnd.bind(this)}>
-      {rows}
+    return <div
+      className="simple-list"
+      ref="list"
+      onDragEnd={this.dragEnd.bind(this)}
+    >
+      {this.renderRows(this.props.rows)}
     </div>;
   }
 }

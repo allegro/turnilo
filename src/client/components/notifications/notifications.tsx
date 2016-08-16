@@ -32,10 +32,12 @@ export interface NotificationAction {
 export interface Notification {
   title: string;
   priority: string;
-  message: string;
+  message?: string;
   id?: number;
   duration?: number; // seconds
   action?: NotificationAction;
+  muted?: boolean;
+  discarded?: boolean;
 }
 
 export class Notifier {
@@ -43,10 +45,16 @@ export class Notifier {
   static notifications: Notification[] = [];
   static listeners: ((notifications: Notification[]) => void)[] = [];
 
-  private static create(notification: Notification) {
+  private static create(notification: Notification): number {
     notification.id = Notifier.counter++;
 
     Notifier.notifications.push(notification);
+    Notifier.callListeners();
+
+    return notification.id;
+  }
+
+  private static callListeners() {
     Notifier.listeners.forEach((cb) => cb(Notifier.notifications));
   }
 
@@ -64,6 +72,33 @@ export class Notifier {
 
   public static subscribe(callback: (notifications: Notification[]) => void) {
     Notifier.listeners.push(callback);
+  }
+
+  // Stickers
+  public static stick(text: string): number {
+    return Notifier.create({title: text, priority: 'info', muted: true});
+  }
+
+  public static removeSticker(id: number) {
+    var notification: Notification;
+    var index = -1;
+
+    Notifier.notifications.forEach((n, i) => {
+      if (n.id === id) {
+        notification = n;
+        index = i;
+      }
+    });
+
+    if (!notification) {
+      console.warn('Trying to remove a non existing sticker');
+      return;
+    }
+
+    notification.discarded = true;
+    Notifier.notifications[index] = notification;
+
+    Notifier.callListeners();
   }
 
   public static removeNotification(notification: Notification) {

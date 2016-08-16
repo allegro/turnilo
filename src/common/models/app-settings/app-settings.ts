@@ -200,6 +200,32 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     return new AppSettings(value);
   }
 
+  public deleteCollection(collection: Collection): AppSettings {
+    var value = this.valueOf();
+    var index = value.collections.indexOf(collection);
+
+    if (index === -1) {
+      throw new Error(`Unknown collection : ${collection.toString()}`);
+    }
+
+    var newCollections = value.collections.concat();
+    newCollections.splice(index, 1);
+
+    console.log(newCollections);
+    value.collections = newCollections;
+    return new AppSettings(value);
+  }
+
+  public addCollectionAt(collection: Collection, index: number): AppSettings {
+    var value = this.valueOf();
+
+    var newCollections = value.collections.concat();
+    newCollections.splice(index, 0, collection);
+
+    value.collections = newCollections;
+    return new AppSettings(value);
+  }
+
   public attachExecutors(executorFactory: (dataCube: DataCube) => Executor): AppSettings {
     var value = this.valueOf();
     value.dataCubes = value.dataCubes.map((ds) => {

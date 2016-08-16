@@ -58,8 +58,14 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     });
   }
 
+  componentWillReceiveProps(nextProps: NotificationCardProps) {
+    if (nextProps.model && nextProps.model.discarded) {
+      this.disappear();
+    }
+  }
+
   appear() {
-    const { title, message, duration } = this.props.model;
+    const { title, message, duration, muted } = this.props.model;
 
     var d = clamp(duration, -1, 10);
 
@@ -68,9 +74,13 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
       return;
     }
 
-    this.setState({appearing: false}, () => {
-      this.timeoutID = window.setTimeout(this.onDisappearTimerEnd.bind(this), (d ? d : DEFAULT_DURATION) * 1000 );
-    });
+    if (muted) {
+      this.setState({appearing: false});
+    } else {
+      this.setState({appearing: false}, () => {
+        this.timeoutID = window.setTimeout(this.onDisappearTimerEnd.bind(this), (d ? d : DEFAULT_DURATION) * 1000 );
+      });
+    }
   }
 
   onDisappearTimerEnd() {
@@ -124,11 +134,11 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
 
     if (!model) return null;
 
-    const { title, message, priority, action } = model;
+    const { title, message, priority, action, muted } = model;
 
     if (appearing || disappearing) top = -100;
 
-    var height = 30 + [message, action].filter(Boolean).length * 30;
+    var rowsClass = `rows-${[title, message, action].filter(Boolean).length}`;
 
     var onClick = () => {
       action && action.callback();
@@ -136,15 +146,15 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     };
 
     return <div
-      style={{top, height}}
+      style={{top}}
       onClick={onClick}
       onMouseOver={this.onMouseEnter.bind(this)}
       onMouseLeave={this.onMouseExit.bind(this)}
-      className={classNames(`notification-card ${priority}`, {appearing, disappearing})}
+      className={classNames(`notification-card ${priority} ${rowsClass}`, {appearing, disappearing, muted})}
      >
       <div className="title">{title}</div>
-      <div className="message">{message}</div>
-      { action ? <div className="undo"><span>{action.label}</span></div> : null }
+      { message ? <div className="message">{message}</div> : null }
+      { action ? <div className="action"><span>{action.label}</span></div> : null }
     </div>;
   }
 }

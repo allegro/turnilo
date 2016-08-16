@@ -22,6 +22,7 @@ import { SvgIcon } from '../../../components/svg-icon/svg-icon';
 
 export interface ItemCardProps extends React.Props<any> {
   title: string;
+  count?: number;
   description: string;
   icon: string;
   onClick: () => void;
@@ -40,7 +41,7 @@ export class ItemCard extends React.Component< ItemCardProps, ItemCardState> {
   }
 
   render() {
-    const { title, description, icon, onClick } = this.props;
+    const { title, description, icon, onClick, count } = this.props;
 
     return <div className="item-card" onClick={onClick}>
       <div className="inner-container">
@@ -49,6 +50,7 @@ export class ItemCard extends React.Component< ItemCardProps, ItemCardState> {
           <div className="title">{title}</div>
           <div className="description">{description || STRINGS.noDescription}</div>
         </div>
+        {count !== undefined ? <div className="count">{count}</div> : null}
       </div>
     </div>;
   }

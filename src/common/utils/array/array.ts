@@ -14,27 +14,8 @@
  * limitations under the License.
  */
 
-@import '../../imports';
-
-.add-collection-item-modal {
-  form {
-    @extend %form;
-    width: 100%;
-  }
-
-  .new-collection {
-    margin: 7px 0 23px 1px;
-    font-size: 11px;
-    cursor: pointer;
-    color: $brand;
-
-    &:not(.disabled):hover {
-      text-decoration: underline;
-    }
-
-    &.disabled {
-      color: $text-light;
-      cursor: initial;
-    }
-  }
+export function move(array: any[], oldIndex: number, newIndex: number) {
+  array.splice(newIndex, 0, array.splice(oldIndex, 1)[0]);
 }
+
+

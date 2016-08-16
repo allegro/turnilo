@@ -74,6 +74,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
     return <ItemCard
       key={item.name}
       title={item.title}
+      count={Collection.isCollection(item) ? item.items.length : undefined}
       description={item.description}
       icon={item instanceof DataCube ? 'full-cube' : 'full-collection'}
       onClick={this.goToItem.bind(this, item)}
@@ -130,18 +131,24 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
 
   renderCollections() {
     const { collections, collectionsDelegate } = this.props;
-    if (collections.length === 0) return null;
+
+    const create = this.createCollection.bind(this);
 
     return <div className="collections">
       <div className="grid-row">
         <div className="grid-col-90 section-title">{STRINGS.collections}</div>
-        { collectionsDelegate ? <div className="grid-col-10 right actions">
-          <div className="add" onClick={this.createCollection.bind(this)}>
-            <SvgIcon svg={require('../../icons/full-add.svg')}/>
-          </div>
-        </div> : null }
+        <div className="grid-col-10 right actions">
+          { collectionsDelegate && collections.length > 4 ?
+            <div className="add" onClick={create}>
+              <SvgIcon svg={require('../../icons/full-add.svg')}/>
+            </div>
+          : null }
+        </div>
       </div>
-      {this.renderItems(collections)}
+      {this.renderItems(
+        collections,
+        collectionsDelegate ? ItemCard.getNewItemCard(create) : null
+      )}
     </div>;
   }
 

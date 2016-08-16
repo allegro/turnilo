@@ -41,30 +41,32 @@ export class CollectionViewDelegate {
     return this.app.setState.bind(this.app)(state, callback);
   }
 
-  private save(appSettings: AppSettings, callback?: () => void) {
-    // this.setState({appSettings}, callback);
-
+  private save(appSettings: AppSettings): Q.Promise<any> {
     var { version } = this.app.props;
+    var deferred = Q.defer<string>();
 
     Qajax({
       method: "POST",
       url: 'collections',
       data: {
         version,
-        collections: appSettings.toJS().collections
+        collections: appSettings.toJS().collections || []
       }
     })
       .then(Qajax.filterSuccess)
       .then(Qajax.toJSON)
       .then(
         (status) => {
-          this.setState({appSettings}, callback);
+          this.setState({appSettings}, deferred.resolve);
           // Notifier.success('Collections saved');
         },
         (xhr: XMLHttpRequest) => {
           Notifier.failure('Woops', 'Something bad happened');
+          deferred.reject(xhr.response);
         }
       ).done();
+
+    return deferred.promise;
   }
 
   private getSettings(): AppSettings {
@@ -72,16 +74,9 @@ export class CollectionViewDelegate {
   }
 
   addCollection(collection: Collection): Q.Promise<string> {
-    var deferred = Q.defer<string>();
-
-    const appSettings = this.getSettings();
-
-    this.save(
-      appSettings.addOrUpdateCollection(collection),
-      () => deferred.resolve(`#collection/${collection.name}`)
-    );
-
-    return deferred.promise;
+    return this
+      .save(this.getSettings().addOrUpdateCollection(collection))
+      .then(() => `#collection/${collection.name}`);
   }
 
   deleteItem(collection: Collection, collectionItem: CollectionItem) {
@@ -94,15 +89,13 @@ export class CollectionViewDelegate {
 
     const undo = () => this.addItem(newCollection, collectionItem, oldIndex);
 
-    this.save(newSettings, () => {
+    this.save(newSettings).then( () => {
       window.location.hash = collectionURL;
       Notifier.success('Item removed', undefined, 3, {label: STRINGS.undo, callback: undo});
     });
   }
 
   addItem(collection: Collection, collectionItem: CollectionItem, index?: number): Q.Promise<string> {
-    var deferred = Q.defer<string>();
-
     const appSettings = this.getSettings();
 
     var newItems = collection.items;
@@ -113,12 +106,10 @@ export class CollectionViewDelegate {
       newItems.push(collectionItem);
     }
 
-    this.save(
-      appSettings.addOrUpdateCollection(collection.change('items', newItems)),
-      () => deferred.resolve(`#collection/${collection.name}/${collectionItem.name}`)
-    );
-
-    return deferred.promise;
+    return this
+      .save(appSettings.addOrUpdateCollection(collection.change('items', newItems)))
+      .then(() => `#collection/${collection.name}/${collectionItem.name}`)
+    ;
   }
 
   createItem(collection: Collection, dataCube: DataCube) {
@@ -154,10 +145,33 @@ export class CollectionViewDelegate {
     }, () => window.location.hash = '#' + dataCube.name);
   }
 
-  updateItem(collection: Collection, item: CollectionItem) {
+  updateCollection(collection: Collection): Q.Promise<any> {
     const appSettings = this.getSettings();
 
-    this.save(appSettings.addOrUpdateCollection(collection.updateItem(item)));
+    return this.save(appSettings.addOrUpdateCollection(collection));
+  }
+
+  deleteCollection(collection: Collection): Q.Promise<any> {
+    const appSettings = this.getSettings();
+
+    const oldIndex = appSettings.collections.indexOf(collection);
+
+    const undo = () => {
+      this.setState({
+        appSettings: appSettings.addCollectionAt(collection, oldIndex)
+      });
+    };
+
+    return this.save(appSettings.deleteCollection(collection)).then( () => {
+      window.location.hash = `#/home`;
+      Notifier.success('Collection removed', undefined, 3, {label: STRINGS.undo, callback: undo});
+    });
+  }
+
+  updateItem(collection: Collection, item: CollectionItem): Q.Promise<any> {
+    const appSettings = this.getSettings();
+
+    return this.save(appSettings.addOrUpdateCollection(collection.updateItem(item)));
   }
 
   editItem(collection: Collection, item: CollectionItem) {
@@ -169,10 +183,8 @@ export class CollectionViewDelegate {
     var onSave = (newEssence: Essence) => {
       let newCollection = collection.updateItem(item.changeEssence(newEssence));
 
-      this.save(
-        appSettings.addOrUpdateCollection(newCollection),
-        () => window.location.hash = collectionURL
-      );
+      this.save(appSettings.addOrUpdateCollection(newCollection))
+        .then(() => window.location.hash = collectionURL);
     };
 
     const { essence } = item;

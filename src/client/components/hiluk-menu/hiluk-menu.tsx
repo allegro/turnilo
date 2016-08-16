@@ -49,7 +49,6 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
       url: null,
       specificUrl: null
     };
-
   }
 
   componentDidMount() {
@@ -95,6 +94,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
 
     if (addEssenceToCollection) {
       shareOptions.push(<li
+        key="add-to-collection"
         className="add-to-collection"
         onClick={addEssenceToCollection}
       >{STRINGS.addToCollection}</li>);

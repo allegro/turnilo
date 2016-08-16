@@ -50,11 +50,18 @@ export class AddCollectionItemModal extends React.Component<AddCollectionItemMod
     const { collection, collections, essence, dataCube } = props;
     var collectionMode: CollectionMode = 'none';
 
+    var selectedCollection: Collection;
+
     if (collections) {
       collectionMode = collections.length > 0 ? 'picking' : 'adding';
+      selectedCollection = collections.length > 0 ? collections[0] : new Collection({
+        name: generateUniqueName('c', () => true),
+        items: [],
+        title: 'New collection'
+      });
+    } else {
+      selectedCollection = collection;
     }
-
-    const selectedCollection = collection || collections[0];
 
     this.setState({
       canSave: !!selectedCollection,
@@ -125,6 +132,9 @@ export class AddCollectionItemModal extends React.Component<AddCollectionItemMod
   renderCollectionDropdown(): JSX.Element {
     const { collection, collectionItem } = this.state;
     const { collections } = this.props;
+
+    if (!collections || collections.length === 0)  return null;
+
     const MyDropDown = Dropdown.specialize<Collection>();
 
     const setCollection = (c: Collection) => {
@@ -207,13 +217,15 @@ export class AddCollectionItemModal extends React.Component<AddCollectionItemMod
           onChange={onCollectionChange}
           focusOnStartUp={true}
         />
-        <div className="new-collection" onClick={toggleCollectionMode}>Or pick an existing collection</div>
+        { collections.length > 0 ?
+          <div className="new-collection" onClick={toggleCollectionMode}>Or pick an existing collection</div>
+        : <div className="new-collection disabled">This will be a new collection</div> }
       </div>;
     }
   }
 
   render(): JSX.Element {
-    const { canSave, errors, collectionItem } = this.state;
+    const { canSave, errors, collectionItem, collectionMode } = this.state;
     const { collections, onCancel } = this.props;
 
     if (!collectionItem) return null;
@@ -231,7 +243,7 @@ export class AddCollectionItemModal extends React.Component<AddCollectionItemMod
         {this.renderCollectionPicker()}
 
         {makeLabel('title')}
-        {makeTextInput('title', /^.+$/, true)}
+        {makeTextInput('title', /^.+$/, collectionMode !== 'adding')}
 
         {makeLabel('description')}
         {makeTextInput('description')}

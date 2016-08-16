@@ -22,6 +22,40 @@
   // otherwise it pollutes the global CSS
   @import '../../../utils/styles/grid';
 
+  &.editing {
+    .headband {
+      cursor: default;
+    }
+
+    .content {
+      pointer-events: none;
+    }
+  }
+
+  &.dragged {
+    opacity: 0.4;
+  }
+
+  &.drop-before::after {
+    content: '';
+    position: absolute;
+    top: 25px;
+    bottom: 25px;
+    left: -2px;
+    width: 2px;
+    border-right: 2px dashed $brand;
+  }
+
+  &.drop-after::after {
+    content: '';
+    position: absolute;
+    top: 25px;
+    bottom: 25px;
+    right: -2px;
+    width: 2px;
+    border-right: 2px dashed $brand;
+  }
+
   > * {
     @extend %module;
     width: 100%;
@@ -55,6 +89,7 @@
     }
 
     .expand-button {
+      cursor: pointer;
       width: 19px;
 
       path {
@@ -67,9 +102,39 @@
         fill: $text-medium;
       }
     }
+
+    .delete-button {
+      cursor: pointer;
+      width: 19px;
+
+      path {
+        fill: $brand;
+      }
+
+      &:hover {
+        path {
+          fill: $danger;
+        }
+      }
+    }
   }
 
   .content {
     border-radius: 0 0 $corner $corner;
+
+    .glass {
+      @include unpin-full(0);
+      background-color: hsla(0, 0%, 70%, 0.5);
+      cursor: move;
+
+      .title {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 23px;
+        color: hsla(200, 8%, 15%, 1.00);
+      }
+    }
   }
 }

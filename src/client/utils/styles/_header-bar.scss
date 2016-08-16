@@ -102,7 +102,34 @@
       svg path {
         fill: #fff;
       }
+    }
 
+    .button-group {
+      display: inline-block;
+      padding-top: 6px;
+      margin-left: 8px;
+
+      > *:not(:last-child) {
+        margin-right: 8px;
+      }
+
+      .cancel {
+        color: $white;
+        background-color: rgba($white, 0.28);
+
+        &:hover {
+          background-color: rgba($white, 0.36);
+        }
+      }
+
+      .save {
+        color: $brand;
+        background-color: $white;
+
+        &:hover {
+          background-color: rgba($white, 0.92);
+        }
+      }
     }
   }
 

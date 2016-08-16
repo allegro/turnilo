@@ -17,16 +17,21 @@
 require('./collection-view.css');
 
 import * as React from 'react';
+import * as Q from 'q';
 
 import { Collection, User, Customization, CollectionItem, DataCube } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';
 
-import { replaceHash } from '../../utils/url/url';
+import { STRINGS } from '../../config/constants';
 
-import { CollectionHeaderBar, Router, Route } from '../../components/index';
+import { replaceHash } from '../../utils/url/url';
+import { move } from '../../../common/utils/array/array';
+
+import { CollectionHeaderBar, Router, Route, Notifier } from '../../components/index';
 
 import { CollectionOverview } from './collection-overview/collection-overview';
 import { CollectionItemLightbox } from './collection-item-lightbox/collection-item-lightbox';
+
 
 
 export interface CollectionViewProps extends React.Props<any> {
@@ -36,6 +41,8 @@ export interface CollectionViewProps extends React.Props<any> {
   onNavClick?: Fn;
   customization?: Customization;
   delegate?: {
+    updateCollection: (collection: Collection) => Q.Promise<any>;
+    deleteCollection: (collection: Collection) => Q.Promise<any>;
     updateItem: (collection: Collection, collectionItem: CollectionItem) => void;
     editItem: (collection: Collection, collectionItem: CollectionItem) => void;
     createItem: (collection: Collection, dataCube: DataCube) => void;
@@ -45,9 +52,13 @@ export interface CollectionViewProps extends React.Props<any> {
 
 export interface CollectionViewState {
   collection?: Collection;
+  tempCollection?: Collection;
+  editingOverview?: boolean;
 }
 
 export class CollectionView extends React.Component<CollectionViewProps, CollectionViewState> {
+  private stickerId: number;
+
   constructor() {
     super();
     this.state = {};
@@ -64,40 +75,105 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
       collection = collections.filter(({name}) => name === crumbs[0])[0];
     }
 
-    this.setState({collection});
+    this.setState({
+      collection,
+      editingOverview: false
+    });
+  }
+
+  onItemsReorder(oldIndex: number, newIndex: number) {
+    var tempCollection = this.state.tempCollection;
+
+    var items = tempCollection.items.concat();
+
+    move(items, oldIndex, newIndex);
+
+    this.setState({
+      tempCollection: tempCollection.changeItems(items)
+    });
+  }
+
+  editCollection() {
+    this.setState({
+      editingOverview: true,
+      tempCollection: new Collection(this.state.collection.valueOf())
+    });
+
+    this.stickerId = Notifier.stick(STRINGS.dragToReorder);
+  }
+
+  onCollectionTitleChange(newTitle: string) {
+    this.setState({
+      tempCollection: this.state.tempCollection.changeTitle(newTitle)
+    });
+  }
+
+  saveEdition() {
+    Notifier.removeSticker(this.stickerId);
+
+    const { delegate } = this.props;
+    const { tempCollection } = this.state;
+
+    delegate
+      .updateCollection(tempCollection)
+      .then(() => {
+        Notifier.success('Collection saved');
+        this.setState({
+          editingOverview: false,
+          tempCollection: null,
+          collection: tempCollection
+        });
+      });
+  }
+
+  cancelEdition() {
+    Notifier.removeSticker(this.stickerId);
+
+    this.setState({
+      editingOverview: false,
+      tempCollection: null
+    });
   }
 
   render() {
     const { user, collections, customization, onNavClick, delegate, dataCubes } = this.props;
-    const { collection } = this.state;
+    const { collection, tempCollection, editingOverview } = this.state;
 
-    const pump = (key: string, value: string): {key: string, value: any} => {
-      if (key !== 'collectionId') return {key, value};
+    const currentCollection = tempCollection || collection;
 
-      return {
-        key: 'collection',
-        value: collections.filter(c => c.name === value)[0]
-      };
-    };
+    const removeCollection = () => delegate.deleteCollection(collection);
 
     return <div className="collection-view">
       <CollectionHeaderBar
         user={user}
         onNavClick={onNavClick}
         customization={customization}
-        title={collection ? collection.title : ''}
+        title={currentCollection ? currentCollection.title : ''}
         dataCubes={dataCubes}
         collections={collections}
         onAddItem={delegate ? delegate.createItem.bind(this, collection) : null}
+        onEditCollection={delegate ? this.editCollection.bind(this) : null}
+        onDeleteCollection={delegate ? removeCollection : null}
+
+        editionMode={editingOverview}
+        onSave={this.saveEdition.bind(this)}
+        onCancel={this.cancelEdition.bind(this)}
+        onCollectionTitleChange={this.onCollectionTitleChange.bind(this)}
       />
 
       <div className="main-panel">
         <Router onURLChange={this.onURLChange.bind(this)} rootFragment="collection">
           <Route fragment=":collectionId" alwaysShowOrphans={true}>
-            <CollectionOverview collections={collections}/>
+            <CollectionOverview
+              collection={currentCollection}
+              editionMode={editingOverview}
+              onReorder={this.onItemsReorder.bind(this)}
+              onDelete={delegate ? delegate.deleteItem : null}
+            />
 
-            <Route fragment=":itemId" transmit={['collectionId']} inflate={pump}>
+            <Route fragment=":itemId">
               <CollectionItemLightbox
+                collection={currentCollection}
                 onChange={delegate ? delegate.updateItem : null}
                 onEdit={delegate ? delegate.editItem : null}
                 onDelete={delegate ? delegate.deleteItem : null}
