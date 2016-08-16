@@ -67,7 +67,7 @@ export class RemoveModal extends React.Component<RemoveModalProps, RemoveModalSt
       <p>Are you sure you would like to delete the data cube "{itemTitle}"?</p>
       <p>This action is not reversible.</p>
 
-      <div className="buttons">
+      <div className="button-bar">
         <Button className="delete" title="Delete" type="warn" onClick={this.props.onOK}/>
         <Button className="cancel" title="Cancel" type="secondary" onClick={this.props.onCancel}/>
       </div>

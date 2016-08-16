@@ -20,12 +20,4 @@
   form {
     @extend %form;
   }
-
-  .buttons {
-    margin-top: 40px;
-
-    > *:not(:last-child) {
-      margin-right: 10px;
-    }
-  }
 }

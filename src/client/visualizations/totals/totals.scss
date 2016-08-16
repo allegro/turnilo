@@ -23,6 +23,7 @@ $total-width: 176px;
   .total-container {
     position: absolute;
     top: 60px;
+    padding-bottom: 60px;
     width: 100%; // overwritten in JS if more than one total
   }
 

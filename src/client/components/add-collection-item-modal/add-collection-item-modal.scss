@@ -23,10 +23,13 @@
   }
 
   .new-collection {
-    margin: 5px 0 15px 1px;
+    margin: 7px 0 23px 1px;
     font-size: 11px;
-    text-decoration: underline;
     cursor: pointer;
     color: $brand;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }

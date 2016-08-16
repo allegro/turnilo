@@ -66,7 +66,7 @@
 
     p {
       line-height: 17px;
-      margin-bottom: 18px;
+      margin-bottom: 25px;
     }
   }
 
@@ -75,6 +75,26 @@
       width: 70%;
       height: 85%;
       min-height: 200px;
+    }
+  }
+
+  .p-group {
+    margin-bottom: 25px;
+
+    p {
+      margin-bottom: 18px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .button-bar {
+    margin-top: 10px;
+
+    button {
+      margin-right: 8px;
     }
   }
 }

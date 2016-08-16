@@ -93,7 +93,6 @@
             padding: 0 12px;
             line-height: 30px;
             border-radius: 3px;
-            margin-right: 8px;
             font-size: 13px;
             text-transform: none;
           }
@@ -119,7 +118,7 @@
           }
 
           &:not(:last-child) {
-            margin-right: 5px;
+            margin-right: 8px;
           }
 
           &.close-button {

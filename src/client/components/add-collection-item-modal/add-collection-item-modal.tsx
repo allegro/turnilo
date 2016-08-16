@@ -199,7 +199,7 @@ export class AddCollectionItemModal extends React.Component<AddCollectionItemMod
       </div>;
     } else {
       return <div className="collection-picker">
-        { FormLabel.dumbLabel(`New collection's title`) }
+        { FormLabel.dumbLabel(`Collection title`) }
         <ImmutableInput
           className="actionable"
           instance={collection}
