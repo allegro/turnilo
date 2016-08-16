@@ -42,7 +42,7 @@ export const SEARCH_WAIT = 900;
 export const STRINGS: any = {
   add: 'Add',
   addVisualization: 'Add visualization',
-  addToCollection: 'Add to a collection',
+  addToCollection: 'Add to collection',
   addFromCube: 'Add from Cube',
   any: 'any',
   autoUpdate: 'Auto update',

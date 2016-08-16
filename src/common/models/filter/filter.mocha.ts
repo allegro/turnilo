@@ -15,7 +15,7 @@
  */
 
 import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class/build/tester';
+import { testImmutableClass } from 'immutable-class-tester';
 
 import { $, Expression } from 'plywood';
 import { Filter, FilterJS } from './filter';

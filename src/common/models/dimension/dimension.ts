@@ -15,11 +15,10 @@
  */
 
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { $, Expression, ExpressionJS, Action, NumberRangeJS, ApplyAction, AttributeInfo } from 'plywood';
+import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
+import { $, Expression } from 'plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 import { Granularity, GranularityJS, granularityFromJS, granularityToJS, granularityEquals } from "../granularity/granularity";
-import { immutableArraysEqual } from "immutable-class";
 
 var geoName = /continent|country|city|region/i;
 function isGeo(name: string): boolean {

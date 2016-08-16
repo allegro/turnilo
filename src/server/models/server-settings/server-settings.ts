@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
+import { SettingsLocation, SettingsLocationJS } from '../settings-location/settings-location';
 
 export type Iframe = "allow" | "deny";
 export type TrustProxy = "none" | "always";
@@ -32,14 +33,10 @@ export interface ServerSettingsValue {
   trustProxy?: TrustProxy;
   strictTransportSecurity?: StrictTransportSecurity;
   auth?: string;
-  settingsUri?: string;
+  settingsLocation?: SettingsLocation;
 }
 
 export type ServerSettingsJS = ServerSettingsValue;
-
-function parseIntFromPossibleString(x: any) {
-  return typeof x === 'string' ? parseInt(x, 10) : x;
-}
 
 function ensureOneOfOrNull<T>(name: string, thing: T, things: T[]): void {
   if (thing == null) return;
@@ -48,8 +45,15 @@ function ensureOneOfOrNull<T>(name: string, thing: T, things: T[]): void {
   }
 }
 
-var check: Class<ServerSettingsValue, ServerSettingsJS>;
-export class ServerSettings implements Instance<ServerSettingsValue, ServerSettingsJS> {
+function ensureNumber(n: any): void {
+  if (typeof n !== 'number') throw new Error(`must be a number`);
+}
+
+function basicEqual(a: any, b: any): boolean {
+  return Boolean(a) === Boolean(b);
+}
+
+export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSettingsJS> {
   static DEFAULT_PORT = 9090;
   static DEFAULT_SERVER_ROOT = '/pivot';
   static DEFAULT_REQUEST_LOG_FORMAT = 'common';
@@ -66,39 +70,26 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
   }
 
   static fromJS(parameters: ServerSettingsJS): ServerSettings {
-    var {
-      port,
-      serverHost,
-      serverRoot,
-      requestLogFormat,
-      trackingUrl,
-      trackingContext,
-      pageMustLoadTimeout,
-      iframe,
-      trustProxy,
-      strictTransportSecurity,
-      auth,
-      settingsUri
-    } = parameters;
-
-    if (serverRoot && serverRoot[0] !== '/') serverRoot = '/' + serverRoot;
-    if (serverRoot === '/') serverRoot = null;
-
-    return new ServerSettings({
-      port: parseIntFromPossibleString(port),
-      serverHost,
-      serverRoot,
-      requestLogFormat,
-      trackingUrl,
-      trackingContext,
-      pageMustLoadTimeout,
-      iframe,
-      trustProxy,
-      strictTransportSecurity,
-      auth,
-      settingsUri
-    });
+    if (typeof parameters.port === 'string') parameters.port = parseInt(parameters.port, 10);
+    if (parameters.serverRoot && parameters.serverRoot[0] !== '/') parameters.serverRoot = '/' + parameters.serverRoot;
+    if (parameters.serverRoot === '/') parameters.serverRoot = null;
+    return new ServerSettings(BaseImmutable.jsToValue(ServerSettings.PROPERTIES, parameters));
   }
+
+  static PROPERTIES: Property[] = [
+    { name: 'port', defaultValue: ServerSettings.DEFAULT_PORT, validate: ensureNumber },
+    { name: 'serverHost', defaultValue: null },
+    { name: 'serverRoot', defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },
+    { name: 'requestLogFormat', defaultValue: ServerSettings.DEFAULT_REQUEST_LOG_FORMAT },
+    { name: 'trackingUrl', defaultValue: null },
+    { name: 'trackingContext', defaultValue: null, equal: basicEqual },
+    { name: 'pageMustLoadTimeout', defaultValue: ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT },
+    { name: 'iframe', defaultValue: ServerSettings.DEFAULT_IFRAME, possibleValues: ServerSettings.IFRAME_VALUES },
+    { name: 'trustProxy', defaultValue: ServerSettings.DEFAULT_TRUST_PROXY, possibleValues: ServerSettings.TRUST_PROXY_VALUES },
+    { name: 'strictTransportSecurity', defaultValue: ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY, possibleValues: ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES },
+    { name: 'auth', defaultValue: null },
+    { name: 'settingsLocation', defaultValue: null, immutableClass: SettingsLocation }
+  ];
 
   public port: number;
   public serverHost: string;
@@ -111,127 +102,22 @@ export class ServerSettings implements Instance<ServerSettingsValue, ServerSetti
   public trustProxy: TrustProxy;
   public strictTransportSecurity: StrictTransportSecurity;
   public auth: string;
-  public settingsUri: string;
+  public settingsLocation: SettingsLocation;
 
   constructor(parameters: ServerSettingsValue) {
-    var port = parameters.port || ServerSettings.DEFAULT_PORT;
-    if (typeof port !== 'number') throw new Error(`port must be a number`);
-    this.port = port;
-
-    this.serverHost = parameters.serverHost;
-    this.serverRoot = parameters.serverRoot;
-    this.requestLogFormat = parameters.requestLogFormat;
-    this.trackingUrl = parameters.trackingUrl;
-    this.trackingContext = parameters.trackingContext;
-    this.pageMustLoadTimeout = parameters.pageMustLoadTimeout;
-
-    this.iframe = parameters.iframe;
-    ensureOneOfOrNull('iframe', this.iframe, ServerSettings.IFRAME_VALUES);
-
-    this.trustProxy = parameters.trustProxy;
-    ensureOneOfOrNull('trustProxy', this.trustProxy, ServerSettings.TRUST_PROXY_VALUES);
-
-    this.strictTransportSecurity = parameters.strictTransportSecurity;
-    ensureOneOfOrNull('strictTransportSecurity', this.strictTransportSecurity, ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES);
-
-    this.auth = parameters.auth;
-    this.settingsUri = parameters.settingsUri;
+    super(parameters);
   }
 
-  public valueOf(): ServerSettingsValue {
-    return {
-      port: this.port,
-      serverHost: this.serverHost,
-      serverRoot: this.serverRoot,
-      requestLogFormat: this.requestLogFormat,
-      trackingUrl: this.trackingUrl,
-      trackingContext: this.trackingContext,
-      pageMustLoadTimeout: this.pageMustLoadTimeout,
-      iframe: this.iframe,
-      trustProxy: this.trustProxy,
-      strictTransportSecurity: this.strictTransportSecurity,
-      auth: this.auth,
-      settingsUri: this.settingsUri
-    };
-  }
-
-  public toJS(): ServerSettingsJS {
-    var js: ServerSettingsJS = {
-      port: this.port
-    };
-    if (this.serverHost) js.serverHost = this.serverHost;
-    if (this.serverRoot) js.serverRoot = this.serverRoot;
-    if (this.requestLogFormat) js.requestLogFormat = this.requestLogFormat;
-    if (this.trackingUrl) js.trackingUrl = this.trackingUrl;
-    if (this.trackingContext) js.trackingContext = this.trackingContext;
-    if (this.pageMustLoadTimeout) js.pageMustLoadTimeout = this.pageMustLoadTimeout;
-    if (this.iframe) js.iframe = this.iframe;
-    if (this.trustProxy) js.trustProxy = this.trustProxy;
-    if (this.strictTransportSecurity) js.strictTransportSecurity = this.strictTransportSecurity;
-    if (this.auth) js.auth = this.auth;
-    if (this.settingsUri) js.settingsUri = this.settingsUri;
-    return js;
-  }
-
-  public toJSON(): ServerSettingsJS {
-    return this.toJS();
-  }
-
-  public toString(): string {
-    return `[ServerSettings ${this.port}]`;
-  }
-
-  public equals(other: ServerSettings): boolean {
-    return ServerSettings.isServerSettings(other) &&
-      this.port === other.port &&
-      this.serverHost === other.serverHost &&
-      this.serverRoot === other.serverRoot &&
-      this.requestLogFormat === other.requestLogFormat &&
-      this.trackingUrl === other.trackingUrl &&
-      Boolean(this.trackingContext) === Boolean(other.trackingContext) &&
-      this.pageMustLoadTimeout === other.pageMustLoadTimeout &&
-      this.iframe === other.iframe &&
-      this.trustProxy === other.trustProxy &&
-      this.strictTransportSecurity === other.strictTransportSecurity &&
-      this.auth === other.auth &&
-      this.settingsUri === other.settingsUri;
-  }
-
-  public getServerHost(): string {
-    return this.serverHost;
-  }
-
-  public getServerRoot(): string {
-    return this.serverRoot || ServerSettings.DEFAULT_SERVER_ROOT;
-  }
-
-  public getRequestLogFormat(): string {
-    return this.requestLogFormat || ServerSettings.DEFAULT_REQUEST_LOG_FORMAT;
-  }
-
-  public getTrackingUrl(): string {
-    return this.trackingUrl || null;
-  }
-
-  public getTrackingContext(): Lookup<string> {
-    return this.trackingContext || null;
-  }
-
-  public getPageMustLoadTimeout(): number {
-    return this.pageMustLoadTimeout || ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT;
-  }
-
-  public getIframe(): Iframe {
-    return this.iframe || ServerSettings.DEFAULT_IFRAME;
-  }
-
-  public getTrustProxy(): TrustProxy {
-    return this.trustProxy || ServerSettings.DEFAULT_TRUST_PROXY;
-  }
-
-  public getStrictTransportSecurity(): StrictTransportSecurity {
-    return this.strictTransportSecurity || ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY;
-  }
-
+  public getPort: () => number;
+  public getServerHost: () => string;
+  public getServerRoot: () => string;
+  public getRequestLogFormat: () => string;
+  public getTrackingUrl: () => string;
+  public getTrackingContext: () => Lookup<string>;
+  public getPageMustLoadTimeout: () => number;
+  public getIframe: () => Iframe;
+  public getTrustProxy: () => TrustProxy;
+  public getStrictTransportSecurity: () => StrictTransportSecurity;
+  public getSettingsLocation: () => SettingsLocation;
 }
-check = ServerSettings;
+BaseImmutable.finalize(ServerSettings);

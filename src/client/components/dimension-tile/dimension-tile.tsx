@@ -454,7 +454,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       var colorValues: string[] = null;
       if (colors) colorValues = colors.getColors(rowData.map(d => d[dimension.name]));
 
-      var formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.format) : null;
+      var formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.getFormat()) : null;
       rows = rowData.map((d, i) => {
         var segmentValue = d[dimension.name];
         var segmentValueStr = String(segmentValue);

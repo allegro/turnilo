@@ -119,8 +119,34 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
     />;
   }
 
+  renderDataCubes() {
+    const { dataCubes } = this.props;
+
+    return <div className="datacubes">
+      <div className="section-title">{STRINGS.dataCubes}</div>
+      {this.renderItems(dataCubes)}
+    </div>;
+  }
+
+  renderCollections() {
+    const { collections, collectionsDelegate } = this.props;
+    if (collections.length === 0) return null;
+
+    return <div className="collections">
+      <div className="grid-row">
+        <div className="grid-col-90 section-title">{STRINGS.collections}</div>
+        { collectionsDelegate ? <div className="grid-col-10 right actions">
+          <div className="add" onClick={this.createCollection.bind(this)}>
+            <SvgIcon svg={require('../../icons/full-add.svg')}/>
+          </div>
+        </div> : null }
+      </div>
+      {this.renderItems(collections)}
+    </div>;
+  }
+
   render() {
-    const { user, dataCubes, onNavClick, onOpenAbout, customization, collections } = this.props;
+    const { user, onNavClick, onOpenAbout, customization } = this.props;
     const { showAddCollectionModal } = this.state;
 
     return <div className="home-view">
@@ -137,22 +163,8 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
       </HomeHeaderBar>
 
       <div className="container">
-        <div className="datacubes">
-          <div className="section-title">{STRINGS.dataCubes}</div>
-          {this.renderItems(dataCubes)}
-        </div>
-
-        { collections.length > 0 ? <div className="collections">
-          <div className="grid-row">
-            <div className="grid-col-90 section-title">{STRINGS.collections}</div>
-            <div className="grid-col-10 right actions">
-              <div className="add" onClick={this.createCollection.bind(this)}>
-                <SvgIcon svg={require('../../icons/full-add.svg')}/>
-              </div>
-            </div>
-          </div>
-          {this.renderItems(collections)}
-        </div> : null }
+        {this.renderDataCubes()}
+        {this.renderCollections()}
       </div>
       {showAddCollectionModal ? this.renderAddCollectionModal() : null}
     </div>;

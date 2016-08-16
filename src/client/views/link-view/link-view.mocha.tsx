@@ -23,7 +23,6 @@ import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
 
-import { $, Expression } from 'plywood';
 import { LinkView } from './link-view';
 
 describe('LinkView', () => {
@@ -34,6 +33,7 @@ describe('LinkView', () => {
         hash={null}
         updateViewHash={null}
         changeHash={null}
+        stateful={true}
       />
     );
 

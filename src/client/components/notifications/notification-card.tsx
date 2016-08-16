@@ -33,6 +33,8 @@ export interface NotificationCardProps extends React.Props<any> {
 export interface NotificationCardState {
   appearing?: boolean;
   disappearing?: boolean;
+  hovered?: boolean;
+  timerExpired?: boolean;
 }
 
 const DEFAULT_DURATION = 1; // seconds
@@ -42,7 +44,12 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
 
   constructor() {
     super();
-    this.state = {appearing: false, disappearing: false};
+    this.state = {
+      appearing: false,
+      disappearing: false,
+      hovered: false,
+      timerExpired: false
+    };
   }
 
   componentDidMount() {
@@ -62,8 +69,20 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     }
 
     this.setState({appearing: false}, () => {
-      this.timeoutID = window.setTimeout(this.disappear.bind(this), (d ? d : DEFAULT_DURATION) * 1000 );
+      this.timeoutID = window.setTimeout(this.onDisappearTimerEnd.bind(this), (d ? d : DEFAULT_DURATION) * 1000 );
     });
+  }
+
+  onDisappearTimerEnd() {
+    if (this.state.hovered) {
+      this.setState({
+        timerExpired: true
+      });
+
+      return;
+    }
+
+    this.disappear();
   }
 
   disappear() {
@@ -81,6 +100,22 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
 
   componentWillUnmount() {
     if (this.timeoutID !== undefined) window.clearTimeout(this.timeoutID);
+  }
+
+  onMouseEnter() {
+    this.setState({
+      hovered: true
+    });
+  }
+
+  onMouseExit() {
+    this.setState({
+      hovered: false
+    });
+
+    if (this.state.timerExpired) {
+      this.disappear();
+    }
   }
 
   render() {
@@ -103,6 +138,8 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     return <div
       style={{top, height}}
       onClick={onClick}
+      onMouseOver={this.onMouseEnter.bind(this)}
+      onMouseLeave={this.onMouseExit.bind(this)}
       className={classNames(`notification-card ${priority}`, {appearing, disappearing})}
      >
       <div className="title">{title}</div>

@@ -81,6 +81,7 @@ export class SupervisedCubeHeaderBar extends React.Component<SupervisedCubeHeade
       changeTimezone={changeTimezone}
       openOn={settingsMenuOpen}
       onClose={this.onSettingsMenuClose.bind(this)}
+      stateful={true}
     />;
   }
 

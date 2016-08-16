@@ -38,6 +38,7 @@ interface Config {
   version: string;
   user: any;
   appSettings: AppSettingsJS;
+  stateful: boolean;
 }
 
 var config: Config = (window as any)['__CONFIG__'];
@@ -82,7 +83,8 @@ if (config.appSettings.dataCubes.length || view === '#settings') {
         {
           version,
           user: config.user,
-          appSettings
+          appSettings,
+          stateful: Boolean(config.stateful)
         }
       ),
       container

@@ -3,19 +3,24 @@
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 
-if (process.argv.length !== 3) {
-  console.log('Usage: mkmodel <model-name>');
+if (process.argv.length !== 3 && process.argv.length !== 4) {
+  console.log('Usage: mkmodel <model-name> <type?>');
   process.exit();
 }
 
 var name = process.argv[2];
-
 if (!/^([a-z-])+$/.test(name)) {
   console.log('must be a hyphen case name');
-  process.exit();
+  process.exit(1);
 }
 
-var path = './src/common/models/' + name + '/';
+var type = process.argv[3] || 'common';
+if (['common', 'server', 'client'].indexOf(type) === -1) {
+  console.log('type must be one of common, server, client');
+  process.exit(1);
+}
+
+var path = `./src/${type}/models/${name}/`;
 mkdirp.sync(path);
 console.log('Making path:', path);
 
@@ -34,7 +39,7 @@ function writeFile(path, data) {
 
 // Make the TypeScript file
 writeFile(path + name + '.ts',
-`import { Class, Instance, isInstanceOf } from 'immutable-class';
+`import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
 import { $, Expression } from 'plywood';
 
 // I am: export * from './${name}/${name}';
@@ -47,57 +52,35 @@ export interface ${camelName}JS {
 
 }
 
-var check: Class<${camelName}Value, ${camelName}JS>;
-export class ${camelName} implements Instance<${camelName}Value, ${camelName}JS> {
+export class ${camelName} extends BaseImmutable<${camelName}Value, ${camelName}JS> {
 
   static is${camelName}(candidate: any): candidate is ${camelName} {
     return isInstanceOf(candidate, ${camelName});
   }
 
-  static fromJS(parameters: ${camelName}JS): ${camelName} {
-    var value: ${camelName}Value = {
-      /* */
-    };
-    return new ${camelName}(value);
+  static fromJS(parameters: ${camelName}JS): ${camelName} {    
+    return new ${camelName}(BaseImmutable.jsToValue(${camelName}.PROPERTIES, parameters));
   }
+
+  static PROPERTIES: Property[] = [
+    //{ name: 'blah' }
+  ];
+  
+  //public blah: string;
 
   constructor(parameters: ${camelName}Value) {
-
-  }
-
-  public valueOf(): ${camelName}Value {
-    return {
-
-    };
-  }
-
-  public toJS(): ${camelName}JS {
-    return {
-
-    };
-  }
-
-  public toJSON(): ${camelName}JS {
-    return this.toJS();
-  }
-
-  public toString(): string {
-    return '[' + ${camelName} + ']';
-  }
-
-  public equals(other: ${camelName}): boolean {
-    return ${camelName}.is${camelName}(other); // && more...
+    super(parameters);
   }
 
 }
-check = ${camelName};
+BaseImmutable.finalize(${camelName});
 `);
 
 
 // Make the TypeScript test file
 writeFile(path + name + '.mocha.ts',
 `import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class/build/tester';
+import { testImmutableClass } from 'immutable-class-tester';
 
 import { $, Expression } from 'plywood';
 import { ${camelName} } from './${name}';

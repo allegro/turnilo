@@ -37,31 +37,34 @@ export class CollectionViewDelegate {
     this.editItem = this.editItem.bind(this);
   }
 
-  private setState(state: PivotApplicationState, callback?: () => any) {
+  private setState(state: PivotApplicationState, callback?: () => void) {
     return this.app.setState.bind(this.app)(state, callback);
   }
 
   private save(appSettings: AppSettings, callback?: () => void) {
-    this.setState({appSettings}, callback);
+    // this.setState({appSettings}, callback);
 
-    // var { version } = this.app.props;
+    var { version } = this.app.props;
 
-    // Qajax({
-    //   method: "POST",
-    //   url: 'settings',
-    //   data: {version, appSettings}
-    // })
-    //   .then(Qajax.filterSuccess)
-    //   .then(Qajax.toJSON)
-    //   .then(
-    //     (status) => {
-    //       this.setState({appSettings}, callback);
-    //       // Notifier.success('Collections saved');
-    //     },
-    //     (xhr: XMLHttpRequest) => {
-    //       Notifier.failure('Woops', 'Something bad happened');
-    //     }
-    //   ).done();
+    Qajax({
+      method: "POST",
+      url: 'collections',
+      data: {
+        version,
+        collections: appSettings.toJS().collections
+      }
+    })
+      .then(Qajax.filterSuccess)
+      .then(Qajax.toJSON)
+      .then(
+        (status) => {
+          this.setState({appSettings}, callback);
+          // Notifier.success('Collections saved');
+        },
+        (xhr: XMLHttpRequest) => {
+          Notifier.failure('Woops', 'Something bad happened');
+        }
+      ).done();
   }
 
   private getSettings(): AppSettings {

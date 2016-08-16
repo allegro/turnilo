@@ -40,6 +40,7 @@ export interface PivotApplicationProps extends React.Props<any> {
   maxFilters?: number;
   maxSplits?: number;
   appSettings: AppSettings;
+  stateful?: boolean;
 }
 
 export interface PivotApplicationState {
@@ -360,7 +361,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   render() {
-    var { maxFilters, maxSplits, user, version } = this.props;
+    var { maxFilters, maxSplits, user, version, stateful } = this.props;
     var {
       viewType,
       viewHash,
@@ -413,7 +414,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           onOpenAbout={this.openAboutModal.bind(this)}
           customization={customization}
-          collectionsDelegate={this.collectionViewDelegate}
+          collectionsDelegate={stateful ? this.collectionViewDelegate : null}
         />;
         break;
 
@@ -431,6 +432,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           transitionFnSlot={this.sideBarHrefFn}
           supervisor={cubeViewSupervisor}
           addEssenceToCollection={this.addEssenceToCollection.bind(this)}
+          stateful={stateful}
         />;
         break;
 
@@ -441,7 +443,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           dataCubes={dataCubes}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           customization={customization}
-          delegate={this.collectionViewDelegate}
+          delegate={stateful ? this.collectionViewDelegate : null}
         />;
         break;
 
@@ -455,6 +457,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           getUrlPrefix={this.getUrlPrefix.bind(this)}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           customization={customization}
+          stateful={stateful}
         />;
         break;
 

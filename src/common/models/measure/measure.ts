@@ -15,7 +15,7 @@
  */
 
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
 import { $, Expression, Datum, ApplyAction, AttributeInfo, ChainExpression, deduplicateSort } from 'plywood';
 import { verifyUrlSafeName, makeTitle, makeUrlSafeName } from '../../utils/general/general';
@@ -43,8 +43,7 @@ export interface MeasureJS {
   format?: string;
 }
 
-var check: Class<MeasureValue, MeasureJS>;
-export class Measure implements Instance<MeasureValue, MeasureJS> {
+export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static DEFAULT_FORMAT = '0,0.0 a';
   static INTEGER_FORMAT = '0,0 a';
 
@@ -144,17 +143,22 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
   }
 
   static fromJS(parameters: MeasureJS): Measure {
-    var name = parameters.name;
-    var parameterExpression = (parameters as any).expression; // Back compat
-    return new Measure({
-      name,
-      title: parameters.title,
-      units: parameters.units,
-      formula: parameters.formula || (typeof parameterExpression === 'string' ? parameterExpression : null) || $('main').sum($(name)).toString(),
-      format: parameters.format
-    });
+    // Back compat
+    if (!parameters.formula) {
+      var parameterExpression = (parameters as any).expression;
+      parameters.formula = (typeof parameterExpression === 'string' ? parameterExpression : $('main').sum($(parameters.name)).toString());
+    }
+
+    return new Measure(BaseImmutable.jsToValue(Measure.PROPERTIES, parameters));
   }
 
+  static PROPERTIES = [
+    { name: 'name', validate: verifyUrlSafeName },
+    { name: 'title', defaultValue: null },
+    { name: 'units', defaultValue: null },
+    { name: 'formula' },
+    { name: 'format', defaultValue: Measure.DEFAULT_FORMAT }
+  ];
 
   public name: string;
   public title: string;
@@ -165,59 +169,11 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
   public formatFn: (n: number) => string;
 
   constructor(parameters: MeasureValue) {
-    var name = parameters.name;
-    verifyUrlSafeName(name);
-    this.name = name;
-    this.title = parameters.title || makeTitle(name);
-    this.units = parameters.units;
+    super(parameters);
 
-    var formula = parameters.formula;
-    if (!formula) throw new Error('measure must have formula');
-    this.formula = formula;
-    this.expression = Expression.parse(formula);
-
-    var format = parameters.format || Measure.DEFAULT_FORMAT;
-    if (format[0] === '(') throw new Error('can not have format that uses ( )');
-    this.format = format;
-    this.formatFn = formatFnFactory(format);
-  }
-
-  public valueOf(): MeasureValue {
-    return {
-      name: this.name,
-      title: this.title,
-      units: this.units,
-      formula: this.formula,
-      format: this.format
-    };
-  }
-
-  public toJS(): MeasureJS {
-    var js: MeasureJS = {
-      name: this.name,
-      title: this.title,
-      formula: this.formula
-    };
-    if (this.units) js.units = this.units;
-    if (this.format !== Measure.DEFAULT_FORMAT) js.format = this.format;
-    return js;
-  }
-
-  public toJSON(): MeasureJS {
-    return this.toJS();
-  }
-
-  public toString(): string {
-    return `[Measure: ${this.name}]`;
-  }
-
-  public equals(other: Measure): boolean {
-    return Measure.isMeasure(other) &&
-      this.name === other.name &&
-      this.title === other.title &&
-      this.units === other.units &&
-      this.formula === other.formula &&
-      this.format === other.format;
+    this.title = this.title || makeTitle(this.name);
+    this.expression = Expression.parse(this.formula);
+    this.formatFn = formatFnFactory(this.getFormat());
   }
 
   public toApplyAction(): ApplyAction {
@@ -232,20 +188,8 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     return this.formatFn(datum[this.name] as number);
   }
 
-  public change(propertyName: string, newValue: any): this {
-    var v = this.valueOf();
-
-    if (!v.hasOwnProperty(propertyName)) {
-      throw new Error(`Unknown property : ${propertyName}`);
-    }
-
-    (v as any)[propertyName] = newValue;
-    return (new Measure(v) as any);
-  }
-
-  public getTitle(): string {
-    return this.title;
-  }
+  public getTitle: () => string;
+  public changeTitle: (newTitle: string) => this;
 
   public getTitleWithUnits(): string {
     if (this.units) {
@@ -255,13 +199,10 @@ export class Measure implements Instance<MeasureValue, MeasureJS> {
     }
   }
 
-  public changeTitle(newTitle: string): this {
-    return this.change('title', newTitle);
-  }
+  public getFormula: () => string;
+  public changeFormula: (newFormula: string) => this;
 
-  public changeFormula(newFormula: string): this {
-    return this.change('formula', newFormula);
-  }
-
+  public getFormat: () => string;
+  public changeFormat: (newFormat: string) => this;
 }
-check = Measure;
+BaseImmutable.finalize(Measure);

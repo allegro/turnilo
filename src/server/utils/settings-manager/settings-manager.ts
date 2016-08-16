@@ -65,15 +65,15 @@ export class SettingsManager {
         return this.reviseSettings(appSettings);
       })
       .catch(e => {
-        logger.error(e.stack);
         logger.error(`Fatal settings load error: ${e.message}`);
+        logger.error(e.stack);
         throw e;
       });
 
     this.makeMaxTimeCheckTimer();
   }
 
-  public isWritable(): boolean {
+  public isStateful(): boolean {
     return Boolean(this.settingsStore.writeSettings);
   }
 

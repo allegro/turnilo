@@ -212,7 +212,28 @@ export class CollectionItemLightbox extends React.Component<CollectionItemLightb
   }
 
   renderHeadBand(): JSX.Element {
+    const { onEdit } = this.props;
     const { editionMode, tempItem, item, editMenuOpen, moreMenuOpen } = this.state;
+
+    var editButton: JSX.Element = null;
+    var moreButton: JSX.Element = null;
+    if (onEdit) {
+      editButton = <div
+        className={classNames('edit-button icon', {active: editMenuOpen})}
+        onClick={this.onEditIconClick.bind(this)}
+        ref="edit-button"
+      >
+        <SvgIcon svg={require(`../../../icons/full-edit.svg`)}/>
+      </div>;
+
+      moreButton = <div
+        className={classNames('more-button icon', {active: moreMenuOpen})}
+        onClick={this.onMoreIconClick.bind(this)}
+        ref="more-button"
+      >
+        <SvgIcon svg={require(`../../../icons/full-more.svg`)}/>
+      </div>;
+    }
 
     if (!editionMode) {
       return <div className="headband grid-row">
@@ -224,20 +245,8 @@ export class CollectionItemLightbox extends React.Component<CollectionItemLightb
           <div className="explore-button" onClick={this.onExplore.bind(this)}>
             {STRINGS.explore}
           </div>
-          <div
-            className={classNames('edit-button icon', {active: editMenuOpen})}
-            onClick={this.onEditIconClick.bind(this)}
-            ref="edit-button"
-          >
-            <SvgIcon svg={require(`../../../icons/full-edit.svg`)}/>
-          </div>
-          <div
-            className={classNames('more-button icon', {active: moreMenuOpen})}
-            onClick={this.onMoreIconClick.bind(this)}
-            ref="more-button"
-          >
-            <SvgIcon svg={require(`../../../icons/full-more.svg`)}/>
-          </div>
+          {editButton}
+          {moreButton}
           <div className="separator"/>
           <div className="close-button icon" onClick={this.closeModal.bind(this)}>
             <SvgIcon svg={require(`../../../icons/full-remove.svg`)}/>

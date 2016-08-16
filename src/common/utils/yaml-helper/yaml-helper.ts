@@ -225,7 +225,7 @@ export function measureToYAML(measure: Measure): string[] {
   lines.push(`formula: ${measure.formula}`);
 
   var format = measure.format;
-  if (format !== Measure.DEFAULT_FORMAT) {
+  if (!!format) {
     lines.push(`format: ${format}`);
   }
 

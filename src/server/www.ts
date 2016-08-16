@@ -32,12 +32,12 @@ if (START_SERVER) {
     // handle specific listen errors with friendly messages
     switch (error.code) {
       case 'EACCES':
-        console.error(`Port ${SERVER_SETTINGS.port} requires elevated privileges`);
+        console.error(`Port ${SERVER_SETTINGS.getPort()} requires elevated privileges`);
         process.exit(1);
         break;
 
       case 'EADDRINUSE':
-        console.error(`Port ${SERVER_SETTINGS.port} is already in use`);
+        console.error(`Port ${SERVER_SETTINGS.getPort()} is already in use`);
         process.exit(1);
         break;
 
@@ -52,6 +52,6 @@ if (START_SERVER) {
     debug(`Pivot is listening on address ${address.address} port ${address.port}`);
   });
 
-  app.set('port', SERVER_SETTINGS.port);
-  server.listen(SERVER_SETTINGS.port, SERVER_SETTINGS.getServerHost());
+  app.set('port', SERVER_SETTINGS.getPort());
+  server.listen(SERVER_SETTINGS.getPort(), SERVER_SETTINGS.getServerHost());
 }

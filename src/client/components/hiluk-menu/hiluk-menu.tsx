@@ -91,14 +91,21 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     const { openOn, onClose, externalViews, essence, getDownloadableDataset, addEssenceToCollection } = this.props;
     const { url, specificUrl } = this.state;
 
-    var shareOptions: JSX.Element[] = [
-      <li
-        className="copy-url clipboard"
-        key="copy-url"
-        data-clipboard-text={url}
-        onClick={onClose}
-      >{STRINGS.copyUrl}</li>
-    ];
+    var shareOptions: JSX.Element[] = [];
+
+    if (addEssenceToCollection) {
+      shareOptions.push(<li
+        className="add-to-collection"
+        onClick={addEssenceToCollection}
+      >{STRINGS.addToCollection}</li>);
+    }
+
+    shareOptions.push(<li
+      className="copy-url clipboard"
+      key="copy-url"
+      data-clipboard-text={url}
+      onClick={onClose}
+    >{STRINGS.copyUrl}</li>);
 
     if (specificUrl) {
       shareOptions.push(<li
@@ -145,7 +152,6 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     >
       <ul className="bubble-list">
         {shareOptions}
-        <li className="add-to-collection" onClick={addEssenceToCollection}>{STRINGS.addToCollection}</li>
       </ul>
     </BubbleMenu>;
   }

@@ -34,6 +34,7 @@ describe('CubeHeaderBar', () => {
         clicker={null}
         essence={EssenceMock.wikiTotals()}
         onNavClick={null}
+        stateful={true}
       />
     );
 

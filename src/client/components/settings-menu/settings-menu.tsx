@@ -25,13 +25,14 @@ import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown } from '../dropdown/dropdown';
 
 export interface SettingsMenuProps extends React.Props<any> {
-  dataCube: DataCube;
+  dataCube?: DataCube;
   openOn: Element;
   onClose: Fn;
   changeTimezone?: (timezone: Timezone) => void;
   timezone?: Timezone;
   timezones?: Timezone[];
   user?: User;
+  stateful: boolean;
 }
 
 export interface SettingsMenuState {
@@ -50,8 +51,8 @@ export class SettingsMenu extends React.Component<SettingsMenuProps, SettingsMen
   }
 
   renderSettingsLinks() {
-    const { dataCube, user } = this.props;
-    if (!user || !user.allow['settings']) return null;
+    const { dataCube, user, stateful } = this.props;
+    if (!stateful || !dataCube || !user || !user.allow['settings']) return null;
 
     return <div>
       <a href={`#settings/data_cubes/${dataCube.name}`}><div className="simple-item">{STRINGS.editThisCube}</div></a>

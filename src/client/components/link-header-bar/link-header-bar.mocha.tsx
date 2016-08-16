@@ -33,6 +33,7 @@ describe('LinkHeaderBar', () => {
         title="Test Link Bar"
         onNavClick={null}
         onExploreClick={null}
+        stateful={true}
       />
     );
 

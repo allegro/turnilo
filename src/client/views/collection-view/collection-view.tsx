@@ -88,7 +88,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
         title={collection ? collection.title : ''}
         dataCubes={dataCubes}
         collections={collections}
-        onAddItem={delegate.createItem.bind(this, collection)}
+        onAddItem={delegate ? delegate.createItem.bind(this, collection) : null}
       />
 
       <div className="main-panel">
@@ -98,9 +98,9 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
 
             <Route fragment=":itemId" transmit={['collectionId']} inflate={pump}>
               <CollectionItemLightbox
-                onChange={delegate.updateItem}
-                onEdit={delegate.editItem}
-                onDelete={delegate.deleteItem}
+                onChange={delegate ? delegate.updateItem : null}
+                onEdit={delegate ? delegate.editItem : null}
+                onDelete={delegate ? delegate.deleteItem : null}
               />
             </Route>
 

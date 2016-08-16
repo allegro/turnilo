@@ -233,7 +233,7 @@ if (auth && auth !== 'none') {
   if (authModule.version !== AUTH_MODULE_VERSION) {
     exitWithError(`incorrect auth module version ${authModule.version} needed ${AUTH_MODULE_VERSION}`);
   }
-  if (typeof authModule.auth !== 'function') exitWithError(`Invalid auth module (must export 'auth' function`);
+  if (typeof authModule.auth !== 'function') exitWithError(`Invalid auth module: must export 'auth' function`);
   authMiddleware = authModule.auth({
     logger: LOGGER,
     tracker: TRACKER,
@@ -261,10 +261,32 @@ const CLUSTER_TYPES: SupportedType[] = ['druid', 'postgres', 'mysql'];
 var settingsStore: SettingsStore = null;
 
 if (serverSettingsFilePath) {
-  if (SERVER_SETTINGS.settingsUri) {
-    settingsStore = SettingsStore.fromWritableFile(path.resolve(anchorPath, SERVER_SETTINGS.settingsUri));
+  var settingsLocation = SERVER_SETTINGS.getSettingsLocation();
+  if (settingsLocation) {
+    switch (settingsLocation.getLocation()) {
+      case 'file':
+        var settingsFilePath = path.resolve(anchorPath, settingsLocation.uri);
+        if (settingsLocation.getReadOnly()) {
+          settingsStore = SettingsStore.fromReadOnlyFile(settingsFilePath, settingsLocation.getFormat());
+        } else {
+          settingsStore = SettingsStore.fromWritableFile(settingsFilePath, settingsLocation.getFormat());
+        }
+        break;
+
+      case 'mysql':
+        throw new Error('todo'); // ToDo: make this not incomplete.
+        //settingsStore = SettingsStore.fromStateStore(require('../../../pivot-mysql-state-store/index.js').stateStoreFactory());
+        //break;
+
+      case 'postgres':
+        throw new Error('todo');
+
+      default:
+        exitWithError(`unknown location '${settingsLocation.location}'`);
+    }
+
   } else {
-    settingsStore = SettingsStore.fromReadOnlyFile(serverSettingsFilePath);
+    settingsStore = SettingsStore.fromReadOnlyFile(serverSettingsFilePath, 'yaml');
   }
 } else {
   var initAppSettings = AppSettings.BLANK;
@@ -318,7 +340,7 @@ if (PRINT_CONFIG) {
       header: true,
       version: VERSION,
       verbose: VERBOSE,
-      port: SERVER_SETTINGS.port
+      port: SERVER_SETTINGS.getPort()
     }));
   }).catch((e: Error) => {
     exitWithError("There was an error generating a config: " + e.message);

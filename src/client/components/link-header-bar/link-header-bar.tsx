@@ -17,10 +17,12 @@
 require('./link-header-bar.css');
 
 import * as React from 'react';
+import { Timezone } from 'chronoshift';
 import { Fn } from '../../../common/utils/general/general';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { User, Customization } from '../../../common/models/index';
 import { UserMenu } from '../user-menu/user-menu';
+import { SettingsMenu } from '../settings-menu/settings-menu';
 
 export interface LinkHeaderBarProps extends React.Props<any> {
   title: string;
@@ -29,9 +31,13 @@ export interface LinkHeaderBarProps extends React.Props<any> {
   onExploreClick: Fn;
   getUrlPrefix?: () => string;
   customization?: Customization;
+  changeTimezone?: (timezone: Timezone) => void;
+  timezone?: Timezone;
+  stateful: boolean;
 }
 
 export interface LinkHeaderBarState {
+  settingsMenuOpenOn?: Element;
   userMenuOpenOn?: Element;
 }
 
@@ -40,6 +46,7 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
   constructor() {
     super();
     this.state = {
+      settingsMenuOpenOn: null,
       userMenuOpenOn: null
     };
   }
@@ -73,6 +80,39 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
     />;
   }
 
+  // Settings menu
+
+  onSettingsMenuClick(e: MouseEvent) {
+    const { settingsMenuOpenOn } = this.state;
+    if (settingsMenuOpenOn) return this.onSettingsMenuClose();
+
+    this.setState({
+      settingsMenuOpenOn: e.target as Element
+    });
+  }
+
+  onSettingsMenuClose() {
+    this.setState({
+      settingsMenuOpenOn: null
+    });
+  }
+
+  renderSettingsMenu() {
+    const { changeTimezone, timezone, customization, user, stateful } = this.props;
+    const { settingsMenuOpenOn } = this.state;
+    if (!settingsMenuOpenOn) return null;
+
+    return <SettingsMenu
+      user={user}
+      timezone={timezone}
+      timezones={customization.getTimezones()}
+      changeTimezone={changeTimezone}
+      openOn={settingsMenuOpenOn}
+      onClose={this.onSettingsMenuClose.bind(this)}
+      stateful={stateful}
+    />;
+  }
+
   render() {
     var { title, user, onNavClick, onExploreClick, customization } = this.props;
 
@@ -102,6 +142,9 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
         <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
           <SvgIcon className="help-icon" svg={require('../../icons/help.svg')}/>
         </a>
+        <div className="icon-button settings" onClick={this.onSettingsMenuClick.bind(this)}>
+          <SvgIcon className="settings-icon" svg={require('../../icons/full-settings.svg')}/>
+        </div>
         {userButton}
       </div>
       {this.renderUserMenu()}

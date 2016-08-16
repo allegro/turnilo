@@ -15,13 +15,14 @@
  */
 
 import { expect } from 'chai';
-import { testImmutableClass } from '../../../../node_modules/immutable-class/build/tester';
+import { testImmutableClass } from 'immutable-class-tester';
 
 import { ServerSettings } from './server-settings';
 
 describe('ServerSettings', () => {
   it('is an immutable class', () => {
     testImmutableClass(ServerSettings, [
+      {},
       {
         port: 9090
       },
@@ -62,7 +63,10 @@ describe('ServerSettings', () => {
       },
       {
         port: 9091,
-        settingsUri: 'path/to/my/file.yaml'
+        settingsLocation: {
+          location: 'file',
+          uri: 'path/to/my/file.yaml'
+        }
       }
     ]);
   });

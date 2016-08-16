@@ -31,7 +31,7 @@ router.get('/', (req: PivotRequest, res: Response, next: Function) => {
         title: appSettings.customization.getTitle(req.version),
         user: req.user,
         appSettings: clientSettings,
-        readOnly: false // ToDo: fix this
+        stateful: req.stateful
       }));
     })
     .done();

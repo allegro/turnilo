@@ -32,7 +32,7 @@ export interface CollectionHeaderBarProps extends React.Props<any> {
   title?: string;
   dataCubes: DataCube[];
   collections: Collection[];
-  onAddItem: (dataCube: DataCube) => void;
+  onAddItem?: (dataCube: DataCube) => void;
 }
 
 export interface CollectionHeaderBarState {
@@ -117,18 +117,20 @@ export class CollectionHeaderBar extends React.Component<CollectionHeaderBarProp
     </BubbleMenu>;
   }
 
-  onShareClick() {
-    // Debug
-    console.log(JSON.stringify(this.props.collections.map(c => c.toJS()), null, 2));
-  }
-
   render() {
-    var { user, onNavClick, customization, title } = this.props;
+    var { user, onNavClick, customization, title, onAddItem } = this.props;
 
     var userButton: JSX.Element = null;
     if (user) {
       userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
         <SvgIcon svg={require('../../icons/full-user.svg')}/>
+      </div>;
+    }
+
+    var addButton: JSX.Element = null;
+    if (onAddItem) {
+      addButton = <div className="icon-button add" onClick={this.onAddClick.bind(this)}>
+        <SvgIcon svg={require('../../icons/full-add-framed.svg')}/>
       </div>;
     }
 
@@ -147,12 +149,7 @@ export class CollectionHeaderBar extends React.Component<CollectionHeaderBarProp
         <div className="title">{title}</div>
       </div>
       <div className="right-bar">
-        <div className="icon-button add" onClick={this.onAddClick.bind(this)}>
-          <SvgIcon svg={require('../../icons/full-add-framed.svg')}/>
-        </div>
-        <div className="icon-button hiluk" onClick={this.onShareClick.bind(this)}>
-          <SvgIcon svg={require('../../icons/full-hiluk.svg')}/>
-        </div>
+        {addButton}
         {userButton}
       </div>
       {this.renderUserMenu()}

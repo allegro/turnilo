@@ -980,7 +980,15 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public getDefaultSortMeasure(): string {
-    return this.defaultSortMeasure || this.measures.first().name;
+    if (this.defaultSortMeasure) {
+      return this.defaultSortMeasure;
+    }
+
+    if (this.measures.size > 0) {
+      this.measures.first().name;
+    }
+
+    return null;
   }
 
   public getDefaultSelectedMeasures(): OrderedSet<string> {

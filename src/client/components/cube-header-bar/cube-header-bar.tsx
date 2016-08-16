@@ -42,13 +42,14 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   addEssenceToCollection?: () => void;
   changeTimezone?: (timezone: Timezone) => void;
   timezone?: Timezone;
+  stateful?: boolean;
 }
 
 export interface CubeHeaderBarState {
   hilukMenuOpenOn?: Element;
   autoRefreshMenuOpenOn?: Element;
   autoRefreshRate?: Duration;
-  settingsMenuOpen?: Element;
+  settingsMenuOpenOn?: Element;
   userMenuOpenOn?: Element;
   animating?: boolean;
 }
@@ -63,6 +64,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       hilukMenuOpenOn: null,
       autoRefreshMenuOpenOn: null,
       autoRefreshRate: null,
+      settingsMenuOpenOn: null,
       userMenuOpenOn: null,
       animating: false
     };
@@ -142,7 +144,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderHilukMenu() {
-    const { essence, getUrlPrefix, customization, openRawDataModal, getDownloadableDataset, addEssenceToCollection } = this.props;
+    const { essence, getUrlPrefix, customization, openRawDataModal, getDownloadableDataset, addEssenceToCollection, stateful } = this.props;
     const { hilukMenuOpenOn } = this.state;
     if (!hilukMenuOpenOn) return null;
 
@@ -151,12 +153,15 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       externalViews = customization.externalViews;
     }
 
-    const onAddEssenceToCollectionClick = () => {
-      this.setState({
-        hilukMenuOpenOn: null
-      });
-      addEssenceToCollection();
-    };
+    var onAddEssenceToCollectionClick: any = null;
+    if (stateful) {
+      onAddEssenceToCollectionClick = () => {
+        this.setState({
+          hilukMenuOpenOn: null
+        });
+        addEssenceToCollection();
+      };
+    }
 
     return <HilukMenu
       essence={essence}
@@ -234,8 +239,8 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   // Settings menu
 
   onSettingsMenuClick(e: MouseEvent) {
-    const { settingsMenuOpen } = this.state;
-    if (settingsMenuOpen) return this.onSettingsMenuClose();
+    const { settingsMenuOpenOn } = this.state;
+    if (settingsMenuOpenOn) return this.onSettingsMenuClose();
 
     if (e.metaKey && e.altKey) {
       console.log(this.props.essence.toJS());
@@ -243,20 +248,20 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     }
 
     this.setState({
-      settingsMenuOpen: e.target as Element
+      settingsMenuOpenOn: e.target as Element
     });
   }
 
   onSettingsMenuClose() {
     this.setState({
-      settingsMenuOpen: null
+      settingsMenuOpenOn: null
     });
   }
 
   renderSettingsMenu() {
-    const { changeTimezone, timezone, customization, essence, user } = this.props;
-    const { settingsMenuOpen } = this.state;
-    if (!settingsMenuOpen) return null;
+    const { changeTimezone, timezone, customization, essence, user, stateful } = this.props;
+    const { settingsMenuOpenOn } = this.state;
+    if (!settingsMenuOpenOn) return null;
 
     return <SettingsMenu
       dataCube={essence.dataCube}
@@ -264,8 +269,9 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       timezone={timezone}
       timezones={customization.getTimezones()}
       changeTimezone={changeTimezone}
-      openOn={settingsMenuOpen}
+      openOn={settingsMenuOpenOn}
       onClose={this.onSettingsMenuClose.bind(this)}
+      stateful={stateful}
     />;
   }
 

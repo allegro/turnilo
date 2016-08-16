@@ -35,6 +35,7 @@ describe('SettingsMenu', () => {
         openOn={openOn}
         changeTimezone={() => {}}
         timezone={Timezone.UTC}
+        stateful={true}
       />
     );
 

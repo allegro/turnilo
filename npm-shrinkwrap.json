@@ -57,11 +57,6 @@
       "from": "assert-plus@>=0.2.0 <0.3.0",
       "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-0.2.0.tgz"
     },
-    "assertion-error": {
-      "version": "1.0.2",
-      "from": "assertion-error@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/assertion-error/-/assertion-error-1.0.2.tgz"
-    },
     "async": {
       "version": "1.5.2",
       "from": "async@>=1.5.2 <2.0.0",
@@ -132,20 +127,15 @@
       "from": "caseless@>=0.11.0 <0.12.0",
       "resolved": "https://registry.npmjs.org/caseless/-/caseless-0.11.0.tgz"
     },
-    "chai": {
-      "version": "3.5.0",
-      "from": "chai@3.5.0",
-      "resolved": "https://registry.npmjs.org/chai/-/chai-3.5.0.tgz"
-    },
     "chalk": {
       "version": "1.1.3",
       "from": "chalk@>=1.1.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz"
     },
     "chronoshift": {
-      "version": "0.5.6",
-      "from": "chronoshift@0.5.6",
-      "resolved": "https://registry.npmjs.org/chronoshift/-/chronoshift-0.5.6.tgz"
+      "version": "0.5.7",
+      "from": "chronoshift@0.5.7",
+      "resolved": "https://registry.npmjs.org/chronoshift/-/chronoshift-0.5.7.tgz"
     },
     "clipboard": {
       "version": "1.5.12",
@@ -245,18 +235,6 @@
       "version": "2.2.0",
       "from": "debug@2.2.0",
       "resolved": "https://registry.npmjs.org/debug/-/debug-2.2.0.tgz"
-    },
-    "deep-eql": {
-      "version": "0.1.3",
-      "from": "deep-eql@>=0.1.3 <0.2.0",
-      "resolved": "https://registry.npmjs.org/deep-eql/-/deep-eql-0.1.3.tgz",
-      "dependencies": {
-        "type-detect": {
-          "version": "0.1.1",
-          "from": "type-detect@0.1.1",
-          "resolved": "https://registry.npmjs.org/type-detect/-/type-detect-0.1.1.tgz"
-        }
-      }
     },
     "delayed-stream": {
       "version": "1.0.0",
@@ -466,9 +444,9 @@
       "resolved": "https://registry.npmjs.org/immutable/-/immutable-3.8.1.tgz"
     },
     "immutable-class": {
-      "version": "0.5.2",
-      "from": "immutable-class@0.5.2",
-      "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.5.2.tgz"
+      "version": "0.6.5",
+      "from": "immutable-class@0.6.5",
+      "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.6.5.tgz"
     },
     "inflight": {
       "version": "1.0.5",
@@ -758,14 +736,14 @@
       "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-2.0.1.tgz"
     },
     "plywood": {
-      "version": "0.12.2",
-      "from": "plywood@0.12.2",
-      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.12.2.tgz"
+      "version": "0.12.3",
+      "from": "plywood@0.12.3",
+      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.12.3.tgz"
     },
     "plywood-druid-requester": {
-      "version": "1.5.3",
-      "from": "plywood-druid-requester@1.5.3",
-      "resolved": "https://registry.npmjs.org/plywood-druid-requester/-/plywood-druid-requester-1.5.3.tgz"
+      "version": "1.5.4",
+      "from": "plywood-druid-requester@1.5.4",
+      "resolved": "https://registry.npmjs.org/plywood-druid-requester/-/plywood-druid-requester-1.5.4.tgz"
     },
     "plywood-mysql-requester": {
       "version": "1.3.1",
@@ -988,11 +966,6 @@
       "version": "0.13.3",
       "from": "tweetnacl@>=0.13.0 <0.14.0",
       "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.13.3.tgz"
-    },
-    "type-detect": {
-      "version": "1.0.0",
-      "from": "type-detect@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/type-detect/-/type-detect-1.0.0.tgz"
     },
     "type-is": {
       "version": "1.6.13",

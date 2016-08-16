@@ -54,6 +54,7 @@ export interface CubeViewProps extends React.Props<any> {
   transitionFnSlot?: FunctionSlot<string>;
   supervisor?: ViewSupervisor;
   addEssenceToCollection?: (essence: Essence) => void;
+  stateful: boolean;
 }
 
 export interface CubeViewState {
@@ -330,8 +331,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   changeTimezone(newTimezone: Timezone): void {
     const { essence } = this.state;
-    const newEsssence = essence.changeTimezone(newTimezone);
-    this.setState({ essence: newEsssence });
+    const newEssence = essence.changeTimezone(newTimezone);
+    this.setState({ essence: newEssence });
   }
 
   getStoredLayout(): CubeViewLayout {

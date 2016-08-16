@@ -21,7 +21,7 @@ export interface ViewOptions {
   title: string;
   user?: any;
   appSettings?: AppSettings;
-  readOnly?: boolean;
+  stateful?: boolean;
 }
 
 function favicon(options: ViewOptions): string {
@@ -72,9 +72,9 @@ ${content}
   }
 
 export function pivotLayout(options: ViewOptions): string {
-  const { version, user, appSettings, readOnly } = options;
+  const { version, user, appSettings, stateful } = options;
   return layout(options, `<div class="app-container"></div>
-<script>var __CONFIG__ = ${JSON.stringify({ version, user, appSettings, readOnly })};</script>
+<script>var __CONFIG__ = ${JSON.stringify({ version, user, appSettings, stateful })};</script>
 <script charset="UTF-8" src="pivot.js?v=${version}"></script>`
   );
 }

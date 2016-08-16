@@ -57,7 +57,7 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
         instance={instance}
         path={name}
         equal={(a: ListItem, b: ListItem) => a.value === b.value}
-        renderItem={(a: ListItem) => a.label}
+        renderItem={(a: ListItem) => a ? a.label : ''}
         keyItem={(a: ListItem) => a.value || 'default_value'}
         onChange={changeFn}
       />;

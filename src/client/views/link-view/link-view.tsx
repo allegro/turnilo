@@ -19,6 +19,7 @@ require('./link-view.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Expression, $, find } from 'plywood';
+import { Timezone } from 'chronoshift';
 import { classNames } from '../../utils/dom/dom';
 import { Fn } from '../../../common/utils/general/general';
 import { Colors, Clicker, Essence, Filter, FilterClause, Stage, Measure,
@@ -57,6 +58,7 @@ export interface LinkViewProps extends React.Props<any> {
   getUrlPrefix?: () => string;
   onNavClick?: Fn;
   customization?: Customization;
+  stateful: boolean;
 }
 
 export interface LinkViewState {
@@ -203,6 +205,12 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     changeHash(`${essence.dataCube.name}/${essence.toHash()}`, true);
   }
 
+  changeTimezone(newTimezone: Timezone): void {
+    const { essence } = this.state;
+    const newEssence = essence.changeTimezone(newTimezone);
+    this.setState({ essence: newEssence });
+  }
+
   getStoredLayout(): LinkViewLayout {
     return localStorage.get('link-view-layout') || {linkPanelWidth: 240, pinboardWidth: 240};
   }
@@ -293,7 +301,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   render() {
     var clicker = this.clicker;
 
-    var { getUrlPrefix, onNavClick, linkViewConfig, user, customization } = this.props;
+    var { getUrlPrefix, onNavClick, linkViewConfig, user, customization, stateful } = this.props;
     var { deviceSize, linkItem, essence, visualizationStage, layout } = this.state;
 
     if (!linkItem) return null;
@@ -341,6 +349,9 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
         onExploreClick={this.goToCubeView.bind(this)}
         getUrlPrefix={getUrlPrefix}
         customization={customization}
+        changeTimezone={this.changeTimezone.bind(this)}
+        timezone={essence.timezone}
+        stateful={stateful}
       />
       <div className="container" ref='container'>
         {this.renderLinkPanel(styles.linkMeasurePanel)}
@@ -368,7 +379,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
           </div>
         </div>
 
-        {deviceSize !== 'small' ?  <ResizeHandle
+        {deviceSize !== 'small' ? <ResizeHandle
           side="right"
           initialValue={layout.pinboardWidth}
           onResize={this.onPinboardPanelResize.bind(this)}
