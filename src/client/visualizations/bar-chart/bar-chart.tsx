@@ -19,7 +19,7 @@ require('./bar-chart.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
-import { r, Range, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, TimeRange } from 'plywood';
+import { r, Range, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, TimeRange, PlywoodRange, NumberRange } from 'plywood';
 
 import {
   Stage,
@@ -29,11 +29,13 @@ import {
   Splits,
   Measure,
   VisualizationProps,
-  DatasetLoad
+  DatasetLoad,
+  Dimension
 } from '../../../common/models/index';
 import { BAR_CHART_MANIFEST } from '../../../common/manifests/bar-chart/bar-chart';
 import { formatValue } from '../../../common/utils/formatter/formatter';
 import { DisplayYear } from '../../../common/utils/time/time';
+import { extend } from "../../../common/utils/object/object";
 
 import { SPLIT, VIS_H_PADDING } from '../../config/constants';
 import { roundToPx, classNames } from '../../utils/dom/dom';
@@ -86,6 +88,52 @@ function getFilterFromDatum(splits: Splits, dataPath: Datum[], dataCube: DataCub
       selection: r(TimeRange.isTimeRange(segment) ? segment : Set.fromJS([segment]))
     });
   })));
+}
+
+function padDataset(originalDataset: Dataset, dimension: Dimension, measure: Measure): Dataset {
+  const data = (originalDataset.data[0][SPLIT] as Dataset).data;
+  const dimensionName = dimension.name;
+
+  const firstBucket: PlywoodRange = data[0][dimensionName] as PlywoodRange;
+
+  const start = Number(firstBucket.start);
+  const end = Number(firstBucket.end);
+
+  const size = end - start;
+
+  let i = start;
+  let j = 0;
+
+  var filledData: Datum[] = [];
+  data.forEach((d) => {
+    let segmentValue = d[dimensionName];
+    var segmentStart = (segmentValue as PlywoodRange).start;
+    while (i < segmentStart) {
+      filledData[j] = {};
+      filledData[j][dimensionName] = NumberRange.fromJS({
+        start: i,
+        end: i + size
+      });
+      filledData[j][measure.name] = 0; // todo: what if effective zero is not 0?
+
+      j++;
+      i += size;
+    }
+    filledData[j] = d;
+    i += size;
+    j++;
+  });
+
+  var value = originalDataset.valueOf();
+  (value.data[0][SPLIT] as Dataset).data = filledData;
+  return new Dataset(value);
+}
+
+function padDatasetLoad(datasetLoad: DatasetLoad, dimension: Dimension, measure: Measure): DatasetLoad {
+  var originalDataset = datasetLoad.dataset;
+  var newDataset = originalDataset ? padDataset(originalDataset, dimension, measure) : null;
+  datasetLoad.dataset = newDataset;
+  return datasetLoad;
 }
 
 export class BarChart extends BaseVisualization<BarChartState> {
@@ -683,18 +731,32 @@ export class BarChart extends BaseVisualization<BarChartState> {
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
     const { registerDownloadableDataset, essence } = props;
     const { splits } = essence;
+    const split = splits.get(0);
+
+    const dimension = split.getDimension(essence.dataCube.dimensions);
+    const dimensionKind = dimension.kind;
+    const measure = essence.getEffectiveMeasures().first();
 
     this.coordinatesCache = [];
 
     var existingDatasetLoad = this.state.datasetLoad;
     var newState: BarChartState = {};
+
     if (datasetLoad) {
+      if (dimensionKind === 'number') {
+        datasetLoad = padDatasetLoad(datasetLoad, dimension, measure);
+      }
       // Always keep the old dataset while loading (for now)
       if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
 
       newState.datasetLoad = datasetLoad;
     } else {
-      datasetLoad = this.state.datasetLoad;
+      var stateDatasetLoad = this.state.datasetLoad;
+      if (dimensionKind === 'number') {
+        datasetLoad = padDatasetLoad(stateDatasetLoad, dimension, measure);
+      } else {
+        datasetLoad = stateDatasetLoad;
+      }
     }
 
     var { dataset } = datasetLoad;
