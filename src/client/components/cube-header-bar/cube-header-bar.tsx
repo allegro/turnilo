@@ -42,7 +42,7 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   addEssenceToCollection?: () => void;
   changeTimezone?: (timezone: Timezone) => void;
   timezone?: Timezone;
-  stateful?: boolean;
+  stateful: boolean;
 }
 
 export interface CubeHeaderBarState {

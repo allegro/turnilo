@@ -370,7 +370,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   render() {
     var clicker = this.clicker;
 
-    var { getUrlPrefix, onNavClick, user, customization, supervisor } = this.props;
+    var { getUrlPrefix, onNavClick, user, customization, supervisor, stateful } = this.props;
     var { deviceSize, layout, essence, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
 
     if (!essence) return null;
@@ -427,6 +427,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       timezone={essence.timezone}
       updatingMaxTime={updatingMaxTime}
       addEssenceToCollection={this.onAddEssenceToCollection.bind(this)}
+      stateful={stateful}
     />;
 
     if (supervisor) {
