@@ -44,6 +44,12 @@ const FILTER_OPTIONS: FilterOption[] = [
     value: Filter.EXCLUDED,
     svg: require('../../icons/filter-exclude.svg'),
     checkType: 'cross'
+  },
+  {
+    label: STRINGS.match,
+    value: Filter.MATCH,
+    svg: require('../../icons/filter-regex.svg'),
+    checkType: 'check'
   }
 ];
 
@@ -51,12 +57,17 @@ const FILTER_OPTIONS: FilterOption[] = [
 export interface FilterOptionsDropdownProps extends React.Props<any> {
   selectedOption: FilterMode;
   onSelectOption: (o: FilterMode) => void;
+  filterOptions?: FilterOption[];
 }
 
 export interface FilterOptionsDropdownState {
 }
 
 export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdownProps, FilterOptionsDropdownState> {
+  static getFilterOptions(...filterTypes: Array<string>) {
+    return FILTER_OPTIONS.filter(option => filterTypes.indexOf(option.value) !== -1);
+  }
+
   constructor() {
     super();
   }
@@ -73,15 +84,16 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
   }
 
   render() {
-    var { selectedOption, onSelectOption } = this.props;
+    var { selectedOption, onSelectOption, filterOptions } = this.props;
     const FilterDropdown = Dropdown.specialize<FilterOption>();
 
-    var selectedItem = FILTER_OPTIONS.filter(o => o.value === selectedOption)[0] || FILTER_OPTIONS[0];
+    var options = filterOptions || FILTER_OPTIONS;
+    var selectedItem = options.filter(o => o.value === selectedOption)[0] || options[0];
 
     return <div className="filter-options-dropdown">
       <FilterDropdown
         menuClassName="filter-options"
-        items={FILTER_OPTIONS}
+        items={options}
         selectedItem={selectedItem}
         equal={(a, b) => a.value === b.value}
         keyItem={(d) => d.value}

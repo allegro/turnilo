@@ -20,7 +20,7 @@ import { Timezone, Duration } from 'chronoshift';
 import { $, r, Expression, LiteralExpression, ExpressionJS, InAction, Set, Range, TimeRange } from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
-import { FilterClause, FilterClauseJS } from '../filter-clause/filter-clause';
+import { FilterClause, FilterClauseJS, FilterSelection } from '../filter-clause/filter-clause';
 
 function withholdClause(clauses: List<FilterClause>, clause: FilterClause, allowIndex: number): List<FilterClause> {
   return <List<FilterClause>>clauses.filter((c, i) => {
@@ -41,7 +41,7 @@ function dateToFileString(date: Date): string {
     .replace('.000', '');
 }
 
-export type FilterMode = 'exclude' | 'include';
+export type FilterMode = 'exclude' | 'include' | 'match' | 'contains';
 export type FilterValue = List<FilterClause>;
 export type FilterJS = ExpressionJS | string;
 
@@ -51,6 +51,9 @@ export class Filter implements Instance<FilterValue, FilterJS> {
 
   static EXCLUDED: FilterMode = 'exclude';
   static INCLUDED: FilterMode = 'include';
+  static MATCH: FilterMode = 'match';
+  static CONTAINS: FilterMode = 'contains';
+
 
   static isFilter(candidate: any): candidate is Filter {
     return isInstanceOf(candidate, Filter);
@@ -217,7 +220,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return this.filteredOnValue(attribute, value) ? this.removeValue(attribute, value) : this.addValue(attribute, value);
   }
 
-  public getSelection(attribute: Expression): Expression {
+  public getSelection(attribute: Expression): FilterSelection {
     var clauses = this.clauses;
     var index = this.indexOfClause(attribute);
     if (index === -1) return null;
@@ -277,6 +280,8 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     var dimensionClauses = this.getClausesForDimension(dimension);
 
     if (dimensionClauses.size > 0) {
+      let isMatch = dimensionClauses.every(clause => clause.action === 'match');
+      if (isMatch) return 'match';
       let isExcluded = dimensionClauses.every(clause => clause.exclude);
       return isExcluded ? 'exclude' : 'include';
     }

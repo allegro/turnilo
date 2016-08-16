@@ -22,17 +22,24 @@ import * as TestUtils from 'react-addons-test-utils';
 
 import '../../utils/test-utils/index';
 
-import { $, Expression } from 'plywood';
+import { EssenceMock, DimensionMock, StageMock } from '../../../common/models/mocks';
 import { TimeFilterMenu } from './time-filter-menu';
 
 describe.skip('TimeFilterMenu', () => {
   it('adds the correct class', () => {
+    var div = document.createElement('div');
+    div.setAttribute("id", "Div1");
+
     var renderedComponent = TestUtils.renderIntoDocument(
       <TimeFilterMenu
         clicker={null}
-        dimension={null}
-        essence={null}
+        dimension={DimensionMock.countryURL()}
+        essence={EssenceMock.wikiLineChart()}
         onClose={null}
+        containerStage={StageMock.defaultA()}
+        openOn={div}
+        inside={div}
+
       />
     );
 

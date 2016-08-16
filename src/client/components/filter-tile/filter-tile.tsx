@@ -379,7 +379,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     return <FilterMenuAsync
       clicker={clicker}
       essence={essence}
-      direction="down"
       containerStage={overflowMenuOpenOn ? null : menuStage}
       openOn={menuOpenOn}
       dimension={menuDimension}

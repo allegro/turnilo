@@ -24,7 +24,7 @@ import { $, r, Dataset, SortAction, TimeRange, RefExpression, Expression, TimeBu
 
 import { formatterFromData, collect, formatGranularity, formatTimeBasedOnGranularity, formatNumberRange } from '../../../common/utils/index';
 import { Fn } from '../../../common/utils/general/general';
-import { Clicker, Essence, VisStrategy, Dimension, SortOn, SplitCombine, Filter, FilterClause, FilterMode,
+import { Clicker, Essence, VisStrategy, Dimension, SortOn, SplitCombine, Filter, FilterSelection, FilterMode,
   Colors, Granularity, ContinuousDimensionKind, getBestGranularityForRange, granularityEquals,
   granularityToString, getDefaultGranularityForKind, getGranularities } from '../../../common/models/index';
 
@@ -125,11 +125,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       const dimensionExpression = dimension.expression as RefExpression;
       const attributeName = dimensionExpression.name;
 
-      const filterSelection: Expression = essence.filter.getSelection(dimensionExpression);
+      const filterSelection: FilterSelection = essence.filter.getSelection(dimensionExpression);
 
       if (!selectedGranularity) {
         if (filterSelection) {
-          var range = dimension.kind === 'time' ? essence.evaluateSelection(filterSelection) : filterSelection.getLiteralValue().extent();
+          var range = dimension.kind === 'time' ? essence.evaluateSelection(filterSelection as Expression) : (filterSelection as Expression).getLiteralValue().extent();
           selectedGranularity = getBestGranularityForRange(range, true, dimension.bucketedBy, dimension.granularities);
         } else {
           selectedGranularity = getDefaultGranularityForKind(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy, dimension.granularities);

@@ -19,14 +19,15 @@ require('./number-filter-menu.css');
 import * as React from 'react';
 import { Set, NumberRange, LiteralExpression } from 'plywood';
 
-import { FilterClause, Clicker, Essence, Filter, Dimension, FilterMode } from '../../../common/models/index';
+import { FilterClause, Clicker, Essence, Filter, Dimension, FilterMode, Stage } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { enterKey } from '../../utils/dom/dom';
 
 import { Button } from '../button/button';
 import { NumberRangePicker, ANY_VALUE } from '../number-range-picker/number-range-picker';
-import { FilterOptionsDropdown } from '../filter-options-dropdown/filter-options-dropdown';
+import { FilterOptionsDropdown, FilterOption } from '../filter-options-dropdown/filter-options-dropdown';
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
 
 function numberOrAnyToString(start: number): string {
   if (start === ANY_VALUE) return STRINGS.any;
@@ -37,12 +38,18 @@ function stringToNumberOrAny(startInput: string): number {
   var parse = parseFloat(startInput);
   return isNaN(parse) ? ANY_VALUE : parse;
 }
+const MENU_WIDTH = 250;
+const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(Filter.INCLUDED, Filter.EXCLUDED);
 
 export interface NumberFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;
   onClose: Fn;
+
+  containerStage: Stage;
+  openOn: Element;
+  inside: Element;
 }
 
 export interface NumberFilterMenuState {
@@ -190,16 +197,26 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   }
 
   render() {
-    const { essence, dimension } = this.props;
+    const { essence, dimension, onClose, containerStage, openOn, inside } = this.props;
     const { endInput, startInput, end, start, filterMode } = this.state;
+    const menuSize = Stage.fromSize(MENU_WIDTH, 410);
 
-    return <div className="number-filter-menu" ref="number-filter-menu">
+    return <BubbleMenu
+      className="number-filter-menu"
+      direction="down"
+      containerStage={containerStage}
+      stage={menuSize}
+      openOn={openOn}
+      onClose={onClose}
+      inside={inside}
+    >
       <div className="side-by-side">
         <div className="group">
           <label className="input-top-label">Type</label>
           <FilterOptionsDropdown
             selectedOption={filterMode}
             onSelectOption={this.onSelectFilterOption.bind(this)}
+            filterOptions={filterOptions}
           />
         </div>
         <div className="group">
@@ -222,10 +239,10 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
         exclude={filterMode === Filter.EXCLUDED}
       />
 
-      <div className="button-bar">
+      <div className="ok-cancel-bar">
         <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} />
         <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick.bind(this)} />
       </div>
-    </div>;
+    </BubbleMenu>;
   }
 }

@@ -15,25 +15,30 @@
  */
 
 import { expect } from 'chai';
-import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 
 import '../../utils/test-utils/index';
 
-import { $, Expression } from 'plywood';
+import { EssenceMock, DimensionMock, StageMock } from '../../../common/models/mocks';
 import { StringFilterMenu } from './string-filter-menu';
 
 describe.skip('StringFilterMenu', () => {
   it('adds the correct class', () => {
+    var div = document.createElement('div');
+    div.setAttribute("id", "Div1");
+
     var renderedComponent = TestUtils.renderIntoDocument(
       <StringFilterMenu
         clicker={null}
-        dimension={null}
-        essence={null}
-        changePosition={null}
+        dimension={DimensionMock.countryURL()}
+        essence={EssenceMock.wikiLineChart()}
         onClose={null}
+        containerStage={StageMock.defaultA()}
+        openOn={div}
+        inside={div}
+        changePosition={null}
       />
     );
 

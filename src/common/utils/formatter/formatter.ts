@@ -19,7 +19,7 @@ import { Timezone } from 'chronoshift';
 
 import { NumberRange, TimeRange, LiteralExpression } from 'plywood';
 
-import { Dimension, FilterClause, Essence } from '../../models/index';
+import { Dimension, FilterClause, Filter } from '../../models/index';
 import { DisplayYear, formatTimeRange } from '../../utils/time/time';
 
 export interface Formatter {
@@ -114,8 +114,10 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
   function getClauseLabel() {
     var dimTitle = dimension.title;
     if (dimKind === 'time' && !verbose) return '';
+    var delimiter = ["match", "contains"].indexOf(clause.action) !== -1 ? ' ~' : ":";
+
     if (clauseSet && clauseSet.elements.length > 1 && !verbose) return `${dimTitle}`;
-    return `${dimTitle}:`;
+    return `${dimTitle}${delimiter}`;
   }
 
   switch (dimKind) {
@@ -132,6 +134,9 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
           values = formatValue(setElements[0]);
         }
       }
+      if (clause.action === Filter.MATCH) values = `/${values}/`;
+      if (clause.action === Filter.CONTAINS) values = `"${values}"`;
+
       break;
 
     case 'time':

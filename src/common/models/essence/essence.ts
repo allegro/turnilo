@@ -463,7 +463,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public getTimeSelection(): Expression {
     const timeAttribute = this.getTimeAttribute();
-    return this.filter.getSelection(timeAttribute);
+    return this.filter.getSelection(timeAttribute) as Expression;
   }
 
   public isFixedMeasureMode(): boolean {

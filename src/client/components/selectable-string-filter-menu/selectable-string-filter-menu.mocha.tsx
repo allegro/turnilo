@@ -15,36 +15,32 @@
  */
 
 import { expect } from 'chai';
-import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { findDOMNode } from '../../utils/test-utils/index';
-
 import * as TestUtils from 'react-addons-test-utils';
 
-import { $, Expression } from 'plywood';
-import { FilterMenu } from './filter-menu';
+import { Filter } from "../../../common/models/filter/filter";
 
-import { EssenceMock, StageMock, DimensionMock } from '../../../common/models/mocks';
+import '../../utils/test-utils/index';
 
-describe('FilterMenu', () => {
+import { SelectableStringFilterMenu } from "./selectable-string-filter-menu";
+
+describe.skip('SelectableStringFilterMenu', () => {
   it('adds the correct class', () => {
-    var openOn = document.createElement('div');
-
     var renderedComponent = TestUtils.renderIntoDocument(
-      <FilterMenu
+      <SelectableStringFilterMenu
+        filterMode={Filter.MATCH}
+        searchText=""
+        onClauseChange={null}
         clicker={null}
-        containerStage={null}
-        dimension={DimensionMock.countryURL()}
-        essence={EssenceMock.wikiTotals()}
-        changePosition={null}
+        dimension={null}
+        essence={null}
         onClose={null}
-        openOn={openOn}
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('filter-menu');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('string-filter-menu');
   });
 
 });

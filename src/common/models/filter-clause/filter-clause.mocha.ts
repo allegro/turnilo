@@ -70,6 +70,11 @@ describe('FilterClause', () => {
         },
         exclude: true
       },
+      {
+        expression: { op: 'ref', name: 'language' },
+        selection: "%David\\_R_ss%?",
+        action: 'match'
+      },
 
       // Dynamic!
       {

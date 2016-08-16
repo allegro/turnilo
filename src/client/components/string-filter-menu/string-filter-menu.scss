@@ -16,17 +16,30 @@
 
 @import '../../imports';
 
-$checkbox-width: 20px;
-
 .string-filter-menu {
-  .menu-table {
-    .side-by-side {
-      @extend %side-by-side;
 
-      :not(:last-child) {
-        margin-right: 0;
-      }
+  .side-by-side {
+    @extend %side-by-side;
+
+    :not(:last-child) {
+      margin-right: 0;
     }
+  }
+
+  .search-box {
+    height: 30px;
+    margin-left: 6px;
+    width: 100%;
+
+    .clearable-input {
+      @extend %input-cont-inset;
+      width: 100%;
+      height: $input-height;
+      padding-left: 6px;
+    }
+  }
+
+  .menu-table {
 
     @extend %white-shadow;
     background: $white;
@@ -34,18 +47,6 @@ $checkbox-width: 20px;
 
     &::after {
       @include unpin-full(0, -14px, 0, -14px);
-    }
-
-    .search-box {
-      height: 30px;
-      margin-left: 6px;
-
-      .clearable-input {
-        @extend %input-cont-inset;
-        width: 100%;
-        height: $input-height;
-        padding-left: 6px;
-      }
     }
 
     .rows {
@@ -80,12 +81,22 @@ $checkbox-width: 20px;
       &:last-child {
         margin-bottom: 12px;
       }
+
+      &.no-select {
+        pointer-events: none;
+        user-select: none;
+      }
     }
 
     .message {
       padding: 4px 10px;
       color: $text-light;
       font-style: italic;
+    }
+
+    .matching-values-message {
+      padding: 4px 10px;
+      color: $text-light;
     }
 
     .loader,

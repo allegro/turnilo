@@ -83,6 +83,7 @@ export const STRINGS: any = {
   lastWeek: 'Last Week',
   limit: 'Limit',
   logout: 'Logout',
+  match: 'Match',
   measures: 'Measures',
   noDescription: 'No description',
   noFilter: 'No filter',

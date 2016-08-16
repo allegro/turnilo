@@ -52,4 +52,16 @@
       }
     }
   }
+
+  .ok-cancel-bar {
+    margin-top: 12px;
+
+    button {
+      min-width: 70px;
+
+      &:not(:last-child) {
+        margin-right: 6px;
+      }
+    }
+  }
 }

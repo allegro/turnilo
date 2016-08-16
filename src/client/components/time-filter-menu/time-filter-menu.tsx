@@ -16,17 +16,19 @@
 
 require('./time-filter-menu.css');
 
-import * as React from 'react';
-import { Timezone, WallTime, Duration, second, minute, hour, day, week, month, year } from 'chronoshift';
-import { $, r, Expression, LiteralExpression, TimeRange, Range, Set } from 'plywood';
-import { Fn } from '../../../common/utils/general/general';
-import { STRINGS } from '../../config/constants';
-import { Clicker, Essence, Filter, FilterClause, Dimension } from '../../../common/models/index';
-import { formatTimeRange, DisplayYear } from '../../../common/utils/time/time';
-import { enterKey, classNames } from '../../utils/dom/dom';
-import { Button } from '../button/button';
-import { ButtonGroup } from '../button-group/button-group';
-import { DateRangePicker } from '../date-range-picker/date-range-picker';
+import * as React from "react";
+import { Timezone, second, day } from "chronoshift";
+import { $, r, Expression, LiteralExpression, TimeRange, Range, Set } from "plywood";
+import { Fn } from "../../../common/utils/general/general";
+import { STRINGS } from "../../config/constants";
+import { Clicker, Essence, Filter, FilterClause, Dimension } from "../../../common/models/index";
+import { formatTimeRange, DisplayYear } from "../../../common/utils/time/time";
+import { enterKey, classNames } from "../../utils/dom/dom";
+import { Button } from "../button/button";
+import { ButtonGroup } from "../button-group/button-group";
+import { DateRangePicker } from "../date-range-picker/date-range-picker";
+import { Stage } from "../../../common/models/stage/stage";
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
 
 function makeDateIntoTimeRange(input: Date, timezone: Timezone): TimeRange {
   return new TimeRange({ start: second.shift(input, timezone, - 1), end: second.shift(input, timezone, 1) });
@@ -63,11 +65,17 @@ var previousPresets: Preset[] = [
   { name: 'Y', selection: $now.timeFloor('P1Y').timeRange('P1Y', -1) }
 ];
 
+const MENU_WIDTH = 250;
+
 export interface TimeFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   dimension: Dimension;
   onClose: Fn;
+
+  containerStage: Stage;
+  openOn: Element;
+  inside: Element;
 }
 
 export interface TimeFilterMenuState {
@@ -99,7 +107,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     const { timezone } = essence;
 
     var dimensionExpression = dimension.expression;
-    var timeSelection = filter.getSelection(dimensionExpression);
+    var timeSelection = filter.getSelection(dimensionExpression) as Expression;
     var selectedTimeRangeSet = essence.getEffectiveFilter().getLiteralSet(dimensionExpression);
     var selectedTimeRange = (selectedTimeRangeSet && selectedTimeRangeSet.size() === 1) ? selectedTimeRangeSet.elements[0] : null;
     if (selectedTimeRange && !Range.isRange(selectedTimeRange)) selectedTimeRange = makeDateIntoTimeRange(selectedTimeRange, timezone);
@@ -267,7 +275,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
         onStartChange={this.onStartChange.bind(this)}
         onEndChange={this.onEndChange.bind(this)}
       />
-      <div className="button-bar">
+      <div className="ok-cancel-bar">
         <Button type="primary" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} title={STRINGS.ok} />
         <Button type="secondary" onClick={this.onCancelClick.bind(this)} title={STRINGS.cancel} />
       </div>
@@ -275,9 +283,10 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   };
 
   render() {
-    var { dimension } = this.props;
+    const { dimension, onClose, containerStage, openOn, inside } = this.props;
     var { tab } = this.state;
     if (!dimension) return null;
+    const menuSize = Stage.fromSize(MENU_WIDTH, 410);
 
     var tabs = ['relative', 'specific'].map((name) => {
       return {
@@ -287,10 +296,17 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
         onClick: this.selectTab.bind(this, name)
       };
     });
-
-    return <div className="time-filter-menu">
+    return <BubbleMenu
+      className="time-filter-menu"
+      direction="down"
+      containerStage={containerStage}
+      stage={menuSize}
+      openOn={openOn}
+      onClose={onClose}
+      inside={inside}
+    >
       <ButtonGroup groupMembers={tabs} />
       {tab === 'relative' ? this.renderPresets() : this.renderCustom()}
-    </div>;
+    </BubbleMenu>;
   }
 }

@@ -17,13 +17,16 @@
 import { expect } from 'chai';
 import * as React from 'react';
 import * as TestUtils from 'react-addons-test-utils';
-import { EssenceMock, DimensionMock } from '../../../common/models/mocks';
+import { EssenceMock, DimensionMock, StageMock } from '../../../common/models/mocks';
 
 import { findDOMNode } from '../../utils/test-utils/index';
 
 import { NumberFilterMenu } from './number-filter-menu';
 
 describe('NumberFilterMenu', () => {
+  var div = document.createElement('div');
+  div.setAttribute("id", "Div1");
+
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <NumberFilterMenu
@@ -31,6 +34,10 @@ describe('NumberFilterMenu', () => {
         dimension={DimensionMock.time()}
         essence={EssenceMock.wikiTotals()}
         onClose={null}
+        containerStage={StageMock.defaultA()}
+        openOn={div}
+        inside={div}
+
       />
     );
 
