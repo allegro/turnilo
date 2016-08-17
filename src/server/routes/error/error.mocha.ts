@@ -17,8 +17,8 @@
 import { expect } from 'chai';
 import * as express from 'express';
 import * as supertest from 'supertest';
+import { Response } from 'supertest';
 import * as bodyParser from 'body-parser';
-
 import * as errorRouter from './error';
 
 var app = express();
@@ -33,7 +33,7 @@ describe('error route', () => {
 
   before(() => {
     originalConsoleError = console.error;
-    console.error = function(t) {
+    console.error = function(t: string) {
       consoleError += t;
     };
   });
@@ -53,7 +53,7 @@ describe('error route', () => {
       .set('Content-Type', "application/json")
       .send(errorObj)
       .expect(200)
-      .end((err, res) => {
+      .end((err: any, res: Response) => {
         expect(consoleError).to.deep.equal('Client Error: ' + JSON.stringify(errorObj));
         testComplete();
       });
@@ -65,7 +65,7 @@ describe('error route', () => {
       .set('Content-Type', "application/json")
       .send({ query: 'select things' })
       .expect(400)
-      .end((err, res) => {
+      .end((err: any, res: Response) => {
         expect(res.body.error).to.deep.equal('Error must have a message');
         testComplete();
       });

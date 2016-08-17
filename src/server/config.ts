@@ -16,11 +16,13 @@
 
 import * as path from 'path';
 import * as nopt from 'nopt';
+import { TRACKER, LOGGER } from 'logger-tracker';
+
 import { arraySum } from '../common/utils/general/general';
 import { Cluster, DataCube, SupportedType, AppSettings } from '../common/models/index';
 import { appSettingsToYAML } from '../common/utils/yaml-helper/yaml-helper';
 import { ServerSettings } from './models/index';
-import { loadFileSync, SettingsManager, SettingsStore, LOGGER, initLogger, TRACKER, initTracker } from './utils/index';
+import { loadFileSync, SettingsManager, SettingsStore } from './utils/index';
 
 const AUTH_MODULE_VERSION = 1;
 const PACKAGE_FILE = path.join(__dirname, '../../package.json');
@@ -168,7 +170,7 @@ if (numSettingsInputs > 1) {
 export const PRINT_CONFIG = Boolean(parsedArgs['print-config']);
 export const START_SERVER = !PRINT_CONFIG;
 
-if (START_SERVER) initLogger();
+if (START_SERVER) LOGGER.init();
 
 // Load server settings
 var serverSettingsFilePath = parsedArgs['config'];
@@ -213,7 +215,7 @@ export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS);
 if (START_SERVER) {
   var trackingUrl = SERVER_SETTINGS.getTrackingUrl();
   if (trackingUrl) {
-    initTracker(VERSION, trackingUrl, SERVER_SETTINGS.getTrackingContext());
+    TRACKER.init(VERSION, trackingUrl, SERVER_SETTINGS.getTrackingContext());
   }
 }
 

@@ -3,8 +3,6 @@
 // Definitions by: Santi Albo <https://github.com/santialbo/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-/// <reference path="../express/express.d.ts" />
-
 declare module "compression" {
     import express = require('express');
 

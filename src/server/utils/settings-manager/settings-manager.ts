@@ -16,9 +16,9 @@
 
 import * as Q from 'q';
 import { External, Dataset, basicExecutorFactory, find } from 'plywood';
+import { Logger } from 'logger-tracker';
 import { pluralIfNeeded } from '../../../common/utils/general/general';
 import { AppSettings, Cluster, DataCube } from '../../../common/models/index';
-import { Logger } from '../logger/logger';
 import { SettingsStore } from '../settings-store/settings-store';
 import { FileManager } from '../file-manager/file-manager';
 import { ClusterManager } from '../cluster-manager/cluster-manager';

@@ -17,10 +17,10 @@
 import * as path from 'path';
 import * as Q from 'q';
 import { External, findByName } from 'plywood';
+import { Logger } from 'logger-tracker';
 import { DruidRequestDecorator } from 'plywood-druid-requester';
 import { properRequesterFactory } from '../requester/requester';
 import { Cluster } from '../../../common/models/index';
-import { Logger } from '../logger/logger';
 
 const CONNECTION_RETRY_TIMEOUT = 20000;
 const DRUID_REQUEST_DECORATOR_MODULE_VERSION = 1;

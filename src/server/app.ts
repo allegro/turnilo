@@ -19,9 +19,9 @@ import { Request, Response, Router, Handler } from 'express';
 import * as hsts from 'hsts';
 
 import * as path from 'path';
-import * as morgan from 'morgan';
 import * as bodyParser from 'body-parser';
 import * as compress from 'compression';
+import { logAndTrack, LOGGER } from 'logger-tracker';
 
 import { Timezone, WallTime } from 'chronoshift';
 // Init chronoshift
@@ -31,7 +31,7 @@ if (!WallTime.rules) {
 }
 
 import { GetSettingsOptions } from '../server/utils/settings-manager/settings-manager';
-import { PivotRequest, LOGGER, TRACKER } from './utils/index';
+import { PivotRequest } from './utils/index';
 import { VERSION, AUTH, SERVER_SETTINGS, SETTINGS_MANAGER } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
 import * as plyqlRoutes from './routes/plyql/plyql';
@@ -89,22 +89,7 @@ function addGuardedRoutes(attach: string, guard: string, router: Router | Handle
 app.use(compress());
 
 // Add request logging and tracking
-var morganFormat = SERVER_SETTINGS.getRequestLogFormat();
-var morgenFormatFunction = morgan.compile((morgan as any)[morganFormat] || morganFormat);
-app.use(morgan((m: any, req: PivotRequest, res: Response) => {
-  TRACKER.track({
-    eventType: 'request',
-    attr: {
-      url: m['url'](req, res),
-      method: m['method'](req, res),
-      status: m['status'](req, res)
-    },
-    user: req.user,
-    metric: 'request/time',
-    value: Number(m['response-time'](req, res))
-  });
-  return morgenFormatFunction(m, req, res);
-}));
+app.use(logAndTrack(SERVER_SETTINGS.getRequestLogFormat()));
 
 // Add Strict Transport Security
 if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {

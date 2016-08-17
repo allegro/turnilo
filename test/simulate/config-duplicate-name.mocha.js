@@ -15,9 +15,8 @@
  */
 
 const expect = require('chai').expect;
-const request = require('request');
+const spawnServer = require('node-spawn-server');
 const extend = require('../utils/extend');
-const spawnServer = require('../utils/spawn-server');
 
 const TEST_PORT = 18082;
 var pivotServer;

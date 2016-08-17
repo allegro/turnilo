@@ -20,5 +20,3 @@ export * from './file/file';
 export * from './general/general';
 export * from './settings-manager/settings-manager';
 export * from './updater/updater';
-export * from './logger/logger';
-export * from './tracker/tracker';

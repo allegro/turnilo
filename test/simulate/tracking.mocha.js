@@ -18,7 +18,7 @@ const expect = require('chai').expect;
 const Q = require('q');
 const request = require('request');
 const plywood = require('plywood');
-const spawnServer = require('../utils/spawn-server');
+const spawnServer = require('node-spawn-server');
 const eventCollector = require('../utils/event-collector');
 
 const $ = plywood.$;

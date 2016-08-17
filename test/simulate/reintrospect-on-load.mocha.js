@@ -16,9 +16,8 @@
 
 const expect = require('chai').expect;
 const request = require('request');
+const spawnServer = require('node-spawn-server');
 const mockDruid = require('../utils/mock-druid');
-const extend = require('../utils/extend');
-const spawnServer = require('../utils/spawn-server');
 const extractConfig = require('../utils/extract-config');
 
 const TEST_PORT = 18082;
