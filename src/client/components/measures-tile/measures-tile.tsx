@@ -107,7 +107,7 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
         onClick={this.measureClick.bind(this, measure)}
       >
         <Checkbox type={checkboxType} selected={selected}/>
-        <HighlightString className="label" text={measure.getTitleWithUnits()} highlightText={searchText}/>
+        <HighlightString className="label" text={measure.getTitleWithUnits()} highlight={searchText}/>
       </div>;
     });
 

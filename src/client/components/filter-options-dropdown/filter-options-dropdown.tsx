@@ -46,10 +46,14 @@ const FILTER_OPTIONS: FilterOption[] = [
     checkType: 'cross'
   },
   {
-    label: STRINGS.match,
-    value: Filter.MATCH,
-    svg: require('../../icons/filter-regex.svg'),
-    checkType: 'check'
+    label: STRINGS.contains,
+    value: Filter.CONTAINS,
+    svg: require('../../icons/filter-contains.svg')
+  },
+  {
+    label: STRINGS.regex,
+    value: Filter.REGEX,
+    svg: require('../../icons/filter-regex.svg')
   }
 ];
 

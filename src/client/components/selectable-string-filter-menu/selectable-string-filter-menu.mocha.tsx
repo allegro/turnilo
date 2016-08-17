@@ -29,7 +29,7 @@ describe.skip('SelectableStringFilterMenu', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <SelectableStringFilterMenu
-        filterMode={Filter.MATCH}
+        filterMode={Filter.REGEX}
         searchText=""
         onClauseChange={null}
         clicker={null}

@@ -95,7 +95,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const dimensionKind = dimension.kind;
 
     var filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(Filter.INCLUDED, Filter.EXCLUDED);
-    if (dimensionKind !== 'boolean') filterOptions = filterOptions.concat(FilterOptionsDropdown.getFilterOptions(Filter.MATCH));
+    if (dimensionKind !== 'boolean') filterOptions = filterOptions.concat(FilterOptionsDropdown.getFilterOptions(Filter.REGEX, Filter.CONTAINS));
 
     return filterOptions;
   }
@@ -130,7 +130,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     var menuSize: Stage = null;
     var menuCont: JSX.Element = null;
 
-    if (filterMode === Filter.MATCH) {
+    if (filterMode === Filter.REGEX || filterMode === Filter.CONTAINS) {
       menuSize = Stage.fromSize(350, 410);
       menuCont = <PreviewStringFilterMenu
           dimension={dimension}

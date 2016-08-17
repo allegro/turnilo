@@ -17,7 +17,7 @@
 require('./preview-string-filter-menu.css');
 
 import * as React from "react";
-import { $, Dataset, SortAction } from "plywood";
+import { $, Dataset, SortAction, r } from "plywood";
 import { Fn, collect } from "../../../common/utils/general/general";
 import { STRINGS, SEARCH_WAIT } from "../../config/constants";
 import { Clicker, Essence, Filter, FilterClause, FilterMode, Dimension } from "../../../common/models/index";
@@ -109,8 +109,8 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   componentWillMount() {
-    var { essence, dimension, searchText } = this.props;
-    if (searchText && !this.checkRegex(searchText)) return;
+    var { essence, dimension, searchText, filterMode } = this.props;
+    if (searchText && filterMode === Filter.REGEX && !this.checkRegex(searchText)) return;
     this.fetchData(essence, dimension, searchText);
   }
 
@@ -123,13 +123,13 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   componentWillReceiveProps(nextProps: PreviewStringFilterMenuProps) {
-    var { searchText } = this.props;
+    var { searchText, filterMode } = this.props;
     var incomingSearchText = nextProps.searchText;
     const { fetchQueued, loading, dataset } = this.state;
-    if (incomingSearchText) this.checkRegex(incomingSearchText);
+    if (incomingSearchText && filterMode === Filter.REGEX) this.checkRegex(incomingSearchText);
 
     // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
-    if (incomingSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
+    if (incomingSearchText && incomingSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
       return;
     } else {
       this.setState({
@@ -161,12 +161,20 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     var { expression } = dimension;
 
     var clause: FilterClause = null;
-    if (filterMode === Filter.MATCH && searchText) {
-      clause = new FilterClause({
-        expression,
-        selection: searchText,
-        action: 'match'
-      });
+    if (searchText) {
+      if (filterMode === Filter.REGEX) {
+        clause = new FilterClause({
+          expression,
+          selection: searchText,
+          action: 'match'
+        });
+      } else if (filterMode === Filter.CONTAINS) {
+        clause = new FilterClause({
+          expression,
+          selection: r(searchText),
+          action: 'contains'
+        });
+      }
     }
 
     return onClauseChange(clause);
@@ -193,34 +201,41 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
   renderRows() {
     var { loading, dataset, fetchQueued, regexErrorMessage  } = this.state;
-    var { dimension, searchText } = this.props;
+    var { dimension, searchText, filterMode } = this.props;
 
     var rows: Array<JSX.Element> = [];
+    var search: string | RegExp = null;
+
     if (dataset) {
       var rowStrings = dataset.data.slice(0, TOP_N).map((d) => d[dimension.name]);
 
       if (searchText) {
         rowStrings = rowStrings.filter((d) => {
-          try {
-            var escaped = searchText.replace(/\\[^\\]]/g, '\\\\');
-            return new RegExp(escaped, 'g').test(String(d));
-          } catch (e) {
-            return false;
+          if (filterMode === Filter.REGEX) {
+            try {
+              var escaped = searchText.replace(/\\[^\\]]/g, '\\\\');
+              search = new RegExp(escaped);
+              return search.test(String(d));
+            } catch (e) {
+              return false;
+            }
+          } else if (filterMode === Filter.CONTAINS) {
+            search = searchText;
+            return String(d).toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
           }
+          return false;
         });
       }
 
       rows = rowStrings.map((segmentValue) => {
         var segmentValueStr = String(segmentValue);
-        var match = segmentValueStr.match(searchText);
-        var highlightText = (searchText && match) ? match.join("") : "";
         return <div
           className="row no-select"
           key={segmentValueStr}
           title={segmentValueStr}
         >
           <div className="row-wrapper">
-            <HighlightString className="label" text={segmentValueStr} highlightText={highlightText}/>
+            <HighlightString className="label" text={segmentValueStr} highlight={search}/>
           </div>
         </div>;
       });

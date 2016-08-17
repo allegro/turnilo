@@ -41,7 +41,7 @@ function dateToFileString(date: Date): string {
     .replace('.000', '');
 }
 
-export type FilterMode = 'exclude' | 'include' | 'match' | 'contains';
+export type FilterMode = 'exclude' | 'include' | 'regex' | 'contains';
 export type FilterValue = List<FilterClause>;
 export type FilterJS = ExpressionJS | string;
 
@@ -51,7 +51,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
 
   static EXCLUDED: FilterMode = 'exclude';
   static INCLUDED: FilterMode = 'include';
-  static MATCH: FilterMode = 'match';
+  static REGEX: FilterMode = 'regex';
   static CONTAINS: FilterMode = 'contains';
 
 
@@ -280,10 +280,10 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     var dimensionClauses = this.getClausesForDimension(dimension);
 
     if (dimensionClauses.size > 0) {
-      let isMatch = dimensionClauses.every(clause => clause.action === 'match');
-      if (isMatch) return 'match';
-      let isExcluded = dimensionClauses.every(clause => clause.exclude);
-      return isExcluded ? 'exclude' : 'include';
+      if (dimensionClauses.every(clause => clause.action === 'match')) return 'regex';
+      if (dimensionClauses.every(clause => clause.action === 'contains')) return 'contains';
+      if (dimensionClauses.every(clause => clause.exclude)) return 'exclude';
+      return 'include';
     }
 
     return undefined;

@@ -114,7 +114,7 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
   function getClauseLabel() {
     var dimTitle = dimension.title;
     if (dimKind === 'time' && !verbose) return '';
-    var delimiter = ["match", "contains"].indexOf(clause.action) !== -1 ? ' ~' : ":";
+    var delimiter = ["regex", "contains"].indexOf(clause.action) !== -1 ? ' ~' : ":";
 
     if (clauseSet && clauseSet.elements.length > 1 && !verbose) return `${dimTitle}`;
     return `${dimTitle}${delimiter}`;
@@ -134,7 +134,7 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
           values = formatValue(setElements[0]);
         }
       }
-      if (clause.action === Filter.MATCH) values = `/${values}/`;
+      if (clause.action === 'match') values = `/${values}/`;
       if (clause.action === Filter.CONTAINS) values = `"${values}"`;
 
       break;

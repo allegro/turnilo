@@ -253,7 +253,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
           >
             <div className="row-wrapper">
               <Checkbox type={checkboxType as CheckboxType} selected={selected}/>
-              <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
+              <HighlightString className="label" text={segmentValueStr} highlight={searchText}/>
             </div>
           </div>;
       });

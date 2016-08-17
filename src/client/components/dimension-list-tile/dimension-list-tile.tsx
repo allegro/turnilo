@@ -202,7 +202,7 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
           <SvgIcon svg={require('../../icons/dim-' + dimension.className + '.svg')}/>
         </div>
         <div className="item-title">
-          <HighlightString className="label" text={dimension.title} highlightText={searchText} />
+          <HighlightString className="label" text={dimension.title} highlight={searchText} />
         </div>
 
       </div>;

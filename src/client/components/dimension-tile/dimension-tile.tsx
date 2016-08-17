@@ -495,7 +495,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         >
           <div className="segment-value" title={segmentValueStr}>
             {checkbox}
-            <HighlightString className="label" text={segmentValueStr} highlightText={searchText}/>
+            <HighlightString className="label" text={segmentValueStr} highlight={searchText}/>
           </div>
           {measureValueElement}
           {selected ? highlightControls : null}
