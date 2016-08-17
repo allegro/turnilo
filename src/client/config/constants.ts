@@ -41,6 +41,8 @@ export const SEARCH_WAIT = 900;
 
 export const STRINGS: any = {
   add: 'Add',
+  addNewCollection: 'Add new collection',
+  addNewTile: 'Add new tile',
   addVisualization: 'Add visualization',
   addToCollection: 'Add to collection',
   addFromCube: 'Add from Cube',
@@ -69,6 +71,7 @@ export const STRINGS: any = {
   explore: 'Explore',
   exportToCSV: 'Export to CSV',
   filter: 'Filter',
+  convertToFixedTime: 'Convert to fixed time',
   generalSettings: 'General settings',
   goToUrl: 'Go to URL',
   granularity: 'Granularity',
@@ -85,6 +88,7 @@ export const STRINGS: any = {
   logout: 'Logout',
   match: 'Match',
   measures: 'Measures',
+  no: 'No',
   noDescription: 'No description',
   noFilter: 'No filter',
   noQueryableDataCubes: 'There are no queryable data cubes configured',
@@ -112,7 +116,8 @@ export const STRINGS: any = {
   timezone: 'Timezone',
   undo: 'Click here to undo',
   updateTimezone: 'Update Timezone',
-  viewRawData: 'View raw data'
+  viewRawData: 'View raw data',
+  yes: 'Yes'
 };
 
 // Data cubes introspection strategies

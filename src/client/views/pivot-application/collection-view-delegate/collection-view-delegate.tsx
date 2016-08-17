@@ -56,10 +56,7 @@ export class CollectionViewDelegate {
       .then(Qajax.filterSuccess)
       .then(Qajax.toJSON)
       .then(
-        (status) => {
-          this.setState({appSettings}, deferred.resolve);
-          // Notifier.success('Collections saved');
-        },
+        (status) => this.setState({appSettings}, deferred.resolve),
         (xhr: XMLHttpRequest) => {
           Notifier.failure('Woops', 'Something bad happened');
           deferred.reject(xhr.response);
@@ -91,7 +88,7 @@ export class CollectionViewDelegate {
 
     this.save(newSettings).then( () => {
       window.location.hash = collectionURL;
-      Notifier.success('Item removed', undefined, 3, {label: STRINGS.undo, callback: undo});
+      Notifier.success('Item removed', {label: STRINGS.undo, callback: undo});
     });
   }
 
@@ -157,14 +154,12 @@ export class CollectionViewDelegate {
     const oldIndex = appSettings.collections.indexOf(collection);
 
     const undo = () => {
-      this.setState({
-        appSettings: appSettings.addCollectionAt(collection, oldIndex)
-      });
+      this.save(this.getSettings().addCollectionAt(collection, oldIndex));
     };
 
     return this.save(appSettings.deleteCollection(collection)).then( () => {
       window.location.hash = `#/home`;
-      Notifier.success('Collection removed', undefined, 3, {label: STRINGS.undo, callback: undo});
+      Notifier.success('Collection removed', {label: STRINGS.undo, callback: undo});
     });
   }
 

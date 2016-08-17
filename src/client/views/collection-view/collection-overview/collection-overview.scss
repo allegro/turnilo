@@ -32,6 +32,33 @@
       height: 12vw;
     }
   }
+
+  &.empty {
+    height: 100%;
+    color: $text-lighter;
+    text-align: center;
+
+    .container {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+
+      .svg-icon {
+        width: 80px;
+
+        path {
+          fill: $text-lighter;
+        }
+      }
+
+      .placeholder {
+        font-size: 18px;
+        font-style: italic;
+        margin-top: 10px;
+      }
+    }
+  }
 }
 
 @media all and (max-width: 1800px) {

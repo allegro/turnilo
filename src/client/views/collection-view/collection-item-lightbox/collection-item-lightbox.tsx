@@ -18,11 +18,12 @@ require('./collection-item-lightbox.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import * as Q from 'q';
 
 import { STRINGS } from '../../../config/constants';
 import { isInside, classNames } from '../../../utils/dom/dom';
 
-import { SvgIcon, Notifier, GlobalEventListener, BodyPortal, GoldenCenter, BubbleMenu, ImmutableInput } from '../../../components/index';
+import { SvgIcon, GlobalEventListener, BodyPortal, GoldenCenter, BubbleMenu, ImmutableInput } from '../../../components/index';
 import { Collection, CollectionItem, VisualizationProps, Stage, Essence } from '../../../../common/models/index';
 
 import { COLLECTION_ITEM as LABELS } from '../../../../common/models/labels';
@@ -34,7 +35,7 @@ export interface CollectionItemLightboxProps extends React.Props<any> {
   itemId?: string;
   onEdit?: (collection: Collection, collectionItem: CollectionItem) => void;
   onDelete?: (collection: Collection, collectionItem: CollectionItem) => void;
-  onChange?: (collection: Collection, collectionItem: CollectionItem) => void;
+  onChange?: (collection: Collection, collectionItem: CollectionItem) => Q.Promise<any>;
 }
 
 export interface CollectionItemLightboxState {
@@ -202,13 +203,13 @@ export class CollectionItemLightbox extends React.Component<CollectionItemLightb
     const { collection } = this.props;
     const { tempItem } = this.state;
 
-    this.setState({
-      item: tempItem,
-      tempItem: null,
-      editionMode: false
+    this.props.onChange(collection, tempItem).then(() => {
+      this.setState({
+        item: tempItem,
+        tempItem: null,
+        editionMode: false
+      });
     });
-
-    this.props.onChange(collection, tempItem);
   }
 
   renderHeadBand(): JSX.Element {

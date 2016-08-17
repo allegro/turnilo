@@ -18,6 +18,7 @@ require('./collection-overview.css');
 
 import * as React from 'react';
 import { Collection, CollectionItem } from '../../../../common/models/index';
+import { SvgIcon, DOMHighlighter } from '../../../components/index';
 
 import { CollectionItemCard } from '../collection-item-card/collection-item-card';
 
@@ -143,10 +144,23 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     />;
   }
 
+  renderEmpty() {
+    return <div
+      className="collection-overview empty"
+    >
+    <div className="container">
+      <SvgIcon svg={require(`../../../icons/full-collection.svg`)}/>
+      <div className="placeholder">There are no views in this collection</div>
+    </div>
+    </div>;
+  }
+
   render() {
     const { collection } = this.props;
 
     if (!collection) return null;
+
+    if (!collection.items.length) return this.renderEmpty();
 
     return <div
       className="collection-overview"

@@ -37,7 +37,7 @@ export interface NotificationCardState {
   timerExpired?: boolean;
 }
 
-const DEFAULT_DURATION = 1; // seconds
+const DEFAULT_DURATION = 6; // seconds
 
 export class NotificationCard extends React.Component<NotificationCardProps, NotificationCardState> {
   private timeoutID: number;
@@ -112,13 +112,13 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     if (this.timeoutID !== undefined) window.clearTimeout(this.timeoutID);
   }
 
-  onMouseEnter() {
+  onMouseOver() {
     this.setState({
       hovered: true
     });
   }
 
-  onMouseExit() {
+  onMouseLeave() {
     this.setState({
       hovered: false
     });
@@ -148,8 +148,8 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     return <div
       style={{top}}
       onClick={onClick}
-      onMouseOver={this.onMouseEnter.bind(this)}
-      onMouseLeave={this.onMouseExit.bind(this)}
+      onMouseOver={this.onMouseOver.bind(this)}
+      onMouseLeave={this.onMouseLeave.bind(this)}
       className={classNames(`notification-card ${priority} ${rowsClass}`, {appearing, disappearing, muted})}
      >
       <div className="title">{title}</div>

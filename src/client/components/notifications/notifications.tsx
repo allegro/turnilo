@@ -66,8 +66,8 @@ export class Notifier {
     Notifier.create({title, message, priority: 'failure'});
   }
 
-  public static success(title: string, message?: string, duration?: number, action?: NotificationAction) {
-    Notifier.create({title, message, priority: 'success', duration, action});
+  public static success(title: string, action?: NotificationAction) {
+    Notifier.create({title, priority: 'success', action});
   }
 
   public static subscribe(callback: (notifications: Notification[]) => void) {
@@ -153,13 +153,10 @@ export class Notifications extends React.Component<NotificationsProps, Notificat
     var cumuledHeight = 0;
 
     return this.state.notifications.map((n, i) => {
-      var top = cumuledHeight;
+      const { title, message, action } = n;
+      const top = cumuledHeight;
 
-      if (n.title && n.message) {
-        cumuledHeight += 60 + 5;
-      } else {
-        cumuledHeight += 30 + 5;
-      }
+      cumuledHeight += [title, message, action].filter(Boolean).length * 30 + 5;
 
       return <NotificationCard model={n} key={n.id} top={top}/>;
     });

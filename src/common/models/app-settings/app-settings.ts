@@ -211,7 +211,6 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     var newCollections = value.collections.concat();
     newCollections.splice(index, 1);
 
-    console.log(newCollections);
     value.collections = newCollections;
     return new AppSettings(value);
   }

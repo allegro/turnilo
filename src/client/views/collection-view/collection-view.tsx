@@ -43,7 +43,7 @@ export interface CollectionViewProps extends React.Props<any> {
   delegate?: {
     updateCollection: (collection: Collection) => Q.Promise<any>;
     deleteCollection: (collection: Collection) => Q.Promise<any>;
-    updateItem: (collection: Collection, collectionItem: CollectionItem) => void;
+    updateItem: (collection: Collection, collectionItem: CollectionItem) => Q.Promise<any>;
     editItem: (collection: Collection, collectionItem: CollectionItem) => void;
     createItem: (collection: Collection, dataCube: DataCube) => void;
     deleteItem: (collection: Collection, collectionItem: CollectionItem) => void;

@@ -34,6 +34,7 @@ export * from './dimension-actions-menu/dimension-actions-menu';
 export * from './dimension-list-tile/dimension-list-tile';
 export * from './dimension-measure-panel/dimension-measure-panel';
 export * from './dimension-tile/dimension-tile';
+export * from './dom-highlighter/dom-highlighter';
 export * from './drop-indicator/drop-indicator';
 export * from './dropdown/dropdown';
 export * from './fancy-drag-indicator/fancy-drag-indicator';

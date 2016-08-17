@@ -31,9 +31,22 @@
     margin-bottom: 8px;
   }
 
-  input, .input {
+  input, .input, .checkbox {
     &:not(.actionable) {
       margin-bottom: 25px;
+    }
+  }
+
+  .checkbox {
+    height: 20px;
+    width: 100%;
+
+    .label {
+      @extend %input-top-label;
+
+      position: absolute;
+      left: 25px;
+      top: 5px;
     }
   }
 }

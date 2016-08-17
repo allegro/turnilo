@@ -3,11 +3,13 @@ require('./add-collection-item-modal.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Collection, Essence, CollectionItem, DataCube } from '../../../common/models/index';
+import { Collection, Essence, CollectionItem, DataCube, SortOn } from '../../../common/models/index';
 import { classNames } from '../../utils/dom/dom';
 import { generateUniqueName } from '../../../common/utils/string/string';
 
-import { FormLabel, Button, ImmutableInput, Modal, Dropdown } from '../index';
+import { FormLabel, Button, ImmutableInput, Modal, Dropdown, Checkbox } from '../index';
+
+import { STRINGS } from '../../config/constants';
 
 import { COLLECTION_ITEM as LABELS } from '../../../common/models/labels';
 
@@ -33,6 +35,7 @@ export interface AddCollectionItemModalState {
   errors?: any;
   canSave?: boolean;
   collectionMode?: CollectionMode;
+  convertToFixedTime?: boolean;
 }
 
 export class AddCollectionItemModal extends React.Component<AddCollectionItemModalProps, AddCollectionItemModalState> {
@@ -44,6 +47,26 @@ export class AddCollectionItemModal extends React.Component<AddCollectionItemMod
       errors: {},
       collectionMode: 'none'
     };
+  }
+
+  getTitleFromEssence(essence: Essence): string {
+    var splits = essence.splits;
+
+    if (splits.length() === 0) return essence.selectedMeasures.map(m => {
+      return essence.dataCube.getMeasure(m).title;
+    }).join(', ');
+
+    var dimensions: string[] = [];
+    var measures: string[] = [];
+
+    splits.forEach(split => {
+      let dimension = split.getDimension(essence.dataCube.dimensions);
+      let sortOn = SortOn.fromSortAction(split.sortAction, essence.dataCube, dimension);
+      dimensions.push(dimension.title);
+      measures.push(SortOn.getTitle(sortOn));
+    });
+
+    return `${dimensions.join(', ')} by ${measures.join(', ')}`;
   }
 
   initFromProps(props: AddCollectionItemModalProps) {
@@ -69,7 +92,7 @@ export class AddCollectionItemModal extends React.Component<AddCollectionItemMod
       collectionMode,
       collectionItem: new CollectionItem({
         name: generateUniqueName('i', this.isItemNameUnique.bind(this, selectedCollection)),
-        title: 'New item',
+        title: this.getTitleFromEssence(essence),
         description: '',
         essence,
         group: null,
@@ -224,29 +247,56 @@ export class AddCollectionItemModal extends React.Component<AddCollectionItemMod
     }
   }
 
+  toggleConvertToFixed() {
+    const { essence } = this.props;
+    var { collectionItem } = this.state;
+    const convertToFixedTime = !this.state.convertToFixedTime;
+
+    if (convertToFixedTime && essence.filter.isRelative()) {
+      collectionItem = collectionItem.changeEssence(essence.convertToSpecificFilter());
+    } else {
+      collectionItem = collectionItem.changeEssence(essence);
+    }
+
+    this.setState({
+      convertToFixedTime,
+      collectionItem
+    });
+  }
+
   render(): JSX.Element {
-    const { canSave, errors, collectionItem, collectionMode } = this.state;
-    const { collections, onCancel } = this.props;
+    const { canSave, errors, collectionItem, collectionMode, convertToFixedTime } = this.state;
+    const { collections, onCancel, essence } = this.props;
 
     if (!collectionItem) return null;
 
     var makeLabel = FormLabel.simpleGenerator(LABELS, errors, true);
     var makeTextInput = ImmutableInput.simpleGenerator(collectionItem, this.onChange.bind(this));
 
+    const isRelative = essence.filter.isRelative();
+
     return <Modal
       className="add-collection-item-modal"
-      title={collectionItem.title}
+      title={STRINGS.addNewTile}
       onClose={onCancel}
       onEnter={this.save.bind(this)}
     >
       <form className="general vertical">
-        {this.renderCollectionPicker()}
+        { this.renderCollectionPicker() }
 
-        {makeLabel('title')}
-        {makeTextInput('title', /^.+$/, collectionMode !== 'adding')}
+        { makeLabel('title') }
+        { makeTextInput('title', /^.+$/, collectionMode !== 'adding') }
 
-        {makeLabel('description')}
-        {makeTextInput('description')}
+        { makeLabel('description') }
+        { makeTextInput('description', /^.*$/) }
+
+        { isRelative ?
+          <Checkbox
+            selected={convertToFixedTime}
+            onClick={this.toggleConvertToFixed.bind(this)}
+            label={STRINGS.convertToFixedTime}
+          />
+        : null }
 
       </form>
 

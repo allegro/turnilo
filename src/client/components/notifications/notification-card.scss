@@ -17,12 +17,13 @@
 @import '../../imports';
 
 .notification-card {
-  @include bounce(top);
+  @include linear(top, opacity);
 
   position: absolute;
   min-width: 250px;
   padding: 10px 20px;
   transform: translate(-50%, 0);
+  opacity: 0;
 
   background-color: $background-brand-light;
   color: $white;
@@ -30,6 +31,10 @@
 
   text-align: center;
   cursor: pointer;
+
+  &:not(.appearing):not(.disappearing) {
+    opacity: 1;
+  }
 
   &.rows-1 {
     height: 30px;

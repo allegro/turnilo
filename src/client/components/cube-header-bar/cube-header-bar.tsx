@@ -26,7 +26,7 @@ import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, DataCube, User, Customization, ExternalView } from '../../../common/models/index';
 
-import { HilukMenu, AutoRefreshMenu, UserMenu, SettingsMenu, AddCollectionItemModal } from '../index';
+import { HilukMenu, AutoRefreshMenu, UserMenu, SettingsMenu } from '../index';
 
 export interface CubeHeaderBarProps extends React.Props<any> {
   clicker: Clicker;

@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-@import '../../../../node_modules/laborer/common/style/tech-mixins';
-@import '../../config/constants';
+@mixin linear($properties...) {
+  $result: ();
+  @each $property in $properties {
+    $result: append($result, $property 0.2s, comma);
+  }
 
-@import './variables';
-@import './media-queries';
-
-@import './linear-transition';
-@import './bounce';
-
-@import './form';
-@import './menu-cont';
-@import './bubble-cont';
-@import './header-bar';
-@import './side-by-side';
-@import './button';
-@import './input';
-@import './dimension-item';
-@import './modal-cont';
-@import './module';
-@import './indicator-field';
-@import './white-shadow';
-@import './overflow';
+  transition: $result;
+}
