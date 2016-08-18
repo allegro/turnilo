@@ -21,7 +21,8 @@ import { Collection, Stage, DataCube, User, Customization } from '../../../commo
 import { STRINGS } from '../../config/constants';
 import { Fn } from '../../../common/utils/general/general';
 
-import { HomeHeaderBar, SvgIcon, AddCollectionModal } from '../../components/index';
+import { AddCollectionModal } from '../../modals/index';
+import { HomeHeaderBar, SvgIcon } from '../../components/index';
 import { ItemCard } from './item-card/item-card';
 
 export interface HomeViewProps extends React.Props<any> {
@@ -74,7 +75,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
     return <ItemCard
       key={item.name}
       title={item.title}
-      count={Collection.isCollection(item) ? item.items.length : undefined}
+      count={Collection.isCollection(item) ? item.tiles.length : undefined}
       description={item.description}
       icon={item instanceof DataCube ? 'full-cube' : 'full-collection'}
       onClick={this.goToItem.bind(this, item)}

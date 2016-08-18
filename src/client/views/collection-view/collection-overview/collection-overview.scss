@@ -23,7 +23,7 @@
   padding-top: 50px;
   padding-bottom: 40px;
 
-  .collection-item-card {
+  .collection-tile-card {
     display: inline-block;
     width: 33.3333333333%;
     padding: 10px;
@@ -63,7 +63,7 @@
 
 @media all and (max-width: 1800px) {
   .collection-overview {
-    .collection-item-card {
+    .collection-tile-card {
       width: 50%;
 
       .content {
@@ -77,7 +77,7 @@
   .collection-overview {
     width: 86%;
 
-    .collection-item-card {
+    .collection-tile-card {
       padding: 8px;
 
       .content {
@@ -91,7 +91,7 @@
   .collection-overview {
     width: 80%;
 
-    .collection-item-card {
+    .collection-tile-card {
       width: 100%;
 
       .content {
@@ -105,7 +105,7 @@
   .collection-overview {
     width: 86%;
 
-    .collection-item-card {
+    .collection-tile-card {
       width: 100%;
     }
   }

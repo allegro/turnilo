@@ -23,7 +23,7 @@ import { Timezone } from 'chronoshift';
 import { classNames } from '../../utils/dom/dom';
 import { Fn } from '../../../common/utils/general/general';
 import { Colors, Clicker, Essence, Filter, FilterClause, Stage, Measure,
-  VisualizationProps, Collection, CollectionItem, User, Customization } from '../../../common/models/index';
+  VisualizationProps, Collection, CollectionTile, User, Customization } from '../../../common/models/index';
 
 import * as localStorage from '../../utils/local-storage/local-storage';
 import { STRINGS } from "../../config/constants";
@@ -62,7 +62,7 @@ export interface LinkViewProps extends React.Props<any> {
 }
 
 export interface LinkViewState {
-  linkItem?: CollectionItem;
+  linkItem?: CollectionTile;
   essence?: Essence;
   visualizationStage?: Stage;
   menuStage?: Stage;
@@ -131,7 +131,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
 
     var linkItem = linkViewConfig.findByName(hash);
     if (!linkItem) {
-      linkItem = linkViewConfig.getDefaultItem();
+      linkItem = linkViewConfig.getDefaultTile();
       updateViewHash(linkItem.name);
     }
 
@@ -184,7 +184,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     });
   }
 
-  selectLinkItem(linkItem: CollectionItem) {
+  selectLinkItem(linkItem: CollectionTile) {
     const { essence } = this.state;
     var newEssence = linkItem.essence;
 
@@ -269,7 +269,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     var groupId = 0;
     var lastGroup: string = null;
     var items: JSX.Element[] = [];
-    linkViewConfig.items.forEach(li => {
+    linkViewConfig.tiles.forEach(li => {
       // Add a group header if needed
       if (lastGroup !== li.group) {
         items.push(<div

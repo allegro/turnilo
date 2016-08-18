@@ -18,23 +18,26 @@ import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-c
 import { findByName } from 'plywood';
 
 import { Manifest } from '../manifest/manifest';
-import { CollectionItem, CollectionItemJS, CollectionItemContext } from '../collection-item/collection-item';
+import { CollectionTile, CollectionTileJS, CollectionTileContext } from '../index';
 
 export interface CollectionValue {
   name: string;
   title?: string;
   description?: string;
-  items: CollectionItem[];
+  tiles: CollectionTile[];
 }
 
 export interface CollectionJS {
   name: string;
   title?: string;
   description?: string;
-  items: CollectionItemJS[];
+  tiles?: CollectionTileJS[];
+
+  // Backward comp, this shouldn't be used anymore
+  items?: CollectionTileJS[];
 }
 
-export type CollectionContext = CollectionItemContext;
+export type CollectionContext = CollectionTileContext;
 
 var check: Class<CollectionValue, CollectionJS>;
 export class Collection implements Instance<CollectionValue, CollectionJS> {
@@ -48,26 +51,28 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
 
     if (!parameters.name) throw new Error('Collection must have a name');
 
-    var items: CollectionItemJS[] = parameters.items || (parameters as any).linkItems || [];
+    var tiles: CollectionTileJS[] = parameters.tiles || parameters.items || (parameters as any).linkItems || [];
 
     return new Collection({
       title: parameters.title,
       name: parameters.name,
       description: parameters.description,
-      items: items.map(linkItem => CollectionItem.fromJS(linkItem, context))
+      tiles: tiles.map(linkItem => CollectionTile.fromJS(linkItem, context))
     });
   }
 
   public title: string;
   public name: string;
   public description: string;
-  public items: CollectionItem[];
+  public tiles: CollectionTile[];
 
   constructor(parameters: CollectionValue) {
     this.title = parameters.title;
     this.name = parameters.name;
-    this.items = parameters.items;
+    this.tiles = parameters.tiles;
     this.description = parameters.description;
+
+    this.isNameAvailable = this.isNameAvailable.bind(this);
   }
 
   public valueOf(): CollectionValue {
@@ -75,14 +80,14 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
       title: this.title,
       name: this.name,
       description: this.description,
-      items: this.items
+      tiles: this.tiles
     };
   }
 
   public toJS(): CollectionJS {
     var o: CollectionJS = {
       name: this.name,
-      items: this.items.map(linkItem => linkItem.toJS())
+      tiles: this.tiles.map(linkItem => linkItem.toJS())
     };
 
     if (this.description) o.description = this.description;
@@ -104,26 +109,30 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
       this.title === other.title &&
       this.name === other.name &&
       this.description === other.description &&
-      immutableArraysEqual(this.items, other.items);
+      immutableArraysEqual(this.tiles, other.tiles);
   }
 
-  public getDefaultItem(): CollectionItem {
-    return this.items[0];
+  public getDefaultTile(): CollectionTile {
+    return this.tiles[0];
   }
 
-  public findByName(name: string): CollectionItem {
-    return findByName(this.items, name);
+  public findByName(name: string): CollectionTile {
+    return findByName(this.tiles, name);
   }
 
-  public deleteItem(item: CollectionItem): Collection {
-    var index = this.items.indexOf(item);
+  public isNameAvailable(name: string): boolean {
+    return !this.findByName(name);
+  }
+
+  public deleteTile(item: CollectionTile): Collection {
+    var index = this.tiles.indexOf(item);
 
     if (index === -1) return this;
 
-    var newItems = this.items.concat();
-    newItems.splice(index, 1);
+    var newTiles = this.tiles.concat();
+    newTiles.splice(index, 1);
 
-    return this.change('items', newItems);
+    return this.change('tiles', newTiles);
   }
 
   public change(propertyName: string, newValue: any): Collection {
@@ -137,29 +146,29 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
     return new Collection(v);
   }
 
-  public updateItem(item: CollectionItem): Collection {
+  public updateTile(tile: CollectionTile): Collection {
     var index = -1;
 
-    this.items.forEach(({name}, i) => {
-      if (name === item.name) {
+    this.tiles.forEach(({name}, i) => {
+      if (name === tile.name) {
         index = i;
         return;
       }
     });
 
     if (index === -1) {
-      throw new Error(`Can't add unknown item : ${item.toString()}`);
+      throw new Error(`Can't add unknown tile : ${tile.toString()}`);
     }
 
-    var newItems = this.items.concat();
+    var newTiles = this.tiles.concat();
 
-    newItems[index] = item;
+    newTiles[index] = tile;
 
-    return this.change('items', newItems);
+    return this.change('tiles', newTiles);
   }
 
-  public changeItems(items: CollectionItem[]): Collection {
-    return this.change('items', items);
+  public changeTiles(tiles: CollectionTile[]): Collection {
+    return this.change('tiles', tiles);
   }
 
   public changeTitle(title: string): Collection {

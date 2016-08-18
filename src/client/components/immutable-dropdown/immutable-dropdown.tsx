@@ -22,6 +22,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure, ListItem } from '../../../common/models/index';
+import { ChangeFn } from '../../utils/immutable-form-delegate/immutable-form-delegate';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Dropdown } from '../dropdown/dropdown';
 
@@ -34,7 +35,7 @@ export interface ImmutableDropdownProps<T> extends React.Props<any> {
   equal: (a: T, b: T) => boolean;
   renderItem: (a: T) => string;
   keyItem: (a: T) => any;
-  onChange: (newItem: any, isValid: boolean, path: string) => void;
+  onChange: ChangeFn;
 }
 
 export interface ImmutableDropdownState {
@@ -48,7 +49,7 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
     return ImmutableDropdown as { new (): ImmutableDropdown<U>; };
   }
 
-  static simpleGenerator(instance: any, changeFn: (newItem: any, isValid: boolean, path: string) => void) {
+  static simpleGenerator(instance: any, changeFn: ChangeFn) {
     return (name: string, items: ListItem[]) => {
       let MyDropDown = ImmutableDropdown.specialize<ListItem>();
 
@@ -74,7 +75,8 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
     onChange(
       ImmutableUtils.setProperty(instance, path, keyItem(newSelectedItem)),
       true,
-      path
+      path,
+      undefined
     );
   }
 

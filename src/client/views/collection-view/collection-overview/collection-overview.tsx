@@ -17,10 +17,10 @@
 require('./collection-overview.css');
 
 import * as React from 'react';
-import { Collection, CollectionItem } from '../../../../common/models/index';
-import { SvgIcon, DOMHighlighter } from '../../../components/index';
+import { Collection, CollectionTile } from '../../../../common/models/index';
+import { SvgIcon } from '../../../components/index';
 
-import { CollectionItemCard } from '../collection-item-card/collection-item-card';
+import { CollectionTileCard } from '../collection-tile-card/collection-tile-card';
 
 import { setDragGhost, classNames, getYFromEvent, getXFromEvent } from '../../../utils/dom/dom';
 
@@ -28,13 +28,13 @@ export interface CollectionOverviewProps extends React.Props<any> {
   collection: Collection;
   collectionId?: string;
   onReorder?: (oldIndex: number, newIndex: number) => void;
-  onDelete?: (collection: Collection, item: CollectionItem) => void;
+  onDelete?: (collection: Collection, tile: CollectionTile) => void;
   editionMode?: boolean;
 }
 
 export interface CollectionOverviewState {
   collection?: Collection;
-  draggedItem?: CollectionItem;
+  draggedTile?: CollectionTile;
   dropIndex?: number;
   dropAfter?: boolean;
 }
@@ -47,18 +47,18 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     };
   }
 
-  onExpand(item: CollectionItem) {
-    window.location.hash = `#collection/${this.props.collection.name}/${item.name}`;
+  onExpand(tile: CollectionTile) {
+    window.location.hash = `#collection/${this.props.collection.name}/${tile.name}`;
   }
 
-  dragStart(item: CollectionItem, e: __React.DragEvent) {
-    this.setState({draggedItem: item});
+  dragStart(tile: CollectionTile, e: __React.DragEvent) {
+    this.setState({draggedTile: tile});
 
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'move';
-    dataTransfer.setData("text/html", item.title);
+    dataTransfer.setData("text/html", tile.title);
 
-    setDragGhost(dataTransfer, item.title);
+    setDragGhost(dataTransfer, tile.title);
   }
 
   shouldDropAfter(e: __React.DragEvent): boolean {
@@ -66,18 +66,18 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     return getXFromEvent(e as any) - targetRect.left >= targetRect.width / 2;
   }
 
-  dragOver(item: CollectionItem, e: __React.DragEvent) {
+  dragOver(tile: CollectionTile, e: __React.DragEvent) {
     e.preventDefault();
 
     const { collection } = this.props;
-    const { draggedItem, dropIndex, dropAfter } = this.state;
+    const { draggedTile, dropIndex, dropAfter } = this.state;
 
-    const items = collection.items;
+    const tiles = collection.tiles;
 
-    if (dropIndex === -1 && item === draggedItem) return;
+    if (dropIndex === -1 && tile === draggedTile) return;
 
-    var sourceIndex = items.indexOf(draggedItem);
-    var targetIndex = items.indexOf(item);
+    var sourceIndex = tiles.indexOf(draggedTile);
+    var targetIndex = tiles.indexOf(tile);
     var newDropIndex = targetIndex;
     var shouldDropAfter = this.shouldDropAfter(e);
 
@@ -106,39 +106,39 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
 
   dragEnd(e: __React.DragEvent) {
     const { onReorder, collection } = this.props;
-    var { draggedItem, dropIndex, dropAfter } = this.state;
+    var { draggedTile, dropIndex, dropAfter } = this.state;
 
     dropIndex = dropAfter || dropIndex === 0 ? dropIndex : dropIndex - 1;
 
-    if (dropIndex > -1) onReorder(collection.items.indexOf(draggedItem), dropIndex);
+    if (dropIndex > -1) onReorder(collection.tiles.indexOf(draggedTile), dropIndex);
 
     this.setState({
-      draggedItem: undefined,
+      draggedTile: undefined,
       dropIndex: -1,
       dropAfter: undefined
     });
   }
 
-  renderItem(item: CollectionItem, i: number): JSX.Element {
+  renderTile(tile: CollectionTile, i: number): JSX.Element {
     const { editionMode, onDelete, collection } = this.props;
-    const { draggedItem, dropIndex, dropAfter } = this.state;
+    const { draggedTile, dropIndex, dropAfter } = this.state;
 
-    const onDeleteClick = (item: CollectionItem) => onDelete(collection, item);
+    const onDeleteClick = (tile: CollectionTile) => onDelete(collection, tile);
 
     const classes = classNames({
-      dragged: draggedItem === item,
+      dragged: draggedTile === tile,
       'drop-before': dropIndex === i && !dropAfter,
       'drop-after': dropIndex === i && dropAfter
     });
 
-    return <CollectionItemCard
+    return <CollectionTileCard
       className={classes}
-      item={item}
-      key={item.name}
+      tile={tile}
+      key={tile.name}
       onExpand={this.onExpand.bind(this)}
-      onDragOver={this.dragOver.bind(this, item)}
+      onDragOver={this.dragOver.bind(this, tile)}
       draggable={editionMode}
-      onDragStart={this.dragStart.bind(this, item)}
+      onDragStart={this.dragStart.bind(this, tile)}
       onDelete={onDeleteClick}
       editionMode={editionMode}
     />;
@@ -160,14 +160,14 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
 
     if (!collection) return null;
 
-    if (!collection.items.length) return this.renderEmpty();
+    if (!collection.tiles.length) return this.renderEmpty();
 
     return <div
       className="collection-overview"
       onDragEnd={this.dragEnd.bind(this)}
     >
-     {collection.items.map(this.renderItem, this)}
-     <div className="collection-item-card empty"/>
+     {collection.tiles.map(this.renderTile, this)}
+     <div className="collection-tile-card empty"/>
     </div>;
   }
 }

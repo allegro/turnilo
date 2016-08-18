@@ -56,13 +56,13 @@ if (config.appSettings.dataCubes.length || view === '#settings') {
     './utils/ajax/ajax',
     '../common/models/index',
     '../common/manifests/index',
-    './views/pivot-application/pivot-application'
+    './applications/pivot-application/pivot-application'
   ], (require) => {
     const WallTime = require('chronoshift').WallTime;
     const Ajax = require('./utils/ajax/ajax').Ajax;
     const AppSettings = require('../common/models/index').AppSettings;
     const MANIFESTS = require('../common/manifests/index').MANIFESTS;
-    const PivotApplication = require('./views/pivot-application/pivot-application').PivotApplication;
+    const PivotApplication = require('./applications/pivot-application/pivot-application').PivotApplication;
 
     Ajax.version = version;
 
@@ -95,9 +95,9 @@ if (config.appSettings.dataCubes.length || view === '#settings') {
 
 } else {
   require.ensure([
-    './components/no-data-cubes-application/no-data-cubes-application'
+    './applications/no-data-cubes-application/no-data-cubes-application'
   ], (require) => {
-    var NoDataCubesApplication = require('./components/no-data-cubes-application/no-data-cubes-application').NoDataCubesApplication;
+    var NoDataCubesApplication = require('./applications/no-data-cubes-application/no-data-cubes-application').NoDataCubesApplication;
 
     ReactDOM.render(
       React.createElement(NoDataCubesApplication, {}),

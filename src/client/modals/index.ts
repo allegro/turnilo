@@ -14,26 +14,10 @@
  * limitations under the License.
  */
 
-@import '../../imports';
-
-.collection-view {
-  @include unpin-full(0, 0, 0, 0);
-
-  .main-panel {
-    @include unpin-full(40px, 0, 0, 0);
-    overflow: auto;
-  }
-
-  .collection-items {
-    display: flex;
-    width: 80%;
-    margin: 0 auto;
-    flex-wrap: wrap;
-
-    .collection-tile-card {
-      flex: 1 0;
-
-      flex-basis: 50%;
-    }
-  }
-}
+export * from './about-modal/about-modal';
+export * from './add-collection-modal/add-collection-modal';
+export * from './add-collection-tile-modal/add-collection-tile-modal';
+export * from './dimension-modal/dimension-modal';
+export * from './measure-modal/measure-modal';
+export * from './raw-data-modal/raw-data-modal';
+export * from './remove-modal/remove-modal';

@@ -20,14 +20,10 @@ import * as React from 'react';
 import { Fn } from '../../../../common/utils/general/general';
 import { classNames } from '../../../utils/dom/dom';
 
-import { SvgIcon } from '../../../components/svg-icon/svg-icon';
-import { FormLabel } from '../../../components/form-label/form-label';
-import { Button } from '../../../components/button/button';
-
 import { AppSettings, Cluster, DataCube} from '../../../../common/models/index';
 
-import { SimpleTable, SimpleTableColumn, SimpleTableAction } from '../../../components/simple-table/simple-table';
-import { RemoveModal } from '../remove-modal/remove-modal';
+import { SimpleTable, SimpleTableColumn, SimpleTableAction, SvgIcon, FormLabel, Button } from '../../../components/index';
+import { RemoveModal } from '../../../modals/index';
 
 export interface DataCubesProps extends React.Props<any> {
   settings?: AppSettings;

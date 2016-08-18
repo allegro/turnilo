@@ -30,48 +30,33 @@ import { GENERAL as LABELS } from '../../../../common/models/labels';
 
 import { AppSettings, AppSettingsJS } from '../../../../common/models/index';
 
+import { ImmutableFormDelegate, ImmutableFormState } from '../../../utils/immutable-form-delegate/immutable-form-delegate';
+
 export interface GeneralProps extends React.Props<any> {
   settings?: AppSettings;
   onSave?: (settings: AppSettings) => void;
 }
 
-export interface GeneralState {
-  newSettings?: AppSettings;
-  hasChanged?: boolean;
-  errors?: any;
-}
+export class General extends React.Component<GeneralProps, ImmutableFormState<AppSettings>> {
 
-export class General extends React.Component<GeneralProps, GeneralState> {
+  private delegate: ImmutableFormDelegate<AppSettings>;
+
   constructor() {
     super();
 
-    this.state = {hasChanged: false, errors: {}};
+    this.delegate = new ImmutableFormDelegate<AppSettings>(this);
   }
 
   componentWillReceiveProps(nextProps: GeneralProps) {
     if (nextProps.settings) this.setState({
-      newSettings: nextProps.settings,
-      hasChanged: false,
+      newInstance: nextProps.settings,
       errors: {}
-    });
-  }
-
-  onChange(newSettings: AppSettings, isValid: boolean, path: string, error: string) {
-    const { errors } = this.state;
-    const settings: AppSettings = this.props.settings;
-
-    errors[path] = isValid ? false : error;
-
-    this.setState({
-      newSettings,
-      errors,
-      hasChanged: !settings.equals(newSettings)
     });
   }
 
   save() {
     if (this.props.onSave) {
-      this.props.onSave(this.state.newSettings);
+      this.props.onSave(this.state.newInstance);
     }
   }
 
@@ -81,17 +66,17 @@ export class General extends React.Component<GeneralProps, GeneralState> {
   }
 
   render() {
-    const { hasChanged, newSettings, errors } = this.state;
+    const { canSave, newInstance, errors } = this.state;
 
-    if (!newSettings) return null;
+    if (!newInstance) return null;
 
     var makeLabel = FormLabel.simpleGenerator(LABELS, errors);
-    var makeTextInput = ImmutableInput.simpleGenerator(newSettings, this.onChange.bind(this));
+    var makeTextInput = ImmutableInput.simpleGenerator(newInstance, this.delegate.onChange);
 
     return <div className="general">
       <div className="title-bar">
         <div className="title">General</div>
-        {hasChanged ? <Button className="save" title="Save" type="primary" onClick={this.save.bind(this)}/> : null}
+        {canSave ? <Button className="save" title="Save" type="primary" onClick={this.save.bind(this)}/> : null}
       </div>
       <div className="content">
         <form className="vertical">
@@ -100,9 +85,9 @@ export class General extends React.Component<GeneralProps, GeneralState> {
 
           {makeLabel('customization.timezones')}
           <ImmutableInput
-            instance={newSettings}
+            instance={newInstance}
             path={'customization.timezones'}
-            onChange={this.onChange.bind(this)}
+            onChange={this.delegate.onChange}
 
             valueToString={(value: any) => value ? value.join(', ') : undefined}
             stringToValue={this.parseTimezones.bind(this)}

@@ -113,7 +113,7 @@ export class CollectionHeaderBar extends React.Component<CollectionHeaderBarProp
   }
 
   goToSettings() {
-    window.location.hash = '#/settings';
+    window.location.hash = '#settings';
   }
 
   renderSettingsMenu() {

@@ -17,7 +17,7 @@
 import * as yaml from 'js-yaml';
 
 import { $, AttributeInfo, RefExpression } from 'plywood';
-import { DataCube, Dimension, Measure, Cluster, AppSettings, Collection, CollectionItem } from '../../../common/models/index';
+import { DataCube, Dimension, Measure, Cluster, AppSettings, Collection, CollectionTile } from '../../../common/models/index';
 import { DATA_CUBE, DIMENSION, MEASURE, CLUSTER, COLLECTION, COLLECTION_ITEM } from '../../../common/models/labels';
 
 function spaces(n: number) {
@@ -153,14 +153,14 @@ export function collectionToYAML(collection: Collection, withComments: boolean):
     .add('description')
     ;
 
-  lines.push('items:');
-  lines = lines.concat.apply(lines, collection.items.map(collectionItemToYAML));
+  lines.push('tiles:');
+  lines = lines.concat.apply(lines, collection.tiles.map(CollectionTileToYAML));
 
   lines.push('');
   return yamlObject(lines);
 }
 
-export function collectionItemToYAML(item: CollectionItem): string[] {
+export function CollectionTileToYAML(item: CollectionTile): string[] {
   var lines: string[] = [
     `name: ${item.name}`
   ];

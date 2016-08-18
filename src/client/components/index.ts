@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-export * from './about-modal/about-modal';
-export * from './add-collection-modal/add-collection-modal';
-export * from './add-collection-item-modal/add-collection-item-modal';
 export * from './auto-refresh-menu/auto-refresh-menu';
 export * from './body-portal/body-portal';
 export * from './bubble-menu/bubble-menu';
@@ -34,7 +31,6 @@ export * from './dimension-actions-menu/dimension-actions-menu';
 export * from './dimension-list-tile/dimension-list-tile';
 export * from './dimension-measure-panel/dimension-measure-panel';
 export * from './dimension-tile/dimension-tile';
-export * from './dom-highlighter/dom-highlighter';
 export * from './drop-indicator/drop-indicator';
 export * from './dropdown/dropdown';
 export * from './fancy-drag-indicator/fancy-drag-indicator';
@@ -61,7 +57,6 @@ export * from './measures-tile/measures-tile';
 export * from './modal/modal';
 export * from './nav-list/nav-list';
 export * from './nav-logo/nav-logo';
-export * from './no-data-cubes-application/no-data-cubes-application';
 export * from './notifications/notifications';
 export * from './number-filter-menu/number-filter-menu';
 export * from './number-range-picker/number-range-picker';
@@ -69,7 +64,6 @@ export * from './pinboard-measure-tile/pinboard-measure-tile';
 export * from './pinboard-panel/pinboard-panel';
 export * from './query-error/query-error';
 export * from './range-handle/range-handle';
-export * from './raw-data-modal/raw-data-modal';
 export * from './resize-handle/resize-handle';
 export * from './router/router';
 export * from './scroller/scroller';

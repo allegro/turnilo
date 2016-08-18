@@ -16,7 +16,7 @@
 
 import { $ } from 'plywood';
 import { DataCubeMock } from "../data-cube/data-cube.mock";
-import { CollectionItemMock } from "../collection-item/collection-item.mock";
+import { CollectionTileMock } from "../collection-tile/collection-tile.mock";
 import { Collection, CollectionJS, CollectionContext } from './collection';
 
 export class CollectionMock {
@@ -24,8 +24,8 @@ export class CollectionMock {
     return {
       title: 'The Links Will Rise Again!',
       name: 'the_links_will_rise_again',
-      items: [
-        CollectionItemMock.testOneJS()
+      tiles: [
+        CollectionTileMock.testOneJS()
       ]
     };
   }
@@ -34,15 +34,15 @@ export class CollectionMock {
     return {
       title: 'The Links Will Be Reloaded!',
       name: 'the_links_will_be_reloaded',
-      items: [
-        CollectionItemMock.testOneJS(),
-        CollectionItemMock.testTwoJS()
+      tiles: [
+        CollectionTileMock.testOneJS(),
+        CollectionTileMock.testTwoJS()
       ]
     };
   }
 
   static getContext(): CollectionContext {
-    return CollectionItemMock.getContext();
+    return CollectionTileMock.getContext();
   }
 
   static testOneOnly() {

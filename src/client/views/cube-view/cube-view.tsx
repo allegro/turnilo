@@ -28,9 +28,11 @@ import { Colors, Clicker, DataCube, Dimension, Essence, Filter, Stage, Measure,
   Customization, Manifest, ViewSupervisor, Device, DeviceSize } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
 
+import { RawDataModal } from '../../modals/index';
+
 import { CubeHeaderBar, SupervisedCubeHeaderBar, DimensionMeasurePanel,
   FilterTile, SplitTile, VisSelector, ManualFallback, DropIndicator,
-  PinboardPanel, RawDataModal, ResizeHandle,
+  PinboardPanel, ResizeHandle,
   GlobalEventListener } from '../../components/index';
 
 import { getVisualizationComponent } from '../../visualizations/index';
@@ -207,9 +209,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       });
     }
 
-    require.ensure(['../../components/raw-data-modal/raw-data-modal'], (require) => {
+    require.ensure(['../../modals/raw-data-modal/raw-data-modal'], (require) => {
       this.setState({
-        RawDataModalAsync: require('../../components/raw-data-modal/raw-data-modal').RawDataModal
+        RawDataModalAsync: require('../../modals/raw-data-modal/raw-data-modal').RawDataModal
       });
     }, 'raw-data-modal');
   }

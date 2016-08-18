@@ -16,24 +16,9 @@
 
 @import '../../imports';
 
-.collection-view {
-  @include unpin-full(0, 0, 0, 0);
-
-  .main-panel {
-    @include unpin-full(40px, 0, 0, 0);
-    overflow: auto;
-  }
-
-  .collection-items {
-    display: flex;
-    width: 80%;
-    margin: 0 auto;
-    flex-wrap: wrap;
-
-    .collection-tile-card {
-      flex: 1 0;
-
-      flex-basis: 50%;
-    }
+.measure-modal {
+  form {
+    @extend %form;
+    width: 100%;
   }
 }

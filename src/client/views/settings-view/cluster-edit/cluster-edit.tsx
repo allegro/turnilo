@@ -27,6 +27,8 @@ import { Button } from '../../../components/button/button';
 import { ImmutableInput } from '../../../components/immutable-input/immutable-input';
 import { ImmutableDropdown } from '../../../components/immutable-dropdown/immutable-dropdown';
 
+import { ImmutableFormDelegate, ImmutableFormState } from '../../../utils/immutable-form-delegate/immutable-form-delegate';
+
 import { AppSettings, Cluster, ListItem } from '../../../../common/models/index';
 
 import { CLUSTER as LABELS } from '../../../../common/models/labels';
@@ -43,19 +45,16 @@ export interface ClusterEditProps extends React.Props<any> {
   onSave: (settings: AppSettings) => void;
 }
 
-export interface ClusterEditState {
-  tempCluster?: Cluster;
-  hasChanged?: boolean;
-  canSave?: boolean;
+export interface ClusterEditState extends ImmutableFormState<Cluster> {
   cluster?: Cluster;
-  errors?: any;
 }
 
 export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditState> {
+  private delegate: ImmutableFormDelegate<Cluster>;
+
   constructor() {
     super();
-
-    this.state = {hasChanged: false, canSave: true, errors: {}};
+    this.delegate = new ImmutableFormDelegate<Cluster>(this);
   }
 
   componentWillReceiveProps(nextProps: ClusterEditProps) {
@@ -68,8 +67,7 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
     let cluster = props.settings.clusters.filter((d) => d.name === props.clusterId)[0];
 
     this.setState({
-      tempCluster: new Cluster(cluster.valueOf()),
-      hasChanged: false,
+      newInstance: new Cluster(cluster.valueOf()),
       canSave: true,
       cluster,
       errors: {}
@@ -77,16 +75,16 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
   }
 
   cancel() {
-    // Settings tempCluster to undefined resets the inputs
-    this.setState({tempCluster: undefined}, () => this.initFromProps(this.props));
+    // Settings newInstance to undefined resets the inputs
+    this.setState({newInstance: undefined}, () => this.initFromProps(this.props));
   }
 
   save() {
     const { settings } = this.props;
-    const { tempCluster, cluster } = this.state;
+    const { newInstance, cluster } = this.state;
 
     var newClusters = settings.clusters;
-    newClusters[newClusters.indexOf(cluster)] = tempCluster;
+    newClusters[newClusters.indexOf(cluster)] = newInstance;
     var newSettings = settings.changeClusters(newClusters);
 
     if (this.props.onSave) {
@@ -100,41 +98,15 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
     window.location.hash = hash.replace(`/${clusterId}`, '');
   }
 
-  onChange(newCluster: Cluster, isValid: boolean, path: string, error: string) {
-    const { cluster, errors } = this.state;
-
-    errors[path] = isValid ? false : error;
-
-    const hasChanged = !isValid || !cluster.equals(newCluster);
-
-    var canSave = true;
-    for (let key in errors) canSave = canSave && (errors[key] === false);
-
-    if (isValid) {
-      this.setState({
-        tempCluster: newCluster,
-        canSave,
-        errors,
-        hasChanged
-      });
-    } else {
-      this.setState({
-        canSave,
-        errors,
-        hasChanged
-      });
-    }
-  }
-
   renderGeneral(): JSX.Element {
-    const { tempCluster, errors } = this.state;
+    const { newInstance, errors } = this.state;
 
     var makeLabel = FormLabel.simpleGenerator(LABELS, errors);
-    var makeTextInput = ImmutableInput.simpleGenerator(tempCluster, this.onChange.bind(this));
-    var makeDropDownInput = ImmutableDropdown.simpleGenerator(tempCluster, this.onChange.bind(this));
+    var makeTextInput = ImmutableInput.simpleGenerator(newInstance, this.delegate.onChange);
+    var makeDropDownInput = ImmutableDropdown.simpleGenerator(newInstance, this.delegate.onChange);
 
-    var isDruid = tempCluster.type === 'druid';
-    var needsAuth = ['mysql', 'postgres'].indexOf(tempCluster.type) > -1;
+    var isDruid = newInstance.type === 'druid';
+    var needsAuth = ['mysql', 'postgres'].indexOf(newInstance.type) > -1;
 
     return <form className="general vertical">
       {makeLabel('host')}
@@ -180,7 +152,8 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
   }
 
   renderButtons(): JSX.Element {
-    const { hasChanged, canSave } = this.state;
+    const { canSave, cluster, newInstance } = this.state;
+    const hasChanged = !cluster.equals(newInstance);
 
     const cancelButton = <Button
       className="cancel"
@@ -209,14 +182,14 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
   }
 
   render() {
-    const { tempCluster, hasChanged, canSave } = this.state;
+    const { newInstance } = this.state;
 
-    if (!tempCluster) return null;
+    if (!newInstance) return null;
 
     return <div className="cluster-edit">
       <div className="title-bar">
         <Button className="button back" type="secondary" svg={require('../../../icons/full-back.svg')} onClick={this.goBack.bind(this)}/>
-        <div className="title">{tempCluster.name}</div>
+        <div className="title">{newInstance.name}</div>
         {this.renderButtons()}
       </div>
       <div className="content">

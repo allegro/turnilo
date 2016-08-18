@@ -16,24 +16,25 @@
 
 @import '../../imports';
 
-.collection-view {
-  @include unpin-full(0, 0, 0, 0);
-
-  .main-panel {
-    @include unpin-full(40px, 0, 0, 0);
-    overflow: auto;
+.add-collection-tile-modal {
+  form {
+    @extend %form;
+    width: 100%;
   }
 
-  .collection-items {
-    display: flex;
-    width: 80%;
-    margin: 0 auto;
-    flex-wrap: wrap;
+  .new-collection {
+    margin: 7px 0 23px 1px;
+    font-size: 11px;
+    cursor: pointer;
+    color: $brand;
 
-    .collection-tile-card {
-      flex: 1 0;
+    &:not(.disabled):hover {
+      text-decoration: underline;
+    }
 
-      flex-basis: 50%;
+    &.disabled {
+      color: $text-light;
+      cursor: initial;
     }
   }
 }

@@ -19,7 +19,7 @@ require('./collection-view.css');
 import * as React from 'react';
 import * as Q from 'q';
 
-import { Collection, User, Customization, CollectionItem, DataCube } from '../../../common/models/index';
+import { Collection, User, Customization, CollectionTile, DataCube } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';
 
 import { STRINGS } from '../../config/constants';
@@ -30,7 +30,7 @@ import { move } from '../../../common/utils/array/array';
 import { CollectionHeaderBar, Router, Route, Notifier } from '../../components/index';
 
 import { CollectionOverview } from './collection-overview/collection-overview';
-import { CollectionItemLightbox } from './collection-item-lightbox/collection-item-lightbox';
+import { CollectionTileLightbox } from './collection-tile-lightbox/collection-tile-lightbox';
 
 
 
@@ -43,10 +43,11 @@ export interface CollectionViewProps extends React.Props<any> {
   delegate?: {
     updateCollection: (collection: Collection) => Q.Promise<any>;
     deleteCollection: (collection: Collection) => Q.Promise<any>;
-    updateItem: (collection: Collection, collectionItem: CollectionItem) => Q.Promise<any>;
-    editItem: (collection: Collection, collectionItem: CollectionItem) => void;
-    createItem: (collection: Collection, dataCube: DataCube) => void;
-    deleteItem: (collection: Collection, collectionItem: CollectionItem) => void;
+    updateTile: (collection: Collection, tile: CollectionTile) => Q.Promise<any>;
+    editTile: (collection: Collection, tile: CollectionTile) => void;
+    duplicateTile: (collection: Collection, tile: CollectionTile) => Q.Promise<string>;
+    createTile: (collection: Collection, dataCube: DataCube) => void;
+    deleteTile: (collection: Collection, tile: CollectionTile) => void;
   };
 }
 
@@ -81,15 +82,24 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
     });
   }
 
-  onItemsReorder(oldIndex: number, newIndex: number) {
+  onTilesReorder(oldIndex: number, newIndex: number) {
     var tempCollection = this.state.tempCollection;
 
-    var items = tempCollection.items.concat();
+    var tiles = tempCollection.tiles.concat();
 
-    move(items, oldIndex, newIndex);
+    move(tiles, oldIndex, newIndex);
 
     this.setState({
-      tempCollection: tempCollection.changeItems(items)
+      tempCollection: tempCollection.changeTiles(tiles)
+    });
+  }
+
+  // For edition mode only, otherwise the delegate should take care of this
+  onTilesDelete(collection: Collection, tile: CollectionTile) {
+    var tempCollection = this.state.tempCollection as Collection;
+
+    this.setState({
+      tempCollection: tempCollection.deleteTile(tile)
     });
   }
 
@@ -151,7 +161,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
         title={currentCollection ? currentCollection.title : ''}
         dataCubes={dataCubes}
         collections={collections}
-        onAddItem={delegate ? delegate.createItem.bind(this, collection) : null}
+        onAddItem={delegate ? delegate.createTile.bind(this, collection) : null}
         onEditCollection={delegate ? this.editCollection.bind(this) : null}
         onDeleteCollection={delegate ? removeCollection : null}
 
@@ -167,16 +177,17 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
             <CollectionOverview
               collection={currentCollection}
               editionMode={editingOverview}
-              onReorder={this.onItemsReorder.bind(this)}
-              onDelete={delegate ? delegate.deleteItem : null}
+              onReorder={this.onTilesReorder.bind(this)}
+              onDelete={this.onTilesDelete.bind(this)}
             />
 
-            <Route fragment=":itemId">
-              <CollectionItemLightbox
+            <Route fragment=":tileId">
+              <CollectionTileLightbox
                 collection={currentCollection}
-                onChange={delegate ? delegate.updateItem : null}
-                onEdit={delegate ? delegate.editItem : null}
-                onDelete={delegate ? delegate.deleteItem : null}
+                onChange={delegate ? delegate.updateTile : null}
+                onEdit={delegate ? delegate.editTile : null}
+                onDelete={delegate ? delegate.deleteTile : null}
+                onDuplicate={delegate ? delegate.duplicateTile : null}
               />
             </Route>
 
