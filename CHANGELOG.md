@@ -2,6 +2,11 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.37
+
+- Dump any and all nodejitsu dependencies added to shrinkwrap
+- Contains and Regexp search filters
+
 ## 0.9.36
 
 - Added ability to define custom extraction functions

@@ -95,7 +95,7 @@ export class Ajax {
             }
             throw new Error(jsonError.message || jsonError.error);
           } else {
-            throw new Error(xhr.responseText);
+            throw new Error(xhr.responseText || 'connection fail');
           }
         }
       });
