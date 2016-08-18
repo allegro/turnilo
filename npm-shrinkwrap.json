@@ -444,9 +444,9 @@
       "resolved": "https://registry.npmjs.org/immutable/-/immutable-3.8.1.tgz"
     },
     "immutable-class": {
-      "version": "0.6.5",
-      "from": "immutable-class@0.6.5",
-      "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.6.5.tgz"
+      "version": "0.6.7",
+      "from": "immutable-class@0.6.7",
+      "resolved": "https://registry.npmjs.org/immutable-class/-/immutable-class-0.6.7.tgz"
     },
     "inflight": {
       "version": "1.0.5",

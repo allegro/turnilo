@@ -56,6 +56,27 @@ describe('examples', function () {
     });
   });
 
+  it('works with POST /plywood (version mismatch)', (testComplete) => {
+    request({
+      method: 'POST',
+      url: `http://localhost:${TEST_PORT}/plywood`,
+      json: {
+        version: '0.8.1',
+        dataCube: 'wiki',
+        timezone: 'Etc/UTC',
+        expression: $('main').split('$channel', 'Channel')
+      }
+    }, (err, response, body) => {
+      expect(err).to.equal(null);
+      expect(response.statusCode).to.equal(412);
+      expect(body).to.deep.equal({
+        "action": "reload",
+        "error": "incorrect version"
+      });
+      testComplete();
+    });
+  });
+
   it('works with POST /plywood', (testComplete) => {
     request({
       method: 'POST',

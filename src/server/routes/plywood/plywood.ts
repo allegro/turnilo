@@ -23,16 +23,8 @@ import { PivotRequest } from '../../utils/index';
 var router = Router();
 
 router.post('/', (req: PivotRequest, res: Response) => {
-  var { version, dataCube, dataSource, expression, timezone } = req.body;
+  var { dataCube, dataSource, expression, timezone, settingsVersion } = req.body;
   dataCube = dataCube || dataSource; // back compat
-
-  if (version && version !== req.version) {
-    res.status(412).send({
-      error: 'incorrect version',
-      action: 'reload'
-    });
-    return;
-  }
 
   if (typeof dataCube !== 'string') {
     res.status(400).send({
@@ -65,8 +57,13 @@ router.post('/', (req: PivotRequest, res: Response) => {
     return;
   }
 
-  req.getSettings(dataCube)
+  req.getSettings(dataCube) // later: , settingsVersion)
     .then((appSettings) => {
+      // var settingsBehind = false;
+      // if (appSettings.getVersion() < settingsVersion) {
+      //   settingsBehind = true;
+      // }
+
       var myDataCube = appSettings.getDataCube(dataCube);
       if (!myDataCube) {
         res.status(400).send({ error: 'unknown data cube' });
@@ -80,9 +77,11 @@ router.post('/', (req: PivotRequest, res: Response) => {
 
       return myDataCube.executor(ex, { timezone: queryTimezone }).then(
         (data: PlywoodValue) => {
-          res.json({
+          var reply: any = {
             result: Dataset.isDataset(data) ? data.toJS() : data
-          });
+          };
+          //if (settingsBehind) reply.action = 'update';
+          res.json(reply);
         },
         (e: Error) => {
           console.log('error:', e.message);

@@ -354,31 +354,27 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   renderNotifications() {
-    const { version } = this.props;
     const { NotificationsAsync } = this.state;
     if (!NotificationsAsync) return null;
     return <NotificationsAsync/>;
   }
 
-  render() {
-    var { maxFilters, maxSplits, user, version, stateful } = this.props;
-    var {
-      viewType,
-      viewHash,
-      selectedItem,
-      ReactCSSTransitionGroupAsync,
-      drawerOpen,
-      SideDrawerAsync,
-      appSettings,
-      cubeViewSupervisor
-    } = this.state;
+  renderSideDrawer() {
+    const { user } = this.props;
+    const { viewType, selectedItem, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync, appSettings } = this.state;
+    if (!drawerOpen || !SideDrawerAsync || !ReactCSSTransitionGroupAsync) return null;
+    const { dataCubes, collections, customization } = appSettings;
 
-    var { dataCubes, collections, customization, linkViewConfig } = appSettings;
+    var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
 
-    var sideDrawer: JSX.Element = null;
-    if (drawerOpen && SideDrawerAsync) {
-      var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
-      sideDrawer = <SideDrawerAsync
+    return <ReactCSSTransitionGroupAsync
+      component="div"
+      className="side-drawer-container"
+      transitionName="side-drawer"
+      transitionEnterTimeout={500}
+      transitionLeaveTimeout={300}
+    >
+      <SideDrawerAsync
         key='drawer'
         selectedItem={selectedItem}
         collections={collections}
@@ -389,25 +385,18 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         user={user}
         itemHrefFn={this.sideBarHrefFn}
         viewType={viewType}
-      />;
-    }
+      />
+    </ReactCSSTransitionGroupAsync>;
+  }
 
-    if (ReactCSSTransitionGroupAsync) {
-      var sideDrawerTransition = <ReactCSSTransitionGroupAsync
-        component="div"
-        className="side-drawer-container"
-        transitionName="side-drawer"
-        transitionEnterTimeout={500}
-        transitionLeaveTimeout={300}
-      >
-        {sideDrawer}
-      </ReactCSSTransitionGroupAsync>;
-    }
+  renderView() {
+    const { maxFilters, maxSplits, user, stateful } = this.props;
+    const { viewType, viewHash, selectedItem, appSettings, cubeViewSupervisor } = this.state;
+    const { dataCubes, collections, customization, linkViewConfig } = appSettings;
 
-    var view: JSX.Element = null;
     switch (viewType) {
       case HOME:
-        view = <HomeView
+        return <HomeView
           user={user}
           dataCubes={dataCubes}
           collections={collections}
@@ -416,10 +405,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           customization={customization}
           collectionsDelegate={stateful ? this.collectionViewDelegate : null}
         />;
-        break;
 
       case CUBE:
-        view = <CubeView
+        return <CubeView
           user={user}
           dataCube={selectedItem as DataCube}
           hash={viewHash}
@@ -434,10 +422,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           addEssenceToCollection={this.addEssenceToCollection.bind(this)}
           stateful={stateful}
         />;
-        break;
 
       case COLLECTION:
-        view = <CollectionView
+        return <CollectionView
           user={user}
           collections={collections}
           dataCubes={dataCubes}
@@ -445,10 +432,9 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           customization={customization}
           delegate={stateful ? this.collectionViewDelegate : null}
         />;
-        break;
 
       case LINK:
-        view = <LinkView
+        return <LinkView
           user={user}
           linkViewConfig={linkViewConfig}
           hash={viewHash}
@@ -459,25 +445,24 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           customization={customization}
           stateful={stateful}
         />;
-        break;
 
       case SETTINGS:
-        view = <SettingsView
+        return <SettingsView
           user={user}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           onSettingsChange={this.onSettingsChange.bind(this)}
           customization={customization}
-          version={version}
         />;
-        break;
 
       default:
         throw new Error('unknown view');
     }
+  }
 
+  render() {
     return <main className='pivot-application'>
-      {view}
-      {sideDrawerTransition}
+      {this.renderView()}
+      {this.renderSideDrawer()}
       {this.renderAboutModal()}
       {this.renderAddCollectionModal()}
       {this.renderNotifications()}

@@ -59,15 +59,17 @@ if (config.appSettings.dataCubes.length || view === '#settings') {
     './views/pivot-application/pivot-application'
   ], (require) => {
     const WallTime = require('chronoshift').WallTime;
-    const queryUrlExecutorFactory = require('./utils/ajax/ajax').queryUrlExecutorFactory;
+    const Ajax = require('./utils/ajax/ajax').Ajax;
     const AppSettings = require('../common/models/index').AppSettings;
     const MANIFESTS = require('../common/manifests/index').MANIFESTS;
     const PivotApplication = require('./views/pivot-application/pivot-application').PivotApplication;
 
+    Ajax.version = version;
+
     var appSettings = AppSettings.fromJS(config.appSettings, {
       visualizations: MANIFESTS,
       executorFactory: (dataCube: DataCube) => {
-        return queryUrlExecutorFactory(dataCube.name, 'plywood', version);
+        return Ajax.queryUrlExecutorFactory(dataCube.name, 'plywood');
       }
     });
 

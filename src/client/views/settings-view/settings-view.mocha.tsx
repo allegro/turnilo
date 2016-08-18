@@ -30,7 +30,6 @@ describe.skip('SettingsView', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <SettingsView
-        version="0.8.23"
       />
     );
 

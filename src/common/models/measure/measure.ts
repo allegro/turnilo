@@ -15,7 +15,7 @@
  */
 
 import { List } from 'immutable';
-import { BaseImmutable, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
 import { $, Expression, Datum, ApplyAction, AttributeInfo, ChainExpression, deduplicateSort } from 'plywood';
 import { verifyUrlSafeName, makeTitle, makeUrlSafeName } from '../../utils/general/general';
@@ -152,7 +152,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return new Measure(BaseImmutable.jsToValue(Measure.PROPERTIES, parameters));
   }
 
-  static PROPERTIES = [
+  static PROPERTIES: Property[] = [
     { name: 'name', validate: verifyUrlSafeName },
     { name: 'title', defaultValue: null },
     { name: 'units', defaultValue: null },

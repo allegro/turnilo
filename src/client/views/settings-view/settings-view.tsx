@@ -17,13 +17,12 @@
 require('./settings-view.css');
 
 import * as React from 'react';
-import * as Qajax from 'qajax';
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { DataCube, User, Customization } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
 import { STRINGS } from '../../config/constants';
 import { Fn } from '../../../common/utils/general/general';
-import { queryUrlExecutorFactory } from '../../utils/ajax/ajax';
+import { Ajax } from '../../utils/ajax/ajax';
 
 import { classNames } from '../../utils/dom/dom';
 import { Notifier } from '../../components/notifications/notifications';
@@ -31,10 +30,9 @@ import { Notifier } from '../../components/notifications/notifications';
 import { HomeHeaderBar } from '../../components/home-header-bar/home-header-bar';
 import { Button } from '../../components/button/button';
 import { SvgIcon } from '../../components/svg-icon/svg-icon';
-import { ButtonGroup } from '../../components/button-group/button-group';
 import { Router, Route } from '../../components/router/router';
 
-import { AppSettings, AppSettingsJS } from '../../../common/models/index';
+import { AppSettings } from '../../../common/models/index';
 
 import { General } from './general/general';
 import { Clusters } from './clusters/clusters';
@@ -44,7 +42,6 @@ import { DataCubeEdit } from './data-cube-edit/data-cube-edit';
 
 
 export interface SettingsViewProps extends React.Props<any> {
-  version: string;
   user?: User;
   customization?: Customization;
   onNavClick?: Fn;
@@ -78,9 +75,7 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
   componentDidMount() {
     this.mounted = true;
 
-    Qajax({method: "GET", url: 'settings'})
-      .then(Qajax.filterSuccess)
-      .then(Qajax.toJSON)
+    Ajax.query({ method: "GET", url: 'settings' })
       .then(
         (resp) => {
           if (!this.mounted) return;
@@ -106,18 +101,15 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
   }
 
   onSave(settings: AppSettings, okMessage?: string) {
-    const { version, onSettingsChange } = this.props;
+    const { onSettingsChange } = this.props;
 
-    Qajax({
+    Ajax.query({
       method: "POST",
       url: 'settings',
       data: {
-        version: version,
         appSettings: settings
       }
     })
-      .then(Qajax.filterSuccess)
-      .then(Qajax.toJSON)
       .then(
         (status) => {
           if (!this.mounted) return;
@@ -126,7 +118,7 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
 
           if (onSettingsChange) {
             onSettingsChange(settings.toClientSettings().attachExecutors((dataCube: DataCube) => {
-              return queryUrlExecutorFactory(dataCube.name, 'plywood', version);
+              return Ajax.queryUrlExecutorFactory(dataCube.name, 'plywood');
             }));
           }
         },

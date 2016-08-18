@@ -131,6 +131,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
 
   renderCollections() {
     const { collections, collectionsDelegate } = this.props;
+    if (!collectionsDelegate && collections.length === 0) return null;
 
     const create = this.createCollection.bind(this);
 

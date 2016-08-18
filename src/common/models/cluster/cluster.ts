@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
 import { External } from 'plywood';
-import { ensureOneOf } from '../../utils/general/general';
+import { verifyUrlSafeName } from '../../utils/general/general';
 
 export type SupportedType = 'druid' | 'mysql' | 'postgres';
 export type SourceListScan = 'disable' | 'auto';
@@ -63,64 +63,70 @@ export interface ClusterJS {
   password?: string;
 }
 
-function parseIntFromPossibleString(x: any) {
-  return typeof x === 'string' ? parseInt(x, 10) : x;
+function ensureNotNative(name: string): void {
+  if (name === 'native') {
+    throw new Error("can not be 'native'");
+  }
 }
 
-var check: Class<ClusterValue, ClusterJS>;
-export class Cluster implements Instance<ClusterValue, ClusterJS> {
+function ensureNotTiny(v: number): void {
+  if (v === 0) return;
+  if (v < 1000) {
+    throw new Error(`can not be < 1000 (is ${v})`);
+  }
+}
+
+export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   static TYPE_VALUES: SupportedType[] = ['druid', 'mysql', 'postgres'];
   static DEFAULT_TIMEOUT = 40000;
+  static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = 'auto';
+  static SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ['disable', 'auto'];
   static DEFAULT_SOURCE_LIST_REFRESH_INTERVAL = 15000;
   static DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 120000;
   static DEFAULT_INTROSPECTION_STRATEGY = 'segment-metadata-fallback';
-  static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = 'auto';
-  static SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ['disable', 'auto'];
 
   static isCluster(candidate: any): candidate is Cluster {
     return isInstanceOf(candidate, Cluster);
   }
 
   static fromJS(parameters: ClusterJS): Cluster {
-    var {
-      name,
-      type,
-      host,
-      version,
-      timeout,
-      sourceListScan,
-      sourceListRefreshOnLoad,
-      sourceListRefreshInterval,
-      sourceReintrospectOnLoad,
-      sourceReintrospectInterval,
-      introspectionStrategy,
-      requestDecorator,
-      decoratorOptions,
-      database,
-      user,
-      password
-    } = parameters;
-
-    var value: ClusterValue = {
-      name,
-      type,
-      host: host || (parameters as any).druidHost || (parameters as any).brokerHost,
-      version,
-      timeout: parseIntFromPossibleString(timeout),
-      sourceListScan: sourceListScan,
-      sourceListRefreshOnLoad: sourceListRefreshOnLoad,
-      sourceListRefreshInterval: parseIntFromPossibleString(sourceListRefreshInterval),
-      sourceReintrospectOnLoad: sourceReintrospectOnLoad,
-      sourceReintrospectInterval: parseIntFromPossibleString(sourceReintrospectInterval),
-      introspectionStrategy,
-      requestDecorator,
-      decoratorOptions,
-      database,
-      user,
-      password
-    };
-    return new Cluster(value);
+    if (!parameters.host && ((parameters as any).druidHost || (parameters as any).brokerHost)) {
+      parameters.host = (parameters as any).druidHost || (parameters as any).brokerHost;
+    }
+    if (typeof parameters.timeout === 'string') {
+      parameters.timeout = parseInt(parameters.timeout, 10);
+    }
+    if (typeof parameters.sourceListRefreshInterval === 'string') {
+      parameters.sourceListRefreshInterval = parseInt(parameters.sourceListRefreshInterval, 10);
+    }
+    if (typeof parameters.sourceReintrospectInterval === 'string') {
+      parameters.sourceReintrospectInterval = parseInt(parameters.sourceReintrospectInterval, 10);
+    }
+    return new Cluster(BaseImmutable.jsToValue(Cluster.PROPERTIES, parameters));
   }
+
+  static PROPERTIES: Property[] = [
+    { name: 'name', validate: [verifyUrlSafeName, ensureNotNative] },
+    { name: 'type', possibleValues: Cluster.TYPE_VALUES },
+    { name: 'host', defaultValue: null },
+    { name: 'version', defaultValue: null },
+    { name: 'timeout', defaultValue: Cluster.DEFAULT_TIMEOUT },
+    { name: 'sourceListScan', defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
+    { name: 'sourceListRefreshOnLoad', defaultValue: false },
+    { name: 'sourceListRefreshInterval', defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
+    { name: 'sourceReintrospectOnLoad', defaultValue: false },
+    { name: 'sourceReintrospectInterval', defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
+
+    // Druid
+    { name: 'introspectionStrategy', defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
+    { name: 'requestDecorator', defaultValue: null },
+    { name: 'decoratorOptions', defaultValue: null },
+
+    // SQLs
+    { name: 'database', defaultValue: null },
+    { name: 'user', defaultValue: null },
+    { name: 'password', defaultValue: null }
+  ];
 
 
   public name: string;
@@ -145,123 +151,33 @@ export class Cluster implements Instance<ClusterValue, ClusterJS> {
   public password: string;
 
   constructor(parameters: ClusterValue) {
-    var name = parameters.name;
-    if (typeof name !== 'string') throw new Error('must have name');
-    if (name === 'native') throw new Error("cluster can not be called 'native'");
-    this.name = name;
-
-    this.type = parameters.type;
-    ensureOneOf(this.type, Cluster.TYPE_VALUES, `In cluster '${this.name}' type`);
-
-    this.host = parameters.host;
-
-    this.version = parameters.version;
-
-    this.timeout = parameters.timeout;
-    this.sourceListScan = parameters.sourceListScan;
-    if (this.sourceListScan) ensureOneOf(this.sourceListScan, Cluster.SOURCE_LIST_SCAN_VALUES, `In cluster '${this.name}' sourceListScan`);
-
-    this.sourceListRefreshOnLoad = parameters.sourceListRefreshOnLoad || false;
-    this.sourceListRefreshInterval = parameters.sourceListRefreshInterval;
-    if (this.sourceListRefreshInterval && this.sourceListRefreshInterval < 1000) {
-      throw new Error(`can not set sourceListRefreshInterval to < 1000 (is ${this.sourceListRefreshInterval})`);
-    }
-
-    this.sourceReintrospectOnLoad = parameters.sourceReintrospectOnLoad;
-    this.sourceReintrospectInterval = parameters.sourceReintrospectInterval;
-    if (this.sourceReintrospectInterval && this.sourceReintrospectInterval < 1000) {
-      throw new Error(`can not set sourceReintrospectInterval to < 1000 (is ${this.sourceReintrospectInterval})`);
-    }
+    super(parameters);
 
     switch (this.type) {
       case 'druid':
-        this.introspectionStrategy = parameters.introspectionStrategy;
-        this.requestDecorator = parameters.requestDecorator;
-        this.decoratorOptions = parameters.decoratorOptions;
+        this.database = null;
+        this.user = null;
+        this.password = null;
         break;
 
       case 'mysql':
       case 'postgres':
-        this.database = parameters.database;
-        this.user = parameters.user;
-        this.password = parameters.password;
+        this.introspectionStrategy = null;
+        this.requestDecorator = null;
+        this.decoratorOptions = null;
         break;
     }
 
   }
 
-  public valueOf(): ClusterValue {
-    return {
-      name: this.name,
-      type: this.type,
-      host: this.host,
-      version: this.version,
-      timeout: this.timeout,
-      sourceListScan: this.sourceListScan,
-      sourceListRefreshOnLoad: this.sourceListRefreshOnLoad,
-      sourceListRefreshInterval: this.sourceListRefreshInterval,
-      sourceReintrospectOnLoad: this.sourceReintrospectOnLoad,
-      sourceReintrospectInterval: this.sourceReintrospectInterval,
-      introspectionStrategy: this.introspectionStrategy,
-      requestDecorator: this.requestDecorator,
-      decoratorOptions: this.decoratorOptions,
-      database: this.database,
-      user: this.user,
-      password: this.password
-    };
-  }
-
-  public toJS(): ClusterJS {
-    var js: ClusterJS = {
-      name: this.name,
-      type: this.type
-    };
-    if (this.host) js.host = this.host;
-    if (this.version) js.version = this.version;
-    if (this.timeout) js.timeout = this.timeout;
-    if (this.sourceListScan) js.sourceListScan = this.sourceListScan;
-
-    if (this.sourceListRefreshOnLoad) js.sourceListRefreshOnLoad = this.sourceListRefreshOnLoad;
-    if (this.sourceListRefreshInterval != null) js.sourceListRefreshInterval = this.sourceListRefreshInterval;
-    if (this.sourceReintrospectOnLoad) js.sourceReintrospectOnLoad = this.sourceReintrospectOnLoad;
-    if (this.sourceReintrospectInterval != null) js.sourceReintrospectInterval = this.sourceReintrospectInterval;
-
-    if (this.introspectionStrategy) js.introspectionStrategy = this.introspectionStrategy;
-    if (this.requestDecorator) js.requestDecorator = this.requestDecorator;
-    if (this.decoratorOptions) js.decoratorOptions = this.decoratorOptions;
-
-    if (this.database) js.database = this.database;
-    if (this.user) js.user = this.user;
-    if (this.password) js.password = this.password;
-    return js;
-  }
-
-  public toJSON(): ClusterJS {
-    return this.toJS();
-  }
-
-  public toString(): string {
-    return `[Cluster ${this.name} (${this.type})]`;
-  }
-
-  public equals(other: Cluster): boolean {
-    return Cluster.isCluster(other) &&
-      this.name === other.name &&
-      this.type === other.type &&
-      this.host === other.host &&
-      this.version === other.version &&
-      this.sourceListScan === other.sourceListScan &&
-      this.sourceListRefreshOnLoad === other.sourceListRefreshOnLoad &&
-      this.sourceListRefreshInterval === other.sourceListRefreshInterval &&
-      this.sourceReintrospectOnLoad === other.sourceReintrospectOnLoad &&
-      this.sourceReintrospectInterval === other.sourceReintrospectInterval &&
-      this.introspectionStrategy === other.introspectionStrategy &&
-      this.requestDecorator === other.requestDecorator && // don't compare decoratorOptions
-      this.database === other.database &&
-      this.user === other.user &&
-      this.timeout === other.timeout &&
-      this.password === other.password;
-  }
+  public getTimeout: () => number;
+  public getSourceListScan: () => SourceListScan;
+  public getSourceListRefreshInterval: () => number;
+  public getSourceReintrospectInterval: () => number;
+  public getIntrospectionStrategy: () => string;
+  public changeHost: (newHost: string) => Cluster;
+  public changeTimeout: (newTimeout: string) => Cluster;
+  public changeSourceListRefreshInterval: (newSourceListRefreshInterval: string) => Cluster;
 
   public toClientCluster(): Cluster {
     return new Cluster({
@@ -284,48 +200,5 @@ export class Cluster implements Instance<ClusterValue, ClusterJS> {
   public shouldScanSources(): boolean {
     return this.getSourceListScan() === 'auto';
   }
-
-  public getTimeout(): number {
-    return this.timeout || Cluster.DEFAULT_TIMEOUT;
-  }
-
-  public getSourceListScan(): SourceListScan {
-    return this.sourceListScan || Cluster.DEFAULT_SOURCE_LIST_SCAN;
-  }
-
-  public getSourceListRefreshInterval(): number {
-    return this.sourceListRefreshInterval != null ? this.sourceListRefreshInterval : Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL;
-  }
-
-  public getSourceReintrospectInterval(): number {
-    return this.sourceReintrospectInterval != null ? this.sourceReintrospectInterval : Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL;
-  }
-
-  public getIntrospectionStrategy(): string {
-    return this.introspectionStrategy || Cluster.DEFAULT_INTROSPECTION_STRATEGY;
-  }
-
-  change(propertyName: string, newValue: any): Cluster {
-    var v = this.valueOf();
-
-    if (!v.hasOwnProperty(propertyName)) {
-      throw new Error(`Unknown property : ${propertyName}`);
-    }
-
-    (v as any)[propertyName] = newValue;
-    return new Cluster(v);
-  }
-
-  changeHost(newHost: string): Cluster {
-    return this.change('host', newHost);
-  }
-
-  changeTimeout(newTimeout: string): Cluster {
-    return this.change('timeout', newTimeout);
-  }
-
-  changeSourceListRefreshInterval(newSourceListRefreshInterval: string): Cluster {
-    return this.change('sourceListRefreshInterval', newSourceListRefreshInterval);
-  }
 }
-check = Cluster;
+BaseImmutable.finalize(Cluster);

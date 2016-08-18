@@ -45,10 +45,6 @@ function ensureOneOfOrNull<T>(name: string, thing: T, things: T[]): void {
   }
 }
 
-function ensureNumber(n: any): void {
-  if (typeof n !== 'number') throw new Error(`must be a number`);
-}
-
 function basicEqual(a: any, b: any): boolean {
   return Boolean(a) === Boolean(b);
 }
@@ -77,7 +73,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   }
 
   static PROPERTIES: Property[] = [
-    { name: 'port', defaultValue: ServerSettings.DEFAULT_PORT, validate: ensureNumber },
+    { name: 'port', defaultValue: ServerSettings.DEFAULT_PORT, validate: BaseImmutable.ensure.number },
     { name: 'serverHost', defaultValue: null },
     { name: 'serverRoot', defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },
     { name: 'requestLogFormat', defaultValue: ServerSettings.DEFAULT_REQUEST_LOG_FORMAT },

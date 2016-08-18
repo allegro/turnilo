@@ -36,15 +36,7 @@ var outputFunctions: PlyqlOutputFunctions = {
 };
 
 router.post('/', (req: PivotRequest, res: Response) => {
-  var { version, outputType, query } = req.body;
-
-  if (version && version !== req.version) {
-    res.status(400).send({
-      error: 'incorrect version',
-      action: 'reload'
-    });
-    return;
-  }
+  var { outputType, query } = req.body;
 
   if (typeof query !== "string") {
     var errmsg = "Query must be a string";

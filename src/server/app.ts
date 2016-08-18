@@ -110,21 +110,32 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+// Assign basics
+var stateful = SETTINGS_MANAGER.isStateful();
 app.use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = VERSION;
+  req.stateful = stateful;
   req.getSettings = (opts: GetSettingsOptions = {}) => {
     return SETTINGS_MANAGER.getSettings(opts);
   };
   next();
 });
 
-var stateful = SETTINGS_MANAGER.isStateful();
+// Global, optional version check
 app.use((req: PivotRequest, res: Response, next: Function) => {
-  req.stateful = stateful;
+  var { version } = req.body;
+  if (version && version !== req.version) {
+    res.status(412).send({
+      error: 'incorrect version',
+      action: 'reload'
+    });
+    return;
+  }
   next();
 });
 
+// Auth
 if (AUTH) {
   app.use(AUTH);
 } else {

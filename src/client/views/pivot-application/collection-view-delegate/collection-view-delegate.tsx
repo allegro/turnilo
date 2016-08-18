@@ -15,11 +15,11 @@
  */
 
 import * as React from 'react';
-import * as Qajax from 'qajax';
 import * as Q from 'q';
 
 import { PivotApplication, PivotApplicationProps, PivotApplicationState } from '../pivot-application.tsx';
 
+import { Ajax } from '../../../utils/ajax/ajax';
 import { Collection, CollectionItem, DataCube, Essence, AppSettings } from '../../../../common/models/index';
 import { STRINGS } from '../../../config/constants';
 import { Notifier, AddCollectionItemModal } from '../../../components/index';
@@ -42,19 +42,15 @@ export class CollectionViewDelegate {
   }
 
   private save(appSettings: AppSettings): Q.Promise<any> {
-    var { version } = this.app.props;
     var deferred = Q.defer<string>();
 
-    Qajax({
+    Ajax.query({
       method: "POST",
       url: 'collections',
       data: {
-        version,
         collections: appSettings.toJS().collections || []
       }
     })
-      .then(Qajax.filterSuccess)
-      .then(Qajax.toJSON)
       .then(
         (status) => this.setState({appSettings}, deferred.resolve),
         (xhr: XMLHttpRequest) => {

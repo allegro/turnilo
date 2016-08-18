@@ -15,13 +15,11 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { $, Expression, RefExpression, External, Datum, Dataset, TimeRange, basicExecutorFactory, Executor, AttributeJSs } from 'plywood';
-import { Timezone, WallTime, Duration } from 'chronoshift';
 import { AppSettings } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
 
 import { PivotRequest } from '../../utils/index';
-import { VERSION, SETTINGS_MANAGER } from '../../config';
+import { SETTINGS_MANAGER } from '../../config';
 
 var router = Router();
 
@@ -47,15 +45,7 @@ router.get('/', (req: PivotRequest, res: Response) => {
 });
 
 router.post('/', (req: PivotRequest, res: Response) => {
-  var { version, appSettings } = req.body;
-
-  if (version && version !== VERSION) {
-    res.status(412).send({
-      error: 'incorrect version',
-      action: 'reload'
-    });
-    return;
-  }
+  var { appSettings } = req.body;
 
   try {
     var appSettingsObject = AppSettings.fromJS(appSettings, { visualizations: MANIFESTS });

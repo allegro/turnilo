@@ -36,6 +36,7 @@ var appSettings: AppSettings = AppSettingsMock.wikiOnlyWithExecutor();
 app.use((req: PivotRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = '0.9.4';
+  req.stateful = false;
   req.getSettings = (dataCubeOfInterest?: string) => Q(appSettings);
   next();
 });
@@ -43,22 +44,6 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
 app.use('/', plywoodRouter);
 
 describe('plywood router', () => {
-  it('version mismatch', (testComplete) => {
-    supertest(app)
-      .post('/')
-      .set('Content-Type', "application/json")
-      .send({
-        version: '0.9.3',
-        expression: $('main').toJS()
-      })
-      .expect('Content-Type', "application/json; charset=utf-8")
-      .expect(412)
-      .expect({
-        error: 'incorrect version',
-        action: 'reload'
-      }, testComplete);
-  });
-
   it('must have dataCube', (testComplete) => {
     supertest(app)
       .post('/')

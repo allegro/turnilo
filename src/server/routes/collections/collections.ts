@@ -24,15 +24,7 @@ import { VERSION, SETTINGS_MANAGER } from '../../config';
 var router = Router();
 
 router.post('/', (req: PivotRequest, res: Response) => {
-  var { version, collections } = req.body;
-
-  if (version && version !== VERSION) {
-    res.status(412).send({
-      error: 'incorrect version',
-      action: 'reload'
-    });
-    return;
-  }
+  var { collections } = req.body;
 
   if (!Array.isArray(collections)) {
     res.status(400).send({
