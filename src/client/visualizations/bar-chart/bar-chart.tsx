@@ -35,7 +35,6 @@ import {
 import { BAR_CHART_MANIFEST } from '../../../common/manifests/bar-chart/bar-chart';
 import { formatValue } from '../../../common/utils/formatter/formatter';
 import { DisplayYear } from '../../../common/utils/time/time';
-import { extend } from "../../../common/utils/object/object";
 
 import { SPLIT, VIS_H_PADDING } from '../../config/constants';
 import { roundToPx, classNames } from '../../utils/dom/dom';
@@ -90,12 +89,12 @@ function getFilterFromDatum(splits: Splits, dataPath: Datum[], dataCube: DataCub
   })));
 }
 
-function padDataset(originalDataset: Dataset, dimension: Dimension, measure: Measure): Dataset {
+function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Measure[]): Dataset {
   const data = (originalDataset.data[0][SPLIT] as Dataset).data;
   const dimensionName = dimension.name;
 
   const firstBucket: PlywoodRange = data[0][dimensionName] as PlywoodRange;
-
+  if (!firstBucket) return originalDataset;
   const start = Number(firstBucket.start);
   const end = Number(firstBucket.end);
 
@@ -114,7 +113,16 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measure: Mea
         start: i,
         end: i + size
       });
-      filledData[j][measure.name] = 0; // todo: what if effective zero is not 0?
+      measures.forEach(m => {
+        filledData[j][m.name] = 0; // todo: what if effective zero is not 0?
+      });
+
+      if (d[SPLIT]) {
+        filledData[j][SPLIT] = new Dataset({
+          data: [],
+          attributes: []
+        });
+      }
 
       j++;
       i += size;
@@ -129,9 +137,9 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measure: Mea
   return new Dataset(value);
 }
 
-function padDatasetLoad(datasetLoad: DatasetLoad, dimension: Dimension, measure: Measure): DatasetLoad {
+function padDatasetLoad(datasetLoad: DatasetLoad, dimension: Dimension, measures: Measure[]): DatasetLoad {
   var originalDataset = datasetLoad.dataset;
-  var newDataset = originalDataset ? padDataset(originalDataset, dimension, measure) : null;
+  var newDataset = originalDataset ? padDataset(originalDataset, dimension, measures) : null;
   datasetLoad.dataset = newDataset;
   return datasetLoad;
 }
@@ -735,7 +743,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const dimension = split.getDimension(essence.dataCube.dimensions);
     const dimensionKind = dimension.kind;
-    const measure = essence.getEffectiveMeasures().first();
+    const measures = essence.getEffectiveMeasures().toArray();
 
     this.coordinatesCache = [];
 
@@ -744,7 +752,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     if (datasetLoad) {
       if (dimensionKind === 'number') {
-        datasetLoad = padDatasetLoad(datasetLoad, dimension, measure);
+        datasetLoad = padDatasetLoad(datasetLoad, dimension, measures);
       }
       // Always keep the old dataset while loading (for now)
       if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
@@ -753,7 +761,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     } else {
       var stateDatasetLoad = this.state.datasetLoad;
       if (dimensionKind === 'number') {
-        datasetLoad = padDatasetLoad(stateDatasetLoad, dimension, measure);
+        datasetLoad = padDatasetLoad(stateDatasetLoad, dimension, measures);
       } else {
         datasetLoad = stateDatasetLoad;
       }
