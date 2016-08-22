@@ -150,7 +150,7 @@ export class Notifications extends React.Component<NotificationsProps, Notificat
   }
 
   renderCards(): JSX.Element[] {
-    var cumuledHeight = 0;
+    var cumuledHeight = 13;
 
     return this.state.notifications.map((n, i) => {
       const { title, message, action } = n;

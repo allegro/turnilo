@@ -47,10 +47,9 @@ export class ItemCard extends React.Component< ItemCardProps, ItemCardState> {
       <div className="inner-container">
         <SvgIcon svg={require(`../../../icons/${icon}.svg`)}/>
         <div className="text">
-          <div className="title">{title}</div>
+          <div className="title">{title} {count !== undefined ? <span className="count">{count}</span> : null}</div>
           <div className="description">{description || STRINGS.noDescription}</div>
         </div>
-        {count !== undefined ? <div className="count">{count}</div> : null}
       </div>
     </div>;
   }

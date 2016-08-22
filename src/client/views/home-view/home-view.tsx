@@ -142,7 +142,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
         <div className="grid-col-10 right actions">
           { collectionsDelegate && collections.length > 4 ?
             <div className="add" onClick={create}>
-              <SvgIcon svg={require('../../icons/full-add.svg')}/>
+              <SvgIcon svg={require('../../icons/full-add-framed.svg')}/>
             </div>
           : null }
         </div>

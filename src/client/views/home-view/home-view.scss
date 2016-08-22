@@ -41,6 +41,9 @@
       }
 
       .actions {
+        margin-top: -7px;
+        padding-right: 5px;
+        display: none;
 
         > * {
           cursor: pointer;
@@ -48,7 +51,6 @@
           .svg-icon {
             height: 20px;
             padding: 1px 0 0 1px;
-            border-radius: 50%;
 
             path {
               fill: $brand;
@@ -56,8 +58,8 @@
           }
 
           &:hover {
-            .svg-icon {
-              background-color: $hover;
+            .svg-icon path {
+              fill: darken($brand, 5);
             }
           }
         }

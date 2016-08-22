@@ -22,12 +22,14 @@
   position: absolute;
   min-width: 250px;
   padding: 10px 20px;
+  line-height: 16px;
   transform: translate(-50%, 0);
   opacity: 0;
 
   background-color: $background-brand-light;
   color: $white;
-  box-shadow: 1px 1px 1px 1px hsla(200, 8%, 15%, 0.2);
+  box-shadow: 0 3px 4px 0 rgba($black, 0.25);
+  border-radius: $corner;
 
   text-align: center;
   cursor: pointer;
@@ -37,15 +39,15 @@
   }
 
   &.rows-1 {
-    height: 30px;
+    height: 36px;
   }
 
   &.rows-2 {
-    height: 60px;
+    height: 64px;
   }
 
   &.rows-3 {
-    height: 90px;
+    height: 108px;
   }
 
   &.success {
@@ -57,13 +59,11 @@
   }
 
   &.info {
-    background-color: hsla(199, 100%, 29%, 1.00);
-    height: 37px;
-    font-size: 15px;
+    background-color: $dark;
   }
 
   .title {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .description {

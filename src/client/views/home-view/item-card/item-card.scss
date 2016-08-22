@@ -56,6 +56,9 @@
         font-size: 13px;
         color: $text-standard;
         margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .description {
@@ -68,37 +71,36 @@
     }
 
     .count {
-      background-color: $brand;
-      color: $white;
-      padding: 2px 4px;
-      border-radius: 6px;
-      min-width: 20px;
-      text-align: center;
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      font-size: 10px;
+      margin-left: 3px;
+
+      &::before {
+        content: '(';
+      }
+
+      &::after {
+        content: ')';
+      }
     }
   }
 
   &.new-one {
-    opacity: 0.6;
+    opacity: 0.4;
 
     &:hover {
-      opacity: 1;
+      opacity: 0.6;
     }
 
     .inner-container {
       text-align: center;
-      border: 2px dashed $text-lighter;
-      background-color: initial;
       box-shadow: initial;
+      background: $white;
 
       .svg-icon {
-        height: 100%;
+        margin-top: 10px;
+        height: 36px;
 
         path {
-          fill: $text-lighter;
+          fill: #777;
         }
       }
     }

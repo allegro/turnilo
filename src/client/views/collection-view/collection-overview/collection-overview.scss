@@ -45,7 +45,7 @@
       transform: translate(-50%, -50%);
 
       .svg-icon {
-        width: 80px;
+        width: 60px;
 
         path {
           fill: $text-lighter;
@@ -53,9 +53,9 @@
       }
 
       .placeholder {
-        font-size: 18px;
+        font-size: 16px;
         font-style: italic;
-        margin-top: 10px;
+        margin-top: 14px;
       }
     }
   }
