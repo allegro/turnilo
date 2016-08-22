@@ -22,6 +22,8 @@ import { AttributeInfo } from 'plywood';
 import { Fn } from '../../../../common/utils/general/general';
 import { classNames } from '../../../utils/dom/dom';
 
+import { generateUniqueName } from '../../../../common/utils/string/string';
+
 import { Duration, Timezone } from 'chronoshift';
 
 import { DATA_CUBES_STRATEGIES_LABELS } from '../../../config/constants';
@@ -228,9 +230,12 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
       });
     };
 
-    const getModal = (item: Dimension) => <DimensionModal dimension={item} dimensions={newInstance.dimensions}/>;
+    const getModal = (item: Dimension) => <DimensionModal dimension={item}/>;
 
-    const getNewItem = () => Dimension.fromJS({name: 'new-dimension'});
+    const getNewItem = () => Dimension.fromJS({
+      name: generateUniqueName('d', name => !newInstance.dimensions.find(m => m.name === name)),
+      title: 'New dimension'
+    });
 
     const getRows = (items: List<Dimension>) => items.toArray().map((dimension) => {
       return {
@@ -271,9 +276,12 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
       });
     };
 
-    const getModal = (item: Measure) => <MeasureModal measure={item} measures={newInstance.measures}/>;
+    const getModal = (item: Measure) => <MeasureModal measure={item}/>;
 
-    const getNewItem = () => Measure.fromJS({name: 'new-measure'});
+    const getNewItem = () => Measure.fromJS({
+      name: generateUniqueName('m', name => !newInstance.measures.find(m => m.name === name)),
+      title: 'New measure'
+    });
 
     const getRows = (items: List<Measure>) => items.toArray().map((measure) => {
       return {

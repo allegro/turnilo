@@ -330,7 +330,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       this.collectionViewDelegate.addTile(_collection, CollectionTile).then(url => {
         Notifier.success('Item added', {
           label: 'View',
-          callback: () => window.location.hash = url
+          callback: () => window.location.hash = `#collection/${_collection.name}`
         });
       });
     };

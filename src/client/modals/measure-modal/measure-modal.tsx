@@ -30,11 +30,9 @@ import { ImmutableFormDelegate, ImmutableFormState } from '../../utils/immutable
 
 
 export interface MeasureModalProps extends React.Props<any> {
-  measures?: List<Measure>;
   measure?: Measure;
   onSave?: (measure: Measure) => void;
   onClose?: () => void;
-  isCreating?: boolean;
 }
 
 
@@ -70,18 +68,8 @@ export class MeasureModal extends React.Component<MeasureModalProps, ImmutableFo
     this.props.onSave(this.state.newInstance);
   }
 
-  uniqueName(name: string): boolean {
-    const { measures } = this.props;
-
-    if (measures.find((m) => m.name === name)) {
-      throw new Error(`Another measure with this name already exists`);
-    }
-
-    return true;
-  }
-
   render(): JSX.Element {
-    const { isCreating, measure } = this.props;
+    const { measure } = this.props;
     const { newInstance, canSave, errors } = this.state;
     const saveButtonDisabled = !canSave || measure.equals(newInstance);
 
@@ -98,11 +86,8 @@ export class MeasureModal extends React.Component<MeasureModalProps, ImmutableFo
       onEnter={this.save.bind(this)}
     >
       <form className="general vertical">
-        { isCreating ? makeLabel('name') : null }
-        { isCreating ? makeTextInput('name', this.uniqueName.bind(this), isCreating) : null }
-
         {makeLabel('title')}
-        {makeTextInput('title', /^.+$/, !isCreating)}
+        {makeTextInput('title', /^.+$/, true)}
 
         {makeLabel('units')}
         {makeTextInput('units')}

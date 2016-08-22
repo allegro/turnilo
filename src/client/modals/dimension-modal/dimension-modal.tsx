@@ -31,11 +31,9 @@ import { ImmutableFormDelegate, ImmutableFormState } from '../../utils/immutable
 
 
 export interface DimensionModalProps extends React.Props<any> {
-  dimensions?: List<Dimension>;
   dimension?: Dimension;
   onSave?: (dimension: Dimension) => void;
   onClose?: () => void;
-  isCreating?: boolean;
 }
 
 export class DimensionModal extends React.Component<DimensionModalProps, ImmutableFormState<Dimension>> {
@@ -82,18 +80,8 @@ export class DimensionModal extends React.Component<DimensionModalProps, Immutab
     this.props.onSave(this.state.newInstance);
   }
 
-  uniqueName(name: string): boolean {
-    const { dimensions } = this.props;
-
-    if (dimensions.find((m) => m.name === name)) {
-      throw new Error(`Another dimension with this name already exists`);
-    }
-
-    return true;
-  }
-
   render(): JSX.Element {
-    const { isCreating, dimension } = this.props;
+    const { dimension } = this.props;
     const { newInstance, canSave, errors } = this.state;
     const saveButtonDisabled = !canSave || dimension.equals(newInstance);
 
@@ -113,11 +101,8 @@ export class DimensionModal extends React.Component<DimensionModalProps, Immutab
       onEnter={this.save.bind(this)}
     >
       <form className="general vertical">
-        { isCreating ? makeLabel('name') : null }
-        { isCreating ? makeTextInput('name', this.uniqueName.bind(this), isCreating) : null }
-
         {makeLabel('title')}
-        {makeTextInput('title', /^.+$/, !isCreating)}
+        {makeTextInput('title', /^.+$/, true)}
 
         {makeLabel('kind')}
         {makeDropDownInput('kind', DimensionModal.KINDS)}
