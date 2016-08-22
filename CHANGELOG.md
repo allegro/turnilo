@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.38
+
+- Fixed side drawer animation
+
 ## 0.9.37
 
 - Dump any and all nodejitsu dependencies added to shrinkwrap

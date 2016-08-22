@@ -362,11 +362,29 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   renderSideDrawer() {
     const { user } = this.props;
-    const { viewType, selectedItem, ReactCSSTransitionGroupAsync, drawerOpen, SideDrawerAsync, appSettings } = this.state;
-    if (!drawerOpen || !SideDrawerAsync || !ReactCSSTransitionGroupAsync) return null;
+    const { viewType, selectedItem, drawerOpen, SideDrawerAsync, appSettings } = this.state;
+    if (!drawerOpen || !SideDrawerAsync) return null;
     const { dataCubes, collections, customization } = appSettings;
 
     var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
+
+    return <SideDrawerAsync
+      key='drawer'
+      selectedItem={selectedItem}
+      collections={collections}
+      dataCubes={dataCubes}
+      onOpenAbout={this.openAboutModal.bind(this)}
+      onClose={closeSideDrawer}
+      customization={customization}
+      user={user}
+      itemHrefFn={this.sideBarHrefFn}
+      viewType={viewType}
+    />;
+  }
+
+  renderSideDrawerTransition() {
+    const { ReactCSSTransitionGroupAsync } = this.state;
+    if (!ReactCSSTransitionGroupAsync) return null;
 
     return <ReactCSSTransitionGroupAsync
       component="div"
@@ -375,18 +393,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       transitionEnterTimeout={500}
       transitionLeaveTimeout={300}
     >
-      <SideDrawerAsync
-        key='drawer'
-        selectedItem={selectedItem}
-        collections={collections}
-        dataCubes={dataCubes}
-        onOpenAbout={this.openAboutModal.bind(this)}
-        onClose={closeSideDrawer}
-        customization={customization}
-        user={user}
-        itemHrefFn={this.sideBarHrefFn}
-        viewType={viewType}
-      />
+      { this.renderSideDrawer() }
     </ReactCSSTransitionGroupAsync>;
   }
 
@@ -463,7 +470,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   render() {
     return <main className='pivot-application'>
       {this.renderView()}
-      {this.renderSideDrawer()}
+      {this.renderSideDrawerTransition()}
       {this.renderAboutModal()}
       {this.renderAddCollectionModal()}
       {this.renderNotifications()}
