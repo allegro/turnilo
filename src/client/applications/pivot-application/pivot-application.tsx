@@ -440,6 +440,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           onOpenAbout={this.openAboutModal.bind(this)}
           customization={customization}
           appSettings={appSettings}
+          stateful={stateful}
         />;
 
       case HOME:
