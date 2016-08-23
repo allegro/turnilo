@@ -22,12 +22,13 @@ import * as ReactDOM from 'react-dom';
 import { SvgIcon, GlobalEventListener } from '../../../components/index';
 import { classNames } from '../../../utils/dom/dom';
 
-import { Collection, CollectionTile, VisualizationProps, Stage, Essence, Device, DeviceSize } from '../../../../common/models/index';
+import { Collection, CollectionTile, VisualizationProps, Stage, Timekeeper, Device, DeviceSize } from '../../../../common/models/index';
 
 import { getVisualizationComponent } from '../../../visualizations/index';
 
 export interface CollectionTileCardProps extends React.Props<any> {
   tile: CollectionTile;
+  timekeeper: Timekeeper;
   className?: string;
   onExpand?: (tile: CollectionTile) => void;
   onDelete?: (tile: CollectionTile) => void;
@@ -83,7 +84,7 @@ export class CollectionTileCard extends React.Component<CollectionTileCardProps,
   }
 
   render() {
-    const { tile, onDragOver, draggable, onDragStart, editionMode, className } = this.props;
+    const { tile, timekeeper, onDragOver, draggable, onDragStart, editionMode, className } = this.props;
     const { visualizationStage, deviceSize } = this.state;
 
     if (!tile) return null;
@@ -101,6 +102,7 @@ export class CollectionTileCard extends React.Component<CollectionTileCardProps,
       var visProps: VisualizationProps = {
         clicker: {},
         essence,
+        timekeeper,
         stage: visualizationStage,
         deviceSize,
         isThumbnail: true

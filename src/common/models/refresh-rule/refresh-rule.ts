@@ -15,19 +15,15 @@
  */
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { Duration, Timezone } from 'chronoshift';
-import { $, Expression } from 'plywood';
-import { MaxTime } from '../max-time/max-time';
+import { Duration } from 'chronoshift';
 
 export interface RefreshRuleValue {
   rule: string;
-  refresh?: Duration;
   time?: Date;
 }
 
 export interface RefreshRuleJS {
   rule: string;
-  refresh?: string;
   time?: Date | string;
 }
 
@@ -38,16 +34,13 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   static QUERY = 'query';
   static REALTIME = 'realtime';
 
-  static DEFAULT_QUERY_REFRESH = Duration.fromJS('PT1M');
-
   static isRefreshRule(candidate: any): candidate is RefreshRule {
     return isInstanceOf(candidate, RefreshRule);
   }
 
-  static query(refresh?: Duration): RefreshRule {
+  static query(): RefreshRule {
     return new RefreshRule({
-      rule: RefreshRule.QUERY,
-      refresh
+      rule: RefreshRule.QUERY
     });
   }
 
@@ -55,9 +48,6 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
     var value: RefreshRuleValue = {
       rule: parameters.rule
     };
-    if (parameters.refresh) {
-      value.refresh = Duration.fromJS(parameters.refresh);
-    }
     if (parameters.time) {
       value.time = new Date(<any>parameters.time);
     }
@@ -66,7 +56,6 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
 
   public rule: string;
-  public refresh: Duration;
   public time: Date;
 
   constructor(parameters: RefreshRuleValue) {
@@ -75,10 +64,6 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
       throw new Error(`rule must be on of: ${RefreshRule.FIXED}, ${RefreshRule.QUERY}, or ${RefreshRule.REALTIME}`);
     }
     this.rule = rule;
-    this.refresh = parameters.refresh;
-    if (this.rule !== RefreshRule.FIXED && !this.refresh) {
-      this.refresh = RefreshRule.DEFAULT_QUERY_REFRESH;
-    }
     this.time = parameters.time;
   }
 
@@ -86,9 +71,6 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
     var value: RefreshRuleValue = {
       rule: this.rule
     };
-    if (this.refresh) {
-      value.refresh = this.refresh;
-    }
     if (this.time) {
       value.time = this.time;
     }
@@ -99,9 +81,6 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
     var js: RefreshRuleJS = {
       rule: this.rule
     };
-    if (this.refresh) {
-      js.refresh = this.refresh.toJS();
-    }
     if (this.time) {
       js.time = this.time;
     }
@@ -119,8 +98,6 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   public equals(other: RefreshRule): boolean {
     return RefreshRule.isRefreshRule(other) &&
       this.rule === other.rule &&
-      Boolean(this.refresh) === Boolean(other.refresh) &&
-      (!this.refresh || this.refresh.equals(other.refresh)) &&
       (!this.time || this.time.valueOf() === other.time.valueOf());
   }
 
@@ -134,14 +111,6 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
   public isRealtime(): boolean {
     return this.rule === RefreshRule.REALTIME;
-  }
-
-  public shouldUpdate(maxTime: MaxTime): boolean {
-    if (this.isFixed()) return false;
-    if (!maxTime) return true;
-    var { refresh } = this;
-    if (!refresh) return false;
-    return Date.now() - maxTime.updated.valueOf() > refresh.getCanonicalLength();
   }
 
 }

@@ -18,14 +18,15 @@ require('./filter-menu.css');
 
 import * as React from "react";
 import { Fn } from "../../../common/utils/general/general";
-import { Stage, Clicker, Essence, Dimension, DragPosition } from "../../../common/models/index";
+import { Stage, Clicker, Essence, Timekeeper, Dimension, DragPosition } from "../../../common/models/index";
 import { StringFilterMenu } from "../string-filter-menu/string-filter-menu";
 import { TimeFilterMenu } from "../time-filter-menu/time-filter-menu";
 import { NumberFilterMenu } from "../number-filter-menu/number-filter-menu";
 
 export interface FilterMenuProps extends React.Props<any> {
-  clicker: Clicker;
   essence: Essence;
+  timekeeper: Timekeeper;
+  clicker: Clicker;
   containerStage?: Stage;
   openOn: Element;
   dimension: Dimension;
@@ -44,13 +45,14 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   }
 
   render() {
-    var { clicker, essence, changePosition, containerStage, openOn, dimension, onClose, inside } = this.props;
+    var { clicker, essence, timekeeper, changePosition, containerStage, openOn, dimension, onClose, inside } = this.props;
     if (!dimension) return null;
     if (dimension.kind === 'time') {
       return <TimeFilterMenu
+        essence={essence}
+        timekeeper={timekeeper}
         clicker={clicker}
         dimension={dimension}
-        essence={essence}
         onClose={onClose}
         containerStage={containerStage}
         openOn={openOn}
@@ -58,9 +60,10 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
       />;
     } else if (dimension.kind === 'number') {
       return <NumberFilterMenu
+        essence={essence}
+        timekeeper={timekeeper}
         clicker={clicker}
         dimension={dimension}
-        essence={essence}
         onClose={onClose}
         containerStage={containerStage}
         openOn={openOn}
@@ -68,9 +71,10 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
       />;
     } else {
       return <StringFilterMenu
+        essence={essence}
+        timekeeper={timekeeper}
         clicker={clicker}
         dimension={dimension}
-        essence={essence}
         changePosition={changePosition}
         onClose={onClose}
         containerStage={containerStage}

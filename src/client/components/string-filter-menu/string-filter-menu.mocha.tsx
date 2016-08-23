@@ -21,7 +21,7 @@ import * as TestUtils from 'react-addons-test-utils';
 
 import '../../utils/test-utils/index';
 
-import { EssenceMock, DimensionMock, StageMock } from '../../../common/models/mocks';
+import { EssenceMock, TimekeeperMock, DimensionMock, StageMock } from '../../../common/models/mocks';
 import { StringFilterMenu } from './string-filter-menu';
 
 describe.skip('StringFilterMenu', () => {
@@ -34,6 +34,7 @@ describe.skip('StringFilterMenu', () => {
         clicker={null}
         dimension={DimensionMock.countryURL()}
         essence={EssenceMock.wikiLineChart()}
+        timekeeper={TimekeeperMock.fixed()}
         onClose={null}
         containerStage={StageMock.defaultA()}
         openOn={div}

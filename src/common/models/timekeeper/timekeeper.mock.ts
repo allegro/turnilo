@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-import { Dataset } from 'plywood';
-import { Fn } from '../../utils/general/general';
-import { Clicker, Stage, Essence, Timekeeper, DeviceSize } from '../index';
+import { Timekeeper, TimekeeperJS } from './timekeeper';
 
-export interface VisualizationProps {
-  clicker: Clicker;
-  essence: Essence;
-  timekeeper: Timekeeper;
-  stage: Stage;
-  openRawDataModal?: Fn;
-  registerDownloadableDataset?: (dataset: Dataset) => void;
-  deviceSize?: DeviceSize;
-  isThumbnail?: boolean;
-}
+export class TimekeeperMock {
+  static fixedJS(): TimekeeperJS {
+    return {
+      timeTags: [],
+      nowOverride: new Date('2016-08-08T08:08:08Z')
+    };
+  }
 
-export interface DatasetLoad {
-  loading?: boolean;
-  dataset?: Dataset;
-  error?: any;
+  static fixed() {
+    return Timekeeper.fromJS(TimekeeperMock.fixedJS());
+  }
 }

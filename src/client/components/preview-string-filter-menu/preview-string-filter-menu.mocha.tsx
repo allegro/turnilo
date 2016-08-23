@@ -22,6 +22,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { Filter } from "../../../common/models/filter/filter";
 
 import '../../utils/test-utils/index';
+import { EssenceMock, TimekeeperMock, StageMock } from '../../../common/models/mocks';
 
 import { PreviewStringFilterMenu } from "./preview-string-filter-menu";
 
@@ -35,6 +36,7 @@ describe.skip('SelectableStringFilterMenu', () => {
         clicker={null}
         dimension={null}
         essence={null}
+        timekeeper={TimekeeperMock.fixed()}
         onClose={null}
       />
     );

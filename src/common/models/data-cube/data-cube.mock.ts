@@ -134,8 +134,7 @@ export class DataCubeMock {
       defaultSortMeasure: 'count',
       defaultPinnedDimensions: ['tweet'],
       refreshRule: {
-        refresh: "PT1M",
-        rule: "fixed"
+        rule: "realtime"
       }
     };
   }

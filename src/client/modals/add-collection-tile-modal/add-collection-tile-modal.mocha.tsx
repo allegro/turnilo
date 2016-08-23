@@ -5,6 +5,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 
 import { findDOMNode } from '../../utils/test-utils/index';
+import { TimekeeperMock } from '../../../common/models/mocks';
 
 import { AddCollectionTileModal } from './add-collection-tile-modal';
 
@@ -13,6 +14,7 @@ describe.skip('AddCollectionTileModal', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <AddCollectionTileModal
         essence={null}
+        timekeeper={TimekeeperMock.fixed()}
         dataCube={null}
         collection={null}
       />

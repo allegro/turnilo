@@ -22,6 +22,7 @@ import * as ReactDOM from 'react-dom';
 import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
+import { TimekeeperMock } from '../../../common/models/mocks';
 
 import { LinkView } from './link-view';
 
@@ -29,7 +30,8 @@ describe('LinkView', () => {
   it.skip('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <LinkView
-        linkViewConfig={null}
+        timekeeper={TimekeeperMock.fixed()}
+        collection={null}
         hash={null}
         updateViewHash={null}
         changeHash={null}

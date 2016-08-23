@@ -22,6 +22,7 @@ import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
 import { Filter } from '../filter/filter';
+import { Timekeeper } from '../timekeeper/timekeeper';
 import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
 import { NumberBucketAction } from "plywood";
 import { getDefaultGranularityForKind, getBestBucketUnitForRange } from "../granularity/granularity";
@@ -180,7 +181,10 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   }
 
   public updateWithFilter(filter: Filter, dimensions: List<Dimension>): Splits {
-    if (filter.isRelative()) throw new Error('can not be a relative filter');
+    if (filter.isRelative()) {
+      // Make specific
+      filter = filter.getSpecificFilter(Timekeeper.globalNow(), Timekeeper.globalNow(), Timezone.UTC);
+    }
 
     var changed = false;
     var newSplitCombines = <List<SplitCombine>>this.splitCombines.map((splitCombine) => {

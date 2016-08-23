@@ -25,6 +25,7 @@ import { Collection, CollectionJS, CollectionContext } from '../collection/colle
 import { Manifest } from '../manifest/manifest';
 
 export interface AppSettingsValue {
+  version?: number;
   clusters?: Cluster[];
   customization?: Customization;
   dataCubes?: DataCube[];
@@ -33,6 +34,7 @@ export interface AppSettingsValue {
 }
 
 export interface AppSettingsJS {
+  version?: number;
   clusters?: ClusterJS[];
   customization?: CustomizationJS;
   dataCubes?: DataCubeJS[];
@@ -92,6 +94,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     };
 
     var value: AppSettingsValue = {
+      version: parameters.version,
       clusters,
       customization: Customization.fromJS(parameters.customization || {}),
       dataCubes,
@@ -102,6 +105,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     return new AppSettings(value);
   }
 
+  public version: number;
   public clusters: Cluster[];
   public customization: Customization;
   public dataCubes: DataCube[];
@@ -110,6 +114,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
   constructor(parameters: AppSettingsValue) {
     const {
+      version,
       clusters,
       customization,
       dataCubes,
@@ -124,6 +129,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       }
     }
 
+    this.version = version || 0;
     this.clusters = clusters;
     this.customization = customization;
     this.dataCubes = dataCubes;
@@ -133,6 +139,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
   public valueOf(): AppSettingsValue {
     return {
+      version: this.version,
       clusters: this.clusters,
       customization: this.customization,
       dataCubes: this.dataCubes,
@@ -143,6 +150,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
   public toJS(): AppSettingsJS {
     var js: AppSettingsJS = {};
+    if (this.version) js.version = this.version;
     js.clusters = this.clusters.map(cluster => cluster.toJS());
     js.customization = this.customization.toJS();
     js.dataCubes = this.dataCubes.map(dataCube => dataCube.toJS());
@@ -156,11 +164,12 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   public toString(): string {
-    return `[AppSettings dataCubes=${this.dataCubes.length}]`;
+    return `[AppSettings v${this.version} dataCubes=${this.dataCubes.length}]`;
   }
 
   public equals(other: AppSettings): boolean {
     return AppSettings.isAppSettings(other) &&
+      this.version === other.version &&
       immutableArraysEqual(this.clusters, other.clusters) &&
       immutableEqual(this.customization, other.customization) &&
       immutableArraysEqual(this.dataCubes, other.dataCubes) &&
@@ -178,6 +187,10 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       .map((ds) => ds.toClientDataCube());
 
     return new AppSettings(value);
+  }
+
+  public getVersion(): number {
+    return this.version;
   }
 
   public getDataCubesForCluster(clusterName: string): DataCube[] {

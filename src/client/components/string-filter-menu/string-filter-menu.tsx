@@ -18,7 +18,7 @@ require('./string-filter-menu.css');
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';
-import { Stage, Clicker, Essence, Filter, FilterMode, Dimension, DragPosition, FilterClause } from '../../../common/models/index';
+import { Stage, Clicker, Essence, Timekeeper, Filter, FilterMode, Dimension, DragPosition, FilterClause } from '../../../common/models/index';
 
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { PreviewStringFilterMenu } from '../preview-string-filter-menu/preview-string-filter-menu';
@@ -30,6 +30,7 @@ export interface StringFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   dimension: Dimension;
   essence: Essence;
+  timekeeper: Timekeeper;
   changePosition: DragPosition;
   onClose: Fn;
 
@@ -123,7 +124,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
   }
 
   render() {
-    const { dimension, clicker, essence, onClose, containerStage, openOn, inside } = this.props;
+    const { dimension, clicker, essence, timekeeper, onClose, containerStage, openOn, inside } = this.props;
     const { filterMode, searchText } = this.state;
     if (!dimension) return null;
 
@@ -133,24 +134,26 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     if (filterMode === Filter.REGEX || filterMode === Filter.CONTAINS) {
       menuSize = Stage.fromSize(350, 410);
       menuCont = <PreviewStringFilterMenu
-          dimension={dimension}
-          clicker={clicker}
-          essence={essence}
-          onClose={onClose}
-          searchText={searchText}
-          filterMode={filterMode}
-          onClauseChange={this.updateFilter.bind(this)}
-        />;
+        dimension={dimension}
+        clicker={clicker}
+        essence={essence}
+        timekeeper={timekeeper}
+        onClose={onClose}
+        searchText={searchText}
+        filterMode={filterMode}
+        onClauseChange={this.updateFilter.bind(this)}
+      />;
     } else {
       menuSize = Stage.fromSize(250, 410);
       menuCont = <SelectableStringFilterMenu
-          dimension={dimension}
-          clicker={clicker}
-          essence={essence}
-          onClose={onClose}
-          searchText={searchText}
-          filterMode={filterMode}
-          onClauseChange={this.updateFilter.bind(this)}
+        dimension={dimension}
+        clicker={clicker}
+        essence={essence}
+        timekeeper={timekeeper}
+        onClose={onClose}
+        searchText={searchText}
+        filterMode={filterMode}
+        onClauseChange={this.updateFilter.bind(this)}
       />;
     }
 

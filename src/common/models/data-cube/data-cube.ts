@@ -28,9 +28,9 @@ import { Measure, MeasureJS } from '../measure/measure';
 import { FilterClause } from '../filter-clause/filter-clause';
 import { Filter, FilterJS } from '../filter/filter';
 import { Splits, SplitsJS } from '../splits/splits';
-import { MaxTime, MaxTimeJS } from '../max-time/max-time';
 import { RefreshRule, RefreshRuleJS } from '../refresh-rule/refresh-rule';
 import { Cluster } from '../cluster/cluster';
+import { Timekeeper } from "../timekeeper/timekeeper";
 
 function formatTimeDiff(diff: number): string {
   diff = Math.round(Math.abs(diff) / 1000); // turn to seconds
@@ -98,7 +98,6 @@ export interface DataCubeValue {
   defaultSelectedMeasures?: OrderedSet<string>;
   defaultPinnedDimensions?: OrderedSet<string>;
   refreshRule?: RefreshRule;
-  maxTime?: MaxTime;
 
   cluster?: Cluster;
   executor?: Executor;
@@ -130,7 +129,6 @@ export interface DataCubeJS {
   defaultSelectedMeasures?: string[];
   defaultPinnedDimensions?: string[];
   refreshRule?: RefreshRuleJS;
-  maxTime?: MaxTimeJS;
 
   longForm?: LongForm;
 }
@@ -235,19 +233,17 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return isInstanceOf(candidate, DataCube);
   }
 
-  static updateMaxTime(dataCube: DataCube): Q.Promise<DataCube> {
-    if (dataCube.refreshRule.isRealtime()) {
-      return Q(dataCube.changeMaxTime(MaxTime.fromNow()));
+  static queryMaxTime(dataCube: DataCube): Q.Promise<Date> {
+    if (!dataCube.executor) {
+      return Q.reject<Date>(new Error('dataCube not ready'));
     }
 
     var ex = ply().apply('maxTime', $('main').max(dataCube.timeAttribute));
 
     return dataCube.executor(ex).then((dataset: Dataset) => {
       var maxTimeDate = <Date>dataset.data[0]['maxTime'];
-      if (!isNaN(maxTimeDate as any)) {
-        return dataCube.changeMaxTime(MaxTime.fromDate(maxTimeDate));
-      }
-      return dataCube;
+      if (isNaN(maxTimeDate as any)) return null;
+      return maxTimeDate;
     });
   }
 
@@ -302,8 +298,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     }
 
     var refreshRule = parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : null;
-
-    var maxTime = parameters.maxTime ? MaxTime.fromJS(parameters.maxTime) : null;
 
     var timeAttributeName = parameters.timeAttribute;
     if (cluster && cluster.type === 'druid' && !timeAttributeName) {
@@ -366,8 +360,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size ? measures.first().name : null),
       defaultSelectedMeasures: parameters.defaultSelectedMeasures ? OrderedSet(parameters.defaultSelectedMeasures) : null,
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : null,
-      refreshRule,
-      maxTime
+      refreshRule
     };
     if (cluster) {
       if (clusterName !== cluster.name) throw new Error(`Cluster name '${clusterName}' was given but '${cluster.name}' cluster was supplied (must match)`);
@@ -403,7 +396,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public defaultSelectedMeasures: OrderedSet<string>;
   public defaultPinnedDimensions: OrderedSet<string>;
   public refreshRule: RefreshRule;
-  public maxTime: MaxTime;
 
   public cluster: Cluster;
   public executor: Executor;
@@ -438,7 +430,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     var refreshRule = parameters.refreshRule || RefreshRule.query();
     this.refreshRule = refreshRule;
-    this.maxTime = parameters.maxTime || (refreshRule.isRealtime() ? MaxTime.fromNow() : null);
 
     this.cluster = parameters.cluster;
     this.executor = parameters.executor;
@@ -478,8 +469,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultSortMeasure: this.defaultSortMeasure,
       defaultSelectedMeasures: this.defaultSelectedMeasures,
       defaultPinnedDimensions: this.defaultPinnedDimensions,
-      refreshRule: this.refreshRule,
-      maxTime: this.maxTime
+      refreshRule: this.refreshRule
     };
     if (this.cluster) value.cluster = this.cluster;
     if (this.executor) value.executor = this.executor;
@@ -513,7 +503,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     if (this.attributes.length) js.attributes = AttributeInfo.toJSs(this.attributes);
     if (this.derivedAttributes) js.derivedAttributes = Expression.expressionLookupToJS(this.derivedAttributes);
     if (Object.keys(this.options).length) js.options = this.options;
-    if (this.maxTime) js.maxTime = this.maxTime.toJS();
     return js;
   }
 
@@ -526,12 +515,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public equals(other: DataCube): boolean {
-    return this.equalsWithoutMaxTime(other) &&
-      Boolean(this.maxTime) === Boolean(other.maxTime) &&
-      (!this.maxTime || this.maxTime.equals(other.maxTime));
-  }
-
-  public equalsWithoutMaxTime(other: DataCube): boolean {
     return DataCube.isDataCube(other) &&
       this.name === other.name &&
       this.title === other.title &&
@@ -710,11 +693,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     // No need for any introspection information on the client
     value.introspection = null;
 
-    // No point sending over the maxTime
-    if (this.refreshRule.isRealtime()) {
-      value.maxTime = null;
-    }
-
     // No need for the overrides
     value.attributeOverrides = null;
 
@@ -727,35 +705,31 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return Boolean(this.executor);
   }
 
-  public getMaxTimeDate(): Date {
-    var { refreshRule } = this;
-    if (refreshRule.isFixed()) return refreshRule.time;
-
-    // refreshRule is query or realtime
-    var { maxTime } = this;
-    if (!maxTime) return null;
-    return second.ceil(maxTime.time, Timezone.UTC);
+  public getMaxTime(timekeeper: Timekeeper): Date {
+    var { name, refreshRule } = this;
+    if (refreshRule.isRealtime()) {
+      return timekeeper.now();
+    } else if (refreshRule.isFixed()) {
+      return refreshRule.time;
+    } else { // refreshRule is query
+      return timekeeper.getTime(name);
+    }
   }
 
-  public updatedText(timezone: Timezone): string {
+  public updatedText(timekeeper: Timekeeper, timezone: Timezone): string {
     var { refreshRule } = this;
     if (refreshRule.isRealtime()) {
       return 'Updated ~1 second ago';
     } else if (refreshRule.isFixed()) {
       return `Fixed to ${getWallTimeString(refreshRule.time, timezone, true)}`;
     } else { // refreshRule is query
-      var { maxTime } = this;
+      var maxTime = this.getMaxTime(timekeeper);
       if (maxTime) {
-        return `Updated ${formatTimeDiff(Date.now() - maxTime.time.valueOf())} ago`;
+        return `Updated ${formatTimeDiff(timekeeper.now().valueOf() - maxTime.valueOf().valueOf())} ago`;
       } else {
         return null;
       }
     }
-  }
-
-  public shouldUpdateMaxTime(): boolean {
-    if (!this.refreshRule.shouldUpdate(this.maxTime)) return false;
-    return Boolean(this.executor) || this.refreshRule.isRealtime();
   }
 
   public getDimension(dimensionName: string): Dimension {
@@ -1008,10 +982,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     (v as any)[propertyName] = newValue;
     return new DataCube(v);
-  }
-
-  public changeMaxTime(maxTime: MaxTime) {
-    return this.change('maxTime', maxTime);
   }
 
   public changeDefaultSortMeasure(defaultSortMeasure: string) {

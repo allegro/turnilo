@@ -18,7 +18,7 @@ require('./base-visualization.css');
 
 import * as React from 'react';
 import { $, ply, Expression, Dataset } from 'plywood';
-import { Measure, VisualizationProps, DatasetLoad, Essence } from '../../../common/models/index';
+import { Measure, VisualizationProps, DatasetLoad, Essence, Timekeeper } from '../../../common/models/index';
 
 import { SPLIT } from '../../config/constants';
 
@@ -66,14 +66,14 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     } as BaseVisualizationState as S); // Geez, TypeScript
   }
 
-  protected makeQuery(essence: Essence): Expression {
+  protected makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
     var { splits, colors, dataCube } = essence;
     var measures = essence.getEffectiveMeasures();
 
     var $main = $('main');
 
     var query = ply()
-      .apply('main', $main.filter(essence.getEffectiveFilter(this.id).toExpression()));
+      .apply('main', $main.filter(essence.getEffectiveFilter(timekeeper, this.id).toExpression()));
 
     measures.forEach((measure) => {
       query = query.performAction(measure.toApplyAction());
@@ -127,10 +127,10 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return query.apply(SPLIT, makeSubQuery(0));
   }
 
-  protected fetchData(essence: Essence): void {
+  protected fetchData(essence: Essence, timekeeper: Timekeeper): void {
     var { registerDownloadableDataset } = this.props;
 
-    let query = this.makeQuery(essence);
+    let query = this.makeQuery(essence, timekeeper);
 
     this.precalculate(this.props, { loading: true });
     essence.dataCube.executor(query, { timezone: essence.timezone })
@@ -163,22 +163,23 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   componentDidMount() {
     this._isMounted = true;
-    var { essence } = this.props;
-    this.fetchData(essence);
+    var { essence, timekeeper } = this.props;
+    this.fetchData(essence, timekeeper);
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
     this.precalculate(nextProps);
-    var { essence } = this.props;
+    var { essence, timekeeper } = this.props;
     var nextEssence = nextProps.essence;
+    var nextTimekeeper = nextProps.timekeeper;
     if (
       nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, this.id) ||
+      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, this.id) ||
       nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.newEffectiveMeasures(essence)
     ) {
-      this.fetchData(nextEssence);
+      this.fetchData(nextEssence, nextTimekeeper);
     }
   }
 

@@ -22,9 +22,8 @@ import * as ReactDOM from 'react-dom';
 import '../../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
-import { EssenceMock } from '../../../../common/models/mocks';
+import { EssenceMock, TimekeeperMock } from '../../../../common/models/mocks';
 
-import { $, Expression } from 'plywood';
 import { CubeHeaderBar } from './cube-header-bar';
 
 describe('CubeHeaderBar', () => {
@@ -33,6 +32,7 @@ describe('CubeHeaderBar', () => {
       <CubeHeaderBar
         clicker={null}
         essence={EssenceMock.wikiTotals()}
+        timekeeper={TimekeeperMock.fixed()}
         onNavClick={null}
         stateful={true}
       />

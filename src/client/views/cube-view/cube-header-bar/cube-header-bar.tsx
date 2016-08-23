@@ -25,11 +25,12 @@ import { classNames } from "../../../utils/dom/dom";
 
 import { SvgIcon, HilukMenu, AutoRefreshMenu, UserMenu, SettingsMenu } from '../../../components/index';
 
-import { Clicker, Essence, DataCube, User, Customization, ExternalView } from '../../../../common/models/index';
+import { Clicker, Essence, Timekeeper, DataCube, User, Customization, ExternalView } from '../../../../common/models/index';
 
 export interface CubeHeaderBarProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
+  timekeeper: Timekeeper;
   user?: User;
   onNavClick: Fn;
   getUrlPrefix?: () => string;
@@ -97,7 +98,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   setAutoRefreshFromDataCube(dataCube: DataCube) {
     const { refreshRule } = dataCube;
     if (refreshRule.isFixed()) return;
-    this.setAutoRefreshRate(refreshRule.refresh);
+    this.setAutoRefreshRate(Duration.fromJS('PT5M')); // ToDo: make this configurable maybe?
   }
 
   setAutoRefreshRate(rate: Duration) {
@@ -143,7 +144,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderHilukMenu() {
-    const { essence, getUrlPrefix, customization, openRawDataModal, getDownloadableDataset, addEssenceToCollection, stateful } = this.props;
+    const { essence, timekeeper, getUrlPrefix, customization, openRawDataModal, getDownloadableDataset, addEssenceToCollection, stateful } = this.props;
     const { hilukMenuOpenOn } = this.state;
     if (!hilukMenuOpenOn) return null;
 
@@ -164,6 +165,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
 
     return <HilukMenu
       essence={essence}
+      timekeeper={timekeeper}
       openOn={hilukMenuOpenOn}
       onClose={this.onHilukMenuClose.bind(this)}
       getUrlPrefix={getUrlPrefix}
@@ -191,11 +193,12 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderAutoRefreshMenu() {
-    const { refreshMaxTime, essence } = this.props;
+    const { refreshMaxTime, essence, timekeeper } = this.props;
     const { autoRefreshMenuOpenOn, autoRefreshRate } = this.state;
     if (!autoRefreshMenuOpenOn) return null;
 
     return <AutoRefreshMenu
+      timekeeper={timekeeper}
       openOn={autoRefreshMenuOpenOn}
       onClose={this.onAutoRefreshMenuClose.bind(this)}
       autoRefreshRate={autoRefreshRate}

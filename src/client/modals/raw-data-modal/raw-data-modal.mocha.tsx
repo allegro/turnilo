@@ -21,8 +21,8 @@ import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 
 import '../../utils/test-utils/index';
+import { TimekeeperMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'plywood';
 import { RawDataModal } from './raw-data-modal';
 
 describe.skip('RawDataModal', () => {
@@ -31,6 +31,7 @@ describe.skip('RawDataModal', () => {
       <RawDataModal
         onClose={null}
         essence={null}
+        timekeeper={TimekeeperMock.fixed()}
       />
     );
 

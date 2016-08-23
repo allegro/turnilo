@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import * as React from 'react';
 import * as TestUtils from 'react-addons-test-utils';
-import { EssenceMock, DimensionMock, StageMock } from '../../../common/models/mocks';
+import { EssenceMock, TimekeeperMock, DimensionMock, StageMock } from '../../../common/models/mocks';
 
 import { findDOMNode } from '../../utils/test-utils/index';
 
@@ -33,6 +33,7 @@ describe('NumberFilterMenu', () => {
         clicker={null}
         dimension={DimensionMock.time()}
         essence={EssenceMock.wikiTotals()}
+        timekeeper={TimekeeperMock.fixed()}
         onClose={null}
         containerStage={StageMock.defaultA()}
         openOn={div}

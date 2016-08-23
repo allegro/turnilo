@@ -20,7 +20,7 @@ import * as Q from 'q';
 import { PivotApplication, PivotApplicationProps, PivotApplicationState } from '../pivot-application.tsx';
 
 import { Ajax } from '../../../utils/ajax/ajax';
-import { Collection, CollectionTile, DataCube, Essence, AppSettings } from '../../../../common/models/index';
+import { Collection, CollectionTile, DataCube, Essence, Timekeeper, AppSettings } from '../../../../common/models/index';
 import { generateUniqueName } from '../../../../common/utils/string/string';
 import { STRINGS } from '../../../config/constants';
 import { AddCollectionTileModal } from '../../../modals/index';
@@ -74,6 +74,10 @@ export class CollectionViewDelegate {
     return this.app.state.appSettings;
   }
 
+  private getTimekeeper(): Timekeeper {
+    return this.app.state.timekeeper;
+  }
+
   addCollection(collection: Collection): Q.Promise<string> {
     return this
       .save(this.getSettings().addOrUpdateCollection(collection))
@@ -123,7 +127,7 @@ export class CollectionViewDelegate {
   }
 
   createTile(collection: Collection, dataCube: DataCube) {
-    const appSettings = this.getSettings();
+    const timekeeper = this.getTimekeeper();
     const collectionURL = `#collection/${collection.name}`;
 
     var onCancel = () => {
@@ -139,6 +143,7 @@ export class CollectionViewDelegate {
     var getConfirmationModal = (newEssence: Essence) => {
       return <AddCollectionTileModal
         collection={collection}
+        timekeeper={timekeeper}
         essence={newEssence}
         dataCube={dataCube}
         onSave={onSave}

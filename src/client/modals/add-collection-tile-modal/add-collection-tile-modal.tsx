@@ -3,7 +3,7 @@ require('./add-collection-tile-modal.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { $, Expression, Executor, Dataset } from 'plywood';
-import { Collection, Essence, CollectionTile, DataCube, SortOn } from '../../../common/models/index';
+import { Collection, Essence, Timekeeper, CollectionTile, DataCube, SortOn } from '../../../common/models/index';
 import { classNames } from '../../utils/dom/dom';
 import { generateUniqueName } from '../../../common/utils/string/string';
 
@@ -19,6 +19,7 @@ export type CollectionMode = 'adding' | 'picking' | 'none';
 
 export interface AddCollectionTileModalProps extends React.Props<any> {
   essence: Essence;
+  timekeeper: Timekeeper;
 
   // If collection is populated, onSave is called with it and the new item
   // Else if the collections property is defined, the modal will ask the user
@@ -209,12 +210,12 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
   }
 
   toggleConvertToFixed() {
-    const { essence } = this.props;
+    const { essence, timekeeper } = this.props;
     var { newInstance } = this.state;
     const convertToFixedTime = !this.state.convertToFixedTime;
 
     if (convertToFixedTime && essence.filter.isRelative()) {
-      newInstance = newInstance.changeEssence(essence.convertToSpecificFilter());
+      newInstance = newInstance.changeEssence(essence.convertToSpecificFilter(timekeeper));
     } else {
       newInstance = newInstance.changeEssence(essence);
     }

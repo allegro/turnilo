@@ -22,7 +22,7 @@ import { Expression, $, find } from 'plywood';
 import { Timezone } from 'chronoshift';
 import { classNames } from '../../utils/dom/dom';
 import { Fn } from '../../../common/utils/general/general';
-import { Colors, Clicker, Essence, Filter, FilterClause, Stage, Measure,
+import { Colors, Clicker, Essence, Timekeeper, Filter, FilterClause, Stage, Measure,
   VisualizationProps, Collection, CollectionTile, User, Customization } from '../../../common/models/index';
 
 import * as localStorage from '../../utils/local-storage/local-storage';
@@ -48,7 +48,8 @@ export interface LinkViewLayout {
 }
 
 export interface LinkViewProps extends React.Props<any> {
-  linkViewConfig: Collection;
+  timekeeper: Timekeeper;
+  collection: Collection;
   user?: User;
   hash: string;
   updateViewHash: (newHash: string) => void;
@@ -60,7 +61,7 @@ export interface LinkViewProps extends React.Props<any> {
 }
 
 export interface LinkViewState {
-  linkItem?: CollectionTile;
+  linkTile?: CollectionTile;
   essence?: Essence;
   visualizationStage?: Stage;
   menuStage?: Stage;
@@ -77,7 +78,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   constructor() {
     super();
     this.state = {
-      linkItem: null,
+      linkTile: null,
       essence: null,
       visualizationStage: null,
       menuStage: null,
@@ -125,17 +126,17 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   componentWillMount() {
-    var { hash, linkViewConfig, updateViewHash } = this.props;
+    var { hash, collection, updateViewHash } = this.props;
 
-    var linkItem = linkViewConfig.findByName(hash);
-    if (!linkItem) {
-      linkItem = linkViewConfig.getDefaultTile();
-      updateViewHash(linkItem.name);
+    var linkTile = collection.findByName(hash);
+    if (!linkTile) {
+      linkTile = collection.getDefaultTile();
+      updateViewHash(linkTile.name);
     }
 
     this.setState({
-      linkItem,
-      essence: linkItem.essence
+      linkTile,
+      essence: linkTile.essence
     });
   }
 
@@ -145,19 +146,19 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   componentWillReceiveProps(nextProps: LinkViewProps) {
-    const { hash, linkViewConfig } = this.props;
+    const { hash, collection } = this.props;
 
     if (hash !== nextProps.hash) {
-      var linkItem = linkViewConfig.findByName(hash);
-      this.setState({ linkItem });
+      var linkTile = collection.findByName(hash);
+      this.setState({ linkTile });
     }
   }
 
   componentWillUpdate(nextProps: LinkViewProps, nextState: LinkViewState): void {
     const { updateViewHash } = this.props;
-    const { linkItem } = this.state;
-    if (updateViewHash && !nextState.linkItem.equals(linkItem)) {
-      updateViewHash(nextState.linkItem.name);
+    const { linkTile } = this.state;
+    if (updateViewHash && !nextState.linkTile.equals(linkTile)) {
+      updateViewHash(nextState.linkTile.name);
     }
   }
 
@@ -182,16 +183,16 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     });
   }
 
-  selectLinkItem(linkItem: CollectionTile) {
+  selectLinkItem(linkTile: CollectionTile) {
     const { essence } = this.state;
-    var newEssence = linkItem.essence;
+    var newEssence = linkTile.essence;
 
     if (essence.getTimeAttribute()) {
       newEssence = newEssence.changeTimeSelection(essence.getTimeSelection());
     }
 
     this.setState({
-      linkItem,
+      linkTile,
       essence: newEssence
     });
   }
@@ -261,13 +262,13 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   renderLinkPanel(style: React.CSSProperties) {
-    const { linkViewConfig } = this.props;
-    const { linkItem } = this.state;
+    const { collection } = this.props;
+    const { linkTile } = this.state;
 
     var groupId = 0;
     var lastGroup: string = null;
     var items: JSX.Element[] = [];
-    linkViewConfig.tiles.forEach(li => {
+    collection.tiles.forEach(li => {
       // Add a group header if needed
       if (lastGroup !== li.group) {
         items.push(<div
@@ -281,7 +282,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       }
 
       items.push(<div
-        className={classNames('link-item', { selected: li === linkItem })}
+        className={classNames('link-item', { selected: li === linkTile })}
         key={'li_' + li.name}
         onClick={this.selectLinkItem.bind(this, li)}
       >
@@ -299,10 +300,10 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   render() {
     var clicker = this.clicker;
 
-    var { getUrlPrefix, onNavClick, linkViewConfig, user, customization, stateful } = this.props;
-    var { deviceSize, linkItem, essence, visualizationStage, layout } = this.state;
+    var { timekeeper, getUrlPrefix, onNavClick, collection, user, customization, stateful } = this.props;
+    var { deviceSize, linkTile, essence, visualizationStage, layout } = this.state;
 
-    if (!linkItem) return null;
+    if (!linkTile) return null;
 
     var { visualization } = essence;
 
@@ -310,6 +311,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     if (essence.visResolve.isReady() && visualizationStage) {
       var visProps: VisualizationProps = {
         clicker,
+        timekeeper,
         essence,
         stage: visualizationStage
       };
@@ -341,7 +343,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
 
     return <div className='link-view'>
       <LinkHeaderBar
-        title={linkViewConfig.title}
+        title={collection.title}
         user={user}
         onNavClick={onNavClick}
         onExploreClick={this.goToCubeView.bind(this)}
@@ -365,8 +367,8 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
 
         <div className='center-panel' style={styles.centerPanel}>
           <div className='center-top-bar'>
-            <div className='link-title'>{linkItem.title}</div>
-            <div className='link-description'>{linkItem.description}</div>
+            <div className='link-title'>{linkTile.title}</div>
+            <div className='link-description'>{linkTile.description}</div>
             <div className="right-align">
               {this.renderPresets()}
             </div>
@@ -390,6 +392,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
           style={styles.pinboardPanel}
           clicker={clicker}
           essence={essence}
+          timekeeper={timekeeper}
           getUrlPrefix={getUrlPrefix}
         />
       </div>

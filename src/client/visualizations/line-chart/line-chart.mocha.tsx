@@ -21,7 +21,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import * as TestUtils from 'react-addons-test-utils';
-import { EssenceMock, StageMock } from '../../../common/models/mocks';
+import { EssenceMock, TimekeeperMock, StageMock } from '../../../common/models/mocks';
 
 import { LineChart } from './line-chart';
 
@@ -32,6 +32,7 @@ describe('LineChart', () => {
         clicker={null}
         essence={EssenceMock.wikiLineChart()}
         stage={StageMock.defaultA()}
+        timekeeper={TimekeeperMock.fixed()}
       />
     );
 

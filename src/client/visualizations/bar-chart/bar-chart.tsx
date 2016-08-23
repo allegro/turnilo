@@ -163,15 +163,16 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
     this.precalculate(nextProps);
-    var { essence } = this.props;
+    var { essence, timekeeper } = this.props;
     var nextEssence = nextProps.essence;
+    var nextTimekeeper = nextProps.timekeeper;
     if (
       nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, BarChart.id) ||
+      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, BarChart.id) ||
       nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.newEffectiveMeasures(essence)
     ) {
-      this.fetchData(nextEssence);
+      this.fetchData(nextEssence, nextTimekeeper);
     }
   }
 

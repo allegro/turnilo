@@ -17,17 +17,18 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'plywood';
-import { MaxTime, MaxTimeJS } from './max-time';
+import { TimeTag, TimeTagJS } from './time-tag';
 
-describe('MaxTime', () => {
+describe('TimeTag', () => {
   it('is an immutable class', () => {
-    testImmutableClass<MaxTimeJS>(MaxTime, [
+    testImmutableClass<TimeTagJS>(TimeTag, [
       {
+        name: 'dodo',
         time: new Date("2015-10-15T19:20:00Z"),
         updated: new Date("2015-10-15T19:20:13Z")
       },
       {
+        name: 'wikipedia',
         time: new Date("2015-10-15T19:21:00Z"),
         updated: new Date("2015-10-15T19:21:13Z")
       }

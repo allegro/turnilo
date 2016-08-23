@@ -554,7 +554,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
-    const { registerDownloadableDataset, essence, stage } = props;
+    const { registerDownloadableDataset, essence, timekeeper, stage } = props;
     const { splits, timezone, dataCube } = essence;
 
     var existingDatasetLoad = this.state.datasetLoad;
@@ -579,10 +579,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
       if (continuousDimension) {
         newState.continuousDimension = continuousDimension;
 
-        var axisRange = essence.getEffectiveFilter(LineChart.id).getExtent(continuousDimension.expression) as PlywoodRange;
+        var axisRange = essence.getEffectiveFilter(timekeeper, LineChart.id).getExtent(continuousDimension.expression) as PlywoodRange;
         if (axisRange) {
           // Special treatment for realtime data, i.e. time data where the maxTime is within Duration of the filter end
-          var maxTime = dataCube.getMaxTimeDate();
+          var maxTime = dataCube.getMaxTime(timekeeper);
           var continuousBucketAction = continuousSplit.bucketAction;
           if (maxTime && continuousBucketAction instanceof TimeBucketAction) {
             var continuousDuration = continuousBucketAction.duration;

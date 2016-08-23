@@ -22,8 +22,8 @@ import * as ReactDOM from 'react-dom';
 import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
+import { EssenceMock, TimekeeperMock, StageMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'plywood';
 import { PinboardPanel } from './pinboard-panel';
 
 describe.skip('PinboardPanel', () => {
@@ -32,6 +32,7 @@ describe.skip('PinboardPanel', () => {
       <PinboardPanel
         clicker={null}
         essence={null}
+        timekeeper={TimekeeperMock.fixed()}
       />
     );
 

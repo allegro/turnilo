@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { AppSettings } from '../common/models/index';
+import { AppSettings, Timekeeper } from '../common/models/index';
 
 export interface ViewOptions {
   version: string;
   title: string;
   user?: any;
   appSettings?: AppSettings;
+  timekeeper?: Timekeeper;
   stateful?: boolean;
 }
 
@@ -72,9 +73,9 @@ ${content}
   }
 
 export function pivotLayout(options: ViewOptions): string {
-  const { version, user, appSettings, stateful } = options;
+  const { version, user, appSettings, timekeeper, stateful } = options;
   return layout(options, `<div class="app-container"></div>
-<script>var __CONFIG__ = ${JSON.stringify({ version, user, appSettings, stateful })};</script>
+<script>var __CONFIG__ = ${JSON.stringify({ version, user, appSettings, timekeeper, stateful })};</script>
 <script charset="UTF-8" src="pivot.js?v=${version}"></script>`
   );
 }

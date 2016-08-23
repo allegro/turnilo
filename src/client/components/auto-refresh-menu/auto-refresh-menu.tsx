@@ -19,10 +19,10 @@ require('./auto-refresh-menu.css');
 import * as React from 'react';
 import { Duration, Timezone } from 'chronoshift';
 import { Fn } from '../../../common/utils/general/general';
-import { Stage, DataCube } from '../../../common/models/index';
+import { Stage, DataCube, Timekeeper } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
-import { Dropdown, DropdownProps } from '../dropdown/dropdown';
+import { Dropdown } from '../dropdown/dropdown';
 
 const AUTO_REFRESH_LABELS: Lookup<string> = {
   "null": "Off",
@@ -51,6 +51,7 @@ export interface AutoRefreshMenuProps extends React.Props<any> {
   setAutoRefreshRate: Fn;
   refreshMaxTime: Fn;
   dataCube: DataCube;
+  timekeeper: Timekeeper;
   timezone: Timezone;
 }
 
@@ -84,7 +85,7 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
   }
 
   render() {
-    var { openOn, onClose, dataCube, timezone } = this.props;
+    var { openOn, onClose, dataCube, timekeeper, timezone } = this.props;
 
     var stage = Stage.fromSize(240, 200);
     return <BubbleMenu
@@ -96,7 +97,7 @@ export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoR
     >
       {this.renderRefreshIntervalDropdown()}
       <button className="update-now-button" onClick={this.onRefreshNowClick.bind(this)}>Update now</button>
-      <div className="update-info">{dataCube.updatedText(timezone)}</div>
+      <div className="update-info">{dataCube.updatedText(timekeeper, timezone)}</div>
     </BubbleMenu>;
   }
 }

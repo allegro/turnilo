@@ -22,10 +22,9 @@ import { findDOMNode } from '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
 
-import { $, Expression } from 'plywood';
 import { FilterMenu } from './filter-menu';
 
-import { EssenceMock, StageMock, DimensionMock } from '../../../common/models/mocks';
+import { EssenceMock, StageMock, DimensionMock, TimekeeperMock } from '../../../common/models/mocks';
 
 describe('FilterMenu', () => {
   it('adds the correct class', () => {
@@ -37,6 +36,7 @@ describe('FilterMenu', () => {
         containerStage={null}
         dimension={DimensionMock.countryURL()}
         essence={EssenceMock.wikiTotals()}
+        timekeeper={TimekeeperMock.fixed()}
         changePosition={null}
         onClose={null}
         openOn={openOn}

@@ -18,7 +18,8 @@ import * as Q from 'q';
 import { External, Dataset, basicExecutorFactory, find } from 'plywood';
 import { Logger } from 'logger-tracker';
 import { pluralIfNeeded } from '../../../common/utils/general/general';
-import { AppSettings, Cluster, DataCube } from '../../../common/models/index';
+import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";
+import { AppSettings, Timekeeper, Cluster, DataCube } from '../../../common/models/index';
 import { SettingsStore } from '../settings-store/settings-store';
 import { FileManager } from '../file-manager/file-manager';
 import { ClusterManager } from '../cluster-manager/cluster-manager';
@@ -42,6 +43,7 @@ export class SettingsManager {
   public anchorPath: string;
   public settingsStore: SettingsStore;
   public appSettings: AppSettings;
+  public timeMonitor: TimeMonitor;
   public fileManagers: FileManager[];
   public clusterManagers: ClusterManager[];
   public currentWork: Q.Promise<any>;
@@ -53,6 +55,7 @@ export class SettingsManager {
     this.verbose = Boolean(options.verbose);
     this.anchorPath = options.anchorPath;
 
+    this.timeMonitor = new TimeMonitor(logger);
     this.settingsStore = settingsStore;
     this.fileManagers = [];
     this.clusterManagers = [];
@@ -69,8 +72,6 @@ export class SettingsManager {
         logger.error(e.stack);
         throw e;
       });
-
-    this.makeMaxTimeCheckTimer();
   }
 
   public isStateful(): boolean {
@@ -146,6 +147,10 @@ export class SettingsManager {
     });
   }
 
+  getTimekeeper(): Timekeeper {
+    return this.timeMonitor.timekeeper;
+  }
+
   getSettings(opts: GetSettingsOptions = {}): Q.Promise<AppSettings> {
     var currentWork = this.currentWork;
 
@@ -208,7 +213,7 @@ export class SettingsManager {
         if (oldDataCube.clusterName === 'native') {
           this.removeFileManager(oldDataCube);
         } else {
-          throw new Error(`only native datasources work for now`); // ToDo: fix
+          throw new Error(`only native data cubes work for now`); // ToDo: fix
         }
       },
       onUpdate: (newDataCube) => {
@@ -218,7 +223,7 @@ export class SettingsManager {
         if (newDataCube.clusterName === 'native') {
           tasks.push(this.addFileManager(newDataCube));
         } else {
-          throw new Error(`only native datasources work for now`); // ToDo: fix
+          throw new Error(`only native data cube work for now`); // ToDo: fix
         }
       }
     });
@@ -280,7 +285,15 @@ export class SettingsManager {
 
     var dataCube = this.appSettings.getDataCube(dataCubeName);
     if (!dataCube) throw new Error(`Unknown dataset ${dataCubeName}`);
-    this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube.updateWithDataset(changedDataset));
+    dataCube = dataCube.updateWithDataset(changedDataset);
+
+    if (dataCube.refreshRule.isQuery()) {
+      this.timeMonitor.addCheck(dataCube.name, () => {
+        return DataCube.queryMaxTime(dataCube);
+      });
+    }
+
+    this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube);
   }
 
   onExternalChange(cluster: Cluster, dataCubeName: string, changedExternal: External): Q.Promise<any> {
@@ -294,38 +307,15 @@ export class SettingsManager {
       dataCube = DataCube.fromClusterAndExternal(dataCubeName, cluster, changedExternal);
     }
     dataCube = dataCube.updateWithExternal(changedExternal);
-    this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube);
-    return this.updateDataCubeMaxTime(dataCube);
-  }
 
-  makeMaxTimeCheckTimer() {
-    const { logger } = this;
-
-    // Periodically check if max time needs to be updated
-    setInterval(() => {
-      this.appSettings.dataCubes.forEach((dataCube) => {
-        this.updateDataCubeMaxTime(dataCube);
+    if (dataCube.refreshRule.isQuery()) {
+      this.timeMonitor.addCheck(dataCube.name, () => {
+        return DataCube.queryMaxTime(dataCube);
       });
-    }, 1000).unref();
-  }
-
-  updateDataCubeMaxTime(dataCube: DataCube): Q.Promise<any> {
-    const { logger, verbose } = this;
-
-    if (dataCube.refreshRule.isQuery() && dataCube.shouldUpdateMaxTime()) {
-      return DataCube.updateMaxTime(dataCube)
-        .then(
-          (updatedDataCube) => {
-            logger.log(`Getting the latest MaxTime for '${updatedDataCube.name}'`);
-            this.appSettings = this.appSettings.addOrUpdateDataCube(updatedDataCube);
-          },
-          (e) => {
-            logger.error(`Error getting MaxTime for ${dataCube.name}: ${e.message}`);
-          }
-        );
-    } else {
-      return Q(null);
     }
+
+    this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube);
+    return Q(null);
   }
 
 }

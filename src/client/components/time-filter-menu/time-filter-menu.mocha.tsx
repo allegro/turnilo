@@ -22,7 +22,7 @@ import * as TestUtils from 'react-addons-test-utils';
 
 import '../../utils/test-utils/index';
 
-import { EssenceMock, DimensionMock, StageMock } from '../../../common/models/mocks';
+import { EssenceMock, TimekeeperMock, DimensionMock, StageMock } from '../../../common/models/mocks';
 import { TimeFilterMenu } from './time-filter-menu';
 
 describe.skip('TimeFilterMenu', () => {
@@ -35,11 +35,11 @@ describe.skip('TimeFilterMenu', () => {
         clicker={null}
         dimension={DimensionMock.countryURL()}
         essence={EssenceMock.wikiLineChart()}
+        timekeeper={TimekeeperMock.fixed()}
         onClose={null}
         containerStage={StageMock.defaultA()}
         openOn={div}
         inside={div}
-
       />
     );
 

@@ -23,7 +23,7 @@ import { Timezone } from 'chronoshift';
 import { Fn } from '../../../common/utils/general/general';
 import { FunctionSlot } from '../../utils/function-slot/function-slot';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
-import { Colors, Clicker, DataCube, Dimension, Essence, Filter, Stage, Measure,
+import { Colors, Clicker, Timekeeper, DataCube, Dimension, Essence, Filter, Stage, Measure,
   SplitCombine, Splits, VisStrategy, VisualizationProps, User,
   Customization, Manifest, ViewSupervisor, Device, DeviceSize } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
@@ -45,6 +45,7 @@ export interface CubeViewLayout {
 }
 
 export interface CubeViewProps extends React.Props<any> {
+  initTimekeeper?: Timekeeper;
   maxFilters?: number;
   maxSplits?: number;
   user?: User;
@@ -62,6 +63,7 @@ export interface CubeViewProps extends React.Props<any> {
 
 export interface CubeViewState {
   essence?: Essence;
+  timekeeper?: Timekeeper;
   visualizationStage?: Stage;
   menuStage?: Stage;
   dragOver?: boolean;
@@ -169,26 +171,32 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   refreshMaxTime() {
-    var { essence } = this.state;
+    var { essence, timekeeper } = this.state;
     var { dataCube } = essence;
     this.setState({ updatingMaxTime: true });
 
-    DataCube.updateMaxTime(dataCube)
-      .then((updatedDataCube) => {
+    DataCube.queryMaxTime(dataCube)
+      .then((updatedMaxTime) => {
         if (!this.mounted) return;
-        this.setState({ essence: essence.updateDataCube(updatedDataCube), updatingMaxTime: false  });
+        this.setState({
+          timekeeper: timekeeper.updateTime(dataCube.name, updatedMaxTime),
+          updatingMaxTime: false
+        });
       });
   }
 
   componentWillMount() {
-    var { hash, dataCube, updateViewHash } = this.props;
+    var { hash, dataCube, updateViewHash, initTimekeeper } = this.props;
     var essence = this.getEssenceFromHash(dataCube, hash);
     if (!essence) {
       if (!dataCube) throw new Error('must have data cube');
       essence = this.getEssenceFromDataCube(dataCube);
       updateViewHash(essence.toHash(), true);
     }
-    this.setState({ essence });
+    this.setState({
+      essence,
+      timekeeper: initTimekeeper || Timekeeper.EMPTY
+    });
   }
 
   componentDidMount() {
@@ -314,10 +322,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   renderRawDataModal() {
-    const { RawDataModalAsync, showRawDataModal, essence, visualizationStage } = this.state;
+    const { RawDataModalAsync, showRawDataModal, essence, timekeeper } = this.state;
     if (!RawDataModalAsync || !showRawDataModal) return null;
+
     return <RawDataModalAsync
       essence={essence}
+      timekeeper={timekeeper}
       onClose={this.onRawDataModalClose.bind(this)}
     />;
   }
@@ -374,7 +384,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     var clicker = this.clicker;
 
     var { getUrlPrefix, onNavClick, user, customization, supervisor, stateful } = this.props;
-    var { deviceSize, layout, essence, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
+    var { deviceSize, layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
 
     if (!essence) return null;
 
@@ -384,6 +394,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     if (essence.visResolve.isReady() && visualizationStage) {
       var visProps: VisualizationProps = {
         clicker,
+        timekeeper,
         essence,
         stage: visualizationStage,
         deviceSize,
@@ -419,6 +430,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     var headerBar = <CubeHeaderBar
       clicker={clicker}
       essence={essence}
+      timekeeper={timekeeper}
       user={user}
       onNavClick={onNavClick}
       getUrlPrefix={getUrlPrefix}
@@ -475,6 +487,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 ref="filterTile"
                 clicker={clicker}
                 essence={essence}
+                timekeeper={timekeeper}
                 menuStage={visualizationStage}
                 getUrlPrefix={getUrlPrefix}
               />
@@ -518,6 +531,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           style={styles.pinboardPanel}
           clicker={clicker}
           essence={essence}
+          timekeeper={timekeeper}
           getUrlPrefix={getUrlPrefix}
         />
       </div>

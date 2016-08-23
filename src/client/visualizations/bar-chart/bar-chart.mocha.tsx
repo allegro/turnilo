@@ -21,9 +21,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import * as TestUtils from 'react-addons-test-utils';
-import { EssenceMock, StageMock } from '../../../common/models/mocks';
+import { EssenceMock, TimekeeperMock, StageMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'plywood';
 import { BarChart } from './bar-chart';
 
 describe.skip('BarChart', () => {
@@ -32,6 +31,7 @@ describe.skip('BarChart', () => {
       <BarChart
         clicker={null}
         essence={EssenceMock.wikiTotals()}
+        timekeeper={TimekeeperMock.fixed()}
         stage={StageMock.defaultA()}
       />
     );

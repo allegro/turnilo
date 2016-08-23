@@ -15,15 +15,13 @@
  */
 
 import { expect } from 'chai';
-import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 import { findDOMNode } from '../../utils/test-utils/index';
 
-import { DataCubeMock } from '../../../common/models/mocks';
+import { DataCubeMock, TimekeeperMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'plywood';
 import { AutoRefreshMenu } from './auto-refresh-menu';
 
 describe('AutoRefreshMenu', () => {
@@ -40,6 +38,7 @@ describe('AutoRefreshMenu', () => {
         setAutoRefreshRate={null}
         refreshMaxTime={null}
         dataCube={dataCube}
+        timekeeper={TimekeeperMock.fixed()}
         timezone={dataCube.getDefaultTimezone()}
       />
     );

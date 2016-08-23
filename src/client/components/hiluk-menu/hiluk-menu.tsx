@@ -19,7 +19,7 @@ require('./hiluk-menu.css');
 import * as React from 'react';
 import { Dataset } from 'plywood';
 import { Fn } from '../../../common/utils/general/general';
-import { Stage, Essence, ExternalView } from '../../../common/models/index';
+import { Stage, Essence, Timekeeper, ExternalView } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { download, makeFileName } from '../../utils/download/download';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
@@ -27,6 +27,7 @@ import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
 export interface HilukMenuProps extends React.Props<any> {
   essence: Essence;
+  timekeeper: Timekeeper;
   openOn: Element;
   onClose: Fn;
   getUrlPrefix: () => string;
@@ -52,11 +53,11 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
   }
 
   componentDidMount() {
-    var { essence, getUrlPrefix } = this.props;
+    var { essence, timekeeper, getUrlPrefix } = this.props;
 
     var urlPrefix = getUrlPrefix();
     var url = essence.getURL(urlPrefix);
-    var specificUrl = essence.filter.isRelative() ? essence.convertToSpecificFilter().getURL(urlPrefix) : null;
+    var specificUrl = essence.filter.isRelative() ? essence.convertToSpecificFilter(timekeeper).getURL(urlPrefix) : null;
 
     this.setState({
       url,
@@ -71,11 +72,11 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
   }
 
   onExport() {
-    const { onClose, getDownloadableDataset, essence } = this.props;
+    const { onClose, getDownloadableDataset, essence, timekeeper } = this.props;
     const { dataCube, splits } = essence;
     if (!getDownloadableDataset) return;
 
-    const filters = essence.getEffectiveFilter().getFileString(dataCube.timeAttribute);
+    const filters = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
     var splitsString = splits.toArray().map((split) => {
       var dimension = split.getDimension(dataCube.dimensions);
       if (!dimension) return '';

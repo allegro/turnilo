@@ -21,10 +21,11 @@ import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { findByName } from 'plywood';
 
 import { replaceHash } from '../../utils/url/url';
-import { DataCube, AppSettings, User, Collection, CollectionTile, Essence, ViewSupervisor } from '../../../common/models/index';
+import { DataCube, AppSettings, User, Collection, CollectionTile, Essence, Timekeeper, ViewSupervisor } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 
 import { createFunctionSlot, FunctionSlot } from '../../utils/function-slot/function-slot';
+import { Ajax } from '../../utils/ajax/ajax';
 import { AboutModal, AddCollectionTileModal } from '../../modals/index';
 import { SideDrawer, Notifications, Notifier } from '../../components/index';
 
@@ -42,6 +43,7 @@ export interface PivotApplicationProps extends React.Props<any> {
   maxFilters?: number;
   maxSplits?: number;
   appSettings: AppSettings;
+  initTimekeeper?: Timekeeper;
   stateful?: boolean;
 }
 
@@ -52,6 +54,7 @@ export interface PivotApplicationState {
   SideDrawerAsync?: typeof SideDrawer;
 
   appSettings?: AppSettings;
+  timekeeper?: Timekeeper;
   drawerOpen?: boolean;
   selectedItem?: DataCube | Collection;
   viewType?: ViewType;
@@ -92,7 +95,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   componentWillMount() {
-    var { appSettings } = this.props;
+    var { appSettings, initTimekeeper } = this.props;
     var { dataCubes, collections } = appSettings;
 
     var hash = window.location.hash;
@@ -137,7 +140,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       viewType,
       viewHash,
       selectedItem,
-      appSettings
+      appSettings,
+      timekeeper: initTimekeeper || Timekeeper.EMPTY
     });
   }
 
@@ -147,6 +151,14 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   componentDidMount() {
     window.addEventListener('hashchange', this.globalHashChangeListener);
+
+    Ajax.settingsVersionGetter = () => {
+      const { appSettings } = this.state;
+      return appSettings.getVersion();
+    };
+    Ajax.onUpdate = () => {
+      console.log('UPDATE!!');
+    };
 
     require.ensure(['clipboard'], (require) => {
       var Clipboard = require('clipboard');
@@ -327,7 +339,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   renderAddCollectionModal() {
-    const { appSettings, selectedItem, showAddCollectionModal, essenceToAddToACollection } = this.state;
+    const { appSettings, selectedItem, timekeeper, showAddCollectionModal, essenceToAddToACollection } = this.state;
 
     if (!showAddCollectionModal) return null;
 
@@ -355,6 +367,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     return <AddCollectionTileModal
       collections={appSettings.collections}
       essence={essenceToAddToACollection}
+      timekeeper={timekeeper}
       dataCube={selectedItem as DataCube}
       onSave={onSave}
       onCancel={closeModal}
@@ -416,7 +429,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
   renderView() {
     const { maxFilters, maxSplits, user, stateful } = this.props;
-    const { viewType, viewHash, selectedItem, appSettings, cubeViewSupervisor } = this.state;
+    const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor } = this.state;
     const { dataCubes, collections, customization, linkViewConfig } = appSettings;
 
     switch (viewType) {
@@ -444,6 +457,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         return <CubeView
           user={user}
           dataCube={selectedItem as DataCube}
+          initTimekeeper={timekeeper}
           hash={viewHash}
           updateViewHash={this.updateViewHash.bind(this)}
           getUrlPrefix={this.getUrlPrefix.bind(this)}
@@ -461,6 +475,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
         return <CollectionView
           user={user}
           collections={collections}
+          timekeeper={timekeeper}
           dataCubes={dataCubes}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           customization={customization}
@@ -470,7 +485,8 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       case LINK:
         return <LinkView
           user={user}
-          linkViewConfig={linkViewConfig}
+          collection={linkViewConfig}
+          timekeeper={timekeeper}
           hash={viewHash}
           updateViewHash={this.updateViewHash.bind(this)}
           changeHash={this.changeHash.bind(this)}

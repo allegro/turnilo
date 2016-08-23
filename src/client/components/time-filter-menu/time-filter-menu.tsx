@@ -21,7 +21,7 @@ import { Timezone, second, day } from "chronoshift";
 import { $, r, Expression, LiteralExpression, TimeRange, Range, Set } from "plywood";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
-import { Clicker, Essence, Filter, FilterClause, Dimension } from "../../../common/models/index";
+import { Clicker, Essence, Timekeeper, Filter, FilterClause, Dimension } from "../../../common/models/index";
 import { formatTimeRange, DisplayYear } from "../../../common/utils/time/time";
 import { enterKey, classNames } from "../../utils/dom/dom";
 import { Button } from "../button/button";
@@ -69,6 +69,7 @@ const MENU_WIDTH = 250;
 
 export interface TimeFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
+  timekeeper: Timekeeper;
   essence: Essence;
   dimension: Dimension;
   onClose: Fn;
@@ -102,13 +103,13 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   }
 
   componentWillMount() {
-    const { essence, dimension } = this.props;
+    const { essence, timekeeper, dimension } = this.props;
     const { filter } = essence;
     const { timezone } = essence;
 
     var dimensionExpression = dimension.expression;
     var timeSelection = filter.getSelection(dimensionExpression) as Expression;
-    var selectedTimeRangeSet = essence.getEffectiveFilter().getLiteralSet(dimensionExpression);
+    var selectedTimeRangeSet = essence.getEffectiveFilter(timekeeper).getLiteralSet(dimensionExpression);
     var selectedTimeRange = (selectedTimeRangeSet && selectedTimeRangeSet.size() === 1) ? selectedTimeRangeSet.elements[0] : null;
     if (selectedTimeRange && !Range.isRange(selectedTimeRange)) selectedTimeRange = makeDateIntoTimeRange(selectedTimeRange, timezone);
     var clause = filter.clauseForExpression(dimensionExpression);
@@ -209,7 +210,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   }
 
   renderPresets() {
-    var { essence, dimension } = this.props;
+    var { essence, timekeeper, dimension } = this.props;
     var { timeSelection, hoverPreset } = this.state;
     if (!dimension) return null;
 
@@ -234,7 +235,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       let time = value.elements[0];
       previewTimeRange = makeDateIntoTimeRange(time, timezone);
     } else {
-      previewTimeRange = essence.evaluateSelection(hoverPreset ? hoverPreset.selection : timeSelection);
+      previewTimeRange = essence.evaluateSelection(hoverPreset ? hoverPreset.selection : timeSelection, timekeeper);
     }
 
     var previewText = previewTimeRange ? formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
@@ -262,7 +263,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   }
 
   renderCustom() {
-    var { essence, dimension } = this.props;
+    var { essence, timekeeper, dimension } = this.props;
     var { startTime, endTime } = this.state;
     if (!dimension) return null;
 
@@ -270,7 +271,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       <DateRangePicker
         startTime={startTime}
         endTime={endTime}
-        maxTime={essence.dataCube.getMaxTimeDate()}
+        maxTime={timekeeper.getTime(essence.dataCube.name)}
         timezone={essence.timezone}
         onStartChange={this.onStartChange.bind(this)}
         onEndChange={this.onEndChange.bind(this)}

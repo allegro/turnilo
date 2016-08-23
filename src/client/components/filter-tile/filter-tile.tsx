@@ -21,7 +21,7 @@ import * as ReactDOM from 'react-dom';
 import * as Q from 'q';
 import { Timezone, Duration, hour, day, week } from 'chronoshift';
 import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, DataCube, Filter, FilterClause, Dimension, DragPosition } from '../../../common/models/index';
+import { Stage, Clicker, Essence, Timekeeper, Filter, FilterClause, Dimension, DragPosition } from '../../../common/models/index';
 import { getFormattedClause } from '../../../common/utils/formatter/formatter';
 import { getMaxItems, SECTION_WIDTH } from '../../utils/pill-tile/pill-tile';
 
@@ -52,6 +52,7 @@ function formatLabelDummy(dimension: Dimension): string {
 export interface FilterTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
+  timekeeper: Timekeeper;
   menuStage: Stage;
   getUrlPrefix?: () => string;
 }
@@ -368,7 +369,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   };
 
   renderMenu(): JSX.Element {
-    var { essence, clicker, menuStage } = this.props;
+    var { essence, timekeeper, clicker, menuStage } = this.props;
     var { FilterMenuAsync, menuOpenOn, menuDimension, menuInside, possiblePosition, maxItems, overflowMenuOpenOn } = this.state;
     if (!FilterMenuAsync || !menuDimension) return null;
 
@@ -379,6 +380,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     return <FilterMenuAsync
       clicker={clicker}
       essence={essence}
+      timekeeper={timekeeper}
       containerStage={overflowMenuOpenOn ? null : menuStage}
       openOn={menuOpenOn}
       dimension={menuDimension}
@@ -448,7 +450,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   renderItemBlank(itemBlank: ItemBlank, style: any): JSX.Element {
-    var { essence, clicker } = this.props;
+    var { essence, timekeeper, clicker } = this.props;
     var { menuDimension } = this.state;
 
     var { dimension, clause, source } = itemBlank;
@@ -462,7 +464,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dimension === menuDimension ? 'selected' : undefined
     ].filter(Boolean).join(' ');
 
-    var evaluatedClause = dimension.kind === 'time' && clause ? essence.evaluateClause(clause) : clause;
+    var evaluatedClause = dimension.kind === 'time' && clause ? essence.evaluateClause(clause, timekeeper) : clause;
     var timezone = essence.timezone;
 
     if (source === 'from-highlight') {

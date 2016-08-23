@@ -13,6 +13,7 @@
       <w>compat</w>
       <w>dasharray</w>
       <w>dashboarding</w>
+      <w>datacube</w>
       <w>doctype</w>
       <w>dragend</w>
       <w>foldability</w>
@@ -60,6 +61,7 @@
       <w>slanty</w>
       <w>sourcemap</w>
       <w>stdall</w>
+      <w>stringified</w>
       <w>subsplit</w>
       <w>supertest</w>
       <w>svgs</w>

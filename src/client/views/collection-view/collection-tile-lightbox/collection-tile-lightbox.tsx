@@ -24,7 +24,7 @@ import { STRINGS } from '../../../config/constants';
 import { isInside, classNames } from '../../../utils/dom/dom';
 
 import { SvgIcon, GlobalEventListener, BodyPortal, GoldenCenter, BubbleMenu, ImmutableInput, Notifier } from '../../../components/index';
-import { Collection, CollectionTile, VisualizationProps, Stage, Essence } from '../../../../common/models/index';
+import { Collection, CollectionTile, VisualizationProps, Stage, Essence, Timekeeper } from '../../../../common/models/index';
 
 import { COLLECTION_ITEM as LABELS } from '../../../../common/models/labels';
 
@@ -33,6 +33,7 @@ import { getVisualizationComponent } from '../../../visualizations/index';
 export interface CollectionTileLightboxProps extends React.Props<any> {
   collection?: Collection;
   tileId?: string;
+  timekeeper: Timekeeper;
   onEdit?: (collection: Collection, tile: CollectionTile) => void;
   onDelete?: (collection: Collection, tile: CollectionTile) => void;
   onDuplicate?: (collection: Collection, tile: CollectionTile) => Q.Promise<string>;
@@ -290,6 +291,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
   }
 
   render() {
+    const { timekeeper } = this.props;
     const { tile, visualizationStage, editMenuOpen, moreMenuOpen } = this.state;
 
     if (!tile) return null;
@@ -301,6 +303,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
       var visProps: VisualizationProps = {
         clicker: {},
         essence,
+        timekeeper,
         stage: visualizationStage
       };
 

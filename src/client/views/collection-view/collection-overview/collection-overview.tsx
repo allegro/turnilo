@@ -17,7 +17,7 @@
 require('./collection-overview.css');
 
 import * as React from 'react';
-import { Collection, CollectionTile } from '../../../../common/models/index';
+import { Collection, CollectionTile, Timekeeper } from '../../../../common/models/index';
 import { SvgIcon } from '../../../components/index';
 
 import { CollectionTileCard } from '../collection-tile-card/collection-tile-card';
@@ -25,6 +25,7 @@ import { CollectionTileCard } from '../collection-tile-card/collection-tile-card
 import { setDragGhost, classNames, getYFromEvent, getXFromEvent } from '../../../utils/dom/dom';
 
 export interface CollectionOverviewProps extends React.Props<any> {
+  timekeeper: Timekeeper;
   collection: Collection;
   collectionId?: string;
   onReorder?: (oldIndex: number, newIndex: number) => void;
@@ -120,7 +121,7 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
   }
 
   renderTile(tile: CollectionTile, i: number): JSX.Element {
-    const { editionMode, onDelete, collection } = this.props;
+    const { timekeeper, editionMode, onDelete, collection } = this.props;
     const { draggedTile, dropIndex, dropAfter } = this.state;
 
     const onDeleteClick = (tile: CollectionTile) => onDelete(collection, tile);
@@ -134,6 +135,7 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     return <CollectionTileCard
       className={classes}
       tile={tile}
+      timekeeper={timekeeper}
       key={tile.name}
       onExpand={this.onExpand.bind(this)}
       onDragOver={this.dragOver.bind(this, tile)}

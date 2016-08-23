@@ -20,7 +20,7 @@ import * as React from 'react';
 import { $, Expression, SortAction } from 'plywood';
 import { STRINGS } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { Clicker, Essence, SortOn, VisStrategy, Colors } from '../../../common/models/index';
+import { Clicker, Essence, Timekeeper, SortOn, VisStrategy, Colors } from '../../../common/models/index';
 import { DragManager } from '../../utils/drag-manager/drag-manager';
 import { PinboardMeasureTile } from '../pinboard-measure-tile/pinboard-measure-tile';
 import { DimensionTile } from '../dimension-tile/dimension-tile';
@@ -28,6 +28,7 @@ import { DimensionTile } from '../dimension-tile/dimension-tile';
 export interface PinboardPanelProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
+  timekeeper: Timekeeper;
   getUrlPrefix?: () => string;
   style?: React.CSSProperties;
 }
@@ -139,7 +140,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   }
 
   render() {
-    var { clicker, essence, getUrlPrefix, style } = this.props;
+    var { clicker, essence, timekeeper, getUrlPrefix, style } = this.props;
     var { dragOver } = this.state;
     var { dataCube, pinnedDimensions, colors } = essence;
 
@@ -162,6 +163,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         legendDimensionTile = <DimensionTile
           clicker={clicker}
           essence={essence}
+          timekeeper={timekeeper}
           dimension={dimension}
           sortOn={colorsSortOn}
           colors={colors}
@@ -181,6 +183,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         key={dimension.name}
         clicker={clicker}
         essence={essence}
+        timekeeper={timekeeper}
         dimension={dimension}
         sortOn={pinnedSortSortOn}
         onClose={clicker.unpin ? clicker.unpin.bind(clicker, dimension) : null}

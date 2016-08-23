@@ -436,8 +436,7 @@ describe('DataCube', () => {
       defaultTimezone: 'Etc/UTC',
       defaultFilter: { op: 'literal', value: true },
       refreshRule: {
-        refresh: "PT1M",
-        rule: "fixed"
+        rule: "realtime"
       }
     });
 
@@ -665,8 +664,7 @@ describe('DataCube', () => {
         defaultTimezone: 'Etc/UTC',
         defaultFilter: { op: 'literal', value: true },
         refreshRule: {
-          refresh: "PT1M",
-          rule: "fixed"
+          rule: "realtime"
         },
         dimensions: [
           {
@@ -698,8 +696,7 @@ describe('DataCube', () => {
       defaultTimezone: 'Etc/UTC',
       defaultFilter: { op: 'literal', value: true },
       refreshRule: {
-        refresh: "PT1M",
-        rule: "fixed"
+        rule: "realtime"
       }
     });
 

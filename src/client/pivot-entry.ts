@@ -19,7 +19,7 @@ require('./pivot-entry.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { addErrorMonitor } from './utils/error-monitor/error-monitor';
-import { DataCube, AppSettingsJS } from '../common/models/index';
+import { DataCube, AppSettingsJS, TimekeeperJS } from '../common/models/index';
 
 import { Loader } from './components/loader/loader';
 
@@ -38,6 +38,7 @@ interface Config {
   version: string;
   user: any;
   appSettings: AppSettingsJS;
+  timekeeper: TimekeeperJS;
   stateful: boolean;
 }
 
@@ -46,7 +47,6 @@ if (!config || !config.version || !config.appSettings || !config.appSettings.dat
   throw new Error('config not found');
 }
 
-let view = window.location.hash.split(/\//)[0];
 var version = config.version;
 
 require.ensure([
@@ -57,11 +57,11 @@ require.ensure([
   '../common/manifests/index',
   './applications/pivot-application/pivot-application'
 ], (require) => {
-  const WallTime = require('chronoshift').WallTime;
-  const Ajax = require('./utils/ajax/ajax').Ajax;
-  const AppSettings = require('../common/models/index').AppSettings;
-  const MANIFESTS = require('../common/manifests/index').MANIFESTS;
-  const PivotApplication = require('./applications/pivot-application/pivot-application').PivotApplication;
+  const { WallTime } = require('chronoshift');
+  const { Ajax } = require('./utils/ajax/ajax');
+  const { AppSettings, Timekeeper } = require('../common/models/index');
+  const { MANIFESTS } = require('../common/manifests/index');
+  const { PivotApplication } = require('./applications/pivot-application/pivot-application');
 
   Ajax.version = version;
 
@@ -85,6 +85,7 @@ require.ensure([
         version,
         user: config.user,
         appSettings,
+        initTimekeeper: Timekeeper.fromJS(config.timekeeper),
         stateful: Boolean(config.stateful)
       }
     ),

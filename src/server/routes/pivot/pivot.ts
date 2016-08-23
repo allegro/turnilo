@@ -15,10 +15,10 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { Timezone, WallTime, Duration } from 'chronoshift';
 
 import { PivotRequest } from '../../utils/index';
 import { pivotLayout } from '../../views';
+import { SETTINGS_MANAGER } from '../../config';
 
 var router = Router();
 
@@ -31,6 +31,7 @@ router.get('/', (req: PivotRequest, res: Response, next: Function) => {
         title: appSettings.customization.getTitle(req.version),
         user: req.user,
         appSettings: clientSettings,
+        timekeeper: SETTINGS_MANAGER.getTimekeeper(),
         stateful: req.stateful
       }));
     })

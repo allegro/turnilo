@@ -20,7 +20,7 @@ import * as React from "react";
 import { $, Dataset, SortAction, r } from "plywood";
 import { Fn, collect } from "../../../common/utils/general/general";
 import { STRINGS, SEARCH_WAIT } from "../../config/constants";
-import { Clicker, Essence, Filter, FilterClause, FilterMode, Dimension } from "../../../common/models/index";
+import { Clicker, Essence, Timekeeper, Filter, FilterClause, FilterMode, Dimension } from "../../../common/models/index";
 import { enterKey, classNames } from "../../utils/dom/dom";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
@@ -34,6 +34,7 @@ export interface PreviewStringFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   dimension: Dimension;
   essence: Essence;
+  timekeeper: Timekeeper;
   onClose: Fn;
   filterMode: FilterMode;
   searchText: string;
@@ -64,17 +65,17 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
     this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
       if (!this.mounted) return;
-      var { essence, dimension, searchText } = this.props;
-      this.fetchData(essence, dimension, searchText);
+      var { essence, timekeeper, dimension, searchText } = this.props;
+      this.fetchData(essence, timekeeper, dimension, searchText);
     });
   }
 
-  fetchData(essence: Essence, dimension: Dimension, searchText: string): void {
+  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, searchText: string): void {
     var { dataCube } = essence;
     var nativeCount = dataCube.getMeasure('count');
     var measureExpression = nativeCount ? nativeCount.expression : $('main').count();
 
-    var filterExpression = essence.getEffectiveFilter(null, dimension).toExpression();
+    var filterExpression = essence.getEffectiveFilter(timekeeper, null, dimension).toExpression();
 
     var query = $('main')
       .filter(filterExpression)
@@ -109,9 +110,9 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   componentWillMount() {
-    var { essence, dimension, searchText, filterMode } = this.props;
+    var { essence, timekeeper, dimension, searchText, filterMode } = this.props;
     if (searchText && filterMode === Filter.REGEX && !this.checkRegex(searchText)) return;
-    this.fetchData(essence, dimension, searchText);
+    this.fetchData(essence, timekeeper, dimension, searchText);
   }
 
   componentDidMount() {

@@ -24,7 +24,7 @@ import { $, r, Dataset, SortAction, TimeRange, RefExpression, Expression, TimeBu
 
 import { formatterFromData, collect, formatGranularity, formatTimeBasedOnGranularity, formatNumberRange } from '../../../common/utils/index';
 import { Fn } from '../../../common/utils/general/general';
-import { Clicker, Essence, VisStrategy, Dimension, SortOn, SplitCombine, Filter, FilterSelection, FilterMode,
+import { Clicker, Essence, Timekeeper, VisStrategy, Dimension, SortOn, SplitCombine, Filter, FilterSelection, FilterMode,
   Colors, Granularity, ContinuousDimensionKind, getBestGranularityForRange, granularityEquals,
   granularityToString, getDefaultGranularityForKind, getGranularities } from '../../../common/models/index';
 
@@ -47,6 +47,7 @@ const FOLDER_BOX_HEIGHT = 30;
 export interface DimensionTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
+  timekeeper: Timekeeper;
   dimension: Dimension;
   sortOn: SortOn;
   colors?: Colors;
@@ -87,18 +88,18 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
       if (!this.mounted) return;
-      var { essence, dimension, sortOn } = this.props;
+      var { essence, timekeeper, dimension, sortOn } = this.props;
       var { unfolded } = this.state;
-      this.fetchData(essence, dimension, sortOn, unfolded);
+      this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
     });
 
   }
 
-  fetchData(essence: Essence, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Granularity): void {
+  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Granularity): void {
     var { searchText } = this.state;
     var { dataCube, colors } = essence;
 
-    var filter = essence.getEffectiveFilter();
+    var filter = essence.getEffectiveFilter(timekeeper);
     // don't remove filter if time
     if (unfolded && dimension !== essence.getTimeDimension()) {
       filter = filter.remove(dimension.expression);
@@ -129,7 +130,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
       if (!selectedGranularity) {
         if (filterSelection) {
-          var range = dimension.kind === 'time' ? essence.evaluateSelection(filterSelection as Expression) : (filterSelection as Expression).getLiteralValue().extent();
+          var range = dimension.kind === 'time' ? essence.evaluateSelection(filterSelection as Expression, timekeeper) : (filterSelection as Expression).getLiteralValue().extent();
           selectedGranularity = getBestGranularityForRange(range, true, dimension.bucketedBy, dimension.granularities);
         } else {
           selectedGranularity = getDefaultGranularityForKind(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy, dimension.granularities);
@@ -199,15 +200,16 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   componentWillMount() {
-    var { essence, dimension, colors, sortOn } = this.props;
+    var { essence, timekeeper, dimension, colors, sortOn } = this.props;
     var unfolded = this.updateFoldability(essence, dimension, colors);
-    this.fetchData(essence, dimension, sortOn, unfolded);
+    this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
   }
 
   componentWillReceiveProps(nextProps: DimensionTileProps) {
-    var { essence, dimension, sortOn } = this.props;
+    var { essence, timekeeper, dimension, sortOn } = this.props;
     var { selectedGranularity } = this.state;
     var nextEssence = nextProps.essence;
+    var nextTimekeeper = nextProps.timekeeper;
     var nextDimension = nextProps.dimension;
     var nextColors = nextProps.colors;
     var nextSortOn = nextProps.sortOn;
@@ -226,13 +228,13 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     if (
       essence.differentDataCube(nextEssence) ||
-      essence.differentEffectiveFilter(nextEssence, null, unfolded ? dimension : null) ||
+      essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, null, unfolded ? dimension : null) ||
       essence.differentColors(nextEssence) || !dimension.equals(nextDimension) || !sortOn.equals(nextSortOn) ||
       essence.differentTimezoneMatters(nextEssence) ||
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === 'time' ||
       differentTimeFilterSelection
     ) {
-      this.fetchData(nextEssence, nextDimension, nextSortOn, unfolded, persistedGranularity);
+      this.fetchData(nextEssence, nextTimekeeper, nextDimension, nextSortOn, unfolded, persistedGranularity);
     }
 
     this.setFilterModeFromProps(nextProps);
@@ -328,11 +330,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   toggleFold() {
-    var { essence, dimension, sortOn } = this.props;
+    var { essence, timekeeper, dimension, sortOn } = this.props;
     var { unfolded } = this.state;
     unfolded = !unfolded;
     this.setState({ unfolded });
-    this.fetchData(essence, dimension, sortOn, unfolded);
+    this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
   }
 
   onDragStart(e: DragEvent) {
@@ -388,10 +390,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   onSelectGranularity(selectedGranularity: Granularity) {
     if (selectedGranularity === this.state.selectedGranularity) return;
-    var { essence, dimension, colors, sortOn } = this.props;
+    var { essence, timekeeper, dimension, colors, sortOn } = this.props;
     var unfolded = this.updateFoldability(essence, dimension, colors);
     this.setState({ dataset: null });
-    this.fetchData(essence, dimension, sortOn, unfolded, selectedGranularity);
+    this.fetchData(essence, timekeeper, dimension, sortOn, unfolded, selectedGranularity);
   }
 
   getGranularityActions(): TileAction[] {

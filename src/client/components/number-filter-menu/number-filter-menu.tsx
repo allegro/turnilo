@@ -19,7 +19,7 @@ require('./number-filter-menu.css');
 import * as React from 'react';
 import { Set, NumberRange, LiteralExpression } from 'plywood';
 
-import { FilterClause, Clicker, Essence, Filter, Dimension, FilterMode, Stage } from '../../../common/models/index';
+import { FilterClause, Clicker, Essence, Timekeeper, Filter, Dimension, FilterMode, Stage } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { enterKey } from '../../utils/dom/dom';
@@ -44,6 +44,7 @@ const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(Fil
 export interface NumberFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
+  timekeeper: Timekeeper;
   dimension: Dimension;
   onClose: Fn;
 
@@ -197,7 +198,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   }
 
   render() {
-    const { essence, dimension, onClose, containerStage, openOn, inside } = this.props;
+    const { essence, timekeeper, dimension, onClose, containerStage, openOn, inside } = this.props;
     const { endInput, startInput, end, start, filterMode } = this.state;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
 
@@ -236,6 +237,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
         end={end}
         dimension={dimension}
         essence={essence}
+        timekeeper={timekeeper}
         exclude={filterMode === Filter.EXCLUDED}
       />
 

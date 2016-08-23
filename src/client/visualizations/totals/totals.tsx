@@ -19,7 +19,7 @@ require('./totals.css');
 import * as React from 'react';
 import { $, ply, Expression, Executor, Dataset } from 'plywood';
 import { TOTALS_MANIFEST } from '../../../common/manifests/totals/totals';
-import { Stage, Essence, VisualizationProps, DatasetLoad } from '../../../common/models/index';
+import { Stage, Essence, Timekeeper, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 
 import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
 
@@ -39,20 +39,21 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
 
   componentDidMount() {
     this._isMounted = true;
-    var { essence } = this.props;
-    this.fetchData(essence);
+    var { essence, timekeeper } = this.props;
+    this.fetchData(essence, timekeeper);
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
     this.precalculate(nextProps);
-    var { essence } = this.props;
+    var { essence, timekeeper } = this.props;
     var nextEssence = nextProps.essence;
+    var nextTimekeeper = nextProps.timekeeper;
     if (
       nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, Totals.id) ||
+      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, Totals.id) ||
       nextEssence.newEffectiveMeasures(essence)
     ) {
-      this.fetchData(nextEssence);
+      this.fetchData(nextEssence, nextTimekeeper);
     }
   }
 
@@ -60,9 +61,9 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     this._isMounted = false;
   }
 
-  makeQuery(essence: Essence): Expression {
+  makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
     var query = ply()
-      .apply('main', $('main').filter(essence.getEffectiveFilter(Totals.id).toExpression()));
+      .apply('main', $('main').filter(essence.getEffectiveFilter(timekeeper, Totals.id).toExpression()));
 
     essence.getEffectiveMeasures().forEach((measure) => {
       query = query.performAction(measure.toApplyAction());

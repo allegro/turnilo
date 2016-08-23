@@ -19,7 +19,7 @@ require('./collection-view.css');
 import * as React from 'react';
 import * as Q from 'q';
 
-import { Collection, User, Customization, CollectionTile, DataCube } from '../../../common/models/index';
+import { Collection, Timekeeper, User, Customization, CollectionTile, DataCube } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';
 
 import { STRINGS } from '../../config/constants';
@@ -38,6 +38,7 @@ import { CollectionTileLightbox } from './collection-tile-lightbox/collection-ti
 export interface CollectionViewProps extends React.Props<any> {
   dataCubes: DataCube[];
   collections: Collection[];
+  timekeeper: Timekeeper;
   user?: User;
   onNavClick?: Fn;
   customization?: Customization;
@@ -147,7 +148,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
   }
 
   render() {
-    const { user, collections, customization, onNavClick, delegate, dataCubes } = this.props;
+    const { user, collections, timekeeper, customization, onNavClick, delegate, dataCubes } = this.props;
     const { collection, tempCollection, editingOverview } = this.state;
 
     const currentCollection = tempCollection || collection;
@@ -177,6 +178,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
           <Route fragment=":collectionId" alwaysShowOrphans={true}>
             <CollectionOverview
               collection={currentCollection}
+              timekeeper={timekeeper}
               editionMode={editingOverview}
               onReorder={this.onTilesReorder.bind(this)}
               onDelete={this.onTilesDelete.bind(this)}
@@ -185,6 +187,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
             <Route fragment=":tileId">
               <CollectionTileLightbox
                 collection={currentCollection}
+                timekeeper={timekeeper}
                 onChange={delegate ? delegate.updateTile : null}
                 onEdit={delegate ? delegate.editTile : null}
                 onDelete={delegate ? delegate.deleteTile : null}

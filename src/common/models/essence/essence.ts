@@ -28,6 +28,7 @@ import { Splits, SplitsJS } from '../splits/splits';
 import { SplitCombine } from '../split-combine/split-combine';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
+import { Timekeeper } from '../timekeeper/timekeeper';
 import { Colors, ColorsJS } from '../colors/colors';
 import { Manifest, Resolve } from '../manifest/manifest';
 
@@ -440,25 +441,21 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.dataCube.getTimeDimension();
   }
 
-  public evaluateSelection(selection: Expression, now: Date = new Date()): TimeRange {
-    var { dataCube, timezone } = this;
-    var maxTime = dataCube.getMaxTimeDate();
-    return FilterClause.evaluate(selection, now, maxTime, timezone);
+  public evaluateSelection(selection: Expression, timekeeper: Timekeeper): TimeRange {
+    var { timezone, dataCube } = this;
+    return FilterClause.evaluate(selection, timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
   }
 
-  public evaluateClause(clause: FilterClause, now: Date = new Date()): FilterClause {
-    var { dataCube, timezone } = this;
-    var maxTime = dataCube.getMaxTimeDate();
-    return clause.evaluate(now, maxTime, timezone);
+  public evaluateClause(clause: FilterClause, timekeeper: Timekeeper): FilterClause {
+    var { timezone, dataCube } = this;
+    return clause.evaluate(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
   }
 
-  public getEffectiveFilter(highlightId: string = null, unfilterDimension: Dimension = null): Filter {
+  public getEffectiveFilter(timekeeper: Timekeeper, highlightId: string = null, unfilterDimension: Dimension = null): Filter {
     var { dataCube, filter, highlight, timezone } = this;
     if (highlight && (highlightId !== highlight.owner)) filter = highlight.applyToFilter(filter);
     if (unfilterDimension) filter = filter.remove(unfilterDimension.expression);
-
-    var maxTime = dataCube.getMaxTimeDate();
-    return filter.getSpecificFilter(new Date(), maxTime, timezone);
+    return filter.getSpecificFilter(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
   }
 
   public getTimeSelection(): Expression {
@@ -563,9 +560,9 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return Boolean(this.highlight && !this.highlight.equals(other.highlight));
   }
 
-  public differentEffectiveFilter(other: Essence, highlightId: string = null, unfilterDimension: Dimension = null): boolean {
-    var myEffectiveFilter = this.getEffectiveFilter(highlightId, unfilterDimension);
-    var otherEffectiveFilter = other.getEffectiveFilter(highlightId, unfilterDimension);
+  public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, highlightId: string = null, unfilterDimension: Dimension = null): boolean {
+    var myEffectiveFilter = this.getEffectiveFilter(myTimekeeper, highlightId, unfilterDimension);
+    var otherEffectiveFilter = other.getEffectiveFilter(otherTimekeeper, highlightId, unfilterDimension);
     return !myEffectiveFilter.equals(otherEffectiveFilter);
   }
 
@@ -602,11 +599,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var { dataCube, visualizations } = this;
 
     if (dataCube.equals(newDataCube)) return this; // nothing to do
-    if (dataCube.equalsWithoutMaxTime(newDataCube)) { // Updated maxTime
-      var value = this.valueOf();
-      value.dataCube = newDataCube;
-      return new Essence(value);
-    }
 
     var value = this.valueOf();
     value.dataCube = newDataCube;
@@ -667,17 +659,16 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.changeFilter(filter.setSelection(timeAttribute, check));
   }
 
-  public convertToSpecificFilter(): Essence {
+  public convertToSpecificFilter(timekeeper: Timekeeper): Essence {
     var { dataCube, filter, timezone } = this;
     if (!filter.isRelative()) return this;
-    var maxTime = dataCube.getMaxTimeDate();
-    return this.changeFilter(filter.getSpecificFilter(new Date(), maxTime, timezone));
+    return this.changeFilter(filter.getSpecificFilter(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone));
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
-    var { visualizations, dataCube, visualization, visResolve, colors } = this;
+    var { visualizations, dataCube, visualization, visResolve, filter, colors } = this;
 
-    splits = splits.updateWithFilter(this.getEffectiveFilter(), dataCube.dimensions);
+    splits = splits.updateWithFilter(filter, dataCube.dimensions);
 
     // If in manual mode stay there, keep the vis regardless of suggested strategy
     if (visResolve.isManual()) {
@@ -716,7 +707,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public updateSplitsWithFilter(): Essence {
     var value = this.valueOf();
-    var newSplits = value.splits.updateWithFilter(this.getEffectiveFilter(), this.dataCube.dimensions);
+    var newSplits = value.splits.updateWithFilter(this.filter, this.dataCube.dimensions);
     if (value.splits === newSplits) return this;
     value.splits = newSplits;
     return new Essence(value);

@@ -21,7 +21,7 @@ import * as ReactDOM from 'react-dom';
 
 import { $, Dataset, ply } from 'plywood';
 
-import { Essence, Dimension, Filter } from '../../../common/models/index';
+import { Essence, Timekeeper, Dimension } from '../../../common/models/index';
 import { toSignificantDigits, getNumberOfWholeDigits } from '../../../common/utils/general/general';
 
 import { getXFromEvent, clamp, classNames } from '../../utils/dom/dom';
@@ -57,6 +57,7 @@ export interface NumberRangePickerProps extends React.Props<any> {
   start: number;
   end: number;
   essence: Essence;
+  timekeeper: Timekeeper;
   dimension: Dimension;
   onRangeStartChange: (n: number) => void;
   onRangeEndChange: (n: number) => void;
@@ -87,9 +88,9 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     };
   }
 
-  fetchData(essence: Essence, dimension: Dimension, rightBound: number): void {
+  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, rightBound: number): void {
     var { dataCube } = essence;
-    var filterExpression = essence.getEffectiveFilter(null, dimension).toExpression();
+    var filterExpression = essence.getEffectiveFilter(timekeeper, null, dimension).toExpression();
     var $main = $('main');
     var query = ply()
       .apply('main', $main.filter(filterExpression))
@@ -130,12 +131,12 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     this.mounted = true;
     var node = ReactDOM.findDOMNode(this.refs['number-range-picker']);
     var rect =  node.getBoundingClientRect();
-    var { essence, dimension } = this.props;
+    var { essence, timekeeper, dimension } = this.props;
     var leftOffset = rect.left;
     var rightBound = rect.width;
 
     this.setState({ leftOffset, rightBound });
-    this.fetchData(essence, dimension, rightBound);
+    this.fetchData(essence, timekeeper, dimension, rightBound);
 
   }
 

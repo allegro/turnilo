@@ -20,7 +20,7 @@ import * as React from "react";
 import { $, r, Dataset, SortAction, Set } from "plywood";
 import { Fn, collect } from "../../../common/utils/general/general";
 import { STRINGS, SEARCH_WAIT } from "../../config/constants";
-import { Clicker, Essence, Filter, FilterClause, FilterMode, Dimension, Colors } from "../../../common/models/index";
+import { Clicker, Essence, Timekeeper, Filter, FilterClause, FilterMode, Dimension, Colors } from "../../../common/models/index";
 import { enterKey, classNames } from "../../utils/dom/dom";
 import { Checkbox, CheckboxType } from "../checkbox/checkbox";
 import { Loader } from "../loader/loader";
@@ -35,6 +35,7 @@ export interface SelectableStringFilterMenuProps extends React.Props<any> {
   clicker: Clicker;
   dimension: Dimension;
   essence: Essence;
+  timekeeper: Timekeeper;
   onClose: Fn;
   filterMode?: FilterMode;
   searchText: string;
@@ -69,17 +70,17 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
     this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
       if (!this.mounted) return;
-      var { essence, dimension, searchText } = this.props;
-      this.fetchData(essence, dimension, searchText);
+      var { essence, timekeeper, dimension, searchText } = this.props;
+      this.fetchData(essence, timekeeper, dimension, searchText);
     });
   }
 
-  fetchData(essence: Essence, dimension: Dimension, searchText: string): void {
+  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, searchText: string): void {
     var { dataCube } = essence;
     var nativeCount = dataCube.getMeasure('count');
     var measureExpression = nativeCount ? nativeCount.expression : $('main').count();
 
-    var filterExpression = essence.getEffectiveFilter(null, dimension).toExpression();
+    var filterExpression = essence.getEffectiveFilter(timekeeper, null, dimension).toExpression();
 
     if (searchText) {
       filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), 'ignoreCase'));
@@ -118,7 +119,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   componentWillMount() {
-    var { essence, dimension, searchText } = this.props;
+    var { essence, timekeeper, dimension, searchText } = this.props;
     var { filter, colors } = essence;
 
     var myColors = (colors && colors.dimension === dimension.name ? colors : null);
@@ -133,7 +134,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       colors: myColors
     });
 
-    this.fetchData(essence, dimension, searchText);
+    this.fetchData(essence, timekeeper, dimension, searchText);
   }
 
   componentDidMount() {

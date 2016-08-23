@@ -21,8 +21,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import * as TestUtils from 'react-addons-test-utils';
+import { EssenceMock, TimekeeperMock, StageMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'plywood';
 import { Table } from './table';
 
 describe.skip('Table', () => {
@@ -31,6 +31,7 @@ describe.skip('Table', () => {
       <Table
         clicker={null}
         essence={null}
+        timekeeper={TimekeeperMock.fixed()}
         stage={null}
       />
     );

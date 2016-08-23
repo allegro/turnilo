@@ -260,9 +260,6 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   if (refreshRule.time) {
     lines.push(`  time: ${refreshRule.time.toISOString()}`);
   }
-  if (refreshRule.refresh) {
-    lines.push(`  refresh: ${refreshRule.refresh.toString()}`);
-  }
   lines.push('');
 
   var addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);

@@ -21,7 +21,7 @@ import * as TestUtils from 'react-addons-test-utils';
 import { findDOMNode } from '../../utils/test-utils/index';
 
 import { NumberRangePicker } from './number-range-picker';
-import { EssenceMock, DimensionMock } from '../../../common/models/mocks';
+import { EssenceMock, TimekeeperMock, DimensionMock } from '../../../common/models/mocks';
 
 describe('NumberRangePicker', () => {
   it('adds the correct class', () => {
@@ -31,6 +31,7 @@ describe('NumberRangePicker', () => {
         end={10}
         onRangeStartChange={null}
         essence={EssenceMock.wikiTotals()}
+        timekeeper={TimekeeperMock.fixed()}
         dimension={DimensionMock.countryURL()}
         onRangeEndChange={null}
         exclude={false}

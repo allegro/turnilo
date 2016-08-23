@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 import { findDOMNode } from '../../utils/test-utils/index';
-import { EssenceMock } from '../../../common/models/mocks';
+import { EssenceMock, TimekeeperMock } from '../../../common/models/mocks';
 
 import { $, Expression } from 'plywood';
 import { HilukMenu } from './hiluk-menu';
@@ -32,6 +32,7 @@ describe.skip('HilukMenu', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <HilukMenu
         essence={EssenceMock.wikiTotals()}
+        timekeeper={TimekeeperMock.fixed()}
         onClose={null}
         openOn={openOn}
         getUrlPrefix={() => { return 'http://stackoverflow.com/'; }}

@@ -23,10 +23,9 @@ import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
 
-import { $, Expression } from 'plywood';
 import { DimensionTile } from './dimension-tile';
 
-import { EssenceMock, DimensionMock, SortOnMock } from '../../../common/models/mocks';
+import { EssenceMock, TimekeeperMock, DimensionMock, SortOnMock } from '../../../common/models/mocks';
 
 describe('DimensionTile', () => {
   it('adds the correct class', () => {
@@ -36,6 +35,7 @@ describe('DimensionTile', () => {
         dimension={DimensionMock.countryURL()}
         sortOn={SortOnMock.defaultA()}
         essence={EssenceMock.wikiTotals()}
+        timekeeper={TimekeeperMock.fixed()}
       />
     );
 

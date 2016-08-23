@@ -21,7 +21,7 @@ import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
 import { isDate } from 'chronoshift';
 import { $, Dataset, PlywoodValue, Datum, AttributeInfo } from 'plywood';
-import { Essence, Stage, DataCube } from '../../../common/models/index';
+import { Essence, Stage, DataCube, Timekeeper } from '../../../common/models/index';
 
 import { Fn, makeTitle, arraySum } from '../../../common/utils/general/general';
 import { download, makeFileName } from '../../utils/download/download';
@@ -30,7 +30,7 @@ import { classNames } from '../../utils/dom/dom';
 import { getVisibleSegments } from '../../utils/sizing/sizing';
 import { STRINGS } from '../../config/constants';
 
-import {Modal, Button, Scroller, ScrollerLayout, Loader, QueryError} from '../../components/index';
+import { Modal, Button, Scroller, ScrollerLayout, Loader, QueryError } from '../../components/index';
 
 const HEADER_HEIGHT = 30;
 const ROW_HEIGHT = 30;
@@ -43,6 +43,7 @@ const DEFAULT_COL_WIDTH = 200;
 export interface RawDataModalProps extends React.Props<any> {
   onClose: Fn;
   essence: Essence;
+  timekeeper: Timekeeper;
 }
 
 export interface RawDataModalState {
@@ -93,8 +94,8 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
   componentDidMount() {
     this.mounted = true;
-    const { essence } = this.props;
-    this.fetchData(essence);
+    const { essence, timekeeper } = this.props;
+    this.fetchData(essence, timekeeper);
     this.globalResizeListener();
   }
 
@@ -102,10 +103,10 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     this.mounted = false;
   }
 
-  fetchData(essence: Essence): void {
+  fetchData(essence: Essence, timekeeper: Timekeeper): void {
     const { dataCube } = essence;
     const $main = $('main');
-    const query = $main.filter(essence.getEffectiveFilter().toExpression()).limit(LIMIT);
+    const query = $main.filter(essence.getEffectiveFilter(timekeeper).toExpression()).limit(LIMIT);
     this.setState({ loading: true });
     dataCube.executor(query, { timezone: essence.timezone })
       .then(
@@ -140,12 +141,13 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
   }
 
   getStringifiedFilters(): List<string> {
-    const { essence } = this.props;
+    const { essence, timekeeper } = this.props;
     const { dataCube } = essence;
-    return essence.getEffectiveFilter().clauses.map((clause, i) => {
+
+    return essence.getEffectiveFilter(timekeeper).clauses.map((clause, i) => {
       const dimension = dataCube.getDimensionByExpression(clause.expression);
       if (!dimension) return null;
-      var evaluatedClause = dimension.kind === 'time' ? essence.evaluateClause(clause) : clause;
+      var evaluatedClause = dimension.kind === 'time' ? essence.evaluateClause(clause, timekeeper) : clause;
       return formatFilterClause(dimension, evaluatedClause, essence.timezone);
     }).toList();
   }
@@ -260,13 +262,13 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
   }
 
   render() {
-    const { essence, onClose } = this.props;
+    const { essence, timekeeper, onClose } = this.props;
     const { dataset, loading, error } = this.state;
     const { dataCube } = essence;
 
     const title = `${makeTitle(STRINGS.segment)} ${STRINGS.rawData}`;
 
-    const filtersString = essence.getEffectiveFilter().getFileString(dataCube.timeAttribute);
+    const filtersString = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
 
     const scrollerLayout: ScrollerLayout = {
       // Inner dimensions

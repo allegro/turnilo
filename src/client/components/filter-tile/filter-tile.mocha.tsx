@@ -21,8 +21,7 @@ import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 import { mockRequireEnsure } from '../../utils/test-utils/index';
 
-import { $, Expression } from 'plywood';
-import { EssenceMock, StageMock, DimensionMock } from '../../../common/models/mocks';
+import { EssenceMock, TimekeeperMock } from '../../../common/models/mocks';
 
 describe('FilterTile', () => {
   var { FilterTile } = mockRequireEnsure('./filter-tile');
@@ -32,6 +31,7 @@ describe('FilterTile', () => {
       <FilterTile
         clicker={null}
         essence={EssenceMock.wikiTotals()}
+        timekeeper={TimekeeperMock.fixed()}
         menuStage={null}
       />
     );
