@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-if [ `git symbolic-ref --short HEAD` != "master" ]
+if [ `git symbolic-ref --short HEAD` != "latest" ]
 then
   echo "can not publish from a non master branch" >&2
   exit 1

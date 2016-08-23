@@ -1,6 +1,6 @@
 {
   "name": "imply-pivot",
-  "version": "0.9.38",
+  "version": "0.9.39",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",

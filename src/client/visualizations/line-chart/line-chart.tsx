@@ -595,7 +595,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           }
         } else {
           // If there is no axis range: compute it from the data
-          axisRange = this.getXAxisRange(essence, continuousDimension, dataset);
+          axisRange = this.getXAxisRange(dataset, continuousDimension);
         }
 
         if (axisRange) {
@@ -618,14 +618,20 @@ export class LineChart extends BaseVisualization<LineChartState> {
     this.setState(newState);
   }
 
-  getXAxisRange(essence: Essence, continuousDimension: Dimension, dataset: Dataset): PlywoodRange {
+  getXAxisRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange {
     if (!dataset) return null;
     const key = continuousDimension.name;
 
     var firstDatum = dataset.data[0];
-    return (firstDatum['SPLIT'] as Dataset).data
-      .map(d => d['SPLIT'] ? this.getXAxisRange(essence, continuousDimension, d['SPLIT'] as Dataset) : (d as any)[key] as PlywoodRange)
-      .reduce((a: PlywoodRange, b: PlywoodRange) => a ? a.union(b) : b);
+    var ranges: PlywoodRange[];
+    if (firstDatum['SPLIT']) {
+      ranges = dataset.data.map(d => this.getXAxisRange(d['SPLIT'] as Dataset, continuousDimension));
+    } else {
+      ranges = dataset.data.map(d => (d as any)[key] as PlywoodRange);
+
+    }
+
+    return ranges.reduce((a: PlywoodRange, b: PlywoodRange) => (a && b) ? a.extend(b) : (a || b));
   }
 
   hideBubble() {

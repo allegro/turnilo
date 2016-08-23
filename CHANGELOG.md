@@ -2,6 +2,10 @@
 
 For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
+## 0.9.39
+
+- Fixed numeric dimension extent computation
+
 ## 0.9.38
 
 - Fixed side drawer animation
