@@ -17,62 +17,87 @@
 require('./clusters.css');
 
 import * as React from 'react';
-import { Fn } from '../../../../common/utils/general/general';
-import { firstUp } from '../../../../common/utils/string/string';
-import { classNames } from '../../../utils/dom/dom';
 
-import { SvgIcon } from '../../../components/svg-icon/svg-icon';
-import { FormLabel } from '../../../components/form-label/form-label';
 import { Button } from '../../../components/button/button';
+import { ClusterSeedModal } from "../../../modals/index";
+import { STRINGS } from "../../../config/constants";
 
-import { AppSettings, Cluster } from '../../../../common/models/index';
+import { AppSettings, Cluster, SupportedType } from '../../../../common/models/index';
 
 import { SimpleTable, SimpleTableColumn, SimpleTableAction } from '../../../components/simple-table/simple-table';
+import { Notifier } from '../../../components/index';
 
 export interface ClustersProps extends React.Props<any> {
   settings?: AppSettings;
-  onSave?: (settings: AppSettings) => void;
+  onSave?: (settings: AppSettings, message?: string) => void;
 }
 
 export interface ClustersState {
   newSettings?: AppSettings;
-  hasChanged?: boolean;
 }
 
 export class Clusters extends React.Component<ClustersProps, ClustersState> {
   constructor() {
     super();
 
-    this.state = {hasChanged: false};
+    this.state = {};
   }
 
   componentWillReceiveProps(nextProps: ClustersProps) {
     if (nextProps.settings) this.setState({
-      newSettings: nextProps.settings,
-      hasChanged: false
+      newSettings: nextProps.settings
     });
-  }
-
-  save() {
-    if (this.props.onSave) {
-      this.props.onSave(this.state.newSettings);
-    }
   }
 
   editCluster(cluster: Cluster) {
     window.location.hash += `/${cluster.name}`;
   }
 
+  startSeed() {
+    window.location.hash += '/new-cluster';
+  }
+
   renderEmpty(): JSX.Element {
     return <div className="clusters empty">
-      <div className="title">No clusters</div>
-      <div className="subtitle">(the only data cube type available is 'native')</div>
+      <div className="title">{STRINGS.noClusters}</div>
+      <div className="subtitle">Start by <a onClick={this.startSeed.bind(this)}>adding a new cluster</a></div>
     </div>;
   }
 
-  render() {
-    const { hasChanged, newSettings } = this.state;
+  removeCluster(cluster: Cluster) {
+    const remove = () => {
+      var settings: AppSettings = this.state.newSettings;
+      var index = settings.clusters.indexOf(cluster);
 
+      if (index < 0) return;
+
+      var newClusters = settings.clusters;
+      newClusters.splice(index, 1);
+
+      this.props.onSave(settings.changeClusters(newClusters), 'Cluster removed');
+      Notifier.removeQuestion();
+    };
+
+    const cancel = () => {
+      Notifier.removeQuestion();
+    };
+
+    Notifier.ask({
+      title: 'Remove this cluster',
+      message: [
+        `Are you sure you would like to delete the cluster "${cluster.title}"?`,
+        'This action is not reversible.'
+      ],
+      choices: [
+        {label: 'Remove', callback: remove, type: 'warn'},
+        {label: 'Cancel', callback: cancel, type: 'secondary'}
+      ],
+      onClose: Notifier.removeQuestion
+    });
+  }
+
+  render() {
+    const { newSettings } = this.state;
     if (!newSettings) return null;
 
     if (!newSettings.clusters.length) return this.renderEmpty();
@@ -84,13 +109,14 @@ export class Clusters extends React.Component<ClustersProps, ClustersState> {
     ];
 
     const actions: SimpleTableAction[] = [
-      {icon: 'full-edit', callback: this.editCluster.bind(this)}
+      {icon: 'full-edit', callback: this.editCluster.bind(this)},
+      {icon: 'full-remove', callback: this.removeCluster.bind(this)}
     ];
 
     return <div className="clusters">
       <div className="title-bar">
         <div className="title">Clusters</div>
-        {hasChanged ? <Button className="save" title="Save" type="primary" onClick={this.save.bind(this)}/> : null}
+        <Button className="add" title={STRINGS.connectNewCluster} type="primary" onClick={this.startSeed.bind(this)}/>
       </div>
       <div className="content">
         <SimpleTable

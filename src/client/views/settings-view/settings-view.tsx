@@ -17,19 +17,24 @@
 require('./settings-view.css');
 
 import * as React from 'react';
+import * as Q from 'q';
+
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { DataCube, User, Customization } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
 import { STRINGS } from '../../config/constants';
 import { Fn } from '../../../common/utils/general/general';
 import { Ajax } from '../../utils/ajax/ajax';
+import { indexByAttribute } from '../../../common/utils/array/array';
 
 import { classNames } from '../../utils/dom/dom';
 import { Notifier } from '../../components/notifications/notifications';
 
 import { Button, SvgIcon, Router, Route } from '../../components/index';
 
-import { AppSettings } from '../../../common/models/index';
+import { ClusterSeedModal } from '../../modals/index';
+
+import { AppSettings, Cluster } from '../../../common/models/index';
 
 import { SettingsHeaderBar } from './settings-header-bar/settings-header-bar';
 import { General } from './general/general';
@@ -51,6 +56,8 @@ export interface SettingsViewState {
   messageText?: string;
   settings?: AppSettings;
   breadCrumbs?: string[];
+
+  tempCluster?: Cluster;
 }
 
 const VIEWS = [
@@ -98,15 +105,13 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
     this.mounted = false;
   }
 
-  onSave(settings: AppSettings, okMessage?: string) {
+  onSave(settings: AppSettings, okMessage?: string): Q.Promise<any> {
     const { onSettingsChange } = this.props;
 
-    Ajax.query({
+    return Ajax.query({
       method: "POST",
       url: 'settings',
-      data: {
-        appSettings: settings
-      }
+      data: {appSettings: settings}
     })
       .then(
         (status) => {
@@ -124,7 +129,7 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
           if (!this.mounted) return;
           Notifier.failure('Woops', 'Something bad happened');
         }
-      ).done();
+      );
   }
 
   selectTab(value: string) {
@@ -150,9 +155,66 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
     this.setState({breadCrumbs});
   }
 
+  createCluster(newCluster: Cluster) {
+    this.setState({
+      tempCluster: newCluster
+    });
+  }
+
+  addCluster(newCluster: Cluster) {
+    const { settings } = this.state;
+
+    var newClusters = settings.clusters;
+    newClusters.push(newCluster);
+    var newSettings = settings.changeClusters(newClusters);
+
+    this.onSave(newSettings, 'Cluster created').then(() => {
+      this.setState({
+        tempCluster: null
+      });
+
+      window.location.hash = '#settings/clusters';
+    });
+  }
+
+  cancelClusterCreation() {
+    this.setState({
+      tempCluster: null
+    });
+
+    window.location.hash = '#settings/clusters';
+  }
+
+  updateCluster(newCluster: Cluster) {
+    const { settings } = this.state;
+
+    const index = indexByAttribute(settings.clusters, 'name', newCluster.name);
+
+    var newClusters = settings.clusters;
+    newClusters[index] = newCluster;
+    var newSettings = settings.changeClusters(newClusters);
+
+    this.onSave(newSettings);
+  }
+
   render() {
     const { user, onNavClick, customization } = this.props;
-    const { errorText, messageText, settings, breadCrumbs } = this.state;
+    const { errorText, messageText, settings, breadCrumbs, tempCluster } = this.state;
+
+    if (!settings) return null;
+
+    const inflateCluster = (key: string, value: string): {key: string, value: any} => {
+      if (key !== 'clusterId') return {key, value};
+      if (!settings) return {key: 'cluster', value: null};
+
+      // TODO : Here we could redirect to another location if the cluster is nowhere to be found.
+      // Something along the lines of "This cluster doesn't exist. Or we lost it. We're not sure."
+
+      return {
+        key: 'cluster',
+        value: settings.clusters.filter((d) => d.name === value)[0]
+      };
+    };
 
     return <div className="settings-view">
       <SettingsHeaderBar
@@ -161,39 +223,54 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
         customization={customization}
         title={STRINGS.settings}
       />
-     <div className="left-panel">
-       {this.renderLeftButtons(breadCrumbs)}
-     </div>
+      <div className="left-panel">
+        {this.renderLeftButtons(breadCrumbs)}
+      </div>
 
-     <div className="main-panel">
+      <div className="main-panel">
 
-       <Router
-         onURLChange={this.onURLChange.bind(this)}
-         rootFragment="settings"
-       >
+        <Router rootFragment="settings" onURLChange={this.onURLChange.bind(this)}>
 
-         <Route fragment="general">
-           <General settings={settings} onSave={this.onSave.bind(this)}/>
-         </Route>
+          <Route fragment="general">
+            <General settings={settings} onSave={this.onSave.bind(this)}/>
+          </Route>
 
-         <Route fragment="clusters">
-           <Clusters settings={settings} onSave={this.onSave.bind(this)}/>
+          <Route fragment="clusters">
+            <Clusters settings={settings} onSave={this.onSave.bind(this)}/>
 
-           <Route fragment=":clusterId">
-             <ClusterEdit settings={settings} onSave={this.onSave.bind(this)}/>
-           </Route>
-         </Route>
+            <Route fragment="new-cluster">
+              { tempCluster ? null : <Clusters settings={settings} onSave={this.onSave.bind(this)}/> }
 
-         <Route fragment="data_cubes">
-           <DataCubes settings={settings} onSave={this.onSave.bind(this)}/>
+              { tempCluster
+                ? <ClusterEdit
+                    isNewCluster={true}
+                    cluster={tempCluster}
+                    onSave={this.addCluster.bind(this)}
+                    onCancel={this.cancelClusterCreation.bind(this)}
+                  />
+                : <ClusterSeedModal
+                    onNext={this.createCluster.bind(this)}
+                    onCancel={this.cancelClusterCreation.bind(this)}
+                    clusters={settings.clusters}
+                  />
+              }
+            </Route>
 
-           <Route fragment=":cubeId/:tab=general">
-             <DataCubeEdit settings={settings} onSave={this.onSave.bind(this)}/>
-           </Route>
+            <Route fragment=":clusterId" inflate={inflateCluster}>
+              <ClusterEdit onSave={this.updateCluster.bind(this)}/>
+            </Route>
+          </Route>
 
-         </Route>
-       </Router>
-     </div>
-    </div>;
+          <Route fragment="data_cubes">
+            <DataCubes settings={settings} onSave={this.onSave.bind(this)}/>
+
+            <Route fragment=":cubeId/:tab=general">
+              <DataCubeEdit settings={settings} onSave={this.onSave.bind(this)}/>
+            </Route>
+
+          </Route>
+        </Router>
+      </div>
+     </div>;
   }
 }

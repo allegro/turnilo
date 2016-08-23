@@ -22,8 +22,7 @@ import { classNames } from '../../../utils/dom/dom';
 
 import { AppSettings, Cluster, DataCube} from '../../../../common/models/index';
 
-import { SimpleTable, SimpleTableColumn, SimpleTableAction, SvgIcon, FormLabel, Button } from '../../../components/index';
-import { RemoveModal } from '../../../modals/index';
+import { SimpleTable, SimpleTableColumn, SimpleTableAction, SvgIcon, FormLabel, Button, Notifier } from '../../../components/index';
 
 export interface DataCubesProps extends React.Props<any> {
   settings?: AppSettings;
@@ -33,7 +32,6 @@ export interface DataCubesProps extends React.Props<any> {
 export interface DataCubesState {
   newSettings?: AppSettings;
   hasChanged?: boolean;
-  pendingDeletion?: DataCube;
 }
 
 export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
@@ -46,8 +44,7 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
   componentWillReceiveProps(nextProps: DataCubesProps) {
     if (nextProps.settings) this.setState({
       newSettings: nextProps.settings,
-      hasChanged: false,
-      pendingDeletion: undefined
+      hasChanged: false
     });
   }
 
@@ -55,26 +52,36 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
     window.location.hash += `/${cube.name}`;
   }
 
-  askForCubeRemoval(cube: DataCube) {
-    this.setState({pendingDeletion: cube});
-  }
+  removeCube(cube: DataCube) {
+    const remove = () => {
+      var settings: AppSettings = this.state.newSettings;
+      var index = settings.dataCubes.indexOf(cube);
 
-  cancelRemoval() {
-    this.setState({pendingDeletion: undefined});
-  }
+      if (index < 0) return;
 
-  removeCube() {
-    var cube = this.state.pendingDeletion;
+      var newCubes = settings.dataCubes;
+      newCubes.splice(index, 1);
 
-    var settings: AppSettings = this.state.newSettings;
-    var index = settings.dataCubes.indexOf(cube);
+      this.props.onSave(settings.changeDataCubes(newCubes), 'Cube removed');
+      Notifier.removeQuestion();
+    };
 
-    if (index < 0) return;
+    const cancel = () => {
+      Notifier.removeQuestion();
+    };
 
-    var newCubes = settings.dataCubes;
-    newCubes.splice(index, 1);
-
-    this.props.onSave(settings.changeDataCubes(newCubes), 'Cube removed');
+    Notifier.ask({
+      title: 'Remove this cube',
+      message: [
+        `Are you sure you would like to delete the data cube "${cube.title}"?`,
+        'This action is not reversible.'
+      ],
+      choices: [
+        {label: 'Remove', callback: remove, type: 'warn'},
+        {label: 'Cancel', callback: cancel, type: 'secondary'}
+      ],
+      onClose: Notifier.removeQuestion
+    });
   }
 
   createCube() {
@@ -97,7 +104,7 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
   }
 
   render() {
-    const { newSettings, pendingDeletion } = this.state;
+    const { newSettings } = this.state;
 
     if (!newSettings) return null;
 
@@ -112,7 +119,7 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
 
     const actions: SimpleTableAction[] = [
       {icon: 'full-edit', callback: this.editCube.bind(this)},
-      {icon: 'full-remove', callback: this.askForCubeRemoval.bind(this)}
+      {icon: 'full-remove', callback: this.removeCube.bind(this)}
     ];
 
     return <div className="data-cubes">
@@ -128,11 +135,6 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
           onRowClick={this.editCube.bind(this)}
         ></SimpleTable>
       </div>
-      {pendingDeletion ? <RemoveModal
-        itemTitle={pendingDeletion.title}
-        onOK={this.removeCube.bind(this)}
-        onCancel={this.cancelRemoval.bind(this)}
-      /> : null}
     </div>;
   }
 }

@@ -45,10 +45,12 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
 
   static simpleGenerator(labels: any, errors: any, isBubble = false) {
     return (name: string) => {
+      let myLabels = labels[name] || {label: '', description: ''};
+
       return <FormLabel
         isBubble={isBubble}
-        label={labels[name].label}
-        helpText={labels[name].description}
+        label={myLabels.label}
+        helpText={myLabels.description}
         errorText={errors[name]}
       />;
     };

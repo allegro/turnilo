@@ -24,6 +24,7 @@ export type SourceListScan = 'disable' | 'auto';
 export interface ClusterValue {
   name: string;
   type: SupportedType;
+  title?: string;
   host?: string;
   version?: string;
   timeout?: number;
@@ -45,6 +46,7 @@ export interface ClusterValue {
 export interface ClusterJS {
   name: string;
   type: SupportedType;
+  title?: string;
   host?: string;
   version?: string;
   timeout?: number;
@@ -109,6 +111,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: 'name', validate: [verifyUrlSafeName, ensureNotNative] },
     { name: 'type', possibleValues: Cluster.TYPE_VALUES },
     { name: 'host', defaultValue: null },
+    { name: 'title', defaultValue: '' },
     { name: 'version', defaultValue: null },
     { name: 'timeout', defaultValue: Cluster.DEFAULT_TIMEOUT },
     { name: 'sourceListScan', defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
@@ -132,6 +135,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public name: string;
   public type: SupportedType;
   public host: string;
+  public title: string;
   public version: string;
   public timeout: number;
   public sourceListScan: SourceListScan;

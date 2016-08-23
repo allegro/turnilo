@@ -135,7 +135,7 @@ describe('Router', () => {
       node = window.document.createElement('div');
 
       var pump = (key: string, value: string): {key: string, value: any} => {
-        if (key === 'action') return {key: 'action', value};
+        if (key === 'action') return {key, value};
         return {key: 'object', value: {label: value.toUpperCase()}};
       };
 

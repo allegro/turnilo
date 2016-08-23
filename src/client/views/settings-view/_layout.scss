@@ -98,7 +98,8 @@
   // Allows placement of one single button or of a group
   > .button-group,
   > .button.save,
-  > .button.cancel {
+  > .button.cancel,
+  > .button.add {
     position: absolute;
     top: 12px;
     right: 24px;

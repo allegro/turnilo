@@ -120,6 +120,12 @@ export const MEASURE = {
 };
 
 export const CLUSTER = {
+  title: {
+    label: 'Title',
+    description: `The title of the Cluster in the UI. Can be anything and is
+    safe to change at anytime`
+  },
+
   name: {
     label: 'Name',
     description: `The name of the cluster (to be referenced later from the data cube)`

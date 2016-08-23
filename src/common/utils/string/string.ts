@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+// Shamelessly stolen from http://stackoverflow.com/a/10006499
+// (well, traded for an upvote)
+export const IP_REGEX = /^(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))$/;
+
+export const NUM_REGEX = /^\d+$/;
+
+
 export function firstUp(str: string): string {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : undefined;
 }

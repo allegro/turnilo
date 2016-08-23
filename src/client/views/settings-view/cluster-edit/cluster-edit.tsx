@@ -20,7 +20,8 @@ import * as React from 'react';
 import { List } from 'immutable';
 import { Fn } from '../../../../common/utils/general/general';
 import { classNames } from '../../../utils/dom/dom';
-import { firstUp } from '../../../../common/utils/string/string';
+import { firstUp, IP_REGEX, NUM_REGEX } from '../../../../common/utils/string/string';
+import { STRINGS } from '../../../config/constants';
 
 import { FormLabel } from '../../../components/form-label/form-label';
 import { Button } from '../../../components/button/button';
@@ -33,23 +34,14 @@ import { AppSettings, Cluster, ListItem } from '../../../../common/models/index'
 
 import { CLUSTER as LABELS } from '../../../../common/models/labels';
 
-// Shamelessly stolen from http://stackoverflow.com/a/10006499
-// (well, traded for an upvote)
-const IP_REGEX = /^(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))$/;
-
-const NUM_REGEX = /^\d+$/;
-
 export interface ClusterEditProps extends React.Props<any> {
-  settings: AppSettings;
-  clusterId?: string;
-  onSave: (settings: AppSettings) => void;
-}
-
-export interface ClusterEditState extends ImmutableFormState<Cluster> {
   cluster?: Cluster;
+  onSave: (newCluster: Cluster) => void;
+  isNewCluster?: boolean;
+  onCancel?: () => void;
 }
 
-export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditState> {
+export class ClusterEdit extends React.Component<ClusterEditProps, ImmutableFormState<Cluster>> {
   private delegate: ImmutableFormDelegate<Cluster>;
 
   constructor() {
@@ -58,44 +50,43 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
   }
 
   componentWillReceiveProps(nextProps: ClusterEditProps) {
-    if (nextProps.settings) {
+    if (nextProps.cluster) {
       this.initFromProps(nextProps);
     }
   }
 
   initFromProps(props: ClusterEditProps) {
-    let cluster = props.settings.clusters.filter((d) => d.name === props.clusterId)[0];
-
     this.setState({
-      newInstance: new Cluster(cluster.valueOf()),
+      newInstance: new Cluster(props.cluster.valueOf()),
       canSave: true,
-      cluster,
       errors: {}
     });
   }
 
+  componentDidMount() {
+    if (this.props.cluster) this.initFromProps(this.props);
+  }
+
   cancel() {
-    // Settings newInstance to undefined resets the inputs
+    const { isNewCluster } = this.props;
+
+    if (isNewCluster) {
+      this.props.onCancel();
+      return;
+    }
+
+    // Setting newInstance to undefined resets the inputs
     this.setState({newInstance: undefined}, () => this.initFromProps(this.props));
   }
 
   save() {
-    const { settings } = this.props;
-    const { newInstance, cluster } = this.state;
-
-    var newClusters = settings.clusters;
-    newClusters[newClusters.indexOf(cluster)] = newInstance;
-    var newSettings = settings.changeClusters(newClusters);
-
-    if (this.props.onSave) {
-      this.props.onSave(newSettings);
-    }
+    if (this.props.onSave) this.props.onSave(this.state.newInstance);
   }
 
   goBack() {
-    const { clusterId } = this.props;
+    const { cluster } = this.props;
     var hash = window.location.hash;
-    window.location.hash = hash.replace(`/${clusterId}`, '');
+    window.location.hash = hash.replace(`/${cluster.name}`, '');
   }
 
   renderGeneral(): JSX.Element {
@@ -105,12 +96,14 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
     var makeTextInput = ImmutableInput.simpleGenerator(newInstance, this.delegate.onChange);
     var makeDropDownInput = ImmutableDropdown.simpleGenerator(newInstance, this.delegate.onChange);
 
-    var isDruid = newInstance.type === 'druid';
     var needsAuth = ['mysql', 'postgres'].indexOf(newInstance.type) > -1;
 
     return <form className="general vertical">
+      {makeLabel('title')}
+      {makeTextInput('title', /.*/, true)}
+
       {makeLabel('host')}
-      {makeTextInput('host', IP_REGEX, true)}
+      {makeTextInput('host', IP_REGEX)}
 
       {makeLabel('type')}
       {makeDropDownInput('type', Cluster.TYPE_VALUES.map(type => {return {value: type, label: type}; }))}
@@ -120,24 +113,6 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
 
       {makeLabel('version')}
       {makeTextInput('version')}
-
-      {makeLabel('sourceListScan')}
-      {makeDropDownInput('sourceListScan', [{value: 'disable', label: 'Disable'}, {value: 'auto', label: 'Auto'}])}
-
-      {makeLabel('sourceListRefreshOnLoad')}
-      {makeDropDownInput('sourceListRefreshOnLoad', [{value: true, label: 'Enabled'}, {value: false, label: 'Disabled'}])}
-
-      {makeLabel('sourceListRefreshInterval')}
-      {makeTextInput('sourceListRefreshInterval', NUM_REGEX)}
-
-      {makeLabel('sourceReintrospectOnLoad')}
-      {makeDropDownInput('sourceReintrospectOnLoad', [{value: true, label: 'Enabled'}, {value: false, label: 'Disabled'}])}
-
-      {makeLabel('sourceReintrospectInterval')}
-      {makeTextInput('sourceReintrospectInterval', NUM_REGEX)}
-
-      {isDruid ? makeLabel('introspectionStrategy') : null}
-      {isDruid ? makeTextInput('introspectionStrategy') : null}
 
       {needsAuth ? makeLabel('database') : null}
       {needsAuth ? makeTextInput('database') : null}
@@ -152,24 +127,25 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
   }
 
   renderButtons(): JSX.Element {
-    const { canSave, cluster, newInstance } = this.state;
+    const { cluster, isNewCluster } = this.props;
+    const { canSave, newInstance } = this.state;
     const hasChanged = !cluster.equals(newInstance);
 
     const cancelButton = <Button
       className="cancel"
-      title="Revert changes"
+      title={isNewCluster ?  "Cancel" : "Revert changes"}
       type="secondary"
       onClick={this.cancel.bind(this)}
     />;
 
     const saveButton = <Button
-      className={classNames("save", {disabled: !canSave || !hasChanged})}
-      title="Save"
+      className={classNames("save", {disabled: !canSave || (!isNewCluster && !hasChanged)})}
+      title={isNewCluster ? "Connect cluster" : "Save"}
       type="primary"
       onClick={this.save.bind(this)}
     />;
 
-    if (!hasChanged) {
+    if (!isNewCluster && !hasChanged) {
       return <div className="button-group">
         {saveButton}
       </div>;
@@ -182,14 +158,23 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
   }
 
   render() {
+    const { isNewCluster } = this.props;
     const { newInstance } = this.state;
 
     if (!newInstance) return null;
 
     return <div className="cluster-edit">
       <div className="title-bar">
-        <Button className="button back" type="secondary" svg={require('../../../icons/full-back.svg')} onClick={this.goBack.bind(this)}/>
-        <div className="title">{newInstance.name}</div>
+        {isNewCluster
+          ? null
+          : <Button
+              className="button back"
+              type="secondary"
+              svg={require('../../../icons/full-back.svg')}
+              onClick={this.goBack.bind(this)}
+            />
+        }
+        <div className="title">{isNewCluster ? STRINGS.connectNewCluster : newInstance.name}</div>
         {this.renderButtons()}
       </div>
       <div className="content">

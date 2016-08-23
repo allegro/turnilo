@@ -27,7 +27,7 @@ import { STRINGS } from '../../config/constants';
 import { createFunctionSlot, FunctionSlot } from '../../utils/function-slot/function-slot';
 import { Ajax } from '../../utils/ajax/ajax';
 import { AboutModal, AddCollectionTileModal } from '../../modals/index';
-import { SideDrawer, Notifications, Notifier } from '../../components/index';
+import { SideDrawer, Notifications, Questions, Notifier } from '../../components/index';
 
 import { NoDataView } from '../../views/no-data-view/no-data-view';
 import { HomeView } from '../../views/home-view/home-view';
@@ -50,6 +50,7 @@ export interface PivotApplicationProps extends React.Props<any> {
 export interface PivotApplicationState {
   AboutModalAsync?: typeof AboutModal;
   NotificationsAsync?: typeof Notifications;
+  QuestionsAsync?: typeof Questions;
   ReactCSSTransitionGroupAsync?: typeof ReactCSSTransitionGroup;
   SideDrawerAsync?: typeof SideDrawer;
 
@@ -183,8 +184,10 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     }, 'about-modal');
 
     require.ensure(['../../components/notifications/notifications'], (require) => {
+      const { Notifications, Questions } = require('../../components/notifications/notifications');
       this.setState({
-        NotificationsAsync: require('../../components/notifications/notifications').Notifications
+        NotificationsAsync: Notifications,
+        QuestionsAsync: Questions
       });
     }, 'notifications');
   }
@@ -390,6 +393,12 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     return <NotificationsAsync/>;
   }
 
+  renderQuestions() {
+    const { QuestionsAsync } = this.state;
+    if (!QuestionsAsync) return null;
+    return <QuestionsAsync/>;
+  }
+
   renderSideDrawer() {
     const { user } = this.props;
     const { viewType, selectedItem, drawerOpen, SideDrawerAsync, appSettings } = this.state;
@@ -517,6 +526,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       {this.renderAboutModal()}
       {this.renderAddCollectionModal()}
       {this.renderNotifications()}
+      {this.renderQuestions()}
     </main>;
   }
 }

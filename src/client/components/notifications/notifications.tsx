@@ -21,7 +21,7 @@ import * as ReactDOM from 'react-dom';
 import { classNames } from '../../utils/dom/dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Fn } from '../../../common/utils/general/general';
-import { BodyPortal } from '../body-portal/body-portal';
+import { BodyPortal, Modal, Button, ButtonType } from '../index';
 import { NotificationCard } from './notification-card';
 
 export interface NotificationAction {
@@ -40,10 +40,27 @@ export interface Notification {
   discarded?: boolean;
 }
 
+export interface Choice {
+  label: string;
+  callback: () => void;
+  className?: string;
+  type?: ButtonType;
+}
+
+export interface Question {
+  title: string;
+  message: (string | string[]);
+  choices: Choice[];
+  onClose?: () => void;
+}
+
 export class Notifier {
   static counter = 0;
-  static notifications: Notification[] = [];
-  static listeners: ((notifications: Notification[]) => void)[] = [];
+  static notifications: Notification[] = []; // notification & stickers, really
+
+  static question: Question = null;
+
+  static listeners: ((notifications: Notification[], question?: Question) => void)[] = [];
 
   private static create(notification: Notification): number {
     notification.id = Notifier.counter++;
@@ -55,7 +72,7 @@ export class Notifier {
   }
 
   private static callListeners() {
-    Notifier.listeners.forEach((cb) => cb(Notifier.notifications));
+    Notifier.listeners.forEach((cb) => cb(Notifier.notifications, Notifier.question));
   }
 
   public static info(title: string, message?: string) {
@@ -70,7 +87,7 @@ export class Notifier {
     Notifier.create({title, priority: 'success', action});
   }
 
-  public static subscribe(callback: (notifications: Notification[]) => void) {
+  public static subscribe(callback: (notifications: Notification[], question: Question) => void) {
     Notifier.listeners.push(callback);
   }
 
@@ -101,6 +118,23 @@ export class Notifier {
     Notifier.callListeners();
   }
 
+  // Questions
+  public static ask(question: Question) {
+    if (Notifier.question) throw new Error('There is already a pending question');
+
+    Notifier.question = question;
+
+    Notifier.callListeners();
+  }
+
+  public static removeQuestion() {
+    if (!Notifier.question) throw new Error('No question to remove');
+
+    Notifier.question = undefined;
+
+    Notifier.callListeners();
+  }
+
   public static removeNotification(notification: Notification) {
     const index = Notifier.notifications.indexOf(notification);
 
@@ -112,7 +146,7 @@ export class Notifier {
     Notifier.listeners.forEach((cb) => cb(Notifier.notifications));
   }
 
-  public static unsubscribe(callback: (notifications: Notification[]) => void) {
+  public static unsubscribe(callback: (notifications: Notification[], question: Question) => void) {
     const index = Notifier.listeners.indexOf(callback);
 
     if (index === -1) {
@@ -123,14 +157,12 @@ export class Notifier {
   }
 }
 
-export interface NotificationsProps extends React.Props<any> {
-}
 
 export interface NotificationsState {
   notifications: Notification[];
 }
 
-export class Notifications extends React.Component<NotificationsProps, NotificationsState> {
+export class Notifications extends React.Component<React.Props<any>, NotificationsState> {
   constructor() {
     super();
     this.state = {notifications: []};
@@ -166,5 +198,54 @@ export class Notifications extends React.Component<NotificationsProps, Notificat
     return <BodyPortal left={'50%'} top={'10px'}>
       <div className="notifications">{this.renderCards()}</div>
     </BodyPortal>;
+  }
+}
+
+
+export interface QuestionsState {
+  question?: Question;
+}
+
+export class Questions extends React.Component<React.Props<any>, QuestionsState> {
+  constructor() {
+    super();
+    this.state = {};
+    this.onChange = this.onChange.bind(this);
+  }
+
+  componentDidMount() {
+    Notifier.subscribe(this.onChange);
+  }
+
+  componentWillUnmount() {
+    Notifier.unsubscribe(this.onChange);
+  }
+
+  onChange(notifications: Notification[], question: Question) {
+    this.setState({question});
+  }
+
+  render() {
+    const { question } = this.state;
+
+    if (!question) return null;
+
+    return <Modal
+      className="remove-modal"
+      title={question.title}
+      onClose={question.onClose}
+    >
+      {Array.isArray(question.message)
+        ? question.message.map((line, i) => <p key={i}>{line}</p>)
+        : <p>{question.message}</p>
+      }
+
+      <div className="button-bar">
+        {question.choices.map(({label, callback, type, className}, i) => {
+          return <Button key={i} className={className} title={label} type={type} onClick={callback}/>;
+        })}
+      </div>
+
+    </Modal>;
   }
 }

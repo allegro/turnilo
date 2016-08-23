@@ -16,8 +16,13 @@
 
 @import '../../imports';
 
-.remove-modal {
+.cluster-seed-modal {
   form {
     @extend %form;
+    width: 100%;
+
+    .dropdown {
+      margin-bottom: 20px;
+    }
   }
 }

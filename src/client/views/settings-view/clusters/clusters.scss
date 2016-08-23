@@ -28,6 +28,13 @@
     .subtitle {
       font-size: 12px;
       margin-top: 10px;
+
+      a {
+        color: $brand;
+        border-bottom: 1px dashed;
+        cursor: pointer;
+      }
+
     }
   }
 }
