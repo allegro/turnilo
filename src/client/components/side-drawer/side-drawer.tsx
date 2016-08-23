@@ -35,7 +35,7 @@ export interface SideDrawerProps extends React.Props<any> {
   onClose: Fn;
   customization?: Customization;
   itemHrefFn?: (oldItem?: DataCube | Collection, newItem?: DataCube | Collection) => string;
-  viewType: 'home' | 'cube' | 'collection' | 'link' | 'settings';
+  viewType: 'home' | 'cube' | 'collection' | 'link' | 'settings' | 'no-data';
 }
 
 export interface SideDrawerState {

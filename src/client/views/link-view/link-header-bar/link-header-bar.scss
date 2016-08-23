@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import '../../../imports';
 
-.home-header-bar {
+.link-header-bar {
   @extend %header-bar;
+  background: #208b84;
 }

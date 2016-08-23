@@ -18,27 +18,23 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-
-import '../../utils/test-utils/index';
-
 import * as TestUtils from 'react-addons-test-utils';
 
-import { $, Expression } from 'plywood';
-import { LinkHeaderBar } from './link-header-bar';
+import '../../../utils/test-utils/index';
 
-describe('LinkHeaderBar', () => {
+import { $, Expression } from 'plywood';
+import { HomeHeaderBar } from './home-header-bar';
+
+describe('HomeHeaderBar', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <LinkHeaderBar
-        title="Test Link Bar"
+      <HomeHeaderBar
         onNavClick={null}
-        onExploreClick={null}
-        stateful={true}
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('link-header-bar');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('home-header-bar');
   });
 
 });

@@ -22,7 +22,9 @@ import { STRINGS } from '../../config/constants';
 import { Fn } from '../../../common/utils/general/general';
 
 import { AddCollectionModal } from '../../modals/index';
-import { HomeHeaderBar, SvgIcon } from '../../components/index';
+import { SvgIcon } from '../../components/index';
+
+import { HomeHeaderBar} from './home-header-bar/home-header-bar';
 import { ItemCard } from './item-card/item-card';
 
 export interface HomeViewProps extends React.Props<any> {

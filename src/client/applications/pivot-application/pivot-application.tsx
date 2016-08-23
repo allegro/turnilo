@@ -28,6 +28,7 @@ import { createFunctionSlot, FunctionSlot } from '../../utils/function-slot/func
 import { AboutModal, AddCollectionTileModal } from '../../modals/index';
 import { SideDrawer, Notifications, Notifier } from '../../components/index';
 
+import { NoDataView } from '../../views/no-data-view/no-data-view';
 import { HomeView } from '../../views/home-view/home-view';
 import { LinkView } from '../../views/link-view/link-view';
 import { CubeView } from '../../views/cube-view/cube-view';
@@ -61,13 +62,14 @@ export interface PivotApplicationState {
   cubeViewSupervisor?: ViewSupervisor;
 }
 
-export type ViewType = "home" | "cube" | "collection" | "link" | "settings";
+export type ViewType = "home" | "cube" | "collection" | "link" | "settings" | "no-data";
 
 export const HOME: ViewType = "home";
 export const CUBE: ViewType = "cube";
 export const COLLECTION: ViewType = "collection";
 export const LINK: ViewType = "link";
 export const SETTINGS: ViewType = "settings";
+export const NO_DATA: ViewType = "no-data";
 
 export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
   private hashUpdating: boolean = false;
@@ -96,7 +98,17 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     var hash = window.location.hash;
     var viewType = this.getViewTypeFromHash(hash);
 
-    if (viewType !== SETTINGS && !dataCubes.length) throw new Error('must have data cubes');
+    if (viewType !== SETTINGS && !dataCubes.length) {
+      window.location.hash = '';
+
+      this.setState({
+        viewType: NO_DATA,
+        viewHash: '',
+        appSettings
+      });
+
+      return;
+    }
 
     var viewHash = this.getViewHashFromHash(hash);
 
@@ -203,15 +215,20 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   getViewTypeFromHash(hash: string): ViewType {
     const { user } = this.props;
     const appSettings = this.state.appSettings || this.props.appSettings;
+    const { dataCubes } = appSettings;
     var viewType = this.parseHash(hash)[0];
 
-    if (!viewType || viewType === HOME) return appSettings.linkViewConfig ? LINK : HOME;
-
     if (viewType === SETTINGS && user && user.allow['settings']) return SETTINGS;
+
+    if (!dataCubes || !dataCubes.length) return NO_DATA;
+
+    if (!viewType || viewType === HOME) return appSettings.linkViewConfig ? LINK : HOME;
 
     if (appSettings.linkViewConfig && viewType === LINK) return LINK;
 
     if (viewType === COLLECTION) return COLLECTION;
+
+    if (viewType === NO_DATA) return NO_DATA;
 
     return CUBE;
   }
@@ -403,6 +420,15 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     const { dataCubes, collections, customization, linkViewConfig } = appSettings;
 
     switch (viewType) {
+      case NO_DATA:
+        return <NoDataView
+          user={user}
+          onNavClick={this.sideDrawerOpen.bind(this, true)}
+          onOpenAbout={this.openAboutModal.bind(this)}
+          customization={customization}
+          appSettings={appSettings}
+        />;
+
       case HOME:
         return <HomeView
           user={user}

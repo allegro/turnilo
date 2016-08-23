@@ -18,18 +18,12 @@ require('./supervised-cube-header-bar.css');
 
 import * as React from 'react';
 import { Duration, Timezone } from 'chronoshift';
-import { classNames } from "../../utils/dom/dom";
+import { classNames } from "../../../utils/dom/dom";
 
-import { STRINGS } from '../../config/constants';
+import { STRINGS } from '../../../config/constants';
 
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { Clicker, Essence, DataCube, User, Customization, ExternalView, ViewSupervisor } from '../../../common/models/index';
-
-import { HilukMenu } from '../hiluk-menu/hiluk-menu';
-import { AutoRefreshMenu } from '../auto-refresh-menu/auto-refresh-menu';
-import { UserMenu } from '../user-menu/user-menu';
-import { Button } from '../button/button';
-import { SettingsMenu } from '../settings-menu/settings-menu';
+import { SvgIcon, HilukMenu, AutoRefreshMenu, UserMenu, Button, SettingsMenu } from '../../../components/index';
+import { Clicker, Essence, DataCube, User, Customization, ExternalView, ViewSupervisor } from '../../../../common/models/index';
 
 export interface SupervisedCubeHeaderBarProps extends React.Props<any> {
   essence: Essence;
@@ -121,7 +115,7 @@ export class SupervisedCubeHeaderBar extends React.Component<SupervisedCubeHeade
       </div>
       <div className="right-bar">
         <div className="icon-button settings" onClick={this.onSettingsMenuClick.bind(this)}>
-          <SvgIcon className="settings-icon" svg={require('../../icons/full-settings.svg')}/>
+          <SvgIcon className="settings-icon" svg={require('../../../icons/full-settings.svg')}/>
         </div>
         <div className="button-group">
           <Button className="cancel" title="Cancel" type="secondary" onClick={supervisor.cancel}/>

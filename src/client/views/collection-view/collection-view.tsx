@@ -27,8 +27,9 @@ import { STRINGS } from '../../config/constants';
 import { replaceHash } from '../../utils/url/url';
 import { move } from '../../../common/utils/array/array';
 
-import { CollectionHeaderBar, Router, Route, Notifier } from '../../components/index';
+import { Router, Route, Notifier } from '../../components/index';
 
+import { CollectionHeaderBar } from './collection-header-bar/collection-header-bar';
 import { CollectionOverview } from './collection-overview/collection-overview';
 import { CollectionTileLightbox } from './collection-tile-lightbox/collection-tile-lightbox';
 

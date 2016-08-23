@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import '../../../imports';
 
-.cube-header-bar {
+.supervised-cube-header-bar {
   @extend %header-bar;
 
-  .refreshing svg {
-    animation-name: rotate;
-    animation-duration: 1s;
-
-    @keyframes rotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
+  .left-bar .title {
+    cursor: default;
+    font-size: 14px;
+    margin-top: 14px;
   }
 }

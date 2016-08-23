@@ -47,65 +47,50 @@ if (!config || !config.version || !config.appSettings || !config.appSettings.dat
 }
 
 let view = window.location.hash.split(/\//)[0];
-if (config.appSettings.dataCubes.length || view === '#settings') {
-  var version = config.version;
+var version = config.version;
 
-  require.ensure([
-    'chronoshift',
-    'chronoshift/lib/walltime/walltime-data.js',
-    './utils/ajax/ajax',
-    '../common/models/index',
-    '../common/manifests/index',
-    './applications/pivot-application/pivot-application'
-  ], (require) => {
-    const WallTime = require('chronoshift').WallTime;
-    const Ajax = require('./utils/ajax/ajax').Ajax;
-    const AppSettings = require('../common/models/index').AppSettings;
-    const MANIFESTS = require('../common/manifests/index').MANIFESTS;
-    const PivotApplication = require('./applications/pivot-application/pivot-application').PivotApplication;
+require.ensure([
+  'chronoshift',
+  'chronoshift/lib/walltime/walltime-data.js',
+  './utils/ajax/ajax',
+  '../common/models/index',
+  '../common/manifests/index',
+  './applications/pivot-application/pivot-application'
+], (require) => {
+  const WallTime = require('chronoshift').WallTime;
+  const Ajax = require('./utils/ajax/ajax').Ajax;
+  const AppSettings = require('../common/models/index').AppSettings;
+  const MANIFESTS = require('../common/manifests/index').MANIFESTS;
+  const PivotApplication = require('./applications/pivot-application/pivot-application').PivotApplication;
 
-    Ajax.version = version;
+  Ajax.version = version;
 
-    var appSettings = AppSettings.fromJS(config.appSettings, {
-      visualizations: MANIFESTS,
-      executorFactory: (dataCube: DataCube) => {
-        return Ajax.queryUrlExecutorFactory(dataCube.name, 'plywood');
-      }
-    });
-
-    // Init chronoshift
-    if (!WallTime.rules) {
-      var tzData = require('chronoshift/lib/walltime/walltime-data.js');
-      WallTime.init(tzData.rules, tzData.zones);
+  var appSettings = AppSettings.fromJS(config.appSettings, {
+    visualizations: MANIFESTS,
+    executorFactory: (dataCube: DataCube) => {
+      return Ajax.queryUrlExecutorFactory(dataCube.name, 'plywood');
     }
+  });
 
-    ReactDOM.render(
-      React.createElement(
-        PivotApplication,
-        {
-          version,
-          user: config.user,
-          appSettings,
-          stateful: Boolean(config.stateful)
-        }
-      ),
-      container
-    );
-  }, 'pivot-main');
+  // Init chronoshift
+  if (!WallTime.rules) {
+    var tzData = require('chronoshift/lib/walltime/walltime-data.js');
+    WallTime.init(tzData.rules, tzData.zones);
+  }
 
-} else {
-  require.ensure([
-    './applications/no-data-cubes-application/no-data-cubes-application'
-  ], (require) => {
-    var NoDataCubesApplication = require('./applications/no-data-cubes-application/no-data-cubes-application').NoDataCubesApplication;
-
-    ReactDOM.render(
-      React.createElement(NoDataCubesApplication, {}),
-      container
-    );
-  }, 'no-data-cubes');
-}
-
+  ReactDOM.render(
+    React.createElement(
+      PivotApplication,
+      {
+        version,
+        user: config.user,
+        appSettings,
+        stateful: Boolean(config.stateful)
+      }
+    ),
+    container
+  );
+}, 'pivot-main');
 
 // Polyfill =====================================
 

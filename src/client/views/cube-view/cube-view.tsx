@@ -30,10 +30,11 @@ import { MANIFESTS } from '../../../common/manifests/index';
 
 import { RawDataModal } from '../../modals/index';
 
-import { CubeHeaderBar, SupervisedCubeHeaderBar, DimensionMeasurePanel,
-  FilterTile, SplitTile, VisSelector, ManualFallback, DropIndicator,
-  PinboardPanel, ResizeHandle,
-  GlobalEventListener } from '../../components/index';
+import { DimensionMeasurePanel, FilterTile, SplitTile, VisSelector, ManualFallback, DropIndicator,
+  PinboardPanel, ResizeHandle, GlobalEventListener } from '../../components/index';
+
+import { SupervisedCubeHeaderBar } from './supervised-cube-header-bar/supervised-cube-header-bar';
+import { CubeHeaderBar } from './cube-header-bar/cube-header-bar';
 
 import { getVisualizationComponent } from '../../visualizations/index';
 import * as localStorage from '../../utils/local-storage/local-storage';

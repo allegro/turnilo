@@ -27,13 +27,11 @@ import { Ajax } from '../../utils/ajax/ajax';
 import { classNames } from '../../utils/dom/dom';
 import { Notifier } from '../../components/notifications/notifications';
 
-import { HomeHeaderBar } from '../../components/home-header-bar/home-header-bar';
-import { Button } from '../../components/button/button';
-import { SvgIcon } from '../../components/svg-icon/svg-icon';
-import { Router, Route } from '../../components/router/router';
+import { Button, SvgIcon, Router, Route } from '../../components/index';
 
 import { AppSettings } from '../../../common/models/index';
 
+import { SettingsHeaderBar } from './settings-header-bar/settings-header-bar';
 import { General } from './general/general';
 import { Clusters } from './clusters/clusters';
 import { ClusterEdit } from './cluster-edit/cluster-edit';
@@ -157,7 +155,7 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
     const { errorText, messageText, settings, breadCrumbs } = this.state;
 
     return <div className="settings-view">
-      <HomeHeaderBar
+      <SettingsHeaderBar
         user={user}
         onNavClick={onNavClick}
         customization={customization}

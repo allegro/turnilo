@@ -18,11 +18,11 @@ require('./link-header-bar.css');
 
 import * as React from 'react';
 import { Timezone } from 'chronoshift';
-import { Fn } from '../../../common/utils/general/general';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { User, Customization } from '../../../common/models/index';
-import { UserMenu } from '../user-menu/user-menu';
-import { SettingsMenu } from '../settings-menu/settings-menu';
+import { Fn } from '../../../../common/utils/general/general';
+
+import { SvgIcon, UserMenu, SettingsMenu } from '../../../components/index';
+
+import { User, Customization } from '../../../../common/models/index';
 
 export interface LinkHeaderBarProps extends React.Props<any> {
   title: string;
@@ -119,7 +119,7 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
     var userButton: JSX.Element = null;
     if (user) {
       userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
-        <SvgIcon svg={require('../../icons/full-user.svg')}/>
+        <SvgIcon svg={require('../../../icons/full-user.svg')}/>
       </div>;
     }
 
@@ -133,17 +133,17 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
     return <header className="link-header-bar" style={headerStyle}>
       <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
-          <SvgIcon svg={require('../../icons/menu.svg')}/>
+          <SvgIcon svg={require('../../../icons/menu.svg')}/>
         </div>
         <div className="title">{title}</div>
       </div>
       <div className="right-bar">
         <div className="text-button" onClick={onExploreClick}>Explore</div>
         <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
-          <SvgIcon className="help-icon" svg={require('../../icons/help.svg')}/>
+          <SvgIcon className="help-icon" svg={require('../../../icons/help.svg')}/>
         </a>
         <div className="icon-button settings" onClick={this.onSettingsMenuClick.bind(this)}>
-          <SvgIcon className="settings-icon" svg={require('../../icons/full-settings.svg')}/>
+          <SvgIcon className="settings-icon" svg={require('../../../icons/full-settings.svg')}/>
         </div>
         {userButton}
       </div>

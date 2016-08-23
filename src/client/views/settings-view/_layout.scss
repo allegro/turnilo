@@ -27,9 +27,9 @@
 // B : title-bar
 // B + C : main-panel
 // C : content (mostly up to the subviews)
-// D : home-header-bar
+// D : settings-header-bar
 
-.home-header-bar {
+.settings-header-bar {
   @include pin-top($header-height);
 }
 

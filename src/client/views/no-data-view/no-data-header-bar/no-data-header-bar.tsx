@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-require('./home-header-bar.css');
+require('./no-data-header-bar.css');
 
 import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { Stage, Clicker, User, Customization } from '../../../common/models/index';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { UserMenu } from '../user-menu/user-menu';
+import { Fn } from '../../../../common/utils/general/general';
+import { Stage, Clicker, User, Customization } from '../../../../common/models/index';
+import { SvgIcon, UserMenu } from '../../../components/index';
 
-export interface HomeHeaderBarProps extends React.Props<any> {
+export interface NoDataHeaderBarProps extends React.Props<any> {
   user?: User;
   onNavClick: Fn;
   customization?: Customization;
   title?: string;
 }
 
-export interface HomeHeaderBarState {
+export interface NoDataHeaderBarState {
   userMenuOpenOn?: Element;
 }
 
-export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeaderBarState> {
+export class NoDataHeaderBar extends React.Component<NoDataHeaderBarProps, NoDataHeaderBarState> {
   constructor() {
     super();
     this.state = {
@@ -76,7 +75,7 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
     var userButton: JSX.Element = null;
     if (user) {
       userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
-        <SvgIcon svg={require('../../icons/full-user.svg')}/>
+        <SvgIcon svg={require('../../../icons/full-user.svg')}/>
       </div>;
     }
 
@@ -87,10 +86,10 @@ export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeade
       };
     }
 
-    return <header className="home-header-bar" style={headerStyle}>
+    return <header className="no-data-header-bar" style={headerStyle}>
       <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
-          <SvgIcon svg={require('../../icons/menu.svg')}/>
+          <SvgIcon svg={require('../../../icons/menu.svg')}/>
         </div>
         <div className="title">{title}</div>
       </div>

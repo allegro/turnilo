@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import '../../../imports';
 
-.supervised-cube-header-bar {
+.home-header-bar {
   @extend %header-bar;
-
-  .left-bar .title {
-    cursor: default;
-    font-size: 14px;
-    margin-top: 14px;
-  }
 }

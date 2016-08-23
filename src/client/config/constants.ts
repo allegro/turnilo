@@ -92,6 +92,7 @@ export const STRINGS: any = {
   noDescription: 'No description',
   noFilter: 'No filter',
   noQueryableDataCubes: 'There are no queryable data cubes configured',
+  noConnectedData: 'No clusters',
   ok: 'OK',
   openIn: 'Open in',
   pin: 'Pin',

@@ -28,13 +28,11 @@ import { Colors, Clicker, Essence, Filter, FilterClause, Stage, Measure,
 import * as localStorage from '../../utils/local-storage/local-storage';
 import { STRINGS } from "../../config/constants";
 
-import { LinkHeaderBar } from '../../components/link-header-bar/link-header-bar';
-import { ManualFallback } from '../../components/manual-fallback/manual-fallback';
-import { PinboardPanel } from '../../components/pinboard-panel/pinboard-panel';
-import { Preset } from '../../components/time-filter-menu/time-filter-menu';
-import { ResizeHandle } from '../../components/resize-handle/resize-handle';
-import { Dropdown } from "../../components/dropdown/dropdown";
+import { ManualFallback, PinboardPanel, Preset, ResizeHandle, Dropdown } from '../../components/index';
+
 import { getVisualizationComponent } from '../../visualizations/index';
+
+import { LinkHeaderBar } from './link-header-bar/link-header-bar';
 
 var $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
 var latestPresets: Preset[] = [
