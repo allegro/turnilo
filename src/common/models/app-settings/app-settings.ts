@@ -248,6 +248,10 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     return new AppSettings(value);
   }
 
+  public getSuggestedCubes(): DataCube[] {
+    return this.dataCubes;
+  }
+
   changeCustomization(customization: Customization): AppSettings {
     return this.change('customization', customization);
   }

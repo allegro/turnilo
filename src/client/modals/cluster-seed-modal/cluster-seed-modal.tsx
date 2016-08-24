@@ -54,7 +54,7 @@ export class ClusterSeedModal extends React.Component<ClusterSeedModalProps, Imm
     });
   }
 
-  componentWillreceiveProps(nextProps: ClusterSeedModalProps) {
+  componentWillReceiveProps(nextProps: ClusterSeedModalProps) {
     this.initFromProps(nextProps);
   }
 

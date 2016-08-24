@@ -150,6 +150,19 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
     ).then(this.backToClustersView.bind(this));
   }
 
+  askForCubes() {
+    const { settings } = this.state;
+    return settings.getSuggestedCubes();
+  }
+
+  addCubes(newCubes: DataCube[]) {
+    const { settings } = this.state;
+    this.onSave(
+      settings.changeDataCubes(newCubes),
+      'Cubes added'
+    ).then(this.backToDataCubesView.bind(this));
+  }
+
   backToClustersView() {
     window.location.hash = '#settings/clusters';
 
@@ -259,6 +272,8 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
                 ? <ClusterEdit
                     isNewCluster={true}
                     cluster={tempCluster}
+                    getSuggestedCubes={this.askForCubes.bind(this)}
+                    addCubes={this.addCubes.bind(this)}
                     onSave={this.addCluster.bind(this)}
                     onCancel={this.backToClustersView.bind(this)}
                   />

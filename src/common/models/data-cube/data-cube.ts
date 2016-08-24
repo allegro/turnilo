@@ -744,6 +744,11 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return <List<Dimension>>this.dimensions.filter((d) => d.kind === kind);
   }
 
+  public getSuggestedDimensions(): Dimension[] {
+    const { dimensions } = this; // todo: actually implement this
+    return dimensions.toArray().splice(0, 5).map((d) => d.change('title', `${d.title}z`).change('name', `${d.name}z`));
+  }
+
   public getTimeDimension() {
     return this.getDimensionByExpression(this.timeAttribute);
   }
@@ -758,6 +763,11 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
   public getMeasureByExpression(expression: Expression): Measure {
     return this.measures.find(measure => measure.expression.equals(expression));
+  }
+
+  public getSuggestedMeasures(): Measure[] {
+    const { measures } = this; // todo: actually implement this
+    return measures.toArray().splice(0, 5).map((m) => m.change('title', `${m.title}z`).change('name', `${m.name}z`));
   }
 
   public changeDimensions(dimensions: List<Dimension>): DataCube {

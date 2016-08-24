@@ -14,12 +14,46 @@
  * limitations under the License.
  */
 
-export * from './about-modal/about-modal';
-export * from './add-collection-modal/add-collection-modal';
-export * from './add-collection-tile-modal/add-collection-tile-modal';
-export * from './cluster-seed-modal/cluster-seed-modal';
-export * from './data-cube-seed-modal/data-cube-seed-modal';
-export * from './dimension-modal/dimension-modal';
-export * from './measure-modal/measure-modal';
-export * from './raw-data-modal/raw-data-modal';
-export * from './suggestion-modal/suggestion-modal';
+@import '../../imports';
+$checkbox-width: 20px;
+
+.suggestion-modal {
+
+  form {
+    background: $background-lightest;
+    padding: 10px 0;
+  }
+
+  .row {
+    padding-left: $padding-compact;
+    height: 27px;
+    cursor: pointer;
+    white-space: nowrap;
+
+    .label {
+      position: absolute;
+      top: 5px;
+      left: $checkbox-width;
+    }
+
+    &:hover {
+      background: $hover;
+    }
+  }
+
+  .checkbox {
+    margin-top: 2px;
+  }
+
+  .button-bar {
+    margin-top: 20px;
+
+    button {
+      min-width: 70px;
+
+      &:not(:last-child) {
+        margin-right: 6px;
+      }
+    }
+  }
+}

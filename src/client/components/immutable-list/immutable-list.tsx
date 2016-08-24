@@ -19,6 +19,7 @@ require('./immutable-list.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
+import { Fn } from "../../../common/utils/general/general";
 
 import { Button } from '../button/button';
 import { Modal } from '../modal/modal';
@@ -33,6 +34,7 @@ export interface ImmutableListProps<T> extends React.Props<any> {
   getNewItem: () => T;
   getModal: (item: T) => JSX.Element;
   getRows: (items: List<T>) => SimpleRow[];
+  toggleSuggestions?: Fn;
 }
 
 export interface ImmutableListState<T> {
@@ -128,16 +130,16 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   }
 
   render() {
-    const { items, getRows, label } = this.props;
+    const { items, getRows, label, toggleSuggestions } = this.props;
     const { editedIndex, pendingAddItem } = this.state;
 
     if (!items) return null;
-
     return <div className="immutable-list">
       <div className="list-title">
         <div className="label">{label}</div>
         <div className="actions">
-          <button onClick={this.addItem.bind(this)}>Add item</button>
+          { toggleSuggestions ? <button key='suggestions' onClick={toggleSuggestions}>Suggestions</button> : null }
+          <button key='add' onClick={this.addItem.bind(this)}>Add item</button>
         </div>
       </div>
       <SimpleList

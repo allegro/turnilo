@@ -27,7 +27,7 @@ var name, what;
 if (process.argv.length === 4) {
   what = process.argv[2];
   name = process.argv[3];
-  if (!(what === 'component' || what === 'visualization')) {
+  if (!(what === 'component' || what === 'visualization' || what === 'modal')) {
     console.log('bad what');
     process.exit();
   }
@@ -146,7 +146,7 @@ import * as React from 'react';
 import * as TestUtils from 'react-addons-test-utils';
 import { $, Expression } from 'plywood';
 
-import { DataSourceMock, EssenceMock } from '../../../common/models/mocks';
+import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
 
 import { findDOMNode } from '../../utils/test-utils/index';
 
@@ -170,8 +170,7 @@ describe('${camelName}', () => {
 
 // Make the SASS file
 writeFile(path + name + '.scss',
-`
-/*
+`/*
  * Copyright 2015-2016 Imply Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
