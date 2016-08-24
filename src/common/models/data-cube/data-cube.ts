@@ -406,7 +406,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     verifyUrlSafeName(name);
     this.name = name;
 
-    this.title = parameters.title || makeTitle(name);
+    this.title = parameters.title;
     this.description = parameters.description || '';
     this.clusterName = parameters.clusterName || 'druid';
     this.source = parameters.source || name;

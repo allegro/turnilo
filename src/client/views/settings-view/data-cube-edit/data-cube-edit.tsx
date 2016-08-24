@@ -22,6 +22,8 @@ import { AttributeInfo } from 'plywood';
 import { Fn } from '../../../../common/utils/general/general';
 import { classNames } from '../../../utils/dom/dom';
 
+import { STRINGS } from '../../../config/constants';
+
 import { generateUniqueName } from '../../../../common/utils/string/string';
 
 import { Duration, Timezone } from 'chronoshift';
@@ -38,15 +40,16 @@ import { ImmutableFormDelegate, ImmutableFormState } from '../../../utils/immuta
 
 
 export interface DataCubeEditProps extends React.Props<any> {
-  settings: AppSettings;
-  cubeId?: string;
+  isNewDataCube?: boolean;
+  dataCube?: DataCube;
+  clusters?: Cluster[];
   tab?: string;
-  onSave: (settings: AppSettings) => void;
+  onSave: (newDataCube: DataCube) => void;
+  onCancel?: () => void;
 }
 
 export interface DataCubeEditState extends ImmutableFormState<DataCube> {
   tab?: any;
-  dataCube?: DataCube;
 }
 
 export interface Tab {
@@ -73,60 +76,64 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
   }
 
   componentWillReceiveProps(nextProps: DataCubeEditProps) {
-    if (nextProps.settings) {
+    if (nextProps.dataCube) {
       this.initFromProps(nextProps);
     }
   }
 
-  initFromProps(props: DataCubeEditProps) {
-    let dataCube = props.settings.dataCubes.filter((d) => d.name === props.cubeId)[0];
+  componentDidMount() {
+    if (this.props.dataCube) this.initFromProps(this.props);
+  }
 
+  initFromProps(props: DataCubeEditProps) {
     this.setState({
-      newInstance: new DataCube(dataCube.valueOf()),
+      newInstance: new DataCube(props.dataCube.valueOf()),
       canSave: true,
       errors: {},
-      dataCube,
-      tab: this.tabs.filter((tab) => tab.value === props.tab)[0]
+      tab: props.isNewDataCube ? this.tabs[0] : this.tabs.filter((tab) => tab.value === props.tab)[0]
     });
   }
 
-  selectTab(tab: string) {
-    var hash = window.location.hash.split('/');
-    hash.splice(-1);
-    window.location.hash = hash.join('/') + '/' + tab;
+  selectTab(tab: Tab) {
+    if (this.props.isNewDataCube) {
+      this.setState({tab});
+    } else {
+      var hash = window.location.hash.split('/');
+      hash.splice(-1);
+      window.location.hash = hash.join('/') + '/' + tab;
+    }
   }
 
   renderTabs(activeTab: Tab): JSX.Element[] {
-    return this.tabs.map(({label, value}) => {
+    return this.tabs.map((tab) => {
       return <button
-        className={classNames({active: activeTab.value === value})}
-        key={value}
-        onClick={this.selectTab.bind(this, value)}
-      >{label}</button>;
+        className={classNames({active: activeTab.value === tab.value})}
+        key={tab.value}
+        onClick={this.selectTab.bind(this, tab)}
+      >{tab.label}</button>;
     });
   }
 
   cancel() {
+    const { isNewDataCube } = this.props;
+
+    if (isNewDataCube) {
+      this.props.onCancel();
+      return;
+    }
+
+    // Setting newInstance to undefined resets the inputs
     this.setState({newInstance: undefined}, () => this.initFromProps(this.props));
   }
 
   save() {
-    const { settings } = this.props;
-    const { newInstance, dataCube } = this.state;
-
-    var newCubes = settings.dataCubes;
-    newCubes[newCubes.indexOf(dataCube)] = newInstance;
-    var newSettings = settings.changeDataCubes(newCubes);
-
-    if (this.props.onSave) {
-      this.props.onSave(newSettings);
-    }
+    if (this.props.onSave) this.props.onSave(this.state.newInstance);
   }
 
   goBack() {
-    const { cubeId, tab } = this.props;
+    const { dataCube, tab } = this.props;
     var hash = window.location.hash;
-    window.location.hash = hash.replace(`/${cubeId}/${tab}`, '');
+    window.location.hash = hash.replace(`/${dataCube.name}/${tab}`, '');
   }
 
   getIntrospectionStrategies(): ListItem[] {
@@ -141,7 +148,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
   }
 
   renderGeneral(): JSX.Element {
-    const { settings } = this.props;
+    const { clusters } = this.props;
     const { newInstance, errors } = this.state;
 
     var makeLabel = FormLabel.simpleGenerator(LABELS, errors);
@@ -150,13 +157,13 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
 
     var possibleClusters = [
       { value: 'native', label: 'Load a file and serve it natively' }
-    ].concat(settings.clusters.map((cluster) => {
+    ].concat(clusters.map((cluster) => {
       return { value: cluster.name, label: cluster.name };
     }));
 
     return <form className="general vertical">
       {makeLabel('title')}
-      {makeTextInput('title', /^.+$/, true)}
+      {makeTextInput('title', /.*/, true)}
 
       {makeLabel('description')}
       {makeTextInput('description')}
@@ -164,24 +171,8 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
       {makeLabel('clusterName')}
       {makeDropDownInput('clusterName', possibleClusters)}
 
-      {makeLabel('introspection')}
-      {makeDropDownInput('introspection', this.getIntrospectionStrategies())}
-
       {makeLabel('source')}
       {makeTextInput('source')}
-
-      {makeLabel('subsetFormula')}
-      {makeTextInput('subsetFormula')}
-
-      {makeLabel('defaultDuration')}
-      <ImmutableInput
-        instance={newInstance}
-        path={'defaultDuration'}
-        onChange={this.delegate.onChange}
-
-        valueToString={(value: Duration) => value ? value.toJS() : undefined}
-        stringToValue={(str: string) => str ? Duration.fromJS(str) : undefined}
-      />
 
       {makeLabel('defaultTimezone')}
       <ImmutableInput
@@ -192,9 +183,6 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
         valueToString={(value: Timezone) => value ? value.toJS() : undefined}
         stringToValue={(str: string) => str ? Timezone.fromJS(str) : undefined}
       />
-
-      {makeLabel('defaultSortMeasure')}
-      {makeDropDownInput('defaultSortMeasure', newInstance.measures.map(m => { return { value: m.name, label: m.title } ; }).toArray()) }
 
     </form>;
   }
@@ -304,24 +292,25 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
   }
 
   renderButtons(): JSX.Element {
-    const { canSave, newInstance, dataCube } = this.state;
+    const { dataCube, isNewDataCube } = this.props;
+    const { canSave, newInstance } = this.state;
     const hasChanged = !dataCube.equals(newInstance);
 
     const cancelButton = <Button
       className="cancel"
-      title="Revert changes"
+      title={isNewDataCube ?  "Cancel" : "Revert changes"}
       type="secondary"
       onClick={this.cancel.bind(this)}
     />;
 
     const saveButton = <Button
-      className={classNames("save", {disabled: !canSave || !hasChanged})}
-      title="Save"
+      className={classNames("save", {disabled: !canSave || (!isNewDataCube && !hasChanged)})}
+      title={isNewDataCube ? "Create cube" : "Save"}
       type="primary"
       onClick={this.save.bind(this)}
     />;
 
-    if (!hasChanged) {
+    if (!isNewDataCube && !hasChanged) {
       return <div className="button-group">
         {saveButton}
       </div>;
@@ -333,15 +322,33 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     </div>;
   }
 
+  getTitle(): string {
+    const { isNewDataCube } = this.props;
+    const { newInstance } = this.state;
+
+    const lastBit = newInstance.title ? `: ${newInstance.title}` : '';
+
+    return (isNewDataCube ? STRINGS.createDataCube : STRINGS.editDataCube) + lastBit;
+  }
+
   render() {
-    const { tab, dataCube, newInstance } = this.state;
+    const { dataCube, isNewDataCube } = this.props;
+    const { tab, newInstance } = this.state;
 
     if (!newInstance || !tab || !dataCube) return null;
 
     return <div className="data-cube-edit">
       <div className="title-bar">
-        <Button className="button back" type="secondary" svg={require('../../../icons/full-back.svg')} onClick={this.goBack.bind(this)}/>
-        <div className="title">{dataCube.title}</div>
+        {isNewDataCube
+          ? null
+          : <Button
+              className="button back"
+              type="secondary"
+              svg={require('../../../icons/full-back.svg')}
+              onClick={this.goBack.bind(this)}
+            />
+        }
+        <div className="title">{this.getTitle()}</div>
         {this.renderButtons()}
       </div>
       <div className="content">

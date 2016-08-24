@@ -19,10 +19,9 @@ require('./cluster-seed-modal.css');
 import * as React from 'react';
 import { SupportedType, Cluster } from "../../../common/models/cluster/cluster";
 
-import { FormLabel, Button, Modal } from '../../components/index';
+import { FormLabel, Button, Modal, ImmutableInput, ImmutableDropdown } from '../../components/index';
 import { STRINGS } from "../../config/constants";
 import { CLUSTER as LABELS } from '../../../common/models/labels';
-import { ImmutableInput, ImmutableDropdown } from "../../components/index";
 import { generateUniqueName } from '../../../common/utils/string/string';
 import { indexByAttribute } from '../../../common/utils/array/array';
 

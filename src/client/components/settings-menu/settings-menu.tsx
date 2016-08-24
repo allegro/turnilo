@@ -55,7 +55,7 @@ export class SettingsMenu extends React.Component<SettingsMenuProps, SettingsMen
     if (!stateful || !dataCube || !user || !user.allow['settings']) return null;
 
     return <div>
-      <a href={`#settings/data_cubes/${dataCube.name}`}><div className="simple-item">{STRINGS.editThisCube}</div></a>
+      <a href={`#settings/data-cubes/${dataCube.name}`}><div className="simple-item">{STRINGS.editThisCube}</div></a>
       <a href="#settings"><div className="simple-item">{STRINGS.generalSettings}</div></a>
       <div className="separator"/>
     </div>;

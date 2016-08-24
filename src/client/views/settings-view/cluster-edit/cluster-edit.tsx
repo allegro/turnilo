@@ -157,6 +157,15 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ImmutableForm
     </div>;
   }
 
+  getTitle(): string {
+    const { isNewCluster } = this.props;
+    const { newInstance } = this.state;
+
+    const lastBit = newInstance.title ? `: ${newInstance.title}` : '';
+
+    return (isNewCluster ? STRINGS.createCluster : STRINGS.editCluster) + lastBit;
+  }
+
   render() {
     const { isNewCluster } = this.props;
     const { newInstance } = this.state;
@@ -174,7 +183,7 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ImmutableForm
               onClick={this.goBack.bind(this)}
             />
         }
-        <div className="title">{isNewCluster ? STRINGS.connectNewCluster : newInstance.name}</div>
+        <div className="title">{this.getTitle()}</div>
         {this.renderButtons()}
       </div>
       <div className="content">

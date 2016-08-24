@@ -84,22 +84,14 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
     });
   }
 
-  createCube() {
-    var settings: AppSettings = this.state.newSettings;
-
-    var newCube = DataCube.fromJS({
-      name: 'new-datacube',
-      clusterName: settings.clusters.length > 0 ? settings.clusters[0].name : 'native',
-      source: 'new-source'
-    });
-
-    this.props.onSave(settings.addDataCube(newCube), 'Cube added');
+  startSeed() {
+    window.location.hash += '/new-data-cube';
   }
 
   renderEmpty(): JSX.Element {
     return <div className="data-cubes empty">
       <div className="title">No data cubes</div>
-      <div className="subtitle actionable" onClick={this.createCube.bind(this)}>Create a new data cube</div>
+      <div className="subtitle actionable" onClick={this.startSeed.bind(this)}>Create a new data cube</div>
     </div>;
   }
 
@@ -125,7 +117,7 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
     return <div className="data-cubes">
       <div className="title-bar">
         <div className="title">Data Cubes</div>
-        <Button className="save" title="Add a cube" type="primary" onClick={this.createCube.bind(this)}/>
+        <Button className="save" title="Add a cube" type="primary" onClick={this.startSeed.bind(this)}/>
       </div>
       <div className="content">
         <SimpleTable

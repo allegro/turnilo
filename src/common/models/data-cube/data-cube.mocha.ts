@@ -248,6 +248,7 @@ describe('DataCube', () => {
     it("works in a generic case", () => {
       var legacyDataCubeJS: any = {
         "name": "wiki",
+        "title": "Wiki",
         "engine": "druid",
         "source": "wiki",
         "subsetFilter": "$page.in(['en', 'fr'])",

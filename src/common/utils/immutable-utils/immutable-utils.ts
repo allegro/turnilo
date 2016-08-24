@@ -67,4 +67,16 @@ export class ImmutableUtils {
     (v as any)[propertyName] = newValue;
     return new (instance as any).constructor(v);
   }
+
+  public static addInArray<T>(instance: T, propertyName: string, newItem: any, index = -1): T {
+    var newArray = (instance as any)[propertyName];
+
+    if (index === -1) {
+      newArray.push(newItem);
+    } else {
+      newArray[index] = newItem;
+    }
+
+    return ImmutableUtils.change(instance, propertyName, newArray);
+  }
 }

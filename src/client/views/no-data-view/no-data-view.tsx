@@ -89,7 +89,7 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
 
   renderLink(mode: Mode): JSX.Element {
     const link = mode === NoDataView.NO_CUBE
-      ? <a href="#settings/data_cubes">cubes settings</a>
+      ? <a href="#settings/data-cubes">cubes settings</a>
       : <a href="#settings/clusters">clusters settings</a>
     ;
 

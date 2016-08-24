@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-@import '../../../imports';
+@import '../../imports';
 
-.cluster-edit {
-  height: 100%;
+.data-cube-seed-modal {
+  form {
+    @extend %form;
+    width: 100%;
+  }
 }

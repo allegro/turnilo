@@ -240,7 +240,7 @@ export const DATA_CUBE = {
   },
   source: {
     label: 'Source',
-    description: 'The name of cube\'s source. The dataSource, table, of filename of the data for this cube'
+    description: 'The name of cube\'s source. The dataSource, table, or filename of the data for this cube'
   },
   subsetFormula: {
     label: 'Subset Formula',
