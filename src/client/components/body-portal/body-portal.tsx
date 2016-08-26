@@ -32,6 +32,11 @@ export interface BodyPortalState {
 }
 
 export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
+  static defaultProps = {
+    disablePointerEvents: false,
+    isAboveAll: false
+  };
+
   private static aboveAll: any;
 
   private _target: any = null; // HTMLElement, a div that is appended to the body
@@ -64,7 +69,7 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
       style.top = top;
     }
 
-    style['z-index'] = 200 + +isAboveAll;
+    style['z-index'] = 200 + (isAboveAll ? 1 : 0);
 
     style['pointer-events'] = disablePointerEvents ? 'none' : 'auto';
   }
