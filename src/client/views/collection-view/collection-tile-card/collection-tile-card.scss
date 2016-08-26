@@ -23,8 +23,10 @@
   @import '../../../utils/styles/grid';
 
   &.editing {
+    cursor: move;
+
     .headband {
-      cursor: default;
+      cursor: move;
     }
 
     .content {

@@ -17,11 +17,16 @@
 require('./home-view.css');
 
 import * as React from 'react';
+import * as Q from 'q';
+
 import { Collection, Stage, DataCube, User, Customization } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { Fn } from '../../../common/utils/general/general';
 
-import { AddCollectionModal } from '../../modals/index';
+import { generateUniqueName } from '../../../common/utils/string/string';
+import { indexByAttribute } from '../../../common/utils/array/array';
+
+import { NameDescriptionModal } from '../../modals/index';
 import { SvgIcon } from '../../components/index';
 
 import { HomeHeaderBar} from './home-header-bar/home-header-bar';
@@ -34,13 +39,20 @@ export interface HomeViewProps extends React.Props<any> {
   onNavClick?: Fn;
   onOpenAbout: Fn;
   customization?: Customization;
+  stateful?: boolean;
   collectionsDelegate?: {
-    addCollection: (collection: Collection) => void;
+    addCollection: (collection: Collection) => Q.Promise<string>;
+    deleteCollection: (collection: Collection) => void;
+    updateCollection: (collection: Collection) => Q.Promise<any>;
   };
+
+  updateDataCube?: (dataCube: DataCube) => void;
+  deleteDataCube?: (dataCube: DataCube) => void;
 }
 
 export interface HomeViewState {
   showAddCollectionModal?: boolean;
+  editedItem?: DataCube | Collection;
 }
 
 export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
@@ -65,35 +77,61 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
   }
 
   renderSettingsIcon() {
-    const { user } = this.props;
-    if (!user || !user.allow['settings']) return null;
+    const { user, stateful } = this.props;
+    if (!user || !user.allow['settings'] || !stateful) return null;
 
     return <div className="icon-button" onClick={this.goToSettings.bind(this)}>
       <SvgIcon svg={require('../../icons/full-settings.svg')}/>
     </div>;
   }
 
+  editItem(item: DataCube | Collection) {
+    this.setState({
+      editedItem: item
+    });
+  }
+
+  deleteCollection(collection: Collection) {
+    this.props.collectionsDelegate.deleteCollection(collection);
+  }
+
   renderItem(item: DataCube | Collection): JSX.Element {
+    const isDataCube = DataCube.isDataCube(item);
+    const { stateful } = this.props;
+
+    if (!stateful) {
+      return <ItemCard
+        key={item.name}
+        title={item.title}
+        count={isDataCube ? undefined : (item as Collection).tiles.length}
+        description={item.description}
+        icon={isDataCube ? 'full-cube' : 'full-collection'}
+        onClick={this.goToItem.bind(this, item)}
+      />;
+    }
+
     return <ItemCard
       key={item.name}
       title={item.title}
-      count={Collection.isCollection(item) ? item.tiles.length : undefined}
+      count={isDataCube ? undefined : (item as Collection).tiles.length}
       description={item.description}
-      icon={item instanceof DataCube ? 'full-cube' : 'full-collection'}
+      icon={isDataCube ? 'full-cube' : 'full-collection'}
       onClick={this.goToItem.bind(this, item)}
+      onEdit={this.editItem.bind(this, item)}
+      onDelete={isDataCube ? this.props.deleteDataCube.bind(this, item) : this.deleteCollection.bind(this, item)}
     />;
   }
 
   renderItems(items: (DataCube | Collection)[], adder?: JSX.Element): JSX.Element {
     return <div className="items-container">
-        {items.map(this.renderItem, this)}
+      {items.map(this.renderItem, this)}
 
-        {/* So that the last item doesn't span on the entire row*/}
-        {adder || <div className="item-card empty"/>}
-        <div className="item-card empty"/>
-        <div className="item-card empty"/>
-        <div className="item-card empty"/>
-      </div>;
+      {/* So that the last item doesn't span on the entire row*/}
+      {adder || <div className="item-card empty"/>}
+      <div className="item-card empty"/>
+      <div className="item-card empty"/>
+      <div className="item-card empty"/>
+    </div>;
   }
 
   createCollection() {
@@ -105,6 +143,12 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
   renderAddCollectionModal(): JSX.Element {
     const { collections, collectionsDelegate } = this.props;
 
+    const newCollection = new Collection({
+      name: generateUniqueName('c', name => indexByAttribute(collections, 'name', name) === -1),
+      tiles: [],
+      title: 'New collection'
+    });
+
     const closeModal = () => {
       this.setState({
         showAddCollectionModal: false
@@ -112,14 +156,20 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
     };
 
     const addCollection = (collection: Collection) => {
-      closeModal();
-      collectionsDelegate.addCollection(collection);
+      collectionsDelegate.addCollection(collection).then((url) => {
+        closeModal();
+        window.location.hash = url;
+      });
     };
 
-    return <AddCollectionModal
-      collections={collections}
+    const CollectionModal = NameDescriptionModal.specialize<Collection>();
+
+    return <CollectionModal
+      title={STRINGS.addNewCollection}
       onCancel={closeModal}
       onSave={addCollection}
+      item={newCollection}
+      okTitle={STRINGS.create}
     />;
   }
 
@@ -156,9 +206,63 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
     </div>;
   }
 
+  renderEditModal() {
+    const { editedItem } = this.state;
+
+    if (DataCube.isDataCube(editedItem)) return this.renderEditDataCubeModal();
+
+    return this.renderEditCollectionModal();
+  }
+
+  renderEditCollectionModal(): JSX.Element {
+    const { collectionsDelegate } = this.props;
+    const editedItem = this.state.editedItem as Collection;
+
+    const EditionModal = NameDescriptionModal.specialize<Collection>();
+
+    const closeModal = () => {
+      this.setState({
+        editedItem: undefined
+      });
+    };
+
+    const update = (collection: Collection) => {
+      collectionsDelegate.updateCollection(collection).then(closeModal);
+    };
+
+    return <EditionModal
+      title={STRINGS.editCollection}
+      onCancel={closeModal}
+      onSave={update}
+      item={editedItem}
+      okTitle={STRINGS.save}
+    />;
+  }
+
+  renderEditDataCubeModal(): JSX.Element {
+    const { updateDataCube } = this.props;
+    const editedItem = this.state.editedItem as DataCube;
+
+    const EditionModal = NameDescriptionModal.specialize<DataCube>();
+
+    const closeModal = () => {
+      this.setState({
+        editedItem: undefined
+      });
+    };
+
+    return <EditionModal
+      title={STRINGS.editDataCube}
+      onCancel={closeModal}
+      onSave={updateDataCube}
+      item={editedItem}
+      okTitle={STRINGS.save}
+    />;
+  }
+
   render() {
     const { user, onNavClick, onOpenAbout, customization } = this.props;
-    const { showAddCollectionModal } = this.state;
+    const { showAddCollectionModal, editedItem } = this.state;
 
     return <div className="home-view">
       <HomeHeaderBar
@@ -178,6 +282,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
         {this.renderCollections()}
       </div>
       {showAddCollectionModal ? this.renderAddCollectionModal() : null}
+      {editedItem ? this.renderEditModal() : null}
     </div>;
   }
 }

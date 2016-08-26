@@ -15,7 +15,7 @@
  */
 
 export * from './about-modal/about-modal';
-export * from './add-collection-modal/add-collection-modal';
+export * from './name-description-modal/name-description-modal';
 export * from './add-collection-tile-modal/add-collection-tile-modal';
 export * from './cluster-seed-modal/cluster-seed-modal';
 export * from './data-cube-seed-modal/data-cube-seed-modal';

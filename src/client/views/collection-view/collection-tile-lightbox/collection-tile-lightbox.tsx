@@ -22,6 +22,7 @@ import * as Q from 'q';
 
 import { STRINGS } from '../../../config/constants';
 import { isInside, classNames } from '../../../utils/dom/dom';
+import { indexByAttribute } from '../../../../common/utils/array/array';
 
 import { SvgIcon, GlobalEventListener, BodyPortal, GoldenCenter, BubbleMenu, ImmutableInput, Notifier } from '../../../components/index';
 import { Collection, CollectionTile, VisualizationProps, Stage, Essence, Timekeeper } from '../../../../common/models/index';
@@ -196,7 +197,9 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
 
     const tiles = collection.tiles;
 
-    var newIndex = tiles.indexOf(tile) + direction;
+    const index = indexByAttribute(collection.tiles, 'name', tile.name);
+
+    var newIndex = index + direction;
 
     if (newIndex >= tiles.length) newIndex = 0;
     if (newIndex < 0) newIndex = tiles.length - 1;
@@ -249,7 +252,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
       return <div className="headband grid-row">
         <div className="grid-col-70 vertical">
           <div className="title actionable" onClick={this.editTitleAndDesc.bind(this)}>{tile.title}</div>
-          <div className="description actionable" onClick={this.editTitleAndDesc.bind(this)}>{tile.description}</div>
+          <div className="description actionable" onClick={this.editTitleAndDesc.bind(this)}>{tile.description || STRINGS.noDescription}</div>
         </div>
         <div className="grid-col-30 right middle">
           <div className="explore-button" onClick={this.onExplore.bind(this)}>

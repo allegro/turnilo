@@ -1,12 +1,11 @@
-require('./add-collection-modal.css');
+require('./name-description-modal.css');
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+
 import { $, Expression, Executor, Dataset } from 'plywood';
 import { Collection, Essence, CollectionTile, DataCube } from '../../../common/models/index';
 import { classNames } from '../../utils/dom/dom';
 import { ImmutableFormDelegate, ImmutableFormState } from '../../utils/immutable-form-delegate/immutable-form-delegate';
-import { generateUniqueName } from '../../../common/utils/string/string';
 
 import { FormLabel, Button, ImmutableInput, Modal, Dropdown } from '../../components/index';
 
@@ -14,15 +13,21 @@ import { STRINGS } from '../../config/constants';
 
 import { COLLECTION as LABELS } from '../../../common/models/labels';
 
-export interface AddCollectionModalProps extends React.Props<any> {
-  collections: Collection[];
+export interface NameDescriptionModalProps<T> extends React.Props<any> {
   onCancel?: () => void;
-  onSave?: (collection: Collection) => void;
+  onSave?: (newItem: T) => void;
+  item: T;
+  title: string;
+  okTitle: string;
 }
 
-export class AddCollectionModal extends React.Component<AddCollectionModalProps, ImmutableFormState<Collection>> {
+export class NameDescriptionModal<T> extends React.Component<NameDescriptionModalProps<T>, ImmutableFormState<T>> {
 
-  private delegate: ImmutableFormDelegate<Collection>;
+  static specialize<U>() {
+    return NameDescriptionModal as { new (): NameDescriptionModal<U>; };
+  }
+
+  private delegate: ImmutableFormDelegate<T>;
 
   constructor() {
     super();
@@ -30,14 +35,12 @@ export class AddCollectionModal extends React.Component<AddCollectionModalProps,
     this.delegate = new ImmutableFormDelegate(this);
   }
 
-  initFromProps(props: AddCollectionModalProps) {
+  initFromProps(props: NameDescriptionModalProps<T>) {
+    if (!props.item) return;
+
     this.setState({
       canSave: true,
-      newInstance: new Collection({
-        name: generateUniqueName('c', this.isNameUnique.bind(this)),
-        tiles: [],
-        title: 'New collection'
-      })
+      newInstance: props.item
     });
   }
 
@@ -49,17 +52,9 @@ export class AddCollectionModal extends React.Component<AddCollectionModalProps,
     if (this.state.canSave) this.props.onSave(this.state.newInstance);
   }
 
-  isNameUnique(name: string): boolean {
-    const { collections } = this.props;
-
-    if (collections.filter(c => c.name === name).length > 0) return false;
-
-    return true;
-  }
-
   render(): JSX.Element {
+    const { title, okTitle } = this.props;
     const { canSave, errors, newInstance } = this.state;
-    const { collections } = this.props;
 
     if (!newInstance) return null;
 
@@ -67,24 +62,24 @@ export class AddCollectionModal extends React.Component<AddCollectionModalProps,
     var makeTextInput = ImmutableInput.simpleGenerator(newInstance, this.delegate.onChange);
 
     return <Modal
-      className="add-collection-modal"
-      title={STRINGS.addNewCollection}
+      className="name-description-modal"
+      title={title}
       onClose={this.props.onCancel}
       onEnter={this.save.bind(this)}
     >
       <form className="general vertical">
         {makeLabel('title')}
-        {makeTextInput('title', /^.+$/, true)}
+        {makeTextInput('title', /.*/, true)}
 
         {makeLabel('description')}
-        {makeTextInput('description')}
+        {makeTextInput('description', /.*/)}
 
       </form>
 
       <div className="button-bar">
         <Button
           className={classNames("save", {disabled: !canSave})}
-          title="Create"
+          title={okTitle}
           type="primary"
           onClick={this.save.bind(this)}
         />

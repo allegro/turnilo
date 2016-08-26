@@ -137,7 +137,7 @@ export class CollectionViewDelegate {
 
     var onSave = (_collection: Collection, CollectionTile: CollectionTile) => {
       this.setState({cubeViewSupervisor: undefined});
-      this.addTile(_collection, CollectionTile).then(url => window.location.hash = url);
+      this.addTile(_collection, CollectionTile).then(url => window.location.hash = `#collection/${_collection.name}`);
     };
 
     var getConfirmationModal = (newEssence: Essence) => {

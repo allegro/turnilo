@@ -228,6 +228,21 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     return new AppSettings(value);
   }
 
+  public deleteDataCube(dataCube: DataCube): AppSettings {
+    var value = this.valueOf();
+    var index = value.dataCubes.indexOf(dataCube);
+
+    if (index === -1) {
+      throw new Error(`Unknown dataCube : ${dataCube.toString()}`);
+    }
+
+    var newDataCubes = value.dataCubes.concat();
+    newDataCubes.splice(index, 1);
+
+    value.dataCubes = newDataCubes;
+    return new AppSettings(value);
+  }
+
   public addCollectionAt(collection: Collection, index: number): AppSettings {
     var value = this.valueOf();
 

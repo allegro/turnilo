@@ -17,6 +17,7 @@
 require('./pivot-application.css');
 
 import * as React from 'react';
+import * as Q from 'q';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { findByName } from 'plywood';
 
@@ -61,7 +62,7 @@ export interface PivotApplicationState {
   viewType?: ViewType;
   viewHash?: string;
   showAboutModal?: boolean;
-  showAddCollectionModal?: boolean;
+  showAddTileModal?: boolean;
   essenceToAddToACollection?: Essence;
   cubeViewSupervisor?: ViewSupervisor;
 }
@@ -337,14 +338,14 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   addEssenceToCollection(essence: Essence) {
     this.setState({
       essenceToAddToACollection: essence,
-      showAddCollectionModal: true
+      showAddTileModal: true
     });
   }
 
-  renderAddCollectionModal() {
-    const { appSettings, selectedItem, timekeeper, showAddCollectionModal, essenceToAddToACollection } = this.state;
+  renderAddTileModal() {
+    const { appSettings, selectedItem, timekeeper, showAddTileModal, essenceToAddToACollection } = this.state;
 
-    if (!showAddCollectionModal) return null;
+    if (!showAddTileModal) return null;
 
     if (!DataCube.isDataCube(selectedItem)) {
       throw new Error(`Can't call this method without a valid dataCube. It's
@@ -353,7 +354,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
 
     const closeModal = () => {
       this.setState({
-        showAddCollectionModal: false
+        showAddTileModal: false
       });
     };
 
@@ -361,7 +362,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       closeModal();
       this.collectionViewDelegate.addTile(_collection, CollectionTile).then(url => {
         Notifier.success('Item added', {
-          label: 'View',
+          label: 'View collection',
           callback: () => window.location.hash = `#collection/${_collection.name}`
         });
       });
@@ -436,6 +437,42 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     </ReactCSSTransitionGroupAsync>;
   }
 
+  saveDataCubes(newSettings: AppSettings): Q.Promise<any> {
+    var deferred = Q.defer<string>();
+
+    Ajax.query({
+      method: "POST",
+      url: 'dataCubes',
+      data: {
+        dataCubes: newSettings.dataCubes
+      }
+    })
+      .then(
+        (status) => this.setState({
+          appSettings: newSettings
+        }, deferred.resolve),
+        (xhr: XMLHttpRequest) => {
+          Notifier.failure('Woops', 'Something bad happened');
+          deferred.reject(xhr.response);
+        }
+      ).done();
+
+    return deferred.promise;
+  }
+
+  updateDataCube(dataCube: DataCube) {
+    const appSettings = this.state.appSettings as AppSettings;
+
+    this.saveDataCubes(appSettings.addOrUpdateDataCube(dataCube));
+  }
+
+  deleteDataCube(dataCube: DataCube) {
+    const appSettings = this.state.appSettings as AppSettings;
+
+    this.saveDataCubes(appSettings.deleteDataCube(dataCube));
+  }
+
+
   renderView() {
     const { maxFilters, maxSplits, user, stateful } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor } = this.state;
@@ -460,7 +497,10 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           onOpenAbout={this.openAboutModal.bind(this)}
           customization={customization}
-          collectionsDelegate={stateful ? this.collectionViewDelegate : null}
+          collectionsDelegate={this.collectionViewDelegate}
+          updateDataCube={this.updateDataCube.bind(this)}
+          deleteDataCube={this.deleteDataCube.bind(this)}
+          stateful={stateful}
         />;
 
       case CUBE:
@@ -524,7 +564,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
       {this.renderView()}
       {this.renderSideDrawerTransition()}
       {this.renderAboutModal()}
-      {this.renderAddCollectionModal()}
+      {this.renderAddTileModal()}
       {this.renderNotifications()}
       {this.renderQuestions()}
     </main>;

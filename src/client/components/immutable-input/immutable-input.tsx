@@ -124,7 +124,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
 
   maybeFocus() {
     if (!this.focusAlreadyGiven && this.props.focusOnStartUp && this.refs['me']) {
-      (ReactDOM.findDOMNode(this.refs['me']) as any).focus();
+      (ReactDOM.findDOMNode(this.refs['me']) as any).select();
       this.focusAlreadyGiven = true;
     }
   }

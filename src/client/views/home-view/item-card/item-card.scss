@@ -37,7 +37,7 @@
       display: inline-block;
     }
 
-    .svg-icon {
+    .svg-icon.view-icon {
       height: 19px;
       margin-right: 9px;
       opacity: 0.6;
@@ -48,14 +48,16 @@
     }
 
     .text {
-      padding-top: 3px;
+      padding-top: 2px;
       white-space: normal;
       width: calc(100% - 30px);
 
       .title {
         font-size: 13px;
         color: $text-standard;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
+        margin-right: 12px;
+        line-height: 15px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -79,6 +81,33 @@
 
       &::after {
         content: ')';
+      }
+    }
+
+    .more-button {
+      position: absolute;
+      top: 14px;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+
+      &:hover {
+        background: #f2f2f2;
+
+        .svg-icon path {
+          fill: #aaa;
+        }
+      }
+
+      .svg-icon {
+        margin: 5px;
+        width: 10px;
+        height: 10px;
+
+        path {
+          fill: #d0d0d0;
+        }
       }
     }
   }

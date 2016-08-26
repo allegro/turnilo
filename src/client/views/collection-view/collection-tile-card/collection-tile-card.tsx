@@ -22,6 +22,8 @@ import * as ReactDOM from 'react-dom';
 import { SvgIcon, GlobalEventListener } from '../../../components/index';
 import { classNames } from '../../../utils/dom/dom';
 
+import { STRINGS } from '../../../config/constants';
+
 import { Collection, CollectionTile, VisualizationProps, Stage, Timekeeper, Device, DeviceSize } from '../../../../common/models/index';
 
 import { getVisualizationComponent } from '../../../visualizations/index';
@@ -132,7 +134,7 @@ export class CollectionTileCard extends React.Component<CollectionTileCardProps,
         <div className="headband grid-row" onClick={onExpandClick}>
           <div className="grid-col-80 vertical">
             <div className="title">{tile.title}</div>
-            <div className="description">{tile.description}</div>
+            <div className="description">{tile.description || STRINGS.noDescription}</div>
           </div>
           <div className="grid-col-20 middle right">
           { editionMode ?

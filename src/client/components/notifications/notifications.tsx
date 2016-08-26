@@ -135,6 +135,11 @@ export class Notifier {
     Notifier.callListeners();
   }
 
+  public static clear() {
+    this.notifications.forEach(n => n.discarded = true);
+    Notifier.callListeners();
+  }
+
   public static removeNotification(notification: Notification) {
     const index = Notifier.notifications.indexOf(notification);
 
@@ -195,7 +200,7 @@ export class Notifications extends React.Component<React.Props<any>, Notificatio
   }
 
   render() {
-    return <BodyPortal left={'50%'} top={'10px'}>
+    return <BodyPortal left={'50%'} top={'10px'} isAboveAll={true}>
       <div className="notifications">{this.renderCards()}</div>
     </BodyPortal>;
   }

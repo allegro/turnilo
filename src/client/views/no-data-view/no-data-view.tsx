@@ -21,7 +21,6 @@ import { User, Customization, AppSettings } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';
 import { Fn } from '../../../common/utils/general/general';
 
-import { AddCollectionModal } from '../../modals/index';
 import { SvgIcon } from '../../components/index';
 
 import { NoDataHeaderBar} from './no-data-header-bar/no-data-header-bar';

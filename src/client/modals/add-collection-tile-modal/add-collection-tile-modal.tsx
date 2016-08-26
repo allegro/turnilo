@@ -48,23 +48,20 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
   }
 
   getTitleFromEssence(essence: Essence): string {
-    var splits = essence.splits;
+    var ret = essence.splits
+      .toArray()
+      .map((split) => {
+        let dimension = split.getDimension(essence.dataCube.dimensions);
+        return dimension.title;
+      })
+      .join(', ') || 'Total';
 
-    if (splits.length() === 0) return essence.selectedMeasures.map(m => {
-      return essence.dataCube.getMeasure(m).title;
-    }).join(', ');
+    var measures = essence.getEffectiveMeasures();
+    if (measures.size === 1) {
+      ret = `${ret} by ${measures.get(0).title}`;
+    }
 
-    var dimensions: string[] = [];
-    var measures: string[] = [];
-
-    splits.forEach(split => {
-      let dimension = split.getDimension(essence.dataCube.dimensions);
-      let sortOn = SortOn.fromSortAction(split.sortAction, essence.dataCube, dimension);
-      dimensions.push(dimension.title);
-      measures.push(SortOn.getTitle(sortOn));
-    });
-
-    return `${dimensions.join(', ')} by ${measures.join(', ')}`;
+    return ret;
   }
 
   initFromProps(props: AddCollectionTileModalProps) {

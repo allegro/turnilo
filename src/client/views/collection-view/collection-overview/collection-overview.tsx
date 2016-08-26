@@ -22,6 +22,8 @@ import { SvgIcon } from '../../../components/index';
 
 import { CollectionTileCard } from '../collection-tile-card/collection-tile-card';
 
+import { STRINGS } from '../../../config/constants';
+
 import { setDragGhost, classNames, getYFromEvent, getXFromEvent } from '../../../utils/dom/dom';
 
 export interface CollectionOverviewProps extends React.Props<any> {
@@ -87,16 +89,6 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
       newDropIndex = -1;
     }
 
-    // Tile right after but in its first horizontal half
-    if (newDropIndex === sourceIndex + 1 && !shouldDropAfter) {
-      newDropIndex = -1;
-    }
-
-    // Tile right before but in its last horizontal half
-    if (newDropIndex === sourceIndex - 1 && shouldDropAfter) {
-      newDropIndex = -1;
-    }
-
     if (newDropIndex !== dropIndex || shouldDropAfter !== dropAfter) {
       this.setState({
         dropIndex: newDropIndex,
@@ -105,13 +97,23 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     }
   }
 
+  getActualDropIndex(originalIndex: number, dropIndex: number, dropAfter: boolean): number {
+    dropIndex = dropAfter || dropIndex === 0 ? dropIndex : dropIndex - 1;
+
+    dropIndex = dropAfter && originalIndex > dropIndex ? dropIndex + 1 : dropIndex;
+
+    return dropIndex;
+  }
+
   dragEnd(e: __React.DragEvent) {
     const { onReorder, collection } = this.props;
     var { draggedTile, dropIndex, dropAfter } = this.state;
 
-    dropIndex = dropAfter || dropIndex === 0 ? dropIndex : dropIndex - 1;
+    const originalIndex = collection.tiles.indexOf(draggedTile);
 
-    if (dropIndex > -1) onReorder(collection.tiles.indexOf(draggedTile), dropIndex);
+    dropIndex = this.getActualDropIndex(originalIndex, dropIndex, dropAfter);
+
+    if (dropIndex > -1) onReorder(originalIndex, dropIndex);
 
     this.setState({
       draggedTile: undefined,
@@ -152,7 +154,7 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     >
     <div className="container">
       <SvgIcon svg={require(`../../../icons/full-collection.svg`)}/>
-      <div className="placeholder">There are no views in this collection</div>
+      <div className="placeholder">{STRINGS.noTilesInThisCollection}</div>
     </div>
     </div>;
   }

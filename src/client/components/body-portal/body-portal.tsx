@@ -25,12 +25,15 @@ export interface BodyPortalProps extends React.Props<any> {
   fullSize?: boolean;
   disablePointerEvents?: boolean;
   onMount?: () => void;
+  isAboveAll?: boolean;
 }
 
 export interface BodyPortalState {
 }
 
 export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
+  private static aboveAll: any;
+
   private _target: any = null; // HTMLElement, a div that is appended to the body
   private _component: React.DOMComponent<any> = null; // ReactElement, which is mounted on the target
 
@@ -47,7 +50,7 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
   }
 
   updateStyle() {
-    var { left, top, disablePointerEvents } = this.props;
+    var { left, top, disablePointerEvents, isAboveAll } = this.props;
     var style = this._target.style;
 
     if (typeof left === 'number') {
@@ -61,18 +64,22 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
       style.top = top;
     }
 
-    // TODO: what was the intent here ?
-    // Disabling it because when showing a tooltip on a modal, the tooltip ends
-    // up behind the modal, which is not the exact goal of it ^^
-    // - Sébastien
-    style['z-index'] = 200; //disablePointerEvents ? 200 : 201;
+    style['z-index'] = 200 + +isAboveAll;
 
     style['pointer-events'] = disablePointerEvents ? 'none' : 'auto';
   }
 
   componentDidMount() {
     this.teleport();
-    if (this.props.onMount) this.props.onMount();
+
+    const { onMount, isAboveAll } = this.props;
+
+    if (onMount) onMount();
+
+    if (isAboveAll) {
+      if (BodyPortal.aboveAll) throw new Error('There can be only one');
+      BodyPortal.aboveAll = this;
+    }
   }
 
   teleport() {
@@ -92,6 +99,8 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
   componentWillUnmount() {
     ReactDOM.unmountComponentAtNode(this._target);
     document.body.removeChild(this._target);
+
+    if (BodyPortal.aboveAll === this) BodyPortal.aboveAll = undefined;
   }
 
   render(): React.ReactElement<BodyPortalProps> {

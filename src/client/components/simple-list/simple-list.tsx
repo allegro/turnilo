@@ -70,17 +70,11 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
     const { draggedItem, dropIndex } = this.state;
     const { rows } = this.props;
 
-    if (dropIndex === -1 && item === draggedItem) return;
-
     var sourceIndex = rows.indexOf(draggedItem);
     var targetIndex = rows.indexOf(item);
     var newDropIndex = this.isInTopHalf(e) ? targetIndex : targetIndex + 1;
 
-    if (newDropIndex === sourceIndex || newDropIndex === sourceIndex + 1) {
-      this.setState({
-        dropIndex: -1
-      });
-    } else if (newDropIndex !== dropIndex) {
+    if (newDropIndex !== dropIndex) {
       this.setState({
         dropIndex: newDropIndex
       });

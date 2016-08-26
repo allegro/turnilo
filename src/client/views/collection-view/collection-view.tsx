@@ -111,6 +111,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
       tempCollection: new Collection(this.state.collection.valueOf())
     });
 
+    Notifier.clear();
     this.stickerId = Notifier.stick(STRINGS.dragToReorder);
   }
 
