@@ -1,0 +1,8 @@
+clusters:
+  - name: druid
+    type: druid
+    host: "%{DRUID_HOST}%"
+    version: 0.9.1
+    sourceReintrospectOnLoad: true
+    sourceListRefreshInterval: 0
+    sourceReintrospectInterval: 0

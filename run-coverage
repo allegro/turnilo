@@ -1,0 +1,4 @@
+#!/bin/bash -eu
+
+# Use a reporter that does not take a ton of height
+node node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --reporter progress build/**/*.mocha.js;

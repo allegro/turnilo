@@ -1,0 +1,140 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+%header-bar {
+  background: $background-brand;
+  color: $white;
+  font-size: 16px;
+  z-index: 11;
+
+  .left-bar {
+    display: inline-block;
+    height: 100%;
+    padding-left: 12px;
+    padding-right: 12px;
+    cursor: pointer;
+
+    .menu-icon {
+      display: inline-block;
+      padding: 11px 5px;
+
+      svg path {
+        fill: #fff;
+      }
+    }
+
+    .title {
+      display: inline-block;
+      font-size: 15px;
+      margin-top: 13px;
+      padding: 0 7px;
+    }
+  }
+
+  .right-bar {
+    position: absolute;
+    top: 0;
+    right: 12px;
+
+    .text-button {
+      display: inline-block;
+      font-size: 12px;
+      text-transform: uppercase;
+      height: 42px;
+      line-height: 42px;
+      padding: 0 5px;
+      margin-right: 2px;
+      cursor: pointer;
+
+      background-color: transparent;
+      color: $white;
+    }
+
+    .icon-button {
+      display: inline-block;
+      padding: 11px 5px;
+      cursor: pointer;
+
+      &:not(:first-child) {
+        margin-left: 3px;
+      }
+
+      &:active::after { display: none; }
+
+      &.help::after { content: 'Google Groups'; }
+      &.auto-refresh::after { content: 'Refresh options'; }
+      &.hiluk::after { content: 'Share link'; }
+      &.user::after { content: 'User'; }
+      &.github::after { content: 'Pivot on Github'; }
+      &.settings::after { content: 'Settings'; }
+
+      &:hover::after {
+        opacity: 1;
+      }
+
+      &::after {
+        @extend %menu-cont;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        display: block;
+        bottom: -24px;
+        right: 0;
+        padding: 5px;
+        color: $text-standard;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      svg path {
+        fill: #fff;
+      }
+    }
+
+    .button-group {
+      display: inline-block;
+      padding-top: 6px;
+      margin-left: 8px;
+
+      > *:not(:last-child) {
+        margin-right: 8px;
+      }
+
+      .cancel {
+        color: $white;
+        background-color: rgba($white, 0.28);
+
+        &:hover {
+          background-color: rgba($white, 0.36);
+        }
+      }
+
+      .save {
+        color: $brand;
+        background-color: $white;
+
+        &:hover {
+          background-color: rgba($white, 0.92);
+        }
+      }
+    }
+  }
+
+  svg {
+    height: 19px;
+    width: 19px;
+  }
+}

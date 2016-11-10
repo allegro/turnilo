@@ -1,0 +1,7 @@
+#!/bin/bash -eu
+
+npm install
+
+gulp
+
+npm prune --production

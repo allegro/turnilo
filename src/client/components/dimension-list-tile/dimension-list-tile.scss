@@ -1,0 +1,79 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+$icon-width: 37px;
+
+.dimension-list-tile {
+  overflow: hidden;
+
+  .items {
+    position: absolute;
+    top: $title-height;
+    bottom: 0;
+    width: 100%;
+    overflow: auto;
+    color: $text-standard;
+    transition: height 0.1s ease-in-out;
+
+    .dimension {
+      @include pin-top($dimension-height);
+      background: $white;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.1s ease-in-out;
+
+      &:last-child {
+        margin-bottom: 12px;
+      }
+
+      &.highlight {
+        background: $hover;
+      }
+
+      &.selected {
+        background: $highlight;
+      }
+
+      .icon {
+        @include pin-left($icon-width);
+        top: 4px;
+        left: 0;
+        width: 19px;
+
+        svg {
+          position: absolute;
+          left: $padding-compact - 2px;
+          width: 19px;
+
+          path {
+            fill: hsla(0, 0, 0, 0.35);
+          }
+        }
+      }
+
+      .item-title {
+        @include ellipsis;
+        position: absolute;
+        top: 7px;
+        bottom: 0;
+        right: 10px;
+        left: $icon-width + 1;
+      }
+    }
+  }
+}

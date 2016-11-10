@@ -1,0 +1,67 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+$total-single-width: 260px;
+$total-width: 176px;
+
+.totals {
+  .total-container {
+    position: absolute;
+    top: 60px;
+    padding-bottom: 60px;
+    width: 100%; // overwritten in JS if more than one total
+  }
+
+  .total {
+    display: inline-block;
+    width: $total-width;
+    text-align: center;
+    padding: 0 10px;
+    margin-bottom: 34px;
+
+    .measure-name {
+      @include ellipsis;
+      width: 100%;
+      cursor: default;
+      font-size: 15px;
+      padding-bottom: 8px;
+      color: #999;
+      user-select: text;
+    }
+
+    .measure-value {
+      width: 100%;
+      cursor: default;
+      font-size: 30px;
+      user-select: text;
+    }
+
+    &.single {
+      width: 100%;
+
+      .measure-name {
+        font-size: 22px;
+        padding-bottom: 11px;
+      }
+
+      .measure-value {
+        font-size: 44px;
+      }
+    }
+  }
+}

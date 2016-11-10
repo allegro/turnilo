@@ -1,0 +1,74 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+%dimension-item {
+  padding: 0 0 0 9px;
+  background: $item-categorical;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.1s ease-in-out;
+  width: $item-width;
+
+  .reading {
+    @include ellipsis;
+    pointer-events: none;
+    white-space: nowrap;
+    margin-right: 20px;
+    height: 16px;
+    margin-top: 7px;
+  }
+
+  .remove {
+    @include pin-right(27px);
+    text-align: center;
+    padding-top: 9px;
+    cursor: pointer;
+
+    svg {
+      width: 10px;
+    }
+
+    path {
+      fill: hsla(0, 0, 0, 0.2);
+    }
+
+    &:hover path {
+      fill: hsla(0, 0, 0, 0.5);
+    }
+  }
+
+  &:hover,
+  &.selected {
+    background-color: darken($item-categorical, 6%);
+  }
+
+  &.type-time,
+  &.type-number {
+    background: $item-continuous;
+
+    &:hover,
+    &.selected {
+      background-color: darken($item-continuous, 6%);
+    }
+  }
+}
+
+%dimension-item-h {
+  top: $control-padding-v;
+  bottom: $control-padding-v;
+}

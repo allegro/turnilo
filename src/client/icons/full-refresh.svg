@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>full-refresh</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="full-refresh" sketch:type="MSArtboardGroup" fill="#000000">
+            <path d="M14.0825,4.909375 C12.904375,3.73125 11.2875,3 9.491875,3 C5.900625,3 3,5.90875 3,9.5 C3,13.09125 5.900625,16 9.491875,16 C12.5225,16 15.049375,13.928125 15.7725,11.125 L14.0825,11.125 C13.41625,13.018125 11.6125,14.375 9.491875,14.375 C6.8025,14.375 4.616875,12.189375 4.616875,9.5 C4.616875,6.810625 6.8025,4.625 9.491875,4.625 C10.840625,4.625 12.043125,5.185625 12.920625,6.07125 L10.304375,8.6875 L15.991875,8.6875 L15.991875,3 L14.0825,4.909375 L14.0825,4.909375 Z" id="Shape" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

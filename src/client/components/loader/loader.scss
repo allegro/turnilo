@@ -1,0 +1,58 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+$loader-size: 30px;
+
+.loader {
+  svg {
+    @include center($loader-size, $loader-size);
+    fill: $brand;
+
+    animation-name: loader-appears;
+    animation-duration: .3s;
+    animation-timing-function: linear;
+
+    circle {
+      animation-name: loader-circle;
+      animation-duration: 0.5s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+
+      &:nth-child(1) { animation-delay: -400s; }
+      &:nth-child(2) { animation-delay: -300ms; }
+      &:nth-child(3) { animation-delay: -100ms; }
+      &:nth-child(4) { animation-delay: 200ms; }
+      &:nth-child(5) { animation-delay: 400ms; }
+      &:nth-child(6) { animation-delay: 0ms; }
+      &:nth-child(7) { animation-delay: 300ms; }
+      &:nth-child(8) { animation-delay: 100ms; }
+      &:nth-child(9) { animation-delay: -200ms; }
+    }
+  }
+}
+
+@keyframes loader-circle {
+  0% { fill-opacity: 1; }
+  100% { fill-opacity: 0.2; }
+}
+
+@keyframes loader-appears {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}

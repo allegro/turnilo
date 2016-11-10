@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.8.2 (29753) - http://www.bohemiancoding.com/sketch -->
+    <title>filter-range</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="filter-range" fill="#000000">
+            <path d="M14.5,15 L16,15 L16,4 L14.5,4 L12,4 L12,6 L14,6 L14,13 L12,13 L12,15 L14.5,15 L14.5,15 Z M4.5,15 L3,15 L3,4 L4.5,4 L7,4 L7,6 L5,6 L5,13 L7,13 L7,15 L4.5,15 L4.5,15 Z" id="Combined-Shape"></path>
+        </g>
+    </g>
+</svg>

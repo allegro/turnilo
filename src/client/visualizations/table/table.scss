@@ -1,0 +1,127 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+$header-height: 38px;
+$segment-width: 300px;
+$measure-width: 130px;
+$row-height: 30px;
+$space-left: 10px;
+$space-right: 10px;
+$measure-column-padding-left: 10px;
+
+$header-padding-top: 12px;
+
+.table {
+
+  // Used for both row (i.e. body rows) and segments
+  @mixin row-style {
+    position: absolute;
+    height: $row-height;
+    border-bottom: 1px solid $border-super-light;
+    left: 0;
+
+    &.hover {
+      background: $hover;
+    }
+
+    &.selected {
+      background: $hover;
+    }
+
+    &.not-selected {
+      color: #a6a6a6;
+    }
+  }
+
+  @mixin sort-arrow {
+    width: 8px;
+    right: -4px;
+
+    &.ascending {
+      transform: rotate(180deg);
+    }
+  }
+
+
+  .scroller {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    @import './header';
+
+    &.has-top-shadow {
+
+      .measure-name,
+      .corner {
+        border-bottom: 0;
+      }
+    }
+
+    @import './body'; // actual values
+    @import './highlight-cont'; // highlighter
+
+    .left-gutter, .top-left-corner {
+      background-color: $white;
+      border-top-left-radius: $corner;
+      border-bottom-left-radius: $corner;
+    }
+
+
+    .corner {
+      position: absolute;
+      background-color: $white;
+      left: 0;
+      top: 0;
+      width: $segment-width - $space-left;
+      height: $header-height;
+      overflow: hidden;
+      padding: $header-padding-top 0 0 6px;
+      margin-left: $space-left;
+      border-bottom: 1px solid $border-super-light;
+
+      > .corner-wrap {
+        display: inline-block;
+        max-width: calc(100% - 10px);
+      }
+
+      .sort-arrow {
+        @include sort-arrow;
+      }
+    }
+
+    .segment-labels {
+      margin-left: $space-left;
+
+      .segment {
+        @include row-style;
+
+        background-color: $white;
+
+        white-space: nowrap;
+        padding-left: 6px;
+
+        overflow: hidden;
+        padding-top: 8px;
+      }
+    }
+  }
+}
+

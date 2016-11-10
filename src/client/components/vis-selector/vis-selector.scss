@@ -1,0 +1,85 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+.vis-selector {
+  @extend %module;
+
+  &::before {
+    @include pin-full;
+    content: '';
+    z-index: 6;
+    background-color: rgba($white, 0.65);
+    pointer-events: none;
+    opacity: 0;
+    //transition: opacity $duration ease;
+  }
+
+  &::after {
+    @include triangle(down, 7px, 9px, $text-medium);
+    content: '';
+    z-index: 7;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -6px;
+    margin-left: -7px;
+    pointer-events: none;
+    opacity: 0;
+    //transition: opacity $duration ease;
+  }
+
+  &:hover,
+  &.active {
+    &::after, &::before {
+      opacity: 1;
+    }
+  }
+
+  .vis-item {
+    display: inline-block;
+    width: $vis-item-width;
+    height: $vis-item-height;
+    cursor: pointer;
+
+    .vis-title {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 7px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 400;
+      color: $text-medium;
+    }
+
+    svg {
+      position: absolute;
+      top: 3px;
+      left: 50%;
+      width: 53px;
+      height: 53px;
+      margin-left: -27px;
+    }
+  }
+
+  .vis-selector-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+  }
+}

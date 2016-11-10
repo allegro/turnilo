@@ -1,0 +1,15 @@
+Pivot
+
+-------------------------------------------------------------------------------
+
+This software includes the font Open Sans, copyright (c) 2015, Google Inc.
+  * LICENSE:
+    * /assets/fonts/Open-Sans-regular/LICENSE.txt (Apache License 2.0)
+  * HOMEPAGE:
+    * https://www.google.com/fonts/specimen/Open+Sans
+
+This software includes the polyfill library ios-html5-drag-drop-shim, copyright (c) 2013 Tim Ruffles
+  * LICENSE:
+    * https://github.com/timruffles/ios-html5-drag-drop-shim/blob/rewrite/LICENSE (MIT)
+  * HOMEPAGE:
+    * https://github.com/timruffles/ios-html5-drag-drop-shim

@@ -1,0 +1,96 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+.notification-card {
+  @include linear(top, opacity);
+
+  position: absolute;
+  min-width: 250px;
+  padding: 10px 20px;
+  line-height: 16px;
+  transform: translate(-50%, 0);
+  opacity: 0;
+
+  background-color: $background-brand-light;
+  color: $white;
+  box-shadow: 0 3px 4px 0 rgba($black, 0.25);
+  border-radius: $corner;
+
+  text-align: center;
+  cursor: pointer;
+
+  &:not(.appearing):not(.disappearing) {
+    opacity: 1;
+  }
+
+  &.rows-1 {
+    height: 36px;
+  }
+
+  &.rows-2 {
+    height: 64px;
+  }
+
+  &.rows-3 {
+    height: 108px;
+  }
+
+  &.success {
+    background-color: $dark;
+  }
+
+  &.failure {
+    background-color: $error;
+  }
+
+  &.info {
+    background-color: $dark;
+  }
+
+  .title {
+    margin-bottom: 8px;
+  }
+
+  .description {
+    font-style: italic;
+  }
+
+  .action {
+    opacity: 0.7;
+
+    span {
+      border-bottom: 1px dashed;
+    }
+  }
+
+  &:hover {
+    box-shadow: 0 0 1px 1px hsla(200, 8%, 15%, 0.2);
+
+    .action {
+      opacity: 1;
+
+      span {
+        border-bottom: 1px solid;
+      }
+    }
+  }
+
+  &.muted {
+    pointer-events: none;
+  }
+}

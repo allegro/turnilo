@@ -1,0 +1,72 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../../imports';
+
+.data-cube-edit {
+  $tabs-column-width: 190px;
+  height: 100%;
+
+  .content {
+    padding: 0;
+
+    .tabs {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: $tabs-column-width;
+
+      border-right: 1px solid $border-super-light;
+
+      padding: 10px 5px;
+
+      button,
+      .button {
+        @extend %button-light;
+
+        display: block;
+        width: 100%;
+        padding: 10px 15px;
+        text-align: left;
+      }
+    }
+
+    .tab-content {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: $tabs-column-width;
+      right: 0;
+
+      form {
+        width: 448px;
+        padding: 24px 24px;
+
+        textarea {
+          height: calc(100% - 10px);
+          outline: none;
+          font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+          font-size: 13px;
+          line-height: 16px;
+          padding: 6px;
+        }
+      }
+
+
+    }
+  }
+
+}

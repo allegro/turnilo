@@ -1,0 +1,119 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+.form-label {
+  height: 20px;
+
+  .label {
+    @extend %input-top-label;
+  }
+
+  .icon-container {
+    position: absolute;
+    right: 1px;
+    top: -3px;
+
+    width: 16px;
+    height: 16px;
+    border-radius: 20px;
+
+    background: rgba($brand, .22);
+    cursor: pointer;
+
+    &:hover,
+    &.visible {
+      background: $brand;
+
+      .icon path {
+        fill: $white;
+      }
+    }
+
+    &.visible:hover {
+      background: darken($brand, 6);
+    }
+
+    &.error {
+      background: $error;
+
+      .icon path {
+        fill: $white;
+      }
+    }
+
+    .icon {
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      width: 14px;
+      height: 14px;
+
+      path {
+        fill: darken($brand, 3);
+      }
+    }
+  }
+
+  &.bubble .additional-text {
+    @extend %bubble-cont;
+    padding: 10px;
+    max-width: 300px;
+  }
+
+  .additional-text {
+    position: absolute;
+    left: calc(100% + 10px);
+    top: -2px;
+    width: 100%;
+    max-width: 400px;
+
+    font-size: 12px;
+    line-height: 17px;
+    color: lighten($brand, 10);
+
+    .error-text {
+      color: $error;
+      margin-bottom: 10px;
+    }
+
+    a {
+      &::after {
+        @include pin-top(15px);
+        content: '';
+        position: absolute;
+        border-bottom: 1px dotted;
+      }
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    code {
+      background: rgba($brand, 0.16);
+      border-radius: $corner;
+      padding: 0 4px;
+    }
+  }
+
+  &.error {
+    .icon path {
+      fill: $error;
+    }
+  }
+}

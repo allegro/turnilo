@@ -1,0 +1,44 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+.chart-line {
+  pointer-events: none;
+
+  .area {
+    stroke: none;
+    fill: $main-time-area;
+    fill-opacity: .9;
+  }
+
+  .line {
+    fill: none;
+    stroke: $main-time-line;
+    stroke-width: 1.6px;
+  }
+
+  .singleton {
+    fill: $main-time-line;
+    stroke: none;
+  }
+
+  .hover {
+    fill: $white;
+    stroke: $main-time-line;
+    stroke-width: 2;
+  }
+}

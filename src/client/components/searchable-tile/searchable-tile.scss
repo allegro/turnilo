@@ -1,0 +1,76 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+$search-box-gap: 3px;
+$search-box-height: 26px;
+
+.searchable-tile {
+  @extend %module;
+  @extend %white-shadow;
+
+  .rows {
+    position: absolute;
+    top: $pin-title-height;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    overflow: auto;
+  }
+
+
+  .search-box {
+    position: absolute;
+    top: $pin-title-height;
+    left: 0;
+    right: 0;
+    height: $search-box-height;
+    padding: 0 $padding-compact;
+    margin-bottom: 4px;
+
+    .clearable-input {
+      @extend %input-cont-inset;
+      width: 100%;
+      height: $search-box-height;
+      padding-left: 6px;
+
+      .clear {
+        top: 3px;
+      }
+    }
+  }
+
+
+  &.has-search .rows {
+    top: $pin-title-height + $search-box-height + $search-box-gap;
+  }
+
+  &.has-search .items {
+    top: $pin-title-height + $search-box-height + $search-box-gap;
+  }
+
+  &.continuous .rows .row {
+    pointer-events: none;
+  }
+
+  .message {
+    padding: 4px 10px;
+    color: $text-light;
+    font-style: italic;
+  }
+}

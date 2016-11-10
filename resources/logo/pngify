@@ -1,0 +1,29 @@
+#!/bin/bash -eu
+
+# Force this to the working directory
+cd "$(dirname "$0")"
+
+if which convert > /dev/null; then
+  echo "Converting..."
+else
+  echo "Please install ImageMagic."
+  exit 1
+fi
+
+# Note: Look into filters (http://www.imagemagick.org/script/command-line-options.php?#filter)
+
+rm -f ./*.png
+
+# Render the SVG into a big PNG
+convert -density 1200 -background none pivot-logo.svg -resize 1024x1024 pivot-logo-1024.png
+convert -density 1200 -background none pivot-logo.svg -resize 800x800   pivot-logo-800.png
+
+# Down size the large PNG into other sizes
+# Gamma correction from: http://www.4p8.com/eric.brasseur/gamma.html
+# Thank you to Xavier Léauté (https://github.com/xvrl) for pointing it out.
+convert pivot-logo-1024.png -depth 16 -gamma 0.454545 -resize 512x512 -gamma 2.2 -depth 8 pivot-logo-512.png
+convert pivot-logo-1024.png -depth 16 -gamma 0.454545 -resize 128x128 -gamma 2.2 -depth 8 pivot-logo-128.png
+convert pivot-logo-1024.png -depth 16 -gamma 0.454545 -resize 64x64   -gamma 2.2 -depth 8 pivot-logo-64.png
+convert pivot-logo-1024.png -depth 16 -gamma 0.454545 -resize 32x32   -gamma 2.2 -depth 8 pivot-logo-32.png
+
+echo "Done"

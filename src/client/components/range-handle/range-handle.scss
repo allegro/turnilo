@@ -1,0 +1,56 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+$nub-size: 16px;
+
+.range-handle {
+  width: $nub-size;
+  height: $nub-size;
+  background: $brand;
+  border-radius: 50%;
+  border: 2px solid $brand;
+  z-index: 2;
+
+  &.empty {
+    background: $white;
+  }
+
+  &.beyond::before {
+    border-style: solid;
+    border-color: $background-light;
+    border-width: 2.5px 2.5px 0 0;
+    content: '';
+    display: inline-block;
+    height: 4px;
+    position: relative;
+    top: 2.5px;
+    vertical-align: top;
+    width: 4px;
+  }
+
+  &.beyond.min::before {
+    top: 3px;
+    left: 4px;
+    transform: rotate(-135deg);
+  }
+
+  &.beyond.max::before {
+    left: 2px;
+    transform: rotate(45deg);
+  }
+}

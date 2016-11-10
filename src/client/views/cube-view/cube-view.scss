@@ -1,0 +1,121 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+.cube-view {
+  .cube-header-bar,
+  .supervised-cube-header-bar {
+    @include pin-top($header-height);
+  }
+
+  .container {
+    @include unpin-top($header-height);
+  }
+
+  .dimension-measure-panel {
+    @include pin-left($left-panel-width);
+  }
+
+  .center-panel {
+    @include for-small-screens {
+      top: 0;
+      bottom: 0;
+    }
+
+    position: absolute;
+    top: $tile-margin-v;
+    bottom: $tile-margin-v;
+    left: $left-panel-width;
+    right: $pinboard-width;
+
+    .center-top-bar {
+      @include pin-top($control-tile-height + 1px + $control-tile-height);
+
+      .filter-split-section {
+        @include unpin-right($vis-selector-width + 1px);
+      }
+
+      .filter-tile,
+      .split-tile {
+        height: $control-tile-height;
+      }
+
+      .filter-tile {
+        margin-bottom: 1px;
+        border-radius: $corner 0 0 0;
+      }
+
+      .split-tile {
+        border-radius: 0 0 0 $corner;
+      }
+
+      .vis-selector {
+        @include pin-right($vis-selector-width);
+        z-index: 8;
+        border-radius: 0 $corner $corner 0;
+      }
+    }
+
+    .center-main {
+      @include unpin-top($control-tile-height + 1px + $control-tile-height + $small-tile-margin);
+      @include for-small-screens {
+        @include unpin-top($control-tile-height + 2px + $control-tile-height);
+      }
+
+      .visualization {
+        @extend %module;
+        @include pin-full;
+        border-radius: $corner;
+      }
+
+      .manual-fallback {
+        @include pin-full;
+      }
+
+      .drop-indicator {
+        @include pin-full;
+        z-index: 9;
+      }
+
+      .drag-mask {
+        @include pin-full;
+        z-index: 10;
+      }
+    }
+  }
+
+  .pinboard-panel {
+    @include pin-right($pinboard-width);
+    @include for-small-screens {
+      margin-bottom: 0;
+    }
+
+    margin-bottom: $tile-margin-v - 1px;
+
+    .pinboard-measure-tile,
+    .dimension-tile,
+    .placeholder-tile {
+      &:first-child {
+        border-radius: $corner $corner 0 0;
+      }
+
+      &:last-child {
+        border-radius: 0 0 $corner $corner;
+      }
+    }
+  }
+}

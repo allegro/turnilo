@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>full-profile</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="full-profile" sketch:type="MSArtboardGroup" fill="#000000">
+            <path d="M9.5,2 C5.36,2 2,5.36 2,9.5 C2,13.64 5.36,17 9.5,17 C13.64,17 17,13.64 17,9.5 C17,5.36 13.64,2 9.5,2 L9.5,2 Z M9.5,4.25 C10.745,4.25 11.75,5.255 11.75,6.5 C11.75,7.745 10.745,8.75 9.5,8.75 C8.255,8.75 7.25,7.745 7.25,6.5 C7.25,5.255 8.255,4.25 9.5,4.25 L9.5,4.25 Z M9.5,14.9 C7.625,14.9 5.9675,13.94 5,12.485 C5.0225,10.9925 8,10.175 9.5,10.175 C10.9925,10.175 13.9775,10.9925 14,12.485 C13.0325,13.94 11.375,14.9 9.5,14.9 L9.5,14.9 Z" id="Shape-Copy-4" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

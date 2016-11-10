@@ -1,0 +1,18 @@
+clusters:
+  - name: druid
+    type: druid
+    host: "%{DRUID_HOST}%"
+    timeout: 30000
+
+dataCubes:
+  - name: wiki
+    title: Wikipedia Edits
+    engine: druid
+    source: wikipedia
+
+    dimensions:
+      - name: language
+        expression: $language
+
+    measures:
+      - name: count

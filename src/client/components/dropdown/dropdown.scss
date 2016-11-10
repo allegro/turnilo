@@ -1,0 +1,88 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+.dropdown {
+  cursor: pointer;
+  white-space: nowrap;
+  pointer-events: none;
+
+  &:hover {
+    .caret-icon {
+      path {
+        fill: $text-light;
+      }
+    }
+  }
+
+  .selected-item {
+    @extend %input-cont;
+    @include ellipsis;
+    display: block;
+    pointer-events: auto;
+    height: $input-height;
+    padding: 8px 22px 0 6px;
+  }
+
+  .dropdown-label {
+    @extend %input-top-label;
+  }
+
+  .caret-icon {
+    position: absolute;
+    width: 11px;
+    height: 9px;
+    right: 9px;
+    bottom: 9px;
+
+    path {
+      fill: $text-lighterish;
+    }
+  }
+
+  .dropdown-menu {
+    @extend %menu-cont;
+    position: absolute;
+    pointer-events: auto;
+    z-index: 800;
+    padding: 8px 0;
+    width: 100%;
+    line-height: 24px;
+  }
+
+  &.down .dropdown-menu {
+    top: 100%;
+  }
+
+  &.up .dropdown-menu {
+    bottom: 100%;
+  }
+
+  .dropdown-item {
+    @include ellipsis;
+    padding: 0 10px;
+    cursor: pointer;
+
+    &.selected {
+      background: $background-light;
+    }
+
+    &:hover {
+      background: $hover;
+    }
+  }
+}

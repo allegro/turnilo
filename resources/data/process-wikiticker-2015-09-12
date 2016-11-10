@@ -1,0 +1,45 @@
+#!/bin/bash -eu
+
+# Force this to the working directory
+cd "$(dirname "$0")"
+
+mkdir -p ../../assets/data
+
+gzcat wikiticker-2015-09-12.gz \
+  | jq -c '
+    select("2015-09-12" < .timestamp and .timestamp < "2015-09-13") |
+    {
+      time: .timestamp | sub(".[0-9]{3}Z"; "Z"),
+      sometimeLater: .timestamp | sub("2015-"; "2016-") | sub(":[0-9]{2}.[0-9]{3}Z"; ":00Z"),
+      channel: .channel | sub("#"; "") | sub(".wikipedia"; ""),
+      cityName,
+      comment,
+      commentLength: (.comment | length),
+      countryIsoCode,
+      countryName,
+      deltaBucket100: (.delta/100 | floor | .*100),
+      isAnonymous: (.countryName != null),
+      isMinor,
+      isNew,
+      isRobot,
+      isUnpatrolled,
+      metroCode,
+      namespace,
+      page,
+      regionIsoCode,
+      regionName,
+      user,
+      userChars: (.user | ascii_upcase | split("") | unique),
+      delta,
+      added: [.delta, 0] | max,
+      deleted: [-.delta, 0] | max,
+      deltaByTen: (.delta / 10)
+    }' \
+  > ../../assets/data/wikiticker-2015-09-12-large.json
+
+perl -ne'print if $. % 10 == 0' ../../assets/data/wikiticker-2015-09-12-large.json \
+  > ../../assets/data/wikiticker-2015-09-12-sampled.json
+
+cat ../../assets/data/wikiticker-2015-09-12-large.json \
+  | jq -c 'select(.isAnonymous)' \
+  > ../../assets/data/wikiticker-2015-09-12-anonymous.json

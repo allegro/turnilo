@@ -1,0 +1,25 @@
+# === Webstorm ===
+/.idea/
+/.sass-cache/
+/imply-pivot-*.tgz
+/assets/data/*-large.*
+/webstorm
+/resources/
+/config.yaml
+/config-test.yaml
+/build/client
+*.mocha.js
+/private/
+/coverage/
+/script/
+/docs/
+/test/
+/src/
+/typings/
+/.travis.yml
+/travis-test
+/full-test
+/run
+/run-coverage
+/CONTRIBUTING.md
+/gulpfile.js

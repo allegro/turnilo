@@ -1,0 +1,7 @@
+trustProxy: always
+strictTransportSecurity: always
+
+dataCubes:
+  - name: file
+    clusterName: native
+    source: ../../assets/data/wikiticker-2015-09-12-anonymous.json

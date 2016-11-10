@@ -1,0 +1,60 @@
+#!/usr/bin/env node
+
+var fs = require('fs-extra');
+var replace = require("replace");
+
+if (process.argv.length !== 5) {
+  console.log('Usage: mv <what> <old-component-name> <new-component-name>');
+  process.exit();
+}
+
+var what = process.argv[2];
+var oldName = process.argv[3];
+var newName = process.argv[4];
+
+if (!(what === 'component' || what === 'model' || what === 'visualization')) {
+  console.log('bad what');
+  process.exit();
+}
+
+if (!/^([a-z-])+$/.test(oldName)) {
+  console.log('must be a hyphen case old name');
+  process.exit();
+}
+
+if (!/^([a-z-])+$/.test(newName)) {
+  console.log('must be a hyphen case new name');
+  process.exit();
+}
+
+var oldPath = './src/client/' + what + 's/' + oldName + '/';
+var newPath = './src/client/' + what + 's/' + newName + '/';
+
+var camelOldName = oldName.replace(/(^|-)[a-z]/g, (s) => s.replace('-', '').toUpperCase());
+var camelNewName = newName.replace(/(^|-)[a-z]/g, (s) => s.replace('-', '').toUpperCase());
+
+console.log('Making path:', newPath);
+
+fs.copySync(oldPath, newPath);
+fs.removeSync(oldPath);
+fs.renameSync(newPath + oldName + '.tsx', newPath + newName + '.tsx');
+fs.renameSync(newPath + oldName + '.scss', newPath + newName + '.scss');
+fs.renameSync(newPath + oldName + '.mocha.tsx', newPath + newName + '.mocha.tsx');
+
+var replacePath = './src/client/';
+
+replace({
+  regex: oldName,
+  replacement: newName,
+  paths: [replacePath],
+  recursive: true,
+  silent: true
+});
+
+replace({
+  regex: camelOldName,
+  replacement: camelNewName,
+  paths: [replacePath],
+  recursive: true,
+  silent: true
+});

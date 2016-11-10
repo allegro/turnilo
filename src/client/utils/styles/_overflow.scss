@@ -1,0 +1,57 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+%overflow {
+  @extend %dimension-item;
+  @extend %dimension-item-h;
+  position: absolute;
+  left: 0;
+  padding: 0 10px;
+  width: 40px;
+
+  &.all-continuous {
+    background: $item-continuous;
+  }
+
+  .count {
+    pointer-events: none;
+    white-space: nowrap;
+    height: 16px;
+    margin-top: 7px;
+  }
+}
+
+%overflow-menu {
+  .split,
+  .filter {
+    @extend %dimension-item;
+    position: absolute;
+    left: 8px;
+    top: 0; // It gets vertical position from the JS
+    height: 29px;
+
+    &.from-highlight {
+      border: 1px dashed $highlight-border;
+      background: rgba($item-categorical, 0.5);
+
+      &.type-time,
+      &.type-number {
+        border: 1px dashed hsl(130, 39%, 44%);
+        background: rgba($item-continuous, 0.5);
+      }
+    }
+  }
+}

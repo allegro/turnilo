@@ -1,0 +1,98 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+.pinboard-panel {
+  @include for-small-screens {
+    padding: 0 0 0 1px;
+    font-size: 0.9em;
+  }
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+
+  padding: $tile-margin-v $tile-margin-h 0 $tile-margin-h;
+
+  .dimension-tile,
+  .drop-indicator-tile {
+    flex-grow: 1;
+    margin-bottom: 1px;
+  }
+
+  .dimension-tile.has-colors {
+    margin-bottom: 5px;
+  }
+
+  .drop-indicator-tile {
+    pointer-events: none;
+
+    &::after {
+      @include unpin-full(4px, 0, 4px, 0);
+      content: '';
+      background: rgba($border-darker, 0.14);
+      border-radius: $corner;
+    }
+  }
+
+  .placeholder {
+    @extend %module;
+    border-radius: 0 0 2px 2px;
+    max-height: 280px;
+    min-height: 150px;
+    flex: 1;
+    pointer-events: none;
+
+    &::after {
+      @include unpin-full(10px);
+      content: '';
+      //border: 1px dashed $border-medium;
+      border-radius: 5px;
+    }
+
+    svg {
+      position: absolute;
+      width: 40px;
+      left: 50%;
+      top: 50%;
+      margin-left: -20px;
+      margin-top: -63px;
+
+      path {
+        fill: darken($background-base, 5%);
+      }
+    }
+
+    .placeholder-message {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      height: 16px;
+      margin-top: -15px;
+      padding-left: 30px;
+      padding-right: 30px;
+      font-style: italic;
+      line-height: 20px;
+      color: $text-lighterish;
+      text-align: center;
+    }
+  }
+
+  .drag-mask {
+    @include pin-full;
+  }
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>full-error</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="full-error" sketch:type="MSArtboardGroup" fill="#000000">
+            <path d="M10.5578035,11 L8.44219653,11 L8,3 L11,3 L10.5578035,11 Z M9.5,16 C10.3284271,16 11,15.3284271 11,14.5 C11,13.6715729 10.3284271,13 9.5,13 C8.67157288,13 8,13.6715729 8,14.5 C8,15.3284271 8.67157288,16 9.5,16 Z" id="!" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

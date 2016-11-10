@@ -1,0 +1,194 @@
+#!/usr/bin/env node
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var fs = require('fs');
+var mkdirp = require('mkdirp');
+
+if (!(process.argv.length === 3 || process.argv.length === 4)) {
+  console.log('Usage: mkcomp <what?> <component-name>');
+  process.exit();
+}
+
+var name, what;
+if (process.argv.length === 4) {
+  what = process.argv[2];
+  name = process.argv[3];
+  if (!(what === 'component' || what === 'visualization' || what === 'modal')) {
+    console.log('bad what');
+    process.exit();
+  }
+} else {
+  what = 'component';
+  name = process.argv[2];
+}
+
+if (!/^([a-z-])+$/.test(name)) {
+  console.log('must be a hyphen case name');
+  process.exit();
+}
+
+var path = './src/client/' + what + 's/' + name + '/';
+mkdirp.sync(path);
+console.log('Making path:', path);
+
+var camelName = name.replace(/(^|-)[a-z]/g, (s) => s.replace('-', '').toUpperCase());
+
+function writeFile(path, data) {
+  try {
+    return fs.writeFileSync(path, data, {
+      flag: 'wx', // x = fail if file exists
+      encoding: 'utf8'
+    });
+  } catch (error) {
+    return console.log("Skipping " + path);
+  }
+}
+
+// Make the TypeScript file
+writeFile(path + name + '.tsx',
+`/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+require('./${name}.css');
+
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { $, Expression, Executor, Dataset } from 'plywood';
+import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
+// import { ... } from '../../config/constants';
+// import { Fn } from '../../../common/utils/general/general';
+import { SvgIcon } from '../index';
+
+// I am: import { ${camelName} } from '../${name}/${name}';
+
+export interface ${camelName}Props extends React.Props<any> {
+}
+
+export interface ${camelName}State {
+}
+
+export class ${camelName} extends React.Component<${camelName}Props, ${camelName}State> {
+  public mounted: boolean;
+
+  constructor() {
+    super();
+    // this.state = {};
+
+  }
+
+  componentDidMount() {
+    this.mounted = true;
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  componentWillReceiveProps(nextProps: ${camelName}Props) {
+
+  }
+
+  render() {
+    return <div className="${name}"></div>;
+  }
+}
+`);
+
+
+// Make the TypeScript test file
+writeFile(path + name + '.mocha.tsx',
+`/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { expect } from 'chai';
+import * as sinon from 'sinon';
+import * as React from 'react';
+import * as TestUtils from 'react-addons-test-utils';
+import { $, Expression } from 'plywood';
+
+import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
+
+import { findDOMNode } from '../../utils/test-utils/index';
+
+import { ${camelName} } from './${name}';
+
+describe('${camelName}', () => {
+  it('adds the correct class', () => {
+    var renderedComponent = TestUtils.renderIntoDocument(
+      <${camelName}
+
+      />
+    );
+
+    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
+    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('${name}');
+  });
+
+});
+`);
+
+
+// Make the SASS file
+writeFile(path + name + '.scss',
+`/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+.${name} {
+
+}
+`);

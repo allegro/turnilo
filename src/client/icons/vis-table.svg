@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="53px" height="53px" viewBox="0 0 53 53" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>vis-table</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="vis-table" sketch:type="MSArtboardGroup">
+            <g id="Rectangle-1-Copy-6-+-Line-Chart-+-Path-11-Copy-+-Path-11-Copy" sketch:type="MSLayerGroup" transform="translate(6.000000, 12.000000)">
+                <g id="Group-Copy-6" sketch:type="MSShapeGroup">
+                    <rect id="Rectangle-35" fill="#EEEEEE" x="0" y="1" width="9" height="27"></rect>
+                    <rect id="Rectangle-35-Copy" fill="#EEEEEE" x="10" y="1" width="31" height="6"></rect>
+                    <path d="M0,0 L41,0 L41,29 L0,29 L0,0 Z M10,1 L40,1 L40,7 L10,7 L10,1 Z M10,8 L40,8 L40,14 L10,14 L10,8 Z M10,15 L40,15 L40,21 L10,21 L10,15 Z M10,22 L40,22 L40,28 L10,28 L10,22 Z M1,1 L9,1 L9,7 L1,7 L1,1 Z M1,8 L9,8 L9,14 L1,14 L1,8 Z M1,15 L9,15 L9,21 L1,21 L1,15 Z M1,22 L9,22 L9,28 L1,28 L1,22 Z" id="Rectangle-37" fill="#999999"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

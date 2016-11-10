@@ -1,0 +1,194 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../../imports';
+
+.collection-tile-lightbox {
+  @include pin-full;
+
+  // Importing this here so it only applies to .collection-tile-lightbox
+  // otherwise it pollutes the global CSS
+  @import '../../../utils/styles/grid';
+
+  .backdrop {
+    @include pin-full;
+    background: $black;
+    opacity: 0.5;
+  }
+
+  .golden-center {
+    @include pin-full;
+    overflow-y: auto;
+
+    .modal-window {
+      @extend %modal-cont;
+      width: calc(100% - 270px);
+
+      .headband {
+        padding: 16px 20px;
+        border-bottom: 1px solid $border-super-light;
+
+        .actionable {
+          cursor: pointer;
+        }
+
+        .title {
+          color: #444;
+          font-size: 16px;
+          margin-bottom: 7px;
+          margin-top: 5px;
+          height: 18px;
+        }
+
+        .description {
+          color: $text-lighter;
+          height: 15px;
+          margin-bottom: 1px;
+        }
+
+        input.title,
+        input.description {
+          margin-left: -7px;
+          font-size: 13px;
+          height: 30px;
+          color: #444;
+        }
+
+        input.title {
+          margin-top: -4px;
+          margin-bottom: 4px;
+        }
+
+        input.description {
+          margin-bottom: -4px;
+        }
+
+        [class*='-button'] {
+          padding: 5px 7px;
+          line-height: 20px;
+          border-radius: $corner;
+          font-size: 12px;
+          text-transform: uppercase;
+
+          color: $brand;
+
+          cursor: pointer;
+
+          &.cancel-button {
+            @extend %button-secondary;
+            height: auto;
+            padding: 0 12px;
+            line-height: 30px;
+            border-radius: 3px;
+            font-size: 13px;
+            text-transform: none;
+          }
+
+          &.save-button {
+            @extend %button-primary;
+            height: auto;
+            padding: 0 12px;
+            line-height: 30px;
+            border-radius: 3px;
+            font-size: 13px;
+            text-transform: none;
+          }
+
+          &.icon {
+            border-radius: 50%;
+            width: 30px;
+            padding: 5px;
+
+            path {
+              fill: $brand;
+            }
+          }
+
+          &:not(:last-child) {
+            margin-right: 8px;
+          }
+
+          &.close-button {
+            path {
+              fill: $text-light;
+            }
+
+            &:hover, &.active {
+              background: none;
+
+              path {
+                fill: #666;
+              }
+            }
+          }
+
+          &:hover {
+            background-color: $hover;
+          }
+
+          &.active {
+            background-color: $highlight;
+          }
+        }
+
+        .separator {
+          border-left: 1px solid $border-extra-light;
+          height: 30px;
+          margin: 0 10px;
+        }
+      }
+
+      .content {
+        min-height: calc(100vh - 200px);
+      }
+    }
+
+  }
+
+  [class$='-arrow'] {
+    $edge-offset: 50px;
+
+    position: absolute;
+    width: 60px;
+    padding: 16px;
+    top: 50%;
+    transform: translate(0, -50%);
+    border-radius: 50%;
+    background-color: rgba($white, 0.18);
+    cursor: pointer;
+
+    path {
+      fill: $white;
+    }
+
+    &:hover {
+      background-color: rgba($white, 0.26);
+    }
+
+    &:active {
+      background-color: rgba($white, 0.34);
+    }
+
+    &.left-arrow {
+      left: $edge-offset;
+    }
+
+    &.right-arrow {
+      right: $edge-offset;
+    }
+  }
+
+}

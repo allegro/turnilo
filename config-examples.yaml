@@ -1,0 +1,152 @@
+dataCubes:
+  - name: wiki
+    title: Wikipedia Example
+    clusterName: native
+    source: assets/data/wikiticker-2015-09-12-sampled.json
+    timeAttribute: time
+
+    refreshRule:
+      rule: fixed
+      time: 2015-09-13T00:00:00.000Z
+
+    defaultDuration: P1D
+    defaultSortMeasure: delta
+
+    defaultPinnedDimensions: ["channel","namespace","isRobot"]
+    introspection: no-autofill
+    attributeOverrides:
+      - name: sometimeLater
+        type: TIME
+
+      - name: commentLength
+        type: NUMBER
+
+      - name: deltaBucket100
+        type: NUMBER
+
+    dimensions:
+      - name: time
+        title: Time
+        kind: time
+        formula: $time
+
+      - name: channel
+        title: Channel
+        formula: $channel
+
+      - name: cityName
+        title: City Name
+        formula: $cityName
+
+      - name: comment
+        title: Comment
+        formula: $comment
+
+      - name: commentLength
+        title: Comment Length
+        kind: number
+        formula: $commentLength
+
+      - name: commentLengthOver100
+        title: Comment Length Over 100
+        kind: boolean
+        formula: $commentLength > 100
+
+      - name: countryIso
+        title: Country ISO
+        formula: $countryIsoCode
+
+      - name: countryName
+        title: Country Name
+        formula: $countryName
+
+      - name: deltaBucket100
+        title: Delta Bucket
+        kind: number
+        formula: $deltaBucket100
+
+      - name: isAnonymous
+        title: Is Anonymous
+        kind: boolean
+        formula: $isAnonymous
+
+      - name: isMinor
+        title: Is Minor
+        kind: boolean
+        formula: $isMinor
+
+      - name: isNew
+        title: Is New
+        kind: boolean
+        formula: $isNew
+
+      - name: isRobot
+        title: Is Robot
+        kind: boolean
+        formula: $isRobot
+
+      - name: isUnpatrolled
+        title: Is Unpatrolled
+        formula: $isUnpatrolled
+
+      - name: metroCode
+        title: Metro Code
+        formula: $metroCode
+
+      - name: namespace
+        title: Namespace
+        formula: $namespace
+
+      - name: page
+        title: Page
+        formula: $page
+
+      - name: regionIso
+        title: Region ISO
+        formula: $regionIsoCode
+
+      - name: regionName
+        title: Region Name
+        formula: $regionName
+
+      - name: user
+        title: User
+        formula: $user
+
+      - name: userChars
+        title: User Chars
+        formula: $userChars
+
+    measures:
+      - name: count
+        title: Rows
+        formula: $main.count()
+
+      - name: delta
+        title: Delta
+        formula: $main.sum($delta)
+
+      - name: avg_delta
+        title: Avg Delta
+        formula: $main.average($delta)
+
+      - name: added
+        title: Added
+        formula: $main.sum($added)
+
+      - name: avg_added
+        title: Avg Added
+        formula: $main.average($added)
+
+      - name: deleted
+        title: Deleted
+        formula: $main.sum($deleted)
+
+      - name: avg_deleted
+        title: Avg Deleted
+        formula: $main.average($deleted)
+
+      - name: unique_users
+        title: Unique Users
+        formula: $main.countDistinct($user)
+

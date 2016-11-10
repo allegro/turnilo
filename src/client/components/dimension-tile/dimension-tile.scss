@@ -1,0 +1,123 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+$checkbox-width: 20px;
+$measure-width: 80px;
+$folder-box-height: 32px;
+
+.dimension-tile {
+  min-height: 94px;
+  overflow-y: hidden;
+
+  &.has-folder .rows {
+    bottom: $folder-box-height;
+  }
+
+  .folder {
+    @include pin-bottom($folder-box-height);
+    cursor: pointer;
+    color: $brand;
+    padding-left: 12px;
+    padding-top: 9px;
+    z-index: 2;
+    border-top: 1px solid $border-super-light;
+
+    svg {
+      width: 11px;
+      margin-right: 6px;
+      margin-top: 2px;
+
+      path {
+        fill: $brand;
+      }
+    }
+
+    &.folded svg {
+      margin-top: 1px;
+      transform: rotate(180deg);
+    }
+
+    &:hover {
+      background: $hover;
+    }
+  }
+
+  .row {
+    height: $pin-item-height;
+    cursor: pointer;
+
+    &:hover {
+      background: $hover;
+    }
+
+    &:last-child {
+      margin-bottom: 12px;
+    }
+
+    &.not-selected {
+      color: $text-lighterish;
+    }
+
+    .highlight-controls {
+      position: absolute;
+      top: -29px;
+      right: 1px;
+      z-index: 4;
+    }
+
+    &:nth-child(1),
+    &:nth-child(2) {
+      .highlight-controls {
+        top: auto;
+        bottom: -34px;
+      }
+    }
+  }
+
+  .segment-value {
+    @include unpin-right($measure-width);
+
+    left: $padding-compact;
+    overflow: hidden;
+    white-space: nowrap;
+
+    .checkbox {
+      margin-top: 1px;
+    }
+
+    .label {
+      display: inline-block;
+      vertical-align: top;
+      padding-top: 6px;
+    }
+  }
+
+  .measure-value {
+    @include pin-right($measure-width);
+
+    text-align: right;
+    padding-top: 6px;
+    padding-right: $padding-compact;
+    white-space: nowrap;
+  }
+
+  .loader,
+  .query-error {
+    @include pin-full;
+  }
+}

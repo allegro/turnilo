@@ -1,0 +1,77 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+$checkbox-size: 15px;
+
+.checkbox {
+  display: inline-block;
+  vertical-align: top;
+  width: 20px;
+  height: 100%;
+  cursor: pointer;
+  margin-right: 3px;
+
+  .checkbox-body {
+    position: absolute;
+    left: 0;
+    top: 3px;
+    background: hsla(0, 0, 0, 0.12);
+    width: $checkbox-size;
+    height: $checkbox-size;
+    border-radius: 2px;
+  }
+
+  &.radio {
+    .checkbox-body {
+      border-radius: 30px;
+    }
+  }
+
+  &.selected.check,
+  &.selected.cross,
+  &.selected.radio {
+    .checkbox-body {
+      background: hsla(0, 0, 0, 0.45);
+    }
+  }
+
+  &.selected.radio {
+    .checkbox-body::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      width: 5px;
+      height: 5px;
+      border-radius: 30px;
+      background: #fff;
+    }
+  }
+
+  svg {
+    position: absolute;
+    top: 4px;
+    left: 2px;
+    width: 11px;
+    height: 14px;
+
+    path {
+      fill: $white;
+    }
+  }
+}
