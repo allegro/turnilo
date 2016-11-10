@@ -1,3 +1,5 @@
+This is the code from the last known OSS release of pivot
+
 # Pivot
 
 Pivot is a web-based exploratory visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
