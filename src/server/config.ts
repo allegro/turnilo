@@ -55,12 +55,12 @@ try {
 export const VERSION = packageObj.version;
 
 const USAGE = `
-Usage: pivot [options]
+Usage: swiv [options]
 
 Possible usage:
 
-  pivot --examples
-  pivot --druid your.broker.host:8082
+  swiv --examples
+  swiv --druid your.broker.host:8082
 
 General arguments:
 
@@ -70,7 +70,7 @@ General arguments:
 
 Server arguments:
 
-  -p, --port <port-number>     The port pivot will run on (default: ${ServerSettings.DEFAULT_PORT})
+  -p, --port <port-number>     The port swiv will run on (default: ${ServerSettings.DEFAULT_PORT})
       --server-host <host>     The host on which to listen on (default: all hosts)
       --server-root <root>     A custom server root to listen on (default ${ServerSettings.DEFAULT_SERVER_ROOT})
 
@@ -79,8 +79,8 @@ Data connection options:
   Exactly one data connection option must be provided.
 
   -c, --config <path>          Use this local configuration (YAML) file
-      --examples               Start Pivot with some example data for testing / demo
-  -f, --file <path>            Start Pivot on top of this file based data cube (must be JSON, CSV, or TSV)
+      --examples               Start Swiv with some example data for testing / demo
+  -f, --file <path>            Start Swiv on top of this file based data cube (must be JSON, CSV, or TSV)
   -d, --druid <host>           The Druid broker node to connect to
       --postgres <host>        The Postgres cluster to connect to
       --mysql <host>           The MySQL cluster to connect to
@@ -161,8 +161,8 @@ if (numSettingsInputs > 1) {
   console.error(`only one of --${SETTINGS_INPUTS.join(', --')} can be given on the command line`);
   if (parsedArgs['druid'] && parsedArgs['config']) {
     console.error(`Looks like you are using --config and --druid in conjunction with each other`);
-    console.error(`This usage is no longer supported. If you are migrating from Pivot < 0.9.x`);
-    console.error(`Please visit: (https://github.com/implydata/pivot/blob/master/docs/pivot-0.9.x-migration.md)`);
+    console.error(`This usage is no longer supported. If you are migrating from Swiv < 0.9.x`);
+    console.error(`Please visit: (https://github.com/yahoo/swiv/blob/master/docs/swiv-0.9.x-migration.md)`);
   }
   process.exit(1);
 }
@@ -248,7 +248,7 @@ export const AUTH = authMiddleware;
 
 // --- Sign of Life -------------------------------
 if (START_SERVER) {
-  LOGGER.log(`Starting Pivot v${VERSION}`);
+  LOGGER.log(`Starting Swiv v${VERSION}`);
   TRACKER.track({
     eventType: 'pivot_init',
     metric: 'init',
@@ -277,7 +277,7 @@ if (serverSettingsFilePath) {
 
       case 'mysql':
         throw new Error('todo'); // ToDo: make this not incomplete.
-        //settingsStore = SettingsStore.fromStateStore(require('../../../pivot-mysql-state-store/index.js').stateStoreFactory());
+        //settingsStore = SettingsStore.fromStateStore(require('../../../swiv-mysql-state-store/index.js').stateStoreFactory());
         //break;
 
       case 'postgres':

@@ -1,6 +1,6 @@
 trackingUrl: 'http://localhost:28090'
 trackingContext:
-  service: pivot/test
+  service: swiv/test
   something: cool
 
 dataCubes:

@@ -4,7 +4,7 @@
     <title>full-cube</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+    <g id="swiv" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <g id="full-cube" sketch:type="MSArtboardGroup" fill="#000000">
             <path d="M10,17.5960697 L17,14.0697019 L17,6.34777241 L10,10.007318 L10,17.5960697 Z M9,17.5960697 L2,14.0697019 L2,6.34777241 L9,10.007318 L9,17.5960697 Z M2,5.29999995 L9.5,1.3499999 L17,5.29999995 L9.5,9.25 L2,5.29999995 Z" id="Rectangle-144" sketch:type="MSShapeGroup"></path>
         </g>

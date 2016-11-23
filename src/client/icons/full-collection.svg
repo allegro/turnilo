@@ -4,7 +4,7 @@
     <title>full-collection</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+    <g id="swiv" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <g id="full-collection" sketch:type="MSArtboardGroup" fill="#000000">
             <path d="M17,2 L17,1 L1,1 L1,17 L2,17 L2,18 L18,18 L18,2 L17,2 Z M3,3 L17,3 L17,17 L3,17 L3,3 Z M6,6 L8,6 L8,15 L6,15 L6,6 Z M9,8 L11,8 L11,15 L9,15 L9,8 Z M12,10 L14,10 L14,15 L12,15 L12,10 Z" id="Rectangle-15" sketch:type="MSShapeGroup"></path>
         </g>

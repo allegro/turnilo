@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./pivot-entry.css');
+require('./swiv-entry.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -55,13 +55,13 @@ require.ensure([
   './utils/ajax/ajax',
   '../common/models/index',
   '../common/manifests/index',
-  './applications/pivot-application/pivot-application'
+  './applications/swiv-application/swiv-application'
 ], (require) => {
   const { WallTime } = require('chronoshift');
   const { Ajax } = require('./utils/ajax/ajax');
   const { AppSettings, Timekeeper } = require('../common/models/index');
   const { MANIFESTS } = require('../common/manifests/index');
-  const { PivotApplication } = require('./applications/pivot-application/pivot-application');
+  const { PivotApplication } = require('./applications/swiv-application/swiv-application');
 
   Ajax.version = version;
 
@@ -91,7 +91,7 @@ require.ensure([
     ),
     container
   );
-}, 'pivot-main');
+}, 'swiv-main');
 
 // Polyfill =====================================
 

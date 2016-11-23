@@ -1,50 +1,50 @@
-# Configuring Pivot
+# Configuring Swiv
 
-It is easy to start using Pivot with Druid by pointing it at your Druid cluster: `pivot --druid druid.broker.host:8082`
-but to make the most of Pivot you will want to configure it.
+It is easy to start using Swiv with Druid by pointing it at your Druid cluster: `swiv --druid druid.broker.host:8082`
+but to make the most of Swiv you will want to configure it.
 
-Pivot can be configured with a *config* YAML file. While you could write one from scratch it is recommended to let
-Pivot give you a head start by using it to generate a config file for you using the default introspection.
+Swiv can be configured with a *config* YAML file. While you could write one from scratch it is recommended to let
+Swiv give you a head start by using it to generate a config file for you using the default introspection.
 
 Run:
 
 ```bash
-pivot --druid druid.broker.host:8082 --print-config --with-comments > config.yaml
+swiv --druid druid.broker.host:8082 --print-config --with-comments > config.yaml
 ```
 
-This will cause Pivot to go through its normal startup and introspection routine and then dump the internally generated
+This will cause Swiv to go through its normal startup and introspection routine and then dump the internally generated
 config (complete with comments) into the provided file.
 
-You can now run `pivot --config config.yaml` to run Pivot with your config.
+You can now run `swiv --config config.yaml` to run Swiv with your config.
 
-The next step is to open the generated config file in your favourite text editor and configure Pivot to your liking.
-Below we will go through a typical configuration flow. At any point you can save the config and re-launch Pivot to load
+The next step is to open the generated config file in your favourite text editor and configure Swiv to your liking.
+Below we will go through a typical configuration flow. At any point you can save the config and re-launch Swiv to load
 that config in.
 
-## Configuring the Pivot server
+## Configuring the Swiv server
 
 **verbose** (boolean)
 
-Indicates that Pivot should run in verbose mode. This will log all the queries done by Pivot.
+Indicates that Swiv should run in verbose mode. This will log all the queries done by Swiv.
 
 **port** (number)
 
-The port that Pivot should run on. Default 9090.
+The port that Swiv should run on. Default 9090.
 
 **serverHost** (string)
 
-The host that Pivot will bind to. Defaults to all hosts.
+The host that Swiv will bind to. Defaults to all hosts.
 
 **serverRoot** (string)
 
-A custom path to act as the server string. Default: `pivot`
+A custom path to act as the server string. Default: `swiv`
 
-The Pivot UI will be served from `http://pivot-host:$port/` and `http://pivot-host:$port/$serverRoot`
+The Swiv UI will be served from `http://swiv-host:$port/` and `http://swiv-host:$port/$serverRoot`
 
 **iframe** ("allow" | "deny")
 
-Specify whether Pivot will be allowed to run in an iFrame.
-If set to 'deny' Pivot will set the following headers:
+Specify whether Swiv will be allowed to run in an iFrame.
+If set to 'deny' Swiv will set the following headers:
 
 ```
 X-Frame-Options: "DENY"
@@ -60,14 +60,14 @@ Should the server trust the `X-Forwarded-*` headers.
 
 **strictTransportSecurity** ("none" | "always")
 
-Specify that Pivot should set the [StrictTransportSecurity](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security) header.
+Specify that Swiv should set the [StrictTransportSecurity](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security) header.
 
-Note that Pivot can itself only run an http server.
-This option is intended to be used when when Pivot is running behind a HTTPS terminator like AWS ELB.
+Note that Swiv can itself only run an http server.
+This option is intended to be used when when Swiv is running behind a HTTPS terminator like AWS ELB.
 
 ## Configuring the Clusters
 
-The top level `clusters:` key that holds the clusters that Pivot will connect to.
+The top level `clusters:` key that holds the clusters that Swiv will connect to.
 
 ### General properties
 
@@ -100,7 +100,7 @@ Should the sources of this cluster be automatically scanned and new sources adde
 
 **sourceListRefreshOnLoad** (boolean)
 
-Should the list of sources be reloaded every time that Pivot is loaded.
+Should the list of sources be reloaded every time that Swiv is loaded.
 This will put additional load on the data store but will ensure that sources are visible in the UI as soon as they are created.
 
 **sourceListRefreshInterval** (number)
@@ -109,7 +109,7 @@ How often should sources be reloaded in ms.
 
 **sourceReintrospectOnLoad** (boolean)
 
-Should sources be scanned for additional dimensions every time that Pivot is loaded.
+Should sources be scanned for additional dimensions every time that Swiv is loaded.
 This will put additional load on the data store but will ensure that dimension are visible in the UI as soon as they are created.
 
 **sourceReintrospectInterval** (number)
@@ -147,7 +147,7 @@ The password to use with the provided user.
 
 ## Configuring the DataSources
 
-The top level `dataCubes:` key that holds the data cubes that will be loaded into Pivot.
+The top level `dataCubes:` key that holds the data cubes that will be loaded into Swiv.
 The order of the data cubes in the config will define the ordering seen in the UI.
 
 
@@ -157,7 +157,7 @@ Described here are only the properties which you might want to change.
 
 **name** (string)
 
-The name of the data cube as used internally in Pivot and used in the URLs. This should be a URL safe string.
+The name of the data cube as used internally in Swiv and used in the URLs. This should be a URL safe string.
 Changing this property for a given data cube will break any URLs that someone might have generated for that data
 cube in the past.
 
@@ -199,7 +199,7 @@ The names of the dimensions (in order) that will appear *pinned* by default on t
 
 ### Attribute Overrides
 
-While Pivot tries to learn as much as it can from your data cube from Druid directly.
+While Swiv tries to learn as much as it can from your data cube from Druid directly.
 It can not (yet) do a perfect job. The `attributeOverrides:` section of the data cube is there for you to fix that.
 
 **name** (string)
@@ -208,7 +208,7 @@ The name of the attribute (column) in Druid. This must match the Druid name.
 
 Here are some common scenarios where you should add an attribute override:
 
-#### You have a HyperLogLog metric column but Pivot is not detecting it
+#### You have a HyperLogLog metric column but Swiv is not detecting it
 
 If you have a HyperLogLog metric (say: `unique_things`) it is possible that Druid introspection (Druid <= 0.8.3) will
 not describe it correctly.
@@ -222,13 +222,13 @@ You should add:
            special: unique
 ```
 
-To the `attributeOverrides` to tell Pivot that this is indeed a special (hyperUnique) column.
+To the `attributeOverrides` to tell Swiv that this is indeed a special (hyperUnique) column.
 
 You should also ensure that wherever it is used in the measures it is aggregated with `countDistinct($unique_things)`.
 
 #### You have a numeric dimension
 
-Pivot can not corretly detect numeric dimensions as Druid reports all dimensions to be strings.
+Swiv can not corretly detect numeric dimensions as Druid reports all dimensions to be strings.
 When a numeric dimension is incorrectly classified as a string its soring will appear wrong in the UI.
 If you have a dimension with numeric values (say: `age`).
 
@@ -239,7 +239,7 @@ You should add:
            type: NUMBER
 ```
 
-To the `attributeOverrides` to tell Pivot that this is numeric.
+To the `attributeOverrides` to tell Swiv that this is numeric.
 
 You can now use `$age` in numeric expressions. For example you could create a dimension with the formula
 `$age / 2 + 7`.
@@ -353,7 +353,7 @@ The transformation could be any supported [Druid extraction function](http://dru
 
 For example you could apply any number of javascript functions to a string.
 
-To use that in Pivot define:
+To use that in Swiv define:
 
 ```yaml
     options:
@@ -441,7 +441,7 @@ The aggregation could be any supported Druid aggregation.
 For example Plywood currently does not support the modulo operator.
 While Druid has no native modulo support ether it is possible to modulo a measure by using a [javascript aggregator](http://druid.io/docs/latest/querying/aggregations.html#javascript-aggregator).
 
-To use that in Pivot define:
+To use that in Swiv define:
 
 ```yaml
     options:
@@ -473,7 +473,7 @@ you could use a derived measure to seemly merge these two metrics in the UI.
 
 Let's say you had a metric called `revenue_in_dollars` and for some reason you will now be ingesting it as `revenue_in_cents`.
 
-Furthermore right now your users are using pivot with the measure:
+Furthermore right now your users are using swiv with the measure:
 
 ```yaml
       - name: revenue
@@ -531,7 +531,7 @@ Note that whichever method you chose you should not change the `name` attribute 
 
 ## Customization
 
-You can define a `customization` option in the config to configure some aspects of the look and feel of Pivot.
+You can define a `customization` option in the config to configure some aspects of the look and feel of Swiv.
 
 ### Visual
 
@@ -551,7 +551,7 @@ Can customize the header background color and logo icon by supplying a color str
 
 ### External links
 
-Pivot supports defining external view links with access to `dataCube`, `filter`, `splits`, and `timezone` objects at link generation time.
+Swiv supports defining external view links with access to `dataCube`, `filter`, `splits`, and `timezone` objects at link generation time.
 This is done by defining a function body in the configuration file.
 
 For example:

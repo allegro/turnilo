@@ -39,7 +39,7 @@ export class NavLogo extends React.Component<NavLogoProps, NavLogoState> {
 
   render() {
     const { onClick, customLogoSvg } = this.props;
-    const svg = customLogoSvg || require('../../icons/pivot-logo.svg');
+    const svg = customLogoSvg || require('../../icons/swiv-logo.svg');
 
     return <div className="nav-logo" onClick={onClick}>
       <div className="logo">

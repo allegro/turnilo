@@ -21,7 +21,7 @@ import * as app from './app';
 import { START_SERVER, SERVER_SETTINGS } from './config';
 
 if (START_SERVER) {
-  var debug = debugModule('pivot:www');
+  var debug = debugModule('swiv:www');
   var server = http.createServer(app);
 
   server.on('error', (error: any) => {
@@ -48,8 +48,8 @@ if (START_SERVER) {
 
   server.on('listening', () => {
     var address = server.address();
-    console.log(`Pivot is listening on address ${address.address} port ${address.port}`);
-    debug(`Pivot is listening on address ${address.address} port ${address.port}`);
+    console.log(`Swiv is listening on address ${address.address} port ${address.port}`);
+    debug(`Swiv is listening on address ${address.address} port ${address.port}`);
   });
 
   app.set('port', SERVER_SETTINGS.getPort());

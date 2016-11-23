@@ -4,7 +4,7 @@
     <title>full-menu</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+    <g id="swiv" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <g id="full-menu" sketch:type="MSArtboardGroup" fill="#000000">
             <path d="M2,4 L17,4 L17,6 L2,6 L2,4 Z M2,8 L17,8 L17,10 L2,10 L2,8 Z M2,12 L17,12 L17,14 L2,14 L2,12 Z" id="Rectangle-159" sketch:type="MSShapeGroup"></path>
         </g>

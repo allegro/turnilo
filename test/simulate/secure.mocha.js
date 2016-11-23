@@ -25,8 +25,8 @@ describe('security', function () {
   this.timeout(5000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/pivot -c test/configs/secure.yaml -p ${TEST_PORT}`);
-    pivotServer.onHook('Pivot is listening on address', done);
+    pivotServer = spawnServer(`bin/swiv -c test/configs/secure.yaml -p ${TEST_PORT}`);
+    pivotServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET /', (testComplete) => {
@@ -40,7 +40,7 @@ describe('security', function () {
     }, (err, response, body) => {
       expect(err).to.equal(null);
       expect(body).to.contain('<!DOCTYPE html>');
-      expect(body).to.contain('<title>Pivot');
+      expect(body).to.contain('<title>Swiv');
       expect(body).to.contain('<div class="app-container"></div>');
       expect(body).to.contain('var __CONFIG__ = {');
       expect(body).to.contain('</html>');

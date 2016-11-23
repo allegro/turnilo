@@ -25,8 +25,8 @@ describe('file', function () {
   this.timeout(5000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/pivot --file assets/data/wikiticker-2015-09-12-anonymous.json -p ${TEST_PORT}`);
-    pivotServer.onHook('Pivot is listening on address', done);
+    pivotServer = spawnServer(`bin/swiv --file assets/data/wikiticker-2015-09-12-anonymous.json -p ${TEST_PORT}`);
+    pivotServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET /health', (testComplete) => {
@@ -43,7 +43,7 @@ describe('file', function () {
       expect(err).to.equal(null);
       expect(response.statusCode).to.equal(200);
       expect(body).to.contain('<!DOCTYPE html>');
-      expect(body).to.contain('<title>Pivot');
+      expect(body).to.contain('<title>Swiv');
       expect(body).to.contain('<div class="app-container"></div>');
       expect(body).to.contain('var __CONFIG__ = {');
       expect(body).to.contain('</html>');

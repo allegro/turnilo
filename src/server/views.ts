@@ -76,7 +76,7 @@ export function pivotLayout(options: ViewOptions): string {
   const { version, user, appSettings, timekeeper, stateful } = options;
   return layout(options, `<div class="app-container"></div>
 <script>var __CONFIG__ = ${JSON.stringify({ version, user, appSettings, timekeeper, stateful })};</script>
-<script charset="UTF-8" src="pivot.js?v=${version}"></script>`
+<script charset="UTF-8" src="swiv.js?v=${version}"></script>`
   );
 }
 

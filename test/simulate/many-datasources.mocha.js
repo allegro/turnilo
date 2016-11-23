@@ -168,13 +168,13 @@ describe('many datasources', function () {
   this.timeout(30000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/pivot -c test/configs/two-little-datasources.yaml -p ${TEST_PORT}`, {
+    pivotServer = spawnServer(`bin/swiv -c test/configs/two-little-datasources.yaml -p ${TEST_PORT}`, {
       env: {
         DRUID_HOST: 'localhost:28082'
       }
     });
 
-    pivotServer.onHook('Pivot is listening on address', done);
+    pivotServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET / before Druid start', (testComplete) => {
@@ -182,7 +182,7 @@ describe('many datasources', function () {
       expect(err).to.equal(null);
       expect(response.statusCode).to.equal(200);
       expect(body).to.contain('<!DOCTYPE html>');
-      expect(body).to.contain('<title>Pivot');
+      expect(body).to.contain('<title>Swiv');
       expect(body).to.contain('<div class="app-container"></div>');
       expect(body).to.contain('</html>');
 
@@ -197,13 +197,13 @@ describe('many datasources', function () {
     druidServer = startDruid((err, port) => {
       if (err) testComplete(err);
 
-      // timeout needed for now because pivot only check connectivity every 20s
+      // timeout needed for now because swiv only check connectivity every 20s
       setTimeout(() => {
         request.get(`http://localhost:${TEST_PORT}/`, (err, response, body) => {
           expect(err).to.equal(null);
           expect(response.statusCode).to.equal(200);
           expect(body).to.contain('<!DOCTYPE html>');
-          expect(body).to.contain('<title>Pivot');
+          expect(body).to.contain('<title>Swiv');
           expect(body).to.contain('<div class="app-container"></div>');
           expect(body).to.contain('</html>');
 
@@ -216,7 +216,7 @@ describe('many datasources', function () {
             expect(err).to.equal(null);
             expect(response.statusCode).to.equal(200);
             expect(body).to.contain('<!DOCTYPE html>');
-            expect(body).to.contain('<title>Pivot');
+            expect(body).to.contain('<title>Swiv');
             expect(body).to.contain('<div class="app-container"></div>');
             expect(body).to.contain('</html>');
 

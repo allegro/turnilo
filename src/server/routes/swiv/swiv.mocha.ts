@@ -25,7 +25,7 @@ import { PivotRequest } from '../../utils/index';
 
 import { AppSettingsMock } from '../../../common/models/app-settings/app-settings.mock';
 
-import * as pivotRouter from './pivot';
+import * as pivotRouter from './swiv';
 
 var app = express();
 
@@ -39,7 +39,7 @@ app.use((req: PivotRequest, res: express.Response, next: Function) => {
 
 app.use('/', pivotRouter);
 
-describe('pivot router', () => {
+describe('swiv router', () => {
   it('does a query (value)', (testComplete) => {
     supertest(app)
       .get('/')

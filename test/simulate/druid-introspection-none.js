@@ -39,13 +39,13 @@ describe('druid reintrospect on load', function () {
     }, function(err, port) {
       if (err) return done(err);
 
-      pivotServer = spawnServer(`bin/pivot -c test/configs/introspection-none.yaml -p ${TEST_PORT}`, {
+      pivotServer = spawnServer(`bin/swiv -c test/configs/introspection-none.yaml -p ${TEST_PORT}`, {
         env: {
           DRUID_HOST: `localhost:${port}`
         }
       });
 
-      pivotServer.onHook('Pivot is listening on address', done);
+      pivotServer.onHook('Swiv is listening on address', done);
     });
   });
 
@@ -54,7 +54,7 @@ describe('druid reintrospect on load', function () {
       expect(err).to.equal(null);
       expect(response.statusCode).to.equal(200);
       expect(body).to.contain('<!DOCTYPE html>');
-      expect(body).to.contain('<title>Pivot');
+      expect(body).to.contain('<title>Swiv');
       expect(body).to.contain('<div class="app-container"></div>');
       expect(body).to.contain('</html>');
 

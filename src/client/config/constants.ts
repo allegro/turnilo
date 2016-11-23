@@ -90,7 +90,7 @@ export const STRINGS: any = {
   generalSettings: 'General settings',
   goToUrl: 'Go to URL',
   granularity: 'Granularity',
-  home: 'Pivot',
+  home: 'Swiv',
   include: 'Include',
   infoAndFeedback: 'Info & Feedback',
   intersection: 'Intersection',

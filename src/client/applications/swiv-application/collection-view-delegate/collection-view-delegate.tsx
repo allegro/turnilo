@@ -17,7 +17,7 @@
 import * as React from 'react';
 import * as Q from 'q';
 
-import { PivotApplication, PivotApplicationProps, PivotApplicationState } from '../pivot-application.tsx';
+import { PivotApplication, PivotApplicationProps, PivotApplicationState } from '../swiv-application.tsx';
 
 import { Ajax } from '../../../utils/ajax/ajax';
 import { Collection, CollectionTile, DataCube, Essence, Timekeeper, AppSettings } from '../../../../common/models/index';

@@ -4,7 +4,7 @@
     <title>dim-numerical</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+    <g id="swiv" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <g id="dim-numerical" sketch:type="MSArtboardGroup" fill="#000000">
             <path d="M7,11 L7,8 L3,8 L3,7 L7,7 L7,3 L8,3 L8,7 L11,7 L11,3 L12,3 L12,7 L16,7 L16,8 L12,8 L12,11 L16,11 L16,12 L12,12 L12,16 L11,16 L11,12 L8,12 L8,16 L7,16 L7,12 L3,12 L3,11 L7,11 Z M8,11 L8,8 L11,8 L11,11 L8,11 Z" id="Rectangle-92" sketch:type="MSShapeGroup"></path>
         </g>

@@ -136,7 +136,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     infoAndFeedback.push({
       name: 'info',
       title: STRINGS.infoAndFeedback,
-      tooltip: 'Learn more about Pivot',
+      tooltip: 'Learn more about Swiv',
       onClick: () => {
         onClose();
         onOpenAbout();

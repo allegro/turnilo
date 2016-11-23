@@ -1,7 +1,7 @@
 # === Webstorm ===
 /.idea/
 /.sass-cache/
-/imply-pivot-*.tgz
+/imply-swiv-*.tgz
 /assets/data/*-large.*
 /webstorm
 /resources/

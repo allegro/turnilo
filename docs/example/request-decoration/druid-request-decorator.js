@@ -1,6 +1,6 @@
 exports.version = 1;
 
-// logger - is just a collection of functions that you should use instead of console to have your logs included with the Pivot logs
+// logger - is just a collection of functions that you should use instead of console to have your logs included with the Swiv logs
 // params - is an object with the following keys:
 //   * options: the decoratorOptions part of the cluster object
 //   * cluster: Cluster - the cluster object

@@ -1,11 +1,11 @@
-# Migrating to Pivot 0.9.x
+# Migrating to Swiv 0.9.x
 
-There have been a number of changes in the Pivot 0.9.x release that might be breaking under certain circumstances.
+There have been a number of changes in the Swiv 0.9.x release that might be breaking under certain circumstances.
 
 
 ## 'clusters' in the config
 
-Pivot can now connect to multiple clusters.
+Swiv can now connect to multiple clusters.
 
 The cluster information used to live in the root of the config file.
 
@@ -36,17 +36,17 @@ clusters:
 
 The `name` of the cluster must match up with the `engine` property in the dataSource (which is probably `'druid'`)
 
-Doing this change is not required as Pivot is fully backwards compatible with the old config style, but you will have
+Doing this change is not required as Swiv is fully backwards compatible with the old config style, but you will have
 to upgrade to the new style to utilize some of the new features.
 
-Pivot can also perform this update for you.
-Run `pivot -c old_config.yaml --print-config > new_config.yaml` and double check by diffing `old_config.yaml` and
+Swiv can also perform this update for you.
+Run `swiv -c old_config.yaml --print-config > new_config.yaml` and double check by diffing `old_config.yaml` and
 `new_config.yaml` to ensure nothing got lost
 
 
 ## No host override
 
-In Pivot 0.8.x it was possible to run `pivot --config your_config.yaml --druid override.broker.host` to override the
+In Swiv 0.8.x it was possible to run `swiv --config your_config.yaml --druid override.broker.host` to override the
 druidHost property in the config.
 
 While useful, this is difficult to manage with multiple clusters and has been removed.
@@ -69,7 +69,7 @@ clusters:
 # ...
 ```
 
-And then run it as: `DRUID_OVERRIDE=override.broker.host pivot --config your_config.yaml` now you can override
+And then run it as: `DRUID_OVERRIDE=override.broker.host swiv --config your_config.yaml` now you can override
 arbitrary properties
 
 

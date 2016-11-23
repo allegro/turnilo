@@ -4,7 +4,7 @@
     <title>full-delete</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+    <g id="swiv" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <g id="full-delete" sketch:type="MSArtboardGroup" fill="#000000">
             <path d="M5,14.7142857 C5,15.4214286 5.675,16 6.5,16 L12.5,16 C13.325,16 14,15.4214286 14,14.7142857 L14,7 L5,7 L5,14.7142857 L5,14.7142857 Z M15,4 L12.25,4 L11.4642857,3 L7.53571429,3 L6.75,4 L4,4 L4,6 L15,6 L15,4 L15,4 Z" id="Shape" sketch:type="MSShapeGroup"></path>
         </g>

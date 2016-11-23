@@ -45,7 +45,7 @@ export interface CustomizationJS {
 
 var check: Class<CustomizationValue, CustomizationJS>;
 export class Customization implements Instance<CustomizationValue, CustomizationJS> {
-  static DEFAULT_TITLE = 'Pivot (%v)';
+  static DEFAULT_TITLE = 'Swiv (%v)';
 
   static DEFAULT_TIMEZONES: Timezone[] = [
     new Timezone("America/Juneau"), // -9.0

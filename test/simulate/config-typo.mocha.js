@@ -27,12 +27,12 @@ describe('config typo', function () {
   this.timeout(5000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/pivot --config test/configs/one-little-datasource.yaml -p ${TEST_PORT}`, {
+    pivotServer = spawnServer(`bin/swiv --config test/configs/one-little-datasource.yaml -p ${TEST_PORT}`, {
       env: {
         DRUID_HOST: '11.22.33.44:5555'
       }
     });
-    pivotServer.onHook('Pivot is listening on address', done);
+    pivotServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET /', (testComplete) => {
@@ -41,7 +41,7 @@ describe('config typo', function () {
       expect(pivotServer.getStderr()).to.contain('Settings load timeout hit, continuing');
       expect(response.statusCode).to.equal(200);
       expect(body).to.contain('<!DOCTYPE html>');
-      expect(body).to.contain('<title>Pivot');
+      expect(body).to.contain('<title>Swiv');
       expect(body).to.contain('<div class="app-container"></div>');
       expect(body).to.contain('"dataCubes":[]');
       expect(body).to.contain('</html>');

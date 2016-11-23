@@ -24,7 +24,7 @@ import '../../utils/test-utils/index';
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { PivotApplication } from './pivot-application';
+import { PivotApplication } from './swiv-application';
 
 describe.skip('PivotApplication', () => {
   it('adds the correct class', () => {
@@ -36,7 +36,7 @@ describe.skip('PivotApplication', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('pivot-application');
+    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('swiv-application');
   });
 
 });

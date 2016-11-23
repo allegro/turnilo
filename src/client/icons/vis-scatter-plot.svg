@@ -4,7 +4,7 @@
     <title>vis-scatter-plot</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="pivot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+    <g id="swiv" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <g id="vis-scatter-plot" sketch:type="MSArtboardGroup">
             <g id="Rectangle-24-+-Group-+-Group" sketch:type="MSLayerGroup" transform="translate(10.000000, 10.000000)">
                 <path d="M32,0 L33,0 L33,33 L32,33 L32,0 Z M0,32 L32,32 L32,33 L0,33 L0,32 Z" id="Rectangle-24" fill="#AAAAAA" sketch:type="MSShapeGroup"></path>

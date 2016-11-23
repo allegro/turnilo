@@ -1,12 +1,12 @@
 {
-  "name": "imply-pivot",
+  "name": "yahoo-swiv",
   "version": "0.9.39",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
     "data",
     "explorer",
-    "pivot",
+    "swiv",
     "visualization",
     "druid"
   ],
@@ -17,10 +17,10 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "http://github.com/implydata/pivot.git"
+    "url": "http://github.com/yahoo/swiv.git"
   },
   "bin": {
-    "pivot": "bin/pivot"
+    "swiv": "bin/swiv"
   },
   "dependencies": {
     "body-parser": "1.15.2",

@@ -40,12 +40,12 @@ describe('error route', () => {
 
   var errorObj = {
     message: "Uncaught TypeError: Cannot read property 'start' of null",
-    file: "http://localhost:9090/pivot-main.9dcd61eb37d2c3c22868.js",
+    file: "http://localhost:9090/swiv-main.9dcd61eb37d2c3c22868.js",
     line: 52026,
     column: 50,
     stack: "TypeError: Cannot read property 'start' of null\n    " +
-    "at LineChart.floorRange (http://localhost:9090/pivot-main.9dcd61eb37d2c3c22868.js:52026:50)\n    " +
-    "at LineChart.globalMouseUpListener (http://localhost:9090/pivot-main.9dcd61eb37d2c3c22868.js:52052:36)"
+    "at LineChart.floorRange (http://localhost:9090/swiv-main.9dcd61eb37d2c3c22868.js:52026:50)\n    " +
+    "at LineChart.globalMouseUpListener (http://localhost:9090/swiv-main.9dcd61eb37d2c3c22868.js:52052:36)"
   };
   it('gets a 200', (testComplete) => {
     supertest(app)

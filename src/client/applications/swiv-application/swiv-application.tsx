@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./pivot-application.css');
+require('./swiv-application.css');
 
 import * as React from 'react';
 import * as Q from 'q';
@@ -560,7 +560,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
   }
 
   render() {
-    return <main className='pivot-application'>
+    return <main className='swiv-application'>
       {this.renderView()}
       {this.renderSideDrawerTransition()}
       {this.renderAboutModal()}

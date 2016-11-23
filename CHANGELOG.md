@@ -1,7 +1,5 @@
 # Change Log
 
-For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
-
 ## 0.9.39
 
 - Fixed numeric dimension extent computation
@@ -177,16 +175,16 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
 - Complete refactor of settings architecture
 - Settings can be updated at runtime
-- Pivot can connect to multiple clusters
-- Pivot can connect to Postgres and MySQL
+- Swiv can connect to multiple clusters
+- Swiv can connect to Postgres and MySQL
 - Full support of Druid 0.9.1
 - Auth module versioning
-- Command line flag changes (see [writeup](docs/pivot-0.9.x-migration.md))
-- Druid Request decorator changes (see [writeup](docs/pivot-0.9.x-migration.md))
-- Ability to [generate programmatic links](docs/generating-links-into-pivot.md) into Pivot
+- Command line flag changes (see [writeup](docs/swiv-0.9.x-migration.md))
+- Druid Request decorator changes (see [writeup](docs/swiv-0.9.x-migration.md))
+- Ability to [generate programmatic links](docs/generating-links-into-swiv.md) into Swiv
 - Ability to configure `serverHost`
 - Auto refresh icon rotation
-- Pivot is npm shrinkwrapped
+- Swiv is npm shrinkwrapped
 - Better dimension / measure panel scaling 
 
 ## 0.8.42
@@ -223,7 +221,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 ## 0.8.35
 
 - Two splits with scrolling in bar chart
-- Pivot will only query within server root
+- Swiv will only query within server root
 
 ## 0.8.34
 
@@ -236,7 +234,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
 ## 0.8.32
 
-- Configurable server root (default: `/pivot`)
+- Configurable server root (default: `/swiv`)
 
 ## 0.8.31
 
@@ -332,7 +330,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
 ## 0.8.12
 
-- New [customization options](https://github.com/implydata/pivot/blob/master/docs/configuration.md#customization)
+- New [customization options](https://github.com/yahoo/swiv/blob/master/docs/configuration.md#customization)
 - Updated favicon PNGs
 
 ## 0.8.11
@@ -345,7 +343,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
 ## 0.8.9
 
-- New plywood fixes startup [bug](https://github.com/implydata/pivot/issues/150).
+- New plywood fixes startup [bug](https://github.com/yahoo/swiv/issues/150).
 
 ## 0.8.8
 
@@ -376,7 +374,7 @@ For updates follow [@implydata](https://twitter.com/implydata) on Twitter.
 
 ## 0.8.2
 
-- Added UI loader and chucked up main pivot JS blob into two
+- Added UI loader and chucked up main swiv JS blob into two
 - Added ability to [decorate requests](/docs/security.md)
 
 ## 0.8.1

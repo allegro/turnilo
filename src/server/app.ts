@@ -35,7 +35,7 @@ import { PivotRequest } from './utils/index';
 import { VERSION, AUTH, SERVER_SETTINGS, SETTINGS_MANAGER } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
 import * as plyqlRoutes from './routes/plyql/plyql';
-import * as pivotRoutes from './routes/pivot/pivot';
+import * as pivotRoutes from './routes/swiv/swiv';
 import * as collectionsRoutes from './routes/collections/collections';
 import * as settingsRoutes from './routes/settings/settings';
 import * as mkurlRoutes from './routes/mkurl/mkurl';

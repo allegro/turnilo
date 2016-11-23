@@ -34,8 +34,8 @@ describe('tracking', function () {
     eventCollectorServer = eventCollector({}, (err, port) => {
       if (err) return done(err);
 
-      pivotServer = spawnServer(`bin/pivot -c test/configs/tracking-static.yaml -p ${TEST_PORT}`);
-      pivotServer.onHook('Pivot is listening on address', done);
+      pivotServer = spawnServer(`bin/swiv -c test/configs/tracking-static.yaml -p ${TEST_PORT}`);
+      pivotServer.onHook('Swiv is listening on address', done);
     });
   });
 
@@ -51,7 +51,7 @@ describe('tracking', function () {
         expect(response.statusCode).to.equal(200);
 
         var body = res[1];
-        expect(body).to.contain('<title>Pivot');
+        expect(body).to.contain('<title>Swiv');
 
         return Q.nfcall(request.post, {
           url: `http://localhost:${TEST_PORT}/plywood`,
@@ -109,14 +109,14 @@ describe('tracking', function () {
         expect(events).to.deep.equal([
           {
             "metric": "init",
-            "service": "pivot/test",
+            "service": "swiv/test",
             "something": "cool",
             "type": "pivot_init"
           },
           {
             "method": "GET",
             "metric": "request/time",
-            "service": "pivot/test",
+            "service": "swiv/test",
             "something": "cool",
             "status": "200",
             "type": "request",
@@ -125,7 +125,7 @@ describe('tracking', function () {
           {
             "method": "GET",
             "metric": "request/time",
-            "service": "pivot/test",
+            "service": "swiv/test",
             "something": "cool",
             "status": "200",
             "type": "request",
@@ -134,7 +134,7 @@ describe('tracking', function () {
           {
             "method": "POST",
             "metric": "request/time",
-            "service": "pivot/test",
+            "service": "swiv/test",
             "something": "cool",
             "status": "200",
             "type": "request",
@@ -143,7 +143,7 @@ describe('tracking', function () {
           {
             "method": "POST",
             "metric": "request/time",
-            "service": "pivot/test",
+            "service": "swiv/test",
             "something": "cool",
             "status": "200",
             "type": "request",

@@ -28,8 +28,8 @@ describe('datazoo druid introspection', function () {
   this.timeout(5000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/pivot --druid 192.168.99.100 -p ${TEST_PORT}`);
-    pivotServer.onHook('Pivot is listening on address', done);
+    pivotServer = spawnServer(`bin/swiv --druid 192.168.99.100 -p ${TEST_PORT}`);
+    pivotServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET /', (testComplete) => {
@@ -38,7 +38,7 @@ describe('datazoo druid introspection', function () {
       expect(pivotServer.getStderr()).to.equal('');
       expect(response.statusCode).to.equal(200);
       expect(body).to.contain('<!DOCTYPE html>');
-      expect(body).to.contain('<title>Pivot');
+      expect(body).to.contain('<title>Swiv');
       expect(body).to.contain('<div class="app-container"></div>');
       expect(body).to.contain('</html>');
 

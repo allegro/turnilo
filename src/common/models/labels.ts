@@ -154,7 +154,7 @@ export const CLUSTER = {
   },
   sourceListRefreshOnLoad: {
     label: 'Source List Refresh On Load',
-    description: `Should the list of sources be reloaded every time that Pivot is
+    description: `Should the list of sources be reloaded every time that Swiv is
     loaded. This will put additional load on the data store but will ensure that
     sources are visible in the UI as soon as they are created.`
   },
@@ -165,7 +165,7 @@ export const CLUSTER = {
   sourceReintrospectOnLoad: {
     label: 'Source Reintrospect On Load',
     description: `Should sources be scanned for additional dimensions every time that
-      Pivot is loaded. This will put additional load on the data store but will
+      Swiv is loaded. This will put additional load on the data store but will
       ensure that dimension are visible in the UI as soon as they are created. Default: <code>${Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL}</code>`
   },
   sourceReintrospectInterval: {
@@ -203,7 +203,7 @@ export const CLUSTER = {
 export const GENERAL = {
   'customization.title': {
     label: 'Title',
-    description: 'What will appear as the tab\'s title in your browser. Use <code>%v</code> as a placeholder for Pivot\'s version.'
+    description: 'What will appear as the tab\'s title in your browser. Use <code>%v</code> as a placeholder for Swiv\'s version.'
   },
   'customization.timezones': {
     label: 'Timezones',
@@ -215,7 +215,7 @@ export const GENERAL = {
 export const DATA_CUBE = {
   name: {
     label: 'Name',
-    description: `The name of the data cube as used internally in Pivot and used in the
+    description: `The name of the data cube as used internally in Swiv and used in the
       URLs. This should be a URL safe string. Changing this property for a given
       data cube will break any URLs that someone might have generated for that
       data cube in the past.`
@@ -268,7 +268,7 @@ export const DATA_CUBE = {
   },
   attributeOverrides: {
     label: `Attribute overrides`,
-    description: `While Pivot tries to learn as much as it can from your data cube
+    description: `While Swiv tries to learn as much as it can from your data cube
       from Druid directly. It can not (yet) do a perfect job.
       The attributeOverrides: section of the data cube is there for you to fix that.`
   }
