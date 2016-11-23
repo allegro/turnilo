@@ -18,7 +18,7 @@ import { Router, Request, Response } from 'express';
 import { $, Expression, ChainExpression, RefExpression, External, Datum, Dataset, TimeRange, ApplyAction } from 'plywood';
 import { Timezone, WallTime, Duration } from 'chronoshift';
 
-import { PivotRequest } from '../../utils/index';
+import { SwivRequest } from '../../utils/index';
 
 var router = Router();
 
@@ -35,7 +35,7 @@ var outputFunctions: PlyqlOutputFunctions = {
   tsv: (data: Dataset): string => { return data.toTSV(); }
 };
 
-router.post('/', (req: PivotRequest, res: Response) => {
+router.post('/', (req: SwivRequest, res: Response) => {
   var { outputType, query } = req.body;
 
   if (typeof query !== "string") {

@@ -61,7 +61,7 @@ require.ensure([
   const { Ajax } = require('./utils/ajax/ajax');
   const { AppSettings, Timekeeper } = require('../common/models/index');
   const { MANIFESTS } = require('../common/manifests/index');
-  const { PivotApplication } = require('./applications/swiv-application/swiv-application');
+  const { SwivApplication } = require('./applications/swiv-application/swiv-application');
 
   Ajax.version = version;
 
@@ -80,7 +80,7 @@ require.ensure([
 
   ReactDOM.render(
     React.createElement(
-      PivotApplication,
+      SwivApplication,
       {
         version,
         user: config.user,

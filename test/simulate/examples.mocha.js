@@ -24,14 +24,14 @@ const ply = plywood.ply;
 const r = plywood.r;
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 
 describe('examples', function () {
   this.timeout(5000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/swiv --examples -p ${TEST_PORT}`);
-    pivotServer.onHook('Swiv is listening on address', done);
+    swivServer = spawnServer(`bin/swiv --examples -p ${TEST_PORT}`);
+    swivServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET /health', (testComplete) => {
@@ -142,7 +142,7 @@ describe('examples', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
   });
 
 });

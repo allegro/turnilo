@@ -38,7 +38,7 @@ import { SettingsView } from '../../views/settings-view/settings-view';
 import { CollectionView } from '../../views/collection-view/collection-view';
 import { CollectionViewDelegate } from './collection-view-delegate/collection-view-delegate';
 
-export interface PivotApplicationProps extends React.Props<any> {
+export interface SwivApplicationProps extends React.Props<any> {
   version: string;
   user?: User;
   maxFilters?: number;
@@ -48,7 +48,7 @@ export interface PivotApplicationProps extends React.Props<any> {
   stateful?: boolean;
 }
 
-export interface PivotApplicationState {
+export interface SwivApplicationState {
   AboutModalAsync?: typeof AboutModal;
   NotificationsAsync?: typeof Notifications;
   QuestionsAsync?: typeof Questions;
@@ -76,7 +76,7 @@ export const LINK: ViewType = "link";
 export const SETTINGS: ViewType = "settings";
 export const NO_DATA: ViewType = "no-data";
 
-export class PivotApplication extends React.Component<PivotApplicationProps, PivotApplicationState> {
+export class SwivApplication extends React.Component<SwivApplicationProps, SwivApplicationState> {
   private hashUpdating: boolean = false;
   private sideBarHrefFn: FunctionSlot<string>;
   private collectionViewDelegate: CollectionViewDelegate;
@@ -206,7 +206,7 @@ export class PivotApplication extends React.Component<PivotApplicationProps, Piv
     const { dataCubes, collections } = this.state.appSettings;
     var viewType = this.getViewTypeFromHash(hash);
     var viewHash = this.getViewHashFromHash(hash);
-    var newState: PivotApplicationState = {
+    var newState: SwivApplicationState = {
       viewType,
       viewHash,
       drawerOpen: false

@@ -18,12 +18,12 @@ import { Router, Request, Response } from 'express';
 import { AppSettings, Collection, CollectionJS } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
 
-import { PivotRequest } from '../../utils/index';
+import { SwivRequest } from '../../utils/index';
 import { VERSION, SETTINGS_MANAGER } from '../../config';
 
 var router = Router();
 
-router.post('/', (req: PivotRequest, res: Response) => {
+router.post('/', (req: SwivRequest, res: Response) => {
   var { collections } = req.body;
 
   if (!Array.isArray(collections)) {

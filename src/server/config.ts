@@ -250,7 +250,7 @@ export const AUTH = authMiddleware;
 if (START_SERVER) {
   LOGGER.log(`Starting Swiv v${VERSION}`);
   TRACKER.track({
-    eventType: 'pivot_init',
+    eventType: 'swiv_init',
     metric: 'init',
     value: 1
   });

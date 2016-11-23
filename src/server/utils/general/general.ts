@@ -19,7 +19,7 @@ import { Request } from 'express';
 import { User, AppSettings } from '../../../common/models/index';
 import { GetSettingsOptions } from '../settings-manager/settings-manager';
 
-export interface PivotRequest extends Request {
+export interface SwivRequest extends Request {
   version: string;
   stateful: boolean;
   user: User;

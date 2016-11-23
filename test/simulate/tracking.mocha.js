@@ -24,7 +24,7 @@ const eventCollector = require('../utils/event-collector');
 const $ = plywood.$;
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 var eventCollectorServer;
 
 describe('tracking', function () {
@@ -34,8 +34,8 @@ describe('tracking', function () {
     eventCollectorServer = eventCollector({}, (err, port) => {
       if (err) return done(err);
 
-      pivotServer = spawnServer(`bin/swiv -c test/configs/tracking-static.yaml -p ${TEST_PORT}`);
-      pivotServer.onHook('Swiv is listening on address', done);
+      swivServer = spawnServer(`bin/swiv -c test/configs/tracking-static.yaml -p ${TEST_PORT}`);
+      swivServer.onHook('Swiv is listening on address', done);
     });
   });
 
@@ -111,7 +111,7 @@ describe('tracking', function () {
             "metric": "init",
             "service": "swiv/test",
             "something": "cool",
-            "type": "pivot_init"
+            "type": "swiv_init"
           },
           {
             "method": "GET",
@@ -155,7 +155,7 @@ describe('tracking', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
     eventCollectorServer.kill();
   });
 

@@ -41,7 +41,7 @@ export interface SplitCombineContext {
 
 var check: Class<SplitCombineValue, SplitCombineJS>;
 export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS> {
-  static SORT_ON_DIMENSION_PLACEHOLDER = '__PIVOT_SORT_ON_DIMENSIONS__';
+  static SORT_ON_DIMENSION_PLACEHOLDER = '__SWIV_SORT_ON_DIMENSIONS__';
 
   static isSplitCombine(candidate: any): candidate is SplitCombine {
     return isInstanceOf(candidate, SplitCombine);

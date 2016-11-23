@@ -23,7 +23,7 @@ const extractConfig = require('../utils/extract-config');
 const basicString = require('../utils/basic-string');
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 var druidServer;
 
 describe('druid reintrospect on load', function () {
@@ -39,13 +39,13 @@ describe('druid reintrospect on load', function () {
     }, function(err, port) {
       if (err) return done(err);
 
-      pivotServer = spawnServer(`bin/swiv -c test/configs/introspection-none.yaml -p ${TEST_PORT}`, {
+      swivServer = spawnServer(`bin/swiv -c test/configs/introspection-none.yaml -p ${TEST_PORT}`, {
         env: {
           DRUID_HOST: `localhost:${port}`
         }
       });
 
-      pivotServer.onHook('Swiv is listening on address', done);
+      swivServer.onHook('Swiv is listening on address', done);
     });
   });
 
@@ -85,7 +85,7 @@ describe('druid reintrospect on load', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
     druidServer.kill();
   });
 

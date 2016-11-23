@@ -22,20 +22,20 @@ const extractConfig = require('../utils/extract-config');
 const basicString = require('../utils/basic-string');
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 
 describe('datazoo postgres introspection', function () {
   this.timeout(5000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/swiv --postgres 192.168.99.100 --database datazoo --user root --password datazoo -p ${TEST_PORT}`);
-    pivotServer.onHook('Swiv is listening on address', done);
+    swivServer = spawnServer(`bin/swiv --postgres 192.168.99.100 --database datazoo --user root --password datazoo -p ${TEST_PORT}`);
+    swivServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET /', (testComplete) => {
     request.get(`http://localhost:${TEST_PORT}/`, (err, response, body) => {
       expect(err).to.equal(null);
-      expect(pivotServer.getStderr()).to.equal('');
+      expect(swivServer.getStderr()).to.equal('');
       expect(response.statusCode).to.equal(200);
       expect(body).to.contain('<!DOCTYPE html>');
       expect(body).to.contain('<title>Swiv');
@@ -89,7 +89,7 @@ describe('datazoo postgres introspection', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
   });
 
 });

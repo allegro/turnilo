@@ -35,19 +35,19 @@ describe('ServerSettings', () => {
       },
       {
         port: 9090,
-        serverRoot: '/pivots',
+        serverRoot: '/swivs',
         pageMustLoadTimeout: 900,
         iframe: 'deny'
       },
       {
         port: 9091,
-        serverRoot: '/pivots',
+        serverRoot: '/swivs',
         pageMustLoadTimeout: 901
       },
       {
         port: 9091,
         serverHost: '10.20.30.40',
-        serverRoot: '/pivots',
+        serverRoot: '/swivs',
         pageMustLoadTimeout: 901
       },
       {
@@ -76,12 +76,12 @@ describe('ServerSettings', () => {
     it("port", () => {
       expect(ServerSettings.fromJS({
         port: ('9090' as any),
-        serverRoot: '/pivots',
+        serverRoot: '/swivs',
         pageMustLoadTimeout: 900,
         iframe: 'deny'
       }).toJS()).to.deep.equal({
         port: 9090,
-        serverRoot: '/pivots',
+        serverRoot: '/swivs',
         pageMustLoadTimeout: 900,
         iframe: 'deny'
       });

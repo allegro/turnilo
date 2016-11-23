@@ -19,20 +19,20 @@ const request = require('request');
 const spawnServer = require('node-spawn-server');
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 
 describe('typo', function () {
   this.timeout(5000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/swiv --druid 11.22.33.44 -p ${TEST_PORT}`);
-    pivotServer.onHook('Swiv is listening on address', done);
+    swivServer = spawnServer(`bin/swiv --druid 11.22.33.44 -p ${TEST_PORT}`);
+    swivServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET /', (testComplete) => {
     request.get(`http://localhost:${TEST_PORT}/`, (err, response, body) => {
       expect(err).to.equal(null);
-      expect(pivotServer.getStderr()).to.contain('Settings load timeout hit, continuing');
+      expect(swivServer.getStderr()).to.contain('Settings load timeout hit, continuing');
       expect(response.statusCode).to.equal(200);
       expect(body).to.contain('<!DOCTYPE html>');
       expect(body).to.contain('<title>Swiv');
@@ -44,7 +44,7 @@ describe('typo', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
   });
 
 });

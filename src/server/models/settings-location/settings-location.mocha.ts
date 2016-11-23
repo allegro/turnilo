@@ -17,7 +17,7 @@ describe('SettingsLocation', () => {
       {
         location: 'mysql',
         uri: 'mysql://root:@192.168.99.100:3306/datazoo',
-        table: 'pivot_state'
+        table: 'swiv_state'
       }
     ]);
   });

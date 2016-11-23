@@ -18,11 +18,11 @@ import { Router, Request, Response } from 'express';
 import { Timezone, WallTime, Duration } from 'chronoshift';
 import { Essence } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests';
-import { PivotRequest } from '../../utils/index';
+import { SwivRequest } from '../../utils/index';
 
 var router = Router();
 
-router.post('/', (req: PivotRequest, res: Response) => {
+router.post('/', (req: SwivRequest, res: Response) => {
   var { domain, dataCube, dataSource, essence } = req.body;
   dataCube = dataCube || dataSource; // back compat
 

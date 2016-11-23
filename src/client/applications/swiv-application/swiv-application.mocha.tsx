@@ -24,12 +24,12 @@ import '../../utils/test-utils/index';
 import * as TestUtils from 'react-addons-test-utils';
 
 import { $, Expression } from 'plywood';
-import { PivotApplication } from './swiv-application';
+import { SwivApplication } from './swiv-application';
 
-describe.skip('PivotApplication', () => {
+describe.skip('SwivApplication', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
-      <PivotApplication
+      <SwivApplication
         version={null}
         appSettings={null}
       />

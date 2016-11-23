@@ -16,17 +16,17 @@
 
 import { Router, Request, Response } from 'express';
 
-import { PivotRequest } from '../../utils/index';
-import { pivotLayout } from '../../views';
+import { SwivRequest } from '../../utils/index';
+import { swivLayout } from '../../views';
 import { SETTINGS_MANAGER } from '../../config';
 
 var router = Router();
 
-router.get('/', (req: PivotRequest, res: Response, next: Function) => {
+router.get('/', (req: SwivRequest, res: Response, next: Function) => {
   req.getSettings()
     .then((appSettings) => {
       var clientSettings = appSettings.toClientSettings();
-      res.send(pivotLayout({
+      res.send(swivLayout({
         version: req.version,
         title: appSettings.customization.getTitle(req.version),
         user: req.user,

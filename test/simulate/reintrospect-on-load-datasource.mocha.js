@@ -22,7 +22,7 @@ const extend = require('../utils/extend');
 const extractConfig = require('../utils/extract-config');
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 var druidServer;
 
 var segmentMetadataResponse = [
@@ -116,13 +116,13 @@ describe('reintrospect on load with datasource', function () {
     }, function(err, port) {
       if (err) return done(err);
 
-      pivotServer = spawnServer(`bin/swiv -c test/configs/reintrospect-on-load-datasource.yaml -p ${TEST_PORT}`, {
+      swivServer = spawnServer(`bin/swiv -c test/configs/reintrospect-on-load-datasource.yaml -p ${TEST_PORT}`, {
         env: {
           DRUID_HOST: `localhost:${port}`
         }
       });
 
-      pivotServer.onHook(`Cluster 'druid' could not introspect 'wiki' because: No such datasource`, done);
+      swivServer.onHook(`Cluster 'druid' could not introspect 'wiki' because: No such datasource`, done);
     });
   });
 
@@ -161,7 +161,7 @@ describe('reintrospect on load with datasource', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
     druidServer.kill();
   });
 

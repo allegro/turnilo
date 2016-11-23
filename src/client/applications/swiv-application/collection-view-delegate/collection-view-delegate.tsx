@@ -17,7 +17,7 @@
 import * as React from 'react';
 import * as Q from 'q';
 
-import { PivotApplication, PivotApplicationProps, PivotApplicationState } from '../swiv-application.tsx';
+import { SwivApplication, SwivApplicationProps, SwivApplicationState } from '../swiv-application.tsx';
 
 import { Ajax } from '../../../utils/ajax/ajax';
 import { Collection, CollectionTile, DataCube, Essence, Timekeeper, AppSettings } from '../../../../common/models/index';
@@ -29,9 +29,9 @@ import { Notifier } from '../../../components/index';
 
 export class CollectionViewDelegate {
 
-  private app: PivotApplication;
+  private app: SwivApplication;
 
-  constructor(app: PivotApplication) {
+  constructor(app: SwivApplication) {
     this.app = app;
 
     this.addCollection = this.addCollection.bind(this);
@@ -45,7 +45,7 @@ export class CollectionViewDelegate {
     this.updateTile = this.updateTile.bind(this);
   }
 
-  private setState(state: PivotApplicationState, callback?: () => void) {
+  private setState(state: SwivApplicationState, callback?: () => void) {
     return this.app.setState.call(this.app, state, callback);
   }
 

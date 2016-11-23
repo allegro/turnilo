@@ -19,14 +19,14 @@ const request = require('request');
 const spawnServer = require('node-spawn-server');
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 
 describe('file', function () {
   this.timeout(5000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/swiv --file assets/data/wikiticker-2015-09-12-anonymous.json -p ${TEST_PORT}`);
-    pivotServer.onHook('Swiv is listening on address', done);
+    swivServer = spawnServer(`bin/swiv --file assets/data/wikiticker-2015-09-12-anonymous.json -p ${TEST_PORT}`);
+    swivServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET /health', (testComplete) => {
@@ -52,7 +52,7 @@ describe('file', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
   });
 
 

@@ -21,7 +21,7 @@ const mockDruid = require('../utils/mock-druid');
 const extractConfig = require('../utils/extract-config');
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 var druidServer;
 
 var segmentMetadataResponse = [
@@ -112,13 +112,13 @@ describe('reintrospect on load', function () {
     }, function(err, port) {
       if (err) return done(err);
 
-      pivotServer = spawnServer(`bin/swiv -c test/configs/reintrospect-on-load.yaml -p ${TEST_PORT}`, {
+      swivServer = spawnServer(`bin/swiv -c test/configs/reintrospect-on-load.yaml -p ${TEST_PORT}`, {
         env: {
           DRUID_HOST: `localhost:${port}`
         }
       });
 
-      pivotServer.onHook(`Getting the latest MaxTime for`, done);
+      swivServer.onHook(`Getting the latest MaxTime for`, done);
     });
   });
 
@@ -236,7 +236,7 @@ describe('reintrospect on load', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
     druidServer.kill();
   });
 

@@ -22,7 +22,7 @@ import mime = require('mime');
 import * as bodyParser from 'body-parser';
 
 import { AppSettings } from '../../../common/models/index';
-import { PivotRequest } from '../../utils/index';
+import { SwivRequest } from '../../utils/index';
 
 import { AppSettingsMock } from '../../../common/models/app-settings/app-settings.mock';
 
@@ -33,7 +33,7 @@ var app = express();
 app.use(bodyParser.json());
 
 var appSettings: AppSettings = AppSettingsMock.wikiOnlyWithExecutor();
-app.use((req: PivotRequest, res: Response, next: Function) => {
+app.use((req: SwivRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = '0.9.4';
   req.getSettings = (dataCubeOfInterest?: string) => Q(appSettings);

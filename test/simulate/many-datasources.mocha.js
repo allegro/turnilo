@@ -21,7 +21,7 @@ const mockDruid = require('../utils/mock-druid');
 const extractConfig = require('../utils/extract-config');
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 var druidServer;
 
 var wikipediaSegmentMetadataResponse = [
@@ -168,13 +168,13 @@ describe('many datasources', function () {
   this.timeout(30000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/swiv -c test/configs/two-little-datasources.yaml -p ${TEST_PORT}`, {
+    swivServer = spawnServer(`bin/swiv -c test/configs/two-little-datasources.yaml -p ${TEST_PORT}`, {
       env: {
         DRUID_HOST: 'localhost:28082'
       }
     });
 
-    pivotServer.onHook('Swiv is listening on address', done);
+    swivServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET / before Druid start', (testComplete) => {
@@ -232,7 +232,7 @@ describe('many datasources', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
     druidServer.kill();
   });
 

@@ -22,7 +22,7 @@ const extend = require('../utils/extend');
 const extractConfig = require('../utils/extract-config');
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 var druidServer;
 
 var segmentMetadataResponse = [
@@ -116,13 +116,13 @@ describe('list refresh on load with datasource', function () {
     }, function(err, port) {
       if (err) return done(err);
 
-      pivotServer = spawnServer(`bin/swiv -c test/configs/list-refresh-on-load-datasource.yaml -p ${TEST_PORT}`, {
+      swivServer = spawnServer(`bin/swiv -c test/configs/list-refresh-on-load-datasource.yaml -p ${TEST_PORT}`, {
         env: {
           DRUID_HOST: `localhost:${port}`
         }
       });
 
-      pivotServer.onHook(`Cluster 'druid' could not introspect 'wiki' because: No such datasource`, done);
+      swivServer.onHook(`Cluster 'druid' could not introspect 'wiki' because: No such datasource`, done);
     });
   });
 
@@ -153,7 +153,7 @@ describe('list refresh on load with datasource', function () {
       expect(body).to.contain('<div class="app-container"></div>');
       expect(body).to.contain('</html>');
 
-      expect(pivotServer.getStdall()).to.contain("Cluster 'druid' has never seen 'wikipedia' and will introspect 'wiki");
+      expect(swivServer.getStdall()).to.contain("Cluster 'druid' has never seen 'wikipedia' and will introspect 'wiki");
 
       var config = extractConfig(body);
       expect(config.appSettings.dataCubes.map((ds) => ds.name)).to.deep.equal(['wiki']);
@@ -163,7 +163,7 @@ describe('list refresh on load with datasource', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
     druidServer.kill();
   });
 

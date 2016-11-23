@@ -18,11 +18,11 @@ import { Router, Request, Response } from 'express';
 import { $, Expression, RefExpression, External, Datum, Dataset, PlywoodValue, TimeRange, basicExecutorFactory, Executor, AttributeJSs } from 'plywood';
 import { Timezone, WallTime, Duration } from 'chronoshift';
 
-import { PivotRequest } from '../../utils/index';
+import { SwivRequest } from '../../utils/index';
 
 var router = Router();
 
-router.post('/', (req: PivotRequest, res: Response) => {
+router.post('/', (req: SwivRequest, res: Response) => {
   var { dataCube, dataSource, expression, timezone, settingsVersion } = req.body;
   dataCube = dataCube || dataSource; // back compat
 

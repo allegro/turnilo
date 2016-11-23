@@ -31,11 +31,11 @@ if (!WallTime.rules) {
 }
 
 import { GetSettingsOptions } from '../server/utils/settings-manager/settings-manager';
-import { PivotRequest } from './utils/index';
+import { SwivRequest } from './utils/index';
 import { VERSION, AUTH, SERVER_SETTINGS, SETTINGS_MANAGER } from './config';
 import * as plywoodRoutes from './routes/plywood/plywood';
 import * as plyqlRoutes from './routes/plyql/plyql';
-import * as pivotRoutes from './routes/swiv/swiv';
+import * as swivRoutes from './routes/swiv/swiv';
 import * as collectionsRoutes from './routes/collections/collections';
 import * as settingsRoutes from './routes/settings/settings';
 import * as mkurlRoutes from './routes/mkurl/mkurl';
@@ -45,7 +45,7 @@ import * as errorRoutes from './routes/error/error';
 import { errorLayout } from './views';
 
 function makeGuard(guard: string): Handler {
-  return (req: PivotRequest, res: Response, next: Function) => {
+  return (req: SwivRequest, res: Response, next: Function) => {
     const user = req.user;
     if (!user) {
       next(new Error('no user'));
@@ -112,7 +112,7 @@ app.use(bodyParser.urlencoded({
 
 // Assign basics
 var stateful = SETTINGS_MANAGER.isStateful();
-app.use((req: PivotRequest, res: Response, next: Function) => {
+app.use((req: SwivRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = VERSION;
   req.stateful = stateful;
@@ -123,7 +123,7 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
 });
 
 // Global, optional version check
-app.use((req: PivotRequest, res: Response, next: Function) => {
+app.use((req: SwivRequest, res: Response, next: Function) => {
   var { version } = req.body;
   if (version && version !== req.version) {
     res.status(412).send({
@@ -139,7 +139,7 @@ app.use((req: PivotRequest, res: Response, next: Function) => {
 if (AUTH) {
   app.use(AUTH);
 } else {
-  app.use((req: PivotRequest, res: Response, next: Function) => {
+  app.use((req: SwivRequest, res: Response, next: Function) => {
     if (req.stateful) {
       req.user = {
         id: 'admin',
@@ -174,7 +174,7 @@ if (SERVER_SETTINGS.getIframe() === 'deny') {
   });
 }
 
-addRoutes('/', pivotRoutes);
+addRoutes('/', swivRoutes);
 
 // Catch 404 and redirect to /
 app.use((req: Request, res: Response, next: Function) => {

@@ -19,14 +19,14 @@ const request = require('request');
 const spawnServer = require('node-spawn-server');
 
 const TEST_PORT = 18082;
-var pivotServer;
+var swivServer;
 
 describe('security', function () {
   this.timeout(5000);
 
   before((done) => {
-    pivotServer = spawnServer(`bin/swiv -c test/configs/secure.yaml -p ${TEST_PORT}`);
-    pivotServer.onHook('Swiv is listening on address', done);
+    swivServer = spawnServer(`bin/swiv -c test/configs/secure.yaml -p ${TEST_PORT}`);
+    swivServer.onHook('Swiv is listening on address', done);
   });
 
   it('works with GET /', (testComplete) => {
@@ -52,7 +52,7 @@ describe('security', function () {
   });
 
   after(() => {
-    pivotServer.kill();
+    swivServer.kill();
   });
 
 
