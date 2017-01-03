@@ -6,6 +6,10 @@ Swiv is a web-based exploratory visualization UI for [Druid](https://github.com/
 Swiv is best used with [Druid](http://druid.io).
 Internal and external APIs may change with little notice.
 
+## Contribution
+
+This is a community owned and operated project.  Contributions are welcome and all interaction is done via this git repository.  File issues, make pull requests and review them all here please.
+
 ## Features
 
 **Drag-and-drop UI**
