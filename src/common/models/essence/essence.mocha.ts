@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { MANIFESTS } from "../../manifests/index";
 import { Essence, EssenceJS, VisStrategy } from './essence';
 import { DataCube, Introspection } from "../data-cube/data-cube";
@@ -27,7 +27,7 @@ import { Splits } from "../splits/splits";
 import { SplitCombineMock } from "../split-combine/split-combine.mock";
 import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
 import { SplitCombine } from "../split-combine/split-combine";
-import { RefExpression } from "plywood";
+import { RefExpression } from "swiv-plywood";
 
 describe('Essence', () => {
   var dataCubeJS = {

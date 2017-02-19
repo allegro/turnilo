@@ -15,7 +15,7 @@
  */
 
 import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
-import { findByName, overrideByName } from 'plywood';
+import { findByName, overrideByName } from 'swiv-plywood';
 import { TimeTag, TimeTagJS } from '../time-tag/time-tag';
 
 // I am: export * from './timekeeper/timekeeper';

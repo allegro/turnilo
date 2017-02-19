@@ -16,7 +16,7 @@
 
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { Dimension } from '../dimension/dimension';
 import { Filter, FilterJS } from '../filter/filter';
 

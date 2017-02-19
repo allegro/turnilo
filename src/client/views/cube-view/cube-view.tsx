@@ -18,7 +18,7 @@ require('./cube-view.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Expression, Dataset } from 'plywood';
+import { Expression, Dataset } from 'swiv-plywood';
 import { Timezone } from 'chronoshift';
 import { Fn } from '../../../common/utils/general/general';
 import { FunctionSlot } from '../../utils/function-slot/function-slot';

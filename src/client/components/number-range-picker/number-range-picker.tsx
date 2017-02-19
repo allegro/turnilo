@@ -19,7 +19,7 @@ require('./number-range-picker.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { $, Dataset, ply } from 'plywood';
+import { $, Dataset, ply } from 'swiv-plywood';
 
 import { Essence, Timekeeper, Dimension } from '../../../common/models/index';
 import { toSignificantDigits, getNumberOfWholeDigits } from '../../../common/utils/general/general';

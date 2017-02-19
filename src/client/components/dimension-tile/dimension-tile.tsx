@@ -20,7 +20,7 @@ import * as React from 'react';
 
 import { Duration } from 'chronoshift';
 import { List } from 'immutable';
-import { $, r, Dataset, SortAction, TimeRange, RefExpression, Expression, TimeBucketAction, NumberRange } from 'plywood';
+import { $, r, Dataset, SortAction, TimeRange, RefExpression, Expression, TimeBucketAction, NumberRange } from 'swiv-plywood';
 
 import { formatterFromData, collect, formatGranularity, formatTimeBasedOnGranularity, formatNumberRange } from '../../../common/utils/index';
 import { Fn } from '../../../common/utils/general/general';

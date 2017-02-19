@@ -17,7 +17,7 @@
 require('./base-visualization.css');
 
 import * as React from 'react';
-import { $, ply, Expression, Dataset } from 'plywood';
+import { $, ply, Expression, Dataset } from 'swiv-plywood';
 import { Measure, VisualizationProps, DatasetLoad, Essence, Timekeeper } from '../../../common/models/index';
 
 import { SPLIT } from '../../config/constants';

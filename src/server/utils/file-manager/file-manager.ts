@@ -17,7 +17,7 @@
 import * as path from 'path';
 import * as Q from 'q';
 import * as fs from 'fs-promise';
-import { Dataset, Expression, PseudoDatum } from 'plywood';
+import { Dataset, Expression, PseudoDatum } from 'swiv-plywood';
 import { Logger } from 'logger-tracker';
 
 import { parseData } from '../../../common/utils/parser/parser';

@@ -18,7 +18,7 @@ require('./time-filter-menu.css');
 
 import * as React from "react";
 import { Timezone, second, day } from "chronoshift";
-import { $, r, Expression, LiteralExpression, TimeRange, Range, Set } from "plywood";
+import { $, r, Expression, LiteralExpression, TimeRange, Range, Set } from "swiv-plywood";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { Clicker, Essence, Timekeeper, Filter, FilterClause, Dimension } from "../../../common/models/index";

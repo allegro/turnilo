@@ -22,7 +22,7 @@ import * as TestUtils from 'react-addons-test-utils';
 
 import '../../utils/test-utils/index';
 
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { HoverMultiBubble } from './hover-multi-bubble';
 
 describe.skip('HoverMultiBubble', () => {

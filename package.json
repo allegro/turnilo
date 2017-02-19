@@ -41,7 +41,6 @@
     "node-spawn-server": "1.0.1",
     "nopt": "3.0.6",
     "numeral": "1.5.3",
-    "plywood": "0.12.3",
     "plywood-druid-requester": "1.5.4",
     "plywood-mysql-requester": "1.3.1",
     "plywood-postgres-requester": "0.9.1",
@@ -50,7 +49,8 @@
     "react": "15.3.0",
     "react-addons-css-transition-group": "15.3.0",
     "react-dom": "15.3.0",
-    "request": "2.74.0"
+    "request": "2.74.0",
+    "swiv-plywood": "0.12.17"
   },
   "devDependencies": {
     "@types/body-parser": "0.0.30",

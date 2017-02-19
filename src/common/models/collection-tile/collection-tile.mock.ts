@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $ } from 'plywood';
+import { $ } from 'swiv-plywood';
 
 import { MANIFESTS } from "../../manifests/index";
 import { DataCubeMock } from "../data-cube/data-cube.mock";

@@ -18,7 +18,7 @@ require('./segment-action-buttons.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'swiv-plywood';
 import { Fn } from '../../../common/utils/general/general';
 import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';

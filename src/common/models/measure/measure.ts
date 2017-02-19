@@ -17,7 +17,7 @@
 import { List } from 'immutable';
 import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
 import * as numeral from 'numeral';
-import { $, Expression, Datum, ApplyAction, AttributeInfo, ChainExpression, deduplicateSort } from 'plywood';
+import { $, Expression, Datum, ApplyAction, AttributeInfo, ChainExpression, deduplicateSort } from 'swiv-plywood';
 import { verifyUrlSafeName, makeTitle, makeUrlSafeName } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {

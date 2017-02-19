@@ -20,7 +20,7 @@ import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, im
 import { Duration, Timezone, second } from 'chronoshift';
 import { $, ply, r, Expression, ExpressionJS, Executor, External, RefExpression, basicExecutorFactory, Dataset,
   Attributes, AttributeInfo, AttributeJSs, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
-  CustomDruidAggregations, CustomDruidTransforms, ExternalValue, findByName } from 'plywood';
+  CustomDruidAggregations, CustomDruidTransforms, ExternalValue, findByName } from 'swiv-plywood';
 import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
 import { getWallTimeString } from '../../utils/time/time';
 import { Dimension, DimensionJS } from '../dimension/dimension';

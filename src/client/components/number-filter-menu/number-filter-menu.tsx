@@ -17,7 +17,7 @@
 require('./number-filter-menu.css');
 
 import * as React from 'react';
-import { Set, NumberRange, LiteralExpression } from 'plywood';
+import { Set, NumberRange, LiteralExpression } from 'swiv-plywood';
 
 import { FilterClause, Clicker, Essence, Timekeeper, Filter, Dimension, FilterMode, Stage } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';

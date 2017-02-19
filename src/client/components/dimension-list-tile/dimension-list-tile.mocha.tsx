@@ -24,7 +24,7 @@ import * as TestUtils from 'react-addons-test-utils';
 
 import { EssenceMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 
 describe('DimensionListTile', () => {
   var { DimensionListTile } = mockRequireEnsure('./dimension-list-tile');

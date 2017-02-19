@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { DragPosition } from './drag-position';
 
 describe('DragPosition', () => {

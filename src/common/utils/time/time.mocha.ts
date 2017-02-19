@@ -16,7 +16,7 @@
 
 import { expect } from 'chai';
 import { Timezone, Duration, day, month } from 'chronoshift';
-import { TimeRange } from 'plywood';
+import { TimeRange } from 'swiv-plywood';
 import { datesEqual, prependDays, appendDays, getEndWallTimeInclusive, getWallTimeDay, getWallTimeMonthWithYear, formatTimeBasedOnGranularity, formatTimeRange } from './time';
 
 var { WallTime } = require('chronoshift');

@@ -17,7 +17,7 @@
 import * as numeral from 'numeral';
 import { Timezone } from 'chronoshift';
 
-import { NumberRange, TimeRange, LiteralExpression } from 'plywood';
+import { NumberRange, TimeRange, LiteralExpression } from 'swiv-plywood';
 
 import { Dimension, FilterClause, Filter } from '../../models/index';
 import { DisplayYear, formatTimeRange } from '../../utils/time/time';

@@ -16,7 +16,7 @@
 
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 import { Granularity, GranularityJS, granularityFromJS, granularityToJS, granularityEquals } from "../granularity/granularity";
 

@@ -16,7 +16,7 @@
 
 import * as d3 from 'd3';
 import { Timezone, Duration, WallTime, month, day, hour, minute } from 'chronoshift';
-import { TimeRange } from 'plywood';
+import { TimeRange } from 'swiv-plywood';
 
 const FORMAT_WITH_YEAR = d3.time.format('%b %-d, %Y');
 const FORMAT_WITHOUT_YEAR = d3.time.format('%b %-d');

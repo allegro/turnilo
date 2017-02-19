@@ -22,7 +22,7 @@ import * as TestUtils from 'react-addons-test-utils';
 
 import '../../utils/test-utils/index';
 
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { VisMeasureLabel } from './vis-measure-label';
 
 describe.skip('VisMeasureLabel', () => {

@@ -17,7 +17,7 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration } from 'chronoshift';
-import { $, r, Expression, LiteralExpression, ExpressionJS, InAction, Set, Range, TimeRange } from 'plywood';
+import { $, r, Expression, LiteralExpression, ExpressionJS, InAction, Set, Range, TimeRange } from 'swiv-plywood';
 import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
 import { FilterClause, FilterClauseJS, FilterSelection } from '../filter-clause/filter-clause';

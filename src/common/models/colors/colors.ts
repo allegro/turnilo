@@ -15,7 +15,7 @@
  */
 
 import { Class, Instance, isInstanceOf, isImmutableClass } from 'immutable-class';
-import { $, Set, valueFromJS, valueToJS, FilterAction, LimitAction } from 'plywood';
+import { $, Set, valueFromJS, valueToJS, FilterAction, LimitAction } from 'swiv-plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 
 const NULL_COLOR = '#666666';

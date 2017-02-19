@@ -19,7 +19,7 @@ require('./table.css');
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction, NumberRange } from 'plywood';
+import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction, NumberRange } from 'swiv-plywood';
 import { formatterFromData, formatNumberRange, Formatter } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
   Measure, Colors, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';

@@ -16,7 +16,7 @@
 
 import { List } from 'immutable';
 import { immutableArraysEqual, Equalable } from 'immutable-class';
-import { TimeRange, NumberRange, PlywoodRange } from 'plywood';
+import { TimeRange, NumberRange, PlywoodRange } from 'swiv-plywood';
 
 // The most generic function
 export interface Fn {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, Executor, Dataset, basicExecutorFactory } from 'plywood';
+import { $, Executor, Dataset, basicExecutorFactory } from 'swiv-plywood';
 import { DataCube, DataCubeJS } from './data-cube';
 
 var executor = basicExecutorFactory({

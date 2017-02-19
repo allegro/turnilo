@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
 import { isDate } from 'chronoshift';
-import { $, Dataset, PlywoodValue, Datum, AttributeInfo } from 'plywood';
+import { $, Dataset, PlywoodValue, Datum, AttributeInfo } from 'swiv-plywood';
 import { Essence, Stage, DataCube, Timekeeper } from '../../../common/models/index';
 
 import { Fn, makeTitle, arraySum } from '../../../common/utils/general/general';

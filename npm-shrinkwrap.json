@@ -745,11 +745,6 @@
       "from": "pinkie-promise@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-2.0.1.tgz"
     },
-    "plywood": {
-      "version": "0.12.3",
-      "from": "plywood@0.12.3",
-      "resolved": "https://registry.npmjs.org/plywood/-/plywood-0.12.3.tgz"
-    },
     "plywood-druid-requester": {
       "version": "1.5.4",
       "from": "plywood-druid-requester@1.5.4",
@@ -941,6 +936,11 @@
       "version": "2.0.0",
       "from": "supports-color@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
+    },
+    "swiv-plywood": {
+      "version": "0.12.17",
+      "from": "swiv-plywood@0.12.17",
+      "resolved": "https://registry.npmjs.org/swiv-plywood/-/swiv-plywood-0.12.17.tgz"
     },
     "thenify": {
       "version": "3.2.0",

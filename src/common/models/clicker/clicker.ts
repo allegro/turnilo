@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Expression } from 'plywood';
+import { Expression } from 'swiv-plywood';
 import { Manifest } from '../manifest/manifest';
 import { Filter } from '../filter/filter';
 import { SplitCombine } from '../split-combine/split-combine';

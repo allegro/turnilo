@@ -17,7 +17,7 @@
 require('./pinboard-panel.css');
 
 import * as React from 'react';
-import { $, Expression, SortAction } from 'plywood';
+import { $, Expression, SortAction } from 'swiv-plywood';
 import { STRINGS } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, Timekeeper, SortOn, VisStrategy, Colors } from '../../../common/models/index';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TimeBucketAction, NumberBucketAction, ActionJS, Action, ActionValue, TimeRange, PlywoodRange, NumberRange } from 'plywood';
+import { TimeBucketAction, NumberBucketAction, ActionJS, Action, ActionValue, TimeRange, PlywoodRange, NumberRange } from 'swiv-plywood';
 import { day, hour, minute, Timezone, Duration } from 'chronoshift';
 
 import {
