@@ -18,7 +18,7 @@ require('./highlighter.css');
 
 import * as React from 'react';
 import { Timezone, Duration } from 'chronoshift';
-import { PlywoodRange } from 'plywood';
+import { PlywoodRange } from 'swiv-plywood';
 
 export interface HighlighterProps extends React.Props<any> {
   highlightRange: PlywoodRange;

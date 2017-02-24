@@ -15,7 +15,7 @@
  */
 
 import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
-import { findByName } from 'plywood';
+import { findByName } from 'swiv-plywood';
 
 import { Manifest } from '../manifest/manifest';
 import { CollectionTile, CollectionTileJS, CollectionTileContext } from '../index';

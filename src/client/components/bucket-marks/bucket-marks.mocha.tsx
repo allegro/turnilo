@@ -22,7 +22,7 @@ import * as TestUtils from 'react-addons-test-utils';
 
 import '../../utils/test-utils/index';
 
-import { $, Expression, PlywoodValue } from 'plywood';
+import { $, Expression, PlywoodValue } from 'swiv-plywood';
 import { BucketMarks } from './bucket-marks';
 
 import { StageMock } from '../../../common/models/mocks';

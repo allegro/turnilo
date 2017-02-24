@@ -19,7 +19,7 @@ require('./dropdown.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { SvgIcon } from '../svg-icon/svg-icon';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'swiv-plywood';
 import { Stage, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
 import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
 

@@ -17,7 +17,7 @@
 require('./hiluk-menu.css');
 
 import * as React from 'react';
-import { Dataset } from 'plywood';
+import { Dataset } from 'swiv-plywood';
 import { Fn } from '../../../common/utils/general/general';
 import { Stage, Essence, Timekeeper, ExternalView } from '../../../common/models/index';
 import { STRINGS } from '../../config/constants';

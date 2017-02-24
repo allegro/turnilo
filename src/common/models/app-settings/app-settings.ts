@@ -16,7 +16,7 @@
 
 import { Class, Instance, isInstanceOf, immutableArraysEqual, immutableEqual } from 'immutable-class';
 import { ImmutableUtils } from '../../utils/index';
-import { Executor, findByName, overrideByName } from 'plywood';
+import { Executor, findByName, overrideByName } from 'swiv-plywood';
 import { hasOwnProperty } from '../../utils/general/general';
 import { Cluster, ClusterJS } from '../cluster/cluster';
 import { Customization, CustomizationJS } from '../customization/customization';

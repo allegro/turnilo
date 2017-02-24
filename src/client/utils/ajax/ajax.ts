@@ -16,7 +16,7 @@
 
 import * as Q from 'q';
 import * as Qajax from 'qajax';
-import { $, Expression, Executor, Dataset, ChainExpression, SplitAction, Environment } from 'plywood';
+import { $, Expression, Executor, Dataset, ChainExpression, SplitAction, Environment } from 'swiv-plywood';
 
 Qajax.defaults.timeout = 0; // We'll manage the timeout per request.
 

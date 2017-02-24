@@ -22,7 +22,7 @@ import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import { Duration } from 'chronoshift';
 import { r, $, ply, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction, SortAction,
-  PlywoodRange, NumberRangeJS, NumberRange, Range, NumberBucketAction } from 'plywood';
+  PlywoodRange, NumberRangeJS, NumberRange, Range, NumberBucketAction } from 'swiv-plywood';
 import { Essence, Splits, Colors, FilterClause, Dimension, Stage,
   Filter, Measure, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 import { LINE_CHART_MANIFEST } from '../../../common/manifests/line-chart/line-chart';

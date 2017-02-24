@@ -16,7 +16,7 @@
 
 import { expect } from 'chai';
 import '../../utils/test-utils/index';
-import { Dataset } from 'plywood';
+import { Dataset } from 'swiv-plywood';
 import { datasetToFileString, getMIMEType } from './download';
 
 describe.skip('Download', () => {

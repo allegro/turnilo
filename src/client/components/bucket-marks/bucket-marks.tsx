@@ -17,7 +17,7 @@
 require('./bucket-marks.css');
 
 import * as React from 'react';
-import { PlywoodValue } from 'plywood';
+import { PlywoodValue } from 'swiv-plywood';
 import { Stage } from '../../../common/models/index';
 import { roundToHalfPx } from '../../utils/dom/dom';
 

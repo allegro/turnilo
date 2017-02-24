@@ -18,7 +18,7 @@ require('./link-view.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Expression, $, find } from 'plywood';
+import { Expression, $, find } from 'swiv-plywood';
 import { Timezone } from 'chronoshift';
 import { classNames } from '../../utils/dom/dom';
 import { Fn } from '../../../common/utils/general/general';

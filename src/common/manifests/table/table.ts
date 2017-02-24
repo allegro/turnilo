@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, SortAction } from 'plywood';
+import { $, SortAction } from 'swiv-plywood';
 import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
 import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
 import { Manifest, Resolve } from '../../models/manifest/manifest';

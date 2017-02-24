@@ -19,7 +19,7 @@ require('./cube-header-bar.css');
 import * as React from 'react';
 import { immutableEqual } from "immutable-class";
 import { Duration, Timezone } from 'chronoshift';
-import { Dataset } from 'plywood';
+import { Dataset } from 'swiv-plywood';
 import { Fn } from '../../../../common/utils/general/general';
 import { classNames } from "../../../utils/dom/dom";
 

@@ -16,7 +16,7 @@
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone } from 'chronoshift';
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { Essence, DataCube, Filter, Splits, Customization} from '../../../common/models/index';
 
 export interface LinkGenerator {

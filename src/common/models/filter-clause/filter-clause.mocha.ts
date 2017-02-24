@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
 import { Timezone, Duration } from 'chronoshift';
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { FilterClause, FilterClauseJS } from './filter-clause';
 
 describe('FilterClause', () => {

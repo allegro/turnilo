@@ -22,7 +22,7 @@ import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
 import { findDOMNode } from '../../utils/test-utils/index';
 
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { BubbleMenu } from './bubble-menu';
 
 import { StageMock } from '../../../common/models/mocks';

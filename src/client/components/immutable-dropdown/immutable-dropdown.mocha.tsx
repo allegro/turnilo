@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as React from 'react';
 import * as TestUtils from 'react-addons-test-utils';
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 
 import { DataCubeMock } from '../../../common/models/mocks';
 import { DataCube, ListItem, Cluster } from '../../../common/models/index';

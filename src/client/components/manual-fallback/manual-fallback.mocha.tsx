@@ -25,7 +25,7 @@ import * as TestUtils from 'react-addons-test-utils';
 
 import { EssenceMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { ManualFallback } from './manual-fallback';
 
 describe('ManualFallback', () => {

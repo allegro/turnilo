@@ -17,7 +17,7 @@
 require('./preview-string-filter-menu.css');
 
 import * as React from "react";
-import { $, Dataset, SortAction, r } from "plywood";
+import { $, Dataset, SortAction, r } from "swiv-plywood";
 import { Fn, collect } from "../../../common/utils/general/general";
 import { STRINGS, SEARCH_WAIT } from "../../config/constants";
 import { Clicker, Essence, Timekeeper, Filter, FilterClause, FilterMode, Dimension } from "../../../common/models/index";

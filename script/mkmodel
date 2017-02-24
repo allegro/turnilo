@@ -72,7 +72,7 @@ writeFile(path + name + '.ts',
  */
 
 import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 
 // I am: export * from './${name}/${name}';
 
@@ -130,7 +130,7 @@ writeFile(path + name + '.mocha.ts',
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { ${camelName} } from './${name}';
 
 describe('${camelName}', () => {

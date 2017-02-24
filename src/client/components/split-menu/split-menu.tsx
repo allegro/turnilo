@@ -18,7 +18,7 @@ require('./split-menu.css');
 
 import * as React from "react";
 import { Timezone, Duration } from "chronoshift";
-import { TimeBucketAction, NumberBucketAction, SortAction } from "plywood";
+import { TimeBucketAction, NumberBucketAction, SortAction } from "swiv-plywood";
 import { Fn, formatGranularity } from "../../../common/utils/index";
 import {
   Stage,

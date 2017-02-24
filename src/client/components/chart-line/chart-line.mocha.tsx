@@ -23,7 +23,7 @@ import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
 
-import { Dataset, TimeRange } from 'plywood';
+import { Dataset, TimeRange } from 'swiv-plywood';
 import { ChartLine } from './chart-line';
 
 import { StageMock } from '../../../common/models/mocks';

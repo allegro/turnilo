@@ -15,7 +15,7 @@
  */
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { $, Expression, RefExpression, SortAction } from 'plywood';
+import { $, Expression, RefExpression, SortAction } from 'swiv-plywood';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 import { DataCube } from '../data-cube/data-cube';

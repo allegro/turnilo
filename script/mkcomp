@@ -80,7 +80,7 @@ require('./${name}.css');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'swiv-plywood';
 import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
 // import { ... } from '../../config/constants';
 // import { Fn } from '../../../common/utils/general/general';
@@ -144,7 +144,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as React from 'react';
 import * as TestUtils from 'react-addons-test-utils';
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 
 import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
 

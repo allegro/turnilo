@@ -24,7 +24,7 @@ import { findDOMNode } from '../../utils/test-utils/index';
 
 import '../../utils/test-utils/index';
 
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { Modal } from './modal';
 
 describe('Modal', () => {

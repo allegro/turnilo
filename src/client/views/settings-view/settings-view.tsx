@@ -19,7 +19,7 @@ require('./settings-view.css');
 import * as React from 'react';
 import * as Q from 'q';
 
-import { $, Expression, Executor, Dataset } from 'plywood';
+import { $, Expression, Executor, Dataset } from 'swiv-plywood';
 import { DataCube, User, Customization } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
 import { STRINGS } from '../../config/constants';

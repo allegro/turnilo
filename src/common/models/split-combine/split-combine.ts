@@ -17,7 +17,7 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
-import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction, NumberBucketAction } from 'plywood';
+import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction, NumberBucketAction } from 'swiv-plywood';
 import { Dimension } from '../dimension/dimension';
 
 export interface SplitCombineValue {

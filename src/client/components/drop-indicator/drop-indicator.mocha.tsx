@@ -23,7 +23,7 @@ import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-addons-test-utils';
 
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 import { DropIndicator } from './drop-indicator';
 
 describe('DropIndicator', () => {

@@ -15,7 +15,7 @@
  */
 
 import { List } from 'immutable';
-import { $, SortAction } from 'plywood';
+import { $, SortAction } from 'swiv-plywood';
 import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
 import {
   CircumstancesHandler

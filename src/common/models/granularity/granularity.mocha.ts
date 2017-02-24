@@ -18,7 +18,7 @@ import { expect } from "chai";
 import { immutableArraysEqual } from "immutable-class";
 import { Duration } from "chronoshift";
 import { Granularity, granularityFromJS, granularityEquals, granularityToString, updateBucketSize, getGranularities, getDefaultGranularityForKind, getBestBucketUnitForRange } from "./granularity";
-import { TimeBucketAction, NumberBucketAction, TimeRange, NumberRange } from "plywood";
+import { TimeBucketAction, NumberBucketAction, TimeRange, NumberRange } from "swiv-plywood";
 
 var { WallTime } = require('chronoshift');
 if (!WallTime.rules) {

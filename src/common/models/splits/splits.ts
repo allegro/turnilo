@@ -17,14 +17,14 @@
 import { List } from 'immutable';
 import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
-import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction, NumberRange, Range } from 'plywood';
+import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction, NumberRange, Range } from 'swiv-plywood';
 import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
 import { Filter } from '../filter/filter';
 import { Timekeeper } from '../timekeeper/timekeeper';
 import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
-import { NumberBucketAction } from "plywood";
+import { NumberBucketAction } from "swiv-plywood";
 import { getDefaultGranularityForKind, getBestBucketUnitForRange } from "../granularity/granularity";
 
 function withholdSplit(splits: List<SplitCombine>, split: SplitCombine, allowIndex: number): List<SplitCombine> {

@@ -15,7 +15,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { $, Expression, RefExpression, External, Datum, Dataset, PlywoodValue, TimeRange, basicExecutorFactory, Executor, AttributeJSs } from 'plywood';
+import { $, Expression, RefExpression, External, Datum, Dataset, PlywoodValue, TimeRange, basicExecutorFactory, Executor, AttributeJSs } from 'swiv-plywood';
 import { Timezone, WallTime, Duration } from 'chronoshift';
 
 import { SwivRequest } from '../../utils/index';

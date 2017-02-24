@@ -18,7 +18,7 @@ require('./date-range-picker.css');
 
 import * as React from 'react';
 import { Timezone, Duration, second, minute, hour, day, week, month, year } from 'chronoshift';
-import { TimeRange } from 'plywood';
+import { TimeRange } from 'swiv-plywood';
 import {
   prependDays, appendDays, datesEqual, monthToWeeks, shiftOneDay, getWallTimeMonthWithYear,
   getWallTimeDay, wallTimeInclusiveEndEqual, getEndWallTimeInclusive

@@ -19,7 +19,7 @@ require('./bar-chart.css');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
-import { r, Range, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, TimeRange, PlywoodRange, NumberRange } from 'plywood';
+import { r, Range, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, TimeRange, PlywoodRange, NumberRange } from 'swiv-plywood';
 
 import {
   Stage,

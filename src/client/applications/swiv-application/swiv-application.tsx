@@ -19,7 +19,7 @@ require('./swiv-application.css');
 import * as React from 'react';
 import * as Q from 'q';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { findByName } from 'plywood';
+import { findByName } from 'swiv-plywood';
 
 import { replaceHash } from '../../utils/url/url';
 import { DataCube, AppSettings, User, Collection, CollectionTile, Essence, Timekeeper, ViewSupervisor } from '../../../common/models/index';

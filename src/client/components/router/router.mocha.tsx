@@ -21,7 +21,7 @@ import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-addons-test-utils';
-import { $, Expression } from 'plywood';
+import { $, Expression } from 'swiv-plywood';
 
 import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
 

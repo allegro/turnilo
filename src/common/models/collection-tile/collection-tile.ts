@@ -15,7 +15,7 @@
  */
 
 import { Class, Instance, isInstanceOf } from 'immutable-class';
-import { find } from 'plywood';
+import { find } from 'swiv-plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 import { DataCube } from '../data-cube/data-cube';
 import { Essence, EssenceJS } from '../essence/essence';

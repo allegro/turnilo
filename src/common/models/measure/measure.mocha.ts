@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, AttributeInfo } from 'plywood';
+import { $, AttributeInfo } from 'swiv-plywood';
 import { Measure, MeasureJS } from './measure';
 
 describe('Measure', () => {

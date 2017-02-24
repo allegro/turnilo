@@ -18,7 +18,7 @@ import { List, OrderedSet, Iterable } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, isInstanceOf, immutableEqual } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
-import { $, Expression, RefExpression, TimeRange, ApplyAction, SortAction, Set, findByName } from 'plywood';
+import { $, Expression, RefExpression, TimeRange, ApplyAction, SortAction, Set, findByName } from 'swiv-plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataCube } from '../data-cube/data-cube';
 import { Filter, FilterJS } from '../filter/filter';
