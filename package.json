@@ -1,6 +1,6 @@
 {
   "name": "yahoo-swiv",
-  "version": "0.9.39",
+  "version": "0.9.40",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
