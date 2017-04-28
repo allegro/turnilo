@@ -1,6 +1,6 @@
 {
   "name": "imply-swiv",
-  "version": "0.9.39",
+  "version": "0.9.41",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
