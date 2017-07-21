@@ -17,7 +17,7 @@
 import * as React from 'react';
 import * as Q from 'q';
 
-import { SwivApplication, SwivApplicationProps, SwivApplicationState } from '../swiv-application.tsx';
+import { SwivApplication, SwivApplicationProps, SwivApplicationState } from '../swiv-application';
 
 import { Ajax } from '../../../utils/ajax/ajax';
 import { Collection, CollectionTile, DataCube, Essence, Timekeeper, AppSettings } from '../../../../common/models/index';

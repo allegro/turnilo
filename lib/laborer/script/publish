@@ -1,0 +1,18 @@
+#!/bin/bash -eu
+
+if [ `git symbolic-ref --short HEAD` != "master" ]
+then
+  echo "can not publish from a non master branch" >&2
+  exit 1
+fi
+
+if [ "$(git status --porcelain)" != "" ]
+then
+  echo "git status not clean!" >&2
+  exit 1
+fi
+
+echo "Trying to publish..."
+
+script/version-bump
+npm publish

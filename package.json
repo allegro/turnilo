@@ -70,7 +70,7 @@
     "immutable-class-tester": "0.5.3",
     "istanbul": "0.4.4",
     "jsdom": "9.4.2",
-    "laborer": "2.5.25",
+    "laborer": "file:lib/laborer",
     "mkdirp": "0.5.1",
     "mocha": "3.0.2",
     "react-addons-test-utils": "15.3.0",

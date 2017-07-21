@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { immutableEqual } from 'immutable-class';
+import { immutableEqual, Equalable } from 'immutable-class';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 
 function getName(thing: any): string {
@@ -31,7 +31,7 @@ export interface UpdatedOptions<T> {
   onExit?: (oldThing: T) => void;
 }
 
-export function updater<T>(oldThings: T[], newThings: T[], updatedOptions: UpdatedOptions<T>): void {
+export function updater<T extends Equalable>(oldThings: T[], newThings: T[], updatedOptions: UpdatedOptions<T>): void {
   const key = updatedOptions.key || getName;
   const equals = updatedOptions.equals || immutableEqual;
   const onEnter = updatedOptions.onEnter || noop;

@@ -1,0 +1,58 @@
+{
+  "name": "laborer",
+  "version": "2.5.27-swiv",
+  "description": "Forked from https://github.com/implydata/laborer, adds Typescript 2.0.8",
+  "main": "laborer.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/implydata/laborer.git"
+  },
+  "keywords": [
+    "laborer",
+    "build",
+    "system"
+  ],
+  "author": "Vadim Ogievetsky",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/implydata/laborer/issues"
+  },
+  "scripts": {
+    "compile": "exit 0;"
+  },
+  "homepage": "https://github.com/implydata/laborer#readme",
+  "dependencies": {
+    "autoprefixer": "6.4.1",
+    "css-loader": "0.25.0",
+    "del": "2.2.2",
+    "file-loader": "0.9.0",
+    "graceful-fs": "4.1.6",
+    "gulp": "3.9.1",
+    "gulp-cache": "0.4.5",
+    "gulp-cached": "1.1.0",
+    "gulp-concat": "2.6.0",
+    "gulp-debug": "2.1.2",
+    "gulp-load-plugins": "1.2.4",
+    "gulp-mocha": "3.0.1",
+    "gulp-postcss": "6.1.1",
+    "gulp-sass": "2.3.2",
+    "gulp-sass-lint": "1.2.0",
+    "gulp-sourcemaps": "2.0.0-alpha",
+    "gulp-tslint": "6.1.1",
+    "gulp-typescript": "2.13.6",
+    "gulp-util": "3.0.7",
+    "gulp-watch": "4.3.9",
+    "json-loader": "0.5.4",
+    "merge-stream": "1.0.0",
+    "node-sass": "3.9.3",
+    "raw-loader": "0.5.1",
+    "sass-lint": "1.9.1",
+    "style-loader": "0.13.1",
+    "svgo": "0.7.0",
+    "svgo-loader": "1.1.0",
+    "through2": "2.0.1",
+    "tslint": "3.15.1",
+    "typescript": "2.0.8",
+    "webpack": "1.13.2"
+  }
+}

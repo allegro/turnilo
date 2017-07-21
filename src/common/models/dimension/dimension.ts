@@ -96,8 +96,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
 
     var bucketingStrategy = parameters.bucketingStrategy;
     if (bucketingStrategy) {
-      if (bucketingStrategy === 'neverBucket') bucketingStrategy = Dimension.defaultNoBucket;
-      if (bucketingStrategy === 'alwaysBucket') bucketingStrategy = Dimension.defaultBucket;
+      if (bucketingStrategy === 'defaultNoBucket') bucketingStrategy = Dimension.defaultNoBucket;
+      if (bucketingStrategy === 'defaultBucket') bucketingStrategy = Dimension.defaultBucket;
       value.bucketingStrategy = bucketingStrategy;
     }
 

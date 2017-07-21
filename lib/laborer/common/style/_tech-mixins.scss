@@ -1,0 +1,152 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// positioning
+@mixin pin-full {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+@mixin pin-top($height) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: $height;
+}
+
+@mixin pin-bottom($height) {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: $height;
+}
+
+@mixin pin-left($width) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: $width;
+}
+
+@mixin pin-right($width) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: $width;
+}
+
+@mixin unpin-full($distance, $right: $distance, $bottom: $distance, $left: $distance) {
+  position: absolute;
+  top: $distance;
+  bottom: $bottom;
+  left: $left;
+  right: $right;
+}
+
+@mixin unpin-top($top) {
+  position: absolute;
+  top: $top;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+@mixin unpin-bottom($bottom) {
+  position: absolute;
+  top: 0;
+  bottom: $bottom;
+  left: 0;
+  right: 0;
+}
+
+@mixin unpin-left($left) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: $left;
+  right: 0;
+}
+
+@mixin unpin-right($right) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: $right;
+}
+
+@mixin center($width, $height) {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: $width;
+  height: $height;
+  margin-left: -$width / 2;
+  margin-top: -$height / 2;
+}
+
+@mixin ellipsis {
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+// for the shpitz
+@mixin triangle($direction, $base, $altitude, $color) {
+  @if $direction == up {
+    width: 0;
+    height: 0;
+    border-top: 0;
+    border-bottom: $base solid $color;
+    border-left: $altitude solid transparent;
+    border-right: $altitude solid transparent;
+  }
+
+  @if $direction == down {
+    width: 0;
+    height: 0;
+    border-top: $altitude solid $color;
+    border-bottom: 0;
+    border-left: $base solid transparent;
+    border-right: $base solid transparent;
+  }
+
+  @if $direction == left {
+    width: 0;
+    height: 0;
+    border-top: $base solid transparent;
+    border-bottom: $base solid transparent;
+    border-left: 0;
+    border-right: $altitude solid $color;
+  }
+
+  @if $direction == right {
+    width: 0;
+    height: 0;
+    border-top: $base solid transparent;
+    border-bottom: $base solid transparent;
+    border-left: $altitude solid $color;
+    border-right: 0;
+  }
+}
+
