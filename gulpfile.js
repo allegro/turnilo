@@ -8,14 +8,12 @@ var laborer = require('laborer');
 gulp.task('style', laborer.taskStyle());
 gulp.task('icons', laborer.taskIcons());
 
-var dontCache = !process.env['DONT_CACHE'];
-var skipLibCheck = !process.env['DO_LIB_CHECK'];
-gulp.task('client:tsc', laborer.taskClientTypeScript({ cache: dontCache, declaration: true, skipLibCheck: skipLibCheck }));
-gulp.task('server:tsc', laborer.taskServerTypeScript({ cache: dontCache, declaration: true, skipLibCheck: skipLibCheck }));
+gulp.task('client:tsc', laborer.taskClientTypeScript({ dontCache: false, declaration: true, skipLibCheck: true }));
+gulp.task('server:tsc', laborer.taskServerTypeScript({ dontCache: false, declaration: true, skipLibCheck: true }));
 
-gulp.task('client:test', laborer.taskClientTest({reporter: 'progress'}));
-gulp.task('server:test', laborer.taskServerTest({reporter: 'progress'}));
-gulp.task('common:test', laborer.taskCommonTest({reporter: 'progress'}));
+gulp.task('client:test', ['client:tsc'], laborer.taskClientTest({reporter: 'progress'}));
+gulp.task('server:test', ['server:tsc'], laborer.taskServerTest({reporter: 'progress'}));
+gulp.task('common:test', ['client:tsc'], laborer.taskCommonTest({reporter: 'progress'}));
 
 gulp.task('client:bundle', laborer.taskClientPack());
 
@@ -54,7 +52,7 @@ gulp.task('watch', ['all-minus-bundle'], function() {
     gulp.watch(['./src/common/**/*.ts', './src/client/**/*.{ts,tsx}', './assets/icons/**'], ['client:tsc']);
   } else {
     gulp.watch(['./src/common/**/*.ts', './src/client/**/*.{ts,tsx}', './assets/icons/**'], function() {
-      runSequence('client:tsc', ['client:test', 'common:test', 'server:test']);
+      runSequence('client:tsc');
     });
   }
 

@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/yahoo/swiv.svg?branch=master)](https://travis-ci.org/yahoo/swiv)
-
 # Swiv
 
 Swiv is a web-based exploratory visualization UI for [Druid](https://github.com/druid-io/druid) built on top of 
@@ -7,6 +5,10 @@ Swiv is a web-based exploratory visualization UI for [Druid](https://github.com/
 
 Swiv is best used with [Druid](http://druid.io).
 Internal and external APIs may change with little notice.
+
+## Fork info
+
+This is a fork of: https://github.com/yahoo/swiv 
 
 ## Contribution
 
