@@ -8,8 +8,8 @@ var laborer = require('laborer');
 gulp.task('style', laborer.taskStyle());
 gulp.task('icons', laborer.taskIcons());
 
-gulp.task('client:tsc', laborer.taskClientTypeScript({ dontCache: false, declaration: true, skipLibCheck: true }));
-gulp.task('server:tsc', laborer.taskServerTypeScript({ dontCache: false, declaration: true, skipLibCheck: true }));
+gulp.task('client:tsc', laborer.taskClientTypeScript({ dontCache: false, declaration: true, skipLibCheck: true, sourcemaps: true }));
+gulp.task('server:tsc', laborer.taskServerTypeScript({ dontCache: false, declaration: true, skipLibCheck: true, sourcemaps: true }));
 
 gulp.task('client:test', ['client:tsc'], laborer.taskClientTest({reporter: 'progress'}));
 gulp.task('server:test', ['server:tsc'], laborer.taskServerTest({reporter: 'progress'}));
