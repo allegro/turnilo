@@ -38,6 +38,7 @@
     "js-yaml": "3.6.1",
     "logger-tracker": "0.0.23",
     "lz-string": "1.4.4",
+    "node-sass": "^4.7.1",
     "node-spawn-server": "1.0.1",
     "nopt": "3.0.6",
     "numeral": "1.5.3",
