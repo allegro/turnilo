@@ -1,8 +1,8 @@
 # Turnilo
 
 Turnilo is a business intelligence, data exploration and visualization web application for [Druid](http://druid.io/).
-Turnilo was previously known as [Pivot](https://github.com/implydata/pivot) which is currently available under commercial licence only.
-This is a fork of an stalled repository [Swiv](https://github.com/yahoo/swiv) 
+Turnilo is a fork of [Pivot](https://github.com/implydata/pivot) which is currently available under commercial licence only.
+This repository was forked from the stalled repository [Swiv](https://github.com/yahoo/swiv) 
 with the latest version of Pivot under Apache license.
 
 ## Motivation
