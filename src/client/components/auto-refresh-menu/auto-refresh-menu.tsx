@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./auto-refresh-menu.css');
+import './auto-refresh-menu.scss';
 
 import * as React from 'react';
 import { Duration, Timezone } from 'chronoshift';

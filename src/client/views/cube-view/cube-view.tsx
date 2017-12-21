@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./cube-view.css');
+import './cube-view.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

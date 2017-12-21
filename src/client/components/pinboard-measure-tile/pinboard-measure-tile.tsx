@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./pinboard-measure-tile.css');
+import './pinboard-measure-tile.scss';
 
 import * as React from 'react';
 import { Stage, Essence, DataCube, Filter, Dimension, Measure, SortOn } from '../../../common/models/index';

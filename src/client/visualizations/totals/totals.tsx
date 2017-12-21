@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./totals.css');
+import './totals.scss';
 
 import * as React from 'react';
 import { $, ply, Expression, Executor, Dataset } from 'swiv-plywood';

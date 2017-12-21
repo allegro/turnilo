@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./query-error.css');
+import './query-error.scss';
 
 import * as React from 'react';
 import { STRINGS } from '../../config/constants';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./side-drawer.css');
+import './side-drawer.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

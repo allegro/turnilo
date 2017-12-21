@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./cube-header-bar.css');
+import './cube-header-bar.scss';
 
 import * as React from 'react';
 import { immutableEqual } from "immutable-class";

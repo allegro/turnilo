@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./measures-tile.css');
+import './measures-tile.scss';
 
 import * as React from 'react';
 

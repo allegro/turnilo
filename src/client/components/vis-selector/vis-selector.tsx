@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./vis-selector.css');
+import './vis-selector.scss';
 
 import * as React from 'react';
 import { findParentWithClass, classNames } from '../../utils/dom/dom';

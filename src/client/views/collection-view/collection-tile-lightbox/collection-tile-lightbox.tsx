@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./collection-tile-lightbox.css');
+import './collection-tile-lightbox.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

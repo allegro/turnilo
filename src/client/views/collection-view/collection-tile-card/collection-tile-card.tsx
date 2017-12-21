@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./collection-tile-card.css');
+import './collection-tile-card.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

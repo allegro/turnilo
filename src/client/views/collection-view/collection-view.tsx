@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./collection-view.css');
+import './collection-view.scss';
 
 import * as React from 'react';
 import * as Q from 'q';

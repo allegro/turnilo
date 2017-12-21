@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./nav-list.css');
+import './nav-list.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';

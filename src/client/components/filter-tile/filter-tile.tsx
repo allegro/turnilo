@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./filter-tile.css');
+import './filter-tile.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

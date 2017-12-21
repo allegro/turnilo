@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./shpitz.css');
+import './shpitz.scss';
 
 import * as React from 'react';
 import { classNames } from '../../utils/dom/dom';

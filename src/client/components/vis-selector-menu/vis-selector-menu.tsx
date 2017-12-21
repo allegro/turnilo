@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./vis-selector-menu.css');
+import './vis-selector-menu.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

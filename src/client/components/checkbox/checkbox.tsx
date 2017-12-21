@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./checkbox.css');
+import './checkbox.scss';
 
 import * as React from 'react';
 import { SvgIcon } from '../svg-icon/svg-icon';

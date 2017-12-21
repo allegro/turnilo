@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./no-data-view.css');
+import './no-data-view.scss';
 
 import * as React from 'react';
 import { User, Customization, AppSettings } from '../../../common/models/index';

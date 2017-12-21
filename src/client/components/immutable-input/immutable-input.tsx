@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./immutable-input.css');
+import './immutable-input.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

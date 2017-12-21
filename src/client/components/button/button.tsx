@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./button.css');
+import  './button.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';

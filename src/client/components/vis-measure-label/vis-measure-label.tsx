@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./vis-measure-label.css');
+import './vis-measure-label.scss';
 
 import * as React from 'react';
 import { Datum } from 'swiv-plywood';

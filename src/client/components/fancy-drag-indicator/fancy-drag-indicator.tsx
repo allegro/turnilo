@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./fancy-drag-indicator.css');
+import './fancy-drag-indicator.scss';
 
 import * as React from 'react';
 import { SvgIcon } from '../svg-icon/svg-icon';

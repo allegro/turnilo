@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./table.css');
+import './table.scss';
 
 import { List } from 'immutable';
 import * as React from 'react';

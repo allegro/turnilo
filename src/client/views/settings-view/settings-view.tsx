@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./settings-view.css');
+import './settings-view.scss';
 
 import * as React from 'react';
 import * as Q from 'q';

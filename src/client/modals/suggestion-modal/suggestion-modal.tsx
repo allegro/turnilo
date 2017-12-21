@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./suggestion-modal.css');
+import './suggestion-modal.scss';
 import * as React from 'react';
 import { Button, Modal } from '../../components/index';
 import { List } from 'immutable';

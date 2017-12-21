@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./user-menu.css');
+import './user-menu.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';

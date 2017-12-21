@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./settings-menu.css');
+import './settings-menu.scss';
 
 import * as React from 'react';
 import { Timezone } from 'chronoshift';

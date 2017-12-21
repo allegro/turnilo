@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./nav-logo.css');
+import './nav-logo.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

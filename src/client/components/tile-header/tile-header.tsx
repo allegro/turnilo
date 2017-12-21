@@ -15,7 +15,7 @@
  */
 
 import {classNames} from '../../utils/dom/dom';
-require('./tile-header.css');
+import './tile-header.scss';
 
 import * as React from 'react';
 import { SvgIcon } from '../svg-icon/svg-icon';

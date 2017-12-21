@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./dimension-actions-menu.css');
+import './dimension-actions-menu.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';

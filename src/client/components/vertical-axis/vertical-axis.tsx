@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./vertical-axis.css');
+import './vertical-axis.scss';
 
 import * as React from 'react';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';

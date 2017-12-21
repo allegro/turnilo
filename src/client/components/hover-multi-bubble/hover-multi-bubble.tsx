@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./hover-multi-bubble.css');
+import './hover-multi-bubble.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';

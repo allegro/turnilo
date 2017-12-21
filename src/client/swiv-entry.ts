@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./swiv-entry.css');
+import './swiv-entry.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

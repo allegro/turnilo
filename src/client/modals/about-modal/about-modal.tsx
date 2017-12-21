@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./about-modal.css');
+import './about-modal.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';

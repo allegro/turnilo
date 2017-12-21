@@ -1,4 +1,4 @@
-require('./name-description-modal.css');
+import './name-description-modal.scss';
 
 import * as React from 'react';
 

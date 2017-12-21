@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./collection-overview.css');
+import './collection-overview.scss';
 
 import * as React from 'react';
 import { Collection, CollectionTile, Timekeeper } from '../../../../common/models/index';

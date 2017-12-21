@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./filter-options-dropdown.css');
+import './filter-options-dropdown.scss';
 
 import * as React from 'react';
 import { STRINGS } from '../../config/constants';

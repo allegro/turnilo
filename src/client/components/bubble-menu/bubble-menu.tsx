@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./bubble-menu.css');
+import './bubble-menu.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';
@@ -52,7 +52,7 @@ export interface BubbleMenuState {
 }
 
 export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState> {
-  static defaultProps = {
+  public static defaultProps: Partial<BubbleMenuProps> = {
     align: 'center'
   };
 

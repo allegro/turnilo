@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./time-filter-menu.css');
+import './time-filter-menu.scss';
 
 import * as React from "react";
 import { Timezone, second, day } from "chronoshift";

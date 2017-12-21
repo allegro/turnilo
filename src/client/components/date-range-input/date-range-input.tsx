@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./date-range-input.css');
+import './date-range-input.scss';
 
 import * as React from 'react';
 import { Timezone, WallTime } from 'chronoshift';

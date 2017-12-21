@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./settings-header-bar.css');
+import './settings-header-bar.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../../common/utils/general/general';

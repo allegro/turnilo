@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./data-cube-seed-modal.css');
+import './data-cube-seed-modal.scss';
 
 import * as React from 'react';
 import { DataCube, Cluster } from "../../../common/models/index";

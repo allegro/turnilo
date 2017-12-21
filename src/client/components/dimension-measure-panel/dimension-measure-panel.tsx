@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./dimension-measure-panel.css');
+import './dimension-measure-panel.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';

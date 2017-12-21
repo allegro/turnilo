@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./golden-center.css');
+import './golden-center.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

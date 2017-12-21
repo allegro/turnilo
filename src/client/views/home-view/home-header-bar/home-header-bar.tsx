@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./home-header-bar.css');
+import './home-header-bar.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../../common/utils/general/general';

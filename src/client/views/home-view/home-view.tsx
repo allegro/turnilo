@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./home-view.css');
+import './home-view.scss';
 
 import * as React from 'react';
 import * as Q from 'q';

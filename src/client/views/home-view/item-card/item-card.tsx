@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./item-card.css');
+import './item-card.scss';
 
 import * as React from 'react';
 import { STRINGS } from '../../../config/constants';

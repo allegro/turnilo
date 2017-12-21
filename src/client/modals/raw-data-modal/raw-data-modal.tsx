@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./raw-data-modal.css');
+import './raw-data-modal.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

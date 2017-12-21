@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./string-filter-menu.css');
+import './string-filter-menu.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';

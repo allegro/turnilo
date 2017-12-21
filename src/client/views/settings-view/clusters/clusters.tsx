@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./clusters.css');
+import './clusters.scss';
 
 import * as React from 'react';
 

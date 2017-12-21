@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./clearable-input.css');
+import './clearable-input.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

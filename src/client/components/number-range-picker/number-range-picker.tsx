@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./number-range-picker.css');
+import './number-range-picker.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./collection-header-bar.css');
+import './collection-header-bar.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../../common/utils/general/general';

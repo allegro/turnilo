@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./body-portal.css');
+import './body-portal.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

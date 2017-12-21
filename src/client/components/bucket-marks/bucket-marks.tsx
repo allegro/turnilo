@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./bucket-marks.css');
+import './bucket-marks.scss';
 
 import * as React from 'react';
 import { PlywoodValue } from 'swiv-plywood';

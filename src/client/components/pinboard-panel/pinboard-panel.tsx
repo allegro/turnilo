@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./pinboard-panel.css');
+import './pinboard-panel.scss';
 
 import * as React from 'react';
 import { $, Expression, SortAction } from 'swiv-plywood';
