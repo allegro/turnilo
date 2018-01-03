@@ -29,7 +29,7 @@ export interface GoldenCenterState {
 }
 
 export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCenterState> {
-  static defaultProps = {
+  static defaultProps: Partial<GoldenCenterProps>  = {
     topRatio: 0.618 / 1.618,
     minPadding: 50
   };

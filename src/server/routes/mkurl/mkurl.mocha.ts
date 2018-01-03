@@ -23,6 +23,7 @@ import * as bodyParser from 'body-parser';
 
 import { AppSettings } from '../../../common/models/index';
 import { SwivRequest } from '../../utils/index';
+import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
 
 import { AppSettingsMock } from '../../../common/models/app-settings/app-settings.mock';
 
@@ -36,14 +37,14 @@ var appSettings: AppSettings = AppSettingsMock.wikiOnlyWithExecutor();
 app.use((req: SwivRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = '0.9.4';
-  req.getSettings = (dataCubeOfInterest?: string) => Q(appSettings);
+  req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Q(appSettings);
   next();
 });
 
 app.use('/', mkurlRouter);
 
 describe('mkurl router', () => {
-  it('gets a simple url back', (testComplete) => {
+  it('gets a simple url back', (testComplete:any) => {
     supertest(app)
       .post('/')
       .set('Content-Type', "application/json")
@@ -70,7 +71,7 @@ describe('mkurl router', () => {
       }, testComplete);
   });
 
-  it('gets a complex url back', (testComplete) => {
+  it('gets a complex url back', (testComplete:any) => {
     supertest(app)
       .post('/')
       .set('Content-Type', "application/json")
@@ -96,7 +97,7 @@ describe('mkurl router', () => {
       }, testComplete);
   });
 
-  it('gets a url filtered on article name back', (testComplete) => {
+  it('gets a url filtered on article name back', (testComplete:any) => {
     supertest(app)
       .post('/')
       .set('Content-Type', "application/json")
@@ -122,7 +123,7 @@ describe('mkurl router', () => {
       }, testComplete);
   });
 
-  it('gets a url filtered on match back', (testComplete) => {
+  it('gets a url filtered on match back', (testComplete:any) => {
     supertest(app)
       .post('/')
       .set('Content-Type', "application/json")
@@ -167,7 +168,7 @@ describe('mkurl router', () => {
       }, testComplete);
   });
 
-  it('gets a url filtered on contains', (testComplete) => {
+  it('gets a url filtered on contains', (testComplete:any) => {
     supertest(app)
       .post('/')
       .set('Content-Type', "application/json")
@@ -213,7 +214,7 @@ describe('mkurl router', () => {
       }, testComplete);
   });
 
-  it('gets a url filtered on set contains', (testComplete) => {
+  it('gets a url filtered on set contains', (testComplete:any) => {
     supertest(app)
       .post('/')
       .set('Content-Type', "application/json")
@@ -259,7 +260,7 @@ describe('mkurl router', () => {
       }, testComplete);
   });
 
-  it('gets a url with split on time back', (testComplete) => {
+  it('gets a url with split on time back', (testComplete:any) => {
     supertest(app)
       .post('/')
       .set('Content-Type', "application/json")

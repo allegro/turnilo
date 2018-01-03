@@ -52,7 +52,7 @@ export interface BubbleMenuState {
 }
 
 export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState> {
-  public static defaultProps: Partial<BubbleMenuProps> = {
+  static defaultProps: Partial<BubbleMenuProps> = {
     align: 'center'
   };
 

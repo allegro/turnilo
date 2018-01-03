@@ -18,6 +18,7 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
 import { Dimension, DimensionJS } from './dimension';
+import { GranularityJS } from "../granularity/granularity";
 
 describe('Dimension', () => {
   it('is an immutable class', () => {
@@ -126,7 +127,8 @@ describe('Dimension', () => {
         granularities: [false, true, true, false, false]
       };
 
-      expect(() => { Dimension.fromJS(dimJS2); }).to.throw("input should be of type number, string, or action");
+
+      expect(() => { Dimension.fromJS(dimJS2 as DimensionJS); }).to.throw("input should be of type number, string, or action");
 
     });
 

@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 import { $, Expression } from 'swiv-plywood';
 
 import { mockRequireEnsure, mockReactComponent } from '../../utils/test-utils/index';

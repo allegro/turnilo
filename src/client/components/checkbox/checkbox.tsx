@@ -35,7 +35,7 @@ export interface CheckboxState {
 
 export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
 
-  static defaultProps = {
+  static defaultProps: Partial<CheckboxProps> = {
     type: 'check'
   };
 

@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { mockRequireEnsure } from '../../utils/test-utils/index';
 
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 
 import { EssenceMock } from '../../../common/models/mocks';
 

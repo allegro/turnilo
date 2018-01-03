@@ -72,7 +72,8 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
     return new ServerSettings(BaseImmutable.jsToValue(ServerSettings.PROPERTIES, parameters));
   }
 
-  static PROPERTIES: Property[] = [
+  // TODO, back to: static PROPERTIES: Property[] = [
+  static PROPERTIES: any[] = [
     { name: 'port', defaultValue: ServerSettings.DEFAULT_PORT, validate: BaseImmutable.ensure.number },
     { name: 'serverHost', defaultValue: null },
     { name: 'serverRoot', defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },

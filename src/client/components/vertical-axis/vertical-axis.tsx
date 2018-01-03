@@ -36,7 +36,7 @@ export interface VerticalAxisState {
 }
 
 export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxisState> {
-  static defaultProps = {
+  static defaultProps: Partial<VerticalAxisProps> = {
     topLineExtend: 0
   };
 

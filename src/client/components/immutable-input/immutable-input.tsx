@@ -47,7 +47,7 @@ export interface ImmutableInputState {
 }
 
 export class ImmutableInput extends React.Component<ImmutableInputProps, ImmutableInputState> {
-  static defaultProps = {
+  static defaultProps: Partial<ImmutableInputProps> = {
     type: 'text',
     stringToValue: String,
     valueToString: (value: any) => value ? String(value) : ''

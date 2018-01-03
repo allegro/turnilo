@@ -112,3 +112,7 @@ if (needsPatch) {
     DragDropPolyfill.Initialize({});
   }, 'ios-drag-drop');
 }
+
+if (process.env.NODE_ENV !== 'production' && module.hot) {
+  module.hot.accept();
+}

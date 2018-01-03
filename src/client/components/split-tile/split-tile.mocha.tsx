@@ -23,7 +23,7 @@ import { mockRequireEnsure } from '../../utils/test-utils/index';
 
 import { EssenceMock } from '../../../common/models/mocks';
 
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 
 
 describe('SplitTile', () => {

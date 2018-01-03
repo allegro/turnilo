@@ -17,6 +17,7 @@
 import { Router, Request, Response } from 'express';
 import { $, Expression, RefExpression, External, Datum, Dataset, PlywoodValue, TimeRange, basicExecutorFactory, Executor, AttributeJSs } from 'swiv-plywood';
 import { Timezone, WallTime, Duration } from 'chronoshift';
+import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
 
 import { SwivRequest } from '../../utils/index';
 
@@ -57,8 +58,8 @@ router.post('/', (req: SwivRequest, res: Response) => {
     return;
   }
 
-  req.getSettings(dataCube) // later: , settingsVersion)
-    .then((appSettings) => {
+  req.getSettings(<GetSettingsOptions>{ dataCubeOfInterest: dataCube }) // later: , settingsVersion)
+    .then((appSettings: any) => {
       // var settingsBehind = false;
       // if (appSettings.getVersion() < settingsVersion) {
       //   settingsBehind = true;

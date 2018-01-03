@@ -32,7 +32,7 @@ export interface BodyPortalState {
 }
 
 export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
-  static defaultProps = {
+  public static defaultProps: Partial<BodyPortalProps> = {
     disablePointerEvents: false,
     isAboveAll: false
   };

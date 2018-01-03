@@ -21,7 +21,7 @@ import * as ReactDOM from 'react-dom/server';
 
 import '../../utils/test-utils/index';
 
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 
 import { $, Expression } from 'swiv-plywood';
 import { SvgIcon } from './svg-icon';

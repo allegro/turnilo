@@ -20,7 +20,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 import { $, Expression } from 'swiv-plywood';
 
 import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
@@ -202,7 +202,7 @@ describe('Router', () => {
     });
 
 
-    it('initializes to the location', (done) => {
+    it('initializes to the location', (done:any) => {
       // Timeout because the router waits for a bit before initializing
       setTimeout(() => {
         expect((findNode(component) as any).className, 'should contain class').to.equal('bar-class');
@@ -289,7 +289,7 @@ describe('Router', () => {
     });
 
 
-    it('defaults to the first route', (done) => {
+    it('defaults to the first route', (done:any) => {
       // Timeout because the router waits for a bit before initializing
       setTimeout(() => {
         isActiveRoute('#root/foo');

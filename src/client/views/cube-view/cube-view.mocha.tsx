@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { mockRequireEnsure, mockReactComponent } from '../../utils/test-utils/index';
 
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 
 import { DataCubeMock, TimekeeperMock } from '../../../common/models/mocks';
 
@@ -70,7 +70,7 @@ describe('CubeView', () => {
     var stub = sinon.stub(localStorage, "get");
     stub.withArgs('is-multi-measure').returns(undefined);
 
-    var initialCubeView = TestUtils.renderIntoDocument(
+    var initialCubeView:any = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
         timekeeper={TimekeeperMock.fixed()}
@@ -84,7 +84,7 @@ describe('CubeView', () => {
     stub = sinon.stub(localStorage, "get");
     stub.withArgs('is-multi-measure').returns(true);
 
-    var wikiCubeView = TestUtils.renderIntoDocument(
+    var wikiCubeView:any = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
         timekeeper={TimekeeperMock.fixed()}
@@ -99,7 +99,7 @@ describe('CubeView', () => {
     stub = sinon.stub(localStorage, "get");
     stub.withArgs('is-multi-measure').returns(false);
 
-    var wikiCubeView2 = TestUtils.renderIntoDocument(
+    var wikiCubeView2:any = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
         timekeeper={TimekeeperMock.fixed()}

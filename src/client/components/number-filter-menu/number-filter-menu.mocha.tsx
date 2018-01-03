@@ -16,7 +16,7 @@
 
 import { expect } from 'chai';
 import * as React from 'react';
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 import { EssenceMock, TimekeeperMock, DimensionMock, StageMock } from '../../../common/models/mocks';
 
 import { findDOMNode } from '../../utils/test-utils/index';

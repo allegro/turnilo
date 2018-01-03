@@ -100,6 +100,41 @@ if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
   }));
 }
 
+
+
+// development error handler and HMR
+
+if (app.get('env') === 'development') { // NODE_ENV
+  // add hot module replacement
+
+  const webpack = require('webpack');
+  const webpackConfig = require('../../config/webpack.dev');
+  const webpackDevMiddleware = require("webpack-dev-middleware");
+  const webpackHotMiddleware = require("webpack-hot-middleware");
+  const webpackCompiler = webpack(webpackConfig);
+
+  app.use(webpackDevMiddleware(webpackCompiler, {
+    hot: true,
+    noInfo: true,
+    publicPath: webpackConfig.output.publicPath
+  }));
+
+  app.use(webpackHotMiddleware(webpackCompiler, {
+    log: console.log,
+    path: '/__webpack_hmr'
+  }));
+
+  // error handlers
+  // will print stacktrace
+  app.use((err: any, req: Request, res: Response, next: Function) => {
+    LOGGER.error(`Server Error: ${err.message}`);
+    LOGGER.error(err.stack);
+    res.status(err.status || 500);
+    res.send(errorLayout({ version: VERSION, title: 'Error' }, err.message, err));
+  });
+
+}
+
 addRoutes('/health', healthRoutes);
 
 addRoutes('/', express.static(path.join(__dirname, '../../build/public')));
@@ -181,18 +216,6 @@ app.use((req: Request, res: Response, next: Function) => {
   res.redirect('/');
 });
 
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') { // NODE_ENV
-  app.use((err: any, req: Request, res: Response, next: Function) => {
-    LOGGER.error(`Server Error: ${err.message}`);
-    LOGGER.error(err.stack);
-    res.status(err.status || 500);
-    res.send(errorLayout({ version: VERSION, title: 'Error' }, err.message, err));
-  });
-}
 
 // production error handler
 // no stacktraces leaked to user

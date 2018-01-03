@@ -56,7 +56,7 @@ export interface CubeHeaderBarState {
 
 export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeaderBarState> {
   public mounted: boolean;
-  private autoRefreshTimer: NodeJS.Timer;
+  private autoRefreshTimer: number;
 
   constructor() {
     super();
@@ -110,7 +110,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     // Make new timer
     var { refreshMaxTime } = this.props;
     if (refreshMaxTime && rate) {
-      this.autoRefreshTimer = setInterval(() => {
+      this.autoRefreshTimer = window.setInterval(() => {
         refreshMaxTime();
       }, rate.getCanonicalLength());
     }
