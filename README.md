@@ -57,7 +57,7 @@ npm run start -- --examples
 Next connect Turnilo to Druid cluster by simply pointing it to broker host:
 
 ```
-npm run start -- --druid your.druid.broker.host:8082
+npm run start -- --druid your.druid.broker.host (default to 8082)
 ```
 
 Turnilo will automatically introspect your Druid cluster and figure out datasets.

@@ -19,9 +19,6 @@ import * as TestUtils from 'react-dom/test-utils';
 import { BodyPortal } from '../../components/body-portal/body-portal';
 
 export function findDOMNode(element: __React.Component<any, any> | Element ): Element {
-/*  if(element instanceof Element) {
-    return Element;
-  }*/
   var portal: any = TestUtils.scryRenderedComponentsWithType(element, BodyPortal)[0];
   return portal ? portal.target.childNodes[0] : ReactDOM.findDOMNode(element);
 }

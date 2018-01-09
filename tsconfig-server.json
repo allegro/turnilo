@@ -18,8 +18,10 @@
     "types" : ["node", "express", "webpack-env"]
   },
   "include": [
-    "src/client/**/*.ts",
-    "src/client/**/*.tsx",
+    "src/server/**/*.ts",
+    "src/server/**/*.tsx",
+    "src/common/**/*.ts",
+    "src/common/**/*.tsx",
     "typings/**/*.d.ts"
   ]
 }

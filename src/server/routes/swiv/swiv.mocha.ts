@@ -38,7 +38,7 @@ app.use((req: SwivRequest, res: express.Response, next: Function) => {
   next();
 });
 
-app.use('/', swivRouter);
+//app.use('/', swivRouter);
 
 describe('swiv router', () => {
   it('does a query (value)', (testComplete:any) => {

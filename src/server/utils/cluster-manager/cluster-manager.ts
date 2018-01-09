@@ -73,11 +73,11 @@ export class ClusterManager {
   public requestDecoratorModule: DruidRequestDecoratorModule;
 
   private sourceListRefreshInterval: number = 0;
-  private sourceListRefreshTimer: any = null; // TODO check why there was an error for the NodeJS.Timer type
+  private sourceListRefreshTimer: NodeJS.Timer = null;
   private sourceReintrospectInterval: number = 0;
-  private sourceReintrospectTimer: any = null; // TODO check why there was an error for the NodeJS.Timer type
+  private sourceReintrospectTimer: NodeJS.Timer = null;
 
-  private initialConnectionTimer: any = null; /// TODO check why there was an error for the NodeJS.Timer type
+  private initialConnectionTimer: NodeJS.Timer = null;
 
   constructor(cluster: Cluster, options: ClusterManagerOptions) {
     if (!cluster) throw new Error('must have cluster');

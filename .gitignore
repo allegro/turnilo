@@ -14,3 +14,4 @@
 /config-test.yaml
 /*.sublime-*
 /dont-commit-*
+package-lock.json

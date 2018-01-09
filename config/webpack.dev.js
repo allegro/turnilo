@@ -2,6 +2,7 @@ var path = require("path");
 var webpack = require('webpack');
 var hotMiddlewareScript = 'webpack-hot-middleware/client';
 
+
 module.exports = {
   entry: {
     'swiv-entry': [hotMiddlewareScript, './src/client/swiv-entry.ts']
@@ -12,7 +13,7 @@ module.exports = {
     chunkFilename: "[name].[hash].js",
     publicPath: '/'
   },
-  devtool: "#source-map",
+  devtool: "source-map",
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
