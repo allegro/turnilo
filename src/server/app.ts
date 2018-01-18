@@ -111,18 +111,21 @@ if (app.get('env') === 'development') { // NODE_ENV
   const webpackConfig = require('../../config/webpack.dev');
   const webpackDevMiddleware = require("webpack-dev-middleware");
   const webpackHotMiddleware = require("webpack-hot-middleware");
-  const webpackCompiler = webpack(webpackConfig);
 
-  app.use(webpackDevMiddleware(webpackCompiler, {
-    hot: true,
-    noInfo: true,
-    publicPath: webpackConfig.output.publicPath
-  }));
+  if(webpack && webpackDevMiddleware && webpackHotMiddleware) {
+    const webpackCompiler = webpack(webpackConfig);
 
-  app.use(webpackHotMiddleware(webpackCompiler, {
-    log: console.log,
-    path: '/__webpack_hmr'
-  }));
+    app.use(webpackDevMiddleware(webpackCompiler, {
+      hot: true,
+      noInfo: true,
+      publicPath: webpackConfig.output.publicPath
+    }));
+
+    app.use(webpackHotMiddleware(webpackCompiler, {
+      log: console.log,
+      path: '/__webpack_hmr'
+    }));
+  }
 
   // error handlers
   // will print stacktrace

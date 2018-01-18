@@ -34,7 +34,6 @@ Make sure you have latest [node](https://nodejs.org/) version (>= 8.x.x) install
 Install project dependencies:
 
 ```
-npm install -g typescript
 npm install
 ```
 
