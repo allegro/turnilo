@@ -1,4 +1,0 @@
-#!/bin/bash -eu
-
-./travis-test
-mocha test/datazoo

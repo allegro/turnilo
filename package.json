@@ -10,10 +10,10 @@
     "visualization",
     "druid"
   ],
-  "author": {
-    "name": "Vadim Ogievetsky",
-    "url": "http://vadim.ogievetsky.com"
-  },
+  "contributors": [
+    "Vadim Ogievetsky <vadim@ogievetsky.com>",
+    "Tomasz Rzeznik <rzeznik.tom@gmail.com>"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/allegro/turnilo.git"
