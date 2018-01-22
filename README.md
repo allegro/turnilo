@@ -61,6 +61,37 @@ npm run start -- --druid your.druid.broker.host (default to 8082)
 
 Turnilo will automatically introspect your Druid cluster and figure out datasets.
 
+## Running tests
+
+Application has three ability to call unit tests:
+
+client side part
+```
+npm run test:client
+```
+
+common part (server/client side)
+```
+npm run test:common
+```
+
+server side part
+```
+npm run test:server
+```
+
+To run all unit test client, common, server
+```
+npm run test
+```
+
 ## License
 
 **Turnilo** is published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+
+## Debugging in WebStorm
+
+In WebStorm open "Run/Debug Configurations", click "Add New Configuration". Next choose "JavaScript Debug", set URL property to "localhost:9090" click OK.
+
+More information you can find [here](https://www.jetbrains.com/help/webstorm/debugging-typescript.html)
