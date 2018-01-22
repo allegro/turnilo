@@ -32,17 +32,17 @@
     "turnilo": "./bin/swiv"
   },
   "scripts": {
-    "test": "npm run test:client | npm run test:common | npm run test:server",
+    "test": "npm run test:client && npm run test:common && npm run test:server",
     "test:common": "node_modules/.bin/mocha --require ts-node/register --require ignore-styles src/common/**/*.mocha.{ts,tsx}",
     "test:client": "node_modules/.bin/mocha --require ts-node/register --require ignore-styles src/client/**/*.mocha.{ts,tsx}",
+    "test:t": "node_modules/.bin/mocha --require ts-node/register --require ignore-styles src/common/models/data-cube/**/*.mocha.{ts,tsx}",
     "test:server": "node_modules/.bin/mocha --require ts-node/register src/server/**/*.mocha.ts",
     "start": "./bin/swiv",
     "start-prod": "NODE_ENV=production ./bin/swiv",
     "build": "npm run clean | npm run tsc -- -p tsconfig-server.json | webpack --config config/webpack.dev.js",
     "build:prod": "npm run clean | npm run tsc -- -p tsconfig-server.json | webpack -p --config config/webpack.prod.js",
     "clean": "rimraf build/*",
-    "tsc": "node_modules/.bin/tsc",
-    "postinstall": "npm run build"
+    "tsc": "node_modules/.bin/tsc"
   },
   "dependencies": {
     "body-parser": "1.18.2",

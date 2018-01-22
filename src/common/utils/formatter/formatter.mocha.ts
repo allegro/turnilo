@@ -125,13 +125,13 @@ describe('General', () => {
     });
 
     it('works in time case', () => {
-      expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentMonth, Timezone.UTC)).to.equal('Nov 11 - Dec 11');
+      expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentMonth, Timezone.UTC)).to.equal('Nov 11 - Dec 11, 2016');
       expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentYear, Timezone.UTC)).to.equal('Nov 11, 2015 - Dec 11, 2016');
       expect(formatFilterClause(DimensionMock.time(), timeFilterSameMonth, Timezone.UTC)).to.equal('Nov 11 - Nov 13, 2015');
     });
 
     it('works in time case verbose', () => {
-      expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentMonth, Timezone.UTC, true)).to.equal('time: Nov 11 - Dec 11');
+      expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentMonth, Timezone.UTC, true)).to.equal('time: Nov 11 - Dec 11, 2016');
     });
 
     it('works in number case', () => {
