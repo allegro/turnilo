@@ -20,7 +20,7 @@ import '../../utils/test-utils/index';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 import { EssenceMock, TimekeeperMock, StageMock } from '../../../common/models/mocks';
 
 import { LineChart } from './line-chart';

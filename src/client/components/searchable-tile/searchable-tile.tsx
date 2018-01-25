@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./searchable-tile.css');
+import './searchable-tile.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

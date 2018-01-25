@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./cluster-seed-modal.css');
+import './cluster-seed-modal.scss';
 
 import * as React from 'react';
 import { SupportedType, Cluster } from "../../../common/models/cluster/cluster";

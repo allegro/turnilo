@@ -20,7 +20,7 @@ import * as ReactDOM from 'react-dom';
 
 import '../../utils/test-utils/index';
 
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 
 import { Dropdown } from './dropdown';
 

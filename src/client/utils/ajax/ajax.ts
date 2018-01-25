@@ -98,7 +98,7 @@ export class Ajax {
             throw new Error(xhr.responseText || 'connection fail');
           }
         }
-      });
+      }) as any;
   }
 
   static queryUrlExecutorFactory(name: string, url: string): Executor {

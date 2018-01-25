@@ -31,17 +31,16 @@ this is how Turnilo emerged.
 
 Make sure you have latest [node](https://nodejs.org/) version (>= 8.x.x) installed.
 
-Install project dependencies and [gulp](https://gulpjs.com/):
+Install project dependencies:
 
 ```
 npm install
-npm -g install gulp
 ```
 
 Build the project:
 
 ```
-gulp
+npm run build
 ```
 
 ### Run Wikipedia examples
@@ -49,7 +48,7 @@ gulp
 Start off by running an example with Wikipedia page editions dataset and open [http://localhost:9090/](http://localhost:9090/):
 
 ```
-./bin/swiv --examples
+npm run start -- --examples
 ```
 
 ### Run with Druid
@@ -57,11 +56,42 @@ Start off by running an example with Wikipedia page editions dataset and open [h
 Next connect Turnilo to Druid cluster by simply pointing it to broker host:
 
 ```
-./bin/swiv --druid your.druid.broker.host:8082
+npm run start -- --druid your.druid.broker.host (default to 8082)
 ```
 
 Turnilo will automatically introspect your Druid cluster and figure out datasets.
 
+## Running tests
+
+Application has three ability to call unit tests:
+
+client side part
+```
+npm run test:client
+```
+
+common part (server/client side)
+```
+npm run test:common
+```
+
+server side part
+```
+npm run test:server
+```
+
+To run all unit test client, common, server
+```
+npm run test
+```
+
 ## License
 
 **Turnilo** is published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+
+## Debugging in WebStorm
+
+In WebStorm open "Run/Debug Configurations", click "Add New Configuration". Next choose "JavaScript Debug", set URL property to "localhost:9090" click OK.
+
+More information you can find [here](https://www.jetbrains.com/help/webstorm/debugging-typescript.html)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./notification-card.css');
+import './notification-card.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

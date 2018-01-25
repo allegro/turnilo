@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./immutable-list.css');
+import './immutable-list.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

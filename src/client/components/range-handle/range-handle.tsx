@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./range-handle.css');
+import './range-handle.scss';
 
 import * as React from 'react';
 import { getXFromEvent, classNames, clamp } from '../../utils/dom/dom';

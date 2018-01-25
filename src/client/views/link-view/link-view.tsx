@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./link-view.css');
+import './link-view.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

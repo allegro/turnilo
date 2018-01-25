@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./simple-table.css');
+import './simple-table.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./immutable-dropdown.css');
+import './immutable-dropdown.scss';
 
 import { ImmutableUtils } from '../../../common/utils/index';
 

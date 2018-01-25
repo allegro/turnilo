@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./cube-view.css');
+import './cube-view.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -78,7 +78,7 @@ const MIN_PANEL_WIDTH = 240;
 const MAX_PANEL_WIDTH = 400;
 
 export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
-  static defaultProps = {
+  static defaultProps: Partial<CubeViewProps> = {
     maxFilters: 20,
     maxSplits: 3
   };

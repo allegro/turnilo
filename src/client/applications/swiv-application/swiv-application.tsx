@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./swiv-application.css');
+import './swiv-application.scss';
 
 import * as React from 'react';
 import * as Q from 'q';

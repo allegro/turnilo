@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./dimension-list-tile.css');
+import  './dimension-list-tile.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../common/utils/general/general';

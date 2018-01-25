@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./simple-list.css');
+import './simple-list.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

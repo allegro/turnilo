@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./data-cube-edit.css');
+import './data-cube-edit.scss';
 
 import * as React from 'react';
 import { List } from 'immutable';

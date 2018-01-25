@@ -208,7 +208,7 @@ export function granularityFromJS(input: GranularityJS): Granularity {
     if (!hasOwnProperty(input, 'action')) {
       throw new Error(`could not recognize object as action`);
     }
-    return (Action.fromJS(input as GranularityJS) as Granularity);
+    return (Action.fromJS(input as ActionJS) as Granularity);
   }
   throw new Error(`input should be of type number, string, or action`);
 }

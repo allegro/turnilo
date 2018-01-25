@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./base-visualization.css');
+import './base-visualization.scss';
 
 import * as React from 'react';
 import { $, ply, Expression, Dataset } from 'swiv-plywood';

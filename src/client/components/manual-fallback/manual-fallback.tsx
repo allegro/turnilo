@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./manual-fallback.css');
+import './manual-fallback.scss';
 
 import * as React from 'react';
 import { Clicker, Essence, VisStrategy, Resolution } from '../../../common/models/index';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./date-range-picker.css');
+import './date-range-picker.scss';
 
 import * as React from 'react';
 import { Timezone, Duration, second, minute, hour, day, week, month, year } from 'chronoshift';

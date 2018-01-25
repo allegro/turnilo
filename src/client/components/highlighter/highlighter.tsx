@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./highlighter.css');
+import './highlighter.scss';
 
 import * as React from 'react';
 import { Timezone, Duration } from 'chronoshift';

@@ -19,6 +19,7 @@ import { Timezone, WallTime, Duration } from 'chronoshift';
 import { Essence } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests';
 import { SwivRequest } from '../../utils/index';
+import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
 
 var router = Router();
 
@@ -47,8 +48,8 @@ router.post('/', (req: SwivRequest, res: Response) => {
     return;
   }
 
-  req.getSettings(dataCube)
-    .then((appSettings) => {
+  req.getSettings(<GetSettingsOptions>{ dataCubeOfInterest: dataCube })
+    .then((appSettings: any) => {
       var myDataCube = appSettings.getDataCube(dataCube);
       if (!myDataCube) {
         res.status(400).send({ error: 'unknown data cube' });

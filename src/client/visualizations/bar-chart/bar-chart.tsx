@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./bar-chart.css');
+import './bar-chart.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

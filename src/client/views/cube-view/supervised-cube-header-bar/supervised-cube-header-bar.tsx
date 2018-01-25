@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./supervised-cube-header-bar.css');
+import './supervised-cube-header-bar.scss';
 
 import * as React from 'react';
 import { Duration, Timezone } from 'chronoshift';

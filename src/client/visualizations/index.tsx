@@ -24,7 +24,8 @@ import { LineChart } from './line-chart/line-chart';
 import { BarChart } from './bar-chart/bar-chart';
 import { Geo } from './geo/geo';
 
-const VIS_COMPONENTS: Array<typeof BaseVisualization> = [
+// TODO, back to: const VIS_COMPONENTS: Array<typeof BaseVisualization> = [
+const VIS_COMPONENTS: Array<any> = [
   Totals,
   Table,
   LineChart,

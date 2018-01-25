@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./line-chart.css');
+import './line-chart.scss';
 
 import { immutableEqual } from 'immutable-class';
 import * as React from 'react';

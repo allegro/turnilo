@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./measure-modal.css');
+import './measure-modal.scss';
 
 import * as React from 'react';
 import { classNames, enterKey } from '../../utils/dom/dom';

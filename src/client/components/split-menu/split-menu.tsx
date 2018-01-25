@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./split-menu.css');
+import './split-menu.scss';
 
 import * as React from "react";
 import { Timezone, Duration } from "chronoshift";

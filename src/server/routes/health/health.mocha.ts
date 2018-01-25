@@ -24,7 +24,7 @@ var app = express();
 app.use('/', healthRouter);
 
 describe('health router', () => {
-  it('gets a 200', (testComplete) => {
+  it('gets a 200', (testComplete:any) => {
     supertest(app)
       .get('/')
       .expect(200, testComplete);

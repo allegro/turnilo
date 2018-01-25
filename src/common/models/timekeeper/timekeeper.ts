@@ -45,10 +45,12 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
     return new Timekeeper(BaseImmutable.jsToValue(Timekeeper.PROPERTIES, parameters));
   }
 
-  static PROPERTIES: Property[] = [
+  // TODO back to:  static PROPERTIES: Property[] = [
+  static PROPERTIES: any = [
     { name: 'timeTags', immutableClassArray: TimeTag },
     { name: 'nowOverride', isDate: true, defaultValue: null }
   ];
+
 
   public timeTags: TimeTag[];
   public nowOverride: Date;

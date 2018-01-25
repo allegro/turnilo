@@ -21,7 +21,7 @@ import { Timezone } from 'chronoshift';
 
 import '../../utils/test-utils/index';
 
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 import { StageMock } from '../../../common/models/mocks';
 
 import { LineChartAxis } from './line-chart-axis';

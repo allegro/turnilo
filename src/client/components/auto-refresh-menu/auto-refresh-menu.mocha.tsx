@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 import { findDOMNode } from '../../utils/test-utils/index';
 
 import { DataCubeMock, TimekeeperMock } from '../../../common/models/mocks';

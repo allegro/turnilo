@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./swiv-entry.css');
+import './swiv-entry.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -111,4 +111,8 @@ if (needsPatch) {
     require('../../lib/polyfill/drag-drop-polyfill.css');
     DragDropPolyfill.Initialize({});
   }, 'ios-drag-drop');
+}
+
+if (process.env.NODE_ENV !== 'production' && module.hot) {
+  module.hot.accept();
 }

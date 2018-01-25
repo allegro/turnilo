@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./router.css');
+import './router.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

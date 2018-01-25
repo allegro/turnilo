@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./segment-bubble.css');
+import './segment-bubble.scss';
 
 import * as React from 'react';
 import { Timezone } from 'chronoshift';

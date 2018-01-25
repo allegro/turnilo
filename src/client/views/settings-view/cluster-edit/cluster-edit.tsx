@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./cluster-edit.css');
+import './cluster-edit.scss';
 
 import * as React from 'react';
 import { List } from 'immutable';

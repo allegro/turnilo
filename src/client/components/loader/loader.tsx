@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./loader.css');
+import './loader.scss';
 
 import * as React from 'react';
 import { SvgIcon } from '../svg-icon/svg-icon';

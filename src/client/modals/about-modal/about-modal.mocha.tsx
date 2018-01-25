@@ -19,7 +19,7 @@ import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { findDOMNode } from '../../utils/test-utils/index';
-import * as TestUtils from 'react-addons-test-utils';
+import * as TestUtils from 'react-dom/test-utils';
 import { AboutModal } from './about-modal';
 
 

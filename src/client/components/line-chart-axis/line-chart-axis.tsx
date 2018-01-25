@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./line-chart-axis.css');
+import './line-chart-axis.scss';
 
 import * as d3 from 'd3';
 import * as React from 'react';

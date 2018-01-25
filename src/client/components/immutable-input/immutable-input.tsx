@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./immutable-input.css');
+import './immutable-input.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -47,7 +47,7 @@ export interface ImmutableInputState {
 }
 
 export class ImmutableInput extends React.Component<ImmutableInputProps, ImmutableInputState> {
-  static defaultProps = {
+  static defaultProps: Partial<ImmutableInputProps> = {
     type: 'text',
     stringToValue: String,
     valueToString: (value: any) => value ? String(value) : ''

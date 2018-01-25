@@ -1,4 +1,4 @@
-require('./add-collection-tile-modal.css');
+import './add-collection-tile-modal.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

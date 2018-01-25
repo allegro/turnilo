@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./drop-indicator.css');
+import './drop-indicator.scss';
 
 import * as React from 'react';
 import { SvgIcon } from '../svg-icon/svg-icon';

@@ -1,4 +1,0 @@
-#!/bin/bash -eu
-
-./node_modules/.bin/tsc
-gulp client:bundle > /dev/null

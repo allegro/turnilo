@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./form-label.css');
+import './form-label.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

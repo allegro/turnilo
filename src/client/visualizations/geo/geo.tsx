@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./geo.css');
+import './geo.scss';
 
 import * as React from 'react';
 import { VisualizationProps } from '../../../common/models/index';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./svg-icon.css');
+import './svg-icon.scss';
 
 import { List } from 'immutable';
 import * as React from 'react';

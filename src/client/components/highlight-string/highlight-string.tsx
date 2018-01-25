@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./highlight-string.css');
+import './highlight-string.scss';
 
 import * as React from 'react';
 import { classNames } from '../../utils/dom/dom';

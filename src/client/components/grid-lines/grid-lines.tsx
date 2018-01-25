@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./grid-lines.css');
+import './grid-lines.scss';
 
 import * as React from 'react';
 import { Stage } from '../../../common/models/index';

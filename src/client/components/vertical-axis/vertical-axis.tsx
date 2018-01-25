@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./vertical-axis.css');
+import './vertical-axis.scss';
 
 import * as React from 'react';
 import { formatterFromData } from '../../../common/utils/formatter/formatter';
@@ -36,7 +36,7 @@ export interface VerticalAxisState {
 }
 
 export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxisState> {
-  static defaultProps = {
+  static defaultProps: Partial<VerticalAxisProps> = {
     topLineExtend: 0
   };
 

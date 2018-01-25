@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./split-tile.css');
+import './split-tile.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

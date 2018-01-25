@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./number-filter-menu.css');
+import './number-filter-menu.scss';
 
 import * as React from 'react';
 import { Set, NumberRange, LiteralExpression } from 'swiv-plywood';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./no-data-header-bar.css');
+import './no-data-header-bar.scss';
 
 import * as React from 'react';
 import { Fn } from '../../../../common/utils/general/general';

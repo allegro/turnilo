@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./dropdown.css');
+import './dropdown.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

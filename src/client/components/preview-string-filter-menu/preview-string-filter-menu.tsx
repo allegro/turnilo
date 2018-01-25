@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./preview-string-filter-menu.css');
+import './preview-string-filter-menu.scss';
 
 import * as React from "react";
 import { $, Dataset, SortAction, r } from "swiv-plywood";

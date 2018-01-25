@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./dimension-tile.css');
+import './dimension-tile.scss';
 
 import * as React from 'react';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./segment-action-buttons.css');
+import './segment-action-buttons.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

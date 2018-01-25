@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./link-header-bar.css');
+import './link-header-bar.scss';
 
 import * as React from 'react';
 import { Timezone } from 'chronoshift';

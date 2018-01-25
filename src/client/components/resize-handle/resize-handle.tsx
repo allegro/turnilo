@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./resize-handle.css');
+import './resize-handle.scss';
 
 import * as React from 'react';
 

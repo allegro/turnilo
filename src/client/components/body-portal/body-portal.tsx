@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./body-portal.css');
+import './body-portal.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -32,7 +32,7 @@ export interface BodyPortalState {
 }
 
 export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
-  static defaultProps = {
+  public static defaultProps: Partial<BodyPortalProps> = {
     disablePointerEvents: false,
     isAboveAll: false
   };

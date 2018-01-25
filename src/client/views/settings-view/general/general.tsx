@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./general.css');
+import './general.scss';
 
 import { Timezone } from 'chronoshift';
 import * as React from 'react';

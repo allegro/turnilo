@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-require('./hiluk-menu.css');
+import './hiluk-menu.scss';
 
 import * as React from 'react';
 import { Dataset } from 'swiv-plywood';
