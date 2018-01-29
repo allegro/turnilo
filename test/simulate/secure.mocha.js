@@ -25,7 +25,7 @@ describe('security', function () {
   this.timeout(5000);
 
   before((done) => {
-    swivServer = spawnServer(`bin/swiv -c test/configs/secure.yaml -p ${TEST_PORT}`);
+    swivServer = spawnServer(`bin/turnilo -c test/configs/secure.yaml -p ${TEST_PORT}`);
     swivServer.onHook('Swiv is listening on address', done);
   });
 

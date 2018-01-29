@@ -28,7 +28,7 @@ describe('datazoo postgres introspection', function () {
   this.timeout(5000);
 
   before((done) => {
-    swivServer = spawnServer(`bin/swiv --postgres 192.168.99.100 --database datazoo --user root --password datazoo -p ${TEST_PORT}`);
+    swivServer = spawnServer(`bin/turnilo --postgres 192.168.99.100 --database datazoo --user root --password datazoo -p ${TEST_PORT}`);
     swivServer.onHook('Swiv is listening on address', done);
   });
 

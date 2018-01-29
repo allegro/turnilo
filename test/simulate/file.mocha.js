@@ -25,7 +25,7 @@ describe('file', function () {
   this.timeout(5000);
 
   before((done) => {
-    swivServer = spawnServer(`bin/swiv --file assets/data/wikiticker-2015-09-12-anonymous.json -p ${TEST_PORT}`);
+    swivServer = spawnServer(`bin/turnilo --file assets/data/wikiticker-2015-09-12-anonymous.json -p ${TEST_PORT}`);
     swivServer.onHook('Swiv is listening on address', done);
   });
 

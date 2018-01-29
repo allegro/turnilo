@@ -34,7 +34,7 @@ describe('tracking', function () {
     eventCollectorServer = eventCollector({}, (err, port) => {
       if (err) return done(err);
 
-      swivServer = spawnServer(`bin/swiv -c test/configs/tracking-static.yaml -p ${TEST_PORT}`);
+      swivServer = spawnServer(`bin/turnilo -c test/configs/tracking-static.yaml -p ${TEST_PORT}`);
       swivServer.onHook('Swiv is listening on address', done);
     });
   });

@@ -39,7 +39,7 @@ describe('druid reintrospect on load', function () {
     }, function(err, port) {
       if (err) return done(err);
 
-      swivServer = spawnServer(`bin/swiv -c test/configs/introspection-none.yaml -p ${TEST_PORT}`, {
+      swivServer = spawnServer(`bin/turnilo -c test/configs/introspection-none.yaml -p ${TEST_PORT}`, {
         env: {
           DRUID_HOST: `localhost:${port}`
         }

@@ -4,10 +4,10 @@ IAP 1.3.0 that ships with Druid 0.9.1 introduces a new way of making query time 
 The [new](http://druid.io/docs/0.9.1/development/extensions-core/lookups-cached-global.html) and [old](http://druid.io/docs/0.9.1/development/extensions-core/namespaced-lookup.html) lookups are incompatible.
 To facilitate a rolling migration [Druid 0.9.1 supports both styles of lookup](https://github.com/druid-io/druid/issues/2999).
 
-If you are using Swiv with QTLs (`.lookup('...')` actions) and desire to have uninterrupted service,
+If you are using Turnilo with QTLs (`.lookup('...')` actions) and desire to have uninterrupted service,
 you will need to follow these steps.
 
-**Note:** these steps assume that Swiv is collocated with the Druid broker node
+**Note:** these steps assume that Turnilo is collocated with the Druid broker node
 
 ### Step 1
 
@@ -15,7 +15,7 @@ Update the IAP Data Nodes to 1.3.0 first.
 
 ### Step 2
 
-For the Query Node, as you roll out 1.3.0, update the Swiv config as follows:
+For the Query Node, as you roll out 1.3.0, update the Turnilo config as follows:
 
 Your config will go from looking like:
 
@@ -45,7 +45,7 @@ clusters:
 # ...
 ```
 
-Setting `version` to `0.9.1-legacy-lookups` instructs Swiv to use all the Druid 0.9.1 features except the new lookups.
+Setting `version` to `0.9.1-legacy-lookups` instructs Turnilo to use all the Druid 0.9.1 features except the new lookups.
 Read more about this in the [general migration instructions](./swiv-0.9.x-migration.md).
 
 ### Step 3
@@ -54,8 +54,8 @@ Follow the [instructions](http://druid.io/docs/0.9.1/development/extensions-core
 
 ### Step 4
 
-Remove the explicit version pinning from the Swiv config.
-Swiv will now auto detect your druid version as `0.9.1`.
+Remove the explicit version pinning from the Turnilo config.
+Turnilo will now auto detect your druid version as `0.9.1`.
 Make sure to restart the Query Node.
 
 ### Step 5

@@ -25,7 +25,7 @@ describe('typo', function () {
   this.timeout(5000);
 
   before((done) => {
-    swivServer = spawnServer(`bin/swiv --druid 11.22.33.44 -p ${TEST_PORT}`);
+    swivServer = spawnServer(`bin/turnilo --druid 11.22.33.44 -p ${TEST_PORT}`);
     swivServer.onHook('Swiv is listening on address', done);
   });
 

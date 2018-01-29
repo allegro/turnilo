@@ -30,7 +30,7 @@ describe('examples', function () {
   this.timeout(5000);
 
   before((done) => {
-    swivServer = spawnServer(`bin/swiv --examples -p ${TEST_PORT}`);
+    swivServer = spawnServer(`bin/turnilo --examples -p ${TEST_PORT}`);
     swivServer.onHook('Swiv is listening on address', done);
   });
 

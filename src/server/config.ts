@@ -55,12 +55,12 @@ try {
 export const VERSION = packageObj.version;
 
 const USAGE = `
-Usage: swiv [options]
+Usage: turnilo [options]
 
 Possible usage:
 
-  swiv --examples
-  swiv --druid your.broker.host:8082
+  turnilo --examples
+  turnilo --druid your.broker.host:8082
 
 General arguments:
 
@@ -70,7 +70,7 @@ General arguments:
 
 Server arguments:
 
-  -p, --port <port-number>     The port swiv will run on (default: ${ServerSettings.DEFAULT_PORT})
+  -p, --port <port-number>     The port turnilo will run on (default: ${ServerSettings.DEFAULT_PORT})
       --server-host <host>     The host on which to listen on (default: all hosts)
       --server-root <root>     A custom server root to listen on (default ${ServerSettings.DEFAULT_SERVER_ROOT})
 
@@ -79,8 +79,8 @@ Data connection options:
   Exactly one data connection option must be provided.
 
   -c, --config <path>          Use this local configuration (YAML) file
-      --examples               Start Swiv with some example data for testing / demo
-  -f, --file <path>            Start Swiv on top of this file based data cube (must be JSON, CSV, or TSV)
+      --examples               Start Turnilo with some example data for testing / demo
+  -f, --file <path>            Start Turnilo on top of this file based data cube (must be JSON, CSV, or TSV)
   -d, --druid <host>           The Druid broker node to connect to
       --postgres <host>        The Postgres cluster to connect to
       --mysql <host>           The MySQL cluster to connect to
@@ -248,7 +248,7 @@ export const AUTH = authMiddleware;
 
 // --- Sign of Life -------------------------------
 if (START_SERVER) {
-  LOGGER.log(`Starting Swiv v${VERSION}`);
+  LOGGER.log(`Starting Turnilo v${VERSION}`);
   TRACKER.track({
     eventType: 'swiv_init',
     metric: 'init',

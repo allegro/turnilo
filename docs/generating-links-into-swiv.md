@@ -1,12 +1,12 @@
-`# Generating Links Into Swiv
+# Generating Links Into Turnilo
 
-If you want to generate links into Swiv from external systems you can do so by posting to `/mkurl` or `<serverRoot>/mkurl`.
+If you want to generate links into Turnilo from external systems you can do so by posting to `/mkurl` or `<serverRoot>/mkurl`.
 
 The post body must include 3 keys:
 
 **domain** (string)
 
-The domain on which swiv is running
+The domain on which Turnilo is running
 
 **dataSource** (string)
 
@@ -19,12 +19,12 @@ The essence JSON that describes the state
 ## Examples
 
 Here are a few examples that you can try out by yourself.
-All the examples run on the built in example dataset that comes with swiv.
+All the examples run on the built in example dataset that comes with Turnilo.
 
-To follow along please start swiv in `--examples` mode like so:
+To follow along please start Turnilo in `--examples` mode like so:
  
 ```bash
-swiv --examples
+turnilo --examples
 ```
 
 Each example can be 'run' using curl like so:
