@@ -51,7 +51,7 @@ function basicEqual(a: any, b: any): boolean {
 
 export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSettingsJS> {
   static DEFAULT_PORT = 9090;
-  static DEFAULT_SERVER_ROOT = '/swiv';
+  static DEFAULT_SERVER_ROOT = '/turnilo';
   static DEFAULT_REQUEST_LOG_FORMAT = 'common';
   static DEFAULT_PAGE_MUST_LOAD_TIMEOUT = 800;
   static IFRAME_VALUES: Iframe[] = ["allow", "deny"];

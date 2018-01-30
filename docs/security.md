@@ -1,14 +1,14 @@
-# Security in Swiv
+# Security in Turnilo
 
 ## User management
 
-Swiv does not currently have a concept of a user. Everyone who has access to a given Swiv server has equal access to that server.
-Swiv can act as a 'gatekeeper' for Druid or any supported datasource via the config.
+Turnilo does not currently have a concept of a user. Everyone who has access to a given Turnilo server has equal access to that server.
+Turnilo can act as a 'gatekeeper' for Druid or any supported datasource via the config.
 
 ### Data source level access
 
 It is possible to restrict which data cubes users have access to by explicitly defining in the config all the data cubes that you want the users to see and disabling source discovery.
-This will prevent any data cube not explicitly defined from being queried through Swiv.
+This will prevent any data cube not explicitly defined from being queried through Turnilo.
 
 ### Column level access
 
@@ -17,13 +17,13 @@ Any query asking for a column that was not explicitly defined in the dimensions 
 
 ### Row level access
 
-A Swiv dataSource can define a `subsetFormula` that is a boolean Plywood filter clause that will be silently applied to all queries made to that data cube.
+A Turnilo dataSource can define a `subsetFormula` that is a boolean Plywood filter clause that will be silently applied to all queries made to that data cube.
 For example if you wanted your users to only see the data for "United States" you could add `subsetFormula: $country == "United States"` to the data cube definition.
 
 
 ## Authentication
 
-Swiv can authenticate to a Druid server via request decoration. You can utilize it as follows:
+Turnilo can authenticate to a Druid server via request decoration. You can utilize it as follows:
 
 In the config add a key of `druidRequestDecorator` that point to a relative js file.
 
@@ -39,7 +39,7 @@ Here is an example decorator:
 ```javascript
 exports.version = 1;
 
-// logger - is just a collection of functions that you should use instead of console to have your logs included with the Swiv logs
+// logger - is just a collection of functions that you should use instead of console to have your logs included with the Turnilo logs
 // options - is an object with the following keys:
 //   * cluster: Cluster - the cluster object
 exports.druidRequestDecoratorFactory = function (logger, params) {

@@ -1,4 +1,4 @@
-# The port on which the Swiv server will listen on
+# The port on which the Turnilo server will listen on
 port: 9090
 
 clusters:

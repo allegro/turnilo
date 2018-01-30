@@ -28,7 +28,7 @@ describe('datazoo druid introspection', function () {
   this.timeout(5000);
 
   before((done) => {
-    swivServer = spawnServer(`bin/swiv --druid 192.168.99.100 -p ${TEST_PORT}`);
+    swivServer = spawnServer(`bin/turnilo --druid 192.168.99.100 -p ${TEST_PORT}`);
     swivServer.onHook('Swiv is listening on address', done);
   });
 

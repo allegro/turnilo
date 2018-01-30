@@ -168,7 +168,7 @@ describe('many datasources', function () {
   this.timeout(30000);
 
   before((done) => {
-    swivServer = spawnServer(`bin/swiv -c test/configs/two-little-datasources.yaml -p ${TEST_PORT}`, {
+    swivServer = spawnServer(`bin/turnilo -c test/configs/two-little-datasources.yaml -p ${TEST_PORT}`, {
       env: {
         DRUID_HOST: 'localhost:28082'
       }

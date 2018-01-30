@@ -78,7 +78,7 @@
       &.auto-refresh::after { content: 'Refresh options'; }
       &.hiluk::after { content: 'Share link'; }
       &.user::after { content: 'User'; }
-      &.github::after { content: 'Swiv on Github'; }
+      &.github::after { content: 'Turnilo on Github'; }
       &.settings::after { content: 'Settings'; }
 
       &:hover::after {

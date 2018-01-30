@@ -48,8 +48,8 @@ if (START_SERVER) {
 
   server.on('listening', () => {
     var address = server.address();
-    console.log(`Swiv is listening on address ${address.address} port ${address.port}`);
-    debug(`Swiv is listening on address ${address.address} port ${address.port}`);
+    console.log(`Turnilo is listening on address ${address.address} port ${address.port}`);
+    debug(`Turnilo is listening on address ${address.address} port ${address.port}`);
   });
 
   app.set('port', SERVER_SETTINGS.getPort());

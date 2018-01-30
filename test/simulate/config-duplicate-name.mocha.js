@@ -25,7 +25,7 @@ describe('config duplicate names', function () {
   this.timeout(5000);
 
   before((done) => {
-    swivServer = spawnServer(`bin/swiv --config test/configs/duplicate-measure-dimension-name.yaml -p ${TEST_PORT}`, {
+    swivServer = spawnServer(`bin/turnilo --config test/configs/duplicate-measure-dimension-name.yaml -p ${TEST_PORT}`, {
       env: {
         DRUID_HOST: '11.22.33.44:5555'
       }

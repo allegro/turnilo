@@ -116,7 +116,7 @@ describe('reintrospect on load with datasource', function () {
     }, function(err, port) {
       if (err) return done(err);
 
-      swivServer = spawnServer(`bin/swiv -c test/configs/reintrospect-on-load-datasource.yaml -p ${TEST_PORT}`, {
+      swivServer = spawnServer(`bin/turnilo -c test/configs/reintrospect-on-load-datasource.yaml -p ${TEST_PORT}`, {
         env: {
           DRUID_HOST: `localhost:${port}`
         }
