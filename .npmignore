@@ -1,0 +1,14 @@
+/.idea/
+/config/
+/docs/
+/resources/
+/src/
+/test/
+/typings/
+*.tgz
+.sass-lint.yml
+.travis.yml
+tsconfig.json
+tsconfig-prod.json
+tsconfig-server.json
+tslint.json

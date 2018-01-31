@@ -28,71 +28,79 @@ this is how Turnilo emerged.
 
 ![Turnilo UI](https://github.com/allegro/turnilo/raw/master/docs/images/drag-and-drop.gif)
 
+## Prerequisites
+
+[node](https://nodejs.org/) LTS version installed.
+
 ## Usage
 
-### Build
+Install Turnilo distribution using [npm](https://www.npmjs.com/).
 
-Make sure you have latest [node](https://nodejs.org/) version (>= 8.x.x) installed.
+```
+npm install -g turnilo
+```
 
-Install project dependencies:
+Start off by running an example with Wikipedia page editions dataset 
+and open [http://localhost:9090/](http://localhost:9090/).
+
+```
+export NODE_ENV=production; turnilo --examples
+```
+
+Or connect to existing Druid cluster using `--druid` command line option.
+Turnilo will automatically introspect your Druid cluster and figure out available datasets.
+
+```
+export NODE_ENV=production; turnilo --druid broker_host:broker_port
+```
+
+## Development
+
+Install project dependencies.
 
 ```
 npm install
 ```
 
-Build the project:
+Build the project.
 
 ```
 npm run build
 ```
 
-### Run Wikipedia examples
-
-Start off by running an example with Wikipedia page editions dataset and open [http://localhost:9090/](http://localhost:9090/):
+Run Wikipedia examples.
 
 ```
 npm run start -- --examples
 ```
 
-### Run with Druid
-
-Next connect Turnilo to Druid cluster by simply pointing it to broker host:
+Connect to existing Druid cluster.
 
 ```
-npm run start -- --druid your.druid.broker.host (default to 8082)
+npm run start -- --druid broker_host:broker_port
 ```
 
-Turnilo will automatically introspect your Druid cluster and figure out datasets.
+### Testing
 
-## Running tests
-
-Application has three ability to call unit tests:
-
-client side part
-```
-npm run test:client
-```
-
-common part (server/client side)
-```
-npm run test:common
-```
-
-server side part
-```
-npm run test:server
-```
-
-To run all unit test client, common, server
+Run all unit tests.
 ```
 npm run test
 ```
 
+Or run tests separately for common, client and server modules.
+
+```
+npm run test:common
+npm run test:client
+npm run test:server
+```
+
 ## Debugging in WebStorm
 
-In WebStorm open "Run/Debug Configurations", click "Add New Configuration". Next choose "JavaScript Debug", set URL property to "localhost:9090" click OK.
+In WebStorm open "Run/Debug Configurations", click "Add New Configuration".
+Next choose "JavaScript Debug", set URL property to "localhost:9090" and click OK.
 
-More information you can find [here](https://www.jetbrains.com/help/webstorm/debugging-typescript.html)
+You can find more information [here](https://www.jetbrains.com/help/webstorm/debugging-typescript.html)
 
 ## License
 
