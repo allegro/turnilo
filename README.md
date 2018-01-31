@@ -1,5 +1,8 @@
 # Turnilo
 
+[![npm version](https://img.shields.io/npm/v/turnilo.svg)](https://www.npmjs.org/package/turnilo)
+[![build status](https://travis-ci.org/allegro/turnilo.svg?branch=master)](https://travis-ci.org/allegro/turnilo)
+
 Turnilo is a business intelligence, data exploration and visualization web application for [Druid](http://druid.io/).
 Turnilo is a fork of [Pivot](https://github.com/implydata/pivot) which is currently available under commercial licence only.
 This repository was forked from the stalled repository [Swiv](https://github.com/yahoo/swiv) 
@@ -85,13 +88,12 @@ To run all unit test client, common, server
 npm run test
 ```
 
-## License
-
-**Turnilo** is published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
-
-
 ## Debugging in WebStorm
 
 In WebStorm open "Run/Debug Configurations", click "Add New Configuration". Next choose "JavaScript Debug", set URL property to "localhost:9090" click OK.
 
 More information you can find [here](https://www.jetbrains.com/help/webstorm/debugging-typescript.html)
+
+## License
+
+**Turnilo** is published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
