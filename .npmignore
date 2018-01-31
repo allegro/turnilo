@@ -1,11 +1,16 @@
 /.idea/
 /config/
 /docs/
+/lib/
 /resources/
 /src/
 /test/
 /typings/
+*.js.map
+*.mocha.js
+*.ts
 *.tgz
+*.iml
 .sass-lint.yml
 .travis.yml
 tsconfig.json
