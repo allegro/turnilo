@@ -28,9 +28,9 @@ this is how Turnilo emerged.
 
 ![Turnilo UI](https://github.com/allegro/turnilo/raw/master/docs/images/drag-and-drop.gif)
 
-## Prerequisites
+## Pre-requisites
 
-[node](https://nodejs.org/) LTS version installed.
+* [Node.js](https://nodejs.org/) LTS version.
 
 ## Usage
 
@@ -44,14 +44,14 @@ Start off by running an example with Wikipedia page editions dataset
 and open [http://localhost:9090/](http://localhost:9090/).
 
 ```
-export NODE_ENV=production; turnilo --examples
+turnilo --examples
 ```
 
 Or connect to existing Druid cluster using `--druid` command line option.
 Turnilo will automatically introspect your Druid cluster and figure out available datasets.
 
 ```
-export NODE_ENV=production; turnilo --druid broker_host:broker_port
+turnilo --druid broker_host:broker_port
 ```
 
 ## Development
