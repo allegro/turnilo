@@ -83,6 +83,7 @@ npm run start -- --druid broker_host:broker_port
 ### Testing
 
 Run all unit tests.
+
 ```
 npm run test
 ```
@@ -95,13 +96,23 @@ npm run test:client
 npm run test:server
 ```
 
-## Debugging in WebStorm
+## Debugging 
 
-In WebStorm open "Run/Debug Configurations", click "Add New Configuration".
-Next choose "JavaScript Debug", set URL property to "localhost:9090" and click OK.
+### Client module
+
+In WebStorm\IntelliJ open "Run/Debug Configurations", click "Add New Configuration".
+Next choose "JavaScript Debug" and set URL property to "localhost:9090".
 
 You can find more information [here](https://www.jetbrains.com/help/webstorm/debugging-typescript.html)
 
+### Server module
+
+In WebStorm\IntelliJ open "Run/Debug Configurations", click "Add New Configuration".
+Next choose "Node.JS", set "JavaScript file" to "./bin/turnilo" 
+and "Application parameters" to "--examples".
+
+You can find more infrmation [here](https://www.jetbrains.com/help/webstorm/running-and-debugging-node-js.html)
+ 
 ## License
 
 **Turnilo** is published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
