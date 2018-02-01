@@ -64,22 +64,48 @@ npm install
 
 Build the project.
 
+Development version:
+```
+npm run build:dev
+```
+
+Producton version:
 ```
 npm run build
 ```
 
 Run Wikipedia examples.
 
+Development version:
+
+```
+npm run start:dev -- --examples
+```
+
+Producton version:
 ```
 npm run start -- --examples
 ```
 
 Connect to existing Druid cluster.
 
+Development version:
+
+```
+npm run start:dev -- --druid broker_host:broker_port
+```
+
+Producton version:
+
 ```
 npm run start -- --druid broker_host:broker_port
 ```
 
+Connect to existing Druid cluster.
+
+```
+npm run start:dev -- --druid broker_host:broker_port
+```
 ### Testing
 
 Run all unit tests.

@@ -1,6 +1,5 @@
 var path = require("path");
 var webpack = require('webpack');
-const TsConfigPathsPlugin = require('awesome-typescript-loader').TsConfigPathsPlugin;
 
 module.exports = {
   entry: "./src/client/swiv-entry.ts",
@@ -18,7 +17,10 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: "awesome-typescript-loader?{configFileName: \"tsconfig-prod.json\"}"
+        loader: "awesome-typescript-loader",
+        query: {
+          declaration: false
+        }
       },
 
       {
@@ -45,12 +47,19 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      beautify: true,
+      mangle: {
+        screw_ie8: true,
+        keep_fnames: true
+      },
+      compress: {
+        screw_ie8: true,
+        dead_code: true,
+        unused: true
+      },
+      comments: true
     })
   ]
 };
-
-resolve: {
-  plugins: [
-    new TsConfigPathsPlugin(/* { tsconfig, compiler } */)
-  ]
-}

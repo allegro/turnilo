@@ -3,7 +3,6 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "noEmitOnError": true,
-    "declaration": true,
     "removeComments": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
