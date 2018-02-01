@@ -62,7 +62,7 @@ Install project dependencies.
 npm install
 ```
 
-####Build the project.
+#### Build the project.
 
 Development version:
 ```
@@ -74,7 +74,7 @@ Producton version:
 npm run build
 ```
 
-####Run Wikipedia examples.
+#### Run Wikipedia examples.
 
 Development version:
 
@@ -87,7 +87,7 @@ Producton version:
 npm run start -- --examples
 ```
 
-####Connect to existing Druid cluster.
+#### Connect to existing Druid cluster.
 
 Development version:
 
