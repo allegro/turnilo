@@ -104,7 +104,7 @@ if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
 
 // development error handler and HMR
 
-if (app.get('env') === 'development') { // NODE_ENV
+if (app.get('env') === 'dev-hrm') {
   // add hot module replacement
 
   const webpack = require('webpack');
@@ -112,7 +112,7 @@ if (app.get('env') === 'development') { // NODE_ENV
   const webpackDevMiddleware = require("webpack-dev-middleware");
   const webpackHotMiddleware = require("webpack-hot-middleware");
 
-  if(webpack && webpackDevMiddleware && webpackHotMiddleware) {
+  if (webpack && webpackDevMiddleware && webpackHotMiddleware) {
     const webpackCompiler = webpack(webpackConfig);
 
     app.use(webpackDevMiddleware(webpackCompiler, {
@@ -126,6 +126,10 @@ if (app.get('env') === 'development') { // NODE_ENV
       path: '/__webpack_hmr'
     }));
   }
+}
+
+if (app.get('env') === 'development') { // NODE_ENV
+  // add hot module replacement
 
   // error handlers
   // will print stacktrace

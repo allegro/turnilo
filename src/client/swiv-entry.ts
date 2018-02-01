@@ -113,6 +113,6 @@ if (needsPatch) {
   }, 'ios-drag-drop');
 }
 
-if (process.env.NODE_ENV !== 'production' && module.hot) {
+if (process.env.NODE_ENV === 'dev-hrm' && module.hot) {
   module.hot.accept();
 }

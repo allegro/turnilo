@@ -1,3 +1,0 @@
-<component name="DependencyValidationManager">
-  <scope name="Server Source Files" pattern="file[pivot]:src/server//*||file[pivot]:src/common//*" />
-</component>

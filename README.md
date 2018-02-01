@@ -1,5 +1,8 @@
 # Turnilo
 
+[![npm version](https://img.shields.io/npm/v/turnilo.svg)](https://www.npmjs.org/package/turnilo)
+[![build status](https://travis-ci.org/allegro/turnilo.svg?branch=master)](https://travis-ci.org/allegro/turnilo)
+
 Turnilo is a business intelligence, data exploration and visualization web application for [Druid](http://druid.io/).
 Turnilo is a fork of [Pivot](https://github.com/implydata/pivot) which is currently available under commercial licence only.
 This repository was forked from the stalled repository [Swiv](https://github.com/yahoo/swiv) 
@@ -25,73 +28,91 @@ this is how Turnilo emerged.
 
 ![Turnilo UI](https://github.com/allegro/turnilo/raw/master/docs/images/drag-and-drop.gif)
 
+## Pre-requisites
+
+* [Node.js](https://nodejs.org/) - LTS version.
+
 ## Usage
 
-### Build
+Install Turnilo distribution using [npm](https://www.npmjs.com/).
 
-Make sure you have latest [node](https://nodejs.org/) version (>= 8.x.x) installed.
+```
+npm install -g turnilo
+```
 
-Install project dependencies:
+Start off by running an example with Wikipedia page editions dataset 
+and open [http://localhost:9090/](http://localhost:9090/).
+
+```
+turnilo --examples
+```
+
+Or connect to the existing Druid cluster using `--druid` command line option.
+Turnilo will automatically introspect your Druid cluster and figure out available datasets.
+
+```
+turnilo --druid broker_host:broker_port
+```
+
+## Development
+
+Install project dependencies.
 
 ```
 npm install
 ```
 
-Build the project:
+Build the project.
 
 ```
-npm run build
+npm run build:dev
 ```
 
-### Run Wikipedia examples
-
-Start off by running an example with Wikipedia page editions dataset and open [http://localhost:9090/](http://localhost:9090/):
+Run Wikipedia examples.
 
 ```
-npm run start -- --examples
+npm run start:dev -- --examples
 ```
 
-### Run with Druid
-
-Next connect Turnilo to Druid cluster by simply pointing it to broker host:
+Connect to the existing Druid cluster.
 
 ```
-npm run start -- --druid your.druid.broker.host (default to 8082)
+npm run start:dev -- --druid broker_host:broker_port
 ```
 
-Turnilo will automatically introspect your Druid cluster and figure out datasets.
+### Testing
 
-## Running tests
+Run all unit tests.
 
-Application has three ability to call unit tests:
-
-client side part
-```
-npm run test:client
-```
-
-common part (server/client side)
-```
-npm run test:common
-```
-
-server side part
-```
-npm run test:server
-```
-
-To run all unit test client, common, server
 ```
 npm run test
 ```
 
+Or run tests separately for common, client and server modules.
+
+```
+npm run test:common
+npm run test:client
+npm run test:server
+```
+
+## Debugging 
+
+### Client module
+
+In WebStorm\IntelliJ open "Run/Debug Configurations", click "Add New Configuration".
+Next choose "JavaScript Debug" and set URL property to "localhost:9090".
+
+You can find more information [here](https://www.jetbrains.com/help/webstorm/debugging-typescript.html)
+
+### Server module
+
+In WebStorm\IntelliJ open "Run/Debug Configurations", click "Add New Configuration".
+Next choose "Node.JS", set "JavaScript file" to "./bin/turnilo" 
+and "Application parameters" to "--examples".
+
+You can find more infrmation [here](https://www.jetbrains.com/help/webstorm/running-and-debugging-node-js.html)
+ 
 ## License
 
 **Turnilo** is published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
-
-
-## Debugging in WebStorm
-
-In WebStorm open "Run/Debug Configurations", click "Add New Configuration". Next choose "JavaScript Debug", set URL property to "localhost:9090" click OK.
-
-More information you can find [here](https://www.jetbrains.com/help/webstorm/debugging-typescript.html)
