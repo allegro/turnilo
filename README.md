@@ -30,7 +30,7 @@ this is how Turnilo emerged.
 
 ## Pre-requisites
 
-* [Node.js](https://nodejs.org/) LTS version.
+* [Node.js](https://nodejs.org/) - LTS version.
 
 ## Usage
 
@@ -47,7 +47,7 @@ and open [http://localhost:9090/](http://localhost:9090/).
 turnilo --examples
 ```
 
-Or connect to existing Druid cluster using `--druid` command line option.
+Or connect to the existing Druid cluster using `--druid` command line option.
 Turnilo will automatically introspect your Druid cluster and figure out available datasets.
 
 ```
@@ -62,43 +62,22 @@ Install project dependencies.
 npm install
 ```
 
-#### Build the project.
+Build the project.
 
-Development version:
 ```
 npm run build:dev
 ```
 
-Producton version:
-```
-npm run build
-```
-
-#### Run Wikipedia examples.
-
-Development version:
+Run Wikipedia examples.
 
 ```
 npm run start:dev -- --examples
 ```
 
-Producton version:
-```
-npm run start -- --examples
-```
-
-#### Connect to existing Druid cluster.
-
-Development version:
+Connect to the existing Druid cluster.
 
 ```
 npm run start:dev -- --druid broker_host:broker_port
-```
-
-Producton version:
-
-```
-npm run start -- --druid broker_host:broker_port
 ```
 
 ### Testing
