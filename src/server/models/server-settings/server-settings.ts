@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property } from 'immutable-class';
 import { SettingsLocation, SettingsLocationJS } from '../settings-location/settings-location';
 
 export type Iframe = "allow" | "deny";
@@ -62,7 +62,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   static DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
 
   static isServerSettings(candidate: any): candidate is ServerSettings {
-    return isInstanceOf(candidate, ServerSettings);
+    return candidate instanceof ServerSettings;
   }
 
   static fromJS(parameters: ServerSettingsJS): ServerSettings {

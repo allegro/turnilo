@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { Class, Instance } from 'immutable-class';
 import { find } from 'swiv-plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 import { DataCube } from '../data-cube/data-cube';
@@ -48,7 +48,7 @@ var check: Class<CollectionTileValue, CollectionTileJS>;
 export class CollectionTile implements Instance<CollectionTileValue, CollectionTileJS> {
 
   static isCollectionTile(candidate: any): candidate is CollectionTile {
-    return isInstanceOf(candidate, CollectionTile);
+    return candidate instanceof CollectionTile;
   }
 
   static fromJS(parameters: CollectionTileJS, context?: CollectionTileContext): CollectionTile {

@@ -15,7 +15,7 @@
  */
 
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
+import { Class, Instance, immutableArraysEqual } from 'immutable-class';
 import { $, Expression } from 'swiv-plywood';
 import { Dimension } from '../dimension/dimension';
 import { Filter, FilterJS } from '../filter/filter';
@@ -36,7 +36,7 @@ var check: Class<HighlightValue, HighlightJS>;
 export class Highlight implements Instance<HighlightValue, HighlightJS> {
 
   static isHighlight(candidate: any): candidate is Highlight {
-    return isInstanceOf(candidate, Highlight);
+    return candidate instanceof Highlight;
   }
 
   static fromJS(parameters: HighlightJS): Highlight {

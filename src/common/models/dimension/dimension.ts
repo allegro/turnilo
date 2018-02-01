@@ -15,7 +15,7 @@
  */
 
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
+import { Class, Instance, immutableArraysEqual } from 'immutable-class';
 import { $, Expression } from 'swiv-plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 import { Granularity, GranularityJS, granularityFromJS, granularityToJS, granularityEquals } from "../granularity/granularity";
@@ -62,7 +62,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   static defaultNoBucket: BucketingStrategy = 'defaultNoBucket';
 
   static isDimension(candidate: any): candidate is Dimension {
-    return isInstanceOf(candidate, Dimension);
+    return candidate instanceof Dimension;
   }
 
   static getDimension(dimensions: List<Dimension>, dimensionName: string): Dimension {

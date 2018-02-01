@@ -15,7 +15,7 @@
  */
 
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { Class, Instance } from 'immutable-class';
 import { Timezone, Duration } from 'chronoshift';
 import { $, r, Expression, LiteralExpression, ExpressionJS, InAction, Set, Range, TimeRange } from 'swiv-plywood';
 import { immutableListsEqual } from '../../utils/general/general';
@@ -56,7 +56,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
 
 
   static isFilter(candidate: any): candidate is Filter {
-    return isInstanceOf(candidate, Filter);
+    return candidate instanceof Filter;
   }
 
   static fromClause(clause: FilterClause): Filter {

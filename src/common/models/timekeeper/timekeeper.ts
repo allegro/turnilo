@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property } from 'immutable-class';
 import { findByName, overrideByName } from 'swiv-plywood';
 import { TimeTag, TimeTagJS } from '../time-tag/time-tag';
 
@@ -34,7 +34,7 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   static EMPTY: Timekeeper;
 
   static isTimekeeper(candidate: any): candidate is Timekeeper {
-    return isInstanceOf(candidate, Timekeeper);
+    return candidate instanceof Timekeeper;
   }
 
   static globalNow(): Date {

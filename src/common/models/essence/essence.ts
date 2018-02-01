@@ -16,7 +16,7 @@
 
 import { List, OrderedSet, Iterable } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
-import { Class, Instance, isInstanceOf, immutableEqual } from 'immutable-class';
+import { Class, Instance, immutableEqual } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, ApplyAction, SortAction, Set, findByName } from 'swiv-plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
@@ -103,7 +103,7 @@ export interface EssenceContext {
 var check: Class<EssenceValue, EssenceJS>;
 export class Essence implements Instance<EssenceValue, EssenceJS> {
   static isEssence(candidate: any): candidate is Essence {
-    return isInstanceOf(candidate, Essence);
+    return candidate instanceof Essence;
   }
 
   static getBestVisualization(visualizations: Manifest[], dataCube: DataCube, splits: Splits, colors: Colors, currentVisualization: Manifest): VisualizationAndResolve {

@@ -15,7 +15,7 @@
  */
 
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
+import { Class, Instance, immutableArraysEqual } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction, NumberRange, Range } from 'swiv-plywood';
 import { immutableListsEqual } from '../../utils/general/general';
@@ -48,7 +48,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   static EMPTY: Splits;
 
   static isSplits(candidate: any): candidate is Splits {
-    return isInstanceOf(candidate, Splits);
+    return candidate instanceof Splits;
   }
 
   static fromSplitCombine(splitCombine: SplitCombine): Splits {

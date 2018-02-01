@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { Class, Instance } from 'immutable-class';
 import { Timezone, Duration, minute, day } from 'chronoshift';
 import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS,
   ChainExpression, NotAction, OverlapAction, InAction, Range, TimeRange, Datum, NumberRange, MatchAction, ContainsAction } from 'swiv-plywood';
@@ -67,7 +67,7 @@ var check: Class<FilterClauseValue, FilterClauseJS>;
 export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS> {
 
   static isFilterClause(candidate: any): candidate is FilterClause {
-    return isInstanceOf(candidate, FilterClause);
+    return candidate instanceof FilterClause;
   }
 
   static NOW_REF_NAME = 'n';

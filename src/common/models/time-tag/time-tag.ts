@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property, PropertyType } from 'immutable-class';
 
 export type Special = 'static' | 'realtime';
 
@@ -35,13 +35,13 @@ export interface TimeTagJS {
 export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
 
   static isTimeTag(candidate: any): candidate is TimeTag {
-    return isInstanceOf(candidate, TimeTag);
+    return candidate instanceof TimeTag;
   }
 
   static PROPERTIES: Property[] = [
     { name: 'name' },
-    { name: 'time', isDate: true, defaultValue: null },
-    { name: 'updated', isDate: true, defaultValue: null },
+    { name: 'time', type: PropertyType.DATE, defaultValue: null },
+    { name: 'updated', type: PropertyType.DATE, defaultValue: null },
     { name: 'spacial', defaultValue: null }
   ];
 

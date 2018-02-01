@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { Class, Instance } from 'immutable-class';
 
 export interface MarginParameters {
   left?: number;
@@ -41,7 +41,7 @@ export interface StageJS {
 var check: Class<StageValue, StageJS>;
 export class Stage implements Instance<StageValue, StageJS> {
   static isStage(candidate: any): candidate is Stage {
-    return isInstanceOf(candidate, Stage);
+    return candidate instanceof Stage;
   }
 
   static fromJS(parameters: StageJS): Stage {

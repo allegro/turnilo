@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf, isImmutableClass } from 'immutable-class';
+import { Class, Instance, isImmutableClass } from 'immutable-class';
 import { $, Set, valueFromJS, valueToJS, FilterAction, LimitAction } from 'swiv-plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 
@@ -91,7 +91,7 @@ var check: Class<ColorsValue, ColorsJS>;
 export class Colors implements Instance<ColorsValue, ColorsJS> {
 
   static isColors(candidate: any): candidate is Colors {
-    return isInstanceOf(candidate, Colors);
+    return candidate instanceof Colors;
   }
 
   static fromLimit(dimension: string, limit: number): Colors {

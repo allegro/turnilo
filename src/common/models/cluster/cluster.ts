@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property } from 'immutable-class';
 import { External } from 'swiv-plywood';
 import { verifyUrlSafeName } from '../../utils/general/general';
 
@@ -88,7 +88,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   static DEFAULT_INTROSPECTION_STRATEGY = 'segment-metadata-fallback';
 
   static isCluster(candidate: any): candidate is Cluster {
-    return isInstanceOf(candidate, Cluster);
+    return candidate instanceof Cluster;
   }
 
   static fromJS(parameters: ClusterJS): Cluster {

@@ -16,7 +16,7 @@
 
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
-import { Class, Instance, isInstanceOf, immutableEqual, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
+import { Class, Instance, immutableEqual, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
 import { Duration, Timezone, second } from 'chronoshift';
 import { $, ply, r, Expression, ExpressionJS, Executor, External, RefExpression, basicExecutorFactory, Dataset,
   Attributes, AttributeInfo, AttributeJSs, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
@@ -230,7 +230,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   static DEFAULT_DEFAULT_DURATION = Duration.fromJS('P1D');
 
   static isDataCube(candidate: any): candidate is DataCube {
-    return isInstanceOf(candidate, DataCube);
+    return candidate instanceof DataCube;
   }
 
   static queryMaxTime(dataCube: DataCube): Q.Promise<Date> {

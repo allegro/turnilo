@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf, immutableArraysEqual, immutableEqual } from 'immutable-class';
+import { Class, Instance, immutableArraysEqual, immutableEqual } from 'immutable-class';
 import { ImmutableUtils } from '../../utils/index';
 import { Executor, findByName, overrideByName } from 'swiv-plywood';
 import { hasOwnProperty } from '../../utils/general/general';
@@ -52,7 +52,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   static BLANK = AppSettings.fromJS({}, { visualizations: [] });
 
   static isAppSettings(candidate: any): candidate is AppSettings {
-    return isInstanceOf(candidate, AppSettings);
+    return candidate instanceof AppSettings;
   }
 
   static fromJS(parameters: AppSettingsJS, context?: AppSettingsContext): AppSettings {

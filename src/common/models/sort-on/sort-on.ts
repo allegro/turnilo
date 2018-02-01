@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { Class, Instance } from 'immutable-class';
 import { $, Expression, RefExpression, SortAction } from 'swiv-plywood';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
@@ -34,7 +34,7 @@ var check: Class<SortOnValue, SortOnJS>;
 export class SortOn implements Instance<SortOnValue, SortOnJS> {
 
   static isSortOn(candidate: any): candidate is SortOn {
-    return isInstanceOf(candidate, SortOn);
+    return candidate instanceof SortOn;
   }
 
   static equal(s1: SortOn, s2: SortOn): boolean {

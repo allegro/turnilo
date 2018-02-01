@@ -15,7 +15,7 @@
  */
 
 import { List } from 'immutable';
-import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property } from 'immutable-class';
 import * as numeral from 'numeral';
 import { $, Expression, Datum, ApplyAction, AttributeInfo, ChainExpression, deduplicateSort } from 'swiv-plywood';
 import { verifyUrlSafeName, makeTitle, makeUrlSafeName } from '../../utils/general/general';
@@ -48,7 +48,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static INTEGER_FORMAT = '0,0 a';
 
   static isMeasure(candidate: any): candidate is Measure {
-    return isInstanceOf(candidate, Measure);
+    return candidate instanceof Measure;
   }
 
   static getMeasure(measures: List<Measure>, measureName: string): Measure {

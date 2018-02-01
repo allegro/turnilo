@@ -15,7 +15,7 @@
  */
 
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { Class, Instance } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction, NumberBucketAction } from 'swiv-plywood';
 import { Dimension } from '../dimension/dimension';
@@ -44,7 +44,7 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
   static SORT_ON_DIMENSION_PLACEHOLDER = '__SWIV_SORT_ON_DIMENSIONS__';
 
   static isSplitCombine(candidate: any): candidate is SplitCombine {
-    return isInstanceOf(candidate, SplitCombine);
+    return candidate instanceof SplitCombine;
   }
 
   static fromExpression(expression: Expression): SplitCombine {

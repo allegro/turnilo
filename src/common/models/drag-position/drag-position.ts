@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { Class, Instance } from 'immutable-class';
 import { hasOwnProperty } from '../../utils/general/general';
 
 export interface DragPositionValue {
@@ -31,7 +31,7 @@ var check: Class<DragPositionValue, DragPositionJS>;
 export class DragPosition implements Instance<DragPositionValue, DragPositionJS> {
 
   static isDragPosition(candidate: any): candidate is DragPosition {
-    return isInstanceOf(candidate, DragPosition);
+    return candidate instanceof DragPosition;
   }
 
   static calculateFromOffset(offset: number, numItems: number, itemWidth: number, itemGap: number): DragPosition {
