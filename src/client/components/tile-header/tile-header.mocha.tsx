@@ -23,7 +23,7 @@ import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-dom/test-utils';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { TileHeader } from './tile-header';
 
 describe('TileHeader', () => {

@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, AttributeInfo } from 'swiv-plywood';
+import { $, AttributeInfo } from 'plywood';
 import { Measure, MeasureJS } from './measure';
 
 describe('Measure', () => {
@@ -63,7 +63,7 @@ describe('Measure', () => {
         "name": "price",
         "type": "NUMBER",
         "unsplitable": true,
-        "makerAction": {
+        "maker": {
           "action": "sum",
           "expression": {
             "name": "price",
@@ -86,7 +86,7 @@ describe('Measure', () => {
         "name": "price",
         "type": "NUMBER",
         "unsplitable": true,
-        "makerAction": {
+        "maker": {
           "action": "min",
           "expression": {
             "name": "price",
@@ -109,7 +109,7 @@ describe('Measure', () => {
         "name": "price",
         "type": "NUMBER",
         "unsplitable": true,
-        "makerAction": {
+        "maker": {
           "action": "max",
           "expression": {
             "name": "price",

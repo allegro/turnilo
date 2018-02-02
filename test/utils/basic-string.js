@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Expression = require('swiv-plywood').Expression;
+const Expression = require('plywood').Expression;
 
 function basicString(thing) {
   return thing.name + ' ~ ' + thing.formula;

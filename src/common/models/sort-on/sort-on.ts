@@ -15,7 +15,7 @@
  */
 
 import { Class, Instance } from 'immutable-class';
-import { $, Expression, RefExpression, SortAction } from 'swiv-plywood';
+import { $, Expression, RefExpression, SortExpression } from 'plywood';
 import { Dimension, DimensionJS } from '../dimension/dimension';
 import { Measure, MeasureJS } from '../measure/measure';
 import { DataCube } from '../data-cube/data-cube';
@@ -57,7 +57,7 @@ export class SortOn implements Instance<SortOnValue, SortOnJS> {
     return new SortOn({ measure });
   }
 
-  static fromSortAction(sortAction: SortAction, dataCube: DataCube, fallbackDimension: Dimension): SortOn {
+  static fromSortExpression(sortAction: SortExpression, dataCube: DataCube, fallbackDimension: Dimension): SortOn {
     if (!sortAction) return SortOn.fromDimension(fallbackDimension);
     var sortOnName = (sortAction.expression as RefExpression).name;
     var measure = dataCube.getMeasure(sortOnName);

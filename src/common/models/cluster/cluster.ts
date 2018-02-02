@@ -15,7 +15,7 @@
  */
 
 import { BaseImmutable, Property } from 'immutable-class';
-import { External } from 'swiv-plywood';
+import { External } from 'plywood';
 import { verifyUrlSafeName } from '../../utils/general/general';
 
 export type SupportedType = 'druid' | 'mysql' | 'postgres';

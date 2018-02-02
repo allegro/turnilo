@@ -23,7 +23,7 @@ import '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-dom/test-utils';
 
-import { TimeRange } from 'swiv-plywood';
+import { TimeRange } from 'plywood';
 import { Highlighter } from './highlighter';
 
 describe('Highlighter', () => {

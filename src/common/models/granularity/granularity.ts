@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TimeBucketAction, NumberBucketAction, ActionJS, Action, ActionValue, TimeRange, PlywoodRange, NumberRange } from 'swiv-plywood';
+import { TimeBucketExpression, NumberBucketExpression, ExpressionJS, Expression, ExpressionValue, TimeRange, PlywoodRange, NumberRange } from 'plywood';
 import { day, hour, minute, Timezone, Duration } from 'chronoshift';
 
 import {
@@ -24,8 +24,8 @@ import {
 
 const MENU_LENGTH = 5;
 
-export type Granularity = TimeBucketAction | NumberBucketAction;
-export type GranularityJS = string | number | ActionJS;
+export type Granularity = TimeBucketExpression | NumberBucketExpression;
+export type GranularityJS = string | number | ExpressionJS;
 export type BucketUnit = Duration | number;
 export type ContinuousDimensionKind = 'time' | 'number';
 
@@ -149,22 +149,22 @@ function getHelperForRange(input: PlywoodRange) {
 }
 
 function getBucketSize(input: Granularity): number {
-  if (input instanceof TimeBucketAction) return input.duration.getCanonicalLength();
-  if (input instanceof NumberBucketAction) return input.size;
+  if (input instanceof TimeBucketExpression) return input.duration.getCanonicalLength();
+  if (input instanceof NumberBucketExpression) return input.size;
   throw new Error(`unrecognized granularity: ${input} must be of type TimeBucketAction or NumberBucketAction`);
 }
 
 function getBucketUnit(input: Granularity): BucketUnit {
-  if (input instanceof TimeBucketAction) return input.duration;
-  if (input instanceof NumberBucketAction) return input.size;
+  if (input instanceof TimeBucketExpression) return input.duration;
+  if (input instanceof NumberBucketExpression) return input.size;
   throw new Error(`unrecognized granularity: ${input} must be of type TimeBucketAction or NumberBucketAction`);
 }
 
 function bucketUnitToGranularity(input: BucketUnit): Granularity {
   if (input instanceof Duration) {
-    return new TimeBucketAction({ duration: input });
+    return new TimeBucketExpression({ duration: input });
   } else if (!isNaN(input)) {
-    return new NumberBucketAction({ size: input, offset: 0 });
+    return new NumberBucketExpression({ size: input, offset: 0 });
   }
   throw new Error(`unrecognized bucket unit: ${input} must be of type number or Duration`);
 }
@@ -201,22 +201,22 @@ function generateGranularitySet(allGranularities: Granularity[], bucketedBy: Gra
 }
 
 export function granularityFromJS(input: GranularityJS): Granularity {
-  if (typeof input === 'number') return NumberBucketAction.fromJS({ size: input });
-  if (typeof input === 'string') return TimeBucketAction.fromJS({ duration: input });
+  if (typeof input === 'number') return NumberBucketExpression.fromJS({ size: input });
+  if (typeof input === 'string') return TimeBucketExpression.fromJS({ duration: input });
 
   if (typeof input === "object") {
     if (!hasOwnProperty(input, 'action')) {
       throw new Error(`could not recognize object as action`);
     }
-    return (Action.fromJS(input as ActionJS) as Granularity);
+    return (Expression.fromJS(input as ExpressionJS) as Granularity);
   }
   throw new Error(`input should be of type number, string, or action`);
 }
 
 export function granularityToString(input: Granularity): string {
-  if (input instanceof TimeBucketAction) {
+  if (input instanceof TimeBucketExpression) {
     return input.duration.toString();
-  } else if (input instanceof NumberBucketAction) {
+  } else if (input instanceof NumberBucketExpression) {
     return input.size.toString();
   }
 
@@ -226,7 +226,7 @@ export function granularityToString(input: Granularity): string {
 export function granularityEquals(g1: Granularity, g2: Granularity) {
   if (!Boolean(g1) === Boolean(g2)) return false;
   if (g1 === g2 ) return true;
-  return (g1 as Action).equals(g2 as Action);
+  return (g1 as Expression).equals(g2 as Expression);
 }
 
 export function granularityToJS(input: Granularity): GranularityJS {
@@ -244,15 +244,15 @@ export function granularityToJS(input: Granularity): GranularityJS {
 }
 
 export function updateBucketSize(existing: Granularity, newInput: Granularity): Granularity {
-  if (newInput instanceof TimeBucketAction) {
-    return new TimeBucketAction({
-      duration: (newInput as TimeBucketAction).duration,
-      timezone: (existing as TimeBucketAction).timezone
+  if (newInput instanceof TimeBucketExpression) {
+    return new TimeBucketExpression({
+      duration: (newInput as TimeBucketExpression).duration,
+      timezone: (existing as TimeBucketExpression).timezone
     });
-  } else if (newInput instanceof NumberBucketAction) {
-    var value: ActionValue = { size: (newInput as NumberBucketAction).size };
-    if ((existing as NumberBucketAction).offset) value.offset = (existing as NumberBucketAction).offset;
-    return new NumberBucketAction(value);
+  } else if (newInput instanceof NumberBucketExpression) {
+    var value: ExpressionValue = { size: (newInput as NumberBucketExpression).size };
+    if ((existing as NumberBucketExpression).offset) value.offset = (existing as NumberBucketExpression).offset;
+    return new NumberBucketExpression(value);
   }
   throw new Error(`unrecognized granularity: ${newInput} must be of type TimeBucket or NumberBucket`);
 }

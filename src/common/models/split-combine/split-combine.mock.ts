@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
+import { SortExpression } from "plywood";
+
 export class SplitCombineMock {
   public static get TIME_JS() {
     return {
         expression: { op: 'ref', name: 'time' },
         sortAction: {
-          action: 'sort',
-          direction: 'ascending',
+          op: 'sort',
+          direction: SortExpression.ASCENDING,
           expression: {
             op: 'ref',
             name: 'time'
           }
         },
         limitAction: {
-          action: 'limit',
+          op: 'limit',
           limit: 2
         }
       };

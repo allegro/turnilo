@@ -15,7 +15,7 @@
  */
 
 import { Class, Instance, isImmutableClass } from 'immutable-class';
-import { $, Set, valueFromJS, valueToJS, FilterAction, LimitAction } from 'swiv-plywood';
+import { $, Set, valueFromJS, valueToJS, FilterExpression, LimitExpression } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 
 const NULL_COLOR = '#666666';
@@ -223,19 +223,19 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return Set.fromJS(this.toArray());
   }
 
-  public toHavingFilter(segmentName?: string): FilterAction {
+  public toHavingFilter(segmentName?: string): FilterExpression {
     var { dimension, values } = this;
     if (!segmentName) segmentName = dimension;
 
     if (!values) return null;
-    return new FilterAction({
+    return new FilterExpression({
       expression: $(segmentName).in(this.toSet())
     });
   }
 
-  public toLimitAction(): LimitAction {
-    return new LimitAction({
-      limit: this.numColors()
+  public toLimitExpression(): LimitExpression {
+    return new LimitExpression({
+      value: this.numColors()
     });
   }
 

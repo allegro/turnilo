@@ -18,7 +18,7 @@ import './router.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'swiv-plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
 import { replaceHash } from '../../utils/url/url';
 import { extend } from '../../../common/utils/object/object';

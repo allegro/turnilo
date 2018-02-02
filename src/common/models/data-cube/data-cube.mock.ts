@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, Executor, Dataset, basicExecutorFactory } from 'swiv-plywood';
+import { $, Executor, Dataset, basicExecutorFactory } from 'plywood';
 import { DataCube, DataCubeJS } from './data-cube';
 
 var executor = basicExecutorFactory({
@@ -38,7 +38,7 @@ export class DataCubeMock {
         { name: 'articleName', type: 'STRING' },
         { name: 'page', type: 'STRING' },
         { name: 'userChars', type: 'SET/STRING' },
-        { name: 'count', type: 'NUMBER', unsplitable: true, makerAction: { action: 'count' } }
+        { name: 'count', type: 'NUMBER', unsplitable: true, maker: { action: 'count' } }
       ],
       dimensions: [
         {

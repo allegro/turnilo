@@ -15,7 +15,8 @@
  */
 
 import * as Q from 'q';
-import { External, Dataset, basicExecutorFactory, find } from 'swiv-plywood';
+import { SimpleArray} from "immutable-class";
+import { External, Dataset, basicExecutorFactory } from 'plywood';
 import { Logger } from 'logger-tracker';
 import { pluralIfNeeded } from '../../../common/utils/general/general';
 import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";
@@ -79,7 +80,7 @@ export class SettingsManager {
   }
 
   private getClusterManagerFor(clusterName: string): ClusterManager {
-    return find(this.clusterManagers, (clusterManager) => clusterManager.cluster.name === clusterName);
+    return SimpleArray.find(this.clusterManagers, (clusterManager) => clusterManager.cluster.name === clusterName);
   }
 
   private addClusterManager(cluster: Cluster, dataCubes: DataCube[]): Q.Promise<any> {
@@ -117,7 +118,7 @@ export class SettingsManager {
   }
 
   private getFileManagerFor(uri: string): FileManager {
-    return find(this.fileManagers, (fileManager) => fileManager.uri === uri);
+    return SimpleArray.find(this.fileManagers, (fileManager) => fileManager.uri === uri);
   }
 
   private addFileManager(dataCube: DataCube): Q.Promise<any> {

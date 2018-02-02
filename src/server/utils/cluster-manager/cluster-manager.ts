@@ -16,7 +16,8 @@
 
 import * as path from 'path';
 import * as Q from 'q';
-import { External, findByName } from 'swiv-plywood';
+import { NamedArray} from "immutable-class";
+import { External } from 'plywood';
 import { Logger } from 'logger-tracker';
 import { DruidRequestDecorator } from 'plywood-druid-requester';
 import { properRequesterFactory } from '../requester/requester';
@@ -393,7 +394,7 @@ export class ClusterManager {
   }
 
   public getExternalByName(name: string): External {
-    var managedExternal = findByName(this.managedExternals, name);
+    var managedExternal = NamedArray.findByName(this.managedExternals, name);
     return managedExternal ? managedExternal.external : null;
   }
 

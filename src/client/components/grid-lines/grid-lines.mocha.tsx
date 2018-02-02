@@ -25,7 +25,7 @@ import * as TestUtils from 'react-dom/test-utils';
 
 import { StageMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { GridLines } from './grid-lines';
 
 describe('GridLines', () => {

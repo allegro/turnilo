@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance, immutableArraysEqual } from 'immutable-class';
-import { findByName } from 'swiv-plywood';
+import { Class, Instance, immutableArraysEqual, NamedArray } from 'immutable-class';
 
 import { Manifest } from '../manifest/manifest';
 import { CollectionTile, CollectionTileJS, CollectionTileContext } from '../index';
@@ -117,7 +116,7 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
   }
 
   public findByName(name: string): CollectionTile {
-    return findByName(this.tiles, name);
+    return NamedArray.findByName(this.tiles, name);
   }
 
   public isNameAvailable(name: string): boolean {

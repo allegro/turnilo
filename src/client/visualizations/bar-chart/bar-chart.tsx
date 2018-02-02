@@ -19,7 +19,7 @@ import './bar-chart.scss';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
-import { r, Range, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, TimeRange, PlywoodRange, NumberRange } from 'swiv-plywood';
+import { r, Range, Dataset, Datum, PseudoDatum, SortExpression, PlywoodValue, Set, TimeRange, PlywoodRange, NumberRange } from 'plywood';
 
 import {
   Stage,
@@ -600,7 +600,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     var labels: JSX.Element[] = [];
     if (dimension.canBucketByDefault()) {
       var lastIndex = data.length - 1;
-      var ascending = split.sortAction.direction === SortAction.ASCENDING;
+      var ascending = split.sortAction.direction === SortExpression.ASCENDING;
       var leftThing = ascending ? 'start' : 'end';
       var rightThing = ascending ? 'end' : 'start';
       data.forEach((d, i) => {

@@ -16,11 +16,11 @@
 
 import * as Q from 'q';
 import { List, OrderedSet } from 'immutable';
-import { Class, Instance, immutableEqual, immutableArraysEqual, immutableLookupsEqual } from 'immutable-class';
+import { Class, Instance, immutableEqual, immutableArraysEqual, immutableLookupsEqual, NamedArray } from 'immutable-class';
 import { Duration, Timezone, second } from 'chronoshift';
 import { $, ply, r, Expression, ExpressionJS, Executor, External, RefExpression, basicExecutorFactory, Dataset,
-  Attributes, AttributeInfo, AttributeJSs, SortAction, SimpleFullType, DatasetFullType, PlyTypeSimple,
-  CustomDruidAggregations, CustomDruidTransforms, ExternalValue, findByName } from 'swiv-plywood';
+  Attributes, AttributeInfo, AttributeJSs, SortExpression, SimpleFullType, DatasetFullType, PlyTypeSimple,
+  CustomDruidAggregations, CustomDruidTransforms, ExternalValue } from 'plywood';
 import { hasOwnProperty, verifyUrlSafeName, makeUrlSafeName, makeTitle, immutableListsEqual } from '../../utils/general/general';
 import { getWallTimeString } from '../../utils/time/time';
 import { Dimension, DimensionJS } from '../dimension/dimension';
@@ -797,7 +797,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       if (expression.equals(timeAttribute)) return;
       var references = expression.getFreeReferences();
       for (var reference of references) {
-        if (findByName(attributes, reference)) continue;
+        if (NamedArray.findByName(attributes, reference)) continue;
         attributes.push(AttributeInfo.fromJS({ name: reference, type: 'STRING' }));
       }
     });
@@ -807,7 +807,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       var references = Measure.getAggregateReferences(expression);
       var countDistinctReferences = Measure.getCountDistinctReferences(expression);
       for (var reference of references) {
-        if (findByName(attributes, reference)) continue;
+        if (NamedArray.findByName(attributes, reference)) continue;
         if (countDistinctReferences.indexOf(reference) !== -1) {
           attributes.push(AttributeInfo.fromJS({ name: reference, special: 'unique' }));
         } else {
@@ -837,7 +837,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       var { name, type, special } = newAttribute;
 
       // Already exists as a current attribute
-      if (attributes && findByName(attributes, name)) continue;
+      if (attributes && NamedArray.findByName(attributes, name)) continue;
 
       // Already exists as a current dimension or a measure
       var urlSafeName = makeUrlSafeName(name);
@@ -1010,10 +1010,10 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return this.change('measures', measures);
   }
 
-  public getDefaultSortAction(): SortAction {
-    return new SortAction({
+  public getDefaultSortExpression(): SortExpression {
+    return new SortExpression({
       expression: $(this.defaultSortMeasure),
-      direction: SortAction.DESCENDING
+      direction: SortExpression.DESCENDING
     });
   }
 

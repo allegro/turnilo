@@ -18,7 +18,7 @@ import * as Q from 'q';
 import * as express from 'express';
 import { Response } from 'express';
 import * as supertest from 'supertest';
-import { $, ply, r } from 'swiv-plywood';
+import { $, ply, r } from 'plywood';
 import * as bodyParser from 'body-parser';
 
 import { AppSettings } from '../../../common/models/index';

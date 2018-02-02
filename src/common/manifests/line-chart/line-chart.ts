@@ -15,7 +15,7 @@
  */
 
 import { List } from 'immutable';
-import { $, SortAction } from 'swiv-plywood';
+import { $, SortExpression } from 'plywood';
 import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
 import {
   CircumstancesHandler
@@ -51,16 +51,16 @@ var handler = CircumstancesHandler.EMPTY()
     var continuousDimension = dataCube.getDimensionByExpression(continuousSplit.expression);
     var sortStrategy = continuousDimension.sortStrategy;
 
-    var sortAction: SortAction = null;
+    var sortAction: SortExpression = null;
     if (sortStrategy && sortStrategy !== 'self') {
-      sortAction = new SortAction({
+      sortAction = new SortExpression({
         expression: $(sortStrategy),
-        direction: SortAction.ASCENDING
+        direction: SortExpression.ASCENDING
       });
     } else {
-      sortAction = new SortAction({
+      sortAction = new SortExpression({
         expression: $(continuousDimension.name),
-        direction: SortAction.ASCENDING
+        direction: SortExpression.ASCENDING
       });
     }
 
@@ -68,13 +68,13 @@ var handler = CircumstancesHandler.EMPTY()
 
     // Fix time sort
     if (!sortAction.equals(continuousSplit.sortAction)) {
-      continuousSplit = continuousSplit.changeSortAction(sortAction);
+      continuousSplit = continuousSplit.changeSortExpression(sortAction);
       autoChanged = true;
     }
 
     // Fix time limit
     if (continuousSplit.limitAction && continuousDimension.kind === 'time') {
-      continuousSplit = continuousSplit.changeLimitAction(null);
+      continuousSplit = continuousSplit.changeLimitExpression(null);
       autoChanged = true;
     }
 
@@ -93,25 +93,25 @@ var handler = CircumstancesHandler.EMPTY()
     var timeSplit = splits.get(0);
     var timeDimension = timeSplit.getDimension(dataCube.dimensions);
 
-    var sortAction: SortAction = new SortAction({
+    var sortAction: SortExpression = new SortExpression({
       expression: $(timeDimension.name),
-      direction: SortAction.ASCENDING
+      direction: SortExpression.ASCENDING
     });
 
     // Fix time sort
     if (!sortAction.equals(timeSplit.sortAction)) {
-      timeSplit = timeSplit.changeSortAction(sortAction);
+      timeSplit = timeSplit.changeSortExpression(sortAction);
     }
 
     // Fix time limit
     if (timeSplit.limitAction) {
-      timeSplit = timeSplit.changeLimitAction(null);
+      timeSplit = timeSplit.changeLimitExpression(null);
     }
 
     let colorSplit = splits.get(1);
 
     if (!colorSplit.sortAction) {
-      colorSplit = colorSplit.changeSortAction(dataCube.getDefaultSortAction());
+      colorSplit = colorSplit.changeSortExpression(dataCube.getDefaultSortExpression());
     }
 
     var colorSplitDimension = dataCube.getDimensionByExpression(colorSplit.expression);
@@ -133,27 +133,27 @@ var handler = CircumstancesHandler.EMPTY()
 
     let autoChanged = false;
 
-    var sortAction: SortAction = new SortAction({
+    var sortAction: SortExpression = new SortExpression({
       expression: $(timeDimension.name),
-      direction: SortAction.ASCENDING
+      direction: SortExpression.ASCENDING
     });
 
     // Fix time sort
     if (!sortAction.equals(timeSplit.sortAction)) {
-      timeSplit = timeSplit.changeSortAction(sortAction);
+      timeSplit = timeSplit.changeSortExpression(sortAction);
       autoChanged = true;
     }
 
     // Fix time limit
     if (timeSplit.limitAction) {
-      timeSplit = timeSplit.changeLimitAction(null);
+      timeSplit = timeSplit.changeLimitExpression(null);
       autoChanged = true;
     }
 
     let colorSplit = splits.get(0);
 
     if (!colorSplit.sortAction) {
-      colorSplit = colorSplit.changeSortAction(dataCube.getDefaultSortAction());
+      colorSplit = colorSplit.changeSortExpression(dataCube.getDefaultSortExpression());
       autoChanged = true;
     }
 

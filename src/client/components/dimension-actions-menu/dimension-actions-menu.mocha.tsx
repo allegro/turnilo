@@ -24,7 +24,7 @@ import '../../utils/test-utils/index';
 import * as TestUtils from 'react-dom/test-utils';
 import { findDOMNode } from '../../utils/test-utils/index';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { DimensionActionsMenu } from './dimension-actions-menu';
 
 import { EssenceMock, StageMock, DimensionMock } from '../../../common/models/mocks';

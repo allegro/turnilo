@@ -17,7 +17,7 @@
 import './pinboard-panel.scss';
 
 import * as React from 'react';
-import { $, Expression, SortAction } from 'swiv-plywood';
+import { $, Expression, SortExpression } from 'plywood';
 import { STRINGS } from '../../config/constants';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { Clicker, Essence, Timekeeper, SortOn, VisStrategy, Colors } from '../../../common/models/index';
@@ -90,7 +90,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       if (dimension) {
         var split = splits.findSplitForDimension(dimension);
         if (split) {
-          return SortOn.fromSortAction(split.sortAction, dataCube, dimension);
+          return SortOn.fromSortExpression(split.sortAction, dataCube, dimension);
         }
       }
     }
@@ -106,8 +106,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         var split = splits.findSplitForDimension(dimension);
         if (split) {
           var sortAction = split.sortAction;
-          var direction = sortAction ? sortAction.direction : SortAction.DESCENDING;
-          var newSplit = split.changeSortAction(new SortAction({
+          var direction = sortAction ? sortAction.direction : SortExpression.DESCENDING;
+          var newSplit = split.changeSortExpression(new SortExpression({
             expression: sortOn.getExpression(),
             direction
           }));

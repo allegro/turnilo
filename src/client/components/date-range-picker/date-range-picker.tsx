@@ -18,7 +18,7 @@ import './date-range-picker.scss';
 
 import * as React from 'react';
 import { Timezone, Duration, second, minute, hour, day, week, month, year } from 'chronoshift';
-import { TimeRange } from 'swiv-plywood';
+import { TimeRange } from 'plywood';
 import {
   prependDays, appendDays, datesEqual, monthToWeeks, shiftOneDay, getWallTimeMonthWithYear,
   getWallTimeDay, wallTimeInclusiveEndEqual, getEndWallTimeInclusive
@@ -218,7 +218,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     const { activeMonthStartDate, selectionSet } = this.state;
     if (!activeMonthStartDate) return null;
 
-    var isSingleDate = endTime ? getWallTimeDay(startTime, timezone) === getEndWallTimeInclusive(endTime, timezone).getDate() : true;
+    var isSingleDate = endTime ? getWallTimeDay(startTime, timezone) === getEndWallTimeInclusive(endTime, timezone) : true;
     return <div className="date-range-picker">
       <div className="side-by-side">
         <DateRangeInput type="start" time={startTime} timezone={timezone} onChange={onStartChange.bind(this)}/>

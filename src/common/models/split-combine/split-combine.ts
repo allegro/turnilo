@@ -17,22 +17,22 @@
 import { List } from 'immutable';
 import { Class, Instance } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
-import { $, Expression, ChainExpression, ExpressionJS, Action, ActionJS, SortAction, LimitAction, TimeBucketAction, NumberBucketAction } from 'swiv-plywood';
+import { $, Expression, ChainableExpression, ExpressionJS, SortExpression, LimitExpression, TimeBucketExpression, NumberBucketExpression } from 'plywood';
 import { Dimension } from '../dimension/dimension';
 
 export interface SplitCombineValue {
   expression: Expression;
-  bucketAction: Action;
-  sortAction: SortAction;
-  limitAction: LimitAction;
+  bucketAction: Expression;
+  sortAction: SortExpression;
+  limitAction: LimitExpression;
 }
 
 export type SplitCombineJS = string | SplitCombineJSFull
 export interface SplitCombineJSFull {
   expression: ExpressionJS;
-  bucketAction?: ActionJS;
-  sortAction?: ActionJS;
-  limitAction?: ActionJS;
+  bucketAction?: ExpressionJS;
+  sortAction?: ExpressionJS;
+  limitAction?: ExpressionJS;
 }
 
 export interface SplitCombineContext {
@@ -75,18 +75,18 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
         limitAction: null
       };
 
-      if (parameters.bucketAction) value.bucketAction = Action.fromJS(parameters.bucketAction);
-      if (parameters.sortAction) value.sortAction = SortAction.fromJS(parameters.sortAction);
-      if (parameters.limitAction) value.limitAction = LimitAction.fromJS(parameters.limitAction);
+      if (parameters.bucketAction) value.bucketAction = Expression.fromJS(parameters.bucketAction);
+      if (parameters.sortAction) value.sortAction = SortExpression.fromJS(parameters.sortAction);
+      if (parameters.limitAction) value.limitAction = LimitExpression.fromJS(parameters.limitAction);
       return new SplitCombine(value);
     }
   }
 
 
   public expression: Expression;
-  public bucketAction: Action;
-  public sortAction: SortAction;
-  public limitAction: LimitAction;
+  public bucketAction: Expression;
+  public sortAction: SortExpression;
+  public limitAction: LimitExpression;
 
   constructor(parameters: SplitCombineValue) {
     this.expression = parameters.expression;
@@ -150,46 +150,46 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     return this.toSplitExpression().toString();
   }
 
-  public getNormalizedSortAction(dimensions: List<Dimension>): SortAction {
+  public getNormalizedSortExpression(dimensions: List<Dimension>): SortExpression {
     const { sortAction } = this;
     var dimension = this.getDimension(dimensions);
     if (!sortAction) return null;
     if (sortAction.refName() === dimension.name) {
-      return sortAction.changeExpression($(SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER)) as SortAction;
+      return sortAction.changeExpression($(SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER)) as SortExpression;
     }
     return sortAction;
   }
 
-  public changeBucketAction(bucketAction: Action): SplitCombine {
+  public changeBucketAction(bucketAction: Expression): SplitCombine {
     var value = this.valueOf();
     value.bucketAction = bucketAction;
     return new SplitCombine(value);
   }
 
-  public changeSortAction(sortAction: SortAction): SplitCombine {
+  public changeSortExpression(sortAction: SortExpression): SplitCombine {
     var value = this.valueOf();
     value.sortAction = sortAction;
     return new SplitCombine(value);
   }
 
-  public changeSortActionFromNormalized(sortAction: SortAction, dimensions: List<Dimension>): SplitCombine {
+  public changeSortExpressionFromNormalized(sortAction: SortExpression, dimensions: List<Dimension>): SplitCombine {
     if (sortAction.refName() === SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER) {
       var dimension = Dimension.getDimensionByExpression(dimensions, this.expression);
       if (!dimension) throw new Error('can not find dimension for split');
-      sortAction = sortAction.changeExpression($(dimension.name)) as SortAction;
+      sortAction = sortAction.changeExpression($(dimension.name)) as SortExpression;
     }
-    return this.changeSortAction(sortAction);
+    return this.changeSortExpression(sortAction);
   }
 
-  public changeLimitAction(limitAction: LimitAction): SplitCombine {
+  public changeLimitExpression(limitAction: LimitExpression): SplitCombine {
     var value = this.valueOf();
     value.limitAction = limitAction;
     return new SplitCombine(value);
   }
 
   public changeLimit(limit: number): SplitCombine {
-    var limitAction = limit === null ? null : new LimitAction({ limit });
-    return this.changeLimitAction(limitAction);
+    var limitAction = limit === null ? null : new LimitExpression({ size: limit });
+    return this.changeLimitExpression(limitAction);
   }
 
   public timezoneDependant(): boolean {
@@ -209,9 +209,9 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
 
   public getBucketTitle(): string {
     var bucketAction = this.bucketAction;
-    if (bucketAction instanceof TimeBucketAction) {
+    if (bucketAction instanceof TimeBucketExpression) {
       return ` (${bucketAction.duration.getDescription(true)})`;
-    } else if (bucketAction instanceof NumberBucketAction) {
+    } else if (bucketAction instanceof NumberBucketExpression) {
       return ` (by ${bucketAction.size})`;
     }
     return '';

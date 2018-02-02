@@ -2,7 +2,7 @@ import './name-description-modal.scss';
 
 import * as React from 'react';
 
-import { $, Expression, Executor, Dataset } from 'swiv-plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { Collection, Essence, CollectionTile, DataCube } from '../../../common/models/index';
 import { classNames } from '../../utils/dom/dom';
 import { ImmutableFormDelegate, ImmutableFormState } from '../../utils/immutable-form-delegate/immutable-form-delegate';

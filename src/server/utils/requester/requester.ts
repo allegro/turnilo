@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, retryRequesterFactory, verboseRequesterFactory, concurrentLimitRequesterFactory } from 'swiv-plywood';
+import { $, retryRequesterFactory, verboseRequesterFactory, concurrentLimitRequesterFactory } from 'plywood';
 import { druidRequesterFactory, DruidRequestDecorator } from 'plywood-druid-requester';
 import { mySqlRequesterFactory } from 'plywood-mysql-requester';
 import { postgresRequesterFactory } from 'plywood-postgres-requester';

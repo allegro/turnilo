@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, SortAction } from 'swiv-plywood';
+import { $, SortExpression } from 'plywood';
 import { Locale } from '../../common/utils/time/time';
 
 export const TITLE_HEIGHT = 36;

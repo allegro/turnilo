@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
 import { isDate } from 'chronoshift';
-import { $, Dataset, PlywoodValue, Datum, AttributeInfo } from 'swiv-plywood';
+import { $, Dataset, PlywoodValue, Datum, AttributeInfo, Expression } from 'plywood';
 import { Essence, Stage, DataCube, Timekeeper } from '../../../common/models/index';
 
 import { Fn, makeTitle, arraySum } from '../../../common/utils/general/general';
@@ -239,7 +239,8 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       var cols: JSX.Element[] = [];
       attributes.forEach((attribute: AttributeInfo) => {
         const name = attribute.name;
-        const value: PlywoodValue = datum[name];
+        const datumAttribute = datum[name]
+        const value = (datumAttribute instanceof Expression) ? datumAttribute.resolve(datum).simplify() : datum[name];
         const colStyle = {
           width: getColumnWidth(attribute)
         };

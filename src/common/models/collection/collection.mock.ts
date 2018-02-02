@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $ } from 'swiv-plywood';
+import { $ } from 'plywood';
 import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { CollectionTileMock } from "../collection-tile/collection-tile.mock";
 import { Collection, CollectionJS, CollectionContext } from './collection';

@@ -17,7 +17,10 @@
 import { List } from 'immutable';
 import { Class, Instance } from 'immutable-class';
 import { Timezone, Duration } from 'chronoshift';
-import { $, r, Expression, LiteralExpression, ExpressionJS, InAction, Set, Range, TimeRange } from 'swiv-plywood';
+import {
+  $, r, Expression, LiteralExpression, ExpressionJS, InExpression, Set, Range, TimeRange,
+  ChainableExpression, ChainableUnaryExpression, AndExpression
+} from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
 import { FilterClause, FilterClauseJS, FilterSelection } from '../filter-clause/filter-clause';
@@ -70,8 +73,10 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     var clauses: FilterClause[] = null;
     if (expression.equals(Expression.TRUE)) {
       clauses = [];
+    } else if (expression instanceof AndExpression) {
+      clauses = expression.getExpressionList().map(c => FilterClause.fromExpression(c));
     } else {
-      clauses = (expression.getExpressionPattern('and') || [expression]).map(c => FilterClause.fromExpression(c));
+      clauses = [FilterClause.fromExpression(expression)]
     }
 
     return new Filter(<List<FilterClause>>List(clauses));

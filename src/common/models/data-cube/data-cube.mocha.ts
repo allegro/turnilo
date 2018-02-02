@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 import * as Q from 'q';
 
-import { $, Expression, AttributeInfo } from 'swiv-plywood';
+import { $, Expression, AttributeInfo } from 'plywood';
 import { Cluster } from "../cluster/cluster";
 import { DataCube, DataCubeJS } from './data-cube';
 import { DataCubeMock} from './data-cube.mock';

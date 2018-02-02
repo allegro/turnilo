@@ -16,7 +16,7 @@
 
 import { List } from 'immutable';
 import { Class, Instance, immutableArraysEqual } from 'immutable-class';
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 import { Granularity, GranularityJS, granularityFromJS, granularityToJS, granularityEquals } from "../granularity/granularity";
 
@@ -153,8 +153,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       }
       var runningActionType: string = null;
       this.granularities = granularities.map((g) => {
-        if (runningActionType === null) runningActionType = g.action;
-        if (g.action !== runningActionType) throw new Error("granularities must have the same type of actions");
+        if (runningActionType === null) runningActionType = g.op;
+        if (g.op !== runningActionType) throw new Error("granularities must have the same type of actions");
         return g;
       });
     }

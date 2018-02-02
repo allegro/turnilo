@@ -15,7 +15,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { $, Expression, RefExpression, External, Datum, Dataset, PlywoodValue, TimeRange, basicExecutorFactory, Executor, AttributeJSs } from 'swiv-plywood';
+import { $, Expression, RefExpression, External, Datum, Dataset, PlywoodValue, TimeRange, basicExecutorFactory, Executor, AttributeJSs } from 'plywood';
 import { Timezone } from 'chronoshift';
 import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
 

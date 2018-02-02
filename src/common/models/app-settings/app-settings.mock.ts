@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, Executor, Dataset, basicExecutorFactory } from 'swiv-plywood';
+import { $, Executor, Dataset, basicExecutorFactory } from 'plywood';
 import { MANIFESTS } from '../../../common/manifests/index';
 import { DataCubeMock } from '../data-cube/data-cube.mock';
 import { CollectionMock } from '../collection/collection.mock';

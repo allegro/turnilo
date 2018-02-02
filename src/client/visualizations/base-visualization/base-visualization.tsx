@@ -17,7 +17,7 @@
 import './base-visualization.scss';
 
 import * as React from 'react';
-import { $, ply, Expression, Dataset } from 'swiv-plywood';
+import { $, ply, Expression, Dataset } from 'plywood';
 import { Measure, VisualizationProps, DatasetLoad, Essence, Timekeeper } from '../../../common/models/index';
 
 import { SPLIT } from '../../config/constants';
@@ -72,11 +72,11 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
     var $main = $('main');
 
-    var query = ply()
+    var query: Expression = ply()
       .apply('main', $main.filter(essence.getEffectiveFilter(timekeeper, this.id).toExpression()));
 
     measures.forEach((measure) => {
-      query = query.performAction(measure.toApplyAction());
+      query = query.performAction(measure.toApplyExpression());
     });
 
     function makeSubQuery(i: number): Expression {
@@ -97,7 +97,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       }
 
       measures.forEach((measure) => {
-        subQuery = subQuery.performAction(measure.toApplyAction());
+        subQuery = subQuery.performAction(measure.toApplyExpression());
       });
 
       var applyForSort = essence.getApplyForSort(sortAction);
@@ -107,7 +107,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       subQuery = subQuery.performAction(sortAction);
 
       if (colors && colors.dimension === splitDimension.name) {
-        subQuery = subQuery.performAction(colors.toLimitAction());
+        subQuery = subQuery.performAction(colors.toLimitExpression());
       } else if (limitAction) {
         subQuery = subQuery.performAction(limitAction);
       } else if (splitDimension.kind === 'number') {

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from 'immutable-class';
-import { find } from 'swiv-plywood';
+import { Class, Instance, SimpleArray } from 'immutable-class';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 import { DataCube } from '../data-cube/data-cube';
 import { Essence, EssenceJS } from '../essence/essence';
@@ -56,7 +55,7 @@ export class CollectionTile implements Instance<CollectionTileValue, CollectionT
     const { dataCubes, visualizations } = context;
 
     var dataCubeName = parameters.dataCube;
-    var dataCube = find(dataCubes, d => d.name === dataCubeName);
+    var dataCube = SimpleArray.find(dataCubes, d => d.name === dataCubeName);
     if (!dataCube) throw new Error(`can not find dataCube '${dataCubeName}'`);
 
     var essence = Essence.fromJS(parameters.essence, { dataCube, visualizations }).updateSplitsWithFilter();

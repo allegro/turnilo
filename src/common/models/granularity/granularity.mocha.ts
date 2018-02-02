@@ -18,7 +18,7 @@ import { expect } from "chai";
 import { immutableArraysEqual } from "immutable-class";
 import { Duration } from "chronoshift";
 import { Granularity, granularityFromJS, granularityEquals, granularityToString, updateBucketSize, getGranularities, getDefaultGranularityForKind, getBestBucketUnitForRange } from "./granularity";
-import { TimeBucketAction, NumberBucketAction, TimeRange, NumberRange } from "swiv-plywood";
+import { TimeBucketExpression, NumberBucketExpression, TimeRange, NumberRange } from "plywood";
 
 describe('Granularity', () => {
   it('fromJSes appropriately', () => {
@@ -29,14 +29,14 @@ describe('Granularity', () => {
       timezone: 'America/Tijuana'
     });
 
-    expect(timeBucketAction1 instanceof TimeBucketAction).to.equal(true);
-    expect((timeBucketAction1 as TimeBucketAction).timezone.toString()).to.equal('America/Tijuana');
-    expect((timeBucketAction1 as TimeBucketAction).duration).to.deep.equal(Duration.fromJS('P1W'));
+    expect(timeBucketAction1 instanceof TimeBucketExpression).to.equal(true);
+    expect((timeBucketAction1 as TimeBucketExpression).timezone.toString()).to.equal('America/Tijuana');
+    expect((timeBucketAction1 as TimeBucketExpression).duration).to.deep.equal(Duration.fromJS('P1W'));
 
     var timeBucketAction2 = granularityFromJS('PT1H');
-    expect(timeBucketAction2 instanceof TimeBucketAction).to.equal(true);
-    expect((timeBucketAction2 as TimeBucketAction).timezone).to.equal(undefined);
-    expect((timeBucketAction2 as TimeBucketAction).duration).to.deep.equal(Duration.fromJS('PT1H'));
+    expect(timeBucketAction2 instanceof TimeBucketExpression).to.equal(true);
+    expect((timeBucketAction2 as TimeBucketExpression).timezone).to.equal(undefined);
+    expect((timeBucketAction2 as TimeBucketExpression).duration).to.deep.equal(Duration.fromJS('PT1H'));
 
     var numberBucketAction1 = granularityFromJS({
       action: 'numberBucket',
@@ -44,15 +44,15 @@ describe('Granularity', () => {
       offset: 1
     });
 
-    expect(numberBucketAction1 instanceof NumberBucketAction).to.equal(true);
-    expect((numberBucketAction1 as NumberBucketAction).size).to.equal(5);
-    expect((numberBucketAction1 as NumberBucketAction).offset).to.equal(1);
+    expect(numberBucketAction1 instanceof NumberBucketExpression).to.equal(true);
+    expect((numberBucketAction1 as NumberBucketExpression).size).to.equal(5);
+    expect((numberBucketAction1 as NumberBucketExpression).offset).to.equal(1);
 
     var numberBucketAction2 = granularityFromJS(5);
 
-    expect(numberBucketAction2 instanceof NumberBucketAction).to.equal(true);
-    expect((numberBucketAction2 as NumberBucketAction).size).to.equal(5);
-    expect((numberBucketAction2 as NumberBucketAction).offset).to.equal(0);
+    expect(numberBucketAction2 instanceof NumberBucketExpression).to.equal(true);
+    expect((numberBucketAction2 as NumberBucketExpression).size).to.equal(5);
+    expect((numberBucketAction2 as NumberBucketExpression).offset).to.equal(0);
 
   });
 

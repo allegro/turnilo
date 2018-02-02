@@ -17,7 +17,7 @@
 import { List } from 'immutable';
 import { BaseImmutable, Property } from 'immutable-class';
 import * as numeral from 'numeral';
-import { $, Expression, Datum, ApplyAction, AttributeInfo, ChainExpression, deduplicateSort } from 'swiv-plywood';
+import { $, Expression, Datum, ApplyExpression, AttributeInfo, ChainableExpression, deduplicateSort } from 'plywood';
 import { verifyUrlSafeName, makeTitle, makeUrlSafeName } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
@@ -65,8 +65,8 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static getAggregateReferences(ex: Expression): string[] {
     var references: string[] = [];
     ex.forEach((ex: Expression) => {
-      if (ex instanceof ChainExpression) {
-        var actions = ex.actions;
+      if (ex instanceof ChainableExpression) {
+        var actions = ex.getArgumentExpressions();
         for (var action of actions) {
           if (action.isAggregate()) {
             references = references.concat(action.getFreeReferences());
@@ -85,10 +85,10 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static getCountDistinctReferences(ex: Expression): string[] {
     var references: string[] = [];
     ex.forEach((ex: Expression) => {
-      if (ex instanceof ChainExpression) {
-        var actions = ex.actions;
+      if (ex instanceof ChainableExpression) {
+        var actions = ex.getArgumentExpressions();
         for (var action of actions) {
-          if (action.action === 'countDistinct') {
+          if (action.op === 'CountDistinct') {
             references = references.concat(action.getFreeReferences());
           }
         }
@@ -120,10 +120,10 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
       }
     }
 
-    var expression = $main.sum(ref);
-    var makerAction = attribute.makerAction;
+    var expression: Expression = $main.sum(ref);
+    var makerAction = attribute.maker;
     if (makerAction) {
-      switch (makerAction.action) {
+      switch (makerAction.op) {
         case 'min':
           expression = $main.min(ref);
           break;
@@ -176,9 +176,9 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     this.formatFn = formatFnFactory(this.getFormat());
   }
 
-  public toApplyAction(): ApplyAction {
+  public toApplyExpression(): ApplyExpression {
     var { name, expression } = this;
-    return new ApplyAction({
+    return new ApplyExpression({
       name: name,
       expression: expression
     });

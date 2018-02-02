@@ -18,7 +18,7 @@ import './data-cube-edit.scss';
 
 import * as React from 'react';
 import { List } from 'immutable';
-import { AttributeInfo } from 'swiv-plywood';
+import { AttributeInfo } from 'plywood';
 import { classNames } from '../../../utils/dom/dom';
 
 import { generateUniqueName } from '../../../../common/utils/string/string';

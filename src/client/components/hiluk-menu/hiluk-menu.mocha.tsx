@@ -22,7 +22,7 @@ import * as TestUtils from 'react-dom/test-utils';
 import { findDOMNode } from '../../utils/test-utils/index';
 import { EssenceMock, TimekeeperMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { HilukMenu } from './hiluk-menu';
 
 describe.skip('HilukMenu', () => {

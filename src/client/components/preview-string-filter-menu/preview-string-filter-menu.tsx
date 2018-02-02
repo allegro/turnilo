@@ -17,7 +17,7 @@
 import './preview-string-filter-menu.scss';
 
 import * as React from "react";
-import { $, Dataset, SortAction, r } from "swiv-plywood";
+import { $, Dataset, SortExpression, r } from "plywood";
 import { Fn, collect } from "../../../common/utils/general/general";
 import { STRINGS, SEARCH_WAIT } from "../../config/constants";
 import { Clicker, Essence, Timekeeper, Filter, FilterClause, FilterMode, Dimension } from "../../../common/models/index";
@@ -81,7 +81,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
       .filter(filterExpression)
       .split(dimension.expression, dimension.name)
       .apply('MEASURE', measureExpression)
-      .sort($('MEASURE'), SortAction.DESCENDING)
+      .sort($('MEASURE'), SortExpression.DESCENDING)
       .limit(TOP_N + 1);
 
     this.setState({

@@ -41,7 +41,7 @@
     "test:server": "node_modules/.bin/mocha --require ts-node/register src/server/**/*.mocha.ts",
     "start": "./bin/turnilo",
     "start:dev": "NODE_ENV=dev-hrm ./bin/turnilo",
-    "build": "npm run clean && npm run tsc -- -p tsconfig-server.json  && webpack --config config/webpack.prod.js",
+    "build": "npm run clean && npm run tsc -- -p tsconfig.json  && webpack --config config/webpack.prod.js",
     "build:dev": "npm run clean && npm run tsc -- -p tsconfig-server.json --declaration true && webpack --config config/webpack.dev.js",
     "clean": "rimraf build/*",
     "tsc": "node_modules/.bin/tsc"
@@ -75,7 +75,7 @@
     "react-addons-css-transition-group": "15.6.2",
     "react-dom": "16.2.0",
     "request": "2.83.0",
-    "swiv-plywood": "0.12.17"
+    "plywood": "0.14.6"
   },
   "devDependencies": {
     "@types/body-parser": "1.16.8",

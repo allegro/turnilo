@@ -15,7 +15,7 @@
  */
 
 import * as filesaver from 'browser-filesaver';
-import { Dataset } from 'swiv-plywood';
+import { Dataset } from 'plywood';
 
 export type FileFormat = "csv" | "tsv" | "json" | "txt";
 
