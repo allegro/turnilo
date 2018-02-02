@@ -19,12 +19,6 @@ import { Timezone, Duration, day, month } from 'chronoshift';
 import { TimeRange } from 'swiv-plywood';
 import { datesEqual, prependDays, appendDays, getEndWallTimeInclusive, getWallTimeDay, getWallTimeMonthWithYear, formatTimeBasedOnGranularity, formatTimeRange } from './time';
 
-var { WallTime } = require('chronoshift');
-if (!WallTime.rules) {
-  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
-  WallTime.init(tzData.rules, tzData.zones);
-}
-
 describe('Time', () => {
   it('calculates date equality properly', () => {
     expect(datesEqual(null, new Date()), 'null and not null').to.equal(false);

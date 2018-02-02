@@ -23,12 +23,6 @@ import { Timezone } from 'chronoshift';
 import '../../utils/test-utils/index';
 
 import { DateRangePicker } from './date-range-picker';
-var { WallTime } = require('chronoshift');
-if (!WallTime.rules) {
-  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
-  WallTime.init(tzData.rules, tzData.zones);
-}
-
 
 describe('DateRangePicker', () => {
   it('adds the correct class', () => {

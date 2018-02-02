@@ -18,12 +18,6 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 import { Customization, CustomizationJS } from './customization';
 
-var { WallTime } = require('chronoshift');
-if (!WallTime.rules) {
-  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
-  WallTime.init(tzData.rules, tzData.zones);
-}
-
 describe('Customization', () => {
   it('is an immutable class', () => {
     testImmutableClass<CustomizationJS>(Customization, [

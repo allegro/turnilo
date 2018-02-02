@@ -19,12 +19,6 @@ import { ImmutableUtils } from '../../utils/index';
 import { Timezone } from 'chronoshift';
 import { ExternalView, ExternalViewValue} from '../external-view/external-view';
 
-var { WallTime } = require('chronoshift');
-if (!WallTime.rules) {
-  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
-  WallTime.init(tzData.rules, tzData.zones);
-}
-
 export interface CustomizationValue {
   title?: string;
   headerBackground?: string;

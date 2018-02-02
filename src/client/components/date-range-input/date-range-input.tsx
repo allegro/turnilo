@@ -17,7 +17,7 @@
 import './date-range-input.scss';
 
 import * as React from 'react';
-import { Timezone, WallTime } from 'chronoshift';
+import { moment, Timezone } from 'chronoshift';
 import { getWallTimeString, exclusiveToInclusiveEnd } from '../../../common/utils/time/time';
 
 export interface DateRangeInputProps extends React.Props<any> {
@@ -91,12 +91,12 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
       onChange(null);
     } else {
       // Convert from WallTime to UTC
-      var possibleDate = WallTime.WallTimeToUTC(
+      var possibleDate = moment.tz(
         timezone.toString(),
         possibleDate.getUTCFullYear(), possibleDate.getUTCMonth(), day,
         possibleDate.getUTCHours(), possibleDate.getUTCMinutes(), possibleDate.getUTCSeconds(),
         possibleDate.getUTCMilliseconds()
-      ) as Date;
+      ).toDate() as Date;
 
       onChange(possibleDate);
     }

@@ -24,10 +24,6 @@ import * as TestUtils from 'react-dom/test-utils';
 
 import { DataCubeMock, TimekeeperMock } from '../../../common/models/mocks';
 
-import { WallTime } from 'chronoshift';
-var tzData = require('../../../../node_modules/chronoshift/lib/walltime/walltime-data.js');
-WallTime.init(tzData.rules, tzData.zones);
-
 import { DimensionMeasurePanel } from '../../components/dimension-measure-panel/dimension-measure-panel';
 import { FilterTile } from '../../components/filter-tile/filter-tile';
 import { SplitTile } from '../../components/split-tile/split-tile';

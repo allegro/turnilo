@@ -23,13 +23,6 @@ import * as bodyParser from 'body-parser';
 import * as compress from 'compression';
 import { logAndTrack, LOGGER } from 'logger-tracker';
 
-import { Timezone, WallTime } from 'chronoshift';
-// Init chronoshift
-if (!WallTime.rules) {
-  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
-  WallTime.init(tzData.rules, tzData.zones);
-}
-
 import { GetSettingsOptions } from '../server/utils/settings-manager/settings-manager';
 import { SwivRequest } from './utils/index';
 import { VERSION, AUTH, SERVER_SETTINGS, SETTINGS_MANAGER } from './config';

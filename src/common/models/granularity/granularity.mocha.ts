@@ -20,12 +20,6 @@ import { Duration } from "chronoshift";
 import { Granularity, granularityFromJS, granularityEquals, granularityToString, updateBucketSize, getGranularities, getDefaultGranularityForKind, getBestBucketUnitForRange } from "./granularity";
 import { TimeBucketAction, NumberBucketAction, TimeRange, NumberRange } from "swiv-plywood";
 
-var { WallTime } = require('chronoshift');
-if (!WallTime.rules) {
-  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
-  WallTime.init(tzData.rules, tzData.zones);
-}
-
 describe('Granularity', () => {
   it('fromJSes appropriately', () => {
 

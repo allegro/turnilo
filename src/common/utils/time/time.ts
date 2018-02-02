@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-import * as d3 from 'd3';
-import { Timezone, Duration, WallTime, month, day, hour, minute } from 'chronoshift';
-import { TimeRange } from 'swiv-plywood';
+import { Timezone, Duration, month, day, hour, minute, moment } from 'chronoshift';
+import { Moment } from 'moment';
+import { TimeRange } from 'plywood';
 
-const FORMAT_WITH_YEAR = d3.time.format('%b %-d, %Y');
-const FORMAT_WITHOUT_YEAR = d3.time.format('%b %-d');
+const FORMAT_ISO_WITHOUT_TIMEZONE = "YYYY-MM-DD[T]HH:mm:ss";
 
-const FORMAT_TIME_OF_DAY_WITHOUT_MINUTES = d3.time.format('%-I%p');
-const FORMAT_TIME_OF_DAY_WITH_MINUTES = d3.time.format('%-I:%M%p');
+const FORMAT_WITH_YEAR = 'MMM D, YYYY';
+const FORMAT_WITHOUT_YEAR = 'MMM D';
 
-const FORMAT_FULL_MONTH_WITH_YEAR = d3.time.format('%B %Y');
+const FORMAT_TIME_OF_DAY_WITHOUT_MINUTES = 'Ha';
+const FORMAT_TIME_OF_DAY_WITH_MINUTES = 'H:mma';
 
-function formatTimeOfDay(d: Date): string {
-  return d.getMinutes() ? FORMAT_TIME_OF_DAY_WITH_MINUTES(d) : FORMAT_TIME_OF_DAY_WITHOUT_MINUTES(d);
+const FORMAT_FULL_MONTH_WITH_YEAR = 'MMMM YYYY';
+
+function formatTimeOfDay(d: Moment): string {
+  return d.minute() ? d.format(FORMAT_TIME_OF_DAY_WITH_MINUTES) : d.format(FORMAT_TIME_OF_DAY_WITHOUT_MINUTES);
 }
 
 function isCurrentYear(year: number, timezone: Timezone): boolean {
-  var nowWallTime = WallTime.UTCToWallTime(new Date(), timezone.toString());
-  return nowWallTime.getFullYear() === year;
+  var nowWallTime = moment.tz(new Date(), timezone.toString());
+  return nowWallTime.year() === year;
 }
 
 export interface Locale {
@@ -45,8 +47,8 @@ export enum DisplayYear {
   ALWAYS, NEVER, IF_DIFF
 }
 
-export function getEndWallTimeInclusive(exclusiveEnd: Date, timezone: Timezone) {
-  return WallTime.UTCToWallTime(exclusiveToInclusiveEnd(exclusiveEnd), timezone.toString());
+export function getEndWallTimeInclusive(exclusiveEnd: Date, timezone: Timezone): Moment {
+  return moment.tz(exclusiveToInclusiveEnd(exclusiveEnd), timezone.toString());
 }
 
 export function exclusiveToInclusiveEnd(exclusiveEnd: Date): Date {
@@ -55,25 +57,25 @@ export function exclusiveToInclusiveEnd(exclusiveEnd: Date): Date {
 
 export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displayYear: DisplayYear): string {
   var { start, end } = timeRange;
-  var startWallTime = WallTime.UTCToWallTime(start, timezone.toString());
-  var endWallTime = WallTime.UTCToWallTime(end, timezone.toString());
+  const startWallTime = moment.tz(start, timezone.toString());
+  const endWallTime = moment.tz(end, timezone.toString());
   var endWallTimeInclusive = getEndWallTimeInclusive(end, timezone);
 
   var showingYear = true;
   var formatted: string;
-  if (startWallTime.getFullYear() !== endWallTimeInclusive.getFullYear()) {
-    formatted = [FORMAT_WITH_YEAR(startWallTime), FORMAT_WITH_YEAR(endWallTimeInclusive)].join(' - ');
+  if (startWallTime.year() !== endWallTimeInclusive.year()) {
+    formatted = [startWallTime.format(FORMAT_WITH_YEAR), endWallTimeInclusive.format(FORMAT_WITH_YEAR)].join(' - ');
   } else {
-    showingYear = displayYear === DisplayYear.ALWAYS || (displayYear === DisplayYear.IF_DIFF && !isCurrentYear(endWallTimeInclusive.getFullYear(), timezone));
+    showingYear = displayYear === DisplayYear.ALWAYS || (displayYear === DisplayYear.IF_DIFF && !isCurrentYear(endWallTimeInclusive.year(), timezone));
     var fmt = showingYear ? FORMAT_WITH_YEAR : FORMAT_WITHOUT_YEAR;
-    if (startWallTime.getMonth() !== endWallTimeInclusive.getMonth() || startWallTime.getDate() !== endWallTimeInclusive.getDate()) {
-      formatted = [FORMAT_WITHOUT_YEAR(startWallTime), fmt(endWallTimeInclusive)].join(' - ');
+    if (startWallTime.month() !== endWallTimeInclusive.month() || startWallTime.date() !== endWallTimeInclusive.date()) {
+      formatted = [startWallTime.format(FORMAT_WITHOUT_YEAR), endWallTimeInclusive.format(fmt)].join(' - ');
     } else {
-      formatted = fmt(startWallTime);
+      formatted = startWallTime.format(fmt);
     }
   }
 
-  if (startWallTime.getHours() || startWallTime.getMinutes() || endWallTime.getHours() || endWallTime.getMinutes()) {
+  if (startWallTime.hour() || startWallTime.minute() || endWallTime.hour() || endWallTime.minute()) {
     formatted += (showingYear ? ' ' : ', ');
 
     var startTimeStr = formatTimeOfDay(startWallTime).toLowerCase();
@@ -101,8 +103,8 @@ export function monthToWeeks(firstDayOfMonth: Date, timezone: Timezone, locale: 
   let week: Date[] = [];
   let currentPointer = day.floor(firstDayOfMonth, timezone);
   while (currentPointer < firstDayNextMonth) {
-    var wallTime = WallTime.UTCToWallTime(currentPointer, timezone.toString());
-    if ((wallTime.getDay() === locale.weekStart || 0) && week.length > 0) {
+    var wallTime = moment.tz(currentPointer, timezone.toString());
+    if ((wallTime.day() === locale.weekStart || 0) && week.length > 0) {
       weeks.push(week);
       week = [];
     }
@@ -144,35 +146,27 @@ export function datesEqual(d1: Date, d2: Date): boolean {
 }
 
 export function getWallTimeDay(date: Date, timezone: Timezone) {
-  return WallTime.UTCToWallTime(date, timezone.toString()).getDate();
+  return moment.tz(date, timezone.toString()).date();
 }
 
 export function getWallTimeMonthWithYear(date: Date, timezone: Timezone) {
-  return FORMAT_FULL_MONTH_WITH_YEAR(WallTime.UTCToWallTime(date, timezone.toString()));
+  return moment.tz(date, timezone.toString()).format(FORMAT_FULL_MONTH_WITH_YEAR);
 }
 
 export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone): boolean {
   if (!Boolean(d1) === Boolean(d2)) return false;
   if (d1 === d2 ) return true;
-  const d1InclusiveEnd = wallTimeHelper(getEndWallTimeInclusive(d1, timezone));
-  const d2InclusiveEnd = wallTimeHelper(getEndWallTimeInclusive(d2, timezone));
-  return datesEqual(d1InclusiveEnd, d2InclusiveEnd);
+  const d1InclusiveEnd = getEndWallTimeInclusive(d1, timezone);
+  const d2InclusiveEnd = getEndWallTimeInclusive(d2, timezone);
+  return datesEqual(d1InclusiveEnd.toDate(), d2InclusiveEnd.toDate());
 }
 
 export function getWallTimeString(date: Date, timezone: Timezone, includeTime?: boolean, delimiter?: string): string {
-  const wallTimeISOString = cleanISOString(wallTimeHelper(WallTime.UTCToWallTime(date, timezone.toString())).toISOString());
+  const wallTimeISOString = moment.tz(date, timezone.toString()).format(FORMAT_ISO_WITHOUT_TIMEZONE);
   if (includeTime) {
     return wallTimeISOString.replace('T', delimiter || ', ');
   }
   return wallTimeISOString.replace( /:\d\d/, '').split('T')[0];
-}
-
-function wallTimeHelper(wallTime: any) {
-  return wallTime['wallTime'];
-}
-
-function cleanISOString(input: string) {
-  return input.replace(/(\.\d\d\d)?Z?$/, '');
 }
 
 function pad(input: number) {
@@ -181,18 +175,19 @@ function pad(input: number) {
 }
 
 export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Duration, timezone: Timezone, locale: Locale): string {
-  const wallTimeStart = WallTime.UTCToWallTime(range.start, timezone.toString());
+  const wallTimeStart = moment.tz(range.start, timezone.toString());
 
-  const year = wallTimeStart.getFullYear();
-  const month = wallTimeStart.getMonth();
-  const day = wallTimeStart.getDate();
-  const hour = wallTimeStart.getHours();
-  const minute = wallTimeStart.getMinutes();
-  const second = wallTimeStart.getSeconds();
+  const year = wallTimeStart.year();
+  const month = wallTimeStart.month();
+  const day = wallTimeStart.date();
+  const hour = wallTimeStart.hour();
+  const minute = wallTimeStart.minute();
+  const second = wallTimeStart.second();
 
   const monthString = locale.shortMonths[month];
   const hourToTwelve = hour % 12 === 0 ? 12 : hour % 12;
   const amPm = (hour / 12) >= 1 ? 'pm' : 'am';
+
 
   var granularityString = granularity.toJS();
   var unit = granularityString.substring(granularityString.length - 1);
@@ -210,7 +205,7 @@ export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Dura
     case 'W':
       return `${formatTimeRange(range, timezone, DisplayYear.ALWAYS)}`;
     default:
-      return cleanISOString(wallTimeHelper(wallTimeStart).toISOString());
+      return wallTimeStart.format(FORMAT_ISO_WITHOUT_TIMEZONE);
   }
 }
 
