@@ -81,7 +81,7 @@ describe('mkurl router', () => {
         essence: {
           visualization: 'totals',
           timezone: 'Etc/UTC',
-          filter: $('time').in(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS(),
+          filter: $('time').in([new Date('2015-01-01Z'), new Date('2016-01-01Z')]).toJS(),
           pinnedDimensions: [],
           singleMeasure: 'count',
           selectedMeasures: ["count", "added"],
@@ -270,7 +270,7 @@ describe('mkurl router', () => {
         essence: {
           visualization: 'totals',
           timezone: 'Etc/UTC',
-          filter: $('time').in(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS(),
+          filter: $('time').in([new Date('2015-01-01Z'), new Date('2016-01-01Z')]).toJS(),
           pinnedDimensions: [],
           singleMeasure: 'count',
           selectedMeasures: ["count", "added"],

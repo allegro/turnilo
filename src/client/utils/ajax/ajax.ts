@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
 import * as Qajax from 'qajax';
 import { $, Expression, Executor, Dataset, ChainableExpression, SplitExpression, Environment } from 'plywood';
 
@@ -61,7 +60,7 @@ export class Ajax {
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
 
-  static query(options: AjaxOptions): Q.Promise<any> {
+  static query(options: AjaxOptions): Promise<any> {
     var data = options.data;
 
     if (data) {

@@ -772,10 +772,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
     if (dataset && splits.length()) {
       let firstSplitDataSet = dataset.data[0][SPLIT] as Dataset;
       if (registerDownloadableDataset) registerDownloadableDataset(dataset);
-      let flatData = firstSplitDataSet.flatten({
+      let flattened = firstSplitDataSet.flatten({
         order: 'preorder',
-        nestingName: '__nest',
-        parentName: '__parent'
+        nestingName: '__nest'
       });
 
       var maxima = splits.toArray().map(() => 0); // initializing maxima to 0
@@ -783,7 +782,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
       newState.maxNumberOfLeaves = maxima;
 
-      newState.flatData = flatData;
+      newState.flatData = flattened.data;
     }
 
     this.setState(newState);

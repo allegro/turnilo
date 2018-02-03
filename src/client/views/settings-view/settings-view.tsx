@@ -81,10 +81,10 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
           });
         },
         (xhr: XMLHttpRequest) => Notifier.failure('Sorry', `The settings couldn't be loaded`)
-      ).done();
+      );
   }
 
-  onSave(settings: AppSettings, okMessage?: string): Q.Promise<any> {
+  onSave(settings: AppSettings, okMessage?: string): Promise<any> {
     const { onSettingsChange } = this.props;
 
     return Ajax.query({

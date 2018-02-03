@@ -98,19 +98,19 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
-    var { name, special } = attribute;
+    var { name, nativeType } = attribute;
     var $main = $('main');
     var ref = $(name);
 
-    if (special) {
-      if (special === 'unique' || special === 'theta') {
+    if (nativeType) {
+      if (nativeType === 'hyperUnique' || nativeType === 'thetaSketch') {
         return [
           new Measure({
             name: makeUrlSafeName(name),
             formula: $main.countDistinct(ref).toString()
           })
         ];
-      } else if (special === 'histogram') {
+      } else if (nativeType === 'approximateHistogram') {
         return [
           new Measure({
             name: makeUrlSafeName(name + '_p98'),

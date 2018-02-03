@@ -95,7 +95,7 @@ describe('General', () => {
         "fox says %{}%": "%{FOX_SAYS}%"
       };
 
-      var vars: Lookup<string> = {
+      var vars: Record<string, string> = {
         PORT: '1234',
         FOX_SAYS: 'Meow'
       };
@@ -114,7 +114,7 @@ describe('General', () => {
         "fox says %{}%": "%{FOX_SAYS}%"
       };
 
-      var vars: Lookup<string> = {
+      var vars: Record<string, string> = {
         PORT: '1234'
       };
 

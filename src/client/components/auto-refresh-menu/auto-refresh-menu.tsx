@@ -24,7 +24,7 @@ import { STRINGS } from '../../config/constants';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 import { Dropdown } from '../dropdown/dropdown';
 
-const AUTO_REFRESH_LABELS: Lookup<string> = {
+const AUTO_REFRESH_LABELS: Record<string, string> = {
   "null": "Off",
   "PT5S": "Every 5 seconds",
   "PT15S": "Every 15 seconds",

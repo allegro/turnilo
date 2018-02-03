@@ -26,7 +26,7 @@ export interface Formatter {
   (n: number): string;
 }
 
-var scales: Lookup<Lookup<number>> = {
+var scales: Record<string, Record<string, number>> = {
   'a': {
     '': 1,
     'k': 1e3,

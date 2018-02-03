@@ -19,7 +19,10 @@ import './table.scss';
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortExpression, NumberRange } from 'plywood';
+import {
+  $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortExpression,
+  NumberRange, PlywoodValue
+} from 'plywood';
 import { formatterFromData, formatNumberRange, Formatter } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
   Measure, Colors, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';
@@ -202,9 +205,8 @@ export class Table extends BaseVisualization<TableState> {
 
       newState.flatData = dataset.flatten({
         order: 'preorder',
-        nestingName: '__nest',
-        parentName: '__parent'
-      });
+        nestingName: '__nest'
+      }).data;
     }
 
     this.setState(newState);

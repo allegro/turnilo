@@ -437,10 +437,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     </ReactCSSTransitionGroupAsync>;
   }
 
-  saveDataCubes(newSettings: AppSettings): Q.Promise<any> {
-    var deferred = Q.defer<string>();
-
-    Ajax.query({
+  saveDataCubes(newSettings: AppSettings): Promise<any> {
+    return Ajax.query({
       method: "POST",
       url: 'dataCubes',
       data: {
@@ -450,14 +448,11 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       .then(
         (status) => this.setState({
           appSettings: newSettings
-        }, deferred.resolve),
+        }),
         (xhr: XMLHttpRequest) => {
           Notifier.failure('Woops', 'Something bad happened');
-          deferred.reject(xhr.response);
         }
-      ).done();
-
-    return deferred.promise;
+      );
   }
 
   updateDataCube(dataCube: DataCube) {

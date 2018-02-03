@@ -38,7 +38,7 @@ export function updater<T extends Equalable>(oldThings: T[], newThings: T[], upd
   const onUpdate = updatedOptions.onUpdate || noop;
   const onExit = updatedOptions.onExit || noop;
 
-  var initialByKey: Lookup<T> = {};
+  var initialByKey: Record<string, T> = {};
   for (var i = 0; i < oldThings.length; i++) {
     var initialThing = oldThings[i];
     var initialThingKey = key(initialThing);

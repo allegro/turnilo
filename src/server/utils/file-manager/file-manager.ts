@@ -84,7 +84,7 @@ export class FileManager {
           var dataset = Dataset.fromJS(rawData).hide();
 
           if (this.subsetExpression) {
-            dataset = dataset.filter(this.subsetExpression.getFn());
+            dataset = dataset.filter(this.subsetExpression);
           }
 
           this.dataset = dataset;

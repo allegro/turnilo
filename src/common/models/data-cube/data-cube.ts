@@ -49,8 +49,8 @@ function formatTimeDiff(diff: number): string {
 }
 
 function checkUnique(dimensions: List<Dimension>, measures: List<Measure>, dataCubeName: string) {
-  var seenDimensions: Lookup<number> = {};
-  var seenMeasures: Lookup<number> = {};
+  var seenDimensions: Record<string, number> = {};
+  var seenMeasures: Record<string, number> = {};
 
   if (dimensions) {
     dimensions.forEach((d) => {
@@ -85,7 +85,7 @@ export interface DataCubeValue {
   introspection?: Introspection;
   attributeOverrides?: Attributes;
   attributes?: Attributes;
-  derivedAttributes?: Lookup<Expression>;
+  derivedAttributes?: Record<string, Expression>;
 
   dimensions?: List<Dimension>;
   measures?: List<Measure>;
@@ -116,7 +116,7 @@ export interface DataCubeJS {
   introspection?: Introspection;
   attributeOverrides?: AttributeJSs;
   attributes?: AttributeJSs;
-  derivedAttributes?: Lookup<ExpressionJS>;
+  derivedAttributes?: Record<string, ExpressionJS>;
 
   dimensions?: DimensionJS[];
   measures?: MeasureJS[];
@@ -136,7 +136,7 @@ export interface DataCubeJS {
 export interface DataCubeOptions {
   customAggregations?: CustomDruidAggregations;
   customTransforms?: CustomDruidTransforms;
-  druidContext?: Lookup<any>;
+  druidContext?: Record<string, any>;
   priority?: number;
 
   // Deprecated
@@ -157,7 +157,7 @@ export interface DataCubeContext {
 
 export interface LongForm {
   metricColumn: string;
-  possibleAggregates: Lookup<any>;
+  possibleAggregates: Record<string, any>;
   addSubsetFilter?: boolean;
   measures: Array<MeasureJS | LongFormMeasure>;
 }
@@ -171,7 +171,7 @@ export interface LongFormMeasure {
 
 function measuresFromLongForm(longForm: LongForm): Measure[] {
   const { metricColumn, measures, possibleAggregates } = longForm;
-  var myPossibleAggregates: Lookup<Expression> = {};
+  var myPossibleAggregates: Record<string, Expression> = {};
   for (var agg in possibleAggregates) {
     if (!hasOwnProperty(possibleAggregates, agg)) continue;
     myPossibleAggregates[agg] = Expression.fromJSLoose(possibleAggregates[agg]);
@@ -233,9 +233,9 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return candidate instanceof DataCube;
   }
 
-  static queryMaxTime(dataCube: DataCube): Q.Promise<Date> {
+  static queryMaxTime(dataCube: DataCube): Promise<Date> {
     if (!dataCube.executor) {
-      return Q.reject<Date>(new Error('dataCube not ready'));
+      return Promise.reject(new Error('dataCube not ready'));
     }
 
     var ex = ply().apply('maxTime', $('main').max(dataCube.timeAttribute));
@@ -307,7 +307,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     var attributeOverrides = AttributeInfo.fromJSs(attributeOverrideJSs || []);
     var attributes = AttributeInfo.fromJSs(parameters.attributes || []);
-    var derivedAttributes: Lookup<Expression> = null;
+    var derivedAttributes: Record<string, Expression> = null;
     if (parameters.derivedAttributes) {
       derivedAttributes = Expression.expressionLookupFromJS(parameters.derivedAttributes);
     }
@@ -384,7 +384,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public introspection: Introspection;
   public attributes: Attributes;
   public attributeOverrides: Attributes;
-  public derivedAttributes: Lookup<Expression>;
+  public derivedAttributes: Record<string, Expression>;
   public dimensions: List<Dimension>;
   public measures: List<Measure>;
   public timeAttribute: RefExpression;
@@ -576,7 +576,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       externalValue.introspectionStrategy = cluster.getIntrospectionStrategy();
       externalValue.allowSelectQueries = true;
 
-      var externalContext: Lookup<any> = options.druidContext || {};
+      var externalContext: Record<string, any> = options.druidContext || {};
       externalContext['timeout'] = cluster.getTimeout();
       if (options.priority) externalContext['priority'] = options.priority;
       externalValue.context = externalContext;
@@ -597,7 +597,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     var { attributes, derivedAttributes } = this;
     if (!attributes) return null;
 
-    var datasetType: Lookup<SimpleFullType> = {};
+    var datasetType: Record<string, SimpleFullType> = {};
     for (var attribute of attributes) {
       datasetType[attribute.name] = (attribute as any);
     }
@@ -809,7 +809,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       for (var reference of references) {
         if (NamedArray.findByName(attributes, reference)) continue;
         if (countDistinctReferences.indexOf(reference) !== -1) {
-          attributes.push(AttributeInfo.fromJS({ name: reference, special: 'unique' }));
+          attributes.push(AttributeInfo.fromJS({ name: reference, nativeType: 'hyperUnique' }));
         } else {
           attributes.push(AttributeInfo.fromJS({ name: reference, type: 'NUMBER' }));
         }
@@ -834,7 +834,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     var $main = $('main');
 
     for (var newAttribute of newAttributes) {
-      var { name, type, special } = newAttribute;
+      var { name, type, nativeType } = newAttribute;
 
       // Already exists as a current attribute
       if (attributes && NamedArray.findByName(attributes, name)) continue;
@@ -858,7 +858,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           break;
 
         case 'STRING':
-          if (special === 'unique' || special === 'theta') {
+          if (nativeType === 'hyperUnique' || nativeType === 'thetaSketch') {
             if (!autofillMeasures) continue;
 
             var newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
@@ -908,6 +908,20 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           });
           break;
 
+        // TODO: quick fix after upgrade of Plywood to 0.17.26
+        case 'NULL':
+          if (nativeType === 'hyperUnique' || nativeType === 'thetaSketch' || nativeType === 'approximateHistogram') {
+            if (!autofillMeasures) continue;
+
+            var newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
+            newMeasures.forEach((newMeasure) => {
+              if (this.getMeasureByExpression(newMeasure.expression)) return;
+              measures = measures.push(newMeasure);
+            });
+          } else {
+            throw new Error(`unsupported type ${type} with nativeType ${nativeType}`);
+          }
+          break;
         default:
           throw new Error(`unsupported type ${type}`);
       }

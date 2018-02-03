@@ -49,11 +49,11 @@ export interface ClusterManagerOptions {
   verbose?: boolean;
   anchorPath: string;
   initialExternals?: ManagedExternal[];
-  onExternalChange?: (name: string, external: External) => Q.Promise<any>;
+  onExternalChange?: (name: string, external: External) => Promise<any>;
   generateExternalName?: (external: External) => string;
 }
 
-function noop() {}
+function noop(): Promise<any> { return Promise.resolve(null)}
 
 function getSourceFromExternal(external: External): string {
   return String(external.source);
@@ -65,11 +65,11 @@ export class ClusterManager {
   public anchorPath: string;
   public cluster: Cluster;
   public initialConnectionEstablished: boolean;
-  public introspectedSources: Lookup<boolean>;
+  public introspectedSources: Record<string, boolean>;
   public version: string;
   public requester: Requester.PlywoodRequester<any>;
   public managedExternals: ManagedExternal[] = [];
-  public onExternalChange: (name: string, external: External) => void;
+  public onExternalChange: (name: string, external: External) => Promise<any>;
   public generateExternalName: (external: External) => string;
   public requestDecoratorModule: DruidRequestDecoratorModule;
 
@@ -134,15 +134,15 @@ export class ClusterManager {
     }
   }
 
-  private addManagedExternal(managedExternal: ManagedExternal): Q.Promise<any> {
+  private addManagedExternal(managedExternal: ManagedExternal): Promise<any> {
     this.managedExternals.push(managedExternal);
-    return Q(this.onExternalChange(managedExternal.name, managedExternal.external));
+    return this.onExternalChange(managedExternal.name, managedExternal.external);
   }
 
-  private updateManagedExternal(managedExternal: ManagedExternal, newExternal: External): Q.Promise<any> {
+  private updateManagedExternal(managedExternal: ManagedExternal, newExternal: External): Promise<any> {
     if (managedExternal.external.equals(newExternal)) return null;
     managedExternal.external = newExternal;
-    return Q(this.onExternalChange(managedExternal.name, managedExternal.external));
+    return this.onExternalChange(managedExternal.name, managedExternal.external);
   }
 
   private updateRequestDecorator(): void {
@@ -299,9 +299,9 @@ export class ClusterManager {
     );
   }
 
-  private introspectManagedExternal(managedExternal: ManagedExternal): Q.Promise<any> {
+  private introspectManagedExternal(managedExternal: ManagedExternal): Promise<any> {
     const { logger, verbose, cluster } = this;
-    if (managedExternal.suppressIntrospection) return Q(null);
+    if (managedExternal.suppressIntrospection) return Promise.resolve(null);
 
     if (verbose) logger.log(`Cluster '${cluster.name}' introspecting '${managedExternal.name}'`);
     return managedExternal.external.introspect()
@@ -317,9 +317,9 @@ export class ClusterManager {
   }
 
   // See if any new sources were added to the cluster
-  public scanSourceList(): Q.Promise<any> {
+  public scanSourceList(): Promise<any> {
     const { logger, cluster, verbose } = this;
-    if (!cluster.shouldScanSources()) return Q(null);
+    if (!cluster.shouldScanSources()) return Promise.resolve(null);
 
     logger.log(`Scanning cluster '${cluster.name}' for new sources`);
     return (External.getConstructorFor(cluster.type) as any).getSourceList(this.requester)
@@ -327,7 +327,7 @@ export class ClusterManager {
         (sources: string[]) => {
           if (verbose) logger.log(`For cluster '${cluster.name}' got sources: [${sources.join(', ')}]`);
           // For every un-accounted source: make an external and add it to the managed list.
-          var introspectionTasks: Q.Promise<any>[] = [];
+          var introspectionTasks: Promise<any>[] = [];
           sources.forEach((source) => {
             var existingExternalsForSource = this.managedExternals.filter(managedExternal => getSourceFromExternal(managedExternal.external) === source);
 

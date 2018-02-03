@@ -33,8 +33,8 @@ const NORMAL_COLORS = [
   '#904064'
 ];
 
-function valuesToJS(values: Lookup<any>): Lookup<any> {
-  var valuesJS: Lookup<any> = {};
+function valuesToJS(values: Record<string, any>): Record<string, any> {
+  var valuesJS: Record<string, any> = {};
   for (var i = 0; i < NORMAL_COLORS.length; i++) {
     if (!hasOwnProperty(values, i)) continue;
     valuesJS[i] = valueToJS(values[i]);
@@ -50,7 +50,7 @@ function valueEquals(v1: any, v2: any): boolean {
   return false;
 }
 
-function valuesEqual(values1: Lookup<any>, values2: Lookup<any>): boolean {
+function valuesEqual(values1: Record<string, any>, values2: Record<string, any>): boolean {
   if (!Boolean(values1) === Boolean(values2)) return false;
   if (values1 === values2) return true;
   if (!values1 !== !values2) return false;
@@ -64,8 +64,8 @@ function valuesEqual(values1: Lookup<any>, values2: Lookup<any>): boolean {
   return true;
 }
 
-function cloneValues(values: Lookup<any>): Lookup<any> {
-  var newValues: Lookup<any> = {};
+function cloneValues(values: Record<string, any>): Record<string, any> {
+  var newValues: Record<string, any> = {};
   for (var i = 0; i < NORMAL_COLORS.length; i++) {
     if (!hasOwnProperty(values, i)) continue;
     newValues[i] = values[i];
@@ -75,14 +75,14 @@ function cloneValues(values: Lookup<any>): Lookup<any> {
 
 export interface ColorsValue {
   dimension: string;
-  values?: Lookup<any>;
+  values?: Record<string, any>;
   hasNull?: boolean;
   limit?: number;
 }
 
 export interface ColorsJS {
   dimension: string;
-  values?: Lookup<any>;
+  values?: Record<string, any>;
   hasNull?: boolean;
   limit?: number;
 }
@@ -99,7 +99,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   }
 
   static fromValues(dimension: string, values: any[]): Colors {
-    var valueLookup: Lookup<any> = {};
+    var valueLookup: Record<string, any> = {};
     var hasNull = false;
     var n = Math.min(values.length, NORMAL_COLORS.length + 1);
     var i = 0;
@@ -130,7 +130,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     var valuesJS = parameters.values;
     if (valuesJS) {
       var hasNull = Boolean(parameters.hasNull);
-      var values: Lookup<any> = {};
+      var values: Record<string, any> = {};
       for (var i = 0; i < NORMAL_COLORS.length; i++) {
         if (!hasOwnProperty(valuesJS, i)) continue;
         var vJS = valuesJS[i];
@@ -149,7 +149,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
 
 
   public dimension: string;
-  public values: Lookup<any>;
+  public values: Record<string, any>;
   public hasNull: boolean;
   public limit: number;
 

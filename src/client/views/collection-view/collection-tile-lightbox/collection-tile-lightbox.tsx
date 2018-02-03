@@ -37,8 +37,8 @@ export interface CollectionTileLightboxProps extends React.Props<any> {
   timekeeper: Timekeeper;
   onEdit?: (collection: Collection, tile: CollectionTile) => void;
   onDelete?: (collection: Collection, tile: CollectionTile) => void;
-  onDuplicate?: (collection: Collection, tile: CollectionTile) => Q.Promise<string>;
-  onChange?: (collection: Collection, tile: CollectionTile) => Q.Promise<any>;
+  onDuplicate?: (collection: Collection, tile: CollectionTile) => Promise<string>;
+  onChange?: (collection: Collection, tile: CollectionTile) => Promise<any>;
 }
 
 export interface CollectionTileLightboxState {

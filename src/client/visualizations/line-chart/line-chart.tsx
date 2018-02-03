@@ -151,8 +151,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     var closestDatum: Datum;
     if (splitLength > 1) {
-      var flatData = dataset.flatten();
-      closestDatum = findClosest(flatData, dragDate, scaleX, continuousDimension);
+      var flattened = dataset.flatten();
+      closestDatum = findClosest(flattened.data, dragDate, scaleX, continuousDimension);
     } else {
       closestDatum = findClosest(dataset.data, dragDate, scaleX, continuousDimension);
     }

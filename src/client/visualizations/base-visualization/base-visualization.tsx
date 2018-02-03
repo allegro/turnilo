@@ -152,7 +152,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
             error
           });
         }
-      ).done(); // Not calling done() prevents potential error from being bubbled up
+      ); // Not calling done() prevents potential error from being bubbled up
   }
 
   private lastRenderResult: JSX.Element = null;

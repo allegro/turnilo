@@ -188,8 +188,8 @@ export function attributeToYAML(attribute: AttributeInfo): string[] {
     `type: ${attribute.type}`
   ];
 
-  if (attribute.special) {
-    lines.push(`special: ${attribute.special}`);
+  if (attribute.nativeType) {
+    lines.push(`nativeType: ${attribute.nativeType}`);
   }
 
   lines.push('');

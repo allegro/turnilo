@@ -49,10 +49,8 @@ export class CollectionViewDelegate {
     return this.app.setState.call(this.app, state, callback);
   }
 
-  private save(appSettings: AppSettings): Q.Promise<any> {
-    var deferred = Q.defer<string>();
-
-    Ajax.query({
+  private save(appSettings: AppSettings): Promise<any> {
+    return Ajax.query({
       method: "POST",
       url: 'collections',
       data: {
@@ -60,14 +58,11 @@ export class CollectionViewDelegate {
       }
     })
       .then(
-        (status) => this.setState({appSettings}, deferred.resolve),
+        (status) => this.setState({appSettings}),
         (xhr: XMLHttpRequest) => {
           Notifier.failure('Woops', 'Something bad happened');
-          deferred.reject(xhr.response);
         }
-      ).done();
-
-    return deferred.promise;
+      );
   }
 
   private getSettings(): AppSettings {
@@ -78,7 +73,7 @@ export class CollectionViewDelegate {
     return this.app.state.timekeeper;
   }
 
-  addCollection(collection: Collection): Q.Promise<string> {
+  addCollection(collection: Collection): Promise<string> {
     return this
       .save(this.getSettings().addOrUpdateCollection(collection))
       .then(() => `#collection/${collection.name}`);
@@ -100,7 +95,7 @@ export class CollectionViewDelegate {
     });
   }
 
-  addTile(collection: Collection, tile: CollectionTile, index?: number): Q.Promise<string> {
+  addTile(collection: Collection, tile: CollectionTile, index?: number): Promise<string> {
     const appSettings = this.getSettings();
 
     var newTiles = collection.tiles;
@@ -117,7 +112,7 @@ export class CollectionViewDelegate {
     ;
   }
 
-  duplicateTile(collection: Collection, tile: CollectionTile): Q.Promise<string> {
+  duplicateTile(collection: Collection, tile: CollectionTile): Promise<string> {
     var newTile = new CollectionTile(tile.valueOf())
       .changeName(generateUniqueName('i', collection.isNameAvailable))
       .changeTitle(tile.title + ' (copy)')
@@ -160,13 +155,13 @@ export class CollectionViewDelegate {
     }, () => window.location.hash = '#' + dataCube.name);
   }
 
-  updateCollection(collection: Collection): Q.Promise<any> {
+  updateCollection(collection: Collection): Promise<any> {
     const appSettings = this.getSettings();
 
     return this.save(appSettings.addOrUpdateCollection(collection));
   }
 
-  deleteCollection(collection: Collection): Q.Promise<any> {
+  deleteCollection(collection: Collection): Promise<any> {
     const appSettings = this.getSettings();
 
     const oldIndex = appSettings.collections.indexOf(collection);
@@ -181,7 +176,7 @@ export class CollectionViewDelegate {
     });
   }
 
-  updateTile(collection: Collection, tile: CollectionTile): Q.Promise<any> {
+  updateTile(collection: Collection, tile: CollectionTile): Promise<any> {
     const appSettings = this.getSettings();
 
     return this.save(appSettings.addOrUpdateCollection(collection.updateTile(tile)));

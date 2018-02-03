@@ -130,7 +130,7 @@ export function getNumberOfWholeDigits(n: number) {
 }
 
 // replaces things like %{PORT_NAME}% with the value of vs.PORT_NAME
-export function inlineVars(obj: any, vs: Lookup<string>): any {
+export function inlineVars(obj: any, vs: Record<string, string>): any {
   return JSON.parse(JSON.stringify(obj).replace(/%\{[\w\-]+\}%/g, (varName) => {
     varName = varName.substr(2, varName.length - 4);
     var v = vs[varName];
