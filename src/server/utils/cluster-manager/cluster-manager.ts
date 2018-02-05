@@ -19,6 +19,7 @@ import * as Q from 'q';
 import { NamedArray} from "immutable-class";
 import { External } from 'plywood';
 import { Logger } from 'logger-tracker';
+import { PlywoodRequester } from 'plywood-base-api';
 import { DruidRequestDecorator } from 'plywood-druid-requester';
 import { properRequesterFactory } from '../requester/requester';
 import { Cluster } from '../../../common/models/index';
@@ -67,7 +68,7 @@ export class ClusterManager {
   public initialConnectionEstablished: boolean;
   public introspectedSources: Record<string, boolean>;
   public version: string;
-  public requester: Requester.PlywoodRequester<any>;
+  public requester: PlywoodRequester<any>;
   public managedExternals: ManagedExternal[] = [];
   public onExternalChange: (name: string, external: External) => Promise<any>;
   public generateExternalName: (external: External) => string;
