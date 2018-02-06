@@ -621,7 +621,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     dimensions.forEach((dimension) => {
       try {
-        dimension.expression.referenceCheckInTypeContext(mainTypeContext);
+        dimension.expression.changeInTypeContext(mainTypeContext);
       } catch (e) {
         issues.push(`failed to validate dimension '${dimension.name}': ${e.message}`);
       }
@@ -636,7 +636,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     measures.forEach((measure) => {
       try {
-        measure.expression.referenceCheckInTypeContext(measureTypeContext);
+        measure.expression.changeInTypeContext(measureTypeContext);
       } catch (e) {
         var message = e.message;
         // If we get here it is possible that the user has misunderstood what the meaning of a measure is and have tried
@@ -804,12 +804,12 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     measures.forEach((measure) => {
       var expression = measure.expression;
-      var references = Measure.getAggregateReferences(expression);
+      var references = Measure.getReferences(expression);
       var countDistinctReferences = Measure.getCountDistinctReferences(expression);
       for (var reference of references) {
         if (NamedArray.findByName(attributes, reference)) continue;
         if (countDistinctReferences.indexOf(reference) !== -1) {
-          attributes.push(AttributeInfo.fromJS({ name: reference, nativeType: 'hyperUnique' }));
+          attributes.push(AttributeInfo.fromJS({ name: reference, type: 'STRING', nativeType: 'hyperUnique' }));
         } else {
           attributes.push(AttributeInfo.fromJS({ name: reference, type: 'NUMBER' }));
         }

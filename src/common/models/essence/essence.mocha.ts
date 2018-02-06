@@ -123,31 +123,25 @@ describe('Essence', () => {
 
       expect(essence.toJS()).to.deep.equal({
         "filter": {
-          "action": {
-            "action": "in",
-            "expression": {
-              "action": {
-                "action": "timeRange",
-                "duration": "P3D",
-                "step": -1
-              },
-              "expression": {
-                "name": "m",
-                "op": "ref"
-              },
-              "op": "chain"
+          "expression": {
+            "op": "timeRange",
+            "duration": "P3D",
+            "step": -1,
+            "operand": {
+              "name": "m",
+              "op": "ref",
             }
           },
-          "expression": {
+          "op": "overlap",
+          "operand": {
             "name": "time",
             "op": "ref"
-          },
-          "op": "chain"
+          }
         },
         "multiMeasureMode": true,
         "pinnedDimensions": [],
-        "singleMeasure": "count",
         "selectedMeasures": [],
+        "singleMeasure": "count",
         "splits": [],
         "timezone": "Etc/UTC",
         "visualization": "totals"
@@ -205,26 +199,20 @@ describe('Essence', () => {
 
       expect(essence.toJS()).to.deep.equal({
         "filter": {
-          "action": {
-            "action": "in",
-            "expression": {
-              "action": {
-                "action": "timeRange",
-                "duration": "P3D",
-                "step": -1
-              },
-              "expression": {
-                "name": "m",
-                "op": "ref"
-              },
-              "op": "chain"
+          "expression": {
+            "op": "timeRange",
+            "duration": "P3D",
+            "step": -1,
+            "operand": {
+              "name": "m",
+              "op": "ref",
             }
           },
-          "expression": {
+          "op": "overlap",
+          "operand": {
             "name": "time",
             "op": "ref"
-          },
-          "op": "chain"
+          }
         },
         "pinnedDimensions": [
           "twitterHandle"
@@ -236,7 +224,7 @@ describe('Essence', () => {
         "splits": [
           {
             "bucketAction": {
-              "action": "timeBucket",
+              "op": "timeBucket",
               "duration": "PT1H"
             },
             "expression": {
@@ -244,7 +232,7 @@ describe('Essence', () => {
               "op": "ref"
             },
             "sortAction": {
-              "action": "sort",
+              "op": "sort",
               "direction": "ascending",
               "expression": {
                 "name": "time",

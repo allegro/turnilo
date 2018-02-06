@@ -92,10 +92,35 @@ describe('plywood router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        result: [
-          { Channel: 'en', Count: 4 },
-          { Channel: 'vi', Count: 4 }
-        ]
+        "result": {
+          "attributes": [
+            {
+              "name": "Channel",
+              "type": "STRING"
+            },
+            {
+              "name": "main",
+              "type": "DATASET"
+            },
+            {
+              "name": "Count",
+              "type": "NUMBER"
+            }
+          ],
+          "data": [
+            {
+              "Channel": "en",
+              "Count": 4
+            },
+            {
+              "Channel": "vi",
+              "Count": 4
+            }
+          ],
+          "keys": [
+            "Channel"
+          ]
+        }
       }, testComplete);
   });
 

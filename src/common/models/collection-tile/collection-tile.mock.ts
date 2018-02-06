@@ -53,7 +53,7 @@ export class CollectionTileMock {
       essence: {
         visualization: 'totals',
         timezone: 'Etc/UTC',
-        filter: $('time').in([new Date('2015-01-01Z'), new Date('2016-01-01Z')]).toJS(),
+        filter: $('time').overlap(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS(),
         pinnedDimensions: [],
         singleMeasure: "count",
         selectedMeasures: ['count'],

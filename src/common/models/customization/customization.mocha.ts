@@ -66,7 +66,7 @@ describe('Customization', () => {
         externalViews: [],
         timezones: ["Pacific/Niue", "Not a timezone"]
       });
-    }).to.throw("Unable to find time zone named Not a timezone");
+    }).to.throw("timezone 'Not a timezone' does not exist");
   });
 
 });

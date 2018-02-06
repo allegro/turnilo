@@ -24,7 +24,7 @@ describe('Granularity', () => {
   it('fromJSes appropriately', () => {
 
     var timeBucketAction1 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1W',
       timezone: 'America/Tijuana'
     });
@@ -39,7 +39,7 @@ describe('Granularity', () => {
     expect((timeBucketAction2 as TimeBucketExpression).duration).to.deep.equal(Duration.fromJS('PT1H'));
 
     var numberBucketAction1 = granularityFromJS({
-      action: 'numberBucket',
+      op: 'numberBucket',
       size: 5,
       offset: 1
     });
@@ -58,25 +58,25 @@ describe('Granularity', () => {
 
   it('to strings appropriately', () => {
     var timeBucketAction1 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1W',
       timezone: 'America/Tijuana'
     });
 
     var timeBucketAction2 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1W',
       timezone: 'America/Tijuana'
     });
 
     var timeBucketAction3 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1W',
       timezone: 'Asia/Kathmandu'
     });
 
     var timeBucketAction4 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1D',
       timezone: 'Asia/Kathmandu'
     });
@@ -87,19 +87,19 @@ describe('Granularity', () => {
     expect(granularityToString(timeBucketAction4)).to.equal('P1D');
 
     var numberBucketAction1 = granularityFromJS({
-      action: 'numberBucket',
+      op: 'numberBucket',
       size: 5,
       offset: 1
     });
 
     var numberBucketAction2 = granularityFromJS({
-      action: 'numberBucket',
+      op: 'numberBucket',
       size: 5,
       offset: 1
     });
 
     var numberBucketAction3 = granularityFromJS({
-      action: 'numberBucket',
+      op: 'numberBucket',
       size: 300000
     });
 
@@ -114,25 +114,25 @@ describe('Granularity', () => {
 
   it('equals appropriately', () => {
     var timeBucketAction1 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1W',
       timezone: 'America/Tijuana'
     });
 
     var timeBucketAction2 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1W',
       timezone: 'America/Tijuana'
     });
 
     var timeBucketAction3 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1W',
       timezone: 'Asia/Kathmandu'
     });
 
     var timeBucketAction4 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1D',
       timezone: 'Asia/Kathmandu'
     });
@@ -142,19 +142,19 @@ describe('Granularity', () => {
     expect(granularityEquals(timeBucketAction3, timeBucketAction4)).to.equal(false);
 
     var numberBucketAction1 = granularityFromJS({
-      action: 'numberBucket',
+      op: 'numberBucket',
       size: 5,
       offset: 1
     });
 
     var numberBucketAction2 = granularityFromJS({
-      action: 'numberBucket',
+      op: 'numberBucket',
       size: 5,
       offset: 1
     });
 
     var numberBucketAction3 = granularityFromJS({
-      action: 'numberBucket',
+      op: 'numberBucket',
       size: 5
     });
 
@@ -169,19 +169,19 @@ describe('Granularity', () => {
   it('updatesBucketSize appropriately, preserves original non size properties', () => {
 
     var numberBucketAction1 = granularityFromJS({
-      action: 'numberBucket',
+      op: 'numberBucket',
       size: 5,
       offset: 1
     });
 
     var numberBucketAction2 = granularityFromJS({
-      action: 'numberBucket',
+      op: 'numberBucket',
       size: 10,
       offset: 0
     });
 
     var numberBucketAction3 = granularityFromJS({
-      action: 'numberBucket',
+      op: 'numberBucket',
       size: 10,
       offset: 1
     });
@@ -189,19 +189,19 @@ describe('Granularity', () => {
     expect(granularityEquals(updateBucketSize(numberBucketAction1, numberBucketAction2), numberBucketAction3)).to.equal(true);
 
     var timeBucketAction1 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1W',
       timezone: 'America/Tijuana'
     });
 
     var timeBucketAction2 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1M',
       timezone: null
     });
 
     var timeBucketAction3 = granularityFromJS({
-      action: 'timeBucket',
+      op: 'timeBucket',
       duration: 'P1M',
       timezone: 'America/Tijuana'
     });

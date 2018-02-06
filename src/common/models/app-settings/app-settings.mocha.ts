@@ -150,8 +150,8 @@ describe('AppSettings', () => {
                 "type": "SET/STRING"
               },
               {
-                "makerAction": {
-                  "action": "count"
+                "maker": {
+                  "op": "count"
                 },
                 "name": "count",
                 "type": "NUMBER",

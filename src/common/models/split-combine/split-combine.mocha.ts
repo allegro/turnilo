@@ -32,7 +32,7 @@ describe('SplitCombine', () => {
       {
         expression: { op: 'ref', name: 'time' },
         bucketAction: {
-          action: 'in',
+          op: 'in',
           expression: {
             'op': 'literal',
             'value': { 'setType': 'STRING', 'elements': ['he'] },
@@ -40,7 +40,7 @@ describe('SplitCombine', () => {
           }
         },
         sortAction: {
-          action: 'sort',
+          op: 'sort',
           direction: 'ascending',
           expression: {
             op: 'ref',
@@ -48,8 +48,8 @@ describe('SplitCombine', () => {
           }
         },
         limitAction: {
-          action: 'limit',
-          limit: 2
+          op: 'limit',
+          value: 2
         }
       }
     ]);

@@ -292,6 +292,10 @@ export class SettingsManager {
       this.timeMonitor.addCheck(dataCube.name, () => {
         return DataCube.queryMaxTime(dataCube);
       });
+    } else if (dataCube.refreshRule.isFixed()) {
+      this.timeMonitor.addCheck(dataCube.name, () => {
+        return Promise.resolve(dataCube.refreshRule.time)
+      });
     }
 
     this.appSettings = this.appSettings.addOrUpdateDataCube(dataCube);

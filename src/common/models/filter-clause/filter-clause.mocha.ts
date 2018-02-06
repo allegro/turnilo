@@ -80,20 +80,23 @@ describe('FilterClause', () => {
       {
         expression: { op: 'ref', name: 'language' },
         selection: {
-          op: 'chain',
-          expression: { op: 'ref', name: 'n' },
-          action: { action: 'timeRange', duration: 'P1D', step: -1 }
+          operand: { op: 'ref', name: 'n' },
+          op: 'timeRange',
+          duration: 'P1D',
+          step: -1
         }
       },
       {
         expression: { op: 'ref', name: 'language' },
         selection: {
-          op: 'chain',
-          expression: { op: 'ref', name: 'm' },
-          actions: [
-            { action: 'timeShift', duration: 'P5D', step: -1 },
-            { action: 'timeRange', duration: 'P1D', step: -1 }
-          ]
+          op: 'timeRange',
+          duration: 'P1D',
+          step: -1,
+          operand: {
+            op: 'timeShift',
+            duration: 'P5D',
+            step: -1 ,
+          }
         }
       }
     ]);

@@ -25,77 +25,58 @@ describe('Filter', () => {
     testImmutableClass<FilterJS>(Filter, [
       { op: 'literal', value: true },
       {
-        "op": "chain", "expression": { "op": "ref", "name": "language" },
-        "action": {
-          "action": "overlap",
-          "expression": {
-            "op": "literal",
-            "value": { "setType": "STRING", "elements": ["en"] },
-            "type": "SET"
-          }
+        "op": "overlap", "operand": { "op": "ref", "name": "language" },
+        "expression": {
+          "op": "literal",
+          "value": { "setType": "STRING", "elements": ["en"] },
+          "type": "SET"
         }
       },
       {
-        "op": "chain", "expression": { "op": "ref", "name": "time" },
-        "action": {
-          "action": "in",
-          "expression": {
-            "op": "literal",
-            "value": { "start": new Date("2013-02-26T19:00:00.000Z"), "end": new Date("2013-02-26T22:00:00.000Z") },
-            "type": "TIME_RANGE"
-          }
+        "op": "overlap", "operand": { "op": "ref", "name": "time" },
+        "expression": {
+          "op": "literal",
+          "value": { "start": new Date("2013-02-26T19:00:00.000Z"), "end": new Date("2013-02-26T22:00:00.000Z") },
+          "type": "TIME_RANGE"
         }
       },
       {
-        "op": "chain", "expression": { "op": "ref", "name": "language" },
-        "action": {
-          "action": "overlap",
+        "op": "overlap", "operand": { "op": "ref", "name": "language" },
+        "expression": {
+          "op": "literal",
+          "value": { "setType": "STRING", "elements": ["he"] },
+          "type": "SET"
+        }
+      },
+      {
+        "op": "and",
+        "operand": {
           "expression": {
             "op": "literal",
             "value": { "setType": "STRING", "elements": ["he"] },
             "type": "SET"
+          },
+          "op": "overlap",
+          "operand": { "op": "ref", "name": "language" }
+        },
+        "expression": {
+          "op": "overlap", "operand": { "op": "ref", "name": "namespace" },
+          "expression": {
+            "op": "literal",
+            "value": { "setType": "STRING", "elements": ["wikipedia"] },
+            "type": "SET"
           }
         }
-      },
-      {
-        "op": "chain",
-        "expression": { "op": "ref", "name": "language" },
-        "actions": [
-          {
-            "action": "overlap",
-            "expression": {
-              "op": "literal",
-              "value": { "setType": "STRING", "elements": ["he"] },
-              "type": "SET"
-            }
-          },
-          {
-            "action": "and",
-            "expression": {
-              "op": "chain", "expression": { "op": "ref", "name": "namespace" },
-              "action": {
-                "action": "overlap",
-                "expression": {
-                  "op": "literal",
-                  "value": { "setType": "STRING", "elements": ["wikipedia"] },
-                  "type": "SET"
-                }
-              }
-            }
-          }
-        ]
       },
 
       // Dynamic
       {
-        "op": "chain", "expression": { "op": "ref", "name": "time" },
-        "action": {
-          "action": "in",
-          "expression": {
-            op: 'chain',
-            expression: { op: 'ref', name: 'n' },
-            action: { action: 'timeRange', duration: 'P1D', step: -1 }
-          }
+        "op": "overlap", "operand": { "op": "ref", "name": "time" },
+        "expression": {
+          op: 'timeRange',
+          operand: { op: 'ref', name: 'n' },
+          duration: 'P1D',
+          step: -1
         }
       }
     ]);
@@ -156,32 +137,24 @@ describe('Filter', () => {
     });
 
     expect(filter.toJS()).to.deep.equal({
-      "op": "chain",
-      "expression": { "op": "ref", "name": "language" },
-      "actions": [
-        {
-          "action": "overlap",
-          "expression": {
-            "op": "literal",
-            "value": { "setType": "STRING", "elements": ["he"] },
-            "type": "SET"
-          }
+      "op": "and",
+      "operand": {
+        "expression": {
+          "op": "literal",
+          "value": { "setType": "STRING", "elements": ["he"] },
+          "type": "SET"
         },
-        {
-          "action": "and",
-          "expression": {
-            "op": "chain", "expression": { "op": "ref", "name": "namespace" },
-            "action": {
-              "action": "overlap",
-              "expression": {
-                "op": "literal",
-                "value": { "setType": "STRING", "elements": ["wikipedia"] },
-                "type": "SET"
-              }
-            }
-          }
+        "op": "overlap",
+        "operand": { "op": "ref", "name": "language" }
+      },
+      "expression": {
+        "op": "overlap", "operand": { "op": "ref", "name": "namespace" },
+        "expression": {
+          "op": "literal",
+          "value": { "setType": "STRING", "elements": ["wikipedia"] },
+          "type": "SET"
         }
-      ]
+      }
     });
 
   });

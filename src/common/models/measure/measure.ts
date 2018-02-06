@@ -17,7 +17,10 @@
 import { List } from 'immutable';
 import { BaseImmutable, Property } from 'immutable-class';
 import * as numeral from 'numeral';
-import { $, Expression, Datum, ApplyExpression, AttributeInfo, ChainableExpression, deduplicateSort } from 'plywood';
+import {
+  $, Expression, Datum, ApplyExpression, AttributeInfo, ChainableExpression, deduplicateSort,
+  RefExpression, CountDistinctExpression
+} from 'plywood';
 import { verifyUrlSafeName, makeTitle, makeUrlSafeName } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
@@ -77,6 +80,16 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return deduplicateSort(references);
   }
 
+  static getReferences(ex: Expression): string[] {
+    var references: string[] = [];
+    ex.forEach((sub: Expression) => {
+      if (sub instanceof RefExpression && sub.name !== 'main') {
+        references = references.concat(sub.name);
+      }
+    });
+    return deduplicateSort(references);
+  }
+
   /**
    * Look for all instances of countDistinct($blah) and return the blahs
    * @param ex
@@ -85,13 +98,8 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static getCountDistinctReferences(ex: Expression): string[] {
     var references: string[] = [];
     ex.forEach((ex: Expression) => {
-      if (ex instanceof ChainableExpression) {
-        var actions = ex.getArgumentExpressions();
-        for (var action of actions) {
-          if (action.op === 'CountDistinct') {
-            references = references.concat(action.getFreeReferences());
-          }
-        }
+      if (ex instanceof CountDistinctExpression) {
+        references = references.concat(this.getReferences(ex));
       }
     });
     return deduplicateSort(references);

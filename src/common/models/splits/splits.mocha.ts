@@ -38,7 +38,7 @@ describe('Splits', () => {
         {
           expression: { op: 'ref', name: 'time' },
           bucketAction: {
-            action: 'in',
+            op: 'in',
             expression: {
               'op': 'literal',
               'value': { 'setType': 'STRING', 'elements': ['he'] },
@@ -46,7 +46,7 @@ describe('Splits', () => {
             }
           },
           sortAction: {
-            action: 'sort',
+            op: 'sort',
             direction: 'ascending',
             expression: {
               op: 'ref',
@@ -54,8 +54,8 @@ describe('Splits', () => {
             }
           },
           limitAction: {
-            action: 'limit',
-            limit: 2
+            op: 'limit',
+            value: 2
           }
         },
         {

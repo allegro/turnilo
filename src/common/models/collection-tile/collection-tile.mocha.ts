@@ -63,26 +63,20 @@ describe('CollectionTile', () => {
         "description": "I like testing",
         "essence": {
           "filter": {
-            "action": {
-              "action": "in",
-              "expression": {
-                "action": {
-                  "action": "timeRange",
-                  "duration": "P3D",
-                  "step": -1
-                },
-                "expression": {
-                  "name": "m",
-                  "op": "ref"
-                },
-                "op": "chain"
-              }
-            },
             "expression": {
+              "operand": {
+                "name": "m",
+                "op": "ref"
+              },
+              "op": "timeRange",
+              "duration": "P3D",
+              "step": -1
+            },
+            "operand": {
               "name": "time",
               "op": "ref"
             },
-            "op": "chain"
+            "op": "overlap"
           },
           "pinnedDimensions": [
             "articleName"
@@ -94,7 +88,7 @@ describe('CollectionTile', () => {
           "splits": [
             {
               "bucketAction": {
-                "action": "timeBucket",
+                "op": "timeBucket",
                 "duration": "PT1H"
               },
               "expression": {
@@ -102,7 +96,7 @@ describe('CollectionTile', () => {
                 "op": "ref"
               },
               "sortAction": {
-                "action": "sort",
+                "op": "sort",
                 "direction": "ascending",
                 "expression": {
                   "name": "time",
