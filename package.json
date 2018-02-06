@@ -66,6 +66,7 @@
     "node-spawn-server": "1.0.1",
     "nopt": "4.0.1",
     "numeral": "2.0.6",
+    "plywood": "0.17.26",
     "plywood-base-api": "0.2.8",
     "plywood-druid-requester": "2.4.2",
     "plywood-mysql-requester": "2.1.0",
@@ -75,8 +76,7 @@
     "react": "16.2.0",
     "react-addons-css-transition-group": "15.6.2",
     "react-dom": "16.2.0",
-    "request": "2.83.0",
-    "plywood": "0.17.26"
+    "request": "2.83.0"
   },
   "devDependencies": {
     "@types/body-parser": "1.16.8",
