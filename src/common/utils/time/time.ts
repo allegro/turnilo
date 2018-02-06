@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Timezone, Duration, month, day, hour, minute, moment } from 'chronoshift';
+import { Timezone, Duration, month, day, hour, minute } from 'chronoshift';
 import { Moment } from 'moment';
+import * as moment from 'moment-timezone';
 import { TimeRange } from 'plywood';
 
 const FORMAT_ISO_WITHOUT_TIMEZONE = "YYYY-MM-DD[T]HH:mm:ss";

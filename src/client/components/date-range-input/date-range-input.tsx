@@ -17,7 +17,9 @@
 import './date-range-input.scss';
 
 import * as React from 'react';
-import { moment, Timezone } from 'chronoshift';
+import { Timezone } from 'chronoshift';
+import * as moment from 'moment';
+import 'moment-timezone';
 import { getWallTimeString, exclusiveToInclusiveEnd } from '../../../common/utils/time/time';
 
 export interface DateRangeInputProps extends React.Props<any> {
@@ -82,23 +84,20 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
   }
 
   changeDate(possibleDateString: string): void {
-    var { timezone, onChange, type } = this.props;
-    var possibleDate = new Date(possibleDateString);
-    // add one if end so it passes the inclusive formatting
-    var day = type === "end" ? possibleDate.getUTCDate() + 1 : possibleDate.getUTCDate();
+    const { timezone, onChange, type } = this.props;
 
-    if (isNaN(possibleDate.valueOf())) {
+    // Convert from WallTime to UTC
+    const possibleMoment = moment.tz(possibleDateString, timezone.toString());
+
+    if (!possibleMoment.isValid()) {
       onChange(null);
     } else {
-      // Convert from WallTime to UTC
-      var possibleDate = moment.tz(
-        timezone.toString(),
-        possibleDate.getUTCFullYear(), possibleDate.getUTCMonth(), day,
-        possibleDate.getUTCHours(), possibleDate.getUTCMinutes(), possibleDate.getUTCSeconds(),
-        possibleDate.getUTCMilliseconds()
-      ).toDate() as Date;
+      // add one if end so it passes the inclusive formatting
+      if (type === "end") {
+        possibleMoment.add(1, "day" );
+      }
 
-      onChange(possibleDate);
+      onChange(possibleMoment.toDate());
     }
   }
 
