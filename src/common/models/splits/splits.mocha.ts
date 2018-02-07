@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { Splits, SplitsJS } from './splits';
 
 describe('Splits', () => {
@@ -38,7 +38,7 @@ describe('Splits', () => {
         {
           expression: { op: 'ref', name: 'time' },
           bucketAction: {
-            action: 'in',
+            op: 'in',
             expression: {
               'op': 'literal',
               'value': { 'setType': 'STRING', 'elements': ['he'] },
@@ -46,7 +46,7 @@ describe('Splits', () => {
             }
           },
           sortAction: {
-            action: 'sort',
+            op: 'sort',
             direction: 'ascending',
             expression: {
               op: 'ref',
@@ -54,8 +54,8 @@ describe('Splits', () => {
             }
           },
           limitAction: {
-            action: 'limit',
-            limit: 2
+            op: 'limit',
+            value: 2
           }
         },
         {

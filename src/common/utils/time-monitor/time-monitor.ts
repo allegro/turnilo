@@ -19,7 +19,7 @@ import { Logger } from 'logger-tracker';
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 
 export interface Check {
-  (): Q.Promise<Date>;
+  (): Promise<Date>;
 }
 
 export class TimeMonitor {
@@ -27,7 +27,7 @@ export class TimeMonitor {
   public regularCheckInterval: number;
   public specialCheckInterval: number;
   public timekeeper: Timekeeper;
-  public checks: Lookup<Check>;
+  public checks: Record<string, Check>;
   private doingChecks = false;
 
   constructor(logger: Logger) {
@@ -51,10 +51,10 @@ export class TimeMonitor {
     return this;
   }
 
-  private doCheck(name: string): Q.Promise<any> {
+  private doCheck(name: string): Promise<any> {
     const { logger } = this;
     var check = this.checks[name];
-    if (!check) return Q(null);
+    if (!check) return Promise.resolve(null);
     return check().then(
       (updatedTime) => {
         logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
@@ -73,7 +73,7 @@ export class TimeMonitor {
     var timeTags = this.timekeeper.timeTags;
 
     this.doingChecks = true;
-    var checkTasks: Q.Promise<any>[] = [];
+    var checkTasks: Promise<any>[] = [];
     for (var timeTag of timeTags) {
       if (!timeTag.time || now - timeTag.updated.valueOf() > regularCheckInterval) {
         checkTasks.push(this.doCheck(timeTag.name));

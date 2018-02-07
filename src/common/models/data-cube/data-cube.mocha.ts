@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 import * as Q from 'q';
 
-import { $, Expression, AttributeInfo } from 'swiv-plywood';
+import { $, Expression, AttributeInfo } from 'plywood';
 import { Cluster } from "../cluster/cluster";
 import { DataCube, DataCubeJS } from './data-cube';
 import { DataCubeMock} from './data-cube.mock';
@@ -234,7 +234,7 @@ describe('DataCube', () => {
 
       expect(dataCube.getIssues()).to.deep.equal([
         "failed to validate dimension 'gaga': could not resolve $gaga",
-        "failed to validate dimension 'bucketArticleName': numberBucket must have input of type NUMBER or NUMBER_RANGE (is STRING)",
+        "failed to validate dimension 'bucketArticleName': numberBucket must have operand of type NUMBER (is STRING)",
         "failed to validate measure 'added': could not resolve $added",
         "failed to validate measure 'sumArticleName': sum must have expression of type NUMBER (is STRING)",
         "failed to validate measure 'koalaCount': measure must contain a $main reference",
@@ -416,7 +416,7 @@ describe('DataCube', () => {
         },
         {
           "name": "unique_user",
-          "special": "unique",
+          "nativeType": "hyperUnique",
           "type": "STRING"
         }
       ]);

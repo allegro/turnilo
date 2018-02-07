@@ -20,7 +20,7 @@ import { ImmutableUtils } from '../../../common/utils/index';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'swiv-plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure, ListItem } from '../../../common/models/index';
 import { ChangeFn } from '../../utils/immutable-form-delegate/immutable-form-delegate';
 import { SvgIcon } from '../svg-icon/svg-icon';

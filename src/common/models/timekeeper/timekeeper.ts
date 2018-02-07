@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
-import { findByName, overrideByName } from 'swiv-plywood';
+import { BaseImmutable, NamedArray, Property, PropertyType } from 'immutable-class';
 import { TimeTag, TimeTagJS } from '../time-tag/time-tag';
 
 // I am: export * from './timekeeper/timekeeper';
@@ -34,7 +33,7 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   static EMPTY: Timekeeper;
 
   static isTimekeeper(candidate: any): candidate is Timekeeper {
-    return isInstanceOf(candidate, Timekeeper);
+    return candidate instanceof Timekeeper;
   }
 
   static globalNow(): Date {
@@ -45,10 +44,9 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
     return new Timekeeper(BaseImmutable.jsToValue(Timekeeper.PROPERTIES, parameters));
   }
 
-  // TODO back to:  static PROPERTIES: Property[] = [
-  static PROPERTIES: any = [
+  static PROPERTIES: Property[] = [
     { name: 'timeTags', immutableClassArray: TimeTag },
-    { name: 'nowOverride', isDate: true, defaultValue: null }
+    { name: 'nowOverride', type: PropertyType.DATE, defaultValue: null }
   ];
 
 
@@ -64,16 +62,16 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   }
 
   getTime(name: string): Date {
-    var timeTag = findByName(this.timeTags, name);
+    var timeTag = NamedArray.findByName(this.timeTags, name);
     if (!timeTag || timeTag.special === 'realtime') return this.now();
     return timeTag.time || this.now();
   }
 
   updateTime(name: string, time: Date): Timekeeper {
     var value = this.valueOf();
-    var tag = findByName(value.timeTags, name);
+    var tag = NamedArray.findByName(value.timeTags, name);
     if (!tag) return this;
-    value.timeTags = overrideByName(value.timeTags, tag.changeTime(time, this.now()));
+    value.timeTags = NamedArray.overrideByName(value.timeTags, tag.changeTime(time, this.now()));
     return new Timekeeper(value);
   }
 

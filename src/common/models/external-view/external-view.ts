@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf } from 'immutable-class';
+import { Class, Instance } from 'immutable-class';
 import { Timezone } from 'chronoshift';
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { Essence, DataCube, Filter, Splits, Customization} from '../../../common/models/index';
 
 export interface LinkGenerator {
@@ -34,7 +34,7 @@ var check: Class<ExternalViewValue, ExternalViewValue>;
 export class ExternalView implements Instance<ExternalViewValue, ExternalViewValue> {
 
   static isExternalView(candidate: any): candidate is ExternalView {
-    return isInstanceOf(candidate, ExternalView);
+    return candidate instanceof ExternalView;
   }
 
   static fromJS(parameters: ExternalViewValue): ExternalView {

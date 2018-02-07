@@ -17,7 +17,7 @@
 import './totals.scss';
 
 import * as React from 'react';
-import { $, ply, Expression, Executor, Dataset } from 'swiv-plywood';
+import { $, ply, Expression, Executor, Dataset } from 'plywood';
 import { TOTALS_MANIFEST } from '../../../common/manifests/totals/totals';
 import { Stage, Essence, Timekeeper, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 
@@ -62,11 +62,11 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
   }
 
   makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-    var query = ply()
+    var query: Expression = ply()
       .apply('main', $('main').filter(essence.getEffectiveFilter(timekeeper, Totals.id).toExpression()));
 
     essence.getEffectiveMeasures().forEach((measure) => {
-      query = query.performAction(measure.toApplyAction());
+      query = query.performAction(measure.toApplyExpression());
     });
 
     return query;

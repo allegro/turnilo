@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
-import { findByName } from 'swiv-plywood';
+import { Class, Instance, immutableArraysEqual, NamedArray } from 'immutable-class';
 
 import { Manifest } from '../manifest/manifest';
 import { CollectionTile, CollectionTileJS, CollectionTileContext } from '../index';
@@ -43,7 +42,7 @@ var check: Class<CollectionValue, CollectionJS>;
 export class Collection implements Instance<CollectionValue, CollectionJS> {
 
   static isCollection(candidate: any): candidate is Collection {
-    return isInstanceOf(candidate, Collection);
+    return candidate instanceof Collection;
   }
 
   static fromJS(parameters: CollectionJS, context?: CollectionContext): Collection {
@@ -117,7 +116,7 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
   }
 
   public findByName(name: string): CollectionTile {
-    return findByName(this.tiles, name);
+    return NamedArray.findByName(this.tiles, name);
   }
 
   public isNameAvailable(name: string): boolean {

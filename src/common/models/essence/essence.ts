@@ -16,9 +16,9 @@
 
 import { List, OrderedSet, Iterable } from 'immutable';
 import { compressToBase64, decompressFromBase64 } from 'lz-string';
-import { Class, Instance, isInstanceOf, immutableEqual } from 'immutable-class';
+import { Class, Instance, immutableEqual, NamedArray } from 'immutable-class';
 import { Timezone, Duration, minute } from 'chronoshift';
-import { $, Expression, RefExpression, TimeRange, ApplyAction, SortAction, Set, findByName } from 'swiv-plywood';
+import { $, Expression, RefExpression, TimeRange, ApplyExpression, SortExpression, Set } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataCube } from '../data-cube/data-cube';
 import { Filter, FilterJS } from '../filter/filter';
@@ -103,7 +103,7 @@ export interface EssenceContext {
 var check: Class<EssenceValue, EssenceJS>;
 export class Essence implements Instance<EssenceValue, EssenceJS> {
   static isEssence(candidate: any): candidate is Essence {
-    return isInstanceOf(candidate, Essence);
+    return candidate instanceof Essence;
   }
 
   static getBestVisualization(visualizations: Manifest[], dataCube: DataCube, splits: Splits, colors: Colors, currentVisualization: Manifest): VisualizationAndResolve {
@@ -192,7 +192,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var visualizationName = parameters.visualization;
     if (visualizationName === 'time-series') visualizationName = 'line-chart'; // Back compat (used to be named time-series)
-    var visualization = findByName(visualizations, visualizationName);
+    var visualization = NamedArray.findByName(visualizations, visualizationName);
 
     var timezone = parameters.timezone ? Timezone.fromJS(parameters.timezone) : null;
     var filter = parameters.filter ? Filter.fromJS(parameters.filter).constrainToDimensions(dataCube.dimensions, dataCube.timeAttribute) : null;
@@ -584,14 +584,14 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return highlight.delta.getSingleClauseSet();
   }
 
-  public getApplyForSort(sort: SortAction): ApplyAction {
+  public getApplyForSort(sort: SortExpression): ApplyExpression {
     var sortOn = (<RefExpression>sort.expression).name;
     var sortMeasure = this.dataCube.getMeasure(sortOn);
     if (!sortMeasure) return null;
-    return sortMeasure.toApplyAction();
+    return sortMeasure.toApplyExpression();
   }
 
-  public getCommonSort(): SortAction {
+  public getCommonSort(): SortExpression {
     return this.splits.getCommonSort(this.dataCube.dimensions);
   }
 

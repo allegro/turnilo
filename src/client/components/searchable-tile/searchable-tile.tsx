@@ -41,7 +41,7 @@ export interface SearchableTileProps extends React.Props<any> {
   showSearch: boolean;
   icons: TileHeaderIcon[];
   className?: string;
-  style: Lookup<any>;
+  style: Record<string, any>;
   title: string;
   onDragStart?: Fn;
   actions?: TileAction[];

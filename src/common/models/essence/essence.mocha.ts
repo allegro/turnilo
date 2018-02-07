@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { MANIFESTS } from "../../manifests/index";
 import { Essence, EssenceJS, VisStrategy } from './essence';
 import { DataCube, Introspection } from "../data-cube/data-cube";
@@ -27,7 +27,7 @@ import { Splits } from "../splits/splits";
 import { SplitCombineMock } from "../split-combine/split-combine.mock";
 import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
 import { SplitCombine } from "../split-combine/split-combine";
-import { RefExpression } from "swiv-plywood";
+import { RefExpression } from "plywood";
 
 describe('Essence', () => {
   var dataCubeJS = {
@@ -123,31 +123,25 @@ describe('Essence', () => {
 
       expect(essence.toJS()).to.deep.equal({
         "filter": {
-          "action": {
-            "action": "in",
-            "expression": {
-              "action": {
-                "action": "timeRange",
-                "duration": "P3D",
-                "step": -1
-              },
-              "expression": {
-                "name": "m",
-                "op": "ref"
-              },
-              "op": "chain"
+          "expression": {
+            "op": "timeRange",
+            "duration": "P3D",
+            "step": -1,
+            "operand": {
+              "name": "m",
+              "op": "ref",
             }
           },
-          "expression": {
+          "op": "overlap",
+          "operand": {
             "name": "time",
             "op": "ref"
-          },
-          "op": "chain"
+          }
         },
         "multiMeasureMode": true,
         "pinnedDimensions": [],
-        "singleMeasure": "count",
         "selectedMeasures": [],
+        "singleMeasure": "count",
         "splits": [],
         "timezone": "Etc/UTC",
         "visualization": "totals"
@@ -205,26 +199,20 @@ describe('Essence', () => {
 
       expect(essence.toJS()).to.deep.equal({
         "filter": {
-          "action": {
-            "action": "in",
-            "expression": {
-              "action": {
-                "action": "timeRange",
-                "duration": "P3D",
-                "step": -1
-              },
-              "expression": {
-                "name": "m",
-                "op": "ref"
-              },
-              "op": "chain"
+          "expression": {
+            "op": "timeRange",
+            "duration": "P3D",
+            "step": -1,
+            "operand": {
+              "name": "m",
+              "op": "ref",
             }
           },
-          "expression": {
+          "op": "overlap",
+          "operand": {
             "name": "time",
             "op": "ref"
-          },
-          "op": "chain"
+          }
         },
         "pinnedDimensions": [
           "twitterHandle"
@@ -236,7 +224,7 @@ describe('Essence', () => {
         "splits": [
           {
             "bucketAction": {
-              "action": "timeBucket",
+              "op": "timeBucket",
               "duration": "PT1H"
             },
             "expression": {
@@ -244,7 +232,7 @@ describe('Essence', () => {
               "op": "ref"
             },
             "sortAction": {
-              "action": "sort",
+              "op": "sort",
               "direction": "ascending",
               "expression": {
                 "name": "time",

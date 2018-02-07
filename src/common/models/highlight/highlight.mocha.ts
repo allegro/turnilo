@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { Highlight, HighlightJS } from './highlight';
 
 describe('Highlight', () => {
@@ -26,32 +26,24 @@ describe('Highlight', () => {
       {
         owner: 'Sunkist',
         delta: {
-          "op": "chain",
-          "expression": { "op": "ref", "name": "language" },
-          "actions": [
-            {
-              "action": "overlap",
-              "expression": {
-                "op": "literal",
-                "value": { "setType": "STRING", "elements": ["he"] },
-                "type": "SET"
-              }
+          "op": "and",
+          "operand": {
+            "expression": {
+              "op": "literal",
+              "value": { "setType": "STRING", "elements": ["he"] },
+              "type": "SET"
             },
-            {
-              "action": "and",
-              "expression": {
-                "op": "chain", "expression": { "op": "ref", "name": "namespace" },
-                "action": {
-                  "action": "overlap",
-                  "expression": {
-                    "op": "literal",
-                    "value": { "setType": "STRING", "elements": ["wikipedia"] },
-                    "type": "SET"
-                  }
-                }
-              }
+            "op": "overlap",
+            "operand": { "op": "ref", "name": "language" }
+          },
+          "expression": {
+            "op": "overlap", "operand": { "op": "ref", "name": "namespace" },
+            "expression": {
+              "op": "literal",
+              "value": { "setType": "STRING", "elements": ["wikipedia"] },
+              "type": "SET"
             }
-          ]
+          }
         }
       },
       {

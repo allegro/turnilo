@@ -17,7 +17,7 @@
 import * as numeral from 'numeral';
 import { Timezone } from 'chronoshift';
 
-import { NumberRange, TimeRange, LiteralExpression } from 'swiv-plywood';
+import { NumberRange, TimeRange, LiteralExpression } from 'plywood';
 
 import { Dimension, FilterClause, Filter } from '../../models/index';
 import { DisplayYear, formatTimeRange } from '../../utils/time/time';
@@ -26,7 +26,7 @@ export interface Formatter {
   (n: number): string;
 }
 
-var scales: Lookup<Lookup<number>> = {
+var scales: Record<string, Record<string, number>> = {
   'a': {
     '': 1,
     'k': 1e3,

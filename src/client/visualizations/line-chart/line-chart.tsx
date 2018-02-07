@@ -21,8 +21,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 import { Duration } from 'chronoshift';
-import { r, $, ply, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketAction, SortAction,
-  PlywoodRange, NumberRangeJS, NumberRange, Range, NumberBucketAction } from 'swiv-plywood';
+import { r, $, ply, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketExpression, SortExpression,
+  PlywoodRange, NumberRangeJS, NumberRange, Range, NumberBucketExpression } from 'plywood';
 import { Essence, Splits, Colors, FilterClause, Dimension, Stage,
   Filter, Measure, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 import { LINE_CHART_MANIFEST } from '../../../common/manifests/line-chart/line-chart';
@@ -151,8 +151,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     var closestDatum: Datum;
     if (splitLength > 1) {
-      var flatData = dataset.flatten();
-      closestDatum = findClosest(flatData, dragDate, scaleX, continuousDimension);
+      var flattened = dataset.flatten();
+      closestDatum = findClosest(flattened.data, dragDate, scaleX, continuousDimension);
     } else {
       closestDatum = findClosest(dataset.data, dragDate, scaleX, continuousDimension);
     }
@@ -194,14 +194,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
     if (!continuousSplit.bucketAction) return dragRange; // temp solution for non-bucketed reaching here
 
     if (TimeRange.isTimeRange(dragRange)) {
-      var timeBucketAction = continuousSplit.bucketAction as TimeBucketAction;
+      var timeBucketAction = continuousSplit.bucketAction as TimeBucketExpression;
       var duration = timeBucketAction.duration;
       return TimeRange.fromJS({
         start: duration.floor(dragRange.start, timezone),
         end: duration.shift(duration.floor(dragRange.end, timezone), timezone, 1)
       });
     } else {
-      var numberBucketAction = continuousSplit.bucketAction as NumberBucketAction;
+      var numberBucketAction = continuousSplit.bucketAction as NumberBucketExpression;
       var bucketSize = numberBucketAction.size;
       var startFloored = roundTo((dragRange as NumberRange).start, bucketSize);
       var endFloored = roundTo((dragRange as NumberRange).end, bucketSize);
@@ -584,7 +584,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           // Special treatment for realtime data, i.e. time data where the maxTime is within Duration of the filter end
           var maxTime = dataCube.getMaxTime(timekeeper);
           var continuousBucketAction = continuousSplit.bucketAction;
-          if (maxTime && continuousBucketAction instanceof TimeBucketAction) {
+          if (maxTime && continuousBucketAction instanceof TimeBucketExpression) {
             var continuousDuration = continuousBucketAction.duration;
             var axisRangeEnd = axisRange.end as Date;
             var axisRangeEndFloor = continuousDuration.floor(axisRangeEnd, timezone);

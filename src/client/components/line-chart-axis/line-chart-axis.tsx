@@ -18,7 +18,8 @@ import './line-chart-axis.scss';
 
 import * as d3 from 'd3';
 import * as React from 'react';
-import { Timezone, WallTime } from 'chronoshift';
+import { Timezone } from 'chronoshift';
+import * as moment from 'moment-timezone';
 import { Stage } from '../../../common/models/index';
 import { roundToHalfPx } from '../../utils/dom/dom';
 
@@ -56,7 +57,7 @@ export class LineChartAxis extends React.Component<LineChartAxisProps, LineChart
     }
 
     function formatWithTimezone(d: Date): string {
-      return format(WallTime.UTCToWallTime(d, timezoneString));
+      return format(moment.tz(d, timezoneString).toDate());
     }
 
     var lines = ticks.map((tick: any) => {

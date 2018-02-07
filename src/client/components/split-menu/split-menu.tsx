@@ -18,7 +18,7 @@ import './split-menu.scss';
 
 import * as React from "react";
 import { Timezone, Duration } from "chronoshift";
-import { TimeBucketAction, NumberBucketAction, SortAction } from "swiv-plywood";
+import { TimeBucketExpression, NumberBucketExpression, SortExpression } from "plywood";
 import { Fn, formatGranularity } from "../../../common/utils/index";
 import {
   Stage,
@@ -118,9 +118,9 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   onSelectSortOn(sortOn: SortOn): void {
     var { split } = this.state;
     var sortAction = split.sortAction;
-    var direction = sortAction ? sortAction.direction : SortAction.DESCENDING;
+    var direction = sortAction ? sortAction.direction : SortExpression.DESCENDING;
     this.setState({
-      split: split.changeSortAction(new SortAction({
+      split: split.changeSortExpression(new SortExpression({
         expression: sortOn.getExpression(),
         direction
       }))
@@ -131,7 +131,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var { split } = this.state;
     var { sortAction } = split;
     this.setState({
-      split: split.changeSortAction(sortAction.toggleDirection())
+      split: split.changeSortExpression(sortAction.toggleDirection())
     });
   }
 
@@ -167,7 +167,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   getSortOn(): SortOn {
     var { essence, dimension } = this.props;
     var { split } = this.state;
-    return SortOn.fromSortAction(split.sortAction, essence.dataCube, dimension);
+    return SortOn.fromSortExpression(split.sortAction, essence.dataCube, dimension);
   }
 
   renderGranularityPicker(type: ContinuousDimensionKind) {
@@ -224,7 +224,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var { limitAction } = split;
 
     var items: Array<number | string> = [5, 10, 25, 50, 100];
-    var selectedItem: number | string = limitAction ? limitAction.limit : null;
+    var selectedItem: number | string = limitAction ? limitAction.value : null;
     if (colors) {
       items = [3, 5, 7, 9, 10];
       selectedItem = colors.values ? 'custom' : colors.limit;
@@ -283,9 +283,9 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var menuSize = Stage.fromSize(250, 240);
 
     var menuControls: JSX.Element = null;
-    if (split.bucketAction instanceof TimeBucketAction) {
+    if (split.bucketAction instanceof TimeBucketExpression) {
       menuControls = this.renderTimeControls();
-    } else if (split.bucketAction instanceof NumberBucketAction) {
+    } else if (split.bucketAction instanceof NumberBucketExpression) {
       menuControls = this.renderNumberControls();
     } else {
       menuControls = this.renderStringControls();

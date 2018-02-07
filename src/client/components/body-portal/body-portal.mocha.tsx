@@ -23,7 +23,7 @@ import * as TestUtils from 'react-dom/test-utils';
 
 import '../../utils/test-utils/index';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { BodyPortal } from './body-portal';
 
 describe('BodyPortal', () => {

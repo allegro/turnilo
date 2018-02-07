@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, SortAction } from 'swiv-plywood';
+import { $, SortExpression } from 'plywood';
 import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
@@ -36,34 +36,34 @@ var handler = CircumstancesHandler.EMPTY()
       if (!split.sortAction) {
         if (sortStrategy) {
           if (sortStrategy === 'self') {
-            split = split.changeSortAction(new SortAction({
+            split = split.changeSortExpression(new SortExpression({
               expression: $(splitDimension.name),
-              direction: SortAction.DESCENDING
+              direction: SortExpression.DESCENDING
             }));
           } else {
-            split = split.changeSortAction(new SortAction({
+            split = split.changeSortExpression(new SortExpression({
               expression: $(sortStrategy),
-              direction: SortAction.DESCENDING
+              direction: SortExpression.DESCENDING
             }));
           }
         } else if (splitDimension.kind === 'boolean') {  // Must sort boolean in deciding order!
-          split = split.changeSortAction(new SortAction({
+          split = split.changeSortExpression(new SortExpression({
             expression: $(splitDimension.name),
-            direction: SortAction.DESCENDING
+            direction: SortExpression.DESCENDING
           }));
         } else {
           if (splitDimension.isContinuous()) {
-            split = split.changeSortAction(new SortAction({
+            split = split.changeSortExpression(new SortExpression({
               expression: $(splitDimension.name),
-              direction: SortAction.ASCENDING
+              direction: SortExpression.ASCENDING
             }));
           } else {
-            split = split.changeSortAction(dataCube.getDefaultSortAction());
+            split = split.changeSortExpression(dataCube.getDefaultSortExpression());
           }
         }
         autoChanged = true;
       } else if (splitDimension.canBucketByDefault() && split.sortAction.refName() !== splitDimension.name) {
-        split = split.changeSortAction(new SortAction({
+        split = split.changeSortExpression(new SortExpression({
           expression: $(splitDimension.name),
           direction: split.sortAction.direction
         }));

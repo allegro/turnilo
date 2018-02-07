@@ -18,7 +18,8 @@ import './link-view.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Expression, $, find } from 'swiv-plywood';
+import { SimpleArray} from "immutable-class";
+import { Expression, $ } from 'plywood';
 import { Timezone } from 'chronoshift';
 import { classNames } from '../../utils/dom/dom';
 import { Fn } from '../../../common/utils/general/general';
@@ -246,7 +247,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     const { essence } = this.state;
     const PresetDropdown = Dropdown.specialize<Preset>();
 
-    var selected = find(latestPresets, p => p.selection.equals(essence.getTimeSelection()));
+    var selected = SimpleArray.find(latestPresets, p => p.selection.equals(essence.getTimeSelection()));
     return <PresetDropdown
       items={latestPresets}
       selectedItem={selected}

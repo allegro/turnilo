@@ -17,7 +17,7 @@
 import './selectable-string-filter-menu.scss';
 
 import * as React from "react";
-import { $, r, Dataset, SortAction, Set } from "swiv-plywood";
+import { $, r, Dataset, SortExpression, Set } from "plywood";
 import { Fn, collect } from "../../../common/utils/general/general";
 import { STRINGS, SEARCH_WAIT } from "../../config/constants";
 import { Clicker, Essence, Timekeeper, Filter, FilterClause, FilterMode, Dimension, Colors } from "../../../common/models/index";
@@ -90,7 +90,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       .filter(filterExpression)
       .split(dimension.expression, dimension.name)
       .apply('MEASURE', measureExpression)
-      .sort($('MEASURE'), SortAction.DESCENDING)
+      .sort($('MEASURE'), SortExpression.DESCENDING)
       .limit(TOP_N + 1);
 
     this.setState({

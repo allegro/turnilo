@@ -18,7 +18,7 @@ import './clearable-input.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'swiv-plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
 import { SvgIcon } from '../svg-icon/svg-icon';
 

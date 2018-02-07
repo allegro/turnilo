@@ -14,7 +14,8 @@
     "outDir": "build",
     "moduleResolution": "node",
     "jsx": "react",
-    "types" : ["node", "express", "webpack-env"]
+    "types" : ["node", "express", "webpack-env"],
+    "lib": ["dom", "es6", "es5"]
   },
   "include": [
     "src/server/**/*.ts",

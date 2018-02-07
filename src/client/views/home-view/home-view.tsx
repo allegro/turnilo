@@ -41,9 +41,9 @@ export interface HomeViewProps extends React.Props<any> {
   customization?: Customization;
   stateful?: boolean;
   collectionsDelegate?: {
-    addCollection: (collection: Collection) => Q.Promise<string>;
+    addCollection: (collection: Collection) => Promise<string>;
     deleteCollection: (collection: Collection) => void;
-    updateCollection: (collection: Collection) => Q.Promise<any>;
+    updateCollection: (collection: Collection) => Promise<any>;
   };
 
   updateDataCube?: (dataCube: DataCube) => void;

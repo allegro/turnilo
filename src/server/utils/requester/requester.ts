@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { $, retryRequesterFactory, verboseRequesterFactory, concurrentLimitRequesterFactory } from 'swiv-plywood';
+import { $, retryRequesterFactory, verboseRequesterFactory, concurrentLimitRequesterFactory } from 'plywood';
+import { PlywoodRequester } from 'plywood-base-api';
 import { druidRequesterFactory, DruidRequestDecorator } from 'plywood-druid-requester';
 import { mySqlRequesterFactory } from 'plywood-mysql-requester';
 import { postgresRequesterFactory } from 'plywood-postgres-requester';
@@ -37,7 +38,7 @@ export interface ProperRequesterOptions {
   password?: string;
 }
 
-export function properRequesterFactory(options: ProperRequesterOptions): Requester.PlywoodRequester<any> {
+export function properRequesterFactory(options: ProperRequesterOptions): PlywoodRequester<any> {
   var {
     type,
     host,
@@ -47,7 +48,7 @@ export function properRequesterFactory(options: ProperRequesterOptions): Request
     concurrentLimit
   } = options;
 
-  var requester: Requester.PlywoodRequester<any>;
+  var requester: PlywoodRequester<any>;
 
   switch (type) {
     case 'druid':

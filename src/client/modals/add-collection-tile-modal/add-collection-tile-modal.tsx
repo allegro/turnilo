@@ -2,7 +2,7 @@ import './add-collection-tile-modal.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'swiv-plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { Collection, Essence, Timekeeper, CollectionTile, DataCube, SortOn } from '../../../common/models/index';
 import { classNames } from '../../utils/dom/dom';
 import { generateUniqueName } from '../../../common/utils/string/string';

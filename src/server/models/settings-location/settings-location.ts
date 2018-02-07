@@ -1,4 +1,4 @@
-import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property } from 'immutable-class';
 
 
 export type Location = 'file' | 'mysql' | 'postgres';
@@ -26,7 +26,7 @@ export class SettingsLocation extends BaseImmutable<SettingsLocationValue, Setti
   static FORMAT_VALUES: Format[] = ['json', 'yaml'];
 
   static isSettingsLocation(candidate: any): candidate is SettingsLocation {
-    return isInstanceOf(candidate, SettingsLocation);
+    return candidate instanceof SettingsLocation;
   }
 
   static fromJS(parameters: SettingsLocationJS): SettingsLocation {

@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { DataCubeMock } from '../data-cube/data-cube.mock';
 import { AppSettings } from './app-settings';
 import { AppSettingsMock } from './app-settings.mock';
@@ -150,8 +150,8 @@ describe('AppSettings', () => {
                 "type": "SET/STRING"
               },
               {
-                "makerAction": {
-                  "action": "count"
+                "maker": {
+                  "op": "count"
                 },
                 "name": "count",
                 "type": "NUMBER",

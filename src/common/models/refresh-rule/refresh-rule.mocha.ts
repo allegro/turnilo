@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { RefreshRule, RefreshRuleJS } from './refresh-rule';
 
 describe('RefreshRule', () => {

@@ -43,11 +43,11 @@ export interface CollectionViewProps extends React.Props<any> {
   onNavClick?: Fn;
   customization?: Customization;
   delegate?: {
-    updateCollection: (collection: Collection) => Q.Promise<any>;
-    deleteCollection: (collection: Collection) => Q.Promise<any>;
-    updateTile: (collection: Collection, tile: CollectionTile) => Q.Promise<any>;
+    updateCollection: (collection: Collection) => Promise<any>;
+    deleteCollection: (collection: Collection) => Promise<any>;
+    updateTile: (collection: Collection, tile: CollectionTile) => Promise<any>;
     editTile: (collection: Collection, tile: CollectionTile) => void;
-    duplicateTile: (collection: Collection, tile: CollectionTile) => Q.Promise<string>;
+    duplicateTile: (collection: Collection, tile: CollectionTile) => Promise<string>;
     createTile: (collection: Collection, dataCube: DataCube) => void;
     deleteTile: (collection: Collection, tile: CollectionTile) => void;
   };

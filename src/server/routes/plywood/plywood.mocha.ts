@@ -18,7 +18,7 @@ import * as Q from 'q';
 import * as express from 'express';
 import { Response } from 'express';
 import * as supertest from 'supertest';
-import { $, ply, r } from 'swiv-plywood';
+import { $, ply, r } from 'plywood';
 import * as bodyParser from 'body-parser';
 
 import { AppSettings } from '../../../common/models/index';
@@ -92,10 +92,35 @@ describe('plywood router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        result: [
-          { Channel: 'en', Count: 4 },
-          { Channel: 'vi', Count: 4 }
-        ]
+        "result": {
+          "attributes": [
+            {
+              "name": "Channel",
+              "type": "STRING"
+            },
+            {
+              "name": "main",
+              "type": "DATASET"
+            },
+            {
+              "name": "Count",
+              "type": "NUMBER"
+            }
+          ],
+          "data": [
+            {
+              "Channel": "en",
+              "Count": 4
+            },
+            {
+              "Channel": "vi",
+              "Count": 4
+            }
+          ],
+          "keys": [
+            "Channel"
+          ]
+        }
       }, testComplete);
   });
 

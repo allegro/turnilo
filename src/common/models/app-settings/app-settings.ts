@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf, immutableArraysEqual, immutableEqual } from 'immutable-class';
+import { Class, Instance, immutableArraysEqual, immutableEqual, NamedArray } from 'immutable-class';
 import { ImmutableUtils } from '../../utils/index';
-import { Executor, findByName, overrideByName } from 'swiv-plywood';
+import { Executor } from 'plywood';
 import { hasOwnProperty } from '../../utils/general/general';
 import { Cluster, ClusterJS } from '../cluster/cluster';
 import { Customization, CustomizationJS } from '../customization/customization';
@@ -52,7 +52,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   static BLANK = AppSettings.fromJS({}, { visualizations: [] });
 
   static isAppSettings(candidate: any): candidate is AppSettings {
-    return isInstanceOf(candidate, AppSettings);
+    return candidate instanceof AppSettings;
   }
 
   static fromJS(parameters: AppSettingsJS, context?: AppSettingsContext): AppSettings {
@@ -76,7 +76,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     var dataCubes = (parameters.dataCubes || (parameters as any).dataSources || []).map((dataCubeJS: DataCubeJS) => {
       var dataCubeClusterName = dataCubeJS.clusterName || (dataCubeJS as any).engine;
       if (dataCubeClusterName !== 'native') {
-        var cluster = findByName(clusters, dataCubeClusterName);
+        var cluster = NamedArray.findByName(clusters, dataCubeClusterName);
         if (!cluster) throw new Error(`Can not find cluster '${dataCubeClusterName}' for data cube '${dataCubeJS.name}'`);
       }
 
@@ -124,7 +124,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
     for (var dataCube of dataCubes) {
       if (dataCube.clusterName === 'native') continue;
-      if (!findByName(clusters, dataCube.clusterName)) {
+      if (!NamedArray.findByName(clusters, dataCube.clusterName)) {
         throw new Error(`data cube ${dataCube.name} refers to an unknown cluster ${dataCube.clusterName}`);
       }
     }
@@ -198,18 +198,18 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   public getDataCube(dataCubeName: string): DataCube {
-    return findByName(this.dataCubes, dataCubeName);
+    return NamedArray.findByName(this.dataCubes, dataCubeName);
   }
 
   public addOrUpdateDataCube(dataCube: DataCube): AppSettings {
     var value = this.valueOf();
-    value.dataCubes = overrideByName(value.dataCubes, dataCube);
+    value.dataCubes = NamedArray.overrideByName(value.dataCubes, dataCube);
     return new AppSettings(value);
   }
 
   public addOrUpdateCollection(collection: Collection): AppSettings {
     var value = this.valueOf();
-    value.collections = overrideByName(value.collections, collection);
+    value.collections = NamedArray.overrideByName(value.collections, collection);
     return new AppSettings(value);
   }
 
@@ -276,7 +276,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   addCluster(cluster: Cluster): AppSettings {
-    return this.changeClusters(overrideByName(this.clusters, cluster));
+    return this.changeClusters(NamedArray.overrideByName(this.clusters, cluster));
   }
 
   change(propertyName: string, newValue: any): AppSettings {
@@ -292,7 +292,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
   addDataCube(dataCube: DataCube): AppSettings {
-    return this.changeDataCubes(overrideByName(this.dataCubes, dataCube));
+    return this.changeDataCubes(NamedArray.overrideByName(this.dataCubes, dataCube));
   }
 
   filterDataCubes(fn: (dataCube: DataCube, index?: number, dataCubes?: DataCube[]) => boolean): AppSettings {

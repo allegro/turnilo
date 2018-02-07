@@ -20,7 +20,7 @@ import { immutableEqual } from 'immutable-class';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as d3 from 'd3';
-import { $, Expression, Executor, Dataset, Datum, TimeRange, PlywoodRange, NumberRange, Range } from 'swiv-plywood';
+import { $, Expression, Executor, Dataset, Datum, TimeRange, PlywoodRange, NumberRange, Range } from 'plywood';
 import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
 
 const lineFn = d3.svg.line();

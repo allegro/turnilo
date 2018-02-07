@@ -15,16 +15,16 @@
  */
 
 import { List } from 'immutable';
-import { Class, Instance, isInstanceOf, immutableArraysEqual } from 'immutable-class';
+import { Class, Instance, immutableArraysEqual } from 'immutable-class';
 import { Timezone, Duration, day, hour } from 'chronoshift';
-import { $, Expression, RefExpression, TimeRange, TimeBucketAction, SortAction, NumberRange, Range } from 'swiv-plywood';
+import { $, Expression, RefExpression, TimeRange, TimeBucketExpression, SortExpression, NumberRange, Range } from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
 import { Measure } from '../measure/measure';
 import { Filter } from '../filter/filter';
 import { Timekeeper } from '../timekeeper/timekeeper';
 import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
-import { NumberBucketAction } from "swiv-plywood";
+import { NumberBucketExpression } from "plywood";
 import { getDefaultGranularityForKind, getBestBucketUnitForRange } from "../granularity/granularity";
 
 function withholdSplit(splits: List<SplitCombine>, split: SplitCombine, allowIndex: number): List<SplitCombine> {
@@ -48,7 +48,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   static EMPTY: Splits;
 
   static isSplits(candidate: any): candidate is Splits {
-    return isInstanceOf(candidate, Splits);
+    return candidate instanceof Splits;
   }
 
   static fromSplitCombine(splitCombine: SplitCombine): Splits {
@@ -113,12 +113,12 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return new Splits(<List<SplitCombine>>this.splitCombines.filter(s => s !== split));
   }
 
-  public changeSortAction(sort: SortAction): Splits {
-    return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSortAction(sort)));
+  public changeSortExpression(sort: SortExpression): Splits {
+    return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSortExpression(sort)));
   }
 
-  public changeSortActionFromNormalized(sort: SortAction, dimensions: List<Dimension>): Splits {
-    return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSortActionFromNormalized(sort, dimensions)));
+  public changeSortExpressionFromNormalized(sort: SortExpression, dimensions: List<Dimension>): Splits {
+    return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSortExpressionFromNormalized(sort, dimensions)));
   }
 
   public getTitle(dimensions: List<Dimension>): string {
@@ -200,15 +200,15 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
       var extent = selectionSet ? selectionSet.extent() : null;
 
       if (splitKind === 'time') {
-        return splitCombine.changeBucketAction(new TimeBucketAction({
+        return splitCombine.changeBucketAction(new TimeBucketExpression({
           duration: TimeRange.isTimeRange(extent) ? (getBestBucketUnitForRange(extent, false, splitDimension.bucketedBy, splitDimension.granularities) as Duration) :
-            (getDefaultGranularityForKind('time', splitDimension.bucketedBy, splitDimension.granularities) as TimeBucketAction).duration
+            (getDefaultGranularityForKind('time', splitDimension.bucketedBy, splitDimension.granularities) as TimeBucketExpression).duration
         }));
 
       } else if (splitKind === 'number') {
-        return splitCombine.changeBucketAction(new NumberBucketAction({
+        return splitCombine.changeBucketAction(new NumberBucketExpression({
           size: extent ? (getBestBucketUnitForRange(extent, false, splitDimension.bucketedBy, splitDimension.granularities) as number) :
-            (getDefaultGranularityForKind('number', splitDimension.bucketedBy, splitDimension.granularities) as NumberBucketAction).size
+            (getDefaultGranularityForKind('number', splitDimension.bucketedBy, splitDimension.granularities) as NumberBucketExpression).size
         }));
 
       }
@@ -253,7 +253,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
       if (!sortAction || sortAction.refName() !== fromMeasure) return splitCombine;
 
       changed = true;
-      return splitCombine.changeSortAction(new SortAction({
+      return splitCombine.changeSortExpression(new SortExpression({
         expression: $(toMeasure),
         direction: sortAction.direction
       }));
@@ -262,11 +262,11 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return changed ? new Splits(newSplitCombines) : this;
   }
 
-  public getCommonSort(dimensions: List<Dimension>): SortAction {
+  public getCommonSort(dimensions: List<Dimension>): SortExpression {
     var splitCombines = this.splitCombines.toArray();
-    var commonSort: SortAction = null;
+    var commonSort: SortExpression = null;
     for (var splitCombine of splitCombines) {
-      var sort = splitCombine.getNormalizedSortAction(dimensions);
+      var sort = splitCombine.getNormalizedSortExpression(dimensions);
       if (commonSort) {
         if (!commonSort.equals(sort)) return null;
       } else {

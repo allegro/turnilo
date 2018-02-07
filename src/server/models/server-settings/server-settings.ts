@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property } from 'immutable-class';
 import { SettingsLocation, SettingsLocationJS } from '../settings-location/settings-location';
 
 export type Iframe = "allow" | "deny";
@@ -27,7 +27,7 @@ export interface ServerSettingsValue {
   serverRoot?: string;
   requestLogFormat?: string;
   trackingUrl?: string;
-  trackingContext?: Lookup<string>;
+  trackingContext?: Record<string, string>;
   pageMustLoadTimeout?: number;
   iframe?: Iframe;
   trustProxy?: TrustProxy;
@@ -62,7 +62,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   static DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
 
   static isServerSettings(candidate: any): candidate is ServerSettings {
-    return isInstanceOf(candidate, ServerSettings);
+    return candidate instanceof ServerSettings;
   }
 
   static fromJS(parameters: ServerSettingsJS): ServerSettings {
@@ -93,7 +93,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public serverRoot: string;
   public requestLogFormat: string;
   public trackingUrl: string;
-  public trackingContext: Lookup<string>;
+  public trackingContext: Record<string, string>;
   public pageMustLoadTimeout: number;
   public iframe: Iframe;
   public trustProxy: TrustProxy;
@@ -110,7 +110,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public getServerRoot: () => string;
   public getRequestLogFormat: () => string;
   public getTrackingUrl: () => string;
-  public getTrackingContext: () => Lookup<string>;
+  public getTrackingContext: () => Record<string, string>;
   public getPageMustLoadTimeout: () => number;
   public getIframe: () => Iframe;
   public getTrustProxy: () => TrustProxy;

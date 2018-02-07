@@ -18,7 +18,6 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
 import { Dimension, DimensionJS } from './dimension';
-import { GranularityJS } from "../granularity/granularity";
 
 describe('Dimension', () => {
   it('is an immutable class', () => {
@@ -28,7 +27,13 @@ describe('Dimension', () => {
         title: 'important countries',
         formula: '$country',
         kind: 'string',
-        granularities: [5, 50, 500, 800, 1000],
+        granularities: [
+          { op: 'numberBucket', size: 5 },
+          { op: 'numberBucket', size: 50 },
+          { op: 'numberBucket', size: 500 },
+          { op: 'numberBucket', size: 800 },
+          { op: 'numberBucket', size: 1000 }
+        ],
         sortStrategy: 'self'
       },
       {
@@ -37,7 +42,10 @@ describe('Dimension', () => {
         formula: '$country',
         kind: 'string',
         url: 'https://www.country.com/%s',
-        bucketedBy: 1,
+        bucketedBy: {
+          op: 'numberBucket',
+          size: 1
+        },
         bucketingStrategy: 'defaultBucket'
       },
       {
@@ -46,7 +54,13 @@ describe('Dimension', () => {
         formula: '$time',
         kind: 'time',
         url: 'http://www.time.com/%s',
-        granularities: ['PT1M', { action: 'timeBucket', duration: 'P6M', timezone: 'Etc/UTC' }, 'PT6H', 'P1D', 'P1W']
+        granularities: [
+          { op: 'timeBucket', duration: 'PT1M' },
+          { op: 'timeBucket', duration: 'P6M', timezone: 'Etc/UTC' },
+          { op: 'timeBucket', duration: 'PT6H' },
+          { op: 'timeBucket', duration: 'P1D' },
+          { op: 'timeBucket', duration: 'P1W' }
+        ]
       },
       {
         name: 'time',
@@ -54,8 +68,17 @@ describe('Dimension', () => {
         formula: '$time',
         kind: 'time',
         url: 'http://www.time.com/%s',
-        granularities: ['PT1M', 'P6M', 'PT6H', 'P1D', 'P1W'],
-        bucketedBy: 'PT6H'
+        granularities: [
+          { op: 'timeBucket', duration: 'PT1M' },
+          { op: 'timeBucket', duration: 'P6M' },
+          { op: 'timeBucket', duration: 'PT6H' },
+          { op: 'timeBucket', duration: 'P1D' },
+          { op: 'timeBucket', duration: 'P1W' }
+        ],
+        bucketedBy: {
+          op: 'timeBucket',
+          duration: 'PT6H'
+        }
       }
     ]);
   });

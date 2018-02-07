@@ -19,7 +19,7 @@ import './settings-view.scss';
 import * as React from 'react';
 import * as Q from 'q';
 
-import { $, Expression, Executor, Dataset } from 'swiv-plywood';
+import { $, Expression, Executor, Dataset } from 'plywood';
 import { DataCube, User, Customization } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests/index';
 import { STRINGS } from '../../config/constants';
@@ -81,10 +81,10 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
           });
         },
         (xhr: XMLHttpRequest) => Notifier.failure('Sorry', `The settings couldn't be loaded`)
-      ).done();
+      );
   }
 
-  onSave(settings: AppSettings, okMessage?: string): Q.Promise<any> {
+  onSave(settings: AppSettings, okMessage?: string): Promise<any> {
     const { onSettingsChange } = this.props;
 
     return Ajax.query({

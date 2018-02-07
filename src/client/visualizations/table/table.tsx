@@ -19,7 +19,10 @@ import './table.scss';
 import { List } from 'immutable';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortAction, NumberRange } from 'swiv-plywood';
+import {
+  $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortExpression,
+  NumberRange, PlywoodValue
+} from 'plywood';
 import { formatterFromData, formatNumberRange, Formatter } from '../../../common/utils/formatter/formatter';
 import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
   Measure, Colors, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';
@@ -135,10 +138,10 @@ export class Table extends BaseVisualization<TableState> {
 
       var sortExpression = $(pos.what === 'corner' ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : pos.measure.name);
       var commonSort = essence.getCommonSort();
-      var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === SortAction.DESCENDING);
-      clicker.changeSplits(essence.splits.changeSortActionFromNormalized(new SortAction({
+      var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === SortExpression.DESCENDING);
+      clicker.changeSplits(essence.splits.changeSortExpressionFromNormalized(new SortExpression({
         expression: sortExpression,
-        direction: myDescending ? SortAction.ASCENDING : SortAction.DESCENDING
+        direction: myDescending ? SortExpression.ASCENDING : SortExpression.DESCENDING
       }), essence.dataCube.dimensions), VisStrategy.KeepAlways);
 
     } else if (pos.what === 'row') {
@@ -202,9 +205,8 @@ export class Table extends BaseVisualization<TableState> {
 
       newState.flatData = dataset.flatten({
         order: 'preorder',
-        nestingName: '__nest',
-        parentName: '__parent'
-      });
+        nestingName: '__nest'
+      }).data;
     }
 
     this.setState(newState);

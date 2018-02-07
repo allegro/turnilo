@@ -17,7 +17,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, AttributeInfo } from 'swiv-plywood';
+import { $, AttributeInfo } from 'plywood';
 import { Measure, MeasureJS } from './measure';
 
 describe('Measure', () => {
@@ -63,7 +63,7 @@ describe('Measure', () => {
         "name": "price",
         "type": "NUMBER",
         "unsplitable": true,
-        "makerAction": {
+        "maker": {
           "action": "sum",
           "expression": {
             "name": "price",
@@ -86,7 +86,7 @@ describe('Measure', () => {
         "name": "price",
         "type": "NUMBER",
         "unsplitable": true,
-        "makerAction": {
+        "maker": {
           "action": "min",
           "expression": {
             "name": "price",
@@ -109,7 +109,7 @@ describe('Measure', () => {
         "name": "price",
         "type": "NUMBER",
         "unsplitable": true,
-        "makerAction": {
+        "maker": {
           "action": "max",
           "expression": {
             "name": "price",
@@ -131,7 +131,7 @@ describe('Measure', () => {
     it('works with histogram', () => {
       var attribute = AttributeInfo.fromJS({
         "name": "delta_hist",
-        "special": "histogram",
+        "nativeType": "approximateHistogram",
         "type": "NUMBER"
       });
 
@@ -148,7 +148,7 @@ describe('Measure', () => {
     it('works with unique', () => {
       var attribute = AttributeInfo.fromJS({
         "name": "unique_page",
-        "special": "unique",
+        "nativeType": "hyperUnique",
         "type": "STRING"
       });
       var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
@@ -164,7 +164,7 @@ describe('Measure', () => {
     it('works with theta', () => {
       var attribute = AttributeInfo.fromJS({
         "name": "page_theta",
-        "special": "theta",
+        "nativeType": "thetaSketch",
         "type": "STRING"
       });
       var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));

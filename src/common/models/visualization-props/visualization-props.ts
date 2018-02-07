@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dataset } from 'swiv-plywood';
+import { Dataset } from 'plywood';
 import { Fn } from '../../utils/general/general';
 import { Clicker, Stage, Essence, Timekeeper, DeviceSize } from '../index';
 

@@ -17,7 +17,7 @@
 import './vis-measure-label.scss';
 
 import * as React from 'react';
-import { Datum } from 'swiv-plywood';
+import { Datum } from 'plywood';
 import { Measure } from '../../../common/models/index';
 
 export interface VisMeasureLabelProps extends React.Props<any> {

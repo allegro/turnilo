@@ -19,7 +19,7 @@ import './swiv-application.scss';
 import * as React from 'react';
 import * as Q from 'q';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { findByName } from 'swiv-plywood';
+import { NamedArray} from "immutable-class";
 
 import { replaceHash } from '../../utils/url/url';
 import { DataCube, AppSettings, User, Collection, CollectionTile, Essence, Timekeeper, ViewSupervisor } from '../../../common/models/index';
@@ -254,7 +254,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     var parts = this.parseHash(hash);
     var itemName = parts[viewType === COLLECTION ? 1 : 0];
 
-    return findByName(items, itemName);
+    return NamedArray.findByName(items, itemName);
   }
 
   getViewHashFromHash(hash: string): string {
@@ -437,10 +437,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     </ReactCSSTransitionGroupAsync>;
   }
 
-  saveDataCubes(newSettings: AppSettings): Q.Promise<any> {
-    var deferred = Q.defer<string>();
-
-    Ajax.query({
+  saveDataCubes(newSettings: AppSettings): Promise<any> {
+    return Ajax.query({
       method: "POST",
       url: 'dataCubes',
       data: {
@@ -450,14 +448,11 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       .then(
         (status) => this.setState({
           appSettings: newSettings
-        }, deferred.resolve),
+        }),
         (xhr: XMLHttpRequest) => {
           Notifier.failure('Woops', 'Something bad happened');
-          deferred.reject(xhr.response);
         }
-      ).done();
-
-    return deferred.promise;
+      );
   }
 
   updateDataCube(dataCube: DataCube) {

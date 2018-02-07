@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isInstanceOf, isImmutableClass, immutableArraysEqual } from 'immutable-class';
+import { Class, Instance, isImmutableClass, immutableArraysEqual } from 'immutable-class';
 import { ImmutableUtils } from '../../utils/index';
 import { Timezone } from 'chronoshift';
 import { ExternalView, ExternalViewValue} from '../external-view/external-view';
-
-var { WallTime } = require('chronoshift');
-if (!WallTime.rules) {
-  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
-  WallTime.init(tzData.rules, tzData.zones);
-}
 
 export interface CustomizationValue {
   title?: string;
@@ -69,7 +63,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   static DEFAULT_LOGOUT_HREF = 'logout';
 
   static isCustomization(candidate: any): candidate is Customization {
-    return isInstanceOf(candidate, Customization);
+    return candidate instanceof Customization;
   }
 
   static fromJS(parameters: CustomizationJS): Customization {

@@ -18,7 +18,7 @@ import * as Q from 'q';
 import * as express from 'express';
 import { Response } from 'express';
 import * as supertest from 'supertest';
-import { $, ply, r } from 'swiv-plywood';
+import { $, ply, r } from 'plywood';
 import * as bodyParser from 'body-parser';
 
 import { AppSettings } from '../../../common/models/index';
@@ -81,7 +81,7 @@ describe('mkurl router', () => {
         essence: {
           visualization: 'totals',
           timezone: 'Etc/UTC',
-          filter: $('time').in(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS(),
+          filter: $('time').overlap(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS(),
           pinnedDimensions: [],
           singleMeasure: 'count',
           selectedMeasures: ["count", "added"],
@@ -91,9 +91,9 @@ describe('mkurl router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        url: "http://localhost:9090#wiki/totals/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwApgB5YBO1Azs6RpbutnsEwGZVyx" +
-        "ALbVeYUmOABfZMGIRJHPOkXLOwClTqMWbFV0w58AG1JhqDYqaoA3GwFdxR5mGIMwvAEwAGAIwArAC0AaH+cL6+uFExvgB0Ub4AWjrkACY+AQBs" +
-        "4eGR0bFRiVGpcsBgAJ5YLsBwAJIAsiAA+gBKAIIAcgDiILIycgDaALrI5I6mpvIQGI7kXshDBHMLVMTp6dSZY6Pjk6ZAA"
+        url: "http://localhost:9090#wiki/totals/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5MBuApgE4A2AhjsplqRQHYAme62ewJRAZisAxQC" +
+        "2RDmACWw4AF8aRAB5YuAZyViMDVrQ5kxYemT4EKZAK4jc6JWAokwHAEwAGAIwBWALQvPzuI8e4/AMcAOj9HAC0+ImYHFwA2b29ff0C/UL9Im" +
+        "WAwAE86DjgASQBZEAB9ACUAQQA5AHEQaRkAbQBdZAYTMjIaCAwTBjtkZuA+gaHgCiYmIhZ2to6usiA==="
       }, testComplete);
   });
 
@@ -117,9 +117,9 @@ describe('mkurl router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        url: "http://localhost:9090#wiki/totals/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwApgB5YBO1Azs6RpbutnsEwGZVyx" +
-        "ALbVexBmFIQANtQByo8QF9kwYhGkc86Tds6YAbtQaziOdXUYs2Orphz5ZpMKeKyqRjwFdxD5mowOABPLH9gAGU4ACUASQUAcSpqeTFyMGY8AG0" +
-        "NKRl5AEYqSWk5agAmYABdNWAwMIjIkDhgFXbkbOrkch9ZWXUIDB8MlFyhkbASgBNp6mmazu7e/qA="
+        url: "http://localhost:9090#wiki/totals/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5MBuApgE4A2AhjsplqRQHYAme62ewJRAZisAxQC" +
+        "2RDhRJgAlhDJEAckJEBfGkQAeWLgGdNEjA1a0OZCWHpk+BCmQCuI3Ok1EwcAJ50OAZTgAlAJKyAcT4iGWEGME08AG1gMUlpIgBGPjipGQAmY" +
+        "ABdZWAwNztgDxA4YEVlKKzkBmsyMhoIDGtwlBjG5rAUpiYiFirK6tqyIA"
       }, testComplete);
   });
 
@@ -144,7 +144,7 @@ describe('mkurl router', () => {
                 "name": "page"
               },
               "sortAction": {
-                "action": "sort",
+                "op": "sort",
                 "expression": {
                   "op": "ref",
                   "name": "count"
@@ -152,8 +152,8 @@ describe('mkurl router', () => {
                 "direction": "descending"
               },
               "limitAction": {
-                "action": "limit",
-                "limit": 50
+                "op": "limit",
+                "size": 50
               }
             }
           ]
@@ -162,9 +162,9 @@ describe('mkurl router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        url: "http://localhost:9090#wiki/table/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwApgB5YBO1Azs6RpbutnsEwGZVyxA" +
-        "LbVeWYgHNxAX2TBiEMO07olKjrxHFIhKkxn1eAPQB0AKgBCGMJYAkwWfIDa6OoxZstXTDnwCQqLi+JIyTgrMGAxgAILKqnjqCT7AUTFUHkysib4" +
-        "8AdSCCsJivBAYAK7kYBHAACakTCmc9SwQ1OQN5FK1ADakIqRxzUmKI/j9gzUKk0N4AKwADM4AusjkFb29CuVV0y4EldVUxHV11HXAay5rG1tAA="
+        url: "http://localhost:9090#wiki/table/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gC2AhpABYqZYCmATkQHYAme62ewNVAZhfUQVXZY" +
+        "iAc0EBfZBypiAHjnwA9AHQAqAEIYwagCTBJAbXRV5nAM5mAlhnotK7Tjyl8BQ0RKlmMNMAEEIYNa2uKwKwF4+FCZY5lY2dmz4jrz8gvgQGAC" +
+        "u9GD6UoyWnAFB7IxUZhBUTJb0InnAADaWBJZ+xfEh9vhNLblSAG5EDZlp9JkNDeLiALrIYxNSGdl9BsBLORREjGXMswaz8w1AA=="
       }, testComplete);
   });
 
@@ -189,7 +189,7 @@ describe('mkurl router', () => {
                 "name": "page"
               },
               "sortAction": {
-                "action": "sort",
+                "op": "sort",
                 "expression": {
                   "op": "ref",
                   "name": "count"
@@ -197,8 +197,8 @@ describe('mkurl router', () => {
                 "direction": "descending"
               },
               "limitAction": {
-                "action": "limit",
-                "limit": 50
+                "op": "limit",
+                "size": 50
               }
             }
           ]
@@ -207,10 +207,10 @@ describe('mkurl router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        url: "http://localhost:9090#wiki/table/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwApgB5YBO1Azs6RpbutnsEwGZVyxAL" +
-        "bVeWYgHNxAX2TBiEMO07olKjrwgcwZcsyp1GLNlq6Yc+ADakw1BsWtUAbk4Cu4/AGVileQQYIpJMvOQYDCJOwLLyANroxkysqnjcVnzUggrCYh" +
-        "LScgrMEWAAgsqpFhqVwMUMYEb0yWZqlrwCQqJege7kDQEAJqRMFebAAywQ1ORD5FIxCrYiduWardVjS3ZUWw24AKwADLEAusjk7tbWCjq9Dchx" +
-        "PX1UxAMTA8BncWcXV0A=="
+        url: "http://localhost:9090#wiki/table/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQYB2YAhgJZEDOKmWApgE6lEAme62ewj9AZrSKk" +
+        "AtvW5ZSAczEBfZMHoAPLLypVyxDnW4AbcmCakdtAG5GArmPwBlFsDkEMwib25EMjYUfvIA2uiUVejUNIi0ufF4BeSFRcSlZeSoPMABBCDBQ8" +
+        "Jx8ZMYwWkDVdU1cThyefkERK0dzEh9gVnJeDKz8VmCIejZKSUa9YX10zNLy3XIhgvkzHUs8InMdHRkZAF1kReX5Qnrp3zqG+VJWTvYN3w2tn" +
+        "SA=="
       }, testComplete);
   });
 
@@ -235,7 +235,7 @@ describe('mkurl router', () => {
                 "name": "page"
               },
               "sortAction": {
-                "action": "sort",
+                "op": "sort",
                 "expression": {
                   "op": "ref",
                   "name": "count"
@@ -243,8 +243,8 @@ describe('mkurl router', () => {
                 "direction": "descending"
               },
               "limitAction": {
-                "action": "limit",
-                "limit": 50
+                "op": "limit",
+                "size": 50
               }
             }
           ]
@@ -253,10 +253,10 @@ describe('mkurl router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        url: "http://localhost:9090#wiki/table/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwApgB5YBO1Azs6RpbutnsEwGZVyxA" +
-        "LbVeAV2bUGCEg2bAAvsmDEIYdp3TrNHXhA5gy5RarqMWbfV0w58AG1JgZxB1QBubiePxIVBBgiWMRMvOQYDCJuyioA2ugWTKxaeNz2fNSCqsJivCE" +
-        "A5uIBzJFgAIIaqba61cClDGBUSVbV6bwCQqK+gRLkTQEAJqRMVTbAgywQ1OTD5AXKqk4izpV62mpjnMDLzlS7TbgArAAMSkoAusjkEg4OqoZ9T" +
-        "chxvf1UxIOTg8BXcVc3O5AA"
+        url: "http://localhost:9090#wiki/table/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQYB2YAhgJZEDOKmWApgE6lEAme62ewj9AZrSKk" +
+        "AtvW4BXKkwQALUoxoBfZMHoAPLLypVyxDnW4AbcmCalDtAG7nxY/EmUEMwrPLvAiGRsPPBlAbXR1TXptXSJ9LnxeARUhUW5XAHMxRyovMABB" +
+        "CDBwyJx8dMYwWmCtHT1cTgKefkERd0JxEj8VVnJeHLz8VlCIejZKJNbgY2ETbNzK6qNycZKVa0NbPCJxQ0NFRQBdZDWNlSaW5H8nZoXgUlZe" +
+        "9l3/Xf3DIA=="
       }, testComplete);
   });
 
@@ -270,7 +270,7 @@ describe('mkurl router', () => {
         essence: {
           visualization: 'totals',
           timezone: 'Etc/UTC',
-          filter: $('time').in(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS(),
+          filter: $('time').overlap(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS(),
           pinnedDimensions: [],
           singleMeasure: 'count',
           selectedMeasures: ["count", "added"],
@@ -281,11 +281,11 @@ describe('mkurl router', () => {
                 "name": "__time"
               },
               "bucketAction": {
-                "action": "timeBucket",
+                "op": "timeBucket",
                 "duration": "PT1H"
               },
               "sortAction": {
-                "action": "sort",
+                "op": "sort",
                 "expression": {
                   "op": "ref",
                   "name": "__time"
@@ -299,9 +299,9 @@ describe('mkurl router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        url: "http://localhost:9090#wiki/totals/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gQAWAhgJYB2KwApgB5YBO1Azs6RpbutnsEwGZVyx" +
-        "ALbVeYUmOABfZMGIRJHPOkXLOwClTqMWbFV0w58AG1JhqDYqaoA3GwFdxR5mGIMwvAEwAGAIwArAC0AaH+cL6+uFExvgB0Ub4AWjrkACY+AQBs" +
-        "4eGR0bFRiVGpcsBgAJ5YLsBwAJIAsiAA+gBKAIIAcgDiILIycgDaALrI5I6mpvIQGI7kXshDBHMLVMTp6dSZY6Pjk6ZAA"
+        url: "http://localhost:9090#wiki/totals/2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5MBuApgE4A2AhjsplqRQHYAme62ewJRAZisAxQC" +
+        "2RDmACWw4AF8aRAB5YuAZyViMDVrQ5kxYemT4EKZAK4jc6JWAokwHAEwAGAIwBWALQvPzuI8e4/AMcAOj9HAC0+ImYHFwA2b29ff0C/UL9Im" +
+        "WAwAE86DjgASQBZEAB9ACUAQQA5AHEQaRkAbQBdZAYTMjIaCAwTBjtkZuA+gaHgCiYmIhZ2to6usiA==="
       }, testComplete);
   });
 });

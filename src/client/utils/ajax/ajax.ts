@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
 import * as Qajax from 'qajax';
-import { $, Expression, Executor, Dataset, ChainExpression, SplitAction, Environment } from 'swiv-plywood';
+import { $, Expression, Executor, Dataset, ChainableExpression, SplitExpression, Environment } from 'plywood';
 
 Qajax.defaults.timeout = 0; // We'll manage the timeout per request.
 
 function getSplitsDescription(ex: Expression): string {
   var splits: string[] = [];
   ex.forEach((ex) => {
-    if (ex instanceof ChainExpression) {
-      ex.actions.forEach((action) => {
-        if (action instanceof SplitAction) {
+    if (ex instanceof ChainableExpression) {
+      ex.getArgumentExpressions().forEach((action) => {
+        if (action instanceof SplitExpression) {
           splits.push(action.firstSplitExpression().toString());
         }
       });
@@ -61,7 +60,7 @@ export class Ajax {
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
 
-  static query(options: AjaxOptions): Q.Promise<any> {
+  static query(options: AjaxOptions): Promise<any> {
     var data = options.data;
 
     if (data) {

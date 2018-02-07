@@ -15,7 +15,7 @@
  */
 
 import { SortOn, SortOnJS } from './sort-on';
-import { $ } from 'swiv-plywood';
+import { $ } from 'plywood';
 
 export class SortOnMock {
   public static get DEFAULT_A_JS(): SortOnJS {

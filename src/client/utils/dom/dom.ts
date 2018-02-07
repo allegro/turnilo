@@ -131,7 +131,7 @@ export function clamp(n: number, min: number, max: number): number {
   return Math.min(Math.max(n, min), max);
 }
 
-export function classNames(...args: Array<string | Lookup<any>>): string {
+export function classNames(...args: Array<string | Record<string, any>>): string {
   var classes: string[] = [];
 
   for (var arg of args) {
@@ -142,7 +142,7 @@ export function classNames(...args: Array<string | Lookup<any>>): string {
     if (argType === 'string') {
       classes.push(arg as string);
     } else if (argType === 'object') {
-      for (var key in (arg as Lookup<any>)) {
+      for (var key in (arg as Record<string, any>)) {
         if (hasOwnProperty(arg, key) && (arg as any)[key]) classes.push(key);
       }
     }

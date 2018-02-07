@@ -19,7 +19,7 @@ import './bar-chart.scss';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
-import { r, Range, Dataset, Datum, PseudoDatum, SortAction, PlywoodValue, Set, TimeRange, PlywoodRange, NumberRange } from 'swiv-plywood';
+import { r, Range, Dataset, Datum, PseudoDatum, SortExpression, PlywoodValue, Set, TimeRange, PlywoodRange, NumberRange } from 'plywood';
 
 import {
   Stage,
@@ -600,7 +600,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     var labels: JSX.Element[] = [];
     if (dimension.canBucketByDefault()) {
       var lastIndex = data.length - 1;
-      var ascending = split.sortAction.direction === SortAction.ASCENDING;
+      var ascending = split.sortAction.direction === SortExpression.ASCENDING;
       var leftThing = ascending ? 'start' : 'end';
       var rightThing = ascending ? 'end' : 'start';
       data.forEach((d, i) => {
@@ -772,10 +772,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
     if (dataset && splits.length()) {
       let firstSplitDataSet = dataset.data[0][SPLIT] as Dataset;
       if (registerDownloadableDataset) registerDownloadableDataset(dataset);
-      let flatData = firstSplitDataSet.flatten({
+      let flattened = firstSplitDataSet.flatten({
         order: 'preorder',
-        nestingName: '__nest',
-        parentName: '__parent'
+        nestingName: '__nest'
       });
 
       var maxima = splits.toArray().map(() => 0); // initializing maxima to 0
@@ -783,7 +782,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
       newState.maxNumberOfLeaves = maxima;
 
-      newState.flatData = flatData;
+      newState.flatData = flattened.data;
     }
 
     this.setState(newState);

@@ -20,7 +20,7 @@ import * as React from 'react';
 
 import { Duration } from 'chronoshift';
 import { List } from 'immutable';
-import { $, r, Dataset, SortAction, TimeRange, RefExpression, Expression, TimeBucketAction, NumberRange } from 'swiv-plywood';
+import { $, r, Dataset, SortExpression, TimeRange, RefExpression, Expression, TimeBucketExpression, NumberRange } from 'plywood';
 
 import { formatterFromData, collect, formatGranularity, formatTimeBasedOnGranularity, formatNumberRange } from '../../../common/utils/index';
 import { Fn } from '../../../common/utils/general/general';
@@ -147,10 +147,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     if (sortOn.measure) {
-      query = query.performAction(sortOn.measure.toApplyAction());
+      query = query.performAction(sortOn.measure.toApplyExpression());
     }
 
-    query = query.sort(sortExpression, SortAction.DESCENDING).limit(TOP_N + 1);
+    query = query.sort(sortExpression, SortExpression.DESCENDING).limit(TOP_N + 1);
 
     this.setState({
       loading: true,
@@ -382,7 +382,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { selectedGranularity } = this.state;
 
     if (selectedGranularity && dimension.kind === 'time') {
-      var duration = (selectedGranularity as TimeBucketAction).duration;
+      var duration = (selectedGranularity as TimeBucketExpression).duration;
       return `${dimension.title} (${duration.getDescription()})`;
     }
     return dimension.title;
@@ -480,7 +480,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         }
 
         if (segmentValue instanceof TimeRange) {
-          segmentValueStr = formatTimeBasedOnGranularity(segmentValue, (selectedGranularity as TimeBucketAction).duration, essence.timezone, getLocale());
+          segmentValueStr = formatTimeBasedOnGranularity(segmentValue, (selectedGranularity as TimeBucketExpression).duration, essence.timezone, getLocale());
         } else if (segmentValue instanceof NumberRange) {
           segmentValueStr = formatNumberRange(segmentValue);
         }

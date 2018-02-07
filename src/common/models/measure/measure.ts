@@ -15,9 +15,12 @@
  */
 
 import { List } from 'immutable';
-import { BaseImmutable, Property, isInstanceOf } from 'immutable-class';
+import { BaseImmutable, Property } from 'immutable-class';
 import * as numeral from 'numeral';
-import { $, Expression, Datum, ApplyAction, AttributeInfo, ChainExpression, deduplicateSort } from 'swiv-plywood';
+import {
+  $, Expression, Datum, ApplyExpression, AttributeInfo, ChainableExpression, deduplicateSort,
+  RefExpression, CountDistinctExpression
+} from 'plywood';
 import { verifyUrlSafeName, makeTitle, makeUrlSafeName } from '../../utils/general/general';
 
 function formatFnFactory(format: string): (n: number) => string {
@@ -48,7 +51,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static INTEGER_FORMAT = '0,0 a';
 
   static isMeasure(candidate: any): candidate is Measure {
-    return isInstanceOf(candidate, Measure);
+    return candidate instanceof Measure;
   }
 
   static getMeasure(measures: List<Measure>, measureName: string): Measure {
@@ -65,13 +68,23 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static getAggregateReferences(ex: Expression): string[] {
     var references: string[] = [];
     ex.forEach((ex: Expression) => {
-      if (ex instanceof ChainExpression) {
-        var actions = ex.actions;
+      if (ex instanceof ChainableExpression) {
+        var actions = ex.getArgumentExpressions();
         for (var action of actions) {
           if (action.isAggregate()) {
             references = references.concat(action.getFreeReferences());
           }
         }
+      }
+    });
+    return deduplicateSort(references);
+  }
+
+  static getReferences(ex: Expression): string[] {
+    var references: string[] = [];
+    ex.forEach((sub: Expression) => {
+      if (sub instanceof RefExpression && sub.name !== 'main') {
+        references = references.concat(sub.name);
       }
     });
     return deduplicateSort(references);
@@ -85,32 +98,27 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static getCountDistinctReferences(ex: Expression): string[] {
     var references: string[] = [];
     ex.forEach((ex: Expression) => {
-      if (ex instanceof ChainExpression) {
-        var actions = ex.actions;
-        for (var action of actions) {
-          if (action.action === 'countDistinct') {
-            references = references.concat(action.getFreeReferences());
-          }
-        }
+      if (ex instanceof CountDistinctExpression) {
+        references = references.concat(this.getReferences(ex));
       }
     });
     return deduplicateSort(references);
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
-    var { name, special } = attribute;
+    var { name, nativeType } = attribute;
     var $main = $('main');
     var ref = $(name);
 
-    if (special) {
-      if (special === 'unique' || special === 'theta') {
+    if (nativeType) {
+      if (nativeType === 'hyperUnique' || nativeType === 'thetaSketch') {
         return [
           new Measure({
             name: makeUrlSafeName(name),
             formula: $main.countDistinct(ref).toString()
           })
         ];
-      } else if (special === 'histogram') {
+      } else if (nativeType === 'approximateHistogram') {
         return [
           new Measure({
             name: makeUrlSafeName(name + '_p98'),
@@ -120,10 +128,10 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
       }
     }
 
-    var expression = $main.sum(ref);
-    var makerAction = attribute.makerAction;
+    var expression: Expression = $main.sum(ref);
+    var makerAction = attribute.maker;
     if (makerAction) {
-      switch (makerAction.action) {
+      switch (makerAction.op) {
         case 'min':
           expression = $main.min(ref);
           break;
@@ -176,9 +184,9 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     this.formatFn = formatFnFactory(this.getFormat());
   }
 
-  public toApplyAction(): ApplyAction {
+  public toApplyExpression(): ApplyExpression {
     var { name, expression } = this;
-    return new ApplyAction({
+    return new ApplyExpression({
       name: name,
       expression: expression
     });

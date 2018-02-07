@@ -26,7 +26,7 @@ import * as TestUtils from 'react-dom/test-utils';
 import { SortOn } from '../../../common/models/index';
 import { EssenceMock } from '../../../common/models/mocks';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { PinboardMeasureTile } from './pinboard-measure-tile';
 
 describe('PinboardMeasureTile', () => {

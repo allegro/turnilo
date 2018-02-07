@@ -22,7 +22,7 @@ import * as TestUtils from 'react-dom/test-utils';
 
 import '../../utils/test-utils/index';
 
-import { $, Expression } from 'swiv-plywood';
+import { $, Expression } from 'plywood';
 import { NavList } from './nav-list';
 
 describe('NavList', () => {

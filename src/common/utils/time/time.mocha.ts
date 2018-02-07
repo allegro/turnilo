@@ -16,14 +16,8 @@
 
 import { expect } from 'chai';
 import { Timezone, Duration, day, month } from 'chronoshift';
-import { TimeRange } from 'swiv-plywood';
+import { TimeRange } from 'plywood';
 import { datesEqual, prependDays, appendDays, getEndWallTimeInclusive, getWallTimeDay, getWallTimeMonthWithYear, formatTimeBasedOnGranularity, formatTimeRange } from './time';
-
-var { WallTime } = require('chronoshift');
-if (!WallTime.rules) {
-  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
-  WallTime.init(tzData.rules, tzData.zones);
-}
 
 describe('Time', () => {
   it('calculates date equality properly', () => {
@@ -80,17 +74,18 @@ describe('Time', () => {
   it('gets human friendly end time which is -1 ms from actual end time', () => {
     var endExclusive = new Date("1995-03-09T00:00:00.000Z");
     var timezone = new Timezone("America/Tijuana");
-    var endWallTimeInclusive = (getEndWallTimeInclusive(endExclusive, timezone) as any)['wallTime'].toISOString();
-    expect(endWallTimeInclusive, 'tijuana').to.equal(new Date("1995-03-08T15:59:59.999Z").toISOString());
+    let quasiIsoFormat = "YYYY-MM-DD[T]HH:mm:ss.SSS";
+    var endWallTimeInclusive = getEndWallTimeInclusive(endExclusive, timezone).format(quasiIsoFormat);
+    expect(endWallTimeInclusive, 'tijuana').to.equal("1995-03-08T15:59:59.999");
     endExclusive = new Date("1995-03-09T00:00:00.000Z");
-    endWallTimeInclusive = (getEndWallTimeInclusive(endExclusive, TZ_KATHMANDU) as any)['wallTime'].toISOString();
-    expect(endWallTimeInclusive, 'kathmandu').to.equal(new Date("1995-03-09T05:44:59.999Z").toISOString());
+    endWallTimeInclusive = getEndWallTimeInclusive(endExclusive, TZ_KATHMANDU).format(quasiIsoFormat);
+    expect(endWallTimeInclusive, 'kathmandu').to.equal("1995-03-09T05:44:59.999");
     endExclusive = new Date("1999-03-09T00:00:00.000Z");
-    endWallTimeInclusive = (getEndWallTimeInclusive(endExclusive, TZ_TIJUANA) as any)['wallTime'].toISOString();
-    expect(endWallTimeInclusive, 'tijuana2').to.equal(new Date("1999-03-08T15:59:59.999Z").toISOString());
+    endWallTimeInclusive = getEndWallTimeInclusive(endExclusive, TZ_TIJUANA).format(quasiIsoFormat);
+    expect(endWallTimeInclusive, 'tijuana2').to.equal("1999-03-08T15:59:59.999");
     endExclusive = new Date("2016-02-28T00:00:00.000Z");
-    endWallTimeInclusive = (getEndWallTimeInclusive(endExclusive, TZ_Kiritimati) as any)['wallTime'].toISOString();
-    expect(endWallTimeInclusive, 'kiritimati').to.equal(new Date("2016-02-28T13:59:59.999Z").toISOString());
+    endWallTimeInclusive = getEndWallTimeInclusive(endExclusive, TZ_Kiritimati).format(quasiIsoFormat);
+    expect(endWallTimeInclusive, 'kiritimati').to.equal("2016-02-28T13:59:59.999");
   });
 
   it('get walltime day returns day according to walltime', () => {

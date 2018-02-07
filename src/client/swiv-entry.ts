@@ -51,13 +51,11 @@ var version = config.version;
 
 require.ensure([
   'chronoshift',
-  'chronoshift/lib/walltime/walltime-data.js',
   './utils/ajax/ajax',
   '../common/models/index',
   '../common/manifests/index',
   './applications/swiv-application/swiv-application'
 ], (require) => {
-  const { WallTime } = require('chronoshift');
   const { Ajax } = require('./utils/ajax/ajax');
   const { AppSettings, Timekeeper } = require('../common/models/index');
   const { MANIFESTS } = require('../common/manifests/index');
@@ -71,12 +69,6 @@ require.ensure([
       return Ajax.queryUrlExecutorFactory(dataCube.name, 'plywood');
     }
   });
-
-  // Init chronoshift
-  if (!WallTime.rules) {
-    var tzData = require('chronoshift/lib/walltime/walltime-data.js');
-    WallTime.init(tzData.rules, tzData.zones);
-  }
 
   ReactDOM.render(
     React.createElement(

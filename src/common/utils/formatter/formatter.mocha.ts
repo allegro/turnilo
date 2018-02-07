@@ -21,12 +21,6 @@ import { Timezone } from 'chronoshift';
 import { FilterClause } from "../../models/filter-clause/filter-clause";
 import { DimensionMock } from '../../../common/models/mocks';
 
-var { WallTime } = require('chronoshift');
-if (!WallTime.rules) {
-  var tzData = require("chronoshift/lib/walltime/walltime-data.js");
-  WallTime.init(tzData.rules, tzData.zones);
-}
-
 import { getMiddleNumber, formatterFromData, formatFilterClause } from './formatter';
 
 describe('General', () => {
