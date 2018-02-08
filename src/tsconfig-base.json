@@ -10,18 +10,11 @@
     "skipLibCheck": true,
     "target": "es5",
     "module": "commonjs",
-    "rootDir": "src",
-    "outDir": "build",
+    "rootDir": ".",
+    "outDir": "../build",
     "moduleResolution": "node",
     "jsx": "react",
-    "types" : ["node", "express", "webpack-env"],
+    "types": ["node", "express", "webpack-env"],
     "lib": ["dom", "es6", "es5"]
-  },
-  "include": [
-    "src/server/**/*.ts",
-    "src/server/**/*.tsx",
-    "src/common/**/*.ts",
-    "src/common/**/*.tsx",
-    "typings/**/*.d.ts"
-  ]
+  }
 }
