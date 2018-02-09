@@ -188,7 +188,7 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
   }
 
   public changeLimit(limit: number): SplitCombine {
-    var limitAction = limit === null ? null : new LimitExpression({ size: limit });
+    const limitAction = limit === null ? null : new LimitExpression({ value: limit });
     return this.changeLimitExpression(limitAction);
   }
 
