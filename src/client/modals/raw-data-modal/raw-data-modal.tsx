@@ -89,14 +89,12 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       stage: null
     };
 
-    this.globalResizeListener = this.globalResizeListener.bind(this);
   }
 
   componentDidMount() {
     this.mounted = true;
     const { essence, timekeeper } = this.props;
     this.fetchData(essence, timekeeper);
-    this.globalResizeListener();
   }
 
   componentWillUnmount() {
@@ -127,13 +125,12 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       );
   }
 
-  globalResizeListener() {
-    var { table } = this.refs;
-    var tableDOM = ReactDOM.findDOMNode(table);
-    if (!tableDOM) return;
-    this.setState({
-      stage: Stage.fromClientRect(tableDOM.getBoundingClientRect())
-    });
+  onScrollerViewportUpdate(viewPortStage: Stage) {
+    if (!viewPortStage.equals(this.state.stage)) {
+      this.setState({
+        stage: viewPortStage
+      });
+    }
   }
 
   onScroll(scrollTop: number, scrollLeft: number) {
@@ -264,7 +261,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
   render() {
     const { essence, timekeeper, onClose } = this.props;
-    const { dataset, loading, error } = this.state;
+    const { dataset, loading, error, stage } = this.state;
     const { dataCube } = essence;
 
     const title = `${makeTitle(STRINGS.segment)} ${STRINGS.rawData}`;
@@ -294,8 +291,9 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
           ref="table"
           layout={scrollerLayout}
           topGutter={this.renderHeader()}
-          body={this.renderRows()}
+          body={stage && this.renderRows()}
           onScroll={this.onScroll.bind(this)}
+          onViewportUpdate={this.onScrollerViewportUpdate.bind(this)}
         />
         {error ? <QueryError error={error}/> : null}
         {loading ? <Loader/> : null}
