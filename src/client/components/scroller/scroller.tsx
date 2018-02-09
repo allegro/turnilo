@@ -20,6 +20,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { clamp, classNames, getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
 import { firstUp } from '../../../common/utils/string/string';
+import { Stage } from "../../../common/models";
 
 export type XSide = 'left' | 'right';
 export type YSide = 'top' | 'bottom';
@@ -42,6 +43,7 @@ export interface ScrollerProps extends React.Props<any> {
   onMouseMove?: (x: number, y: number, part: ScrollerPart) => void;
   onMouseLeave?: () => void;
   onScroll?: (scrollTop: number, scrollLeft: number) => void;
+  onViewportUpdate?: (stage: Stage) => void;
 
   // "Transcluded" elements
   topGutter?: JSX.Element | JSX.Element[];
@@ -211,10 +213,10 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     const { bodyWidth, bodyHeight } = this.props.layout;
     const { viewportWidth, viewportHeight } = this.state;
     var target = e.target as Element;
-​
+
     var scrollLeft = clamp(target.scrollLeft, 0, Math.max(bodyWidth - viewportWidth, 0));
     var scrollTop = clamp(target.scrollTop, 0, Math.max(bodyHeight - viewportHeight, 0));
-​
+
     if (this.props.onScroll !== undefined) {
       this.setState({
         scrollTop,
@@ -336,6 +338,11 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
 
     if (this.state.viewportHeight !== newHeight || this.state.viewportWidth !== newWidth) {
       this.setState({viewportHeight: newHeight, viewportWidth: newWidth});
+
+      const onViewportUpdate = this.props.onViewportUpdate;
+      const viewportStage = new Stage({x: rect.x, y: rect.y, width: newWidth, height: newHeight});
+
+      onViewportUpdate && onViewportUpdate(viewportStage);
     }
   }
 
