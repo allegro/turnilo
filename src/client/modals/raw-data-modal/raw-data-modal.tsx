@@ -17,20 +17,19 @@
 import './raw-data-modal.scss';
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
 import { isDate } from 'chronoshift';
-import { $, Dataset, PlywoodValue, Datum, AttributeInfo, Expression } from 'plywood';
-import { Essence, Stage, DataCube, Timekeeper } from '../../../common/models/index';
+import { $, AttributeInfo, Dataset, Datum, Expression } from 'plywood';
+import { DataCube, Essence, Stage, Timekeeper } from '../../../common/models';
 
-import { Fn, makeTitle, arraySum } from '../../../common/utils/general/general';
+import { arraySum, Fn, makeTitle } from '../../../common/utils/general/general';
 import { download, makeFileName } from '../../utils/download/download';
 import { formatFilterClause } from '../../../common/utils/formatter/formatter';
 import { classNames } from '../../utils/dom/dom';
 import { getVisibleSegments } from '../../utils/sizing/sizing';
 import { STRINGS } from '../../config/constants';
 
-import { Modal, Button, Scroller, ScrollerLayout, Loader, QueryError } from '../../components/index';
+import { Button, Loader, Modal, QueryError, Scroller, ScrollerLayout } from '../../components';
 
 const HEADER_HEIGHT = 30;
 const ROW_HEIGHT = 30;
@@ -134,17 +133,17 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
   }
 
   onScroll(scrollTop: number, scrollLeft: number) {
-    this.setState({scrollLeft, scrollTop});
+    this.setState({ scrollLeft, scrollTop });
   }
 
   getStringifiedFilters(): List<string> {
     const { essence, timekeeper } = this.props;
     const { dataCube } = essence;
 
-    return essence.getEffectiveFilter(timekeeper).clauses.map((clause, i) => {
+    return essence.getEffectiveFilter(timekeeper).clauses.map((clause,) => {
       const dimension = dataCube.getDimensionByExpression(clause.expression);
       if (!dimension) return null;
-      var evaluatedClause = dimension.kind === 'time' ? essence.evaluateClause(clause, timekeeper) : clause;
+      const evaluatedClause = dimension.kind === 'time' ? essence.evaluateClause(clause, timekeeper) : clause;
       return formatFilterClause(dimension, evaluatedClause, essence.timezone);
     }).toList();
   }
@@ -152,7 +151,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
   getSortedAttributes(dataCube: DataCube): AttributeInfo[] {
     const timeAttributeName = dataCube.timeAttribute ? dataCube.timeAttribute.name : null;
 
-    var attributeRank = (attribute: AttributeInfo) => {
+    const attributeRank = (attribute: AttributeInfo) => {
       const name = attribute.name;
       if (name === timeAttributeName) {
         return 1;
@@ -194,10 +193,9 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
       const name = attribute.name;
       const width = getColumnWidth(attribute);
       const style = { width };
-      const key = name;
       return (<div className={classNames("header-cell", classFromAttribute(attribute))} style={style} key={i}>
         <div className="title-wrap">
-          {makeTitle(key)}
+          {makeTitle(name)}
         </div>
       </div>);
     });
@@ -220,23 +218,23 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
     const rawData = dataset.data;
 
-    const [ firstRowToShow, lastRowToShow ] = this.getVisibleIndices(rawData.length, stage.height);
+    const [firstRowToShow, lastRowToShow] = this.getVisibleIndices(rawData.length, stage.height);
 
     const rows = rawData.slice(firstRowToShow, lastRowToShow);
-    var attributes = this.getSortedAttributes(dataCube);
-    var attributeWidths = attributes.map(getColumnWidth);
+    let attributes = this.getSortedAttributes(dataCube);
+    const attributeWidths = attributes.map(getColumnWidth);
 
     const { startIndex, shownColumns } = getVisibleSegments(attributeWidths, scrollLeft, stage.width);
-    var leftOffset = arraySum(attributeWidths.slice(0, startIndex));
+    const leftOffset = arraySum(attributeWidths.slice(0, startIndex));
 
     attributes = attributes.slice(startIndex, startIndex + shownColumns);
 
-    var rowY = firstRowToShow * ROW_HEIGHT;
+    let rowY = firstRowToShow * ROW_HEIGHT;
     return rows.map((datum: Datum, i: number) => {
-      var cols: JSX.Element[] = [];
+      const cols: JSX.Element[] = [];
       attributes.forEach((attribute: AttributeInfo) => {
         const name = attribute.name;
-        const datumAttribute = datum[name]
+        const datumAttribute = datum[name];
         const value = (datumAttribute instanceof Expression) ? datumAttribute.resolve(datum).simplify() : datum[name];
         const colStyle = {
           width: getColumnWidth(attribute)
@@ -298,7 +296,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
         {error ? <QueryError error={error}/> : null}
         {loading ? <Loader/> : null}
         <div className="button-bar">
-          <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
+          <Button type="primary" className="close" onClick={onClose} title={STRINGS.close}/>
           <Button
             type="secondary"
             className="download"
