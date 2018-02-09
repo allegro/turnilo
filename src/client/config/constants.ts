@@ -122,7 +122,6 @@ export const STRINGS: any = {
   regex: 'Regex',
   relative: 'Relative',
   save: 'Save',
-  segment: 'segment',
   select: 'Select',
   settings: 'Settings',
   sortBy: 'Sort by',

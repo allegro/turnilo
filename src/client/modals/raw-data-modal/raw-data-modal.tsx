@@ -264,7 +264,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataset, loading, error, stage } = this.state;
     const { dataCube } = essence;
 
-    const title = `${makeTitle(STRINGS.segment)} ${STRINGS.rawData}`;
+    const title = `${makeTitle(STRINGS.rawData)}`;
 
     const filtersString = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
 
