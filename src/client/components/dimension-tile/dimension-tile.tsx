@@ -154,7 +154,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     this.setState({
       loading: true,
-      fetchQueued: false
+      fetchQueued: false,
+      dataset: null
     });
     dataCube.executor(query, { timezone: essence.timezone })
       .then(
