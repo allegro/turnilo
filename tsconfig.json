@@ -3,10 +3,8 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "noEmitOnError": true,
-    "declaration": true,
     "removeComments": true,
     "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
     "noImplicitReturns": true,
     "strictNullChecks": false,
     "skipLibCheck": true,
@@ -16,14 +14,7 @@
     "outDir": "build",
     "moduleResolution": "node",
     "jsx": "react",
-    "types" : ["node", "express", "webpack-env"],
-    "experimentalDecorators": true,
-    "lib": [ "dom", "es6", "es5" ]
-  },
-  "include": [
-    "src/client/**/*.ts",
-    "src/client/**/*.tsx",
-    "typings/**/*.d.ts"
-  ],
-  "compileOnSave": false
+    "types": ["node", "express", "webpack-env"],
+    "lib": ["dom", "es6", "es5"]
+  }
 }

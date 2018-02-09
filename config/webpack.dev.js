@@ -21,9 +21,10 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: [
-          "awesome-typescript-loader"
-        ]
+        loader: "awesome-typescript-loader",
+        query: {
+          configFileName: "./src/client/tsconfig.json"
+        }
       },
       {
         enforce: "pre",

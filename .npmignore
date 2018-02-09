@@ -13,7 +13,5 @@
 *.iml
 .sass-lint.yml
 .travis.yml
-tsconfig.json
-tsconfig-prod.json
-tsconfig-server.json
+tsconfig*.json
 tslint.json
