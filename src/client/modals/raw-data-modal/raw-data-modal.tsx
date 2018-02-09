@@ -140,7 +140,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { essence, timekeeper } = this.props;
     const { dataCube } = essence;
 
-    return essence.getEffectiveFilter(timekeeper).clauses.map((clause,) => {
+    return essence.getEffectiveFilter(timekeeper).clauses.map((clause, ) => {
       const dimension = dataCube.getDimensionByExpression(clause.expression);
       if (!dimension) return null;
       const evaluatedClause = dimension.kind === 'time' ? essence.evaluateClause(clause, timekeeper) : clause;
@@ -296,7 +296,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
         {error ? <QueryError error={error}/> : null}
         {loading ? <Loader/> : null}
         <div className="button-bar">
-          <Button type="primary" className="close" onClick={onClose} title={STRINGS.close}/>
+          <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
           <Button
             type="secondary"
             className="download"
