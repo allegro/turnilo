@@ -30,12 +30,12 @@ import {
 } from 'plywood';
 import {
   collect,
+  Fn,
   formatGranularity,
   formatNumberRange,
   formatterFromData,
   formatTimeBasedOnGranularity
 } from '../../../common/utils';
-import { Fn } from '../../../common/utils';
 import {
   Clicker,
   Colors,
