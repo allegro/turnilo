@@ -23,9 +23,9 @@
     > .measure {
       > .background-container {
         > .background {
-          background-color: #a8dbf5;
-          border-top: 1px solid #98cbe5;
-          border-bottom: 1px solid #98cbe5;
+          background-color: $highlight;
+          border-top: 1px solid $highlight-border;
+          border-bottom: 1px solid $highlight-border;
         }
       }
     }
@@ -58,9 +58,9 @@
       > .background {
         height: 100%;
 
-        background-color: #d2edfa;
-        border-top: 1px solid #bed9e6;
-        border-bottom: 1px solid #bed9e6;
+        background-color: $background-brand-light;
+        border-top: 1px solid $highlight-border;
+        border-bottom: 1px solid $highlight-border;
       }
     }
 
