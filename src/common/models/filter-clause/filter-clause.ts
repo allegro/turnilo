@@ -46,7 +46,7 @@ function isLiteral(ex: Expression): boolean {
 function isRelative(ex: Expression): boolean {
   if (ex instanceof ChainableExpression) {
     if (ex.type !== 'TIME_RANGE') return false;
-    var expression = ex.operand;
+    const expression = ex.getHeadOperand();
     if (expression instanceof RefExpression) {
       return expression.name === FilterClause.NOW_REF_NAME || expression.name === FilterClause.MAX_TIME_REF_NAME;
     }
