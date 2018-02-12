@@ -17,19 +17,18 @@
 import './home-view.scss';
 
 import * as React from 'react';
-import * as Q from 'q';
 
-import { Collection, Stage, DataCube, User, Customization } from '../../../common/models/index';
+import { Collection, Customization, DataCube, User } from '../../../common/models';
 import { STRINGS } from '../../config/constants';
-import { Fn } from '../../../common/utils/general/general';
+import { Fn } from '../../../common/utils';
 
 import { generateUniqueName } from '../../../common/utils/string/string';
 import { indexByAttribute } from '../../../common/utils/array/array';
 
-import { NameDescriptionModal } from '../../modals/index';
-import { SvgIcon } from '../../components/index';
+import { NameDescriptionModal } from '../../modals';
+import { SvgIcon } from '../../components';
 
-import { HomeHeaderBar} from './home-header-bar/home-header-bar';
+import { HomeHeaderBar } from './home-header-bar/home-header-bar';
 import { ItemCard } from './item-card/item-card';
 
 export interface HomeViewProps extends React.Props<any> {
@@ -55,7 +54,7 @@ export interface HomeViewState {
   editedItem?: DataCube | Collection;
 }
 
-export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
+export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
 
   constructor() {
     super();
@@ -63,13 +62,9 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
   }
 
   goToItem(item: DataCube | Collection) {
-    var fragments = item.name;
+    const itemPrefix = Collection.isCollection(item) ? 'collection/' : '';
 
-    if (Collection.isCollection(item)) {
-      fragments = 'collection/' + fragments;
-    }
-
-    window.location.hash = '#' + fragments;
+    window.location.hash = '#' + itemPrefix + item.name;
   }
 
   goToSettings() {
@@ -81,7 +76,7 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
     if (!user || !user.allow['settings'] || !stateful) return null;
 
     return <div className="icon-button" onClick={this.goToSettings.bind(this)}>
-      <SvgIcon svg={require('../../icons/full-settings.svg')}/>
+      <SvgIcon svg={require('../../icons/full-settings.svg')} />
     </div>;
   }
 
@@ -127,10 +122,10 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
       {items.map(this.renderItem, this)}
 
       {/* So that the last item doesn't span on the entire row*/}
-      {adder || <div className="item-card empty"/>}
-      <div className="item-card empty"/>
-      <div className="item-card empty"/>
-      <div className="item-card empty"/>
+      {adder || <div className="item-card empty" />}
+      <div className="item-card empty" />
+      <div className="item-card empty" />
+      <div className="item-card empty" />
     </div>;
   }
 
@@ -192,11 +187,11 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
       <div className="grid-row">
         <div className="grid-col-90 section-title">{STRINGS.collections}</div>
         <div className="grid-col-10 right actions">
-          { collectionsDelegate && collections.length > 4 ?
+          {collectionsDelegate && collections.length > 4 ?
             <div className="add" onClick={create}>
-              <SvgIcon svg={require('../../icons/full-add-framed.svg')}/>
+              <SvgIcon svg={require('../../icons/full-add-framed.svg')} />
             </div>
-          : null }
+            : null}
         </div>
       </div>
       {this.renderItems(
@@ -279,7 +274,6 @@ export class HomeView extends React.Component< HomeViewProps, HomeViewState> {
 
       <div className="container">
         {this.renderDataCubes()}
-        {this.renderCollections()}
       </div>
       {showAddCollectionModal ? this.renderAddCollectionModal() : null}
       {editedItem ? this.renderEditModal() : null}
