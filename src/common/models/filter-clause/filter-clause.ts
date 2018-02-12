@@ -15,9 +15,25 @@
  */
 
 import { Class, Instance } from 'immutable-class';
-import { Timezone, Duration, minute, day } from 'chronoshift';
-import { $, r, Expression, ExpressionJS, LiteralExpression, RefExpression, Set, SetJS,
-  ChainableExpression, NotExpression, OverlapExpression, InExpression, Range, TimeRange, Datum, NumberRange, MatchExpression, ContainsExpression } from 'plywood';
+import { day, minute, Timezone } from 'chronoshift';
+import {
+  ChainableExpression,
+  ContainsExpression,
+  Datum,
+  Expression,
+  ExpressionJS,
+  InExpression,
+  LiteralExpression,
+  MatchExpression,
+  NotExpression,
+  NumberRange,
+  OverlapExpression,
+  r,
+  Range,
+  RefExpression,
+  Set,
+  TimeRange
+} from 'plywood';
 
 // Basically these represent
 // expression.in(selection) .not()?
@@ -63,7 +79,8 @@ function selectionsEqual(a: any, b: any) {
   return (a as Expression).equals(b as Expression);
 }
 
-var check: Class<FilterClauseValue, FilterClauseJS>;
+let check: Class<FilterClauseValue, FilterClauseJS>;
+
 export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS> {
 
   static isFilterClause(candidate: any): candidate is FilterClause {
@@ -75,15 +92,15 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
 
   static evaluate(selection: Expression, now: Date, maxTime: Date, timezone: Timezone): TimeRange {
     if (!selection) return null;
-    var maxTimeMinuteTop = minute.shift(minute.floor(maxTime || now, timezone), timezone, 1);
-    var datum: Datum = {};
+    const maxTimeMinuteTop = minute.shift(minute.floor(maxTime || now, timezone), timezone, 1);
+    const datum: Datum = {};
     datum[FilterClause.NOW_REF_NAME] = now;
     datum[FilterClause.MAX_TIME_REF_NAME] = maxTimeMinuteTop;
     return selection.defineEnvironment({ timezone }).getFn()(datum);
   }
 
   static fromExpression(ex: Expression): FilterClause {
-    var exclude = false;
+    let exclude = false;
 
     if (ex instanceof NotExpression) {
       ex = ex.operand;
@@ -99,8 +116,8 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
 
     if (ex instanceof InExpression || ex instanceof OverlapExpression || ex instanceof ContainsExpression) {
       let dimExpression = ex.operand;
-      var selection = ex.expression;
-      var action = ex.op as SupportedAction;
+      const selection = ex.expression;
+      const action = ex.op as SupportedAction;
 
       return new FilterClause({
         action,
@@ -112,7 +129,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
 
     if (ex instanceof MatchExpression) {
       let dimExpression = ex.operand;
-      var regexp = (ex as MatchExpression).regexp;
+      const regexp = (ex as MatchExpression).regexp;
       return new FilterClause({
         action: 'match',
         expression: dimExpression,
@@ -126,7 +143,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
 
   static fromJS(parameters: FilterClauseJS): FilterClause {
     const { selection, action } = parameters;
-    var value: FilterClauseValue = {
+    const value: FilterClauseValue = {
       action,
       expression: Expression.fromJS(parameters.expression),
       selection: (typeof selection !== "string") ? Expression.fromJS(selection as ExpressionJS) : selection as string,
@@ -170,7 +187,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
 
   public toJS(): FilterClauseJS {
     const { selection, action } = this;
-    var js: FilterClauseJS = {
+    const js: FilterClauseJS = {
       expression: this.expression.toJS(),
       selection: selection instanceof Expression ? (selection as Expression).toJS() : selection
     };
@@ -197,9 +214,9 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
 
   public toExpression(): ChainableExpression {
     const { expression, selection, action } = this;
-    var ex: ChainableExpression = null;
+    let ex: ChainableExpression = null;
     if (selection instanceof Expression) {
-      var selectionType = (selection as Expression).type;
+      const selectionType = (selection as Expression).type;
       if (selectionType === 'TIME_RANGE' || selectionType === 'SET/TIME_RANGE' || selectionType === 'NUMBER_RANGE' || selectionType === 'SET/NUMBER_RANGE') {
         ex = expression.in(selection);
       } else if (action === 'contains') {
@@ -219,7 +236,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     const { selection } = this;
     if (this.relative) return null;
     if (selection instanceof Expression) {
-      var v = (selection as Expression).getLiteralValue();
+      const v = (selection as Expression).getLiteralValue();
       return Set.isSet(v) ? v : Set.fromJS([v]);
     } else {
       return Set.fromJS([selection]);
@@ -227,24 +244,24 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
   }
 
   public getExtent(): Range<any> {
-    var mySet = this.getLiteralSet();
+    const mySet = this.getLiteralSet();
     return mySet ? mySet.extent() : null;
   }
 
   public isLessThanFullDay(): boolean {
-    var extent = this.getExtent();
+    let extent = this.getExtent();
     if (!extent) return false;
     return extent.end.valueOf() - extent.start.valueOf() < day.canonicalLength;
   }
 
   public changeSelection(selection: Expression) {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.selection = selection;
     return new FilterClause(value);
   }
 
   public changeExclude(exclude: boolean): FilterClause {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.exclude = exclude;
     return new FilterClause(value);
   }
@@ -254,4 +271,5 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     return this.changeSelection(r(FilterClause.evaluate((this.selection as Expression), now, maxTime, timezone)));
   }
 }
+
 check = FilterClause;
