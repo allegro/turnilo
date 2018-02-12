@@ -22,9 +22,8 @@ import { isDate } from 'chronoshift';
 import { $, AttributeInfo, Dataset, Datum, Expression } from 'plywood';
 import { DataCube, Essence, Stage, Timekeeper } from '../../../common/models';
 
-import { arraySum, Fn, makeTitle } from '../../../common/utils/general/general';
+import { arraySum, Fn, formatFilterClause, makeTitle } from '../../../common/utils';
 import { download, makeFileName } from '../../utils/download/download';
-import { formatFilterClause } from '../../../common/utils/formatter/formatter';
 import { classNames } from '../../utils/dom/dom';
 import { getVisibleSegments } from '../../utils/sizing/sizing';
 import { STRINGS } from '../../config/constants';
@@ -140,7 +139,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { essence, timekeeper } = this.props;
     const { dataCube } = essence;
 
-    return essence.getEffectiveFilter(timekeeper).clauses.map((clause, ) => {
+    return essence.getEffectiveFilter(timekeeper).clauses.map(clause => {
       const dimension = dataCube.getDimensionByExpression(clause.expression);
       if (!dimension) return null;
       const evaluatedClause = dimension.kind === 'time' ? essence.evaluateClause(clause, timekeeper) : clause;
@@ -293,8 +292,8 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
           onScroll={this.onScroll.bind(this)}
           onViewportUpdate={this.onScrollerViewportUpdate.bind(this)}
         />
-        {error ? <QueryError error={error}/> : null}
-        {loading ? <Loader/> : null}
+        {error ? <QueryError error={error} /> : null}
+        {loading ? <Loader /> : null}
         <div className="button-bar">
           <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
           <Button

@@ -339,10 +339,10 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     if (this.state.viewportHeight !== newHeight || this.state.viewportWidth !== newWidth) {
       this.setState({viewportHeight: newHeight, viewportWidth: newWidth});
 
-      const onViewportUpdate = this.props.onViewportUpdate;
-      const viewportStage = new Stage({x: rect.x, y: rect.y, width: newWidth, height: newHeight});
+      const { x, y } = rect;
+      const { onViewportUpdate } = this.props;
 
-      onViewportUpdate && onViewportUpdate(viewportStage);
+      onViewportUpdate && onViewportUpdate(new Stage({ x, y, width: newWidth, height: newHeight }));
     }
   }
 
