@@ -122,9 +122,9 @@ How often should source schema be reloaded in ms.
 
 ### Druid specific properties
 
-**introspectionStrategy** ("segment-metadata-fallback", "segment-metadata-only", "datasource-get"), default: "segment-metadata-fallback"
+**introspectionStrategy** ("segment-metadata-fallback" | "segment-metadata-only" | "datasource-get"), default: "segment-metadata-fallback"
 
-The introspection strategy for the Druid external.
+The introspection strategy for Druid cluster.
 
 **requestDecorator** (string)
 
@@ -190,7 +190,7 @@ The names of the measures that will be selected by default.
 
 The names of the dimensions (in order) that will appear *pinned* by default on the right panel.
 
-**introspection** ("none", "no-autofill", "autofill-dimensions-only", "autofill-measures-only", "autofill-all")
+**introspection** ("none" | "no-autofill" | "autofill-dimensions-only" | "autofill-measures-only" | "autofill-all")
 
 Data cube introspection strategy.
 
@@ -276,7 +276,7 @@ If you mainly care about smaller intervals, you might want to set it to: `['PT1S
 
 Alternatively, if you mainly care about large intervals, you might want to try: `['P1D', 'P1W', 'P1M', 'P3M', 'P1Y']`
 
-**bucketingStrategy** ('defaultBucket' | 'defaultNoBucket')
+**bucketingStrategy** ("defaultBucket" | "defaultNoBucket")
 
 Specify whether or not the dimension should be bucketed by default. If unspecified defaults to 'defaultBucket' for time and numeric dimensions.
 
