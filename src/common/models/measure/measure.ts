@@ -70,11 +70,11 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
    * @returns {string[]}
    */
   static getAggregateReferences(ex: Expression): string[] {
-    var references: string[] = [];
+    let references: string[] = [];
     ex.forEach((ex: Expression) => {
       if (ex instanceof ChainableExpression) {
-        var actions = ex.getArgumentExpressions();
-        for (var action of actions) {
+        const actions = ex.getArgumentExpressions();
+        for (let action of actions) {
           if (action.isAggregate()) {
             references = references.concat(action.getFreeReferences());
           }
@@ -85,7 +85,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   static getReferences(ex: Expression): string[] {
-    var references: string[] = [];
+    let references: string[] = [];
     ex.forEach((sub: Expression) => {
       if (sub instanceof RefExpression && sub.name !== 'main') {
         references = references.concat(sub.name);
@@ -100,7 +100,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
    * @returns {string[]}
    */
   static getCountDistinctReferences(ex: Expression): string[] {
-    var references: string[] = [];
+    let references: string[] = [];
     ex.forEach((ex: Expression) => {
       if (ex instanceof CountDistinctExpression) {
         references = references.concat(this.getReferences(ex));
@@ -110,9 +110,9 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
-    var { name, nativeType } = attribute;
-    var $main = $('main');
-    var ref = $(name);
+    const { name, nativeType } = attribute;
+    const $main = $('main');
+    const ref = $(name);
 
     if (nativeType) {
       if (nativeType === 'hyperUnique' || nativeType === 'thetaSketch') {
@@ -132,8 +132,8 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
       }
     }
 
-    var expression: Expression = $main.sum(ref);
-    var makerAction = attribute.maker;
+    let expression: Expression = $main.sum(ref);
+    const makerAction = attribute.maker;
     if (makerAction) {
       switch (makerAction.op) {
         case 'min':
@@ -157,7 +157,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static fromJS(parameters: MeasureJS): Measure {
     // Back compat
     if (!parameters.formula) {
-      var parameterExpression = (parameters as any).expression;
+      let parameterExpression = (parameters as any).expression;
       parameters.formula = (typeof parameterExpression === 'string' ? parameterExpression : $('main').sum($(parameters.name)).toString());
     }
 

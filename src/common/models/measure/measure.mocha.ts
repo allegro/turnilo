@@ -78,7 +78,7 @@ describe('Measure', () => {
 
   describe('.measuresFromAttributeInfo', () => {
     it('works with sum', () => {
-      var attribute = AttributeInfo.fromJS({
+      const attribute = AttributeInfo.fromJS({
         "name": "price",
         "type": "NUMBER",
         "unsplitable": true,
@@ -90,7 +90,7 @@ describe('Measure', () => {
           }
         }
       });
-      var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
           "name": "price",
@@ -101,7 +101,7 @@ describe('Measure', () => {
     });
 
     it('works with min', () => {
-      var attribute = AttributeInfo.fromJS({
+      const attribute = AttributeInfo.fromJS({
         "name": "price",
         "type": "NUMBER",
         "unsplitable": true,
@@ -113,7 +113,7 @@ describe('Measure', () => {
           }
         }
       });
-      var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
           "name": "price",
@@ -124,7 +124,7 @@ describe('Measure', () => {
     });
 
     it('works with max', () => {
-      var attribute = AttributeInfo.fromJS({
+      const attribute = AttributeInfo.fromJS({
         "name": "price",
         "type": "NUMBER",
         "unsplitable": true,
@@ -137,7 +137,7 @@ describe('Measure', () => {
         }
       });
 
-      var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
           "name": "price",
@@ -148,13 +148,13 @@ describe('Measure', () => {
     });
 
     it('works with histogram', () => {
-      var attribute = AttributeInfo.fromJS({
+      const attribute = AttributeInfo.fromJS({
         "name": "delta_hist",
         "nativeType": "approximateHistogram",
         "type": "NUMBER"
       });
 
-      var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
           "name": "delta_hist_p98",
@@ -165,12 +165,12 @@ describe('Measure', () => {
     });
 
     it('works with unique', () => {
-      var attribute = AttributeInfo.fromJS({
+      const attribute = AttributeInfo.fromJS({
         "name": "unique_page",
         "nativeType": "hyperUnique",
         "type": "STRING"
       });
-      var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
           "name": "unique_page",
@@ -181,12 +181,12 @@ describe('Measure', () => {
     });
 
     it('works with theta', () => {
-      var attribute = AttributeInfo.fromJS({
+      const attribute = AttributeInfo.fromJS({
         "name": "page_theta",
         "nativeType": "thetaSketch",
         "type": "STRING"
       });
-      var measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m => m.toJS()));
       expect(measures).to.deep.equal([
         {
           "name": "page_theta",
