@@ -17,8 +17,9 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, AttributeInfo } from 'plywood';
+import { AttributeInfo } from 'plywood';
 import { Measure, MeasureJS } from './measure';
+import { MeasureFixtures } from "./measure.fixtures";
 
 describe('Measure', () => {
   it('is an immutable class', () => {
@@ -38,6 +39,24 @@ describe('Measure', () => {
         title: 'Latency',
         units: 'ms',
         formula: '$main.sum($latency)'
+      },
+      {
+        name: 'item_sum',
+        title: 'Items',
+        formula: '$main.sum($item)',
+        transformation: 'none'
+      },
+      {
+        name: 'items_of_parent',
+        title: 'Items (% of parent)',
+        formula: '$main.sum($item)',
+        transformation: 'percent-of-parent'
+      },
+      {
+        name: 'items_of_total',
+        title: 'Items (% of total)',
+        formula: '$main.sum($item)',
+        transformation: 'percent-of-total'
       }
     ]);
   });
@@ -177,5 +196,59 @@ describe('Measure', () => {
       ]);
     });
 
+  });
+
+  describe('toApplyExpression', () => {
+
+    describe('no transformation', () => {
+      it('creates simple formula expression at root level', () => {
+        const applyExpression = MeasureFixtures.noTransformationMeasure().toApplyExpression(0);
+        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithNoTransformation());
+      });
+
+      it('creates simple formula expression at first level', () => {
+        const applyExpression = MeasureFixtures.noTransformationMeasure().toApplyExpression(1);
+        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithNoTransformation());
+      });
+
+      it('creates simple formula expression at first level', () => {
+        const applyExpression = MeasureFixtures.noTransformationMeasure().toApplyExpression(99);
+        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithNoTransformation());
+      });
+    });
+
+    describe('percent-of-parent transformation', () => {
+      it('creates simple formula expression at root level', () => {
+        const applyExpression = MeasureFixtures.percentOfParentMeasure().toApplyExpression(0);
+        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtRootLevel());
+      });
+
+      it('creates correct division expression at deeper level', () => {
+        const applyExpression = MeasureFixtures.percentOfParentMeasure().toApplyExpression(1);
+        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtLevel(1));
+      });
+
+      it('creates correct division expression at really deep level', () => {
+        const applyExpression = MeasureFixtures.percentOfParentMeasure().toApplyExpression(99);
+        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtLevel(1));
+      });
+    });
+
+    describe('percent-of-total transformation', () => {
+      it('creates simple formula expression at root level', () => {
+        const applyExpression = MeasureFixtures.percentOfTotalMeasure().toApplyExpression(0);
+        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtRootLevel());
+      });
+
+      it('creates correct division expression at deeper level', () => {
+        const applyExpression = MeasureFixtures.percentOfTotalMeasure().toApplyExpression(1);
+        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtLevel(1));
+      });
+
+      it('creates correct division expression at really deep level', () => {
+        const applyExpression = MeasureFixtures.percentOfTotalMeasure().toApplyExpression(99);
+        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtLevel(99));
+      });
+    });
   });
 });

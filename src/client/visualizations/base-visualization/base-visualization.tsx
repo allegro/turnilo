@@ -76,7 +76,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       .apply('main', $main.filter(essence.getEffectiveFilter(timekeeper, this.id).toExpression()));
 
     measures.forEach((measure) => {
-      query = query.performAction(measure.toApplyExpression());
+      query = query.performAction(measure.toApplyExpression(0));
     });
 
     function makeSubQuery(i: number): Expression {
@@ -96,11 +96,12 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         }
       }
 
+      const nestingLevel = i + 1;
       measures.forEach((measure) => {
-        subQuery = subQuery.performAction(measure.toApplyExpression());
+        subQuery = subQuery.performAction(measure.toApplyExpression(nestingLevel));
       });
 
-      var applyForSort = essence.getApplyForSort(sortAction);
+      var applyForSort = essence.getApplyForSort(sortAction, nestingLevel);
       if (applyForSort) {
         subQuery = subQuery.performAction(applyForSort);
       }

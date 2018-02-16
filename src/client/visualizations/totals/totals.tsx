@@ -66,7 +66,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       .apply('main', $('main').filter(essence.getEffectiveFilter(timekeeper, Totals.id).toExpression()));
 
     essence.getEffectiveMeasures().forEach((measure) => {
-      query = query.performAction(measure.toApplyExpression());
+      query = query.performAction(measure.toApplyExpression(0));
     });
 
     return query;
