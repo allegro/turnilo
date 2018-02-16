@@ -1,7 +1,7 @@
 # Configuring Turnilo
 
-It is easy to start using Turnilo with Druid by pointing it at your Druid cluster: `turnilo --druid druid.broker.host:8082`
-but to make the most of Turnilo you will want to configure it.
+It is easy to start using Turnilo with Druid by pointing it at your Druid cluster: `turnilo --druid broker_host:broker_port`
+Turnilo will automatically introspect your Druid cluster and figure out available datasets.
 
 Turnilo can be configured with a *config* YAML file. While you could write one from scratch it is recommended to let
 Turnilo give you a head start by using it to generate a config file for you using the default introspection.
@@ -9,7 +9,7 @@ Turnilo give you a head start by using it to generate a config file for you usin
 Run:
 
 ```bash
-turnilo --druid druid.broker.host:8082 --print-config --with-comments > config.yaml
+turnilo --druid broker_host:broker_port --print-config --with-comments > config.yaml
 ```
 
 This will cause Turnilo to go through its normal startup and introspection routine and then dump the internally generated
@@ -21,30 +21,31 @@ The next step is to open the generated config file in your favourite text editor
 Below we will go through a typical configuration flow. At any point you can save the config and re-launch Turnilo to load
 that config in.
 
+
 ## Configuring the Turnilo server
 
-**verbose** (boolean)
+**port** (number), default: 9090
+
+The port that Turnilo should run on.
+
+**verbose** (boolean), default: false
 
 Indicates that Turnilo should run in verbose mode. This will log all the queries done by Turnilo.
 
-**port** (number)
+**serverHost** (string), default: bind to all hosts
 
-The port that Turnilo should run on. Default 9090.
+The host that Turnilo will bind to.
 
-**serverHost** (string)
+**serverRoot** (string), default "turnilo"
 
-The host that Turnilo will bind to. Defaults to all hosts.
-
-**serverRoot** (string)
-
-A custom path to act as the server string. Default: `turnilo`
+A custom path to act as the server string.
 
 The Turnilo UI will be served from `http://turnilo-host:$port/` and `http://turnilo-host:$port/$serverRoot`
 
-**iframe** ("allow" | "deny")
+**iframe** ("allow" | "deny"), default "allow"
 
 Specify whether Turnilo will be allowed to run in an iFrame.
-If set to 'deny' Turnilo will set the following headers:
+If set to "deny" Turnilo will set the following headers:
 
 ```
 X-Frame-Options: "DENY"
@@ -54,20 +55,22 @@ Content-Security-Policy: "frame-ancestors 'none'"
 This is used to prevent [Clickjacking](http://en.wikipedia.org/wiki/clickjacking).
 Learn more about it on [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options).
 
-**trustProxy** ("none" | "always")
+**trustProxy** ("none" | "always"), default "none"
 
 Should the server trust the `X-Forwarded-*` headers.
 
-**strictTransportSecurity** ("none" | "always")
+**strictTransportSecurity** ("none" | "always"), default "none"
 
 Specify that Turnilo should set the [StrictTransportSecurity](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security) header.
 
 Note that Turnilo can itself only run an http server.
 This option is intended to be used when when Turnilo is running behind a HTTPS terminator like AWS ELB.
 
+
 ## Configuring the Clusters
 
 The top level `clusters:` key that holds the clusters that Turnilo will connect to.
+
 
 ### General properties
 
@@ -75,11 +78,11 @@ Each cluster has the following properties:
 
 **name** (string)
 
-The name of the cluster (to be referenced later from the data cube)
+The name of the cluster (to be referenced later from the data cube).
 
-**type** ('druid' | 'mysql' | 'postgres')
+**type** ('druid')
 
-The database type of the cluster
+The database type of the cluster. Currently only Druid is supported.
 
 **host** (string)
 
@@ -90,35 +93,36 @@ The host (hostname:port) of the cluster. In the Druid case this must be the brok
 The explicit version to use for this cluster.
 Define this to override the automatic version detection.
 
-**timeout** (number)
+**timeout** (number), default: 40000
 
-The timeout to set on the queries in ms. Default: 40000
+The timeout to set on the queries in ms.
 
-**sourceListScan** ('disable' | 'auto')
+**sourceListScan** ("auto" | "disable"), default: "auto"
 
-Should the sources of this cluster be automatically scanned and new sources added as data cubes. Default: 'auto'
+Should the sources of this cluster be automatically scanned and new sources added as data cubes.
 
-**sourceListRefreshOnLoad** (boolean)
+**sourceListRefreshOnLoad** (boolean), default: false
 
 Should the list of sources be reloaded every time that Turnilo is loaded.
 This will put additional load on the data store but will ensure that sources are visible in the UI as soon as they are created.
 
-**sourceListRefreshInterval** (number)
+**sourceListRefreshInterval** (number), default: 15000
 
 How often should sources be reloaded in ms.
 
-**sourceReintrospectOnLoad** (boolean)
+**sourceReintrospectOnLoad** (boolean), default: false
 
 Should sources be scanned for additional dimensions every time that Turnilo is loaded.
 This will put additional load on the data store but will ensure that dimension are visible in the UI as soon as they are created.
 
-**sourceReintrospectInterval** (number)
+**sourceReintrospectInterval** (number), default: 120000
 
 How often should source schema be reloaded in ms.
 
-### Druid specific
 
-**introspectionStrategy** (string)
+### Druid specific properties
+
+**introspectionStrategy** ("segment-metadata-fallback", "segment-metadata-only", "datasource-get"), default: "segment-metadata-fallback"
 
 The introspection strategy for the Druid external.
 
@@ -130,22 +134,8 @@ The request decorator module filepath to load.
 
 Options passed to the request decorator module
 
-### Postgres + MySQL specific
 
-**database** (string)
-
-The database to which to connect to.
-
-**user** (string)
-
-The user to connect as. This user needs no permissions other than SELECT.
-
-**password** (string)
-
-The password to use with the provided user.
-
-
-## Configuring the DataSources
+## Configuring Data Cubes
 
 The top level `dataCubes:` key that holds the data cubes that will be loaded into Turnilo.
 The order of the data cubes in the config will define the ordering seen in the UI.
@@ -161,10 +151,6 @@ The name of the data cube as used internally in Turnilo and used in the URLs. Th
 Changing this property for a given data cube will break any URLs that someone might have generated for that data
 cube in the past.
 
-**clusterName** (string)
-
-The cluster that the data cube belongs to (or `'native'` if this is a file based data cube)
-
 **title** (string)
 
 The user visible name that will be used to describe this data cube in the UI. It is always safe to change this.
@@ -173,29 +159,40 @@ The user visible name that will be used to describe this data cube in the UI. It
 
 The description of the data cube shown in the homepage.
 
+**clusterName** (string)
+
+The cluster that the data cube belongs to (or "native" if this is a file based data cube).
+
+**source** (string)
+
+Source of data, for Druid cluster it is a data source name.
+
 **defaultTimezone** (string - timezone)
 
 The default timezone, expressed as an [Olsen Timezone](https://en.wikipedia.org/wiki/Tz_database),
 that will be selected when the user first opens this cube. Default `Etc/UTC`.
 
-**defaultDuration** (string - duration)
+**defaultDuration** (string - duration), default P1D (1 day)
 
 The time period, expressed as an [ISO 8601 Duration](https://en.wikipedia.org/wiki/ISO_8601#Durations),
-that will be shown when the user first opens this cube. Default `P1D` (1 day).
+that will be shown when the user first opens this cube.
 
-**defaultSortMeasure** (string)
+**defaultSortMeasure** (string), default: the first measure
 
 The name of the measure that will be used for default sorting. It is commonly set to the measure that represents the
-count of events. Default: the first measure.
+count of events.
 
-**defaultSelectedMeasures** (string[])
+**defaultSelectedMeasures** (string[]), default: first four measures
 
-The names of the measures that will be selected by default. Default: first four measures.
+The names of the measures that will be selected by default.
 
 **defaultPinnedDimensions** (string[])
 
-The names of the dimensions (in order) that will appear *pinned* by default on the right panel. Default: `[]`.
+The names of the dimensions (in order) that will appear *pinned* by default on the right panel.
 
+**introspection** ("none", "no-autofill", "autofill-dimensions-only", "autofill-measures-only", "autofill-all")
+
+Data cube introspection strategy.
 
 ### Attribute Overrides
 
@@ -208,7 +205,7 @@ The name of the attribute (column) in Druid. This must match the Druid name.
 
 Here are some common scenarios where you should add an attribute override:
 
-#### You have a HyperLogLog metric column but Turnilo is not detecting it
+#### Override HyperLogLog measure
 
 If you have a HyperLogLog metric (say: `unique_things`) it is possible that Druid introspection (Druid <= 0.8.3) will
 not describe it correctly.
@@ -218,25 +215,25 @@ when included in queries.
 You should add:
 
 ```yaml
-         - name: unique_things
-           special: unique
+- name: unique_things
+  special: unique
 ```
 
 To the `attributeOverrides` to tell Turnilo that this is indeed a special (hyperUnique) column.
 
 You should also ensure that wherever it is used in the measures it is aggregated with `countDistinct($unique_things)`.
 
-#### You have a numeric dimension
+#### Override numeric dimension
 
-Turnilo can not corretly detect numeric dimensions as Druid reports all dimensions to be strings.
+Turnilo could not corretly detect numeric dimensions as Druid reports all dimensions to be strings.
 When a numeric dimension is incorrectly classified as a string its soring will appear wrong in the UI.
 If you have a dimension with numeric values (say: `age`).
 
 You should add:
 
 ```yaml
-         - name: age
-           type: NUMBER
+- name: age
+  type: NUMBER
 ```
 
 To the `attributeOverrides` to tell Turnilo that this is numeric.
@@ -267,15 +264,13 @@ The title for this dimension in the UI. Can be anything and is safe to change at
 A url associated with the dimension, with optional token '%s' that is replaced by the dimension value to generate
 a link specific to each value.
 
-**granularities** (string[5])
+**granularities** (string[5]), default: ["PT1M", "PT5M", "PT1H", "P1D", "P1W"]`
 
 For time dimensions you can define a set of exactly 5 granularities that you want to be available for bucketing.
 
 Each granularity must be expressed as a 'floorable' [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations)
 A floorable duration is any duration that is either a single period like `P1D`, `P1W`, `PT1S`, e.t.c. or a multiple period
 that divides into the larger period. For example, `P3M` is floorable because 3 divides 12 but `P5M` is not floorable.
-
-By default `granularities` is set to: `['PT1M', 'PT5M', 'PT1H', 'P1D', 'P1W']`
 
 If you mainly care about smaller intervals, you might want to set it to: `['PT1S', 'PT15S', 'PT30S', 'PT1M', 'PT1H']`
 
@@ -285,25 +280,26 @@ Alternatively, if you mainly care about large intervals, you might want to try: 
 
 Specify whether or not the dimension should be bucketed by default. If unspecified defaults to 'defaultBucket' for time and numeric dimensions.
 
-**sortStrategy** ('self' | `someMeasureName`)
+**sortStrategy** ("self" | `someMeasureName`)
 
 Specify a specific sort strategy for this dimension in visualizations. If unspecified defaults to best sort strategy based on the visualization.
 
 **formula** (string - plywood expression)
 
-The formula for this dimension. By default it is `$name` where *name* is the name of the dimension.
+The [Plywood expression](http://plywood.imply.io/expressions) for this dimension.
+By default it is `$name` where *name* is the name of the dimension.
 You can create derived dimensions by using non-trivial formulas.
 
 Here are some common use cases for derived dimensions:
 
-#### Lookups
+#### Lookup formula
 
 If you have a dimension that represents an ID that is a key into some other table. You may have set up a
 [Druid Query Time Lookup](http://druid.io/docs/latest/querying/lookups.html) in which case you could
 
 ```yaml
-      - name: correctValue
-        formula: $lookupKey.lookup('my_awesome_lookup')
+- name: correctValue
+  formula: $lookupKey.lookup('my_awesome_lookup')
 ```
 
 Which would apply the lookup.
@@ -313,7 +309,7 @@ You can also apply the `.fallback()` action as ether:
 - `$lookupKey.lookup('my_awesome_lookup').fallback($lookupKey)` to keep values that were not found as they are.
 - `$lookupKey.lookup('my_awesome_lookup').fallback('missing')` to map missing values to the word 'missing'.
 
-#### Extraction
+#### Extraction formula
 
 Imagine you have an attribute `resourceName` which has values:
 
@@ -324,8 +320,8 @@ Imagine you have an attribute `resourceName` which has values:
 You could apply, for example, the `.extract` function by creating the following dimension:
 
 ```yaml
-      - name: resourceVersion
-        formula: $resourceName.extract('(\d+\.\d+\.\d+)')
+- name: resourceVersion
+  formula: $resourceName.extract('(\d+\.\d+\.\d+)')
 ```
 
 Which would have values:
@@ -334,14 +330,14 @@ Which would have values:
 ["0.8.2", "0.8.1", "0.7.0", null]
 ```
 
-#### Boolean
+#### Boolean formula
 
 It is often useful to create dimensions that are the result of some boolean expression.
 Let's say that you are responsible for all accounts in the United States as well as some specific account you could create a dimension like:
 
 ```yaml
-      - name: myAccounts
-        formula: $country == 'United States' or $accountName.in(['Toyota', 'Honda'])
+- name: myAccounts
+  formula: $country == 'United States' or $accountName.in(['Toyota', 'Honda'])
 ```
 
 Now my account would represent a custom filter boolean diemension.
@@ -356,20 +352,20 @@ For example you could apply any number of javascript functions to a string.
 To use that in Turnilo define:
 
 ```yaml
-    options:
-      customTransforms:
-        stringFun:
-          extractionFn:
-            type: javascript
-            function: function(x) { try { return decodeURIComponent(x).trim().charCodeAt(0) } catch(e) { return null; } }
+options:
+  customTransforms:
+    stringFun:
+      extractionFn:
+        type: javascript
+        function: function(x) { try { return decodeURIComponent(x).trim().charCodeAt(0) } catch(e) { return null; } }
 ```
 
 Then in the dimensions simply reference `stringFun` like so:
 
 ```yaml
-      - name: stringFun
-        title: String Fun
-        formula: $countryURL.customTransform('stringFun')
+- name: stringFun
+  title: String Fun
+  formula: $countryURL.customTransform('stringFun')
 ```
 
 ### Measures
@@ -402,33 +398,33 @@ In Plywood every aggregate is a function that acts on a data segment.
 You can create derived measures by using non-trivial expressions. Here are some common use cases for derived dimensions:
 
 
-#### Dividing to compute ratios
+#### Ratio formula
 
 Ratios are generally considered fun.
 
 ```yaml
-      - name: ecpm
-        title: eCPM
-        formula: $main.sum($revenue) / $main.sum($impressions) * 1000
+- name: ecpm
+  title: eCPM
+  formula: $main.sum($revenue) / $main.sum($impressions) * 1000
 ```
 
 
-#### Filtered aggregations
+#### Filtered aggregations formula
 
 A very powerful tool is to use a filtered aggregate.
 If, for example, your revenue in the US is a very important measure you could express it as:
 
 ```yaml
-      - name: usa_revenue
-        title: USA Revenue
-        formula: $main.filter($country == 'United States').sum($revenue)
+- name: usa_revenue
+  title: USA Revenue
+  formula: $main.filter($country == 'United States').sum($revenue)
 ```
 
 It is also common to express a ratio of something filtered vs unfiltered.
 
 ```yaml
-      - name: errorRate
-        formula: $main.filter($statusCode == 500).sum($requests) / $main.sum($requests)
+- name: errorRate
+  formula: $main.filter($statusCode == 500).sum($requests) / $main.sum($requests)
 ```
 
 
@@ -444,23 +440,23 @@ While Druid has no native modulo support ether it is possible to modulo a measur
 To use that in Turnilo define:
 
 ```yaml
-    options:
-      customAggregations:
-        addedMod1337:
-          aggregation:
-            type: javascript
-            fieldNames: ['added']
-            fnAggregate: "function(current, added) { return (current + added) % 1337 }"
-            fnCombine: "function(partialA, partialB) { return (partialA + partialB) % 1337 }"
-            fnReset: "function() { return 0; }"
+options:
+  customAggregations:
+    addedMod1337:
+      aggregation:
+        type: javascript
+        fieldNames: ['added']
+        fnAggregate: "function(current, added) { return (current + added) % 1337 }"
+        fnCombine: "function(partialA, partialB) { return (partialA + partialB) % 1337 }"
+        fnReset: "function() { return 0; }"
 ```
 
 Then in the measures simply reference `addedMod1337` like so:
 
 ```yaml
-      - name: addedMod
-        title: Added Mod 1337
-        formula: $main.customAggregate('addedMod1337')
+- name: addedMod
+  title: Added Mod 1337
+  formula: $main.customAggregate('addedMod1337')
 ```
 
 This functionality can be used to access any custom aggregations that might be loaded via extensions.
@@ -476,17 +472,17 @@ Let's say you had a metric called `revenue_in_dollars` and for some reason you w
 Furthermore right now your users are using Turnilo with the measure:
 
 ```yaml
-      - name: revenue
-        title: Revenue
-        formula: $main.sum($revenue_in_dollars)
+- name: revenue
+  title: Revenue
+  formula: $main.sum($revenue_in_dollars)
 ```
 
 If your data had a 'clean break' where all events have ether `revenue_in_dollars` or `revenue_in_cents` with no overlap you could use:
 
 ```yaml
-      - name: revenue
-        title: Revenue
-        formula: $main.sum($revenue_in_dollars) + $main.sum($revenue_in_cents) / 100
+- name: revenue
+  title: Revenue
+  formula: $main.sum($revenue_in_dollars) + $main.sum($revenue_in_cents) / 100
 ```
 
 If instead there was a period where you were ingesting both metrics then the above solution would double count that interval.
@@ -495,11 +491,11 @@ You can 'splice' these two metrics together at a specific time point.
 Logically you should be able leverage the [Filtered aggregations](#filtered-aggregations) to do:
 
 ```yaml
-      - name: revenue  # DO NOT DO THIS IT WILL NOT WORK WITH DRUID < 0.9.2
-        title: Revenue
-        formula: >
-          $main.filter(__time < '2016-04-04T00:00:00Z').sum($revenue_in_dollars) +
-          $main.filter('2016-04-04T00:00:00Z' <= __time).sum($revenue_in_cents) / 100
+- name: revenue  # DO NOT DO THIS IT WILL NOT WORK WITH DRUID < 0.9.2
+  title: Revenue
+  formula: >
+    $main.filter(__time < '2016-04-04T00:00:00Z').sum($revenue_in_dollars) +
+    $main.filter('2016-04-04T00:00:00Z' <= __time).sum($revenue_in_cents) / 100
 ```
 
 But the above will not work because, as of this writing, [Druid can not filter on time in measures](https://github.com/druid-io/druid/issues/2816).
@@ -507,38 +503,38 @@ But the above will not work because, as of this writing, [Druid can not filter o
 Instead you can leverage [Custom aggregations](#custom-aggregations) and the `javascript` aggregation to achieve essentially the same thing:
 
 ```yaml
-    # Add this to the data cube options
-    options:
-      customAggregations:
-        revenueSplice:
-          aggregation:
-            type: javascript
-            fieldNames: ['__time', 'revenue_in_dollars', 'revenue_in_cents']
-            fnAggregate: "function(current, time, revD, revC) { return current + (time < 1442080800000 ? revD : (revC / 100)); }"
-            fnCombine: "function(partialA, partialB) { return partialA + partialB; }"
-            fnReset: "function() { return 0; }"
+# Add this to the data cube options
+options:
+  customAggregations:
+    revenueSplice:
+      aggregation:
+        type: javascript
+        fieldNames: ['__time', 'revenue_in_dollars', 'revenue_in_cents']
+        fnAggregate: "function(current, time, revD, revC) { return current + (time < 1442080800000 ? revD : (revC / 100)); }"
+        fnCombine: "function(partialA, partialB) { return partialA + partialB; }"
+        fnReset: "function() { return 0; }"
 ```
 
 Then in the measure definitions:
 
 ```yaml
-      - name: revenue
-        title: Revenue
-        formula: $main.customAggregate('revenueSplice')
+- name: revenue
+  title: Revenue
+  formula: $main.customAggregate('revenueSplice')
 ```
 
 Note that whichever method you chose you should not change the `name` attribute of your original measure as it will preserve the function of any bookmarks.
 
 ## Customization
 
-You can define a `customization` option in the config to configure some aspects of the look and feel of Turnilo.
+You can define a `customization:` section in the config to configure some aspects of the look and feel of Turnilo.
 
 ### Visual
 
 Can customize the header background color and logo icon by supplying a color string and SVG string respectively.
 
 ```yaml
-  customization:
+customization:
     customLogoSvg: >
       <svg width="300" height="200"
         xmlns="http://www.w3.org/2000/svg"
@@ -557,7 +553,7 @@ This is done by defining a function body in the configuration file.
 For example:
 
 ```yaml
-  customization:
+customization:
     externalViews:
       - title: Timezone Info
         linkGenerator: >
@@ -579,8 +575,8 @@ You can customize the timezones that appear in the header bar dropdown by provid
 For example:
 
 ```yaml
-  customization:
-    timezones: ['Pacific/Niue', 'Pacific/Marquesas', 'America/Tijuana']
+customization:
+  timezones: ['Pacific/Niue', 'Pacific/Marquesas', 'America/Tijuana']
 ```
 
 These timezones will appear in the dropdown instead of the default, which are

@@ -54,6 +54,10 @@ Turnilo will automatically introspect your Druid cluster and figure out availabl
 turnilo --druid broker_host:broker_port
 ```
 
+## Documentation
+
+* [Configuration](docs/configuration.md)
+
 ## Development
 
 Install project dependencies.

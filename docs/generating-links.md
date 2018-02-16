@@ -1,3 +1,7 @@
+<aside class="warning">
+This document has not been updated yet, enter at your own risk.
+</aside>
+
 # Generating Links Into Turnilo
 
 If you want to generate links into Turnilo from external systems you can do so by posting to `/mkurl` or `<serverRoot>/mkurl`.
