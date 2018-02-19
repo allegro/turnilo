@@ -205,23 +205,16 @@ The name of the attribute (column) in Druid. This must match the Druid name.
 
 Here are some common scenarios where you should add an attribute override:
 
-#### Override HyperLogLog measure
+#### Override native Druid type
 
-If you have a HyperLogLog metric (say: `unique_things`) it is possible that Druid introspection (Druid <= 0.8.3) will
-not describe it correctly.
-In that case it will be assumed to be a regular numeric column and will ether return incorrect results (or error out)
-when included in queries.
-
-You should add:
+If Turnilo is not able to discover column type, it could be overridden with Druid native column type. 
 
 ```yaml
-- name: unique_things
-  special: unique
+- name: column_name
+  nativeType: hyperUnique
 ```
 
-To the `attributeOverrides` to tell Turnilo that this is indeed a special (hyperUnique) column.
-
-You should also ensure that wherever it is used in the measures it is aggregated with `countDistinct($unique_things)`.
+Supported native types: "hyperUnique", "thetaSketch" and "approximateHistogram".
 
 #### Override numeric dimension
 
