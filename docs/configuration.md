@@ -388,7 +388,15 @@ The [Plywood expression](http://plywood.imply.io/expressions) for this dimension
 The `$main` part of the measure expressions serves as a placeholder for the data segment.
 In Plywood every aggregate is a function that acts on a data segment.
 
-You can create derived measures by using non-trivial expressions. Here are some common use cases for derived dimensions:
+**transformation** ("none", "percent-of-parent", "percent-of-total"), default: "none"
+
+Predefined transformation that can be applied to a measure formula. Currently supported options are:
+- "none" - no transformation;
+- "percent-of-parent" - displays the ratio between expression value at current split and expression value at parent split;
+- "percent-of-total" - displays the ratio between expression value at current split and total expression value without splitting.
+
+
+One can also create derived measures by using non-trivial expressions in **formula**. Here are some common use cases for derived dimensions:
 
 
 #### Ratio formula
