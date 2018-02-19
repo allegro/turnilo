@@ -202,7 +202,7 @@ describe('Measure', () => {
 
     describe('no transformation', () => {
       it('creates simple formula expression at root level', () => {
-        const applyExpression = MeasureFixtures.noTransformationMeasure().toApplyExpression(0);
+        const applyExpression = MeasureFixtures.noTransformationMeasure().toApplyExpression();
         expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithNoTransformation());
       });
 
@@ -219,7 +219,7 @@ describe('Measure', () => {
 
     describe('percent-of-parent transformation', () => {
       it('creates simple formula expression at root level', () => {
-        const applyExpression = MeasureFixtures.percentOfParentMeasure().toApplyExpression(0);
+        const applyExpression = MeasureFixtures.percentOfParentMeasure().toApplyExpression();
         expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtRootLevel());
       });
 
@@ -236,7 +236,7 @@ describe('Measure', () => {
 
     describe('percent-of-total transformation', () => {
       it('creates simple formula expression at root level', () => {
-        const applyExpression = MeasureFixtures.percentOfTotalMeasure().toApplyExpression(0);
+        const applyExpression = MeasureFixtures.percentOfTotalMeasure().toApplyExpression();
         expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtRootLevel());
       });
 

@@ -190,7 +190,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     this.formatFn = formatFnFactory(this.getFormat());
   }
 
-  public toApplyExpression(nestingLevel: number): ApplyExpression {
+  public toApplyExpression(nestingLevel = 0): ApplyExpression {
     switch (this.transformation) {
       case 'percent-of-parent': {
         const referencedLevelDelta = Math.min(nestingLevel, 1);

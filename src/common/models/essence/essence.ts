@@ -584,7 +584,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return highlight.delta.getSingleClauseSet();
   }
 
-  public getApplyForSort(sort: SortExpression, nestingLevel: number): ApplyExpression {
+  public getApplyForSort(sort: SortExpression, nestingLevel = 0): ApplyExpression {
     var sortOn = (<RefExpression>sort.expression).name;
     var sortMeasure = this.dataCube.getMeasure(sortOn);
     if (!sortMeasure) return null;

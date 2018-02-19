@@ -76,7 +76,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       .apply('main', $main.filter(essence.getEffectiveFilter(timekeeper, this.id).toExpression()));
 
     measures.forEach((measure) => {
-      query = query.performAction(measure.toApplyExpression(0));
+      query = query.performAction(measure.toApplyExpression());
     });
 
     function makeSubQuery(i: number): Expression {
