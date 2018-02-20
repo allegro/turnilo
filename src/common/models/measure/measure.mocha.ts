@@ -201,53 +201,43 @@ describe('Measure', () => {
   describe('toApplyExpression', () => {
 
     describe('no transformation', () => {
-      it('creates simple formula expression at root level', () => {
-        const applyExpression = MeasureFixtures.noTransformationMeasure().toApplyExpression();
-        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithNoTransformation());
-      });
+      const nestingLevels = [0, 1, 99];
 
-      it('creates simple formula expression at first level', () => {
-        const applyExpression = MeasureFixtures.noTransformationMeasure().toApplyExpression(1);
-        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithNoTransformation());
-      });
-
-      it('creates simple formula expression at first level', () => {
-        const applyExpression = MeasureFixtures.noTransformationMeasure().toApplyExpression(99);
-        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithNoTransformation());
+      nestingLevels.forEach((nestingLevel) => {
+        it(`creates simple formula expression at level: ${nestingLevel}`, () => {
+          const applyExpression = MeasureFixtures.noTransformationMeasure().toApplyExpression(nestingLevel);
+          expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithNoTransformation());
+        });
       });
     });
 
     describe('percent-of-parent transformation', () => {
-      it('creates simple formula expression at root level', () => {
-        const applyExpression = MeasureFixtures.percentOfParentMeasure().toApplyExpression();
-        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtRootLevel());
-      });
+      const tests = [
+        { nestingLevel: 0, expression: MeasureFixtures.applyWithTransformationAtRootLevel() },
+        { nestingLevel: 1, expression: MeasureFixtures.applyWithTransformationAtLevel(1) },
+        { nestingLevel: 99, expression: MeasureFixtures.applyWithTransformationAtLevel(1) }
+      ];
 
-      it('creates correct division expression at deeper level', () => {
-        const applyExpression = MeasureFixtures.percentOfParentMeasure().toApplyExpression(1);
-        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtLevel(1));
-      });
-
-      it('creates correct division expression at really deep level', () => {
-        const applyExpression = MeasureFixtures.percentOfParentMeasure().toApplyExpression(99);
-        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtLevel(1));
+      tests.forEach((test) => {
+        it(`creates correct formula expression at level: ${test.nestingLevel}`, () => {
+          const applyExpression = MeasureFixtures.percentOfParentMeasure().toApplyExpression(test.nestingLevel);
+          expect(applyExpression.toJS()).to.deep.equal(test.expression);
+        });
       });
     });
 
     describe('percent-of-total transformation', () => {
-      it('creates simple formula expression at root level', () => {
-        const applyExpression = MeasureFixtures.percentOfTotalMeasure().toApplyExpression();
-        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtRootLevel());
-      });
+      const tests = [
+        { nestingLevel: 0, expression: MeasureFixtures.applyWithTransformationAtRootLevel() },
+        { nestingLevel: 1, expression: MeasureFixtures.applyWithTransformationAtLevel(1) },
+        { nestingLevel: 99, expression: MeasureFixtures.applyWithTransformationAtLevel(99) }
+      ];
 
-      it('creates correct division expression at deeper level', () => {
-        const applyExpression = MeasureFixtures.percentOfTotalMeasure().toApplyExpression(1);
-        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtLevel(1));
-      });
-
-      it('creates correct division expression at really deep level', () => {
-        const applyExpression = MeasureFixtures.percentOfTotalMeasure().toApplyExpression(99);
-        expect(applyExpression.toJS()).to.deep.equal(MeasureFixtures.applyWithTransformationAtLevel(99));
+      tests.forEach((test) => {
+        it(`creates correct formula expression at level: ${test.nestingLevel}`, () => {
+          const applyExpression = MeasureFixtures.percentOfTotalMeasure().toApplyExpression(test.nestingLevel);
+          expect(applyExpression.toJS()).to.deep.equal(test.expression);
+        });
       });
     });
   });
