@@ -96,11 +96,12 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         }
       }
 
+      const nestingLevel = i + 1;
       measures.forEach((measure) => {
-        subQuery = subQuery.performAction(measure.toApplyExpression());
+        subQuery = subQuery.performAction(measure.toApplyExpression(nestingLevel));
       });
 
-      var applyForSort = essence.getApplyForSort(sortAction);
+      var applyForSort = essence.getApplyForSort(sortAction, nestingLevel);
       if (applyForSort) {
         subQuery = subQuery.performAction(applyForSort);
       }
