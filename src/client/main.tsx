@@ -102,6 +102,6 @@ if (needsPatch) {
   }, 'ios-drag-drop');
 }
 
-if (process.env.NODE_ENV === 'dev-hrm' && module.hot) {
+if (process.env.NODE_ENV === 'dev-hmr' && module.hot) {
   module.hot.accept();
 }

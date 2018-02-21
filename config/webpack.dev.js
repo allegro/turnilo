@@ -58,7 +58,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('dev-hrm')
+      'process.env.NODE_ENV': JSON.stringify('dev-hmr')
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
