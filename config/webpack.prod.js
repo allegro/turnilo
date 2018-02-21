@@ -14,36 +14,39 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
-
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: "awesome-typescript-loader",
-        query: {
-          declaration: false,
-          configFileName: "./src/client/tsconfig.json"
-        }
+        use: [
+          {
+            loader: "awesome-typescript-loader",
+            options: {
+              declaration: false,
+              configFileName: "./src/client/tsconfig.json"
+            }
+          }
+        ]
       },
 
       {
         test: /\.css$/,
         use: [
-          'style-loader',
-          'css-loader'
+          "style-loader",
+          "css-loader"
         ]
       },
       {
         test: /\.scss$/,
         use: [
-          { loader: "style-loader" },
-          { loader: "css-loader" },
-          { loader: "sass-loader" }
+          "style-loader",
+          "css-loader",
+          "sass-loader"
         ]
       },
       {
         test: /\.svg$/,
-        loader: 'svg-inline-loader'
+        use: ["svg-inline-loader"]
       }
     ]
   },

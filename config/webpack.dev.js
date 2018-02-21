@@ -21,14 +21,19 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: "awesome-typescript-loader",
-        query: {
-          configFileName: "./src/client/tsconfig.json"
-        }
+        use: [
+          {
+            loader: "awesome-typescript-loader",
+            options: {
+              configFileName: "./src/client/tsconfig.json"
+            }
+          }
+        ]
       },
       {
         enforce: "pre",
-        test: /\.js$/, loader: "source-map-loader"
+        test: /\.js$/,
+        use: ["source-map-loader"]
       },
       {
         test: /\.css$/,
@@ -47,12 +52,9 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        use: [
-          "svg-inline-loader"
-        ]
+        use: ["svg-inline-loader"]
       }
     ]
-
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
