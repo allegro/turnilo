@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import './swiv-entry.scss';
+import './main.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { addErrorMonitor } from './utils/error-monitor/error-monitor';
-import { DataCube, AppSettingsJS, TimekeeperJS } from '../common/models/index';
+import { AppSettingsJS, DataCube, TimekeeperJS } from '../common/models';
 
 import { Loader } from './components/loader/loader';
 
@@ -70,20 +70,17 @@ require.ensure([
     }
   });
 
-  ReactDOM.render(
-    React.createElement(
-      SwivApplication,
-      {
-        version,
-        user: config.user,
-        appSettings,
-        initTimekeeper: Timekeeper.fromJS(config.timekeeper),
-        stateful: Boolean(config.stateful)
-      }
-    ),
-    container
-  );
-}, 'swiv-main');
+  const app =
+    <SwivApplication
+      version={version}
+      appSettings={appSettings}
+      user={config.user}
+      initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
+      stateful={Boolean(config.stateful)}
+    />;
+
+  ReactDOM.render(app, container);
+}, "app");
 
 // Polyfill =====================================
 

@@ -5,11 +5,11 @@ var hotMiddlewareScript = 'webpack-hot-middleware/client';
 
 module.exports = {
   entry: {
-    'swiv-entry': [hotMiddlewareScript, './src/client/swiv-entry.ts']
+    main: [hotMiddlewareScript, "./src/client/main.tsx"]
   },
   output: {
     path: path.resolve(__dirname, '../build/public'),
-    filename: "swiv.js",
+    filename: "main.js",
     chunkFilename: "[name].[hash].js",
     publicPath: '/'
   },

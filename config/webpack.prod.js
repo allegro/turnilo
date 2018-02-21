@@ -2,10 +2,12 @@ var path = require("path");
 var webpack = require('webpack');
 
 module.exports = {
-  entry: "./src/client/swiv-entry.ts",
+  entry: {
+    main: ["./src/client/main.tsx"]
+  },
   output: {
     path: path.resolve(__dirname, '../build/public'),
-    filename: "swiv.js",
+    filename: "main.js",
     chunkFilename: "[name].[hash].js"
   },
   devtool: "source-map",
