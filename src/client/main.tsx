@@ -49,13 +49,7 @@ if (!config || !config.version || !config.appSettings || !config.appSettings.dat
 
 var version = config.version;
 
-require.ensure([
-  'chronoshift',
-  './utils/ajax/ajax',
-  '../common/models/index',
-  '../common/manifests/index',
-  './applications/swiv-application/swiv-application'
-], (require) => {
+require.ensure([], (require) => {
   const { Ajax } = require('./utils/ajax/ajax');
   const { AppSettings, Timekeeper } = require('../common/models/index');
   const { MANIFESTS } = require('../common/manifests/index');
