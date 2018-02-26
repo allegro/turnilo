@@ -54,18 +54,6 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      beautify: true,
-      mangle: {
-        screw_ie8: true,
-        keep_fnames: true
-      },
-      compress: {
-        screw_ie8: true,
-        dead_code: true,
-        unused: true
-      },
-      comments: true
-    })
+    new webpack.optimize.UglifyJsPlugin()
   ]
 };
