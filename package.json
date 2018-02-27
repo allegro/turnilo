@@ -41,8 +41,8 @@
     "test:server": "mocha --require ts-node/register --exit src/server/**/*.mocha.ts",
     "start": "./bin/turnilo",
     "start:dev": "NODE_ENV=dev-hmr ./bin/turnilo",
-    "build": "npm run clean && npm run tsc -- -p src/server/tsconfig.json  && webpack --config config/webpack.prod.js",
-    "build:dev": "npm run clean && npm run tsc -- -p src/server/tsconfig.json --declaration true && webpack --config config/webpack.dev.js",
+    "build": "npm run clean && npm run tsc -- -p src/server/tsconfig.json && webpack --config config/webpack.prod.js",
+    "build:dev": "npm run clean && npm run tsc -- -p src/server/tsconfig.json --declaration true",
     "clean": "rimraf build/*",
     "tsc": "node_modules/.bin/tsc"
   },
