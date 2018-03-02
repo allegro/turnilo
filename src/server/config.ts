@@ -311,7 +311,10 @@ if (serverSettingsFilePath) {
         type: clusterType,
         host: host,
         sourceListScan: 'auto',
-        sourceListRefreshInterval: 15000,
+        sourceListRefreshInterval: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
+        sourceListRefreshOnLoad: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
+        sourceReintrospectInterval: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
+        sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD,
 
         user: parsedArgs['user'],
         password: parsedArgs['password'],

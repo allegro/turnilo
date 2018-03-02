@@ -83,8 +83,10 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   static DEFAULT_TIMEOUT = 40000;
   static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = 'auto';
   static SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ['disable', 'auto'];
-  static DEFAULT_SOURCE_LIST_REFRESH_INTERVAL = 15000;
-  static DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 120000;
+  static DEFAULT_SOURCE_LIST_REFRESH_INTERVAL = 0;
+  static DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD = false;
+  static DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 0;
+  static DEFAULT_SOURCE_REINTROSPECT_ON_LOAD = false;
   static DEFAULT_INTROSPECTION_STRATEGY = 'segment-metadata-fallback';
 
   static isCluster(candidate: any): candidate is Cluster {
@@ -115,9 +117,9 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: 'version', defaultValue: null },
     { name: 'timeout', defaultValue: Cluster.DEFAULT_TIMEOUT },
     { name: 'sourceListScan', defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
-    { name: 'sourceListRefreshOnLoad', defaultValue: false },
+    { name: 'sourceListRefreshOnLoad', defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD },
     { name: 'sourceListRefreshInterval', defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
-    { name: 'sourceReintrospectOnLoad', defaultValue: false },
+    { name: 'sourceReintrospectOnLoad', defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD },
     { name: 'sourceReintrospectInterval', defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
 
     // Druid
