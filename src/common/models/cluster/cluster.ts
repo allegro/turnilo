@@ -197,6 +197,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
       engine: this.type,
       source,
       version: version,
+      suppress: true,
 
       allowSelectQueries: true,
       allowEternity: false
