@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { $, SortExpression } from 'plywood';
 import { Locale } from '../../common/utils/time/time';
 
 export const TITLE_HEIGHT = 36;
@@ -86,6 +85,7 @@ export const STRINGS: any = {
   exclude: 'Exclude',
   explore: 'Explore',
   exportToCSV: 'Export to CSV',
+  exportToTSV: 'Export to TSV',
   filter: 'Filter',
   generalSettings: 'General settings',
   goToUrl: 'Go to URL',
