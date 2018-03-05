@@ -158,3 +158,8 @@ const EN_US: Locale = {
 export function getLocale(): Locale {
   return EN_US;
 }
+
+export const exportOptions = [
+  { label: STRINGS.exportToCSV, fileFormat: 'csv' },
+  { label: STRINGS.exportToTSV, fileFormat: 'tsv' }
+];

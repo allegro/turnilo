@@ -20,7 +20,7 @@ import * as React from 'react';
 import { Dataset } from 'plywood';
 import { Fn } from '../../../common/utils/general/general';
 import { Stage, Essence, Timekeeper, ExternalView } from '../../../common/models/index';
-import { STRINGS } from '../../config/constants';
+import { exportOptions , STRINGS } from '../../config/constants';
 import { download, FileFormat, makeFileName } from '../../utils/download/download';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
@@ -118,11 +118,13 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     }
 
     if (getDownloadableDataset()) {
-      shareOptions.push(<li
-        className="export"
-        key="export"
-        onClick={this.onExport.bind(this, 'tsv')}
-      >{STRINGS.exportToTSV}</li>);
+      exportOptions.forEach(({ label, fileFormat }) => {
+        shareOptions.push(<li
+          className="export"
+          key="export"
+          onClick={this.onExport.bind(this, fileFormat)}
+        >{label}</li>);
+      });
     }
 
     shareOptions.push(<li
