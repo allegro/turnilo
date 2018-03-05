@@ -16,21 +16,19 @@
 
 import { SimpleArray } from 'immutable-class';
 import { Manifest } from '../../common/models/manifest/manifest';
-import { BaseVisualization } from './base-visualization/base-visualization';
 
-import { Totals } from './totals/totals';
-import { Table } from './table/table';
-import { LineChart } from './line-chart/line-chart';
 import { BarChart } from './bar-chart/bar-chart';
-import { Geo } from './geo/geo';
+import { BaseVisualization } from './base-visualization/base-visualization';
+import { LineChart } from './line-chart/line-chart';
+import { Table } from './table/table';
+import { Totals } from './totals/totals';
 
 // TODO, back to: const VIS_COMPONENTS: Array<typeof BaseVisualization> = [
 const VIS_COMPONENTS: Array<any> = [
   Totals,
   Table,
   LineChart,
-  BarChart,
-  Geo
+  BarChart
 ];
 
 export function getVisualizationComponent(manifest: Manifest): typeof BaseVisualization {

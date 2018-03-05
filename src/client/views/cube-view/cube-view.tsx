@@ -68,7 +68,6 @@ export interface CubeViewState {
   menuStage?: Stage;
   dragOver?: boolean;
   showRawDataModal?: boolean;
-  RawDataModalAsync?: typeof RawDataModal;
   layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
@@ -217,12 +216,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         return '#' + newDataCube.name + '/' + essence.updateDataCube(newDataCube).toHash();
       });
     }
-
-    require.ensure(['../../modals/raw-data-modal/raw-data-modal'], (require) => {
-      this.setState({
-        RawDataModalAsync: require('../../modals/raw-data-modal/raw-data-modal').RawDataModal
-      });
-    }, 'raw-data-modal');
   }
 
   componentWillReceiveProps(nextProps: CubeViewProps) {
@@ -322,10 +315,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   renderRawDataModal() {
-    const { RawDataModalAsync, showRawDataModal, essence, timekeeper } = this.state;
-    if (!RawDataModalAsync || !showRawDataModal) return null;
+    const { showRawDataModal, essence, timekeeper } = this.state;
+    if (!showRawDataModal) return null;
 
-    return <RawDataModalAsync
+    return <RawDataModal
       essence={essence}
       timekeeper={timekeeper}
       onClose={this.onRawDataModalClose.bind(this)}

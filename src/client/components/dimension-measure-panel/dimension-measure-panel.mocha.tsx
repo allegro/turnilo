@@ -15,13 +15,11 @@
  */
 
 import { expect } from 'chai';
-import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-dom/test-utils';
-import { $, Expression } from 'plywood';
 
-import { mockRequireEnsure, mockReactComponent } from '../../utils/test-utils/index';
+import { mockReactComponent } from '../../utils/test-utils/index';
 import { EssenceMock } from '../../../common/models/mocks';
 
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
