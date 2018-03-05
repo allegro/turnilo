@@ -19,26 +19,26 @@ import '../../utils/test-utils/index';
 import { Dataset } from 'plywood';
 import { datasetToFileString, getMIMEType } from './download';
 
-describe.skip('Download', () => {
+describe('Download', () => {
   describe('datasetToFileString', () => {
 
     it('defaults to JSON if no type specified', () => {
-      var dsJS = [
+      const dsJS = [
         { x: 1, y: "hello", z: 2 },
         { x: 2, y: "world", z: 3 }
       ];
-      var ds = Dataset.fromJS(dsJS);
+      const ds = Dataset.fromJS(dsJS);
       expect(() => { JSON.parse(datasetToFileString(ds)); }).to.not.throw();
       expect(JSON.parse(datasetToFileString(ds))).to.deep.equal(dsJS);
     });
 
     it('encloses set/string in brackets appropriately', () => {
-      var ds = Dataset.fromJS([
+      const ds = Dataset.fromJS([
         { y: ["dear", "john"] },
         { y: ["from", "peter"] }
       ]);
-      expect(datasetToFileString(ds, 'csv').indexOf("\"[dear,john\"]"), 'csv').to.not.equal(-1);
-      expect(datasetToFileString(ds, 'tsv').indexOf("[dear,john]"), 'tsv').to.not.equal(-1);
+      expect(datasetToFileString(ds, 'csv').indexOf("\"dear, john\""), 'csv').to.not.equal(-1);
+      expect(datasetToFileString(ds, 'tsv').indexOf("dear, john"), 'tsv').to.not.equal(-1);
     });
   });
 

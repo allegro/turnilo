@@ -26,7 +26,7 @@ import { arraySum, Fn, formatFilterClause, makeTitle } from '../../../common/uti
 import { download, makeFileName } from '../../utils/download/download';
 import { classNames } from '../../utils/dom/dom';
 import { getVisibleSegments } from '../../utils/sizing/sizing';
-import { STRINGS } from '../../config/constants';
+import { exportOptions, STRINGS } from '../../config/constants';
 
 import { Button, Loader, Modal, QueryError, Scroller, ScrollerLayout } from '../../components';
 
@@ -256,14 +256,40 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     });
   }
 
+  renderButtons(): JSX.Element {
+    const { essence, onClose, timekeeper } = this.props;
+    const { dataset, loading, error } = this.state;
+    const { dataCube } = essence;
+
+    const filtersString = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
+
+    const buttons: JSX.Element[] = [];
+
+    buttons.push(<Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />);
+
+    exportOptions.forEach(({ label, fileFormat }) => {
+      buttons.push(
+        <Button
+          type="secondary"
+          className="download"
+          onClick={download.bind(this, dataset, makeFileName(dataCube.name, filtersString, 'raw'), fileFormat)}
+          title={label}
+          disabled={Boolean(loading || error)}
+        />
+      );
+    });
+
+    return <div className="button-bar">
+      {buttons}
+    </div>
+  }
+
   render() {
-    const { essence, timekeeper, onClose } = this.props;
+    const { essence, onClose } = this.props;
     const { dataset, loading, error, stage } = this.state;
     const { dataCube } = essence;
 
     const title = `${makeTitle(STRINGS.rawData)}`;
-
-    const filtersString = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
 
     const scrollerLayout: ScrollerLayout = {
       // Inner dimensions
@@ -294,16 +320,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
         />
         {error ? <QueryError error={error} /> : null}
         {loading ? <Loader /> : null}
-        <div className="button-bar">
-          <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
-          <Button
-            type="secondary"
-            className="download"
-            onClick={download.bind(this, dataset, makeFileName(dataCube.name, filtersString, 'raw'), 'csv')}
-            title={STRINGS.download}
-            disabled={Boolean(loading || error)}
-          />
-        </div>
+        {this.renderButtons()}
       </div>
     </Modal>;
   }
