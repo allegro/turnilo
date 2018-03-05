@@ -18,12 +18,13 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { mockRequireEnsure, mockReactComponent } from '../../utils/test-utils/index';
+import { mockReactComponent } from '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-dom/test-utils';
 
 import { DataCubeMock, TimekeeperMock } from '../../../common/models/mocks';
 
+import { CubeView } from "./cube-view";
 import { DimensionMeasurePanel } from '../../components/dimension-measure-panel/dimension-measure-panel';
 import { FilterTile } from '../../components/filter-tile/filter-tile';
 import { SplitTile } from '../../components/split-tile/split-tile';
@@ -42,17 +43,16 @@ describe('CubeView', () => {
     (SplitTile as any).restore();
   });
 
-  var { CubeView } = mockRequireEnsure('./cube-view');
-
   it('adds the correct class', () => {
     var updateViewHash = sinon.stub();
 
     var renderedComponent = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
-        timekeeper={TimekeeperMock.fixed()}
+        initTimekeeper={TimekeeperMock.fixed()}
         dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
+        stateful={false}
       />
     );
 
@@ -66,12 +66,13 @@ describe('CubeView', () => {
     var stub = sinon.stub(localStorage, "get");
     stub.withArgs('is-multi-measure').returns(undefined);
 
-    var initialCubeView:any = TestUtils.renderIntoDocument(
+    var initialCubeView: any = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
-        timekeeper={TimekeeperMock.fixed()}
+        initTimekeeper={TimekeeperMock.fixed()}
         dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
+        stateful={false}
       />
     );
     expect(initialCubeView.state.essence.multiMeasureMode, 'default is single measure').to.equal(false);
@@ -80,12 +81,13 @@ describe('CubeView', () => {
     stub = sinon.stub(localStorage, "get");
     stub.withArgs('is-multi-measure').returns(true);
 
-    var wikiCubeView:any = TestUtils.renderIntoDocument(
+    var wikiCubeView: any = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
-        timekeeper={TimekeeperMock.fixed()}
+        initTimekeeper={TimekeeperMock.fixed()}
         dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
+        stateful={false}
       />
     );
 
@@ -95,12 +97,13 @@ describe('CubeView', () => {
     stub = sinon.stub(localStorage, "get");
     stub.withArgs('is-multi-measure').returns(false);
 
-    var wikiCubeView2:any = TestUtils.renderIntoDocument(
+    var wikiCubeView2: any = TestUtils.renderIntoDocument(
       <CubeView
         hash={null}
-        timekeeper={TimekeeperMock.fixed()}
+        initTimekeeper={TimekeeperMock.fixed()}
         dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
+        stateful={false}
       />
     );
 
