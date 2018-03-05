@@ -196,7 +196,7 @@ Data cube introspection strategy.
 
 **refreshRule**
 
-Refresh rule defining how is the information about latest data in a data source obtained.
+Refresh rule defining how the information about latest data in a data source is obtained.
 
 ### Refresh rules
 
