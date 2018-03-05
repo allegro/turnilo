@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
+import { Response, Router } from 'express';
 
-import { SwivRequest } from '../../utils/index';
-import { swivLayout } from '../../views';
+import { SwivRequest } from '../../utils';
+import { mainLayout } from '../../views';
 import { SETTINGS_MANAGER } from '../../config';
 
 var router = Router();
@@ -26,7 +26,7 @@ router.get('/', (req: SwivRequest, res: Response, next: Function) => {
   req.getSettings()
     .then((appSettings) => {
       var clientSettings = appSettings.toClientSettings();
-      res.send(swivLayout({
+      res.send(mainLayout({
         version: req.version,
         title: appSettings.customization.getTitle(req.version),
         user: req.user,

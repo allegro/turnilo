@@ -15,17 +15,14 @@
  */
 
 import { expect } from 'chai';
-import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-dom/test-utils';
-import { mockRequireEnsure } from '../../utils/test-utils/index';
 
 import { EssenceMock, TimekeeperMock } from '../../../common/models/mocks';
+import { FilterTile } from "./filter-tile";
 
 describe('FilterTile', () => {
-  var { FilterTile } = mockRequireEnsure('./filter-tile');
-
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <FilterTile

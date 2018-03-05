@@ -5,11 +5,11 @@ var hotMiddlewareScript = 'webpack-hot-middleware/client';
 
 module.exports = {
   entry: {
-    'swiv-entry': [hotMiddlewareScript, './src/client/swiv-entry.ts']
+    main: [hotMiddlewareScript, "./src/client/main.tsx"]
   },
   output: {
     path: path.resolve(__dirname, '../build/public'),
-    filename: "swiv.js",
+    filename: "main.js",
     chunkFilename: "[name].[hash].js",
     publicPath: '/'
   },
@@ -21,14 +21,19 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: "awesome-typescript-loader",
-        query: {
-          configFileName: "./src/client/tsconfig.json"
-        }
+        use: [
+          {
+            loader: "awesome-typescript-loader",
+            options: {
+              configFileName: "./src/client/tsconfig.json"
+            }
+          }
+        ]
       },
       {
         enforce: "pre",
-        test: /\.js$/, loader: "source-map-loader"
+        test: /\.js$/,
+        use: ["source-map-loader"]
       },
       {
         test: /\.css$/,
@@ -47,14 +52,14 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        use: [
-          "svg-inline-loader"
-        ]
+        use: ["svg-inline-loader"]
       }
     ]
-
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('dev-hmr')
+    }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
   ]
