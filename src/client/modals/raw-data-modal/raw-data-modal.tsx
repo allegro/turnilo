@@ -299,7 +299,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
           <Button
             type="secondary"
             className="download"
-            onClick={download.bind(this, dataset, makeFileName(dataCube.name, filtersString, 'raw'), 'csv')}
+            onClick={download.bind(this, dataset, makeFileName(dataCube.name, filtersString, 'raw'), 'tsv')}
             title={STRINGS.download}
             disabled={Boolean(loading || error)}
           />
