@@ -17,20 +17,15 @@
 import './table.scss';
 
 import { List } from 'immutable';
+import { $, Datum, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeRange } from 'plywood';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import {
-  $, ply, r, Expression, RefExpression, Executor, Dataset, Datum, PseudoDatum, TimeRange, Set, SortExpression,
-  NumberRange, PlywoodValue
-} from 'plywood';
-import { formatterFromData, formatNumberRange, Formatter } from '../../../common/utils/formatter/formatter';
-import { Stage, Filter, FilterClause, Essence, VisStrategy, Splits, SplitCombine, Dimension,
-  Measure, Colors, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 import { TABLE_MANIFEST } from '../../../common/manifests/table/table';
-import { getXFromEvent, getYFromEvent, classNames } from '../../utils/dom/dom';
-import { SvgIcon } from '../../components/svg-icon/svg-icon';
-import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
+import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, SplitCombine, Splits, VisStrategy, VisualizationProps } from '../../../common/models/index';
+import { formatNumberRange, Formatter, formatterFromData } from '../../../common/utils/formatter/formatter';
 import { Scroller, ScrollerLayout } from '../../components/scroller/scroller';
+import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
+import { SvgIcon } from '../../components/svg-icon/svg-icon';
+import { classNames } from '../../utils/dom/dom';
 
 import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
 
@@ -54,18 +49,24 @@ function formatSegment(value: any): string {
 }
 
 function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataCube: DataCube): Filter {
-  if (flatDatum['__nest'] === 0) return null;
-  var segments: any[] = [];
-  while (flatDatum['__nest'] > 0) {
-    segments.unshift(flatDatum[splits.get(flatDatum['__nest'] - 1).getDimension(dataCube.dimensions).name]);
-    flatDatum = flatDatum['__parent'];
-  }
-  return new Filter(List(segments.map((segment, i) => {
-    return new FilterClause({
-      expression: splits.get(i).expression,
-      selection: r(TimeRange.isTimeRange(segment) ? segment : Set.fromJS([segment]))
+  const splitNesting = flatDatum['__nest'];
+  const { splitCombines } = splits;
+
+  if (splitNesting === 0 || splitNesting > splitCombines.size) return null;
+
+  const filterClauses = splitCombines
+    .take(splitNesting)
+    .map(splitCombine => {
+      const dimensionName = splitCombine.getDimension(dataCube.dimensions).name;
+      const selectedValue = flatDatum[dimensionName];
+
+      return new FilterClause({
+        expression: splitCombine.expression,
+        selection: r(TimeRange.isTimeRange(selectedValue) ? selectedValue : Set.fromJS([selectedValue]))
+      });
     });
-  })));
+
+  return new Filter(List(filterClauses));
 }
 
 export interface PositionHover {
