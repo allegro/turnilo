@@ -41,7 +41,6 @@ export interface DimensionListTileProps extends React.Props<any> {
 }
 
 export interface DimensionListTileState {
-  DimensionActionsMenuAsync?: typeof DimensionActionsMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   highlightDimension?: Dimension;
@@ -54,21 +53,12 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   constructor() {
     super();
     this.state = {
-      DimensionActionsMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
       highlightDimension: null,
       showSearch: false,
       searchText: ''
     };
-  }
-
-  componentDidMount() {
-    require.ensure(['../dimension-actions-menu/dimension-actions-menu'], (require) => {
-      this.setState({
-        DimensionActionsMenuAsync: require('../dimension-actions-menu/dimension-actions-menu').DimensionActionsMenu
-      });
-    }, 'dimension-actions-menu');
   }
 
   clickDimension(dimension: Dimension, e: MouseEvent) {
@@ -146,11 +136,11 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
 
   renderMenu(): JSX.Element {
     var { essence, clicker, menuStage, triggerFilterMenu, triggerSplitMenu } = this.props;
-    var { DimensionActionsMenuAsync, menuOpenOn, menuDimension } = this.state;
-    if (!DimensionActionsMenuAsync || !menuDimension) return null;
+    var { menuOpenOn, menuDimension } = this.state;
+    if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
-    return <DimensionActionsMenuAsync
+    return <DimensionActionsMenu
       clicker={clicker}
       essence={essence}
       direction="right"

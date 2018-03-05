@@ -17,13 +17,11 @@
 import './swiv-application.scss';
 
 import * as React from 'react';
-import * as Q from 'q';
 import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { NamedArray} from "immutable-class";
 
 import { replaceHash } from '../../utils/url/url';
 import { DataCube, AppSettings, User, Collection, CollectionTile, Essence, Timekeeper, ViewSupervisor } from '../../../common/models/index';
-import { STRINGS } from '../../config/constants';
 
 import { createFunctionSlot, FunctionSlot } from '../../utils/function-slot/function-slot';
 import { Ajax } from '../../utils/ajax/ajax';
@@ -49,12 +47,6 @@ export interface SwivApplicationProps extends React.Props<any> {
 }
 
 export interface SwivApplicationState {
-  AboutModalAsync?: typeof AboutModal;
-  NotificationsAsync?: typeof Notifications;
-  QuestionsAsync?: typeof Questions;
-  ReactCSSTransitionGroupAsync?: typeof ReactCSSTransitionGroup;
-  SideDrawerAsync?: typeof SideDrawer;
-
   appSettings?: AppSettings;
   timekeeper?: Timekeeper;
   drawerOpen?: boolean;
@@ -77,7 +69,7 @@ export const SETTINGS: ViewType = "settings";
 export const NO_DATA: ViewType = "no-data";
 
 export class SwivApplication extends React.Component<SwivApplicationProps, SwivApplicationState> {
-  private hashUpdating: boolean = false;
+  private hashUpdating = false;
   private sideBarHrefFn: FunctionSlot<string>;
   private collectionViewDelegate: CollectionViewDelegate;
 
@@ -162,35 +154,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       console.log('UPDATE!!');
     };
 
-    require.ensure(['clipboard'], (require) => {
-      var Clipboard = require('clipboard');
-      var clipboard = new Clipboard('.clipboard');
-
-      clipboard.on('success', (e: any) => {
-        // ToDo: do something here
-      });
-    }, 'clipboard');
-
-    require.ensure(['react-addons-css-transition-group', '../../components/side-drawer/side-drawer'], (require) => {
-      this.setState({
-        ReactCSSTransitionGroupAsync: require('react-addons-css-transition-group'),
-        SideDrawerAsync: require('../../components/side-drawer/side-drawer').SideDrawer
-      });
-    }, 'side-drawer');
-
-    require.ensure(['../../modals/about-modal/about-modal'], (require) => {
-      this.setState({
-        AboutModalAsync: require('../../modals/about-modal/about-modal').AboutModal
-      });
-    }, 'about-modal');
-
-    require.ensure(['../../components/notifications/notifications'], (require) => {
-      const { Notifications, Questions } = require('../../components/notifications/notifications');
-      this.setState({
-        NotificationsAsync: Notifications,
-        QuestionsAsync: Questions
-      });
-    }, 'notifications');
+    // There was a clipboard module that did nothing here
+    // maybe it should be restored one day
   }
 
   componentWillUnmount() {
@@ -380,35 +345,31 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
   renderAboutModal() {
     const { version } = this.props;
-    const { AboutModalAsync, showAboutModal } = this.state;
-    if (!AboutModalAsync || !showAboutModal) return null;
-    return <AboutModalAsync
+    const { showAboutModal } = this.state;
+    if (!showAboutModal) return null;
+    return <AboutModal
       version={version}
       onClose={this.onAboutModalClose.bind(this)}
     />;
   }
 
   renderNotifications() {
-    const { NotificationsAsync } = this.state;
-    if (!NotificationsAsync) return null;
-    return <NotificationsAsync/>;
+    return <Notifications />;
   }
 
   renderQuestions() {
-    const { QuestionsAsync } = this.state;
-    if (!QuestionsAsync) return null;
-    return <QuestionsAsync/>;
+    return <Questions />;
   }
 
   renderSideDrawer() {
     const { user } = this.props;
-    const { viewType, selectedItem, drawerOpen, SideDrawerAsync, appSettings } = this.state;
-    if (!drawerOpen || !SideDrawerAsync) return null;
+    const { viewType, selectedItem, drawerOpen, appSettings } = this.state;
+    if (!drawerOpen) return null;
     const { dataCubes, collections, customization } = appSettings;
 
     var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
 
-    return <SideDrawerAsync
+    return <SideDrawer
       key='drawer'
       selectedItem={selectedItem}
       collections={collections}
@@ -423,10 +384,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   renderSideDrawerTransition() {
-    const { ReactCSSTransitionGroupAsync } = this.state;
-    if (!ReactCSSTransitionGroupAsync) return null;
-
-    return <ReactCSSTransitionGroupAsync
+    return <ReactCSSTransitionGroup
       component="div"
       className="side-drawer-container"
       transitionName="side-drawer"
@@ -434,7 +392,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       transitionLeaveTimeout={300}
     >
       { this.renderSideDrawer() }
-    </ReactCSSTransitionGroupAsync>;
+    </ReactCSSTransitionGroup>;
   }
 
   saveDataCubes(newSettings: AppSettings): Promise<any> {

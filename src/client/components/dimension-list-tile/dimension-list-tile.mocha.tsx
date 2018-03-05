@@ -15,20 +15,15 @@
  */
 
 import { expect } from 'chai';
-import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { mockRequireEnsure } from '../../utils/test-utils/index';
 
 import * as TestUtils from 'react-dom/test-utils';
 
 import { EssenceMock } from '../../../common/models/mocks';
-
-import { $, Expression } from 'plywood';
+import { DimensionListTile } from "./dimension-list-tile";
 
 describe('DimensionListTile', () => {
-  var { DimensionListTile } = mockRequireEnsure('./dimension-list-tile');
-
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <DimensionListTile

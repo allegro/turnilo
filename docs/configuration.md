@@ -106,18 +106,18 @@ Should the sources of this cluster be automatically scanned and new sources adde
 Should the list of sources be reloaded every time that Turnilo is loaded.
 This will put additional load on the data store but will ensure that sources are visible in the UI as soon as they are created.
 
-**sourceListRefreshInterval** (number), default: 15000
+**sourceListRefreshInterval** (number), minimum: 1000, default: 0
 
-How often should sources be reloaded in ms.
+How often should sources be reloaded in ms. Default value of 0 disables periodical source refresh.
 
 **sourceReintrospectOnLoad** (boolean), default: false
 
 Should sources be scanned for additional dimensions every time that Turnilo is loaded.
 This will put additional load on the data store but will ensure that dimension are visible in the UI as soon as they are created.
 
-**sourceReintrospectInterval** (number), default: 120000
+**sourceReintrospectInterval** (number), minimum: 1000, default: 0
 
-How often should source schema be reloaded in ms.
+How often should source schema be reloaded in ms. Default value of 0 disables periodical source refresh.
 
 
 ### Druid specific properties
@@ -193,6 +193,27 @@ The names of the dimensions (in order) that will appear *pinned* by default on t
 **introspection** ("none" | "no-autofill" | "autofill-dimensions-only" | "autofill-measures-only" | "autofill-all")
 
 Data cube introspection strategy.
+
+**refreshRule**
+
+Refresh rule defining how the information about latest data in a data source is obtained.
+
+### Refresh rules
+
+The `refreshRule:` section of the data cube allows the customisation of latest data discovery mechanism.
+
+**rule** ("query" | "realtime" | "fixed" ), default: "query"
+
+The name of the rule which will be used to obtain information about the latest data. Following rules are available:
+
+- `query`: best suited for batch data sources. The data source will be queried every minute to obtain the maximum value from time dimension.
+- `realtime`: best suited for realtime data sources. The data source will not be queried and the value of *now* is assumed as a latest data time.
+- `fixed`: best suited for constant data sources. The data source will not be queried and the value of `refreshRule.time` property will be used.
+
+**time** (string - date with time instant)
+
+Latest date time of a data source, expressed as [ISO 8601 Instant](https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations).
+Applicable only if `refreshRule.rule` is set to `fixed`.
 
 ### Attribute Overrides
 
@@ -489,7 +510,7 @@ If your data had a 'clean break' where all events have ether `revenue_in_dollars
 If instead there was a period where you were ingesting both metrics then the above solution would double count that interval.
 You can 'splice' these two metrics together at a specific time point.
 
-Logically you should be able leverage the [Filtered aggregations](#filtered-aggregations) to do:
+Logically you should be able leverage the [Filtered aggregations](#filtered-aggregations-formula) to do:
 
 ```yaml
 - name: revenue  # DO NOT DO THIS IT WILL NOT WORK WITH DRUID < 0.9.2

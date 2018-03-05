@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import './swiv-entry.scss';
+import './main.scss';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { addErrorMonitor } from './utils/error-monitor/error-monitor';
-import { DataCube, AppSettingsJS, TimekeeperJS } from '../common/models/index';
+import { AppSettingsJS, DataCube, TimekeeperJS } from '../common/models';
 
 import { Loader } from './components/loader/loader';
 
@@ -49,13 +49,7 @@ if (!config || !config.version || !config.appSettings || !config.appSettings.dat
 
 var version = config.version;
 
-require.ensure([
-  'chronoshift',
-  './utils/ajax/ajax',
-  '../common/models/index',
-  '../common/manifests/index',
-  './applications/swiv-application/swiv-application'
-], (require) => {
+require.ensure([], (require) => {
   const { Ajax } = require('./utils/ajax/ajax');
   const { AppSettings, Timekeeper } = require('../common/models/index');
   const { MANIFESTS } = require('../common/manifests/index');
@@ -70,20 +64,17 @@ require.ensure([
     }
   });
 
-  ReactDOM.render(
-    React.createElement(
-      SwivApplication,
-      {
-        version,
-        user: config.user,
-        appSettings,
-        initTimekeeper: Timekeeper.fromJS(config.timekeeper),
-        stateful: Boolean(config.stateful)
-      }
-    ),
-    container
-  );
-}, 'swiv-main');
+  const app =
+    <SwivApplication
+      version={version}
+      appSettings={appSettings}
+      user={config.user}
+      initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
+      stateful={Boolean(config.stateful)}
+    />;
+
+  ReactDOM.render(app, container);
+}, "app");
 
 // Polyfill =====================================
 
@@ -105,6 +96,6 @@ if (needsPatch) {
   }, 'ios-drag-drop');
 }
 
-if (process.env.NODE_ENV === 'dev-hrm' && module.hot) {
+if (process.env.NODE_ENV === 'dev-hmr' && module.hot) {
   module.hot.accept();
 }

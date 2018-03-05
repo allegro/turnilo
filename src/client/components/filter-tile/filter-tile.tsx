@@ -58,7 +58,6 @@ export interface FilterTileProps extends React.Props<any> {
 }
 
 export interface FilterTileState {
-  FilterMenuAsync?: typeof FilterMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   menuInside?: Element;
@@ -79,7 +78,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     super();
     this.overflowMenuId = uniqueId('overflow-menu-');
     this.state = {
-      FilterMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
       menuInside: null,
@@ -89,14 +87,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       possiblePosition: null,
       maxItems: 20
     };
-  }
-
-  componentDidMount() {
-    require.ensure(['../filter-menu/filter-menu'], (require) => {
-      this.setState({
-        FilterMenuAsync: require('../filter-menu/filter-menu').FilterMenu
-      });
-    }, 'filter-menu');
   }
 
   componentWillReceiveProps(nextProps: FilterTileProps) {
@@ -366,18 +356,18 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   overflowButtonClick() {
     this.openOverflowMenu(this.overflowButtonTarget());
-  };
+  }
 
   renderMenu(): JSX.Element {
     var { essence, timekeeper, clicker, menuStage } = this.props;
-    var { FilterMenuAsync, menuOpenOn, menuDimension, menuInside, possiblePosition, maxItems, overflowMenuOpenOn } = this.state;
-    if (!FilterMenuAsync || !menuDimension) return null;
+    var { menuOpenOn, menuDimension, menuInside, possiblePosition, maxItems, overflowMenuOpenOn } = this.state;
+    if (!menuDimension) return null;
 
     if (possiblePosition && possiblePosition.replace === maxItems) {
       possiblePosition = new DragPosition({ insert: possiblePosition.replace });
     }
 
-    return <FilterMenuAsync
+    return <FilterMenu
       clicker={clicker}
       essence={essence}
       timekeeper={timekeeper}

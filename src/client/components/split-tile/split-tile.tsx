@@ -44,7 +44,6 @@ export interface SplitTileProps extends React.Props<any> {
 }
 
 export interface SplitTileState {
-  SplitMenuAsync?: typeof SplitMenu;
   menuOpenOn?: Element;
   menuDimension?: Dimension;
   menuSplit?: SplitCombine;
@@ -62,20 +61,11 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     super();
     this.overflowMenuId = uniqueId('overflow-menu-');
     this.state = {
-      SplitMenuAsync: null,
       menuOpenOn: null,
       menuDimension: null,
       dragPosition: null,
       maxItems: null
     };
-  }
-
-  componentDidMount() {
-    require.ensure(['../split-menu/split-menu'], (require) => {
-      this.setState({
-        SplitMenuAsync: require('../split-menu/split-menu').SplitMenu
-      });
-    }, 'split-menu');
   }
 
   componentWillReceiveProps(nextProps: SplitTileProps) {
@@ -285,15 +275,15 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   overflowButtonClick() {
     this.openOverflowMenu(this.overflowButtonTarget());
-  };
+  }
 
   renderMenu(): JSX.Element {
     var { essence, clicker, menuStage } = this.props;
-    var { SplitMenuAsync, menuOpenOn, menuDimension, menuSplit, menuInside, overflowMenuOpenOn } = this.state;
-    if (!SplitMenuAsync || !menuDimension) return null;
+    var { menuOpenOn, menuDimension, menuSplit, menuInside, overflowMenuOpenOn } = this.state;
+    if (!menuDimension) return null;
     var onClose = this.closeMenu.bind(this);
 
-    return <SplitMenuAsync
+    return <SplitMenu
       clicker={clicker}
       essence={essence}
       containerStage={overflowMenuOpenOn ? null : menuStage}

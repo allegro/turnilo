@@ -97,7 +97,7 @@ if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
 
 // development error handler and HMR
 
-if (app.get('env') === 'dev-hrm') {
+if (app.get('env') === 'dev-hmr') {
   // add hot module replacement
 
   const webpack = require('webpack');

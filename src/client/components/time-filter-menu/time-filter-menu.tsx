@@ -271,7 +271,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       <DateRangePicker
         startTime={startTime}
         endTime={endTime}
-        maxTime={timekeeper.getTime(essence.dataCube.name)}
+        maxTime={essence.dataCube.getMaxTime(timekeeper)}
         timezone={essence.timezone}
         onStartChange={this.onStartChange.bind(this)}
         onEndChange={this.onEndChange.bind(this)}
