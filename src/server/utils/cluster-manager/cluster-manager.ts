@@ -54,7 +54,9 @@ export interface ClusterManagerOptions {
   generateExternalName?: (external: External) => string;
 }
 
-function noop(): Promise<any> { return Promise.resolve(null)}
+function noop(): Promise<any> {
+  return Promise.resolve(null);
+}
 
 function getSourceFromExternal(external: External): string {
   return String(external.source);
@@ -74,9 +76,9 @@ export class ClusterManager {
   public generateExternalName: (external: External) => string;
   public requestDecoratorModule: DruidRequestDecoratorModule;
 
-  private sourceListRefreshInterval: number = 0;
+  private sourceListRefreshInterval = 0;
   private sourceListRefreshTimer: NodeJS.Timer = null;
-  private sourceReintrospectInterval: number = 0;
+  private sourceReintrospectInterval = 0;
   private sourceReintrospectTimer: NodeJS.Timer = null;
 
   private initialConnectionTimer: NodeJS.Timer = null;

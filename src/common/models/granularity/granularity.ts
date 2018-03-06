@@ -135,7 +135,7 @@ export class NumberHelper {
 
   static supportedGranularities = (bucketedBy: Granularity) => {
     return makeNumberBuckets(getBucketSize(bucketedBy), 10);
-  };
+  }
 }
 
 function getHelperForKind(kind: ContinuousDimensionKind) {

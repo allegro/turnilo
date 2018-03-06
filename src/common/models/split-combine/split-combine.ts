@@ -34,7 +34,7 @@ export interface SplitCombineValue {
   limitAction: LimitExpression;
 }
 
-export type SplitCombineJS = string | SplitCombineJSFull
+export type SplitCombineJS = string | SplitCombineJSFull;
 
 export interface SplitCombineJSFull {
   expression: ExpressionJS;

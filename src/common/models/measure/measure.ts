@@ -217,7 +217,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
         operand: formulaExpression,
         expression: $(formulaName).divide($(formulaName, nestingLevel)).multiply(100)
       });
-    } else if (nestingLevel == 0) {
+    } else if (nestingLevel === 0) {
       return formulaExpression;
     } else {
       throw new Error(`wrong nesting level: ${nestingLevel}`);

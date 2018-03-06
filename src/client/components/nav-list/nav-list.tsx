@@ -85,5 +85,5 @@ export class NavList extends React.Component< NavListProps, NavListState> {
         {this.renderNavList()}
       </div>
     </div>;
-  };
+  }
 }

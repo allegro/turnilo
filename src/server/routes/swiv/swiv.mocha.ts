@@ -41,7 +41,7 @@ app.use((req: SwivRequest, res: express.Response, next: Function) => {
 app.use('/', swivRouter);
 
 describe('swiv router', () => {
-  it('does a query (value)', (testComplete:any) => {
+  it('does a query (value)', (testComplete: any) => {
     supertest(app)
       .get('/')
       .expect(200)

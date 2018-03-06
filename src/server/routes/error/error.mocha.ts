@@ -47,7 +47,7 @@ describe('error route', () => {
     "at LineChart.floorRange (http://localhost:9090/swiv-main.9dcd61eb37d2c3c22868.js:52026:50)\n    " +
     "at LineChart.globalMouseUpListener (http://localhost:9090/swiv-main.9dcd61eb37d2c3c22868.js:52052:36)"
   };
-  it('gets a 200', (testComplete:any) => {
+  it('gets a 200', (testComplete: any) => {
     supertest(app)
       .post('/')
       .set('Content-Type', "application/json")
@@ -59,7 +59,7 @@ describe('error route', () => {
       });
   });
 
-  it('validates error has a message', (testComplete:any) => {
+  it('validates error has a message', (testComplete: any) => {
     supertest(app)
       .post('/')
       .set('Content-Type', "application/json")

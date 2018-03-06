@@ -54,7 +54,7 @@ export class CircumstancesHandler {
       var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataCube.dimensions).kind);
       return CircumstancesHandler.strictCompare(selectors, kinds);
     };
-  };
+  }
 
   public static haveAtLeastSplitKinds = (...kinds: string[]) => {
     return (splits: Splits, dataCube: DataCube): boolean => {
@@ -64,7 +64,7 @@ export class CircumstancesHandler {
 
       return kinds.every((kind) => actualKinds.indexOf(kind) > -1);
     };
-  };
+  }
 
   public static EMPTY() {
     return new CircumstancesHandler();
