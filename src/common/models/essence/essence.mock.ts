@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { MANIFESTS } from "../../manifests/index";
+import { MANIFESTS } from "../../manifests";
 import { Essence, EssenceJS, EssenceContext } from './essence';
 import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { SplitCombineMock } from "../split-combine/split-combine.mock";
 
 export class EssenceMock {
-  static wikiTotalsJS(): EssenceJS {
+  static noVisualisationJS(): EssenceJS {
     return {
       visualization: 'totals',
       timezone: 'Etc/UTC',
@@ -30,7 +30,17 @@ export class EssenceMock {
     };
   }
 
-  static wikiLineChartJS(): EssenceJS {
+  static totalsJS(): EssenceJS {
+    return {
+      visualization: 'totals',
+      timezone: 'Etc/UTC',
+      pinnedDimensions: [],
+      selectedMeasures: [],
+      splits: []
+    };
+  }
+
+  static lineChartJS(): EssenceJS {
     return {
       visualization: 'line-chart',
       timezone: 'Etc/UTC',
@@ -40,7 +50,7 @@ export class EssenceMock {
     };
   }
 
-  static wikiLineChartNoSplitJS(): EssenceJS {
+  static lineChartNoSplitJS(): EssenceJS {
     return {
       visualization: 'line-chart',
       timezone: 'Etc/UTC',
@@ -50,22 +60,33 @@ export class EssenceMock {
     };
   }
 
-  static getContext(): EssenceContext {
+  static getWikiContext(): EssenceContext {
     return {
       dataCube: DataCubeMock.wiki(),
       visualizations: MANIFESTS
     };
   }
 
+  static getTwitterContext(): EssenceContext {
+    return {
+      dataCube: DataCubeMock.twitter(),
+      visualizations: MANIFESTS
+    };
+  }
+
   static wikiTotals() {
-    return Essence.fromJS(EssenceMock.wikiTotalsJS(), EssenceMock.getContext());
+    return Essence.fromJS(EssenceMock.totalsJS(), EssenceMock.getWikiContext());
   }
 
   static wikiLineChart() {
-    return Essence.fromJS(EssenceMock.wikiLineChartJS(), EssenceMock.getContext());
+    return Essence.fromJS(EssenceMock.lineChartJS(), EssenceMock.getWikiContext());
   }
 
   static wikiLineChartNoSplit() {
-    return Essence.fromJS(EssenceMock.wikiLineChartNoSplitJS(), EssenceMock.getContext());
+    return Essence.fromJS(EssenceMock.lineChartNoSplitJS(), EssenceMock.getWikiContext());
+  }
+
+  static twitterNoVisualisation() {
+    return Essence.fromJS(EssenceMock.noVisualisationJS(), EssenceMock.getTwitterContext());
   }
 }
