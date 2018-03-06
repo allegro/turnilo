@@ -110,7 +110,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     let dimension = "";
     if (ex instanceof ChainableExpression) {
       if (ex.operand instanceof RefExpression) {
-        dimension = ex.operand.name
+        dimension = ex.operand.name;
       }
     }
 

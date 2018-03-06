@@ -179,7 +179,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
         >{getWallTimeDay(dayDate, timezone)}</div>;
       })}</div>;
     });
-  };
+  }
 
   renderCalendar(startDate: Date, isSingleDate: boolean): JSX.Element[] {
     const { timezone } = this.props;

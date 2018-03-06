@@ -129,7 +129,7 @@ describe('Essence', () => {
             "step": -1,
             "operand": {
               "name": "m",
-              "op": "ref",
+              "op": "ref"
             }
           },
           "op": "overlap",
@@ -205,7 +205,7 @@ describe('Essence', () => {
             "step": -1,
             "operand": {
               "name": "m",
-              "op": "ref",
+              "op": "ref"
             }
           },
           "op": "overlap",
