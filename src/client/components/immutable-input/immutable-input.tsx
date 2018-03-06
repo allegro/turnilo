@@ -65,7 +65,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
         validator={validator}
       />;
     };
-  };
+  }
 
   private focusAlreadyGiven = false;
 

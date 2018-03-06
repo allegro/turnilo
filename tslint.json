@@ -21,7 +21,6 @@
     "interface-name": false,
     "jsdoc-format": true,
     "label-position": true,
-    "label-undefined": true,
     "max-line-length": [true, 200],
     "member-access": false,
     "member-ordering": [true,
@@ -39,9 +38,8 @@
       "trace"
     ],
     "no-construct": false,
-    "no-constructor-vars": true,
+    "no-parameter-properties": true,
     "no-debugger": true,
-    "no-duplicate-key": true,
     "no-duplicate-variable": false,
     "no-empty": false,
     "no-eval": true,

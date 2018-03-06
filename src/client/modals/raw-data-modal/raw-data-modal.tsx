@@ -281,7 +281,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
     return <div className="button-bar">
       {buttons}
-    </div>
+    </div>;
   }
 
   render() {

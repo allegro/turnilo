@@ -153,6 +153,6 @@ export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTil
         { message }
       </div>
     </SearchableTile>;
-  };
+  }
 }
 

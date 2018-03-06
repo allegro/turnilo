@@ -76,7 +76,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     } else if (expression instanceof AndExpression) {
       clauses = expression.getExpressionList().map(c => FilterClause.fromExpression(c));
     } else {
-      clauses = [FilterClause.fromExpression(expression)]
+      clauses = [FilterClause.fromExpression(expression)];
     }
 
     return new Filter(<List<FilterClause>>List(clauses));

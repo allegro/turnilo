@@ -95,7 +95,7 @@ describe('FilterClause', () => {
           operand: {
             op: 'timeShift',
             duration: 'P5D',
-            step: -1 ,
+            step: -1
           }
         }
       }
