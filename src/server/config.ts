@@ -349,5 +349,7 @@ if (PRINT_CONFIG) {
     }));
   }).catch((e: Error) => {
     exitWithError("There was an error generating a config: " + e.message);
+  }).finally(() => {
+    process.exit();
   });
 }
