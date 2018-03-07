@@ -91,7 +91,7 @@ Data connection options:
 
 Configuration printing utilities:
 
-      --print-config           Prints out the auto generated config
+      --print-config           Prints out the auto generated config and exits
       --with-comments          Adds comments when printing the auto generated config
 `;
 
@@ -347,6 +347,7 @@ if (PRINT_CONFIG) {
       verbose: VERBOSE,
       port: SERVER_SETTINGS.getPort()
     }));
+    process.exit();
   }).catch((e: Error) => {
     exitWithError("There was an error generating a config: " + e.message);
   });
