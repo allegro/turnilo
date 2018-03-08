@@ -17,17 +17,19 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { $, Expression } from 'plywood';
-import { MANIFESTS } from "../../manifests/index";
+import { $ } from 'plywood';
+import { MANIFESTS } from "../../manifests";
+import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
+import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { Essence, EssenceJS, VisStrategy } from './essence';
 import { DataCube, Introspection } from "../data-cube/data-cube";
 import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
 import { Splits } from "../splits/splits";
-import { SplitCombineMock } from "../split-combine/split-combine.mock";
 import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
 import { SplitCombine } from "../split-combine/split-combine";
 import { RefExpression } from "plywood";
+import { EssenceMock } from "./essence.mock";
 
 describe('Essence', () => {
   var dataCubeJS = {
@@ -129,7 +131,7 @@ describe('Essence', () => {
             "step": -1,
             "operand": {
               "name": "m",
-              "op": "ref",
+              "op": "ref"
             }
           },
           "op": "overlap",
@@ -205,7 +207,7 @@ describe('Essence', () => {
             "step": -1,
             "operand": {
               "name": "m",
-              "op": "ref",
+              "op": "ref"
             }
           },
           "op": "overlap",
@@ -274,81 +276,84 @@ describe('Essence', () => {
   describe('vis picking', () => {
 
     describe("#getBestVisualization", () => {
-      it("#getBestVisualization", () => {
-        var dimensions = DataCubeMock.twitter().dimensions;
-        var vis1 = Essence.getBestVisualization(MANIFESTS, DataCubeMock.twitter(), Splits.EMPTY, null, null);
-        expect(vis1.visualization.name).to.deep.equal("totals");
+      const tests = [
+        { splitDimensions: [], current: null, expected: TOTALS_MANIFEST},
+        { splitDimensions: ['tweetLength'], current: TOTALS_MANIFEST, expected: BAR_CHART_MANIFEST},
+        { splitDimensions: ['twitterHandle'], current: TOTALS_MANIFEST, expected: TABLE_MANIFEST},
+        { splitDimensions: ['time'], current: BAR_CHART_MANIFEST, expected: LINE_CHART_MANIFEST}
+      ];
+      const dimensions = DataCubeMock.twitter().dimensions;
 
-        var vis2 = Essence.getBestVisualization(MANIFESTS, DataCubeMock.twitter(), Splits.fromJS(['tweetLength'], { dimensions }), null, TOTALS_MANIFEST);
-        expect(vis2.visualization.name).to.deep.equal("bar-chart");
+      tests.forEach(({ splitDimensions, current, expected }) => {
+        it(`chooses ${expected.name} given splits: [${splitDimensions}] with current ${current && current.name}`, () => {
+          const { visualization } = Essence.getBestVisualization(
+            MANIFESTS,
+            DataCubeMock.twitter(),
+            Splits.fromJS(splitDimensions, { dimensions }),
+            null,
+            current);
 
-        var vis3 = Essence.getBestVisualization(MANIFESTS, DataCubeMock.twitter(), Splits.fromJS(['time'], { dimensions }), null, BAR_CHART_MANIFEST);
-        expect(vis3.visualization.name).to.deep.equal("line-chart");
+          expect(visualization).to.deep.equal(expected);
+        });
       });
     });
 
     describe("#changeSplits", () => {
-      var essence: Essence = null;
+      let essence: Essence = null;
+      beforeEach(() => essence = EssenceMock.twitterNoVisualisation());
 
-      beforeEach(() => {
-        essence = Essence.fromJS({
-          visualization: null,
-          timezone: 'Etc/UTC',
-          pinnedDimensions: [],
-          selectedMeasures: [],
-          splits: []
-        }, {
-          dataCube: DataCubeMock.twitter(),
-          visualizations: MANIFESTS
-        });
-      });
-
-
-      var timeSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'time' }});
-      var tweetLengthSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'tweetLength' }});
-      var twitterHandleSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'twitterHandle' }});
+      const timeSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'time' }});
+      const tweetLengthSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'tweetLength' }});
+      const twitterHandleSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'twitterHandle' }});
 
       it("defaults to bar chart with numeric dimension and is sorted on self", () => {
         essence = essence.addSplit(tweetLengthSplit, VisStrategy.FairGame);
-        expect(essence.visualization.name).to.deep.equal("bar-chart");
+        expect(essence.visualization).to.deep.equal(BAR_CHART_MANIFEST);
         expect((essence.splits.get(0).sortAction.expression as RefExpression).name).to.deep.equal('tweetLength');
-        expect(essence.visResolve.state).to.deep.equal("ready");
+        expect(essence.visResolve.isReady()).to.be.true;
       });
 
-      it("defaults to line chart with a time split", () => {
-        essence = essence.changeSplit(timeSplit, VisStrategy.FairGame);
-        expect(essence.visualization.name).to.deep.equal("line-chart");
-        expect(essence.visResolve.state).to.deep.equal("ready");
-      });
-
-      it("fall back with no splits", () => {
-        essence = essence.changeVisualization(BAR_CHART_MANIFEST);
-        expect(essence.visualization.name).to.deep.equal("bar-chart");
-        expect(essence.visResolve.state).to.deep.equal("manual");
+      it("defaults to table with non numeric dimension", () => {
+        essence = essence.changeVisualization(TOTALS_MANIFEST);
+        essence = essence.addSplit(twitterHandleSplit, VisStrategy.FairGame);
+        expect(essence.visualization).to.deep.equal(TABLE_MANIFEST);
+        expect(essence.visResolve.isReady()).to.be.true;
       });
 
       it("in fair game, adding a string split to time split results in line chart", () => {
         essence = essence.addSplit(timeSplit, VisStrategy.FairGame);
         essence = essence.addSplit(twitterHandleSplit, VisStrategy.FairGame);
-        expect(essence.visualization.name).to.deep.equal("line-chart");
-        expect(essence.visResolve.state).to.deep.equal("ready");
+        expect(essence.visualization).to.deep.equal(LINE_CHART_MANIFEST);
+        expect(essence.visResolve.isReady()).to.be.true;
       });
 
-      it("gives existing vis a bonus", () => {
+      it("in unfair game, gives existing vis a bonus", () => {
         essence = essence.addSplit(timeSplit, VisStrategy.FairGame);
         essence = essence.changeVisualization(BAR_CHART_MANIFEST);
-        expect(essence.visualization.name).to.deep.equal("bar-chart");
-        expect(essence.visResolve.state).to.deep.equal("ready");
+        expect(essence.visualization).to.deep.equal(BAR_CHART_MANIFEST);
+        expect(essence.visResolve.isReady()).to.be.true;
         essence = essence.addSplit(twitterHandleSplit, VisStrategy.UnfairGame);
-        expect(essence.visualization.name).to.deep.equal("bar-chart");
-        expect(essence.visResolve.state).to.deep.equal("ready");
-
+        expect(essence.visualization).to.deep.equal(BAR_CHART_MANIFEST);
+        expect(essence.visResolve.isReady()).to.be.true;
       });
 
       it("falls back when can't handle measures", () => {
         // todo
       });
-
     });
+
+    describe("#changeVisualisation", () => {
+      let essence: Essence = null;
+      beforeEach(() => essence = EssenceMock.twitterNoVisualisation());
+
+      [TABLE_MANIFEST, LINE_CHART_MANIFEST, BAR_CHART_MANIFEST].forEach(manifest => {
+        it("it sets visResolve to manual", () => {
+          essence = essence.changeVisualization(manifest);
+          expect(essence.visualization.name).to.deep.equal(manifest.name);
+          expect(essence.visResolve.isManual()).to.be.true;
+        });
+      });
+    });
+
   });
 });

@@ -281,7 +281,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
         <Button type="secondary" onClick={this.onCancelClick.bind(this)} title={STRINGS.cancel} />
       </div>
     </div>;
-  };
+  }
 
   render() {
     const { dimension, onClose, containerStage, openOn, inside } = this.props;
