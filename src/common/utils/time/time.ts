@@ -167,7 +167,16 @@ export function getWallTimeString(date: Date, timezone: Timezone, includeTime?: 
   if (includeTime) {
     return wallTimeISOString.replace('T', delimiter || ', ');
   }
-  return wallTimeISOString.replace( /:\d\d/, '').split('T')[0];
+  return splitDateTimeString(wallTimeISOString)[0]
+}
+
+export function getWallTimeTimeOnlyString(date: Date, timezone: Timezone): string {
+  const wallTimeISOString = moment.tz(date, timezone.toString()).format(FORMAT_ISO_WITHOUT_TIMEZONE);
+  return splitDateTimeString(wallTimeISOString)[1];
+}
+
+function splitDateTimeString(dateTimeString: string): string[] {
+  return dateTimeString.replace( /:\d\d/, '').split('T');
 }
 
 function pad(input: number) {

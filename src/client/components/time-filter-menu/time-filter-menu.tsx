@@ -19,15 +19,15 @@ import './time-filter-menu.scss';
 import * as React from "react";
 import { Timezone, second, day } from "chronoshift";
 import { $, r, Expression, LiteralExpression, TimeRange, Range, Set } from "plywood";
-import { Fn } from "../../../common/utils/general/general";
+import { Fn } from "../../../common/utils";
 import { STRINGS } from "../../config/constants";
-import { Clicker, Essence, Timekeeper, Filter, FilterClause, Dimension } from "../../../common/models/index";
-import { formatTimeRange, DisplayYear } from "../../../common/utils/time/time";
+import { Clicker, Essence, Timekeeper, Filter, FilterClause, Dimension } from "../../../common/models";
+import { formatTimeRange, DisplayYear } from "../../../common/utils";
 import { enterKey, classNames } from "../../utils/dom/dom";
 import { Button } from "../button/button";
 import { ButtonGroup } from "../button-group/button-group";
 import { DateRangePicker } from "../date-range-picker/date-range-picker";
-import { Stage } from "../../../common/models/stage/stage";
+import { Stage } from "../../../common/models";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 
 function makeDateIntoTimeRange(input: Date, timezone: Timezone): TimeRange {
@@ -39,8 +39,8 @@ export interface Preset {
   selection: Expression;
 }
 
-var $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
-var latestPresets: Preset[] = [
+const $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
+const latestPresets: Preset[] = [
   { name: '1H',  selection: $maxTime.timeRange('PT1H', -1) },
   { name: '6H',  selection: $maxTime.timeRange('PT6H', -1) },
   { name: '1D',  selection: $maxTime.timeRange('P1D', -1)  },
@@ -48,8 +48,8 @@ var latestPresets: Preset[] = [
   { name: '30D', selection: $maxTime.timeRange('P1D', -30) }
 ];
 
-var $now = $(FilterClause.NOW_REF_NAME);
-var currentPresets: Preset[] = [
+const $now = $(FilterClause.NOW_REF_NAME);
+const currentPresets: Preset[] = [
   { name: 'D', selection: $now.timeBucket('P1D') },
   { name: 'W', selection: $now.timeBucket('P1W') },
   { name: 'M', selection: $now.timeBucket('P1M') },
@@ -57,7 +57,7 @@ var currentPresets: Preset[] = [
   { name: 'Y', selection: $now.timeBucket('P1Y') }
 ];
 
-var previousPresets: Preset[] = [
+const previousPresets: Preset[] = [
   { name: 'D', selection: $now.timeFloor('P1D').timeRange('P1D', -1) },
   { name: 'W', selection: $now.timeFloor('P1W').timeRange('P1W', -1) },
   { name: 'M', selection: $now.timeFloor('P1M').timeRange('P1M', -1) },
@@ -107,18 +107,20 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     const { filter } = essence;
     const { timezone } = essence;
 
-    var dimensionExpression = dimension.expression;
-    var timeSelection = filter.getSelection(dimensionExpression) as Expression;
-    var selectedTimeRangeSet = essence.getEffectiveFilter(timekeeper).getLiteralSet(dimensionExpression);
-    var selectedTimeRange = (selectedTimeRangeSet && selectedTimeRangeSet.size() === 1) ? selectedTimeRangeSet.elements[0] : null;
-    if (selectedTimeRange && !Range.isRange(selectedTimeRange)) selectedTimeRange = makeDateIntoTimeRange(selectedTimeRange, timezone);
-    var clause = filter.clauseForExpression(dimensionExpression);
+    const dimensionExpression = dimension.expression;
+    const timeSelection = filter.getSelection(dimensionExpression) as Expression;
+    const selectedTimeRangeSet = essence.getEffectiveFilter(timekeeper).getLiteralSet(dimensionExpression);
+    let selectedTimeRange = (selectedTimeRangeSet && selectedTimeRangeSet.size() === 1) ? selectedTimeRangeSet.elements[0] : null;
+    if (selectedTimeRange && !Range.isRange(selectedTimeRange)) {
+      selectedTimeRange = makeDateIntoTimeRange(selectedTimeRange, timezone);
+    }
+    const clause = filter.clauseForExpression(dimensionExpression);
 
     this.setState({
       timeSelection,
-      tab: (!clause || clause.relative || clause.isLessThanFullDay()) ? 'relative' : 'specific',
-      startTime: selectedTimeRange ? day.floor(selectedTimeRange.start, timezone) : null,
-      endTime: selectedTimeRange ? day.ceil(selectedTimeRange.end, timezone) : null
+      tab: (!clause || clause.relative) ? 'relative' : 'specific',
+      startTime: selectedTimeRange ? selectedTimeRange.start : null,
+      endTime: selectedTimeRange ? selectedTimeRange.end : null
     });
   }
 
@@ -137,10 +139,10 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   }
 
   constructFilter(): Filter {
-    var { essence, dimension } = this.props;
-    var { tab, startTime, endTime } = this.state;
-    var { filter } = essence;
-    var { timezone } = essence;
+    let { tab, startTime, endTime } = this.state;
+    const { essence, dimension } = this.props;
+    const { filter } = essence;
+    const { timezone } = essence;
 
     if (tab !== 'specific') return null;
 
@@ -156,15 +158,15 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   }
 
   onPresetClick(preset: Preset) {
-    var { clicker, onClose, essence, dimension } = this.props;
-    var { filter } = essence;
-    var newFilter = filter.setSelection(dimension.expression, preset.selection);
+    const { clicker, onClose, essence, dimension } = this.props;
+    const { filter } = essence;
+    const newFilter = filter.setSelection(dimension.expression, preset.selection);
     clicker.changeFilter(newFilter);
     onClose();
   }
 
   onPresetMouseEnter(preset: Preset) {
-    var { hoverPreset } = this.state;
+    const { hoverPreset } = this.state;
     if (hoverPreset === preset) return;
     this.setState({
       hoverPreset: preset
@@ -172,7 +174,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   }
 
   onPresetMouseLeave(preset: Preset) {
-    var { hoverPreset } = this.state;
+    const { hoverPreset } = this.state;
     if (hoverPreset !== preset) return;
     this.setState({
       hoverPreset: null
@@ -197,26 +199,26 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
   onOkClick() {
     if (!this.actionEnabled()) return;
-    var { clicker, onClose } = this.props;
-    var newFilter = this.constructFilter();
+    const { clicker, onClose } = this.props;
+    const newFilter = this.constructFilter();
     if (!newFilter) return;
     clicker.changeFilter(newFilter);
     onClose();
   }
 
   onCancelClick() {
-    var { onClose } = this.props;
+    const { onClose } = this.props;
     onClose();
   }
 
-  renderPresets() {
-    var { essence, timekeeper, dimension } = this.props;
-    var { timeSelection, hoverPreset } = this.state;
+  renderPresetsTimePicker() {
+    const { essence, timekeeper, dimension } = this.props;
+    const { timeSelection, hoverPreset } = this.state;
     if (!dimension) return null;
 
-    var { timezone } = essence;
+    const { timezone } = essence;
 
-    var presetToButton = (preset: Preset) => {
+    const presetToButton = (preset: Preset) => {
       return <button
         key={preset.name}
         className={classNames('preset', { hover: preset === hoverPreset, selected: preset.selection.equals(timeSelection) })}
@@ -226,7 +228,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       >{preset.name}</button>;
     };
 
-    var previewTimeRange: TimeRange = null;
+    let previewTimeRange: TimeRange = null;
     if (timeSelection && timeSelection.type !== 'TIME_RANGE') {
       let { value } = timeSelection as LiteralExpression;
       if (!Set.isSet(value)) throw new Error(`Unrecognized filter value ${value}`);
@@ -238,8 +240,8 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       previewTimeRange = essence.evaluateSelection(hoverPreset ? hoverPreset.selection : timeSelection, timekeeper);
     }
 
-    var previewText = previewTimeRange ? formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
-    var maxTimeBasedPresets = <div>
+    const previewText = previewTimeRange ? formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
+    const maxTimeBasedPresets = <div>
       <div className="type">{STRINGS.latest}</div>
       <div className="buttons">{latestPresets.map(presetToButton)}</div>
     </div>;
@@ -255,16 +257,16 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   }
 
   actionEnabled() {
-    var { essence } = this.props;
-    var { tab } = this.state;
+    const { essence } = this.props;
+    const { tab } = this.state;
     if (tab !== 'specific') return false;
-    var newFilter = this.constructFilter();
+    const newFilter = this.constructFilter();
     return newFilter && !essence.filter.equals(newFilter);
   }
 
-  renderCustom() {
-    var { essence, timekeeper, dimension } = this.props;
-    var { startTime, endTime } = this.state;
+  renderSpecificDateRangePicker() {
+    const { essence, timekeeper, dimension } = this.props;
+    const { startTime, endTime } = this.state;
     if (!dimension) return null;
 
     return <div>
@@ -285,11 +287,11 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
   render() {
     const { dimension, onClose, containerStage, openOn, inside } = this.props;
-    var { tab } = this.state;
+    const { tab } = this.state;
     if (!dimension) return null;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
 
-    var tabs = ['relative', 'specific'].map((name) => {
+    const tabs = ['relative', 'specific'].map((name) => {
       return {
         isSelected: tab === name,
         title: (name === 'relative' ? STRINGS.relative : STRINGS.specific),
@@ -307,7 +309,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       inside={inside}
     >
       <ButtonGroup groupMembers={tabs} />
-      {tab === 'relative' ? this.renderPresets() : this.renderCustom()}
+      {tab === 'relative' ? this.renderPresetsTimePicker() : this.renderSpecificDateRangePicker()}
     </BubbleMenu>;
   }
 }
