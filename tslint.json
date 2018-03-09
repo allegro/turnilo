@@ -16,6 +16,10 @@
     ],
     "curly": false,
     "eofline": true,
+    "file-header": [
+      true,
+      "Copyright 2017-2018 Allegro.pl"
+    ],
     "forin": false,
     "indent": [true, 2],
     "interface-name": false,
