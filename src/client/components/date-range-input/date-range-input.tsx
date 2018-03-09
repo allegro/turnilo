@@ -20,7 +20,7 @@ import * as React from 'react';
 import { Timezone } from 'chronoshift';
 import * as moment from 'moment';
 import 'moment-timezone';
-import { getWallTimeDateOnlyString, getWallTimeTimeOnlyString, isFullyDefinedDate, isFullyDefinedTime, combineDateAndTimeIntoMoment } from '../../../common/utils';
+import { getWallTimeDateOnlyString, getWallTimeTimeOnlyString, maybeFullyDefinedDate, maybeFullyDefinedTime, combineDateAndTimeIntoMoment } from '../../../common/utils';
 
 export interface DateRangeInputProps extends React.Props<any> {
   time: Date;
@@ -76,7 +76,7 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     this.setState({
       dateString
     });
-    if (isFullyDefinedDate(dateString)) {
+    if (maybeFullyDefinedDate(dateString)) {
       this.changeDate(dateString, this.state.timeString);
     }
   }
@@ -86,7 +86,7 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     this.setState({
       timeString
     });
-    if (isFullyDefinedTime(timeString)) {
+    if (maybeFullyDefinedTime(timeString)) {
       this.changeDate(this.state.dateString, timeString);
     }
   }

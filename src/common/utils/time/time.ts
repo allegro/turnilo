@@ -220,11 +220,11 @@ export function formatGranularity(granularity: string): string {
   return granularity.replace(/^PT?/, '');
 }
 
-export function isFullyDefinedDate(date: string): boolean {
+export function maybeFullyDefinedDate(date: string): boolean {
   return date.length === FORMAT_DATE.length;
 }
 
-export function isFullyDefinedTime(time: string): boolean {
+export function maybeFullyDefinedTime(time: string): boolean {
   return time.length === FORMAT_TIME.length;
 }
 
