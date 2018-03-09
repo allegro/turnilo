@@ -17,7 +17,30 @@
 @import '../../imports';
 
 .date-range-input {
-  .input-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 15px;
+
+  .label {
+    width: 40px;
+    min-width: 40px;
+    text-align: right;
+    color: #a6a6a6;
+    font-size: 13px;
+    text-transform: uppercase;
+    margin-right: 5px;
+  }
+
+  .date-field {
     @extend %default-input;
+    width: 85px;
+    padding-left: 5px;
+    margin-right: 10px;
+  }
+
+  .time-field {
+    @extend %default-input;
+    width: 60px;
   }
 }

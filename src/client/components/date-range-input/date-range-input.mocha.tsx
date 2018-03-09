@@ -30,6 +30,7 @@ describe('DateRangeInput', () => {
   it('adds the correct class', () => {
     var renderedComponent = TestUtils.renderIntoDocument(
       <DateRangeInput
+        label="Test"
         hide={true}
         onChange={null}
         time={null}
