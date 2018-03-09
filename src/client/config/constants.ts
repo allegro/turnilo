@@ -126,7 +126,7 @@ export const STRINGS: any = {
   select: 'Select',
   settings: 'Settings',
   sortBy: 'Sort by',
-  specific: 'Specific',
+  fixed: 'Fixed',
   split: 'Split',
   splitDelimiter: 'by',
   start: 'Start',

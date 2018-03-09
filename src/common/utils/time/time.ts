@@ -21,6 +21,8 @@ import * as moment from 'moment-timezone';
 import { TimeRange } from 'plywood';
 
 const FORMAT_ISO_WITHOUT_TIMEZONE = "YYYY-MM-DD[T]HH:mm:ss";
+const FORMAT_DATE = "YYYY-MM-DD";
+const FORMAT_TIME = "HH:mm";
 
 const FORMAT_WITH_YEAR = 'MMM D, YYYY';
 const FORMAT_WITHOUT_YEAR = 'MMM D';
@@ -35,7 +37,7 @@ function formatTimeOfDay(d: Moment): string {
 }
 
 function isCurrentYear(year: number, timezone: Timezone): boolean {
-  var nowWallTime = moment.tz(new Date(), timezone.toString());
+  const nowWallTime = moment.tz(new Date(), timezone.toString());
   return nowWallTime.year() === year;
 }
 
@@ -58,18 +60,18 @@ export function exclusiveToInclusiveEnd(exclusiveEnd: Date): Date {
 }
 
 export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displayYear: DisplayYear): string {
-  var { start, end } = timeRange;
+  const { start, end } = timeRange;
   const startWallTime = moment.tz(start, timezone.toString());
   const endWallTime = moment.tz(end, timezone.toString());
-  var endWallTimeInclusive = getEndWallTimeInclusive(end, timezone);
+  const endWallTimeInclusive = getEndWallTimeInclusive(end, timezone);
 
-  var showingYear = true;
-  var formatted: string;
+  let showingYear = true;
+  let formatted: string;
   if (startWallTime.year() !== endWallTimeInclusive.year()) {
     formatted = [startWallTime.format(FORMAT_WITH_YEAR), endWallTimeInclusive.format(FORMAT_WITH_YEAR)].join(' - ');
   } else {
     showingYear = displayYear === DisplayYear.ALWAYS || (displayYear === DisplayYear.IF_DIFF && !isCurrentYear(endWallTimeInclusive.year(), timezone));
-    var fmt = showingYear ? FORMAT_WITH_YEAR : FORMAT_WITHOUT_YEAR;
+    const fmt = showingYear ? FORMAT_WITH_YEAR : FORMAT_WITHOUT_YEAR;
     if (startWallTime.month() !== endWallTimeInclusive.month() || startWallTime.date() !== endWallTimeInclusive.date()) {
       formatted = [startWallTime.format(FORMAT_WITHOUT_YEAR), endWallTimeInclusive.format(fmt)].join(' - ');
     } else {
@@ -80,8 +82,8 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displa
   if (startWallTime.hour() || startWallTime.minute() || endWallTime.hour() || endWallTime.minute()) {
     formatted += (showingYear ? ' ' : ', ');
 
-    var startTimeStr = formatTimeOfDay(startWallTime).toLowerCase();
-    var endTimeStr = formatTimeOfDay(endWallTime).toLowerCase();
+    let startTimeStr = formatTimeOfDay(startWallTime).toLowerCase();
+    const endTimeStr = formatTimeOfDay(endWallTime).toLowerCase();
 
     if (startTimeStr === endTimeStr) {
       formatted += startTimeStr;
@@ -105,7 +107,7 @@ export function monthToWeeks(firstDayOfMonth: Date, timezone: Timezone, locale: 
   let week: Date[] = [];
   let currentPointer = day.floor(firstDayOfMonth, timezone);
   while (currentPointer < firstDayNextMonth) {
-    var wallTime = moment.tz(currentPointer, timezone.toString());
+    const wallTime = moment.tz(currentPointer, timezone.toString());
     if ((wallTime.day() === locale.weekStart || 0) && week.length > 0) {
       weeks.push(week);
       week = [];
@@ -120,18 +122,18 @@ export function monthToWeeks(firstDayOfMonth: Date, timezone: Timezone, locale: 
 }
 
 export function prependDays(timezone: Timezone, weekPrependTo: Date[], countPrepend: number): Date[] {
-  for (var i = 0; i < countPrepend; i++) {
-    var firstDate = weekPrependTo[0];
-    var shiftedDate = day.shift(firstDate, timezone, -1);
+  for (let i = 0; i < countPrepend; i++) {
+    const firstDate = weekPrependTo[0];
+    const shiftedDate = day.shift(firstDate, timezone, -1);
     weekPrependTo.unshift(shiftedDate);
   }
   return weekPrependTo;
 }
 
 export function appendDays(timezone: Timezone, weekAppendTo: Date[], countAppend: number): Date[] {
-  for (var i = 0; i < countAppend; i++) {
-    var lastDate = weekAppendTo[weekAppendTo.length - 1];
-    var shiftedDate = day.shift(lastDate, timezone, 1);
+  for (let i = 0; i < countAppend; i++) {
+    const lastDate = weekAppendTo[weekAppendTo.length - 1];
+    const shiftedDate = day.shift(lastDate, timezone, 1);
     weekAppendTo.push(shiftedDate);
   }
   return weekAppendTo;
@@ -163,12 +165,17 @@ export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone
   return datesEqual(d1InclusiveEnd.toDate(), d2InclusiveEnd.toDate());
 }
 
-export function getWallTimeString(date: Date, timezone: Timezone, includeTime?: boolean, delimiter?: string): string {
+export function getWallTimeString(date: Date, timezone: Timezone): string {
   const wallTimeISOString = moment.tz(date, timezone.toString()).format(FORMAT_ISO_WITHOUT_TIMEZONE);
-  if (includeTime) {
-    return wallTimeISOString.replace('T', delimiter || ', ');
-  }
-  return wallTimeISOString.replace( /:\d\d/, '').split('T')[0];
+  return wallTimeISOString.replace('T', ', ');
+}
+
+export function getWallTimeDateOnlyString(date: Date, timezone: Timezone): string {
+  return moment.tz(date, timezone.toString()).format(FORMAT_DATE);
+}
+
+export function getWallTimeTimeOnlyString(date: Date, timezone: Timezone): string {
+  return moment.tz(date, timezone.toString()).format(FORMAT_TIME);
 }
 
 function pad(input: number) {
@@ -190,15 +197,14 @@ export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Dura
   const hourToTwelve = hour % 12 === 0 ? 12 : hour % 12;
   const amPm = (hour / 12) >= 1 ? 'pm' : 'am';
 
-
-  var granularityString = granularity.toJS();
-  var unit = granularityString.substring(granularityString.length - 1);
+  const granularityString = granularity.toJS();
+  const unit = granularityString.substring(granularityString.length - 1);
 
   switch (unit) {
     case 'S':
       return `${monthString} ${day}, ${pad(hour)}:${pad(minute)}:${pad(second)}`;
     case 'M':
-      var prefix = granularityString.substring(0, 2);
+      const prefix = granularityString.substring(0, 2);
       return prefix === "PT" ? `${monthString} ${day}, ${hourToTwelve}:${pad(minute)}${amPm}` : `${monthString}, ${year}`;
     case 'H':
       return `${monthString} ${day}, ${year}, ${hourToTwelve}${amPm}`;
@@ -213,4 +219,17 @@ export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Dura
 
 export function formatGranularity(granularity: string): string {
   return granularity.replace(/^PT?/, '');
+}
+
+export function maybeFullyDefinedDate(date: string): boolean {
+  return date.length === FORMAT_DATE.length;
+}
+
+export function maybeFullyDefinedTime(time: string): boolean {
+  return time.length === FORMAT_TIME.length;
+}
+
+export function combineDateAndTimeIntoMoment(date: string, time: string, timezone: Timezone): moment.Moment {
+  const fullDateTimeString = date + "T" + time;
+  return moment.tz(fullDateTimeString, timezone.toString());
 }

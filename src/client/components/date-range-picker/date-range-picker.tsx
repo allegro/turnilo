@@ -56,10 +56,8 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
   }
 
   componentWillMount() {
-    var { startTime, endTime, timezone } = this.props;
+    const { startTime, endTime, timezone } = this.props;
 
-    if (startTime && !datesEqual(startTime, day.floor(startTime, timezone))) throw new Error("start time must be round");
-    if (endTime && !datesEqual(endTime, day.floor(endTime, timezone))) throw new Error("end time must be round");
     const flooredStart = month.floor(startTime || new Date(), timezone);
     this.setState({
       activeMonthStartDate: flooredStart,
@@ -70,7 +68,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
   navigateToMonth(offset: number): void {
     const { timezone } = this.props;
     const { activeMonthStartDate } = this.state;
-    var newDate = month.shift(activeMonthStartDate, timezone, offset);
+    const newDate = month.shift(activeMonthStartDate, timezone, offset);
     this.setState({
       activeMonthStartDate: newDate
     });
@@ -86,10 +84,10 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
   calculateHoverTimeRange(mouseEnteredDay: Date) {
     const { startTime, endTime } = this.props;
-    var hoverTimeRange: TimeRange = null;
+    let hoverTimeRange: TimeRange = null;
     if (startTime && !endTime) {
-      var start = startTime;
-      var end = mouseEnteredDay;
+      let start = startTime;
+      let end = mouseEnteredDay;
       // if mousing over backwards, set end to old start time
       if (mouseEnteredDay < startTime) {
         start = mouseEnteredDay;
@@ -137,7 +135,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
   getIsSelectable(date: Date): boolean {
     const { hoverTimeRange, selectionSet } = this.state;
-    var inHoverTimeRange = false;
+    let inHoverTimeRange = false;
     if (hoverTimeRange) {
       inHoverTimeRange = hoverTimeRange.contains(date);
     }
@@ -157,12 +155,12 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
     return weeks.map((daysInWeek: Date[], row: number) => {
       return <div className="week" key={row}> { daysInWeek.map((dayDate: Date, column: number) => {
-        var isPast = dayDate < monthStart;
-        var isFuture = dayDate >= nextMonthStart;
-        var isBeyondMaxRange = dayDate > maxTime;
-        var isSelectedEdgeStart = datesEqual(dayDate, startTime);
-        var isSelectedEdgeEnd = this.getIsSelectedEdgeEnd(isSingleDate, dayDate);
-        var className = classNames("day", "value",
+        const isPast = dayDate < monthStart;
+        const isFuture = dayDate >= nextMonthStart;
+        const isBeyondMaxRange = dayDate > maxTime;
+        const isSelectedEdgeStart = datesEqual(dayDate, day.floor(startTime, timezone));
+        const isSelectedEdgeEnd = this.getIsSelectedEdgeEnd(isSingleDate, dayDate);
+        const className = classNames("day", "value",
           {
             past: isPast,
             future: isFuture,
@@ -184,7 +182,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
   renderCalendar(startDate: Date, isSingleDate: boolean): JSX.Element[] {
     const { timezone } = this.props;
-    var weeks: Date[][] = monthToWeeks(startDate, timezone, getLocale());
+    const weeks: Date[][] = monthToWeeks(startDate, timezone, getLocale());
     const firstWeek = weeks[0];
     const lastWeek = weeks[weeks.length - 1];
     const countPrepend = 7 - firstWeek.length;
@@ -219,11 +217,11 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     const { activeMonthStartDate, selectionSet } = this.state;
     if (!activeMonthStartDate) return null;
 
-    var isSingleDate = endTime ? getWallTimeDay(startTime, timezone) === getEndWallTimeInclusive(endTime, timezone).date() : true;
+    const isSingleDate = endTime ? getWallTimeDay(startTime, timezone) === getEndWallTimeInclusive(endTime, timezone).date() : true;
     return <div className="date-range-picker">
-      <div className="side-by-side">
-        <DateRangeInput type="start" time={startTime} timezone={timezone} onChange={onStartChange.bind(this)}/>
-        <DateRangeInput type="end" time={endTime} timezone={timezone} onChange={onEndChange.bind(this)} hide={!selectionSet} />
+      <div>
+        <DateRangeInput label="Start" type="start" time={startTime} timezone={timezone} onChange={onStartChange.bind(this)}/>
+        <DateRangeInput label="End" type="end" time={endTime} timezone={timezone} onChange={onEndChange.bind(this)} hide={!selectionSet} />
       </div>
       <div
         className="calendar"
