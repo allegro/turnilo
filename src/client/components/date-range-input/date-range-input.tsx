@@ -20,7 +20,7 @@ import * as React from 'react';
 import { Timezone } from 'chronoshift';
 import * as moment from 'moment';
 import 'moment-timezone';
-import { getWallTimeString, getWallTimeTimeOnlyString, exclusiveToInclusiveEnd } from '../../../common/utils';
+import { getWallTimeDateOnlyString, getWallTimeTimeOnlyString } from '../../../common/utils';
 
 export interface DateRangeInputProps extends React.Props<any> {
   time: Date;
@@ -46,9 +46,6 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     };
   }
 
-  // 2015-09-23T17:42:57.636Z
-  // 2015-09-23 17:42
-
   componentDidMount() {
     const { time, timezone } = this.props;
     this.updateStateFromTime(time, timezone);
@@ -68,51 +65,36 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
       return;
     }
 
-    const effectiveTime = this.props.type === "end" ? exclusiveToInclusiveEnd(time) : time;
-
     this.setState({
-      dateString: getWallTimeString(effectiveTime, timezone),
-      timeString: getWallTimeTimeOnlyString(effectiveTime, timezone)
+      dateString: getWallTimeDateOnlyString(time, timezone),
+      timeString: getWallTimeTimeOnlyString(time, timezone)
     });
   }
 
   dateChange(e: KeyboardEvent) {
-    const dateString = (e.target as HTMLInputElement).value.replace(/[^\d-]/g, '').substr(0, 10);
+    const dateString = (e.target as HTMLInputElement).value.replace(/[^\d-]/g, '');
     this.setState({
-      dateString: dateString
+      dateString
     });
-
-    if (dateString.length === 10) {
-      this.changeDate(dateString, this.state.timeString);
-    }
+    this.changeDate(dateString, this.state.timeString);
   }
 
   timeChange(e: KeyboardEvent) {
-      const timeString = (e.target as HTMLInputElement).value.replace(/[^(\d|:)-]/g, '').substr(0, 10);
-      this.setState({
-          timeString: timeString
-      });
-
-      if (timeString.length === 5) {
-        this.changeDate(this.state.dateString, timeString);
-      }
+    const timeString = (e.target as HTMLInputElement).value.replace(/[^\d:]/g, '');
+    this.setState({
+      timeString
+    });
+    this.changeDate(this.state.dateString, timeString);
   }
 
   changeDate(possibleDateString: string, possibleTimeString: string): void {
-    const { timezone, onChange, type } = this.props;
+    const { timezone, onChange } = this.props;
 
-    // Convert from WallTime to UTC
     const fullDateTimeString = possibleDateString + "T" + possibleTimeString;
     const possibleMoment = moment.tz(fullDateTimeString, timezone.toString());
-
-    if (!possibleMoment.isValid()) {
+    if (possibleMoment && !possibleMoment.isValid()) {
       onChange(null);
     } else {
-      // add one if end so it passes the inclusive formatting
-      if (type === "end") {
-          // possibleMoment.add(1, "day" );
-      }
-
       onChange(possibleMoment.toDate());
     }
   }

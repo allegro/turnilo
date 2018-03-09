@@ -88,6 +88,10 @@ export interface TimeFilterMenuState {
 }
 
 export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFilterMenuState> {
+
+  private static readonly RELATIVE_TAB = 'relative';
+  private static readonly FIXED_TAB = 'fixed';
+
   public mounted: boolean;
 
   constructor() {
@@ -118,7 +122,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
     this.setState({
       timeSelection,
-      tab: (!clause || clause.relative) ? 'relative' : 'specific',
+      tab: (!clause || clause.relative) ? TimeFilterMenu.RELATIVE_TAB : TimeFilterMenu.FIXED_TAB,
       startTime: selectedTimeRange ? selectedTimeRange.start : null,
       endTime: selectedTimeRange ? selectedTimeRange.end : null
     });
@@ -144,7 +148,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     const { filter } = essence;
     const { timezone } = essence;
 
-    if (tab !== 'specific') return null;
+    if (tab !== TimeFilterMenu.FIXED_TAB) return null;
 
     if (startTime && !endTime) {
       endTime = day.shift(startTime, timezone, 1);
@@ -259,12 +263,12 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   actionEnabled() {
     const { essence } = this.props;
     const { tab } = this.state;
-    if (tab !== 'specific') return false;
+    if (tab !== TimeFilterMenu.FIXED_TAB) return false;
     const newFilter = this.constructFilter();
     return newFilter && !essence.filter.equals(newFilter);
   }
 
-  renderSpecificDateRangePicker() {
+  renderDateRangePicker() {
     const { essence, timekeeper, dimension } = this.props;
     const { startTime, endTime } = this.state;
     if (!dimension) return null;
@@ -291,10 +295,10 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     if (!dimension) return null;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
 
-    const tabs = ['relative', 'specific'].map((name) => {
+    const tabs = [TimeFilterMenu.RELATIVE_TAB, TimeFilterMenu.FIXED_TAB].map((name) => {
       return {
         isSelected: tab === name,
-        title: (name === 'relative' ? STRINGS.relative : STRINGS.specific),
+        title: (name === TimeFilterMenu.RELATIVE_TAB ? STRINGS.relative : STRINGS.fixed),
         key: name,
         onClick: this.selectTab.bind(this, name)
       };
@@ -309,7 +313,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       inside={inside}
     >
       <ButtonGroup groupMembers={tabs} />
-      {tab === 'relative' ? this.renderPresetsTimePicker() : this.renderSpecificDateRangePicker()}
+      {tab === TimeFilterMenu.RELATIVE_TAB ? this.renderPresetsTimePicker() : this.renderDateRangePicker()}
     </BubbleMenu>;
   }
 }

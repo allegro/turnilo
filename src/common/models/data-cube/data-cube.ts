@@ -721,7 +721,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     if (refreshRule.isRealtime()) {
       return 'Updated ~1 second ago';
     } else if (refreshRule.isFixed()) {
-      return `Fixed to ${getWallTimeString(refreshRule.time, timezone, true)}`;
+      return `Fixed to ${getWallTimeString(refreshRule.time, timezone)}`;
     } else { // refreshRule is query
       var maxTime = this.getMaxTime(timekeeper);
       if (maxTime) {
