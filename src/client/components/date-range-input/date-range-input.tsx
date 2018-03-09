@@ -20,7 +20,7 @@ import * as React from 'react';
 import { Timezone } from 'chronoshift';
 import * as moment from 'moment';
 import 'moment-timezone';
-import { getWallTimeDateOnlyString, getWallTimeTimeOnlyString } from '../../../common/utils';
+import { getWallTimeDateOnlyString, getWallTimeTimeOnlyString, isFullyDefinedDate, isFullyDefinedTime, combineDateAndTimeIntoMoment } from '../../../common/utils';
 
 export interface DateRangeInputProps extends React.Props<any> {
   time: Date;
@@ -76,7 +76,9 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     this.setState({
       dateString
     });
-    this.changeDate(dateString, this.state.timeString);
+    if (isFullyDefinedDate(dateString)) {
+      this.changeDate(dateString, this.state.timeString);
+    }
   }
 
   timeChange(e: KeyboardEvent) {
@@ -84,17 +86,16 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     this.setState({
       timeString
     });
-    this.changeDate(this.state.dateString, timeString);
+    if (isFullyDefinedTime(timeString)) {
+      this.changeDate(this.state.dateString, timeString);
+    }
   }
 
   changeDate(possibleDateString: string, possibleTimeString: string): void {
     const { timezone, onChange } = this.props;
 
-    const fullDateTimeString = possibleDateString + "T" + possibleTimeString;
-    const possibleMoment = moment.tz(fullDateTimeString, timezone.toString());
-    if (possibleMoment && !possibleMoment.isValid()) {
-      onChange(null);
-    } else {
+    const possibleMoment = combineDateAndTimeIntoMoment(possibleDateString, possibleTimeString, timezone);
+    if (possibleMoment && possibleMoment.isValid()) {
       onChange(possibleMoment.toDate());
     }
   }

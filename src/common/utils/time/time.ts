@@ -169,7 +169,7 @@ export function getWallTimeString(date: Date, timezone: Timezone): string {
   return wallTimeISOString.replace('T', ', ');
 }
 
-export function getWallTimeDateOnlyString(date: Date, timezone: Timezone, includeTime?: boolean, delimiter?: string): string {
+export function getWallTimeDateOnlyString(date: Date, timezone: Timezone): string {
   return moment.tz(date, timezone.toString()).format(FORMAT_DATE);
 }
 
@@ -218,4 +218,17 @@ export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Dura
 
 export function formatGranularity(granularity: string): string {
   return granularity.replace(/^PT?/, '');
+}
+
+export function isFullyDefinedDate(date: string): boolean {
+  return date.length === FORMAT_DATE.length;
+}
+
+export function isFullyDefinedTime(time: string): boolean {
+  return time.length === FORMAT_TIME.length;
+}
+
+export function combineDateAndTimeIntoMoment(date: string, time: string, timezone: Timezone): moment.Moment {
+  const fullDateTimeString = date + "T" + time;
+  return moment.tz(fullDateTimeString, timezone.toString());
 }
