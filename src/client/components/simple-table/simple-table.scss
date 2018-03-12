@@ -33,8 +33,10 @@
       height: 100%;
       background-color: $white;
 
+      // sass-lint:disable no-empty-rulesets
       .header {
       }
+      // sass-lint:enable no-empty-rulesets
 
       > * {
         display: inline-block;

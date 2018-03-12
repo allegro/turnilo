@@ -29,10 +29,12 @@
   //transition-property: all;
   //transition-duration: $duration;
 
+  // sass-lint:disable no-empty-rulesets
   &.active,
   &:active {
     //transition-duration: 0s;
   }
+  // sass-lint:enable no-empty-rulesets
 
   &.disabled,
   &[disabled] {
