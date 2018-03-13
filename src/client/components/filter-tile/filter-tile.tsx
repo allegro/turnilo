@@ -20,7 +20,7 @@ import './filter-tile.scss';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Q from 'q';
-import { Timezone, Duration, hour, day, week } from 'chronoshift';
+import { Timezone } from 'chronoshift';
 import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
 import { Stage, Clicker, Essence, Timekeeper, Filter, FilterClause, Dimension, DragPosition } from '../../../common/models/index';
 import { getFormattedClause } from '../../../common/utils/formatter/formatter';
@@ -432,7 +432,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   renderItemLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): JSX.Element {
-    var { title, values } = getFormattedClause(dimension, clause, timezone);
+    const { title, values } = getFormattedClause(dimension, clause, timezone);
 
     return <div className="reading">
       {title ? <span className="dimension-title">{title}</span> : null}
@@ -441,7 +441,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   renderItemBlank(itemBlank: ItemBlank, style: any): JSX.Element {
-    var { essence, timekeeper, clicker } = this.props;
+    var { essence: { timezone }, clicker } = this.props;
     var { menuDimension } = this.state;
 
     var { dimension, clause, source } = itemBlank;
@@ -455,9 +455,6 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       dimension === menuDimension ? 'selected' : undefined
     ].filter(Boolean).join(' ');
 
-    var evaluatedClause = dimension.kind === 'time' && clause ? essence.evaluateClause(clause, timekeeper) : clause;
-    var timezone = essence.timezone;
-
     if (source === 'from-highlight') {
       return <div
         className={className}
@@ -466,7 +463,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onClick={clicker.acceptHighlight.bind(clicker)}
         style={style}
       >
-        {this.renderItemLabel(dimension, evaluatedClause, timezone)}
+        {this.renderItemLabel(dimension, clause, timezone)}
         {this.renderRemoveButton(itemBlank)}
       </div>;
     }
@@ -481,7 +478,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         onDragStart={this.dragStart.bind(this, dimension, clause)}
         style={style}
       >
-        {this.renderItemLabel(dimension, evaluatedClause, timezone)}
+        {this.renderItemLabel(dimension, clause, timezone)}
         {this.renderRemoveButton(itemBlank)}
       </div>;
     } else {
