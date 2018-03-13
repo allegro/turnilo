@@ -72,10 +72,12 @@
           right: 0;
         }
 
+        // sass-lint:disable no-empty-rulesets
         &.disabled {
           //pointer-events: none;
           //opacity: 0.4;
         }
+        // sass-lint:enable no-empty-rulesets
       }
     }
 
