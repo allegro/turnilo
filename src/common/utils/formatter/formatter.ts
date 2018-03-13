@@ -21,7 +21,7 @@ import * as numeral from 'numeral';
 import { $, LiteralExpression, NumberRange, TimeBucketExpression, TimeRange, TimeRangeExpression } from 'plywood';
 import { STRINGS } from "../../../client/config/constants";
 
-import { Dimension, Filter, FilterClause } from '../../models/index';
+import { Dimension, Filter, FilterClause } from '../../models';
 import { DisplayYear, formatTimeRange } from '../../utils/time/time';
 
 export interface Formatter {
