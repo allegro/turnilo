@@ -20,7 +20,8 @@ import './dimension-tile.scss';
 import * as React from 'react';
 import {
   $,
-  Dataset, Datum,
+  Dataset,
+  Datum,
   Expression,
   NumberRange,
   r,
@@ -78,8 +79,6 @@ import { HighlightString } from '../highlight-string/highlight-string';
 import { SearchableTile, TileAction } from '../searchable-tile/searchable-tile';
 import { TileHeaderIcon } from "../tile-header/tile-header";
 
-const TOP_N = 100;
-const FOLDER_BOX_HEIGHT = 30;
 
 export interface DimensionTileProps extends React.Props<any> {
   clicker: Clicker;
@@ -106,6 +105,10 @@ export interface DimensionTileState {
 }
 
 export class DimensionTile extends React.Component<DimensionTileProps, DimensionTileState> {
+
+  private static readonly TOP_N = 100;
+  private static readonly FOLDER_BOX_HEIGHT = 30;
+
   public mounted: boolean;
   public collectTriggerSearch: Fn;
 
@@ -133,7 +136,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Granularity): void {
-    const { searchText } = this.state;
+    const { searchText, foldable } = this.state;
     const { dataCube, colors } = essence;
 
     let filter = essence.getEffectiveFilter(timekeeper);
@@ -145,6 +148,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     filter = filter.setExclusionforDimension(false, dimension);
 
     let filterExpression = filter.toExpression();
+
+    const shouldFoldRows = !unfolded && foldable && colors && colors.dimension === dimension.name && colors.values;
+
+    if (shouldFoldRows) {
+      filterExpression = filterExpression.and(dimension.expression.in(colors.toSet()));
+    }
 
     if (searchText) {
       filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), 'ignoreCase'));
@@ -183,7 +192,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       query = query.performAction(sortOn.measure.toApplyExpression());
     }
 
-    query = query.sort(sortExpression, SortExpression.DESCENDING).limit(TOP_N + 1);
+    query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);
 
     this.setState({
       loading: true,
@@ -391,7 +400,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (searchText === newSearchText) return; // nothing to do;
 
     // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
-    if (newSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
+    if (newSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < DimensionTile.TOP_N) {
       this.setState({
         searchText: newSearchText
       });
@@ -446,7 +455,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const filterSet = essence.filter.getLiteralSet(dimension.expression);
 
     if (dataset) {
-      let rowData = dataset.data.slice(0, TOP_N);
+      let rowData = dataset.data.slice(0, DimensionTile.TOP_N);
 
       if (!unfolded) {
         if (filterSet) {
@@ -467,10 +476,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
   }
 
-  private prepareColorsValues(colors: Colors, dimension: Dimension, rowData: Datum[]): string[] {
-    let colorValues: string[] = null;
-    if (colors) colorValues = colors.getColors(rowData.map(d => d[dimension.name]));
-    return colorValues;
+  private prepareColorValues(colors: Colors, dimension: Dimension, rowData: Datum[]): string[] {
+    if (colors) {
+      return colors.getColors(rowData.map(d => d[dimension.name]));
+    } else {
+      return null;
+    }
   }
 
   private prepareRows(rowData: Datum[], continuous: boolean): Array<JSX.Element> {
@@ -480,13 +491,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const measure = sortOn.measure;
     const measureName = measure ? measure.name : null;
     const formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.getFormat()) : null;
-    const colorValues = this.prepareColorsValues(colors, dimension, rowData);
+    const colorValues = this.prepareColorValues(colors, dimension, rowData);
     const filterSet = essence.filter.getLiteralSet(dimension.expression);
-    const excluded = filterMode === Filter.EXCLUDED;
+    const isExcluded = filterMode === Filter.EXCLUDED;
 
     return rowData.map((datum, i) => {
       const segmentValue = datum[dimension.name];
-      let segmentValueStr = String(segmentValue);
 
       let className = 'row';
       let checkbox: JSX.Element = null;
@@ -501,11 +511,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         }
         checkbox = <Checkbox
           selected={selected}
-          type={excluded ? 'cross' : 'check'}
+          type={isExcluded ? 'cross' : 'check'}
           color={colorValues ? colorValues[i] : null}
         />;
       }
 
+      let segmentValueStr = String(segmentValue);
       if (segmentValue instanceof TimeRange) {
         segmentValueStr = formatTimeBasedOnGranularity(segmentValue, (selectedGranularity as TimeBucketExpression).duration, essence.timezone, getLocale());
       } else if (segmentValue instanceof NumberRange) {
@@ -517,7 +528,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         measureValueElement = <div className="measure-value">{formatter(datum[measureName] as number)}</div>;
       }
 
-      const row = <div
+      return <div
         className={className}
         key={segmentValueStr}
         onClick={this.onRowClick.bind(this, segmentValue)}
@@ -528,11 +539,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         </div>
         {measureValueElement}
       </div>;
-      return row;
     });
   }
 
-  private prepareFolder(isFoldable: boolean, unfolded: boolean): JSX.Element {
+  private prepareFoldControl(isFoldable: boolean, unfolded: boolean): JSX.Element {
     if (isFoldable) {
       return <div
         className={classNames('folder', unfolded ? 'folded' : 'unfolded')}
@@ -551,7 +561,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const rowsHeightWithPaddingAndTitle = Math.max(2, rowsCount) * PIN_ITEM_HEIGHT + titleAndPaddingHeight;
 
     if (isFoldable) {
-      return rowsHeightWithPaddingAndTitle + FOLDER_BOX_HEIGHT;
+      return rowsHeightWithPaddingAndTitle +  DimensionTile.FOLDER_BOX_HEIGHT;
     } else {
       return rowsHeightWithPaddingAndTitle;
     }
@@ -561,10 +571,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { essence, dimension, colors, onClose } = this.props;
     const { loading, dataset, error, showSearch, unfolded, foldable, fetchQueued, searchText, filterMode } = this.state;
 
-    const continuous = dimension.isContinuous();
-    const rowData = this.prepareRowsData();
-    const rows = this.prepareRows(rowData, continuous);
-    const folder = this.prepareFolder(foldable, unfolded);
+    const isContinuous = dimension.isContinuous();
+    const rowsData = this.prepareRowsData();
+    const rows = this.prepareRows(rowsData, isContinuous);
+    const foldControl = this.prepareFoldControl(foldable, unfolded);
 
     let message: JSX.Element = null;
     if (!loading && dataset && !fetchQueued && searchText && !rows.length) {
@@ -574,9 +584,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const className = classNames(
       'dimension-tile',
       filterMode,
-      (folder ? 'has-folder' : 'no-folder'),
+      (foldControl ? 'has-folder' : 'no-folder'),
       (colors ? 'has-colors' : 'no-colors'),
-      { continuous }
+      { continuous: isContinuous }
     );
 
     const maxHeight = this.calculateTileHeight(rows.length, foldable);
@@ -605,7 +615,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     if (dimension.canBucketByDefault()) {
       actions = this.getGranularityActions();
-    } else if (!continuous && !essence.colors) {
+    } else if (!isContinuous && !essence.colors) {
       actions = this.getFilterActions();
     }
 
@@ -625,7 +635,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         {rows}
         {message}
       </div>
-      {folder}
+      {foldControl}
       {error ? <QueryError error={error} /> : null}
       {loading ? <Loader /> : null}
     </SearchableTile>;
