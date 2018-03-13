@@ -17,7 +17,7 @@
 import { $, r, RefExpression, TimeRange } from "plywood";
 import { FilterClause } from "../../models/filter-clause/filter-clause";
 
-export class FormatterMock {
+export class FormatterFixtures {
 
   static fixedTimeFilter(start: Date, end: Date) {
     return new FilterClause({

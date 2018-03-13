@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Timezone } from 'chronoshift';
+import { Duration, Timezone } from 'chronoshift';
 import * as numeral from 'numeral';
 
 import { $, LiteralExpression, NumberRange, TimeBucketExpression, TimeRange, TimeRangeExpression } from 'plywood';
@@ -141,7 +141,7 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
 
       break;
     case 'time':
-      values = getFormattedTimeClause(clause, timezone);
+      values = getFormattedTimeClauseValues(clause, timezone);
       break;
     default:
       throw new Error(`unknown kind ${dimKind}`);
@@ -150,68 +150,56 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
   return { title: getClauseLabel(), values };
 }
 
-export function getFormattedTimeClause(clause: FilterClause, timezone: Timezone): string {
-  let values;
+function getFormattedTimeClauseValues(clause: FilterClause, timezone: Timezone): string {
+  const { relative, selection } = clause;
 
-  if (clause.relative) {
-    values = getRelativeTimeLabel(clause);
+  if (relative && selection instanceof TimeRangeExpression) {
+    return getRelativeLatestOrPreviousLabel(selection);
+  } else if (relative && selection instanceof TimeBucketExpression) {
+    return getRelativeCurrentLabel(selection);
+  } else if (selection instanceof LiteralExpression && selection.value instanceof TimeRange) {
+    return formatTimeRange(selection.value, timezone, DisplayYear.IF_DIFF);
   } else {
-    values = getFixedTimeRangeLabel(clause, timezone);
-  }
-
-  return values;
-}
-
-function getRelativeTimeLabel(clause: FilterClause): string {
-  const { selection } = clause;
-
-  if (selection instanceof TimeRangeExpression) {
-    return getRelativeTimeRangeLabel(selection);
-  } else if (selection instanceof TimeBucketExpression) {
-    return getRelativeTimeBucketLabel(selection);
-  } else {
-    throw Error(`unsupported relative time filter clause: ${clause.selection}`);
+    throw Error(`unsupported time filter clause: ${clause.selection}`);
   }
 }
 
-function getRelativeTimeRangeLabel(expression: TimeRangeExpression): string {
+const $now = $(FilterClause.NOW_REF_NAME);
+const $max = $(FilterClause.MAX_TIME_REF_NAME);
+
+function getRelativeLatestOrPreviousLabel(expression: TimeRangeExpression): string {
+  const { duration, step } = expression;
+  const durationDescription = normalizeDurationDescription(expression.getQualifiedDurationDescription(), duration);
+
+  const isEarlierTimeRange = step < 0;
+  const isPreviousTimeRange = step === -1;
+
   const op = expression.getHeadOperand();
-  let durationDescription = expression.getQualifiedDurationDescription();
-  if (expression.duration.toString() === 'P3M') {
-    durationDescription = "quarter";
-  }
-
-  if (op.equals($(FilterClause.MAX_TIME_REF_NAME)) && expression.step < 0) {
+  if (op.equals($max) && isEarlierTimeRange) {
     return `${STRINGS.latest} ${durationDescription}`;
-  } else if (op.equals($(FilterClause.NOW_REF_NAME)) && expression.step === -1) {
+  } else if (op.equals($now) && isPreviousTimeRange) {
     return `${STRINGS.previous} ${durationDescription}`;
   } else {
     throw Error(`unsupported relative time filter expression: ${expression}`);
   }
 }
 
-function getRelativeTimeBucketLabel(expression: TimeBucketExpression): string {
-  const op = expression.getHeadOperand();
-  let durationDescription = expression.duration.getDescription();
-  if (expression.duration.toString() === 'P3M') {
-    durationDescription = "quarter";
-  }
+function getRelativeCurrentLabel(expression: TimeBucketExpression): string {
+  const { duration } = expression;
+  const durationDescription = normalizeDurationDescription(duration.getDescription(), duration);
 
-  if (op.equals($(FilterClause.NOW_REF_NAME))) {
+  const op = expression.getHeadOperand();
+  if (op.equals($now)) {
     return `${STRINGS.current} ${durationDescription}`;
   } else {
     throw Error(`unsupported relative time filter expression: ${expression}`);
   }
 }
 
-function getFixedTimeRangeLabel(clause: FilterClause, timezone: Timezone): string {
-  let values;
-  const selection = (clause.selection as LiteralExpression);
-  if (selection.type === 'TIME_RANGE') {
-    const timeRange = selection.value as TimeRange;
-    values = formatTimeRange(timeRange, timezone, DisplayYear.IF_DIFF);
-  } else if (selection.type === "SET/TIME") {
-    values = clause.getLiteralSet().toString();
+function normalizeDurationDescription(description: string, duration: Duration) {
+  if (duration.toString() === 'P3M') {
+    return STRINGS.quarter.toLowerCase();
+  } else {
+    return description;
   }
-  return values;
 }
