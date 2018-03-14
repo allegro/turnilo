@@ -21,6 +21,7 @@ import * as React from 'react';
 import {
   $,
   Dataset,
+  Datum,
   Expression,
   NumberRange,
   r,
@@ -78,8 +79,6 @@ import { HighlightString } from '../highlight-string/highlight-string';
 import { SearchableTile, TileAction } from '../searchable-tile/searchable-tile';
 import { TileHeaderIcon } from "../tile-header/tile-header";
 
-const TOP_N = 100;
-const FOLDER_BOX_HEIGHT = 30;
 
 export interface DimensionTileProps extends React.Props<any> {
   clicker: Clicker;
@@ -106,6 +105,10 @@ export interface DimensionTileState {
 }
 
 export class DimensionTile extends React.Component<DimensionTileProps, DimensionTileState> {
+
+  private static readonly TOP_N = 100;
+  private static readonly FOLDER_BOX_HEIGHT = 30;
+
   public mounted: boolean;
   public collectTriggerSearch: Fn;
 
@@ -133,7 +136,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Granularity): void {
-    const { searchText } = this.state;
+    const { searchText, foldable } = this.state;
     const { dataCube, colors } = essence;
 
     let filter = essence.getEffectiveFilter(timekeeper);
@@ -146,7 +149,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     let filterExpression = filter.toExpression();
 
-    if (!unfolded && colors && colors.dimension === dimension.name && colors.values) {
+    const shouldFoldRows = !unfolded && foldable && colors && colors.dimension === dimension.name && colors.values;
+
+    if (shouldFoldRows) {
       filterExpression = filterExpression.and(dimension.expression.in(colors.toSet()));
     }
 
@@ -187,7 +192,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       query = query.performAction(sortOn.measure.toApplyExpression());
     }
 
-    query = query.sort(sortExpression, SortExpression.DESCENDING).limit(TOP_N + 1);
+    query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);
 
     this.setState({
       loading: true,
@@ -311,13 +316,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         colors = Colors.fromValues(colors.dimension, values);
       }
       colors = colors.toggle(value);
-      if (filter.filteredOn(dimension.expression)) {
-        filter = filter.toggleValue(dimension.expression, value);
-        clicker.changeFilter(filter, colors);
-      } else {
-        clicker.changeColors(colors);
-      }
-
+      clicker.changeColors(colors);
     } else {
       if (e.altKey || e.ctrlKey || e.metaKey) {
         let filteredOnMe = filter.filteredOnValue(dimension.expression, value);
@@ -354,8 +353,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { filterMode } = this.state;
 
     if (!essence || !dimension) return null;
-
-    const filter: Filter = essence.filter;
 
     const options: FilterMode[] = [Filter.INCLUDED, Filter.EXCLUDED];
 
@@ -403,7 +400,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (searchText === newSearchText) return; // nothing to do;
 
     // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
-    if (newSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
+    if (newSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < DimensionTile.TOP_N) {
       this.setState({
         searchText: newSearchText
       });
@@ -451,38 +448,18 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     });
   }
 
-  render() {
-    const { clicker, essence, dimension, sortOn, colors, onClose } = this.props;
-    const { loading, dataset, error, showSearch, unfolded, foldable, fetchQueued, searchText, selectedGranularity, filterMode } = this.state;
+  private prepareRowsData(): Datum[] {
+    const { essence, dimension } = this.props;
+    const { dataset, unfolded, searchText } = this.state;
 
-    const measure = sortOn.measure;
-    const measureName = measure ? measure.name : null;
     const filterSet = essence.filter.getLiteralSet(dimension.expression);
-    const continuous = dimension.isContinuous();
-    const excluded = filterMode === Filter.EXCLUDED;
 
-    let maxHeight = PIN_TITLE_HEIGHT;
-
-    let rows: Array<JSX.Element> = [];
-    let folder: JSX.Element = null;
-    let highlightControls: JSX.Element = null;
-    let hasMore = false;
     if (dataset) {
-      hasMore = dataset.data.length > TOP_N;
-      let rowData = dataset.data.slice(0, TOP_N);
+      let rowData = dataset.data.slice(0, DimensionTile.TOP_N);
 
       if (!unfolded) {
         if (filterSet) {
           rowData = rowData.filter((d) => filterSet.contains(d[dimension.name]));
-        }
-
-        if (colors) {
-          if (colors.values) {
-            const colorsSet = colors.toSet();
-            rowData = rowData.filter((d) => colorsSet.contains(d[dimension.name]));
-          } else {
-            rowData = rowData.slice(0, colors.limit);
-          }
         }
       }
 
@@ -493,73 +470,111 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         });
       }
 
-      let colorValues: string[] = null;
-      if (colors) colorValues = colors.getColors(rowData.map(d => d[dimension.name]));
-
-      const formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.getFormat()) : null;
-      rows = rowData.map((d, i) => {
-        const segmentValue = d[dimension.name];
-        let segmentValueStr = String(segmentValue);
-
-        let className = 'row';
-        let checkbox: JSX.Element = null;
-        let selected = false;
-        if ((filterSet || colors) && !continuous) {
-          if (colors) {
-            selected = false;
-            className += ' color';
-          } else {
-            selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
-            className += ' ' + (selected ? 'selected' : 'not-selected');
-          }
-          checkbox = <Checkbox
-            selected={selected}
-            type={excluded ? 'cross' : 'check'}
-            color={colorValues ? colorValues[i] : null}
-          />;
-        }
-
-        if (segmentValue instanceof TimeRange) {
-          segmentValueStr = formatTimeBasedOnGranularity(segmentValue, (selectedGranularity as TimeBucketExpression).duration, essence.timezone, getLocale());
-        } else if (segmentValue instanceof NumberRange) {
-          segmentValueStr = formatNumberRange(segmentValue);
-        }
-
-        let measureValueElement: JSX.Element = null;
-        if (measure) {
-          measureValueElement = <div className="measure-value">{formatter(d[measureName] as number)}</div>;
-        }
-
-        const row = <div
-          className={className}
-          key={segmentValueStr}
-          onClick={this.onRowClick.bind(this, segmentValue)}
-        >
-          <div className="segment-value" title={segmentValueStr}>
-            {checkbox}
-            <HighlightString className="label" text={segmentValueStr} highlight={searchText} />
-          </div>
-          {measureValueElement}
-          {selected ? highlightControls : null}
-        </div>;
-        if (selected && highlightControls) highlightControls = null; // place only once
-        return row;
-      });
-      maxHeight += Math.max(2, rows.length) * PIN_ITEM_HEIGHT;
-
-      if (foldable) {
-        folder = <div
-          className={classNames('folder', unfolded ? 'folded' : 'unfolded')}
-          onClick={this.toggleFold.bind(this)}
-        >
-          <SvgIcon svg={require('../../icons/caret.svg')} />
-          {unfolded ? 'Show selection' : 'Show all'}
-        </div>;
-        maxHeight += FOLDER_BOX_HEIGHT;
-      }
+      return rowData;
+    } else {
+      return [];
     }
+  }
 
-    maxHeight += PIN_PADDING_BOTTOM;
+  private prepareColorValues(colors: Colors, dimension: Dimension, rowData: Datum[]): string[] {
+    if (colors) {
+      return colors.getColors(rowData.map(d => d[dimension.name]));
+    } else {
+      return null;
+    }
+  }
+
+  private prepareRows(rowData: Datum[], continuous: boolean): Array<JSX.Element> {
+    const { essence, dimension, sortOn, colors } = this.props;
+    const { searchText, selectedGranularity, filterMode } = this.state;
+
+    const measure = sortOn.measure;
+    const measureName = measure ? measure.name : null;
+    const formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.getFormat()) : null;
+    const colorValues = this.prepareColorValues(colors, dimension, rowData);
+    const filterSet = essence.filter.getLiteralSet(dimension.expression);
+    const isExcluded = filterMode === Filter.EXCLUDED;
+
+    return rowData.map((datum, i) => {
+      const segmentValue = datum[dimension.name];
+
+      let className = 'row';
+      let checkbox: JSX.Element = null;
+      let selected = false;
+      if ((filterSet || colors) && !continuous) {
+        if (colors) {
+          selected = false;
+          className += ' color';
+        } else {
+          selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
+          className += ' ' + (selected ? 'selected' : 'not-selected');
+        }
+        checkbox = <Checkbox
+          selected={selected}
+          type={isExcluded ? 'cross' : 'check'}
+          color={colorValues ? colorValues[i] : null}
+        />;
+      }
+
+      let segmentValueStr = String(segmentValue);
+      if (segmentValue instanceof TimeRange) {
+        segmentValueStr = formatTimeBasedOnGranularity(segmentValue, (selectedGranularity as TimeBucketExpression).duration, essence.timezone, getLocale());
+      } else if (segmentValue instanceof NumberRange) {
+        segmentValueStr = formatNumberRange(segmentValue);
+      }
+
+      let measureValueElement: JSX.Element = null;
+      if (measure) {
+        measureValueElement = <div className="measure-value">{formatter(datum[measureName] as number)}</div>;
+      }
+
+      return <div
+        className={className}
+        key={segmentValueStr}
+        onClick={this.onRowClick.bind(this, segmentValue)}
+      >
+        <div className="segment-value" title={segmentValueStr}>
+          {checkbox}
+          <HighlightString className="label" text={segmentValueStr} highlight={searchText}/>
+        </div>
+        {measureValueElement}
+      </div>;
+    });
+  }
+
+  private prepareFoldControl(isFoldable: boolean, unfolded: boolean): JSX.Element {
+    if (isFoldable) {
+      return <div
+        className={classNames('folder', unfolded ? 'folded' : 'unfolded')}
+        onClick={this.toggleFold.bind(this)}
+      >
+        <SvgIcon svg={require('../../icons/caret.svg')} />
+        {unfolded ? 'Show selection' : 'Show all'}
+      </div>;
+    } else {
+      return null;
+    }
+  }
+
+  private calculateTileHeight(rowsCount: int, isFoldable: boolean): number {
+    const titleAndPaddingHeight = PIN_TITLE_HEIGHT + PIN_PADDING_BOTTOM;
+    const rowsHeightWithPaddingAndTitle = Math.max(2, rowsCount) * PIN_ITEM_HEIGHT + titleAndPaddingHeight;
+
+    if (isFoldable) {
+      return rowsHeightWithPaddingAndTitle +  DimensionTile.FOLDER_BOX_HEIGHT;
+    } else {
+      return rowsHeightWithPaddingAndTitle;
+    }
+  }
+
+  render() {
+    const { essence, dimension, colors, onClose } = this.props;
+    const { loading, dataset, error, showSearch, unfolded, foldable, fetchQueued, searchText, filterMode } = this.state;
+
+    const isContinuous = dimension.isContinuous();
+    const rowsData = this.prepareRowsData();
+    const rows = this.prepareRows(rowsData, isContinuous);
+    const foldControl = this.prepareFoldControl(foldable, unfolded);
 
     let message: JSX.Element = null;
     if (!loading && dataset && !fetchQueued && searchText && !rows.length) {
@@ -569,11 +584,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const className = classNames(
       'dimension-tile',
       filterMode,
-      (folder ? 'has-folder' : 'no-folder'),
+      (foldControl ? 'has-folder' : 'no-folder'),
       (colors ? 'has-colors' : 'no-colors'),
-      { continuous }
+      { continuous: isContinuous }
     );
 
+    const maxHeight = this.calculateTileHeight(rows.length, foldable);
     const style = {
       maxHeight
     };
@@ -599,7 +615,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     if (dimension.canBucketByDefault()) {
       actions = this.getGranularityActions();
-    } else if (!continuous && !essence.colors) {
+    } else if (!isContinuous && !essence.colors) {
       actions = this.getFilterActions();
     }
 
@@ -619,7 +635,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
         {rows}
         {message}
       </div>
-      {folder}
+      {foldControl}
       {error ? <QueryError error={error} /> : null}
       {loading ? <Loader /> : null}
     </SearchableTile>;
