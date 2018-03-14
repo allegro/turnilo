@@ -21,7 +21,7 @@ import * as numeral from 'numeral';
 import { $, LiteralExpression, NumberRange, TimeBucketExpression, TimeRange, TimeRangeExpression } from 'plywood';
 import { STRINGS } from "../../../client/config/constants";
 
-import { Dimension, Filter, FilterClause } from '../../models';
+import { Dimension, Filter, FilterClause, FilterSelection } from '../../models';
 import { DisplayYear, formatTimeRange } from '../../utils/time/time';
 
 export interface Formatter {
@@ -150,13 +150,18 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
   return { title: getClauseLabel(), values };
 }
 
+const $now = $(FilterClause.NOW_REF_NAME);
+const $max = $(FilterClause.MAX_TIME_REF_NAME);
+
 function getFormattedTimeClauseValues(clause: FilterClause, timezone: Timezone): string {
   const { relative, selection } = clause;
 
-  if (relative && selection instanceof TimeRangeExpression) {
-    return getRelativeLatestOrPreviousLabel(selection);
-  } else if (relative && selection instanceof TimeBucketExpression) {
-    return getRelativeCurrentLabel(selection);
+  if (isLatestDuration(relative, selection)) {
+    return `${STRINGS.latest} ${getQualifiedDurationDescription(selection)}`;
+  } else if (isPreviousDuration(relative, selection)) {
+    return `${STRINGS.previous} ${getQualifiedDurationDescription(selection)}`;
+  } else if (isCurrentDuration(relative, selection)) {
+    return `${STRINGS.current} ${getDurationDescription(selection)}`;
   } else if (selection instanceof LiteralExpression && selection.value instanceof TimeRange) {
     return formatTimeRange(selection.value, timezone, DisplayYear.IF_DIFF);
   } else {
@@ -164,36 +169,41 @@ function getFormattedTimeClauseValues(clause: FilterClause, timezone: Timezone):
   }
 }
 
-const $now = $(FilterClause.NOW_REF_NAME);
-const $max = $(FilterClause.MAX_TIME_REF_NAME);
-
-function getRelativeLatestOrPreviousLabel(expression: TimeRangeExpression): string {
-  const { duration, step } = expression;
-  const durationDescription = normalizeDurationDescription(expression.getQualifiedDurationDescription(), duration);
-
-  const isEarlierTimeRange = step < 0;
-  const isPreviousTimeRange = step === -1;
-
-  const op = expression.getHeadOperand();
-  if (op.equals($max) && isEarlierTimeRange) {
-    return `${STRINGS.latest} ${durationDescription}`;
-  } else if (op.equals($now) && isPreviousTimeRange) {
-    return `${STRINGS.previous} ${durationDescription}`;
-  } else {
-    throw Error(`unsupported relative time filter expression: ${expression}`);
+function isLatestDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
+  function isEarlierTimeRange(selection: TimeRangeExpression) {
+    return selection.step < 0;
   }
+
+  return isRelative
+    && selection instanceof TimeRangeExpression
+    && selection.getHeadOperand().equals($max)
+    && isEarlierTimeRange(selection);
 }
 
-function getRelativeCurrentLabel(expression: TimeBucketExpression): string {
-  const { duration } = expression;
-  const durationDescription = normalizeDurationDescription(duration.getDescription(), duration);
+function isCurrentDuration(isRelative: boolean, selection: FilterSelection): selection is TimeBucketExpression {
+  return isRelative
+    && selection instanceof TimeBucketExpression
+    && selection.getHeadOperand().equals($now);
+}
 
-  const op = expression.getHeadOperand();
-  if (op.equals($now)) {
-    return `${STRINGS.current} ${durationDescription}`;
-  } else {
-    throw Error(`unsupported relative time filter expression: ${expression}`);
+function isPreviousDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
+  function isPreviousTimeRange(selection: TimeRangeExpression) {
+    return selection.step === -1;
   }
+
+  return isRelative
+    && selection instanceof TimeRangeExpression
+    && selection.getHeadOperand().equals($now)
+    && isPreviousTimeRange(selection);
+}
+
+function getQualifiedDurationDescription(selection: TimeRangeExpression) {
+  return normalizeDurationDescription(selection.getQualifiedDurationDescription(), selection.duration);
+}
+
+function getDurationDescription(selection: TimeBucketExpression) {
+  const { duration } = selection;
+  return normalizeDurationDescription(duration.getDescription(), duration);
 }
 
 function normalizeDurationDescription(description: string, duration: Duration) {
