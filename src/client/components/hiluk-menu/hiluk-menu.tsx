@@ -25,7 +25,6 @@ import { exportOptions , STRINGS } from '../../config/constants';
 import { download, FileFormat, makeFileName } from '../../utils/download/download';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
 
-
 export interface HilukMenuProps extends React.Props<any> {
   essence: Essence;
   timekeeper: Timekeeper;
@@ -33,6 +32,7 @@ export interface HilukMenuProps extends React.Props<any> {
   onClose: Fn;
   getUrlPrefix: () => string;
   openRawDataModal: Fn;
+  openViewDefinitionModal: Fn;
   externalViews?: ExternalView[];
   getDownloadableDataset?: () => Dataset;
   addEssenceToCollection?: () => void;
@@ -54,11 +54,11 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
   }
 
   componentDidMount() {
-    var { essence, timekeeper, getUrlPrefix } = this.props;
+    const { essence, timekeeper, getUrlPrefix } = this.props;
 
-    var urlPrefix = getUrlPrefix();
-    var url = essence.getURL(urlPrefix);
-    var specificUrl = essence.filter.isRelative() ? essence.convertToSpecificFilter(timekeeper).getURL(urlPrefix) : null;
+    const urlPrefix = getUrlPrefix();
+    const url = essence.getURL(urlPrefix);
+    const specificUrl = essence.filter.isRelative() ? essence.convertToSpecificFilter(timekeeper).getURL(urlPrefix) : null;
 
     this.setState({
       url,
@@ -72,14 +72,20 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     onClose();
   }
 
+  openViewDefinitionModal() {
+    const { openViewDefinitionModal, onClose } = this.props;
+    openViewDefinitionModal();
+    onClose();
+  }
+
   onExport(fileFormat: FileFormat) {
     const { onClose, getDownloadableDataset, essence, timekeeper } = this.props;
     const { dataCube, splits } = essence;
     if (!getDownloadableDataset) return;
 
     const filters = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
-    var splitsString = splits.toArray().map((split) => {
-      var dimension = split.getDimension(dataCube.dimensions);
+    const splitsString = splits.toArray().map((split) => {
+      let dimension = split.getDimension(dataCube.dimensions);
       if (!dimension) return '';
       return `${STRINGS.splitDelimiter}_${dimension.name}`;
     }).join("_");
@@ -92,30 +98,27 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     const { openOn, onClose, externalViews, essence, getDownloadableDataset, addEssenceToCollection } = this.props;
     const { url, specificUrl } = this.state;
 
-    var shareOptions: JSX.Element[] = [];
+    const shareOptions: JSX.Element[] = [];
 
     if (addEssenceToCollection) {
       shareOptions.push(<li
         key="add-to-collection"
         className="add-to-collection"
-        onClick={addEssenceToCollection}
-      >{STRINGS.addToCollection}</li>);
+        onClick={addEssenceToCollection}>{STRINGS.addToCollection}</li>);
     }
 
     shareOptions.push(<li
       className="copy-url clipboard"
       key="copy-url"
       data-clipboard-text={url}
-      onClick={onClose}
-    >{STRINGS.copyUrl}</li>);
+      onClick={onClose}>{STRINGS.copyUrl}</li>);
 
     if (specificUrl) {
       shareOptions.push(<li
         className="copy-specific-url clipboard"
         key="copy-specific-url"
         data-clipboard-text={specificUrl}
-        onClick={onClose}
-      >{STRINGS.copySpecificUrl}</li>);
+        onClick={onClose}>{STRINGS.copySpecificUrl}</li>);
     }
 
     if (getDownloadableDataset()) {
@@ -123,30 +126,32 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
         shareOptions.push(<li
           className="export"
           key="export"
-          onClick={this.onExport.bind(this, fileFormat)}
-        >{label}</li>);
+          onClick={this.onExport.bind(this, fileFormat)}>{label}</li>);
       });
     }
 
     shareOptions.push(<li
-      className="view-raw-data"
       key="view-raw-data"
-      onClick={this.openRawDataModal.bind(this)}
-    >{STRINGS.viewRawData}</li>);
+      onClick={this.openRawDataModal.bind(this)}>{STRINGS.displayRawData}</li>);
+
+
+    shareOptions.push(<li
+      key="display-view-definition"
+      onClick={this.openViewDefinitionModal.bind(this)}>{STRINGS.displayViewDefinition}</li>);
 
     if (externalViews) {
       externalViews.forEach((externalView: ExternalView, i: number) => {
         const url = externalView.linkGeneratorFn(essence.dataCube, essence.timezone, essence.filter, essence.splits);
         if (typeof url !== "string") return;
-        var title = `${STRINGS.openIn} ${externalView.title}`;
-        var target = externalView.sameWindow ? "_self" : "_blank";
+        const title = `${STRINGS.openIn} ${externalView.title}`;
+        const target = externalView.sameWindow ? "_self" : "_blank";
         shareOptions.push(<li key={`custom-url-${i}`}>
           <a href={url} target={target}>{title}</a>
         </li>);
       });
     }
 
-    var stage = Stage.fromSize(200, 200);
+    const stage = Stage.fromSize(200, 200);
     return <BubbleMenu
       className="hiluk-menu"
       direction="down"
