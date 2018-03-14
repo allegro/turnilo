@@ -16,13 +16,13 @@
  */
 
 import { expect } from 'chai';
-
-import { List } from 'immutable';
 import { Timezone } from 'chronoshift';
-import { FilterClause } from "../../models/filter-clause/filter-clause";
+import { $ } from "plywood";
 import { DimensionMock } from '../../../common/models/mocks';
+import { FilterClause } from "../../models/filter-clause/filter-clause";
 
-import { getMiddleNumber, formatterFromData, formatFilterClause } from './formatter';
+import { formatFilterClause, formatterFromData, getMiddleNumber } from './formatter';
+import { FormatterFixtures } from "./formatter.fixtures";
 
 describe('General', () => {
   describe('getMiddleNumber', () => {
@@ -60,89 +60,119 @@ describe('General', () => {
   });
 
   describe('formatFilterClause', () => {
-    var timeFilterDifferentMonth = FilterClause.fromJS(
-      {
-        expression: { op: 'ref', name: 'time' },
-        selection: {
-          op: 'literal',
-          type: 'TIME_RANGE',
-          value: { start: new Date('2016-11-11'), end: new Date('2016-12-12') }
-        }
-      }
-    );
+    const $now = $(FilterClause.NOW_REF_NAME);
+    const $max = $(FilterClause.MAX_TIME_REF_NAME);
 
-    var timeFilterDifferentYear = FilterClause.fromJS(
-      {
-        expression: { op: 'ref', name: 'time' },
-        selection: {
-          op: 'literal',
-          type: 'TIME_RANGE',
-          value: { start: new Date('2015-11-11'), end: new Date('2016-12-12') }
-        }
-      }
-    );
+    const latestDurationTests = [
+      { duration: 'PT1H', step: -1, label: 'Latest hour' },
+      { duration: 'PT1H', step: -6, label: 'Latest 6 hours' },
+      { duration: 'P1D', step: -1, label: 'Latest day' },
+      { duration: 'P1D', step: -7, label: 'Latest 7 days' },
+      { duration: 'P1D', step: -30, label: 'Latest 30 days' }
+    ];
 
-    var timeFilterSameMonth = FilterClause.fromJS(
-      {
-        expression: { op: 'ref', name: 'time' },
-        selection: {
-          op: 'literal',
-          type: 'TIME_RANGE',
-          value: { start: new Date('2015-11-11'), end: new Date('2015-11-14') }
-        }
-      }
-    );
-
-
-    var numberFilter = FilterClause.fromJS({
-      expression: { op: 'ref', name: 'commentLength' },
-      selection: {
-        op: 'literal',
-        value: {
-          "setType": "NUMBER",
-          "elements": [1, 2, 3]
-        },
-        "type": "SET"
-      },
-      exclude: true
+    latestDurationTests.forEach(({ duration, step, label }) => {
+      it(`formats previous ${-step} * ${duration} as "${label}"`, () => {
+        const timeFilterLatest = FormatterFixtures.latestDuration(duration, step);
+        expect(formatFilterClause(DimensionMock.time(), timeFilterLatest, Timezone.UTC)).to.equal(label);
+      });
     });
 
-    var stringFilterShort = FilterClause.fromJS({
-      expression: { op: 'ref', name: 'country' },
-      selection: {
-        op: 'literal',
-        value: {
-          "setType": "STRING",
-          "elements": ["iceland"]
-        },
-        "type": "SET"
-      }
+    const unsupportedLatestDurationTests = [
+      { reference: $now, duration: 'P1D', step: -2 },
+      { reference: $max, duration: 'PT1H', step: 0 },
+      { reference: $max, duration: 'P1D', step: 1 }
+    ];
+
+    unsupportedLatestDurationTests.forEach(({ reference, duration, step }) => {
+      it(`throws on formatting latest ${-step} * ${duration} with ${reference} reference"`, () => {
+        const timeFilterLatest = FormatterFixtures.timeRangeDuration(reference, duration, step);
+        expect(() => formatFilterClause(DimensionMock.time(), timeFilterLatest, Timezone.UTC)).to.throw();
+      });
     });
 
-    it('works in time case', () => {
-      expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentMonth, Timezone.UTC)).to.equal('Nov 11 - Dec 11, 2016');
-      expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentYear, Timezone.UTC)).to.equal('Nov 11, 2015 - Dec 11, 2016');
-      expect(formatFilterClause(DimensionMock.time(), timeFilterSameMonth, Timezone.UTC)).to.equal('Nov 11 - Nov 13, 2015');
+    const durationTests = [
+      { duration: 'P1D', previousLabel: 'Previous day', currentLabel: 'Current day' },
+      { duration: 'P1W', previousLabel: 'Previous week', currentLabel: 'Current week' },
+      { duration: 'P1M', previousLabel: 'Previous month', currentLabel: 'Current month' },
+      { duration: 'P3M', previousLabel: 'Previous quarter', currentLabel: 'Current quarter' },
+      { duration: 'P1Y', previousLabel: 'Previous year', currentLabel: 'Current year' }
+    ];
+
+    durationTests.forEach(({ duration, previousLabel: label }) => {
+      it(`formats previous ${duration} as "${label}"`, () => {
+        const timeFilterPrevious = FormatterFixtures.previousDuration(duration);
+        expect(formatFilterClause(DimensionMock.time(), timeFilterPrevious, Timezone.UTC)).to.equal(label);
+      });
     });
 
-    it('works in time case verbose', () => {
-      expect(formatFilterClause(DimensionMock.time(), timeFilterDifferentMonth, Timezone.UTC, true)).to.equal('time: Nov 11 - Dec 11, 2016');
+    durationTests.forEach(({ duration, currentLabel: label }) => {
+      it(`formats current ${duration} as "${label}"`, () => {
+        const timeFilterCurrent = FormatterFixtures.currentDuration(duration);
+        expect(formatFilterClause(DimensionMock.time(), timeFilterCurrent, Timezone.UTC)).to.equal(label);
+      });
     });
 
-    it('works in number case', () => {
-      expect(formatFilterClause(DimensionMock.number(), numberFilter, Timezone.UTC)).to.equal('Numeric (3)');
+    const unsupportedPreviousDurationTests = [
+      { reference: $now, duration: 'P1D', step: -2 },
+      { reference: $now, duration: 'P1W', step: 0 },
+      { reference: $now, duration: 'P1M', step: 1 }
+    ];
+
+    unsupportedPreviousDurationTests.forEach(({ reference, duration, step }) => {
+      it(`throws on formatting previous ${-step} * ${duration} with ${reference} reference"`, () => {
+        const timeFilterEarlier = FormatterFixtures.earlierDuration(reference, duration, step);
+        expect(() => formatFilterClause(DimensionMock.time(), timeFilterEarlier, Timezone.UTC)).to.throw();
+      });
     });
 
-    it('works in number verbose', () => {
-      expect(formatFilterClause(DimensionMock.number(), numberFilter, Timezone.UTC, true)).to.equal('Numeric: 1, 2, 3');
+    const unsupportedCurrentDurationTests = [
+      { reference: $max, duration: 'P1D' },
+      { reference: $max, duration: 'P1W' },
+      { reference: $max, duration: 'P1M' }
+    ];
+
+    unsupportedCurrentDurationTests.forEach(({ reference, duration }) => {
+      it(`throws on formatting current ${duration} with ${reference} reference"`, () => {
+        const timeFilterCurrent = FormatterFixtures.timeBucketDuration(reference, duration);
+        expect(() => formatFilterClause(DimensionMock.time(), timeFilterCurrent, Timezone.UTC)).to.throw();
+      });
     });
 
-    it('works in string case', () => {
-      expect(formatFilterClause(DimensionMock.countryString(), stringFilterShort, Timezone.UTC)).to.equal('important countries: iceland');
+    const fixedTimeTests = [
+      { start: "2016-11-11", end: "2016-12-12", label: 'Nov 11 - Dec 11, 2016' },
+      { start: "2015-11-11", end: "2016-12-12", label: 'Nov 11, 2015 - Dec 11, 2016' },
+      { start: "2015-11-11", end: "2015-11-14", label: 'Nov 11 - Nov 13, 2015' }
+    ];
+
+    fixedTimeTests.forEach(({ start, end, label }) => {
+      it(`formats [${start}, ${end}) as "${label}"`, () => {
+        const filterClause = FormatterFixtures.fixedTimeFilter(new Date(start), new Date(end));
+        expect(formatFilterClause(DimensionMock.time(), filterClause, Timezone.UTC)).to.equal(label);
+      });
     });
 
-    it('works in string verbose', () => {
-      expect(formatFilterClause(DimensionMock.countryString(), stringFilterShort, Timezone.UTC, true)).to.equal('important countries: iceland');
+    fixedTimeTests.forEach(({ start, end, label }) => {
+      it(`formats range [${start}, ${end}) as "time: ${label}"`, () => {
+        const filterClause = FormatterFixtures.fixedTimeFilter(new Date(start), new Date(end));
+        expect(formatFilterClause(DimensionMock.time(), filterClause, Timezone.UTC, true)).to.equal(`time: ${label}`);
+      });
+    });
+
+    it('formats number', () => {
+      expect(formatFilterClause(DimensionMock.number(), FormatterFixtures.numberFilter(), Timezone.UTC)).to.equal('Numeric (3)');
+    });
+
+    it('formats number verbose', () => {
+      expect(formatFilterClause(DimensionMock.number(), FormatterFixtures.numberFilter(), Timezone.UTC, true)).to.equal('Numeric: 1, 2, 3');
+    });
+
+    it('formats string', () => {
+      expect(formatFilterClause(DimensionMock.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC)).to.equal('important countries: iceland');
+    });
+
+    it('formats string verbose', () => {
+      expect(formatFilterClause(DimensionMock.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC, true)).to.equal('important countries: iceland');
     });
   });
 });

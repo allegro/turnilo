@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
+import { Duration, Timezone } from 'chronoshift';
 import * as numeral from 'numeral';
-import { Timezone } from 'chronoshift';
 
-import { NumberRange, TimeRange, LiteralExpression } from 'plywood';
+import { $, LiteralExpression, NumberRange, TimeBucketExpression, TimeRange, TimeRangeExpression } from 'plywood';
+import { STRINGS } from "../../../client/config/constants";
 
-import { Dimension, FilterClause, Filter } from '../../models/index';
+import { Dimension, Filter, FilterClause, FilterSelection } from '../../models';
 import { DisplayYear, formatTimeRange } from '../../utils/time/time';
 
 export interface Formatter {
   (n: number): string;
 }
 
-var scales: Record<string, Record<string, number>> = {
+const scales: Record<string, Record<string, number>> = {
   'a': {
     '': 1,
     'k': 1e3,
@@ -49,13 +50,13 @@ var scales: Record<string, Record<string, number>> = {
 };
 
 export function getMiddleNumber(values: number[]): number {
-  var filteredAbsData: number[] = [];
-  for (var v of values) {
+  const filteredAbsData: number[] = [];
+  for (let v of values) {
     if (v === 0 || isNaN(v) || !isFinite(v)) continue;
     filteredAbsData.push(Math.abs(v));
   }
 
-  var n = filteredAbsData.length;
+  const n = filteredAbsData.length;
   if (n) {
     filteredAbsData.sort((a, b) => b - a);
     return filteredAbsData[Math.ceil((n - 1) / 2)];
@@ -65,16 +66,16 @@ export function getMiddleNumber(values: number[]): number {
 }
 
 export function formatterFromData(values: number[], format: string): Formatter {
-  var match = format.match(/^(\S*)( ?)([ab])$/);
+  const match = format.match(/^(\S*)( ?)([ab])$/);
   if (match) {
-    var numberFormat = match[1];
-    var space = match[2];
-    var formatType = match[3];
-    var middle = getMiddleNumber(values);
-    var formatMiddle = numeral(middle).format('0 ' + formatType);
-    var unit = formatMiddle.split(' ')[1] || '';
-    var scale = scales[formatType][unit];
-    var append = unit ? space + unit : '';
+    const numberFormat = match[1];
+    const space = match[2];
+    const formatType = match[3];
+    const middle = getMiddleNumber(values);
+    const formatMiddle = numeral(middle).format('0 ' + formatType);
+    const unit = formatMiddle.split(' ')[1] || '';
+    const scale = scales[formatType][unit];
+    const append = unit ? space + unit : '';
 
     return (n: number) => {
       if (isNaN(n) || !isFinite(n)) return '-';
@@ -89,7 +90,7 @@ export function formatterFromData(values: number[], format: string): Formatter {
 }
 
 export function formatNumberRange(value: NumberRange) {
-  return `${formatValue(value.start || `any`)} to ${formatValue(value.end  || `any`)}`;
+  return `${formatValue(value.start || `any`)} to ${formatValue(value.end || `any`)}`;
 }
 
 export function formatValue(value: any, timezone?: Timezone, displayYear?: DisplayYear): string {
@@ -103,19 +104,19 @@ export function formatValue(value: any, timezone?: Timezone, displayYear?: Displ
 }
 
 export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone, verbose?: boolean): string {
-  var { title, values } = this.getFormattedClause(dimension, clause, timezone, verbose);
+  const { title, values } = this.getFormattedClause(dimension, clause, timezone, verbose);
   return title ? `${title} ${values}` : values;
 }
 
-export function getFormattedClause(dimension: Dimension, clause: FilterClause, timezone: Timezone, verbose?: boolean): {title: string, values: string} {
-  var dimKind = dimension.kind;
-  var values: string;
-  var clauseSet = clause.getLiteralSet();
+export function getFormattedClause(dimension: Dimension, clause: FilterClause, timezone: Timezone, verbose?: boolean): { title: string, values: string } {
+  const dimKind = dimension.kind;
+  let values: string;
+  const clauseSet = clause.getLiteralSet();
 
   function getClauseLabel() {
-    var dimTitle = dimension.title;
+    const dimTitle = dimension.title;
     if (dimKind === 'time' && !verbose) return '';
-    var delimiter = ["regex", "contains"].indexOf(clause.action) !== -1 ? ' ~' : ":";
+    const delimiter = ["regex", "contains"].indexOf(clause.action) !== -1 ? ' ~' : ":";
 
     if (clauseSet && clauseSet.elements.length > 1 && !verbose) return `${dimTitle}`;
     return `${dimTitle}${delimiter}`;
@@ -128,7 +129,7 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
       if (verbose) {
         values = clauseSet.toString();
       } else {
-        var setElements = clauseSet.elements;
+        const setElements = clauseSet.elements;
         if (setElements.length > 1) {
           values = `(${setElements.length})`;
         } else {
@@ -139,22 +140,76 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
       if (clause.action === Filter.CONTAINS) values = `"${values}"`;
 
       break;
-
     case 'time':
-      var selection = (clause.selection as LiteralExpression);
-      var selectionType = selection.type;
-      if (selectionType === 'TIME_RANGE') {
-        var timeRange = selection.value as TimeRange;
-        values = formatTimeRange(timeRange, timezone, DisplayYear.IF_DIFF);
-      } else if (selectionType === "SET/TIME") {
-        values = clauseSet.toString();
-      }
+      values = getFormattedTimeClauseValues(clause, timezone);
       break;
-
     default:
       throw new Error(`unknown kind ${dimKind}`);
   }
 
-  return {title: getClauseLabel(), values};
+  return { title: getClauseLabel(), values };
 }
 
+const $now = $(FilterClause.NOW_REF_NAME);
+const $max = $(FilterClause.MAX_TIME_REF_NAME);
+
+function getFormattedTimeClauseValues(clause: FilterClause, timezone: Timezone): string {
+  const { relative, selection } = clause;
+
+  if (isLatestDuration(relative, selection)) {
+    return `${STRINGS.latest} ${getQualifiedDurationDescription(selection)}`;
+  } else if (isPreviousDuration(relative, selection)) {
+    return `${STRINGS.previous} ${getQualifiedDurationDescription(selection)}`;
+  } else if (isCurrentDuration(relative, selection)) {
+    return `${STRINGS.current} ${getDurationDescription(selection)}`;
+  } else if (selection instanceof LiteralExpression && selection.value instanceof TimeRange) {
+    return formatTimeRange(selection.value, timezone, DisplayYear.IF_DIFF);
+  } else {
+    throw Error(`unsupported time filter clause: ${clause.selection}`);
+  }
+}
+
+function isLatestDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
+  function isEarlierTimeRange(selection: TimeRangeExpression) {
+    return selection.step < 0;
+  }
+
+  return isRelative
+    && selection instanceof TimeRangeExpression
+    && selection.getHeadOperand().equals($max)
+    && isEarlierTimeRange(selection);
+}
+
+function isCurrentDuration(isRelative: boolean, selection: FilterSelection): selection is TimeBucketExpression {
+  return isRelative
+    && selection instanceof TimeBucketExpression
+    && selection.getHeadOperand().equals($now);
+}
+
+function isPreviousDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
+  function isPreviousTimeRange(selection: TimeRangeExpression) {
+    return selection.step === -1;
+  }
+
+  return isRelative
+    && selection instanceof TimeRangeExpression
+    && selection.getHeadOperand().equals($now)
+    && isPreviousTimeRange(selection);
+}
+
+function getQualifiedDurationDescription(selection: TimeRangeExpression) {
+  return normalizeDurationDescription(selection.getQualifiedDurationDescription(), selection.duration);
+}
+
+function getDurationDescription(selection: TimeBucketExpression) {
+  const { duration } = selection;
+  return normalizeDurationDescription(duration.getDescription(), duration);
+}
+
+function normalizeDurationDescription(description: string, duration: Duration) {
+  if (duration.toString() === 'P3M') {
+    return STRINGS.quarter.toLowerCase();
+  } else {
+    return description;
+  }
+}
