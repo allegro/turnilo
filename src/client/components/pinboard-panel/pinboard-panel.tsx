@@ -150,9 +150,8 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var colorDimension = colors ? colors.dimension : null;
     if (colorDimension) {
       var dimension = dataCube.getDimension(colorDimension);
-      if (dimension) {
-        var colorsSortOn = this.getColorsSortOn();
-
+      var colorsSortOn = this.getColorsSortOn();
+      if (dimension && colorsSortOn) {
         legendMeasureSelector = <PinboardMeasureTile
           essence={essence}
           title="Legend"
