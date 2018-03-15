@@ -17,6 +17,7 @@
 
 import './table.scss';
 
+import * as d3 from 'd3';
 import { List } from 'immutable';
 import { $, Datum, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeRange } from 'plywood';
 import * as React from 'react';

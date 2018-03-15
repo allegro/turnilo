@@ -24,7 +24,7 @@ import { Logger } from 'logger-tracker';
 import { parseData } from '../../../common/utils/parser/parser';
 
 
-export function getFileData(filePath: string): Q.Promise<any[]> {
+export function getFileData(filePath: string): Promise<any[]> {
   return fs.readFile(filePath, 'utf-8')
     .then((fileData) => {
       try {
@@ -78,7 +78,7 @@ export class FileManager {
     var filePath = path.resolve(anchorPath, uri);
 
     logger.log(`Loading file ${filePath}`);
-    return getFileData(filePath)
+    return Q(getFileData(filePath)
       .then(
         (rawData) => {
           logger.log(`Loaded file ${filePath} (rows = ${rawData.length})`);
@@ -94,7 +94,7 @@ export class FileManager {
         (e) => {
           logger.error(`Failed to load file ${filePath} because: ${e.message}`);
         }
-      );
+      ));
   }
 
   public destroy(): void {

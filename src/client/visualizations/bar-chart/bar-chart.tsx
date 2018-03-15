@@ -17,6 +17,7 @@
 
 import './bar-chart.scss';
 
+import * as d3 from 'd3';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';

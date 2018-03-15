@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import * as debugModule from 'debug';
 import * as http from 'http';
 
 import * as app from './app';
 import { START_SERVER, SERVER_SETTINGS } from './config';
 
 if (START_SERVER) {
-  var debug = debugModule('swiv:www');
   var server = http.createServer(app);
 
   server.on('error', (error: any) => {
@@ -50,7 +48,6 @@ if (START_SERVER) {
   server.on('listening', () => {
     var address = server.address();
     console.log(`Turnilo is listening on address ${address.address} port ${address.port}`);
-    debug(`Turnilo is listening on address ${address.address} port ${address.port}`);
   });
 
   app.set('port', SERVER_SETTINGS.getPort());
