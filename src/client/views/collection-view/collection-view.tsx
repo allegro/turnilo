@@ -63,8 +63,8 @@ export interface CollectionViewState {
 export class CollectionView extends React.Component<CollectionViewProps, CollectionViewState> {
   private stickerId: number;
 
-  constructor() {
-    super();
+  constructor(props: CollectionViewProps) {
+    super(props);
     this.state = {};
   }
 

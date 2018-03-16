@@ -50,8 +50,9 @@ export interface SuggestionModalState {
 }
 
 export class SuggestionModal extends React.Component<SuggestionModalProps, SuggestionModalState> {
-  constructor() {
-    super();
+
+  constructor(props: SuggestionModalProps) {
+    super(props);
     this.state = {
       suggestions: []
     };

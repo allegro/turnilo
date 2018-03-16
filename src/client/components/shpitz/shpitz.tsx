@@ -30,11 +30,6 @@ export interface ShpitzState {
 
 export class Shpitz extends React.Component<ShpitzProps, ShpitzState> {
 
-  constructor() {
-    super();
-
-  }
-
   render() {
     const { direction, style } = this.props;
 

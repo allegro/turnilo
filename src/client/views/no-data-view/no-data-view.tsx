@@ -46,8 +46,8 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
   static NO_CLUSTER: Mode = 'no-cluster';
   static NO_CUBE: Mode = 'no-cube';
 
-  constructor() {
-    super();
+  constructor(props: NoDataViewProps) {
+    super(props);
     this.state = {};
   }
 

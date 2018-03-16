@@ -59,8 +59,8 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   public mounted: boolean;
   private autoRefreshTimer: number;
 
-  constructor() {
-    super();
+  constructor(props: CubeHeaderBarProps) {
+    super(props);
     this.state = {
       hilukMenuOpenOn: null,
       autoRefreshMenuOpenOn: null,

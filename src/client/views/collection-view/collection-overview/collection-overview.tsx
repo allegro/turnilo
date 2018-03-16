@@ -44,8 +44,8 @@ export interface CollectionOverviewState {
 }
 
 export class CollectionOverview extends React.Component<CollectionOverviewProps, CollectionOverviewState> {
-  constructor() {
-    super();
+  constructor(props: CollectionOverviewProps) {
+    super(props);
     this.state = {
       dropIndex: -1
     };
@@ -55,7 +55,7 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     window.location.hash = `#collection/${this.props.collection.name}/${tile.name}`;
   }
 
-  dragStart(tile: CollectionTile, e: __React.DragEvent) {
+  dragStart(tile: CollectionTile, e: React.DragEvent<HTMLElement>) {
     this.setState({draggedTile: tile});
 
     var dataTransfer = e.dataTransfer;
@@ -65,12 +65,12 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     setDragGhost(dataTransfer, tile.title);
   }
 
-  shouldDropAfter(e: __React.DragEvent): boolean {
+  shouldDropAfter(e: React.DragEvent<HTMLElement>): boolean {
     var targetRect = (e.currentTarget as any).getBoundingClientRect();
     return getXFromEvent(e as any) - targetRect.left >= targetRect.width / 2;
   }
 
-  dragOver(tile: CollectionTile, e: __React.DragEvent) {
+  dragOver(tile: CollectionTile, e: React.DragEvent<HTMLElement>) {
     e.preventDefault();
 
     const { collection } = this.props;
@@ -106,7 +106,7 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     return dropIndex;
   }
 
-  dragEnd(e: __React.DragEvent) {
+  dragEnd(e: React.DragEvent<HTMLElement>) {
     const { onReorder, collection } = this.props;
     var { draggedTile, dropIndex, dropAfter } = this.state;
 

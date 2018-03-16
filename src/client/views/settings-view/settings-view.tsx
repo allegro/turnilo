@@ -68,8 +68,8 @@ const VIEWS = [
 ];
 
 export class SettingsView extends React.Component<SettingsViewProps, SettingsViewState> {
-  constructor() {
-    super();
+  constructor(props: SettingsViewProps) {
+    super(props);
     this.state = {};
   }
 

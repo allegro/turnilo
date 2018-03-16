@@ -58,8 +58,8 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   private overflowMenuId: string;
   private overflowMenuDeferred: Q.Deferred<Element>;
 
-  constructor() {
-    super();
+  constructor(props: SplitTileProps) {
+    super(props);
     this.overflowMenuId = uniqueId('overflow-menu-');
     this.state = {
       menuOpenOn: null,

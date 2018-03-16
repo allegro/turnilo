@@ -24,7 +24,7 @@ import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '.
 import { SvgIcon } from '../svg-icon/svg-icon';
 
 export interface NavLogoProps extends React.Props<any> {
-  onClick?: React.MouseEventHandler;
+  onClick?: React.MouseEventHandler<HTMLElement>;
   customLogoSvg?: string;
 }
 
@@ -32,11 +32,6 @@ export interface NavLogoState {
 }
 
 export class NavLogo extends React.Component<NavLogoProps, NavLogoState> {
-
-  constructor() {
-    super();
-
-  }
 
   render() {
     const { onClick, customLogoSvg } = this.props;

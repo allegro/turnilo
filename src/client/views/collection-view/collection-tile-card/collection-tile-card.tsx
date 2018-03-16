@@ -37,9 +37,9 @@ export interface CollectionTileCardProps extends React.Props<any> {
   onDelete?: (tile: CollectionTile) => void;
 
   editionMode?: boolean;
-  onDragOver?: (e: __React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent<HTMLElement>) => void;
   draggable?: boolean;
-  onDragStart?: (e: __React.DragEvent) => void;
+  onDragStart?: (e: React.DragEvent<HTMLElement>) => void;
 }
 
 export interface CollectionTileCardState {
@@ -48,8 +48,8 @@ export interface CollectionTileCardState {
 }
 
 export class CollectionTileCard extends React.Component<CollectionTileCardProps, CollectionTileCardState> {
-  constructor() {
-    super();
+  constructor(props: CollectionTileCardProps) {
+    super(props);
 
     this.state = {};
   }

@@ -36,8 +36,8 @@ export interface DataCubesState {
 }
 
 export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
-  constructor() {
-    super();
+  constructor(props: DataCubesProps) {
+    super(props);
 
     this.state = {};
   }

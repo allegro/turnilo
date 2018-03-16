@@ -85,10 +85,6 @@ export interface TableState extends BaseVisualizationState {
 export class Table extends BaseVisualization<TableState> {
   public static id = TABLE_MANIFEST.name;
 
-  constructor() {
-    super();
-  }
-
   getDefaultState(): TableState {
     var s = super.getDefaultState() as TableState;
 

@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-import './hiluk-menu.scss';
+import { Dataset } from 'plywood';
 
 import * as React from 'react';
-import { Dataset } from 'plywood';
+import { Essence, ExternalView, Stage, Timekeeper } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';
-import { Stage, Essence, Timekeeper, ExternalView } from '../../../common/models/index';
-import { exportOptions , STRINGS } from '../../config/constants';
+import { exportOptions, STRINGS } from '../../config/constants';
 import { download, FileFormat, makeFileName } from '../../utils/download/download';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
-
+import './hiluk-menu.scss';
 
 export interface HilukMenuProps extends React.Props<any> {
   essence: Essence;
@@ -45,8 +44,8 @@ export interface HilukMenuState {
 
 export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
 
-  constructor() {
-    super();
+  constructor(props: HilukMenuProps) {
+    super(props);
     this.state = {
       url: null,
       specificUrl: null

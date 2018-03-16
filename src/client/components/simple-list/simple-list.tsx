@@ -44,8 +44,9 @@ export interface SimpleListState {
 }
 
 export class SimpleList extends React.Component<SimpleListProps, SimpleListState> {
-  constructor() {
-    super();
+
+  constructor(props: SimpleListProps) {
+    super(props);
 
     this.state = {dropIndex: -1};
   }

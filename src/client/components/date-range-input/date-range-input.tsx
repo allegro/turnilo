@@ -39,8 +39,8 @@ export interface DateRangeInputState {
 
 export class DateRangeInput extends React.Component<DateRangeInputProps, DateRangeInputState> {
 
-  constructor() {
-    super();
+  constructor(props: DateRangeInputProps) {
+    super(props);
     this.state = {
       dateString: '',
       timeString: ''

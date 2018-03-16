@@ -32,10 +32,6 @@ export interface AboutModalState {
 
 export class AboutModal extends React.Component<AboutModalProps, AboutModalState> {
 
-  constructor() {
-    super();
-  }
-
   render() {
     const { version, onClose } = this.props;
 

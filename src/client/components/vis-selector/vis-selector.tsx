@@ -34,8 +34,8 @@ export interface VisSelectorState {
 
 export class VisSelector extends React.Component<VisSelectorProps, VisSelectorState> {
 
-  constructor() {
-    super();
+  constructor(props: VisSelectorProps) {
+    super(props);
     this.state = {
       menuOpenOn: null
     };

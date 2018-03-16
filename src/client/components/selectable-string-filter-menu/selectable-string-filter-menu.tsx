@@ -57,8 +57,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   public mounted: boolean;
   public collectTriggerSearch: Fn;
 
-  constructor() {
-    super();
+  constructor(props: SelectableStringFilterMenuProps) {
+    super(props);
     this.state = {
       loading: false,
       dataset: null,

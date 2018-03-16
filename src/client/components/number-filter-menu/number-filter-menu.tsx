@@ -68,8 +68,8 @@ export interface NumberFilterMenuState {
 export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, NumberFilterMenuState> {
   public mounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: NumberFilterMenuProps) {
+    super(props);
     this.state = {
       leftOffset: null,
       rightBound: null,

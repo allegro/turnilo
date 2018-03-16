@@ -34,9 +34,6 @@ export interface BucketMarksState {
 }
 
 export class BucketMarks extends React.Component<BucketMarksProps, BucketMarksState> {
-  constructor() {
-    super();
-  }
 
   render() {
     const { stage, ticks, scale } = this.props;

@@ -112,8 +112,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   public mounted: boolean;
   public collectTriggerSearch: Fn;
 
-  constructor() {
-    super();
+  constructor(props: DimensionTileProps) {
+    super(props);
     this.state = {
       loading: false,
       dataset: null,

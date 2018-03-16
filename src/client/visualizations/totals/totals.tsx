@@ -30,10 +30,6 @@ const TOTAL_WIDTH = 176;
 export class Totals extends BaseVisualization<BaseVisualizationState> {
   public static id = TOTALS_MANIFEST.name;
 
-  constructor() {
-    super();
-  }
-
   componentWillMount() {
     this.precalculate(this.props);
   }

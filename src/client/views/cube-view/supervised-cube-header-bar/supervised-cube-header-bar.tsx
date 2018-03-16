@@ -41,8 +41,8 @@ export interface SupervisedCubeHeaderBarState {
 
 export class SupervisedCubeHeaderBar extends React.Component<SupervisedCubeHeaderBarProps, SupervisedCubeHeaderBarState> {
 
-  constructor() {
-    super();
+  constructor(props: SupervisedCubeHeaderBarProps) {
+    super(props);
     this.state = {};
   }
 

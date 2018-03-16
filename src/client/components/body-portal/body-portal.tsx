@@ -16,6 +16,7 @@
  */
 
 import './body-portal.scss';
+import { ReactElement } from "react";
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -41,11 +42,7 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
   private static aboveAll: any;
 
   private _target: any = null; // HTMLElement, a div that is appended to the body
-  private _component: React.DOMComponent<any> = null; // ReactElement, which is mounted on the target
-
-  constructor() {
-    super();
-  }
+  private _component: Element = null; // ReactElement, which is mounted on the target
 
   public get component() {
     return this._component;

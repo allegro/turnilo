@@ -51,8 +51,8 @@ export interface DimensionListTileState {
 
 export class DimensionListTile extends React.Component<DimensionListTileProps, DimensionListTileState> {
 
-  constructor() {
-    super();
+  constructor(props: DimensionListTileProps) {
+    super(props);
     this.state = {
       menuOpenOn: null,
       menuDimension: null,

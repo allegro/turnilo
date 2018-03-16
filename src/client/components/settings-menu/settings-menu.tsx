@@ -41,10 +41,6 @@ export interface SettingsMenuState {
 
 export class SettingsMenu extends React.Component<SettingsMenuProps, SettingsMenuState> {
 
-  constructor() {
-    super();
-  }
-
   changeTimezone(newTimezone: Timezone) {
     const { onClose, changeTimezone } = this.props;
     changeTimezone(newTimezone);

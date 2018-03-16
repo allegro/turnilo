@@ -87,8 +87,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   private clicker: Clicker;
   private downloadableDataset: Dataset;
 
-  constructor() {
-    super();
+  constructor(props: CubeViewProps) {
+    super(props);
 
     this.state = {
       essence: null,

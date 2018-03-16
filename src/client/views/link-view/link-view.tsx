@@ -77,8 +77,8 @@ const MAX_PANEL_WIDTH = 400;
 export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   private clicker: Clicker;
 
-  constructor() {
-    super();
+  constructor(props: LinkViewProps) {
+    super(props);
     this.state = {
       linkTile: null,
       essence: null,

@@ -151,10 +151,6 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   private coordinatesCache: BarCoordinates[][] = [];
 
-  constructor() {
-    super();
-  }
-
   getDefaultState(): BarChartState {
     var s = super.getDefaultState() as BarChartState;
 

@@ -42,8 +42,8 @@ export interface DataCubeSeedModalState extends ImmutableFormState<DataCube> {
 export class DataCubeSeedModal extends React.Component<DataCubeSeedModalProps, DataCubeSeedModalState> {
   private delegate: ImmutableFormDelegate<DataCube>;
 
-  constructor() {
-    super();
+  constructor(props: DataCubeSeedModalProps) {
+    super(props);
     this.delegate = new ImmutableFormDelegate<DataCube>(this);
   }
 

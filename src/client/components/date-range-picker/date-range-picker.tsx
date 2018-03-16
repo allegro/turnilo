@@ -46,8 +46,8 @@ export interface DateRangePickerState {
 }
 
 export class DateRangePicker extends React.Component<DateRangePickerProps, DateRangePickerState> {
-  constructor() {
-    super();
+  constructor(props: DateRangePickerProps) {
+    super(props);
     this.state = {
       activeMonthStartDate: null,
       hoverTimeRange: null,

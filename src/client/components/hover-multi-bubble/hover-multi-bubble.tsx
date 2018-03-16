@@ -47,10 +47,6 @@ export interface HoverMultiBubbleState {
 export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, HoverMultiBubbleState> {
   public mounted: boolean;
 
-  constructor() {
-    super();
-  }
-
   renderColorSwabs(): JSX.Element {
     const { colorEntries } = this.props;
     if (!colorEntries || !colorEntries.length) return null;

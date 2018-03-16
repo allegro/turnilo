@@ -84,8 +84,8 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     [Scroller.BOTTOM_LEFT_CORNER, Scroller.BOTTOM_GUTTER, Scroller.BOTTOM_RIGHT_CORNER]
   ];
 
-  constructor() {
-    super();
+  constructor(props: ScrollerProps) {
+    super(props);
     this.state = {
       scrollTop: 0,
       scrollLeft: 0,

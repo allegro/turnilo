@@ -54,8 +54,8 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   public mounted: boolean;
   public collectTriggerSearch: Fn;
 
-  constructor() {
-    super();
+  constructor(props: PreviewStringFilterMenuProps) {
+    super(props);
     this.state = {
       loading: false,
       dataset: null,

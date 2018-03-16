@@ -40,10 +40,6 @@ export interface ButtonGroupState {
 
 export class ButtonGroup extends React.Component<ButtonGroupProps, ButtonGroupState> {
 
-  constructor() {
-    super();
-  }
-
   renderMembers() {
     const { groupMembers } = this.props;
     return groupMembers.map((button) => {

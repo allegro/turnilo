@@ -57,8 +57,8 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
     };
   }
 
-  constructor() {
-    super();
+  constructor(props: FormLabelProps) {
+    super(props);
 
     this.state = {helpVisible: false};
   }

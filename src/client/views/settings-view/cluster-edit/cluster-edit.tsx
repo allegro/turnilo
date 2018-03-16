@@ -52,8 +52,8 @@ export interface ClusterEditState extends ImmutableFormState<Cluster> {
 export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditState> {
   private delegate: ImmutableFormDelegate<Cluster>;
 
-  constructor() {
-    super();
+  constructor(props: ClusterEditProps) {
+    super(props);
     this.delegate = new ImmutableFormDelegate<Cluster>(this);
   }
 

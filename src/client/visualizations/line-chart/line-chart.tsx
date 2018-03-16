@@ -90,10 +90,6 @@ export interface LineChartState extends BaseVisualizationState {
 export class LineChart extends BaseVisualization<LineChartState> {
   public static id = LINE_CHART_MANIFEST.name;
 
-  constructor() {
-    super();
-  }
-
   getDefaultState(): LineChartState {
     var s = super.getDefaultState() as LineChartState;
 

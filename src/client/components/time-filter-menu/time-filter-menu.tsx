@@ -95,8 +95,8 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
   public mounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: TimeFilterMenuProps) {
+    super(props);
     this.state = {
       tab: null,
       timeSelection: null,

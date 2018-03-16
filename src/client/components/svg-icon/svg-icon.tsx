@@ -36,10 +36,6 @@ export interface SvgIconState {
 
 export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
 
-  constructor() {
-    super();
-  }
-
   render() {
     var { className, style, svg } = this.props;
 

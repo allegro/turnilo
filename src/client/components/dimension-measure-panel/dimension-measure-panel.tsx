@@ -43,10 +43,6 @@ export interface DimensionMeasurePanelState {
 
 export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanelProps, DimensionMeasurePanelState> {
 
-  constructor() {
-    super();
-  }
-
   render() {
     const { clicker, essence, menuStage, triggerFilterMenu, triggerSplitMenu, getUrlPrefix, style } = this.props;
     const { dataCube } = essence;

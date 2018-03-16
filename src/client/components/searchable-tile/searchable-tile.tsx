@@ -16,6 +16,7 @@
  */
 
 import './searchable-tile.scss';
+import { Component } from "react";
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -56,8 +57,8 @@ export interface SearchableTileState {
 export class SearchableTile extends React.Component<SearchableTileProps, SearchableTileState> {
   public mounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: SearchableTileProps) {
+    super(props);
     this.state = {
       actionsMenuOpenOn: null
     };
@@ -91,7 +92,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     if (!searchBoxElement || isInside(target, searchBoxElement)) return;
 
     var headerRef = this.refs['header'];
-    if (!headerRef) return;
+    if (!headerRef || headerRef instanceof Element) return;
     var searchButtonElement = ReactDOM.findDOMNode(headerRef.refs['search']);
     if (!searchButtonElement || isInside(target, searchButtonElement)) return;
 

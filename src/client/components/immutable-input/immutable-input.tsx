@@ -70,8 +70,8 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
 
   private focusAlreadyGiven = false;
 
-  constructor() {
-    super();
+  constructor(props: ImmutableInputProps) {
+    super(props);
     this.state = {};
   }
 
@@ -194,7 +194,6 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
       return <textarea
         className={classNames('immutable-input', className, {error: isInvalid})}
         ref='me'
-        type="text"
         value={(isInvalid ? invalidString : validString) || ''}
         onChange={this.onChange.bind(this)}
       />;

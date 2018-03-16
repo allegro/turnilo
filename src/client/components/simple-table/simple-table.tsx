@@ -59,8 +59,9 @@ const HEADER_HEIGHT = 26;
 const ACTION_WIDTH = 30;
 
 export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableState> {
-  constructor() {
-    super();
+
+  constructor(props: SimpleTableProps) {
+    super(props);
 
     this.state = {};
   }

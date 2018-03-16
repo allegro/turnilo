@@ -29,10 +29,6 @@ export interface QueryErrorState {
 
 export class QueryError extends React.Component<QueryErrorProps, QueryErrorState> {
 
-  constructor() {
-    super();
-  }
-
   render() {
     var { error } = this.props;
 

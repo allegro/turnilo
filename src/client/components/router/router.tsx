@@ -65,8 +65,8 @@ const HASH_SEPARATOR = /\/+/;
 export class Router extends React.Component<RouterProps, RouterState> {
   public mounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: RouterProps) {
+    super(props);
     this.state = {};
 
     this.globalHashChangeListener = this.globalHashChangeListener.bind(this);

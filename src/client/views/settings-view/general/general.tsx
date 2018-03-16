@@ -42,8 +42,8 @@ export class General extends React.Component<GeneralProps, ImmutableFormState<Ap
 
   private delegate: ImmutableFormDelegate<AppSettings>;
 
-  constructor() {
-    super();
+  constructor(props: GeneralProps) {
+    super(props);
 
     this.delegate = new ImmutableFormDelegate<AppSettings>(this);
   }

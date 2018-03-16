@@ -40,9 +40,6 @@ interface FakeProps extends React.Props<any> {
 interface FakeState {}
 
 class Fake extends React.Component<FakeProps, FakeState> {
-  constructor() {
-    super();
-  }
 
   render() {
     const { itemId, action, object} = this.props;
@@ -62,7 +59,7 @@ describe('Router', () => {
   var updateHash: (newHash: string) => void;
   var isActiveRoute: (route: string) => void;
 
-  var findNodes = (element: __React.Component<any, any>): NodeList => {
+  var findNodes = (element: React.Component<any, any>): NodeList => {
     let wrapper = findDOMNode(element);
 
     if (wrapper.className !== 'route-wrapper') {
@@ -72,7 +69,7 @@ describe('Router', () => {
     return wrapper.childNodes;
   };
 
-  var findNode = (element: __React.Component<any, any>): Node => {
+  var findNode = (element: React.Component<any, any>): Node => {
     var children = findNodes(element);
 
     if (children.length !== 1) {

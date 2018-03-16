@@ -43,8 +43,8 @@ export interface SegmentActionButtonsState {
 
 export class SegmentActionButtons extends React.Component<SegmentActionButtonsProps, SegmentActionButtonsState> {
 
-  constructor() {
-    super();
+  constructor(props: SegmentActionButtonsProps) {
+    super(props);
     this.state = {
       moreMenuOpenOn: null
     };

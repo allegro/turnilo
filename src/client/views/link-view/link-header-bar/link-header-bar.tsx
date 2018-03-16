@@ -44,8 +44,8 @@ export interface LinkHeaderBarState {
 
 export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeaderBarState> {
 
-  constructor() {
-    super();
+  constructor(props: LinkHeaderBarProps) {
+    super(props);
     this.state = {
       settingsMenuOpenOn: null,
       userMenuOpenOn: null

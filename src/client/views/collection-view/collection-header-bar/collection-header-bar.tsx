@@ -49,8 +49,8 @@ export interface CollectionHeaderBarState {
 }
 
 export class CollectionHeaderBar extends React.Component<CollectionHeaderBarProps, CollectionHeaderBarState> {
-  constructor() {
-    super();
+  constructor(props: CollectionHeaderBarProps) {
+    super(props);
     this.state = {
       userMenuOpenOn: null,
       addMenuOpenOn: null,

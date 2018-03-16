@@ -59,8 +59,8 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
 
   private delegate: ImmutableFormDelegate<CollectionTile>;
 
-  constructor() {
-    super();
+  constructor(props: AddCollectionTileModalProps) {
+    super(props);
     this.delegate = new ImmutableFormDelegate<CollectionTile>(this);
   }
 

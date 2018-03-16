@@ -31,11 +31,6 @@ export interface ManualFallbackState {
 
 export class ManualFallback extends React.Component<ManualFallbackProps, ManualFallbackState> {
 
-  constructor() {
-    super();
-
-  }
-
   onResolutionClick(resolution: Resolution): void {
     var { clicker } = this.props;
     clicker.changeSplits(resolution.adjustment.splits, VisStrategy.KeepAlways);

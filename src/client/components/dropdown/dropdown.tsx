@@ -52,11 +52,11 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
   // const MyDropdown = Dropdown.specialize<MyItemClass>();
   // then : <MyDropdown ... />
   static specialize<U>() {
-    return Dropdown as { new (): Dropdown<U>; };
+    return Dropdown as { new (props: DropdownProps<U>): Dropdown<U>; };
   }
 
-  constructor() {
-    super();
+  constructor(props: DropdownProps<T>) {
+    super(props);
     this.state = {
       open: false
     };

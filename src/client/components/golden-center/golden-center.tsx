@@ -35,8 +35,8 @@ export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCente
     minPadding: 50
   };
 
-  constructor() {
-    super();
+  constructor(props: GoldenCenterProps) {
+    super(props);
     this.state = {
       top: 0
     };

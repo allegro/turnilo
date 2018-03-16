@@ -41,10 +41,6 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
     topLineExtend: 0
   };
 
-  constructor() {
-    super();
-  }
-
   render() {
     var { stage, ticks, scale, topLineExtend, hideZero } = this.props;
 

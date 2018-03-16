@@ -52,8 +52,8 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
     left: 'keydown'
   };
 
-  constructor() {
-    super();
+  constructor(props: GlobalEventListenerProps) {
+    super(props);
 
     this.onResize = this.onResize.bind(this);
     this.onMousemove = this.onMousemove.bind(this);

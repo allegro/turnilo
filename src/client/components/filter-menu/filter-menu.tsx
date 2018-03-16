@@ -24,7 +24,7 @@ import { StringFilterMenu } from "../string-filter-menu/string-filter-menu";
 import { TimeFilterMenu } from "../time-filter-menu/time-filter-menu";
 import { NumberFilterMenu } from "../number-filter-menu/number-filter-menu";
 
-export interface FilterMenuProps extends React.Props<any> {
+export interface FilterMenuProps {
   essence: Essence;
   timekeeper: Timekeeper;
   clicker: Clicker;
@@ -40,10 +40,6 @@ export interface FilterMenuState {
 }
 
 export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
-
-  constructor() {
-    super();
-  }
 
   render() {
     var { clicker, essence, timekeeper, changePosition, containerStage, openOn, dimension, onClose, inside } = this.props;

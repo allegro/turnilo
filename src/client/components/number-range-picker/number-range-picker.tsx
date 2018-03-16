@@ -78,8 +78,8 @@ export interface NumberRangePickerState {
 export class NumberRangePicker extends React.Component<NumberRangePickerProps, NumberRangePickerState> {
   public mounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: NumberRangePickerProps) {
+    super(props);
     this.state = {
       min: null,
       max: null,
