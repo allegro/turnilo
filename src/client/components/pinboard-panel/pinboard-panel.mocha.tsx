@@ -20,7 +20,7 @@ import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import '../../utils/test-utils/index';
+import { renderIntoDocument } from '../../utils/test-utils';
 
 import * as TestUtils from 'react-dom/test-utils';
 import { EssenceMock, TimekeeperMock, StageMock } from '../../../common/models/mocks';
@@ -29,7 +29,7 @@ import { PinboardPanel } from './pinboard-panel';
 
 describe.skip('PinboardPanel', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <PinboardPanel
         clicker={null}
         essence={null}
@@ -38,7 +38,7 @@ describe.skip('PinboardPanel', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('pinboard-panel');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('pinboard-panel');
   });
 
 });

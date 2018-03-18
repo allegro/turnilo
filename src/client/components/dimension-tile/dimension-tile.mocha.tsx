@@ -20,7 +20,7 @@ import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import '../../utils/test-utils/index';
+import { renderIntoDocument } from '../../utils/test-utils';
 
 import * as TestUtils from 'react-dom/test-utils';
 
@@ -30,7 +30,7 @@ import { EssenceMock, TimekeeperMock, DimensionMock, SortOnMock } from '../../..
 
 describe('DimensionTile', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <DimensionTile
         clicker={null}
         dimension={DimensionMock.countryURL()}
@@ -41,7 +41,7 @@ describe('DimensionTile', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('dimension-tile');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('dimension-tile');
   });
 
 });

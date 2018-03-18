@@ -22,7 +22,7 @@ import * as ReactDOM from 'react-dom';
 
 import * as TestUtils from 'react-dom/test-utils';
 
-import '../../utils/test-utils/index';
+import '../../utils/test-utils';
 
 import { $, Expression } from 'plywood';
 import { BodyPortal } from './body-portal';

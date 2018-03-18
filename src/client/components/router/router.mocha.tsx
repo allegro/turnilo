@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode } from '../../utils/test-utils';
 
 import { expect } from 'chai';
 import * as sinon from 'sinon';
@@ -88,7 +88,7 @@ describe('Router', () => {
       // Cloning components so that react doesn't complain about the lack of keys...
       component = ReactDOM.render(<Router rootFragment="root" onURLChange={spy}>
         {children.map((c, i) => React.cloneElement(c, {key: i})) }
-      </Router>, node);
+      </Router>, node) as React.Component;
     };
 
     isActiveRoute = (route: string) => {

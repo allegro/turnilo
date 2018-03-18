@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Timezone } from 'chronoshift';
 
-import '../../utils/test-utils/index';
+import { renderIntoDocument } from '../../utils/test-utils';
 
 import * as TestUtils from 'react-dom/test-utils';
 import { StageMock } from '../../../common/models/mocks';
@@ -32,7 +32,7 @@ describe('LineChartAxis', () => {
     var scale = {
       tickFormat: () => {}
     };
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <LineChartAxis
         scale={scale}
         stage={StageMock.defaultA()}
@@ -42,7 +42,7 @@ describe('LineChartAxis', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('line-chart-axis');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('line-chart-axis');
   });
 
 });

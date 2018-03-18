@@ -23,13 +23,13 @@ import { $, Expression } from 'plywood';
 
 import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
 
 import { ResizeHandle } from './resize-handle';
 
 describe('ResizeHandle', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <ResizeHandle
         side="left"
         min={240}
@@ -39,7 +39,7 @@ describe('ResizeHandle', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('resize-handle');
+    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('resize-handle');
   });
 
 });

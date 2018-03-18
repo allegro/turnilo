@@ -18,16 +18,15 @@
 import { expect } from 'chai';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-
-import { EssenceMock } from '../../../common/models/mocks';
-import { SplitTile } from "./split-tile";
-
 import * as TestUtils from 'react-dom/test-utils';
 
+import { EssenceMock } from '../../../common/models/mocks';
+import { renderIntoDocument } from '../../utils/test-utils';
+import { SplitTile } from "./split-tile";
 
 describe('SplitTile', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <SplitTile
         clicker={null}
         essence={EssenceMock.wikiTotals()}
@@ -36,6 +35,6 @@ describe('SplitTile', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('split-tile');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('split-tile');
   });
 });

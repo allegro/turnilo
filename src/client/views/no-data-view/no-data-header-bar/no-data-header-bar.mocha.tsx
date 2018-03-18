@@ -21,21 +21,21 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-dom/test-utils';
 
-import '../../../utils/test-utils/index';
+import { renderIntoDocument } from '../../../utils/test-utils';
 
 import { $, Expression } from 'plywood';
 import { NoDataHeaderBar } from './no-data-header-bar';
 
 describe('NoDataHeaderBar', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <NoDataHeaderBar
         onNavClick={null}
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('no-data-header-bar');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('no-data-header-bar');
   });
 
 });

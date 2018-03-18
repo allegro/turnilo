@@ -20,12 +20,14 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-dom/test-utils';
 
+import { renderIntoDocument } from '../../utils/test-utils';
+
 import { EssenceMock, TimekeeperMock } from '../../../common/models/mocks';
 import { FilterTile } from "./filter-tile";
 
 describe('FilterTile', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <FilterTile
         clicker={null}
         essence={EssenceMock.wikiTotals()}
@@ -35,7 +37,7 @@ describe('FilterTile', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('filter-tile');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('filter-tile');
   });
 
 });

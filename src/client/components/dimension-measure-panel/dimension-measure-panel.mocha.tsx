@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-dom/test-utils';
 
-import { mockReactComponent } from '../../utils/test-utils/index';
+import { mockReactComponent, renderIntoDocument } from '../../utils/test-utils';
 import { EssenceMock } from '../../../common/models/mocks';
 
 import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
@@ -39,7 +39,7 @@ describe('DimensionMeasurePanel', () => {
   it('adds the correct class', () => {
     var clickyMcClickFace = {toggleMultiMeasureMode: () => {}};
 
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <DimensionMeasurePanel
         clicker={clickyMcClickFace}
         essence={EssenceMock.wikiTotals()}
@@ -50,7 +50,7 @@ describe('DimensionMeasurePanel', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('dimension-measure-panel');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('dimension-measure-panel');
   });
 
 });

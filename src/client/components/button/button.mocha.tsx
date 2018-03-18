@@ -21,14 +21,14 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-dom/test-utils';
 
-import '../../utils/test-utils/index';
+import { renderIntoDocument } from '../../utils/test-utils';
 
 import { $, Expression } from 'plywood';
 import { Button } from './button';
 
 describe('Button', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <Button
         title="Important button"
         type="primary"
@@ -36,7 +36,7 @@ describe('Button', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('button');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('button');
   });
 
 });

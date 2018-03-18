@@ -24,7 +24,7 @@ import { $, Expression } from 'plywood';
 import { DataCubeMock } from '../../../common/models/mocks';
 import { DataCube, ListItem, Cluster } from '../../../common/models/index';
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
 
 import { ImmutableDropdown } from './immutable-dropdown';
 
@@ -41,7 +41,7 @@ describe('ImmutableDropdown', () => {
 
     const clusterNames = Cluster.TYPE_VALUES.map(type => {return {value: type, label: type}; });
 
-    component = TestUtils.renderIntoDocument(
+    component = renderIntoDocument(
       <MyDropdown
         instance={DataCubeMock.twitter()}
         path={'clusterName'}

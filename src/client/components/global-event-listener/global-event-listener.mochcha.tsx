@@ -21,13 +21,13 @@ import * as React from 'react';
 import * as TestUtils from 'react-dom/test-utils';
 import { $, Expression } from 'plywood';
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { renderIntoDocument } from '../../utils/test-utils';
 
 import { GlobalEventListener } from './global-event-listener';
 
 describe('GlobalEventListener', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <GlobalEventListener
 
       />

@@ -16,7 +16,7 @@
  */
 
 import { expect } from 'chai';
-import '../../utils/test-utils/index';
+import '../../utils/test-utils';
 import { Dataset } from 'plywood';
 import { datasetToFileString, getMIMEType } from './download';
 

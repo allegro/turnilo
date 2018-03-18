@@ -23,13 +23,13 @@ import { $, Expression } from 'plywood';
 
 import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
 
 import { FilterOptionsDropdown } from './filter-options-dropdown';
 
 describe('FilterOptionsDropdown', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <FilterOptionsDropdown
         selectedOption={null}
         onSelectOption={() => {}}
@@ -37,7 +37,7 @@ describe('FilterOptionsDropdown', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('filter-options-dropdown');
+    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('filter-options-dropdown');
   });
 
 });
