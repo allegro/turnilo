@@ -24,6 +24,9 @@ import {STRINGS} from '../../config/constants';
 
 import {Button, Modal} from '../../components';
 
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { githubGist } from 'react-syntax-highlighter/styles/hljs';
+
 export interface ViewDefinitionModalProps {
   onClose: Fn;
   essence: Essence;
@@ -60,7 +63,13 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
     >
       <div className="content">
         {STRINGS.viewDefinitionSubtitle}
-        <textarea className="definition-view" readOnly={true} value={makeUrlData.printAsJson()}/>
+        <SyntaxHighlighter
+          className="definition-view"
+          language="json"
+          style={githubGist}
+        >
+          {makeUrlData.printAsJson()}
+        </SyntaxHighlighter>
         <div className="button-bar">
           <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
         </div>

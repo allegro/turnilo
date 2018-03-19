@@ -79,6 +79,7 @@
     "react": "16.2.0",
     "react-addons-css-transition-group": "15.6.2",
     "react-dom": "16.2.0",
+    "react-syntax-highlighter": "7.0.2",
     "request": "2.83.0"
   },
   "devDependencies": {
@@ -112,6 +113,7 @@
     "@types/supertest": "2.0.4",
     "@types/webpack": "3.8.10",
     "@types/webpack-env": "1.13.3",
+    "@types/react-syntax-highlighter": "0.0.5",
     "awesome-typescript-loader": "3.4.1",
     "chai": "4.1.2",
     "create-react-class": "15.6.2",
