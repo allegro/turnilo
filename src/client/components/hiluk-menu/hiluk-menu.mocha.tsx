@@ -38,6 +38,7 @@ describe.skip('HilukMenu', () => {
         openOn={openOn}
         getUrlPrefix={() => { return 'http://stackoverflow.com/'; }}
         openRawDataModal={null}
+        openViewDefinitionModal={null}
       />
     );
 

@@ -31,14 +31,17 @@ import { MANIFESTS } from '../../../common/manifests/index';
 
 import { RawDataModal } from '../../modals/index';
 
-import { DimensionMeasurePanel, FilterTile, SplitTile, VisSelector, ManualFallback, DropIndicator,
-  PinboardPanel, ResizeHandle, GlobalEventListener } from '../../components/index';
+import {
+  DimensionMeasurePanel, FilterTile, SplitTile, VisSelector, ManualFallback, DropIndicator,
+  PinboardPanel, ResizeHandle, GlobalEventListener, Modal
+} from '../../components/index';
 
 import { SupervisedCubeHeaderBar } from './supervised-cube-header-bar/supervised-cube-header-bar';
 import { CubeHeaderBar } from './cube-header-bar/cube-header-bar';
 
 import { getVisualizationComponent } from '../../visualizations/index';
 import * as localStorage from '../../utils/local-storage/local-storage';
+import {ViewDefinitionModal} from "../../modals/view-definition-modal/view-definition-modal";
 
 export interface CubeViewLayout {
   dimensionPanelWidth: number;
@@ -69,6 +72,7 @@ export interface CubeViewState {
   menuStage?: Stage;
   dragOver?: boolean;
   showRawDataModal?: boolean;
+  showViewDefinitionModal?: boolean;
   layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
@@ -98,81 +102,80 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       updatingMaxTime: false
     };
 
-    var clicker = {
+    this.clicker = {
       changeFilter: (filter: Filter, colors?: Colors) => {
-        var { essence } = this.state;
+        let {essence} = this.state;
         essence = essence.changeFilter(filter);
         if (colors) essence = essence.changeColors(colors);
-        this.setState({ essence });
+        this.setState({essence});
       },
       changeTimeSelection: (selection: Expression) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changeTimeSelection(selection) });
+        const {essence} = this.state;
+        this.setState({essence: essence.changeTimeSelection(selection)});
       },
       changeSplits: (splits: Splits, strategy: VisStrategy, colors?: Colors) => {
-        var { essence } = this.state;
+        let {essence} = this.state;
         if (colors) essence = essence.changeColors(colors);
-        this.setState({ essence: essence.changeSplits(splits, strategy) });
+        this.setState({essence: essence.changeSplits(splits, strategy)});
       },
       changeSplit: (split: SplitCombine, strategy: VisStrategy) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changeSplit(split, strategy) });
+        const {essence} = this.state;
+        this.setState({essence: essence.changeSplit(split, strategy)});
       },
       addSplit: (split: SplitCombine, strategy: VisStrategy) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.addSplit(split, strategy) });
+        const {essence} = this.state;
+        this.setState({essence: essence.addSplit(split, strategy)});
       },
       removeSplit: (split: SplitCombine, strategy: VisStrategy) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.removeSplit(split, strategy) });
+        const {essence} = this.state;
+        this.setState({essence: essence.removeSplit(split, strategy)});
       },
       changeColors: (colors: Colors) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changeColors(colors) });
+        const {essence} = this.state;
+        this.setState({essence: essence.changeColors(colors)});
       },
       changeVisualization: (visualization: Manifest) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changeVisualization(visualization) });
+        const {essence} = this.state;
+        this.setState({essence: essence.changeVisualization(visualization)});
       },
       pin: (dimension: Dimension) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.pin(dimension) });
+        const {essence} = this.state;
+        this.setState({essence: essence.pin(dimension)});
       },
       unpin: (dimension: Dimension) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.unpin(dimension) });
+        const {essence} = this.state;
+        this.setState({essence: essence.unpin(dimension)});
       },
       changePinnedSortMeasure: (measure: Measure) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changePinnedSortMeasure(measure) });
+        const {essence} = this.state;
+        this.setState({essence: essence.changePinnedSortMeasure(measure)});
       },
       toggleMultiMeasureMode: () => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.toggleMultiMeasureMode() });
+        const {essence} = this.state;
+        this.setState({essence: essence.toggleMultiMeasureMode()});
       },
       toggleEffectiveMeasure: (measure: Measure) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.toggleEffectiveMeasure(measure) });
+        const {essence} = this.state;
+        this.setState({essence: essence.toggleEffectiveMeasure(measure)});
       },
       changeHighlight: (owner: string, measure: string, delta: Filter) => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(owner, measure, delta) });
+        const {essence} = this.state;
+        this.setState({essence: essence.changeHighlight(owner, measure, delta)});
       },
       acceptHighlight: () => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.acceptHighlight() });
+        const {essence} = this.state;
+        this.setState({essence: essence.acceptHighlight()});
       },
       dropHighlight: () => {
-        var { essence } = this.state;
-        this.setState({ essence: essence.dropHighlight() });
+        const {essence} = this.state;
+        this.setState({essence: essence.dropHighlight()});
       }
     };
-    this.clicker = clicker;
   }
 
   refreshMaxTime() {
-    var { essence, timekeeper } = this.state;
-    var { dataCube } = essence;
+    const { essence, timekeeper } = this.state;
+    const { dataCube } = essence;
     this.setState({ updatingMaxTime: true });
 
     DataCube.queryMaxTime(dataCube)
@@ -186,8 +189,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillMount() {
-    var { hash, dataCube, updateViewHash, initTimekeeper } = this.props;
-    var essence = this.getEssenceFromHash(dataCube, hash);
+    const { hash, dataCube, updateViewHash, initTimekeeper } = this.props;
+    let essence = this.getEssenceFromHash(dataCube, hash);
     if (!essence) {
       if (!dataCube) throw new Error('must have data cube');
       essence = this.getEssenceFromDataCube(dataCube);
@@ -224,7 +227,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     if (!nextProps.dataCube) throw new Error('must have data cube');
 
     if (dataCube.name !== nextProps.dataCube.name || hash !== nextProps.hash) {
-      var hashEssence = this.getEssenceFromHash(nextProps.dataCube, nextProps.hash);
+      let hashEssence = this.getEssenceFromHash(nextProps.dataCube, nextProps.hash);
       if (!hashEssence) {
         hashEssence = this.getEssenceFromDataCube(nextProps.dataCube);
         updateViewHash(hashEssence.toHash(), true);
@@ -251,7 +254,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   getEssenceFromDataCube(dataCube: DataCube): Essence {
     const essence = Essence.fromDataCube(dataCube, { dataCube: dataCube, visualizations: MANIFESTS });
-    var isMulti = !!localStorage.get('is-multi-measure');
+    const isMulti = !!localStorage.get('is-multi-measure');
     return essence.multiMeasureMode !== isMulti ? essence.toggleMultiMeasureMode() : essence;
   }
 
@@ -261,9 +264,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   globalResizeListener() {
-    var { container, visualization } = this.refs;
-    var containerDOM = ReactDOM.findDOMNode(container);
-    var visualizationDOM = ReactDOM.findDOMNode(visualization);
+    const { container, visualization } = this.refs;
+    const containerDOM = ReactDOM.findDOMNode(container);
+    const visualizationDOM = ReactDOM.findDOMNode(visualization);
     if (!containerDOM || !visualizationDOM) return;
 
     this.setState({
@@ -296,7 +299,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   drop(e: DragEvent) {
     if (!this.canDrop(e)) return;
     e.preventDefault();
-    var dimension = DragManager.getDragDimension();
+    const dimension = DragManager.getDragDimension();
     if (dimension) {
       this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
     }
@@ -323,6 +326,28 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence={essence}
       timekeeper={timekeeper}
       onClose={this.onRawDataModalClose.bind(this)}
+    />;
+  }
+
+  openViewDefinitionModal() {
+    this.setState({
+      showViewDefinitionModal: true
+    });
+  }
+
+  onViewDefinitionModalClose() {
+    this.setState({
+      showViewDefinitionModal: false
+    });
+  }
+
+  renderViewDefinitionModal() {
+    const { showViewDefinitionModal, essence } = this.state;
+    if (!showViewDefinitionModal) return null;
+
+    return <ViewDefinitionModal
+      onClose={this.onViewDefinitionModalClose.bind(this)}
+      essence={essence}
     />;
   }
 
@@ -375,31 +400,33 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   render() {
-    var clicker = this.clicker;
+    const clicker = this.clicker;
 
-    var { getUrlPrefix, onNavClick, user, customization, supervisor, stateful } = this.props;
-    var { deviceSize, layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
+    const { getUrlPrefix, onNavClick, user, customization, supervisor, stateful } = this.props;
+    const { deviceSize, layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
 
     if (!essence) return null;
 
-    var { visualization } = essence;
+    const { visualization } = essence;
 
-    var visElement: JSX.Element = null;
+    let visElement: JSX.Element = null;
     if (essence.visResolve.isReady() && visualizationStage) {
-      var visProps: VisualizationProps = {
+      const visProps: VisualizationProps = {
         clicker,
         timekeeper,
         essence,
         stage: visualizationStage,
         deviceSize,
         openRawDataModal: this.openRawDataModal.bind(this),
-        registerDownloadableDataset: (dataset: Dataset) => { this.downloadableDataset = dataset; }
+        registerDownloadableDataset: (dataset: Dataset) => {
+          this.downloadableDataset = dataset;
+        }
       };
 
       visElement = React.createElement(getVisualizationComponent(visualization), visProps);
     }
 
-    var manualFallback: JSX.Element = null;
+    let manualFallback: JSX.Element = null;
     if (essence.visResolve.isManual()) {
       manualFallback = React.createElement(ManualFallback, {
         clicker,
@@ -407,7 +434,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       });
     }
 
-    var styles = {
+    let styles = {
       dimensionMeasurePanel: {width: layout.dimensionPanelWidth},
       centerPanel: {left: layout.dimensionPanelWidth, right: layout.pinboardWidth},
       pinboardPanel: {width: layout.pinboardWidth}
@@ -421,7 +448,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       };
     }
 
-    var headerBar = <CubeHeaderBar
+    let headerBar = <CubeHeaderBar
       clicker={clicker}
       essence={essence}
       timekeeper={timekeeper}
@@ -430,6 +457,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       getUrlPrefix={getUrlPrefix}
       refreshMaxTime={this.refreshMaxTime.bind(this)}
       openRawDataModal={this.openRawDataModal.bind(this)}
+      openViewDefinitionModal={this.openViewDefinitionModal.bind(this)}
       customization={customization}
       getDownloadableDataset={() => this.downloadableDataset}
       changeTimezone={this.changeTimezone.bind(this)}
@@ -530,6 +558,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         />
       </div>
       {this.renderRawDataModal()}
+      {this.renderViewDefinitionModal()}
     </div>;
   }
 }
