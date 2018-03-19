@@ -15,6 +15,14 @@ In order to gain wide adoption of non-technical users, Druid requires simple yet
 In Allegro we have decided that we are going to continue Pivot development as an open source software,
 this is how Turnilo emerged.
 
+## Manifesto
+
+* High usability for non-technical users over sophisticated but rarely used features.
+* Focus on interactive data exploration over static predefined dashboards.
+* Outstanding integration with Druid over support for other data sources like SQL databases.
+* Focus on data visualizations over Druid cluster or data ingestion management.
+* Data cubes configuration as a code over UI editor backed by non-versioned database.
+* Stateless over stateful server-side architecture.
 
 ## Features
 
