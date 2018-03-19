@@ -104,6 +104,7 @@ export const STRINGS: any = {
   logout: 'Logout',
   measures: 'Measures',
   measure: 'Measure',
+  mkurlDomainPlaceholder: 'CHANGE ME',
   next: 'Next',
   no: 'No',
   noIllCreateThem: 'No, I\'ll create them myself',
@@ -141,7 +142,6 @@ export const STRINGS: any = {
   displayViewDefinition: 'Display view definition',
   viewDefinition: 'View definition',
   viewDefinitionSubtitle: 'View definition for mkurl',
-  mkurlDomainPlaceholder: 'CHANGE ME',
   yes: 'Yes'
 };
 

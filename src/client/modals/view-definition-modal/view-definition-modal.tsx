@@ -24,7 +24,7 @@ import {STRINGS} from '../../config/constants';
 
 import {Button, Modal} from '../../components';
 
-export interface ViewDefinitionModalProps extends React.Props<any> {
+export interface ViewDefinitionModalProps {
   onClose: Fn;
   essence: Essence;
 }
@@ -46,8 +46,6 @@ class MakeUrlData {
 }
 
 export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProps, {}> {
-
-  public mounted: boolean;
 
   render() {
     const { essence, onClose } = this.props;

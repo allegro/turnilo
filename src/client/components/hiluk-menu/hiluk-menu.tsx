@@ -85,7 +85,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
 
     const filters = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
     const splitsString = splits.toArray().map((split) => {
-      let dimension = split.getDimension(dataCube.dimensions);
+      const dimension = split.getDimension(dataCube.dimensions);
       if (!dimension) return '';
       return `${STRINGS.splitDelimiter}_${dimension.name}`;
     }).join("_");
