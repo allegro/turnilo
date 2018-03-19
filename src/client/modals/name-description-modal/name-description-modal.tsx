@@ -41,13 +41,13 @@ export interface NameDescriptionModalProps<T> extends React.Props<any> {
 export class NameDescriptionModal<T> extends React.Component<NameDescriptionModalProps<T>, ImmutableFormState<T>> {
 
   static specialize<U>() {
-    return NameDescriptionModal as { new (): NameDescriptionModal<U>; };
+    return NameDescriptionModal as { new (props: NameDescriptionModalProps<U>): NameDescriptionModal<U>; };
   }
 
   private delegate: ImmutableFormDelegate<T>;
 
-  constructor() {
-    super();
+  constructor(props: NameDescriptionModalProps<T>) {
+    super(props);
 
     this.delegate = new ImmutableFormDelegate(this);
   }

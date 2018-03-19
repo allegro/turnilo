@@ -20,7 +20,7 @@ import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import '../../utils/test-utils/index';
+import { renderIntoDocument } from '../../utils/test-utils';
 
 import * as TestUtils from 'react-dom/test-utils';
 
@@ -36,7 +36,7 @@ describe('MeasuresTile', () => {
       toggleMultiMeasureMode: () => {}
     };
 
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <MeasuresTile
         clicker={fakeClicker}
         essence={EssenceMock.wikiTotals()}
@@ -44,7 +44,7 @@ describe('MeasuresTile', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('measures-tile');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('measures-tile');
   });
 
 });

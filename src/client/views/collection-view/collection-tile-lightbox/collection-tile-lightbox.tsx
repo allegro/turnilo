@@ -52,8 +52,8 @@ export interface CollectionTileLightboxState {
 }
 
 export class CollectionTileLightbox extends React.Component<CollectionTileLightboxProps, CollectionTileLightboxState> {
-  constructor() {
-    super();
+  constructor(props: CollectionTileLightboxProps) {
+    super(props);
 
     this.state = {};
   }

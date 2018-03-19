@@ -67,8 +67,8 @@ export interface SplitMenuState {
 export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   public mounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: SplitMenuProps) {
+    super(props);
     this.state = {
       split: null,
       colors: null

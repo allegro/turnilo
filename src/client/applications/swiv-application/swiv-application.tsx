@@ -74,8 +74,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   private sideBarHrefFn: FunctionSlot<string>;
   private collectionViewDelegate: CollectionViewDelegate;
 
-  constructor() {
-    super();
+  constructor(props: SwivApplicationProps) {
+    super(props);
     this.collectionViewDelegate = new CollectionViewDelegate(this);
     this.sideBarHrefFn = createFunctionSlot<string>();
     this.state = {

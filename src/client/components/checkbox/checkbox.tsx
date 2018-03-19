@@ -23,9 +23,9 @@ import { classNames } from '../../utils/dom/dom';
 
 export type CheckboxType = 'check' | 'cross' | 'radio';
 
-export interface CheckboxProps extends React.Props<any> {
+export interface CheckboxProps {
   selected: boolean;
-  onClick?: React.MouseEventHandler;
+  onClick?: React.MouseEventHandler<HTMLElement>;
   type?: CheckboxType;
   color?: string;
   label?: string;
@@ -39,11 +39,6 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
   static defaultProps: Partial<CheckboxProps> = {
     type: 'check'
   };
-
-  constructor() {
-    super();
-
-  }
 
   renderIcon() {
     const { selected, type } = this.props;

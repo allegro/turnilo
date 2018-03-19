@@ -50,7 +50,7 @@ function formatLabelDummy(dimension: Dimension): string {
   return dimension.title;
 }
 
-export interface FilterTileProps extends React.Props<any> {
+export interface FilterTileProps {
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;
@@ -75,8 +75,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   private dummyDeferred: Q.Deferred<any>;
   private overflowMenuDeferred: Q.Deferred<Element>;
 
-  constructor() {
-    super();
+  constructor(props: FilterTileProps) {
+    super(props);
     this.overflowMenuId = uniqueId('overflow-menu-');
     this.state = {
       menuOpenOn: null,
@@ -130,7 +130,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     return document.getElementById(this.overflowMenuId);
   }
 
-  clickDimension(dimension: Dimension, e: React.MouseEvent) {
+  clickDimension(dimension: Dimension, e: React.MouseEvent<HTMLElement>) {
     const target = findParentWithClass(e.target as Element, FILTER_CLASS_NAME);
     this.openMenu(dimension, target);
   }

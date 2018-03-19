@@ -17,7 +17,7 @@
 
 import * as express from 'express';
 import { Request, Response, Router, Handler } from 'express';
-import * as hsts from 'hsts';
+import { hsts } from 'helmet';
 
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
@@ -89,7 +89,7 @@ app.use(logAndTrack(SERVER_SETTINGS.getRequestLogFormat()));
 if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {
   app.use(hsts({
     maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
-    includeSubDomains: true, // Must be enabled to be approved by Google
+    includeSubdomains: true, // Must be enabled to be approved by Google
     preload: true
   }));
 }

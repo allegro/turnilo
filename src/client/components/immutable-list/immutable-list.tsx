@@ -50,11 +50,11 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   // const MyList = ImmutableList.specialize<MyImmutableClass>();
   // then : <MyList ... />
   static specialize<U>() {
-    return ImmutableList as { new (): ImmutableList<U>; };
+    return ImmutableList as { new (props: ImmutableListProps<U>): ImmutableList<U>; };
   }
 
-  constructor() {
-    super();
+  constructor(props: ImmutableListProps<T>) {
+    super(props);
     this.state = {};
   }
 

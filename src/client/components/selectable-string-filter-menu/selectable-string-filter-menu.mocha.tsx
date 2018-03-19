@@ -22,14 +22,14 @@ import * as TestUtils from 'react-dom/test-utils';
 
 import { Filter } from "../../../common/models/filter/filter";
 
-import '../../utils/test-utils/index';
+import { renderIntoDocument } from '../../utils/test-utils';
 import { EssenceMock, TimekeeperMock } from '../../../common/models/mocks';
 
 import { SelectableStringFilterMenu } from "./selectable-string-filter-menu";
 
 describe.skip('SelectableStringFilterMenu', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <SelectableStringFilterMenu
         filterMode={Filter.REGEX}
         searchText=""
@@ -43,7 +43,7 @@ describe.skip('SelectableStringFilterMenu', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('string-filter-menu');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('string-filter-menu');
   });
 
 });

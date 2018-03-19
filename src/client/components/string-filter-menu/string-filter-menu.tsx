@@ -48,8 +48,8 @@ export interface StringFilterMenuState {
 export class StringFilterMenu extends React.Component<StringFilterMenuProps, StringFilterMenuState> {
   public mounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: StringFilterMenuProps) {
+    super(props);
     this.state = {
       filterMode: null,
       searchText: null

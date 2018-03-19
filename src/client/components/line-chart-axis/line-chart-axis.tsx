@@ -39,10 +39,6 @@ export interface LineChartAxisState {
 }
 
 export class LineChartAxis extends React.Component<LineChartAxisProps, LineChartAxisState> {
-  constructor() {
-    super();
-
-  }
 
   render() {
     const { stage, ticks, scale, timezone } = this.props;

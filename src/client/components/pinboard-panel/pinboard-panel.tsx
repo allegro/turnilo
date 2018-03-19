@@ -40,8 +40,8 @@ export interface PinboardPanelState {
 
 export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardPanelState> {
 
-  constructor() {
-    super();
+  constructor(props: PinboardPanelProps) {
+    super(props);
     this.state = {
       dragOver: false
     };

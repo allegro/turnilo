@@ -57,8 +57,8 @@ export interface HomeViewState {
 
 export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
 
-  constructor() {
-    super();
+  constructor(props: HomeViewProps) {
+    super(props);
     this.state = {};
   }
 

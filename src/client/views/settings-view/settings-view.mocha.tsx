@@ -23,18 +23,18 @@ import { $, Expression } from 'plywood';
 
 import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
 
 import { SettingsView } from './settings-view';
 
 describe.skip('SettingsView', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <SettingsView
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('settings-view');
+    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('settings-view');
   });
 });

@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +14,13 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
-import { BodyPortal } from '../../components/body-portal/body-portal';
+import * as React from "react";
+import * as TestUtils from "react-dom/test-utils";
 
-export function findDOMNode(element: React.Component<any, any> | Element ): Element {
-  var portal: any = TestUtils.scryRenderedComponentsWithType(element as React.Component, BodyPortal)[0];
-  return portal ? portal.target.childNodes[0] : ReactDOM.findDOMNode(element);
+// TODO: remove when included in official @types/react-dom package
+//
+// This wrapper is needed for correct type inference
+// Current @types/react-dom declare wrong (IMHO) return type which includes void
+export function renderIntoDocument<P>(element: React.ReactElement<P>): React.Component<P> | Element {
+  return TestUtils.renderIntoDocument(element) as React.Component<P> | Element;
 }

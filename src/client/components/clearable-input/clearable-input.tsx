@@ -23,7 +23,7 @@ import { $, Expression, Executor, Dataset } from 'plywood';
 import { Stage, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
 import { SvgIcon } from '../svg-icon/svg-icon';
 
-function focusOnInput(component: React.DOMComponent<React.HTMLAttributes>): void {
+function focusOnInput(component: HTMLInputElement): any {
   if (!component) return;
   (component as any).focus();
 }
@@ -35,17 +35,13 @@ export interface ClearableInputProps extends React.Props<any> {
   focusOnMount?: boolean;
   value: string;
   onChange: (newValue: string) => any;
-  onBlur?: React.FocusEventHandler;
+  onBlur?: React.FocusEventHandler<HTMLElement>;
 }
 
 export interface ClearableInputState {
 }
 
 export class ClearableInput extends React.Component<ClearableInputProps, ClearableInputState> {
-
-  constructor() {
-    super();
-  }
 
   onChange(e: KeyboardEvent) {
     this.props.onChange((e.target as HTMLInputElement).value);

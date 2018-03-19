@@ -43,8 +43,8 @@ export interface ModalState {
 export class Modal extends React.Component<ModalProps, ModalState> {
   private focusAlreadyGiven =  false;
 
-  constructor() {
-    super();
+  constructor(props: ModalProps) {
+    super(props);
     this.state = {
       id: null
     };

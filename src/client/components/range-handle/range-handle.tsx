@@ -38,8 +38,8 @@ export interface RangeHandleState {
 export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleState> {
   public mounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: RangeHandleProps) {
+    super(props);
     this.state = {
       anchor:  null
     };

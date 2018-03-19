@@ -42,8 +42,8 @@ export interface MeasuresTileState {
 
 export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTileState> {
 
-  constructor() {
-    super();
+  constructor(props: MeasuresTileProps) {
+    super(props);
     this.state = {
       showSearch: false,
       searchText: ''

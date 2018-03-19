@@ -43,10 +43,6 @@ export interface ChartLineState {
 
 export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
 
-  constructor() {
-    super();
-  }
-
   render() {
     var { stage, dataset, getY, getX, scaleX, scaleY, color, showArea, hoverRange } = this.props;
     if (!dataset || !color) return null;

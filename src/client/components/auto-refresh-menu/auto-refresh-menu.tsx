@@ -61,11 +61,6 @@ export interface AutoRefreshMenuState {
 
 export class AutoRefreshMenu extends React.Component<AutoRefreshMenuProps, AutoRefreshMenuState> {
 
-  constructor() {
-    super();
-
-  }
-
   onRefreshNowClick() {
     var { refreshMaxTime } = this.props;
     refreshMaxTime();

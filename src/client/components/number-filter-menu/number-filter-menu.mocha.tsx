@@ -20,7 +20,7 @@ import * as React from 'react';
 import * as TestUtils from 'react-dom/test-utils';
 import { EssenceMock, TimekeeperMock, DimensionMock, StageMock } from '../../../common/models/mocks';
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
 
 import { NumberFilterMenu } from './number-filter-menu';
 
@@ -29,7 +29,7 @@ describe('NumberFilterMenu', () => {
   div.setAttribute("id", "Div1");
 
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <NumberFilterMenu
         clicker={null}
         dimension={DimensionMock.time()}
@@ -44,7 +44,7 @@ describe('NumberFilterMenu', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('number-filter-menu');
+    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('number-filter-menu');
   });
 
 });

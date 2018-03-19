@@ -37,8 +37,8 @@ export interface VisSelectorMenuState {
 export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSelectorMenuState> {
   public mounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: VisSelectorMenuProps) {
+    super(props);
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }

@@ -24,14 +24,14 @@ import { SvgIcon } from '../svg-icon/svg-icon';
 export interface TileHeaderIcon {
   name: string;
   svg: string;
-  onClick: React.MouseEventHandler;
+  onClick: React.MouseEventHandler<HTMLElement>;
   ref?: string;
   active?: boolean;
 }
 
-export interface TileHeaderProps extends React.Props<any> {
+export interface TileHeaderProps {
   title: string;
-  onDragStart?: React.DragEventHandler;
+  onDragStart?: React.DragEventHandler<HTMLElement>;
   icons?: TileHeaderIcon[];
 }
 
@@ -39,11 +39,6 @@ export interface TileHeaderState {
 }
 
 export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState> {
-
-  constructor() {
-    super();
-
-  }
 
   renderIcons() {
     const { icons } = this.props;

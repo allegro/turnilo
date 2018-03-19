@@ -33,10 +33,6 @@ export interface GridLinesState {
 
 export class GridLines extends React.Component<GridLinesProps, GridLinesState> {
 
-  constructor() {
-    super();
-  }
-
   render() {
     var { orientation, stage, ticks, scale } = this.props;
 

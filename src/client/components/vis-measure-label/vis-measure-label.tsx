@@ -30,10 +30,6 @@ export interface VisMeasureLabelState {
 }
 
 export class VisMeasureLabel extends React.Component<VisMeasureLabelProps, VisMeasureLabelState> {
-  constructor() {
-    super();
-
-  }
 
   render() {
     const { measure, datum } = this.props;

@@ -19,7 +19,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { mockReactComponent } from '../../utils/test-utils/index';
+import { mockReactComponent, renderIntoDocument } from '../../utils/test-utils';
 
 import * as TestUtils from 'react-dom/test-utils';
 
@@ -47,7 +47,7 @@ describe('CubeView', () => {
   it('adds the correct class', () => {
     var updateViewHash = sinon.stub();
 
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <CubeView
         hash={null}
         initTimekeeper={TimekeeperMock.fixed()}
@@ -58,7 +58,7 @@ describe('CubeView', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('cube-view');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('cube-view');
 
   });
 
@@ -67,7 +67,7 @@ describe('CubeView', () => {
     var stub = sinon.stub(localStorage, "get");
     stub.withArgs('is-multi-measure').returns(undefined);
 
-    var initialCubeView: any = TestUtils.renderIntoDocument(
+    var initialCubeView: any = renderIntoDocument(
       <CubeView
         hash={null}
         initTimekeeper={TimekeeperMock.fixed()}
@@ -82,7 +82,7 @@ describe('CubeView', () => {
     stub = sinon.stub(localStorage, "get");
     stub.withArgs('is-multi-measure').returns(true);
 
-    var wikiCubeView: any = TestUtils.renderIntoDocument(
+    var wikiCubeView: any = renderIntoDocument(
       <CubeView
         hash={null}
         initTimekeeper={TimekeeperMock.fixed()}
@@ -98,7 +98,7 @@ describe('CubeView', () => {
     stub = sinon.stub(localStorage, "get");
     stub.withArgs('is-multi-measure').returns(false);
 
-    var wikiCubeView2: any = TestUtils.renderIntoDocument(
+    var wikiCubeView2: any = renderIntoDocument(
       <CubeView
         hash={null}
         initTimekeeper={TimekeeperMock.fixed()}

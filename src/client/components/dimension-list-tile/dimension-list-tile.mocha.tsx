@@ -21,12 +21,14 @@ import * as ReactDOM from 'react-dom';
 
 import * as TestUtils from 'react-dom/test-utils';
 
+import { renderIntoDocument } from '../../utils/test-utils';
+
 import { EssenceMock } from '../../../common/models/mocks';
 import { DimensionListTile } from "./dimension-list-tile";
 
 describe('DimensionListTile', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <DimensionListTile
         clicker={null}
         essence={EssenceMock.wikiTotals()}
@@ -37,7 +39,7 @@ describe('DimensionListTile', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('dimension-list-tile');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('dimension-list-tile');
   });
 
 });

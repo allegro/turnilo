@@ -21,7 +21,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import * as TestUtils from 'react-dom/test-utils';
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
 
 import { $, Expression } from 'plywood';
 import { BubbleMenu } from './bubble-menu';
@@ -32,7 +32,7 @@ describe('BubbleMenu', () => {
   it('adds the correct class', () => {
     var openOn = document.createElement('div');
 
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <BubbleMenu
         children={null}
         className={null}
@@ -45,7 +45,7 @@ describe('BubbleMenu', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('bubble-menu');
+    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('bubble-menu');
   });
 
 });

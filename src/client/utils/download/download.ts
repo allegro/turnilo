@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as filesaver from 'browser-filesaver';
+import * as filesaver from 'file-saver';
 import { Dataset, DatasetJSFull } from 'plywood';
 
 export type FileFormat = "csv" | "tsv" | "json" | "txt";

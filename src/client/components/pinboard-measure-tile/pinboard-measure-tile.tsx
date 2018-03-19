@@ -33,9 +33,6 @@ export interface PinboardMeasureTileState {
 }
 
 export class PinboardMeasureTile extends React.Component<PinboardMeasureTileProps, PinboardMeasureTileState> {
-  constructor() {
-    super();
-  }
 
   render() {
     var { essence, title, dimension, sortOn, onSelect } = this.props;

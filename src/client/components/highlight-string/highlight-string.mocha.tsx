@@ -21,7 +21,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom/server';
 import * as TestUtils from 'react-dom/test-utils';
 
-import '../../utils/test-utils/index';
+import '../../utils/test-utils';
 
 import { $, Expression } from 'plywood';
 import { HighlightString } from './highlight-string';
@@ -42,7 +42,7 @@ describe('HighlightString', () => {
       />
     )).to.equal(`<span class="highlight-string"><span class="pre">2</span><span class="bold">me</span><span class="post">2</span></span>`);
     // expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    // expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('highlight-string');
+    // expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('highlight-string');
   });
 
 });

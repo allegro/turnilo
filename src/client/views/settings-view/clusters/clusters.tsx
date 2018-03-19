@@ -38,8 +38,8 @@ export interface ClustersState {
 }
 
 export class Clusters extends React.Component<ClustersProps, ClustersState> {
-  constructor() {
-    super();
+  constructor(props: ClustersProps) {
+    super(props);
 
     this.state = {};
   }

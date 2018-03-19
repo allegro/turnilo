@@ -44,8 +44,8 @@ export interface SideDrawerState {
 
 export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
 
-  constructor() {
-    super();
+  constructor(props: SideDrawerProps) {
+    super(props);
 
     this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);

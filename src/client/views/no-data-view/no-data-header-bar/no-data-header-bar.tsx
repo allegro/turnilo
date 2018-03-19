@@ -34,8 +34,8 @@ export interface NoDataHeaderBarState {
 }
 
 export class NoDataHeaderBar extends React.Component<NoDataHeaderBarProps, NoDataHeaderBarState> {
-  constructor() {
-    super();
+  constructor(props: NoDataHeaderBarProps) {
+    super(props);
     this.state = {
       userMenuOpenOn: null
     };

@@ -69,8 +69,8 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
 
   private delegate: ImmutableFormDelegate<DataCube>;
 
-  constructor() {
-    super();
+  constructor(props: DataCubeEditProps) {
+    super(props);
 
     this.delegate = new ImmutableFormDelegate<DataCube>(this);
   }

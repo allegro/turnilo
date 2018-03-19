@@ -30,10 +30,6 @@ export interface HighlightStringState {
 }
 
 export class HighlightString extends React.Component<HighlightStringProps, HighlightStringState> {
-  constructor() {
-    super();
-
-  }
 
   highlightInString(): any {
     var { text, highlight} = this.props;

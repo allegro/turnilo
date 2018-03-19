@@ -19,14 +19,14 @@ import { expect } from 'chai';
 import * as React from 'react';
 import * as TestUtils from 'react-dom/test-utils';
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
 
 import { NumberRangePicker } from './number-range-picker';
 import { EssenceMock, TimekeeperMock, DimensionMock } from '../../../common/models/mocks';
 
 describe('NumberRangePicker', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <NumberRangePicker
         start={2}
         end={10}
@@ -40,7 +40,7 @@ describe('NumberRangePicker', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('number-range-picker');
+    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('number-range-picker');
   });
 
 });

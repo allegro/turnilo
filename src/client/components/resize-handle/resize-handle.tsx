@@ -45,8 +45,8 @@ export interface ResizeHandleState {
 export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandleState> {
   private offset = 0;
 
-  constructor() {
-    super();
+  constructor(props: ResizeHandleProps) {
+    super(props);
 
     this.state = {};
 

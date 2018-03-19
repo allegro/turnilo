@@ -37,8 +37,8 @@ export interface ClusterSeedModalProps extends React.Props<any> {
 export class ClusterSeedModal extends React.Component<ClusterSeedModalProps, ImmutableFormState<Cluster>> {
   private delegate: ImmutableFormDelegate<Cluster>;
 
-  constructor() {
-    super();
+  constructor(props: ClusterSeedModalProps) {
+    super(props);
     this.delegate = new ImmutableFormDelegate<Cluster>(this);
   }
 

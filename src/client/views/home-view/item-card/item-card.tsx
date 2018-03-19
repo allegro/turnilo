@@ -47,8 +47,8 @@ export class ItemCard extends React.Component< ItemCardProps, ItemCardState> {
     </div>;
   }
 
-  constructor() {
-    super();
+  constructor(props: ItemCardProps) {
+    super(props);
 
     this.state = {};
   }

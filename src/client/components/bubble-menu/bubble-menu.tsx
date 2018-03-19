@@ -57,8 +57,8 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     align: 'center'
   };
 
-  constructor() {
-    super();
+  constructor(props: BubbleMenuProps) {
+    super(props);
     this.state = {
       id: null
     };

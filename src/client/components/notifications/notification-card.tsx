@@ -43,8 +43,8 @@ const DEFAULT_DURATION = 6; // seconds
 export class NotificationCard extends React.Component<NotificationCardProps, NotificationCardState> {
   private timeoutID: number;
 
-  constructor() {
-    super();
+  constructor(props: NotificationCardProps) {
+    super(props);
     this.state = {
       appearing: false,
       disappearing: false,

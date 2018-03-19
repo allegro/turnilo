@@ -46,10 +46,6 @@ export interface SegmentBubbleState {
 
 export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBubbleState> {
 
-  constructor() {
-    super();
-  }
-
   render() {
     const { left, top, dimension, segmentLabel, measureLabel, clicker, openRawDataModal, onClose } = this.props;
 

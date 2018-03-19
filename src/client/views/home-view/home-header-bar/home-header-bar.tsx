@@ -34,8 +34,8 @@ export interface HomeHeaderBarState {
 }
 
 export class HomeHeaderBar extends React.Component<HomeHeaderBarProps, HomeHeaderBarState> {
-  constructor() {
-    super();
+  constructor(props: HomeHeaderBarProps) {
+    super(props);
     this.state = {
       userMenuOpenOn: null
     };

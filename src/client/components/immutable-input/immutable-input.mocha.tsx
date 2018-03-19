@@ -24,7 +24,7 @@ import { $, Expression } from 'plywood';
 import { DataCube } from '../../../common/models/index';
 import { DataCubeMock } from '../../../common/models/mocks';
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
 
 import { ImmutableInput } from './immutable-input';
 
@@ -38,7 +38,7 @@ describe('ImmutableInput', () => {
     onChange = sinon.spy();
     onInvalid = sinon.spy();
 
-    component = TestUtils.renderIntoDocument(
+    component = renderIntoDocument(
       <ImmutableInput
         instance={DataCubeMock.twitter()}
         path={'clusterName'}
@@ -122,7 +122,7 @@ describe('ImmutableInput', () => {
 
       let valueToString = (str: string) => str.toUpperCase();
 
-      component = TestUtils.renderIntoDocument(
+      component = renderIntoDocument(
         <ImmutableInput
           instance={DataCubeMock.twitter()}
           path={'clusterName'}

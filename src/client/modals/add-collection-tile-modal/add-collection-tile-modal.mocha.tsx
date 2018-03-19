@@ -21,14 +21,14 @@ import * as React from 'react';
 import * as TestUtils from 'react-dom/test-utils';
 import { $, Expression } from 'plywood';
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
 import { TimekeeperMock } from '../../../common/models/mocks';
 
 import { AddCollectionTileModal } from './add-collection-tile-modal';
 
 describe.skip('AddCollectionTileModal', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <AddCollectionTileModal
         essence={null}
         timekeeper={TimekeeperMock.fixed()}
@@ -38,7 +38,7 @@ describe.skip('AddCollectionTileModal', () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('add-collection-tile-modal');
+    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('add-collection-tile-modal');
   });
 
 });

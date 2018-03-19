@@ -73,10 +73,6 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
     return FILTER_OPTIONS.filter(option => filterTypes.indexOf(option.value) !== -1);
   }
 
-  constructor() {
-    super();
-  }
-
   onSelectOption(option: FilterOption) {
     this.props.onSelectOption(option.value);
   }

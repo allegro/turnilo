@@ -23,7 +23,7 @@ import { $, Expression } from 'plywood';
 
 import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
 
-import { findDOMNode } from '../../utils/test-utils/index';
+import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
 
 import { SimpleList } from './simple-list';
 
@@ -31,14 +31,14 @@ describe.skip('SimpleList', () => {
   it('adds the correct class', () => {
     var myRows: any[] = [];
 
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <SimpleList
         rows={myRows}
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('simple-list');
+    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('simple-list');
   });
 
 });

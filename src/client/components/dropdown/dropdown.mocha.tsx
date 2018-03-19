@@ -19,7 +19,7 @@ import { expect } from 'chai';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import '../../utils/test-utils/index';
+import { renderIntoDocument } from '../../utils/test-utils';
 
 import * as TestUtils from 'react-dom/test-utils';
 
@@ -27,14 +27,14 @@ import { Dropdown } from './dropdown';
 
 describe('Dropdown', () => {
   it('adds the correct class', () => {
-    var renderedComponent = TestUtils.renderIntoDocument(
+    var renderedComponent = renderIntoDocument(
       <Dropdown
         items={null}
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('dropdown');
+    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('dropdown');
   });
 
 });

@@ -28,11 +28,6 @@ export interface DropIndicatorState {
 
 export class DropIndicator extends React.Component<DropIndicatorProps, DropIndicatorState> {
 
-  constructor() {
-    super();
-
-  }
-
   render() {
     return <div className="drop-indicator">
       <div className="white-out"></div>

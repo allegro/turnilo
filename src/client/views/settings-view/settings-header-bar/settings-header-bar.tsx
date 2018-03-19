@@ -34,8 +34,8 @@ export interface SettingsHeaderBarState {
 }
 
 export class SettingsHeaderBar extends React.Component<SettingsHeaderBarProps, SettingsHeaderBarState> {
-  constructor() {
-    super();
+  constructor(props: SettingsHeaderBarProps) {
+    super(props);
     this.state = {
       userMenuOpenOn: null
     };

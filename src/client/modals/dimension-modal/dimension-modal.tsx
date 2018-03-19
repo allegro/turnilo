@@ -52,8 +52,8 @@ export class DimensionModal extends React.Component<DimensionModalProps, Immutab
 
   private delegate: ImmutableFormDelegate<Dimension>;
 
-  constructor() {
-    super();
+  constructor(props: DimensionModalProps) {
+    super(props);
 
     this.delegate = new ImmutableFormDelegate(this);
   }

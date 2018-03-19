@@ -169,8 +169,8 @@ export interface NotificationsState {
 }
 
 export class Notifications extends React.Component<React.Props<any>, NotificationsState> {
-  constructor() {
-    super();
+  constructor(props: React.Props<any>) {
+    super(props);
     this.state = {notifications: []};
     this.onChange = this.onChange.bind(this);
   }
@@ -213,8 +213,8 @@ export interface QuestionsState {
 }
 
 export class Questions extends React.Component<React.Props<any>, QuestionsState> {
-  constructor() {
-    super();
+  constructor(props: React.Props<any>) {
+    super(props);
     this.state = {};
     this.onChange = this.onChange.bind(this);
   }

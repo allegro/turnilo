@@ -17,6 +17,7 @@
 
 import './bar-chart.scss';
 
+import * as d3 from 'd3';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { List } from 'immutable';
@@ -149,10 +150,6 @@ export class BarChart extends BaseVisualization<BarChartState> {
   public static id = BAR_CHART_MANIFEST.name;
 
   private coordinatesCache: BarCoordinates[][] = [];
-
-  constructor() {
-    super();
-  }
 
   getDefaultState(): BarChartState {
     var s = super.getDefaultState() as BarChartState;

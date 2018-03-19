@@ -47,7 +47,7 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
   // const MyDropdown = ImmutableDropdown.specialize<MyImmutableClass>();
   // then : <MyDropdown ... />
   static specialize<U>() {
-    return ImmutableDropdown as { new (): ImmutableDropdown<U>; };
+    return ImmutableDropdown as { new (props: ImmutableDropdownProps<U>): ImmutableDropdown<U>; };
   }
 
   static simpleGenerator(instance: any, changeFn: ChangeFn) {
@@ -64,10 +64,6 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
         onChange={changeFn}
       />;
     };
-  }
-
-  constructor() {
-    super();
   }
 
   onChange(newSelectedItem: T) {

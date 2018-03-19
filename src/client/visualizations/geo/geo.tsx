@@ -30,10 +30,6 @@ export interface GeoState extends BaseVisualizationState {
 export class Geo extends BaseVisualization<GeoState> {
   public static id = GEO_MANIFEST.name;
 
-  constructor() {
-    super();
-  }
-
   getDefaultState(): GeoState {
     return super.getDefaultState() as GeoState;
   }

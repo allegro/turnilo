@@ -31,10 +31,6 @@ export interface HighlighterState {
 
 export class Highlighter extends React.Component<HighlighterProps, HighlighterState> {
 
-  constructor() {
-    super();
-  }
-
   render() {
     const { highlightRange, scaleX } = this.props;
     if (!highlightRange) return null;

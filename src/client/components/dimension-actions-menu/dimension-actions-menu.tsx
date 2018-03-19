@@ -43,10 +43,6 @@ export interface DimensionActionsMenuState {
 
 export class DimensionActionsMenu extends React.Component<DimensionActionsMenuProps, DimensionActionsMenuState> {
 
-  constructor() {
-    super();
-  }
-
   onFilter(): void {
     var { dimension, triggerFilterMenu, onClose } = this.props;
     triggerFilterMenu(dimension);

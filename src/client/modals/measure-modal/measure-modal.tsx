@@ -42,8 +42,8 @@ export class MeasureModal extends React.Component<MeasureModalProps, ImmutableFo
 
   private delegate: ImmutableFormDelegate<Measure>;
 
-  constructor() {
-    super();
+  constructor(props: MeasureModalProps) {
+    super(props);
     this.delegate = new ImmutableFormDelegate<Measure>(this);
   }
 

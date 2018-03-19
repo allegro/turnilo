@@ -20,7 +20,7 @@ import * as sinon from 'sinon';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/server';
 
-import '../../utils/test-utils/index';
+import '../../utils/test-utils';
 
 import * as TestUtils from 'react-dom/test-utils';
 
@@ -48,7 +48,7 @@ describe('SvgIcon', () => {
 
 
     //expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    //expect(((ReactDOM.findDOMNode(renderedComponent) as any).className, 'should contain class').to.contain('svg-icon');
+    //expect((ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('svg-icon');
   });
 
 });

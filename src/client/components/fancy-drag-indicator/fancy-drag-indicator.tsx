@@ -31,11 +31,6 @@ export interface FancyDragIndicatorState {
 
 export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps, FancyDragIndicatorState> {
 
-  constructor() {
-    super();
-
-  }
-
   render() {
     const { dragPosition } = this.props;
     if (!dragPosition) return null;

@@ -77,8 +77,8 @@ function classFromAttribute(attribute: AttributeInfo): string {
 export class RawDataModal extends React.Component<RawDataModalProps, RawDataModalState> {
   public mounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: RawDataModalProps) {
+    super(props);
     this.state = {
       loading: false,
       dataset: null,

@@ -39,8 +39,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   // isMounted was already taken by the superclass
   protected _isMounted: boolean;
 
-  constructor() {
-    super();
+  constructor(props: VisualizationProps) {
+    super(props);
 
     this.state = this.getDefaultState() as S;
   }
