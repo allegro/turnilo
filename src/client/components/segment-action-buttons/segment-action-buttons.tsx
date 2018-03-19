@@ -105,7 +105,7 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
         className="view-raw-data"
         key="view-raw-data"
         onClick={this.openRawDataModal.bind(this)}
-      >{STRINGS.viewRawData}</li>
+      >{STRINGS.displayRawData}</li>
     ];
 
     var url = this.getUrl();
