@@ -155,7 +155,6 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       {this.renderItems(dataCubes, 'full-cube.svg')}
       {this.renderItems(collections, 'full-collection.svg', 'collection/')}
       <NavList navLinks={infoAndFeedback}/>
-
     </div>;
   }
 }

@@ -18,7 +18,7 @@
 import './swiv-application.scss';
 
 import * as React from 'react';
-import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { CSSTransition } from 'react-transition-group';
 import { NamedArray} from "immutable-class";
 
 import { replaceHash } from '../../utils/url/url';
@@ -364,8 +364,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
   renderSideDrawer() {
     const { user } = this.props;
-    const { viewType, selectedItem, drawerOpen, appSettings } = this.state;
-    if (!drawerOpen) return null;
+    const { viewType, selectedItem, appSettings } = this.state;
     const { dataCubes, collections, customization } = appSettings;
 
     var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
@@ -385,15 +384,16 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   renderSideDrawerTransition() {
-    return <ReactCSSTransitionGroup
-      component="div"
-      className="side-drawer-container"
-      transitionName="side-drawer"
-      transitionEnterTimeout={500}
-      transitionLeaveTimeout={300}
+    const { drawerOpen } = this.state;
+    return <CSSTransition
+      in={drawerOpen}
+      classNames="side-drawer"
+      mountOnEnter={true}
+      unmountOnExit={true}
+      timeout={{ enter: 500, exit: 300 }}
     >
-      { this.renderSideDrawer() }
-    </ReactCSSTransitionGroup>;
+      {this.renderSideDrawer()}
+    </CSSTransition>;
   }
 
   saveDataCubes(newSettings: AppSettings): Promise<any> {
