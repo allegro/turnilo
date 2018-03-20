@@ -22,7 +22,7 @@ import * as ReactDOM from 'react-dom';
 import { Fn } from '../../../common/utils/general/general';
 import { STRINGS } from '../../config/constants';
 import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
-import { DataCube, Customization, User, Collection } from '../../../common/models/index';
+import { DataCube, Customization, User, Collection } from '../../../common/models';
 import { NavLogo } from '../nav-logo/nav-logo';
 import { SvgIcon } from '../svg-icon/svg-icon';
 import { NavList } from '../nav-list/nav-list';
@@ -62,8 +62,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   globalMouseDownListener(e: MouseEvent) {
-    var myElement = ReactDOM.findDOMNode(this);
-    var target = e.target as Element;
+    const myElement = ReactDOM.findDOMNode(this);
+    const target = e.target as Element;
 
     if (isInside(target, myElement)) return;
     this.props.onClose();
@@ -87,10 +87,10 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
     return <div className="home-container">
       <div
-        className={classNames('home-link', {selected: viewType === 'home'})}
+        className={classNames('home-link', { selected: viewType === 'home' })}
         onClick={this.onHomeClick.bind(this)}
       >
-        <SvgIcon svg={require('../../icons/home.svg')}/>
+        <SvgIcon svg={require('../../icons/home.svg')} />
         <span>{viewType === 'link' ? 'Overview' : 'Home'}</span>
       </div>
     </div>;
@@ -99,9 +99,9 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   renderItems(items: (DataCube | Collection)[], icon: string, urlPrefix = ''): JSX.Element {
     if (!items || items.length === 0) return null;
 
-    var { itemHrefFn, selectedItem } = this.props;
+    const { itemHrefFn, selectedItem } = this.props;
 
-    var navLinks = items.map(item => {
+    const navLinks = items.map(item => {
       return {
         name: item.name,
         title: item.title,
@@ -118,9 +118,9 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   render() {
-    var { onClose, selectedItem, collections, dataCubes, onOpenAbout, customization, itemHrefFn, user } = this.props;
+    const { onClose, collections, dataCubes, onOpenAbout, customization, user } = this.props;
 
-    var infoAndFeedback: any[] = [];
+    const infoAndFeedback: any[] = [];
 
     if (user && user.allow['settings']) {
       infoAndFeedback.push({
@@ -144,18 +144,17 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       }
     });
 
-    var customLogoSvg: string = null;
+    let customLogoSvg: string = null;
     if (customization && customization.customLogoSvg) {
       customLogoSvg = customization.customLogoSvg;
     }
 
     return <div className="side-drawer">
-      <NavLogo customLogoSvg={customLogoSvg} onClick={onClose}/>
+      <NavLogo customLogoSvg={customLogoSvg} onClick={onClose} />
       {this.renderOverviewLink()}
       {this.renderItems(dataCubes, 'full-cube.svg')}
       {this.renderItems(collections, 'full-collection.svg', 'collection/')}
-      <NavList navLinks={infoAndFeedback}/>
-
+      <NavList navLinks={infoAndFeedback} />
     </div>;
   }
 }

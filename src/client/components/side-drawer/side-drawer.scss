@@ -25,6 +25,7 @@
   font-size: 13px;
   box-shadow: 1px 0 2px 0 hsla(0, 0, 0, 0.13), 2px 0 12px 0 hsla(0, 0, 0, 0.26);
   overflow: auto;
+  z-index: 80;
 
   .home-container {
     padding-top: $drawer-v-padding;
@@ -105,10 +106,10 @@
   }
 }
 
-.side-drawer-leave {
+.side-drawer-exit {
   transform: translate(0, 0);
 
-  &.side-drawer-leave-active {
+  &.side-drawer-exit-active {
     transform: translate(-$side-drawer-width - 1, 0);
     transition: transform .2s cubic-bezier(.4, 0, .2, 1) .1s;
   }

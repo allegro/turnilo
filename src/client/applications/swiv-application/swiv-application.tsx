@@ -18,16 +18,16 @@
 import './swiv-application.scss';
 
 import * as React from 'react';
-import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { CSSTransition } from 'react-transition-group';
 import { NamedArray} from "immutable-class";
 
 import { replaceHash } from '../../utils/url/url';
-import { DataCube, AppSettings, User, Collection, CollectionTile, Essence, Timekeeper, ViewSupervisor } from '../../../common/models/index';
+import { DataCube, AppSettings, User, Collection, CollectionTile, Essence, Timekeeper, ViewSupervisor } from '../../../common/models';
 
 import { createFunctionSlot, FunctionSlot } from '../../utils/function-slot/function-slot';
 import { Ajax } from '../../utils/ajax/ajax';
-import { AboutModal, AddCollectionTileModal } from '../../modals/index';
-import { SideDrawer, Notifications, Questions, Notifier } from '../../components/index';
+import { AboutModal, AddCollectionTileModal } from '../../modals';
+import { SideDrawer, Notifications, Questions, Notifier } from '../../components';
 
 import { NoDataView } from '../../views/no-data-view/no-data-view';
 import { HomeView } from '../../views/home-view/home-view';
@@ -37,7 +37,7 @@ import { SettingsView } from '../../views/settings-view/settings-view';
 import { CollectionView } from '../../views/collection-view/collection-view';
 import { CollectionViewDelegate } from './collection-view-delegate/collection-view-delegate';
 
-export interface SwivApplicationProps extends React.Props<any> {
+export interface SwivApplicationProps {
   version: string;
   user?: User;
   maxFilters?: number;
@@ -71,8 +71,8 @@ export const NO_DATA: ViewType = "no-data";
 
 export class SwivApplication extends React.Component<SwivApplicationProps, SwivApplicationState> {
   private hashUpdating = false;
-  private sideBarHrefFn: FunctionSlot<string>;
-  private collectionViewDelegate: CollectionViewDelegate;
+  private readonly sideBarHrefFn: FunctionSlot<string>;
+  private readonly collectionViewDelegate: CollectionViewDelegate;
 
   constructor(props: SwivApplicationProps) {
     super(props);
@@ -90,11 +90,11 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   componentWillMount() {
-    var { appSettings, initTimekeeper } = this.props;
-    var { dataCubes, collections } = appSettings;
+    const { appSettings, initTimekeeper } = this.props;
+    const { dataCubes, collections } = appSettings;
 
-    var hash = window.location.hash;
-    var viewType = this.getViewTypeFromHash(hash);
+    const hash = window.location.hash;
+    let viewType = this.getViewTypeFromHash(hash);
 
     if (viewType !== SETTINGS && !dataCubes.length) {
       window.location.hash = '';
@@ -108,9 +108,9 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       return;
     }
 
-    var viewHash = this.getViewHashFromHash(hash);
+    const viewHash = this.getViewHashFromHash(hash);
 
-    var selectedItem: DataCube | Collection;
+    let selectedItem: DataCube | Collection;
 
     if (this.viewTypeNeedsAnItem(viewType)) {
       selectedItem = this.getSelectedItemFromHash(
@@ -170,17 +170,17 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
   hashToState(hash: string) {
     const { dataCubes, collections } = this.state.appSettings;
-    var viewType = this.getViewTypeFromHash(hash);
-    var viewHash = this.getViewHashFromHash(hash);
-    var newState: SwivApplicationState = {
+    const viewType = this.getViewTypeFromHash(hash);
+    const viewHash = this.getViewHashFromHash(hash);
+    const newState: SwivApplicationState = {
       viewType,
       viewHash,
       drawerOpen: false
     };
 
     if (this.viewTypeNeedsAnItem(viewType)) {
-      let items = viewType === CUBE ? dataCubes : collections;
-      let item = this.getSelectedItemFromHash(items, hash, viewType);
+      const items = viewType === CUBE ? dataCubes : collections;
+      const item = this.getSelectedItemFromHash(items, hash, viewType);
       newState.selectedItem = item ? item : items[0];
     } else {
       newState.selectedItem = null;
@@ -198,7 +198,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     const { user } = this.props;
     const appSettings = this.state.appSettings || this.props.appSettings;
     const { dataCubes } = appSettings;
-    var viewType = this.parseHash(hash)[0];
+    const viewType = this.parseHash(hash)[0];
 
     if (viewType === SETTINGS && user && user.allow['settings']) return SETTINGS;
 
@@ -217,14 +217,14 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
   getSelectedItemFromHash(items: (DataCube | Collection)[], hash: string, viewType: ViewType): DataCube | Collection {
     // can change header from hash
-    var parts = this.parseHash(hash);
-    var itemName = parts[viewType === COLLECTION ? 1 : 0];
+    const parts = this.parseHash(hash);
+    const itemName = parts[viewType === COLLECTION ? 1 : 0];
 
     return NamedArray.findByName(items, itemName);
   }
 
   getViewHashFromHash(hash: string): string {
-    var parts = this.parseHash(hash);
+    const parts = this.parseHash(hash);
     if (parts.length < 2) return null;
     parts.shift();
     return parts.join('/');
@@ -251,9 +251,9 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   updateViewHash(viewHash: string, force = false): void {
-    var { viewType } = this.state;
+    const { viewType } = this.state;
 
-    var newHash: string;
+    let newHash: string;
     if (viewType === CUBE) {
       newHash = `${this.state.selectedItem.name}/${viewHash}`;
     } else if (viewType === COLLECTION) {
@@ -268,12 +268,12 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   getUrlPrefix(baseOnly = false): string {
-    var { viewType } = this.state;
-    var url = window.location;
-    var urlBase = url.origin + url.pathname;
+    const { viewType } = this.state;
+    const url = window.location;
+    const urlBase = url.origin + url.pathname;
     if (baseOnly) return urlBase;
 
-    var newPrefix: string;
+    let newPrefix: string;
     if (this.viewTypeNeedsAnItem(viewType)) {
       newPrefix = `${this.state.selectedItem.name}/`;
     } else {
@@ -364,11 +364,10 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
   renderSideDrawer() {
     const { user } = this.props;
-    const { viewType, selectedItem, drawerOpen, appSettings } = this.state;
-    if (!drawerOpen) return null;
+    const { viewType, selectedItem, appSettings } = this.state;
     const { dataCubes, collections, customization } = appSettings;
 
-    var closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
+    const closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
 
     return <SideDrawer
       key='drawer'
@@ -385,15 +384,16 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   renderSideDrawerTransition() {
-    return <ReactCSSTransitionGroup
-      component="div"
-      className="side-drawer-container"
-      transitionName="side-drawer"
-      transitionEnterTimeout={500}
-      transitionLeaveTimeout={300}
+    const { drawerOpen } = this.state;
+    return <CSSTransition
+      in={drawerOpen}
+      classNames="side-drawer"
+      mountOnEnter={true}
+      unmountOnExit={true}
+      timeout={{ enter: 500, exit: 300 }}
     >
-      { this.renderSideDrawer() }
-    </ReactCSSTransitionGroup>;
+      {this.renderSideDrawer()}
+    </CSSTransition>;
   }
 
   saveDataCubes(newSettings: AppSettings): Promise<any> {
@@ -425,7 +425,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
     this.saveDataCubes(appSettings.deleteDataCube(dataCube));
   }
-
 
   renderView() {
     const { maxFilters, maxSplits, user, stateful } = this.props;
