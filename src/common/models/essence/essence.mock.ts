@@ -16,6 +16,7 @@
  */
 
 import { MANIFESTS } from "../../manifests";
+import { FilterFixtures } from "../filter/filter.fixtures";
 import { Essence, EssenceJS, EssenceContext } from './essence';
 import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { SplitCombineMock } from "../split-combine/split-combine.mock";
@@ -45,8 +46,9 @@ export class EssenceMock {
     return {
       visualization: 'line-chart',
       timezone: 'Etc/UTC',
-      pinnedDimensions: [],
-      selectedMeasures: [],
+      pinnedDimensions: ['countryIso'],
+      selectedMeasures: ['count'],
+      filter: FilterFixtures.wikiLanguageIn(["any article"]),
       splits: [SplitCombineMock.TIME_JS]
     };
   }

@@ -20,6 +20,7 @@ import './swiv-application.scss';
 import * as React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { NamedArray} from "immutable-class";
+import { EssenceToUrlPathConverter, UrlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 
 import { replaceHash } from '../../utils/url/url';
 import { DataCube, AppSettings, User, Collection, CollectionTile, Essence, Timekeeper, ViewSupervisor } from '../../../common/models';
@@ -73,9 +74,12 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   private hashUpdating = false;
   private readonly sideBarHrefFn: FunctionSlot<string>;
   private readonly collectionViewDelegate: CollectionViewDelegate;
+  private readonly urlHashConverter: EssenceToUrlPathConverter;
 
   constructor(props: SwivApplicationProps) {
     super(props);
+
+    this.urlHashConverter = new UrlHashConverter();
     this.collectionViewDelegate = new CollectionViewDelegate(this);
     this.sideBarHrefFn = createFunctionSlot<string>();
     this.state = {
@@ -265,6 +269,12 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     }
 
     this.changeHash(newHash, force);
+  }
+
+  getCubeViewHash = (essence: Essence, withPrefix = false): string => {
+    const cubeViewHash = this.urlHashConverter.toHash(essence);
+
+    return withPrefix ? this.getUrlPrefix() + cubeViewHash : cubeViewHash;
   }
 
   getUrlPrefix(baseOnly = false): string {
@@ -463,7 +473,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           initTimekeeper={timekeeper}
           hash={viewHash}
           updateViewHash={this.updateViewHash.bind(this)}
-          getUrlPrefix={this.getUrlPrefix.bind(this)}
+          getCubeViewHash={this.getCubeViewHash}
+          getEssenceFromHash={this.urlHashConverter.essenceFromHash}
           maxFilters={maxFilters}
           maxSplits={maxSplits}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
@@ -483,6 +494,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           customization={customization}
           delegate={stateful ? this.collectionViewDelegate : null}
+          getCubeViewHash={this.getCubeViewHash}
         />;
 
       case LINK:
@@ -493,7 +505,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           hash={viewHash}
           updateViewHash={this.updateViewHash.bind(this)}
           changeHash={this.changeHash.bind(this)}
-          getUrlPrefix={this.getUrlPrefix.bind(this)}
+          getCubeViewHash={this.getCubeViewHash}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           customization={customization}
           stateful={stateful}

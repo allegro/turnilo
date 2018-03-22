@@ -34,7 +34,7 @@ export interface CubeHeaderBarProps extends React.Props<any> {
   timekeeper: Timekeeper;
   user?: User;
   onNavClick: Fn;
-  getUrlPrefix?: () => string;
+  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
   refreshMaxTime?: Fn;
   updatingMaxTime?: boolean;
   openRawDataModal?: Fn;
@@ -146,7 +146,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   renderHilukMenu() {
-    const { essence, timekeeper, getUrlPrefix, customization, openRawDataModal, openViewDefinitionModal, getDownloadableDataset, addEssenceToCollection, stateful } = this.props;
+    const { essence, timekeeper, getCubeViewHash, customization, openRawDataModal, openViewDefinitionModal, getDownloadableDataset, addEssenceToCollection, stateful } = this.props;
     const { hilukMenuOpenOn } = this.state;
     if (!hilukMenuOpenOn) return null;
 
@@ -170,7 +170,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       timekeeper={timekeeper}
       openOn={hilukMenuOpenOn}
       onClose={this.onHilukMenuClose.bind(this)}
-      getUrlPrefix={getUrlPrefix}
+      getCubeViewHash={getCubeViewHash}
       openRawDataModal={openRawDataModal}
       openViewDefinitionModal={openViewDefinitionModal}
       externalViews={externalViews}

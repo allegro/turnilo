@@ -30,7 +30,7 @@ export interface PinboardPanelProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;
-  getUrlPrefix?: () => string;
+  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
   style?: React.CSSProperties;
 }
 
@@ -141,7 +141,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   }
 
   render() {
-    var { clicker, essence, timekeeper, getUrlPrefix, style } = this.props;
+    var { clicker, essence, timekeeper, getCubeViewHash, style } = this.props;
     var { dragOver } = this.state;
     var { dataCube, pinnedDimensions, colors } = essence;
 
@@ -168,7 +168,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
           sortOn={colorsSortOn}
           colors={colors}
           onClose={this.onRemoveLegend.bind(this)}
-          getUrlPrefix={getUrlPrefix}
+          getCubeViewHash={getCubeViewHash}
         />;
       }
     }
@@ -187,7 +187,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         dimension={dimension}
         sortOn={pinnedSortSortOn}
         onClose={clicker.unpin ? clicker.unpin.bind(clicker, dimension) : null}
-        getUrlPrefix={getUrlPrefix}
+        getCubeViewHash={getCubeViewHash}
       />);
     });
 

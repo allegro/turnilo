@@ -35,7 +35,7 @@ export interface DimensionMeasurePanelProps extends React.Props<any> {
   triggerFilterMenu: Fn;
   triggerSplitMenu: Fn;
   style?: React.CSSProperties;
-  getUrlPrefix?: () => string;
+  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
 }
 
 export interface DimensionMeasurePanelState {
@@ -44,7 +44,7 @@ export interface DimensionMeasurePanelState {
 export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanelProps, DimensionMeasurePanelState> {
 
   render() {
-    const { clicker, essence, menuStage, triggerFilterMenu, triggerSplitMenu, getUrlPrefix, style } = this.props;
+    const { clicker, essence, menuStage, triggerFilterMenu, triggerSplitMenu, getCubeViewHash, style } = this.props;
     const { dataCube } = essence;
 
     // Compute relative sizes by diving up TOTAL_FLEXES
@@ -71,7 +71,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
         menuStage={menuStage}
         triggerFilterMenu={triggerFilterMenu}
         triggerSplitMenu={triggerSplitMenu}
-        getUrlPrefix={getUrlPrefix}
+        getCubeViewHash={getCubeViewHash}
         style={dimensionListStyle}
       />
       <MeasuresTile

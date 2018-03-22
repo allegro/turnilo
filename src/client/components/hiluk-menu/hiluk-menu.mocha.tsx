@@ -36,7 +36,7 @@ describe.skip('HilukMenu', () => {
         timekeeper={TimekeeperMock.fixed()}
         onClose={null}
         openOn={openOn}
-        getUrlPrefix={() => { return 'http://stackoverflow.com/'; }}
+        getCubeViewHash={() => { return 'http://stackoverflow.com/'; }}
         openRawDataModal={null}
         openViewDefinitionModal={null}
       />

@@ -30,7 +30,7 @@ import { Notifier } from '../../../components/index';
 
 export class CollectionViewDelegate {
 
-  private app: SwivApplication;
+  private readonly app: SwivApplication;
 
   constructor(app: SwivApplication) {
     this.app = app;
@@ -204,6 +204,6 @@ export class CollectionViewDelegate {
         cancel: onCancel,
         save: onSave
       }
-    }, () => window.location.hash = `#${essence.dataCube.name}/${essence.toHash()}`);
+    }, () => window.location.hash = `#${essence.dataCube.name}/${this.app.getCubeViewHash(essence)}`);
   }
 }

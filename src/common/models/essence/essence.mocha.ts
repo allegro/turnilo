@@ -177,22 +177,6 @@ describe('Essence', () => {
       });
     });
 
-    it('handles time series', () => {
-      var hashNoVis = "2/EQUQLgxg9AqgKgYWAGgN7APYAdgC5gA2AlmAKYBOAhgSsAG7UCupeY5zAvsgNoC6ybZsmAQMjAHZgU3EWMnB+MsAHcSZcgAlK4gCYEW/cYwIEgA=";
-
-      var timeSeriesHash = `time-series/${hashNoVis}`;
-      var lineChartHash = `line-chart/${hashNoVis}`;
-      var barChartHash = `bar-chart/${hashNoVis}`;
-
-      var timeSeries = Essence.fromHash(timeSeriesHash, context);
-      var lineChart = Essence.fromHash(lineChartHash, context);
-      var barChart = Essence.fromHash(barChartHash, context);
-
-      expect(timeSeries.visualization).to.equal(lineChart.visualization);
-      expect(timeSeries.visualization).to.not.equal(barChart.visualization);
-
-    });
-
   });
 
 
@@ -249,29 +233,6 @@ describe('Essence', () => {
       });
     });
 
-  });
-
-
-  describe('.toHash / #fromHash', () => {
-    it("is symmetric", () => {
-      var essence1 = Essence.fromJS({
-        visualization: 'totals',
-        timezone: 'Etc/UTC',
-        filter: {
-          op: "literal",
-          value: true
-
-        },
-        pinnedDimensions: ['twitterHandle'],
-        selectedMeasures: ['count'],
-        splits: []
-      }, context);
-
-      var hash = essence1.toHash();
-      var essence2 = Essence.fromHash(hash, context);
-
-      expect(essence1.toJS()).to.deep.equal(essence2.toJS());
-    });
   });
 
   describe('vis picking', () => {

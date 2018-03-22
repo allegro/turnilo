@@ -55,7 +55,8 @@ export interface CubeViewProps extends React.Props<any> {
   user?: User;
   hash: string;
   updateViewHash: (newHash: string, force?: boolean) => void;
-  getUrlPrefix?: () => string;
+  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
+  getEssenceFromHash: (hash: string, dateCube: DataCube, visualizations: Manifest[]) => Essence;
   dataCube: DataCube;
   onNavClick?: Fn;
   customization?: Customization;
@@ -189,12 +190,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillMount() {
-    const { hash, dataCube, updateViewHash, initTimekeeper } = this.props;
+    const { hash, dataCube, updateViewHash, initTimekeeper, getCubeViewHash } = this.props;
     let essence = this.getEssenceFromHash(dataCube, hash);
     if (!essence) {
       if (!dataCube) throw new Error('must have data cube');
       essence = this.getEssenceFromDataCube(dataCube);
-      updateViewHash(essence.toHash(), true);
+      updateViewHash(getCubeViewHash(essence), true);
     }
     this.setState({
       essence,
@@ -203,7 +204,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentDidMount() {
-    const { transitionFnSlot } = this.props;
+    const { transitionFnSlot, getCubeViewHash } = this.props;
 
     this.mounted = true;
     DragManager.init();
@@ -217,20 +218,20 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         if (newDataCube === oldDataCube || !newDataCube.sameGroup(oldDataCube)) return null;
         const { essence } = this.state;
         if (!essence) return null;
-        return '#' + newDataCube.name + '/' + essence.updateDataCube(newDataCube).toHash();
+        return getCubeViewHash(essence.updateDataCube(newDataCube));
       });
     }
   }
 
   componentWillReceiveProps(nextProps: CubeViewProps) {
-    const { hash, dataCube, updateViewHash } = this.props;
+    const { hash, dataCube, updateViewHash, getCubeViewHash } = this.props;
     if (!nextProps.dataCube) throw new Error('must have data cube');
 
     if (dataCube.name !== nextProps.dataCube.name || hash !== nextProps.hash) {
       let hashEssence = this.getEssenceFromHash(nextProps.dataCube, nextProps.hash);
       if (!hashEssence) {
         hashEssence = this.getEssenceFromDataCube(nextProps.dataCube);
-        updateViewHash(hashEssence.toHash(), true);
+        updateViewHash(getCubeViewHash(hashEssence), true);
       }
 
       this.setState({ essence: hashEssence });
@@ -238,10 +239,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
-    const { updateViewHash } = this.props;
+    const { updateViewHash, getCubeViewHash } = this.props;
     const { essence } = this.state;
     if (updateViewHash && !nextState.essence.equals(essence)) {
-      updateViewHash(nextState.essence.toHash());
+      updateViewHash(getCubeViewHash(nextState.essence));
     }
   }
 
@@ -260,7 +261,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   getEssenceFromHash(dataCube: DataCube, hash: string): Essence {
     if (!dataCube || !hash) return null;
-    return Essence.fromHash(hash, { dataCube: dataCube, visualizations: MANIFESTS });
+
+    const { getEssenceFromHash } = this.props;
+    return getEssenceFromHash(hash, dataCube, MANIFESTS);
   }
 
   globalResizeListener() {
@@ -402,7 +405,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   render() {
     const clicker = this.clicker;
 
-    const { getUrlPrefix, onNavClick, user, customization, supervisor, stateful } = this.props;
+    const { getCubeViewHash, onNavClick, user, customization, supervisor, stateful } = this.props;
     const { deviceSize, layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
 
     if (!essence) return null;
@@ -454,7 +457,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       timekeeper={timekeeper}
       user={user}
       onNavClick={onNavClick}
-      getUrlPrefix={getUrlPrefix}
+      getCubeViewHash={getCubeViewHash}
       refreshMaxTime={this.refreshMaxTime.bind(this)}
       openRawDataModal={this.openRawDataModal.bind(this)}
       openViewDefinitionModal={this.openViewDefinitionModal.bind(this)}
@@ -490,7 +493,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           menuStage={menuStage}
           triggerFilterMenu={this.triggerFilterMenu.bind(this)}
           triggerSplitMenu={this.triggerSplitMenu.bind(this)}
-          getUrlPrefix={getUrlPrefix}
+          getCubeViewHash={getCubeViewHash}
         />
 
         {deviceSize !== 'small' ? <ResizeHandle
@@ -511,14 +514,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 essence={essence}
                 timekeeper={timekeeper}
                 menuStage={visualizationStage}
-                getUrlPrefix={getUrlPrefix}
+                getCubeViewHash={getCubeViewHash}
               />
               <SplitTile
                 ref="splitTile"
                 clicker={clicker}
                 essence={essence}
                 menuStage={visualizationStage}
-                getUrlPrefix={getUrlPrefix}
+                getCubeViewHash={getCubeViewHash}
               />
             </div>
             <VisSelector clicker={clicker} essence={essence}/>
@@ -554,7 +557,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           clicker={clicker}
           essence={essence}
           timekeeper={timekeeper}
-          getUrlPrefix={getUrlPrefix}
+          getCubeViewHash={getCubeViewHash}
         />
       </div>
       {this.renderRawDataModal()}

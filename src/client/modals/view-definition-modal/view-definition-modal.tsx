@@ -20,6 +20,7 @@ import * as React from 'react';
 import {Essence, EssenceJS} from '../../../common/models';
 
 import {Fn, makeTitle} from '../../../common/utils';
+import { defaultDefinitionConverter } from "../../../common/view-definitions";
 import {STRINGS} from '../../config/constants';
 
 import {Button, Modal} from '../../components';
@@ -41,9 +42,9 @@ export interface ViewDefinitionModalState {
 class MakeUrlData {
   private domain: String;
   private dataCube: String;
-  private essence: EssenceJS;
+  private essence: any;
 
-  constructor(domain: String, dataCube: String, essence: EssenceJS) {
+  constructor(domain: String, dataCube: String, essence: any) {
     this.domain = domain;
     this.dataCube = dataCube;
     this.essence = essence;
@@ -72,7 +73,7 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
     const { copied } = this.state;
     const title = `${makeTitle(STRINGS.viewDefinition)}`;
 
-    const makeUrlData = new MakeUrlData(STRINGS.mkurlDomainPlaceholder, essence.dataCube.name, essence.toJSON());
+    const makeUrlData = new MakeUrlData(STRINGS.mkurlDomainPlaceholder, essence.dataCube.name, defaultDefinitionConverter.toViewDefinition(essence));
     const viewDefinitionAsJson = makeUrlData.printAsJson();
 
     return <Modal

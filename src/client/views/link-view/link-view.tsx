@@ -56,7 +56,7 @@ export interface LinkViewProps extends React.Props<any> {
   hash: string;
   updateViewHash: (newHash: string) => void;
   changeHash: (newHash: string, force?: boolean) => void;
-  getUrlPrefix?: () => string;
+  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
   onNavClick?: Fn;
   customization?: Customization;
   stateful: boolean;
@@ -200,10 +200,10 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   goToCubeView() {
-    var { changeHash, getUrlPrefix } = this.props;
+    var { changeHash, getCubeViewHash } = this.props;
     var { essence } = this.state;
 
-    changeHash(`${essence.dataCube.name}/${essence.toHash()}`, true);
+    changeHash(`${essence.dataCube.name}/${getCubeViewHash(essence)}`, true);
   }
 
   changeTimezone(newTimezone: Timezone): void {
@@ -302,7 +302,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   render() {
     var clicker = this.clicker;
 
-    var { timekeeper, getUrlPrefix, onNavClick, collection, user, customization, stateful } = this.props;
+    var { timekeeper, getCubeViewHash, onNavClick, collection, user, customization, stateful } = this.props;
     var { deviceSize, linkTile, essence, visualizationStage, layout } = this.state;
 
     if (!linkTile) return null;
@@ -349,7 +349,6 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
         user={user}
         onNavClick={onNavClick}
         onExploreClick={this.goToCubeView.bind(this)}
-        getUrlPrefix={getUrlPrefix}
         customization={customization}
         changeTimezone={this.changeTimezone.bind(this)}
         timezone={essence.timezone}
@@ -395,7 +394,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
           clicker={clicker}
           essence={essence}
           timekeeper={timekeeper}
-          getUrlPrefix={getUrlPrefix}
+          getCubeViewHash={getCubeViewHash}
         />
       </div>
     </div>;

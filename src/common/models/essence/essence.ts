@@ -118,53 +118,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return visAndResolves.sort((vr1, vr2) => Resolve.compare(vr1.resolve, vr2.resolve))[0];
   }
 
-  static fromHash(hash: string, context: EssenceContext): Essence {
-    var parts = hash.split('/');
-    if (parts.length < 3) return null;
-    var visualization = parts.shift();
-    var version = parseInt(parts.shift(), 10);
-
-    if (version > HASH_VERSION) return null;
-
-    var jsArray: any[] = null;
-    try {
-      jsArray = JSON.parse('[' + decompressFromBase64(parts.join('/')) + ']');
-    } catch (e) {
-      return null;
-    }
-
-    if (!Array.isArray(jsArray)) return null;
-
-    if (version === 1) { // Upgrade to version 2
-      jsArray.splice(3, 0, false, null); // Insert null at position 3 (between splits and selectedMeasures)
-    }
-
-    var jsArrayLength = jsArray.length;
-    if (!(8 <= jsArrayLength && jsArrayLength <= 11)) return null;
-
-    var essence: Essence;
-    try {
-      essence = Essence.fromJS({
-        visualization: visualization,
-        timezone: jsArray[0],
-        filter: jsArray[1],
-        splits: jsArray[2],
-        multiMeasureMode: jsArray[3],
-        singleMeasure: jsArray[4],
-        selectedMeasures: jsArray[5],
-        pinnedDimensions: jsArray[6],
-        pinnedSort: jsArray[7],
-        colors: jsArray[8] || null,
-        compare: jsArray[9] || null,
-        highlight: jsArray[10] || null
-      }, context);
-    } catch (e) {
-      return null;
-    }
-
-    return essence;
-  }
-
   static fromDataCube(dataCube: DataCube, context: EssenceContext): Essence {
     var essence = new Essence({
       dataCube: context.dataCube,
@@ -192,7 +145,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     const { dataCube, visualizations } = context;
 
     var visualizationName = parameters.visualization;
-    if (visualizationName === 'time-series') visualizationName = 'line-chart'; // Back compat (used to be named time-series)
     var visualization = NamedArray.findByName(visualizations, visualizationName);
 
     var timezone = parameters.timezone ? Timezone.fromJS(parameters.timezone) : null;
@@ -399,39 +351,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       this.pinnedSort === other.pinnedSort &&
       immutableEqual(this.compare, other.compare) &&
       immutableEqual(this.highlight, other.highlight);
-  }
-
-  public toHash(): string {
-    var js = this.toJS();
-
-    var compressed: any[] = [
-      js.timezone,         // 0
-      js.filter,           // 1
-      js.splits,           // 2
-      js.multiMeasureMode, // 3
-      js.singleMeasure,    // 4
-      js.selectedMeasures, // 5
-      js.pinnedDimensions, // 6
-      js.pinnedSort        // 7
-    ];
-    if (js.colors)      compressed[8] = js.colors;
-    if (js.compare)     compressed[9] = js.compare;
-    if (js.highlight)   compressed[10] = js.highlight;
-
-    var restJSON: string[] = [];
-    for (var i = 0; i < compressed.length; i++) {
-      restJSON.push(JSON.stringify(compressed[i] || null));
-    }
-
-    return [
-      js.visualization,
-      HASH_VERSION,
-      compressToBase64(restJSON.join(','))
-    ].join('/');
-  }
-
-  public getURL(urlPrefix: string): string {
-    return urlPrefix + this.toHash();
   }
 
   public getTimeAttribute(): RefExpression {

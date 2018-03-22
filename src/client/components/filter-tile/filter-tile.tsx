@@ -55,7 +55,7 @@ export interface FilterTileProps {
   essence: Essence;
   timekeeper: Timekeeper;
   menuStage: Stage;
-  getUrlPrefix?: () => string;
+  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
 }
 
 export interface FilterTileState {
@@ -226,16 +226,8 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   dragStart(dimension: Dimension, clause: FilterClause, e: DragEvent) {
-    const { essence, getUrlPrefix } = this.props;
-
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
-
-    if (getUrlPrefix) {
-      const newUrl = essence.getURL(getUrlPrefix());
-      dataTransfer.setData("text/url-list", newUrl);
-      dataTransfer.setData("text/plain", newUrl);
-    }
 
     DragManager.setDragDimension(dimension, 'filter-tile');
 

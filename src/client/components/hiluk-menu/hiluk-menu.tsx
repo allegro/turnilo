@@ -30,7 +30,7 @@ export interface HilukMenuProps extends React.Props<any> {
   timekeeper: Timekeeper;
   openOn: Element;
   onClose: Fn;
-  getUrlPrefix: () => string;
+  getCubeViewHash: (essence: Essence, withPrefix?: boolean) => string;
   openRawDataModal: Fn;
   openViewDefinitionModal: Fn;
   externalViews?: ExternalView[];
@@ -54,11 +54,11 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
   }
 
   componentDidMount() {
-    const { essence, timekeeper, getUrlPrefix } = this.props;
+    const { essence, timekeeper, getCubeViewHash } = this.props;
 
-    const urlPrefix = getUrlPrefix();
-    const url = essence.getURL(urlPrefix);
-    const specificUrl = essence.filter.isRelative() ? essence.convertToSpecificFilter(timekeeper).getURL(urlPrefix) : null;
+    const withPrefix = true;
+    const url = getCubeViewHash(essence, withPrefix);
+    const specificUrl = essence.filter.isRelative() ? getCubeViewHash(essence.convertToSpecificFilter(timekeeper), withPrefix) : null;
 
     this.setState({
       url,

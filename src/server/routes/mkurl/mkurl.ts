@@ -18,14 +18,31 @@
 import { Router, Request, Response } from 'express';
 import { Essence } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests';
+import { defaultDefinitionUrlEncoder, definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
 import { SwivRequest } from '../../utils/index';
 import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
 
 var router = Router();
 
 router.post('/', (req: SwivRequest, res: Response) => {
-  var { domain, dataCube, dataSource, essence } = req.body;
+  var { domain, dataCube, dataSource, version, viewDefinition } = req.body;
   dataCube = dataCube || dataSource; // back compat
+
+  if (typeof version !== 'string') {
+    res.status(400).send({
+      error: 'must have a version'
+    });
+    return;
+  }
+
+  const definitionConverter = definitionConverters[version as ViewDefinitionVersion];
+
+  if (definitionConverter == null) {
+    res.status(400).send({
+      error: 'unsupported version value'
+    });
+    return;
+  }
 
   if (typeof domain !== 'string') {
     res.status(400).send({
@@ -41,9 +58,9 @@ router.post('/', (req: SwivRequest, res: Response) => {
     return;
   }
 
-  if (typeof essence !== 'object') {
+  if (typeof viewDefinition !== 'object') {
     res.status(400).send({
-      error: 'essence must be an object'
+      error: 'viewDefinition must be an object'
     });
     return;
   }
@@ -56,21 +73,20 @@ router.post('/', (req: SwivRequest, res: Response) => {
         return;
       }
 
+      let essence: Essence;
+
       try {
-        var essenceObj = Essence.fromJS(essence, {
-          dataCube: myDataCube,
-          visualizations: MANIFESTS
-        });
+        essence = definitionConverter.fromViewDefinition(viewDefinition, myDataCube, MANIFESTS);
       } catch (e) {
         res.status(400).send({
-          error: 'invalid essence',
+          error: 'invalid viewDefinition object',
           message: e.message
         });
         return;
       }
 
       res.json({
-        url: essenceObj.getURL(`${domain}#${myDataCube.name}/`)
+        url: `${domain}#${myDataCube.name}/${defaultDefinitionUrlEncoder.encodeUrlHash(essence)}`
       });
     })
     .done();
