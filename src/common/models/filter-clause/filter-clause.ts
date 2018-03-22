@@ -39,7 +39,11 @@ import {
 // Basically these represent
 // expression.in(selection) .not()?
 export type FilterSelection = Expression | string;
-export type SupportedAction = 'overlap' | 'contains' | 'match';
+export enum SupportedAction {
+  overlap = 'overlap',
+  contains = 'contains',
+  match = 'match'
+}
 
 export interface FilterClauseValue {
   action?: SupportedAction;
@@ -132,7 +136,7 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
       let dimExpression = ex.operand;
       const regexp = (ex as MatchExpression).regexp;
       return new FilterClause({
-        action: 'match',
+        action: SupportedAction.match,
         expression: dimExpression,
         selection: regexp,
         exclude

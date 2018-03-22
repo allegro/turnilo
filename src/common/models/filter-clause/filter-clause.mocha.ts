@@ -20,7 +20,7 @@ import { testImmutableClass } from 'immutable-class-tester';
 
 import { Timezone, Duration } from 'chronoshift';
 import { $, Expression } from 'plywood';
-import { FilterClause, FilterClauseJS } from './filter-clause';
+import { FilterClause, FilterClauseJS, SupportedAction } from './filter-clause';
 
 describe('FilterClause', () => {
   it('is an immutable class', () => {
@@ -74,7 +74,7 @@ describe('FilterClause', () => {
       {
         expression: { op: 'ref', name: 'language' },
         selection: "%David\\_R_ss%?",
-        action: 'match'
+        action: SupportedAction.match
       },
 
       // Dynamic!
