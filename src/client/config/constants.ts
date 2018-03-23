@@ -57,6 +57,7 @@ export const STRINGS: any = {
   connectNewCluster: 'Connect new cluster',
   contains: 'Contains',
   convertToFixedTime: 'Convert to fixed time',
+  copyDefinition: 'Copy definition',
   copySpecificUrl: 'Copy URL - fixed time',
   copyUrl: 'Copy URL',
   copyValue: 'Copy value',
