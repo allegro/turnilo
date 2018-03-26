@@ -27,9 +27,15 @@ import {Button, Modal} from '../../components';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { githubGist } from 'react-syntax-highlighter/styles/hljs';
 
+import * as CopyToClipboard from 'react-copy-to-clipboard';
+
 export interface ViewDefinitionModalProps {
   onClose: Fn;
   essence: Essence;
+}
+
+export interface ViewDefinitionModalState {
+  copied: boolean;
 }
 
 class MakeUrlData {
@@ -48,13 +54,26 @@ class MakeUrlData {
   }
 }
 
-export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProps, {}> {
+export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProps, ViewDefinitionModalState> {
+
+  constructor(props: ViewDefinitionModalProps) {
+    super(props);
+    this.state = {
+      copied: false
+    };
+  }
+
+  onCopyClick = () => {
+    this.setState({copied: true});
+  }
 
   render() {
     const { essence, onClose } = this.props;
+    const { copied } = this.state;
     const title = `${makeTitle(STRINGS.viewDefinition)}`;
 
     const makeUrlData = new MakeUrlData(STRINGS.mkurlDomainPlaceholder, essence.dataCube.name, essence.toJSON());
+    const viewDefinitionAsJson = makeUrlData.printAsJson();
 
     return <Modal
       className="view-definition-modal"
@@ -68,10 +87,15 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
           language="json"
           style={githubGist}
         >
-          {makeUrlData.printAsJson()}
+          {viewDefinitionAsJson}
         </SyntaxHighlighter>
         <div className="button-bar">
           <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
+
+          <CopyToClipboard text={viewDefinitionAsJson} onCopy={this.onCopyClick}>
+            <Button type="secondary" title={STRINGS.copyDefinition} />
+          </CopyToClipboard>
+          { copied ? <div className="copied-hint">Copied!</div> : null }
         </div>
       </div>
     </Modal>;

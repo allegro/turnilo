@@ -48,6 +48,14 @@ $row-height: 30px;
       left: 0;
       right: 0;
       bottom: $modal-window-padding;
+
+      .copied-hint {
+        display: inline-block;
+        line-height: 30px;
+        height: 30px;
+        text-align: center;
+        min-width: 60px;
+      }
     }
   }
 }
