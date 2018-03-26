@@ -63,6 +63,10 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
     };
   }
 
+  onCopyClick = () => {
+    this.setState({copied: true});
+  }
+
   render() {
     const { essence, onClose } = this.props;
     const { copied } = this.state;
@@ -88,7 +92,7 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
         <div className="button-bar">
           <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
 
-          <CopyToClipboard text={viewDefinitionAsJson} onCopy={() => this.setState({copied: true})}>
+          <CopyToClipboard text={viewDefinitionAsJson} onCopy={this.onCopyClick}>
             <Button type="secondary" title={STRINGS.copyDefinition} />
           </CopyToClipboard>
           { copied ? <div className="copied-hint">Copied!</div> : null }
