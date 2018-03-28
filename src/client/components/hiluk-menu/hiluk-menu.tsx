@@ -24,6 +24,7 @@ import { Stage, Essence, Timekeeper, ExternalView } from '../../../common/models
 import { exportOptions, STRINGS } from '../../config/constants';
 import { download, FileFormat, makeFileName } from '../../utils/download/download';
 import { BubbleMenu } from '../bubble-menu/bubble-menu';
+import * as CopyToClipboard from 'react-copy-to-clipboard';
 
 export interface HilukMenuProps extends React.Props<any> {
   essence: Essence;
@@ -40,7 +41,7 @@ export interface HilukMenuProps extends React.Props<any> {
 
 export interface HilukMenuState {
   url?: string;
-  specificUrl?: string;
+  fixedTimeUrl?: string;
 }
 
 export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
@@ -49,7 +50,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     super(props);
     this.state = {
       url: null,
-      specificUrl: null
+      fixedTimeUrl: null
     };
   }
 
@@ -58,11 +59,11 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
 
     const urlPrefix = getUrlPrefix();
     const url = essence.getURL(urlPrefix);
-    const specificUrl = essence.filter.isRelative() ? essence.convertToSpecificFilter(timekeeper).getURL(urlPrefix) : null;
+    const fixedTimeUrl = essence.filter.isRelative() ? essence.convertToSpecificFilter(timekeeper).getURL(urlPrefix) : null;
 
     this.setState({
       url,
-      specificUrl
+      fixedTimeUrl
     });
   }
 
@@ -96,7 +97,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
 
   render() {
     const { openOn, onClose, externalViews, essence, getDownloadableDataset, addEssenceToCollection } = this.props;
-    const { url, specificUrl } = this.state;
+    const { url, fixedTimeUrl } = this.state;
 
     const shareOptions: JSX.Element[] = [];
 
@@ -107,18 +108,20 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
         onClick={addEssenceToCollection}>{STRINGS.addToCollection}</li>);
     }
 
-    shareOptions.push(<li
+    shareOptions.push(<CopyToClipboard text={url}>
+      <li
       className="copy-url clipboard"
       key="copy-url"
-      data-clipboard-text={url}
-      onClick={onClose}>{STRINGS.copyUrl}</li>);
+      onClick={onClose}>{fixedTimeUrl ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}</li>
+    </CopyToClipboard>);
 
-    if (specificUrl) {
-      shareOptions.push(<li
+    if (fixedTimeUrl) {
+      shareOptions.push(<CopyToClipboard text={fixedTimeUrl}>
+        <li
         className="copy-specific-url clipboard"
         key="copy-specific-url"
-        data-clipboard-text={specificUrl}
-        onClick={onClose}>{STRINGS.copySpecificUrl}</li>);
+        onClick={onClose}>{STRINGS.copyFixedTimeUrl}</li>
+      </CopyToClipboard>);
     }
 
     if (getDownloadableDataset()) {
