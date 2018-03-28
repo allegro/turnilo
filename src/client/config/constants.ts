@@ -60,6 +60,7 @@ export const STRINGS: any = {
   copyDefinition: 'Copy definition',
   copyFixedTimeUrl: 'Copy URL - fixed time',
   copyRelativeTimeUrl: 'Copy URL - relative time',
+  copyUrl: 'Copy URL',
   copyValue: 'Copy value',
   createDataCube: 'Create new cube',
   createCluster: 'Create new cluster',

@@ -112,7 +112,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
       <li
       className="copy-url clipboard"
       key="copy-url"
-      onClick={onClose}>{STRINGS.copyRelativeTimeUrl}</li>
+      onClick={onClose}>{fixedTimeUrl ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}</li>
     </CopyToClipboard>);
 
     if (fixedTimeUrl) {
