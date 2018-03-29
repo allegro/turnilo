@@ -18,7 +18,7 @@
 import './totals.scss';
 
 import * as React from 'react';
-import { $, ply, Expression, Executor, Dataset } from 'plywood';
+import { $, ply, Expression } from 'plywood';
 import { TOTALS_MANIFEST } from '../../../common/manifests/totals/totals';
 import { Stage, Essence, Timekeeper, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 
@@ -40,19 +40,14 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     this.fetchData(essence, timekeeper);
   }
 
-  componentWillReceiveProps(nextProps: VisualizationProps) {
-    this.precalculate(nextProps);
+  shouldFetchData(nextProps: VisualizationProps): boolean {
     const { essence, timekeeper } = this.props;
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
-    if (
-      nextEssence.differentDataCube(essence) ||
+    return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, Totals.id) ||
       nextEssence.newEffectiveMeasures(essence) ||
-      nextEssence.dataCube.refreshRule.isRealtime()
-    ) {
-      this.fetchData(nextEssence, nextTimekeeper);
-    }
+      nextEssence.dataCube.refreshRule.isRealtime();
   }
 
   componentWillUnmount() {

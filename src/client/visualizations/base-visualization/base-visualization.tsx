@@ -171,19 +171,25 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
     this.precalculate(nextProps);
+    if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
+      this.fetchData(nextProps.essence, nextProps.timekeeper);
+    }
+  }
+
+  shouldFetchData(nextProps: VisualizationProps): boolean {
     const { essence, timekeeper } = this.props;
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
-    if (
-      nextEssence.differentDataCube(essence) ||
+    return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, this.id) ||
       nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
-      nextEssence.dataCube.refreshRule.isRealtime()
-    ) {
-      this.fetchData(nextEssence, nextTimekeeper);
-    }
+      nextEssence.dataCube.refreshRule.isRealtime();
+  }
+
+  visualisationNotResized(nextProps: VisualizationProps): boolean {
+    return this.props.stage.equals(nextProps.stage);
   }
 
   componentWillUnmount() {
