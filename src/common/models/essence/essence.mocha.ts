@@ -96,6 +96,7 @@ describe('Essence', () => {
         timezone: 'Etc/UTC',
         filter: $('twitterHandle').overlap(['A', 'B', 'C']).toJS(),
         pinnedDimensions: ['twitterHandle'],
+        pinnedSort: 'count',
         singleMeasure: 'count',
         selectedMeasures: ['count'],
         splits: []
@@ -204,6 +205,7 @@ describe('Essence', () => {
         "pinnedDimensions": [
           "twitterHandle"
         ],
+        "pinnedSort": "count",
         "singleMeasure": "count",
         "selectedMeasures": [
           "count"

@@ -15,6 +15,7 @@
  */
 
 import { expect } from "chai";
+import { SplitCombineFixtures } from "../../models/split-combine/split-combine.fixtures";
 import { SortDirection, splitConverter } from "./split-definition";
 import { SplitDefinitionFixtures } from "./split-definition.fixtures";
 
@@ -29,10 +30,11 @@ describe("SplitDefinition v3", () => {
 
     stringSplitTests.forEach(({ dimension, sortOn, sortDirection, limit }) => {
       it(`should convert model sorted ${sortDirection} on ${sortOn} with limit ${limit}`, () => {
-        const filterClause = converter.toSplitCombine(SplitDefinitionFixtures.stringSplitModel(dimension, sortOn, sortDirection, limit));
-        const expected = SplitDefinitionFixtures.stringSplitCombine(dimension, sortOn, sortDirection, limit);
+        const splitDefinition = SplitDefinitionFixtures.stringSplitDefinition(dimension, sortOn, sortDirection, limit);
+        const splitCombine = converter.toSplitCombine(splitDefinition);
+        const expectedSplitCombine = SplitCombineFixtures.stringSplitCombine(dimension, sortOn, sortDirection, limit);
 
-        expect(filterClause.toJS()).to.deep.equal(expected.toJS());
+        expect(splitCombine.toJS()).to.deep.equal(expectedSplitCombine.toJS());
       });
     });
   });

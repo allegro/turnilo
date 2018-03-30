@@ -321,8 +321,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     };
     if (this.multiMeasureMode) js.multiMeasureMode = true;
     if (this.colors) js.colors = this.colors.toJS();
-    var defaultSortMeasure = this.dataCube.getDefaultSortMeasure();
-    if (this.pinnedSort !== defaultSortMeasure) js.pinnedSort = this.pinnedSort;
+    if (this.pinnedSort && this.pinnedDimensions.size) js.pinnedSort = this.pinnedSort;
     if (this.compare) js.compare = this.compare.toJS();
     if (this.highlight) js.highlight = this.highlight.toJS();
     return js;

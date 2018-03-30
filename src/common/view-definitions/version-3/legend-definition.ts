@@ -19,7 +19,8 @@ import { Colors } from "../../models";
 export interface LegendDefinition {
   dimension: string;
   limit?: number;
-  values?: any[];
+  values?: Record<string, any>;
+  hasNull: boolean;
 }
 
 export interface LegendConversion {
@@ -28,24 +29,20 @@ export interface LegendConversion {
 }
 
 export const legendConverter: LegendConversion = {
-  toColors(legend: LegendDefinition): Colors {
-    const { dimension, values, limit } = legend;
+  toColors(legend: LegendDefinition) {
+    const { dimension, values, limit, hasNull } = legend;
 
-    const colorValues: Record<string, any> =
-      values && values.reduce((acc, value, index) => { acc[`${index}`] = value; return acc; } , {});
-
-    const hasNull = values.reduce((acc, value) => acc || value === null, false);
-
-    return new Colors({ dimension, limit, values: colorValues, hasNull });
+    return new Colors({ dimension, limit, values, hasNull });
   },
 
   fromColors(colors: Colors) {
-    const { dimension, limit } = colors;
+    const { dimension, limit, values, hasNull } = colors;
 
     return {
       dimension,
       limit,
-      values: colors.toArray()
+      values,
+      hasNull
     };
   }
 };

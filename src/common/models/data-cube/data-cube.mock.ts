@@ -50,6 +50,30 @@ export class DataCubeMock {
         },
         {
           kind: 'string',
+          name: 'channel',
+          title: 'Channel',
+          formula: '$channel'
+        },
+        {
+          kind: 'number',
+          name: 'commentLength',
+          title: 'Comment Length',
+          formula: '$commentLength'
+        },
+        {
+          kind: 'string',
+          name: 'isRobot',
+          title: 'Is Robot',
+          formula: '$isRobot'
+        },
+        {
+          kind: 'string',
+          name: 'namespace',
+          title: 'Namespace',
+          formula: '$namespace'
+        },
+        {
+          kind: 'string',
           name: 'articleName',
           title: 'Article Name',
           formula: '$articleName'
@@ -77,6 +101,11 @@ export class DataCubeMock {
           name: 'added',
           title: 'Added',
           formula: '$main.sum($added)'
+        },
+        {
+          name: 'delta',
+          title: 'Delta',
+          formula: '$main.sum($delta)'
         }
       ],
       timeAttribute: 'time',

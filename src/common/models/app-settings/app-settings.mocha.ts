@@ -182,6 +182,30 @@ describe('AppSettings', () => {
                 "title": "Time"
               },
               {
+                "formula": '$channel',
+                "kind": 'string',
+                "name": 'channel',
+                "title": 'Channel'
+              },
+              {
+                "formula": '$commentLength',
+                "kind": 'number',
+                "name": 'commentLength',
+                "title": 'Comment Length'
+              },
+              {
+                "formula": '$isRobot',
+                "kind": 'string',
+                "name": 'isRobot',
+                "title": 'Is Robot'
+              },
+              {
+                "kind": 'string',
+                "name": 'namespace',
+                "title": 'Namespace',
+                "formula": '$namespace'
+              },
+              {
                 "formula": "$articleName",
                 "kind": "string",
                 "name": "articleName",
@@ -210,6 +234,11 @@ describe('AppSettings', () => {
                 "formula": "$main.sum($added)",
                 "name": "added",
                 "title": "Added"
+              },
+              {
+                "formula": '$main.sum($delta)',
+                "name": 'delta',
+                "title": 'Delta'
               }
             ],
             "name": "wiki",

@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-import { $, LimitExpression, SortExpression } from "plywood";
-import { SplitCombine } from "../../models/split-combine/split-combine";
-import { SortDirection, sortDirectionMapper, SplitType, StringSplitDefinition } from "./split-definition";
+import { SortDirection, SplitType, StringSplitDefinition } from "./split-definition";
 
 export class SplitDefinitionFixtures {
-  static stringSplitModel(dimension: string, sortOn: string, sortDirection: SortDirection, limit: number): StringSplitDefinition {
+  static stringSplitDefinition(dimension: string, sortOn: string, sortDirection: SortDirection, limit: number): StringSplitDefinition {
     return {
       type: SplitType.string,
       dimension,
       sort: { ref: sortOn, direction: sortDirection },
       limit: limit
     };
-  }
-
-  static stringSplitCombine(dimension: string, sortOn: string, sortDirection: SortDirection, limit: number): SplitCombine {
-    return new SplitCombine({
-      expression: $(dimension),
-      bucketAction: null,
-      sortAction: new SortExpression({ expression: $(sortOn), direction: sortDirectionMapper[sortDirection] }),
-      limitAction: new LimitExpression({ value: limit })
-    });
   }
 }

@@ -82,6 +82,7 @@ describe('CollectionTile', () => {
           "pinnedDimensions": [
             "articleName"
           ],
+          "pinnedSort": "count",
           "singleMeasure": "count",
           "selectedMeasures": [
             "count"
