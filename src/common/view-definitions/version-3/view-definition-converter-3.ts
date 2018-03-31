@@ -17,7 +17,7 @@
 import { Timezone } from "chronoshift";
 import { DataCube, Essence, Filter, Manifest } from "../../models";
 import { ViewDefinitionConverter } from "../view-definition-converter";
-import { FilterDefinitionConverter } from "./filter-definition";
+import { filterDefinitionConverter } from "./filter-definition";
 import { highlightConverter } from "./highlight-definition";
 import { legendConverter } from "./legend-definition";
 import { measuresDefinitionConverter } from "./measures-definition";
@@ -28,12 +28,10 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
   version = 3;
 
   fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube, visualizations: Manifest[]): Essence {
-    const filterConverter = new FilterDefinitionConverter();
-
     return Essence.fromJS({
       visualization: definition.visualization,
       timezone: Timezone.fromJS(definition.timezone).toJS(),
-      filter: Filter.fromClauses(definition.filters.map(filterConverter.toFilterClause)).toJS(),
+      filter: Filter.fromClauses(definition.filters.map(filterDefinitionConverter.toFilterClause)).toJS(),
       splits: definition.splits.map(splitConverter.toSplitCombine).map((sc) => sc.toJS()),
       multiMeasureMode: measuresDefinitionConverter.toMultiMeasureMode(definition.measures),
       singleMeasure: measuresDefinitionConverter.toSingleMeasure(definition.measures),
@@ -41,23 +39,21 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
       pinnedDimensions: definition.pinnedDimensions,
       pinnedSort: definition.pinnedSort,
       colors: definition.legend && legendConverter.toColors(definition.legend),
-      highlight: definition.highlight && highlightConverter(filterConverter).toHighlight(definition.highlight).toJS()
+      highlight: definition.highlight && highlightConverter.toHighlight(definition.highlight).toJS()
     }, { dataCube, visualizations });
   }
 
   toViewDefinition(essence: Essence): ViewDefinition3 {
-    const filterConverter = new FilterDefinitionConverter();
-
     return {
       visualization: essence.visualization.name,
       timezone: essence.timezone.toJS(),
-      filters: essence.filter.clauses.map(filterConverter.fromFilterClause).toArray(),
+      filters: essence.filter.clauses.map(filterDefinitionConverter.fromFilterClause).toArray(),
       splits: essence.splits.splitCombines.map(splitConverter.fromSplitCombine).toArray(),
       measures: measuresDefinitionConverter.fromSimpleValues(essence.multiMeasureMode, essence.singleMeasure, essence.selectedMeasures),
       pinnedDimensions: essence.pinnedDimensions.toArray(),
       pinnedSort: essence.pinnedSort,
       legend: essence.colors && legendConverter.fromColors(essence.colors),
-      highlight: essence.highlight && highlightConverter(filterConverter).fromHighlight(essence.highlight)
+      highlight: essence.highlight && highlightConverter.fromHighlight(essence.highlight)
     };
   }
 }

@@ -17,13 +17,11 @@
 import { expect } from "chai";
 import { $, r } from "plywood";
 import { FilterClause } from "../../models";
-import { FilterDefinitionConverter, StringFilterAction } from "./filter-definition";
+import { filterDefinitionConverter, StringFilterAction } from "./filter-definition";
 import { FilterDefinitionFixtures } from "./filter-definition.fixtures";
 
 describe("FilterDefinition v3", () => {
   describe("string filter conversion", () => {
-    const converter = new FilterDefinitionConverter();
-
     const stringFilterTests = [
       { dimension: "channel", action: StringFilterAction.in, exclude: false, values: ["en", "pl"] },
       { dimension: "channel", action: StringFilterAction.in, exclude: true, values: ["en", "pl"] },
@@ -33,7 +31,7 @@ describe("FilterDefinition v3", () => {
 
     stringFilterTests.forEach(({ dimension, action, exclude, values }) => {
       it(`should convert model with ${action} action`, () => {
-        const filterClause = converter.toFilterClause(FilterDefinitionFixtures.stringFilterModel(dimension, action, exclude, values));
+        const filterClause = filterDefinitionConverter.toFilterClause(FilterDefinitionFixtures.stringFilterModel(dimension, action, exclude, values));
         const expected = FilterDefinitionFixtures.stringFilterClause(dimension, action, exclude, values);
 
         expect(filterClause.toJS()).to.deep.equal(expected.toJS());
@@ -42,14 +40,12 @@ describe("FilterDefinition v3", () => {
   });
 
   describe("time filter conversion", () => {
-    const converter = new FilterDefinitionConverter();
-
     it("should convert", () => {
       // const selection = r({ start: "2018-01-01T00:00:00", end: "2018-01-02T00:00:00", type: "TIME_RANGE"});
       // const selection = $(FilterClause.NOW_REF_NAME).timeRange("P1D", -1);
       const selection = r({ start: 1, end: null, type: "NUMBER_RANGE" });
       const filterClause = new FilterClause({ expression: $("time"), action: null, selection, exclude: false });
-      const filter = converter.fromFilterClause(filterClause);
+      const filter = filterDefinitionConverter.fromFilterClause(filterClause);
       console.log(filter);
     });
   });

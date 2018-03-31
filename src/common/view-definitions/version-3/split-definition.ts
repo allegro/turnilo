@@ -62,8 +62,10 @@ export const directionMapper: { [sort in Direction]: SortDirection; } = {
   descending: SortDirection.descending
 };
 
-interface SplitDefinitionConversion<In extends BaseSplitDefinition> {
+interface SplitDefinitionConversion<In extends SplitDefinition> {
   toSplitCombine(split: In): SplitCombine;
+
+  fromSplitCombine(splitCombine: SplitCombine): In;
 }
 
 const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = {
@@ -76,6 +78,24 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
     const limitAction = new LimitExpression({ value: limit });
 
     return new SplitCombine({ expression, bucketAction, sortAction, limitAction });
+  },
+
+  fromSplitCombine(splitCombine: SplitCombine): NumberSplitDefinition {
+    const { expression, bucketAction, sortAction, limitAction } = splitCombine;
+
+    if (bucketAction instanceof NumberBucketExpression) {
+      const { name: dimension } = expression as RefExpression;
+
+      return {
+        type: SplitType.number,
+        dimension,
+        granularity: bucketAction.size,
+        sort: { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
+        limit: limitAction && limitAction.value
+      };
+    } else {
+      throw new Error("");
+    }
   }
 };
 
@@ -89,7 +109,26 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
     const limitAction = new LimitExpression({ value: limit });
 
     return new SplitCombine({ expression, bucketAction, sortAction, limitAction });
+  },
+
+  fromSplitCombine(splitCombine: SplitCombine): TimeSplitDefinition {
+    const { expression, bucketAction, sortAction, limitAction } = splitCombine;
+
+    if (bucketAction instanceof TimeBucketExpression) {
+      const { name: dimension } = expression as RefExpression;
+
+      return {
+        type: SplitType.time,
+        dimension,
+        granularity: bucketAction.duration.toJS(),
+        sort: { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
+        limit: limitAction && limitAction.value
+      };
+    } else {
+      throw new Error("");
+    }
   }
+
 };
 
 const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = {
@@ -102,52 +141,47 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
     const limitAction = new LimitExpression({ value: limit });
 
     return new SplitCombine({ expression, bucketAction, sortAction, limitAction });
+  },
+
+  fromSplitCombine(splitCombine: SplitCombine): StringSplitDefinition {
+    const { expression, sortAction, limitAction } = splitCombine;
+    const { name: dimension } = expression as RefExpression;
+
+    return {
+      type: SplitType.string,
+      dimension,
+      sort: { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
+      limit: limitAction && limitAction.value
+    };
   }
 };
 
-const splitConversions: { [type in SplitType]: SplitDefinitionConversion<BaseSplitDefinition> } = {
+const splitConversions: { [type in SplitType]: SplitDefinitionConversion<SplitDefinition> } = {
   number: numberSplitConversion,
   string: stringSplitConversion,
   time: timeSplitConversion
 };
 
-export interface SplitConverter {
+export interface SplitDefinitionConverter {
   toSplitCombine(split: SplitDefinition): SplitCombine;
 
   fromSplitCombine(splitCombine: SplitCombine): SplitDefinition;
 }
 
-export const splitConverter: SplitConverter = {
+export const splitConverter: SplitDefinitionConverter = {
   toSplitCombine(split: SplitDefinition): SplitCombine {
     return splitConversions[split.type].toSplitCombine(split);
   },
 
   fromSplitCombine(splitCombine: SplitCombine): SplitDefinition {
-    const { expression, bucketAction, sortAction, limitAction } = splitCombine;
-    const dimension = (expression as RefExpression).name;
+    const { bucketAction } = splitCombine;
 
     if (bucketAction instanceof NumberBucketExpression) {
-      return {
-        type: SplitType.number,
-        dimension,
-        granularity: bucketAction.size,
-        sort: { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
-        limit: limitAction && limitAction.value
-      };
+      return numberSplitConversion.fromSplitCombine(splitCombine);
     } else if (bucketAction instanceof TimeBucketExpression) {
-      return {
-        type: SplitType.time,
-        dimension,
-        granularity: bucketAction.duration.toJS(),
-        sort: { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
-        limit: limitAction && limitAction.value
-      };
-    } else
-      return {
-        type: SplitType.string,
-        dimension,
-        sort: { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
-        limit: limitAction && limitAction.value
-      };
+      return timeSplitConversion.fromSplitCombine(splitCombine);
+    } else {
+      return stringSplitConversion.fromSplitCombine(splitCombine);
+    }
   }
 };

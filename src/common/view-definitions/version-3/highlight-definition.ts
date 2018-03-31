@@ -15,7 +15,7 @@
  */
 
 import { Filter, Highlight } from "../../models";
-import { FilterClauseDefinition, FilterDefinitionConverter } from "./filter-definition";
+import { FilterClauseDefinition, filterDefinitionConverter } from "./filter-definition";
 
 export interface HighlightDefinition {
   owner: string;
@@ -23,25 +23,24 @@ export interface HighlightDefinition {
   measure: string;
 }
 
-export interface HighlightConversion {
+export interface HighlightDefinitionConverter {
   toHighlight(highlightDefinition: HighlightDefinition): Highlight;
 
   fromHighlight(highlight: Highlight): HighlightDefinition;
 }
 
-export function highlightConverter(filterConverter: FilterDefinitionConverter): HighlightConversion {
-  return {
+export const highlightConverter: HighlightDefinitionConverter = {
     toHighlight(highlightDefinition: HighlightDefinition): Highlight {
       const { owner, filters, measure } = highlightDefinition;
-      const filter = Filter.fromClauses(filters.map(filterConverter.toFilterClause));
+      const filter = Filter.fromClauses(filters.map(filterDefinitionConverter.toFilterClause));
 
       return new Highlight({ owner, delta: filter, measure });
     },
+
     fromHighlight(highlight: Highlight): HighlightDefinition {
       const { owner, delta, measure } = highlight;
-      const filters = delta.clauses.map(filterConverter.fromFilterClause).toArray();
+      const filters = delta.clauses.map(filterDefinitionConverter.fromFilterClause).toArray();
 
       return { owner, filters, measure };
     }
-  };
-}
+};

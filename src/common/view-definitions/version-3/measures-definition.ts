@@ -22,7 +22,7 @@ export interface MeasuresDefinition {
   multi: string[];
 }
 
-export interface MeasuresDefinitionConversion {
+export interface MeasuresDefinitionConverter {
   fromSimpleValues(multiMeasureMode: boolean, singleMeasure: string, selectedMeasures: OrderedSet<string>): MeasuresDefinition;
 
   toMultiMeasureMode(measuresDefinition: MeasuresDefinition): boolean;
@@ -32,7 +32,7 @@ export interface MeasuresDefinitionConversion {
   toSelectedMeasures(measuresDefinition: MeasuresDefinition): OrderedSet<string>;
 }
 
-export const measuresDefinitionConverter: MeasuresDefinitionConversion = {
+export const measuresDefinitionConverter: MeasuresDefinitionConverter = {
   fromSimpleValues(multiMeasureMode: boolean, singleMeasure: string, selectedMeasures: OrderedSet<string>): MeasuresDefinition {
     return {
       isMulti: multiMeasureMode,

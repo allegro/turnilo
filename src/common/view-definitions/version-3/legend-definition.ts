@@ -23,12 +23,12 @@ export interface LegendDefinition {
   hasNull: boolean;
 }
 
-export interface LegendConversion {
+export interface LegendDefinitionConverter {
   toColors(legend: LegendDefinition): Colors;
   fromColors(colors: Colors): LegendDefinition;
 }
 
-export const legendConverter: LegendConversion = {
+export const legendConverter: LegendDefinitionConverter = {
   toColors(legend: LegendDefinition) {
     const { dimension, values, limit, hasNull } = legend;
 

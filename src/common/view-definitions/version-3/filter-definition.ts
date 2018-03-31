@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, Expression, LiteralExpression, r, RefExpression, TimeFloorExpression, TimeRangeExpression } from "plywood";
+import { $, Expression, LiteralExpression, r, RefExpression, TimeBucketExpression, TimeFloorExpression, TimeRangeExpression } from "plywood";
 import { FilterClause, FilterSelection, SupportedAction } from "../../models/filter-clause/filter-clause";
 
 export enum FilterType {
@@ -67,105 +67,19 @@ export enum StringFilterAction {
 
 export type FilterClauseDefinition = NumberFilterClauseDefinition | StringFilterClauseDefinition | TimeFilterClauseDefinition;
 
-export interface FilterDefinitionConversionStrategy<In extends BaseFilterClauseDefinition> {
+export interface FilterDefinitionConversion<In extends FilterClauseDefinition> {
   toFilterClause(filter: In): FilterClause;
+
+  fromFilterClause(filterClause: FilterClause): In;
 }
 
-export interface FilterClauseConversion {
-  fromFilterClause(filterClause: FilterClause): FilterClauseDefinition;
-}
+const stringActionMap: { [action in StringFilterAction]: SupportedAction } = {
+  in: SupportedAction.overlap,
+  match: SupportedAction.match,
+  contains: SupportedAction.contains
+};
 
-export class FilterDefinitionConverter implements FilterDefinitionConversionStrategy<FilterClauseDefinition>, FilterClauseConversion {
-  private readonly converters: {
-    [type in FilterType]: FilterDefinitionConversionStrategy<BaseFilterClauseDefinition>
-  } = {
-    number: new NumberFilterClauseConverter(),
-    string: new StringFilterClauseConverter(),
-    time: new TimeFilterClauseConverter()
-  };
-
-  toFilterClause = (clauseDefinition: FilterClauseDefinition): FilterClause => {
-    if (clauseDefinition.dimension === null)
-      throw new Error("Dimension name cannot be empty.");
-
-    const clauseConverter = this.converters[clauseDefinition.type];
-    return clauseConverter.toFilterClause(clauseDefinition);
-  }
-
-  fromFilterClause = (filterClause: FilterClause): FilterClauseDefinition => {
-    const { expression, selection, action, exclude } = filterClause;
-
-    const dimension = (expression as RefExpression).name;
-
-    if (selection instanceof LiteralExpression && selection.type === "NUMBER_RANGE") {
-      return {
-        type: FilterType.number,
-        dimension,
-        action: NumberFilterAction.include,
-        exclude: false,
-        range: { start: selection.value.start, end: selection.value.end }
-      };
-    } else if (selection instanceof LiteralExpression && selection.type === "TIME_RANGE") {
-      return {
-        type: FilterType.time,
-        dimension,
-        timeRanges: [{ start: selection.value.start, end: selection.value.end }]
-      };
-    } else if (selection instanceof TimeRangeExpression) {
-      if (selection.operand instanceof TimeFloorExpression) {
-        return {
-          type: FilterType.time,
-          dimension,
-          timePeriods: [{ duration: selection.duration.toJS(), type: "floored", step: selection.step }]
-        };
-      } else {
-        return {
-          type: FilterType.time,
-          dimension,
-          timePeriods: [{ duration: selection.duration.toJS(), type: "latest", step: selection.step }]
-        };
-      }
-    } else {
-      switch (action) {
-        case SupportedAction.overlap:
-        case undefined:
-          return {
-            type: FilterType.string,
-            dimension,
-            action: StringFilterAction.in,
-            values: (selection as LiteralExpression).value.elements,
-            exclude
-          };
-        case SupportedAction.contains:
-          return {
-            type: FilterType.string,
-            dimension,
-            action: StringFilterAction.contains,
-            values: [(selection as LiteralExpression).value],
-            exclude
-          };
-        case SupportedAction.match:
-          return {
-            type: FilterType.string,
-            dimension,
-            action: StringFilterAction.match,
-            values: [selection as string],
-            exclude
-          };
-        default:
-          return null;
-      }
-    }
-  }
-}
-
-export class StringFilterClauseConverter implements FilterDefinitionConversionStrategy<StringFilterClauseDefinition> {
-  stringActionMap: { [action in StringFilterAction]: SupportedAction } = {
-    in: SupportedAction.overlap,
-    match: SupportedAction.match,
-    contains: SupportedAction.contains
-  };
-
+const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClauseDefinition> = {
   toFilterClause(clauseDefinition: StringFilterClauseDefinition): FilterClause {
     const { dimension, action, exclude, values } = clauseDefinition;
 
@@ -186,11 +100,46 @@ export class StringFilterClauseConverter implements FilterDefinitionConversionSt
       selection = values[0];
     }
 
-    return new FilterClause({ action: this.stringActionMap[action], exclude, expression, selection });
-  }
-}
+    return new FilterClause({ action: stringActionMap[action], exclude, expression, selection });
+  },
 
-export class NumberFilterClauseConverter implements FilterDefinitionConversionStrategy<NumberFilterClauseDefinition> {
+  fromFilterClause(filterClause: FilterClause): StringFilterClauseDefinition {
+    const { action, exclude, expression, selection } = filterClause;
+    const { name: dimension } = expression as RefExpression;
+
+    switch (action) {
+      case SupportedAction.overlap:
+      case undefined:
+        return {
+          type: FilterType.string,
+          dimension,
+          action: StringFilterAction.in,
+          values: (selection as LiteralExpression).value.elements,
+          exclude
+        };
+      case SupportedAction.contains:
+        return {
+          type: FilterType.string,
+          dimension,
+          action: StringFilterAction.contains,
+          values: [(selection as LiteralExpression).value],
+          exclude
+        };
+      case SupportedAction.match:
+        return {
+          type: FilterType.string,
+          dimension,
+          action: StringFilterAction.match,
+          values: [selection as string],
+          exclude
+        };
+      default:
+        return null;
+    }
+  }
+};
+
+const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClauseDefinition> = {
   toFilterClause(filterModel: NumberFilterClauseDefinition): FilterClause {
     const { dimension, action, exclude, range } = filterModel;
 
@@ -205,10 +154,27 @@ export class NumberFilterClauseConverter implements FilterDefinitionConversionSt
     const selection: Expression = r({ ...range, type: "NUMBER_RANGE" });
 
     return new FilterClause({ action: "include" as SupportedAction, exclude, expression, selection });
-  }
-}
+  },
 
-export class TimeFilterClauseConverter implements FilterDefinitionConversionStrategy<TimeFilterClauseDefinition> {
+  fromFilterClause(filterClause: FilterClause): NumberFilterClauseDefinition {
+    const { expression, selection } = filterClause;
+    const { name: dimension } = expression as RefExpression;
+
+    if (isNumberFilterSelection(selection)) {
+      return {
+        type: FilterType.number,
+        dimension,
+        action: NumberFilterAction.include,
+        exclude: false,
+        range: { start: selection.value.start, end: selection.value.end }
+      };
+    } else {
+      throw new Error(`Number filterClause expected, found: ${filterClause}. Dimension: ${dimension}`);
+    }
+  }
+};
+
+const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefinition> = {
   toFilterClause(filterModel: TimeFilterClauseDefinition): FilterClause {
     const { dimension, timeRanges, timePeriods } = filterModel;
 
@@ -226,23 +192,92 @@ export class TimeFilterClauseConverter implements FilterDefinitionConversionStra
       selection = r({ ...timeRanges[0], type: "TIME_RANGE" });
     } else if (timePeriods !== null && timePeriods.length === 1) {
       const timePeriod = timePeriods[0];
-      selection = this.timePeriodToExpression(timePeriod);
+      selection = timePeriodToExpression(timePeriod);
     } else {
       throw new Error(`Wrong time filter definition: ${filterModel}`);
     }
 
     return new FilterClause({ action: "include" as SupportedAction, expression, selection });
-  }
+  },
 
-  timePeriodToExpression(timePeriod: TimePeriodDefinition): Expression {
-    switch (timePeriod.type) {
-      case "latest":
-        return $(FilterClause.MAX_TIME_REF_NAME)
-          .timeRange(timePeriod.duration, timePeriod.step);
-      case "floored":
-        return $(FilterClause.NOW_REF_NAME)
-          .timeFloor(timePeriod.duration)
-          .timeRange(timePeriod.duration, timePeriod.step);
+  fromFilterClause(filterClause: FilterClause): TimeFilterClauseDefinition {
+    const { expression, selection } = filterClause;
+    const { name: dimension } = expression as RefExpression;
+
+    if (isFixedTimeRangeSelection(selection)) {
+      return {
+        type: FilterType.time,
+        dimension,
+        timeRanges: [{ start: selection.value.start, end: selection.value.end }]
+      };
+    } else if (isRelativeTimeRangeSelection(selection)) {
+      if (selection.operand instanceof TimeFloorExpression) {
+        return {
+          type: FilterType.time,
+          dimension,
+          timePeriods: [{ duration: selection.duration.toJS(), type: "floored", step: selection.step }]
+        };
+      } else {
+        return {
+          type: FilterType.time,
+          dimension,
+          timePeriods: [{ duration: selection.duration.toJS(), type: "latest", step: selection.step }]
+        };
+      }
+    } else {
+      throw new Error(`Time filterClause expected, found: ${filterClause}. Dimension: ${dimension}`);
     }
   }
+};
+
+function timePeriodToExpression(timePeriod: TimePeriodDefinition): Expression {
+  switch (timePeriod.type) {
+    case "latest":
+      return $(FilterClause.MAX_TIME_REF_NAME)
+        .timeRange(timePeriod.duration, timePeriod.step);
+    case "floored":
+      return $(FilterClause.NOW_REF_NAME)
+        .timeFloor(timePeriod.duration)
+        .timeRange(timePeriod.duration, timePeriod.step);
+  }
+}
+
+const filterClauseConverters: { [type in FilterType]: FilterDefinitionConversion<FilterClauseDefinition> } = {
+  number: numberFilterClauseConverter,
+  string: stringFilterClauseConverter,
+  time: timeFilterClauseConverter
+};
+
+export const filterDefinitionConverter: FilterDefinitionConversion<FilterClauseDefinition> = {
+  toFilterClause(clauseDefinition: FilterClauseDefinition): FilterClause {
+    if (clauseDefinition.dimension === null)
+      throw new Error("Dimension name cannot be empty.");
+
+    const clauseConverter = filterClauseConverters[clauseDefinition.type];
+    return clauseConverter.toFilterClause(clauseDefinition);
+  },
+
+  fromFilterClause(filterClause: FilterClause): FilterClauseDefinition {
+    const { selection } = filterClause;
+
+    if (isNumberFilterSelection(selection)) {
+      return numberFilterClauseConverter.fromFilterClause(filterClause);
+    } else if (isFixedTimeRangeSelection(selection) || isRelativeTimeRangeSelection(selection)) {
+      return timeFilterClauseConverter.fromFilterClause(filterClause);
+    } else {
+      return stringFilterClauseConverter.fromFilterClause(filterClause);
+    }
+  }
+};
+
+function isNumberFilterSelection(selection: FilterSelection): selection is LiteralExpression {
+  return selection instanceof LiteralExpression && selection.type === "NUMBER_RANGE";
+}
+
+function isFixedTimeRangeSelection(selection: FilterSelection): selection is LiteralExpression {
+  return selection instanceof LiteralExpression && selection.type === "TIME_RANGE";
+}
+
+function isRelativeTimeRangeSelection(selection: FilterSelection): selection is TimeRangeExpression {
+  return selection instanceof TimeRangeExpression;
 }
