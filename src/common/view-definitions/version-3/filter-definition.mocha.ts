@@ -17,6 +17,7 @@
 import { expect } from "chai";
 import { $, r } from "plywood";
 import { FilterClause } from "../../models";
+import { DataCubeMock } from "../../models/data-cube/data-cube.mock";
 import { filterDefinitionConverter, StringFilterAction } from "./filter-definition";
 import { FilterDefinitionFixtures } from "./filter-definition.fixtures";
 
@@ -31,7 +32,7 @@ describe("FilterDefinition v3", () => {
 
     stringFilterTests.forEach(({ dimension, action, exclude, values }) => {
       it(`should convert model with ${action} action`, () => {
-        const filterClause = filterDefinitionConverter.toFilterClause(FilterDefinitionFixtures.stringFilterModel(dimension, action, exclude, values));
+        const filterClause = filterDefinitionConverter.toFilterClause(FilterDefinitionFixtures.stringFilterModel(dimension, action, exclude, values), DataCubeMock.wiki());
         const expected = FilterDefinitionFixtures.stringFilterClause(dimension, action, exclude, values);
 
         expect(filterClause.toJS()).to.deep.equal(expected.toJS());
@@ -45,7 +46,7 @@ describe("FilterDefinition v3", () => {
       // const selection = $(FilterClause.NOW_REF_NAME).timeRange("P1D", -1);
       const selection = r({ start: 1, end: null, type: "NUMBER_RANGE" });
       const filterClause = new FilterClause({ expression: $("time"), action: null, selection, exclude: false });
-      const filter = filterDefinitionConverter.fromFilterClause(filterClause);
+      const filter = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeMock.wiki());
       console.log(filter);
     });
   });

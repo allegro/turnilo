@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Filter, Highlight } from "../../models";
+import { DataCube, Filter, Highlight } from "../../models";
 import { FilterClauseDefinition, filterDefinitionConverter } from "./filter-definition";
 
 export interface HighlightDefinition {
@@ -29,18 +29,20 @@ export interface HighlightDefinitionConverter {
   fromHighlight(highlight: Highlight): HighlightDefinition;
 }
 
-export const highlightConverter: HighlightDefinitionConverter = {
+export function highlightConverter(dataCube: DataCube): HighlightDefinitionConverter {
+  return {
     toHighlight(highlightDefinition: HighlightDefinition): Highlight {
       const { owner, filters, measure } = highlightDefinition;
-      const filter = Filter.fromClauses(filters.map(filterDefinitionConverter.toFilterClause));
+      const filter = Filter.fromClauses(filters.map((fc) => filterDefinitionConverter.toFilterClause(fc, dataCube)));
 
       return new Highlight({ owner, delta: filter, measure });
     },
 
     fromHighlight(highlight: Highlight): HighlightDefinition {
       const { owner, delta, measure } = highlight;
-      const filters = delta.clauses.map(filterDefinitionConverter.fromFilterClause).toArray();
+      const filters = delta.clauses.map((fc) => filterDefinitionConverter.fromFilterClause(fc, dataCube)).toArray();
 
       return { owner, filters, measure };
     }
-};
+  };
+}

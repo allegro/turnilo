@@ -31,7 +31,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     return Essence.fromJS({
       visualization: definition.visualization,
       timezone: Timezone.fromJS(definition.timezone).toJS(),
-      filter: Filter.fromClauses(definition.filters.map(filterDefinitionConverter.toFilterClause)).toJS(),
+      filter: Filter.fromClauses(definition.filters.map((fc) => filterDefinitionConverter.toFilterClause(fc, dataCube))).toJS(),
       splits: definition.splits.map(splitConverter.toSplitCombine).map((sc) => sc.toJS()),
       multiMeasureMode: measuresDefinitionConverter.toMultiMeasureMode(definition.measures),
       singleMeasure: measuresDefinitionConverter.toSingleMeasure(definition.measures),
@@ -39,21 +39,23 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
       pinnedDimensions: definition.pinnedDimensions,
       pinnedSort: definition.pinnedSort,
       colors: definition.legend && legendConverter.toColors(definition.legend),
-      highlight: definition.highlight && highlightConverter.toHighlight(definition.highlight).toJS()
+      highlight: definition.highlight && highlightConverter(dataCube).toHighlight(definition.highlight).toJS()
     }, { dataCube, visualizations });
   }
 
   toViewDefinition(essence: Essence): ViewDefinition3 {
+    const { dataCube } = essence;
+
     return {
       visualization: essence.visualization.name,
       timezone: essence.timezone.toJS(),
-      filters: essence.filter.clauses.map(filterDefinitionConverter.fromFilterClause).toArray(),
+      filters: essence.filter.clauses.map((fc) => filterDefinitionConverter.fromFilterClause(fc, dataCube)).toArray(),
       splits: essence.splits.splitCombines.map(splitConverter.fromSplitCombine).toArray(),
       measures: measuresDefinitionConverter.fromSimpleValues(essence.multiMeasureMode, essence.singleMeasure, essence.selectedMeasures),
       pinnedDimensions: essence.pinnedDimensions.toArray(),
       pinnedSort: essence.pinnedSort,
       legend: essence.colors && legendConverter.fromColors(essence.colors),
-      highlight: essence.highlight && highlightConverter.fromHighlight(essence.highlight)
+      highlight: essence.highlight && highlightConverter(dataCube).fromHighlight(essence.highlight)
     };
   }
 }
