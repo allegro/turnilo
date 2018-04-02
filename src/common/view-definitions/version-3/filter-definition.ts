@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, Expression, LiteralExpression, r, TimeFloorExpression, TimeRangeExpression } from "plywood";
+import { $, Expression, LiteralExpression, r, Set, TimeFloorExpression, TimeRangeExpression } from "plywood";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { FilterClause, FilterSelection, SupportedAction } from "../../models/filter-clause/filter-clause";
 
@@ -32,9 +32,8 @@ export interface BaseFilterClauseDefinition {
 
 export interface NumberFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.number;
-  action: NumberFilterAction;
   exclude: boolean;
-  range: { start?: number, end?: number };
+  ranges: { start: number, end: number, bounds?: string }[];
 }
 
 export interface StringFilterClauseDefinition extends BaseFilterClauseDefinition {
@@ -52,7 +51,7 @@ export interface BooleanFilterClauseDefinition extends BaseFilterClauseDefinitio
 
 export interface TimeFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.time;
-  timeRanges?: [{ start: string, end: string }];
+  timeRanges?: { start: string, end: string }[];
   timePeriods?: TimePeriodDefinition[];
 }
 
@@ -60,10 +59,6 @@ export interface TimePeriodDefinition {
   type: "latest" | "floored";
   duration: string;
   step: number;
-}
-
-export enum NumberFilterAction {
-  include = "include"
 }
 
 export enum StringFilterAction {
@@ -171,32 +166,24 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
 
 const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClauseDefinition> = {
   toFilterClause(filterModel: NumberFilterClauseDefinition, dataCube: DataCube): FilterClause {
-    const { dimension, action, exclude, range } = filterModel;
-
-    if (action === null)
-      throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
-    if (action !== NumberFilterAction.include)
-      throw Error(`Number filter action must be: ${NumberFilterAction.include}. Dimension: ${dimension}`);
-    if (NumberFilterAction[action] === undefined)
-      throw Error(`Unknown number filter action. Dimension: ${dimension}`);
+    const { dimension, exclude, ranges } = filterModel;
 
     const expression = dataCube.getDimension(dimension).expression;
-    const selection: Expression = r({ ...range, type: "NUMBER_RANGE" });
+    const selection: Expression = r(ranges);
 
-    return new FilterClause({ action: "include" as SupportedAction, exclude, expression, selection });
+    return new FilterClause({ exclude, expression, selection });
   },
 
   fromFilterClause(filterClause: FilterClause, dataCube: DataCube): NumberFilterClauseDefinition {
     const { expression, selection } = filterClause;
     const { name: dimension } = dataCube.getDimensionByExpression(expression);
 
-    if (isNumberFilterSelection(selection)) {
+    if (isNumberFilterSelection(selection) && selection.value instanceof Set) {
       return {
         type: FilterType.number,
         dimension,
-        action: NumberFilterAction.include,
         exclude: false,
-        range: { start: selection.value.start, end: selection.value.end }
+        ranges: selection.value.elements.map((range) => ({ start: range.start, end: range.end, bounds: range.bounds }))
       };
     } else {
       throw new Error(`Number filterClause expected, found: ${filterClause}. Dimension: ${dimension}`);
@@ -314,7 +301,7 @@ function isBooleanFilterSelection(selection: FilterSelection): selection is Lite
 }
 
 function isNumberFilterSelection(selection: FilterSelection): selection is LiteralExpression {
-  return selection instanceof LiteralExpression && selection.type === "NUMBER_RANGE";
+  return selection instanceof LiteralExpression && selection.type === "SET/NUMBER_RANGE";
 }
 
 function isFixedTimeRangeSelection(selection: FilterSelection): selection is LiteralExpression {

@@ -15,7 +15,6 @@
  */
 
 import { expect } from "chai";
-import { Map } from "immutable";
 import { MANIFESTS } from "../../manifests";
 import { Essence } from "../../models";
 import { DataCubeMock } from "../../models/data-cube/data-cube.mock";
