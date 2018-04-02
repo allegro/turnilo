@@ -16,6 +16,7 @@
 
 import { $, Expression, LiteralExpression, r, Set, TimeFloorExpression, TimeRangeExpression } from "plywood";
 import { DataCube } from "../../models/data-cube/data-cube";
+import { Dimension } from "../../models/dimension/dimension";
 import { FilterClause, FilterSelection, SupportedAction } from "../../models/filter-clause/filter-clause";
 
 export enum FilterType {
@@ -71,9 +72,9 @@ export type FilterClauseDefinition =
   BooleanFilterClauseDefinition | NumberFilterClauseDefinition | StringFilterClauseDefinition | TimeFilterClauseDefinition;
 
 export interface FilterDefinitionConversion<In extends FilterClauseDefinition> {
-  toFilterClause(filter: In, dataCube: DataCube): FilterClause;
+  toFilterClause(filter: In, dimension: Dimension): FilterClause;
 
-  fromFilterClause(filterClause: FilterClause, dataCube: DataCube): In;
+  fromFilterClause(filterClause: FilterClause, dimension: Dimension): In;
 }
 
 const stringActionMap: { [action in StringFilterAction]: SupportedAction } = {
@@ -83,23 +84,21 @@ const stringActionMap: { [action in StringFilterAction]: SupportedAction } = {
 };
 
 const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClauseDefinition> = {
-  toFilterClause(clauseDefinition: BooleanFilterClauseDefinition, dataCube: DataCube): FilterClause {
-    const { dimension, exclude, values } = clauseDefinition;
-
-    const action = SupportedAction.overlap;
-    const expression = dataCube.getDimension(dimension).expression;
+  toFilterClause(clauseDefinition: BooleanFilterClauseDefinition, dimension: Dimension): FilterClause {
+    const { exclude, values } = clauseDefinition;
+    const { expression}  = dimension;
     const selection = r(values);
 
-    return new FilterClause({ action, exclude, expression, selection });
+    return new FilterClause({ exclude, expression, selection });
   },
 
-  fromFilterClause(filterClause: FilterClause, dataCube: DataCube): BooleanFilterClauseDefinition {
-    const { exclude, expression, selection } = filterClause;
-    const { name: dimension } = dataCube.getDimensionByExpression(expression);
+  fromFilterClause(filterClause: FilterClause, dimension: Dimension): BooleanFilterClauseDefinition {
+    const { exclude, selection } = filterClause;
+    const { name: referenceName } = dimension;
 
     return {
       type: FilterType.boolean,
-      dimension,
+      dimension: referenceName,
       values: (selection as LiteralExpression).value.elements,
       exclude
     };
@@ -107,8 +106,8 @@ const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClau
 };
 
 const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClauseDefinition> = {
-  toFilterClause(clauseDefinition: StringFilterClauseDefinition, dataCube: DataCube): FilterClause {
-    const { dimension, action, exclude, values } = clauseDefinition;
+  toFilterClause(clauseDefinition: StringFilterClauseDefinition, dimension: Dimension): FilterClause {
+    const { action, exclude, values } = clauseDefinition;
 
     if (action === null)
       throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
@@ -117,7 +116,8 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
     if (action in [StringFilterAction.contains, StringFilterAction.match] && values.length !== 1)
       throw Error(`Wrong string filter values: ${values} for action: ${action}. Dimension: ${dimension}`);
 
-    const expression = dataCube.getDimension(dimension).expression;
+    const { expression } = dimension;
+
     let selection: FilterSelection;
     if (action === StringFilterAction.in) {
       selection = r(values);
@@ -130,16 +130,16 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
     return new FilterClause({ action: stringActionMap[action], exclude, expression, selection });
   },
 
-  fromFilterClause(filterClause: FilterClause, dataCube: DataCube): StringFilterClauseDefinition {
-    const { action, exclude, expression, selection } = filterClause;
-    const { name: dimension } = dataCube.getDimensionByExpression(expression);
+  fromFilterClause(filterClause: FilterClause, dimension: Dimension): StringFilterClauseDefinition {
+    const { action, exclude, selection } = filterClause;
+    const { name: referenceName } = dimension;
 
     switch (action) {
       case SupportedAction.overlap:
       case undefined:
         return {
           type: FilterType.string,
-          dimension,
+          dimension: referenceName,
           action: StringFilterAction.in,
           values: (selection as LiteralExpression).value.elements,
           exclude
@@ -147,7 +147,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       case SupportedAction.contains:
         return {
           type: FilterType.string,
-          dimension,
+          dimension: referenceName,
           action: StringFilterAction.contains,
           values: [(selection as LiteralExpression).value],
           exclude
@@ -155,7 +155,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       case SupportedAction.match:
         return {
           type: FilterType.string,
-          dimension,
+          dimension: referenceName,
           action: StringFilterAction.match,
           values: [selection as string],
           exclude
@@ -165,35 +165,34 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
 };
 
 const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClauseDefinition> = {
-  toFilterClause(filterModel: NumberFilterClauseDefinition, dataCube: DataCube): FilterClause {
-    const { dimension, exclude, ranges } = filterModel;
-
-    const expression = dataCube.getDimension(dimension).expression;
+  toFilterClause(filterModel: NumberFilterClauseDefinition, dimension: Dimension): FilterClause {
+    const { exclude, ranges } = filterModel;
+    const { expression } = dimension;
     const selection: Expression = r(ranges);
 
     return new FilterClause({ exclude, expression, selection });
   },
 
-  fromFilterClause(filterClause: FilterClause, dataCube: DataCube): NumberFilterClauseDefinition {
-    const { expression, selection } = filterClause;
-    const { name: dimension } = dataCube.getDimensionByExpression(expression);
+  fromFilterClause(filterClause: FilterClause, dimension: Dimension): NumberFilterClauseDefinition {
+    const { selection } = filterClause;
+    const { name: referenceName } = dimension;
 
     if (isNumberFilterSelection(selection) && selection.value instanceof Set) {
       return {
         type: FilterType.number,
-        dimension,
+        dimension: referenceName,
         exclude: false,
         ranges: selection.value.elements.map((range) => ({ start: range.start, end: range.end, bounds: range.bounds }))
       };
     } else {
-      throw new Error(`Number filterClause expected, found: ${filterClause}. Dimension: ${dimension}`);
+      throw new Error(`Number filterClause expected, found: ${filterClause}. Dimension: ${referenceName}`);
     }
   }
 };
 
 const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefinition> = {
-  toFilterClause(filterModel: TimeFilterClauseDefinition, dataCube: DataCube): FilterClause {
-    const { dimension, timeRanges, timePeriods } = filterModel;
+  toFilterClause(filterModel: TimeFilterClauseDefinition, dimension: Dimension): FilterClause {
+    const { timeRanges, timePeriods } = filterModel;
 
     if (timeRanges === undefined && timePeriods === undefined)
       throw Error(`Time filter must have one of: timeRanges or timePeriods property. Dimension: ${dimension}`);
@@ -202,7 +201,7 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
     if (timePeriods !== undefined && timePeriods.length !== 1)
       throw Error(`Time filter support a single timePeriod only. Dimension: ${dimension}`);
 
-    const expression = dataCube.getDimension(dimension).expression;
+    const { expression } = dimension;
 
     let selection: Expression;
     if (timeRanges !== undefined && timeRanges.length === 1) {
@@ -217,32 +216,32 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
     return new FilterClause({ action: "include" as SupportedAction, expression, selection });
   },
 
-  fromFilterClause(filterClause: FilterClause, dataCube: DataCube): TimeFilterClauseDefinition {
-    const { expression, selection } = filterClause;
-    const { name: dimension } = dataCube.getDimensionByExpression(expression);
+  fromFilterClause(filterClause: FilterClause, dimension: Dimension): TimeFilterClauseDefinition {
+    const { selection } = filterClause;
+    const { name: referenceName } = dimension;
 
     if (isFixedTimeRangeSelection(selection)) {
       return {
         type: FilterType.time,
-        dimension,
+        dimension: referenceName,
         timeRanges: [{ start: selection.value.start, end: selection.value.end }]
       };
     } else if (isRelativeTimeRangeSelection(selection)) {
       if (selection.operand instanceof TimeFloorExpression) {
         return {
           type: FilterType.time,
-          dimension,
+          dimension: referenceName,
           timePeriods: [{ duration: selection.duration.toJS(), type: "floored", step: selection.step }]
         };
       } else {
         return {
           type: FilterType.time,
-          dimension,
+          dimension: referenceName,
           timePeriods: [{ duration: selection.duration.toJS(), type: "latest", step: selection.step }]
         };
       }
     } else {
-      throw new Error(`Time filterClause expected, found: ${filterClause}. Dimension: ${dimension}`);
+      throw new Error(`Time filterClause expected, found: ${filterClause}. Dimension: ${referenceName}`);
     }
   }
 };
@@ -274,24 +273,31 @@ export interface FilterDefinitionConverter {
 
 export const filterDefinitionConverter: FilterDefinitionConverter = {
   toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: DataCube): FilterClause {
-    if (clauseDefinition.dimension === null)
+    if (clauseDefinition.dimension == null)
       throw new Error("Dimension name cannot be empty.");
 
+    const dimension = dataCube.getDimension(clauseDefinition.dimension);
+
+    if (dimension == null)
+      throw new Error(`Dimension ${clauseDefinition.dimension} not found in data cube ${dataCube.name}.`);
+
     const clauseConverter = filterClauseConverters[clauseDefinition.type];
-    return clauseConverter.toFilterClause(clauseDefinition, dataCube);
+    return clauseConverter.toFilterClause(clauseDefinition, dimension);
   },
 
   fromFilterClause(filterClause: FilterClause, dataCube: DataCube): FilterClauseDefinition {
-    const { selection } = filterClause;
+    const { expression, selection } = filterClause;
+
+    const dimension = dataCube.getDimensionByExpression(expression);
 
     if (isBooleanFilterSelection(selection)) {
-      return booleanFilterClauseConverter.fromFilterClause(filterClause, dataCube);
+      return booleanFilterClauseConverter.fromFilterClause(filterClause, dimension);
     } else if (isNumberFilterSelection(selection)) {
-      return numberFilterClauseConverter.fromFilterClause(filterClause, dataCube);
+      return numberFilterClauseConverter.fromFilterClause(filterClause, dimension);
     } else if (isFixedTimeRangeSelection(selection) || isRelativeTimeRangeSelection(selection)) {
-      return timeFilterClauseConverter.fromFilterClause(filterClause, dataCube);
+      return timeFilterClauseConverter.fromFilterClause(filterClause, dimension);
     } else {
-      return stringFilterClauseConverter.fromFilterClause(filterClause, dataCube);
+      return stringFilterClauseConverter.fromFilterClause(filterClause, dimension);
     }
   }
 };
