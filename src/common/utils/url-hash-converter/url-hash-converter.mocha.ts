@@ -20,11 +20,10 @@ import { Essence } from "../../models";
 import { DataCubeMock } from "../../models/data-cube/data-cube.mock";
 import { EssenceMock } from "../../models/essence/essence.mock";
 import { ViewDefinitionVersion } from "../../view-definitions";
-import { UrlHashConverter } from "./url-hash-converter";
+import { urlHashConverter } from "./url-hash-converter";
 import { UrlHashConverterFixtures } from "./url-hash-converter.fixtures";
 
-describe("UrlHashConverter", () => {
-  const urlHashConverter = new UrlHashConverter();
+describe("urlHashConverter", () => {
 
   const tests: { version: ViewDefinitionVersion, hash: string, essence: Essence }[] = [
     { version: "2", hash: UrlHashConverterFixtures.tableHashVersion2(), essence: EssenceMock.wikiTable() },

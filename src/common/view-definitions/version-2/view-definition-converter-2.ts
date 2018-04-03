@@ -22,16 +22,12 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<Essence
   version = 2;
 
   fromViewDefinition(definition: EssenceJS, dataCube: DataCube, visualizations: Manifest[]): Essence {
-    try {
-      const preProcessedDefinition = {
-        ...definition,
-        filter: filterJSConverter(definition.filter)
-      };
+    const preProcessedDefinition = {
+      ...definition,
+      filter: filterJSConverter(definition.filter)
+    };
 
-      return Essence.fromJS(preProcessedDefinition, { dataCube, visualizations });
-    } catch (e) {
-      return null;
-    }
+    return Essence.fromJS(preProcessedDefinition, { dataCube, visualizations });
   }
 
   toViewDefinition(essence: Essence): EssenceJS {

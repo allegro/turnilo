@@ -20,7 +20,7 @@ import './swiv-application.scss';
 import * as React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { NamedArray} from "immutable-class";
-import { EssenceToUrlPathConverter, UrlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
+import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 
 import { replaceHash } from '../../utils/url/url';
 import { DataCube, AppSettings, User, Collection, CollectionTile, Essence, Timekeeper, ViewSupervisor } from '../../../common/models';
@@ -74,12 +74,12 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   private hashUpdating = false;
   private readonly sideBarHrefFn: FunctionSlot<string>;
   private readonly collectionViewDelegate: CollectionViewDelegate;
-  private readonly urlHashConverter: EssenceToUrlPathConverter;
+  private readonly urlHashConverter: UrlHashConverter;
 
   constructor(props: SwivApplicationProps) {
     super(props);
 
-    this.urlHashConverter = new UrlHashConverter();
+    this.urlHashConverter = urlHashConverter;
     this.collectionViewDelegate = new CollectionViewDelegate(this);
     this.sideBarHrefFn = createFunctionSlot<string>();
     this.state = {

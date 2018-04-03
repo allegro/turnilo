@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { hashToObject, objectToHash } from "../array-to-hash-converter";
+import { hashToObject, objectToHash } from "../hash-conversions";
 import { ViewDefinitionHashEncoder } from "../view-definition-hash-encoder";
 import { ViewDefinition3 } from "./view-definition-3";
 

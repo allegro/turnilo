@@ -15,7 +15,7 @@
  */
 
 import { EssenceJS } from "../../models";
-import { arrayToHash, hashToArray } from "../array-to-hash-converter";
+import { arrayToHash, hashToArray } from "../hash-conversions";
 import { ViewDefinitionHashEncoder } from "../view-definition-hash-encoder";
 
 export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<EssenceJS> {

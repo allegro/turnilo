@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { Essence } from '../../../common/models/index';
 import { MANIFESTS } from '../../../common/manifests';
-import { UrlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
+import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
 import { SwivRequest } from '../../utils/index';
 import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
@@ -86,7 +86,6 @@ router.post('/', (req: SwivRequest, res: Response) => {
         return;
       }
 
-      const urlHashConverter = new UrlHashConverter();
       res.json({
         url: `${domain}#${myDataCube.name}/${urlHashConverter.toHash(essence)}`
       });

@@ -17,17 +17,18 @@
 import { DataCube, Essence, Manifest } from "../../models";
 import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters, definitionUrlEncoders, ViewDefinitionVersion } from "../../view-definitions";
 
-export interface EssenceToUrlPathConverter {
+export interface UrlHashConverter {
   essenceFromHash(hash: string, dataCube: DataCube, visializations: Manifest[]): Essence;
 
   toHash(essence: Essence, version?: ViewDefinitionVersion): string;
 }
 
-export class UrlHashConverter implements EssenceToUrlPathConverter {
+export const urlHashConverter: UrlHashConverter = {
   essenceFromHash(hash: string, dataCube: DataCube, visualizations: Manifest[]): Essence {
     const hashParts = hash.split('/');
 
-    if (hashParts.length < 3) return null;
+    if (hashParts.length < 3)
+      throw new Error("Wrong url hash structure.");
 
     const visualization = hashParts[0];
     const version = hashParts[1] as ViewDefinitionVersion;
@@ -36,11 +37,12 @@ export class UrlHashConverter implements EssenceToUrlPathConverter {
     const urlEncoder = definitionUrlEncoders[version];
     const definitionConverter = definitionConverters[version];
 
-    if (urlEncoder == null || definitionConverter == null) return null;
+    if (urlEncoder == null || definitionConverter == null)
+      throw new Error(`Unsupported url hash version: ${version}.`);
 
     const definition = urlEncoder.decodeUrlHash(encodedModel, visualization);
     return definitionConverter.fromViewDefinition(definition, dataCube, visualizations);
-  }
+  },
 
   toHash(essence: Essence, version: ViewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION): string {
     const { visualization } = essence;
@@ -48,7 +50,8 @@ export class UrlHashConverter implements EssenceToUrlPathConverter {
     const urlEncoder = definitionUrlEncoders[version];
     const definitionConverter = definitionConverters[version];
 
-    if (urlEncoder == null || definitionConverter == null) return null;
+    if (urlEncoder == null || definitionConverter == null)
+      throw new Error(`Unsupported url hash version: ${version}.`);
 
     const definition = definitionConverter.toViewDefinition(essence);
     const encodedDefinition = urlEncoder.encodeUrlHash(definition);
@@ -59,4 +62,4 @@ export class UrlHashConverter implements EssenceToUrlPathConverter {
       encodedDefinition
     ].join("/");
   }
-}
+};

@@ -29,23 +29,20 @@ export function objectToHash(anyObject: any): string {
 }
 
 export function hashToArray(hash: string): any[] {
-  var jsArray: any[] = null;
-  try {
-    const decompressed = decompressFromBase64(hash);
-    jsArray = JSON.parse('[' + decompressed + ']');
-  } catch (e) {
-    return null;
-  }
+  const decompressed = decompressFromBase64(hash);
+  const jsArray = JSON.parse('[' + decompressed + ']');
 
-  if (!Array.isArray(jsArray)) return null;
+  if (!Array.isArray(jsArray))
+    throw new Error("Decoded hash should be an array.");
 
   return jsArray;
 }
 
 export function hashToObject(hash: string): any {
-  try {
-    return JSON.parse(decompressFromBase64(hash));
-  } catch (e) {
-    return null;
-  }
+  const jsObject = JSON.parse(decompressFromBase64(hash));
+
+  if (!jsObject || jsObject.constructor !== Object)
+    throw new Error("Decoded hash should be an object.");
+
+  return jsObject;
 }

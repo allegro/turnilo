@@ -190,17 +190,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillMount() {
-    const { hash, dataCube, updateViewHash, initTimekeeper, getCubeViewHash } = this.props;
-    let essence = this.getEssenceFromHash(dataCube, hash);
-    if (!essence) {
-      if (!dataCube) throw new Error('must have data cube');
-      essence = this.getEssenceFromDataCube(dataCube);
-      updateViewHash(getCubeViewHash(essence), true);
-    }
+    const { hash, dataCube, initTimekeeper } = this.props;
+    if (!dataCube)
+      throw new Error('must have a data cube');
+
     this.setState({
-      essence,
       timekeeper: initTimekeeper || Timekeeper.EMPTY
     });
+    this.updateEssenceFromHashOrDataCube(dataCube, hash);
   }
 
   componentDidMount() {
@@ -224,17 +221,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   componentWillReceiveProps(nextProps: CubeViewProps) {
-    const { hash, dataCube, updateViewHash, getCubeViewHash } = this.props;
-    if (!nextProps.dataCube) throw new Error('must have data cube');
+    const { hash, dataCube } = this.props;
+    if (!nextProps.dataCube)
+      throw new Error('must have a data cube');
 
     if (dataCube.name !== nextProps.dataCube.name || hash !== nextProps.hash) {
-      let hashEssence = this.getEssenceFromHash(nextProps.dataCube, nextProps.hash);
-      if (!hashEssence) {
-        hashEssence = this.getEssenceFromDataCube(nextProps.dataCube);
-        updateViewHash(getCubeViewHash(hashEssence), true);
-      }
-
-      this.setState({ essence: hashEssence });
+      this.updateEssenceFromHashOrDataCube(nextProps.dataCube, nextProps.hash);
     }
   }
 
@@ -251,6 +243,19 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
     this.mounted = false;
     if (transitionFnSlot) transitionFnSlot.clear();
+  }
+
+  updateEssenceFromHashOrDataCube(dataCube: DataCube, hash: string) {
+    let essence: Essence;
+    try {
+      essence = this.getEssenceFromHash(dataCube, hash);
+    } catch (e) {
+      console.warn("Could not get essence from url hash. " + e.stack.split("\n", 2).join("\n"));
+      const { getCubeViewHash, updateViewHash } = this.props;
+      essence = this.getEssenceFromDataCube(dataCube);
+      updateViewHash(getCubeViewHash(essence), true);
+    }
+    this.setState({ essence });
   }
 
   getEssenceFromDataCube(dataCube: DataCube): Essence {
