@@ -81,8 +81,8 @@ export interface BarChartState extends BaseVisualizationState {
 
 function getFilterFromDatum(splits: Splits, dataPath: Datum[], dataCube: DataCube): Filter {
   return new Filter(List(dataPath.map((datum, i) => {
-    var split = splits.get(i);
-    var segment: any = datum[split.getDimension(dataCube.dimensions).name];
+    const split = splits.get(i);
+    const segment: any = datum[split.getDimension(dataCube.dimensions).name];
 
     return new FilterClause({
       expression: split.expression,
@@ -105,10 +105,10 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
   let i = start;
   let j = 0;
 
-  var filledData: Datum[] = [];
+  const filledData: Datum[] = [];
   data.forEach((d) => {
     let segmentValue = d[dimensionName];
-    var segmentStart = (segmentValue as PlywoodRange).start;
+    const segmentStart = (segmentValue as PlywoodRange).start;
     while (i < segmentStart) {
       filledData[j] = {};
       filledData[j][dimensionName] = NumberRange.fromJS({
@@ -134,14 +134,14 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
     j++;
   });
 
-  var value = originalDataset.valueOf();
+  const value = originalDataset.valueOf();
   (value.data[0][SPLIT] as Dataset).data = filledData;
   return new Dataset(value);
 }
 
 function padDatasetLoad(datasetLoad: DatasetLoad, dimension: Dimension, measures: Measure[]): DatasetLoad {
-  var originalDataset = datasetLoad.dataset;
-  var newDataset = originalDataset ? padDataset(originalDataset, dimension, measures) : null;
+  const originalDataset = datasetLoad.dataset;
+  const newDataset = originalDataset ? padDataset(originalDataset, dimension, measures) : null;
   datasetLoad.dataset = newDataset;
   return datasetLoad;
 }
@@ -152,35 +152,31 @@ export class BarChart extends BaseVisualization<BarChartState> {
   private coordinatesCache: BarCoordinates[][] = [];
 
   getDefaultState(): BarChartState {
-    var s = super.getDefaultState() as BarChartState;
+    const s = super.getDefaultState() as BarChartState;
 
     s.hoverInfo = null;
 
     return s;
   }
 
-  componentWillReceiveProps(nextProps: VisualizationProps) {
-    this.precalculate(nextProps);
-    var { essence, timekeeper } = this.props;
-    var nextEssence = nextProps.essence;
-    var nextTimekeeper = nextProps.timekeeper;
-    if (
-      nextEssence.differentDataCube(essence) ||
+  shouldFetchData(nextProps: VisualizationProps): boolean {
+    const { essence, timekeeper } = this.props;
+    const nextEssence = nextProps.essence;
+    const nextTimekeeper = nextProps.timekeeper;
+    return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, BarChart.id) ||
       nextEssence.differentEffectiveSplits(essence) ||
-      nextEssence.newEffectiveMeasures(essence)
-    ) {
-      this.fetchData(nextEssence, nextTimekeeper);
-    }
+      nextEssence.newEffectiveMeasures(essence) ||
+      nextEssence.dataCube.refreshRule.isRealtime();
   }
 
   componentDidUpdate() {
     const { scrollerYPosition, scrollerXPosition } = this.state;
 
-    var node = ReactDOM.findDOMNode(this.refs['scroller']);
+    let node = ReactDOM.findDOMNode(this.refs['scroller']);
     if (!node) return;
 
-    var rect = node.getBoundingClientRect();
+    const rect = node.getBoundingClientRect();
 
     if (scrollerYPosition !== rect.top || scrollerXPosition !== rect.left) {
       this.setState({scrollerYPosition: rect.top, scrollerXPosition: rect.left});
@@ -188,22 +184,22 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   calculateMousePosition(x: number, y: number): BubbleInfo {
-    var { essence } = this.props;
+    const { essence } = this.props;
 
-    var measures = essence.getEffectiveMeasures().toArray();
-    var chartStage = this.getSingleChartStage();
-    var chartHeight = this.getOuterChartHeight(chartStage);
+    const measures = essence.getEffectiveMeasures().toArray();
+    const chartStage = this.getSingleChartStage();
+    const chartHeight = this.getOuterChartHeight(chartStage);
 
     if (y >= chartHeight * measures.length) return null; // on x axis
     if (x >= chartStage.width) return null; // on y axis
 
 
     const xScale = this.getPrimaryXScale();
-    var chartIndex = Math.floor(y / chartHeight);
+    const chartIndex = Math.floor(y / chartHeight);
 
-    var chartCoordinates = this.getBarsCoordinates(chartIndex, xScale);
+    const chartCoordinates = this.getBarsCoordinates(chartIndex, xScale);
 
-    var { path, coordinates } = this.findBarCoordinatesForX(x, chartCoordinates, []);
+    const { path, coordinates } = this.findBarCoordinatesForX(x, chartCoordinates, []);
 
     return {
       path: this.findPathForIndices(path),
@@ -214,11 +210,11 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   findPathForIndices(indices: number[]): Datum[] {
-    var { datasetLoad } = this.state;
-    var mySplitDataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
+    const { datasetLoad } = this.state;
+    const mySplitDataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
 
-    var path: Datum[] = [];
-    var currentData: Dataset = mySplitDataset;
+    const path: Datum[] = [];
+    let currentData: Dataset = mySplitDataset;
     indices.forEach((i) => {
       let datum = currentData.data[i];
       path.push(datum);
@@ -277,9 +273,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { path, chartIndex } = selectionInfo;
 
     const { splits, dataCube } = essence;
-    var measures = essence.getEffectiveMeasures().toArray();
+    const measures = essence.getEffectiveMeasures().toArray();
 
-    var rowHighlight = getFilterFromDatum(splits, path, dataCube);
+    const rowHighlight = getFilterFromDatum(splits, path, dataCube);
 
     if (essence.highlightOn(BarChart.id, measures[chartIndex].name)) {
       if (rowHighlight.equals(essence.highlight.delta)) {
@@ -294,19 +290,19 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   getYExtent(data: Datum[], measure: Measure): number[] {
-    var measureName = measure.name;
-    var getY = (d: Datum) => d[measureName] as number;
+    const measureName = measure.name;
+    const getY = (d: Datum) => d[measureName] as number;
     return d3.extent(data, getY);
   }
 
   getYScale(measure: Measure, yAxisStage: Stage): d3.scale.Linear<number, number> {
-    var { essence } = this.props;
-    var { flatData } = this.state;
+    const { essence } = this.props;
+    const { flatData } = this.state;
 
-    var splitLength = essence.splits.length();
-    var leafData = flatData.filter((d: Datum) => d['__nest'] === splitLength - 1);
+    const splitLength = essence.splits.length();
+    const leafData = flatData.filter((d: Datum) => d['__nest'] === splitLength - 1);
 
-    var extentY = this.getYExtent(leafData, measure);
+    const extentY = this.getYExtent(leafData, measure);
 
     return d3.scale.linear()
       .domain([Math.min(extentY[0] * 1.1, 0), Math.max(extentY[1] * 1.1, 0)])
@@ -358,8 +354,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   getScrollerLayout(chartStage: Stage, xAxisStage: Stage, yAxisStage: Stage): ScrollerLayout {
-    var { essence } = this.props;
-    var measures = essence.getEffectiveMeasures().toArray();
+    const { essence } = this.props;
+    const measures = essence.getEffectiveMeasures().toArray();
 
     const oneChartHeight = this.getOuterChartHeight(chartStage);
 
@@ -499,8 +495,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { essence } = this.props;
     const { timezone } = essence;
 
-    var bars: any[] = [];
-    var highlight: JSX.Element;
+    const bars: any[] = [];
+    let highlight: JSX.Element;
 
     const dimension = essence.splits.get(splitIndex).getDimension(essence.dataCube.dimensions);
     const splitLength = essence.splits.length();
@@ -577,7 +573,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const leftOffset = roundToPx(x) + barOffset - SELECTION_PAD + chartStage.x - scrollLeft;
     const topOffset = roundToPx(y) - SELECTION_PAD + chartStage.y  - scrollTop + chartHeight * chartIndex;
 
-    var style: React.CSSProperties = {
+    const style: React.CSSProperties = {
       left: leftOffset,
       top: topOffset,
       width: roundToPx(barWidth + SELECTION_PAD * 2),
@@ -595,12 +591,12 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const split = essence.splits.get(0);
     const dimension = split.getDimension(essence.dataCube.dimensions);
 
-    var labels: JSX.Element[] = [];
+    const labels: JSX.Element[] = [];
     if (dimension.canBucketByDefault()) {
-      var lastIndex = data.length - 1;
-      var ascending = split.sortAction.direction === SortExpression.ASCENDING;
-      var leftThing = ascending ? 'start' : 'end';
-      var rightThing = ascending ? 'end' : 'start';
+      const lastIndex = data.length - 1;
+      const ascending = split.sortAction.direction === SortExpression.ASCENDING;
+      const leftThing = ascending ? 'start' : 'end';
+      const rightThing = ascending ? 'end' : 'start';
       data.forEach((d, i) => {
         let segmentValue = d[dimension.name];
         let segmentValueStr = String(Range.isRange(segmentValue) ? (segmentValue as any)[leftThing] : '');
@@ -645,21 +641,21 @@ export class BarChart extends BaseVisualization<BarChartState> {
   getYAxisStuff(dataset: Dataset, measure: Measure, chartStage: Stage, chartIndex: number): {
     yGridLines: JSX.Element, yAxis: JSX.Element, yScale: d3.scale.Linear<number, number>
   } {
-    var { yAxisStage } = this.getAxisStages(chartStage);
+    const { yAxisStage } = this.getAxisStages(chartStage);
 
-    var yScale = this.getYScale(measure, yAxisStage);
-    var yTicks = yScale.ticks(5);
+    const yScale = this.getYScale(measure, yAxisStage);
+    const yTicks = yScale.ticks(5);
 
-    var yGridLines: JSX.Element = <GridLines
+    const yGridLines: JSX.Element = <GridLines
       orientation="horizontal"
       scale={yScale}
       ticks={yTicks}
       stage={chartStage}
     />;
 
-    var axisStage = yAxisStage.changeY(yAxisStage.y + (chartStage.height + CHART_TOP_PADDING + CHART_BOTTOM_PADDING) * chartIndex);
+    const axisStage = yAxisStage.changeY(yAxisStage.y + (chartStage.height + CHART_TOP_PADDING + CHART_BOTTOM_PADDING) * chartIndex);
 
-    var yAxis: JSX.Element = <VerticalAxis
+    const yAxis: JSX.Element = <VerticalAxis
       key={measure.name}
       stage={axisStage}
       ticks={yTicks}
@@ -696,9 +692,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
     getX: any
   ): {yAxis: JSX.Element, chart: JSX.Element, highlight: JSX.Element} {
     const { isThumbnail } = this.props;
-    var mySplitDataset = dataset.data[0][SPLIT] as Dataset;
+    const mySplitDataset = dataset.data[0][SPLIT] as Dataset;
 
-    var measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]}/> : null;
+    const measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]}/> : null;
 
     // Invalid data, early return
     if (!this.hasValidYExtent(measure, mySplitDataset.data)) {
@@ -714,17 +710,17 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     let { xAxisStage } = this.getAxisStages(chartStage);
 
-    var { yAxis, yGridLines } = this.getYAxisStuff(mySplitDataset, measure, chartStage, chartIndex);
+    const { yAxis, yGridLines } = this.getYAxisStuff(mySplitDataset, measure, chartStage, chartIndex);
 
-    var bars: JSX.Element[];
-    var highlight: JSX.Element;
+    let bars: JSX.Element[];
+    let highlight: JSX.Element;
     if (this.isChartVisible(chartIndex, xAxisStage)) {
        let renderedChart = this.renderBars(mySplitDataset.data, measure, chartIndex, chartStage, xAxisStage, coordinates);
        bars = renderedChart.bars;
        highlight = renderedChart.highlight;
     }
 
-    var chart = <div className="measure-bar-chart" key={measure.name} style={{width: chartStage.width}}>
+    const chart = <div className="measure-bar-chart" key={measure.name} style={{width: chartStage.width}}>
       <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}>
         {yGridLines}
         <g className="bars" transform={chartStage.getTransform()}>{bars}</g>
@@ -746,8 +742,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     this.coordinatesCache = [];
 
-    var existingDatasetLoad = this.state.datasetLoad;
-    var newState: BarChartState = {};
+    const existingDatasetLoad = this.state.datasetLoad;
+    const newState: BarChartState = {};
 
     if (datasetLoad) {
       if (dimensionKind === 'number') {
@@ -758,7 +754,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
       newState.datasetLoad = datasetLoad;
     } else {
-      var stateDatasetLoad = this.state.datasetLoad;
+      const stateDatasetLoad = this.state.datasetLoad;
       if (dimensionKind === 'number') {
         datasetLoad = padDatasetLoad(stateDatasetLoad, dimension, measures);
       } else {
@@ -766,7 +762,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       }
     }
 
-    var { dataset } = datasetLoad;
+    const { dataset } = datasetLoad;
     if (dataset && splits.length()) {
       let firstSplitDataSet = dataset.data[0][SPLIT] as Dataset;
       if (registerDownloadableDataset) registerDownloadableDataset(dataset);
@@ -775,7 +771,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
         nestingName: '__nest'
       });
 
-      var maxima = splits.toArray().map(() => 0); // initializing maxima to 0
+      const maxima = splits.toArray().map(() => 0); // initializing maxima to 0
       this.maxNumberOfLeaves(firstSplitDataSet.data, maxima, 0);
 
       newState.maxNumberOfLeaves = maxima;
@@ -799,13 +795,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   getPrimaryXScale(): d3.scale.Ordinal<string, number> {
     const { datasetLoad, maxNumberOfLeaves } = this.state;
-    var data = (datasetLoad.dataset.data[0][SPLIT] as Dataset).data;
+    const data = (datasetLoad.dataset.data[0][SPLIT] as Dataset).data;
 
     const { essence } = this.props;
     const { splits, dataCube} = essence;
     const dimension = splits.get(0).getDimension(dataCube.dimensions);
 
-    var getX = (d: Datum) => d[dimension.name] as string;
+    const getX = (d: Datum) => d[dimension.name] as string;
 
     const { usedWidth, padLeft } = this.getXValues(maxNumberOfLeaves);
 
@@ -816,31 +812,31 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   getBarDimensions(xRangeBand: number): {stepWidth: number, barWidth: number, barOffset: number} {
     if (isNaN(xRangeBand)) xRangeBand = 0;
-    var stepWidth = xRangeBand;
-    var barWidth = Math.max(stepWidth * BAR_PROPORTION, 0);
-    var barOffset = (stepWidth - barWidth) / 2;
+    const stepWidth = xRangeBand;
+    const barWidth = Math.max(stepWidth * BAR_PROPORTION, 0);
+    const barOffset = (stepWidth - barWidth) / 2;
 
     return { stepWidth, barWidth, barOffset };
   }
 
   getXValues(maxNumberOfLeaves: number[]): {padLeft: number, usedWidth: number} {
     const { essence, stage } = this.props;
-    var overallWidth = stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH;
+    const overallWidth = stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH;
 
-    var numPrimarySteps = maxNumberOfLeaves[0];
-    var minStepWidth = MIN_STEP_WIDTH * maxNumberOfLeaves.slice(1).reduce(((a, b) => a * b), 1);
+    const numPrimarySteps = maxNumberOfLeaves[0];
+    const minStepWidth = MIN_STEP_WIDTH * maxNumberOfLeaves.slice(1).reduce(((a, b) => a * b), 1);
 
-    var maxAvailableWidth = overallWidth - BARS_MIN_PAD_LEFT - BARS_MIN_PAD_RIGHT;
+    const maxAvailableWidth = overallWidth - BARS_MIN_PAD_LEFT - BARS_MIN_PAD_RIGHT;
 
-    var stepWidth: number;
+    let stepWidth: number;
     if (minStepWidth * numPrimarySteps < maxAvailableWidth) {
       stepWidth = Math.max(Math.min(maxAvailableWidth / numPrimarySteps, MAX_STEP_WIDTH * essence.splits.length()), MIN_STEP_WIDTH);
     } else {
       stepWidth = minStepWidth;
     }
 
-    var usedWidth = stepWidth * maxNumberOfLeaves[0];
-    var padLeft = Math.max(BARS_MIN_PAD_LEFT, (overallWidth - usedWidth) / 2);
+    const usedWidth = stepWidth * maxNumberOfLeaves[0];
+    const padLeft = Math.max(BARS_MIN_PAD_LEFT, (overallWidth - usedWidth) / 2);
 
     return {padLeft, usedWidth};
   }
@@ -858,8 +854,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const dataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
     const dimension = splits.get(0).getDimension(dataCube.dimensions);
 
-    var chartStage = this.getSingleChartStage();
-    var { yScale } = this.getYAxisStuff(dataset, measure, chartStage, chartIndex);
+    const chartStage = this.getSingleChartStage();
+    const { yScale } = this.getYAxisStuff(dataset, measure, chartStage, chartIndex);
 
     this.coordinatesCache[chartIndex] = this.getSubCoordinates(
       dataset.data,
@@ -885,14 +881,14 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { essence } = this.props;
     const { maxNumberOfLeaves } = this.state;
 
-    var { stepWidth, barWidth, barOffset } = this.getBarDimensions(xScale.rangeBand());
+    const { stepWidth, barWidth, barOffset } = this.getBarDimensions(xScale.rangeBand());
 
-    var coordinates: BarCoordinates[] = data.map((d, i) => {
+    const coordinates: BarCoordinates[] = data.map((d, i) => {
       let x = xScale(getX(d, i));
       let y = scaleY(d[measure.name] as number);
       let h = scaleY(0) - y;
-      var children: BarCoordinates[] = [];
-      var coordinate = new BarCoordinates({
+      const children: BarCoordinates[] = [];
+      const coordinate = new BarCoordinates({
         x,
         y: h >= 0 ? y : scaleY(0),
         width: roundToPx(barWidth),
@@ -921,7 +917,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   renderRightGutter(measures: Measure[], yAxisStage: Stage, yAxes: JSX.Element[]): JSX.Element {
-    var yAxesStage = yAxisStage.changeHeight((yAxisStage.height + CHART_TOP_PADDING + CHART_BOTTOM_PADDING) * measures.length);
+    const yAxesStage = yAxisStage.changeHeight((yAxisStage.height + CHART_TOP_PADDING + CHART_BOTTOM_PADDING) * measures.length);
 
     return <svg style={yAxesStage.getWidthHeight()} viewBox={yAxesStage.getViewBox()}>
       {yAxes}
@@ -943,11 +939,11 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { splits, dataCube } = essence;
     const dimension = splits.get(0).getDimension(dataCube.dimensions);
 
-    var scrollerLayout: ScrollerLayout;
-    var measureCharts: JSX.Element[] = [];
-    var xAxis: JSX.Element;
-    var rightGutter: JSX.Element;
-    var overlay: JSX.Element;
+    let scrollerLayout: ScrollerLayout;
+    const measureCharts: JSX.Element[] = [];
+    let xAxis: JSX.Element;
+    let rightGutter: JSX.Element;
+    let overlay: JSX.Element;
 
     if (datasetLoad.dataset && splits.length()) {
       let xScale = this.getPrimaryXScale();

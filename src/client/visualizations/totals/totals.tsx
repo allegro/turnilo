@@ -18,7 +18,7 @@
 import './totals.scss';
 
 import * as React from 'react';
-import { $, ply, Expression, Executor, Dataset } from 'plywood';
+import { $, ply, Expression } from 'plywood';
 import { TOTALS_MANIFEST } from '../../../common/manifests/totals/totals';
 import { Stage, Essence, Timekeeper, VisualizationProps, DatasetLoad } from '../../../common/models/index';
 
@@ -36,22 +36,18 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
 
   componentDidMount() {
     this._isMounted = true;
-    var { essence, timekeeper } = this.props;
+    const { essence, timekeeper } = this.props;
     this.fetchData(essence, timekeeper);
   }
 
-  componentWillReceiveProps(nextProps: VisualizationProps) {
-    this.precalculate(nextProps);
-    var { essence, timekeeper } = this.props;
-    var nextEssence = nextProps.essence;
-    var nextTimekeeper = nextProps.timekeeper;
-    if (
-      nextEssence.differentDataCube(essence) ||
+  shouldFetchData(nextProps: VisualizationProps): boolean {
+    const { essence, timekeeper } = this.props;
+    const nextEssence = nextProps.essence;
+    const nextTimekeeper = nextProps.timekeeper;
+    return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, Totals.id) ||
-      nextEssence.newEffectiveMeasures(essence)
-    ) {
-      this.fetchData(nextEssence, nextTimekeeper);
-    }
+      nextEssence.newEffectiveMeasures(essence) ||
+      nextEssence.dataCube.refreshRule.isRealtime();
   }
 
   componentWillUnmount() {
@@ -59,7 +55,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
   }
 
   makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-    var query: Expression = ply()
+    let query: Expression = ply()
       .apply('main', $('main').filter(essence.getEffectiveFilter(timekeeper, Totals.id).toExpression()));
 
     essence.getEffectiveMeasures().forEach((measure) => {
@@ -73,8 +69,8 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     const { registerDownloadableDataset, essence } = props;
     const { splits } = essence;
 
-    var existingDatasetLoad = this.state.datasetLoad;
-    var newState: BaseVisualizationState = {};
+    const existingDatasetLoad = this.state.datasetLoad;
+    const newState: BaseVisualizationState = {};
     if (datasetLoad) {
       // Always keep the old dataset while loading
       if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
@@ -84,7 +80,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       datasetLoad = existingDatasetLoad;
     }
 
-    var { dataset } = datasetLoad;
+    const { dataset } = datasetLoad;
     if (dataset && splits.length()) {
       if (registerDownloadableDataset) registerDownloadableDataset(dataset);
     }
@@ -93,15 +89,15 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
   }
 
   renderInternals() {
-    var { essence, stage } = this.props;
-    var { datasetLoad } = this.state;
+    const { essence, stage } = this.props;
+    const { datasetLoad } = this.state;
 
-    var myDatum = datasetLoad.dataset ? datasetLoad.dataset.data[0] : null;
-    var measures = essence.getEffectiveMeasures();
-    var single = measures.size === 1;
+    const myDatum = datasetLoad.dataset ? datasetLoad.dataset.data[0] : null;
+    const measures = essence.getEffectiveMeasures();
+    let single = measures.size === 1;
 
-    var totals = measures.map(measure => {
-      var measureValueStr = '-';
+    const totals = measures.map(measure => {
+      let measureValueStr = '-';
       if (myDatum) {
         measureValueStr = measure.formatDatum(myDatum);
       }
@@ -115,10 +111,10 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       </div>;
     });
 
-    var totalContainerStyle: React.CSSProperties = null;
+    let totalContainerStyle: React.CSSProperties = null;
     if (!single) {
-      var numColumns = Math.min(totals.size, Math.max(1, Math.floor((stage.width - 2 * PADDING_H) / TOTAL_WIDTH)));
-      var containerWidth = numColumns * TOTAL_WIDTH;
+      const numColumns = Math.min(totals.size, Math.max(1, Math.floor((stage.width - 2 * PADDING_H) / TOTAL_WIDTH)));
+      let containerWidth = numColumns * TOTAL_WIDTH;
       totalContainerStyle = {
         left: '50%',
         width: containerWidth,
