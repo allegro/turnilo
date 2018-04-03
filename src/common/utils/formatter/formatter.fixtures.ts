@@ -28,10 +28,10 @@ export class FormatterFixtures {
 
   static previousDuration(duration: string) {
     const previousStep = -1;
-    return this.earlierDuration($(FilterClause.NOW_REF_NAME), duration, previousStep);
+    return this.flooredDuration($(FilterClause.NOW_REF_NAME), duration, previousStep);
   }
 
-  static earlierDuration(reference: RefExpression, duration: string, step: number) {
+  static flooredDuration(reference: RefExpression, duration: string, step: number) {
     return new FilterClause({
       expression: r("time"),
       selection: reference.timeFloor(duration).timeRange(duration, step)
@@ -39,14 +39,8 @@ export class FormatterFixtures {
   }
 
   static currentDuration(duration: string) {
-    return this.timeBucketDuration($(FilterClause.NOW_REF_NAME), duration);
-  }
-
-  static timeBucketDuration(reference: RefExpression, duration: string) {
-    return new FilterClause({
-      expression: r("time"),
-      selection: reference.timeBucket(duration)
-    });
+    const currentStep = 1;
+    return this.flooredDuration($(FilterClause.NOW_REF_NAME), duration, currentStep);
   }
 
   static latestDuration(duration: string, step: number) {

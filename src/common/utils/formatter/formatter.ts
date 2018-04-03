@@ -161,7 +161,7 @@ function getFormattedTimeClauseValues(clause: FilterClause, timezone: Timezone):
   } else if (isPreviousDuration(relative, selection)) {
     return `${STRINGS.previous} ${getQualifiedDurationDescription(selection)}`;
   } else if (isCurrentDuration(relative, selection)) {
-    return `${STRINGS.current} ${getDurationDescription(selection)}`;
+    return `${STRINGS.current} ${getQualifiedDurationDescription(selection)}`;
   } else if (selection instanceof LiteralExpression && selection.value instanceof TimeRange) {
     return formatTimeRange(selection.value, timezone, DisplayYear.IF_DIFF);
   } else {
@@ -180,10 +180,15 @@ function isLatestDuration(isRelative: boolean, selection: FilterSelection): sele
     && isEarlierTimeRange(selection);
 }
 
-function isCurrentDuration(isRelative: boolean, selection: FilterSelection): selection is TimeBucketExpression {
+function isCurrentDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
+  function isCurrentTimeRange(selection: TimeRangeExpression) {
+    return selection.step === 1;
+  }
+
   return isRelative
-    && selection instanceof TimeBucketExpression
-    && selection.getHeadOperand().equals($now);
+    && selection instanceof TimeRangeExpression
+    && selection.getHeadOperand().equals($now)
+    && isCurrentTimeRange(selection);
 }
 
 function isPreviousDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
@@ -199,11 +204,6 @@ function isPreviousDuration(isRelative: boolean, selection: FilterSelection): se
 
 function getQualifiedDurationDescription(selection: TimeRangeExpression) {
   return normalizeDurationDescription(selection.getQualifiedDurationDescription(), selection.duration);
-}
-
-function getDurationDescription(selection: TimeBucketExpression) {
-  const { duration } = selection;
-  return normalizeDurationDescription(duration.getDescription(), duration);
 }
 
 function normalizeDurationDescription(description: string, duration: Duration) {

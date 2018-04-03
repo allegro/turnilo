@@ -115,13 +115,12 @@ describe('General', () => {
 
     const unsupportedPreviousDurationTests = [
       { reference: $now, duration: 'P1D', step: -2 },
-      { reference: $now, duration: 'P1W', step: 0 },
-      { reference: $now, duration: 'P1M', step: 1 }
+      { reference: $now, duration: 'P1M', step: 2 }
     ];
 
     unsupportedPreviousDurationTests.forEach(({ reference, duration, step }) => {
       it(`throws on formatting previous ${-step} * ${duration} with ${reference} reference"`, () => {
-        const timeFilterEarlier = FormatterFixtures.earlierDuration(reference, duration, step);
+        const timeFilterEarlier = FormatterFixtures.flooredDuration(reference, duration, step);
         expect(() => formatFilterClause(DimensionMock.time(), timeFilterEarlier, Timezone.UTC)).to.throw();
       });
     });
@@ -134,7 +133,7 @@ describe('General', () => {
 
     unsupportedCurrentDurationTests.forEach(({ reference, duration }) => {
       it(`throws on formatting current ${duration} with ${reference} reference"`, () => {
-        const timeFilterCurrent = FormatterFixtures.timeBucketDuration(reference, duration);
+        const timeFilterCurrent = FormatterFixtures.flooredDuration(reference, duration, 1);
         expect(() => formatFilterClause(DimensionMock.time(), timeFilterCurrent, Timezone.UTC)).to.throw();
       });
     });

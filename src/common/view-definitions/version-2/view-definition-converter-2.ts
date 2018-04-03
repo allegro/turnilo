@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { DataCube, Essence, EssenceJS, Manifest } from "../../models";
+import { AndExpression, Expression, TimeBucketExpression } from "plywood";
+import { DataCube, Essence, EssenceJS, FilterJS, Manifest } from "../../models";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 
 export class ViewDefinitionConverter2 implements ViewDefinitionConverter<EssenceJS, Essence> {
@@ -22,7 +23,12 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<Essence
 
   fromViewDefinition(definition: EssenceJS, dataCube: DataCube, visualizations: Manifest[]): Essence {
     try {
-      return Essence.fromJS(definition, { dataCube, visualizations });
+      const preProcessedDefinition = {
+        ...definition,
+        filter: filterJSConverter(definition.filter)
+      };
+
+      return Essence.fromJS(preProcessedDefinition, { dataCube, visualizations });
     } catch (e) {
       return null;
     }
@@ -30,5 +36,29 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<Essence
 
   toViewDefinition(essence: Essence): EssenceJS {
     return essence.toJS();
+  }
+}
+
+function filterJSConverter(filter: FilterJS): FilterJS {
+  if (typeof filter === "string")
+    return filter;
+
+  const filterExpression = Expression.fromJSLoose(filter);
+  if (filterExpression instanceof AndExpression) {
+    const processedExpressions = filterExpression.getExpressionList().map(convertFilterExpression);
+
+    return Expression.and(processedExpressions).toJS();
+  } else {
+    return convertFilterExpression(filterExpression).toJS();
+  }
+}
+
+function convertFilterExpression(expression: Expression): Expression {
+  if (expression instanceof TimeBucketExpression) {
+    const { operand, duration } = expression;
+
+    return operand.timeFloor(duration).timeRange(duration);
+  } else {
+    return expression;
   }
 }
