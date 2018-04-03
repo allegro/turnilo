@@ -78,6 +78,15 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
     var filterExpression = essence.getEffectiveFilter(timekeeper, null, dimension).toExpression();
 
+    if (searchText) {
+      const { filterMode } = this.props;
+      if (filterMode === Filter.CONTAINS) {
+        filterExpression = filterExpression.and(dimension.expression.contains(r(searchText)));
+      } else if (filterMode === Filter.REGEX) {
+        filterExpression = filterExpression.and(dimension.expression.match(searchText));
+      }
+    }
+
     var query = $('main')
       .filter(filterExpression)
       .split(dimension.expression, dimension.name)
@@ -223,7 +232,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
             }
           } else if (filterMode === Filter.CONTAINS) {
             search = searchText;
-            return String(d).toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
+            return String(d).indexOf(searchText) !== -1;
           }
           return false;
         });
