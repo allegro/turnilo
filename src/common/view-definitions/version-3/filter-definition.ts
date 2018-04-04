@@ -28,7 +28,7 @@ export enum FilterType {
 
 export interface BaseFilterClauseDefinition {
   type: FilterType;
-  dimension: string;
+  ref: string;
 }
 
 export interface NumberFilterClauseDefinition extends BaseFilterClauseDefinition {
@@ -98,7 +98,7 @@ const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClau
 
     return {
       type: FilterType.boolean,
-      dimension: referenceName,
+      ref: referenceName,
       values: (selection as LiteralExpression).value.elements,
       exclude
     };
@@ -139,7 +139,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       case undefined:
         return {
           type: FilterType.string,
-          dimension: referenceName,
+          ref: referenceName,
           action: StringFilterAction.in,
           values: (selection as LiteralExpression).value.elements,
           exclude
@@ -147,7 +147,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       case SupportedAction.contains:
         return {
           type: FilterType.string,
-          dimension: referenceName,
+          ref: referenceName,
           action: StringFilterAction.contains,
           values: [(selection as LiteralExpression).value],
           exclude
@@ -155,7 +155,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       case SupportedAction.match:
         return {
           type: FilterType.string,
-          dimension: referenceName,
+          ref: referenceName,
           action: StringFilterAction.match,
           values: [selection as string],
           exclude
@@ -180,7 +180,7 @@ const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClause
     if (isNumberFilterSelection(selection) && selection.value instanceof Set) {
       return {
         type: FilterType.number,
-        dimension: referenceName,
+        ref: referenceName,
         exclude: false,
         ranges: selection.value.elements.map((range) => ({ start: range.start, end: range.end, bounds: range.bounds }))
       };
@@ -223,20 +223,20 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
     if (isFixedTimeRangeSelection(selection)) {
       return {
         type: FilterType.time,
-        dimension: referenceName,
+        ref: referenceName,
         timeRanges: [{ start: selection.value.start, end: selection.value.end }]
       };
     } else if (isRelativeTimeRangeSelection(selection)) {
       if (selection.operand instanceof TimeFloorExpression) {
         return {
           type: FilterType.time,
-          dimension: referenceName,
+          ref: referenceName,
           timePeriods: [{ duration: selection.duration.toJS(), type: "floored", step: selection.step }]
         };
       } else {
         return {
           type: FilterType.time,
-          dimension: referenceName,
+          ref: referenceName,
           timePeriods: [{ duration: selection.duration.toJS(), type: "latest", step: selection.step }]
         };
       }
@@ -273,13 +273,13 @@ export interface FilterDefinitionConverter {
 
 export const filterDefinitionConverter: FilterDefinitionConverter = {
   toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: DataCube): FilterClause {
-    if (clauseDefinition.dimension == null)
+    if (clauseDefinition.ref == null)
       throw new Error("Dimension name cannot be empty.");
 
-    const dimension = dataCube.getDimension(clauseDefinition.dimension);
+    const dimension = dataCube.getDimension(clauseDefinition.ref);
 
     if (dimension == null)
-      throw new Error(`Dimension ${clauseDefinition.dimension} not found in data cube ${dataCube.name}.`);
+      throw new Error(`Dimension ${clauseDefinition.ref} not found in data cube ${dataCube.name}.`);
 
     const clauseConverter = filterClauseConverters[clauseDefinition.type];
     return clauseConverter.toFilterClause(clauseDefinition, dimension);

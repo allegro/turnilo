@@ -16,12 +16,12 @@
 
 import { $, r } from "plywood";
 import { FilterClause, SupportedAction } from "../../models/filter-clause/filter-clause";
-import { FilterType, StringFilterAction, StringFilterClauseDefinition } from "./filter-definition";
+import { FilterType, StringFilterAction, StringFilterClauseDefinition, TimeFilterClauseDefinition } from "./filter-definition";
 
 export class FilterDefinitionFixtures {
-  static stringFilterModel(dimension: string, action: StringFilterAction, exclude: boolean, values: string[]): StringFilterClauseDefinition {
+  static stringFilterClauseDefinition(ref: string, action: StringFilterAction, exclude: boolean, values: string[]): StringFilterClauseDefinition {
     return {
-      dimension,
+      ref,
       type: FilterType.string,
       action,
       exclude,
@@ -41,28 +41,12 @@ export class FilterDefinitionFixtures {
   }
 
   static stringInFilterClause(dimension: string, exclude: boolean, values: string[]) {
-    return FilterClause.fromJS({
-      expression: {
-        op: "ref",
-        name: dimension
-      },
-      selection: {
-        op: "literal",
-        value: {
-          setType: "STRING",
-          elements: values
-        },
-        type: "SET"
-      },
+    return new FilterClause({
       action: SupportedAction.overlap,
-      exclude
+      exclude,
+      selection: r(values),
+      expression: $(dimension)
     });
-    // return new FilterClause({
-    //   action: SupportedAction.overlap,
-    //   exclude,
-    //   selection: r(values),
-    //   expression: $(dimension)
-    // });
   }
 
   static stringContainsFilterClause(dimension: string, exclude: boolean, value: string) {

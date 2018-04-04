@@ -32,7 +32,7 @@ describe("FilterDefinition v3", () => {
 
     stringFilterTests.forEach(({ dimension, action, exclude, values }) => {
       it(`should convert model with ${action} action`, () => {
-        const filterClause = filterDefinitionConverter.toFilterClause(FilterDefinitionFixtures.stringFilterModel(dimension, action, exclude, values), DataCubeMock.wiki());
+        const filterClause = filterDefinitionConverter.toFilterClause(FilterDefinitionFixtures.stringFilterClauseDefinition(dimension, action, exclude, values), DataCubeMock.wiki());
         const expected = FilterDefinitionFixtures.stringFilterClause(dimension, action, exclude, values);
 
         expect(filterClause.toJS()).to.deep.equal(expected.toJS());
