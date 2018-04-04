@@ -192,7 +192,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
     if (!dataCube)
-      throw new Error('must have a data cube');
+      throw new Error("Data cube is required.");
 
     this.setState({
       timekeeper: initTimekeeper || Timekeeper.EMPTY
@@ -223,7 +223,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   componentWillReceiveProps(nextProps: CubeViewProps) {
     const { hash, dataCube } = this.props;
     if (!nextProps.dataCube)
-      throw new Error('must have a data cube');
+      throw new Error("Data cube is required.");
 
     if (dataCube.name !== nextProps.dataCube.name || hash !== nextProps.hash) {
       this.updateEssenceFromHashOrDataCube(nextProps.dataCube, nextProps.hash);
@@ -250,7 +250,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     try {
       essence = this.getEssenceFromHash(dataCube, hash);
     } catch (e) {
-      console.warn("Could not get essence from url hash. " + e.stack.split("\n", 2).join("\n"));
       const { getCubeViewHash, updateViewHash } = this.props;
       essence = this.getEssenceFromDataCube(dataCube);
       updateViewHash(getCubeViewHash(essence), true);
@@ -265,7 +264,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   getEssenceFromHash(dataCube: DataCube, hash: string): Essence {
-    if (!dataCube || !hash) return null;
+    if (!dataCube)
+      throw new Error("Data cube is required.");
+
+    if (!hash)
+      throw new Error("Hash is required.");
 
     const { getEssenceFromHash } = this.props;
     return getEssenceFromHash(hash, dataCube, MANIFESTS);
