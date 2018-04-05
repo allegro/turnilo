@@ -14,28 +14,39 @@
  * limitations under the License.
  */
 
-import { Essence } from "../models";
+import { BAR_CHART_MANIFEST } from "../manifests/bar-chart/bar-chart";
+import { LINE_CHART_MANIFEST } from "../manifests/line-chart/line-chart";
+import { TABLE_MANIFEST } from "../manifests/table/table";
+import { TOTALS_MANIFEST } from "../manifests/totals/totals";
+import { Essence, EssenceJS } from "../models";
 import { ViewDefinitionConverter2 } from "./version-2/view-definition-converter-2";
 import { ViewDefinitionHashEncoder2 } from "./version-2/view-definition-hash-encoder2";
+import { ViewDefinition3 } from "./version-3/view-definition-3";
 import { ViewDefinitionConverter3 } from "./version-3/view-definition-converter-3";
 import { ViewDefinitionHashEncoder3 } from "./version-3/view-definition-hash-encoder3";
 import { ViewDefinitionConverter } from "./view-definition-converter";
 import { ViewDefinitionHashEncoder } from "./view-definition-hash-encoder";
 
-export * from "./version-3/view-definition-3";
-
 export type ViewDefinitionVersion = "2" | "3";
 
 export const DEFAULT_VIEW_DEFINITION_VERSION = "3";
+export const LEGACY_VIEW_DEFINITION_VERSION = "2";
 
-export const definitionConverters: { [version in ViewDefinitionVersion]: ViewDefinitionConverter<object, Essence> } = {
+export const definitionConverters: { [version in ViewDefinitionVersion]: ViewDefinitionConverter<EssenceJS | ViewDefinition3, Essence> } = {
   "2": new ViewDefinitionConverter2(),
   "3": new ViewDefinitionConverter3()
 };
-export const definitionUrlEncoders: { [version in ViewDefinitionVersion]: ViewDefinitionHashEncoder<object> } = {
+export const definitionUrlEncoders: { [version in ViewDefinitionVersion]: ViewDefinitionHashEncoder<EssenceJS | ViewDefinition3> } = {
   "2": new ViewDefinitionHashEncoder2(),
   "3": new ViewDefinitionHashEncoder3()
 };
 
 export const defaultDefinitionConverter = definitionConverters[DEFAULT_VIEW_DEFINITION_VERSION];
 export const defaultDefinitionUrlEncoder = definitionUrlEncoders[DEFAULT_VIEW_DEFINITION_VERSION];
+
+export const version2Visualizations = [
+  TOTALS_MANIFEST.name,
+  TABLE_MANIFEST.name,
+  LINE_CHART_MANIFEST.name,
+  BAR_CHART_MANIFEST.name
+];

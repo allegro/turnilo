@@ -70,7 +70,7 @@ describe('mkurl router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        url: "http://localhost:9090#wiki/totals/3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6l" +
+        url: "http://localhost:9090#wiki/3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6l" +
         "KAAckaGQsp04sSbRmhoAWRjiI+YaVpKI2AOYImBdphjY0Q6qYz4FAX0plW2xaABMAERpabCgsGN9FECDsENCAZUxJD2dXdyFHO2jQ/GxTBEoACwg7CqQa7NKEBD8gA"
       }, testComplete);
   });

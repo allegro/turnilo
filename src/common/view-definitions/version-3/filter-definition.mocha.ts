@@ -25,7 +25,7 @@ describe("FilterDefinition v3", () => {
   const booleanFilterTests = [
     { dimension: "isRobot", exclude: false, values: [true] },
     { dimension: "isRobot", exclude: true, values: [false] },
-    { dimension: "isRobot", exclude: false, values: [true, false] },
+    { dimension: "isRobot", exclude: false, values: [true, false] }
   ];
 
   describe("boolean filter conversion to filter clause", () => {

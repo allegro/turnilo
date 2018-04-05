@@ -29,7 +29,7 @@ export class UrlHashConverterFixtures {
   }
 
   static tableHashVersion3() {
-    return "table/3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegCU42AOZkZe" +
+    return "3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADSEQC2ZyOFBAomgMYD0AqgCoDCVEADMICNGQBOUfAG1QaAJ4AHZjXpDJZYfnUVqGegCU42AOZkZe" +
       "eSChFJaXQCYADAEYArAFoXATi9uTrwuLnghYS4AdCEuAFpCZNgAJs7u3n4BAMzBoeEh0SHxAL4AukWUCipqdpIQ5prauuwAFqbYZAhCcOwYOLp1QmCIMJZyIIkgJdTYmI" +
       "54wohQZOWVqrrEmJjkpg06BNBGmBuO1EMII1ayaJIjUyAzc9cjK4RVujV1Zru6ynAWXT0sLgCOwcEQ6jJTsNRtYQAApKRkWiKSbTWb4BYIJYvJRrAgferULR7EAwJaSfi" +
       "taQA3rAkC0dAtQbQy4gAB6AEEACSo+7o+aLZYVV54+4wWjEKTfEGYWj0bBoAAyiTMaGaQgeGMFRNMFkuoDscAc+Ey1ESKTw2BgCAQ1A2MGSVhAsgAlCBSqVqFBlEg0PqR" +
@@ -50,7 +50,7 @@ export class UrlHashConverterFixtures {
   }
 
   static lineChartVersion3() {
-    return "line-chart/3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADQgYC2xyOx+IAomuQHoAqgBUAwoxAAzCAjTEaUfAG1QaAJ4AHLgVZcmNYlO57Je" +
+    return "3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADQgYC2xyOx+IAomuQHoAqgBUAwoxAAzCAjTEaUfAG1QaAJ4AHLgVZcmNYlO57Je" +
       "gAoKsAEyV5VIazBrosuAuYCMAETNadhOjEUPRMIcSa+KSeAL4AujEMav7cITQQ2ADmkobGBFRw2CQIknDkGDjcGZJgiDDBKiDEuEzYmJJQYJLW+tI0kuRKca2Y9HhSiFD" +
       "E8WGaSGh2DhraqWjpWd0QbNhQbtwFRcQlYZh0+KC53D1ycJuG5XsEPVDkzdYZ2YmEWxBjAKwABkSyRWui2vXe212lTBbEkmRc2BgCFov3U3HMIk8AAkOqcxhcjCZwXdiA" +
       "8YSA4C83h8QF8kCxfvgkQgEDMQGwqc4GnhQNAALLIjD4Nb1MIfBABa5oW5MFhCiCNciYGDYUKU6w9awgBJMTQZEjWbzgnZuRYgA7FSTYOBsKCaMq9aAAJUwACNRjq9Qbi" +

@@ -15,7 +15,14 @@
  */
 
 import { DataCube, Essence, Manifest } from "../../models";
-import { DEFAULT_VIEW_DEFINITION_VERSION, definitionConverters, definitionUrlEncoders, ViewDefinitionVersion } from "../../view-definitions";
+import {
+  DEFAULT_VIEW_DEFINITION_VERSION,
+  definitionConverters,
+  definitionUrlEncoders,
+  LEGACY_VIEW_DEFINITION_VERSION,
+  version2Visualizations,
+  ViewDefinitionVersion
+} from "../../view-definitions";
 
 export interface UrlHashConverter {
   essenceFromHash(hash: string, dataCube: DataCube, visializations: Manifest[]): Essence;
@@ -30,9 +37,16 @@ export const urlHashConverter: UrlHashConverter = {
     if (hashParts.length < 3)
       throw new Error("Wrong url hash structure.");
 
-    const visualization = hashParts[0];
-    const version = hashParts[1] as ViewDefinitionVersion;
-    const encodedModel = hashParts.splice(2).join("/");
+    const isLegacyVersionWithVisualisationPrefix =
+      hashParts[1] === LEGACY_VIEW_DEFINITION_VERSION && version2Visualizations.indexOf(hashParts[0]) !== -1;
+
+    let visualization;
+    if (isLegacyVersionWithVisualisationPrefix) {
+      visualization = hashParts.shift();
+    }
+
+    const version = hashParts[0] as ViewDefinitionVersion;
+    const encodedModel = hashParts.splice(1).join("/");
 
     const urlEncoder = definitionUrlEncoders[version];
     const definitionConverter = definitionConverters[version];
@@ -56,10 +70,12 @@ export const urlHashConverter: UrlHashConverter = {
     const definition = definitionConverter.toViewDefinition(essence);
     const encodedDefinition = urlEncoder.encodeUrlHash(definition);
 
-    return [
-      visualization.name,
-      version,
-      encodedDefinition
-    ].join("/");
+    const hashParts = [version, encodedDefinition];
+
+    if (version === LEGACY_VIEW_DEFINITION_VERSION) {
+      hashParts.unshift(visualization.name);
+    }
+
+    return hashParts.join("/");
   }
 };
