@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-import { $, r } from "plywood";
-import { FilterClause, SupportedAction } from "../../models/filter-clause/filter-clause";
-import { FilterType, StringFilterAction, StringFilterClauseDefinition, TimeFilterClauseDefinition } from "./filter-definition";
+import {
+  BooleanFilterClauseDefinition,
+  FilterType,
+  NumberFilterClauseDefinition,
+  StringFilterAction,
+  StringFilterClauseDefinition,
+  TimeFilterClauseDefinition
+} from "./filter-definition";
 
 export class FilterDefinitionFixtures {
-  static stringFilterClauseDefinition(ref: string, action: StringFilterAction, exclude: boolean, values: string[]): StringFilterClauseDefinition {
+  static booleanFilterDefinition(ref: string, values: boolean[], exclude = false): BooleanFilterClauseDefinition {
+    return {
+      ref,
+      type: FilterType.boolean,
+      exclude,
+      values
+    };
+  }
+
+  static stringFilterDefinition(ref: string, action: StringFilterAction, values: string[], exclude = false): StringFilterClauseDefinition {
     return {
       ref,
       type: FilterType.string,
@@ -29,41 +43,36 @@ export class FilterDefinitionFixtures {
     };
   }
 
-  static stringFilterClause(dimension: string, action: StringFilterAction, exclude: boolean, values: string[]) {
-    switch (action) {
-      case StringFilterAction.in:
-        return this.stringInFilterClause(dimension, exclude, values);
-      case StringFilterAction.contains:
-        return this.stringContainsFilterClause(dimension, exclude, values[0]);
-      case StringFilterAction.match:
-        return this.stringMatchFilterClause(dimension, exclude, values[0]);
-    }
+  static numberRangeFilterDefinition(ref: string, start: number, end: number, bounds: string | null = "[)", exclude = false): NumberFilterClauseDefinition {
+    return {
+      ref,
+      type: FilterType.number,
+      exclude,
+      ranges: [{ start, end, bounds }]
+    };
   }
 
-  static stringInFilterClause(dimension: string, exclude: boolean, values: string[]) {
-    return new FilterClause({
-      action: SupportedAction.overlap,
-      exclude,
-      selection: r(values),
-      expression: $(dimension)
-    });
+  static timeRangeFilterDefinition(ref: string, start: string, end: string): TimeFilterClauseDefinition {
+    return {
+      ref,
+      type: FilterType.time,
+      timeRanges: [{ start, end }]
+    };
   }
 
-  static stringContainsFilterClause(dimension: string, exclude: boolean, value: string) {
-    return new FilterClause({
-      action: SupportedAction.contains,
-      exclude,
-      selection: r(value),
-      expression: $(dimension)
-    });
+  static latestTimeFilterDefinition(ref: string, multiple: number, duration: string): TimeFilterClauseDefinition {
+    return {
+      ref,
+      type: FilterType.time,
+      timePeriods: [{ type: "latest", duration, step: multiple }]
+    };
   }
 
-  static stringMatchFilterClause(dimension: string, exclude: boolean, value: string) {
-    return new FilterClause({
-      action: SupportedAction.match,
-      exclude,
-      selection: value,
-      expression: $(dimension)
-    });
+  static flooredTimeFilterDefinition(ref: string, step: number, duration: string): TimeFilterClauseDefinition {
+    return {
+      ref,
+      type: FilterType.time,
+      timePeriods: [{ type: "floored", duration, step }]
+    };
   }
 }

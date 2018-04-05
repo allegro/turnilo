@@ -79,7 +79,7 @@ export class EssenceMock {
       FilterClauseFixtures.booleanIn("isRobot", [true], true),
       FilterClauseFixtures.stringContains("page", "Jeremy", false),
       FilterClauseFixtures.stringMatch("userChars", "^A$", false),
-      FilterClauseFixtures.numberRange("commentLength", 3, null, false)
+      FilterClauseFixtures.numberRange("commentLength", 3, null, "[)", false)
     ];
     const splitCombines = [
       SplitCombineFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
@@ -107,7 +107,7 @@ export class EssenceMock {
 
   static wikiLineChart() {
     const filterClauses = [
-      FilterClauseFixtures.timeDurationLatest("time", -1, "P1D", false),
+      FilterClauseFixtures.timeDurationLatest("time", -1, "P1D"),
       FilterClauseFixtures.stringIn("channel", ["en", "no", "sv", "de", "fr", "cs"])
     ];
     const splitCombines = [

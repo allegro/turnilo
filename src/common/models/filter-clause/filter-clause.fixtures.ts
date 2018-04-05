@@ -19,6 +19,21 @@ import { FilterClause, SupportedAction } from "./filter-clause";
 
 export class FilterClauseFixtures {
 
+  static stringWithAction(ref: string, action: SupportedAction, values: string | string[], exclude = false): FilterClause {
+    if (action !== SupportedAction.overlap && values instanceof Array && values.length !== 1)
+      throw new Error(`Unsupported values: ${values} for action: ${action}.`);
+
+    switch (action) {
+      case SupportedAction.overlap:
+      case undefined:
+        return this.stringIn(ref, typeof values === "string" ? [values] : values, exclude);
+      case SupportedAction.contains:
+        return this.stringContains(ref, typeof values === "string" ? values : values[0], exclude);
+      case SupportedAction.match:
+        return this.stringMatch(ref, typeof values === "string" ? values : values[0], exclude);
+    }
+  }
+
   static stringIn(ref: string, values: string[], exclude = false): FilterClause {
     return new FilterClause({
       action: SupportedAction.overlap,
@@ -28,7 +43,7 @@ export class FilterClauseFixtures {
     });
   }
 
-  static stringContains(dimension: string, value: string, exclude: boolean): FilterClause {
+  static stringContains(dimension: string, value: string, exclude = false): FilterClause {
     return new FilterClause({
       action: SupportedAction.contains,
       exclude,
@@ -37,7 +52,7 @@ export class FilterClauseFixtures {
     });
   }
 
-  static stringMatch(dimension: string, value: string, exclude: boolean): FilterClause {
+  static stringMatch(dimension: string, value: string, exclude = false): FilterClause {
     return new FilterClause({
       action: SupportedAction.match,
       exclude,
@@ -55,16 +70,16 @@ export class FilterClauseFixtures {
     });
   }
 
-  static numberRange(dimension: string, start: number, end: number, exclude: boolean): FilterClause {
+  static numberRange(dimension: string, start: number, end: number, bounds = "[)", exclude = false): FilterClause {
     return new FilterClause({
       action: SupportedAction.overlap,
       exclude,
-      selection: r([{ start, end, type: "NUMBER_RANGE" }]),
+      selection: r([{ start, end, bounds, type: "NUMBER_RANGE" }]),
       expression: $(dimension)
     });
   }
 
-  static timeRange(dimension: string, start: Date, end: Date, exclude: boolean): FilterClause {
+  static timeRange(dimension: string, start: Date, end: Date, exclude = false): FilterClause {
     return new FilterClause({
       action: SupportedAction.overlap,
       exclude,
@@ -73,16 +88,15 @@ export class FilterClauseFixtures {
     });
   }
 
-  static timeDurationLatest(dimension: string, step: number, duration: string, exclude: boolean): FilterClause {
+  static timeDurationLatest(dimension: string, step: number, duration: string): FilterClause {
     return new FilterClause({
       action: SupportedAction.overlap,
-      exclude,
       selection: $(FilterClause.MAX_TIME_REF_NAME).timeRange(duration, step),
       expression: $(dimension)
     });
   }
 
-  static timeDurationFloored(dimension: string, step: number, duration: string, exclude: boolean): FilterClause {
+  static timeDurationFloored(dimension: string, step: number, duration: string, exclude = false): FilterClause {
     return new FilterClause({
       action: SupportedAction.overlap,
       exclude,
