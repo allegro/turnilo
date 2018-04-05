@@ -73,7 +73,7 @@ export interface FilterTileState {
 export class FilterTile extends React.Component<FilterTileProps, FilterTileState> {
   private overflowMenuId: string;
   private dummyDeferred: Q.Deferred<any>;
-  private overflowMenuDeferred: Q.Deferred<Element>;
+  private overflowMenuDeferred: Q.Deferred<any>;
 
   constructor(props: FilterTileProps) {
     super(props);
@@ -117,8 +117,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
 
     if (overflowMenuOpenOn) {
-      const overflowMenu = this.getOverflowMenu();
-      if (overflowMenu) this.overflowMenuDeferred.resolve(overflowMenu);
+      this.overflowMenuDeferred.resolve();
     }
   }
 
@@ -198,7 +197,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       return Q(null);
     }
 
-    this.overflowMenuDeferred = Q.defer() as Q.Deferred<Element>;
+    this.overflowMenuDeferred = Q.defer();
     this.setState({ overflowMenuOpenOn: target });
     return this.overflowMenuDeferred.promise;
   }

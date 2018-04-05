@@ -194,6 +194,10 @@ The names of the dimensions (in order) that will appear *pinned* by default on t
 
 Data cube introspection strategy.
 
+**subsetFormula** (string - plywood expression)
+
+A filter defined as [Plywood expression](http://plywood.imply.io/expressions) that is applied to data cube. This expression is not shown in the filter area, so Turnilo user is not aware of subset formula filter clause.
+
 **refreshRule**
 
 Refresh rule defining how the information about latest data in a data source is obtained.

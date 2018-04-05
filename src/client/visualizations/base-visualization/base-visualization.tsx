@@ -60,7 +60,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   protected onScroll(e: UIEvent) {
-    var target = e.target as Element;
+    const target = e.target as Element;
     this.setState({
       scrollLeft: target.scrollLeft,
       scrollTop: target.scrollTop
@@ -68,12 +68,12 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   protected makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-    var { splits, colors, dataCube } = essence;
-    var measures = essence.getEffectiveMeasures();
+    const { splits, colors, dataCube } = essence;
+    const measures = essence.getEffectiveMeasures();
 
-    var $main = $('main');
+    const $main = $('main');
 
-    var query: Expression = ply()
+    let query: Expression = ply()
       .apply('main', $main.filter(essence.getEffectiveFilter(timekeeper, this.id).toExpression()));
 
     measures.forEach((measure) => {
@@ -81,17 +81,17 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     });
 
     function makeSubQuery(i: number): Expression {
-      var split = splits.get(i);
-      var splitDimension = dataCube.getDimensionByExpression(split.expression);
-      var { sortAction, limitAction } = split;
+      const split = splits.get(i);
+      const splitDimension = dataCube.getDimensionByExpression(split.expression);
+      const { sortAction, limitAction } = split;
       if (!sortAction) {
         throw new Error('something went wrong during query generation');
       }
 
-      var subQuery: Expression = $main.split(split.toSplitExpression(), splitDimension.name);
+      let subQuery: Expression = $main.split(split.toSplitExpression(), splitDimension.name);
 
       if (colors && colors.dimension === splitDimension.name) {
-        var havingFilter = colors.toHavingFilter(splitDimension.name);
+        const havingFilter = colors.toHavingFilter(splitDimension.name);
         if (havingFilter) {
           subQuery = subQuery.performAction(havingFilter);
         }
@@ -102,7 +102,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         subQuery = subQuery.performAction(measure.toApplyExpression(nestingLevel));
       });
 
-      var applyForSort = essence.getApplyForSort(sortAction, nestingLevel);
+      const applyForSort = essence.getApplyForSort(sortAction, nestingLevel);
       if (applyForSort) {
         subQuery = subQuery.performAction(applyForSort);
       }
@@ -130,7 +130,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   protected fetchData(essence: Essence, timekeeper: Timekeeper): void {
-    var { registerDownloadableDataset } = this.props;
+    const { registerDownloadableDataset } = this.props;
 
     let query = this.makeQuery(essence, timekeeper);
 
@@ -165,24 +165,31 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   componentDidMount() {
     this._isMounted = true;
-    var { essence, timekeeper } = this.props;
+    const { essence, timekeeper } = this.props;
     this.fetchData(essence, timekeeper);
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps) {
     this.precalculate(nextProps);
-    var { essence, timekeeper } = this.props;
-    var nextEssence = nextProps.essence;
-    var nextTimekeeper = nextProps.timekeeper;
-    if (
-      nextEssence.differentDataCube(essence) ||
+    if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
+      this.fetchData(nextProps.essence, nextProps.timekeeper);
+    }
+  }
+
+  shouldFetchData(nextProps: VisualizationProps): boolean {
+    const { essence, timekeeper } = this.props;
+    const nextEssence = nextProps.essence;
+    const nextTimekeeper = nextProps.timekeeper;
+    return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, this.id) ||
       nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.differentColors(essence) ||
-      nextEssence.newEffectiveMeasures(essence)
-    ) {
-      this.fetchData(nextEssence, nextTimekeeper);
-    }
+      nextEssence.newEffectiveMeasures(essence) ||
+      nextEssence.dataCube.refreshRule.isRealtime();
+  }
+
+  visualisationNotResized(nextProps: VisualizationProps): boolean {
+    return this.props.stage.equals(nextProps.stage);
   }
 
   componentWillUnmount() {
