@@ -24,30 +24,30 @@ import {
 } from "./filter-definition";
 
 export class FilterDefinitionFixtures {
-  static booleanFilterDefinition(ref: string, values: boolean[], exclude = false): BooleanFilterClauseDefinition {
+  static booleanFilterDefinition(ref: string, values: boolean[], not = false): BooleanFilterClauseDefinition {
     return {
       ref,
       type: FilterType.boolean,
-      exclude,
+      not,
       values
     };
   }
 
-  static stringFilterDefinition(ref: string, action: StringFilterAction, values: string[], exclude = false): StringFilterClauseDefinition {
+  static stringFilterDefinition(ref: string, action: StringFilterAction, values: string[], not = false): StringFilterClauseDefinition {
     return {
       ref,
       type: FilterType.string,
       action,
-      exclude,
+      not,
       values
     };
   }
 
-  static numberRangeFilterDefinition(ref: string, start: number, end: number, bounds: string | null = "[)", exclude = false): NumberFilterClauseDefinition {
+  static numberRangeFilterDefinition(ref: string, start: number, end: number, bounds: string | null = "[)", not = false): NumberFilterClauseDefinition {
     return {
       ref,
       type: FilterType.number,
-      exclude,
+      not,
       ranges: [{ start, end, bounds }]
     };
   }

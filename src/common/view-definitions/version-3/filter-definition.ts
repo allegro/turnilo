@@ -33,20 +33,20 @@ export interface BaseFilterClauseDefinition {
 
 export interface NumberFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.number;
-  exclude: boolean;
+  not: boolean;
   ranges: { start: number, end: number, bounds?: string }[];
 }
 
 export interface StringFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.string;
   action: StringFilterAction;
-  exclude: boolean;
+  not: boolean;
   values: string[];
 }
 
 export interface BooleanFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.boolean;
-  exclude: boolean;
+  not: boolean;
   values: boolean[];
 }
 
@@ -85,11 +85,11 @@ const stringActionMap: { [action in StringFilterAction]: SupportedAction } = {
 
 const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClauseDefinition> = {
   toFilterClause(clauseDefinition: BooleanFilterClauseDefinition, dimension: Dimension): FilterClause {
-    const { exclude, values } = clauseDefinition;
+    const { not, values } = clauseDefinition;
     const { expression}  = dimension;
     const selection = r(values);
 
-    return new FilterClause({ action: SupportedAction.overlap, exclude, expression, selection });
+    return new FilterClause({ action: SupportedAction.overlap, exclude: not, expression, selection });
   },
 
   fromFilterClause(filterClause: FilterClause, dimension: Dimension): BooleanFilterClauseDefinition {
@@ -100,14 +100,14 @@ const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClau
       type: FilterType.boolean,
       ref: referenceName,
       values: (selection as LiteralExpression).value.elements,
-      exclude
+      not: exclude
     };
   }
 };
 
 const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClauseDefinition> = {
   toFilterClause(clauseDefinition: StringFilterClauseDefinition, dimension: Dimension): FilterClause {
-    const { action, exclude, values } = clauseDefinition;
+    const { action, not, values } = clauseDefinition;
 
     if (action === null)
       throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
@@ -127,7 +127,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       selection = values[0];
     }
 
-    return new FilterClause({ action: stringActionMap[action], exclude, expression, selection });
+    return new FilterClause({ action: stringActionMap[action], exclude: not, expression, selection });
   },
 
   fromFilterClause(filterClause: FilterClause, dimension: Dimension): StringFilterClauseDefinition {
@@ -142,7 +142,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
           ref: referenceName,
           action: StringFilterAction.in,
           values: (selection as LiteralExpression).value.elements,
-          exclude
+          not: exclude
         };
       case SupportedAction.contains:
         return {
@@ -150,7 +150,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
           ref: referenceName,
           action: StringFilterAction.contains,
           values: [(selection as LiteralExpression).value],
-          exclude
+          not: exclude
         };
       case SupportedAction.match:
         return {
@@ -158,7 +158,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
           ref: referenceName,
           action: StringFilterAction.match,
           values: [selection as string],
-          exclude
+          not: exclude
         };
     }
   }
@@ -166,11 +166,11 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
 
 const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClauseDefinition> = {
   toFilterClause(filterModel: NumberFilterClauseDefinition, dimension: Dimension): FilterClause {
-    const { exclude, ranges } = filterModel;
+    const { not, ranges } = filterModel;
     const { expression } = dimension;
     const selection: Expression = r(ranges);
 
-    return new FilterClause({ action: SupportedAction.overlap, exclude, expression, selection });
+    return new FilterClause({ action: SupportedAction.overlap, exclude: not, expression, selection });
   },
 
   fromFilterClause(filterClause: FilterClause, dimension: Dimension): NumberFilterClauseDefinition {
@@ -181,7 +181,7 @@ const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClause
       return {
         type: FilterType.number,
         ref: referenceName,
-        exclude,
+        not: exclude,
         ranges: selection.value.elements.map((range) => ({ start: range.start, end: range.end, bounds: range.bounds }))
       };
     } else {
