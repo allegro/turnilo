@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-import './view-definition-modal.scss';
-
 import * as React from 'react';
-import {Essence, EssenceJS} from '../../../common/models';
-
-import {Fn, makeTitle} from '../../../common/utils';
-import { defaultDefinitionConverter } from "../../../common/view-definitions";
-import {STRINGS} from '../../config/constants';
-
-import {Button, Modal} from '../../components';
-
+import * as CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { githubGist } from 'react-syntax-highlighter/styles/hljs';
 
-import * as CopyToClipboard from 'react-copy-to-clipboard';
+import { Essence } from '../../../common/models';
+import { Fn, makeTitle } from '../../../common/utils';
+import { defaultDefinitionConverter, ViewDefinition } from "../../../common/view-definitions";
+import { Button, Modal } from '../../components';
+import { STRINGS } from '../../config/constants';
+
+import './view-definition-modal.scss';
 
 export interface ViewDefinitionModalProps {
   onClose: Fn;
@@ -41,13 +38,13 @@ export interface ViewDefinitionModalState {
 
 class MakeUrlData {
   private domain: String;
-  private dataCube: String;
-  private essence: any;
+  private dataCubeName: String;
+  private viewDefinition: ViewDefinition;
 
-  constructor(domain: String, dataCube: String, essence: any) {
+  constructor(domain: String, dataCubeName: String, viewDefinition: ViewDefinition) {
     this.domain = domain;
-    this.dataCube = dataCube;
-    this.essence = essence;
+    this.dataCubeName = dataCubeName;
+    this.viewDefinition = viewDefinition;
   }
 
   public printAsJson(): string {
@@ -65,7 +62,7 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
   }
 
   onCopyClick = () => {
-    this.setState({copied: true});
+    this.setState({ copied: true });
   }
 
   render() {
@@ -96,7 +93,7 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
           <CopyToClipboard text={viewDefinitionAsJson} onCopy={this.onCopyClick}>
             <Button type="secondary" title={STRINGS.copyDefinition} />
           </CopyToClipboard>
-          { copied ? <div className="copied-hint">Copied!</div> : null }
+          {copied ? <div className="copied-hint">Copied!</div> : null}
         </div>
       </div>
     </Modal>;

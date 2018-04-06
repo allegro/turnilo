@@ -27,16 +27,17 @@ import { ViewDefinitionHashEncoder3 } from "./version-3/view-definition-hash-enc
 import { ViewDefinitionConverter } from "./view-definition-converter";
 import { ViewDefinitionHashEncoder } from "./view-definition-hash-encoder";
 
+export type ViewDefinition = EssenceJS | ViewDefinition3;
 export type ViewDefinitionVersion = "2" | "3";
 
 export const DEFAULT_VIEW_DEFINITION_VERSION = "3";
 export const LEGACY_VIEW_DEFINITION_VERSION = "2";
 
-export const definitionConverters: { [version in ViewDefinitionVersion]: ViewDefinitionConverter<EssenceJS | ViewDefinition3, Essence> } = {
+export const definitionConverters: { [version in ViewDefinitionVersion]: ViewDefinitionConverter<ViewDefinition, Essence> } = {
   "2": new ViewDefinitionConverter2(),
   "3": new ViewDefinitionConverter3()
 };
-export const definitionUrlEncoders: { [version in ViewDefinitionVersion]: ViewDefinitionHashEncoder<EssenceJS | ViewDefinition3> } = {
+export const definitionUrlEncoders: { [version in ViewDefinitionVersion]: ViewDefinitionHashEncoder<ViewDefinition> } = {
   "2": new ViewDefinitionHashEncoder2(),
   "3": new ViewDefinitionHashEncoder3()
 };

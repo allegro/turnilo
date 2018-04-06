@@ -197,7 +197,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({
       timekeeper: initTimekeeper || Timekeeper.EMPTY
     });
-    this.updateEssenceFromHashOrDataCube(dataCube, hash);
+    this.updateEssenceFromHashOrDataCube(hash, dataCube);
   }
 
   componentDidMount() {
@@ -226,7 +226,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       throw new Error("Data cube is required.");
 
     if (dataCube.name !== nextProps.dataCube.name || hash !== nextProps.hash) {
-      this.updateEssenceFromHashOrDataCube(nextProps.dataCube, nextProps.hash);
+      this.updateEssenceFromHashOrDataCube(nextProps.hash, nextProps.dataCube);
     }
   }
 
@@ -245,10 +245,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     if (transitionFnSlot) transitionFnSlot.clear();
   }
 
-  updateEssenceFromHashOrDataCube(dataCube: DataCube, hash: string) {
+  updateEssenceFromHashOrDataCube(hash: string, dataCube: DataCube) {
     let essence: Essence;
     try {
-      essence = this.getEssenceFromHash(dataCube, hash);
+      essence = this.getEssenceFromHash(hash, dataCube);
     } catch (e) {
       const { getCubeViewHash, updateViewHash } = this.props;
       essence = this.getEssenceFromDataCube(dataCube);
@@ -263,7 +263,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return essence.multiMeasureMode !== isMulti ? essence.toggleMultiMeasureMode() : essence;
   }
 
-  getEssenceFromHash(dataCube: DataCube, hash: string): Essence {
+  getEssenceFromHash(hash: string, dataCube: DataCube): Essence {
     if (!dataCube)
       throw new Error("Data cube is required.");
 
