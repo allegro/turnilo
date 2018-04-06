@@ -37,7 +37,6 @@ export interface DimensionListTileProps extends React.Props<any> {
   menuStage: Stage;
   triggerFilterMenu: Fn;
   triggerSplitMenu: Fn;
-  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
   style?: React.CSSProperties;
 }
 

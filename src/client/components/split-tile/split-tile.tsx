@@ -41,7 +41,6 @@ export interface SplitTileProps extends React.Props<any> {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
 }
 
 export interface SplitTileState {

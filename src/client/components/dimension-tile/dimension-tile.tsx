@@ -86,7 +86,6 @@ export interface DimensionTileProps extends React.Props<any> {
   sortOn: SortOn;
   colors?: Colors;
   onClose?: any;
-  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
 }
 
 export interface DimensionTileState {

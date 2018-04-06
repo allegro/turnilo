@@ -302,7 +302,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   render() {
     var clicker = this.clicker;
 
-    var { timekeeper, getCubeViewHash, onNavClick, collection, user, customization, stateful } = this.props;
+    var { timekeeper, onNavClick, collection, user, customization, stateful } = this.props;
     var { deviceSize, linkTile, essence, visualizationStage, layout } = this.state;
 
     if (!linkTile) return null;
@@ -394,7 +394,6 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
           clicker={clicker}
           essence={essence}
           timekeeper={timekeeper}
-          getCubeViewHash={getCubeViewHash}
         />
       </div>
     </div>;

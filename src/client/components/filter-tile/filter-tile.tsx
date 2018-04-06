@@ -55,7 +55,6 @@ export interface FilterTileProps {
   essence: Essence;
   timekeeper: Timekeeper;
   menuStage: Stage;
-  getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
 }
 
 export interface FilterTileState {

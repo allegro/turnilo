@@ -501,7 +501,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           menuStage={menuStage}
           triggerFilterMenu={this.triggerFilterMenu.bind(this)}
           triggerSplitMenu={this.triggerSplitMenu.bind(this)}
-          getCubeViewHash={getCubeViewHash}
         />
 
         {deviceSize !== 'small' ? <ResizeHandle
@@ -522,14 +521,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 essence={essence}
                 timekeeper={timekeeper}
                 menuStage={visualizationStage}
-                getCubeViewHash={getCubeViewHash}
               />
               <SplitTile
                 ref="splitTile"
                 clicker={clicker}
                 essence={essence}
                 menuStage={visualizationStage}
-                getCubeViewHash={getCubeViewHash}
               />
             </div>
             <VisSelector clicker={clicker} essence={essence}/>
@@ -565,7 +562,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           clicker={clicker}
           essence={essence}
           timekeeper={timekeeper}
-          getCubeViewHash={getCubeViewHash}
         />
       </div>
       {this.renderRawDataModal()}
