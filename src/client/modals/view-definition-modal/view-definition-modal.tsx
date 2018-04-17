@@ -21,7 +21,7 @@ import { githubGist } from 'react-syntax-highlighter/styles/hljs';
 
 import { Essence } from '../../../common/models';
 import { Fn, makeTitle } from '../../../common/utils';
-import { defaultDefinitionConverter, ViewDefinition } from "../../../common/view-definitions";
+import { DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter, ViewDefinition, ViewDefinitionVersion } from "../../../common/view-definitions";
 import { Button, Modal } from '../../components';
 import { STRINGS } from '../../config/constants';
 
@@ -37,13 +37,13 @@ export interface ViewDefinitionModalState {
 }
 
 class MakeUrlData {
-  private domain: String;
   private dataCubeName: String;
+  private viewDefinitionVersion: ViewDefinitionVersion;
   private viewDefinition: ViewDefinition;
 
-  constructor(domain: String, dataCubeName: String, viewDefinition: ViewDefinition) {
-    this.domain = domain;
+  constructor(dataCubeName: String, viewDefinitionVersion: ViewDefinitionVersion, viewDefinition: ViewDefinition) {
     this.dataCubeName = dataCubeName;
+    this.viewDefinitionVersion = viewDefinitionVersion;
     this.viewDefinition = viewDefinition;
   }
 
@@ -70,7 +70,7 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
     const { copied } = this.state;
     const title = `${makeTitle(STRINGS.viewDefinition)}`;
 
-    const makeUrlData = new MakeUrlData(STRINGS.mkurlDomainPlaceholder, essence.dataCube.name, defaultDefinitionConverter.toViewDefinition(essence));
+    const makeUrlData = new MakeUrlData(essence.dataCube.name, DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter.toViewDefinition(essence));
     const viewDefinitionAsJson = makeUrlData.printAsJson();
 
     return <Modal

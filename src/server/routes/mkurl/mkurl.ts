@@ -23,38 +23,30 @@ import { definitionConverters, ViewDefinitionVersion } from "../../../common/vie
 import { SwivRequest } from '../../utils/index';
 import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
 
-var router = Router();
+const router = Router();
 
 router.post('/', (req: SwivRequest, res: Response) => {
-  var { domain, dataCube, dataSource, version, viewDefinition } = req.body;
-  dataCube = dataCube || dataSource; // back compat
+  const { dataCubeName, viewDefinitionVersion, viewDefinition } = req.body;
 
-  if (typeof version !== 'string') {
+  if (typeof viewDefinitionVersion !== 'string') {
     res.status(400).send({
-      error: 'must have a version'
+      error: 'must have a viewDefinitionVersion'
     });
     return;
   }
 
-  const definitionConverter = definitionConverters[version as ViewDefinitionVersion];
+  const definitionConverter = definitionConverters[viewDefinitionVersion as ViewDefinitionVersion];
 
   if (definitionConverter == null) {
     res.status(400).send({
-      error: 'unsupported version value'
+      error: 'unsupported viewDefinitionVersion value'
     });
     return;
   }
 
-  if (typeof domain !== 'string') {
+  if (typeof dataCubeName !== 'string') {
     res.status(400).send({
-      error: 'must have a domain'
-    });
-    return;
-  }
-
-  if (typeof dataCube !== 'string') {
-    res.status(400).send({
-      error: 'must have a dataCube'
+      error: 'must have a dataCubeName'
     });
     return;
   }
@@ -66,9 +58,9 @@ router.post('/', (req: SwivRequest, res: Response) => {
     return;
   }
 
-  req.getSettings(<GetSettingsOptions>{ dataCubeOfInterest: dataCube })
+  req.getSettings(<GetSettingsOptions>{ dataCubeOfInterest: dataCubeName })
     .then((appSettings: any) => {
-      var myDataCube = appSettings.getDataCube(dataCube);
+      const myDataCube = appSettings.getDataCube(dataCubeName);
       if (!myDataCube) {
         res.status(400).send({ error: 'unknown data cube' });
         return;
@@ -87,7 +79,7 @@ router.post('/', (req: SwivRequest, res: Response) => {
       }
 
       res.json({
-        url: `${domain}#${myDataCube.name}/${urlHashConverter.toHash(essence)}`
+        hash: `#${myDataCube.name}/${urlHashConverter.toHash(essence)}`
       });
     })
     .done();

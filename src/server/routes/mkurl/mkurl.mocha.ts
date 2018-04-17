@@ -19,7 +19,7 @@ import * as Q from 'q';
 import * as express from 'express';
 import { Response } from 'express';
 import * as supertest from 'supertest';
-import { $, ply, r } from 'plywood';
+import { $ } from 'plywood';
 import * as bodyParser from 'body-parser';
 
 import { AppSettings } from '../../../common/models/index';
@@ -43,17 +43,17 @@ app.use((req: SwivRequest, res: Response, next: Function) => {
   next();
 });
 
-app.use('/', mkurlRouter);
+const mkurlPath = "/mkurl";
+app.use(mkurlPath, mkurlRouter);
 
 describe('mkurl router', () => {
   it('gets a simple url back', (testComplete: any) => {
     supertest(app)
-      .post('/')
+      .post(mkurlPath)
       .set('Content-Type', "application/json")
       .send({
-        domain: 'http://localhost:9090',
-        dataCube: 'wiki',
-        version: '2',
+        dataCubeName: 'wiki',
+        viewDefinitionVersion: '2',
         viewDefinition: {
           visualization: 'totals',
           timezone: 'Etc/UTC',
@@ -70,19 +70,18 @@ describe('mkurl router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        url: "http://localhost:9090#wiki/3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6l" +
+        hash: "#wiki/3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6l" +
         "KAAckaGQsp04sSbRmhoAWRjiI+YaVpKI2AOYImBdphjY0Q6qYz4FAX0plW2xaABMAERpabCgsGN9FECDsENCAZUxJD2dXdyFHO2jQ/GxTBEoACwg7CqQa7NKEBD8gA"
       }, testComplete);
   });
 
   it('gets a complex url back', (testComplete: any) => {
     supertest(app)
-      .post('/')
+      .post(mkurlPath)
       .set('Content-Type', "application/json")
       .send({
-        domain: 'http://localhost:9090',
-        dataCube: 'wiki',
-        version: '2',
+        dataCubeName: 'wiki',
+        viewDefinitionVersion: '2',
         viewDefinition: {
           visualization: 'table',
           timezone: 'Etc/UTC',
@@ -185,7 +184,7 @@ describe('mkurl router', () => {
       .expect('Content-Type', "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        url: "http://localhost:9090#wiki/" + UrlHashConverterFixtures.tableHashVersion3()
+        hash: "#wiki/" + UrlHashConverterFixtures.tableHashVersion3()
       }, testComplete);
   });
 
