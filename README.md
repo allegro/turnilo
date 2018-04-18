@@ -65,6 +65,7 @@ turnilo --druid broker_host:broker_port
 ## Documentation
 
 * [Configuration](docs/configuration.md)
+* [Generating Links](docs/generating-links.md)
 
 ## Development
 
