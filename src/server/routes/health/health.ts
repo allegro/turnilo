@@ -15,12 +15,77 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
+import * as request from "request-promise-native";
+import { Cluster } from "../../../common/models";
+import { SwivRequest } from "../../utils";
 
 var router = Router();
 
-router.get('/', (req: Request, res: Response) => {
-  res.send(`I am healthy @ ${new Date().toISOString()}`);
+router.get('/', (req: SwivRequest, res: Response) => {
+  req
+    .getSettings()
+    .then((appSettings) => appSettings.clusters)
+    .then(checkClusters)
+    .then((clusterHealths) => emitHealthStatus(clusterHealths)(res))
+    .catch((reason) => res.send(unhealthyHttpStatus, { status: unhealthyStatus, message: reason.message }));
 });
+
+const healthyStatus: "healthy" = "healthy";
+const unhealthyStatus: "unhealthy" = "unhealthy";
+const unhealthyHttpStatus = 500;
+const healthyHttpStatus = 200;
+
+type ClusterHealthStatus = typeof healthyStatus | typeof unhealthyStatus;
+
+interface ClusterHealth {
+  host: string;
+  status: ClusterHealthStatus;
+  message: string;
+}
+
+const checkClusters = (clusters: Cluster[]): Promise<ClusterHealth[]> => {
+  const promises = clusters
+    .filter((value) => (value.type === "druid"))
+    .map(checkDruidCluster);
+
+  return Promise.all(promises);
+};
+
+const checkDruidCluster = (cluster: Cluster): Promise<ClusterHealth> => {
+  const { host } = cluster;
+  const loadStatusUrl = `http://${cluster.host}/druid/broker/v1/loadstatus`;
+
+  return request
+    .get(loadStatusUrl, { json: true })
+    .promise()
+    .then((loadStatus) => {
+      const { inventoryInitialized } = loadStatus;
+
+      if (inventoryInitialized) {
+        return { host, status: healthyStatus, message: "" };
+      } else {
+        return { host, status: unhealthyStatus, message: "inventory not initialized" };
+      }
+    })
+    .catch((reason) => {
+      let reasonMessage: string;
+      if (reason != null && reason instanceof Error) {
+        reasonMessage = reason.message;
+      }
+      return { host, status: unhealthyStatus, message: `connection error: '${reasonMessage}'` };
+    });
+};
+
+
+const emitHealthStatus = (clusterHealths: ClusterHealth[]): (res: Response) => void => {
+  return (res: Response) => {
+    const overallHealth = clusterHealths
+      .reduce((healthStatus, clusterHealth) => (clusterHealth.status === unhealthyStatus ? unhealthyStatus : healthStatus), healthyStatus);
+    const httpState = overallHealth === healthyStatus ? healthyHttpStatus : unhealthyHttpStatus;
+
+    res.send(httpState, { status: overallHealth, clusters: clusterHealths });
+  };
+};
 
 export = router;

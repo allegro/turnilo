@@ -136,8 +136,6 @@ if (app.get('env') === 'development') { // NODE_ENV
 
 }
 
-addRoutes('/health', healthRoutes);
-
 addRoutes('/', express.static(path.join(__dirname, '../../build/public')));
 addRoutes('/', express.static(path.join(__dirname, '../../assets')));
 
@@ -189,6 +187,8 @@ if (AUTH) {
     next();
   });
 }
+
+addRoutes('/health', healthRoutes);
 
 // Data routes
 addRoutes('/plywood', plywoodRoutes);
