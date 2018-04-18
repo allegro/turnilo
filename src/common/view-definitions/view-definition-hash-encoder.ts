@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,24 +14,8 @@
  * limitations under the License.
  */
 
-import { SortExpression } from "plywood";
+export interface ViewDefinitionHashEncoder<VD> {
+  encodeUrlHash(definition: VD): string;
 
-export class SplitCombineMock {
-  public static get TIME_JS() {
-    return {
-        expression: { op: 'ref', name: 'time' },
-        sortAction: {
-          op: 'sort',
-          direction: SortExpression.ASCENDING,
-          expression: {
-            op: 'ref',
-            name: 'time'
-          }
-        },
-        limitAction: {
-          op: 'limit',
-          limit: 2
-        }
-      };
-  }
+  decodeUrlHash(urlHash: string, visualization: string): VD;
 }

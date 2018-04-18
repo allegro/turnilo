@@ -37,7 +37,6 @@ export interface DimensionListTileProps extends React.Props<any> {
   menuStage: Stage;
   triggerFilterMenu: Fn;
   triggerSplitMenu: Fn;
-  getUrlPrefix?: () => string;
   style?: React.CSSProperties;
 }
 
@@ -85,16 +84,8 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   dragStart(dimension: Dimension, e: DragEvent) {
-    var { essence, getUrlPrefix } = this.props;
-
     var dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
-
-    if (getUrlPrefix) {
-      var newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame).getURL(getUrlPrefix());
-      dataTransfer.setData("text/url-list", newUrl);
-      dataTransfer.setData("text/plain", newUrl);
-    }
 
     DragManager.setDragDimension(dimension, 'dimension-list-tile');
     setDragGhost(dataTransfer, dimension.title);

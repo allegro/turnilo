@@ -21,7 +21,7 @@ import * as React from "react";
 import { $, Dataset, SortExpression, r } from "plywood";
 import { Fn, collect } from "../../../common/utils/general/general";
 import { STRINGS, SEARCH_WAIT } from "../../config/constants";
-import { Clicker, Essence, Timekeeper, Filter, FilterClause, FilterMode, Dimension } from "../../../common/models/index";
+import { Clicker, Essence, Timekeeper, Filter, FilterClause, FilterMode, Dimension, SupportedAction } from "../../../common/models/index";
 import { enterKey, classNames } from "../../utils/dom/dom";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
@@ -177,13 +177,13 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
         clause = new FilterClause({
           expression,
           selection: searchText,
-          action: 'match'
+          action: SupportedAction.match
         });
       } else if (filterMode === Filter.CONTAINS) {
         clause = new FilterClause({
           expression,
           selection: r(searchText),
-          action: 'contains'
+          action: SupportedAction.contains
         });
       }
     }

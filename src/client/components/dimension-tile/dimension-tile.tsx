@@ -54,9 +54,7 @@ import {
   granularityEquals,
   granularityToString,
   SortOn,
-  SplitCombine,
-  Timekeeper,
-  VisStrategy
+  Timekeeper
 } from '../../../common/models';
 
 import { classNames, setDragGhost } from '../../utils/dom/dom';
@@ -88,7 +86,6 @@ export interface DimensionTileProps extends React.Props<any> {
   sortOn: SortOn;
   colors?: Colors;
   onClose?: any;
-  getUrlPrefix?: () => string;
 }
 
 export interface DimensionTileState {
@@ -375,14 +372,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   }
 
   onDragStart(e: DragEvent) {
-    const { essence, dimension, getUrlPrefix } = this.props;
-
-    const newUrl = essence.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame).getURL(getUrlPrefix());
+    const { dimension } = this.props;
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
-    dataTransfer.setData("text/url-list", newUrl);
-    dataTransfer.setData("text/plain", newUrl);
+
     DragManager.setDragDimension(dimension, 'dimension-tile');
     setDragGhost(dataTransfer, dimension.title);
   }

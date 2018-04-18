@@ -46,6 +46,8 @@ describe('CubeView', () => {
 
   it('adds the correct class', () => {
     var updateViewHash = sinon.stub();
+    const getEssenceFromHash = sinon.stub();
+    const getCubeViewHash = sinon.stub();
 
     var renderedComponent = renderIntoDocument(
       <CubeView
@@ -54,6 +56,8 @@ describe('CubeView', () => {
         dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
         stateful={false}
+        getCubeViewHash={getCubeViewHash}
+        getEssenceFromHash={getEssenceFromHash}
       />
     );
 
@@ -64,6 +68,8 @@ describe('CubeView', () => {
 
   it('remembers measure mode toggle click', () => {
     var updateViewHash = sinon.stub();
+    const getEssenceFromHash = sinon.stub();
+    const getCubeViewHash = sinon.stub();
     var stub = sinon.stub(localStorage, "get");
     stub.withArgs('is-multi-measure').returns(undefined);
 
@@ -74,6 +80,8 @@ describe('CubeView', () => {
         dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
         stateful={false}
+        getCubeViewHash={getCubeViewHash}
+        getEssenceFromHash={getEssenceFromHash}
       />
     );
     expect(initialCubeView.state.essence.multiMeasureMode, 'default is single measure').to.equal(false);
@@ -89,6 +97,8 @@ describe('CubeView', () => {
         dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
         stateful={false}
+        getCubeViewHash={getCubeViewHash}
+        getEssenceFromHash={getEssenceFromHash}
       />
     );
 
@@ -105,6 +115,8 @@ describe('CubeView', () => {
         dataCube={DataCubeMock.wiki()}
         updateViewHash={updateViewHash}
         stateful={false}
+        getCubeViewHash={getCubeViewHash}
+        getEssenceFromHash={getEssenceFromHash}
       />
     );
 

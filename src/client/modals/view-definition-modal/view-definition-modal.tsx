@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-import './view-definition-modal.scss';
-
 import * as React from 'react';
-import {Essence, EssenceJS} from '../../../common/models';
-
-import {Fn, makeTitle} from '../../../common/utils';
-import {STRINGS} from '../../config/constants';
-
-import {Button, Modal} from '../../components';
-
+import * as CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { githubGist } from 'react-syntax-highlighter/styles/hljs';
 
-import * as CopyToClipboard from 'react-copy-to-clipboard';
+import { Essence } from '../../../common/models';
+import { Fn, makeTitle } from '../../../common/utils';
+import { DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter, ViewDefinition, ViewDefinitionVersion } from "../../../common/view-definitions";
+import { Button, Modal } from '../../components';
+import { STRINGS } from '../../config/constants';
+
+import './view-definition-modal.scss';
 
 export interface ViewDefinitionModalProps {
   onClose: Fn;
@@ -39,14 +37,14 @@ export interface ViewDefinitionModalState {
 }
 
 class MakeUrlData {
-  private domain: String;
-  private dataCube: String;
-  private essence: EssenceJS;
+  private dataCubeName: String;
+  private viewDefinitionVersion: ViewDefinitionVersion;
+  private viewDefinition: ViewDefinition;
 
-  constructor(domain: String, dataCube: String, essence: EssenceJS) {
-    this.domain = domain;
-    this.dataCube = dataCube;
-    this.essence = essence;
+  constructor(dataCubeName: String, viewDefinitionVersion: ViewDefinitionVersion, viewDefinition: ViewDefinition) {
+    this.dataCubeName = dataCubeName;
+    this.viewDefinitionVersion = viewDefinitionVersion;
+    this.viewDefinition = viewDefinition;
   }
 
   public printAsJson(): string {
@@ -64,7 +62,7 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
   }
 
   onCopyClick = () => {
-    this.setState({copied: true});
+    this.setState({ copied: true });
   }
 
   render() {
@@ -72,7 +70,7 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
     const { copied } = this.state;
     const title = `${makeTitle(STRINGS.viewDefinition)}`;
 
-    const makeUrlData = new MakeUrlData(STRINGS.mkurlDomainPlaceholder, essence.dataCube.name, essence.toJSON());
+    const makeUrlData = new MakeUrlData(essence.dataCube.name, DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter.toViewDefinition(essence));
     const viewDefinitionAsJson = makeUrlData.printAsJson();
 
     return <Modal
@@ -95,7 +93,7 @@ export class ViewDefinitionModal extends React.Component<ViewDefinitionModalProp
           <CopyToClipboard text={viewDefinitionAsJson} onCopy={this.onCopyClick}>
             <Button type="secondary" title={STRINGS.copyDefinition} />
           </CopyToClipboard>
-          { copied ? <div className="copied-hint">Copied!</div> : null }
+          {copied ? <div className="copied-hint">Copied!</div> : null}
         </div>
       </div>
     </Modal>;

@@ -51,11 +51,11 @@ const latestPresets: Preset[] = [
 
 const $now = $(FilterClause.NOW_REF_NAME);
 const currentPresets: Preset[] = [
-  { name: 'D', selection: $now.timeBucket('P1D') },
-  { name: 'W', selection: $now.timeBucket('P1W') },
-  { name: 'M', selection: $now.timeBucket('P1M') },
-  { name: 'Q', selection: $now.timeBucket('P3M') },
-  { name: 'Y', selection: $now.timeBucket('P1Y') }
+  { name: 'D', selection: $now.timeFloor('P1D').timeRange('P1D', 1) },
+  { name: 'W', selection: $now.timeFloor('P1W').timeRange('P1W', 1) },
+  { name: 'M', selection: $now.timeFloor('P1M').timeRange('P1M', 1) },
+  { name: 'Q', selection: $now.timeFloor('P3M').timeRange('P3M', 1) },
+  { name: 'Y', selection: $now.timeFloor('P1Y').timeRange('P1Y', 1) }
 ];
 
 const previousPresets: Preset[] = [

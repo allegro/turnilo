@@ -37,6 +37,7 @@ export class CollectionTileMock {
           value: true
         },
         pinnedDimensions: ['articleName'],
+        pinnedSort: 'count',
         singleMeasure: "count",
         selectedMeasures: ['count'],
         splits: []

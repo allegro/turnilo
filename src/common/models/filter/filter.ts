@@ -64,8 +64,12 @@ export class Filter implements Instance<FilterValue, FilterJS> {
   }
 
   static fromClause(clause: FilterClause): Filter {
-    if (!clause) throw new Error('must have clause');
-    return new Filter(List([clause]));
+    return this.fromClauses([clause]);
+  }
+
+  static fromClauses(clauses: FilterClause[]): Filter {
+    if (!clauses) throw new Error('must have clause');
+    return new Filter(List(clauses));
   }
 
   static fromJS(parameters: FilterJS): Filter {

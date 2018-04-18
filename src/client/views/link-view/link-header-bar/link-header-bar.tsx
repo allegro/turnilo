@@ -30,7 +30,6 @@ export interface LinkHeaderBarProps extends React.Props<any> {
   user?: User;
   onNavClick: Fn;
   onExploreClick: Fn;
-  getUrlPrefix?: () => string;
   customization?: Customization;
   changeTimezone?: (timezone: Timezone) => void;
   timezone?: Timezone;

@@ -20,7 +20,7 @@ import './collection-view.scss';
 import * as React from 'react';
 import * as Q from 'q';
 
-import { Collection, Timekeeper, User, Customization, CollectionTile, DataCube } from '../../../common/models/index';
+import { Collection, Timekeeper, User, Customization, CollectionTile, DataCube, Essence } from '../../../common/models';
 import { Fn } from '../../../common/utils/general/general';
 
 import { STRINGS } from '../../config/constants';
@@ -28,7 +28,7 @@ import { STRINGS } from '../../config/constants';
 import { replaceHash } from '../../utils/url/url';
 import { move } from '../../../common/utils/array/array';
 
-import { Router, Route, Notifier } from '../../components/index';
+import { Router, Route, Notifier } from '../../components';
 
 import { CollectionHeaderBar } from './collection-header-bar/collection-header-bar';
 import { CollectionOverview } from './collection-overview/collection-overview';
@@ -52,6 +52,7 @@ export interface CollectionViewProps extends React.Props<any> {
     createTile: (collection: Collection, dataCube: DataCube) => void;
     deleteTile: (collection: Collection, tile: CollectionTile) => void;
   };
+  getCubeViewHash: (essence: Essence) => string;
 }
 
 export interface CollectionViewState {
@@ -150,7 +151,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
   }
 
   render() {
-    const { user, collections, timekeeper, customization, onNavClick, delegate, dataCubes } = this.props;
+    const { user, collections, timekeeper, customization, onNavClick, delegate, dataCubes, getCubeViewHash } = this.props;
     const { collection, tempCollection, editingOverview } = this.state;
 
     const currentCollection = tempCollection || collection;
@@ -194,6 +195,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
                 onEdit={delegate ? delegate.editTile : null}
                 onDelete={delegate ? delegate.deleteTile : null}
                 onDuplicate={delegate ? delegate.duplicateTile : null}
+                getCubeViewHash={getCubeViewHash}
               />
             </Route>
 

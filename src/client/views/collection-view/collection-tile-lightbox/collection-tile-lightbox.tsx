@@ -40,6 +40,7 @@ export interface CollectionTileLightboxProps extends React.Props<any> {
   onDelete?: (collection: Collection, tile: CollectionTile) => void;
   onDuplicate?: (collection: Collection, tile: CollectionTile) => Promise<string>;
   onChange?: (collection: Collection, tile: CollectionTile) => Promise<any>;
+  getCubeViewHash: (essence: Essence) => string;
 }
 
 export interface CollectionTileLightboxState {
@@ -82,8 +83,9 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
   }
 
   onExplore() {
-    const essence = this.state.tile.essence as Essence;
-    window.location.hash = '#' + essence.getURL(essence.dataCube.name + '/');
+    const { getCubeViewHash } = this.props;
+    const { tile: { essence } } = this.state;
+    window.location.hash = `#${essence.dataCube.name}/${getCubeViewHash(essence)}`;
   }
 
   onEditIconClick() {
