@@ -28,7 +28,7 @@ router.get('/', (req: SwivRequest, res: Response) => {
     .then((appSettings) => appSettings.clusters)
     .then(checkClusters)
     .then((clusterHealths) => emitHealthStatus(clusterHealths)(res))
-    .catch((reason) => res.send(unhealthyHttpStatus, { status: unhealthyStatus, message: reason.message }));
+    .catch((reason) => res.status(unhealthyHttpStatus).send({ status: unhealthyStatus, message: reason.message }));
 });
 
 const healthyStatus: "healthy" = "healthy";
@@ -46,7 +46,7 @@ interface ClusterHealth {
 
 const checkClusters = (clusters: Cluster[]): Promise<ClusterHealth[]> => {
   const promises = clusters
-    .filter((value) => (value.type === "druid"))
+    .filter((cluster) => (cluster.type === "druid"))
     .map(checkDruidCluster);
 
   return Promise.all(promises);
@@ -57,7 +57,7 @@ const checkDruidCluster = (cluster: Cluster): Promise<ClusterHealth> => {
   const loadStatusUrl = `http://${cluster.host}/druid/broker/v1/loadstatus`;
 
   return request
-    .get(loadStatusUrl, { json: true })
+    .get(loadStatusUrl, { json: true, timeout: cluster.healthCheckingTimeout })
     .promise()
     .then((loadStatus) => {
       const { inventoryInitialized } = loadStatus;
@@ -79,12 +79,12 @@ const checkDruidCluster = (cluster: Cluster): Promise<ClusterHealth> => {
 
 
 const emitHealthStatus = (clusterHealths: ClusterHealth[]): (res: Response) => void => {
-  return (res: Response) => {
+  return (response: Response) => {
     const overallHealth = clusterHealths
       .reduce((healthStatus, clusterHealth) => (clusterHealth.status === unhealthyStatus ? unhealthyStatus : healthStatus), healthyStatus);
     const httpState = overallHealth === healthyStatus ? healthyHttpStatus : unhealthyHttpStatus;
 
-    res.send(httpState, { status: overallHealth, clusters: clusterHealths });
+    response.status(httpState).send({ status: overallHealth, clusters: clusterHealths });
   };
 };
 

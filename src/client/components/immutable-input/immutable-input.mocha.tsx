@@ -138,7 +138,7 @@ describe('ImmutableInput', () => {
     });
 
     it('works for valid values', () => {
-      expect(node.value).to.equal('DRUID');
+      expect(node.value).to.equal('DRUID-TWITTER');
 
       node.value = 'GIRAFFE';
       TestUtils.Simulate.change(node);
@@ -157,7 +157,7 @@ describe('ImmutableInput', () => {
     });
 
     it('works when an error is thrown', () => {
-      expect(node.value).to.equal('DRUID');
+      expect(node.value).to.equal('DRUID-TWITTER');
 
       node.value = 'PLATYPUS';
       TestUtils.Simulate.change(node);

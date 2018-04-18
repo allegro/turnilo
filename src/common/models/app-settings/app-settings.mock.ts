@@ -17,6 +17,7 @@
 
 import { $, Executor, Dataset, basicExecutorFactory } from 'plywood';
 import { MANIFESTS } from '../../../common/manifests/index';
+import { ClusterFixtures } from "../cluster/cluster.fixtures";
 import { DataCubeMock } from '../data-cube/data-cube.mock';
 import { CollectionMock } from '../collection/collection.mock';
 import { AppSettings, AppSettingsJS, AppSettingsContext } from './app-settings';
@@ -293,18 +294,7 @@ export class AppSettingsMock {
         customLogoSvg: "ansvgstring"
       },
       clusters: [
-        {
-          name: 'druid',
-          type: 'druid',
-          host: '192.168.99.100',
-          version: '0.9.1',
-          timeout: 30000,
-          sourceListScan: 'auto',
-          sourceListRefreshInterval: 10000,
-          sourceReintrospectInterval: 10000,
-
-          introspectionStrategy: 'segment-metadata-fallback'
-        }
+        ClusterFixtures.druidWikiClusterJS()
       ],
       dataCubes: [
         DataCubeMock.WIKI_JS
@@ -320,18 +310,7 @@ export class AppSettingsMock {
         customLogoSvg: "ansvgstring"
       },
       clusters: [
-        {
-          name: 'druid',
-          type: 'druid',
-          host: '192.168.99.100',
-          version: '0.9.1',
-          timeout: 30000,
-          sourceListScan: 'auto',
-          sourceListRefreshInterval: 10000,
-          sourceReintrospectInterval: 10000,
-
-          introspectionStrategy: 'segment-metadata-fallback'
-        }
+        ClusterFixtures.druidWikiClusterJS()
       ],
       dataCubes: [
         DataCubeMock.WIKI_JS
@@ -346,18 +325,8 @@ export class AppSettingsMock {
         title: "Hello World"
       },
       clusters: [
-        {
-          name: 'druid',
-          type: 'druid',
-          host: '192.168.99.100',
-          version: '0.9.1',
-          timeout: 30000,
-          sourceListScan: 'auto',
-          sourceListRefreshInterval: 10000,
-          sourceReintrospectInterval: 10000,
-
-          introspectionStrategy: "segment-metadata-fallback"
-        }
+        ClusterFixtures.druidWikiClusterJS(),
+        ClusterFixtures.druidTwitterClusterJS()
       ],
       dataCubes: [
         DataCubeMock.WIKI_JS,
