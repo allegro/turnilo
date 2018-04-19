@@ -49,6 +49,7 @@ describe('ServerSettings', () => {
         port: 9091,
         serverHost: '10.20.30.40',
         serverRoot: '/swivs',
+        healthEndpoint: '/status/health',
         pageMustLoadTimeout: 901
       },
       {

@@ -188,7 +188,7 @@ if (AUTH) {
   });
 }
 
-addRoutes('/health', healthRoutes);
+addRoutes(SERVER_SETTINGS.getHealthEndpoint(), healthRoutes);
 
 // Data routes
 addRoutes('/plywood', plywoodRoutes);
