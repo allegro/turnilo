@@ -5,12 +5,12 @@ and those brokers knowing about all segments in Zookeeper.
 
 It can be checked by sending a GET request to a `healthEndpoint` path defined in Turnilo's server [configuration](configuration.md).
 
-Healthy Turnilo instance responds with HTTP status 200 while an unhealthy one responds with the status of 500.
+Healthy Turnilo instance responds with HTTP status 200 while an unhealthy one responds with the status of 503.
 The body of a response contains health status of all configured brokers with optional error message on unhealthy brokers.
 
 While processing the health checking request Turnilo server will send its own requests to all configured
 druid clusters' brokers for `/druid/broker/v1/loadstatus` endpoint. It will check that all brokers responds within
-individually defined cluster timeout (`healthCheckingTimeout` property in [cluster properties](configuration.md#general-properties))
+individually defined cluster timeout (`healthCheckTimeout` property in [cluster properties](configuration.md#general-properties))
 and that the response body contains `inventoryInitialized` flag set to `true`.
 If any of the requests to brokers fail to meet the criteria defined above the Turnilo instance is marked as unhealthy.
 
@@ -35,7 +35,7 @@ Content-Type: application/json; charset=utf-8
 
 Unhealthy response example:
 ```
-HTTP/1.1 500 Internal Server Error
+HTTP/1.1 503 Service Unavailable
 Content-Type: application/json; charset=utf-8
 
 {

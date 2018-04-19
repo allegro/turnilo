@@ -101,7 +101,7 @@ Define this to override the automatic version detection.
 
 The timeout to set on the queries in ms.
 
-**healthCheckingTimeout** (number), default: 1000
+**healthCheckTimeout** (number), default: 1000
 
 The timeout for the cluster health checking request in ms. See [Checking health of Turnilo instance](health-checking.md)
 

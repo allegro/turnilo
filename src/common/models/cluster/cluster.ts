@@ -29,7 +29,7 @@ export interface ClusterValue {
   host?: string;
   version?: string;
   timeout?: number;
-  healthCheckingTimeout?: number;
+  healthCheckTimeout?: number;
   sourceListScan?: SourceListScan;
   sourceListRefreshOnLoad?: boolean;
   sourceListRefreshInterval?: number;
@@ -52,7 +52,7 @@ export interface ClusterJS {
   host?: string;
   version?: string;
   timeout?: number;
-  healthCheckingTimeout?: number;
+  healthCheckTimeout?: number;
   sourceListScan?: SourceListScan;
   sourceListRefreshOnLoad?: boolean;
   sourceListRefreshInterval?: number;
@@ -84,7 +84,7 @@ function ensureNotTiny(v: number): void {
 export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   static TYPE_VALUES: SupportedType[] = ['druid', 'mysql', 'postgres'];
   static DEFAULT_TIMEOUT = 40000;
-  static DEFAULT_HEALTH_CHECKING_TIMEOUT = 1000;
+  static DEFAULT_HEALTH_CHECK_TIMEOUT = 1000;
   static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = 'auto';
   static SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ['disable', 'auto'];
   static DEFAULT_SOURCE_LIST_REFRESH_INTERVAL = 0;
@@ -120,7 +120,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: 'title', defaultValue: '' },
     { name: 'version', defaultValue: null },
     { name: 'timeout', defaultValue: Cluster.DEFAULT_TIMEOUT },
-    { name: 'healthCheckingTimeout', defaultValue: Cluster.DEFAULT_HEALTH_CHECKING_TIMEOUT },
+    { name: 'healthCheckTimeout', defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT },
     { name: 'sourceListScan', defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
     { name: 'sourceListRefreshOnLoad', defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD },
     { name: 'sourceListRefreshInterval', defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
@@ -145,7 +145,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public title: string;
   public version: string;
   public timeout: number;
-  public healthCheckingTimeout: number;
+  public healthCheckTimeout: number;
   public sourceListScan: SourceListScan;
   public sourceListRefreshOnLoad: boolean;
   public sourceListRefreshInterval: number;

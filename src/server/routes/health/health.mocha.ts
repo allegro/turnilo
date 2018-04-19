@@ -70,9 +70,9 @@ describe('health router', () => {
 
     const singleClusterTests = [
       { scenario: "healthy broker", status: 200, initialized: true, delay: 0, expectedStatus: 200 },
-      { scenario: "unhealthy broker", status: 500, initialized: false, delay: 0, expectedStatus: 500 },
-      { scenario: "uninitialized broker", status: 200, initialized: false, delay: 0, expectedStatus: 500 },
-      { scenario: "timeout to broker", status: 200, initialized: true, delay: 200, expectedStatus: 500 }
+      { scenario: "unhealthy broker", status: 500, initialized: false, delay: 0, expectedStatus: 503 },
+      { scenario: "uninitialized broker", status: 200, initialized: false, delay: 0, expectedStatus: 503 },
+      { scenario: "timeout to broker", status: 200, initialized: true, delay: 200, expectedStatus: 503 }
     ];
 
     singleClusterTests.forEach(({ scenario, status, initialized, delay, expectedStatus }) => {
@@ -105,15 +105,15 @@ describe('health router', () => {
       { scenario: "single unhealthy broker",
         wikiBroker: { status: 500, initialized: true, delay: 0 },
         twitterBroker: { status: 200, initialized: true, delay: 0 },
-        expectedStatus: 500 },
+        expectedStatus: 503 },
       { scenario: "single uninitialized broker",
         wikiBroker: { status: 200, initialized: true, delay: 0 },
         twitterBroker: { status: 200, initialized: false, delay: 0 },
-        expectedStatus: 500 },
+        expectedStatus: 503 },
       { scenario: "timeout to single broker",
         wikiBroker: { status: 200, initialized: true, delay: 100 },
         twitterBroker: { status: 200, initialized: true, delay: 0 },
-        expectedStatus: 500 }
+        expectedStatus: 503 }
     ];
 
     multipleClustersTests.forEach(({ scenario, wikiBroker, twitterBroker, expectedStatus }) => {
