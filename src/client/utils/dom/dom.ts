@@ -17,7 +17,6 @@
 
 import * as d3 from 'd3';
 import { hasOwnProperty } from '../../../common/utils/general/general';
-import { DeviceSize } from '../../../common/models/index';
 
 const DRAG_GHOST_OFFSET_X = -12;
 const DRAG_GHOST_OFFSET_Y = -12;
@@ -63,13 +62,16 @@ export function findParentWithClass(child: Element, className: string): Element 
 }
 
 export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
+  // Not all browsers support setDragImage. Guess which ones do not ;-)
+  if (dataTransfer.setDragImage === undefined)
+    return;
+
   // Thanks to http://www.kryogenix.org/code/browser/custom-drag-image.html
   var dragGhost = d3.select(document.body).append('div')
     .attr('class', 'drag-ghost')
     .text(text);
 
-  // remove <any> when DataTransfer interface in lib.d.ts includes setDragImage
-  (<any>dataTransfer).setDragImage(dragGhost.node(), DRAG_GHOST_OFFSET_X, DRAG_GHOST_OFFSET_Y);
+  dataTransfer.setDragImage(dragGhost.node() as Element, DRAG_GHOST_OFFSET_X, DRAG_GHOST_OFFSET_Y);
 
   // Remove the host after a ms because it is no longer needed
   setTimeout(() => {
