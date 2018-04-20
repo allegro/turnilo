@@ -31,7 +31,7 @@ export class DataCubeMock {
       name: 'wiki',
       title: 'Wiki',
       description: 'Wiki description',
-      clusterName: 'druid',
+      clusterName: 'druid-wiki',
       source: 'wiki',
       introspection: 'none',
       attributes: [
@@ -127,7 +127,7 @@ export class DataCubeMock {
       name: 'twitter',
       title: 'Twitter',
       description: 'Twitter description should go here',
-      clusterName: 'druid',
+      clusterName: 'druid-twitter',
       source: 'twitter',
       introspection: 'none',
       dimensions: [

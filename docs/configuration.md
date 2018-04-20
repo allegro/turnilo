@@ -42,6 +42,10 @@ A custom path to act as the server string.
 
 The Turnilo UI will be served from `http://turnilo-host:$port/` and `http://turnilo-host:$port/$serverRoot`
 
+**healthEndpoint** (string), default "/health"
+
+A health endpoint location. See [Checking health of Turnilo instance](health-checking.md)
+
 **iframe** ("allow" | "deny"), default "allow"
 
 Specify whether Turnilo will be allowed to run in an iFrame.
@@ -96,6 +100,10 @@ Define this to override the automatic version detection.
 **timeout** (number), default: 40000
 
 The timeout to set on the queries in ms.
+
+**healthCheckTimeout** (number), default: 1000
+
+The timeout for the cluster health checking request in ms. See [Checking health of Turnilo instance](health-checking.md)
 
 **sourceListScan** ("auto" | "disable"), default: "auto"
 

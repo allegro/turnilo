@@ -33,6 +33,7 @@ describe('Cluster', () => {
         host: '192.168.99.100',
         version: '0.9.1',
         timeout: 30000,
+        healthCheckTimeout: 50,
         sourceListScan: 'auto',
         sourceListRefreshOnLoad: true,
         sourceListRefreshInterval: 10000,

@@ -26,6 +26,7 @@ export interface ServerSettingsValue {
   port?: number;
   serverHost?: string;
   serverRoot?: string;
+  healthEnpoint?: string;
   requestLogFormat?: string;
   trackingUrl?: string;
   trackingContext?: Record<string, string>;
@@ -53,6 +54,7 @@ function basicEqual(a: any, b: any): boolean {
 export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSettingsJS> {
   static DEFAULT_PORT = 9090;
   static DEFAULT_SERVER_ROOT = '/turnilo';
+  static DEFAULT_HEALTH_ENDPOINT = '/health';
   static DEFAULT_REQUEST_LOG_FORMAT = 'common';
   static DEFAULT_PAGE_MUST_LOAD_TIMEOUT = 800;
   static IFRAME_VALUES: Iframe[] = ["allow", "deny"];
@@ -78,6 +80,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
     { name: 'port', defaultValue: ServerSettings.DEFAULT_PORT, validate: BaseImmutable.ensure.number },
     { name: 'serverHost', defaultValue: null },
     { name: 'serverRoot', defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },
+    { name: 'healthEndpoint', defaultValue: ServerSettings.DEFAULT_HEALTH_ENDPOINT },
     { name: 'requestLogFormat', defaultValue: ServerSettings.DEFAULT_REQUEST_LOG_FORMAT },
     { name: 'trackingUrl', defaultValue: null },
     { name: 'trackingContext', defaultValue: null, equal: basicEqual },
@@ -92,6 +95,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public port: number;
   public serverHost: string;
   public serverRoot: string;
+  public healthEndpoint: string;
   public requestLogFormat: string;
   public trackingUrl: string;
   public trackingContext: Record<string, string>;
@@ -109,6 +113,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public getPort: () => number;
   public getServerHost: () => string;
   public getServerRoot: () => string;
+  public getHealthEndpoint: () => string;
   public getRequestLogFormat: () => string;
   public getTrackingUrl: () => string;
   public getTrackingContext: () => Record<string, string>;
