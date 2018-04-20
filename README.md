@@ -23,6 +23,7 @@ this is how Turnilo emerged.
 * Focus on data visualizations over Druid cluster or data ingestion management.
 * Data cubes configuration as a code over UI editor backed by non-versioned database.
 * Stateless over stateful server-side architecture.
+* Support for most recent versions of standards compliant browsers.
 
 ## Features
 
