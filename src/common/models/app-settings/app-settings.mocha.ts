@@ -39,7 +39,7 @@ describe('AppSettings', () => {
     it("errors if there is no matching cluster", () => {
       var js = AppSettingsMock.wikiOnlyJS();
       js.clusters = [];
-      expect(() => AppSettings.fromJS(js, context)).to.throw("Can not find cluster 'druid' for data cube 'wiki'");
+      expect(() => AppSettings.fromJS(js, context)).to.throw("Can not find cluster 'druid-wiki' for data cube 'wiki'");
     });
 
   });
@@ -90,7 +90,7 @@ describe('AppSettings', () => {
         druidHost: '192.168.99.100',
         sourceListScan: 'disable',
         dataSources: [
-          DataCubeMock.WIKI_JS
+          { ...DataCubeMock.WIKI_JS, clusterName: "druid" }
         ]
       };
 
@@ -122,7 +122,7 @@ describe('AppSettings', () => {
       expect(settings.toClientSettings().toJS()).to.deep.equal({
         "clusters": [
           {
-            "name": "druid",
+            "name": "druid-wiki",
             "type": "druid"
           }
         ],
@@ -159,7 +159,7 @@ describe('AppSettings', () => {
                 "unsplitable": true
               }
             ],
-            "clusterName": "druid",
+            "clusterName": "druid-wiki",
             "defaultDuration": "P3D",
             "defaultFilter": {
               "op": "literal",
