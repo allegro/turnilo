@@ -21,7 +21,7 @@ import { Colors, DataCube, SplitCombine, Splits } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
 
-var handler = CircumstancesHandler.measuresRequired()
+var handler = CircumstancesHandler.needsAtLeastOneMeasure()
 
   .when((multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube) => !(dataCube.getDimensionByKind('time') || dataCube.getDimensionByKind('number')))
   .then(() => Resolve.NEVER)

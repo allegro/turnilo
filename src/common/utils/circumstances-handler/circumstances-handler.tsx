@@ -16,7 +16,7 @@
  */
 
 import { OrderedSet } from "immutable";
-import { Colors, DataCube, SplitCombine, Splits } from '../../models';
+import { Colors, DataCube, Resolution, SplitCombine, Splits } from '../../models';
 import { Resolve } from '../../models/manifest/manifest';
 
 export type Configuration = (multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, dataCube?: DataCube) => boolean;
@@ -71,16 +71,33 @@ export class CircumstancesHandler {
     return new CircumstancesHandler();
   }
 
-  public static measuresRequired() {
+  public static needsAtLeastOneMeasure() {
+    const defaultSelectedMeasuresResolutions = (dataCube: DataCube): Resolution[] => {
+      const defaultSelectedMeasures = dataCube.defaultSelectedMeasures || OrderedSet();
+      const measures = defaultSelectedMeasures.map((measureName) => dataCube.getMeasure(measureName)).toArray();
+      if (measures.length === 0)
+        return [];
+
+      const measureNames = measures.map((measure) => measure.title).join(", ");
+      return [
+        { description: `Select default measures: ${measureNames}`, adjustment: { measures } }
+      ];
+    };
+
+    const firstMeasureResolutions = (dataCube: DataCube): Resolution[] => {
+      const firstMeasure = dataCube.measures.get(0);
+      return [{ description: `Select measure: ${firstMeasure.title}`, adjustment: { measures: [firstMeasure] } }];
+    };
+
     return new CircumstancesHandler()
       .when((multiMeasureMode, selectedMeasures) => multiMeasureMode && selectedMeasures.isEmpty())
       .then((splits: Splits, dataCube: DataCube) => {
-        const measures = dataCube.defaultSelectedMeasures.map((measureName) => dataCube.getMeasure(measureName)).toArray();
-        const measureNames = measures.map((measure) => measure.title).join(", ");
+        const defaultMeasuresResolutions = defaultSelectedMeasuresResolutions(dataCube);
 
-        return Resolve.manual(3, "At least one of the measures should be selected", [
-          { description: `Select default measures: ${measureNames}`, adjustment: { measures } }
-        ]);
+        return Resolve.manual(
+          3,
+          "At least one of the measures should be selected",
+          defaultMeasuresResolutions.length > 0 ? defaultMeasuresResolutions : firstMeasureResolutions(dataCube));
       });
   }
 

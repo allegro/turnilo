@@ -20,7 +20,7 @@ import { Colors, DataCube, Splits } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
 
-var handler = CircumstancesHandler.measuresRequired()
+var handler = CircumstancesHandler.needsAtLeastOneMeasure()
   .needsAtLeastOneSplit('The Table requires at least one split')
   .otherwise(
     (splits: Splits, dataCube: DataCube, colors: Colors, current: boolean) => {

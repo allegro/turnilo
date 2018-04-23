@@ -20,7 +20,7 @@ import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models'
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
 
-var handler = CircumstancesHandler.measuresRequired()
+var handler = CircumstancesHandler.needsAtLeastOneMeasure()
   .needsAtLeastOneSplit('The Bar Chart requires at least one split')
 
   .when(CircumstancesHandler.areExactSplitKinds('*'))
