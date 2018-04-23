@@ -85,7 +85,7 @@ export class Resolve {
   }
 }
 
-export type HandleCircumstance = (dataCube: DataCube, selectedMeasures: OrderedSet<string>, splits: Splits, colors: Colors, selected: boolean) => Resolve;
+export type HandleCircumstance = (dataCube: DataCube, multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, colors: Colors, selected: boolean) => Resolve;
 export type MeasureModeNeeded = 'any' | 'single' | 'multi';
 
 

@@ -23,7 +23,7 @@ import { CircumstancesHandler } from '../../utils/circumstances-handler/circumst
 
 var handler = CircumstancesHandler.measuresRequired()
 
-  .when((selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube) => !(dataCube.getDimensionByKind('time') || dataCube.getDimensionByKind('number')))
+  .when((multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube) => !(dataCube.getDimensionByKind('time') || dataCube.getDimensionByKind('number')))
   .then(() => Resolve.NEVER)
 
   .when(CircumstancesHandler.noSplits())

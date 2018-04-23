@@ -44,6 +44,11 @@ function addToSetInOrder<T>(order: Iterable<any, T>, setToAdd: OrderedSet<T>, th
   return OrderedSet(order.toArray().filter((name) => setToAdd.has(name) || name === thing));
 }
 
+function getEffectiveMultiMeasureMode(multiMeasureMode: boolean, visualization?: Manifest) {
+  const visualizationNeedsMulti = visualization != null && visualization.measureModeNeed === "multi";
+  return multiMeasureMode || visualizationNeedsMulti;
+}
+
 export interface VisualizationAndResolve {
   visualization: Manifest;
   resolve: Resolve;
@@ -107,15 +112,17 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   static getBestVisualization(
     visualizations: Manifest[],
     dataCube: DataCube,
+    multiMeasureMode: boolean,
     selectedMeasures: OrderedSet<string>,
     splits: Splits,
     colors: Colors,
     currentVisualization: Manifest
   ): VisualizationAndResolve {
     var visAndResolves = visualizations.map((visualization) => {
+      const effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(multiMeasureMode, visualization);
       return {
         visualization,
-        resolve: visualization.handleCircumstance(dataCube, selectedMeasures, splits, colors, visualization === currentVisualization)
+        resolve: visualization.handleCircumstance(dataCube, effectiveMultiMeasureMode, selectedMeasures, splits, colors, visualization === currentVisualization)
       };
     });
 
@@ -255,19 +262,21 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     }
 
     let visResolve: Resolve;
+    let effectiveMultiMeasureMode: boolean;
     if (visualizations) {
       // Place vis here because it needs to know about splits and colors (and maybe later other things)
       if (!visualization) {
-        var visAndResolve = Essence.getBestVisualization(visualizations, dataCube, selectedMeasures, splits, colors, null);
+        var visAndResolve = Essence.getBestVisualization(visualizations, dataCube, multiMeasureMode, selectedMeasures, splits, colors, null);
         visualization = visAndResolve.visualization;
       }
 
-      visResolve = visualization.handleCircumstance(dataCube, selectedMeasures, splits, colors, true);
+      effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(multiMeasureMode, visualization);
+      visResolve = visualization.handleCircumstance(dataCube, effectiveMultiMeasureMode, selectedMeasures, splits, colors, true);
       if (visResolve.isAutomatic()) {
         var adjustment = visResolve.adjustment;
         splits = adjustment.splits;
         colors = adjustment.colors || null;
-        visResolve = visualization.handleCircumstance(dataCube, selectedMeasures, splits, colors, true);
+        visResolve = visualization.handleCircumstance(dataCube, effectiveMultiMeasureMode, selectedMeasures, splits, colors, true);
 
         if (!visResolve.isReady()) {
           console.log(visResolve);
@@ -283,7 +292,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     this.timezone = timezone;
     this.filter = filter;
     this.splits = splits;
-    this.multiMeasureMode = multiMeasureMode;
+    this.multiMeasureMode = effectiveMultiMeasureMode;
     this.singleMeasure = singleMeasure;
     this.selectedMeasures = selectedMeasures;
     this.pinnedDimensions = pinnedDimensions;
@@ -590,7 +599,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
-    var { visualizations, dataCube, selectedMeasures, visualization, visResolve, filter, colors } = this;
+    var { visualizations, dataCube, multiMeasureMode, selectedMeasures, visualization, visResolve, filter, colors } = this;
 
     splits = splits.updateWithFilter(filter, dataCube.dimensions);
 
@@ -601,7 +610,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (this.splits.length() > 0 && splits.length() !== 0) strategy = VisStrategy.UnfairGame;
 
     if (strategy !== VisStrategy.KeepAlways && strategy !== VisStrategy.UnfairGame) {
-      var visAndResolve = Essence.getBestVisualization(visualizations, dataCube, selectedMeasures, splits, colors, (strategy === VisStrategy.FairGame ? null : visualization));
+      var visAndResolve = Essence.getBestVisualization(visualizations, dataCube, multiMeasureMode, selectedMeasures, splits, colors, (strategy === VisStrategy.FairGame ? null : visualization));
       visualization = visAndResolve.visualization;
     }
 

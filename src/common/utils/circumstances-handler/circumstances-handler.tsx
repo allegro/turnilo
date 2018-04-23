@@ -19,12 +19,12 @@ import { OrderedSet } from "immutable";
 import { Colors, DataCube, SplitCombine, Splits } from '../../models';
 import { Resolve } from '../../models/manifest/manifest';
 
-export type Configuration = (selectedMeasures: OrderedSet<string>, splits: Splits, dataCube?: DataCube) => boolean;
+export type Configuration = (multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, dataCube?: DataCube) => boolean;
 export type Action = (splits?: Splits, dataCube?: DataCube, colors?: Colors, current?: boolean) => Resolve;
 
 export class CircumstancesHandler {
   public static noSplits() {
-    return (selectedMeasures: OrderedSet<string>, splits: Splits) => splits.length() === 0;
+    return (multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits) => splits.length() === 0;
   }
 
   private static testKind(kind: string, selector: string): boolean {
@@ -51,14 +51,14 @@ export class CircumstancesHandler {
   }
 
   public static areExactSplitKinds = (...selectors: string[]) => {
-    return (selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube): boolean => {
+    return (multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube): boolean => {
       var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataCube.dimensions).kind);
       return CircumstancesHandler.strictCompare(selectors, kinds);
     };
   }
 
   public static haveAtLeastSplitKinds = (...kinds: string[]) => {
-    return (selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube): boolean => {
+    return (multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube): boolean => {
       let getKind = (split: SplitCombine) => split.getDimension(dataCube.dimensions).kind;
 
       let actualKinds = splits.toArray().map(getKind);
@@ -73,7 +73,7 @@ export class CircumstancesHandler {
 
   public static measuresRequired() {
     return new CircumstancesHandler()
-      .when((selectedMeasures) => selectedMeasures.isEmpty())
+      .when((multiMeasureMode, selectedMeasures) => multiMeasureMode && selectedMeasures.isEmpty())
       .then((splits: Splits, dataCube: DataCube) => {
         const measures = dataCube.defaultSelectedMeasures.map((measureName) => dataCube.getMeasure(measureName)).toArray();
         const measureNames = measures.map((measure) => measure.title).join(", ");
@@ -137,11 +137,11 @@ export class CircumstancesHandler {
     );
   }
 
-  evaluate = (dataCube: DataCube, selectedMeasures: OrderedSet<string>, splits: Splits, colors: Colors, current: boolean): Resolve => {
+  evaluate = (dataCube: DataCube, multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, colors: Colors, current: boolean): Resolve => {
     for (let i = 0; i < this.configurations.length; i++) {
       let confs = this.configurations[i];
 
-      if (confs.some((c) => c(selectedMeasures, splits, dataCube))) {
+      if (confs.some((c) => c(multiMeasureMode, selectedMeasures, splits, dataCube))) {
         return this.actions[i](splits, dataCube, colors, current);
       }
     }
