@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
+import { OrderedSet } from "immutable";
+import { Colors, DataCube, Splits } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 
-function handleCircumstance(dataCube: DataCube, splits: Splits, colors: Colors, current: boolean): Resolve {
+function handleCircumstance(dataCube: DataCube, selectedMeasures: OrderedSet<string>, splits: Splits, colors: Colors, current: boolean): Resolve {
   return Resolve.manual(0, 'The Geo visualization is not ready, please select another visualization.', []);
 }
 

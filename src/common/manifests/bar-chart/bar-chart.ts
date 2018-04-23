@@ -16,11 +16,11 @@
  */
 
 import { $, SortExpression } from 'plywood';
-import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
+import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
 
-var handler = CircumstancesHandler.EMPTY()
+var handler = CircumstancesHandler.measuresRequired()
   .needsAtLeastOneSplit('The Bar Chart requires at least one split')
 
   .when(CircumstancesHandler.areExactSplitKinds('*'))
@@ -119,5 +119,5 @@ var handler = CircumstancesHandler.EMPTY()
 export const BAR_CHART_MANIFEST = new Manifest(
   'bar-chart',
   'Bar Chart',
-  handler.evaluate.bind(handler)
+  handler.evaluate
 );

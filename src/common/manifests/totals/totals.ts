@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
+import { Splits } from '../../models/splits/splits';
+import { CircumstancesHandler } from "../../utils/circumstances-handler/circumstances-handler";
 
-function handleCircumstance(dataCube: DataCube, splits: Splits, colors: Colors, current: boolean): Resolve {
-  if (!splits.length()) return Resolve.ready(10);
-  return Resolve.automatic(3, { splits: Splits.EMPTY });
-}
+const handler = CircumstancesHandler.measuresRequired()
+  .when(CircumstancesHandler.noSplits())
+  .then(() => Resolve.ready(10))
+  .otherwise(() => Resolve.automatic(3, { splits: Splits.EMPTY }));
 
 export const TOTALS_MANIFEST = new Manifest(
   'totals',
   'Totals',
-  handleCircumstance,
+  handler.evaluate,
   'multi'
 );

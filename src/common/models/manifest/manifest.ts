@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import { DataCube, Splits, Colors } from '../index';
+import { OrderedSet } from "immutable";
+import { DataCube, Splits, Colors, Measure } from '../';
 
 export interface Adjustment {
-  splits: Splits;
+  measures?: Measure[];
+  splits?: Splits;
   colors?: Colors;
 }
 
@@ -84,7 +85,7 @@ export class Resolve {
   }
 }
 
-export type HandleCircumstance = (dataCube: DataCube, splits: Splits, colors: Colors, selected: boolean) => Resolve;
+export type HandleCircumstance = (dataCube: DataCube, selectedMeasures: OrderedSet<string>, splits: Splits, colors: Colors, selected: boolean) => Resolve;
 export type MeasureModeNeeded = 'any' | 'single' | 'multi';
 
 

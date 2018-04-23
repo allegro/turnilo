@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-import { List } from 'immutable';
+import { List, OrderedSet } from 'immutable';
 import { $, SortExpression } from 'plywood';
-import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
-import {
-  CircumstancesHandler
-} from '../../utils/circumstances-handler/circumstances-handler';
+import { Colors, DataCube, SplitCombine, Splits } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
+import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
 
-var handler = CircumstancesHandler.EMPTY()
+var handler = CircumstancesHandler.measuresRequired()
 
-  .when((splits: Splits, dataCube: DataCube) => !(dataCube.getDimensionByKind('time') || dataCube.getDimensionByKind('number')))
+  .when((selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube) => !(dataCube.getDimensionByKind('time') || dataCube.getDimensionByKind('number')))
   .then(() => Resolve.NEVER)
 
   .when(CircumstancesHandler.noSplits())
@@ -86,7 +84,7 @@ var handler = CircumstancesHandler.EMPTY()
     if (continuousDimension.kind === 'time') score += 3;
 
     if (!autoChanged) return Resolve.ready(current ? 10 : score);
-    return Resolve.automatic(score, {splits: new Splits(List([continuousSplit]))});
+    return Resolve.automatic(score, { splits: new Splits(List([continuousSplit])) });
   })
 
   .when(CircumstancesHandler.areExactSplitKinds('time', '*'))
@@ -200,9 +198,8 @@ var handler = CircumstancesHandler.EMPTY()
     }
   );
 
-
 export const LINE_CHART_MANIFEST = new Manifest(
   'line-chart',
   'Line Chart',
-  handler.evaluate.bind(handler)
+  handler.evaluate
 );

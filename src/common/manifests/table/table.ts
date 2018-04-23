@@ -16,11 +16,11 @@
  */
 
 import { $, SortExpression } from 'plywood';
-import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
-import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
+import { Colors, DataCube, Splits } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
+import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
 
-var handler = CircumstancesHandler.EMPTY()
+var handler = CircumstancesHandler.measuresRequired()
   .needsAtLeastOneSplit('The Table requires at least one split')
   .otherwise(
     (splits: Splits, dataCube: DataCube, colors: Colors, current: boolean) => {
@@ -71,5 +71,5 @@ var handler = CircumstancesHandler.EMPTY()
 export const TABLE_MANIFEST = new Manifest(
   'table',
   'Table',
-  handler.evaluate.bind(handler)
+  handler.evaluate
 );

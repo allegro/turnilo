@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-import { Dimension, Essence, Splits, SplitCombine, Filter, FilterClause, Measure, DataCube, Colors } from '../../models/index';
-import { Resolve, Resolution } from '../../models/manifest/manifest';
+import { OrderedSet } from "immutable";
+import { Colors, DataCube, SplitCombine, Splits } from '../../models';
+import { Resolve } from '../../models/manifest/manifest';
 
-export type Configuration = (splits: Splits, dataCube?: DataCube) => boolean;
+export type Configuration = (selectedMeasures: OrderedSet<string>, splits: Splits, dataCube?: DataCube) => boolean;
 export type Action = (splits?: Splits, dataCube?: DataCube, colors?: Colors, current?: boolean) => Resolve;
 
 export class CircumstancesHandler {
   public static noSplits() {
-    return (splits: Splits) => splits.length() === 0;
+    return (selectedMeasures: OrderedSet<string>, splits: Splits) => splits.length() === 0;
   }
 
   private static testKind(kind: string, selector: string): boolean {
@@ -43,7 +44,6 @@ export class CircumstancesHandler {
     return result;
   }
 
-
   public static strictCompare(selectors: string[], kinds: string[]): boolean {
     if (selectors.length !== kinds.length) return false;
 
@@ -51,14 +51,14 @@ export class CircumstancesHandler {
   }
 
   public static areExactSplitKinds = (...selectors: string[]) => {
-    return (splits: Splits, dataCube: DataCube): boolean => {
+    return (selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube): boolean => {
       var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataCube.dimensions).kind);
       return CircumstancesHandler.strictCompare(selectors, kinds);
     };
   }
 
   public static haveAtLeastSplitKinds = (...kinds: string[]) => {
-    return (splits: Splits, dataCube: DataCube): boolean => {
+    return (selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube): boolean => {
       let getKind = (split: SplitCombine) => split.getDimension(dataCube.dimensions).kind;
 
       let actualKinds = splits.toArray().map(getKind);
@@ -67,12 +67,25 @@ export class CircumstancesHandler {
     };
   }
 
-  public static EMPTY() {
+  public static empty() {
     return new CircumstancesHandler();
   }
 
-  private configurations: Configuration[][];
-  private actions: Action[];
+  public static measuresRequired() {
+    return new CircumstancesHandler()
+      .when((selectedMeasures) => selectedMeasures.isEmpty())
+      .then((splits: Splits, dataCube: DataCube) => {
+        const measures = dataCube.defaultSelectedMeasures.map((measureName) => dataCube.getMeasure(measureName)).toArray();
+        const measureNames = measures.map((measure) => measure.title).join(", ");
+
+        return Resolve.manual(3, "At least one of the measures should be selected", [
+          { description: `Select default measures: ${measureNames}`, adjustment: { measures } }
+        ]);
+      });
+  }
+
+  private readonly configurations: Configuration[][];
+  private readonly actions: Action[];
 
   private otherwiseAction: Action;
 
@@ -99,7 +112,6 @@ export class CircumstancesHandler {
     return ret;
   }
 
-
   public otherwise(action: Action): CircumstancesHandler {
     this.otherwiseAction = action;
 
@@ -125,11 +137,11 @@ export class CircumstancesHandler {
     );
   }
 
-  public evaluate(dataCube: DataCube, splits: Splits, colors: Colors, current: boolean): Resolve {
+  evaluate = (dataCube: DataCube, selectedMeasures: OrderedSet<string>, splits: Splits, colors: Colors, current: boolean): Resolve => {
     for (let i = 0; i < this.configurations.length; i++) {
       let confs = this.configurations[i];
 
-      if (confs.some((c) => c(splits, dataCube))) {
+      if (confs.some((c) => c(selectedMeasures, splits, dataCube))) {
         return this.actions[i](splits, dataCube, colors, current);
       }
     }
