@@ -18,13 +18,48 @@
 import { OrderedSet } from "immutable";
 import { Colors, DataCube, Resolution, SplitCombine, Splits } from '../../models';
 import { Resolve } from '../../models/manifest/manifest';
+import { Resolutions } from "./resolutions";
 
-export type Configuration = (multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, dataCube?: DataCube) => boolean;
-export type Action = (splits?: Splits, dataCube?: DataCube, colors?: Colors, current?: boolean) => Resolve;
+export interface PredicateCircumstance {
+  multiMeasureMode: boolean;
+  selectedMeasures: OrderedSet<string>;
+  splits: Splits;
+  dataCube?: DataCube;
+}
 
-export class CircumstancesHandler {
-  public static noSplits() {
-    return (multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits) => splits.length() === 0;
+export interface ActionCircumstance {
+  splits?: Splits;
+  dataCube?: DataCube;
+  colors?: Colors;
+  current?: boolean;
+}
+
+export type Circumstance = Required<ActionCircumstance & PredicateCircumstance>;
+export type HandleCircumstance = (circumstance: Circumstance) => Resolve;
+
+export type Configuration = (predicateCircumstance: PredicateCircumstance) => boolean;
+export type Action = (actionCircumstance: ActionCircumstance) => Resolve;
+
+export interface CircumstancesHandlerPredicate {
+  when: (configuration: Configuration) => CircumstancesHandlerAction;
+  otherwise: (action: Action) => CircumstancesHandlerComplete;
+  evaluate: HandleCircumstance;
+  needsAtLeastOneMeasure: () => CircumstancesHandlerPredicate;
+  needsAtLeastOneSplit: (message?: String) => CircumstancesHandlerPredicate;
+}
+
+export interface CircumstancesHandlerAction {
+  or: (configuration: Configuration) => CircumstancesHandlerAction;
+  then: (action: Action) => CircumstancesHandlerPredicate;
+}
+
+export interface CircumstancesHandlerComplete {
+  evaluate: HandleCircumstance;
+}
+
+export class Predicates {
+  public static noSplits(): Configuration {
+    return ({ splits }) => splits.length() === 0;
   }
 
   private static testKind(kind: string, selector: string): boolean {
@@ -47,18 +82,18 @@ export class CircumstancesHandler {
   public static strictCompare(selectors: string[], kinds: string[]): boolean {
     if (selectors.length !== kinds.length) return false;
 
-    return selectors.every((selector, i) => CircumstancesHandler.testKind(kinds[i], selector));
+    return selectors.every((selector, i) => Predicates.testKind(kinds[i], selector));
   }
 
   public static areExactSplitKinds = (...selectors: string[]) => {
-    return (multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube): boolean => {
+    return ({ splits, dataCube }: PredicateCircumstance): boolean => {
       var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataCube.dimensions).kind);
-      return CircumstancesHandler.strictCompare(selectors, kinds);
+      return Predicates.strictCompare(selectors, kinds);
     };
   }
 
   public static haveAtLeastSplitKinds = (...kinds: string[]) => {
-    return (multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube): boolean => {
+    return ({ splits, dataCube }: PredicateCircumstance): boolean => {
       let getKind = (split: SplitCombine) => split.getDimension(dataCube.dimensions).kind;
 
       let actualKinds = splits.toArray().map(getKind);
@@ -66,103 +101,82 @@ export class CircumstancesHandler {
       return kinds.every((kind) => actualKinds.indexOf(kind) > -1);
     };
   }
+}
 
-  public static empty() {
+export class CircumstancesHandler implements CircumstancesHandlerPredicate, CircumstancesHandlerAction, CircumstancesHandlerComplete {
+  public static empty(): CircumstancesHandlerPredicate {
     return new CircumstancesHandler();
   }
 
-  public static needsAtLeastOneMeasure() {
-    const defaultSelectedMeasuresResolutions = (dataCube: DataCube): Resolution[] => {
-      const defaultSelectedMeasures = dataCube.defaultSelectedMeasures || OrderedSet();
-      const measures = defaultSelectedMeasures.map((measureName) => dataCube.getMeasure(measureName)).toArray();
-      if (measures.length === 0)
-        return [];
+  private readonly predicates: Configuration[];
+  private readonly configurations: Configuration[][];
+  private readonly actions: Action[];
+  private readonly otherwiseAction: Action;
 
-      const measureNames = measures.map((measure) => measure.title).join(", ");
-      return [
-        { description: `Select default measures: ${measureNames}`, adjustment: { measures } }
-      ];
-    };
+  private constructor(
+    predicates?: Configuration[],
+    configurations?: Configuration[][],
+    actions?: Action[],
+    otherwiseAction?: Action
+  ) {
+    this.predicates = predicates || [];
+    this.configurations = configurations || [];
+    this.actions = actions || [];
+    this.otherwiseAction = otherwiseAction;
+  }
 
-    const firstMeasureResolutions = (dataCube: DataCube): Resolution[] => {
-      const firstMeasure = dataCube.measures.get(0);
-      return [{ description: `Select measure: ${firstMeasure.title}`, adjustment: { measures: [firstMeasure] } }];
-    };
+  public when(configuration: Configuration): CircumstancesHandlerAction {
+    const { actions, configurations } = this;
+    return new CircumstancesHandler([configuration], configurations, actions);
+  }
 
-    return new CircumstancesHandler()
-      .when((multiMeasureMode, selectedMeasures) => multiMeasureMode && selectedMeasures.isEmpty())
-      .then((splits: Splits, dataCube: DataCube) => {
-        const defaultMeasuresResolutions = defaultSelectedMeasuresResolutions(dataCube);
+  public or(configuration: Configuration): CircumstancesHandlerAction {
+    const { actions, configurations, predicates } = this;
+    return new CircumstancesHandler([...predicates, configuration], configurations, actions);
+  }
+
+  public then(action: Action): CircumstancesHandlerPredicate {
+    const { actions, configurations, predicates } = this;
+    return new CircumstancesHandler([], [...configurations, predicates], [...actions, action]);
+  }
+
+  public otherwise(action: Action): CircumstancesHandlerComplete {
+    const { actions, configurations } = this;
+
+    return new CircumstancesHandler([], configurations, actions, action);
+  }
+
+  public needsAtLeastOneMeasure(): CircumstancesHandlerPredicate {
+    return this
+      .when(({ multiMeasureMode, selectedMeasures }) => multiMeasureMode && selectedMeasures.isEmpty())
+      .then(({ splits, dataCube }) => {
+        const defaultMeasuresResolutions = Resolutions.defaultSelectedMeasures(dataCube);
 
         return Resolve.manual(
           3,
           "At least one of the measures should be selected",
-          defaultMeasuresResolutions.length > 0 ? defaultMeasuresResolutions : firstMeasureResolutions(dataCube));
+          defaultMeasuresResolutions.length > 0 ? defaultMeasuresResolutions : Resolutions.firstMeasure(dataCube));
       });
   }
 
-  private readonly configurations: Configuration[][];
-  private readonly actions: Action[];
-
-  private otherwiseAction: Action;
-
-  constructor() {
-    this.configurations = [];
-    this.actions = [];
-  }
-
-  public when(configuration: Configuration): any {
-    let temp: Configuration[] = [configuration];
-
-    let ret = {
-      or: (conf: Configuration) => {
-        temp.push(conf);
-        return ret;
-      },
-      then: (action: Action) => {
-        this.configurations.push(temp);
-        this.actions.push(action);
-        return this;
-      }
-    };
-
-    return ret;
-  }
-
-  public otherwise(action: Action): CircumstancesHandler {
-    this.otherwiseAction = action;
-
-    return this;
-  }
-
-  public needsAtLeastOneSplit(message?: string): CircumstancesHandler {
+  public needsAtLeastOneSplit(message?: string): CircumstancesHandlerPredicate {
     return this
-      .when(CircumstancesHandler.noSplits())
-      .then((splits: Splits, dataCube: DataCube) => {
-        var someDimensions = dataCube.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
-        return Resolve.manual(4, message,
-          someDimensions.map((someDimension) => {
-            return {
-              description: `Add a split on ${someDimension.title}`,
-              adjustment: {
-                splits: Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
-              }
-            };
-          })
-        );
+      .when(Predicates.noSplits())
+      .then(({ splits, dataCube }) => {
+        return Resolve.manual(4, message, Resolutions.someDimensions(dataCube));
       }
     );
   }
 
-  evaluate = (dataCube: DataCube, multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, colors: Colors, current: boolean): Resolve => {
+  evaluate = (circumstance: Circumstance): Resolve => {
     for (let i = 0; i < this.configurations.length; i++) {
       let confs = this.configurations[i];
 
-      if (confs.some((c) => c(multiMeasureMode, selectedMeasures, splits, dataCube))) {
-        return this.actions[i](splits, dataCube, colors, current);
+      if (confs.some((c) => c(circumstance))) {
+        return this.actions[i](circumstance);
       }
     }
 
-    return this.otherwiseAction(splits, dataCube, colors, current);
+    return this.otherwiseAction(circumstance);
   }
 }

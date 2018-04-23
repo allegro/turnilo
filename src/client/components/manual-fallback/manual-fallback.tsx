@@ -29,10 +29,10 @@ export class ManualFallback extends React.Component<ManualFallbackProps, {}> {
 
   onResolutionClick(resolution: Resolution): void {
     const { clicker } = this.props;
-    const { adjustment: { splits, measures } } = resolution;
+    const { adjustment: { splits, selectedMeasures } } = resolution;
 
-    if (measures != null && measures.length > 0) {
-      measures.forEach(clicker.toggleEffectiveMeasure);
+    if (selectedMeasures != null && selectedMeasures.length > 0) {
+      selectedMeasures.forEach(clicker.toggleEffectiveMeasure);
     }
     if (splits != null) {
       clicker.changeSplits(splits, VisStrategy.KeepAlways);

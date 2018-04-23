@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { OrderedSet } from "immutable";
-import { DataCube, Splits, Colors, Measure } from '../';
+import { Splits, Colors, Measure } from '../';
+import { HandleCircumstance } from "../../utils/circumstances-handler/circumstances-handler";
 
 export interface Adjustment {
-  measures?: Measure[];
+  selectedMeasures?: Measure[];
   splits?: Splits;
   colors?: Colors;
 }
@@ -85,9 +85,7 @@ export class Resolve {
   }
 }
 
-export type HandleCircumstance = (dataCube: DataCube, multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, colors: Colors, selected: boolean) => Resolve;
 export type MeasureModeNeeded = 'any' | 'single' | 'multi';
-
 
 export class Manifest {
   public name: string;

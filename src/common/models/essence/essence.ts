@@ -119,10 +119,17 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     currentVisualization: Manifest
   ): VisualizationAndResolve {
     var visAndResolves = visualizations.map((visualization) => {
-      const effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(multiMeasureMode, visualization);
+      const circumstance = {
+        dataCube,
+        multiMeasureMode: getEffectiveMultiMeasureMode(multiMeasureMode, visualization),
+        selectedMeasures,
+        splits,
+        colors,
+        current: visualization === currentVisualization
+      };
       return {
         visualization,
-        resolve: visualization.handleCircumstance(dataCube, effectiveMultiMeasureMode, selectedMeasures, splits, colors, visualization === currentVisualization)
+        resolve: visualization.handleCircumstance(circumstance)
       };
     });
 
@@ -271,12 +278,13 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       }
 
       effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(multiMeasureMode, visualization);
-      visResolve = visualization.handleCircumstance(dataCube, effectiveMultiMeasureMode, selectedMeasures, splits, colors, true);
+      const circumstance = { dataCube, multiMeasureMode: effectiveMultiMeasureMode, selectedMeasures, splits, colors, current: true };
+      visResolve = visualization.handleCircumstance(circumstance);
       if (visResolve.isAutomatic()) {
         var adjustment = visResolve.adjustment;
         splits = adjustment.splits;
         colors = adjustment.colors || null;
-        visResolve = visualization.handleCircumstance(dataCube, effectiveMultiMeasureMode, selectedMeasures, splits, colors, true);
+        visResolve = visualization.handleCircumstance({ ...circumstance, splits, colors });
 
         if (!visResolve.isReady()) {
           console.log(visResolve);
@@ -292,7 +300,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     this.timezone = timezone;
     this.filter = filter;
     this.splits = splits;
-    this.multiMeasureMode = effectiveMultiMeasureMode;
+    this.multiMeasureMode = multiMeasureMode;
     this.singleMeasure = singleMeasure;
     this.selectedMeasures = selectedMeasures;
     this.pinnedDimensions = pinnedDimensions;

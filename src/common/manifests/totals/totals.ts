@@ -17,10 +17,12 @@
 
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 import { Splits } from '../../models/splits/splits';
-import { CircumstancesHandler } from "../../utils/circumstances-handler/circumstances-handler";
+import { CircumstancesHandler, Predicates } from "../../utils/circumstances-handler/circumstances-handler";
 
-const handler = CircumstancesHandler.needsAtLeastOneMeasure()
-  .when(CircumstancesHandler.noSplits())
+const handler = CircumstancesHandler.empty()
+  .needsAtLeastOneMeasure()
+
+  .when(Predicates.noSplits())
   .then(() => Resolve.ready(10))
   .otherwise(() => Resolve.automatic(3, { splits: Splits.EMPTY }));
 

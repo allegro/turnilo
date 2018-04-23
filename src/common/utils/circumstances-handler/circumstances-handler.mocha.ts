@@ -17,10 +17,10 @@
 
 import { expect } from 'chai';
 
-import { CircumstancesHandler } from './circumstances-handler';
+import { Predicates } from './circumstances-handler';
 
 describe('dimension kind matcher', () => {
-  let strictCompare = CircumstancesHandler.strictCompare;
+  let strictCompare = Predicates.strictCompare;
 
   it('should work in various cases', () => {
     var cases: any[] = [

@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-import { List, OrderedSet } from 'immutable';
+import { List } from 'immutable';
 import { $, SortExpression } from 'plywood';
-import { Colors, DataCube, SplitCombine, Splits } from '../../models';
+import { Colors, SplitCombine, Splits } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
-import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
+import { CircumstancesHandler, Predicates } from '../../utils/circumstances-handler/circumstances-handler';
 
-var handler = CircumstancesHandler.needsAtLeastOneMeasure()
+const handler = CircumstancesHandler.empty()
+  .needsAtLeastOneMeasure()
 
-  .when((multiMeasureMode: boolean, selectedMeasures: OrderedSet<string>, splits: Splits, dataCube: DataCube) => !(dataCube.getDimensionByKind('time') || dataCube.getDimensionByKind('number')))
+  .when(({ dataCube }) => !(dataCube.getDimensionByKind('time') || dataCube.getDimensionByKind('number')))
   .then(() => Resolve.NEVER)
 
-  .when(CircumstancesHandler.noSplits())
-  .then((splits: Splits, dataCube: DataCube) => {
-    let continuousDimensions = dataCube.getDimensionByKind('time').concat(dataCube.getDimensionByKind('number'));
+  .when(Predicates.noSplits())
+  .then(({ splits, dataCube }) => {
+    const continuousDimensions = dataCube.getDimensionByKind('time').concat(dataCube.getDimensionByKind('number'));
     return Resolve.manual(3, 'This visualization requires a continuous dimension split',
       continuousDimensions.toArray().map((continuousDimension) => {
         return {
@@ -41,16 +42,16 @@ var handler = CircumstancesHandler.needsAtLeastOneMeasure()
     );
   })
 
-  .when(CircumstancesHandler.areExactSplitKinds('time'))
-  .or(CircumstancesHandler.areExactSplitKinds('number'))
-  .then((splits: Splits, dataCube: DataCube, colors: Colors, current: boolean) => {
-    var score = 4;
+  .when(Predicates.areExactSplitKinds('time'))
+  .or(Predicates.areExactSplitKinds('number'))
+  .then(({ splits, dataCube, colors, current }) => {
+    let score = 4;
 
-    var continuousSplit = splits.get(0);
-    var continuousDimension = dataCube.getDimensionByExpression(continuousSplit.expression);
-    var sortStrategy = continuousDimension.sortStrategy;
+    let continuousSplit = splits.get(0);
+    const continuousDimension = dataCube.getDimensionByExpression(continuousSplit.expression);
+    const sortStrategy = continuousDimension.sortStrategy;
 
-    var sortAction: SortExpression = null;
+    let sortAction: SortExpression = null;
     if (sortStrategy && sortStrategy !== 'self') {
       sortAction = new SortExpression({
         expression: $(sortStrategy),
@@ -87,12 +88,12 @@ var handler = CircumstancesHandler.needsAtLeastOneMeasure()
     return Resolve.automatic(score, { splits: new Splits(List([continuousSplit])) });
   })
 
-  .when(CircumstancesHandler.areExactSplitKinds('time', '*'))
-  .then((splits: Splits, dataCube: DataCube, colors: Colors) => {
-    var timeSplit = splits.get(0);
-    var timeDimension = timeSplit.getDimension(dataCube.dimensions);
+  .when(Predicates.areExactSplitKinds('time', '*'))
+  .then(({ splits, dataCube, colors }) => {
+    let timeSplit = splits.get(0);
+    const timeDimension = timeSplit.getDimension(dataCube.dimensions);
 
-    var sortAction: SortExpression = new SortExpression({
+    const sortAction: SortExpression = new SortExpression({
       expression: $(timeDimension.name),
       direction: SortExpression.ASCENDING
     });
@@ -113,7 +114,7 @@ var handler = CircumstancesHandler.needsAtLeastOneMeasure()
       colorSplit = colorSplit.changeSortExpression(dataCube.getDefaultSortExpression());
     }
 
-    var colorSplitDimension = dataCube.getDimensionByExpression(colorSplit.expression);
+    const colorSplitDimension = dataCube.getDimensionByExpression(colorSplit.expression);
     if (!colors || colors.dimension !== colorSplitDimension.name) {
       colors = Colors.fromLimit(colorSplitDimension.name, 5);
     }
@@ -124,15 +125,15 @@ var handler = CircumstancesHandler.needsAtLeastOneMeasure()
     });
   })
 
-  .when(CircumstancesHandler.areExactSplitKinds('*', 'time'))
-  .or(CircumstancesHandler.areExactSplitKinds('*', 'number'))
-  .then((splits: Splits, dataCube: DataCube, colors: Colors) => {
-    var timeSplit = splits.get(1);
-    var timeDimension = timeSplit.getDimension(dataCube.dimensions);
+  .when(Predicates.areExactSplitKinds('*', 'time'))
+  .or(Predicates.areExactSplitKinds('*', 'number'))
+  .then(({ splits, dataCube, colors }) => {
+    let timeSplit = splits.get(1);
+    const timeDimension = timeSplit.getDimension(dataCube.dimensions);
 
     let autoChanged = false;
 
-    var sortAction: SortExpression = new SortExpression({
+    const sortAction: SortExpression = new SortExpression({
       expression: $(timeDimension.name),
       direction: SortExpression.ASCENDING
     });
@@ -156,7 +157,7 @@ var handler = CircumstancesHandler.needsAtLeastOneMeasure()
       autoChanged = true;
     }
 
-    var colorSplitDimension = dataCube.getDimensionByExpression(colorSplit.expression);
+    const colorSplitDimension = dataCube.getDimensionByExpression(colorSplit.expression);
     if (!colors || colors.dimension !== colorSplitDimension.name) {
       colors = Colors.fromLimit(colorSplitDimension.name, 5);
       autoChanged = true;
@@ -169,8 +170,8 @@ var handler = CircumstancesHandler.needsAtLeastOneMeasure()
     });
   })
 
-  .when(CircumstancesHandler.haveAtLeastSplitKinds('time'))
-  .then((splits: Splits, dataCube: DataCube) => {
+  .when(Predicates.haveAtLeastSplitKinds('time'))
+  .then(({ splits, dataCube }) => {
     let timeSplit = splits.toArray().filter((split) => split.getDimension(dataCube.dimensions).kind === 'time')[0];
     return Resolve.manual(3, 'Too many splits on the line chart', [
       {
@@ -182,21 +183,19 @@ var handler = CircumstancesHandler.needsAtLeastOneMeasure()
     ]);
   })
 
-  .otherwise(
-    (splits: Splits, dataCube: DataCube) => {
-      let continuousDimensions = dataCube.getDimensionByKind('time').concat(dataCube.getDimensionByKind('number'));
-      return Resolve.manual(3, 'The Line Chart needs one continuous dimension split',
-        continuousDimensions.toArray().map((continuousDimension) => {
-          return {
-            description: `Split on ${continuousDimension.title} instead`,
-            adjustment: {
-              splits: Splits.fromSplitCombine(SplitCombine.fromExpression(continuousDimension.expression))
-            }
-          };
-        })
-      );
-    }
-  );
+  .otherwise(({ splits, dataCube }) => {
+    let continuousDimensions = dataCube.getDimensionByKind('time').concat(dataCube.getDimensionByKind('number'));
+    return Resolve.manual(3, 'The Line Chart needs one continuous dimension split',
+      continuousDimensions.toArray().map((continuousDimension) => {
+        return {
+          description: `Split on ${continuousDimension.title} instead`,
+          adjustment: {
+            splits: Splits.fromSplitCombine(SplitCombine.fromExpression(continuousDimension.expression))
+          }
+        };
+      })
+    );
+  });
 
 export const LINE_CHART_MANIFEST = new Manifest(
   'line-chart',
