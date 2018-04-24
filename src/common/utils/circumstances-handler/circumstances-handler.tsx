@@ -16,7 +16,7 @@
  */
 
 import { OrderedSet } from "immutable";
-import { Colors, DataCube, Resolution, SplitCombine, Splits } from '../../models';
+import { Colors, DataCube, SplitCombine, Splits } from '../../models';
 import { Resolve } from '../../models/manifest/manifest';
 import { Resolutions } from "./resolutions";
 
@@ -150,12 +150,10 @@ export class CircumstancesHandler implements CircumstancesHandlerPredicate, Circ
     return this
       .when(({ multiMeasureMode, selectedMeasures }) => multiMeasureMode && selectedMeasures.isEmpty())
       .then(({ splits, dataCube }) => {
-        const defaultMeasuresResolutions = Resolutions.defaultSelectedMeasures(dataCube);
+        const selectDefault = Resolutions.defaultSelectedMeasures(dataCube);
+        const resolutions = selectDefault.length > 0 ? selectDefault : Resolutions.firstMeasure(dataCube);
 
-        return Resolve.manual(
-          3,
-          "At least one of the measures should be selected",
-          defaultMeasuresResolutions.length > 0 ? defaultMeasuresResolutions : Resolutions.firstMeasure(dataCube));
+        return Resolve.manual(3, "At least one of the measures should be selected", resolutions);
       });
   }
 
