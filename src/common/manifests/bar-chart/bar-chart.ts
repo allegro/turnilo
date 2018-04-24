@@ -18,15 +18,16 @@
 import { $, SortExpression } from 'plywood';
 import { Splits, SplitCombine, Dimension } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
-import { CircumstancesHandler, Predicates } from '../../utils/circumstances-handler/circumstances-handler';
+import { CircumstanceEvaluatorBuilder} from '../../utils/circumstance/circumstance-evaluator-builder';
+import { Predicates } from "../../utils/circumstance/predicates";
 
-var handler = CircumstancesHandler.empty()
+var circumstanceEvaluator = CircumstanceEvaluatorBuilder.empty()
   .needsAtLeastOneMeasure()
   .needsAtLeastOneSplit('The Bar Chart requires at least one split')
 
   .when(Predicates.areExactSplitKinds('*'))
   .or(Predicates.areExactSplitKinds('*', '*'))
-  .then(({ splits, dataCube, colors, current }) => {
+  .then(({ splits, dataCube, colors, isSelectedVisualization }) => {
     var continuousBoost = 0;
 
     // Auto adjustment
@@ -94,7 +95,7 @@ var handler = CircumstancesHandler.empty()
       return Resolve.automatic(5 + continuousBoost, { splits });
     }
 
-    return Resolve.ready(current ? 10 : (7 + continuousBoost));
+    return Resolve.ready(isSelectedVisualization ? 10 : (7 + continuousBoost));
   })
 
   .otherwise(({ splits, dataCube }) => {
@@ -112,11 +113,12 @@ var handler = CircumstancesHandler.empty()
         };
       })
     );
-  });
+  })
+  .build();
 
 
 export const BAR_CHART_MANIFEST = new Manifest(
   'bar-chart',
   'Bar Chart',
-  handler.evaluate
+  circumstanceEvaluator
 );

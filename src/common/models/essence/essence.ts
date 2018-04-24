@@ -125,11 +125,11 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
         selectedMeasures,
         splits,
         colors,
-        current: visualization === currentVisualization
+        isSelectedVisualization: visualization === currentVisualization
       };
       return {
         visualization,
-        resolve: visualization.handleCircumstance(circumstance)
+        resolve: visualization.evaluateCircumstance(circumstance)
       };
     });
 
@@ -268,13 +268,13 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       }
 
       effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(multiMeasureMode, visualization);
-      const circumstance = { dataCube, multiMeasureMode: effectiveMultiMeasureMode, selectedMeasures, splits, colors, current: true };
-      visResolve = visualization.handleCircumstance(circumstance);
+      const circumstance = { dataCube, multiMeasureMode: effectiveMultiMeasureMode, selectedMeasures, splits, colors, isSelectedVisualization: true };
+      visResolve = visualization.evaluateCircumstance(circumstance);
       if (visResolve.isAutomatic()) {
         const adjustment = visResolve.adjustment;
         splits = adjustment.splits;
         colors = adjustment.colors || null;
-        visResolve = visualization.handleCircumstance({ ...circumstance, splits, colors });
+        visResolve = visualization.evaluateCircumstance({ ...circumstance, splits, colors });
 
         if (!visResolve.isReady()) {
           console.log(visResolve);

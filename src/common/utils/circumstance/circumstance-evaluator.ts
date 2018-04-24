@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
+import { OrderedSet } from "immutable";
+import { Colors, DataCube, Resolve, Splits } from "../../models";
 
-import { Predicates } from './circumstances-handler';
+export interface PredicateCircumstance {
+  dataCube?: DataCube;
+  splits: Splits;
+  multiMeasureMode: boolean;
+  selectedMeasures: OrderedSet<string>;
+}
 
-describe('dimension kind matcher', () => {
-  let strictCompare = Predicates.strictCompare;
+export interface ActionCircumstance {
+  dataCube?: DataCube;
+  splits?: Splits;
+  colors?: Colors;
+  isSelectedVisualization?: boolean;
+}
 
-  it('should work in various cases', () => {
-    var cases: any[] = [
-      [[], [], true],
-      [['time'], ['time'], true],
-      [['time', '*'], ['pouet', 'time'], false],
-      [['time', '*'], ['time', 'tut'], true],
-      [['!time'], ['pouet'], true],
-      [['!time'], ['time'], false],
-      [['*'], ['time'], true]
-    ];
+export type ComposedCircumstance = Required<ActionCircumstance & PredicateCircumstance>;
 
-    cases.forEach((c, i) => {
-      expect(strictCompare(c[0], c[1])).to.equal(c[2], `test case #${i}`);
-    });
-  });
-});
+export interface CircumstanceEvaluator {
+  (circumstance: ComposedCircumstance): Resolve;
+}

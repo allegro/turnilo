@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-import { Manifest, Resolve } from '../../models/manifest/manifest';
-import { Splits } from '../../models/splits/splits';
-import { CircumstanceEvaluatorBuilder} from "../../utils/circumstance/circumstance-evaluator-builder";
-import { Predicates } from "../../utils/circumstance/predicates";
+import { expect } from 'chai';
 
-const circumstanceEvaluator = CircumstanceEvaluatorBuilder.empty()
-  .needsAtLeastOneMeasure()
+import { Predicates } from './predicates';
 
-  .when(Predicates.noSplits())
-  .then(() => Resolve.ready(10))
-  .otherwise(() => Resolve.automatic(3, { splits: Splits.EMPTY }))
-  .build();
+describe('dimension kind matcher', () => {
+  let strictCompare = Predicates.strictCompare;
 
-export const TOTALS_MANIFEST = new Manifest(
-  'totals',
-  'Totals',
-  circumstanceEvaluator,
-  'multi'
-);
+  it('should work in various cases', () => {
+    var cases: any[] = [
+      [[], [], true],
+      [['time'], ['time'], true],
+      [['time', '*'], ['pouet', 'time'], false],
+      [['time', '*'], ['time', 'tut'], true],
+      [['!time'], ['pouet'], true],
+      [['!time'], ['time'], false],
+      [['*'], ['time'], true]
+    ];
+
+    cases.forEach((c, i) => {
+      expect(strictCompare(c[0], c[1])).to.equal(c[2], `test case #${i}`);
+    });
+  });
+});

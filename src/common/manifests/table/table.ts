@@ -17,12 +17,12 @@
 
 import { $, SortExpression } from 'plywood';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
-import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
+import { CircumstanceEvaluatorBuilder } from '../../utils/circumstance/circumstance-evaluator-builder';
 
-var handler = CircumstancesHandler.empty()
+var circumstancesEvaluator = CircumstanceEvaluatorBuilder.empty()
   .needsAtLeastOneMeasure()
   .needsAtLeastOneSplit('The Table requires at least one split')
-  .otherwise(({ splits, dataCube, colors, current }) => {
+  .otherwise(({ splits, dataCube, colors, isSelectedVisualization }) => {
     var autoChanged = false;
     splits = splits.map((split, i) => {
       var splitDimension = splits.get(0).getDimension(dataCube.dimensions);
@@ -62,12 +62,13 @@ var handler = CircumstancesHandler.empty()
       autoChanged = true;
     }
 
-    return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(current ? 10 : 8);
-  });
+    return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(isSelectedVisualization ? 10 : 8);
+  })
+  .build();
 
 
 export const TABLE_MANIFEST = new Manifest(
   'table',
   'Table',
-  handler.evaluate
+  circumstancesEvaluator
 );

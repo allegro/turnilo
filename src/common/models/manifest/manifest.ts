@@ -16,7 +16,7 @@
  */
 
 import { Splits, Colors, Measure } from '../';
-import { HandleCircumstance } from "../../utils/circumstances-handler/circumstances-handler";
+import { CircumstanceEvaluator } from "../../utils/circumstance/circumstance-evaluator";
 
 export interface Adjustment {
   selectedMeasures?: Measure[];
@@ -90,13 +90,13 @@ export type MeasureModeNeeded = 'any' | 'single' | 'multi';
 export class Manifest {
   public name: string;
   public title: string;
-  public handleCircumstance: HandleCircumstance;
+  public evaluateCircumstance: CircumstanceEvaluator;
   public measureModeNeed: MeasureModeNeeded;
 
-  constructor(name: string, title: string, handleCircumstance: HandleCircumstance, measureModeNeed: MeasureModeNeeded = 'any') {
+  constructor(name: string, title: string, evaluateCircumstance: CircumstanceEvaluator, measureModeNeed: MeasureModeNeeded = 'any') {
     this.name = name;
     this.title = title;
-    this.handleCircumstance = handleCircumstance;
+    this.evaluateCircumstance = evaluateCircumstance;
     this.measureModeNeed = measureModeNeed;
   }
 }

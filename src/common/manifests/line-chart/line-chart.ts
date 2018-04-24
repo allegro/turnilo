@@ -19,9 +19,10 @@ import { List } from 'immutable';
 import { $, SortExpression } from 'plywood';
 import { Colors, SplitCombine, Splits } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
-import { CircumstancesHandler, Predicates } from '../../utils/circumstances-handler/circumstances-handler';
+import { CircumstanceEvaluatorBuilder} from '../../utils/circumstance/circumstance-evaluator-builder';
+import { Predicates } from "../../utils/circumstance/predicates";
 
-const handler = CircumstancesHandler.empty()
+const circumstanceEvaluator = CircumstanceEvaluatorBuilder.empty()
   .needsAtLeastOneMeasure()
 
   .when(({ dataCube }) => !(dataCube.getDimensionByKind('time') || dataCube.getDimensionByKind('number')))
@@ -44,7 +45,7 @@ const handler = CircumstancesHandler.empty()
 
   .when(Predicates.areExactSplitKinds('time'))
   .or(Predicates.areExactSplitKinds('number'))
-  .then(({ splits, dataCube, colors, current }) => {
+  .then(({ splits, dataCube, colors, isSelectedVisualization }) => {
     let score = 4;
 
     let continuousSplit = splits.get(0);
@@ -84,7 +85,7 @@ const handler = CircumstancesHandler.empty()
 
     if (continuousDimension.kind === 'time') score += 3;
 
-    if (!autoChanged) return Resolve.ready(current ? 10 : score);
+    if (!autoChanged) return Resolve.ready(isSelectedVisualization ? 10 : score);
     return Resolve.automatic(score, { splits: new Splits(List([continuousSplit])) });
   })
 
@@ -195,10 +196,11 @@ const handler = CircumstancesHandler.empty()
         };
       })
     );
-  });
+  })
+  .build();
 
 export const LINE_CHART_MANIFEST = new Manifest(
   'line-chart',
   'Line Chart',
-  handler.evaluate
+  circumstanceEvaluator
 );
