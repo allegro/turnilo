@@ -33,7 +33,7 @@ export class EssenceMock {
       visualization: 'totals',
       timezone: 'Etc/UTC',
       pinnedDimensions: [],
-      selectedMeasures: [],
+      selectedMeasures: ['count'],
       splits: []
     };
   }

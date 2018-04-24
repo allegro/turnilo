@@ -15,34 +15,37 @@
  * limitations under the License.
  */
 
+import * as React from 'react';
+
+import { Clicker, Essence, Resolution, VisStrategy } from '../../../common/models';
 import './manual-fallback.scss';
 
-import * as React from 'react';
-import { Clicker, Essence, VisStrategy, Resolution } from '../../../common/models/index';
-
-
-export interface ManualFallbackProps extends React.Props<any> {
+export interface ManualFallbackProps {
   clicker: Clicker;
   essence: Essence;
 }
 
-export interface ManualFallbackState {
-}
-
-export class ManualFallback extends React.Component<ManualFallbackProps, ManualFallbackState> {
+export class ManualFallback extends React.Component<ManualFallbackProps, {}> {
 
   onResolutionClick(resolution: Resolution): void {
-    var { clicker } = this.props;
-    clicker.changeSplits(resolution.adjustment.splits, VisStrategy.KeepAlways);
+    const { clicker } = this.props;
+    const { adjustment: { splits, selectedMeasures } } = resolution;
+
+    if (selectedMeasures != null && selectedMeasures.length > 0) {
+      selectedMeasures.forEach(clicker.toggleEffectiveMeasure);
+    }
+    if (splits != null) {
+      clicker.changeSplits(splits, VisStrategy.KeepAlways);
+    }
   }
 
   render() {
-    var { essence } = this.props;
-    var { visResolve } = essence;
+    const { essence } = this.props;
+    const { visResolve } = essence;
 
     if (!visResolve.isManual()) return null;
 
-    var resolutionItems = visResolve.resolutions.map((resolution, i) => {
+    const resolutionItems = visResolve.resolutions.map((resolution, i) => {
       return <li key={i} onClick={this.onResolutionClick.bind(this, resolution)}>{resolution.description}</li>;
     });
 

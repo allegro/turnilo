@@ -16,16 +16,18 @@
  */
 
 import { $, SortExpression } from 'plywood';
-import { Splits, DataCube, SplitCombine, Colors, Dimension } from '../../models/index';
+import { Splits, SplitCombine, Dimension } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
-import { CircumstancesHandler } from '../../utils/circumstances-handler/circumstances-handler';
+import { CircumstanceEvaluatorBuilder} from '../../utils/circumstance/circumstance-evaluator-builder';
+import { Predicates } from "../../utils/circumstance/predicates";
 
-var handler = CircumstancesHandler.EMPTY()
+var circumstanceEvaluator = CircumstanceEvaluatorBuilder.empty()
+  .needsAtLeastOneMeasure()
   .needsAtLeastOneSplit('The Bar Chart requires at least one split')
 
-  .when(CircumstancesHandler.areExactSplitKinds('*'))
-  .or(CircumstancesHandler.areExactSplitKinds('*', '*'))
-  .then((splits: Splits, dataCube: DataCube, colors: Colors, current: boolean) => {
+  .when(Predicates.areExactSplitKinds('*'))
+  .or(Predicates.areExactSplitKinds('*', '*'))
+  .then(({ splits, dataCube, colors, isSelectedVisualization }) => {
     var continuousBoost = 0;
 
     // Auto adjustment
@@ -93,31 +95,30 @@ var handler = CircumstancesHandler.EMPTY()
       return Resolve.automatic(5 + continuousBoost, { splits });
     }
 
-    return Resolve.ready(current ? 10 : (7 + continuousBoost));
+    return Resolve.ready(isSelectedVisualization ? 10 : (7 + continuousBoost));
   })
 
-  .otherwise(
-    (splits: Splits, dataCube: DataCube) => {
-      let categoricalDimensions = dataCube.dimensions.filter((d) => d.kind !== 'time');
+  .otherwise(({ splits, dataCube }) => {
+    let categoricalDimensions = dataCube.dimensions.filter((d) => d.kind !== 'time');
 
-      return Resolve.manual(
-        3,
-        'The Bar Chart needs one or two splits',
-        categoricalDimensions.toArray().slice(0, 2).map((dimension: Dimension) => {
-          return {
-            description: `Split on ${dimension.title} instead`,
-            adjustment: {
-              splits: Splits.fromSplitCombine(SplitCombine.fromExpression(dimension.expression))
-            }
-          };
-        })
-      );
-    }
-  );
+    return Resolve.manual(
+      3,
+      'The Bar Chart needs one or two splits',
+      categoricalDimensions.toArray().slice(0, 2).map((dimension: Dimension) => {
+        return {
+          description: `Split on ${dimension.title} instead`,
+          adjustment: {
+            splits: Splits.fromSplitCombine(SplitCombine.fromExpression(dimension.expression))
+          }
+        };
+      })
+    );
+  })
+  .build();
 
 
 export const BAR_CHART_MANIFEST = new Manifest(
   'bar-chart',
   'Bar Chart',
-  handler.evaluate.bind(handler)
+  circumstanceEvaluator
 );

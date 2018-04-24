@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import { DataCube, Splits, Colors } from '../index';
+import { Splits, Colors, Measure } from '../';
+import { CircumstanceEvaluator } from "../../utils/circumstance/circumstance-evaluator";
 
 export interface Adjustment {
-  splits: Splits;
+  selectedMeasures?: Measure[];
+  splits?: Splits;
   colors?: Colors;
 }
 
@@ -84,20 +85,18 @@ export class Resolve {
   }
 }
 
-export type HandleCircumstance = (dataCube: DataCube, splits: Splits, colors: Colors, selected: boolean) => Resolve;
 export type MeasureModeNeeded = 'any' | 'single' | 'multi';
-
 
 export class Manifest {
   public name: string;
   public title: string;
-  public handleCircumstance: HandleCircumstance;
+  public evaluateCircumstance: CircumstanceEvaluator;
   public measureModeNeed: MeasureModeNeeded;
 
-  constructor(name: string, title: string, handleCircumstance: HandleCircumstance, measureModeNeed: MeasureModeNeeded = 'any') {
+  constructor(name: string, title: string, evaluateCircumstance: CircumstanceEvaluator, measureModeNeed: MeasureModeNeeded = 'any') {
     this.name = name;
     this.title = title;
-    this.handleCircumstance = handleCircumstance;
+    this.evaluateCircumstance = evaluateCircumstance;
     this.measureModeNeed = measureModeNeed;
   }
 }

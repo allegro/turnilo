@@ -16,9 +16,8 @@
  */
 
 import { List, OrderedSet, Iterable } from 'immutable';
-import { compressToBase64, decompressFromBase64 } from 'lz-string';
 import { Class, Instance, immutableEqual, NamedArray } from 'immutable-class';
-import { Timezone, Duration, minute } from 'chronoshift';
+import { Timezone } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, ApplyExpression, SortExpression, Set } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
 import { DataCube } from '../data-cube/data-cube';
@@ -33,8 +32,6 @@ import { Timekeeper } from '../timekeeper/timekeeper';
 import { Colors, ColorsJS } from '../colors/colors';
 import { Manifest, Resolve } from '../manifest/manifest';
 
-const HASH_VERSION = 2;
-
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
   return <OrderedSet<string>>dimensions.filter((dimensionName) => Boolean(dataCube.getDimension(dimensionName)));
 }
@@ -45,6 +42,11 @@ function constrainMeasures(measures: OrderedSet<string>, dataCube: DataCube): Or
 
 function addToSetInOrder<T>(order: Iterable<any, T>, setToAdd: OrderedSet<T>, thing: T): OrderedSet<T> {
   return OrderedSet(order.toArray().filter((name) => setToAdd.has(name) || name === thing));
+}
+
+function getEffectiveMultiMeasureMode(multiMeasureMode: boolean, visualization?: Manifest) {
+  const visualizationNeedsMulti = visualization != null && visualization.measureModeNeed === "multi";
+  return multiMeasureMode || visualizationNeedsMulti;
 }
 
 export interface VisualizationAndResolve {
@@ -107,11 +109,27 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return candidate instanceof Essence;
   }
 
-  static getBestVisualization(visualizations: Manifest[], dataCube: DataCube, splits: Splits, colors: Colors, currentVisualization: Manifest): VisualizationAndResolve {
-    var visAndResolves = visualizations.map((visualization) => {
+  static getBestVisualization(
+    visualizations: Manifest[],
+    dataCube: DataCube,
+    multiMeasureMode: boolean,
+    selectedMeasures: OrderedSet<string>,
+    splits: Splits,
+    colors: Colors,
+    currentVisualization: Manifest
+  ): VisualizationAndResolve {
+    const visAndResolves = visualizations.map((visualization) => {
+      const circumstance = {
+        dataCube,
+        multiMeasureMode: getEffectiveMultiMeasureMode(multiMeasureMode, visualization),
+        selectedMeasures,
+        splits,
+        colors,
+        isSelectedVisualization: visualization === currentVisualization
+      };
       return {
         visualization,
-        resolve: visualization.handleCircumstance(dataCube, splits, colors, visualization === currentVisualization)
+        resolve: visualization.evaluateCircumstance(circumstance)
       };
     });
 
@@ -214,55 +232,49 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   public visResolve: Resolve;
 
   constructor(parameters: EssenceValue) {
-    var {
+    const {
       visualizations,
       dataCube,
-      visualization,
       timezone,
       filter,
-      splits,
       multiMeasureMode,
       singleMeasure,
       selectedMeasures,
       pinnedDimensions,
-      colors,
       pinnedSort,
       compare,
       highlight
     } = parameters;
 
+    let { visualization, splits, colors } = parameters;
+
     if (!dataCube) throw new Error('Essence must have a dataCube');
 
-    timezone = timezone || Timezone.UTC;
+    function isHighlightMeasureVisible(highlight: Highlight): boolean {
+      if (!highlight || !highlight.measure)
+        return false;
 
-    if (!filter) {
-      filter = dataCube.getDefaultFilter();
+      const { measure } = highlight;
+      return multiMeasureMode ? selectedMeasures.has(measure) : measure === singleMeasure;
     }
 
-    multiMeasureMode = Boolean(multiMeasureMode);
-
-    function visibleMeasure(measureName: string): boolean {
-      return multiMeasureMode ? selectedMeasures.has(measureName) : measureName === singleMeasure;
-    }
-
-    // Wipe out the highlight if measure is not selected
-    if (highlight && highlight.measure && !visibleMeasure(highlight.measure)) {
-      highlight = null;
-    }
-
+    let visResolve: Resolve;
+    let effectiveMultiMeasureMode: boolean;
     if (visualizations) {
       // Place vis here because it needs to know about splits and colors (and maybe later other things)
       if (!visualization) {
-        var visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, colors, null);
+        const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, multiMeasureMode, selectedMeasures, splits, colors, null);
         visualization = visAndResolve.visualization;
       }
 
-      var visResolve = visualization.handleCircumstance(dataCube, splits, colors, true);
+      effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(multiMeasureMode, visualization);
+      const circumstance = { dataCube, multiMeasureMode: effectiveMultiMeasureMode, selectedMeasures, splits, colors, isSelectedVisualization: true };
+      visResolve = visualization.evaluateCircumstance(circumstance);
       if (visResolve.isAutomatic()) {
-        var adjustment = visResolve.adjustment;
+        const adjustment = visResolve.adjustment;
         splits = adjustment.splits;
         colors = adjustment.colors || null;
-        visResolve = visualization.handleCircumstance(dataCube, splits, colors, true);
+        visResolve = visualization.evaluateCircumstance({ ...circumstance, splits, colors });
 
         if (!visResolve.isReady()) {
           console.log(visResolve);
@@ -275,8 +287,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     this.dataCube = dataCube;
     this.visualization = visualization;
     this.dataCube = dataCube;
-    this.timezone = timezone;
-    this.filter = filter;
+    this.timezone = timezone || Timezone.UTC;
+    this.filter = filter || dataCube.getDefaultFilter();
     this.splits = splits;
     this.multiMeasureMode = multiMeasureMode;
     this.singleMeasure = singleMeasure;
@@ -284,7 +296,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     this.pinnedDimensions = pinnedDimensions;
     this.colors = colors;
     this.pinnedSort = pinnedSort;
-    this.highlight = highlight;
+    this.highlight = isHighlightMeasureVisible(highlight) ? highlight : null;
     this.compare = compare;
     this.visResolve = visResolve;
   }
@@ -585,7 +597,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
-    var { visualizations, dataCube, visualization, visResolve, filter, colors } = this;
+    const { visualizations, dataCube, multiMeasureMode, selectedMeasures, visualization, visResolve, filter, colors } = this;
 
     splits = splits.updateWithFilter(filter, dataCube.dimensions);
 
@@ -593,16 +605,20 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (visResolve.isManual()) {
       strategy = VisStrategy.KeepAlways;
     }
-    if (this.splits.length() > 0 && splits.length() !== 0) strategy = VisStrategy.UnfairGame;
-
-    if (strategy !== VisStrategy.KeepAlways && strategy !== VisStrategy.UnfairGame) {
-      var visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, colors, (strategy === VisStrategy.FairGame ? null : visualization));
-      visualization = visAndResolve.visualization;
+    if (this.splits.length() > 0 && splits.length() !== 0) {
+      strategy = VisStrategy.UnfairGame;
     }
 
-    var value = this.valueOf();
+    let changedVisualisation: Manifest;
+    if (strategy !== VisStrategy.KeepAlways && strategy !== VisStrategy.UnfairGame) {
+      const currentVisualization = (strategy === VisStrategy.FairGame ? null : visualization);
+      const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, multiMeasureMode, selectedMeasures, splits, colors, currentVisualization);
+      changedVisualisation = visAndResolve.visualization;
+    }
+
+    const value = this.valueOf();
     value.splits = splits;
-    value.visualization = visualization;
+    value.visualization = changedVisualisation || visualization;
     if (value.highlight) {
       value.filter = value.highlight.applyToFilter(value.filter);
       value.highlight = null;

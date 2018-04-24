@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-import { Manifest, Resolve } from '../../models/manifest/manifest';
-import { Splits } from '../../models/splits/splits';
-import { CircumstanceEvaluatorBuilder} from "../../utils/circumstance/circumstance-evaluator-builder";
-import { Predicates } from "../../utils/circumstance/predicates";
+import { OrderedSet } from "immutable";
+import { Colors, DataCube, Resolve, Splits } from "../../models";
 
-const circumstanceEvaluator = CircumstanceEvaluatorBuilder.empty()
-  .needsAtLeastOneMeasure()
+export interface PredicateCircumstance {
+  dataCube?: DataCube;
+  splits: Splits;
+  multiMeasureMode: boolean;
+  selectedMeasures: OrderedSet<string>;
+}
 
-  .when(Predicates.noSplits())
-  .then(() => Resolve.ready(10))
-  .otherwise(() => Resolve.automatic(3, { splits: Splits.EMPTY }))
-  .build();
+export interface ActionCircumstance {
+  dataCube?: DataCube;
+  splits?: Splits;
+  colors?: Colors;
+  isSelectedVisualization?: boolean;
+}
 
-export const TOTALS_MANIFEST = new Manifest(
-  'totals',
-  'Totals',
-  circumstanceEvaluator,
-  'multi'
-);
+export type ComposedCircumstance = Required<ActionCircumstance & PredicateCircumstance>;
+
+export interface CircumstanceEvaluator {
+  (circumstance: ComposedCircumstance): Resolve;
+}

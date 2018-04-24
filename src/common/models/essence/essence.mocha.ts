@@ -16,6 +16,7 @@
  */
 
 import { expect } from 'chai';
+import { OrderedSet } from "immutable";
 import { testImmutableClass } from 'immutable-class-tester';
 
 import { $ } from 'plywood';
@@ -253,6 +254,8 @@ describe('Essence', () => {
           const { visualization } = Essence.getBestVisualization(
             MANIFESTS,
             DataCubeMock.twitter(),
+            false,
+            OrderedSet('count'),
             Splits.fromJS(splitDimensions, { dimensions }),
             null,
             current);

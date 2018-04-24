@@ -156,8 +156,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         this.setState({essence: essence.toggleMultiMeasureMode()});
       },
       toggleEffectiveMeasure: (measure: Measure) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.toggleEffectiveMeasure(measure)});
+        this.setState((prevState) => {
+          const { essence: prevEssence } = prevState;
+          return { essence: prevEssence.toggleEffectiveMeasure(measure) };
+        });
       },
       changeHighlight: (owner: string, measure: string, delta: Filter) => {
         const {essence} = this.state;
