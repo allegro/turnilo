@@ -44,7 +44,7 @@ function isModernWithNoVisualizationPrefix(hashParts: string[]) {
 interface HashSegments {
   readonly version: ViewDefinitionVersion;
   readonly encodedModel: string;
-  readonly visualization: string | undefined;
+  readonly visualization?: string;
 }
 
 function getHashSegments(hash: string): HashSegments {
