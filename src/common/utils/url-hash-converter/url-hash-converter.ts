@@ -24,37 +24,58 @@ import {
   ViewDefinitionVersion
 } from "../../view-definitions";
 
+const SEGMENT_SEPARATOR = "/";
+const MINIMAL_HASH_SEGMENTS_COUNT = 2;
+
 export interface UrlHashConverter {
   essenceFromHash(hash: string, dataCube: DataCube, visializations: Manifest[]): Essence;
 
   toHash(essence: Essence, version?: ViewDefinitionVersion): string;
 }
 
+function isLegacyWithVisualizationPrefix(hashParts: string[]) {
+  return version2Visualizations.indexOf(hashParts[0]) !== -1 && hashParts[1] === LEGACY_VIEW_DEFINITION_VERSION && hashParts.length >= 3;
+}
+
+function isModernWithNoVisualizationPrefix(hashParts: string[]) {
+  return hashParts[0] === "3";
+}
+
+interface HashSegments {
+  readonly version: ViewDefinitionVersion;
+  readonly encodedModel: string;
+  readonly visualization: string | undefined;
+}
+
+function getHashSegments(hash: string): HashSegments {
+  const hashParts = hash.split(SEGMENT_SEPARATOR);
+
+  if (hashParts.length < MINIMAL_HASH_SEGMENTS_COUNT)
+    throw new Error(`Expected ${MINIMAL_HASH_SEGMENTS_COUNT} hash segments, got ${hashParts.length}.`);
+
+  if (isLegacyWithVisualizationPrefix(hashParts)) {
+    return {
+      version: hashParts[1] as ViewDefinitionVersion,
+      encodedModel: hashParts.splice(2).join(SEGMENT_SEPARATOR),
+      visualization: hashParts[0]
+    };
+  } else if (isModernWithNoVisualizationPrefix(hashParts)) {
+    return {
+      version: hashParts[0] as ViewDefinitionVersion,
+      encodedModel: hashParts.splice(1).join(SEGMENT_SEPARATOR),
+      visualization: undefined
+    };
+  } else {
+    throw new Error(`Unsupported url hash: ${hash}.`);
+  }
+}
+
 export const urlHashConverter: UrlHashConverter = {
   essenceFromHash(hash: string, dataCube: DataCube, visualizations: Manifest[]): Essence {
-    const hashParts = hash.split('/');
-
-    const isLegacyVersionWithVisualisationPrefix =
-      hashParts.length >= 3
-      && hashParts[1] === LEGACY_VIEW_DEFINITION_VERSION
-      && version2Visualizations.indexOf(hashParts[0]) !== -1;
-
-    let visualization;
-    if (isLegacyVersionWithVisualisationPrefix) {
-      visualization = hashParts.shift();
-    }
-
-    if (hashParts.length < 2)
-      throw new Error("Wrong url hash structure.");
-
-    const version = hashParts[0] as ViewDefinitionVersion;
-    const encodedModel = hashParts.splice(1).join("/");
+    const { version, encodedModel, visualization } = getHashSegments(hash);
 
     const urlEncoder = definitionUrlEncoders[version];
     const definitionConverter = definitionConverters[version];
-
-    if (urlEncoder == null || definitionConverter == null)
-      throw new Error(`Unsupported url hash version: ${version}.`);
 
     const definition = urlEncoder.decodeUrlHash(encodedModel, visualization);
     return definitionConverter.fromViewDefinition(definition, dataCube, visualizations);
@@ -78,6 +99,6 @@ export const urlHashConverter: UrlHashConverter = {
       hashParts.unshift(visualization.name);
     }
 
-    return hashParts.join("/");
+    return hashParts.join(SEGMENT_SEPARATOR);
   }
 };

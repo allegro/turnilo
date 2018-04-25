@@ -70,9 +70,9 @@ describe("urlHashConverter", () => {
   });
 
   const wrongHashStructureTests = [
-    { hash: "table/2", errorMessage: "Unsupported url hash version: table." },
-    { hash: "xxyz", errorMessage: "Wrong url hash structure." },
-    { hash: "3", errorMessage: "Wrong url hash structure." },
+    { hash: "table/2", errorMessage: "Unsupported url hash: table/2" },
+    { hash: "xxyz", errorMessage: "Expected 2 hash segments, got 1." },
+    { hash: "3", errorMessage: "Expected 2 hash segments, got 1." },
     { hash: "3/AAAAA", errorMessage: "Unexpected end of JSON input" }
   ];
 
