@@ -34,16 +34,18 @@ export const urlHashConverter: UrlHashConverter = {
   essenceFromHash(hash: string, dataCube: DataCube, visualizations: Manifest[]): Essence {
     const hashParts = hash.split('/');
 
-    if (hashParts.length < 3)
-      throw new Error("Wrong url hash structure.");
-
     const isLegacyVersionWithVisualisationPrefix =
-      hashParts[1] === LEGACY_VIEW_DEFINITION_VERSION && version2Visualizations.indexOf(hashParts[0]) !== -1;
+      hashParts.length >= 3
+      && hashParts[1] === LEGACY_VIEW_DEFINITION_VERSION
+      && version2Visualizations.indexOf(hashParts[0]) !== -1;
 
     let visualization;
     if (isLegacyVersionWithVisualisationPrefix) {
       visualization = hashParts.shift();
     }
+
+    if (hashParts.length < 2)
+      throw new Error("Wrong url hash structure.");
 
     const version = hashParts[0] as ViewDefinitionVersion;
     const encodedModel = hashParts.splice(1).join("/");

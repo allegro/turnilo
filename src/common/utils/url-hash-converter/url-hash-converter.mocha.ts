@@ -55,4 +55,31 @@ describe("urlHashConverter", () => {
       expect(encodedHash).to.deep.equal(hash);
     });
   });
+
+  const minimalNumberOfSegmentsTests: { version: ViewDefinitionVersion, hash: string }[] = [
+    { version: "2", hash: UrlHashConverterFixtures.noSlashInEncodedDefinition2() },
+    { version: "3", hash: UrlHashConverterFixtures.noSlashInEncodedDefinition3() }
+  ];
+
+  minimalNumberOfSegmentsTests.forEach(({ version, hash }) => {
+    it(`decodes version ${version} with minimal number of segments`, () => {
+      const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeMock.wiki(), MANIFESTS);
+
+      expect(decodedEssence).to.be.an.instanceOf(Essence);
+    });
+  });
+
+  const wrongHashStructureTests = [
+    { hash: "table/2", errorMessage: "Unsupported url hash version: table." },
+    { hash: "xxyz", errorMessage: "Wrong url hash structure." },
+    { hash: "3", errorMessage: "Wrong url hash structure." },
+    { hash: "3/AAAAA", errorMessage: "Unexpected end of JSON input" }
+  ];
+
+  wrongHashStructureTests.forEach(({ hash, errorMessage }) => {
+    it(`throws error for hash: "${hash}" with wrong structure`, () => {
+      const essenceFromHashCall = () => urlHashConverter.essenceFromHash(hash, DataCubeMock.wiki(), MANIFESTS);
+      expect(essenceFromHashCall).to.throw(errorMessage);
+    });
+  });
 });
