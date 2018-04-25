@@ -56,7 +56,7 @@ export class CircumstanceEvaluatorBuilder
   }
 
   private readonly rules: Rule[];
-  private readonly partialRule: PartialRule | undefined;
+  private readonly partialRule?: PartialRule;
   private readonly otherwiseAction: Action;
 
   private constructor(rules?: Rule[], partialRule?: PartialRule, otherwiseAction?: Action) {
