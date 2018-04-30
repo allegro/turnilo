@@ -70,6 +70,13 @@ function roundTo(v: number, roundTo: number) {
   return Math.round(Math.floor(v / roundTo)) * roundTo;
 }
 
+function splitRangeExtractor(dimensionName: string, range: PlywoodRange): (d: Datum) => Datum {
+  return (d: Datum): Datum => {
+    const dataset = d[SPLIT] as Dataset;
+    return dataset != null ? dataset.findDatumByAttribute(dimensionName, range) : null;
+  };
+}
+
 export type continuousValueType = Date | number;
 
 export interface LineChartState extends BaseVisualizationState {
@@ -336,7 +343,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
         var leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.end);
 
-        var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(continuousDimension.name, bubbleRange));
+        var hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, bubbleRange));
         var colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
         var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
           var segment = d[categoryDimension.name];
@@ -378,7 +385,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
       if (colors) {
         var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
-        var hoverDatums = dataset.data.map(d => (d[SPLIT] as Dataset).findDatumByAttribute(continuousDimension.name, hoverRange));
+        var hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, hoverRange));
         var colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
         var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
           var segment = d[categoryDimension.name];
