@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Splits, Colors, Measure } from '../';
-import { CircumstanceEvaluator } from "../../utils/circumstance/circumstance-evaluator";
+import { Colors, Measure, Splits } from '../';
+import { VisualizationDependentEvaluator } from "../../utils/rules/visualization-dependent-evaluator";
 
 export interface Adjustment {
   selectedMeasures?: Measure[];
@@ -31,6 +31,7 @@ export interface Resolution {
 
 export class Resolve {
   static NEVER: Resolve = new Resolve(-1, 'never', null, null, null);
+
   // static READY: Resolve;
 
   static compare(r1: Resolve, r2: Resolve): number {
@@ -48,7 +49,6 @@ export class Resolve {
   static ready(score: number) {
     return new Resolve(score, 'ready', null, null, null);
   }
-
 
   public score: number;
   public state: string;
@@ -90,13 +90,13 @@ export type MeasureModeNeeded = 'any' | 'single' | 'multi';
 export class Manifest {
   public name: string;
   public title: string;
-  public evaluateCircumstance: CircumstanceEvaluator;
+  public evaluateRules: VisualizationDependentEvaluator;
   public measureModeNeed: MeasureModeNeeded;
 
-  constructor(name: string, title: string, evaluateCircumstance: CircumstanceEvaluator, measureModeNeed: MeasureModeNeeded = 'any') {
+  constructor(name: string, title: string, evaluateRules: VisualizationDependentEvaluator, measureModeNeed: MeasureModeNeeded = 'any') {
     this.name = name;
     this.title = title;
-    this.evaluateCircumstance = evaluateCircumstance;
+    this.evaluateRules = evaluateRules;
     this.measureModeNeed = measureModeNeed;
   }
 }

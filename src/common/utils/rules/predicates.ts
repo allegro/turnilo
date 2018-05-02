@@ -16,12 +16,25 @@
  */
 
 import { SplitCombine } from "../../models";
-import { PredicateCircumstance } from "./circumstance-evaluator";
-import { Predicate} from "./circumstance-evaluator-builder";
+import { VisualizationDependentPredicate } from "./visualization-dependent-evaluator";
+import { VisualizationIndependentPredicate } from "./visualization-independent-evaluator";
 
 export class Predicates {
-  public static noSplits(): Predicate {
+  public static noSplits(): VisualizationDependentPredicate {
     return ({ splits }) => splits.length() === 0;
+  }
+
+  public static areExactSplitKinds(...selectors: string[]): VisualizationDependentPredicate {
+    return ({ splits, dataCube }) => {
+      var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataCube.dimensions).kind);
+      return Predicates.strictCompare(selectors, kinds);
+    };
+  }
+
+  public static strictCompare(selectors: string[], kinds: string[]): boolean {
+    if (selectors.length !== kinds.length) return false;
+
+    return selectors.every((selector, i) => Predicates.testKind(kinds[i], selector));
   }
 
   private static testKind(kind: string, selector: string): boolean {
@@ -41,26 +54,19 @@ export class Predicates {
     return result;
   }
 
-  public static strictCompare(selectors: string[], kinds: string[]): boolean {
-    if (selectors.length !== kinds.length) return false;
-
-    return selectors.every((selector, i) => Predicates.testKind(kinds[i], selector));
-  }
-
-  public static areExactSplitKinds = (...selectors: string[]) => {
-    return ({ splits, dataCube }: PredicateCircumstance): boolean => {
-      var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataCube.dimensions).kind);
-      return Predicates.strictCompare(selectors, kinds);
-    };
-  }
-
-  public static haveAtLeastSplitKinds = (...kinds: string[]) => {
-    return ({ splits, dataCube }: PredicateCircumstance): boolean => {
+  public static haveAtLeastSplitKinds(...kinds: string[]): VisualizationDependentPredicate {
+    return ({ splits, dataCube }) => {
       let getKind = (split: SplitCombine) => split.getDimension(dataCube.dimensions).kind;
 
       let actualKinds = splits.toArray().map(getKind);
 
       return kinds.every((kind) => actualKinds.indexOf(kind) > -1);
+    };
+  }
+
+  public static noSelectedMeasures(): VisualizationIndependentPredicate {
+    return ({ multiMeasureMode, selectedMeasures }) => {
+      return multiMeasureMode && selectedMeasures.isEmpty();
     };
   }
 }

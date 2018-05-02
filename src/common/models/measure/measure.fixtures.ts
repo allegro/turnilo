@@ -18,6 +18,13 @@ import { ExpressionJS } from "plywood";
 import { Measure } from "./measure";
 
 export class MeasureFixtures {
+  static twitterCount(): Measure {
+    return Measure.fromJS({
+      name: "count",
+      formula: "$main.count()"
+    });
+  }
+
   static noTransformationMeasure(): Measure {
     return Measure.fromJS({
       name: "items_measure",

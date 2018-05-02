@@ -19,12 +19,10 @@ import { List } from 'immutable';
 import { $, SortExpression } from 'plywood';
 import { Colors, SplitCombine, Splits } from '../../models';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
-import { CircumstanceEvaluatorBuilder} from '../../utils/circumstance/circumstance-evaluator-builder';
-import { Predicates } from "../../utils/circumstance/predicates";
+import { Predicates } from "../../utils/rules/predicates";
+import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
-const circumstanceEvaluator = CircumstanceEvaluatorBuilder.empty()
-  .needsAtLeastOneMeasure()
-
+const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(({ dataCube }) => !(dataCube.getDimensionByKind('time') || dataCube.getDimensionByKind('number')))
   .then(() => Resolve.NEVER)
 
@@ -202,5 +200,5 @@ const circumstanceEvaluator = CircumstanceEvaluatorBuilder.empty()
 export const LINE_CHART_MANIFEST = new Manifest(
   'line-chart',
   'Line Chart',
-  circumstanceEvaluator
+  rulesEvaluator
 );

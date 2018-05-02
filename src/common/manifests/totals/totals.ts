@@ -17,12 +17,10 @@
 
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 import { Splits } from '../../models/splits/splits';
-import { CircumstanceEvaluatorBuilder} from "../../utils/circumstance/circumstance-evaluator-builder";
-import { Predicates } from "../../utils/circumstance/predicates";
+import { Predicates } from "../../utils/rules/predicates";
+import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
-const circumstanceEvaluator = CircumstanceEvaluatorBuilder.empty()
-  .needsAtLeastOneMeasure()
-
+const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(() => Resolve.ready(10))
   .otherwise(() => Resolve.automatic(3, { splits: Splits.EMPTY }))
@@ -31,6 +29,6 @@ const circumstanceEvaluator = CircumstanceEvaluatorBuilder.empty()
 export const TOTALS_MANIFEST = new Manifest(
   'totals',
   'Totals',
-  circumstanceEvaluator,
+  rulesEvaluator,
   'multi'
 );
