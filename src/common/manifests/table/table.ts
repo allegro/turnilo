@@ -17,11 +17,14 @@
 
 import { $, SortExpression } from 'plywood';
 import { Manifest, Resolve } from '../../models/manifest/manifest';
-import { CircumstanceEvaluatorBuilder } from '../../utils/circumstance/circumstance-evaluator-builder';
+import { Actions } from "../../utils/rules/actions";
+import { Predicates } from "../../utils/rules/predicates";
+import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
-var circumstancesEvaluator = CircumstanceEvaluatorBuilder.empty()
-  .needsAtLeastOneMeasure()
-  .needsAtLeastOneSplit('The Table requires at least one split')
+var rulesEvaluator = visualizationDependentEvaluatorBuilder
+  .when(Predicates.noSplits())
+  .then(Actions.manualDimensionSelection("The Table requires at least one split"))
+
   .otherwise(({ splits, dataCube, colors, isSelectedVisualization }) => {
     var autoChanged = false;
     splits = splits.map((split, i) => {
@@ -47,7 +50,6 @@ var circumstancesEvaluator = CircumstanceEvaluatorBuilder.empty()
         }
       }
 
-
       // ToDo: review this
       if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
         split = split.changeLimit(i ? 5 : 50);
@@ -66,9 +68,8 @@ var circumstancesEvaluator = CircumstanceEvaluatorBuilder.empty()
   })
   .build();
 
-
 export const TABLE_MANIFEST = new Manifest(
   'table',
   'Table',
-  circumstancesEvaluator
+  rulesEvaluator
 );

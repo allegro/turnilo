@@ -17,12 +17,12 @@
 
 import { Manifest, Resolve } from '../../models/manifest/manifest';
 
-function handleCircumstance(): Resolve {
+function rulesEvaluator(): Resolve {
   return Resolve.manual(0, 'The Geo visualization is not ready, please select another visualization.', []);
 }
 
 export const GEO_MANIFEST = new Manifest(
   'geo',
   'Geo',
-  handleCircumstance
+  rulesEvaluator
 );

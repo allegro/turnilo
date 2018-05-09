@@ -20,6 +20,7 @@ import { Class, Instance, immutableEqual, NamedArray } from 'immutable-class';
 import { Timezone } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, ApplyExpression, SortExpression, Set } from 'plywood';
 import { hasOwnProperty } from '../../../common/utils/general/general';
+import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { DataCube } from '../data-cube/data-cube';
 import { Filter, FilterJS } from '../filter/filter';
 import { FilterClause } from '../filter-clause/filter-clause';
@@ -112,24 +113,16 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   static getBestVisualization(
     visualizations: Manifest[],
     dataCube: DataCube,
-    multiMeasureMode: boolean,
-    selectedMeasures: OrderedSet<string>,
     splits: Splits,
     colors: Colors,
     currentVisualization: Manifest
   ): VisualizationAndResolve {
     const visAndResolves = visualizations.map((visualization) => {
-      const circumstance = {
-        dataCube,
-        multiMeasureMode: getEffectiveMultiMeasureMode(multiMeasureMode, visualization),
-        selectedMeasures,
-        splits,
-        colors,
-        isSelectedVisualization: visualization === currentVisualization
-      };
+      const isSelectedVisualization = visualization === currentVisualization;
+      const ruleVariables = { dataCube, splits, colors, isSelectedVisualization };
       return {
         visualization,
-        resolve: visualization.evaluateCircumstance(circumstance)
+        resolve: visualization.evaluateRules(ruleVariables)
       };
     });
 
@@ -259,27 +252,30 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     }
 
     let visResolve: Resolve;
-    let effectiveMultiMeasureMode: boolean;
     if (visualizations) {
       // Place vis here because it needs to know about splits and colors (and maybe later other things)
       if (!visualization) {
-        const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, multiMeasureMode, selectedMeasures, splits, colors, null);
+        const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, colors, null);
         visualization = visAndResolve.visualization;
       }
 
-      effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(multiMeasureMode, visualization);
-      const circumstance = { dataCube, multiMeasureMode: effectiveMultiMeasureMode, selectedMeasures, splits, colors, isSelectedVisualization: true };
-      visResolve = visualization.evaluateCircumstance(circumstance);
+      const ruleVariables = { dataCube, splits, colors, isSelectedVisualization: true };
+      visResolve = visualization.evaluateRules(ruleVariables);
       if (visResolve.isAutomatic()) {
         const adjustment = visResolve.adjustment;
         splits = adjustment.splits;
         colors = adjustment.colors || null;
-        visResolve = visualization.evaluateCircumstance({ ...circumstance, splits, colors });
+        visResolve = visualization.evaluateRules({ ...ruleVariables, splits, colors });
 
         if (!visResolve.isReady()) {
           console.log(visResolve);
           throw new Error(visualization.title + ' must be ready after automatic adjustment');
         }
+      }
+
+      if (visResolve.isReady()) {
+        const effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(multiMeasureMode, visualization);
+        visResolve = visualizationIndependentEvaluator({ dataCube, multiMeasureMode: effectiveMultiMeasureMode, selectedMeasures });
       }
     }
 
@@ -612,7 +608,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     let changedVisualisation: Manifest;
     if (strategy !== VisStrategy.KeepAlways && strategy !== VisStrategy.UnfairGame) {
       const currentVisualization = (strategy === VisStrategy.FairGame ? null : visualization);
-      const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, multiMeasureMode, selectedMeasures, splits, colors, currentVisualization);
+      const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, colors, currentVisualization);
       changedVisualisation = visAndResolve.visualization;
     }
 

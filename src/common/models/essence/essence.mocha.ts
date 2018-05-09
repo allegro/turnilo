@@ -16,13 +16,13 @@
  */
 
 import { expect } from 'chai';
-import { OrderedSet } from "immutable";
 import { testImmutableClass } from 'immutable-class-tester';
 
 import { $ } from 'plywood';
 import { MANIFESTS } from "../../manifests";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
+import { MeasureFixtures } from "../measure/measure.fixtures";
 import { Essence, EssenceJS, VisStrategy } from './essence';
 import { DataCube, Introspection } from "../data-cube/data-cube";
 import { DataCubeMock } from "../data-cube/data-cube.mock";
@@ -254,8 +254,6 @@ describe('Essence', () => {
           const { visualization } = Essence.getBestVisualization(
             MANIFESTS,
             DataCubeMock.twitter(),
-            false,
-            OrderedSet('count'),
             Splits.fromJS(splitDimensions, { dimensions }),
             null,
             current);
@@ -280,10 +278,17 @@ describe('Essence', () => {
         expect(essence.visResolve.isReady()).to.be.true;
       });
 
-      it("defaults to table with non numeric dimension", () => {
+      it("defaults to table with non continuous dimension", () => {
         essence = essence.changeVisualization(TOTALS_MANIFEST);
         essence = essence.addSplit(twitterHandleSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(TABLE_MANIFEST);
+        expect(essence.visResolve.isReady()).to.be.true;
+      });
+
+      it("defaults to line chart with a continuous dimension", () => {
+        essence = essence.changeVisualization(TOTALS_MANIFEST);
+        essence = essence.addSplit(timeSplit, VisStrategy.FairGame);
+        expect(essence.visualization).to.deep.equal(LINE_CHART_MANIFEST);
         expect(essence.visResolve.isReady()).to.be.true;
       });
 
@@ -302,6 +307,44 @@ describe('Essence', () => {
         essence = essence.addSplit(twitterHandleSplit, VisStrategy.UnfairGame);
         expect(essence.visualization).to.deep.equal(BAR_CHART_MANIFEST);
         expect(essence.visResolve.isReady()).to.be.true;
+      });
+
+      it("defaults back to totals with no split", () => {
+        essence = essence.changeVisualization(TOTALS_MANIFEST);
+        essence = essence.addSplit(timeSplit, VisStrategy.FairGame);
+        expect(essence.visualization).to.deep.equal(LINE_CHART_MANIFEST);
+        expect(essence.visResolve.isReady()).to.be.true;
+
+        essence = essence.removeSplit(essence.splits.first(), VisStrategy.FairGame);
+        expect(essence.visualization).to.deep.equal(TOTALS_MANIFEST);
+        expect(essence.visResolve.isReady()).to.be.true;
+      });
+
+      const noMeasuresTests = [
+        { splits: [timeSplit], visualization: LINE_CHART_MANIFEST },
+        { splits: [tweetLengthSplit], visualization: BAR_CHART_MANIFEST },
+        { splits: [twitterHandleSplit], visualization: TABLE_MANIFEST }
+      ];
+
+      noMeasuresTests.forEach(({ splits, visualization }) => {
+        it(`does not change ${visualization.title} visualization when in manual resolve`, () => {
+          essence = essence.changeVisualization(TOTALS_MANIFEST);
+          essence = essence.addSplit(splits[0], VisStrategy.FairGame);
+          expect(essence.visualization).to.deep.equal(visualization);
+          expect(essence.visResolve.isReady()).to.be.true;
+
+          essence = essence.toggleSelectedMeasure(MeasureFixtures.twitterCount());
+          expect(essence.visualization).to.deep.equal(visualization);
+          expect(essence.visResolve.isManual()).to.be.true;
+
+          essence = essence.removeSplit(essence.splits.first(), VisStrategy.FairGame);
+          expect(essence.visualization).to.deep.equal(visualization);
+          expect(essence.visResolve.isManual()).to.be.true;
+
+          essence = essence.toggleSelectedMeasure(MeasureFixtures.twitterCount());
+          expect(essence.visualization).to.deep.equal(visualization);
+          expect(essence.visResolve.isManual()).to.be.true;
+        });
       });
 
       it("falls back when can't handle measures", () => {

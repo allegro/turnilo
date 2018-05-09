@@ -74,8 +74,8 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
 
     const expression = $(dimension);
     const bucketAction = new NumberBucketExpression({ size: granularity });
-    const sortAction = new SortExpression({ expression: $(sort.ref), direction: sortDirectionMapper[sort.direction] });
-    const limitAction = new LimitExpression({ value: limit });
+    const sortAction = sort && new SortExpression({ expression: $(sort.ref), direction: sortDirectionMapper[sort.direction] });
+    const limitAction = limit && new LimitExpression({ value: limit });
 
     return new SplitCombine({ expression, bucketAction, sortAction, limitAction });
   },
@@ -90,7 +90,7 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
         type: SplitType.number,
         dimension,
         granularity: bucketAction.size,
-        sort: { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
+        sort: sortAction && { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
         limit: limitAction && limitAction.value
       };
     } else {
@@ -105,8 +105,8 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
 
     const expression = $(dimension);
     const bucketAction: any = new TimeBucketExpression({ duration: Duration.fromJS(granularity) });
-    const sortAction = new SortExpression({ expression: $(sort.ref), direction: sortDirectionMapper[sort.direction] });
-    const limitAction = new LimitExpression({ value: limit });
+    const sortAction = sort && new SortExpression({ expression: $(sort.ref), direction: sortDirectionMapper[sort.direction] });
+    const limitAction = limit && new LimitExpression({ value: limit });
 
     return new SplitCombine({ expression, bucketAction, sortAction, limitAction });
   },
@@ -121,7 +121,7 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
         type: SplitType.time,
         dimension,
         granularity: bucketAction.duration.toJS(),
-        sort: { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
+        sort: sortAction && { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
         limit: limitAction && limitAction.value
       };
     } else {
@@ -137,8 +137,8 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
 
     const expression = $(dimension);
     const bucketAction: null = null;
-    const sortAction = new SortExpression({ expression: $(sort.ref), direction: sortDirectionMapper[sort.direction] });
-    const limitAction = new LimitExpression({ value: limit });
+    const sortAction = sort && new SortExpression({ expression: $(sort.ref), direction: sortDirectionMapper[sort.direction] });
+    const limitAction = limit && new LimitExpression({ value: limit });
 
     return new SplitCombine({ expression, bucketAction, sortAction, limitAction });
   },
@@ -150,7 +150,7 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
     return {
       type: SplitType.string,
       dimension,
-      sort: { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
+      sort: sortAction && { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
       limit: limitAction && limitAction.value
     };
   }

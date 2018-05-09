@@ -15,25 +15,8 @@
  * limitations under the License.
  */
 
-import { OrderedSet } from "immutable";
-import { Colors, DataCube, Resolve, Splits } from "../../models";
+import { Resolve } from "../../models";
 
-export interface PredicateCircumstance {
-  dataCube?: DataCube;
-  splits: Splits;
-  multiMeasureMode: boolean;
-  selectedMeasures: OrderedSet<string>;
-}
-
-export interface ActionCircumstance {
-  dataCube?: DataCube;
-  splits?: Splits;
-  colors?: Colors;
-  isSelectedVisualization?: boolean;
-}
-
-export type ComposedCircumstance = Required<ActionCircumstance & PredicateCircumstance>;
-
-export interface CircumstanceEvaluator {
-  (circumstance: ComposedCircumstance): Resolve;
+export interface RulesEvaluator<PredicateVars, ActionVars> {
+  (variables: PredicateVars & ActionVars): Resolve;
 }
