@@ -41,6 +41,11 @@ this is how Turnilo emerged.
 
 * [Node.js](https://nodejs.org/) - LTS version.
 
+<aside class="warning">
+Do not use 'yarn' command for dependency managment and project build, use 'npm'.
+With 'npm' builds are reproducible (thanks to package-lock.json) and even faster than 'yarn'.
+</aside>
+
 ## Usage
 
 Install Turnilo distribution using [npm](https://www.npmjs.com/).
