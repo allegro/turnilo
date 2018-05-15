@@ -226,6 +226,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   dragStart(dimension: Dimension, clause: FilterClause, e: DragEvent) {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
+    dataTransfer.setData('text/plain', dimension.title);
 
     DragManager.setDragDimension(dimension, 'filter-tile');
 
