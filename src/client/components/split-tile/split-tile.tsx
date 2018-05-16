@@ -167,8 +167,9 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   dragStart(dimension: Dimension, split: SplitCombine, splitIndex: number, e: DragEvent) {
-    var dataTransfer = e.dataTransfer;
+    const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
+    dataTransfer.setData('text/plain', dimension.title);
 
     DragManager.setDragSplit(split, 'filter-tile');
     DragManager.setDragDimension(dimension, 'filter-tile');

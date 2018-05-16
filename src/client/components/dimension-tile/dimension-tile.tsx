@@ -376,6 +376,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
+    dataTransfer.setData('text/plain', dimension.title);
 
     DragManager.setDragDimension(dimension, 'dimension-tile');
     setDragGhost(dataTransfer, dimension.title);

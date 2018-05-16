@@ -84,8 +84,9 @@ export class DimensionListTile extends React.Component<DimensionListTileProps, D
   }
 
   dragStart(dimension: Dimension, e: DragEvent) {
-    var dataTransfer = e.dataTransfer;
+    const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = 'all';
+    dataTransfer.setData('text/plain', dimension.title);
 
     DragManager.setDragDimension(dimension, 'dimension-list-tile');
     setDragGhost(dataTransfer, dimension.title);
