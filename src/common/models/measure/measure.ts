@@ -17,12 +17,21 @@
 
 import { List } from 'immutable';
 import { BaseImmutable, Property } from 'immutable-class';
+
 import * as numeral from 'numeral';
 import {
-  $, Expression, Datum, ApplyExpression, AttributeInfo, ChainableExpression, deduplicateSort,
-  RefExpression, CountDistinctExpression
+  $,
+  ApplyExpression,
+  AttributeInfo,
+  ChainableExpression,
+  CountDistinctExpression,
+  Datum,
+  deduplicateSort,
+  Expression,
+  RefExpression
 } from 'plywood';
-import { verifyUrlSafeName, makeTitle, makeUrlSafeName } from '../../utils/general/general';
+import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from '../../utils/general/general';
+import { MeasureOrGroupVisitor } from "./measure-group";
 
 function formatFnFactory(format: string): (n: number) => string {
   return (n: number) => {
@@ -182,6 +191,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   public format: string;
   public formatFn: (n: number) => string;
   public transformation: string;
+  public readonly type = "measure";
 
   constructor(parameters: MeasureValue) {
     super(parameters);
@@ -189,6 +199,14 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     this.title = this.title || makeTitle(this.name);
     this.expression = Expression.parse(this.formula);
     this.formatFn = formatFnFactory(this.getFormat());
+  }
+
+  accept<R>(visitor: MeasureOrGroupVisitor<R>): R {
+    return visitor.visitMeasure(this);
+  }
+
+  equals(other: any): boolean {
+    return this === other || Measure.isMeasure(other) && super.equals(other);
   }
 
   public toApplyExpression(nestingLevel = 0): ApplyExpression {

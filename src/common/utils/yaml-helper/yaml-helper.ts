@@ -333,7 +333,6 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   lines = lines.concat.apply(lines, attributeOverrides.map(attributeToYAML));
 
 
-  var dimensions = dataCube.dimensions.toArray();
   if (withComments) {
     lines.push('', "# The list of dimensions defined in the UI. The order here will be reflected in the UI");
   }
@@ -362,7 +361,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
       ""
     );
   }
-  lines = lines.concat.apply(lines, dimensions.map(dimensionToYAML));
+  lines = lines.concat.apply(lines, dataCube.dimensions.mapDimensions(dimensionToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived dimensions.",
@@ -380,7 +379,6 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   }
 
 
-  var measures = dataCube.measures.toArray();
   if (withComments) {
     lines.push('', "# The list of measures defined in the UI. The order here will be reflected in the UI");
   }
@@ -402,7 +400,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
       ""
     );
   }
-  lines = lines.concat.apply(lines, measures.map(measureToYAML));
+  lines = lines.concat.apply(lines, dataCube.measures.mapMeasures(measureToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived measures (a.k.a Post Aggregators).",

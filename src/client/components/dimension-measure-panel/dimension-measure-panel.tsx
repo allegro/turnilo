@@ -47,8 +47,8 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
     const { dataCube } = essence;
 
     // Compute relative sizes by diving up TOTAL_FLEXES
-    var numDimensions = dataCube.dimensions.size;
-    var numMeasures = dataCube.measures.size;
+    var numDimensions = dataCube.dimensions.size();
+    var numMeasures = dataCube.measures.size();
 
     var dimensionsFlex = clamp(
       Math.ceil(TOTAL_FLEXES * numDimensions / (numDimensions + numMeasures)),

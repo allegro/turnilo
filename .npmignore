@@ -7,7 +7,9 @@
 /test/
 /typings/
 *.js.map
+*.fixtures.js
 *.mocha.js
+*.mock.js
 *.ts
 *.tgz
 *.iml

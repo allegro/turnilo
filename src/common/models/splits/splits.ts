@@ -21,8 +21,9 @@ import { Timezone, Duration, day, hour } from 'chronoshift';
 import { $, Expression, RefExpression, TimeRange, TimeBucketExpression, SortExpression, NumberRange, Range } from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
-import { Measure } from '../measure/measure';
+import { Dimensions } from "../dimension/dimensions";
 import { Filter } from '../filter/filter';
+import { Measures } from "../measure/measures";
 import { Timekeeper } from '../timekeeper/timekeeper';
 import { SplitCombine, SplitCombineJS, SplitCombineContext } from '../split-combine/split-combine';
 import { NumberBucketExpression } from "plywood";
@@ -118,11 +119,11 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSortExpression(sort)));
   }
 
-  public changeSortExpressionFromNormalized(sort: SortExpression, dimensions: List<Dimension>): Splits {
+  public changeSortExpressionFromNormalized(sort: SortExpression, dimensions: Dimensions): Splits {
     return new Splits(<List<SplitCombine>>this.splitCombines.map(s => s.changeSortExpressionFromNormalized(sort, dimensions)));
   }
 
-  public getTitle(dimensions: List<Dimension>): string {
+  public getTitle(dimensions: Dimensions): string {
     return this.splitCombines.map(s => s.getDimension(dimensions).title).join(', ');
   }
 
@@ -181,7 +182,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return changed ? new Splits(newSplitCombines) : this;
   }
 
-  public updateWithFilter(filter: Filter, dimensions: List<Dimension>): Splits {
+  public updateWithFilter(filter: Filter, dimensions: Dimensions): Splits {
     if (filter.isRelative()) {
       // Make specific
       filter = filter.getSpecificFilter(Timekeeper.globalNow(), Timekeeper.globalNow(), Timezone.UTC);
@@ -192,7 +193,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
       if (splitCombine.bucketAction) return splitCombine;
 
       var splitExpression = splitCombine.expression;
-      var splitDimension = dimensions.find(d => splitExpression.equals(d.expression));
+      var splitDimension = dimensions.getDimensionByExpression(splitExpression);
       var splitKind = splitDimension.kind;
       if (!splitDimension || !(splitKind === 'time' || splitKind === 'number') || !splitDimension.canBucketByDefault()) return splitCombine;
       changed = true;
@@ -220,13 +221,12 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return changed ? new Splits(newSplitCombines) : this;
   }
 
-  public constrainToDimensionsAndMeasures(dimensions: List<Dimension>, measures: List<Measure>): Splits {
+  public constrainToDimensionsAndMeasures(dimensions: Dimensions, measures: Measures): Splits {
     function validSplit(split: SplitCombine): boolean {
       if (!split.getDimension(dimensions)) return false;
       if (!split.sortAction) return true;
       var sortRef = split.sortAction.refName();
-      if (!dimensions.find(d => d.name === sortRef) && !measures.find(m => m.name === sortRef)) return false;
-      return true;
+      return dimensions.containsDimensionWithName(sortRef) || measures.containsMeasureWithName(sortRef);
     }
 
     var changed = false;
@@ -263,7 +263,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     return changed ? new Splits(newSplitCombines) : this;
   }
 
-  public getCommonSort(dimensions: List<Dimension>): SortExpression {
+  public getCommonSort(dimensions: Dimensions): SortExpression {
     var splitCombines = this.splitCombines.toArray();
     var commonSort: SortExpression = null;
     for (var splitCombine of splitCombines) {

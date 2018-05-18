@@ -192,7 +192,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   renderSortDropdown() {
     var { essence, dimension } = this.props;
 
-    var sortOns = [SortOn.fromDimension(dimension)].concat(essence.dataCube.measures.toArray().map(SortOn.fromMeasure));
+    var sortOns = [SortOn.fromDimension(dimension)].concat(essence.dataCube.measures.mapMeasures(SortOn.fromMeasure));
 
     const SortOnDropdown = Dropdown.specialize<SortOn>();
 

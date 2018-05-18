@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { List } from 'immutable';
 import { Class, Instance, immutableArraysEqual } from 'immutable-class';
 import { $, Expression } from 'plywood';
 import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
 import { Granularity, GranularityJS, granularityFromJS, granularityToJS, granularityEquals } from "../granularity/granularity";
+import { DimensionOrGroupVisitor } from "./dimension-group";
 
 var geoName = /continent|country|city|region/i;
 function isGeo(name: string): boolean {
@@ -31,7 +31,15 @@ function typeToKind(type: string): string {
   return type.toLowerCase().replace(/_/g, '-').replace(/-range$/, '');
 }
 
-export type BucketingStrategy = 'defaultBucket' | 'defaultNoBucket';
+export enum BucketingStrategy {
+  defaultBucket = "defaultBucket",
+  defaultNoBucket = "defaultNoBucket"
+}
+
+const bucketingStrategies: { [strategy in BucketingStrategy]: BucketingStrategy } = {
+  "defaultBucket": BucketingStrategy.defaultBucket,
+  "defaultNoBucket": BucketingStrategy.defaultNoBucket
+};
 
 export interface DimensionValue {
   name: string;
@@ -59,52 +67,32 @@ export interface DimensionJS {
 
 var check: Class<DimensionValue, DimensionJS>;
 export class Dimension implements Instance<DimensionValue, DimensionJS> {
-  static defaultBucket: BucketingStrategy = 'defaultBucket';
-  static defaultNoBucket: BucketingStrategy = 'defaultNoBucket';
-
   static isDimension(candidate: any): candidate is Dimension {
     return candidate instanceof Dimension;
   }
 
-  static getDimension(dimensions: List<Dimension>, dimensionName: string): Dimension {
-    if (!dimensionName) return null;
-    dimensionName = dimensionName.toLowerCase(); // Case insensitive
-    return dimensions.find(dimension => dimension.name.toLowerCase() === dimensionName);
-  }
-
-  static getDimensionByExpression(dimensions: List<Dimension>, expression: Expression): Dimension {
-    return dimensions.find(dimension => dimension.expression.equals(expression));
-  }
-
   static fromJS(parameters: DimensionJS): Dimension {
-    var parameterExpression = (parameters as any).expression; // Back compat
-    var value: DimensionValue = {
+    const parameterExpression = (parameters as any).expression; // Back compat
+
+    const value: DimensionValue = {
       name: parameters.name,
       title: parameters.title,
       formula: parameters.formula || (typeof parameterExpression === 'string' ? parameterExpression : null),
       kind: parameters.kind || typeToKind((parameters as any).type),
       url: parameters.url
     };
-    var granularities = parameters.granularities;
-    if (granularities) {
-      value.granularities = granularities.map(granularityFromJS);
-    }
 
-    var bucketedBy = parameters.bucketedBy;
-    if (bucketedBy) {
-      value.bucketedBy = granularityFromJS(bucketedBy);
+    if (parameters.granularities) {
+      value.granularities = parameters.granularities.map(granularityFromJS);
     }
-
-    var bucketingStrategy = parameters.bucketingStrategy;
-    if (bucketingStrategy) {
-      if (bucketingStrategy === 'defaultNoBucket') bucketingStrategy = Dimension.defaultNoBucket;
-      if (bucketingStrategy === 'defaultBucket') bucketingStrategy = Dimension.defaultBucket;
-      value.bucketingStrategy = bucketingStrategy;
+    if (parameters.bucketedBy) {
+      value.bucketedBy = granularityFromJS(parameters.bucketedBy);
     }
-
-    var sortStrategy = parameters.sortStrategy;
-    if (sortStrategy) {
-      value.sortStrategy = sortStrategy;
+    if (parameters.bucketingStrategy) {
+      value.bucketingStrategy = bucketingStrategies[parameters.bucketingStrategy];
+    }
+    if (parameters.sortStrategy) {
+      value.sortStrategy = parameters.sortStrategy;
     }
 
     return new Dimension(value);
@@ -121,6 +109,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public bucketedBy: Granularity;
   public bucketingStrategy: BucketingStrategy;
   public sortStrategy: string;
+  public type = "dimension";
 
   constructor(parameters: DimensionValue) {
     var name = parameters.name;
@@ -164,6 +153,10 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     if (parameters.sortStrategy) this.sortStrategy = parameters.sortStrategy;
   }
 
+  accept<R>(visitor: DimensionOrGroupVisitor<R>): R {
+    return visitor.visitDimension(this);
+  }
+
   public valueOf(): DimensionValue {
     return {
       name: this.name,
@@ -201,7 +194,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     return `[Dimension: ${this.name}]`;
   }
 
-  public equals(other: Dimension): boolean {
+  public equals(other: any): boolean {
     return Dimension.isDimension(other) &&
       this.name === other.name &&
       this.title === other.title &&
@@ -215,7 +208,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   public canBucketByDefault(): boolean {
-    return this.isContinuous() && this.bucketingStrategy !== Dimension.defaultNoBucket;
+    return this.isContinuous() && this.bucketingStrategy !== BucketingStrategy.defaultNoBucket;
   }
 
   public isContinuous() {

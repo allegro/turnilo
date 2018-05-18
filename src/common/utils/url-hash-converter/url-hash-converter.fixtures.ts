@@ -64,6 +64,7 @@ export class UrlHashConverterFixtures {
       "dT5wvgASTsBKGCTVtSkWGcOjfAnKql5pWlZZtkK5wPkihUxiXOOLwBRKEETMYgwG0lIAushgJC5EzkRkYBQoMcAQGC4M7XcvhAABaMBivbLrJRYCinPhiJ" +
       "S6DBFDAAl5vD7IBguMhkLE4vHY3FAA==";
   }
+
   static noSlashInEncodedDefinition3() {
     return "3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADQgYC2xyOx+IAomuQHoAqgBUAwoxAAzCAjTEaUfAG1QaAJ4AHLgVZcmNYlO57Je" +
       "gAoKsAEyV5VIazBrosuAuYCMAETNadhOjEUPRMIcSa+KSeAL4AuvFhmkhodg4a2iYQbJLW2cTYUG5ZOUwA5i7YMAi0EBrc5iKeABKSUJh0+KCGxrr5uRCG" +

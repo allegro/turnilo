@@ -22,27 +22,30 @@ $icon-width: 37px;
 .dimension-list-tile {
   overflow: hidden;
 
-  .items {
-    position: absolute;
+  .rows {
     top: $title-height;
-    bottom: 0;
-    width: 100%;
-    overflow: auto;
-    color: $text-standard;
-    transition: height 0.1s ease-in-out;
+
+    .folder {
+      .dimension {
+        &:last-child {
+          margin-bottom: $searchable-folder-last-child-margin;
+        }
+      }
+    }
 
     .dimension {
-      @include pin-top($dimension-height);
       background: $white;
       cursor: pointer;
       overflow: hidden;
-      transition: transform 0.1s ease-in-out;
+      padding-left: 14px;
+      height: $dimension-height;
+      //transition: transform 0.1s ease-in-out;
 
       &:last-child {
-        margin-bottom: 12px;
+        margin-bottom: $searchable-tile-last-child-margin;
       }
 
-      &.highlight {
+      &:hover {
         background: $hover;
       }
 
@@ -51,14 +54,12 @@ $icon-width: 37px;
       }
 
       .icon {
-        @include pin-left($icon-width);
         top: 4px;
-        left: 0;
+        left: -2px;
         width: 19px;
+        float: left;
 
         svg {
-          position: absolute;
-          left: $padding-compact - 2px;
           width: 19px;
 
           path {
@@ -67,13 +68,10 @@ $icon-width: 37px;
         }
       }
 
-      .item-title {
+      .label {
         @include ellipsis;
-        position: absolute;
-        top: 7px;
-        bottom: 0;
-        right: 10px;
-        left: $icon-width + 1;
+        display: block;
+        padding: 7px 0.15em;
       }
     }
   }

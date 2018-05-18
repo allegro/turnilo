@@ -37,7 +37,7 @@ export class VisMeasureLabel extends React.Component<VisMeasureLabelProps, VisMe
     return <div className="vis-measure-label">
       <span className="measure-title">{measure.title}</span>
       <span className="colon">: </span>
-      <span className="measure-value">{measure.formatFn(datum[measure.name] as number)}</span>
+      <span className="measure-value">{measure.formatDatum(datum)}</span>
     </div>;
   }
 }

@@ -10,7 +10,8 @@ dataCubes:
       time: 2015-09-13T00:00:00.000Z
 
     defaultDuration: P1D
-    defaultSortMeasure: delta
+    defaultSortMeasure: added
+    defaultSelectedMeasures: ["added"]
 
     defaultPinnedDimensions: ["channel","namespace","isRobot"]
     introspection: no-autofill
@@ -38,19 +39,27 @@ dataCubes:
         title: City Name
         formula: $cityName
 
-      - name: comment
-        title: Comment
-        formula: $comment
+      - name: comments
+        title: Comments
+        dimensions:
 
-      - name: commentLength
-        title: Comment Length
-        kind: number
-        formula: $commentLength
+          - name: comment
+            title: Comment
+            formula: $comment
 
-      - name: commentLengthOver100
-        title: Comment Length Over 100
-        kind: boolean
-        formula: $commentLength > 100
+          - name: commentLengths
+            title: Comment Lengths
+            dimensions:
+
+              - name: commentLength
+                title: Comment Length
+                kind: number
+                formula: $commentLength
+
+              - name: commentLengthOver100
+                title: Comment Length Over 100
+                kind: boolean
+                formula: $commentLength > 100
 
       - name: countryIso
         title: Country ISO
@@ -118,17 +127,25 @@ dataCubes:
         formula: $userChars
 
     measures:
-      - name: count
-        title: Rows
-        formula: $main.count()
+      - name: rowsAndDeltas
+        title: Rows & Deltas
+        measures:
 
-      - name: delta
-        title: Delta
-        formula: $main.sum($delta)
+          - name: count
+            title: Rows
+            formula: $main.count()
 
-      - name: avg_delta
-        title: Avg Delta
-        formula: $main.average($delta)
+          - name: deltas
+            title: Deltas
+            measures:
+
+              - name: delta
+                title: Delta
+                formula: $main.sum($delta)
+
+              - name: avg_delta
+                title: Avg Delta
+                formula: $main.average($delta)
 
       - name: added
         title: Added

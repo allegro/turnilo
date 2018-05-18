@@ -18,7 +18,7 @@
 import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
-import { Dimension, DimensionJS } from './dimension';
+import { BucketingStrategy, Dimension, DimensionJS } from './dimension';
 
 describe('Dimension', () => {
   it('is an immutable class', () => {
@@ -47,7 +47,7 @@ describe('Dimension', () => {
           op: 'numberBucket',
           size: 1
         },
-        bucketingStrategy: 'defaultBucket'
+        bucketingStrategy: BucketingStrategy.defaultBucket
       },
       {
         name: 'time',

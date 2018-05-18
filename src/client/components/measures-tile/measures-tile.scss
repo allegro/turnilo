@@ -18,32 +18,31 @@
 @import '../../imports';
 
 .measures-tile {
-  .row {
-    padding-left: $padding-compact;
-    height: $measure-height;
-    cursor: pointer;
-    overflow: hidden;
-    white-space: nowrap;
+  $icon-width: 37px;
 
-    &:last-child {
-      margin-bottom: 12px;
+  .rows {
+    .row {
+      padding-left: $padding-compact;
+      height: $measure-height;
+      cursor: pointer;
+      overflow: hidden;
+      white-space: nowrap;
+
+      .label {
+        @include ellipsis;
+        display: block;
+        padding: 7px 0.15em;
+      }
+
+      &:hover {
+        background: $hover;
+      }
     }
 
-    .label {
-      @include ellipsis;
-      position: absolute;
-      top: 7px;
-      bottom: 0;
-      left: 37px;
-      right: 10px;
-    }
-
-    &:hover {
-      background: $hover;
+    .checkbox {
+      margin-top: 2px;
+      float: left;
     }
   }
 
-  .checkbox {
-    margin-top: 2px;
-  }
 }

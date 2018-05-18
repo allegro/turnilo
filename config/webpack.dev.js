@@ -27,7 +27,8 @@ module.exports = {
     path: path.resolve(__dirname, '../build/public'),
     filename: "main.js",
     chunkFilename: "[name].[hash].js",
-    publicPath: '/'
+    publicPath: '/',
+    pathinfo: false
   },
   devtool: "source-map",
   resolve: {

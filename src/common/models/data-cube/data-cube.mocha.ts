@@ -121,7 +121,7 @@ describe('DataCube', () => {
             }
           ]
         });
-      }).to.throw("name 'articleName' found in both dimensions and measures in data cube: 'wiki'");
+      }).to.throw("data cube: 'wiki', names: 'articleName' found in both dimensions and measures");
     });
 
     it("throws an error if duplicate name is used in measures", () => {
@@ -152,7 +152,7 @@ describe('DataCube', () => {
             }
           ]
         });
-      }).to.throw("duplicate measure name 'articleName' found in data cube: 'wiki'");
+      }).to.throw("data cube: 'wiki', found duplicate measure or group with names: 'articleName'");
     });
 
     it("throws an error if duplicate name is used in dimensions", () => {
@@ -183,7 +183,7 @@ describe('DataCube', () => {
             }
           ]
         });
-      }).to.throw("duplicate dimension name 'articleName' found in data cube: 'wiki'");
+      }).to.throw("data cube: 'wiki', found duplicate dimension or group with names: 'articleName'");
     });
 
   });

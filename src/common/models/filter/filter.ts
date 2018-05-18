@@ -24,6 +24,7 @@ import {
 } from 'plywood';
 import { immutableListsEqual } from '../../utils/general/general';
 import { Dimension } from '../dimension/dimension';
+import { Dimensions } from "../dimension/dimensions";
 import { FilterClause, FilterClauseJS, FilterSelection } from '../filter-clause/filter-clause';
 
 function withholdClause(clauses: List<FilterClause>, clause: FilterClause, allowIndex: number): List<FilterClause> {
@@ -331,12 +332,12 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return clauses.get(0).getLiteralSet();
   }
 
-  public constrainToDimensions(dimensions: List<Dimension>, timeAttribute: Expression, oldTimeAttribute: Expression = null): Filter {
+  public constrainToDimensions(dimensions: Dimensions, timeAttribute: Expression, oldTimeAttribute: Expression = null): Filter {
     var hasChanged = false;
     var clauses: FilterClause[] = [];
     this.clauses.forEach((clause) => {
       var clauseExpression = clause.expression;
-      if (Dimension.getDimensionByExpression(dimensions, clauseExpression)) {
+      if (dimensions.getDimensionByExpression(clauseExpression)) {
         clauses.push(clause);
       } else {
         hasChanged = true;

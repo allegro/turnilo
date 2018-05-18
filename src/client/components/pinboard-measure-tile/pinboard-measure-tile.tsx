@@ -38,7 +38,7 @@ export class PinboardMeasureTile extends React.Component<PinboardMeasureTileProp
     var { essence, title, dimension, sortOn, onSelect } = this.props;
 
     var sortOns = (dimension ? [SortOn.fromDimension(dimension)] : []).concat(
-      essence.dataCube.measures.toArray().map(SortOn.fromMeasure)
+      essence.dataCube.measures.mapMeasures(SortOn.fromMeasure)
     );
 
     const SortOnDropdown = Dropdown.specialize<SortOn>();

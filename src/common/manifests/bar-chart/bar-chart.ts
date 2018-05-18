@@ -100,12 +100,12 @@ var rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .otherwise(({ splits, dataCube }) => {
-    let categoricalDimensions = dataCube.dimensions.filter((d) => d.kind !== 'time');
+    const categoricalDimensions = dataCube.dimensions.filterDimensions((dimension) => dimension.kind !== 'time');
 
     return Resolve.manual(
       3,
       'The Bar Chart needs one or two splits',
-      categoricalDimensions.toArray().slice(0, 2).map((dimension: Dimension) => {
+      categoricalDimensions.slice(0, 2).map((dimension: Dimension) => {
         return {
           description: `Split on ${dimension.title} instead`,
           adjustment: {

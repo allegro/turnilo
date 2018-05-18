@@ -15,9 +15,41 @@
  */
 
 import { ExpressionJS } from "plywood";
-import { Measure } from "./measure";
+import { Measure, MeasureJS } from "./measure";
 
 export class MeasureFixtures {
+  static wikiCountJS(): MeasureJS {
+    return {
+      name: "count",
+      title: "Count",
+      formula: "$main.sum($count)"
+    };
+  }
+
+  static wikiCount(): Measure {
+    return new Measure({
+      name: "count",
+      title: "Count",
+      formula: "$main.sum($count)"
+    });
+  }
+
+  static wikiUniqueUsersJS(): MeasureJS {
+    return {
+      name: "unique_users",
+      title: "Unique Users",
+      formula: "$main.countDistinct($unique_users)"
+    };
+  }
+
+  static wikiUniqueUsers(): Measure {
+    return new Measure({
+      name: "unique_users",
+      title: "Unique Users",
+      formula: "$main.countDistinct($unique_users)"
+    });
+  }
+
   static twitterCount(): Measure {
     return Measure.fromJS({
       name: "count",

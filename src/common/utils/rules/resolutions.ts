@@ -19,7 +19,7 @@ import { DataCube, Resolution, SplitCombine, Splits } from "../../models";
 
 export class Resolutions {
   static someDimensions = (dataCube: DataCube): Resolution[] => {
-    const dimensions = dataCube.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
+    const dimensions = dataCube.getDimensionsByKind("string").slice(0, 2);
     return dimensions.map((someDimension) => {
       return {
         description: `Add a split on ${someDimension.title}`,
@@ -43,7 +43,7 @@ export class Resolutions {
   }
 
   static firstMeasure = (dataCube: DataCube): Resolution[] => {
-    const firstMeasure = dataCube.measures.get(0);
+    const firstMeasure = dataCube.measures.first();
     return [{ description: `Select measure: ${firstMeasure.title}`, adjustment: { selectedMeasures: [firstMeasure] } }];
   }
 }

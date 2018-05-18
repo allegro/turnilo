@@ -23,14 +23,14 @@ import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
-  .when(({ dataCube }) => !(dataCube.getDimensionByKind('time') || dataCube.getDimensionByKind('number')))
+  .when(({ dataCube }) => !(dataCube.getDimensionsByKind('time').length || dataCube.getDimensionsByKind('number').length))
   .then(() => Resolve.NEVER)
 
   .when(Predicates.noSplits())
   .then(({ splits, dataCube }) => {
-    const continuousDimensions = dataCube.getDimensionByKind('time').concat(dataCube.getDimensionByKind('number'));
+    const continuousDimensions = dataCube.getDimensionsByKind('time').concat(dataCube.getDimensionsByKind('number'));
     return Resolve.manual(3, 'This visualization requires a continuous dimension split',
-      continuousDimensions.toArray().map((continuousDimension) => {
+      continuousDimensions.map((continuousDimension) => {
         return {
           description: `Add a split on ${continuousDimension.title}`,
           adjustment: {
@@ -183,9 +183,9 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .otherwise(({ splits, dataCube }) => {
-    let continuousDimensions = dataCube.getDimensionByKind('time').concat(dataCube.getDimensionByKind('number'));
+    let continuousDimensions = dataCube.getDimensionsByKind('time').concat(dataCube.getDimensionsByKind('number'));
     return Resolve.manual(3, 'The Line Chart needs one continuous dimension split',
-      continuousDimensions.toArray().map((continuousDimension) => {
+      continuousDimensions.map((continuousDimension) => {
         return {
           description: `Split on ${continuousDimension.title} instead`,
           adjustment: {
