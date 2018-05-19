@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import { DragEvent, MouseEvent } from "react";
-import { Clicker, Dimension, Essence, Stage } from '../../../common/models/index';
+import { Clicker, DataCube, Dimension, Essence, Filter, Splits, Stage } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';
 import { MAX_SEARCH_LENGTH, STRINGS } from '../../config/constants';
 import { findParentWithClass, setDragGhost } from '../../utils/dom/dom';
@@ -52,10 +52,21 @@ const hasSearchTextPredicate = (searchText: string) => (dimension: Dimension): b
 
 const isFilteredOrSplitPredicate = (essence: Essence) => (dimension: Dimension): boolean => {
   const { dataCube, filter, splits } = essence;
-  const filteredDimensions = filter.clauses.map((clause) => dataCube.dimensions.getDimensionByExpression(clause.expression));
-  const splitDimensions = splits.splitCombines.map((split) => dataCube.dimensions.getDimensionByExpression(split.expression));
+  return isFiltered(dimension, filter, dataCube) || isSplit(dimension, splits, dataCube);
+};
 
-  return filteredDimensions.contains(dimension) || splitDimensions.contains(dimension);
+const isSplit = (dimension: Dimension, splits: Splits, dataCube: DataCube): boolean => {
+  return splits
+    .splitCombines
+    .map((split) => dataCube.dimensions.getDimensionByExpression(split.expression))
+    .contains(dimension);
+};
+
+const isFiltered = (dimension: Dimension, filter: Filter, dataCube: DataCube): boolean => {
+  return filter
+    .clauses
+    .map((clause) => dataCube.dimensions.getDimensionByExpression(clause.expression))
+    .contains(dimension);
 };
 
 export class DimensionListTile extends React.Component<DimensionListTileProps, DimensionListTileState> {
