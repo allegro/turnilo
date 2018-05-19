@@ -161,7 +161,8 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     const { searchText } = this.state;
 
     if (!!searchText && !dimensionsForView.some(dimension => dimension.hasSearchText)) {
-      return <div className="message">{`No ${ STRINGS.dimensions.toLowerCase() } for "${searchText}"`}</div>;
+      const noDimensionsFound = `No dimensions for "${searchText}"`;
+      return <div className="message">{noDimensionsFound}</div>;
     } else {
       return <></>;
     }

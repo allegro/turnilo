@@ -86,7 +86,8 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     const { searchText } = this.state;
 
     if (!!searchText && !measuresForView.some(measure => measure.hasSearchText)) {
-      return <div className="message">{`No ${ STRINGS.measures.toLowerCase() } for "${searchText}"`}</div>;
+      const noMeasuresFound = `No measures for "${searchText}"`;
+      return <div className="message">{noMeasuresFound}</div>;
     } else {
       return <></>;
     }
