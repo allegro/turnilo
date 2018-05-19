@@ -17,7 +17,7 @@
 
 import { OrderedSet } from "immutable";
 import * as React from "react";
-import { MouseEvent } from "react";
+import { Component, MouseEvent } from "react";
 import { Clicker, Essence, Measure } from '../../../common/models';
 import { MAX_SEARCH_LENGTH, STRINGS } from '../../config/constants';
 import * as localStorage from '../../utils/local-storage/local-storage';
@@ -50,7 +50,7 @@ const isSelectedMeasurePredicate = (selectedMeasures: OrderedSet<string>) => (me
   return selectedMeasures.contains(measure.name);
 };
 
-export class MeasuresTile extends React.Component<MeasuresTileProps, MeasuresTileState> {
+export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState> {
   readonly state: MeasuresTileState = initialState;
 
   measureClick = (measureName: string) => {

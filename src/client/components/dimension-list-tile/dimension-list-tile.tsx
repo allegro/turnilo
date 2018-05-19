@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { DragEvent, MouseEvent } from "react";
+import { Component, CSSProperties, DragEvent, MouseEvent } from "react";
 import { Clicker, DataCube, Dimension, Essence, Filter, Splits, Stage } from '../../../common/models/index';
 import { Fn } from '../../../common/utils/general/general';
 import { MAX_SEARCH_LENGTH, STRINGS } from '../../config/constants';
@@ -30,13 +30,13 @@ import './dimension-list-tile.scss';
 import { DimensionOrGroupForView, DimensionsConverter } from "./dimensions-converter";
 import { DimensionsRenderer } from "./dimensions-renderer";
 
-export interface DimensionListTileProps extends React.Props<any> {
+export interface DimensionListTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
   triggerFilterMenu: Fn;
   triggerSplitMenu: Fn;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }
 
 export interface DimensionListTileState {
@@ -69,7 +69,7 @@ const isFiltered = (dimension: Dimension, filter: Filter, dataCube: DataCube): b
     .contains(dimension);
 };
 
-export class DimensionListTile extends React.Component<DimensionListTileProps, DimensionListTileState> {
+export class DimensionListTile extends Component<DimensionListTileProps, DimensionListTileState> {
 
   constructor(props: DimensionListTileProps) {
     super(props);

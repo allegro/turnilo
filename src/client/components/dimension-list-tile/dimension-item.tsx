@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { DragEvent, MouseEvent } from "react";
+import { DragEvent, MouseEvent, PureComponent } from "react";
 import { HighlightString, SvgIcon } from "..";
 import { classNames } from "../../utils/dom/dom";
 
@@ -34,7 +34,7 @@ export interface DimensionItemProps {
 export type DimensionClickHandler = (dimensionName: string, e: MouseEvent<HTMLElement>) => void;
 export type DimensionDragStartHandler = (dimensionName: string, e: DragEvent<HTMLElement>) => void;
 
-export class DimensionItem extends React.PureComponent<DimensionItemProps, {}> {
+export class DimensionItem extends PureComponent<DimensionItemProps, {}> {
   handleClick = (e: MouseEvent<HTMLElement>) => {
     const { name, dimensionClick } = this.props;
     dimensionClick(name, e);
