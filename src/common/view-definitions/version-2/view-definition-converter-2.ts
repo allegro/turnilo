@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AndExpression, Expression, TimeBucketExpression } from "plywood";
+import { AndExpression, Expression, OverlapExpression, TimeBucketExpression } from "plywood";
 import { DataCube, Essence, EssenceJS, FilterJS, Manifest } from "../../models";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 
@@ -50,10 +50,11 @@ function filterJSConverter(filter: FilterJS): FilterJS {
 }
 
 function convertFilterExpression(expression: Expression): Expression {
-  if (expression instanceof TimeBucketExpression) {
-    const { operand, duration } = expression;
+  if (expression instanceof OverlapExpression && expression.expression instanceof TimeBucketExpression) {
+    const { operand: overlapOperand } = expression;
+    const { operand: timeBucketOperand, duration } = expression.expression;
 
-    return operand.timeFloor(duration).timeRange(duration);
+    return overlapOperand.overlap(timeBucketOperand.timeFloor(duration).timeRange(duration));
   } else {
     return expression;
   }
