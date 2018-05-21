@@ -35,6 +35,9 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
 
   readonly state: SearchableFolderState;
 
+  private readonly openIcon = <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")} />;
+  private readonly closedIcon = <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />;
+
   constructor(props: SearchableFolderProps) {
     super(props);
 
@@ -63,12 +66,9 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
     const isGroupOpen = opened || inSearchMode && hasItemsWithSearchText;
     const hidden = inSearchMode && !hasItemsWithSearchText;
 
-    const openIcon = <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")} />;
-    const closedIcon = <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />;
-
     return <div className={classNames("folder", { hidden })}>
       <div className={classNames("folder-header")} onClick={this.handleClick}>
-        <div className={"folder-icon"}>{isGroupOpen ? openIcon : closedIcon}</div>
+        <div className={"folder-icon"}>{isGroupOpen ? this.openIcon : this.closedIcon}</div>
         <span className={"label"}>{title}</span>
       </div>
       <div className={classNames("folder-items", { closed: !isGroupOpen})}>

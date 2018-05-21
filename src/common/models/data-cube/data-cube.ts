@@ -52,7 +52,7 @@ function formatTimeDiff(diff: number): string {
   return diff + ' days';
 }
 
-function checkUniquenessOfNamesAcrossDimensionsAndMeasures(dimensions: Dimensions, measures: Measures, dataCubeName: string) {
+function checkDimensionsAndMeasuresNamesUniqueness(dimensions: Dimensions, measures: Measures, dataCubeName: string) {
   if (dimensions != null && measures != null) {
     const dimensionNames = dimensions.getDimensionNames();
     const measureNames = measures.getMeasureNames();
@@ -433,7 +433,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     var dimensions = parameters.dimensions;
     var measures = parameters.measures;
-    checkUniquenessOfNamesAcrossDimensionsAndMeasures(dimensions, measures, name);
+    checkDimensionsAndMeasuresNamesUniqueness(dimensions, measures, name);
 
     this.dimensions = dimensions || Dimensions.empty();
     this.measures = measures || Measures.empty();
