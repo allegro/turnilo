@@ -40,7 +40,7 @@ export class MeasuresRenderer {
       });
   }
 
-  renderFolder(groupView: MeasureGroupForView): JSX.Element {
+  private renderFolder(groupView: MeasureGroupForView): JSX.Element {
     const { searchText } = this;
     const { name, title, hasSearchText, hasSelectedMeasures, children } = groupView;
 
@@ -56,7 +56,7 @@ export class MeasuresRenderer {
     </SearchableFolder>;
   }
 
-  renderMeasure(measureView: MeasureForView): JSX.Element {
+  private renderMeasure(measureView: MeasureForView): JSX.Element {
     const { measureClick, multiMeasureMode, searchText } = this;
     const { name, title, hasSelectedMeasures } = measureView;
 

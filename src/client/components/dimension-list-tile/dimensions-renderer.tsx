@@ -39,7 +39,7 @@ export class DimensionsRenderer {
       });
   }
 
-  renderFolder(groupView: DimensionGroupForView): JSX.Element {
+  private renderFolder(groupView: DimensionGroupForView): JSX.Element {
     const { searchText } = this;
     const { name, title, hasSearchText, isFilteredOrSplit, children } = groupView;
 
@@ -55,7 +55,7 @@ export class DimensionsRenderer {
     </SearchableFolder>;
   }
 
-  renderMeasure(measureView: DimensionForView): JSX.Element {
+  private renderMeasure(measureView: DimensionForView): JSX.Element {
     const { dimensionClick, dimensionDragStart, searchText } = this;
     const { name, title, classSuffix, selected } = measureView;
 

@@ -69,6 +69,10 @@ const isFiltered = (dimension: Dimension, filter: Filter, dataCube: DataCube): b
     .contains(dimension);
 };
 
+const isSelectedDimensionPredicate = (menuDimension: Dimension) => (dimension: Dimension): boolean => {
+  return menuDimension === dimension;
+};
+
 export class DimensionListTile extends Component<DimensionListTileProps, DimensionListTileState> {
 
   constructor(props: DimensionListTileProps) {
@@ -173,7 +177,11 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     const { menuDimension, showSearch, searchText } = this.state;
     const { dataCube } = essence;
 
-    const dimensionsConverter = new DimensionsConverter(hasSearchTextPredicate(searchText), isFilteredOrSplitPredicate(essence), menuDimension);
+    const dimensionsConverter = new DimensionsConverter(
+      hasSearchTextPredicate(searchText),
+      isFilteredOrSplitPredicate(essence),
+      isSelectedDimensionPredicate(menuDimension)
+    );
     const dimensionsForView = dataCube.dimensions.accept(dimensionsConverter);
 
     const dimensionsRenderer = new DimensionsRenderer(this.clickDimension, this.dragStart, searchText);

@@ -47,12 +47,12 @@ export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrG
   constructor(
     private readonly hasSearchTextPredicate: (dimension: Dimension) => boolean,
     private readonly isFilteredOrSplitPredicate: (dimension: Dimension) => boolean,
-    private readonly selectedDimension: Dimension
+    private readonly isSelectedDimensionPredicate: (dimension: Dimension) => boolean
   ) {
   }
 
   visitDimension(dimension: Dimension): DimensionOrGroupForView {
-    const { hasSearchTextPredicate, isFilteredOrSplitPredicate } = this;
+    const { hasSearchTextPredicate, isFilteredOrSplitPredicate, isSelectedDimensionPredicate } = this;
     const { name, title, className } = dimension;
 
     return {
@@ -61,7 +61,7 @@ export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrG
       classSuffix: className,
       isFilteredOrSplit: isFilteredOrSplitPredicate(dimension),
       hasSearchText: hasSearchTextPredicate(dimension),
-      selected: dimension === this.selectedDimension,
+      selected: isSelectedDimensionPredicate(dimension),
       type: DimensionForViewType.dimension
     };
   }
