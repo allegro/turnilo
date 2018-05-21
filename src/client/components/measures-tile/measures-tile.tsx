@@ -89,7 +89,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
       const noMeasuresFound = `No measures for "${searchText}"`;
       return <div className="message">{noMeasuresFound}</div>;
     } else {
-      return <></>;
+      return null;
     }
   }
 

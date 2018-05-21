@@ -168,7 +168,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       const noDimensionsFound = `No dimensions for "${searchText}"`;
       return <div className="message">{noDimensionsFound}</div>;
     } else {
-      return <></>;
+      return null;
     }
   }
 
