@@ -577,12 +577,6 @@ Custom dimension transformations definition. See [custom transformations](#custo
 Context to be send to Druid with every query executed on the data cube defined as yaml key / value mappings.
 See [Druid context](http://druid.io/docs/latest/querying/query-context.html).
 
-**priority**
-
-Druid query priority. Higher priority queries gets precedence for computational resources.
-This property's value takes precedence over the `priority` value defined in `druidContext` property.
-See [Druid context](http://druid.io/docs/latest/querying/query-context.html).
-
 Advanced options example:
 ```yaml
 - name: data_cube
@@ -592,8 +586,8 @@ Advanced options example:
     customAggregation:
       ...
     druidContext:
+      priority: 100
       useCache: false
-    priority: 100
 ```
 
 ## Customization
