@@ -271,14 +271,21 @@ You can now use `$age` in numeric expressions. For example you could create a di
 ### Dimensions
 
 In this section you can define the dimensions that users can *split* and *filter* on in the UI.
+Dimensions may be organized as list or tree where each item of list can be either a dimension
+or [dimension group](#dimension-group) having its own dimensions list or tree.
 The order of the dimension list in the top of the left panel is determined by the order of the dimensions definitions
 in this section.
+
+
+#### Dimension
+
+Dimensions are defined with following attributes:
 
 **name** (string)
 
 The name of the dimension.
 This does not have to correspond to the attribute name (but the auto generated dimensions do).
-This should be a URL safe string.
+This should be a URL safe string and unique across dimensions, dimension groups, measures and measure groups.
 Changing this property will break any URLs that someone might have generated that include this dimension.
 
 **title** (string)
@@ -318,7 +325,7 @@ You can create derived dimensions by using non-trivial formulas.
 
 Here are some common use cases for derived dimensions:
 
-#### Lookup formula
+##### Lookup formula
 
 If you have a dimension that represents an ID that is a key into some other table. You may have set up a
 [Druid Query Time Lookup](http://druid.io/docs/latest/querying/lookups.html) in which case you could
@@ -335,7 +342,7 @@ You can also apply the `.fallback()` action as ether:
 - `$lookupKey.lookup('my_awesome_lookup').fallback($lookupKey)` to keep values that were not found as they are.
 - `$lookupKey.lookup('my_awesome_lookup').fallback('missing')` to map missing values to the word 'missing'.
 
-#### Extraction formula
+##### Extraction formula
 
 Imagine you have an attribute `resourceName` which has values:
 
@@ -356,7 +363,7 @@ Which would have values:
 ["0.8.2", "0.8.1", "0.7.0", null]
 ```
 
-#### Boolean formula
+##### Boolean formula
 
 It is often useful to create dimensions that are the result of some boolean expression.
 Let's say that you are responsible for all accounts in the United States as well as some specific account you could create a dimension like:
@@ -368,7 +375,7 @@ Let's say that you are responsible for all accounts in the United States as well
 
 Now my account would represent a custom filter boolean diemension.
 
-#### Custom transformations
+##### Custom transformations
 
 If no existing plywood function meets your needs, you could also define your own custom transformation.
 The transformation could be any supported [Druid extraction function](http://druid.io/docs/latest/querying/dimensionspecs.html).
@@ -394,11 +401,34 @@ Then in the dimensions simply reference `stringFun` like so:
   formula: $countryURL.customTransform('stringFun')
 ```
 
+#### Dimension Group
+
+Dimension groups are defined with following attributes:
+
+**name** (string)
+
+The name of the dimension group.
+This should be a URL safe string and unique across dimensions, dimension groups, measures and measure groups.
+
+**title** (string)
+
+The title for this dimension group in the UI. Can be anything and is safe to change at any time.
+
+**dimensions** (Dimension | DimensionGroup)[]
+
+An array of nested dimensions or dimension groups. It cannot be empty.
+
 ### Measures
 
 In this section you can define the measures that users can *aggregate* on (*apply*) on in the UI.
+Measures may be organized as list or tree where each item of list can be either a measure
+or [measure group](#measure-group) having its own measures list or tree.
 The order of the measure list in the bottom of the left panel is determined by the order of the measure definitions
 in this section.
+
+#### Measure
+
+Measures are defined with following attributes:
 
 **name** (string)
 
@@ -432,7 +462,7 @@ Predefined transformation that can be applied to a measure formula. Currently su
 One can also create derived measures by using non-trivial expressions in **formula**. Here are some common use cases for derived dimensions:
 
 
-#### Ratio formula
+##### Ratio formula
 
 Ratios are generally considered fun.
 
@@ -443,7 +473,7 @@ Ratios are generally considered fun.
 ```
 
 
-#### Filtered aggregations formula
+##### Filtered aggregations formula
 
 A very powerful tool is to use a filtered aggregate.
 If, for example, your revenue in the US is a very important measure you could express it as:
@@ -462,7 +492,7 @@ It is also common to express a ratio of something filtered vs unfiltered.
 ```
 
 
-#### Custom aggregations
+##### Custom aggregations
 
 Within the measures you have access to the full power of the [Plywood expressions](http://plywood.imply.io/expressions).
 If you ever find yourself needing to go beyond the expressive potential of Plywood you could define your own custom aggregation.
@@ -496,7 +526,7 @@ Then in the measures simply reference `addedMod1337` like so:
 This functionality can be used to access any custom aggregations that might be loaded via extensions.
 
 
-#### Switching metric columns
+##### Switching metric columns
 
 If you switch how you ingest you underlying metric and can't (or do not want to) recalculate all of the previous data,
 you could use a derived measure to seemly merge these two metrics in the UI.
@@ -558,6 +588,25 @@ Then in the measure definitions:
 ```
 
 Note that whichever method you chose you should not change the `name` attribute of your original measure as it will preserve the function of any bookmarks.
+
+
+#### Measure Group
+
+Measure groups are defined with following attributes:
+
+**name** (string)
+
+The name of the measure group.
+This should be a URL safe string and unique across dimensions, dimension groups, measures and measure groups.
+
+**title** (string)
+
+The title for this measure group in the UI. Can be anything and is safe to change at any time.
+
+**measures** (Measure | MeasureGroup)[]
+
+An array of nested measures or measure groups. It cannot be empty.
+
 
 ## Customization
 
