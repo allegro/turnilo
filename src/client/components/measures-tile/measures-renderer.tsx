@@ -30,8 +30,13 @@ export class MeasuresRenderer {
 
   render(children: MeasureOrGroupForView[]): JSX.Element[] {
     const { searchText } = this;
+
+    const notInSearchModeOrHasSearchTextOrIsGroup = (item: MeasureOrGroupForView) => {
+      return !searchText || item.hasSearchText || item.type === MeasureForViewType.group;
+    };
+
     return children
-      .filter(child => !searchText || child.hasSearchText || child.type === MeasureForViewType.group)
+      .filter(notInSearchModeOrHasSearchTextOrIsGroup)
       .map(child => {
         if (child.type === MeasureForViewType.group)
           return this.renderFolder(child);
