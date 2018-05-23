@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { List } from 'immutable';
+import { Collection, List } from 'immutable';
 import { immutableArraysEqual, Equalable } from 'immutable-class';
 import { TimeRange, NumberRange, PlywoodRange } from 'plywood';
 
@@ -149,4 +149,8 @@ export function ensureOneOf(value: string, values: string[], messagePrefix: stri
 
 export function pluralIfNeeded(n: number, thing: string): string {
   return `${n} ${thing}${n === 1 ? '' : 's'}`;
+}
+
+export function quoteNames(names: Collection.Indexed<string>): string {
+  return names.map(name => `'${name}'`).join(", ");
 }

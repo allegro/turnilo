@@ -55,6 +55,24 @@ export class DimensionMock {
     };
   }
 
+  static wikiTimeJS(): DimensionJS {
+    return {
+      name: 'time',
+      title: 'Time',
+      formula: '$time',
+      kind: 'time'
+    };
+  }
+
+  static wikiTime(): Dimension {
+    return new Dimension({
+      name: 'time',
+      title: 'Time',
+      formula: '$time',
+      kind: 'time'
+    });
+  }
+
   static countryString() {
     return Dimension.fromJS(DimensionMock.COUNTRY_STRING_JS);
   }

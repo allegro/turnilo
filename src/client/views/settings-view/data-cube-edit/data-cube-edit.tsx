@@ -20,6 +20,7 @@ import './data-cube-edit.scss';
 import * as React from 'react';
 import { List } from 'immutable';
 import { AttributeInfo } from 'plywood';
+import { Dimensions } from "../../../../common/models/dimension/dimensions";
 import { classNames } from '../../../utils/dom/dom';
 
 import { generateUniqueName } from '../../../../common/utils/string/string';
@@ -213,7 +214,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
   renderDimensions(): JSX.Element {
     const { newInstance } = this.state;
 
-    const onChange = (newDimensions: List<Dimension>) => {
+    const onChange = (newDimensions: Dimensions) => {
       const newCube = newInstance.changeDimensions(newDimensions);
       this.setState({
         newInstance: newCube
@@ -223,7 +224,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     const getModal = (item: Dimension) => <DimensionModal dimension={item}/>;
 
     const getNewItem = () => Dimension.fromJS({
-      name: generateUniqueName('d', name => !newInstance.dimensions.find(m => m.name === name)),
+      name: generateUniqueName('d', name => !newInstance.dimensions.containsDimensionWithName(name)),
       title: 'New dimension'
     });
 
@@ -239,7 +240,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
 
     return <DimensionsList
       label={STRINGS.dimensions}
-      items={newInstance.dimensions}
+      items={List()} // empty list of dimensions for now
       onChange={onChange.bind(this)}
       getModal={getModal}
       getNewItem={getNewItem}
@@ -303,7 +304,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     const getModal = (item: Measure) => <MeasureModal measure={item}/>;
 
     const getNewItem = () => Measure.fromJS({
-      name: generateUniqueName('m', name => !newInstance.measures.find(m => m.name === name)),
+      name: generateUniqueName('m', name => !newInstance.measures.containsMeasureWithName(name)),
       title: 'New measure'
     });
 
@@ -319,7 +320,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
 
     return <MeasuresList
       label={STRINGS.measures}
-      items={newInstance.measures}
+      items={List()} // empty list of measures for now
       onChange={onChange.bind(this)}
       getModal={getModal}
       getNewItem={getNewItem}

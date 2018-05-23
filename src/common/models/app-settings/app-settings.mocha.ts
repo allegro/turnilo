@@ -188,10 +188,28 @@ describe('AppSettings', () => {
                 "title": 'Channel'
               },
               {
-                "formula": '$commentLength',
-                "kind": 'number',
-                "name": 'commentLength',
-                "title": 'Comment Length'
+                "name": "comment_group",
+                "title": "Comment Group",
+                "dimensions": [
+                  {
+                    "kind": "string",
+                    "name": "comment",
+                    "title": "Comment",
+                    "formula": "$comment"
+                  },
+                  {
+                    "kind": "number",
+                    "name": "commentLength",
+                    "title": "Comment Length",
+                    "formula": "$commentLength"
+                  },
+                  {
+                    "kind": "boolean",
+                    "name": "commentLengthOver100",
+                    "title": "Comment Length Over 100",
+                    "formula": "$commentLength > 100"
+                  }
+                ]
               },
               {
                 "formula": '$isRobot',
@@ -231,14 +249,42 @@ describe('AppSettings', () => {
                 "title": "Count"
               },
               {
-                "formula": "$main.sum($added)",
-                "name": "added",
-                "title": "Added"
-              },
-              {
-                "formula": '$main.sum($delta)',
-                "name": 'delta',
-                "title": 'Delta'
+                "name": "other",
+                "title": "Other",
+                "measures": [
+                  {
+                    "name": "added_group",
+                    "title": "Added Group",
+                    "measures": [
+                      {
+                        "name": "added",
+                        "title": "Added",
+                        "formula": "$main.sum($added)"
+                      },
+                      {
+                        "name": "avg_added",
+                        "title": "Avg Added",
+                        "formula": "$main.average($added)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "delta_group",
+                    "title": "Delta Group",
+                    "measures": [
+                      {
+                        "name": "delta",
+                        "title": "Delta",
+                        "formula": "$main.sum($delta)"
+                      },
+                      {
+                        "name": "avg_delta",
+                        "title": "Avg Delta",
+                        "formula": "$main.average($delta)"
+                      }
+                    ]
+                  }
+                ]
               }
             ],
             "name": "wiki",

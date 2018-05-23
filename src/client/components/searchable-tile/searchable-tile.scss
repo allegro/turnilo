@@ -32,8 +32,13 @@ $search-box-height: 26px;
     right: 0;
 
     overflow: auto;
-  }
 
+    .row {
+      &:last-child {
+        margin-bottom: $searchable-tile-last-child-margin;
+      }
+    }
+  }
 
   .search-box {
     position: absolute;
@@ -56,7 +61,6 @@ $search-box-height: 26px;
     }
   }
 
-
   &.has-search .rows {
     top: $pin-title-height + $search-box-height + $search-box-gap;
   }
@@ -67,6 +71,59 @@ $search-box-height: 26px;
 
   &.continuous .rows .row {
     pointer-events: none;
+  }
+
+  .folder {
+    .folder-header {
+      background: $white;
+      cursor: pointer;
+      overflow: hidden;
+      padding-left: 14px;
+      height: $dimension-height;
+
+      &:hover {
+        background: $hover;
+      }
+
+      .label {
+        @include ellipsis;
+        display: block;
+        padding: 7px 0.15em;
+      }
+
+      .folder-icon {
+        top: 4px;
+        left: -2px;
+        width: 19px;
+        float: left;
+
+        svg {
+          width: 19px;
+
+          path {
+            fill: hsla(0, 0, 0, 0.35);
+          }
+        }
+      }
+    }
+
+    .folder-items {
+      padding-left: 22px;
+
+      .row {
+        &:last-child {
+          margin-bottom: $searchable-folder-last-child-margin;
+        }
+      }
+    }
+
+    .closed {
+      display: none;
+    }
+  }
+
+  .hidden {
+    display: none;
   }
 
   .message {

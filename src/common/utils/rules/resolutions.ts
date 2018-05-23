@@ -19,12 +19,16 @@ import { DataCube, Resolution, SplitCombine, Splits } from "../../models";
 
 export class Resolutions {
   static someDimensions = (dataCube: DataCube): Resolution[] => {
-    const dimensions = dataCube.dimensions.toArray().filter(d => d.kind === 'string').slice(0, 2);
-    return dimensions.map((someDimension) => {
+    const numberOfSuggestedSplitDimensions = 2;
+    const suggestedSplitDimensions = dataCube
+      .getDimensionsByKind("string")
+      .slice(0, numberOfSuggestedSplitDimensions);
+
+    return suggestedSplitDimensions.map((dimension) => {
       return {
-        description: `Add a split on ${someDimension.title}`,
+        description: `Add a split on ${dimension.title}`,
         adjustment: {
-          splits: Splits.fromSplitCombine(SplitCombine.fromExpression(someDimension.expression))
+          splits: Splits.fromSplitCombine(SplitCombine.fromExpression(dimension.expression))
         }
       };
     });
@@ -43,7 +47,7 @@ export class Resolutions {
   }
 
   static firstMeasure = (dataCube: DataCube): Resolution[] => {
-    const firstMeasure = dataCube.measures.get(0);
+    const firstMeasure = dataCube.measures.first();
     return [{ description: `Select measure: ${firstMeasure.title}`, adjustment: { selectedMeasures: [firstMeasure] } }];
   }
 }

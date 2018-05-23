@@ -688,7 +688,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
         value.singleMeasure = selectedMeasures.first();
       }
     } else {
-      value.selectedMeasures = addToSetInOrder(dataCube.measures.map(m => m.name), value.selectedMeasures, singleMeasure);
+      value.selectedMeasures = addToSetInOrder(dataCube.measures.getMeasureNames(), value.selectedMeasures, singleMeasure);
     }
     return new Essence(value);
   }
@@ -711,7 +711,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (selectedMeasures.has(measureName)) {
       value.selectedMeasures = selectedMeasures.delete(measureName);
     } else {
-      value.selectedMeasures = addToSetInOrder(dataCube.measures.map(m => m.name), selectedMeasures, measureName);
+      value.selectedMeasures = addToSetInOrder(dataCube.measures.getMeasureNames(), selectedMeasures, measureName);
     }
 
     return new Essence(value);

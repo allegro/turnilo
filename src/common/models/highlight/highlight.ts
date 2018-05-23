@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import { List } from 'immutable';
-import { Class, Instance, immutableArraysEqual } from 'immutable-class';
-import { $, Expression } from 'plywood';
-import { Dimension } from '../dimension/dimension';
+import { Class, Instance } from 'immutable-class';
+import { Expression } from 'plywood';
+import { Dimensions } from "../dimension/dimensions";
 import { Filter, FilterJS } from '../filter/filter';
 
 export interface HighlightValue {
@@ -97,7 +96,7 @@ export class Highlight implements Instance<HighlightValue, HighlightJS> {
     return filter.applyDelta(this.delta);
   }
 
-  public constrainToDimensions(dimensions: List<Dimension>, timeAttribute: Expression): Highlight {
+  public constrainToDimensions(dimensions: Dimensions, timeAttribute: Expression): Highlight {
     var { delta } = this;
     var newDelta = delta.constrainToDimensions(dimensions, timeAttribute);
     if (newDelta === delta) return this;

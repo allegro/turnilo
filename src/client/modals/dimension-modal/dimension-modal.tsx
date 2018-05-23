@@ -24,7 +24,7 @@ import { List } from 'immutable';
 
 import { SvgIcon, FormLabel, Button, ImmutableInput, Modal, ImmutableDropdown } from '../../components/index';
 
-import { Dimension, ListItem, granularityFromJS, granularityToString } from '../../../common/models/index';
+import { Dimension, ListItem, granularityFromJS, granularityToString, BucketingStrategy } from '../../../common/models/index';
 
 import { DIMENSION as LABELS } from '../../../common/models/labels';
 
@@ -46,8 +46,8 @@ export class DimensionModal extends React.Component<DimensionModalProps, Immutab
   ];
 
   static BUCKETING_STRATEGIES = [
-    {label: 'Bucket', value: Dimension.defaultBucket},
-    {label: 'Don’t Bucket', value: Dimension.defaultNoBucket}
+    {label: 'Bucket', value: BucketingStrategy.defaultBucket},
+    {label: 'Don’t Bucket', value: BucketingStrategy.defaultNoBucket}
   ];
 
   private delegate: ImmutableFormDelegate<Dimension>;

@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-import { $, Executor, Dataset, basicExecutorFactory } from 'plywood';
+import { Dataset, basicExecutorFactory } from 'plywood';
+import { DimensionsFixtures } from "../dimension/dimensions.fixtures";
+import { MeasuresFixtures } from "../measure/measures.fixtures";
 import { DataCube, DataCubeJS } from './data-cube';
 
 var executor = basicExecutorFactory({
@@ -41,73 +43,8 @@ export class DataCubeMock {
         { name: 'userChars', type: 'SET/STRING' },
         { name: 'count', type: 'NUMBER', unsplitable: true, maker: { op: 'count' } }
       ],
-      dimensions: [
-        {
-          kind: 'time',
-          name: 'time',
-          title: 'Time',
-          formula: '$time'
-        },
-        {
-          kind: 'string',
-          name: 'channel',
-          title: 'Channel',
-          formula: '$channel'
-        },
-        {
-          kind: 'number',
-          name: 'commentLength',
-          title: 'Comment Length',
-          formula: '$commentLength'
-        },
-        {
-          kind: 'string',
-          name: 'isRobot',
-          title: 'Is Robot',
-          formula: '$isRobot'
-        },
-        {
-          kind: 'string',
-          name: 'namespace',
-          title: 'Namespace',
-          formula: '$namespace'
-        },
-        {
-          kind: 'string',
-          name: 'articleName',
-          title: 'Article Name',
-          formula: '$articleName'
-        },
-        {
-          kind: 'string',
-          name: 'page',
-          title: 'Page',
-          formula: '$page'
-        },
-        {
-          kind: 'string',
-          name: 'userChars',
-          title: 'User Chars',
-          formula: '$userChars'
-        }
-      ],
-      measures: [
-        {
-          name: 'count',
-          title: 'Count',
-          formula: '$main.sum($count)'
-        },
-        {
-          name: 'added',
-          title: 'Added',
-          formula: '$main.sum($added)'
-        },
-        {
-          name: 'delta',
-          title: 'Delta',
-          formula: '$main.sum($delta)'
-        }
-      ],
+      dimensions: DimensionsFixtures.wikiJS(),
+      measures: MeasuresFixtures.wikiJS(),
       timeAttribute: 'time',
       defaultTimezone: 'Etc/UTC',
       defaultFilter: { op: 'literal', value: true },
@@ -130,33 +67,8 @@ export class DataCubeMock {
       clusterName: 'druid-twitter',
       source: 'twitter',
       introspection: 'none',
-      dimensions: [
-        {
-          kind: 'time',
-          name: 'time',
-          title: 'Time',
-          formula: '$time'
-        },
-        {
-          kind: 'string',
-          name: 'twitterHandle',
-          title: 'Twitter Handle',
-          formula: '$twitterHandle'
-        },
-        {
-          kind: 'number',
-          name: 'tweetLength',
-          title: 'Tweet Length',
-          formula: '$tweetLength'
-        }
-      ],
-      measures: [
-        {
-          name: 'count',
-          title: 'count',
-          formula: '$main.count()'
-        }
-      ],
+      dimensions: DimensionsFixtures.twitterJS(),
+      measures: MeasuresFixtures.twitterJS(),
       timeAttribute: 'time',
       defaultTimezone: 'Etc/UTC',
       defaultFilter: { op: 'literal', value: true },
