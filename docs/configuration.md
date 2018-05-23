@@ -382,7 +382,7 @@ The transformation could be any supported [Druid extraction function](http://dru
 
 For example you could apply any number of javascript functions to a string.
 
-To use that in Turnilo define:
+To use that in Turnilo define following `options` at data cube level:
 
 ```yaml
 options:
@@ -501,7 +501,7 @@ The aggregation could be any supported Druid aggregation.
 For example Plywood currently does not support the modulo operator.
 While Druid has no native modulo support ether it is possible to modulo a measure by using a [javascript aggregator](http://druid.io/docs/latest/querying/aggregations.html#javascript-aggregator).
 
-To use that in Turnilo define:
+To use that in Turnilo define following `options` at data cube level:
 
 ```yaml
 options:
@@ -607,6 +607,37 @@ The title for this measure group in the UI. Can be anything and is safe to chang
 
 An array of nested measures or measure groups. It cannot be empty.
 
+
+### Advanced data cube options
+
+One can set advanced options for every data cube configured in Turnilo with the following properties
+defined in `options` property of a date cube:
+
+**customAggregations**
+
+Custom measure aggregations definition. See [Custom aggregations](#custom-aggregations).
+
+**customTransforms**
+
+Custom dimension transformations definition. See [custom transformations](#custom-transformations).
+
+**druidContext**
+
+Context to be send to Druid with every query executed on the data cube defined as yaml key / value mappings.
+See [Druid context](http://druid.io/docs/latest/querying/query-context.html).
+
+Advanced options example:
+```yaml
+- name: data_cube
+  options:
+    customTransforms:
+      ...
+    customAggregation:
+      ...
+    druidContext:
+      priority: 100
+      useCache: false
+```
 
 ## Customization
 

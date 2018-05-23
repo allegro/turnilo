@@ -135,7 +135,6 @@ export interface DataCubeOptions {
   customAggregations?: CustomDruidAggregations;
   customTransforms?: CustomDruidTransforms;
   druidContext?: Record<string, any>;
-  priority?: number;
 
   // Deprecated
   defaultSplits?: SplitsJS;
@@ -575,7 +574,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
       var externalContext: Record<string, any> = options.druidContext || {};
       externalContext['timeout'] = cluster.getTimeout();
-      if (options.priority) externalContext['priority'] = options.priority;
       externalValue.context = externalContext;
     }
 

@@ -278,7 +278,9 @@ describe('DataCube', () => {
             }
           ],
           "defaultSplits": "__time",
-          "priority": 13
+          "druidContext": {
+            "priority": 13
+          }
         }
       };
 
@@ -326,7 +328,9 @@ describe('DataCube', () => {
         ],
         "name": "wiki",
         "options": {
-          "priority": 13
+          "druidContext": {
+            "priority": 13
+          }
         },
         "refreshRule": {
           "rule": "query"
