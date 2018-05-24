@@ -1,29 +1,39 @@
 {
-  "_extends": "tslint:recommended",
+  "extends": [
+    "tslint:recommended",
+    "tslint-eslint-rules"
+  ],
   "rules": {
+    "prefer-const": false,
     "align": [true,
       "parameters",
-      "statements"
+      "arguments", // a lot of fixes
+      "statements",
+      "members",
+      "elements"
     ],
-    "ban": [false,
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "ban": [true,
       ["_", "extend"],
       ["_", "isNull"],
       ["_", "isDefined"]
     ],
     "class-name": true,
-    "comment-format": [false,
+    "comment-format": [true,
       "check-space"
     ],
-    "curly": false,
+    "curly": [true,
+      "ignore-same-line"
+    ],
     "eofline": true,
     "file-header": [
       true,
       "Copyright 2017-2018 Allegro.pl"
     ],
-    "forin": false,
-    "indent": [true, 2],
-    "interface-name": false,
-    "jsdoc-format": true,
+    "forin": true,
+    "indent": [true, "spaces", 2],
+    "interface-name": [true, "never-prefix"],
+    "jsdoc-format": [true, "check-multiline-start"],
     "label-position": true,
     "max-line-length": [true, 200],
     "member-access": false,
@@ -32,8 +42,9 @@
     ],
     "no-any": false,
     "no-arg": true,
-    "no-bitwise": false,
-    "no-consecutive-blank-lines": false,
+    "no-angle-bracket-type-assertion": false,
+    "no-bitwise": true,
+    "no-consecutive-blank-lines": true,
     "no-console": [true,
       "debug",
       "info",
@@ -41,65 +52,22 @@
       "timeEnd",
       "trace"
     ],
-    "no-construct": false,
-    "no-parameter-properties": false,
-    "no-debugger": true,
     "no-duplicate-variable": false,
-    "no-empty": false,
-    "no-eval": true,
+    "no-empty": true,
     "no-inferrable-types": true,
-    "no-internal-module": false,
-    "no-null-keyword": false,
     "no-require-imports": false,
-    "no-shadowed-variable": false,
     "no-string-literal": false,
     "no-switch-case-fall-through": false,
-    "no-trailing-whitespace": true,
-    "no-unreachable": false,
-    "no-unused-expression": false,
-    "no-unused-variable": false,
-    "no-use-before-declare": false,
+    "no-unused-variable": true,
     "no-var-keyword": false,
     "no-var-requires": false,
+    "object-curly-spacing": [true, "always"],
     "object-literal-sort-keys": false,
-    "one-line": [true,
-      "check-catch",
-      "check-else",
-      "check-finally",
-      "check-open-brace",
-      "check-whitespace"
-    ],
     "quotemark": [false, "double", "jsx-double", "avoid-escape"],
-    "radix": true,
-    "semicolon": true,
     "switch-default": false,
     "trailing-comma": [true, {
       "singleline": "never",
       "multiline": "never"
-    }],
-    "triple-equals": [true, "allow-null-check"],
-    "typedef": false,
-    "typedef-whitespace": [true, {
-      "call-signature": "nospace",
-      "index-signature": "nospace",
-      "parameter": "nospace",
-      "property-declaration": "nospace",
-      "variable-declaration": "nospace"
-    }, {
-      "call-signature": "onespace",
-      "index-signature": "onespace",
-      "parameter": "onespace",
-      "property-declaration": "onespace",
-      "variable-declaration": "onespace"
-    }],
-    "use-strict": false,
-    "variable-name": false,
-    "whitespace": [true,
-      "check-branch",
-      "check-decl",
-      "check-operator",
-      "check-separator",
-      "check-type"
-    ]
+    }]
   }
 }
