@@ -243,9 +243,9 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     if (!dataCube) throw new Error('Essence must have a dataCube');
 
-    function isHighlightMeasureVisible(highlight: Highlight): boolean {
+    function hasNoMeasureOrMeasureIsSelected(highlight: Highlight): boolean {
       if (!highlight || !highlight.measure)
-        return false;
+        return true;
 
       const { measure } = highlight;
       return multiMeasureMode ? selectedMeasures.has(measure) : measure === singleMeasure;
@@ -292,7 +292,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     this.pinnedDimensions = pinnedDimensions;
     this.colors = colors;
     this.pinnedSort = pinnedSort;
-    this.highlight = isHighlightMeasureVisible(highlight) ? highlight : null;
+    this.highlight = hasNoMeasureOrMeasureIsSelected(highlight) ? highlight : null;
     this.compare = compare;
     this.visResolve = visResolve;
   }

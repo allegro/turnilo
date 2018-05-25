@@ -19,9 +19,11 @@ import { expect } from 'chai';
 import { testImmutableClass } from 'immutable-class-tester';
 
 import { $ } from 'plywood';
+import { Highlight } from "..";
 import { MANIFESTS } from "../../manifests";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
+import { HighlightFixtures } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
 import { Essence, EssenceJS, VisStrategy } from './essence';
 import { DataCube, Introspection } from "../data-cube/data-cube";
@@ -105,6 +107,26 @@ describe('Essence', () => {
     ], { context });
   });
 
+  describe("removes highlight when necessary", () => {
+    const { lineChartWithAddedMeasure, lineChartWithAvgAddedMeasure, tableNoMeasure } = HighlightFixtures;
+
+    const tests: {highlight: Highlight, expected: Highlight, description: string}[] = [
+      { highlight: lineChartWithAddedMeasure(), expected: lineChartWithAddedMeasure(), description: "is kept when measure is selected" },
+      { highlight: tableNoMeasure(), expected: tableNoMeasure(), description: "is kept when contains no measure" },
+      { highlight: lineChartWithAvgAddedMeasure(), expected: null, description: "is removed when measure is not selected" }
+    ];
+
+    tests.forEach(({ highlight, expected, description }) => {
+      it(`highlight ${description}`, () => {
+        const essenceValue = EssenceMock.wikiTable().valueOf();
+        const essenceValueWithHighlight = { ...essenceValue, highlight };
+        const essenceWithHighlight = new Essence(essenceValueWithHighlight);
+
+        expect(essenceWithHighlight.highlight).to.deep.equal(expected);
+
+      });
+    });
+  });
 
   describe('errors', () => {
     it('must have context', () => {
