@@ -56,7 +56,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
   }
 
   handleClick = () => {
-    this.setState((prevState) => ({ opened: !prevState.opened }));
+    this.setState(prevState => ({ opened: !prevState.opened }));
   }
 
   render() {
@@ -71,7 +71,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
         <div className={"folder-icon"}>{isGroupOpen ? this.openIcon : this.closedIcon}</div>
         <span className={"label"}>{title}</span>
       </div>
-      <div className={classNames("folder-items", { closed: !isGroupOpen})}>
+      <div className={classNames("folder-items", { closed: !isGroupOpen })}>
         {children}
       </div>
     </div>;

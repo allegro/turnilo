@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isImmutableClass } from 'immutable-class';
-import { $, Set, valueFromJS, valueToJS, FilterExpression, LimitExpression } from 'plywood';
-import { hasOwnProperty } from '../../../common/utils/general/general';
+import { Class, Instance, isImmutableClass } from "immutable-class";
+import { $, FilterExpression, LimitExpression, Set, valueFromJS, valueToJS } from "plywood";
+import { hasOwnProperty } from "../../../common/utils/general/general";
 
-const NULL_COLOR = '#666666';
-//const OTHERS_COLOR = '#AAAAAA';
+const NULL_COLOR = "#666666";
+// const OTHERS_COLOR = '#AAAAAA';
 const NORMAL_COLORS = [
-  '#2D95CA',
-  '#EFB925',
-  '#DA4E99',
-  '#4CC873',
-  '#745CBD',
-  '#EA7136',
-  '#E68EE0',
-  '#218C35',
-  '#B0B510',
-  '#904064'
+  "#2D95CA",
+  "#EFB925",
+  "#DA4E99",
+  "#4CC873",
+  "#745CBD",
+  "#EA7136",
+  "#E68EE0",
+  "#218C35",
+  "#B0B510",
+  "#904064"
 ];
 
 function valuesToJS(values: Record<string, any>): Record<string, any> {
@@ -148,7 +148,6 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return new Colors(value);
   }
 
-
   public dimension: string;
   public values: Record<string, any>;
   public hasNull: boolean;
@@ -156,11 +155,11 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
 
   constructor(parameters: ColorsValue) {
     this.dimension = parameters.dimension;
-    if (!this.dimension) throw new Error('must have a dimension');
+    if (!this.dimension) throw new Error("must have a dimension");
     this.values = parameters.values;
     this.hasNull = parameters.hasNull;
     this.limit = parameters.limit;
-    if (!this.values && !this.limit) throw new Error('must have values or limit');
+    if (!this.values && !this.limit) throw new Error("must have values or limit");
   }
 
   public valueOf(): ColorsValue {

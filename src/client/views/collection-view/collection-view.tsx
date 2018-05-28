@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-import './collection-view.scss';
+import "./collection-view.scss";
 
-import * as React from 'react';
-import * as Q from 'q';
+import * as React from "react";
 
-import { Collection, Timekeeper, User, Customization, CollectionTile, DataCube, Essence } from '../../../common/models';
-import { Fn } from '../../../common/utils/general/general';
+import { Collection, CollectionTile, Customization, DataCube, Essence, Timekeeper, User } from "../../../common/models";
+import { Fn } from "../../../common/utils/general/general";
 
-import { STRINGS } from '../../config/constants';
+import { STRINGS } from "../../config/constants";
 
-import { replaceHash } from '../../utils/url/url';
-import { move } from '../../../common/utils/array/array';
+import { move } from "../../../common/utils/array/array";
+import { replaceHash } from "../../utils/url/url";
 
-import { Router, Route, Notifier } from '../../components';
+import { Notifier, Route, Router } from "../../components";
 
-import { CollectionHeaderBar } from './collection-header-bar/collection-header-bar';
-import { CollectionOverview } from './collection-overview/collection-overview';
-import { CollectionTileLightbox } from './collection-tile-lightbox/collection-tile-lightbox';
-
-
+import { CollectionHeaderBar } from "./collection-header-bar/collection-header-bar";
+import { CollectionOverview } from "./collection-overview/collection-overview";
+import { CollectionTileLightbox } from "./collection-tile-lightbox/collection-tile-lightbox";
 
 export interface CollectionViewProps extends React.Props<any> {
   dataCubes: DataCube[];
@@ -77,7 +74,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
       collection = collections[0];
       replaceHash(`#collection/${collection.name}`);
     } else {
-      collection = collections.filter(({name}) => name === crumbs[0])[0];
+      collection = collections.filter(({ name }) => name === crumbs[0])[0];
     }
 
     this.setState({
@@ -132,7 +129,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
     delegate
       .updateCollection(tempCollection)
       .then(() => {
-        Notifier.success('Collection saved');
+        Notifier.success("Collection saved");
         this.setState({
           editingOverview: false,
           tempCollection: null,
@@ -163,7 +160,7 @@ export class CollectionView extends React.Component<CollectionViewProps, Collect
         user={user}
         onNavClick={onNavClick}
         customization={customization}
-        title={currentCollection ? currentCollection.title : ''}
+        title={currentCollection ? currentCollection.title : ""}
         dataCubes={dataCubes}
         collections={collections}
         onAddItem={delegate ? delegate.createTile.bind(this, collection) : null}

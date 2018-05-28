@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-import './dimension-tile.scss';
+import "./dimension-tile.scss";
 
-import * as React from 'react';
 import {
   $,
   Dataset,
@@ -29,15 +28,8 @@ import {
   SortExpression,
   TimeBucketExpression,
   TimeRange
-} from 'plywood';
-import {
-  collect,
-  Fn,
-  formatGranularity,
-  formatNumberRange,
-  formatterFromData,
-  formatTimeBasedOnGranularity
-} from '../../../common/utils';
+} from "plywood";
+import * as React from "react";
 import {
   Clicker,
   Colors,
@@ -55,10 +47,16 @@ import {
   granularityToString,
   SortOn,
   Timekeeper
-} from '../../../common/models';
+} from "../../../common/models";
+import {
+  collect,
+  Fn,
+  formatGranularity,
+  formatNumberRange,
+  formatterFromData,
+  formatTimeBasedOnGranularity
+} from "../../../common/utils";
 
-import { classNames, setDragGhost } from '../../utils/dom/dom';
-import { DragManager } from '../../utils/drag-manager/drag-manager';
 import {
   getLocale,
   MAX_SEARCH_LENGTH,
@@ -67,16 +65,17 @@ import {
   PIN_TITLE_HEIGHT,
   SEARCH_WAIT,
   STRINGS
-} from '../../config/constants';
+} from "../../config/constants";
+import { classNames, setDragGhost } from "../../utils/dom/dom";
+import { DragManager } from "../../utils/drag-manager/drag-manager";
 
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { Checkbox } from '../checkbox/checkbox';
-import { Loader } from '../loader/loader';
-import { QueryError } from '../query-error/query-error';
-import { HighlightString } from '../highlight-string/highlight-string';
-import { SearchableTile, TileAction } from '../searchable-tile/searchable-tile';
+import { Checkbox } from "../checkbox/checkbox";
+import { HighlightString } from "../highlight-string/highlight-string";
+import { Loader } from "../loader/loader";
+import { QueryError } from "../query-error/query-error";
+import { SearchableTile, TileAction } from "../searchable-tile/searchable-tile";
+import { SvgIcon } from "../svg-icon/svg-icon";
 import { TileHeaderIcon } from "../tile-header/tile-header";
-
 
 export interface DimensionTileProps extends React.Props<any> {
   clicker: Clicker;
@@ -120,7 +119,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       foldable: false,
       showSearch: false,
       selectedGranularity: null,
-      searchText: ''
+      searchText: ""
     };
 
     this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
@@ -153,10 +152,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     if (searchText) {
-      filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), 'ignoreCase'));
+      filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), "ignoreCase"));
     }
 
-    let query: any = $('main')
+    let query: any = $("main")
       .filter(filterExpression);
 
     let sortExpression: Expression = null;
@@ -169,7 +168,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
       if (!selectedGranularity) {
         if (filterSelection) {
-          const range = dimension.kind === 'time' ? essence.evaluateSelection(filterSelection as Expression, timekeeper) : (filterSelection as Expression).getLiteralValue().extent();
+          const range = dimension.kind === "time" ? essence.evaluateSelection(filterSelection as Expression, timekeeper) : (filterSelection as Expression).getLiteralValue().extent();
           selectedGranularity = getBestGranularityForRange(range, true, dimension.bucketedBy, dimension.granularities);
         } else {
           selectedGranularity = getDefaultGranularityForKind(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy, dimension.granularities);
@@ -205,8 +204,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
             dataset,
             error: null
           });
-        },
-        (error) => {
+        }, error => {
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -271,7 +269,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, null, unfolded ? dimension : null) ||
       essence.differentColors(nextEssence) || !dimension.equals(nextDimension) || !sortOn.equals(nextSortOn) ||
       essence.differentTimezoneMatters(nextEssence) ||
-      (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === 'time' ||
+      (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
       differentTimeFilterSelection
     ) {
       this.fetchData(nextEssence, nextTimekeeper, nextDimension, nextSortOn, unfolded, persistedGranularity);
@@ -309,7 +307,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (colors && colors.dimension === dimension.name) {
       if (colors.limit) {
         if (!dataset) return;
-        const values = dataset.data.slice(0, colors.limit).map((d) => d[dimension.name]);
+        const values = dataset.data.slice(0, colors.limit).map(d => d[dimension.name]);
         colors = Colors.fromValues(colors.dimension, values);
       }
       colors = colors.toggle(value);
@@ -353,7 +351,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     const options: FilterMode[] = [Filter.INCLUDED, Filter.EXCLUDED];
 
-    return options.map((value) => {
+    return options.map(value => {
       return {
         selected: filterMode === value,
         onSelect: this.changeFilterMode.bind(this, value),
@@ -375,17 +373,17 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { dimension } = this.props;
 
     const dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = 'all';
-    dataTransfer.setData('text/plain', dimension.title);
+    dataTransfer.effectAllowed = "all";
+    dataTransfer.setData("text/plain", dimension.title);
 
-    DragManager.setDragDimension(dimension, 'dimension-tile');
+    DragManager.setDragDimension(dimension, "dimension-tile");
     setDragGhost(dataTransfer, dimension.title);
   }
 
   toggleSearch() {
     const { showSearch } = this.state;
     this.setState({ showSearch: !showSearch });
-    this.onSearchChange('');
+    this.onSearchChange("");
   }
 
   onSearchChange(text: string) {
@@ -413,7 +411,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { dimension } = this.props;
     const { selectedGranularity } = this.state;
 
-    if (selectedGranularity && dimension.kind === 'time') {
+    if (selectedGranularity && dimension.kind === "time") {
       const duration = (selectedGranularity as TimeBucketExpression).duration;
       return `${dimension.title} (${duration.getDescription()})`;
     }
@@ -432,7 +430,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { dimension } = this.props;
     const { selectedGranularity } = this.state;
     const granularities = dimension.granularities || getGranularities(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy, true);
-    return granularities.map((g) => {
+    return granularities.map(g => {
       const granularityStr = granularityToString(g);
       return {
         selected: granularityEquals(selectedGranularity, g),
@@ -454,13 +452,13 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
       if (!unfolded) {
         if (filterSet) {
-          rowData = rowData.filter((d) => filterSet.contains(d[dimension.name]));
+          rowData = rowData.filter(d => filterSet.contains(d[dimension.name]));
         }
       }
 
       if (searchText) {
         const searchTextLower = searchText.toLowerCase();
-        rowData = rowData.filter((d) => {
+        rowData = rowData.filter(d => {
           return String(d[dimension.name]).toLowerCase().indexOf(searchTextLower) !== -1;
         });
       }
@@ -479,7 +477,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
   }
 
-  private prepareRows(rowData: Datum[], continuous: boolean): Array<JSX.Element> {
+  private prepareRows(rowData: Datum[], continuous: boolean): JSX.Element[] {
     const { essence, dimension, sortOn, colors } = this.props;
     const { searchText, selectedGranularity, filterMode } = this.state;
 
@@ -493,20 +491,20 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     return rowData.map((datum, i) => {
       const segmentValue = datum[dimension.name];
 
-      let className = 'row';
+      let className = "row";
       let checkbox: JSX.Element = null;
       let selected = false;
       if ((filterSet || colors) && !continuous) {
         if (colors) {
           selected = false;
-          className += ' color';
+          className += " color";
         } else {
           selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
-          className += ' ' + (selected ? 'selected' : 'not-selected');
+          className += " " + (selected ? "selected" : "not-selected");
         }
         checkbox = <Checkbox
           selected={selected}
-          type={isExcluded ? 'cross' : 'check'}
+          type={isExcluded ? "cross" : "check"}
           color={colorValues ? colorValues[i] : null}
         />;
       }
@@ -540,11 +538,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   private prepareFoldControl(isFoldable: boolean, unfolded: boolean): JSX.Element {
     if (isFoldable) {
       return <div
-        className={classNames('folder', unfolded ? 'folded' : 'unfolded')}
+        className={classNames("folder", unfolded ? "folded" : "unfolded")}
         onClick={this.toggleFold.bind(this)}
       >
-        <SvgIcon svg={require('../../icons/caret.svg')} />
-        {unfolded ? 'Show selection' : 'Show all'}
+        <SvgIcon svg={require("../../icons/caret.svg")} />
+        {unfolded ? "Show selection" : "Show all"}
       </div>;
     } else {
       return null;
@@ -577,10 +575,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     const className = classNames(
-      'dimension-tile',
+      "dimension-tile",
       filterMode,
-      (foldControl ? 'has-folder' : 'no-folder'),
-      (colors ? 'has-colors' : 'no-colors'),
+      (foldControl ? "has-folder" : "no-folder"),
+      (colors ? "has-colors" : "no-colors"),
       { continuous: isContinuous }
     );
 
@@ -590,19 +588,19 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     };
 
     const icons: TileHeaderIcon[] = [{
-      name: 'search',
-      ref: 'search',
+      name: "search",
+      ref: "search",
       onClick: this.toggleSearch.bind(this),
-      svg: require('../../icons/full-search.svg'),
+      svg: require("../../icons/full-search.svg"),
       active: showSearch
     }];
 
     if (onClose !== null) {
       icons.push({
-        name: 'close',
-        ref: 'close',
+        name: "close",
+        ref: "close",
         onClick: onClose,
-        svg: require('../../icons/full-remove.svg')
+        svg: require("../../icons/full-remove.svg")
       });
     }
 

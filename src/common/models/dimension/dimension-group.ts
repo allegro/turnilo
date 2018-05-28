@@ -98,7 +98,7 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
     return {
       name: this.name,
       title: this.title,
-      dimensions: this.dimensions.map((dimension) => dimension.toJS())
+      dimensions: this.dimensions.map(dimension => dimension.toJS())
     };
   }
 

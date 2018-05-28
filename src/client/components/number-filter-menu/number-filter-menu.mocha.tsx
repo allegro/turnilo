@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as React from 'react';
-import * as TestUtils from 'react-dom/test-utils';
-import { EssenceMock, TimekeeperMock, DimensionMock, StageMock } from '../../../common/models/mocks';
+import { expect } from "chai";
+import * as React from "react";
+import * as TestUtils from "react-dom/test-utils";
+import { DimensionMock, EssenceMock, StageMock, TimekeeperMock } from "../../../common/models/mocks";
 
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
-import { NumberFilterMenu } from './number-filter-menu';
+import { NumberFilterMenu } from "./number-filter-menu";
 
-describe('NumberFilterMenu', () => {
-  var div = document.createElement('div');
+describe("NumberFilterMenu", () => {
+  var div = document.createElement("div");
   div.setAttribute("id", "Div1");
 
-  it('adds the correct class', () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <NumberFilterMenu
         clicker={null}
@@ -43,8 +43,8 @@ describe('NumberFilterMenu', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('number-filter-menu');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("number-filter-menu");
   });
 
 });

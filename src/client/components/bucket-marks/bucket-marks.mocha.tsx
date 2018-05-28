@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
 
-import { renderIntoDocument } from '../../utils/test-utils';
+import { renderIntoDocument } from "../../utils/test-utils";
 
-import { $, Expression, PlywoodValue } from 'plywood';
-import { BucketMarks } from './bucket-marks';
+import { BucketMarks } from "./bucket-marks";
 
-import { StageMock } from '../../../common/models/mocks';
+import { StageMock } from "../../../common/models/mocks";
 
-describe('BucketMarks', () => {
-  it('adds the correct class', () => {
+describe("BucketMarks", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <BucketMarks
         stage={StageMock.defaultA()}
@@ -38,8 +36,8 @@ describe('BucketMarks', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('bucket-marks');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("bucket-marks");
   });
 
 });

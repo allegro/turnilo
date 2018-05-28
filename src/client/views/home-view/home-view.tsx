@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-import './home-view.scss';
+import "./home-view.scss";
 
-import * as React from 'react';
+import * as React from "react";
 
-import { Collection, Customization, DataCube, User } from '../../../common/models';
-import { STRINGS } from '../../config/constants';
-import { Fn } from '../../../common/utils';
+import { Collection, Customization, DataCube, User } from "../../../common/models";
+import { Fn } from "../../../common/utils";
+import { STRINGS } from "../../config/constants";
 
-import { generateUniqueName } from '../../../common/utils/string/string';
-import { indexByAttribute } from '../../../common/utils/array/array';
+import { indexByAttribute } from "../../../common/utils/array/array";
+import { generateUniqueName } from "../../../common/utils/string/string";
 
-import { NameDescriptionModal } from '../../modals';
-import { SvgIcon } from '../../components';
+import { SvgIcon } from "../../components";
+import { NameDescriptionModal } from "../../modals";
 
-import { HomeHeaderBar } from './home-header-bar/home-header-bar';
-import { ItemCard } from './item-card/item-card';
+import { HomeHeaderBar } from "./home-header-bar/home-header-bar";
+import { ItemCard } from "./item-card/item-card";
 
 export interface HomeViewProps extends React.Props<any> {
   dataCubes?: DataCube[];
@@ -63,21 +63,21 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
   }
 
   goToItem(item: DataCube | Collection) {
-    const itemPrefix = Collection.isCollection(item) ? 'collection/' : '';
+    const itemPrefix = Collection.isCollection(item) ? "collection/" : "";
 
-    window.location.hash = '#' + itemPrefix + item.name;
+    window.location.hash = "#" + itemPrefix + item.name;
   }
 
   goToSettings() {
-    window.location.hash = '#settings';
+    window.location.hash = "#settings";
   }
 
   renderSettingsIcon() {
     const { user, stateful } = this.props;
-    if (!user || !user.allow['settings'] || !stateful) return null;
+    if (!user || !user.allow["settings"] || !stateful) return null;
 
     return <div className="icon-button" onClick={this.goToSettings.bind(this)}>
-      <SvgIcon svg={require('../../icons/full-settings.svg')} />
+      <SvgIcon svg={require("../../icons/full-settings.svg")} />
     </div>;
   }
 
@@ -101,7 +101,7 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
         title={item.title}
         count={isDataCube ? undefined : (item as Collection).tiles.length}
         description={item.description}
-        icon={isDataCube ? 'full-cube' : 'full-collection'}
+        icon={isDataCube ? "full-cube" : "full-collection"}
         onClick={this.goToItem.bind(this, item)}
       />;
     }
@@ -111,14 +111,14 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
       title={item.title}
       count={isDataCube ? undefined : (item as Collection).tiles.length}
       description={item.description}
-      icon={isDataCube ? 'full-cube' : 'full-collection'}
+      icon={isDataCube ? "full-cube" : "full-collection"}
       onClick={this.goToItem.bind(this, item)}
       onEdit={this.editItem.bind(this, item)}
       onDelete={isDataCube ? this.props.deleteDataCube.bind(this, item) : this.deleteCollection.bind(this, item)}
     />;
   }
 
-  renderItems(items: (DataCube | Collection)[], adder?: JSX.Element): JSX.Element {
+  renderItems(items: Array<DataCube | Collection>, adder?: JSX.Element): JSX.Element {
     return <div className="items-container">
       {items.map(this.renderItem, this)}
 
@@ -140,9 +140,9 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
     const { collections, collectionsDelegate } = this.props;
 
     const newCollection = new Collection({
-      name: generateUniqueName('c', name => indexByAttribute(collections, 'name', name) === -1),
+      name: generateUniqueName("c", name => indexByAttribute(collections, "name", name) === -1),
       tiles: [],
-      title: 'New collection'
+      title: "New collection"
     });
 
     const closeModal = () => {
@@ -152,7 +152,7 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
     };
 
     const addCollection = (collection: Collection) => {
-      collectionsDelegate.addCollection(collection).then((url) => {
+      collectionsDelegate.addCollection(collection).then(url => {
         closeModal();
         window.location.hash = url;
       });
@@ -190,7 +190,7 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
         <div className="grid-col-10 right actions">
           {collectionsDelegate && collections.length > 4 ?
             <div className="add" onClick={create}>
-              <SvgIcon svg={require('../../icons/full-add-framed.svg')} />
+              <SvgIcon svg={require("../../icons/full-add-framed.svg")} />
             </div>
             : null}
         </div>

@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { testImmutableClass } from "immutable-class-tester";
 
-import { $, Expression } from 'plywood';
-import { Stage, StageJS } from './stage';
-import { StageMock } from './stage.mock';
+import { Stage, StageJS } from "./stage";
+import { StageMock } from "./stage.mock";
 
-describe('Stage', () => {
-  it('is an immutable class', () => {
+describe("Stage", () => {
+  it("is an immutable class", () => {
     testImmutableClass<StageJS>(Stage, [
       StageMock.DEFAULT_A_JS,
       StageMock.DEFAULT_B_JS,

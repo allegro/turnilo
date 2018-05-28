@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-import './simple-list.scss';
+import "./simple-list.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
+import * as React from "react";
 
-import { setDragGhost, classNames, getYFromEvent } from '../../utils/dom/dom';
-import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import { classNames, getYFromEvent, setDragGhost } from "../../utils/dom/dom";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
 export interface SimpleRow {
   title: string;
@@ -48,14 +45,14 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
   constructor(props: SimpleListProps) {
     super(props);
 
-    this.state = {dropIndex: -1};
+    this.state = { dropIndex: -1 };
   }
 
   dragStart(item: SimpleRow, e: DragEvent) {
-    this.setState({draggedItem: item});
+    this.setState({ draggedItem: item });
 
     var dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = 'move';
+    dataTransfer.effectAllowed = "move";
     dataTransfer.setData("text/html", item.title);
 
     setDragGhost(dataTransfer, item.title);
@@ -104,10 +101,10 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
     const svgize = (iconName: string) => iconName ? <SvgIcon svg={require(`../../icons/${iconName}.svg`)}/> : null;
 
     return rows.map((row, i) => {
-      let {title, description, icon} = row;
+      let { title, description, icon } = row;
 
       let dragHandle = <div className="drag-handle">
-        <SvgIcon svg={require('../../icons/dragger.svg')}/>
+        <SvgIcon svg={require("../../icons/dragger.svg")}/>
       </div>;
 
       let svg = svgize(icon);
@@ -117,21 +114,21 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
       </div>;
 
       let actions = <div className="actions">
-        <button onClick={onEdit.bind(this, i)}>{svgize('full-edit')}</button>
-        <button onClick={onRemove.bind(this, i)}>{svgize('full-remove')}</button>
+        <button onClick={onEdit.bind(this, i)}>{svgize("full-edit")}</button>
+        <button onClick={onRemove.bind(this, i)}>{svgize("full-remove")}</button>
       </div>;
 
       const isBeingDragged = draggedItem === row;
 
       const classes = classNames(
-        'row',
+        "row",
         {
-          'drop-before': dropIndex === i,
+          "drop-before": dropIndex === i,
 
           // last item takes care of both before and after indications
-          'drop-after': i === rows.length - 1 && dropIndex === i + 1,
+          "drop-after": i === rows.length - 1 && dropIndex === i + 1,
 
-          'dragged': isBeingDragged
+          "dragged": isBeingDragged
         }
       );
 

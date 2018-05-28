@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import './about-modal.scss';
+import "./about-modal.scss";
 
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { STRINGS } from '../../config/constants';
-import { Modal, Button } from '../../components/index';
+import * as React from "react";
+import { Fn } from "../../../common/utils/general/general";
+import { Button, Modal } from "../../components/index";
+import { STRINGS } from "../../config/constants";
 
 export interface AboutModalProps extends React.Props<any> {
   version: string;
@@ -42,11 +42,11 @@ export class AboutModal extends React.Component<AboutModalProps, AboutModalState
     >
       <div className="p-group">
         <p>
-          <a href="https://github.com/allegro/turnilo" target='_blank'>Turnilo</a> (version {version}) is open source under
-          the <a href="https://github.com/allegro/turnilo/blob/master/LICENSE" target='_blank'>Apache 2.0</a> license.
+          <a href="https://github.com/allegro/turnilo" target="_blank">Turnilo</a> (version {version}) is open source under
+          the <a href="https://github.com/allegro/turnilo/blob/master/LICENSE" target="_blank">Apache 2.0</a> license.
         </p>
         <p>
-          For bug reports, feedback or support please create an issue on <a href="https://github.com/allegro/turnilo/issues" target='_blank'>GitHub</a>.
+          For bug reports, feedback or support please create an issue on <a href="https://github.com/allegro/turnilo/issues" target="_blank">GitHub</a>.
         </p>
       </div>
       <div className="button-bar">

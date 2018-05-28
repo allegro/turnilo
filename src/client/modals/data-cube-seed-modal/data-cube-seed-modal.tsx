@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-import './data-cube-seed-modal.scss';
+import "./data-cube-seed-modal.scss";
 
-import * as React from 'react';
-import { DataCube, Cluster } from "../../../common/models/index";
+import * as React from "react";
+import { Cluster, DataCube } from "../../../common/models/index";
 
-import { FormLabel, Button, Modal, ImmutableInput, ImmutableDropdown, Checkbox } from '../../components/index';
+import { DATA_CUBE as LABELS } from "../../../common/models/labels";
+import { indexByAttribute } from "../../../common/utils/array/array";
+import { generateUniqueName } from "../../../common/utils/string/string";
+import { Button, Checkbox, FormLabel, ImmutableDropdown, ImmutableInput, Modal } from "../../components/index";
 import { STRINGS } from "../../config/constants";
-import { DATA_CUBE as LABELS } from '../../../common/models/labels';
-import { generateUniqueName } from '../../../common/utils/string/string';
-import { indexByAttribute } from '../../../common/utils/array/array';
 
-import { ImmutableFormDelegate, ImmutableFormState } from '../../utils/immutable-form-delegate/immutable-form-delegate';
+import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 
 export interface DataCubeSeedModalProps extends React.Props<any> {
   onNext: (newDataCube: DataCube, autoFill: boolean) => void;
@@ -52,13 +52,13 @@ export class DataCubeSeedModal extends React.Component<DataCubeSeedModalProps, D
 
     if (!dataCubes) return;
 
-    var clusterName = clusters.length ? clusters[0].name : 'native';
+    var clusterName = clusters.length ? clusters[0].name : "native";
 
     this.setState({
       newInstance: new DataCube({
-        name: generateUniqueName('dc', name => indexByAttribute(dataCubes, 'name', name) === -1),
+        name: generateUniqueName("dc", name => indexByAttribute(dataCubes, "name", name) === -1),
         clusterName,
-        source: ''
+        source: ""
       })
     });
   }
@@ -99,8 +99,8 @@ export class DataCubeSeedModal extends React.Component<DataCubeSeedModalProps, D
       onClose={this.props.onCancel}
     >
       <form>
-        {makeLabel('source')}
-        {makeDropDownInput('source', [])}
+        {makeLabel("source")}
+        {makeDropDownInput("source", [])}
 
         <Checkbox
           selected={autoFill}

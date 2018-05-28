@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
-import * as express from 'express';
-import { Response } from 'express';
-import * as supertest from 'supertest';
-import { $, ply, r } from 'plywood';
-import * as bodyParser from 'body-parser';
+import * as bodyParser from "body-parser";
+import * as express from "express";
+import { Response } from "express";
+import { $ } from "plywood";
+import * as Q from "q";
+import * as supertest from "supertest";
 
-import { AppSettings } from '../../../common/models/index';
-import { SwivRequest } from '../../utils/index';
+import { AppSettings } from "../../../common/models/index";
+import { SwivRequest } from "../../utils/index";
 
-import { AppSettingsMock } from '../../../common/models/app-settings/app-settings.mock';
+import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
 
-import * as plywoodRouter from './plywood';
+import * as plywoodRouter from "./plywood";
 
 var app = express();
 
@@ -36,93 +36,93 @@ app.use(bodyParser.json());
 var appSettings: AppSettings = AppSettingsMock.wikiOnlyWithExecutor();
 app.use((req: SwivRequest, res: Response, next: Function) => {
   req.user = null;
-  req.version = '0.9.4';
+  req.version = "0.9.4";
   req.stateful = false;
   req.getSettings = (dataCubeOfInterest?: any) => Q(appSettings);
   next();
 });
 
-app.use('/', plywoodRouter);
+app.use("/", plywoodRouter);
 
-describe('plywood router', () => {
-  it('must have dataCube', (testComplete: any) => {
+describe("plywood router", () => {
+  it("must have dataCube", (testComplete: any) => {
     supertest(app)
-      .post('/')
-      .set('Content-Type', "application/json")
+      .post("/")
+      .set("Content-Type", "application/json")
       .send({
-        version: '0.9.4',
-        expression: $('main').toJS()
+        version: "0.9.4",
+        expression: $("main").toJS()
       })
-      .expect('Content-Type', "application/json; charset=utf-8")
+      .expect("Content-Type", "application/json; charset=utf-8")
       .expect(400)
       .expect({
-        "error": "must have a dataCube"
-      }, testComplete);
+        error: "must have a dataCube"
+      },      testComplete);
   });
 
-  it('does a query (value)', (testComplete: any) => {
+  it("does a query (value)", (testComplete: any) => {
     supertest(app)
-      .post('/')
-      .set('Content-Type', "application/json")
+      .post("/")
+      .set("Content-Type", "application/json")
       .send({
-        version: '0.9.4',
-        expression: $('main').count().toJS(),
-        dataCube: 'wiki'
+        version: "0.9.4",
+        expression: $("main").count().toJS(),
+        dataCube: "wiki"
       })
-      .expect('Content-Type', "application/json; charset=utf-8")
+      .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)
       .expect({
         result: 10
-      }, testComplete);
+      },      testComplete);
   });
 
-  it('does a query (dataset)', (testComplete: any) => {
+  it("does a query (dataset)", (testComplete: any) => {
     supertest(app)
-      .post('/')
-      .set('Content-Type', "application/json")
+      .post("/")
+      .set("Content-Type", "application/json")
       .send({
-        version: '0.9.4',
-        expression: $('main')
-          .split('$channel', 'Channel')
-          .apply('Count', $('main').count())
-          .sort('$Count', 'descending')
+        version: "0.9.4",
+        expression: $("main")
+          .split("$channel", "Channel")
+          .apply("Count", $("main").count())
+          .sort("$Count", "descending")
           .limit(2)
           .toJS(),
-        dataSource: 'wiki' // back compat
+        dataSource: "wiki" // back compat
       })
-      .expect('Content-Type', "application/json; charset=utf-8")
+      .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)
       .expect({
-        "result": {
-          "attributes": [
+        result: {
+          attributes: [
             {
-              "name": "Channel",
-              "type": "STRING"
+              name: "Channel",
+              type: "STRING"
             },
             {
-              "name": "main",
-              "type": "DATASET"
+              name: "main",
+              type: "DATASET"
             },
             {
-              "name": "Count",
-              "type": "NUMBER"
+              name: "Count",
+              type: "NUMBER"
             }
           ],
-          "data": [
+          data: [
             {
-              "Channel": "en",
-              "Count": 4
+              Channel: "en",
+              Count: 4
             },
             {
-              "Channel": "vi",
-              "Count": 4
+              Channel: "vi",
+              Count: 4
             }
           ],
-          "keys": [
+          keys: [
             "Channel"
           ]
         }
-      }, testComplete);
+      },      testComplete);
   });
 
 });

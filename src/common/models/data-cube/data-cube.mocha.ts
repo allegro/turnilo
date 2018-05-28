@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
-import * as Q from 'q';
+import { expect } from "chai";
+import { testImmutableClass } from "immutable-class-tester";
 
-import { $, Expression, AttributeInfo } from 'plywood';
+import { AttributeInfo } from "plywood";
 import { Cluster } from "../cluster/cluster";
-import { DataCube, DataCubeJS } from './data-cube';
-import { DataCubeMock} from './data-cube.mock';
+import { DataCube, DataCubeJS } from "./data-cube";
+import { DataCubeMock } from "./data-cube.mock";
 
-describe('DataCube', () => {
+describe("DataCube", () => {
   var druidCluster = Cluster.fromJS({
-    name: 'druid',
-    type: 'druid'
+    name: "druid",
+    type: "druid"
   });
 
   var context = {
     cluster: druidCluster
   };
 
-  it('is an immutable class', () => {
+  it("is an immutable class", () => {
     testImmutableClass<DataCubeJS>(DataCube, [
       DataCubeMock.TWITTER_JS,
       DataCubeMock.WIKI_JS
@@ -45,24 +44,24 @@ describe('DataCube', () => {
     it("throws an error if bad name is used", () => {
       expect(() => {
         DataCube.fromJS({
-          name: 'wiki hello',
-          clusterName: 'druid',
-          source: 'wiki',
+          name: "wiki hello",
+          clusterName: "druid",
+          source: "wiki",
           attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'articleName', type: 'STRING' },
-            { name: 'count', type: 'NUMBER' }
+            { name: "__time", type: "TIME" },
+            { name: "articleName", type: "STRING" },
+            { name: "count", type: "NUMBER" }
           ],
           dimensions: [
             {
-              name: 'articleName',
-              formula: '$articleName'
+              name: "articleName",
+              formula: "$articleName"
             }
           ],
           measures: [
             {
-              name: 'count',
-              formula: '$main.sum($count)'
+              name: "count",
+              formula: "$main.sum($count)"
             }
           ]
         });
@@ -72,25 +71,25 @@ describe('DataCube', () => {
     it("throws an error if the defaultSortMeasure can not be found", () => {
       expect(() => {
         DataCube.fromJS({
-          name: 'wiki',
-          clusterName: 'druid',
-          source: 'wiki',
-          defaultSortMeasure: 'gaga',
+          name: "wiki",
+          clusterName: "druid",
+          source: "wiki",
+          defaultSortMeasure: "gaga",
           attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'articleName', type: 'STRING' },
-            { name: 'count', type: 'NUMBER' }
+            { name: "__time", type: "TIME" },
+            { name: "articleName", type: "STRING" },
+            { name: "count", type: "NUMBER" }
           ],
           dimensions: [
             {
-              name: 'articleName',
-              formula: '$articleName'
+              name: "articleName",
+              formula: "$articleName"
             }
           ],
           measures: [
             {
-              name: 'count',
-              formula: '$main.sum($count)'
+              name: "count",
+              formula: "$main.sum($count)"
             }
           ]
         });
@@ -100,24 +99,24 @@ describe('DataCube', () => {
     it("throws an error if duplicate name is used across measures and dimensions", () => {
       expect(() => {
         DataCube.fromJS({
-          name: 'wiki',
-          clusterName: 'druid',
-          source: 'wiki',
+          name: "wiki",
+          clusterName: "druid",
+          source: "wiki",
           attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'articleName', type: 'STRING' },
-            { name: 'count', type: 'NUMBER' }
+            { name: "__time", type: "TIME" },
+            { name: "articleName", type: "STRING" },
+            { name: "count", type: "NUMBER" }
           ],
           dimensions: [
             {
-              name: 'articleName',
-              formula: '$articleName'
+              name: "articleName",
+              formula: "$articleName"
             }
           ],
           measures: [
             {
-              name: 'articleName',
-              formula: '$main.sum($count)'
+              name: "articleName",
+              formula: "$main.sum($count)"
             }
           ]
         });
@@ -127,28 +126,28 @@ describe('DataCube', () => {
     it("throws an error if duplicate name is used in measures", () => {
       expect(() => {
         DataCube.fromJS({
-          name: 'wiki',
-          clusterName: 'druid',
-          source: 'wiki',
+          name: "wiki",
+          clusterName: "druid",
+          source: "wiki",
           attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'articleName', type: 'STRING' },
-            { name: 'count', type: 'NUMBER' }
+            { name: "__time", type: "TIME" },
+            { name: "articleName", type: "STRING" },
+            { name: "count", type: "NUMBER" }
           ],
           dimensions: [
             {
-              name: 'notArticleName',
-              formula: '$notArticleName'
+              name: "notArticleName",
+              formula: "$notArticleName"
             }
           ],
           measures: [
             {
-              name: 'articleName',
-              formula: '$main.sum($count)'
+              name: "articleName",
+              formula: "$main.sum($count)"
             },
             {
-              name: 'articleName',
-              formula: '$articleName'
+              name: "articleName",
+              formula: "$articleName"
             }
           ]
         });
@@ -158,28 +157,28 @@ describe('DataCube', () => {
     it("throws an error if duplicate name is used in dimensions", () => {
       expect(() => {
         DataCube.fromJS({
-          name: 'wiki',
-          clusterName: 'druid',
-          source: 'wiki',
+          name: "wiki",
+          clusterName: "druid",
+          source: "wiki",
           attributes: [
-            { name: '__time', type: 'TIME' },
-            { name: 'articleName', type: 'STRING' },
-            { name: 'count', type: 'NUMBER' }
+            { name: "__time", type: "TIME" },
+            { name: "articleName", type: "STRING" },
+            { name: "count", type: "NUMBER" }
           ],
           dimensions: [
             {
-              name: 'articleName',
-              formula: '$articleName'
+              name: "articleName",
+              formula: "$articleName"
             },
             {
-              name: 'articleName',
-              formula: '$articleName.substr(0,2)'
+              name: "articleName",
+              formula: "$articleName.substr(0,2)"
             }
           ],
           measures: [
             {
-              name: 'articleName',
-              formula: '$main.sum($count)'
+              name: "articleName",
+              formula: "$main.sum($count)"
             }
           ]
         });
@@ -191,44 +190,44 @@ describe('DataCube', () => {
   describe("#getIssues", () => {
     it("raises issues", () => {
       var dataCube = DataCube.fromJS({
-        name: 'wiki',
-        clusterName: 'druid',
-        source: 'wiki',
+        name: "wiki",
+        clusterName: "druid",
+        source: "wiki",
         attributes: [
-          { name: '__time', type: 'TIME' },
-          { name: 'articleName', type: 'STRING' },
-          { name: 'count', type: 'NUMBER' }
+          { name: "__time", type: "TIME" },
+          { name: "articleName", type: "STRING" },
+          { name: "count", type: "NUMBER" }
         ],
         dimensions: [
           {
-            name: 'gaga',
-            formula: '$gaga'
+            name: "gaga",
+            formula: "$gaga"
           },
           {
-            name: 'bucketArticleName',
-            formula: '$articleName.numberBucket(5)'
+            name: "bucketArticleName",
+            formula: "$articleName.numberBucket(5)"
           }
         ],
         measures: [
           {
-            name: 'count',
-            formula: '$main.sum($count)'
+            name: "count",
+            formula: "$main.sum($count)"
           },
           {
-            name: 'added',
-            formula: '$main.sum($added)'
+            name: "added",
+            formula: "$main.sum($added)"
           },
           {
-            name: 'sumArticleName',
-            formula: '$main.sum($articleName)'
+            name: "sumArticleName",
+            formula: "$main.sum($articleName)"
           },
           {
-            name: 'koalaCount',
-            formula: '$koala.sum($count)'
+            name: "koalaCount",
+            formula: "$koala.sum($count)"
           },
           {
-            name: 'countByThree',
-            formula: '$count / 3'
+            name: "countByThree",
+            formula: "$count / 3"
           }
         ]
       });
@@ -244,42 +243,41 @@ describe('DataCube', () => {
     });
   });
 
-
   describe("back compat", () => {
     it("works in a generic case", () => {
       var legacyDataCubeJS: any = {
-        "name": "wiki",
-        "title": "Wiki",
-        "engine": "druid",
-        "source": "wiki",
-        "subsetFilter": "$page.in(['en', 'fr'])",
-        "dimensions": [
+        name: "wiki",
+        title: "Wiki",
+        engine: "druid",
+        source: "wiki",
+        subsetFilter: "$page.in(['en', 'fr'])",
+        dimensions: [
           {
-            "kind": "time",
-            "name": "__time",
-            "formula": "$__time"
+            kind: "time",
+            name: "__time",
+            formula: "$__time"
           },
           {
-            "name": "page"
+            name: "page"
           }
         ],
-        "measures": [
+        measures: [
           {
-            "name": "added",
-            "formula": "$main.sum($added)"
+            name: "added",
+            formula: "$main.sum($added)"
           }
         ],
-        "options": {
-          "skipIntrospection": true,
-          "attributeOverrides": [
+        options: {
+          skipIntrospection: true,
+          attributeOverrides: [
             {
-              name: 'page',
-              type: 'STRING'
+              name: "page",
+              type: "STRING"
             }
           ],
-          "defaultSplits": "__time",
-          "druidContext": {
-            "priority": 13
+          defaultSplits: "__time",
+          druidContext: {
+            priority: 13
           }
         }
       };
@@ -287,142 +285,141 @@ describe('DataCube', () => {
       var dataCube = DataCube.fromJS(legacyDataCubeJS, context);
 
       expect(dataCube.toJS()).to.deep.equal({
-        "attributeOverrides": [
+        attributeOverrides: [
           {
-            "name": "page",
-            "type": "STRING"
+            name: "page",
+            type: "STRING"
           }
         ],
-        "clusterName": "druid",
-        "defaultSortMeasure": "added",
-        "defaultSplits": [
+        clusterName: "druid",
+        defaultSortMeasure: "added",
+        defaultSplits: [
           {
-            "expression": {
-              "name": "__time",
-              "op": "ref"
+            expression: {
+              name: "__time",
+              op: "ref"
             }
           }
         ],
-        "description": "",
-        "dimensions": [
+        description: "",
+        dimensions: [
           {
-            "kind": "time",
-            "name": "__time",
-            "title": "Time",
-            "formula": "$__time"
+            kind: "time",
+            name: "__time",
+            title: "Time",
+            formula: "$__time"
           },
           {
-            "kind": "string",
-            "name": "page",
-            "title": "Page",
-            "formula": "$page"
+            kind: "string",
+            name: "page",
+            title: "Page",
+            formula: "$page"
           }
         ],
-        "introspection": "none",
-        "measures": [
+        introspection: "none",
+        measures: [
           {
-            "name": "added",
-            "title": "Added",
-            "formula": "$main.sum($added)"
+            name: "added",
+            title: "Added",
+            formula: "$main.sum($added)"
           }
         ],
-        "name": "wiki",
-        "options": {
-          "druidContext": {
-            "priority": 13
+        name: "wiki",
+        options: {
+          druidContext: {
+            priority: 13
           }
         },
-        "refreshRule": {
-          "rule": "query"
+        refreshRule: {
+          rule: "query"
         },
-        "source": "wiki",
-        "subsetFormula": "$page.in(['en', 'fr'])",
-        "timeAttribute": "__time",
-        "title": "Wiki"
+        source: "wiki",
+        subsetFormula: "$page.in(['en', 'fr'])",
+        timeAttribute: "__time",
+        title: "Wiki"
       });
 
     });
 
   });
 
-
   describe("#deduceAttributes", () => {
     it("works in a generic case", () => {
       var dataCube = DataCube.fromJS({
-        "name": "wiki",
-        "clusterName": "druid",
-        "source": "wiki",
-        introspection: 'autofill-all',
-        "defaultFilter": { "op": "literal", "value": true },
-        "defaultSortMeasure": "added",
-        "defaultTimezone": "Etc/UTC",
-        "dimensions": [
+        name: "wiki",
+        clusterName: "druid",
+        source: "wiki",
+        introspection: "autofill-all",
+        defaultFilter: { op: "literal", value: true },
+        defaultSortMeasure: "added",
+        defaultTimezone: "Etc/UTC",
+        dimensions: [
           {
-            "kind": "time",
-            "name": "__time",
-            "formula": "$__time"
+            kind: "time",
+            name: "__time",
+            formula: "$__time"
           },
           {
-            "name": "page"
+            name: "page"
           },
           {
-            "name": "pageInBrackets",
-            "formula": "'[' ++ $page ++ ']'"
+            name: "pageInBrackets",
+            formula: "'[' ++ $page ++ ']'"
           },
           {
-            "name": "userInBrackets",
-            "formula": "'[' ++ $user ++ ']'"
+            name: "userInBrackets",
+            formula: "'[' ++ $user ++ ']'"
           },
           {
-            "name": "languageLookup",
-            "formula": "$language.lookup(wiki_language_lookup)"
+            name: "languageLookup",
+            formula: "$language.lookup(wiki_language_lookup)"
           }
         ],
-        "measures": [
+        measures: [
           {
-            "name": "added",
-            "formula": "$main.sum($added)"
+            name: "added",
+            formula: "$main.sum($added)"
           },
           {
-            "name": "addedByDeleted",
-            "formula": "$main.sum($added) / $main.sum($deleted)"
+            name: "addedByDeleted",
+            formula: "$main.sum($added) / $main.sum($deleted)"
           },
           {
-            "name": "unique_user",
-            "formula": "$main.countDistinct($unique_user)"
+            name: "unique_user",
+            formula: "$main.countDistinct($unique_user)"
           }
         ]
-      }, context);
+      },                             context);
 
       expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
         {
-          "name": "__time",
-          "type": "TIME"
+          name: "__time",
+          type: "TIME"
         },
         {
-          "name": "page",
-          "type": "STRING"
+          name: "page",
+          type: "STRING"
         },
         {
-          "name": "user",
-          "type": "STRING"
+          name: "user",
+          type: "STRING"
         },
         {
-          "name": "language",
-          "type": "STRING"
+          name: "language",
+          type: "STRING"
         },
         {
-          "name": "added",
-          "type": "NUMBER"
+          name: "added",
+          type: "NUMBER"
         },
         {
-          "name": "deleted",
-          "type": "NUMBER"
+          name: "deleted",
+          type: "NUMBER"
         },
         {
-          "name": "unique_user",
-          "nativeType": "hyperUnique",
-          "type": "STRING"
+          name: "unique_user",
+          nativeType: "hyperUnique",
+          type: "STRING"
         }
       ]);
 
@@ -430,16 +427,15 @@ describe('DataCube', () => {
 
   });
 
-
   describe("#addAttributes", () => {
     var dataCubeStub = DataCube.fromJS({
-      name: 'wiki',
-      title: 'Wiki',
-      clusterName: 'druid',
-      source: 'wiki',
-      introspection: 'autofill-all',
-      defaultTimezone: 'Etc/UTC',
-      defaultFilter: { op: 'literal', value: true },
+      name: "wiki",
+      title: "Wiki",
+      clusterName: "druid",
+      source: "wiki",
+      introspection: "autofill-all",
+      defaultTimezone: "Etc/UTC",
+      defaultFilter: { op: "literal", value: true },
       refreshRule: {
         rule: "realtime"
       }
@@ -516,7 +512,6 @@ describe('DataCube', () => {
           }
         ]
       });
-
 
       var attributes2 = AttributeInfo.fromJSs([
         { name: '__time', type: 'TIME' },
@@ -668,106 +663,105 @@ describe('DataCube', () => {
 
     it("works with existing dimension", () => {
       var attributes1 = AttributeInfo.fromJSs([
-        { name: '__time', type: 'TIME' },
-        { name: 'added', type: 'NUMBER' },
-        { name: 'added!!!', type: 'NUMBER' },
-        { name: 'deleted', type: 'NUMBER' }
+        { name: "__time", type: "TIME" },
+        { name: "added", type: "NUMBER" },
+        { name: "added!!!", type: "NUMBER" },
+        { name: "deleted", type: "NUMBER" }
       ]);
 
       var dataCubeWithDim = DataCube.fromJS({
-        name: 'wiki',
-        title: 'Wiki',
-        clusterName: 'druid',
-        source: 'wiki',
+        name: "wiki",
+        title: "Wiki",
+        clusterName: "druid",
+        source: "wiki",
         subsetFormula: null,
-        introspection: 'autofill-all',
-        defaultTimezone: 'Etc/UTC',
-        defaultFilter: { op: 'literal', value: true },
+        introspection: "autofill-all",
+        defaultTimezone: "Etc/UTC",
+        defaultFilter: { op: "literal", value: true },
         refreshRule: {
           rule: "realtime"
         },
         dimensions: [
           {
-            name: 'added',
-            formula: '$added'
+            name: "added",
+            formula: "$added"
           },
           {
-            name: 'added_',
-            formula: '${added!!!}'
+            name: "added_",
+            formula: "${added!!!}"
           }
         ]
       });
 
       var dataCube = dataCubeWithDim.addAttributes(attributes1);
-      expect(dataCube.toJS().measures.map(m => m.name)).to.deep.equal(['deleted']);
+      expect(dataCube.toJS().measures.map(m => m.name)).to.deep.equal(["deleted"]);
     });
 
   });
 
-
   describe("#addAttributes (new dim)", () => {
     var dataCube = DataCube.fromJS({
-      name: 'wiki',
-      title: 'Wiki',
-      clusterName: 'druid',
-      source: 'wiki',
+      name: "wiki",
+      title: "Wiki",
+      clusterName: "druid",
+      source: "wiki",
       subsetFormula: null,
-      introspection: 'autofill-all',
-      defaultTimezone: 'Etc/UTC',
-      defaultFilter: { op: 'literal', value: true },
+      introspection: "autofill-all",
+      defaultTimezone: "Etc/UTC",
+      defaultFilter: { op: "literal", value: true },
       refreshRule: {
         rule: "realtime"
       }
     });
 
-    it('adds new dimensions', () => {
+    it("adds new dimensions", () => {
       var columns: any = [
-        { "name": "__time", "type": "TIME" },
-        { "name": "added", "makerAction": { "action": "sum", "expression": { "name": "added", "op": "ref" }}, "type": "NUMBER", "unsplitable": true },
-        { "name": "count", "makerAction": { "action": "count"}, "type": "NUMBER", "unsplitable": true },
-        { "name": "delta_hist", "special": "histogram", "type": "NUMBER" },
-        { "name": "page", "type": "STRING" },
-        { "name": "page_unique", "special": "unique", "type": "STRING" }
+        { name: "__time", type: "TIME" },
+        { name: "added", makerAction: { action: "sum", expression: { name: "added", op: "ref" } }, type: "NUMBER", unsplitable: true },
+        { name: "count", makerAction: { action: "count" }, type: "NUMBER", unsplitable: true },
+        { name: "delta_hist", special: "histogram", type: "NUMBER" },
+        { name: "page", type: "STRING" },
+        { name: "page_unique", special: "unique", type: "STRING" }
       ];
 
       var dataCube1 = dataCube.addAttributes(AttributeInfo.fromJSs(columns));
 
       expect(dataCube1.toJS().dimensions).to.deep.equal([
         {
-          "kind": "time",
-          "name": "__time",
-          "title": "Time",
-          "formula": "$__time"
+          kind: "time",
+          name: "__time",
+          title: "Time",
+          formula: "$__time"
         },
         {
-          "kind": "string",
-          "name": "page",
-          "title": "Page",
-          "formula": "$page"
+          kind: "string",
+          name: "page",
+          title: "Page",
+          formula: "$page"
         }
       ]);
 
-      columns.push({ "name": "channel", "type": "STRING" });
+      columns.push({ name: "channel", type: "STRING" });
       var dataCube2 = dataCube1.addAttributes(AttributeInfo.fromJSs(columns));
 
       expect(dataCube2.toJS().dimensions).to.deep.equal([
         {
-          "kind": "time",
-          "name": "__time",
-          "title": "Time",
-          "formula": "$__time"
+          kind: "time",
+          name: "__time",
+          title: "Time",
+          formula: "$__time"
         },
         {
-          "kind": "string",
-          "name": "page",
-          "title": "Page",
-          "formula": "$page"
+          kind: "string",
+          name: "page",
+          title: "Page",
+          formula: "$page"
         },
         {
-          "kind": "string",
-          "name": "channel",
-          "title": "Channel",
-          "formula": "$channel"
+          kind: "string",
+          name: "channel",
+          title: "Channel",
+          formula: "$channel"
         }
       ]);
 

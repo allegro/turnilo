@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import './base-visualization.scss';
+import "./base-visualization.scss";
 
-import * as React from 'react';
-import { $, ply, Expression, Dataset } from 'plywood';
-import { Measure, VisualizationProps, DatasetLoad, Essence, Timekeeper } from '../../../common/models/index';
+import { $, Dataset, Expression, ply } from "plywood";
+import * as React from "react";
+import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
 
-import { SPLIT } from '../../config/constants';
+import { SPLIT } from "../../config/constants";
 
-import { Loader, GlobalEventListener, QueryError } from '../../components/index';
+import { GlobalEventListener, Loader, QueryError } from "../../components/index";
 
 export interface BaseVisualizationState {
   datasetLoad?: DatasetLoad;
@@ -34,7 +34,7 @@ export interface BaseVisualizationState {
 }
 
 export class BaseVisualization<S extends BaseVisualizationState> extends React.Component<VisualizationProps, S> {
-  public static id = 'base-visualization';
+  public static id = "base-visualization";
 
   // isMounted was already taken by the superclass
   protected _isMounted: boolean;
@@ -71,12 +71,12 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const { splits, colors, dataCube } = essence;
     const measures = essence.getEffectiveMeasures();
 
-    const $main = $('main');
+    const $main = $("main");
 
     let query: Expression = ply()
-      .apply('main', $main.filter(essence.getEffectiveFilter(timekeeper, this.id).toExpression()));
+      .apply("main", $main.filter(essence.getEffectiveFilter(timekeeper, this.id).toExpression()));
 
-    measures.forEach((measure) => {
+    measures.forEach(measure => {
       query = query.performAction(measure.toApplyExpression());
     });
 
@@ -85,7 +85,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       const splitDimension = dataCube.getDimensionByExpression(split.expression);
       const { sortAction, limitAction } = split;
       if (!sortAction) {
-        throw new Error('something went wrong during query generation');
+        throw new Error("something went wrong during query generation");
       }
 
       let subQuery: Expression = $main.split(split.toSplitExpression(), splitDimension.name);
@@ -98,7 +98,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       }
 
       const nestingLevel = i + 1;
-      measures.forEach((measure) => {
+      measures.forEach(measure => {
         subQuery = subQuery.performAction(measure.toApplyExpression(nestingLevel));
       });
 
@@ -112,7 +112,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         subQuery = subQuery.performAction(colors.toLimitExpression());
       } else if (limitAction) {
         subQuery = subQuery.performAction(limitAction);
-      } else if (splitDimension.kind === 'number') {
+      } else if (splitDimension.kind === "number") {
       // Hack: Plywood converts groupBys to topN if the limit is below a certain threshold.  Currently sorting on dimension in a groupBy query does not
       // behave as expected and in the future plywood will handle this, but for now add a limit so a topN query is performed.
       // 5000 is just a randomly selected number that's high enough that it's not immediately obvious that there's a limit.
@@ -144,8 +144,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
             dataset,
             error: null
           });
-        },
-        (error) => {
+        }, error => {
           if (registerDownloadableDataset) registerDownloadableDataset(null);
           if (!this._isMounted) return;
           this.precalculate(this.props, {
@@ -215,7 +214,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       this.lastRenderResult = this.renderInternals();
     }
 
-    return <div className={'base-visualization ' + this.id}>
+    return <div className={"base-visualization " + this.id}>
       <GlobalEventListener
         mouseMove={this.globalMouseMoveListener.bind(this)}
         mouseUp={this.globalMouseUpListener.bind(this)}

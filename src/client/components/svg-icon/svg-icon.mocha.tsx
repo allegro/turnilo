@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom/server';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom/server";
 
-import '../../utils/test-utils';
+import "../../utils/test-utils";
 
-import * as TestUtils from 'react-dom/test-utils';
+import { SvgIcon } from "./svg-icon";
 
-import { $, Expression } from 'plywood';
-import { SvgIcon } from './svg-icon';
-
-describe('SvgIcon', () => {
-  it('adds the correct class', () => {
+describe("SvgIcon", () => {
+  it("adds the correct class", () => {
     expect(ReactDOM.renderToStaticMarkup(
       <SvgIcon svg={null}/>
     )).to.equal(`<svg class="svg-icon " viewBox="0 0 16 16" preserveAspectRatio="xMidYMid meet"><rect width=16 height=16 fill='red'></rect></svg>`);
@@ -46,9 +42,8 @@ describe('SvgIcon', () => {
     </g>
 </svg>`);
 
-
-    //expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    //expect((ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('svg-icon');
+    // expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
+    // expect((ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('svg-icon');
   });
 
 });

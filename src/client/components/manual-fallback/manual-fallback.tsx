@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
+import * as React from "react";
 
-import { Clicker, Essence, Resolution, VisStrategy } from '../../../common/models';
-import './manual-fallback.scss';
+import { Clicker, Essence, Resolution, VisStrategy } from "../../../common/models";
+import "./manual-fallback.scss";
 
 export interface ManualFallbackProps {
   clicker: Clicker;

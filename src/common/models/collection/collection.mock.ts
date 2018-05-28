@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-import { $ } from 'plywood';
-import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { CollectionTileMock } from "../collection-tile/collection-tile.mock";
-import { Collection, CollectionJS, CollectionContext } from './collection';
+import { Collection, CollectionContext, CollectionJS } from "./collection";
 
 export class CollectionMock {
   public static testOneOnlyJS(): CollectionJS {
     return {
-      title: 'The Links Will Rise Again!',
-      name: 'the_links_will_rise_again',
+      title: "The Links Will Rise Again!",
+      name: "the_links_will_rise_again",
       tiles: [
         CollectionTileMock.testOneJS()
       ]
@@ -33,8 +31,8 @@ export class CollectionMock {
 
   public static testOneTwoJS(): CollectionJS {
     return {
-      title: 'The Links Will Be Reloaded!',
-      name: 'the_links_will_be_reloaded',
+      title: "The Links Will Be Reloaded!",
+      name: "the_links_will_be_reloaded",
       tiles: [
         CollectionTileMock.testOneJS(),
         CollectionTileMock.testTwoJS()

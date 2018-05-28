@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import './filter-menu.scss';
+import "./filter-menu.scss";
 
 import * as React from "react";
+import { Clicker, Dimension, DragPosition, Essence, Stage, Timekeeper } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
-import { Stage, Clicker, Essence, Timekeeper, Dimension, DragPosition } from "../../../common/models/index";
+import { NumberFilterMenu } from "../number-filter-menu/number-filter-menu";
 import { StringFilterMenu } from "../string-filter-menu/string-filter-menu";
 import { TimeFilterMenu } from "../time-filter-menu/time-filter-menu";
-import { NumberFilterMenu } from "../number-filter-menu/number-filter-menu";
 
 export interface FilterMenuProps {
   essence: Essence;
@@ -44,7 +44,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
   render() {
     var { clicker, essence, timekeeper, changePosition, containerStage, openOn, dimension, onClose, inside } = this.props;
     if (!dimension) return null;
-    if (dimension.kind === 'time') {
+    if (dimension.kind === "time") {
       return <TimeFilterMenu
         essence={essence}
         timekeeper={timekeeper}
@@ -55,7 +55,7 @@ export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState
         openOn={openOn}
         inside={inside}
       />;
-    } else if (dimension.kind === 'number') {
+    } else if (dimension.kind === "number") {
       return <NumberFilterMenu
         essence={essence}
         timekeeper={timekeeper}

@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-import * as Qajax from 'qajax';
-import { $, Expression, Executor, Dataset, ChainableExpression, SplitExpression, Environment } from 'plywood';
+import { ChainableExpression, Dataset, Environment, Executor, Expression, SplitExpression } from "plywood";
+import * as Qajax from "qajax";
 
 Qajax.defaults.timeout = 0; // We'll manage the timeout per request.
 
 function getSplitsDescription(ex: Expression): string {
   var splits: string[] = [];
-  ex.forEach((ex) => {
+  ex.forEach(ex => {
     if (ex instanceof ChainableExpression) {
-      ex.getArgumentExpressions().forEach((action) => {
+      ex.getArgumentExpressions().forEach(action => {
         if (action instanceof SplitExpression) {
           splits.push(action.firstSplitExpression().toString());
         }
       });
     }
   });
-  return splits.join(';');
+  return splits.join(";");
 }
 
 var reloadRequested = false;
@@ -50,7 +50,7 @@ function parseOrNull(json: any): any {
 }
 
 export interface AjaxOptions {
-  method: 'GET' | 'POST';
+  method: "GET" | "POST";
   url: string;
   data?: any;
 }
@@ -77,25 +77,25 @@ export class Ajax {
       .timeout(60000)
       .then(Qajax.filterSuccess)
       .then(Qajax.toJSON)
-      .then((res) => {
-        if (res && res.action === 'update' && Ajax.onUpdate) Ajax.onUpdate();
+      .then(res => {
+        if (res && res.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
         return res;
       })
       .catch((xhr: XMLHttpRequest | Error): Dataset => {
         if (!xhr) return null; // TS needs this
         if (xhr instanceof Error) {
-          throw new Error('client timeout');
+          throw new Error("client timeout");
         } else {
           var jsonError = parseOrNull(xhr.responseText);
           if (jsonError) {
-            if (jsonError.action === 'reload') {
+            if (jsonError.action === "reload") {
               reload();
-            } else if (jsonError.action === 'update' && Ajax.onUpdate) {
+            } else if (jsonError.action === "update" && Ajax.onUpdate) {
               Ajax.onUpdate();
             }
             throw new Error(jsonError.message || jsonError.error);
           } else {
-            throw new Error(xhr.responseText || 'connection fail');
+            throw new Error(xhr.responseText || "connection fail");
           }
         }
       }) as any;
@@ -105,13 +105,13 @@ export class Ajax {
     return (ex: Expression, env: Environment = {}) => {
       return Ajax.query({
         method: "POST",
-        url: url + '?by=' + getSplitsDescription(ex),
+        url: url + "?by=" + getSplitsDescription(ex),
         data: {
           dataCube: name,
           expression: ex.toJS(),
           timezone: env ? env.timezone : null
         }
-      }).then((res) => Dataset.fromJS(res.result));
+      }).then(res => Dataset.fromJS(res.result));
     };
   }
 }

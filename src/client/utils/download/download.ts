@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import * as filesaver from 'file-saver';
-import { Dataset, DatasetJSFull } from 'plywood';
+import * as filesaver from "file-saver";
+import { Dataset, DatasetJSFull } from "plywood";
 
 export type FileFormat = "csv" | "tsv" | "json" | "txt";
 
 export function getMIMEType(fileType: string) {
   switch (fileType) {
-    case 'csv':
-      return 'text/csv';
-    case 'tsv':
-      return 'text/tsv';
+    case "csv":
+      return "text/csv";
+    case "tsv":
+      return "text/tsv";
     default:
-      return 'application/json';
+      return "application/json";
   }
 }
 
@@ -40,9 +40,9 @@ export function download(dataset: Dataset, fileName?: string, fileFormat?: FileF
 }
 
 export function datasetToFileString(dataset: Dataset, fileFormat?: FileFormat): string {
-  if (fileFormat === 'csv') {
+  if (fileFormat === "csv") {
     return dataset.toCSV();
-  } else if (fileFormat === 'tsv') {
+  } else if (fileFormat === "tsv") {
     return dataset.toTSV();
   } else {
     const datasetJS = dataset.toJS() as DatasetJSFull;
@@ -50,12 +50,11 @@ export function datasetToFileString(dataset: Dataset, fileFormat?: FileFormat): 
   }
 }
 
-export function makeFileName(...args: Array<string>): string {
+export function makeFileName(...args: string[]): string {
   var nameComponents: string[] = [];
-  args.forEach((arg) => {
+  args.forEach(arg => {
     if (arg) nameComponents.push(arg.toLowerCase());
   });
   var nameString = nameComponents.join("_");
   return nameString.length < 200 ? nameString : nameString.substr(0, 200);
 }
-

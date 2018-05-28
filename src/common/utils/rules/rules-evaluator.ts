@@ -17,6 +17,4 @@
 
 import { Resolve } from "../../models";
 
-export interface RulesEvaluator<PredicateVars, ActionVars> {
-  (variables: PredicateVars & ActionVars): Resolve;
-}
+export type RulesEvaluator<PredicateVars, ActionVars> = (variables: PredicateVars & ActionVars) => Resolve;

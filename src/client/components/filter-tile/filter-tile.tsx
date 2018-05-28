@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-import './filter-tile.scss';
+import "./filter-tile.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as Q from 'q';
-import { Timezone } from 'chronoshift';
-import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, Timekeeper, Filter, FilterClause, Dimension, DragPosition } from '../../../common/models/index';
-import { getFormattedClause } from '../../../common/utils/formatter/formatter';
-import { getMaxItems, SECTION_WIDTH } from '../../utils/pill-tile/pill-tile';
+import { Timezone } from "chronoshift";
+import * as Q from "q";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { Clicker, Dimension, DragPosition, Essence, Filter, FilterClause, Stage, Timekeeper } from "../../../common/models/index";
+import { getFormattedClause } from "../../../common/utils/formatter/formatter";
+import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
+import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 
 import {
-  findParentWithClass, setDragGhost, uniqueId, isInside, transformStyle, getXFromEvent, classNames
-} from '../../utils/dom/dom';
+  classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId
+} from "../../utils/dom/dom";
 
-import { DragManager } from '../../utils/drag-manager/drag-manager';
+import { DragManager } from "../../utils/drag-manager/drag-manager";
 
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
-import { FilterMenu } from '../filter-menu/filter-menu';
-import { BubbleMenu } from '../bubble-menu/bubble-menu';
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
+import { FilterMenu } from "../filter-menu/filter-menu";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
-const FILTER_CLASS_NAME = 'filter';
+const FILTER_CLASS_NAME = "filter";
 const ANIMATION_DURATION = 400;
 
 export interface ItemBlank {
@@ -76,7 +76,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   constructor(props: FilterTileProps) {
     super(props);
-    this.overflowMenuId = uniqueId('overflow-menu-');
+    this.overflowMenuId = uniqueId("overflow-menu-");
     this.state = {
       menuOpenOn: null,
       menuDimension: null,
@@ -121,7 +121,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   overflowButtonTarget(): Element {
-    return ReactDOM.findDOMNode(this.refs['overflow']);
+    return ReactDOM.findDOMNode(this.refs["overflow"]);
   }
 
   getOverflowMenu(): Element {
@@ -212,7 +212,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   removeFilter(itemBlank: ItemBlank, e: MouseEvent) {
     const { essence, clicker } = this.props;
     if (itemBlank.clause) {
-      if (itemBlank.source === 'from-highlight') {
+      if (itemBlank.source === "from-highlight") {
         clicker.dropHighlight();
       } else {
         clicker.changeFilter(essence.filter.remove(itemBlank.clause.expression));
@@ -225,10 +225,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   dragStart(dimension: Dimension, clause: FilterClause, e: DragEvent) {
     const dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = 'all';
-    dataTransfer.setData('text/plain', dimension.title);
+    dataTransfer.effectAllowed = "all";
+    dataTransfer.setData("text/plain", dimension.title);
 
-    DragManager.setDragDimension(dimension, 'filter-tile');
+    DragManager.setDragDimension(dimension, "filter-tile");
 
     setDragGhost(dataTransfer, dimension.title);
 
@@ -239,7 +239,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   calculateDragPosition(e: DragEvent): DragPosition {
     const { essence } = this.props;
     const numItems = essence.filter.length();
-    const rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
+    const rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
     const offset = getXFromEvent(e) - rect.left;
     return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
@@ -258,7 +258,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   dragOver(e: DragEvent) {
     if (!this.canDrop(e)) return;
-    e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
@@ -303,14 +303,14 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           clicker.changeFilter(newFilter);
         }
 
-        if (DragManager.getDragOrigin() !== 'filter-tile') { // Do not open the menu if it is an internal re-arrange
+        if (DragManager.getDragOrigin() !== "filter-tile") { // Do not open the menu if it is an internal re-arrange
           if (newFilterSame) {
             this.filterMenuRequest(dimension);
           } else {
             // Wait for the animation to finish to know where to open the menu
             setTimeout(() => {
               this.filterMenuRequest(dimension);
-            }, ANIMATION_DURATION + 50);
+            },         ANIMATION_DURATION + 50);
           }
         }
 
@@ -402,13 +402,13 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const style = transformStyle(itemX, 0);
 
     return <div
-      className={classNames('overflow', { 'all-continuous': overflowItemBlanks.every(item => item.dimension.isContinuous()) })}
+      className={classNames("overflow", { "all-continuous": overflowItemBlanks.every(item => item.dimension.isContinuous()) })}
       ref="overflow"
       key="overflow"
       style={style}
       onClick={this.overflowButtonClick.bind(this)}
     >
-      <div className="count">{'+' + overflowItemBlanks.length}</div>
+      <div className="count">{"+" + overflowItemBlanks.length}</div>
       {this.renderOverflowMenu(overflowItemBlanks)}
     </div>;
   }
@@ -418,7 +418,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const dataCube = essence.dataCube;
     if (itemBlank.dimension.expression.equals(dataCube.timeAttribute)) return null;
     return <div className="remove" onClick={this.removeFilter.bind(this, itemBlank)}>
-      <SvgIcon svg={require('../../icons/x.svg')}/>
+      <SvgIcon svg={require("../../icons/x.svg")}/>
     </div>;
   }
 
@@ -440,13 +440,13 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     const className = [
       FILTER_CLASS_NAME,
-      'type-' + dimension.className,
+      "type-" + dimension.className,
       source,
-      (clause && clause.exclude) ? 'excluded' : 'included',
-      dimension === menuDimension ? 'selected' : undefined
-    ].filter(Boolean).join(' ');
+      (clause && clause.exclude) ? "excluded" : "included",
+      dimension === menuDimension ? "selected" : undefined
+    ].filter(Boolean).join(" ");
 
-    if (source === 'from-highlight') {
+    if (source === "from-highlight") {
       return <div
         className={className}
         key={dimensionName}
@@ -498,21 +498,21 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         if (!dimension) return null;
         return {
           dimension,
-          source: 'from-filter',
+          source: "from-filter",
           clause
         };
       })
       .filter(Boolean);
 
     if (highlight) {
-      highlight.delta.clauses.forEach((clause) => {
+      highlight.delta.clauses.forEach(clause => {
         let added = false;
-        itemBlanks = itemBlanks.map((blank) => {
+        itemBlanks = itemBlanks.map(blank => {
           if (clause.expression.equals(blank.clause.expression)) {
             added = true;
             return {
               dimension: blank.dimension,
-              source: 'from-highlight',
+              source: "from-highlight",
               clause
             };
           } else {
@@ -524,7 +524,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           if (dimension) {
             itemBlanks.push({
               dimension,
-              source: 'from-highlight',
+              source: "from-highlight",
               clause
             });
           }
@@ -535,7 +535,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     if (possibleDimension && possiblePosition) {
       const dummyBlank: ItemBlank = {
         dimension: possibleDimension,
-        source: 'from-drag'
+        source: "from-drag"
       };
       if (possiblePosition.replace === maxItems) {
         possiblePosition = new DragPosition({ insert: possiblePosition.replace });
@@ -566,7 +566,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
 
     return <div
-      className='filter-tile'
+      className="filter-tile"
       onDragEnter={this.dragEnter.bind(this)}
 
     >

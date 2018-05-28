@@ -25,7 +25,7 @@ import { UrlHashConverterFixtures } from "./url-hash-converter.fixtures";
 
 describe("urlHashConverter", () => {
 
-  const tests: { version: ViewDefinitionVersion, hash: string, essence: Essence }[] = [
+  const tests: Array<{ version: ViewDefinitionVersion, hash: string, essence: Essence }> = [
     { version: "2", hash: UrlHashConverterFixtures.tableHashVersion2(), essence: EssenceMock.wikiTable() },
     { version: "2", hash: UrlHashConverterFixtures.lineChartVersion2(), essence: EssenceMock.wikiLineChart() },
     { version: "3", hash: UrlHashConverterFixtures.tableHashVersion3(), essence: EssenceMock.wikiTable() },
@@ -56,7 +56,7 @@ describe("urlHashConverter", () => {
     });
   });
 
-  const minimalNumberOfSegmentsTests: { version: ViewDefinitionVersion, hash: string }[] = [
+  const minimalNumberOfSegmentsTests: Array<{ version: ViewDefinitionVersion, hash: string }> = [
     { version: "2", hash: UrlHashConverterFixtures.noSlashInEncodedDefinition2() },
     { version: "3", hash: UrlHashConverterFixtures.noSlashInEncodedDefinition3() }
   ];

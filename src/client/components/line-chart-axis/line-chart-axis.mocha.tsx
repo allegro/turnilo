@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { Timezone } from 'chronoshift';
+import { expect } from "chai";
+import { Timezone } from "chronoshift";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import { renderIntoDocument } from '../../utils/test-utils';
+import { renderIntoDocument } from "../../utils/test-utils";
 
-import * as TestUtils from 'react-dom/test-utils';
-import { StageMock } from '../../../common/models/mocks';
+import * as TestUtils from "react-dom/test-utils";
+import { StageMock } from "../../../common/models/mocks";
 
-import { LineChartAxis } from './line-chart-axis';
+import { LineChartAxis } from "./line-chart-axis";
 
-describe('LineChartAxis', () => {
-  it('adds the correct class', () => {
+describe("LineChartAxis", () => {
+  it("adds the correct class", () => {
     var scale = {
       tickFormat: () => {}
     };
@@ -41,8 +41,8 @@ describe('LineChartAxis', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('line-chart-axis');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("line-chart-axis");
   });
 
 });

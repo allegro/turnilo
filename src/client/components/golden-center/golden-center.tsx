@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import './golden-center.scss';
+import "./golden-center.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 export interface GoldenCenterProps extends React.Props<any> {
   topRatio?: number;
@@ -45,12 +45,12 @@ export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCente
   }
 
   componentDidMount() {
-    window.addEventListener('resize', this.globalResizeListener);
+    window.addEventListener("resize", this.globalResizeListener);
     this.globalResizeListener();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.globalResizeListener);
+    window.removeEventListener("resize", this.globalResizeListener);
   }
 
   globalResizeListener() {

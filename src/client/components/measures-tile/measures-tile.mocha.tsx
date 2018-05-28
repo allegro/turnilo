@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import { renderIntoDocument } from '../../utils/test-utils';
+import { renderIntoDocument } from "../../utils/test-utils";
 
-import * as TestUtils from 'react-dom/test-utils';
+import * as TestUtils from "react-dom/test-utils";
 
-import { EssenceMock } from '../../../common/models/mocks';
+import { EssenceMock } from "../../../common/models/mocks";
 
-import { $, Expression } from 'plywood';
-import { MeasuresTile } from './measures-tile';
+import { MeasuresTile } from "./measures-tile";
 
-describe('MeasuresTile', () => {
-  it('adds the correct class', () => {
+describe("MeasuresTile", () => {
+  it("adds the correct class", () => {
     var fakeClicker = {
       toggleEffectiveMeasure: () => {},
       toggleMultiMeasureMode: () => {}
@@ -43,8 +41,8 @@ describe('MeasuresTile', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('measures-tile');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("measures-tile");
   });
 
 });

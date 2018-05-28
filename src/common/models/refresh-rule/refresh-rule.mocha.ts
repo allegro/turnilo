@@ -15,38 +15,37 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { expect } from "chai";
+import { testImmutableClass } from "immutable-class-tester";
 
-import { $, Expression } from 'plywood';
-import { RefreshRule, RefreshRuleJS } from './refresh-rule';
+import { RefreshRule, RefreshRuleJS } from "./refresh-rule";
 
-describe('RefreshRule', () => {
-  it('is an immutable class', () => {
+describe("RefreshRule", () => {
+  it("is an immutable class", () => {
     testImmutableClass<RefreshRuleJS>(RefreshRule, [
       {
-        rule: 'fixed',
+        rule: "fixed",
         time: new Date("2015-10-15T19:21:00Z")
       },
       {
-        rule: 'query'
+        rule: "query"
       },
       {
-        rule: 'realtime'
+        rule: "realtime"
       }
     ]);
   });
 
-  describe('Auto refresh rate', () => {
+  describe("Auto refresh rate", () => {
     it("works for query", () => {
-      expect(RefreshRule.fromJS({ rule: 'query' }).toJS()).to.deep.equal({
-        rule: 'query'
+      expect(RefreshRule.fromJS({ rule: "query" }).toJS()).to.deep.equal({
+        rule: "query"
       });
     });
 
     it("works for realtime", () => {
-      expect(RefreshRule.fromJS({ rule: 'realtime' }).toJS()).to.deep.equal({
-        rule: 'realtime'
+      expect(RefreshRule.fromJS({ rule: "realtime" }).toJS()).to.deep.equal({
+        rule: "realtime"
       });
     });
 

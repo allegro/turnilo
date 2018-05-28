@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-import * as path from 'path';
-import * as nopt from 'nopt';
-import { TRACKER, LOGGER } from 'logger-tracker';
+import { LOGGER, TRACKER } from "logger-tracker";
+import * as nopt from "nopt";
+import * as path from "path";
 
-import { arraySum } from '../common/utils/general/general';
-import { Cluster, DataCube, SupportedType, AppSettings } from '../common/models/index';
-import { appSettingsToYAML } from '../common/utils/yaml-helper/yaml-helper';
-import { ServerSettings } from './models/index';
-import { loadFileSync, SettingsManager, SettingsStore } from './utils/index';
+import { AppSettings, Cluster, DataCube, SupportedType } from "../common/models/index";
+import { arraySum } from "../common/utils/general/general";
+import { appSettingsToYAML } from "../common/utils/yaml-helper/yaml-helper";
+import { ServerSettings } from "./models/index";
+import { loadFileSync, SettingsManager, SettingsStore } from "./utils/index";
 
 const AUTH_MODULE_VERSION = 1;
-const PACKAGE_FILE = path.join(__dirname, '../../package.json');
+const PACKAGE_FILE = path.join(__dirname, "../../package.json");
 
 function exitWithMessage(message: string): void {
   console.log(message);
 
   // Hack: load the package file for no reason other than to make some time for console.log to flush
-  try { loadFileSync(PACKAGE_FILE, 'json'); } catch (e) { }
+  try { loadFileSync(PACKAGE_FILE, "json"); } catch (e) { }
 
   process.exit();
 }
@@ -46,10 +46,9 @@ function zeroOne(thing: any): number {
   return Number(Boolean(thing));
 }
 
-
 var packageObj: any = null;
 try {
-  packageObj = loadFileSync(PACKAGE_FILE, 'json');
+  packageObj = loadFileSync(PACKAGE_FILE, "json");
 } catch (e) {
   exitWithError(`Could not read package.json: ${e.message}`);
 }
@@ -125,11 +124,11 @@ function parseArgs() {
       "database": String
     },
     {
-      "v": ["--verbose"],
-      "p": ["--port"],
-      "c": ["--config"],
-      "f": ["--file"],
-      "d": ["--druid"]
+      v: ["--verbose"],
+      p: ["--port"],
+      c: ["--config"],
+      f: ["--file"],
+      d: ["--druid"]
     },
     process.argv
   );
@@ -137,30 +136,30 @@ function parseArgs() {
 
 var parsedArgs = parseArgs();
 
-if (parsedArgs['help']) {
+if (parsedArgs["help"]) {
   exitWithMessage(USAGE);
 }
 
-if (parsedArgs['version']) {
+if (parsedArgs["version"]) {
   exitWithMessage(VERSION);
 }
 
-if (parsedArgs['example']) {
-  delete parsedArgs['example'];
-  parsedArgs['examples'] = true;
+if (parsedArgs["example"]) {
+  delete parsedArgs["example"];
+  parsedArgs["examples"] = true;
 }
 
-const SETTINGS_INPUTS = ['config', 'examples', 'file', 'druid', 'postgres', 'mysql'];
+const SETTINGS_INPUTS = ["config", "examples", "file", "druid", "postgres", "mysql"];
 
-var numSettingsInputs = arraySum(SETTINGS_INPUTS.map((input) => zeroOne(parsedArgs[input])));
+var numSettingsInputs = arraySum(SETTINGS_INPUTS.map(input => zeroOne(parsedArgs[input])));
 
 if (numSettingsInputs === 0) {
   exitWithMessage(USAGE);
 }
 
 if (numSettingsInputs > 1) {
-  console.error(`only one of --${SETTINGS_INPUTS.join(', --')} can be given on the command line`);
-  if (parsedArgs['druid'] && parsedArgs['config']) {
+  console.error(`only one of --${SETTINGS_INPUTS.join(", --")} can be given on the command line`);
+  if (parsedArgs["druid"] && parsedArgs["config"]) {
     console.error(`Looks like you are using --config and --druid in conjunction with each other`);
     console.error(`This usage is no longer supported. If you are migrating from Swiv < 0.9.x`);
     console.error(`Please visit: (https://github.com/yahoo/swiv/blob/master/docs/swiv-0.9.x-migration.md)`);
@@ -168,15 +167,15 @@ if (numSettingsInputs > 1) {
   process.exit(1);
 }
 
-export const PRINT_CONFIG = Boolean(parsedArgs['print-config']);
+export const PRINT_CONFIG = Boolean(parsedArgs["print-config"]);
 export const START_SERVER = !PRINT_CONFIG;
 
 if (START_SERVER) LOGGER.init();
 
 // Load server settings
-var serverSettingsFilePath = parsedArgs['config'];
+var serverSettingsFilePath = parsedArgs["config"];
 
-if (parsedArgs['examples']) {
+if (parsedArgs["examples"]) {
   serverSettingsFilePath = path.join(__dirname, `../../config-examples.yaml`);
 }
 
@@ -185,7 +184,7 @@ var serverSettingsJS: any;
 if (serverSettingsFilePath) {
   anchorPath = path.dirname(serverSettingsFilePath);
   try {
-    serverSettingsJS = loadFileSync(serverSettingsFilePath, 'yaml');
+    serverSettingsJS = loadFileSync(serverSettingsFilePath, "yaml");
     LOGGER.log(`Using config ${serverSettingsFilePath}`);
   } catch (e) {
     exitWithError(`Could not load config from '${serverSettingsFilePath}': ${e.message}`);
@@ -195,20 +194,20 @@ if (serverSettingsFilePath) {
   serverSettingsJS = {};
 }
 
-if (parsedArgs['port']) {
-  serverSettingsJS.port = parsedArgs['port'];
+if (parsedArgs["port"]) {
+  serverSettingsJS.port = parsedArgs["port"];
 }
-if (parsedArgs['server-host']) {
-  serverSettingsJS.serverHost = parsedArgs['server-host'];
+if (parsedArgs["server-host"]) {
+  serverSettingsJS.serverHost = parsedArgs["server-host"];
 }
-if (parsedArgs['server-root']) {
-  serverSettingsJS.serverRoot = parsedArgs['server-root'];
+if (parsedArgs["server-root"]) {
+  serverSettingsJS.serverRoot = parsedArgs["server-root"];
 }
-if (parsedArgs['auth']) {
-  serverSettingsJS.auth = parsedArgs['auth'];
+if (parsedArgs["auth"]) {
+  serverSettingsJS.auth = parsedArgs["auth"];
 }
 
-export const VERBOSE = Boolean(parsedArgs['verbose'] || serverSettingsJS.verbose);
+export const VERBOSE = Boolean(parsedArgs["verbose"] || serverSettingsJS.verbose);
 export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS);
 
 // --- Tracker --------------------------------
@@ -224,7 +223,7 @@ if (START_SERVER) {
 
 var auth = SERVER_SETTINGS.auth;
 var authMiddleware: any = null;
-if (auth && auth !== 'none') {
+if (auth && auth !== "none") {
   auth = path.resolve(anchorPath, auth);
   LOGGER.log(`Using auth ${auth}`);
   try {
@@ -236,7 +235,7 @@ if (auth && auth !== 'none') {
   if (authModule.version !== AUTH_MODULE_VERSION) {
     exitWithError(`incorrect auth module version ${authModule.version} needed ${AUTH_MODULE_VERSION}`);
   }
-  if (typeof authModule.auth !== 'function') exitWithError(`Invalid auth module: must export 'auth' function`);
+  if (typeof authModule.auth !== "function") exitWithError(`Invalid auth module: must export 'auth' function`);
   authMiddleware = authModule.auth({
     logger: LOGGER,
     tracker: TRACKER,
@@ -251,15 +250,15 @@ export const AUTH = authMiddleware;
 if (START_SERVER) {
   LOGGER.log(`Starting Turnilo v${VERSION}`);
   TRACKER.track({
-    eventType: 'swiv_init',
-    metric: 'init',
+    eventType: "swiv_init",
+    metric: "init",
     value: 1
   });
 }
 
 // --- Location -------------------------------
 
-const CLUSTER_TYPES: SupportedType[] = ['druid', 'postgres', 'mysql'];
+const CLUSTER_TYPES: SupportedType[] = ["druid", "postgres", "mysql"];
 
 var settingsStore: SettingsStore = null;
 
@@ -267,7 +266,7 @@ if (serverSettingsFilePath) {
   var settingsLocation = SERVER_SETTINGS.getSettingsLocation();
   if (settingsLocation) {
     switch (settingsLocation.getLocation()) {
-      case 'file':
+      case "file":
         var settingsFilePath = path.resolve(anchorPath, settingsLocation.uri);
         if (settingsLocation.getReadOnly()) {
           settingsStore = SettingsStore.fromReadOnlyFile(settingsFilePath, settingsLocation.getFormat());
@@ -276,30 +275,30 @@ if (serverSettingsFilePath) {
         }
         break;
 
-      case 'mysql':
-        throw new Error('todo'); // ToDo: make this not incomplete.
-        //settingsStore = SettingsStore.fromStateStore(require('../../../swiv-mysql-state-store/index.js').stateStoreFactory());
-        //break;
+      case "mysql":
+        throw new Error("todo"); // ToDo: make this not incomplete.
+        // settingsStore = SettingsStore.fromStateStore(require('../../../swiv-mysql-state-store/index.js').stateStoreFactory());
+        // break;
 
-      case 'postgres':
-        throw new Error('todo');
+      case "postgres":
+        throw new Error("todo");
 
       default:
         exitWithError(`unknown location '${settingsLocation.location}'`);
     }
 
   } else {
-    settingsStore = SettingsStore.fromReadOnlyFile(serverSettingsFilePath, 'yaml');
+    settingsStore = SettingsStore.fromReadOnlyFile(serverSettingsFilePath, "yaml");
   }
 } else {
   var initAppSettings = AppSettings.BLANK;
 
   // If a file is specified add it as a dataCube
-  var fileToLoad = parsedArgs['file'];
+  var fileToLoad = parsedArgs["file"];
   if (fileToLoad) {
     initAppSettings = initAppSettings.addDataCube(new DataCube({
       name: path.basename(fileToLoad, path.extname(fileToLoad)),
-      clusterName: 'native',
+      clusterName: "native",
       source: fileToLoad
     }));
   }
@@ -310,16 +309,16 @@ if (serverSettingsFilePath) {
       initAppSettings = initAppSettings.addCluster(new Cluster({
         name: clusterType,
         type: clusterType,
-        host: host,
-        sourceListScan: 'auto',
+        host,
+        sourceListScan: "auto",
         sourceListRefreshInterval: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
         sourceListRefreshOnLoad: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
         sourceReintrospectInterval: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
         sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD,
 
-        user: parsedArgs['user'],
-        password: parsedArgs['password'],
-        database: parsedArgs['database']
+        user: parsedArgs["user"],
+        password: parsedArgs["password"],
+        database: parsedArgs["database"]
       }));
     }
   }
@@ -337,7 +336,7 @@ export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
 // --- Printing -------------------------------
 
 if (PRINT_CONFIG) {
-  var withComments = Boolean(parsedArgs['with-comments']);
+  var withComments = Boolean(parsedArgs["with-comments"]);
 
   SETTINGS_MANAGER.getSettings({
     timeout: 10000

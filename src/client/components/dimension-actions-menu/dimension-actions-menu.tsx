@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import './dimension-actions-menu.scss';
+import "./dimension-actions-menu.scss";
 
-import * as React from 'react';
-import { Clicker, Dimension, Essence, SplitCombine, Stage, VisStrategy } from '../../../common/models';
-import { Fn } from '../../../common/utils/general/general';
-import { STRINGS } from '../../config/constants';
-import { BubbleMenu } from '../bubble-menu/bubble-menu';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import * as React from "react";
+import { Clicker, Dimension, Essence, SplitCombine, Stage, VisStrategy } from "../../../common/models";
+import { Fn } from "../../../common/utils/general/general";
+import { STRINGS } from "../../config/constants";
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
 const ACTION_SIZE = 60;
 
@@ -90,19 +90,19 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
       onClose={onClose}
     >
       <div className="filter action" onClick={this.onFilter.bind(this)}>
-        <SvgIcon svg={require('../../icons/preview-filter.svg')} />
+        <SvgIcon svg={require("../../icons/preview-filter.svg")} />
         <div className="action-label">{STRINGS.filter}</div>
       </div>
       <div className="pin action" onClick={this.onPin.bind(this)}>
-        <SvgIcon svg={require('../../icons/preview-pin.svg')} />
+        <SvgIcon svg={require("../../icons/preview-pin.svg")} />
         <div className="action-label">{STRINGS.pin}</div>
       </div>
       <div className="split action" onClick={this.onSplit.bind(this)}>
-        <SvgIcon svg={require('../../icons/preview-split.svg')} />
+        <SvgIcon svg={require("../../icons/preview-split.svg")} />
         <div className="action-label">{STRINGS.split}</div>
       </div>
       <div className="subsplit action" onClick={this.onSubsplit.bind(this)}>
-        <SvgIcon svg={require('../../icons/preview-subsplit.svg')} />
+        <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
         <div className="action-label">{STRINGS.subsplit}</div>
       </div>
     </BubbleMenu>;

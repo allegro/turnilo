@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { firstUp } from '../../../common/utils/string/string';
-import { escapeKey, enterKey, leftKey, rightKey } from '../../utils/dom/dom';
-
+import * as React from "react";
+import { firstUp } from "../../../common/utils/string/string";
+import { enterKey, escapeKey, leftKey, rightKey } from "../../utils/dom/dom";
 
 export interface GlobalEventListenerProps extends React.Props<any> {
   resize?: () => void;
@@ -40,16 +38,16 @@ export interface GlobalEventListenerState {
 export class GlobalEventListener extends React.Component<GlobalEventListenerProps, GlobalEventListenerState> {
   public mounted: boolean;
   private propsToEvents: any = {
-    resize: 'resize',
-    scroll: 'scroll',
-    mouseDown: 'mousedown',
-    mouseMove: 'mousemove',
-    mouseUp: 'mouseup',
-    keyDown: 'keydown',
-    enter: 'keydown',
-    escape: 'keydown',
-    right: 'keydown',
-    left: 'keydown'
+    resize: "resize",
+    scroll: "scroll",
+    mouseDown: "mousedown",
+    mouseMove: "mousemove",
+    mouseUp: "mouseup",
+    keyDown: "keydown",
+    enter: "keydown",
+    escape: "keydown",
+    right: "keydown",
+    left: "keydown"
   };
 
   constructor(props: GlobalEventListenerProps) {
@@ -98,7 +96,7 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
   }
 
   addListener(event: string) {
-    var useCapture = event === 'scroll';
+    var useCapture = event === "scroll";
     window.addEventListener(event, (this as any)[`on${firstUp(event)}`], useCapture);
   }
 

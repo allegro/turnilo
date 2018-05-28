@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import './user-menu.scss';
+import "./user-menu.scss";
 
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { Stage, User, Customization } from '../../../common/models/index';
-import { STRINGS } from '../../config/constants';
-import { BubbleMenu } from '../bubble-menu/bubble-menu';
+import * as React from "react";
+import { Customization, Stage, User } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { STRINGS } from "../../config/constants";
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
 
 export interface UserMenuProps extends React.Props<any> {
   openOn: Element;

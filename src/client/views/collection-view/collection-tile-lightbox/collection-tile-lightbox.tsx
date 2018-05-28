@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-import './collection-tile-lightbox.scss';
+import "./collection-tile-lightbox.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as Q from 'q';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import { STRINGS } from '../../../config/constants';
-import { isInside, classNames } from '../../../utils/dom/dom';
-import { indexByAttribute } from '../../../../common/utils/array/array';
+import { indexByAttribute } from "../../../../common/utils/array/array";
+import { STRINGS } from "../../../config/constants";
+import { classNames, isInside } from "../../../utils/dom/dom";
 
-import { SvgIcon, GlobalEventListener, BodyPortal, GoldenCenter, BubbleMenu, ImmutableInput, Notifier } from '../../../components/index';
-import { Collection, CollectionTile, VisualizationProps, Stage, Essence, Timekeeper } from '../../../../common/models/index';
+import { Collection, CollectionTile, Essence, Stage, Timekeeper, VisualizationProps } from "../../../../common/models/index";
+import { BodyPortal, BubbleMenu, GlobalEventListener, GoldenCenter, ImmutableInput, Notifier, SvgIcon } from "../../../components/index";
 
-import { COLLECTION_ITEM as LABELS } from '../../../../common/models/labels';
-
-import { getVisualizationComponent } from '../../../visualizations/index';
+import { getVisualizationComponent } from "../../../visualizations/index";
 
 export interface CollectionTileLightboxProps extends React.Props<any> {
   collection?: Collection;
@@ -63,7 +60,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
     const { collection, tileId } = nextProps;
 
     if (collection) {
-      let tile = collection.tiles.filter(({name}) => tileId === name)[0];
+      let tile = collection.tiles.filter(({ name }) => tileId === name)[0];
 
       this.setState({
         tile
@@ -131,7 +128,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
   renderEditMenu() {
     const { onEdit, collection } = this.props;
     const { tile } = this.state;
-    var onClose = () => this.setState({editMenuOpen: false});
+    var onClose = () => this.setState({ editMenuOpen: false });
 
     const edit = () => onEdit(collection, tile);
 
@@ -139,7 +136,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
       className="edit-menu"
       direction="down"
       stage={Stage.fromSize(200, 200)}
-      openOn={this.refs['edit-button'] as any}
+      openOn={this.refs["edit-button"] as any}
       onClose={onClose}
     >
       <ul className="bubble-list">
@@ -152,14 +149,14 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
   renderMoreMenu() {
     const { onDelete, collection, onDuplicate } = this.props;
     const { tile } = this.state;
-    var onClose = () => this.setState({moreMenuOpen: false});
+    var onClose = () => this.setState({ moreMenuOpen: false });
 
     const remove = () => onDelete(collection, tile);
     const duplicate = () => {
       onDuplicate(collection, tile).then(url => {
         window.location.hash = url;
         onClose();
-        Notifier.success('Tile duplicated');
+        Notifier.success("Tile duplicated");
       });
     };
 
@@ -167,7 +164,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
       className="more-menu"
       direction="down"
       stage={Stage.fromSize(200, 200)}
-      openOn={this.refs['more-button'] as any}
+      openOn={this.refs["more-button"] as any}
       onClose={onClose}
     >
       <ul className="bubble-list">
@@ -181,9 +178,9 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
     const { editMenuOpen, moreMenuOpen } = this.state;
 
     const target = e.target as Element;
-    const modal = this.refs['modal'] as any;
-    const leftArrow = this.refs['left-arrow'] as any;
-    const rightArrow = this.refs['right-arrow'] as any;
+    const modal = this.refs["modal"] as any;
+    const leftArrow = this.refs["left-arrow"] as any;
+    const rightArrow = this.refs["right-arrow"] as any;
 
     if (isInside(target, modal)) return;
     if (isInside(target, leftArrow)) return;
@@ -200,7 +197,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
 
     const tiles = collection.tiles;
 
-    const index = indexByAttribute(collection.tiles, 'name', tile.name);
+    const index = indexByAttribute(collection.tiles, "name", tile.name);
 
     var newIndex = index + direction;
 
@@ -235,7 +232,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
     var moreButton: JSX.Element = null;
     if (onEdit) {
       editButton = <div
-        className={classNames('edit-button icon', {active: editMenuOpen})}
+        className={classNames("edit-button icon", { active: editMenuOpen })}
         onClick={this.onEditIconClick.bind(this)}
         ref="edit-button"
       >
@@ -243,7 +240,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
       </div>;
 
       moreButton = <div
-        className={classNames('more-button icon', {active: moreMenuOpen})}
+        className={classNames("more-button icon", { active: moreMenuOpen })}
         onClick={this.onMoreIconClick.bind(this)}
         ref="more-button"
       >
@@ -272,7 +269,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
     }
 
     var onChange = (newItem: CollectionTile) => {
-      this.setState({tempTile: newItem});
+      this.setState({ tempTile: newItem });
     };
 
     var makeTextInput = ImmutableInput.simpleGenerator(tempTile, onChange);
@@ -286,8 +283,8 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
 
     return <div className="headband grid-row">
       <div className="grid-col-70 vertical enable-overflow">
-        {makeTextInput('title', /.*/, true)}
-        {makeTextInput('description')}
+        {makeTextInput("title", /.*/, true)}
+        {makeTextInput("description")}
       </div>
       <div className="grid-col-30 right middle">
         <div className="cancel-button" onClick={cancel}>{STRINGS.cancel}</div>

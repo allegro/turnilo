@@ -56,14 +56,14 @@ export class FormatterFixtures {
 
   static numberFilter() {
     return FilterClause.fromJS({
-      expression: { op: 'ref', name: 'commentLength' },
+      expression: { op: "ref", name: "commentLength" },
       selection: {
-        op: 'literal',
+        op: "literal",
         value: {
-          "setType": "NUMBER",
-          "elements": [1, 2, 3]
+          setType: "NUMBER",
+          elements: [1, 2, 3]
         },
-        "type": "SET"
+        type: "SET"
       },
       exclude: true
     });
@@ -71,14 +71,14 @@ export class FormatterFixtures {
 
   static stringFilterShort() {
     return FilterClause.fromJS({
-      expression: { op: 'ref', name: 'country' },
+      expression: { op: "ref", name: "country" },
       selection: {
-        op: 'literal',
+        op: "literal",
         value: {
-          "setType": "STRING",
-          "elements": ["iceland"]
+          setType: "STRING",
+          elements: ["iceland"]
         },
-        "type": "SET"
+        type: "SET"
       }
     });
   }

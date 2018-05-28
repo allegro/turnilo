@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import  './button.scss';
+import  "./button.scss";
 
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { classNames } from '../../utils/dom/dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import * as React from "react";
+import { Fn } from "../../../common/utils/general/general";
+import { classNames } from "../../utils/dom/dom";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
 export type ButtonType = "primary" | "secondary" | "warn";
 
@@ -48,7 +48,7 @@ export class Button extends React.Component<ButtonProps, ButtonState> {
     }
 
     return <button
-      className={classNames('button', type, className, { icon, active })}
+      className={classNames("button", type, className, { icon, active })}
       onClick={onClick}
       disabled={disabled}
     >

@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-import './notification-card.scss';
+import "./notification-card.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { STRINGS } from '../../config/constants';
-import { classNames, clamp } from '../../utils/dom/dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { BodyPortal } from '../body-portal/body-portal';
+import * as React from "react";
+import { clamp, classNames } from "../../utils/dom/dom";
 
-import { Notifier, Notification } from './notifications';
+import { Notification, Notifier } from "./notifications";
 
 export interface NotificationCardProps extends React.Props<any> {
   model: Notification;
@@ -54,7 +50,7 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
   }
 
   componentDidMount() {
-    this.setState({appearing: true}, () => {
+    this.setState({ appearing: true }, () => {
       this.timeoutID = window.setTimeout(this.appear.bind(this), 10);
     });
   }
@@ -71,14 +67,14 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     var d = clamp(duration, -1, 10);
 
     if (d === -1) {
-      this.setState({appearing: false});
+      this.setState({ appearing: false });
       return;
     }
 
     if (muted) {
-      this.setState({appearing: false});
+      this.setState({ appearing: false });
     } else {
-      this.setState({appearing: false}, () => {
+      this.setState({ appearing: false }, () => {
         this.timeoutID = window.setTimeout(this.onDisappearTimerEnd.bind(this), (d ? d : DEFAULT_DURATION) * 1000 );
       });
     }
@@ -99,7 +95,7 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
   disappear() {
     if (this.timeoutID !== undefined) window.clearTimeout(this.timeoutID);
 
-    this.setState({disappearing: true}, () => {
+    this.setState({ disappearing: true }, () => {
       this.timeoutID = window.setTimeout(this.removeMe.bind(this, this.props.model), 200);
     });
   }
@@ -147,11 +143,11 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     };
 
     return <div
-      style={{top}}
+      style={{ top }}
       onClick={onClick}
       onMouseOver={this.onMouseOver.bind(this)}
       onMouseLeave={this.onMouseLeave.bind(this)}
-      className={classNames(`notification-card ${priority} ${rowsClass}`, {appearing, disappearing, muted})}
+      className={classNames(`notification-card ${priority} ${rowsClass}`, { appearing, disappearing, muted })}
      >
       <div className="title">{title}</div>
       { message ? <div className="message">{message}</div> : null }

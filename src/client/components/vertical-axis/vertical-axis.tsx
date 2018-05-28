@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import './vertical-axis.scss';
+import "./vertical-axis.scss";
 
-import * as React from 'react';
-import { formatterFromData } from '../../../common/utils/formatter/formatter';
-import { roundToHalfPx } from '../../utils/dom/dom';
-import { Stage, Measure } from '../../../common/models/index';
+import * as React from "react";
+import { Measure, Stage } from "../../../common/models/index";
+import { formatterFromData } from "../../../common/utils/formatter/formatter";
+import { roundToHalfPx } from "../../utils/dom/dom";
 
 const TICK_WIDTH = 5;
 const TEXT_OFFSET = 2;
@@ -55,7 +55,6 @@ export class VerticalAxis extends React.Component<VerticalAxisProps, VerticalAxi
 
     var labelX = TICK_WIDTH + TEXT_OFFSET;
     var dy = "0.31em";
-
 
     var labels = ticks.map((tick: any) => {
       var y = scale(tick);

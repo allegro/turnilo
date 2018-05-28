@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-import './add-collection-tile-modal.scss';
+import "./add-collection-tile-modal.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Collection, Essence, Timekeeper, CollectionTile, DataCube, SortOn } from '../../../common/models/index';
-import { classNames } from '../../utils/dom/dom';
-import { generateUniqueName } from '../../../common/utils/string/string';
+import * as React from "react";
+import { Collection, CollectionTile, DataCube, Essence, Timekeeper } from "../../../common/models/index";
+import { generateUniqueName } from "../../../common/utils/string/string";
+import { classNames } from "../../utils/dom/dom";
 
-import { FormLabel, Button, ImmutableInput, Modal, Dropdown, Checkbox } from '../../components/index';
+import { Button, Checkbox, Dropdown, FormLabel, ImmutableInput, Modal } from "../../components/index";
 
-import { STRINGS } from '../../config/constants';
+import { STRINGS } from "../../config/constants";
 
-import { COLLECTION_ITEM as LABELS } from '../../../common/models/labels';
+import { COLLECTION_ITEM as LABELS } from "../../../common/models/labels";
 
-import { ImmutableFormDelegate, ImmutableFormState } from '../../utils/immutable-form-delegate/immutable-form-delegate';
+import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 
-export type CollectionMode = 'adding' | 'picking' | 'none';
+export type CollectionMode = "adding" | "picking" | "none";
 
 export interface AddCollectionTileModalProps extends React.Props<any> {
   essence: Essence;
@@ -67,11 +65,11 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
   getTitleFromEssence(essence: Essence): string {
     var ret = essence.splits
       .toArray()
-      .map((split) => {
+      .map(split => {
         let dimension = split.getDimension(essence.dataCube.dimensions);
         return dimension.title;
       })
-      .join(', ') || 'Total';
+      .join(", ") || "Total";
 
     var measures = essence.getEffectiveMeasures();
     if (measures.size === 1) {
@@ -83,16 +81,16 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
 
   initFromProps(props: AddCollectionTileModalProps) {
     const { collection, collections, essence, dataCube } = props;
-    var collectionMode: CollectionMode = 'none';
+    var collectionMode: CollectionMode = "none";
 
     var selectedCollection: Collection;
 
     if (collections) {
-      collectionMode = collections.length > 0 ? 'picking' : 'adding';
+      collectionMode = collections.length > 0 ? "picking" : "adding";
       selectedCollection = collections.length > 0 ? collections[0] : new Collection({
-        name: generateUniqueName('c', () => true),
+        name: generateUniqueName("c", () => true),
         tiles: [],
-        title: 'New collection'
+        title: "New collection"
       });
     } else {
       selectedCollection = collection;
@@ -103,9 +101,9 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
       collection: selectedCollection,
       collectionMode,
       newInstance: new CollectionTile({
-        name: generateUniqueName('i', this.isItemNameUnique.bind(this, selectedCollection)),
+        name: generateUniqueName("i", this.isItemNameUnique.bind(this, selectedCollection)),
         title: this.getTitleFromEssence(essence),
-        description: '',
+        description: "",
         essence,
         group: null,
         dataCube
@@ -147,7 +145,7 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
     const setCollection = (c: Collection) => {
       this.setState({
         collection: c,
-        newInstance: newInstance.change('name', generateUniqueName('i', c.isNameAvailable))
+        newInstance: newInstance.change("name", generateUniqueName("i", c.isNameAvailable))
       });
     };
 
@@ -155,7 +153,7 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
       label="Collection"
       items={collections}
       selectedItem={collection}
-      renderItem={c => c ? (c.title || '<no title>') : 'Pick a collection'}
+      renderItem={c => c ? (c.title || "<no title>") : "Pick a collection"}
       keyItem={c => c.name}
       onSelect={setCollection}
     />;
@@ -170,14 +168,14 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
     };
 
     const toggleCollectionMode = () => {
-      let newMode: CollectionMode = collectionMode === 'picking' ? 'adding' : 'picking';
-      let collection: Collection = undefined;
+      let newMode: CollectionMode = collectionMode === "picking" ? "adding" : "picking";
+      let collection: Collection;
 
-      if (newMode === 'adding') {
+      if (newMode === "adding") {
         collection = new Collection({
-          name: generateUniqueName('c', isCollectionNameUnique),
+          name: generateUniqueName("c", isCollectionNameUnique),
           tiles: [],
-          title: 'New collection'
+          title: "New collection"
         });
       } else {
         collection = collections[0];
@@ -193,15 +191,15 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
       this.setState({
         collection: newCollection,
         newInstance: newInstance.change(
-          'name',
-          generateUniqueName('i', this.isItemNameUnique.bind(this, newCollection))
+          "name",
+          generateUniqueName("i", this.isItemNameUnique.bind(this, newCollection))
         )
       });
     };
 
-    if (collectionMode === 'none') return null;
+    if (collectionMode === "none") return null;
 
-    if (collectionMode === 'picking') {
+    if (collectionMode === "picking") {
       return <div className="collection-picker">
         {this.renderCollectionDropdown()}
         <div className="new-collection" onClick={toggleCollectionMode}>Or add a new collection</div>
@@ -260,11 +258,11 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
       <form className="general vertical">
         { this.renderCollectionPicker() }
 
-        { makeLabel('title') }
-        { makeTextInput('title', /^.+$/, collectionMode !== 'adding') }
+        { makeLabel("title") }
+        { makeTextInput("title", /^.+$/, collectionMode !== "adding") }
 
-        { makeLabel('description') }
-        { makeTextInput('description', /^.*$/) }
+        { makeLabel("description") }
+        { makeTextInput("description", /^.*$/) }
 
         { isRelative ?
           <Checkbox
@@ -278,7 +276,7 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
 
       <div className="button-bar">
         <Button
-          className={classNames("save", {disabled: !canSave})}
+          className={classNames("save", { disabled: !canSave })}
           title="Add to collection"
           type="primary"
           onClick={this.save.bind(this)}

@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
 
-import { EssenceMock } from '../../../common/models/mocks';
-import { renderIntoDocument } from '../../utils/test-utils';
+import { EssenceMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
 import { SplitTile } from "./split-tile";
 
-describe('SplitTile', () => {
-  it('adds the correct class', () => {
+describe("SplitTile", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <SplitTile
         clicker={null}
@@ -34,7 +34,7 @@ describe('SplitTile', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('split-tile');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("split-tile");
   });
 });

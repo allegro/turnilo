@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-import './table.scss';
+import "./table.scss";
 
-import * as d3 from 'd3';
-import { List } from 'immutable';
-import { $, Datum, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeRange } from 'plywood';
-import * as React from 'react';
-import { TABLE_MANIFEST } from '../../../common/manifests/table/table';
-import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, SplitCombine, Splits, VisStrategy, VisualizationProps } from '../../../common/models/index';
-import { formatNumberRange, Formatter, formatterFromData } from '../../../common/utils/formatter/formatter';
-import { Scroller, ScrollerLayout } from '../../components/scroller/scroller';
-import { SegmentBubble } from '../../components/segment-bubble/segment-bubble';
-import { SvgIcon } from '../../components/svg-icon/svg-icon';
-import { classNames } from '../../utils/dom/dom';
+import * as d3 from "d3";
+import { List } from "immutable";
+import { $, Datum, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
+import * as React from "react";
+import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
+import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, SplitCombine, Splits, VisStrategy, VisualizationProps } from "../../../common/models/index";
+import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
+import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
+import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
+import { SvgIcon } from "../../components/svg-icon/svg-icon";
+import { classNames } from "../../utils/dom/dom";
 
-import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
+import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 300;
@@ -51,7 +51,7 @@ function formatSegment(value: any): string {
 }
 
 function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataCube: DataCube): Filter {
-  const splitNesting = flatDatum['__nest'];
+  const splitNesting = flatDatum["__nest"];
   const { splitCombines } = splits;
 
   if (splitNesting === 0 || splitNesting > splitCombines.size) return null;
@@ -104,46 +104,45 @@ export class Table extends BaseVisualization<TableState> {
     var { essence } = this.props;
     var { flatData } = this.state;
 
-    if (x <= SPACE_LEFT) return { what: 'space-left' };
+    if (x <= SPACE_LEFT) return { what: "space-left" };
     x -= SPACE_LEFT;
 
     if (y <= HEADER_HEIGHT) {
-      if (x <= this.getSegmentWidth()) return { what: 'corner' };
+      if (x <= this.getSegmentWidth()) return { what: "corner" };
 
       x = x - this.getSegmentWidth();
       var measureWidth = this.getIdealMeasureWidth(this.props.essence);
       var measureIndex = Math.floor(x / measureWidth);
       var measure = essence.getEffectiveMeasures().get(measureIndex);
-      if (!measure) return { what: 'whitespace' };
-      return { what: 'header', measure };
+      if (!measure) return { what: "whitespace" };
+      return { what: "header", measure };
     }
 
     y = y - HEADER_HEIGHT;
     var rowIndex = Math.floor(y / ROW_HEIGHT);
     var datum = flatData ? flatData[rowIndex] : null;
-    if (!datum) return { what: 'whitespace' };
-    return { what: 'row', row: datum };
+    if (!datum) return { what: "whitespace" };
+    return { what: "row", row: datum };
   }
 
   onClick(x: number, y: number) {
     var { clicker, essence } = this.props;
     var { splits, dataCube } = essence;
 
-
     var pos = this.calculateMousePosition(x, y);
 
-    if (pos.what === 'corner' || pos.what === 'header') {
+    if (pos.what === "corner" || pos.what === "header") {
       if (!clicker.changeSplits) return;
 
-      var sortExpression = $(pos.what === 'corner' ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : pos.measure.name);
+      var sortExpression = $(pos.what === "corner" ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : pos.measure.name);
       var commonSort = essence.getCommonSort();
       var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === SortExpression.DESCENDING);
       clicker.changeSplits(essence.splits.changeSortExpressionFromNormalized(new SortExpression({
         expression: sortExpression,
         direction: myDescending ? SortExpression.ASCENDING : SortExpression.DESCENDING
-      }), essence.dataCube.dimensions), VisStrategy.KeepAlways);
+      }),                                                                    essence.dataCube.dimensions), VisStrategy.KeepAlways);
 
-    } else if (pos.what === 'row') {
+    } else if (pos.what === "row") {
       if (!clicker.dropHighlight || !clicker.changeHighlight) return;
 
       var rowHighlight = getFilterFromDatum(essence.splits, pos.row, dataCube);
@@ -203,21 +202,21 @@ export class Table extends BaseVisualization<TableState> {
       if (registerDownloadableDataset) registerDownloadableDataset(dataset);
 
       newState.flatData = dataset.flatten({
-        order: 'preorder',
-        nestingName: '__nest'
+        order: "preorder",
+        nestingName: "__nest"
       }).data;
     }
 
     this.setState(newState);
   }
 
-  getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): d3.scale.Linear<number, number>[] {
+  getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
     var measuresArray = essence.getEffectiveMeasures().toArray();
     var splitLength = essence.splits.length();
 
     return measuresArray.map(measure => {
       var measureValues = flatData
-        .filter((d: Datum) => d['__nest'] === splitLength)
+        .filter((d: Datum) => d["__nest"] === splitLength)
         .map((d: Datum) => d[measure.name] as number);
 
       // Ensure that 0 is in there
@@ -246,13 +245,13 @@ export class Table extends BaseVisualization<TableState> {
     return columnsCount * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / columnsCount;
   }
 
-  makeMeasuresRenderer(essence: Essence, formatters: Formatter[], hScales: d3.scale.Linear<number, number>[]): (datum: PseudoDatum) => JSX.Element[] {
+  makeMeasuresRenderer(essence: Essence, formatters: Formatter[], hScales: Array<d3.scale.Linear<number, number>>): (datum: PseudoDatum) => JSX.Element[] {
     var measuresArray = essence.getEffectiveMeasures().toArray();
     var idealWidth = this.getIdealMeasureWidth(essence);
 
     var splitLength = essence.splits.length();
     var isSingleMeasure = measuresArray.length === 1;
-    var className = classNames('measure', {'all-alone': !!isSingleMeasure});
+    var className = classNames("measure", { "all-alone": !!isSingleMeasure });
 
     return (datum: PseudoDatum): JSX.Element[] => {
 
@@ -261,14 +260,14 @@ export class Table extends BaseVisualization<TableState> {
         var measureValueStr = formatters[i](measureValue);
 
         var background: JSX.Element = null;
-        if (datum['__nest'] === splitLength) {
+        if (datum["__nest"] === splitLength) {
           let backgroundWidth = hScales[i](measureValue);
           background = <div className="background-container">
-            <div className="background" style={{width: backgroundWidth + '%'}}></div>
+            <div className="background" style={{ width: backgroundWidth + "%" }}></div>
           </div>;
         }
 
-        return <div className={className} key={measure.name} style={{width: idealWidth}}>
+        return <div className={className} key={measure.name} style={{ width: idealWidth }}>
           {background}
           <div className="label">{measureValueStr}</div>
         </div>;
@@ -278,8 +277,8 @@ export class Table extends BaseVisualization<TableState> {
 
   renderRow(index: number, rowMeasures: JSX.Element[], style: React.CSSProperties, rowClass: string): JSX.Element {
     return <div
-      className={'row ' + rowClass}
-      key={'_' + index}
+      className={"row " + rowClass}
+      key={"_" + index}
       style={style}
     >{rowMeasures}</div>;
   }
@@ -289,17 +288,17 @@ export class Table extends BaseVisualization<TableState> {
     var commonSortName = commonSort ? (commonSort.expression as RefExpression).name : null;
 
     var sortArrowIcon = commonSort ? React.createElement(SvgIcon, {
-      svg: require('../../icons/sort-arrow.svg'),
-      className: 'sort-arrow ' + commonSort.direction
+      svg: require("../../icons/sort-arrow.svg"),
+      className: "sort-arrow " + commonSort.direction
     }) : null;
 
     return essence.getEffectiveMeasures().toArray().map((measure, i) => {
       let amISorted = commonSortName === measure.name;
 
       return <div
-        className={classNames('measure-name', {hover: measure === hoverMeasure, sorted: amISorted})}
+        className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: amISorted })}
         key={measure.name}
-        style={{width: measureWidth}}
+        style={{ width: measureWidth }}
       >
         <div className="title-wrap">{measure.title}</div>
         {amISorted ? sortArrowIcon : null}
@@ -313,8 +312,8 @@ export class Table extends BaseVisualization<TableState> {
 
     if (commonSort.refName() === SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER) {
       return <SvgIcon
-        svg={require('../../icons/sort-arrow.svg')}
-        className={'sort-arrow ' + commonSort.direction}
+        svg={require("../../icons/sort-arrow.svg")}
+        className={"sort-arrow " + commonSort.direction}
       />;
     }
 
@@ -322,7 +321,7 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   onSimpleScroll(scrollTop: number, scrollLeft: number) {
-    this.setState({scrollLeft, scrollTop});
+    this.setState({ scrollLeft, scrollTop });
   }
 
   getVisibleIndices(rowCount: number, height: number): number[] {
@@ -370,34 +369,34 @@ export class Table extends BaseVisualization<TableState> {
       for (var i = skipNumber; i < lastElementToShow; i++) {
         var d = flatData[i];
 
-        var nest = d['__nest'];
+        var nest = d["__nest"];
 
         var split = nest > 0 ? splits.get(nest - 1) : null;
         var dimension = split ? split.getDimension(dataCube.dimensions) : null;
 
-        var segmentValue = dimension ? d[dimension.name] : '';
-        var segmentName = nest ? formatSegment(segmentValue) : 'Total';
+        var segmentValue = dimension ? d[dimension.name] : "";
+        var segmentName = nest ? formatSegment(segmentValue) : "Total";
         var left = Math.max(0, nest - 1) * INDENT_WIDTH;
-        var segmentStyle = { left: left, width: this.getSegmentWidth() - left, top: rowY };
-        var hoverClass = d === hoverRow ? 'hover' : null;
+        var segmentStyle = { left, width: this.getSegmentWidth() - left, top: rowY };
+        var hoverClass = d === hoverRow ? "hover" : null;
 
         var selected = false;
-        var selectedClass = '';
+        var selectedClass = "";
         if (highlightDelta) {
           selected = highlightDelta.equals(getFilterFromDatum(splits, d, dataCube));
-          selectedClass = selected ? 'selected' : 'not-selected';
+          selectedClass = selected ? "selected" : "not-selected";
         }
 
         var nestClass = `nest${nest}`;
         segments.push(<div
-          className={classNames('segment', nestClass, selectedClass, hoverClass)}
-          key={'_' + i}
+          className={classNames("segment", nestClass, selectedClass, hoverClass)}
+          key={"_" + i}
           style={segmentStyle}
         >{segmentName}</div>);
 
         let rowMeasures = measuresRenderer(d);
         let rowClass = classNames(nestClass, selectedClass, hoverClass);
-        let rowStyle: React.CSSProperties = {top: rowY, width: rowWidth};
+        let rowStyle: React.CSSProperties = { top: rowY, width: rowWidth };
 
         rows.push(this.renderRow(i, rowMeasures, rowStyle, rowClass));
 
@@ -409,7 +408,7 @@ export class Table extends BaseVisualization<TableState> {
 
           var dimension = essence.dataCube.getDimensionByExpression(splits.splitCombines.get(nest - 1).expression);
 
-          highlighter = <div className='highlighter' key='highlight' style={highlighterStyle}></div>;
+          highlighter = <div className="highlighter" key="highlight" style={highlighterStyle}></div>;
 
           highlightBubble = <SegmentBubble
             left={stage.x + stage.width / 2}
@@ -438,7 +437,6 @@ export class Table extends BaseVisualization<TableState> {
       <div className="corner-wrap">{segmentTitle}</div>
       {cornerSortArrow}
     </div>;
-
 
     const scrollerLayout: ScrollerLayout = {
       // Inner dimensions

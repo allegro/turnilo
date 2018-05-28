@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
-import { Timezone } from 'chronoshift';
+import { expect } from "chai";
+import { Timezone } from "chronoshift";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
 
-import { renderIntoDocument } from '../../utils/test-utils';
+import { renderIntoDocument } from "../../utils/test-utils";
 
-import { DateRangePicker } from './date-range-picker';
+import { DateRangePicker } from "./date-range-picker";
 
-describe('DateRangePicker', () => {
-  it('adds the correct class', () => {
+describe("DateRangePicker", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <DateRangePicker
         startTime={new Date(Date.UTC(2003, 11, 2))}
@@ -38,8 +38,8 @@ describe('DateRangePicker', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('date-range-picker');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("date-range-picker");
   });
 /* TODO: remove comments after the bug will be resolved https://github.com/chaijs/chai/pull/1071 */
 /*
@@ -57,7 +57,6 @@ describe('DateRangePicker', () => {
     }).to.throw('start time must be round');
   });*/
 
-
 /* TODO: remove comments after the bug will be resolved https://github.com/chaijs/chai/pull/1071 */
 /*  it('throws on non round end time input', () => {
     expect(() => {
@@ -73,8 +72,7 @@ describe('DateRangePicker', () => {
     }).to.throw('end time must be round'));
   });*/
 
-
-  it('does not error on null end time', () => {
+  it("does not error on null end time", () => {
     expect(() => {
       renderIntoDocument(
         <DateRangePicker

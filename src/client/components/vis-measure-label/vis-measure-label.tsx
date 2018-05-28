@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import './vis-measure-label.scss';
+import "./vis-measure-label.scss";
 
-import * as React from 'react';
-import { Datum } from 'plywood';
-import { Measure } from '../../../common/models/index';
+import { Datum } from "plywood";
+import * as React from "react";
+import { Measure } from "../../../common/models/index";
 
 export interface VisMeasureLabelProps extends React.Props<any> {
   measure: Measure;

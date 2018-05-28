@@ -34,7 +34,7 @@ export interface BaseFilterClauseDefinition {
 export interface NumberFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.number;
   not: boolean;
-  ranges: { start: number, end: number, bounds?: string }[];
+  ranges: Array<{ start: number, end: number, bounds?: string }>;
 }
 
 export interface StringFilterClauseDefinition extends BaseFilterClauseDefinition {
@@ -52,7 +52,7 @@ export interface BooleanFilterClauseDefinition extends BaseFilterClauseDefinitio
 
 export interface TimeFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.time;
-  timeRanges?: { start: string, end: string }[];
+  timeRanges?: Array<{ start: string, end: string }>;
   timePeriods?: TimePeriodDefinition[];
 }
 
@@ -86,7 +86,7 @@ const stringActionMap: { [action in StringFilterAction]: SupportedAction } = {
 const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClauseDefinition> = {
   toFilterClause(clauseDefinition: BooleanFilterClauseDefinition, dimension: Dimension): FilterClause {
     const { not, values } = clauseDefinition;
-    const { expression}  = dimension;
+    const { expression }  = dimension;
     const selection = r(values);
 
     return new FilterClause({ action: SupportedAction.overlap, exclude: not, expression, selection });
@@ -109,12 +109,15 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
   toFilterClause(clauseDefinition: StringFilterClauseDefinition, dimension: Dimension): FilterClause {
     const { action, not, values } = clauseDefinition;
 
-    if (action === null)
+    if (action === null) {
       throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
-    if (StringFilterAction[action] === undefined)
+    }
+    if (StringFilterAction[action] === undefined) {
       throw Error(`Unknown string filter action. Dimension: ${dimension}`);
-    if (action in [StringFilterAction.contains, StringFilterAction.match] && values.length !== 1)
+    }
+    if (action in [StringFilterAction.contains, StringFilterAction.match] && values.length !== 1) {
       throw Error(`Wrong string filter values: ${values} for action: ${action}. Dimension: ${dimension}`);
+    }
 
     const { expression } = dimension;
 
@@ -182,7 +185,7 @@ const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClause
         type: FilterType.number,
         ref: referenceName,
         not: exclude,
-        ranges: selection.value.elements.map((range) => ({ start: range.start, end: range.end, bounds: range.bounds }))
+        ranges: selection.value.elements.map(range => ({ start: range.start, end: range.end, bounds: range.bounds }))
       };
     } else {
       throw new Error(`Number filterClause expected, found: ${filterClause}. Dimension: ${referenceName}`);
@@ -194,12 +197,15 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
   toFilterClause(filterModel: TimeFilterClauseDefinition, dimension: Dimension): FilterClause {
     const { timeRanges, timePeriods } = filterModel;
 
-    if (timeRanges === undefined && timePeriods === undefined)
+    if (timeRanges === undefined && timePeriods === undefined) {
       throw Error(`Time filter must have one of: timeRanges or timePeriods property. Dimension: ${dimension}`);
-    if (timeRanges !== undefined && timeRanges.length !== 1)
+    }
+    if (timeRanges !== undefined && timeRanges.length !== 1) {
       throw Error(`Time filter support a single timeRange only. Dimension: ${dimension}`);
-    if (timePeriods !== undefined && timePeriods.length !== 1)
+    }
+    if (timePeriods !== undefined && timePeriods.length !== 1) {
       throw Error(`Time filter support a single timePeriod only. Dimension: ${dimension}`);
+    }
 
     const { expression } = dimension;
 
@@ -274,13 +280,15 @@ export interface FilterDefinitionConverter {
 
 export const filterDefinitionConverter: FilterDefinitionConverter = {
   toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: DataCube): FilterClause {
-    if (clauseDefinition.ref == null)
+    if (clauseDefinition.ref == null) {
       throw new Error("Dimension name cannot be empty.");
+    }
 
     const dimension = dataCube.getDimension(clauseDefinition.ref);
 
-    if (dimension == null)
+    if (dimension == null) {
       throw new Error(`Dimension ${clauseDefinition.ref} not found in data cube ${dataCube.name}.`);
+    }
 
     const clauseConverter = filterClauseConverters[clauseDefinition.type];
     return clauseConverter.toFilterClause(clauseDefinition, dimension);

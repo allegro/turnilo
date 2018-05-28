@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as React from 'react';
-import * as TestUtils from 'react-dom/test-utils';
-import { Timezone } from 'chronoshift';
-import { SettingsMenu } from './settings-menu';
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
-import { DataCubeMock } from '../../../common/models/mocks';
+import { expect } from "chai";
+import { Timezone } from "chronoshift";
+import * as React from "react";
+import * as TestUtils from "react-dom/test-utils";
+import { DataCubeMock } from "../../../common/models/mocks";
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
+import { SettingsMenu } from "./settings-menu";
 
+describe("SettingsMenu", () => {
 
-describe('SettingsMenu', () => {
-
-  it('adds the correct class', () => {
-    var openOn = document.createElement('div');
+  it("adds the correct class", () => {
+    var openOn = document.createElement("div");
 
     var renderedComponent = renderIntoDocument(
       <SettingsMenu
@@ -40,8 +39,8 @@ describe('SettingsMenu', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('settings-menu');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("settings-menu");
   });
 
 });

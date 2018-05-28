@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import './collection-overview.scss';
+import "./collection-overview.scss";
 
-import * as React from 'react';
-import { Collection, CollectionTile, Timekeeper } from '../../../../common/models/index';
-import { SvgIcon } from '../../../components/index';
+import * as React from "react";
+import { Collection, CollectionTile, Timekeeper } from "../../../../common/models/index";
+import { SvgIcon } from "../../../components/index";
 
-import { CollectionTileCard } from '../collection-tile-card/collection-tile-card';
+import { CollectionTileCard } from "../collection-tile-card/collection-tile-card";
 
-import { STRINGS } from '../../../config/constants';
+import { STRINGS } from "../../../config/constants";
 
-import { setDragGhost, classNames, getYFromEvent, getXFromEvent } from '../../../utils/dom/dom';
+import { classNames, getXFromEvent, setDragGhost } from "../../../utils/dom/dom";
 
 export interface CollectionOverviewProps extends React.Props<any> {
   timekeeper: Timekeeper;
@@ -56,10 +56,10 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
   }
 
   dragStart(tile: CollectionTile, e: React.DragEvent<HTMLElement>) {
-    this.setState({draggedTile: tile});
+    this.setState({ draggedTile: tile });
 
     var dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = 'move';
+    dataTransfer.effectAllowed = "move";
     dataTransfer.setData("text/html", tile.title);
 
     setDragGhost(dataTransfer, tile.title);
@@ -130,9 +130,9 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     const onDeleteClick = (tile: CollectionTile) => onDelete(collection, tile);
 
     const classes = classNames({
-      dragged: draggedTile === tile,
-      'drop-before': dropIndex === i && !dropAfter,
-      'drop-after': dropIndex === i && dropAfter
+      "dragged": draggedTile === tile,
+      "drop-before": dropIndex === i && !dropAfter,
+      "drop-after": dropIndex === i && dropAfter
     });
 
     return <CollectionTileCard

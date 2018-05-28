@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-import './selectable-string-filter-menu.scss';
+import "./selectable-string-filter-menu.scss";
 
+import { $, Dataset, r, Set, SortExpression } from "plywood";
 import * as React from "react";
-import { $, r, Dataset, SortExpression, Set } from "plywood";
-import { Fn, collect } from "../../../common/utils/general/general";
-import { STRINGS, SEARCH_WAIT } from "../../config/constants";
-import { Clicker, Essence, Timekeeper, Filter, FilterClause, FilterMode, Dimension, Colors } from "../../../common/models/index";
-import { enterKey, classNames } from "../../utils/dom/dom";
+import { Clicker, Colors, Dimension, Essence, Filter, FilterClause, FilterMode, Timekeeper } from "../../../common/models/index";
+import { collect, Fn } from "../../../common/utils/general/general";
+import { SEARCH_WAIT, STRINGS } from "../../config/constants";
+import { classNames, enterKey } from "../../utils/dom/dom";
+import { Button } from "../button/button";
 import { Checkbox, CheckboxType } from "../checkbox/checkbox";
+import { GlobalEventListener } from "../global-event-listener/global-event-listener";
+import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
-import { HighlightString } from "../highlight-string/highlight-string";
-import { Button } from "../button/button";
-import { GlobalEventListener } from "../global-event-listener/global-event-listener";
 
 const TOP_N = 100;
 
@@ -78,20 +78,20 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, searchText: string): void {
     var { dataCube } = essence;
-    var nativeCount = dataCube.getMeasure('count');
-    var measureExpression = nativeCount ? nativeCount.expression : $('main').count();
+    var nativeCount = dataCube.getMeasure("count");
+    var measureExpression = nativeCount ? nativeCount.expression : $("main").count();
 
     var filterExpression = essence.getEffectiveFilter(timekeeper, null, dimension).toExpression();
 
     if (searchText) {
-      filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), 'ignoreCase'));
+      filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), "ignoreCase"));
     }
 
-    var query = $('main')
+    var query = $("main")
       .filter(filterExpression)
       .split(dimension.expression, dimension.name)
-      .apply('MEASURE', measureExpression)
-      .sort($('MEASURE'), SortExpression.DESCENDING)
+      .apply("MEASURE", measureExpression)
+      .sort($("MEASURE"), SortExpression.DESCENDING)
       .limit(TOP_N + 1);
 
     this.setState({
@@ -107,8 +107,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
             dataset,
             error: null
           });
-        },
-        (error) => {
+        }, error => {
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -128,9 +127,9 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     var existingMode = filter.getModeForDimension(dimension);
 
     var valueSet = filter.getLiteralSet(dimension.expression);
-    var selectedValues = (existingMode !== 'regex' && valueSet) || (myColors ? myColors.toSet() : null) || Set.EMPTY; // don't want regex to show up as a promoted value
+    var selectedValues = (existingMode !== "regex" && valueSet) || (myColors ? myColors.toSet() : null) || Set.EMPTY; // don't want regex to show up as a promoted value
     this.setState({
-      selectedValues: selectedValues,
+      selectedValues,
       promotedValues: selectedValues,
       colors: myColors
     });
@@ -227,28 +226,28 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     var { loading, dataset, fetchQueued, selectedValues, promotedValues } = this.state;
     var { dimension, filterMode, searchText } = this.props;
 
-    var rows: Array<JSX.Element> = [];
+    var rows: JSX.Element[] = [];
     if (dataset) {
       var promotedElements = promotedValues ? promotedValues.elements : [];
-      var rowData = dataset.data.slice(0, TOP_N).filter((d) => {
+      var rowData = dataset.data.slice(0, TOP_N).filter(d => {
         return promotedElements.indexOf(d[dimension.name]) === -1;
       });
-      var rowStrings = promotedElements.concat(rowData.map((d) => d[dimension.name]));
+      var rowStrings = promotedElements.concat(rowData.map(d => d[dimension.name]));
 
       if (searchText) {
         var searchTextLower = searchText.toLowerCase();
-        rowStrings = rowStrings.filter((d) => {
+        rowStrings = rowStrings.filter(d => {
           return String(d).toLowerCase().indexOf(searchTextLower) !== -1;
         });
       }
 
-      var checkboxType = filterMode === Filter.EXCLUDED ? 'cross' : 'check';
-      rows = rowStrings.map((segmentValue) => {
+      var checkboxType = filterMode === Filter.EXCLUDED ? "cross" : "check";
+      rows = rowStrings.map(segmentValue => {
           var segmentValueStr = String(segmentValue);
           var selected = selectedValues && selectedValues.contains(segmentValue);
 
           return <div
-            className={classNames('row', { 'selected': selected })}
+            className={classNames("row", { selected })}
             key={segmentValueStr}
             title={segmentValueStr}
             onClick={this.onValueClick.bind(this, segmentValue)}
@@ -281,7 +280,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       <GlobalEventListener
         keyDown={this.globalKeyDownListener.bind(this)}
       />
-      <div className={classNames('menu-table', hasMore ? 'has-more' : 'no-more')}>
+      <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
         {this.renderRows()}
         {error ? <QueryError error={error}/> : null}
         {loading ? <Loader/> : null}

@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-import './number-filter-menu.scss';
+import "./number-filter-menu.scss";
 
-import * as React from 'react';
-import { Set, NumberRange, LiteralExpression } from 'plywood';
+import { LiteralExpression, NumberRange, Set } from "plywood";
+import * as React from "react";
 
-import { FilterClause, Clicker, Essence, Timekeeper, Filter, Dimension, FilterMode, Stage } from '../../../common/models/index';
-import { Fn } from '../../../common/utils/general/general';
-import { STRINGS } from '../../config/constants';
-import { enterKey } from '../../utils/dom/dom';
+import { Clicker, Dimension, Essence, Filter, FilterClause, FilterMode, Stage, Timekeeper } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { STRINGS } from "../../config/constants";
+import { enterKey } from "../../utils/dom/dom";
 
-import { Button } from '../button/button';
-import { NumberRangePicker, ANY_VALUE } from '../number-range-picker/number-range-picker';
-import { FilterOptionsDropdown, FilterOption } from '../filter-options-dropdown/filter-options-dropdown';
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import { Button } from "../button/button";
+import { FilterOption, FilterOptionsDropdown } from "../filter-options-dropdown/filter-options-dropdown";
+import { ANY_VALUE, NumberRangePicker } from "../number-range-picker/number-range-picker";
 
 function numberOrAnyToString(start: number): string {
   if (start === ANY_VALUE) return STRINGS.any;
-  return '' + start;
+  return "" + start;
 }
 
 function stringToNumberOrAny(startInput: string): number {
@@ -92,11 +92,11 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     var end: number = null;
 
     if (hasFilter) {
-      if (valueSet.setType === 'NUMBER_RANGE') {
+      if (valueSet.setType === "NUMBER_RANGE") {
         var range = valueSet.elements[0];
         start = range.start;
         end = range.end;
-      } else if (valueSet.setType === 'NUMBER') {
+      } else if (valueSet.setType === "NUMBER") {
         var number = valueSet.elements[0];
         start = number;
         end = number;
@@ -113,11 +113,11 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', this.globalKeyDownListener);
+    window.addEventListener("keydown", this.globalKeyDownListener);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.globalKeyDownListener);
+    window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
   constructFilter(): Filter {
@@ -134,7 +134,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
 
     if (validFilter) {
 
-      var bounds = start === end ? '[]' : '[)';
+      var bounds = start === end ? "[]" : "[)";
       var newSet = Set.fromJS({ setType: "NUMBER_RANGE", elements: [NumberRange.fromJS({ start, end, bounds })] });
       var clause = new FilterClause({
         expression: dimension.expression,
@@ -190,7 +190,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   }
 
   onSelectFilterOption(filterMode: FilterMode) {
-    this.setState({filterMode});
+    this.setState({ filterMode });
   }
 
   actionEnabled() {

@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as TestUtils from 'react-dom/test-utils';
-import { $, Expression } from 'plywood';
+import { expect } from "chai";
+import * as React from "react";
+import * as TestUtils from "react-dom/test-utils";
 
-import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
+import { ResizeHandle } from "./resize-handle";
 
-import { ResizeHandle } from './resize-handle';
-
-describe('ResizeHandle', () => {
-  it('adds the correct class', () => {
+describe("ResizeHandle", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <ResizeHandle
         side="left"
@@ -38,8 +34,8 @@ describe('ResizeHandle', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('resize-handle');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("resize-handle");
   });
 
 });

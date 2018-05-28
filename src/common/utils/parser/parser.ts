@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as d3 from 'd3';
+import * as d3 from "d3";
 
 export function parseCSV(text: string): any[] {
   return d3.csv.parse(text);
@@ -29,14 +29,14 @@ export function parseJSON(text: string): any[] {
   text = text.trim();
   var firstChar = text[0];
 
-  if (firstChar[0] === '[') {
+  if (firstChar[0] === "[") {
     try {
       return JSON.parse(text);
     } catch (e) {
       throw new Error(`could not parse`);
     }
 
-  } else if (firstChar[0] === '{') { // Also support line json
+  } else if (firstChar[0] === "{") { // Also support line json
     return text.split(/\r?\n/).map((line, i) => {
       try {
         return JSON.parse(line);
@@ -52,19 +52,19 @@ export function parseJSON(text: string): any[] {
 }
 
 export function parseData(text: string, type: string): any[] {
-  type = type.replace('.', '');
+  type = type.replace(".", "");
   switch (type) {
-    case 'csv':
-    case 'text/csv':
+    case "csv":
+    case "text/csv":
       return parseCSV(text);
 
-    case 'tsv':
-    case 'text/tsv':
-    case 'text/tab-separated-values':
+    case "tsv":
+    case "text/tsv":
+    case "text/tab-separated-values":
       return parseTSV(text);
 
-    case 'json':
-    case 'application/json':
+    case "json":
+    case "application/json":
       return parseJSON(text);
 
     default:

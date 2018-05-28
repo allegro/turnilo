@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import './hiluk-menu.scss';
+import "./hiluk-menu.scss";
 
-import * as React from 'react';
-import { Dataset } from 'plywood';
-import { Fn } from '../../../common/utils/general/general';
-import { Stage, Essence, Timekeeper, ExternalView } from '../../../common/models/index';
-import { exportOptions, STRINGS } from '../../config/constants';
-import { download, FileFormat, makeFileName } from '../../utils/download/download';
-import { BubbleMenu } from '../bubble-menu/bubble-menu';
-import * as CopyToClipboard from 'react-copy-to-clipboard';
+import { Dataset } from "plywood";
+import * as React from "react";
+import * as CopyToClipboard from "react-copy-to-clipboard";
+import { Essence, ExternalView, Stage, Timekeeper } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { exportOptions, STRINGS } from "../../config/constants";
+import { download, FileFormat, makeFileName } from "../../utils/download/download";
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
 
 export interface HilukMenuProps extends React.Props<any> {
   essence: Essence;
@@ -85,9 +85,9 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     if (!getDownloadableDataset) return;
 
     const filters = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
-    const splitsString = splits.toArray().map((split) => {
+    const splitsString = splits.toArray().map(split => {
       const dimension = split.getDimension(dataCube.dimensions);
-      if (!dimension) return '';
+      if (!dimension) return "";
       return `${STRINGS.splitDelimiter}_${dimension.name}`;
     }).join("_");
 
@@ -136,7 +136,6 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     shareOptions.push(<li
       key="view-raw-data"
       onClick={this.openRawDataModal.bind(this)}>{STRINGS.displayRawData}</li>);
-
 
     shareOptions.push(<li
       key="display-view-definition"

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import './highlight-string.scss';
+import "./highlight-string.scss";
 
-import * as React from 'react';
-import { classNames } from '../../utils/dom/dom';
+import * as React from "react";
+import { classNames } from "../../utils/dom/dom";
 
 export interface HighlightStringProps extends React.Props<any> {
   className?: string;
@@ -32,7 +32,7 @@ export interface HighlightStringState {
 export class HighlightString extends React.Component<HighlightStringProps, HighlightStringState> {
 
   highlightInString(): any {
-    var { text, highlight} = this.props;
+    var { text, highlight } = this.props;
     if (!highlight) return text;
 
     let startIndex: number = null;
@@ -60,6 +60,6 @@ export class HighlightString extends React.Component<HighlightStringProps, Highl
   render() {
     var { className } = this.props;
 
-    return <span className={classNames('highlight-string', className)}>{this.highlightInString()}</span>;
+    return <span className={classNames("highlight-string", className)}>{this.highlightInString()}</span>;
   }
 }

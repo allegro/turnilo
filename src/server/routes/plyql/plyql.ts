@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
-import { $, Expression, ChainableExpression, RefExpression, External, Datum, Dataset, TimeRange, ApplyExpression } from 'plywood';
-import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
+import { Response, Router } from "express";
+import { $, Dataset, Expression, RefExpression } from "plywood";
+import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 
-import { SwivRequest } from '../../utils/index';
+import { SwivRequest } from "../../utils/index";
 
 var router = Router();
 
@@ -31,12 +31,12 @@ interface PlyqlOutputFunctions {
 }
 
 var outputFunctions: PlyqlOutputFunctions = {
-  json: (data: Dataset): string => { return JSON.stringify(data, null, 2); },
-  csv: (data: Dataset): string => { return data.toCSV(); },
-  tsv: (data: Dataset): string => { return data.toTSV(); }
+  json: (data: Dataset): string => JSON.stringify(data, null, 2),
+  csv: (data: Dataset): string => data.toCSV(),
+  tsv: (data: Dataset): string => data.toTSV()
 };
 
-router.post('/', (req: SwivRequest, res: Response) => {
+router.post("/", (req: SwivRequest, res: Response) => {
   var { outputType, query } = req.body;
 
   if (typeof query !== "string") {
@@ -73,19 +73,19 @@ router.post('/', (req: SwivRequest, res: Response) => {
     return;
   }
 
-  parsedQuery = parsedQuery.substitute((ex) => {
+  parsedQuery = parsedQuery.substitute(ex => {
     if (ex instanceof RefExpression && ex.name === dataCube) {
       return $("main");
     }
     return null;
   });
 
-  req.getSettings(<GetSettingsOptions>{ dataCubeOfInterest: dataCube })
+  req.getSettings(<GetSettingsOptions> { dataCubeOfInterest: dataCube })
     .then((appSettings: any) => {
       var myDataCube = appSettings.getDataCube(dataCube);
 
       if (!myDataCube) {
-        res.status(400).send({ error: 'unknown data cube' });
+        res.status(400).send({ error: "unknown data cube" });
         return;
       }
 

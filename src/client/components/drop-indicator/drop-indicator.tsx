@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import './drop-indicator.scss';
+import "./drop-indicator.scss";
 
-import * as React from 'react';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import * as React from "react";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
 export interface DropIndicatorProps extends React.Props<any> {
 }
@@ -32,7 +32,7 @@ export class DropIndicator extends React.Component<DropIndicatorProps, DropIndic
     return <div className="drop-indicator">
       <div className="white-out"></div>
       <div className="action">
-        <SvgIcon svg={require('../../icons/split-replace.svg')}/>
+        <SvgIcon svg={require("../../icons/split-replace.svg")}/>
       </div>
     </div>;
   }

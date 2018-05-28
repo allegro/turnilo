@@ -15,17 +15,14 @@
  * limitations under the License.
  */
 
-import './simple-table.scss';
+import "./simple-table.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
+import * as React from "react";
 
-import { classNames } from '../../utils/dom/dom';
+import { classNames } from "../../utils/dom/dom";
 
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { Scroller, ScrollerPart } from '../scroller/scroller';
+import { Scroller, ScrollerPart } from "../scroller/scroller";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
 export interface SimpleTableColumn {
   label: string;
@@ -75,14 +72,14 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
       let icon: JSX.Element = null;
       if (sortColumn && sortColumn === column) {
         icon = <SvgIcon
-          svg={require('../../icons/sort-arrow.svg')}
-          className={`sort-arrow ${sortAscending ? 'ascending' : 'descending'}`}
+          svg={require("../../icons/sort-arrow.svg")}
+          className={`sort-arrow ${sortAscending ? "ascending" : "descending"}`}
         />;
       }
 
       items.push(<div
         className="header"
-        style={{width: column.width}}
+        style={{ width: column.width }}
         key={`column-${i}`}
       >{column.label}{icon}</div>);
     }
@@ -101,7 +98,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
       let action = actions[i];
 
       items.push(<div
-        className='cell action'
+        className="cell action"
         key={`action-${i}`}
         onClick={action.callback.bind(this, row)}
       ><SvgIcon svg={require(`../../icons/${action.icon}.svg`)}/></div>);
@@ -111,7 +108,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   }
 
   labelizer(column: SimpleTableColumn): (row: any) => any {
-    if (typeof column.field === 'string') {
+    if (typeof column.field === "string") {
       return (row: any) => row[column.field as string];
     }
 
@@ -128,16 +125,16 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
       let icon = col.cellIcon ? <SvgIcon svg={require(`../../icons/${col.cellIcon}.svg`)}/> : null;
 
       items.push(<div
-        className={classNames('cell', {'has-icon': !!col.cellIcon})}
-        style={{width: col.width}}
+        className={classNames("cell", { "has-icon": !!col.cellIcon })}
+        style={{ width: col.width }}
         key={`cell-${i}`}
       >{icon}{this.labelizer(col)(row)}</div>);
     }
 
     return <div
-      className={classNames('row', {hover: hoveredRowIndex === index})}
+      className={classNames("row", { hover: hoveredRowIndex === index })}
       key={`row-${index}`}
-      style={{height: ROW_HEIGHT}}
+      style={{ height: ROW_HEIGHT }}
     >
       {items}
     </div>;
@@ -188,7 +185,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   getLayout(columns: SimpleTableColumn[], rows: any[], actions: SimpleTableAction[]) {
     const width = columns.reduce((a, b) => a + b.width, 0);
 
-    const directActionsCount = actions.filter((a) => !a.inEllipsis).length;
+    const directActionsCount = actions.filter(a => !a.inEllipsis).length;
     const indirectActionsCount = directActionsCount !== actions.length ? 1 : 0;
 
     return {
@@ -205,7 +202,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
   }
 
   getDirectActions(actions: SimpleTableAction[]): SimpleTableAction[] {
-    return actions.filter((action) => !action.inEllipsis);
+    return actions.filter(action => !action.inEllipsis);
   }
 
   renderActions(rows: any[], actions: SimpleTableAction[]): JSX.Element[] {
@@ -218,18 +215,18 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
 
       let icons = directActions.map((action, j) => {
         return <div
-          className={classNames("icon", {hover: isRowHovered && j === hoveredActionIndex})}
+          className={classNames("icon", { hover: isRowHovered && j === hoveredActionIndex })}
           key={`icon-${j}`}
-          style={{width: ACTION_WIDTH}}
+          style={{ width: ACTION_WIDTH }}
         >
           <SvgIcon svg={require(`../../icons/${action.icon}.svg`)}/>
         </div>;
       });
 
       return <div
-        className={classNames("row action", {hover: isRowHovered})}
+        className={classNames("row action", { hover: isRowHovered })}
         key={`action-${i}`}
-        style={{height: ROW_HEIGHT}}
+        style={{ height: ROW_HEIGHT }}
       >
         {icons}
       </div>;
@@ -339,7 +336,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
 
     if (!columns) return null;
 
-    return <div className={classNames("simple-table", {clickable: hoveredRowIndex !== undefined})}>
+    return <div className={classNames("simple-table", { clickable: hoveredRowIndex !== undefined })}>
       <Scroller
         ref="scroller"
         layout={this.getLayout(columns, rows, actions)}

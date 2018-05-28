@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import './dimension-measure-panel.scss';
+import "./dimension-measure-panel.scss";
 
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
-import { clamp } from '../../utils/dom/dom';
-import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
-import { MeasuresTile } from '../measures-tile/measures-tile';
+import * as React from "react";
+import { Clicker, Essence, Stage } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { clamp } from "../../utils/dom/dom";
+import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
+import { MeasuresTile } from "../measures-tile/measures-tile";
 
 const TOTAL_FLEXES = 100;
 const MIN_FLEX = 20;

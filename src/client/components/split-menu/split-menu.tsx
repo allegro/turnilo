@@ -15,37 +15,36 @@
  * limitations under the License.
  */
 
-import './split-menu.scss';
+import "./split-menu.scss";
 
+import { NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
 import * as React from "react";
-import { Timezone, Duration } from "chronoshift";
-import { TimeBucketExpression, NumberBucketExpression, SortExpression } from "plywood";
-import { Fn, formatGranularity } from "../../../common/utils/index";
 import {
-  Stage,
   Clicker,
-  Essence,
-  VisStrategy,
-  SplitCombine,
   Colors,
+  ContinuousDimensionKind,
   Dimension,
-  SortOn,
+  Essence,
+  getGranularities,
   Granularity,
   granularityToString,
+  SortOn,
+  SplitCombine,
+  Stage,
   updateBucketSize,
-  getGranularities,
-  ContinuousDimensionKind
+  VisStrategy
 } from "../../../common/models/index";
+import { Fn, formatGranularity } from "../../../common/utils/index";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
-import { SvgIcon } from "../svg-icon/svg-icon";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { Dropdown } from "../dropdown/dropdown";
 import { ButtonGroup } from "../button-group/button-group";
+import { Dropdown } from "../dropdown/dropdown";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
 function formatLimit(limit: number | string): string {
-  if (limit === 'custom') return 'Custom';
-  return limit === null ? 'None' : String(limit);
+  if (limit === "custom") return "Custom";
+  return limit === null ? "None" : String(limit);
 }
 
 export interface SplitMenuProps extends React.Props<any> {
@@ -95,11 +94,11 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', this.globalKeyDownListener);
+    window.addEventListener("keydown", this.globalKeyDownListener);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.globalKeyDownListener);
+    window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
@@ -213,8 +212,8 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
     return <div className="sort-direction">
       {this.renderSortDropdown()}
-      <div className={'direction ' + direction} onClick={this.onToggleDirection.bind(this)}>
-        <SvgIcon svg={require('../../icons/sort-arrow.svg')}/>
+      <div className={"direction " + direction} onClick={this.onToggleDirection.bind(this)}>
+        <SvgIcon svg={require("../../icons/sort-arrow.svg")}/>
       </div>
     </div>;
   }
@@ -228,7 +227,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     var selectedItem: number | string = limitAction ? limitAction.value : null;
     if (colors) {
       items = [3, 5, 7, 9, 10];
-      selectedItem = colors.values ? 'custom' : colors.limit;
+      selectedItem = colors.values ? "custom" : colors.limit;
     }
 
     if (includeNone) items.unshift(null);
@@ -246,7 +245,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   renderTimeControls() {
     return <div>
-      {this.renderGranularityPicker('time')}
+      {this.renderGranularityPicker("time")}
       {this.renderSortDirection()}
       {this.renderLimitDropdown(true)}
     </div>;
@@ -254,7 +253,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   renderNumberControls() {
     return <div>
-      {this.renderGranularityPicker('number')}
+      {this.renderGranularityPicker("number")}
       {this.renderSortDirection()}
       {this.renderLimitDropdown(true)}
     </div>;

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { Dataset, basicExecutorFactory } from 'plywood';
+import { basicExecutorFactory, Dataset } from "plywood";
 import { DimensionsFixtures } from "../dimension/dimensions.fixtures";
 import { MeasuresFixtures } from "../measure/measures.fixtures";
-import { DataCube, DataCubeJS } from './data-cube';
+import { DataCube, DataCubeJS } from "./data-cube";
 
 var executor = basicExecutorFactory({
   datasets: {
@@ -30,30 +30,30 @@ var executor = basicExecutorFactory({
 export class DataCubeMock {
   public static get WIKI_JS(): DataCubeJS {
     return {
-      name: 'wiki',
-      title: 'Wiki',
-      description: 'Wiki description',
-      clusterName: 'druid-wiki',
-      source: 'wiki',
-      introspection: 'none',
+      name: "wiki",
+      title: "Wiki",
+      description: "Wiki description",
+      clusterName: "druid-wiki",
+      source: "wiki",
+      introspection: "none",
       attributes: [
-        { name: 'time', type: 'TIME' },
-        { name: 'articleName', type: 'STRING' },
-        { name: 'page', type: 'STRING' },
-        { name: 'userChars', type: 'SET/STRING' },
-        { name: 'count', type: 'NUMBER', unsplitable: true, maker: { op: 'count' } }
+        { name: "time", type: "TIME" },
+        { name: "articleName", type: "STRING" },
+        { name: "page", type: "STRING" },
+        { name: "userChars", type: "SET/STRING" },
+        { name: "count", type: "NUMBER", unsplitable: true, maker: { op: "count" } }
       ],
       dimensions: DimensionsFixtures.wikiJS(),
       measures: MeasuresFixtures.wikiJS(),
-      timeAttribute: 'time',
-      defaultTimezone: 'Etc/UTC',
-      defaultFilter: { op: 'literal', value: true },
-      defaultDuration: 'P3D',
-      defaultSortMeasure: 'count',
-      defaultPinnedDimensions: ['articleName'],
-      defaultSelectedMeasures: ['count'],
+      timeAttribute: "time",
+      defaultTimezone: "Etc/UTC",
+      defaultFilter: { op: "literal", value: true },
+      defaultDuration: "P3D",
+      defaultSortMeasure: "count",
+      defaultPinnedDimensions: ["articleName"],
+      defaultSelectedMeasures: ["count"],
       refreshRule: {
-        time: new Date('2016-04-30T12:39:51.350Z'),
+        time: new Date("2016-04-30T12:39:51.350Z"),
         rule: "fixed"
       }
     };
@@ -61,20 +61,20 @@ export class DataCubeMock {
 
   public static get TWITTER_JS(): DataCubeJS {
     return {
-      name: 'twitter',
-      title: 'Twitter',
-      description: 'Twitter description should go here',
-      clusterName: 'druid-twitter',
-      source: 'twitter',
-      introspection: 'none',
+      name: "twitter",
+      title: "Twitter",
+      description: "Twitter description should go here",
+      clusterName: "druid-twitter",
+      source: "twitter",
+      introspection: "none",
       dimensions: DimensionsFixtures.twitterJS(),
       measures: MeasuresFixtures.twitterJS(),
-      timeAttribute: 'time',
-      defaultTimezone: 'Etc/UTC',
-      defaultFilter: { op: 'literal', value: true },
-      defaultDuration: 'P3D',
-      defaultSortMeasure: 'count',
-      defaultPinnedDimensions: ['tweet'],
+      timeAttribute: "time",
+      defaultTimezone: "Etc/UTC",
+      defaultFilter: { op: "literal", value: true },
+      defaultDuration: "P3D",
+      defaultSortMeasure: "count",
+      defaultPinnedDimensions: ["tweet"],
       refreshRule: {
         rule: "realtime"
       }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property } from 'immutable-class';
-import { External } from 'plywood';
-import { verifyUrlSafeName } from '../../utils/general/general';
+import { BaseImmutable, Property } from "immutable-class";
+import { External } from "plywood";
+import { verifyUrlSafeName } from "../../utils/general/general";
 
-export type SupportedType = 'druid' | 'mysql' | 'postgres';
-export type SourceListScan = 'disable' | 'auto';
+export type SupportedType = "druid" | "mysql" | "postgres";
+export type SourceListScan = "disable" | "auto";
 
 export interface ClusterValue {
   name: string;
@@ -69,7 +69,7 @@ export interface ClusterJS {
 }
 
 function ensureNotNative(name: string): void {
-  if (name === 'native') {
+  if (name === "native") {
     throw new Error("can not be 'native'");
   }
 }
@@ -82,16 +82,16 @@ function ensureNotTiny(v: number): void {
 }
 
 export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
-  static TYPE_VALUES: SupportedType[] = ['druid', 'mysql', 'postgres'];
+  static TYPE_VALUES: SupportedType[] = ["druid", "mysql", "postgres"];
   static DEFAULT_TIMEOUT = 40000;
   static DEFAULT_HEALTH_CHECK_TIMEOUT = 1000;
-  static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = 'auto';
-  static SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ['disable', 'auto'];
+  static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = "auto";
+  static SOURCE_LIST_SCAN_VALUES: SourceListScan[] = ["disable", "auto"];
   static DEFAULT_SOURCE_LIST_REFRESH_INTERVAL = 0;
   static DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD = false;
   static DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 0;
   static DEFAULT_SOURCE_REINTROSPECT_ON_LOAD = false;
-  static DEFAULT_INTROSPECTION_STRATEGY = 'segment-metadata-fallback';
+  static DEFAULT_INTROSPECTION_STRATEGY = "segment-metadata-fallback";
 
   static isCluster(candidate: any): candidate is Cluster {
     return candidate instanceof Cluster;
@@ -101,43 +101,42 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     if (!parameters.host && ((parameters as any).druidHost || (parameters as any).brokerHost)) {
       parameters.host = (parameters as any).druidHost || (parameters as any).brokerHost;
     }
-    if (typeof parameters.timeout === 'string') {
+    if (typeof parameters.timeout === "string") {
       parameters.timeout = parseInt(parameters.timeout, 10);
     }
-    if (typeof parameters.sourceListRefreshInterval === 'string') {
+    if (typeof parameters.sourceListRefreshInterval === "string") {
       parameters.sourceListRefreshInterval = parseInt(parameters.sourceListRefreshInterval, 10);
     }
-    if (typeof parameters.sourceReintrospectInterval === 'string') {
+    if (typeof parameters.sourceReintrospectInterval === "string") {
       parameters.sourceReintrospectInterval = parseInt(parameters.sourceReintrospectInterval, 10);
     }
     return new Cluster(BaseImmutable.jsToValue(Cluster.PROPERTIES, parameters));
   }
 
   static PROPERTIES: Property[] = [
-    { name: 'name', validate: [verifyUrlSafeName, ensureNotNative] },
-    { name: 'type', possibleValues: Cluster.TYPE_VALUES },
-    { name: 'host', defaultValue: null },
-    { name: 'title', defaultValue: '' },
-    { name: 'version', defaultValue: null },
-    { name: 'timeout', defaultValue: Cluster.DEFAULT_TIMEOUT },
-    { name: 'healthCheckTimeout', defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT },
-    { name: 'sourceListScan', defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
-    { name: 'sourceListRefreshOnLoad', defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD },
-    { name: 'sourceListRefreshInterval', defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
-    { name: 'sourceReintrospectOnLoad', defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD },
-    { name: 'sourceReintrospectInterval', defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
+    { name: "name", validate: [verifyUrlSafeName, ensureNotNative] },
+    { name: "type", possibleValues: Cluster.TYPE_VALUES },
+    { name: "host", defaultValue: null },
+    { name: "title", defaultValue: "" },
+    { name: "version", defaultValue: null },
+    { name: "timeout", defaultValue: Cluster.DEFAULT_TIMEOUT },
+    { name: "healthCheckTimeout", defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT },
+    { name: "sourceListScan", defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
+    { name: "sourceListRefreshOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD },
+    { name: "sourceListRefreshInterval", defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
+    { name: "sourceReintrospectOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD },
+    { name: "sourceReintrospectInterval", defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
 
     // Druid
-    { name: 'introspectionStrategy', defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
-    { name: 'requestDecorator', defaultValue: null },
-    { name: 'decoratorOptions', defaultValue: null },
+    { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
+    { name: "requestDecorator", defaultValue: null },
+    { name: "decoratorOptions", defaultValue: null },
 
     // SQLs
-    { name: 'database', defaultValue: null },
-    { name: 'user', defaultValue: null },
-    { name: 'password', defaultValue: null }
+    { name: "database", defaultValue: null },
+    { name: "user", defaultValue: null },
+    { name: "password", defaultValue: null }
   ];
-
 
   public name: string;
   public type: SupportedType;
@@ -166,14 +165,14 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     super(parameters);
 
     switch (this.type) {
-      case 'druid':
+      case "druid":
         this.database = null;
         this.user = null;
         this.password = null;
         break;
 
-      case 'mysql':
-      case 'postgres':
+      case "mysql":
+      case "postgres":
         this.introspectionStrategy = null;
         this.requestDecorator = null;
         this.decoratorOptions = null;
@@ -202,7 +201,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     return External.fromValue({
       engine: this.type,
       source,
-      version: version,
+      version,
       suppress: true,
 
       allowSelectQueries: true,
@@ -211,7 +210,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   }
 
   public shouldScanSources(): boolean {
-    return this.getSourceListScan() === 'auto';
+    return this.getSourceListScan() === "auto";
   }
 }
 BaseImmutable.finalize(Cluster);

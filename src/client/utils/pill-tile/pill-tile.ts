@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { BAR_TITLE_WIDTH, CORE_ITEM_WIDTH, CORE_ITEM_GAP, VIS_SELECTOR_WIDTH, OVERFLOW_WIDTH } from '../../config/constants';
+import { BAR_TITLE_WIDTH, CORE_ITEM_GAP, CORE_ITEM_WIDTH, OVERFLOW_WIDTH, VIS_SELECTOR_WIDTH } from "../../config/constants";
 
 export const SECTION_WIDTH = CORE_ITEM_WIDTH + CORE_ITEM_GAP;
 

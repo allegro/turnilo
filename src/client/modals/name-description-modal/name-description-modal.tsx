@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-import './name-description-modal.scss';
+import "./name-description-modal.scss";
 
-import * as React from 'react';
+import * as React from "react";
 
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Collection, Essence, CollectionTile, DataCube } from '../../../common/models/index';
-import { classNames } from '../../utils/dom/dom';
-import { ImmutableFormDelegate, ImmutableFormState } from '../../utils/immutable-form-delegate/immutable-form-delegate';
+import { classNames } from "../../utils/dom/dom";
+import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 
-import { FormLabel, Button, ImmutableInput, Modal, Dropdown } from '../../components/index';
+import { Button, FormLabel, ImmutableInput, Modal } from "../../components/index";
 
-import { STRINGS } from '../../config/constants';
-
-import { COLLECTION as LABELS } from '../../../common/models/labels';
+import { COLLECTION as LABELS } from "../../../common/models/labels";
 
 export interface NameDescriptionModalProps<T> extends React.Props<any> {
   onCancel?: () => void;
@@ -85,17 +81,17 @@ export class NameDescriptionModal<T> extends React.Component<NameDescriptionModa
       onEnter={this.save.bind(this)}
     >
       <form className="general vertical">
-        {makeLabel('title')}
-        {makeTextInput('title', /.*/, true)}
+        {makeLabel("title")}
+        {makeTextInput("title", /.*/, true)}
 
-        {makeLabel('description')}
-        {makeTextInput('description', /.*/)}
+        {makeLabel("description")}
+        {makeTextInput("description", /.*/)}
 
       </form>
 
       <div className="button-bar">
         <Button
-          className={classNames("save", {disabled: !canSave})}
+          className={classNames("save", { disabled: !canSave })}
           title={okTitle}
           type="primary"
           onClick={this.save.bind(this)}

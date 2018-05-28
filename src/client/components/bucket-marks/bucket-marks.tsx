@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import './bucket-marks.scss';
+import "./bucket-marks.scss";
 
-import * as React from 'react';
-import { PlywoodValue } from 'plywood';
-import { Stage } from '../../../common/models/index';
-import { roundToHalfPx } from '../../utils/dom/dom';
+import { PlywoodValue } from "plywood";
+import * as React from "react";
+import { Stage } from "../../../common/models/index";
+import { roundToHalfPx } from "../../utils/dom/dom";
 
 const TICK_HEIGHT = 5;
 
@@ -47,11 +47,11 @@ export class BucketMarks extends React.Component<BucketMarksProps, BucketMarksSt
 
     for (var tick of ticks) {
       var x = roundToHalfPx(scale(tick));
-      addLine(x, '_' + tick);
+      addLine(x, "_" + tick);
     }
     if (ticks.length) {
       var x = roundToHalfPx(scale(ticks[ticks.length - 1]) + scale.rangeBand());
-      addLine(x, 'last');
+      addLine(x, "last");
     }
 
     return <g className="bucket-marks" transform={stage.getTransform()}>

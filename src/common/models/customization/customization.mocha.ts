@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
-import { Customization, CustomizationJS } from './customization';
+import { expect } from "chai";
+import { testImmutableClass } from "immutable-class-tester";
+import { Customization, CustomizationJS } from "./customization";
 
-describe('Customization', () => {
-  it('is an immutable class', () => {
+describe("Customization", () => {
+  it("is an immutable class", () => {
     testImmutableClass<CustomizationJS>(Customization, [
       {
         title: "Hello World",

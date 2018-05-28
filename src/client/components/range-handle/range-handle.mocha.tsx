@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
+import { expect } from "chai";
 
-import * as React from 'react';
-import * as TestUtils from 'react-dom/test-utils';
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
+import * as React from "react";
+import * as TestUtils from "react-dom/test-utils";
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
-import { RangeHandle } from './range-handle';
+import { RangeHandle } from "./range-handle";
 
-describe('RangeHandle', () => {
-  it('adds the correct class', () => {
+describe("RangeHandle", () => {
+  it("adds the correct class", () => {
 
     var renderedComponent = renderIntoDocument(
       <RangeHandle
@@ -35,7 +35,7 @@ describe('RangeHandle', () => {
 
       />
     );
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('range-handle');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("range-handle");
   });
 });

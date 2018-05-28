@@ -15,18 +15,8 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import "../../utils/test-utils";
 
-import * as TestUtils from 'react-dom/test-utils';
-
-import '../../utils/test-utils';
-
-import { $, Expression } from 'plywood';
-import { BodyPortal } from './body-portal';
-
-describe('BodyPortal', () => {
+describe("BodyPortal", () => {
 
 });

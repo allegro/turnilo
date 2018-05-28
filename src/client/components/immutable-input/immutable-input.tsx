@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-import './immutable-input.scss';
+import "./immutable-input.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import { ImmutableUtils } from '../../../common/utils/index';
-import { classNames } from '../../utils/dom/dom';
-import { ChangeFn } from '../../utils/immutable-form-delegate/immutable-form-delegate';
+import { ImmutableUtils } from "../../../common/utils/index";
+import { classNames } from "../../utils/dom/dom";
+import { ChangeFn } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 
-import { firstUp } from '../../../common/utils/string/string';
-
-export type InputType = 'text' | 'textarea';
+export type InputType = "text" | "textarea";
 
 export interface ImmutableInputProps extends React.Props<any> {
   instance: any;
@@ -49,12 +47,12 @@ export interface ImmutableInputState {
 
 export class ImmutableInput extends React.Component<ImmutableInputProps, ImmutableInputState> {
   static defaultProps: Partial<ImmutableInputProps> = {
-    type: 'text',
+    type: "text",
     stringToValue: String,
-    valueToString: (value: any) => value ? String(value) : ''
+    valueToString: (value: any) => value ? String(value) : ""
   };
 
-  static simpleGenerator (instance: any, changeFn: ChangeFn) {
+  static simpleGenerator(instance: any, changeFn: ChangeFn) {
     return (name: string, validator= /^.+$/, focusOnStartUp= false) => {
       return <ImmutableInput
         key={name}
@@ -100,7 +98,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
     this.setState({
       invalidString: undefined,
       validString: undefined
-    }, callback);
+    },            callback);
   }
 
   componentWillReceiveProps(nextProps: ImmutableInputProps) {
@@ -124,8 +122,8 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
   }
 
   maybeFocus() {
-    if (!this.focusAlreadyGiven && this.props.focusOnStartUp && this.refs['me']) {
-      (ReactDOM.findDOMNode(this.refs['me']) as any).select();
+    if (!this.focusAlreadyGiven && this.props.focusOnStartUp && this.refs["me"]) {
+      (ReactDOM.findDOMNode(this.refs["me"]) as any).select();
       this.focusAlreadyGiven = true;
     }
   }
@@ -153,7 +151,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
     var invalidString: string;
     var validString: string;
 
-    var error = '';
+    var error = "";
 
     try {
       var newValue: any = stringToValue ? stringToValue(newString) : newString;
@@ -174,7 +172,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
       if (onInvalid) onInvalid(newValue);
     }
 
-    this.setState({myInstance, invalidString, validString}, () => {
+    this.setState({ myInstance, invalidString, validString }, () => {
       if (onChange) onChange(myInstance, invalidString === undefined, path, error);
     });
   }
@@ -190,20 +188,20 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
 
     if (!path || !myInstance) return null;
 
-    if (type === 'textarea') {
+    if (type === "textarea") {
       return <textarea
-        className={classNames('immutable-input', className, {error: isInvalid})}
-        ref='me'
-        value={(isInvalid ? invalidString : validString) || ''}
+        className={classNames("immutable-input", className, { error: isInvalid })}
+        ref="me"
+        value={(isInvalid ? invalidString : validString) || ""}
         onChange={this.onChange.bind(this)}
       />;
     }
 
     return <input
-      className={classNames('immutable-input', className, {error: isInvalid})}
-      ref='me'
+      className={classNames("immutable-input", className, { error: isInvalid })}
+      ref="me"
       type="text"
-      value={(isInvalid ? invalidString : validString) || ''}
+      value={(isInvalid ? invalidString : validString) || ""}
       onChange={this.onChange.bind(this)}
     />;
   }

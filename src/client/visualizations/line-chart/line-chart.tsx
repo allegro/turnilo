@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-import './line-chart.scss';
+import "./line-chart.scss";
 
-import { immutableEqual } from 'immutable-class';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as d3 from 'd3';
-import { Duration } from 'chronoshift';
-import { r, $, ply, Expression, Dataset, Datum, TimeRange, TimeRangeJS, TimeBucketExpression, SortExpression,
-  PlywoodRange, NumberRangeJS, NumberRange, Range, NumberBucketExpression } from 'plywood';
-import { Essence, Splits, Colors, FilterClause, Dimension, Stage,
-  Filter, Measure, DataCube, VisualizationProps, DatasetLoad } from '../../../common/models/index';
-import { LINE_CHART_MANIFEST } from '../../../common/manifests/line-chart/line-chart';
-import { DisplayYear } from '../../../common/utils/time/time';
-import { formatValue } from '../../../common/utils/formatter/formatter';
+import * as d3 from "d3";
+import { immutableEqual } from "immutable-class";
+import { Dataset, Datum, NumberBucketExpression, NumberRange, NumberRangeJS, PlywoodRange, r,
+  Range, TimeBucketExpression, TimeRange, TimeRangeJS } from "plywood";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
+import { DatasetLoad, Dimension, Filter,
+  FilterClause, Measure, Stage, VisualizationProps } from "../../../common/models/index";
+import { formatValue } from "../../../common/utils/formatter/formatter";
+import { DisplayYear } from "../../../common/utils/time/time";
 
-import { getLineChartTicks } from '../../../common/models/granularity/granularity';
+import { getLineChartTicks } from "../../../common/models/granularity/granularity";
 
-import { SPLIT, VIS_H_PADDING } from '../../config/constants';
-import { getXFromEvent, escapeKey } from '../../utils/dom/dom';
+import { SPLIT, VIS_H_PADDING } from "../../config/constants";
+import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
 
-import { VisMeasureLabel, ChartLine, LineChartAxis, VerticalAxis, GridLines, Highlighter,
-  SegmentBubble, HoverMultiBubble, ColorEntry, GlobalEventListener } from '../../components/index';
+import { ChartLine, ColorEntry, GlobalEventListener, GridLines, Highlighter, HoverMultiBubble,
+  LineChartAxis, SegmentBubble, VerticalAxis, VisMeasureLabel } from "../../components/index";
 
-import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
+import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
@@ -110,7 +109,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   componentDidUpdate() {
     const { containerYPosition, containerXPosition } = this.state;
 
-    var node = ReactDOM.findDOMNode(this.refs['container']);
+    var node = ReactDOM.findDOMNode(this.refs["container"]);
     if (!node) return;
 
     var rect = node.getBoundingClientRect();
@@ -325,7 +324,6 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange }  = this.state;
     const { dragOnMeasure, hoverRange, hoverMeasure, scaleX, continuousDimension } = this.state;
 
-
     if (essence.highlightOnDifferentMeasure(LineChart.id, measure.name)) return null;
 
     var topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
@@ -487,7 +485,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       if (splitLength === 1) {
         chartLines = [];
         chartLines.push(<ChartLine
-          key='single'
+          key="single"
           dataset={mySplitDataset}
           getX={getX}
           getY={getY}
@@ -508,7 +506,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           var subDataset = datum[SPLIT] as Dataset;
           if (!subDataset) return null;
           return <ChartLine
-            key={'single' + i}
+            key={"single" + i}
             dataset={subDataset}
             getX={getX}
             getY={getY}
@@ -607,7 +605,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           let domain = [(axisRange).start, (axisRange).end];
           let range = [0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
           let scaleFn: any = null;
-          if (continuousDimension.kind === 'time') {
+          if (continuousDimension.kind === "time") {
             scaleFn = d3.time.scale();
           } else {
             scaleFn = d3.scale.linear();
@@ -628,8 +626,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     var firstDatum = dataset.data[0];
     var ranges: PlywoodRange[];
-    if (firstDatum['SPLIT']) {
-      ranges = dataset.data.map(d => this.getXAxisRange(d['SPLIT'] as Dataset, continuousDimension));
+    if (firstDatum["SPLIT"]) {
+      ranges = dataset.data.map(d => this.getXAxisRange(d["SPLIT"] as Dataset, continuousDimension));
     } else {
       ranges = dataset.data.map(d => (d as any)[key] as PlywoodRange);
 

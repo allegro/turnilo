@@ -24,31 +24,31 @@ import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
 describe("ViewDefinitionConverter2", () => {
 
   const totalsWithTimeBucket: EssenceJS = {
-    "visualization": "totals",
-    "timezone": "Etc/UTC",
-    "filter": {
-      "op": "overlap",
-      "operand": {
-        "op": "ref",
-        "name": "time"
+    visualization: "totals",
+    timezone: "Etc/UTC",
+    filter: {
+      op: "overlap",
+      operand: {
+        op: "ref",
+        name: "time"
       },
-      "expression": {
-        "op": "timeBucket",
-        "operand": {
-          "op": "ref",
-          "name": "n"
+      expression: {
+        op: "timeBucket",
+        operand: {
+          op: "ref",
+          name: "n"
         },
-        "duration": "P1D"
+        duration: "P1D"
       }
     },
-    "splits": [],
-    "singleMeasure": "delta",
-    "selectedMeasures": [
+    splits: [],
+    singleMeasure: "delta",
+    selectedMeasures: [
       "count"
     ],
-    "pinnedDimensions": [],
-    "multiMeasureMode": true,
-    "pinnedSort": "delta"
+    pinnedDimensions: [],
+    multiMeasureMode: true,
+    pinnedSort: "delta"
   };
 
   it("should convert time bucket expression to time range", () => {

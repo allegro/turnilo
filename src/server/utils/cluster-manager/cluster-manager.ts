@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import * as path from 'path';
-import * as Q from 'q';
-import { NamedArray} from "immutable-class";
-import { External } from 'plywood';
-import { Logger } from 'logger-tracker';
-import { PlywoodRequester } from 'plywood-base-api';
-import { DruidRequestDecorator } from 'plywood-druid-requester';
-import { properRequesterFactory } from '../requester/requester';
-import { Cluster } from '../../../common/models/index';
+import { NamedArray } from "immutable-class";
+import { Logger } from "logger-tracker";
+import * as path from "path";
+import { External } from "plywood";
+import { PlywoodRequester } from "plywood-base-api";
+import { DruidRequestDecorator } from "plywood-druid-requester";
+import * as Q from "q";
+import { Cluster } from "../../../common/models/index";
+import { properRequesterFactory } from "../requester/requester";
 
 const CONNECTION_RETRY_TIMEOUT = 20000;
 const DRUID_REQUEST_DECORATOR_MODULE_VERSION = 1;
@@ -85,7 +85,7 @@ export class ClusterManager {
   private initialConnectionTimer: NodeJS.Timer = null;
 
   constructor(cluster: Cluster, options: ClusterManagerOptions) {
-    if (!cluster) throw new Error('must have cluster');
+    if (!cluster) throw new Error("must have cluster");
     this.logger = options.logger;
     this.verbose = Boolean(options.verbose);
     this.anchorPath = options.anchorPath;
@@ -100,7 +100,7 @@ export class ClusterManager {
     this.updateRequestDecorator();
     this.updateRequester();
 
-    this.managedExternals.forEach((managedExternal) => {
+    this.managedExternals.forEach(managedExternal => {
       managedExternal.external = managedExternal.external.attachRequester(this.requester);
     });
   }
@@ -170,7 +170,7 @@ export class ClusterManager {
     const { cluster, logger, requestDecoratorModule } = this;
 
     var druidRequestDecorator: DruidRequestDecorator = null;
-    if (cluster.type === 'druid' && requestDecoratorModule) {
+    if (cluster.type === "druid" && requestDecoratorModule) {
       logger.log(`Cluster '${cluster.name}' creating requestDecorator`);
       druidRequestDecorator = requestDecoratorModule.druidRequestDecoratorFactory(logger, {
         options: cluster.decoratorOptions,
@@ -208,10 +208,10 @@ export class ClusterManager {
       if (this.sourceListRefreshInterval && cluster.shouldScanSources()) {
         logger.log(`Setting up sourceListRefresh timer in cluster '${cluster.name}' (every ${this.sourceListRefreshInterval}ms)`);
         this.sourceListRefreshTimer = setInterval(() => {
-          this.scanSourceList().catch((e) => {
+          this.scanSourceList().catch(e => {
             logger.error(`Cluster '${cluster.name}' encountered and error during SourceListRefresh: ${e.message}`);
           });
-        }, this.sourceListRefreshInterval);
+        },                                        this.sourceListRefreshInterval);
         this.sourceListRefreshTimer.unref();
       }
     }
@@ -232,10 +232,10 @@ export class ClusterManager {
       if (this.sourceReintrospectInterval) {
         logger.log(`Setting up sourceReintrospect timer in cluster '${cluster.name}' (every ${this.sourceReintrospectInterval}ms)`);
         this.sourceReintrospectTimer = setInterval(() => {
-          this.introspectSources().catch((e) => {
+          this.introspectSources().catch(e => {
             logger.error(`Cluster '${cluster.name}' encountered and error during SourceReintrospect: ${e.message}`);
           });
-        }, this.sourceReintrospectInterval);
+        },                                         this.sourceReintrospectInterval);
         this.sourceReintrospectTimer.unref();
       }
     }
@@ -309,12 +309,11 @@ export class ClusterManager {
 
     if (verbose) logger.log(`Cluster '${cluster.name}' introspecting '${managedExternal.name}'`);
     return managedExternal.external.introspect()
-      .then(
-        (introspectedExternal) => {
+      .then(introspectedExternal => {
           this.introspectedSources[String(introspectedExternal.source)] = true;
           return this.updateManagedExternal(managedExternal, introspectedExternal);
         },
-        (e: Error) => {
+            (e: Error) => {
           logger.error(`Cluster '${cluster.name}' could not introspect '${managedExternal.name}' because: ${e.message}`);
         }
       );
@@ -329,10 +328,10 @@ export class ClusterManager {
     return (External.getConstructorFor(cluster.type) as any).getSourceList(this.requester)
       .then(
         (sources: string[]) => {
-          if (verbose) logger.log(`For cluster '${cluster.name}' got sources: [${sources.join(', ')}]`);
+          if (verbose) logger.log(`For cluster '${cluster.name}' got sources: [${sources.join(", ")}]`);
           // For every un-accounted source: make an external and add it to the managed list.
-          var introspectionTasks: Promise<any>[] = [];
-          sources.forEach((source) => {
+          var introspectionTasks: Array<Promise<any>> = [];
+          sources.forEach(source => {
             var existingExternalsForSource = this.managedExternals.filter(managedExternal => getSourceFromExternal(managedExternal.external) === source);
 
             if (existingExternalsForSource.length) {
@@ -350,7 +349,7 @@ export class ClusterManager {
               var external = cluster.makeExternalFromSourceName(source, this.version).attachRequester(this.requester);
               var newManagedExternal: ManagedExternal = {
                 name: this.generateExternalName(external),
-                external: external,
+                external,
                 autoDiscovered: true
               };
               introspectionTasks.push(
@@ -375,7 +374,7 @@ export class ClusterManager {
 
     logger.log(`Introspecting all sources in cluster '${cluster.name}'`);
 
-    return Q.all(this.managedExternals.map((managedExternal) => {
+    return Q.all(this.managedExternals.map(managedExternal => {
       return this.introspectManagedExternal(managedExternal);
     }));
   }

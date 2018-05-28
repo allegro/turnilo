@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom/server';
-import * as TestUtils from 'react-dom/test-utils';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom/server";
 
-import '../../utils/test-utils';
+import "../../utils/test-utils";
 
-import { $, Expression } from 'plywood';
-import { HighlightString } from './highlight-string';
+import { HighlightString } from "./highlight-string";
 
-describe('HighlightString', () => {
-  it('properly highlights different types', () => {
+describe("HighlightString", () => {
+  it("properly highlights different types", () => {
     expect(ReactDOM.renderToStaticMarkup(
       <HighlightString
         highlight={/[0-9]*/}

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { AppSettings, Timekeeper } from '../common/models/index';
+import { AppSettings, Timekeeper } from "../common/models/index";
 
 export interface ViewOptions {
   version: string;

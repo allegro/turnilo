@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-import './chart-line.scss';
+import "./chart-line.scss";
 
-import { immutableEqual } from 'immutable-class';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as d3 from 'd3';
-import { $, Expression, Executor, Dataset, Datum, TimeRange, PlywoodRange, NumberRange, Range } from 'plywood';
-import { Stage, Filter, Dimension, Measure } from '../../../common/models/index';
+import * as d3 from "d3";
+import { immutableEqual } from "immutable-class";
+import { Dataset, Datum, NumberRange, PlywoodRange, Range, TimeRange } from "plywood";
+import * as React from "react";
+import { Stage } from "../../../common/models/index";
 
 const lineFn = d3.svg.line();
 
@@ -95,7 +94,7 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
 
     var strokeStyle: React.CSSProperties = null;
     var fillStyle: React.CSSProperties = null;
-    if (color !== 'default') {
+    if (color !== "default") {
       strokeStyle = { stroke: color };
       fillStyle = { fill: color };
     }

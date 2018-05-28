@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from 'immutable-class';
-import { $, Expression, RefExpression, SortExpression } from 'plywood';
-import { Dimension, DimensionJS } from '../dimension/dimension';
-import { Measure, MeasureJS } from '../measure/measure';
-import { DataCube } from '../data-cube/data-cube';
+import { Class, Instance } from "immutable-class";
+import { $, Expression, RefExpression, SortExpression } from "plywood";
+import { DataCube } from "../data-cube/data-cube";
+import { Dimension, DimensionJS } from "../dimension/dimension";
+import { Measure, MeasureJS } from "../measure/measure";
 
 export interface SortOnValue {
   dimension?: Dimension;

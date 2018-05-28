@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { expect } from "chai";
+import * as React from "react";
 
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
-import * as TestUtils from 'react-dom/test-utils';
+import * as TestUtils from "react-dom/test-utils";
 
-import { $, Expression } from 'plywood';
-import { DimensionActionsMenu } from './dimension-actions-menu';
+import { DimensionActionsMenu } from "./dimension-actions-menu";
 
-import { EssenceMock, StageMock, DimensionMock } from '../../../common/models/mocks';
+import { DimensionMock, EssenceMock, StageMock } from "../../../common/models/mocks";
 
-describe('DimensionActionsMenu', () => {
-  it('adds the correct class', () => {
-    var openOn = document.createElement('div');
+describe("DimensionActionsMenu", () => {
+  it("adds the correct class", () => {
+    var openOn = document.createElement("div");
 
     var renderedComponent = renderIntoDocument(
       <DimensionActionsMenu
         clicker={null}
         containerStage={StageMock.defaultA()}
         dimension={DimensionMock.countryURL()}
-        direction={'right'}
+        direction={"right"}
         essence={EssenceMock.wikiTotals()}
         onClose={null}
         openOn={openOn}
@@ -47,8 +44,8 @@ describe('DimensionActionsMenu', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('dimension-actions-menu');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("dimension-actions-menu");
   });
 
 });

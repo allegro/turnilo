@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import './hover-multi-bubble.scss';
+import "./hover-multi-bubble.scss";
 
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { Stage, Clicker, Dimension } from '../../../common/models/index';
-import { BodyPortal } from '../body-portal/body-portal';
-import { SegmentActionButtons } from '../segment-action-buttons/segment-action-buttons';
+import * as React from "react";
+import { Clicker, Dimension } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { BodyPortal } from "../body-portal/body-portal";
+import { SegmentActionButtons } from "../segment-action-buttons/segment-action-buttons";
 
 const LEFT_OFFSET = 22;
 
@@ -51,7 +51,7 @@ export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, Hov
     const { colorEntries } = this.props;
     if (!colorEntries || !colorEntries.length) return null;
 
-    var colorSwabs = colorEntries.map((colorEntry) => {
+    var colorSwabs = colorEntries.map(colorEntry => {
       const { color, segmentLabel, measureLabel } = colorEntry;
       var swabStyle = { background: color };
       return <div className="color" key={segmentLabel}>

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
-import { Request } from 'express';
-import { User, AppSettings } from '../../../common/models/index';
-import { GetSettingsOptions } from '../settings-manager/settings-manager';
+import { Request } from "express";
+import * as Q from "q";
+import { AppSettings, User } from "../../../common/models/index";
+import { GetSettingsOptions } from "../settings-manager/settings-manager";
 
 export interface SwivRequest extends Request {
   version: string;

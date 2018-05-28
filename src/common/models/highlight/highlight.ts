@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from 'immutable-class';
-import { Expression } from 'plywood';
+import { Class, Instance } from "immutable-class";
+import { Expression } from "plywood";
 import { Dimensions } from "../dimension/dimensions";
-import { Filter, FilterJS } from '../filter/filter';
+import { Filter, FilterJS } from "../filter/filter";
 
 export interface HighlightValue {
   owner: string;
@@ -47,14 +47,13 @@ export class Highlight implements Instance<HighlightValue, HighlightJS> {
     });
   }
 
-
   public owner: string;
   public delta: Filter;
   public measure: string;
 
   constructor(parameters: HighlightValue) {
     var owner = parameters.owner;
-    if (typeof owner !== 'string') throw new TypeError('owner must be a string');
+    if (typeof owner !== "string") throw new TypeError("owner must be a string");
     this.owner = owner;
     this.delta = parameters.delta;
     this.measure = parameters.measure || null;

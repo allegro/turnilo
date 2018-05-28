@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-import './segment-action-buttons.scss';
+import "./segment-action-buttons.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Fn } from '../../../common/utils/general/general';
-import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
-import { STRINGS } from '../../config/constants';
-import { BubbleMenu } from '../bubble-menu/bubble-menu';
-import { Button } from '../button/button';
+import * as React from "react";
+import { Clicker, Dimension, Stage } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { STRINGS } from "../../config/constants";
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import { Button } from "../button/button";
 
 // I am: import { SegmentActionButtons } from '../segment-action-buttons/segment-action-buttons';
 
@@ -152,7 +150,7 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
         type="secondary"
         className="mini"
         onClick={this.onMore.bind(this)}
-        svg={require('../../icons/full-more-mini.svg')}
+        svg={require("../../icons/full-more-mini.svg")}
         active={Boolean(moreMenuOpenOn)}
       /> }
       {this.renderMoreMenu()}

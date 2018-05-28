@@ -15,38 +15,37 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as sinon from "sinon";
 
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
-import * as TestUtils from 'react-dom/test-utils';
+import * as TestUtils from "react-dom/test-utils";
 
-import { $, Expression } from 'plywood';
-import { Checkbox } from './checkbox';
+import { Checkbox } from "./checkbox";
 
-describe('Checkbox', () => {
-  it('adds the correct class', () => {
+describe("Checkbox", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <Checkbox
         selected={true}
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('checkbox');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("checkbox");
   });
 
-  it('not checked + check', () => {
+  it("not checked + check", () => {
     var onClick = sinon.spy();
 
     var renderedComponent = renderIntoDocument(
       <Checkbox selected={false} onClick={onClick}/>
     );
 
-    var svgs = TestUtils.scryRenderedDOMComponentsWithTag(renderedComponent as React.Component, 'svg');
+    var svgs = TestUtils.scryRenderedDOMComponentsWithTag(renderedComponent as React.Component, "svg");
     expect(svgs.length).to.equal(0);
 
     expect(onClick.callCount).to.equal(0);

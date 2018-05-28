@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
+import { expect } from "chai";
 import { List } from "immutable";
 import { Expression } from "plywood";
 import { DimensionJS } from "./dimension";

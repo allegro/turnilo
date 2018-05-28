@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import {classNames} from '../../utils/dom/dom';
-import './tile-header.scss';
+import { classNames } from "../../utils/dom/dom";
+import "./tile-header.scss";
 
-import * as React from 'react';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import * as React from "react";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
 export interface TileHeaderIcon {
   name: string;
@@ -46,7 +46,7 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
 
     var iconElements = icons.map(icon => {
       return <div
-        className={classNames('icon', icon.name, { active: icon.active })}
+        className={classNames("icon", icon.name, { active: icon.active })}
         key={icon.name}
         onClick={icon.onClick}
         ref={icon.ref}

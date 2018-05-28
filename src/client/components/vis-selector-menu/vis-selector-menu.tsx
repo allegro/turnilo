@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-import './vis-selector-menu.scss';
+import "./vis-selector-menu.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { Fn } from '../../../common/utils/general/general';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
-import { Clicker, Essence, Manifest } from '../../../common/models/index';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { Clicker, Essence, Manifest } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
 export interface VisSelectorMenuProps extends React.Props<any> {
   clicker: Clicker;
@@ -44,13 +44,13 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
   }
 
   componentDidMount() {
-    window.addEventListener('mousedown', this.globalMouseDownListener);
-    window.addEventListener('keydown', this.globalKeyDownListener);
+    window.addEventListener("mousedown", this.globalMouseDownListener);
+    window.addEventListener("keydown", this.globalKeyDownListener);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('mousedown', this.globalMouseDownListener);
-    window.removeEventListener('keydown', this.globalKeyDownListener);
+    window.removeEventListener("mousedown", this.globalMouseDownListener);
+    window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
   globalMouseDownListener(e: MouseEvent) {
@@ -82,11 +82,11 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     var { visualization } = essence;
 
     return <div
-      className={classNames('vis-item', (v.name === visualization.name ? 'selected' : 'not-selected'))}
+      className={classNames("vis-item", (v.name === visualization.name ? "selected" : "not-selected"))}
       key={v.name}
       onClick={this.onVisSelect.bind(this, v)}
     >
-      <SvgIcon svg={require('../../icons/vis-' + v.name + '.svg')}/>
+      <SvgIcon svg={require("../../icons/vis-" + v.name + ".svg")}/>
       <div className="vis-title">{v.title}</div>
     </div>;
   }

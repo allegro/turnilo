@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Dimension, SplitCombine } from '../../../common/models/index';
+import { Dimension, SplitCombine } from "../../../common/models/index";
 
 export class DragManager {
   static dragOrigin: string = null;
@@ -27,7 +27,7 @@ export class DragManager {
       DragManager.dragOrigin = null;
       DragManager.dragDimension = null;
       DragManager.dragSplit = null;
-    }, false);
+    },                        false);
   }
 
   static getDragOrigin(): string {

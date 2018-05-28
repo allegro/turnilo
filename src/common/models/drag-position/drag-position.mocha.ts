@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { testImmutableClass } from "immutable-class-tester";
 
-import { $, Expression } from 'plywood';
-import { DragPosition } from './drag-position';
+import { DragPosition } from "./drag-position";
 
-describe('DragPosition', () => {
-  it('is an immutable class', () => {
+describe("DragPosition", () => {
+  it("is an immutable class", () => {
     testImmutableClass(DragPosition, [
       {
         insert: 0

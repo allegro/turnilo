@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as Qajax from 'qajax';
+import * as Qajax from "qajax";
 
 export function addErrorMonitor() {
   var originalOnError = window.onerror;
@@ -32,13 +32,13 @@ export function addErrorMonitor() {
     };
 
     if (typeof console !== "undefined") {
-      console.log('An error has occurred. Please include the below information in the issue:');
+      console.log("An error has occurred. Please include the below information in the issue:");
       console.log(JSON.stringify(err));
     }
 
     Qajax({
       method: "POST",
-      url: 'error',
+      url: "error",
       data: err
     });
 

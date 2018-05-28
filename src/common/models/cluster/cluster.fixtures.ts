@@ -19,33 +19,33 @@ import { ClusterJS } from "./cluster";
 export class ClusterFixtures {
   static druidWikiClusterJS(): ClusterJS {
     return {
-      name: 'druid-wiki',
-      type: 'druid',
-      host: '192.168.99.100',
-      version: '0.9.1',
+      name: "druid-wiki",
+      type: "druid",
+      host: "192.168.99.100",
+      version: "0.9.1",
       timeout: 30000,
       healthCheckTimeout: 50,
-      sourceListScan: 'auto',
+      sourceListScan: "auto",
       sourceListRefreshInterval: 10000,
       sourceReintrospectInterval: 10000,
 
-      introspectionStrategy: 'segment-metadata-fallback'
+      introspectionStrategy: "segment-metadata-fallback"
     };
   }
 
   static druidTwitterClusterJS(): ClusterJS {
     return {
-      name: 'druid-twitter',
-      type: 'druid',
-      host: '192.168.99.101',
-      version: '0.9.1',
+      name: "druid-twitter",
+      type: "druid",
+      host: "192.168.99.101",
+      version: "0.9.1",
       timeout: 30000,
       healthCheckTimeout: 200,
-      sourceListScan: 'auto',
+      sourceListScan: "auto",
       sourceListRefreshInterval: 10000,
       sourceReintrospectInterval: 10000,
 
-      introspectionStrategy: 'segment-metadata-fallback'
+      introspectionStrategy: "segment-metadata-fallback"
     };
   }
 }

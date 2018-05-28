@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Stage, StageJS } from './stage';
+import { Stage, StageJS } from "./stage";
 
 export class StageMock {
   public static get DEFAULT_A_JS(): StageJS {

@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-import { $ } from 'plywood';
+import { $ } from "plywood";
 
 import { MANIFESTS } from "../../manifests/index";
 import { DataCubeMock } from "../data-cube/data-cube.mock";
-import { CollectionTile, CollectionTileJS, CollectionTileContext } from './collection-tile';
+import { CollectionTile, CollectionTileContext, CollectionTileJS } from "./collection-tile";
 
 export class CollectionTileMock {
   public static testOneJS(): CollectionTileJS {
     return {
-      name: 'test1',
-      title: 'Test One',
-      description: 'I like testing',
-      group: 'Tests',
-      dataCube: 'wiki',
+      name: "test1",
+      title: "Test One",
+      description: "I like testing",
+      group: "Tests",
+      dataCube: "wiki",
       essence: {
-        visualization: 'totals',
-        timezone: 'Etc/UTC',
+        visualization: "totals",
+        timezone: "Etc/UTC",
         filter: {
           op: "literal",
           value: true
         },
-        pinnedDimensions: ['articleName'],
-        pinnedSort: 'count',
+        pinnedDimensions: ["articleName"],
+        pinnedSort: "count",
         singleMeasure: "count",
-        selectedMeasures: ['count'],
+        selectedMeasures: ["count"],
         splits: []
       }
     };
@@ -47,18 +47,18 @@ export class CollectionTileMock {
 
   public static testTwoJS(): CollectionTileJS {
     return {
-      name: 'test2',
-      title: 'Test Two',
-      description: 'I like testing',
-      group: 'Tests',
-      dataCube: 'wiki',
+      name: "test2",
+      title: "Test Two",
+      description: "I like testing",
+      group: "Tests",
+      dataCube: "wiki",
       essence: {
-        visualization: 'totals',
-        timezone: 'Etc/UTC',
-        filter: $('time').overlap(new Date('2015-01-01Z'), new Date('2016-01-01Z')).toJS(),
+        visualization: "totals",
+        timezone: "Etc/UTC",
+        filter: $("time").overlap(new Date("2015-01-01Z"), new Date("2016-01-01Z")).toJS(),
         pinnedDimensions: [],
         singleMeasure: "count",
-        selectedMeasures: ['count'],
+        selectedMeasures: ["count"],
         splits: []
       }
     };

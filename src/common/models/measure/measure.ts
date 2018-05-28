@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { List } from 'immutable';
-import { BaseImmutable, Property } from 'immutable-class';
+import { List } from "immutable";
+import { BaseImmutable, Property } from "immutable-class";
 
-import * as numeral from 'numeral';
+import * as numeral from "numeral";
 import {
   $,
   ApplyExpression,
@@ -29,13 +29,13 @@ import {
   deduplicateSort,
   Expression,
   RefExpression
-} from 'plywood';
-import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from '../../utils/general/general';
+} from "plywood";
+import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
 function formatFnFactory(format: string): (n: number) => string {
   return (n: number) => {
-    if (isNaN(n) || !isFinite(n)) return '-';
+    if (isNaN(n) || !isFinite(n)) return "-";
     return numeral(n).format(format);
   };
 }
@@ -59,10 +59,10 @@ export interface MeasureJS {
 }
 
 export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
-  static DEFAULT_FORMAT = '0,0.0 a';
-  static INTEGER_FORMAT = '0,0 a';
-  static DEFAULT_TRANSFORMATION = 'none';
-  static TRANSFORMATIONS = ['none', 'percent-of-parent', 'percent-of-total'];
+  static DEFAULT_FORMAT = "0,0.0 a";
+  static INTEGER_FORMAT = "0,0 a";
+  static DEFAULT_TRANSFORMATION = "none";
+  static TRANSFORMATIONS = ["none", "percent-of-parent", "percent-of-total"];
 
   static isMeasure(candidate: any): candidate is Measure {
     return candidate instanceof Measure;
@@ -97,7 +97,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static getReferences(ex: Expression): string[] {
     let references: string[] = [];
     ex.forEach((sub: Expression) => {
-      if (sub instanceof RefExpression && sub.name !== 'main') {
+      if (sub instanceof RefExpression && sub.name !== "main") {
         references = references.concat(sub.name);
       }
     });
@@ -121,21 +121,21 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
     const { name, nativeType } = attribute;
-    const $main = $('main');
+    const $main = $("main");
     const ref = $(name);
 
     if (nativeType) {
-      if (nativeType === 'hyperUnique' || nativeType === 'thetaSketch') {
+      if (nativeType === "hyperUnique" || nativeType === "thetaSketch") {
         return [
           new Measure({
             name: makeUrlSafeName(name),
             formula: $main.countDistinct(ref).toString()
           })
         ];
-      } else if (nativeType === 'approximateHistogram') {
+      } else if (nativeType === "approximateHistogram") {
         return [
           new Measure({
-            name: makeUrlSafeName(name + '_p98'),
+            name: makeUrlSafeName(name + "_p98"),
             formula: $main.quantile(ref, 0.98).toString()
           })
         ];
@@ -146,15 +146,15 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     const makerAction = attribute.maker;
     if (makerAction) {
       switch (makerAction.op) {
-        case 'min':
+        case "min":
           expression = $main.min(ref);
           break;
 
-        case 'max':
+        case "max":
           expression = $main.max(ref);
           break;
 
-        //default: // sum, count
+        // default: // sum, count
       }
     }
 
@@ -168,19 +168,19 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     // Back compat
     if (!parameters.formula) {
       let parameterExpression = (parameters as any).expression;
-      parameters.formula = (typeof parameterExpression === 'string' ? parameterExpression : $('main').sum($(parameters.name)).toString());
+      parameters.formula = (typeof parameterExpression === "string" ? parameterExpression : $("main").sum($(parameters.name)).toString());
     }
 
     return new Measure(BaseImmutable.jsToValue(Measure.PROPERTIES, parameters));
   }
 
   static PROPERTIES: Property[] = [
-    { name: 'name', validate: verifyUrlSafeName },
-    { name: 'title', defaultValue: null },
-    { name: 'units', defaultValue: null },
-    { name: 'formula' },
-    { name: 'format', defaultValue: Measure.DEFAULT_FORMAT },
-    { name: 'transformation', defaultValue: Measure.DEFAULT_TRANSFORMATION, possibleValues: Measure.TRANSFORMATIONS }
+    { name: "name", validate: verifyUrlSafeName },
+    { name: "title", defaultValue: null },
+    { name: "units", defaultValue: null },
+    { name: "formula" },
+    { name: "format", defaultValue: Measure.DEFAULT_FORMAT },
+    { name: "transformation", defaultValue: Measure.DEFAULT_TRANSFORMATION, possibleValues: Measure.TRANSFORMATIONS }
   ];
 
   public name: string;
@@ -211,11 +211,11 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
 
   public toApplyExpression(nestingLevel = 0): ApplyExpression {
     switch (this.transformation) {
-      case 'percent-of-parent': {
+      case "percent-of-parent": {
         const referencedLevelDelta = Math.min(nestingLevel, 1);
         return this.percentOfParentExpression(referencedLevelDelta);
       }
-      case 'percent-of-total': {
+      case "percent-of-total": {
         return this.percentOfParentExpression(nestingLevel);
       }
       default: {
@@ -227,12 +227,12 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
 
   private percentOfParentExpression(nestingLevel: number): ApplyExpression {
     const { name, expression } = this;
-    const formulaName = '__formula_' + name;
+    const formulaName = "__formula_" + name;
     const formulaExpression = new ApplyExpression({ name: formulaName, expression });
 
     if (nestingLevel > 0) {
       return new ApplyExpression({
-        name: name,
+        name,
         operand: formulaExpression,
         expression: $(formulaName).divide($(formulaName, nestingLevel)).multiply(100)
       });

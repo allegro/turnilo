@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { expect } from "chai";
+import { testImmutableClass } from "immutable-class-tester";
 
-import { ServerSettings } from './server-settings';
+import { ServerSettings } from "./server-settings";
 
-describe('ServerSettings', () => {
-  it('is an immutable class', () => {
+describe("ServerSettings", () => {
+  it("is an immutable class", () => {
     testImmutableClass(ServerSettings, [
       {},
       {
@@ -36,56 +36,55 @@ describe('ServerSettings', () => {
       },
       {
         port: 9090,
-        serverRoot: '/swivs',
+        serverRoot: "/swivs",
         pageMustLoadTimeout: 900,
-        iframe: 'deny'
+        iframe: "deny"
       },
       {
         port: 9091,
-        serverRoot: '/swivs',
+        serverRoot: "/swivs",
         pageMustLoadTimeout: 901
       },
       {
         port: 9091,
-        serverHost: '10.20.30.40',
-        serverRoot: '/swivs',
-        healthEndpoint: '/status/health',
+        serverHost: "10.20.30.40",
+        serverRoot: "/swivs",
+        healthEndpoint: "/status/health",
         pageMustLoadTimeout: 901
       },
       {
         port: 9091,
-        trackingUrl: 'http://mytracker-is-cool.io/trackz',
+        trackingUrl: "http://mytracker-is-cool.io/trackz",
         trackingContext: {
-          service: 'me'
+          service: "me"
         }
       },
       {
         port: 9091,
-        auth: 'my_auth.js'
+        auth: "my_auth.js"
       },
       {
         port: 9091,
         settingsLocation: {
-          location: 'file',
-          uri: 'path/to/my/file.yaml'
+          location: "file",
+          uri: "path/to/my/file.yaml"
         }
       }
     ]);
   });
 
-
   describe("upgrades", () => {
     it("port", () => {
       expect(ServerSettings.fromJS({
-        port: ('9090' as any),
-        serverRoot: '/swivs',
+        port: ("9090" as any),
+        serverRoot: "/swivs",
         pageMustLoadTimeout: 900,
-        iframe: 'deny'
+        iframe: "deny"
       }).toJS()).to.deep.equal({
         port: 9090,
-        serverRoot: '/swivs',
+        serverRoot: "/swivs",
         pageMustLoadTimeout: 900,
-        iframe: 'deny'
+        iframe: "deny"
       });
     });
 

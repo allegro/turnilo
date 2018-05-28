@@ -24,7 +24,7 @@ export class Resolutions {
       .getDimensionsByKind("string")
       .slice(0, numberOfSuggestedSplitDimensions);
 
-    return suggestedSplitDimensions.map((dimension) => {
+    return suggestedSplitDimensions.map(dimension => {
       return {
         description: `Add a split on ${dimension.title}`,
         adjustment: {
@@ -36,11 +36,12 @@ export class Resolutions {
 
   static defaultSelectedMeasures = (dataCube: DataCube): Resolution[] => {
     const defaultSelectedMeasures = dataCube.defaultSelectedMeasures || OrderedSet();
-    const measures = defaultSelectedMeasures.map((measureName) => dataCube.getMeasure(measureName)).toArray();
-    if (measures.length === 0)
+    const measures = defaultSelectedMeasures.map(measureName => dataCube.getMeasure(measureName)).toArray();
+    if (measures.length === 0) {
       return [];
+    }
 
-    const measureNames = measures.map((measure) => measure.title).join(", ");
+    const measureNames = measures.map(measure => measure.title).join(", ");
     return [
       { description: `Select default measures: ${measureNames}`, adjustment: { selectedMeasures: measures } }
     ];

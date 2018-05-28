@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import '../../utils/test-utils';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import "../../utils/test-utils";
 
-import * as TestUtils from 'react-dom/test-utils';
-import { EssenceMock, TimekeeperMock, StageMock } from '../../../common/models/mocks';
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
+import * as TestUtils from "react-dom/test-utils";
+import { TimekeeperMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
 
-import { Geo } from './geo';
+import { Geo } from "./geo";
 
-describe('Geo', () => {
-  it('adds the correct class', () => {
+describe("Geo", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <Geo
         clicker={null}
@@ -38,8 +37,8 @@ describe('Geo', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('geo');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("geo");
   });
 
 });

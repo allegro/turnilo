@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from 'immutable-class';
-import { Duration } from 'chronoshift';
+import { Class, Instance } from "immutable-class";
 
 export interface RefreshRuleValue {
   rule: string;
@@ -31,9 +30,9 @@ export interface RefreshRuleJS {
 var check: Class<RefreshRuleValue, RefreshRuleJS>;
 export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
-  static FIXED = 'fixed';
-  static QUERY = 'query';
-  static REALTIME = 'realtime';
+  static FIXED = "fixed";
+  static QUERY = "query";
+  static REALTIME = "realtime";
 
   static isRefreshRule(candidate: any): candidate is RefreshRule {
     return candidate instanceof RefreshRule;
@@ -50,11 +49,10 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
       rule: parameters.rule
     };
     if (parameters.time) {
-      value.time = new Date(<any>parameters.time);
+      value.time = new Date(<any> parameters.time);
     }
     return new RefreshRule(value);
   }
-
 
   public rule: string;
   public time: Date;

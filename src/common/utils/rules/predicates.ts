@@ -38,16 +38,16 @@ export class Predicates {
   }
 
   private static testKind(kind: string, selector: string): boolean {
-    if (selector === '*') {
+    if (selector === "*") {
       return true;
     }
 
-    var bareSelector = selector.replace(/^!/, '');
+    var bareSelector = selector.replace(/^!/, "");
 
     // This can be enriched later, right now it's just a 1-1 match
     var result = kind === bareSelector;
 
-    if (selector.charAt(0) === '!') {
+    if (selector.charAt(0) === "!") {
       return !result;
     }
 
@@ -60,7 +60,7 @@ export class Predicates {
 
       let actualKinds = splits.toArray().map(getKind);
 
-      return kinds.every((kind) => actualKinds.indexOf(kind) > -1);
+      return kinds.every(kind => actualKinds.indexOf(kind) > -1);
     };
   }
 

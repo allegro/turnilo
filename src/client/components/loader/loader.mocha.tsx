@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import { renderIntoDocument } from '../../utils/test-utils';
+import { renderIntoDocument } from "../../utils/test-utils";
 
-import * as TestUtils from 'react-dom/test-utils';
+import * as TestUtils from "react-dom/test-utils";
 
-import { $, Expression } from 'plywood';
-import { Loader } from './loader';
+import { Loader } from "./loader";
 
-describe('Loader', () => {
-  it('adds the correct class', () => {
+describe("Loader", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <Loader/>
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('loader');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("loader");
   });
 
 });

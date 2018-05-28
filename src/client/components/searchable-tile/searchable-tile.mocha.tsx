@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
+import { expect } from "chai";
+import * as React from "react";
+import * as TestUtils from "react-dom/test-utils";
 
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
-import { $, Expression } from 'plywood';
-import { SearchableTile } from './searchable-tile';
+import { SearchableTile } from "./searchable-tile";
 
-describe('SearchableTile', () => {
-  it('adds the correct class', () => {
+describe("SearchableTile", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <SearchableTile
         toggleChangeFn={null}
@@ -41,8 +38,8 @@ describe('SearchableTile', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('searchable-tile');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("searchable-tile");
   });
 
 });

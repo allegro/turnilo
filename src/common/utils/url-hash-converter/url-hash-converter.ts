@@ -50,8 +50,9 @@ interface HashSegments {
 function getHashSegments(hash: string): HashSegments {
   const hashParts = hash.split(SEGMENT_SEPARATOR);
 
-  if (hashParts.length < MINIMAL_HASH_SEGMENTS_COUNT)
+  if (hashParts.length < MINIMAL_HASH_SEGMENTS_COUNT) {
     throw new Error(`Expected ${MINIMAL_HASH_SEGMENTS_COUNT} hash segments, got ${hashParts.length}.`);
+  }
 
   if (isLegacyWithVisualizationPrefix(hashParts)) {
     return {
@@ -87,8 +88,9 @@ export const urlHashConverter: UrlHashConverter = {
     const urlEncoder = definitionUrlEncoders[version];
     const definitionConverter = definitionConverters[version];
 
-    if (urlEncoder == null || definitionConverter == null)
+    if (urlEncoder == null || definitionConverter == null) {
       throw new Error(`Unsupported url hash version: ${version}.`);
+    }
 
     const definition = definitionConverter.toViewDefinition(essence);
     const encodedDefinition = urlEncoder.encodeUrlHash(definition);

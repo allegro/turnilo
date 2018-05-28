@@ -22,7 +22,7 @@ export class SplitDefinitionFixtures {
       type: SplitType.string,
       dimension,
       sort: { ref: sortOn, direction: sortDirection },
-      limit: limit
+      limit
     };
   }
 }

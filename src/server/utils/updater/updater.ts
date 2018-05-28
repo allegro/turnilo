@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { immutableEqual, Equalable } from 'immutable-class';
-import { hasOwnProperty } from '../../../common/utils/general/general';
+import { Equalable, immutableEqual } from "immutable-class";
+import { hasOwnProperty } from "../../../common/utils/general/general";
 
 function getName(thing: any): string {
   return thing.name;

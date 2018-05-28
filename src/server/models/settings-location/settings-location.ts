@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property } from 'immutable-class';
+import { BaseImmutable, Property } from "immutable-class";
 
-
-export type Location = 'file' | 'mysql' | 'postgres';
-export type Format = 'json' | 'yaml';
+export type Location = "file" | "mysql" | "postgres";
+export type Format = "json" | "yaml";
 
 export interface SettingsLocationValue {
   location: Location;
@@ -38,9 +37,9 @@ export interface SettingsLocationJS {
 }
 
 export class SettingsLocation extends BaseImmutable<SettingsLocationValue, SettingsLocationJS> {
-  static LOCATION_VALUES: Location[] = ['file', 'mysql', 'postgres'];
-  static DEFAULT_FORMAT: Format = 'json';
-  static FORMAT_VALUES: Format[] = ['json', 'yaml'];
+  static LOCATION_VALUES: Location[] = ["file", "mysql", "postgres"];
+  static DEFAULT_FORMAT: Format = "json";
+  static FORMAT_VALUES: Format[] = ["json", "yaml"];
 
   static isSettingsLocation(candidate: any): candidate is SettingsLocation {
     return candidate instanceof SettingsLocation;
@@ -51,11 +50,11 @@ export class SettingsLocation extends BaseImmutable<SettingsLocationValue, Setti
   }
 
   static PROPERTIES: Property[] = [
-    { name: 'location', possibleValues: SettingsLocation.LOCATION_VALUES },
-    { name: 'uri' },
-    { name: 'table', defaultValue: null },
-    { name: 'format', defaultValue: SettingsLocation.DEFAULT_FORMAT, possibleValues: SettingsLocation.FORMAT_VALUES },
-    { name: 'readOnly', defaultValue: false }
+    { name: "location", possibleValues: SettingsLocation.LOCATION_VALUES },
+    { name: "uri" },
+    { name: "table", defaultValue: null },
+    { name: "format", defaultValue: SettingsLocation.DEFAULT_FORMAT, possibleValues: SettingsLocation.FORMAT_VALUES },
+    { name: "readOnly", defaultValue: false }
   ];
 
   public location: Location;
@@ -68,7 +67,7 @@ export class SettingsLocation extends BaseImmutable<SettingsLocationValue, Setti
     super(parameters);
 
     // remove table if file
-    if (this.location === 'file' && this.table) this.table = null;
+    if (this.location === "file" && this.table) this.table = null;
   }
 
   public getLocation: () => Location;
@@ -79,11 +78,11 @@ export class SettingsLocation extends BaseImmutable<SettingsLocationValue, Setti
     if (this.format) return this.format;
 
     // derive format from extension if not set, and possible
-    if (this.location === 'file') {
+    if (this.location === "file") {
       if (/\.json$/.test(this.uri)) {
-        return 'json';
+        return "json";
       } else if (/\.yaml$/.test(this.uri)) {
-        return 'yaml';
+        return "yaml";
       }
     }
 

@@ -15,13 +15,10 @@
  * limitations under the License.
  */
 
-import './clearable-input.scss';
+import "./clearable-input.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import * as React from "react";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
 function focusOnInput(component: HTMLInputElement): any {
   if (!component) return;
@@ -48,7 +45,7 @@ export class ClearableInput extends React.Component<ClearableInputProps, Clearab
   }
 
   onClear() {
-    this.props.onChange('');
+    this.props.onChange("");
   }
 
   render() {
@@ -56,21 +53,21 @@ export class ClearableInput extends React.Component<ClearableInputProps, Clearab
 
     var ref = focusOnMount ? focusOnInput : null;
 
-    var classNames = ['clearable-input'];
+    var classNames = ["clearable-input"];
     if (className) classNames.push(className);
-    if (!value) classNames.push('empty');
+    if (!value) classNames.push("empty");
 
-    return <div className={classNames.join(' ')}>
+    return <div className={classNames.join(" ")}>
       <input
-        type={type || 'text'}
+        type={type || "text"}
         placeholder={placeholder}
-        value={value || ''}
+        value={value || ""}
         onChange={this.onChange.bind(this)}
         onBlur={onBlur}
         ref={ref}
       />
       <div className="clear" onClick={this.onClear.bind(this)}>
-        <SvgIcon svg={require('../../icons/x.svg')}/>
+        <SvgIcon svg={require("../../icons/x.svg")}/>
       </div>
     </div>;
   }

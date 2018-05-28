@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import './nav-list.scss';
+import "./nav-list.scss";
 
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { classNames } from '../../utils/dom/dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import * as React from "react";
+import { Fn } from "../../../common/utils/general/general";
+import { classNames } from "../../utils/dom/dom";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
 export interface NavLink {
   name: string;
@@ -52,15 +52,15 @@ export class NavList extends React.Component< NavListProps, NavListState> {
 
   renderNavList() {
     const { navLinks, iconSvg, selected } = this.props;
-    return navLinks.map((navLink) => {
+    return navLinks.map(navLink => {
       return React.createElement(
-        navLink.href ? 'a' : 'div',
+        navLink.href ? "a" : "div",
         {
-          className: classNames('item', { selected: selected && selected === navLink.name }),
+          className: classNames("item", { selected: selected && selected === navLink.name }),
           key: navLink.name,
           title: navLink.tooltip,
           href: navLink.href,
-          target: navLink.newTab ? '_blank' : null,
+          target: navLink.newTab ? "_blank" : null,
           onClick: navLink.onClick
         },
         this.renderIcon(iconSvg),

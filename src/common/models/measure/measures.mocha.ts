@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
+import { expect } from "chai";
 import { List, OrderedSet } from "immutable";
 import { Expression } from "plywood";
 import { MeasureJS } from "./measure";

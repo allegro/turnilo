@@ -20,7 +20,7 @@ import { MeasureFixtures } from "./measure.fixtures";
 export class MeasureGroupFixtures {
   static noTitleJS(): MeasureGroupJS {
     return {
-      name: 'dummyName',
+      name: "dummyName",
       measures: [
         MeasureFixtures.wikiCountJS()
       ]
@@ -29,8 +29,8 @@ export class MeasureGroupFixtures {
 
   static withTitleInferredJS(): MeasureGroupJS {
     return {
-      name: 'dummyName',
-      title: 'Dummy Name',
+      name: "dummyName",
+      title: "Dummy Name",
       measures: [
         MeasureFixtures.wikiCountJS()
       ]
@@ -45,31 +45,31 @@ export class MeasureGroupFixtures {
 
   static noMeasuresJS(): MeasureGroupJS {
     return {
-      name: 'dummyName'
+      name: "dummyName"
     } as MeasureGroupJS;
   }
 
   static emptyMeasuresJS(): MeasureGroupJS {
     return {
-      name: 'dummyName',
+      name: "dummyName",
       measures: []
     } as MeasureGroupJS;
   }
 
   static wikiAddedJS(): MeasureGroupJS {
     return {
-      name: 'added_group',
-      title: 'Added Group',
+      name: "added_group",
+      title: "Added Group",
       measures: [
         {
-          name: 'added',
-          title: 'Added',
-          formula: '$main.sum($added)'
+          name: "added",
+          title: "Added",
+          formula: "$main.sum($added)"
         },
         {
-          name: 'avg_added',
-          title: 'Avg Added',
-          formula: '$main.average($added)'
+          name: "avg_added",
+          title: "Avg Added",
+          formula: "$main.average($added)"
         }
       ]
     };
@@ -77,18 +77,18 @@ export class MeasureGroupFixtures {
 
   static wikiDeltaJS(): MeasureGroupJS {
     return {
-      name: 'delta_group',
-      title: 'Delta Group',
+      name: "delta_group",
+      title: "Delta Group",
       measures: [
         {
-          name: 'delta',
-          title: 'Delta',
-          formula: '$main.sum($delta)'
+          name: "delta",
+          title: "Delta",
+          formula: "$main.sum($delta)"
         },
         {
-          name: 'avg_delta',
-          title: 'Avg Delta',
-          formula: '$main.average($delta)'
+          name: "avg_delta",
+          title: "Avg Delta",
+          formula: "$main.average($delta)"
         }
       ]
     };

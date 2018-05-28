@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { expect } from "chai";
 
-import { Timekeeper } from './timekeeper';
+import { Timekeeper } from "./timekeeper";
 
-describe('Timekeeper', () => {
-  it('is an immutable class', () => {
+describe("Timekeeper", () => {
+  it("is an immutable class", () => {
 /* TODO: check the correctness of the test */
 /*    testImmutableClass(Timekeeper, [
       {
@@ -41,13 +40,13 @@ describe('Timekeeper', () => {
     ]);*/
   });
 
-  it('works with now', () => {
+  it("works with now", () => {
     var timekeeper = Timekeeper.fromJS({
       timeTags: [],
-      nowOverride: new Date('2016-01-01T01:02:03Z')
+      nowOverride: new Date("2016-01-01T01:02:03Z")
     });
 
-    expect(timekeeper.now()).to.deep.equal(new Date('2016-01-01T01:02:03Z'));
+    expect(timekeeper.now()).to.deep.equal(new Date("2016-01-01T01:02:03Z"));
   });
 
 });

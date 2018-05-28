@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { testImmutableClass } from "immutable-class-tester";
 
-import { $, Expression } from 'plywood';
-import { ExternalView } from './external-view';
+import { ExternalView } from "./external-view";
 
-describe('ExternalView', () => {
-  it('is an immutable class', () => {
+describe("ExternalView", () => {
+  it("is an immutable class", () => {
     testImmutableClass(ExternalView, [
       {
         title: "yahoo",

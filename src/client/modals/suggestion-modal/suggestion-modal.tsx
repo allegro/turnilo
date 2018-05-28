@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import './suggestion-modal.scss';
-import * as React from 'react';
-import { Button, Modal } from '../../components/index';
-import { List } from 'immutable';
-import { STRINGS } from "../../config/constants";
-import { Dimension, Measure, DataCube } from "../../../common/models/index";
+import { List } from "immutable";
+import * as React from "react";
+import { DataCube, Dimension, Measure } from "../../../common/models/index";
 import { pluralIfNeeded } from "../../../common/utils/general/general";
+import { Button, Modal } from "../../components/index";
+import { STRINGS } from "../../config/constants";
+import "./suggestion-modal.scss";
 
 import { Checkbox } from "../../components/checkbox/checkbox";
 
@@ -73,7 +73,7 @@ export class SuggestionModal extends React.Component<SuggestionModalProps, Sugge
     const { getOptions, getLabel } = props;
     const suggestions: Option[] = getOptions();
     this.setState({
-      suggestions: suggestions.map((s) => { return { option: s, selected: true, label: getLabel(s) }; })
+      suggestions: suggestions.map(s => ({ option: s, selected: true, label: getLabel(s) }))
     });
   }
 
@@ -88,7 +88,7 @@ export class SuggestionModal extends React.Component<SuggestionModalProps, Sugge
     const { suggestions } = this.state;
     const toggleName = toggle.option.name;
 
-    var newStateSuggestions = suggestions.map((suggestion) => {
+    var newStateSuggestions = suggestions.map(suggestion => {
       let { option, selected, label } = suggestion;
       return option.name === toggleName ? { option, selected: !selected, label } : suggestion;
     });
@@ -122,7 +122,7 @@ export class SuggestionModal extends React.Component<SuggestionModalProps, Sugge
     const { onClose, title, okLabel, cancelLabel } = this.props;
     const { suggestions } = this.state;
 
-    const length = List(suggestions).filter((s) => s.selected).size;
+    const length = List(suggestions).filter(s => s.selected).size;
     return <Modal
       className="suggestion-modal"
       title={`${title}`}

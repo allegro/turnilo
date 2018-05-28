@@ -15,104 +15,102 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { expect } from "chai";
+import { testImmutableClass } from "immutable-class-tester";
 
-import { $, Expression } from 'plywood';
-import { CollectionTileMock } from './collection-tile.mock';
-import { CollectionTile } from './collection-tile';
+import { CollectionTile } from "./collection-tile";
+import { CollectionTileMock } from "./collection-tile.mock";
 
-describe('CollectionTile', () => {
+describe("CollectionTile", () => {
   var context = CollectionTileMock.getContext();
 
-  it('is an immutable class', () => {
+  it("is an immutable class", () => {
     testImmutableClass(CollectionTile, [
       CollectionTileMock.testOneJS(),
       CollectionTileMock.testTwoJS()
-    ], { context });
+    ],                 { context });
   });
 
-
-  describe('errors', () => {
-    it('must have context', () => {
+  describe("errors", () => {
+    it("must have context", () => {
       expect(() => {
         CollectionTile.fromJS({} as any);
-      }).to.throw('must have context');
+      }).to.throw("must have context");
     });
 
   });
 
-  describe('upgrades', () => {
-    it('must add filter and timezone', () => {
+  describe("upgrades", () => {
+    it("must add filter and timezone", () => {
       var linkItem = CollectionTile.fromJS({
-        name: 'test1',
-        title: 'Test One',
-        description: 'I like testing',
-        group: 'Tests',
-        dataCube: 'wiki',
+        name: "test1",
+        title: "Test One",
+        description: "I like testing",
+        group: "Tests",
+        dataCube: "wiki",
         essence: {
-          visualization: 'line-chart',
-          pinnedDimensions: ['articleName'],
+          visualization: "line-chart",
+          pinnedDimensions: ["articleName"],
           singleMeasure: "count",
-          selectedMeasures: ['count'],
-          splits: 'time'
+          selectedMeasures: ["count"],
+          splits: "time"
         }
-      }, context);
+      },                                   context);
 
       expect(linkItem.toJS()).to.deep.equal({
-        "dataCube": "wiki",
-        "description": "I like testing",
-        "essence": {
-          "filter": {
-            "expression": {
-              "operand": {
-                "name": "m",
-                "op": "ref"
+        dataCube: "wiki",
+        description: "I like testing",
+        essence: {
+          filter: {
+            expression: {
+              operand: {
+                name: "m",
+                op: "ref"
               },
-              "op": "timeRange",
-              "duration": "P3D",
-              "step": -1
+              op: "timeRange",
+              duration: "P3D",
+              step: -1
             },
-            "operand": {
-              "name": "time",
-              "op": "ref"
+            operand: {
+              name: "time",
+              op: "ref"
             },
-            "op": "overlap"
+            op: "overlap"
           },
-          "pinnedDimensions": [
+          pinnedDimensions: [
             "articleName"
           ],
-          "pinnedSort": "count",
-          "singleMeasure": "count",
-          "selectedMeasures": [
+          pinnedSort: "count",
+          singleMeasure: "count",
+          selectedMeasures: [
             "count"
           ],
-          "splits": [
+          splits: [
             {
-              "bucketAction": {
-                "op": "timeBucket",
-                "duration": "PT1H"
+              bucketAction: {
+                op: "timeBucket",
+                duration: "PT1H"
               },
-              "expression": {
-                "name": "time",
-                "op": "ref"
+              expression: {
+                name: "time",
+                op: "ref"
               },
-              "sortAction": {
-                "op": "sort",
-                "direction": "ascending",
-                "expression": {
-                  "name": "time",
-                  "op": "ref"
+              sortAction: {
+                op: "sort",
+                direction: "ascending",
+                expression: {
+                  name: "time",
+                  op: "ref"
                 }
               }
             }
           ],
-          "timezone": "Etc/UTC",
-          "visualization": "line-chart"
+          timezone: "Etc/UTC",
+          visualization: "line-chart"
         },
-        "group": "Tests",
-        "name": "test1",
-        "title": "Test One"
+        group: "Tests",
+        name: "test1",
+        title: "Test One"
       });
     });
 

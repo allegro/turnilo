@@ -15,40 +15,40 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as Q from 'q';
-import * as express from 'express';
-import * as supertest from 'supertest';
-import { Response } from 'supertest';
+import { expect } from "chai";
+import * as express from "express";
+import * as Q from "q";
+import * as supertest from "supertest";
+import { Response } from "supertest";
 
-import { AppSettings } from '../../../common/models/index';
-import { SwivRequest } from '../../utils/index';
-import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
+import { AppSettings } from "../../../common/models/index";
+import { SwivRequest } from "../../utils/index";
+import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 
-import { AppSettingsMock } from '../../../common/models/app-settings/app-settings.mock';
+import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
 
-import * as swivRouter from './swiv';
+import * as swivRouter from "./swiv";
 
 var app = express();
 
 var appSettings: AppSettings = AppSettingsMock.wikiOnlyWithExecutor();
 app.use((req: SwivRequest, res: express.Response, next: Function) => {
   req.user = null;
-  req.version = '0.9.4';
+  req.version = "0.9.4";
   req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Q(appSettings);
   next();
 });
 
-app.use('/', swivRouter);
+app.use("/", swivRouter);
 
-describe('swiv router', () => {
-  it('does a query (value)', (testComplete: any) => {
+describe("swiv router", () => {
+  it("does a query (value)", (testComplete: any) => {
     supertest(app)
-      .get('/')
+      .get("/")
       .expect(200)
       .end((err: any, res: Response) => {
         if (err) testComplete(err);
-        expect(res.text).to.contain('<!DOCTYPE html>');
+        expect(res.text).to.contain("<!DOCTYPE html>");
         expect(res.text).to.contain('<meta name="description" content="Data Explorer">');
         testComplete();
       });

@@ -83,7 +83,7 @@ describe("FilterDefinition v3", () => {
     });
   });
 
-  const numberFilterTests: { dimension: string, exclude: boolean, start?: number, end?: number, bounds?: string }[] = [
+  const numberFilterTests: Array<{ dimension: string, exclude: boolean, start?: number, end?: number, bounds?: string }> = [
     { dimension: "commentLength", exclude: false, start: 1, end: null, bounds: "[)" },
     { dimension: "commentLength", exclude: true, start: null, end: 100, bounds: "()" },
     { dimension: "commentLength", exclude: false, start: 1, end: 2, bounds: "[)" },

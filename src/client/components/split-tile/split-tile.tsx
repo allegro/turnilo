@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-import './split-tile.scss';
+import "./split-tile.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as Q from 'q';
+import * as Q from "q";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { STRINGS, CORE_ITEM_WIDTH, CORE_ITEM_GAP } from '../../config/constants';
-import { Stage, Clicker, Essence, VisStrategy, DataCube, Filter, SplitCombine, Dimension, DragPosition } from '../../../common/models/index';
+import { Clicker, Dimension, DragPosition, Essence, SplitCombine, Stage, VisStrategy } from "../../../common/models/index";
+import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import {
-  findParentWithClass, setDragGhost, transformStyle, getXFromEvent, isInside, uniqueId,
-  classNames
-} from '../../utils/dom/dom';
-import { getMaxItems, SECTION_WIDTH } from '../../utils/pill-tile/pill-tile';
+  classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle,
+  uniqueId
+} from "../../utils/dom/dom";
+import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
-import { DragManager } from '../../utils/drag-manager/drag-manager';
-import { FancyDragIndicator } from '../fancy-drag-indicator/fancy-drag-indicator';
-import { SplitMenu } from '../split-menu/split-menu';
-import { BubbleMenu } from '../bubble-menu/bubble-menu';
+import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
+import { SplitMenu } from "../split-menu/split-menu";
 
-const SPLIT_CLASS_NAME = 'split';
+const SPLIT_CLASS_NAME = "split";
 
 export interface SplitTileProps extends React.Props<any> {
   clicker: Clicker;
@@ -59,7 +59,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   constructor(props: SplitTileProps) {
     super(props);
-    this.overflowMenuId = uniqueId('overflow-menu-');
+    this.overflowMenuId = uniqueId("overflow-menu-");
     this.state = {
       menuOpenOn: null,
       menuDimension: null,
@@ -168,11 +168,11 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   dragStart(dimension: Dimension, split: SplitCombine, splitIndex: number, e: DragEvent) {
     const dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = 'all';
-    dataTransfer.setData('text/plain', dimension.title);
+    dataTransfer.effectAllowed = "all";
+    dataTransfer.setData("text/plain", dimension.title);
 
-    DragManager.setDragSplit(split, 'filter-tile');
-    DragManager.setDragDimension(dimension, 'filter-tile');
+    DragManager.setDragSplit(split, "filter-tile");
+    DragManager.setDragDimension(dimension, "filter-tile");
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
@@ -182,7 +182,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   calculateDragPosition(e: DragEvent): DragPosition {
     const { essence } = this.props;
     var numItems = essence.splits.length();
-    var rect = ReactDOM.findDOMNode(this.refs['items']).getBoundingClientRect();
+    var rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
     var x = getXFromEvent(e);
     var offset = x - rect.left;
     return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
@@ -202,7 +202,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   dragOver(e: DragEvent) {
     if (!this.canDrop(e)) return;
-    e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     var dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
@@ -263,7 +263,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
   }
 
   overflowButtonTarget(): Element {
-    return ReactDOM.findDOMNode(this.refs['overflow']);
+    return ReactDOM.findDOMNode(this.refs["overflow"]);
   }
 
   overflowButtonClick() {
@@ -321,13 +321,13 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var style = transformStyle(itemX, 0);
 
     return <div
-      className={classNames('overflow', { 'all-continuous': items.every(item => item.getDimension(dataCube.dimensions).isContinuous()) })}
+      className={classNames("overflow", { "all-continuous": items.every(item => item.getDimension(dataCube.dimensions).isContinuous()) })}
       ref="overflow"
       key="overflow"
       style={style}
       onClick={this.overflowButtonClick.bind(this)}
     >
-      <div className="count">{'+' + items.length}</div>
+      <div className="count">{"+" + items.length}</div>
       {this.renderOverflowMenu(items)}
     </div>;
   }
@@ -338,16 +338,16 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var { dataCube } = essence;
 
     var dimension = split.getDimension(dataCube.dimensions);
-    if (!dimension) throw new Error('dimension not found');
+    if (!dimension) throw new Error("dimension not found");
     var dimensionName = dimension.name;
 
     var classNames = [
       SPLIT_CLASS_NAME,
-      'type-' + dimension.className
+      "type-" + dimension.className
     ];
-    if (dimension === menuDimension) classNames.push('selected');
+    if (dimension === menuDimension) classNames.push("selected");
     return <div
-      className={classNames.join(' ')}
+      className={classNames.join(" ")}
       key={split.toKey()}
       ref={dimensionName}
       draggable={true}
@@ -357,7 +357,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     >
       <div className="reading">{split.getTitle(dataCube.dimensions)}</div>
       <div className="remove" onClick={this.removeSplit.bind(this, split)}>
-        <SvgIcon svg={require('../../icons/x.svg')}/>
+        <SvgIcon svg={require("../../icons/x.svg")}/>
       </div>
     </div>;
   }
@@ -374,7 +374,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       var style = transformStyle(itemX, 0);
       itemX += SECTION_WIDTH;
       return this.renderSplit(split, style, i);
-    }, this);
+    },                                                  this);
 
     var overflowItems = splitsArray.slice(maxItems);
     if (overflowItems.length > 0) {

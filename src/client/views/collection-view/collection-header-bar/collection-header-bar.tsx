@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import './collection-header-bar.scss';
+import "./collection-header-bar.scss";
 
-import * as React from 'react';
-import { Fn } from '../../../../common/utils/general/general';
-import { User, Customization, DataCube, Stage, Collection } from '../../../../common/models/index';
+import * as React from "react";
+import { Collection, Customization, DataCube, Stage, User } from "../../../../common/models/index";
+import { Fn } from "../../../../common/utils/general/general";
 
-import { SvgIcon, UserMenu, BubbleMenu, Button } from '../../../components/index';
+import { BubbleMenu, Button, SvgIcon, UserMenu } from "../../../components/index";
 
-import { STRINGS } from '../../../config/constants';
+import { STRINGS } from "../../../config/constants";
 
 export interface CollectionHeaderBarProps extends React.Props<any> {
   user?: User;
@@ -114,7 +114,7 @@ export class CollectionHeaderBar extends React.Component<CollectionHeaderBarProp
   }
 
   goToSettings() {
-    window.location.hash = '#settings';
+    window.location.hash = "#settings";
   }
 
   renderSettingsMenu() {
@@ -137,7 +137,7 @@ export class CollectionHeaderBar extends React.Component<CollectionHeaderBarProp
           onClick={this.props.onDeleteCollection}
         >{STRINGS.deleteCollection}</li>
 
-        { user && user.allow['settings'] ? <li
+        { user && user.allow["settings"] ? <li
           className="general-settings"
           onClick={this.goToSettings.bind(this)}
         >{STRINGS.generalSettings}</li>
@@ -154,7 +154,7 @@ export class CollectionHeaderBar extends React.Component<CollectionHeaderBarProp
 
     var stage = Stage.fromSize(200, 200);
 
-    var items = dataCubes.map((dataCube) => {
+    var items = dataCubes.map(dataCube => {
       return <li
         className="data-cube"
         key={dataCube.name}
@@ -215,32 +215,32 @@ export class CollectionHeaderBar extends React.Component<CollectionHeaderBarProp
     var userButton: JSX.Element = null;
     if (user) {
       userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
-        <SvgIcon svg={require('../../../icons/full-user.svg')}/>
+        <SvgIcon svg={require("../../../icons/full-user.svg")}/>
       </div>;
     }
 
     return <header className="collection-header-bar" style={this.getHeaderStyle(customization)}>
       <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
-          <SvgIcon svg={require('../../../icons/menu.svg')}/>
+          <SvgIcon svg={require("../../../icons/menu.svg")}/>
         </div>
         <div className="title">{title}</div>
       </div>
       <div className="right-bar">
         { onAddItem ?
           <div className="icon-button add" onClick={this.onAddClick.bind(this)}>
-            <SvgIcon svg={require('../../../icons/full-add-framed.svg')}/>
+            <SvgIcon svg={require("../../../icons/full-add-framed.svg")}/>
           </div>
         : null }
 
         { onEditCollection ?
           <div className="icon-button edit" onClick={onEditCollection}>
-            <SvgIcon svg={require('../../../icons/full-edit.svg')}/>
+            <SvgIcon svg={require("../../../icons/full-edit.svg")}/>
           </div>
         : null }
 
         <div className="icon-button settings" onClick={this.onSettingsClick.bind(this)}>
-          <SvgIcon svg={require('../../../icons/full-settings.svg')}/>
+          <SvgIcon svg={require("../../../icons/full-settings.svg")}/>
         </div>
         {userButton}
       </div>

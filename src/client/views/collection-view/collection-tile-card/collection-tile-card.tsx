@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import './collection-tile-card.scss';
+import "./collection-tile-card.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import { SvgIcon, GlobalEventListener } from '../../../components/index';
-import { classNames } from '../../../utils/dom/dom';
+import { GlobalEventListener, SvgIcon } from "../../../components/index";
+import { classNames } from "../../../utils/dom/dom";
 
-import { STRINGS } from '../../../config/constants';
+import { STRINGS } from "../../../config/constants";
 
-import { Collection, CollectionTile, VisualizationProps, Stage, Timekeeper, Device, DeviceSize } from '../../../../common/models/index';
+import { CollectionTile, Device, DeviceSize, Stage, Timekeeper, VisualizationProps } from "../../../../common/models/index";
 
-import { getVisualizationComponent } from '../../../visualizations/index';
+import { getVisualizationComponent } from "../../../visualizations/index";
 
 export interface CollectionTileCardProps extends React.Props<any> {
   tile: CollectionTile;
@@ -123,7 +123,7 @@ export class CollectionTileCard extends React.Component<CollectionTileCardProps,
     };
 
     return <div
-      className={classNames("collection-tile-card", {editing: editionMode}, className)}
+      className={classNames("collection-tile-card", { editing: editionMode }, className)}
       onDragOver={onDragOver}
       draggable={draggable}
       onDragStart={onDragStart}

@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-import './data-cube-edit.scss';
+import "./data-cube-edit.scss";
 
-import * as React from 'react';
-import { List } from 'immutable';
-import { AttributeInfo } from 'plywood';
+import { List } from "immutable";
+import { AttributeInfo } from "plywood";
+import * as React from "react";
 import { Dimensions } from "../../../../common/models/dimension/dimensions";
-import { classNames } from '../../../utils/dom/dom';
+import { classNames } from "../../../utils/dom/dom";
 
-import { generateUniqueName } from '../../../../common/utils/string/string';
 import { ImmutableUtils } from "../../../../common/utils/immutable-utils/immutable-utils";
+import { generateUniqueName } from "../../../../common/utils/string/string";
 
-import { Duration, Timezone } from 'chronoshift';
+import { Timezone } from "chronoshift";
 
-import { DATA_CUBES_STRATEGIES_LABELS, STRINGS } from '../../../config/constants';
+import { DATA_CUBES_STRATEGIES_LABELS, STRINGS } from "../../../config/constants";
 
-import { SvgIcon, FormLabel, Button, SimpleList, ImmutableInput, ImmutableList, ImmutableDropdown } from '../../../components/index';
-import { DimensionModal, MeasureModal, SuggestionModal } from '../../../modals/index';
-import { AppSettings, ListItem, Cluster, DataCube, Dimension, DimensionJS, Measure, MeasureJS } from '../../../../common/models/index';
+import { Cluster, DataCube, Dimension, ListItem, Measure } from "../../../../common/models/index";
+import { Button, FormLabel, ImmutableDropdown, ImmutableInput, ImmutableList } from "../../../components/index";
+import { DimensionModal, MeasureModal, SuggestionModal } from "../../../modals/index";
 
-import { DATA_CUBE as LABELS } from '../../../../common/models/labels';
+import { DATA_CUBE as LABELS } from "../../../../common/models/labels";
 
-import { ImmutableFormDelegate, ImmutableFormState } from '../../../utils/immutable-form-delegate/immutable-form-delegate';
+import { ImmutableFormDelegate, ImmutableFormState } from "../../../utils/immutable-form-delegate/immutable-form-delegate";
 
 export interface DataCubeEditProps extends React.Props<any> {
   isNewDataCube?: boolean;
@@ -59,13 +59,12 @@ export interface Tab {
   render: () => JSX.Element;
 }
 
-
 export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEditState> {
   private tabs: Tab[] = [
-    {label: 'General', value: 'general', render: this.renderGeneral},
-    {label: 'Attributes', value: 'attributes', render: this.renderAttributes},
-    {label: 'Dimensions', value: 'dimensions', render: this.renderDimensions},
-    {label: 'Measures', value: 'measures', render: this.renderMeasures}
+    { label: "General", value: "general", render: this.renderGeneral },
+    { label: "Attributes", value: "attributes", render: this.renderAttributes },
+    { label: "Dimensions", value: "dimensions", render: this.renderDimensions },
+    { label: "Measures", value: "measures", render: this.renderMeasures }
   ];
 
   private delegate: ImmutableFormDelegate<DataCube>;
@@ -91,7 +90,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
       newInstance: new DataCube(props.dataCube.valueOf()),
       canSave: true,
       errors: {},
-      tab: props.isNewDataCube ? this.tabs[0] : this.tabs.filter((tab) => tab.value === props.tab)[0],
+      tab: props.isNewDataCube ? this.tabs[0] : this.tabs.filter(tab => tab.value === props.tab)[0],
       showDimensionsSuggestion: false,
       showMeasuresSuggestion: false
     });
@@ -99,18 +98,18 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
 
   selectTab(tab: Tab) {
     if (this.props.isNewDataCube) {
-      this.setState({tab});
+      this.setState({ tab });
     } else {
-      var hash = window.location.hash.split('/');
+      var hash = window.location.hash.split("/");
       hash.splice(-1);
-      window.location.hash = hash.join('/') + '/' + tab.value;
+      window.location.hash = hash.join("/") + "/" + tab.value;
     }
   }
 
   renderTabs(activeTab: Tab): JSX.Element[] {
-    return this.tabs.map((tab) => {
+    return this.tabs.map(tab => {
       return <button
-        className={classNames({active: activeTab.value === tab.value})}
+        className={classNames({ active: activeTab.value === tab.value })}
         key={tab.value}
         onClick={this.selectTab.bind(this, tab)}
       >{tab.label}</button>;
@@ -126,7 +125,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     }
 
     // Setting newInstance to undefined resets the inputs
-    this.setState({newInstance: undefined}, () => this.initFromProps(this.props));
+    this.setState({ newInstance: undefined }, () => this.initFromProps(this.props));
   }
 
   save() {
@@ -136,7 +135,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
   goBack() {
     const { dataCube, tab } = this.props;
     var hash = window.location.hash;
-    window.location.hash = hash.replace(`/${dataCube.name}/${tab}`, '');
+    window.location.hash = hash.replace(`/${dataCube.name}/${tab}`, "");
   }
 
   getIntrospectionStrategies(): ListItem[] {
@@ -145,8 +144,8 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     return [{
       label: `Default (${labels[DataCube.DEFAULT_INTROSPECTION]})`,
       value: undefined
-    }].concat(DataCube.INTROSPECTION_VALUES.map((value) => {
-      return {value, label: labels[value]};
+    }].concat(DataCube.INTROSPECTION_VALUES.map(value => {
+      return { value, label: labels[value] };
     }));
   }
 
@@ -159,28 +158,28 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     var makeDropDownInput = ImmutableDropdown.simpleGenerator(newInstance, this.delegate.onChange);
 
     var possibleClusters = [
-      { value: 'native', label: 'Load a file and serve it natively' }
-    ].concat(clusters.map((cluster) => {
+      { value: "native", label: "Load a file and serve it natively" }
+    ].concat(clusters.map(cluster => {
       return { value: cluster.name, label: cluster.name };
     }));
 
     return <form className="general vertical">
-      {makeLabel('title')}
-      {makeTextInput('title', /.*/, true)}
+      {makeLabel("title")}
+      {makeTextInput("title", /.*/, true)}
 
-      {makeLabel('description')}
-      {makeTextInput('description')}
+      {makeLabel("description")}
+      {makeTextInput("description")}
 
-      {makeLabel('clusterName')}
-      {makeDropDownInput('clusterName', possibleClusters)}
+      {makeLabel("clusterName")}
+      {makeDropDownInput("clusterName", possibleClusters)}
 
-      {makeLabel('source')}
-      {makeTextInput('source')}
+      {makeLabel("source")}
+      {makeTextInput("source")}
 
-      {makeLabel('defaultTimezone')}
+      {makeLabel("defaultTimezone")}
       <ImmutableInput
         instance={newInstance}
-        path={'defaultTimezone'}
+        path={"defaultTimezone"}
         onChange={this.delegate.onChange}
 
         valueToString={(value: Timezone) => value ? value.toJS() : undefined}
@@ -197,10 +196,10 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
 
     return <form className="general vertical">
 
-      {makeLabel('attributeOverrides')}
+      {makeLabel("attributeOverrides")}
       <ImmutableInput
         instance={newInstance}
-        path={'attributeOverrides'}
+        path={"attributeOverrides"}
         onChange={this.delegate.onChange}
 
         valueToString={(value: AttributeInfo[]) => value ? JSON.stringify(AttributeInfo.toJSs(value), null, 2) : undefined}
@@ -224,11 +223,11 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     const getModal = (item: Dimension) => <DimensionModal dimension={item}/>;
 
     const getNewItem = () => Dimension.fromJS({
-      name: generateUniqueName('d', name => !newInstance.dimensions.containsDimensionWithName(name)),
-      title: 'New dimension'
+      name: generateUniqueName("d", name => !newInstance.dimensions.containsDimensionWithName(name)),
+      title: "New dimension"
     });
 
-    const getRows = (items: List<Dimension>) => items.toArray().map((dimension) => {
+    const getRows = (items: List<Dimension>) => items.toArray().map(dimension => {
       return {
         title: dimension.title,
         description: dimension.expression.toString(),
@@ -256,7 +255,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     });
   }
 
-  addToCube(property: string, additionalValues: (Dimension | Measure)[]) {
+  addToCube(property: string, additionalValues: Array<Dimension | Measure>) {
     const { newInstance } = this.state;
     var newValues = additionalValues.concat((newInstance as any)[property].toArray());
     this.setState({
@@ -267,7 +266,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
   renderDimensionSuggestions() {
     const { newInstance } = this.state;
     return <SuggestionModal
-      onAdd={this.addToCube.bind(this, 'dimensions')}
+      onAdd={this.addToCube.bind(this, "dimensions")}
       onClose={this.toggleDimensionsSuggestions.bind(this)}
       getLabel={(d: Dimension) => `${d.title} (${d.formula})`}
       getOptions={newInstance.getSuggestedDimensions.bind(newInstance)}
@@ -290,7 +289,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
       var { defaultSortMeasure } = newInstance;
 
       if (defaultSortMeasure) {
-        if (!newMeasures.find((measure) => measure.name === defaultSortMeasure)) {
+        if (!newMeasures.find(measure => measure.name === defaultSortMeasure)) {
           newInstance = newInstance.changeDefaultSortMeasure(newMeasures.get(0).name);
         }
       }
@@ -304,11 +303,11 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     const getModal = (item: Measure) => <MeasureModal measure={item}/>;
 
     const getNewItem = () => Measure.fromJS({
-      name: generateUniqueName('m', name => !newInstance.measures.containsMeasureWithName(name)),
-      title: 'New measure'
+      name: generateUniqueName("m", name => !newInstance.measures.containsMeasureWithName(name)),
+      title: "New measure"
     });
 
-    const getRows = (items: List<Measure>) => items.toArray().map((measure) => {
+    const getRows = (items: List<Measure>) => items.toArray().map(measure => {
       return {
         title: measure.title,
         description: measure.expression.toString(),
@@ -332,7 +331,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
   renderMeasureSuggestions() {
     const { newInstance } = this.state;
     return <SuggestionModal
-      onAdd={this.addToCube.bind(this, 'measures')}
+      onAdd={this.addToCube.bind(this, "measures")}
       onClose={this.toggleMeasuresSuggestions.bind(this)}
       getLabel={(m: Measure) => `${m.title} (${m.formula})`}
       getOptions={newInstance.getSuggestedMeasures.bind(newInstance)}
@@ -353,7 +352,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     />;
 
     const saveButton = <Button
-      className={classNames("save", {disabled: !canSave || (!isNewDataCube && !hasChanged)})}
+      className={classNames("save", { disabled: !canSave || (!isNewDataCube && !hasChanged) })}
       title={isNewDataCube ? "Create cube" : "Save"}
       type="primary"
       onClick={this.save.bind(this)}
@@ -375,7 +374,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
     const { isNewDataCube } = this.props;
     const { newInstance } = this.state;
 
-    const lastBit = newInstance.title ? `: ${newInstance.title}` : '';
+    const lastBit = newInstance.title ? `: ${newInstance.title}` : "";
 
     return (isNewDataCube ? STRINGS.createDataCube : STRINGS.editDataCube) + lastBit;
   }
@@ -393,7 +392,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
           : <Button
               className="button back"
               type="secondary"
-              svg={require('../../../icons/full-back.svg')}
+              svg={require("../../../icons/full-back.svg")}
               onClick={this.goBack.bind(this)}
             />
         }

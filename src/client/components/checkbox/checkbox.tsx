@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import './checkbox.scss';
+import "./checkbox.scss";
 
-import * as React from 'react';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { classNames } from '../../utils/dom/dom';
+import * as React from "react";
+import { classNames } from "../../utils/dom/dom";
+import { SvgIcon } from "../svg-icon/svg-icon";
 
-export type CheckboxType = 'check' | 'cross' | 'radio';
+export type CheckboxType = "check" | "cross" | "radio";
 
 export interface CheckboxProps {
   selected: boolean;
@@ -37,16 +37,16 @@ export interface CheckboxState {
 export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
 
   static defaultProps: Partial<CheckboxProps> = {
-    type: 'check'
+    type: "check"
   };
 
   renderIcon() {
     const { selected, type } = this.props;
     if (!selected) return null;
-    if (type === 'check') {
-      return <SvgIcon svg={require('../../icons/check.svg')}/>;
-    } else if (type === 'cross') {
-      return <SvgIcon svg={require('../../icons/x.svg')}/>;
+    if (type === "check") {
+      return <SvgIcon svg={require("../../icons/check.svg")}/>;
+    } else if (type === "cross") {
+      return <SvgIcon svg={require("../../icons/x.svg")}/>;
     }
     return null;
   }
@@ -59,7 +59,7 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
       style = { background: color };
     }
 
-    return <div className={classNames('checkbox', type, { selected, color })} onClick={onClick}>
+    return <div className={classNames("checkbox", type, { selected, color })} onClick={onClick}>
       <div className="checkbox-body" style={style}></div>
       {this.renderIcon()}
       {label ? <div className="label">{label}</div> : null}

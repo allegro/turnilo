@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import './main.scss';
+import "./main.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { addErrorMonitor } from './utils/error-monitor/error-monitor';
-import { AppSettingsJS, DataCube, TimekeeperJS } from '../common/models';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { AppSettingsJS, DataCube, TimekeeperJS } from "../common/models";
+import { addErrorMonitor } from "./utils/error-monitor/error-monitor";
 
-import { Loader } from './components/loader/loader';
+import { Loader } from "./components/loader/loader";
 
 addErrorMonitor();
 
-var container = document.getElementsByClassName('app-container')[0];
-if (!container) throw new Error('container not found');
+var container = document.getElementsByClassName("app-container")[0];
+if (!container) throw new Error("container not found");
 
 // Add the loader
 ReactDOM.render(
@@ -43,25 +43,25 @@ interface Config {
   stateful: boolean;
 }
 
-var config: Config = (window as any)['__CONFIG__'];
+var config: Config = (window as any)["__CONFIG__"];
 if (!config || !config.version || !config.appSettings || !config.appSettings.dataCubes) {
-  throw new Error('config not found');
+  throw new Error("config not found");
 }
 
 var version = config.version;
 
-require.ensure([], (require) => {
-  const { Ajax } = require('./utils/ajax/ajax');
-  const { AppSettings, Timekeeper } = require('../common/models/index');
-  const { MANIFESTS } = require('../common/manifests/index');
-  const { SwivApplication } = require('./applications/swiv-application/swiv-application');
+require.ensure([], require => {
+  const { Ajax } = require("./utils/ajax/ajax");
+  const { AppSettings, Timekeeper } = require("../common/models/index");
+  const { MANIFESTS } = require("../common/manifests/index");
+  const { SwivApplication } = require("./applications/swiv-application/swiv-application");
 
   Ajax.version = version;
 
   var appSettings = AppSettings.fromJS(config.appSettings, {
     visualizations: MANIFESTS,
     executorFactory: (dataCube: DataCube) => {
-      return Ajax.queryUrlExecutorFactory(dataCube.name, 'plywood');
+      return Ajax.queryUrlExecutorFactory(dataCube.name, "plywood");
     }
   });
 
@@ -75,28 +75,28 @@ require.ensure([], (require) => {
     />;
 
   ReactDOM.render(app, container);
-}, "app");
+},             "app");
 
 // Polyfill =====================================
 
 // From ../../assets/polyfill/drag-drop-polyfill.js
-var div = document.createElement('div');
-var dragDiv = 'draggable' in div;
-var evts = 'ondragstart' in div && 'ondrop' in div;
+var div = document.createElement("div");
+var dragDiv = "draggable" in div;
+var evts = "ondragstart" in div && "ondrop" in div;
 
 var needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
 
 if (needsPatch) {
   require.ensure([
-    '../../lib/polyfill/drag-drop-polyfill.min.js',
-    '../../lib/polyfill/drag-drop-polyfill.css'
-  ], (require) => {
-    var DragDropPolyfill = require('../../lib/polyfill/drag-drop-polyfill.min.js');
-    require('../../lib/polyfill/drag-drop-polyfill.css');
+    "../../lib/polyfill/drag-drop-polyfill.min.js",
+    "../../lib/polyfill/drag-drop-polyfill.css"
+  ],             require => {
+    var DragDropPolyfill = require("../../lib/polyfill/drag-drop-polyfill.min.js");
+    require("../../lib/polyfill/drag-drop-polyfill.css");
     DragDropPolyfill.Initialize({});
-  }, 'ios-drag-drop');
+  },             "ios-drag-drop");
 }
 
-if (process.env.NODE_ENV === 'dev-hmr' && module.hot) {
+if (process.env.NODE_ENV === "dev-hmr" && module.hot) {
   module.hot.accept();
 }

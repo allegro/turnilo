@@ -15,64 +15,64 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { expect } from "chai";
+import { testImmutableClass } from "immutable-class-tester";
 
-import { $ } from 'plywood';
+import { $ } from "plywood";
+import { RefExpression } from "plywood";
 import { Highlight } from "..";
 import { MANIFESTS } from "../../manifests";
+import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
-import { HighlightFixtures } from "../highlight/highlight.fixtures";
-import { MeasureFixtures } from "../measure/measure.fixtures";
-import { Essence, EssenceJS, VisStrategy } from './essence';
+import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
 import { DataCube, Introspection } from "../data-cube/data-cube";
 import { DataCubeMock } from "../data-cube/data-cube.mock";
-import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
-import { Splits } from "../splits/splits";
-import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
+import { HighlightFixtures } from "../highlight/highlight.fixtures";
+import { MeasureFixtures } from "../measure/measure.fixtures";
 import { SplitCombine } from "../split-combine/split-combine";
-import { RefExpression } from "plywood";
+import { Splits } from "../splits/splits";
+import { Essence, EssenceJS, VisStrategy } from "./essence";
 import { EssenceMock } from "./essence.mock";
 
-describe('Essence', () => {
+describe("Essence", () => {
   var dataCubeJS = {
-    name: 'twitter',
-    title: 'Twitter',
-    clusterName: 'druid',
-    source: 'twitter',
-    introspection: ('none' as Introspection),
+    name: "twitter",
+    title: "Twitter",
+    clusterName: "druid",
+    source: "twitter",
+    introspection: ("none" as Introspection),
     dimensions: [
       {
-        kind: 'time',
-        name: 'time',
-        title: 'Time',
-        formula: '$time'
+        kind: "time",
+        name: "time",
+        title: "Time",
+        formula: "$time"
       },
       {
-        kind: 'string',
-        name: 'twitterHandle',
-        title: 'Twitter Handle',
-        formula: '$twitterHandle'
+        kind: "string",
+        name: "twitterHandle",
+        title: "Twitter Handle",
+        formula: "$twitterHandle"
       }
     ],
     measures: [
       {
-        name: 'count',
-        title: 'count',
-        formula: '$main.count()'
+        name: "count",
+        title: "count",
+        formula: "$main.count()"
       }
     ],
-    timeAttribute: 'time',
-    defaultTimezone: 'Etc/UTC',
-    defaultFilter: { op: 'literal', value: true },
-    defaultSplits: 'time',
-    defaultDuration: 'P3D',
-    defaultSortMeasure: 'count',
-    defaultPinnedDimensions: ['twitterHandle'],
+    timeAttribute: "time",
+    defaultTimezone: "Etc/UTC",
+    defaultFilter: { op: "literal", value: true },
+    defaultSplits: "time",
+    defaultDuration: "P3D",
+    defaultSortMeasure: "count",
+    defaultPinnedDimensions: ["twitterHandle"],
     refreshRule: {
       rule: "fixed",
-      time: new Date('2015-09-13T00:00:00Z')
+      time: new Date("2015-09-13T00:00:00Z")
     }
   };
 
@@ -80,37 +80,37 @@ describe('Essence', () => {
 
   var context = { dataCube, visualizations: MANIFESTS };
 
-  it('is an immutable class', () => {
+  it("is an immutable class", () => {
     testImmutableClass<EssenceJS>(Essence, [
       {
-        visualization: 'totals',
-        timezone: 'Etc/UTC',
+        visualization: "totals",
+        timezone: "Etc/UTC",
         filter: {
           op: "literal",
           value: true
         },
         pinnedDimensions: [],
-        singleMeasure: 'count',
+        singleMeasure: "count",
         selectedMeasures: [],
         splits: []
       },
       {
-        visualization: 'totals',
-        timezone: 'Etc/UTC',
-        filter: $('twitterHandle').overlap(['A', 'B', 'C']).toJS(),
-        pinnedDimensions: ['twitterHandle'],
-        pinnedSort: 'count',
-        singleMeasure: 'count',
-        selectedMeasures: ['count'],
+        visualization: "totals",
+        timezone: "Etc/UTC",
+        filter: $("twitterHandle").overlap(["A", "B", "C"]).toJS(),
+        pinnedDimensions: ["twitterHandle"],
+        pinnedSort: "count",
+        singleMeasure: "count",
+        selectedMeasures: ["count"],
         splits: []
       }
-    ], { context });
+    ],                            { context });
   });
 
   describe("removes highlight when necessary", () => {
     const { lineChartWithAddedMeasure, lineChartWithAvgAddedMeasure, tableNoMeasure } = HighlightFixtures;
 
-    const tests: {highlight: Highlight, expected: Highlight, description: string}[] = [
+    const tests: Array<{highlight: Highlight, expected: Highlight, description: string}> = [
       { highlight: lineChartWithAddedMeasure(), expected: lineChartWithAddedMeasure(), description: "is kept when measure is selected" },
       { highlight: tableNoMeasure(), expected: tableNoMeasure(), description: "is kept when contains no measure" },
       { highlight: lineChartWithAvgAddedMeasure(), expected: null, description: "is removed when measure is not selected" }
@@ -128,146 +128,144 @@ describe('Essence', () => {
     });
   });
 
-  describe('errors', () => {
-    it('must have context', () => {
+  describe("errors", () => {
+    it("must have context", () => {
       expect(() => {
         Essence.fromJS({} as any);
-      }).to.throw('must have context');
+      }).to.throw("must have context");
     });
 
   });
 
-
-  describe('upgrades', () => {
-    it('works in the base case', () => {
+  describe("upgrades", () => {
+    it("works in the base case", () => {
       var essence = Essence.fromJS({
-        visualization: 'totals',
-        timezone: 'Etc/UTC',
+        visualization: "totals",
+        timezone: "Etc/UTC",
         pinnedDimensions: [],
         selectedMeasures: [],
         splits: []
-      }, context);
+      },                           context);
 
       expect(essence.toJS()).to.deep.equal({
-        "filter": {
-          "expression": {
-            "op": "timeRange",
-            "duration": "P3D",
-            "step": -1,
-            "operand": {
-              "name": "m",
-              "op": "ref"
+        filter: {
+          expression: {
+            op: "timeRange",
+            duration: "P3D",
+            step: -1,
+            operand: {
+              name: "m",
+              op: "ref"
             }
           },
-          "op": "overlap",
-          "operand": {
-            "name": "time",
-            "op": "ref"
+          op: "overlap",
+          operand: {
+            name: "time",
+            op: "ref"
           }
         },
-        "multiMeasureMode": true,
-        "pinnedDimensions": [],
-        "selectedMeasures": [],
-        "singleMeasure": "count",
-        "splits": [],
-        "timezone": "Etc/UTC",
-        "visualization": "totals"
+        multiMeasureMode: true,
+        pinnedDimensions: [],
+        selectedMeasures: [],
+        singleMeasure: "count",
+        splits: [],
+        timezone: "Etc/UTC",
+        visualization: "totals"
       });
     });
 
-    it('adds timezone', () => {
+    it("adds timezone", () => {
       var linkItem = Essence.fromJS({
-        visualization: 'totals',
-        pinnedDimensions: ['statusCode'],
-        selectedMeasures: ['count'],
+        visualization: "totals",
+        pinnedDimensions: ["statusCode"],
+        selectedMeasures: ["count"],
         splits: [],
-        filter: 'true'
-      }, context);
+        filter: "true"
+      },                            context);
 
       expect(linkItem.toJS()).to.deep.equal({
-        "filter": {
-          "op": "literal",
-          "value": true
+        filter: {
+          op: "literal",
+          value: true
         },
-        "multiMeasureMode": true,
-        "pinnedDimensions": [],
-        "singleMeasure": "count",
-        "selectedMeasures": [
+        multiMeasureMode: true,
+        pinnedDimensions: [],
+        singleMeasure: "count",
+        selectedMeasures: [
           "count"
         ],
-        "splits": [],
-        "timezone": "Etc/UTC",
-        "visualization": "totals"
+        splits: [],
+        timezone: "Etc/UTC",
+        visualization: "totals"
       });
     });
 
   });
 
-
-  describe('.fromDataCube', () => {
-    it('works in the base case', () => {
+  describe(".fromDataCube", () => {
+    it("works in the base case", () => {
       var essence = Essence.fromDataCube(dataCube, context);
 
       expect(essence.toJS()).to.deep.equal({
-        "filter": {
-          "expression": {
-            "op": "timeRange",
-            "duration": "P3D",
-            "step": -1,
-            "operand": {
-              "name": "m",
-              "op": "ref"
+        filter: {
+          expression: {
+            op: "timeRange",
+            duration: "P3D",
+            step: -1,
+            operand: {
+              name: "m",
+              op: "ref"
             }
           },
-          "op": "overlap",
-          "operand": {
-            "name": "time",
-            "op": "ref"
+          op: "overlap",
+          operand: {
+            name: "time",
+            op: "ref"
           }
         },
-        "pinnedDimensions": [
+        pinnedDimensions: [
           "twitterHandle"
         ],
-        "pinnedSort": "count",
-        "singleMeasure": "count",
-        "selectedMeasures": [
+        pinnedSort: "count",
+        singleMeasure: "count",
+        selectedMeasures: [
           "count"
         ],
-        "splits": [
+        splits: [
           {
-            "bucketAction": {
-              "op": "timeBucket",
-              "duration": "PT1H"
+            bucketAction: {
+              op: "timeBucket",
+              duration: "PT1H"
             },
-            "expression": {
-              "name": "time",
-              "op": "ref"
+            expression: {
+              name: "time",
+              op: "ref"
             },
-            "sortAction": {
-              "op": "sort",
-              "direction": "ascending",
-              "expression": {
-                "name": "time",
-                "op": "ref"
+            sortAction: {
+              op: "sort",
+              direction: "ascending",
+              expression: {
+                name: "time",
+                op: "ref"
               }
             }
           }
         ],
-        "timezone": "Etc/UTC",
-        "visualization": "line-chart"
+        timezone: "Etc/UTC",
+        visualization: "line-chart"
       });
     });
 
   });
 
-  describe('vis picking', () => {
+  describe("vis picking", () => {
 
     describe("#getBestVisualization", () => {
       const tests = [
-        { splitDimensions: [], current: null, expected: TOTALS_MANIFEST},
-        { splitDimensions: ['tweetLength'], current: TOTALS_MANIFEST, expected: BAR_CHART_MANIFEST},
-        { splitDimensions: ['twitterHandle'], current: TOTALS_MANIFEST, expected: TABLE_MANIFEST},
-        { splitDimensions: ['time'], current: BAR_CHART_MANIFEST, expected: LINE_CHART_MANIFEST}
+        { splitDimensions: [], current: null, expected: TOTALS_MANIFEST },
+        { splitDimensions: ["tweetLength"], current: TOTALS_MANIFEST, expected: BAR_CHART_MANIFEST },
+        { splitDimensions: ["twitterHandle"], current: TOTALS_MANIFEST, expected: TABLE_MANIFEST },
+        { splitDimensions: ["time"], current: BAR_CHART_MANIFEST, expected: LINE_CHART_MANIFEST }
       ];
       const dimensions = DataCubeMock.twitter().dimensions;
 
@@ -289,14 +287,14 @@ describe('Essence', () => {
       let essence: Essence = null;
       beforeEach(() => essence = EssenceMock.twitterNoVisualisation());
 
-      const timeSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'time' }});
-      const tweetLengthSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'tweetLength' }});
-      const twitterHandleSplit = SplitCombine.fromJS({expression: { op: 'ref', name: 'twitterHandle' }});
+      const timeSplit = SplitCombine.fromJS({ expression: { op: "ref", name: "time" } });
+      const tweetLengthSplit = SplitCombine.fromJS({ expression: { op: "ref", name: "tweetLength" } });
+      const twitterHandleSplit = SplitCombine.fromJS({ expression: { op: "ref", name: "twitterHandle" } });
 
       it("defaults to bar chart with numeric dimension and is sorted on self", () => {
         essence = essence.addSplit(tweetLengthSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(BAR_CHART_MANIFEST);
-        expect((essence.splits.get(0).sortAction.expression as RefExpression).name).to.deep.equal('tweetLength');
+        expect((essence.splits.get(0).sortAction.expression as RefExpression).name).to.deep.equal("tweetLength");
         expect(essence.visResolve.isReady()).to.be.true;
       });
 

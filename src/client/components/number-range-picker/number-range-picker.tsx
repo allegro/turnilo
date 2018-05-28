@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-import './number-range-picker.scss';
+import "./number-range-picker.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import { $, Dataset, ply } from 'plywood';
+import { $, Dataset, ply } from "plywood";
 
-import { Essence, Timekeeper, Dimension } from '../../../common/models/index';
-import { toSignificantDigits, getNumberOfWholeDigits } from '../../../common/utils/general/general';
+import { Dimension, Essence, Timekeeper } from "../../../common/models/index";
+import { getNumberOfWholeDigits, toSignificantDigits } from "../../../common/utils/general/general";
 
-import { getXFromEvent, clamp, classNames } from '../../utils/dom/dom';
+import { clamp, classNames, getXFromEvent } from "../../utils/dom/dom";
 
-import { Loader } from '../loader/loader';
-import { QueryError } from '../query-error/query-error';
-import { RangeHandle } from '../range-handle/range-handle';
+import { Loader } from "../loader/loader";
+import { QueryError } from "../query-error/query-error";
+import { RangeHandle } from "../range-handle/range-handle";
 
 export const ANY_VALUE: any = null;
 
@@ -92,11 +92,11 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, rightBound: number): void {
     var { dataCube } = essence;
     var filterExpression = essence.getEffectiveFilter(timekeeper, null, dimension).toExpression();
-    var $main = $('main');
+    var $main = $("main");
     var query = ply()
-      .apply('main', $main.filter(filterExpression))
-      .apply('Min', $main.min($(dimension.name)))
-      .apply('Max', $main.max($(dimension.name)));
+      .apply("main", $main.filter(filterExpression))
+      .apply("Min", $main.min($(dimension.name)))
+      .apply("Max", $main.max($(dimension.name)));
 
     this.setState({
       loading: true
@@ -106,8 +106,8 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;
-          var min = (dataset.data[0]['Min'] as number);
-          var max = (dataset.data[0]['Max'] as number);
+          var min = (dataset.data[0]["Min"] as number);
+          var max = (dataset.data[0]["Max"] as number);
 
           var step = max && min && isFinite(max) && isFinite(min) ? (max - min) / rightBound : 1;
 
@@ -117,8 +117,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
             loading: false,
             step: step !== 0 && isFinite(step) ? step : 1
           });
-        },
-        (error) => {
+        }, error => {
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -130,7 +129,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
 
   componentDidMount() {
     this.mounted = true;
-    var node = ReactDOM.findDOMNode(this.refs['number-range-picker']);
+    var node = ReactDOM.findDOMNode(this.refs["number-range-picker"]);
     var rect =  node.getBoundingClientRect();
     var { essence, timekeeper, dimension } = this.props;
     var leftOffset = rect.left;
@@ -145,10 +144,10 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     this.mounted = false;
   }
 
-  relativePositionToValue(position: number, type: 'start' | 'end') {
+  relativePositionToValue(position: number, type: "start" | "end") {
     const { step, min, max, rightBound } = this.state;
-    if (position <= addNubSize(0) && type === 'start') return ANY_VALUE;
-    if (position >= rightBound && type === 'end') return ANY_VALUE;
+    if (position <= addNubSize(0) && type === "start") return ANY_VALUE;
+    if (position >= rightBound && type === "end") return ANY_VALUE;
 
     var range = max - min !== 0 ? max - min : Math.abs(max);
     return toSignificantDigits(position * step, getNumberOfDigitsToShow(range));
@@ -166,7 +165,6 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     var absoluteX = getXFromEvent(e);
     var relativeX = absoluteX - leftOffset;
     if (relativeX < NUB_SIZE / 2) return this.updateStart(leftOffset);
-
 
     var startNubPosition = addNubSize(positionStart) + clickPadding;
     var endNubPosition = subtractNubSize(positionEnd) + clickPadding;
@@ -198,7 +196,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     const { leftOffset } = this.state;
 
     var relativePosition = absolutePosition - leftOffset;
-    var newValue = this.relativePositionToValue(addNubSize(relativePosition), 'start');
+    var newValue = this.relativePositionToValue(addNubSize(relativePosition), "start");
     onRangeStartChange(newValue);
   }
 
@@ -207,7 +205,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     const { leftOffset } = this.state;
 
     var relativePosition = absolutePosition - leftOffset;
-    var newValue = this.relativePositionToValue(relativePosition, 'end');
+    var newValue = this.relativePositionToValue(relativePosition, "end");
 
     onRangeEndChange(newValue);
   }
@@ -254,7 +252,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       </div>;
     }
 
-    return <div className={classNames("number-range-picker", { 'inverted': exclude })} ref="number-range-picker">
+    return <div className={classNames("number-range-picker", { inverted: exclude })} ref="number-range-picker">
       {content}
       {loading ? <Loader/> : null}
       {error ? <QueryError error={error}/> : null}

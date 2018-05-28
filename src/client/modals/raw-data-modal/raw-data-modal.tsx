@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-import './raw-data-modal.scss';
+import "./raw-data-modal.scss";
 
-import * as React from 'react';
-import { List } from 'immutable';
-import { isDate } from 'chronoshift';
-import { $, AttributeInfo, Dataset, Datum, Expression } from 'plywood';
-import { DataCube, Essence, Stage, Timekeeper } from '../../../common/models';
+import { isDate } from "chronoshift";
+import { List } from "immutable";
+import { $, AttributeInfo, Dataset, Datum, Expression } from "plywood";
+import * as React from "react";
+import { DataCube, Essence, Stage, Timekeeper } from "../../../common/models";
 
-import { arraySum, Fn, formatFilterClause, makeTitle } from '../../../common/utils';
-import { download, makeFileName } from '../../utils/download/download';
-import { classNames } from '../../utils/dom/dom';
-import { getVisibleSegments } from '../../utils/sizing/sizing';
-import { exportOptions, STRINGS } from '../../config/constants';
+import { arraySum, Fn, formatFilterClause, makeTitle } from "../../../common/utils";
+import { exportOptions, STRINGS } from "../../config/constants";
+import { classNames } from "../../utils/dom/dom";
+import { download, makeFileName } from "../../utils/download/download";
+import { getVisibleSegments } from "../../utils/sizing/sizing";
 
-import { Button, Loader, Modal, QueryError, Scroller, ScrollerLayout } from '../../components';
+import { Button, Loader, Modal, QueryError, Scroller, ScrollerLayout } from "../../components";
 
 const HEADER_HEIGHT = 30;
 const ROW_HEIGHT = 30;
@@ -56,11 +56,11 @@ export interface RawDataModalState {
 
 function getColumnWidth(attribute: AttributeInfo): number {
   switch (attribute.type) {
-    case 'BOOLEAN':
+    case "BOOLEAN":
       return BOOLEAN_COL_WIDTH;
-    case 'NUMBER':
+    case "NUMBER":
       return NUMBER_COL_WIDTH;
-    case 'TIME':
+    case "TIME":
       return TIME_COL_WIDTH;
     default:
       return DEFAULT_COL_WIDTH;
@@ -69,7 +69,7 @@ function getColumnWidth(attribute: AttributeInfo): number {
 
 function classFromAttribute(attribute: AttributeInfo): string {
   return classNames(
-    String(attribute.type).toLowerCase().replace(/\//g, '-'),
+    String(attribute.type).toLowerCase().replace(/\//g, "-"),
     { unsplitable: attribute.unsplitable }
   );
 }
@@ -102,7 +102,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
   fetchData(essence: Essence, timekeeper: Timekeeper): void {
     const { dataCube } = essence;
-    const $main = $('main');
+    const $main = $("main");
     const query = $main.filter(essence.getEffectiveFilter(timekeeper).toExpression()).limit(LIMIT);
     this.setState({ loading: true });
     dataCube.executor(query, { timezone: essence.timezone })
@@ -245,7 +245,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
           displayValue = (datum[name] as Date).toISOString();
         }
 
-        cols.push(<div className={classNames('cell', classFromAttribute(attribute))} key={name} style={colStyle}>
+        cols.push(<div className={classNames("cell", classFromAttribute(attribute))} key={name} style={colStyle}>
           <span className="cell-value">{String(displayValue)}</span>
         </div>);
       });
@@ -272,7 +272,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
         <Button
           type="secondary"
           className="download"
-          onClick={download.bind(this, dataset, makeFileName(dataCube.name, filtersString, 'raw'), fileFormat)}
+          onClick={download.bind(this, dataset, makeFileName(dataCube.name, filtersString, "raw"), fileFormat)}
           title={label}
           disabled={Boolean(loading || error)}
         />
@@ -325,4 +325,3 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     </Modal>;
   }
 }
-
