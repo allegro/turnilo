@@ -55,9 +55,7 @@ describe("plywood router", () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(400)
-      .expect({
-        error: "must have a dataCube"
-      },      testComplete);
+      .expect({ error: "must have a dataCube" }, testComplete);
   });
 
   it("does a query (value)", (testComplete: any) => {
@@ -71,9 +69,7 @@ describe("plywood router", () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)
-      .expect({
-        result: 10
-      },      testComplete);
+      .expect({ result: 10 }, testComplete);
   });
 
   it("does a query (dataset)", (testComplete: any) => {
@@ -92,37 +88,40 @@ describe("plywood router", () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)
-      .expect({
-        result: {
-          attributes: [
-            {
-              name: "Channel",
-              type: "STRING"
-            },
-            {
-              name: "main",
-              type: "DATASET"
-            },
-            {
-              name: "Count",
-              type: "NUMBER"
-            }
-          ],
-          data: [
-            {
-              Channel: "en",
-              Count: 4
-            },
-            {
-              Channel: "vi",
-              Count: 4
-            }
-          ],
-          keys: [
-            "Channel"
-          ]
-        }
-      },      testComplete);
+      .expect(
+        {
+          result: {
+            attributes: [
+              {
+                name: "Channel",
+                type: "STRING"
+              },
+              {
+                name: "main",
+                type: "DATASET"
+              },
+              {
+                name: "Count",
+                type: "NUMBER"
+              }
+            ],
+            data: [
+              {
+                Channel: "en",
+                Count: 4
+              },
+              {
+                Channel: "vi",
+                Count: 4
+              }
+            ],
+            keys: [
+              "Channel"
+            ]
+          }
+        },
+        testComplete
+      );
   });
 
 });

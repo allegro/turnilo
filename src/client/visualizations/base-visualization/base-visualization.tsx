@@ -144,7 +144,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
             dataset,
             error: null
           });
-        }, error => {
+        },
+        error => {
           if (registerDownloadableDataset) registerDownloadableDataset(null);
           if (!this._isMounted) return;
           this.precalculate(this.props, {

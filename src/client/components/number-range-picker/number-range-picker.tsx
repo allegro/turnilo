@@ -117,7 +117,8 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
             loading: false,
             step: step !== 0 && isFinite(step) ? step : 1
           });
-        }, error => {
+        },
+        error => {
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -130,7 +131,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
   componentDidMount() {
     this.mounted = true;
     var node = ReactDOM.findDOMNode(this.refs["number-range-picker"]);
-    var rect =  node.getBoundingClientRect();
+    var rect = node.getBoundingClientRect();
     var { essence, timekeeper, dimension } = this.props;
     var leftOffset = rect.left;
     var rightBound = rect.width;

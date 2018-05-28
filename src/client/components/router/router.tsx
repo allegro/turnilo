@@ -212,9 +212,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
   }
 
   getDefaultFragment(children: JSX.Element[]): string {
-    for (let i = 0; i < children.length; i++) {
-      let child = children[i];
-
+    for (const child of children) {
       if (child.type === Route) {
         return child.props.fragment;
       }
@@ -229,9 +227,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
       candidates = ([candidates as any]) as JSX.Element[];
     }
 
-    for (let i = 0; i < candidates.length; i++) {
-      let candidate = candidates[i];
-
+    for (const candidate of candidates) {
       if (this.isAComment(candidate)) continue;
 
       let fragment = candidate.props.fragment;

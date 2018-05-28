@@ -78,7 +78,8 @@ export class FileManager {
 
     logger.log(`Loading file ${filePath}`);
     return Q(getFileData(filePath)
-      .then(rawData => {
+      .then(
+        rawData => {
           logger.log(`Loaded file ${filePath} (rows = ${rawData.length})`);
           var dataset = Dataset.fromJS(rawData).hide();
 
@@ -88,7 +89,8 @@ export class FileManager {
 
           this.dataset = dataset;
           this.onDatasetChange(dataset);
-        },  e => {
+        },
+        e => {
           logger.error(`Failed to load file ${filePath} because: ${e.message}`);
         }
       ));

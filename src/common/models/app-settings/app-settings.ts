@@ -22,7 +22,7 @@ import { ImmutableUtils } from "../../utils/index";
 import { Cluster, ClusterJS } from "../cluster/cluster";
 import { Collection, CollectionJS } from "../collection/collection";
 import { Customization, CustomizationJS } from "../customization/customization";
-import { DataCube, DataCubeJS } from  "../data-cube/data-cube";
+import { DataCube, DataCubeJS } from "../data-cube/data-cube";
 import { Manifest } from "../manifest/manifest";
 
 export interface AppSettingsValue {

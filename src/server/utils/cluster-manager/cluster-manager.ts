@@ -207,11 +207,14 @@ export class ClusterManager {
 
       if (this.sourceListRefreshInterval && cluster.shouldScanSources()) {
         logger.log(`Setting up sourceListRefresh timer in cluster '${cluster.name}' (every ${this.sourceListRefreshInterval}ms)`);
-        this.sourceListRefreshTimer = setInterval(() => {
-          this.scanSourceList().catch(e => {
-            logger.error(`Cluster '${cluster.name}' encountered and error during SourceListRefresh: ${e.message}`);
-          });
-        },                                        this.sourceListRefreshInterval);
+        this.sourceListRefreshTimer = setInterval(
+          () => {
+            this.scanSourceList().catch(e => {
+              logger.error(`Cluster '${cluster.name}' encountered and error during SourceListRefresh: ${e.message}`);
+            });
+          },
+          this.sourceListRefreshInterval
+        );
         this.sourceListRefreshTimer.unref();
       }
     }
@@ -231,11 +234,14 @@ export class ClusterManager {
 
       if (this.sourceReintrospectInterval) {
         logger.log(`Setting up sourceReintrospect timer in cluster '${cluster.name}' (every ${this.sourceReintrospectInterval}ms)`);
-        this.sourceReintrospectTimer = setInterval(() => {
-          this.introspectSources().catch(e => {
-            logger.error(`Cluster '${cluster.name}' encountered and error during SourceReintrospect: ${e.message}`);
-          });
-        },                                         this.sourceReintrospectInterval);
+        this.sourceReintrospectTimer = setInterval(
+          () => {
+            this.introspectSources().catch(e => {
+              logger.error(`Cluster '${cluster.name}' encountered and error during SourceReintrospect: ${e.message}`);
+            });
+          },
+          this.sourceReintrospectInterval
+        );
         this.sourceReintrospectTimer.unref();
       }
     }

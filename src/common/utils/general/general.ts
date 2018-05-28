@@ -86,9 +86,7 @@ export function verifyUrlSafeName(name: string): void {
 }
 
 export function arraySum(inputArray: number[]) {
-  return inputArray.reduce((pV: number, cV: number) => {
-    return pV + cV;
-  },                       0);
+  return inputArray.reduce((pV: number, cV: number) => pV + cV, 0);
 }
 
 export function findFirstBiggerIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {

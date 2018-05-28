@@ -284,9 +284,8 @@ export function getBestBucketUnitForRange(inputRange: PlywoodRange, bigChecker: 
   var bucketLength = bucketedBy ? getBucketSize(bucketedBy) : 0;
   var checkPoints = bigChecker && rangeHelper.coarseCheckers ? rangeHelper.coarseCheckers : rangeHelper.checkers;
 
-  for (var i = 0; i < checkPoints.length; i++) {
-    var checkPoint = checkPoints[i].checkPoint;
-    var returnVal = granularityFromJS(checkPoints[i].returnValue);
+  for (const { checkPoint, returnValue } of checkPoints) {
+    var returnVal = granularityFromJS(returnValue);
     if (rangeLength > checkPoint || bucketLength > checkPoint) {
 
       if (bucketedBy) {

@@ -308,9 +308,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
             this.filterMenuRequest(dimension);
           } else {
             // Wait for the animation to finish to know where to open the menu
-            setTimeout(() => {
-              this.filterMenuRequest(dimension);
-            },         ANIMATION_DURATION + 50);
+            setTimeout(
+              () => this.filterMenuRequest(dimension),
+              ANIMATION_DURATION + 50
+            );
           }
         }
 

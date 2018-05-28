@@ -37,11 +37,11 @@ export interface ViewDefinitionModalState {
 }
 
 class MakeUrlData {
-  private dataCubeName: String;
+  private dataCubeName: string;
   private viewDefinitionVersion: ViewDefinitionVersion;
   private viewDefinition: ViewDefinition;
 
-  constructor(dataCubeName: String, viewDefinitionVersion: ViewDefinitionVersion, viewDefinition: ViewDefinition) {
+  constructor(dataCubeName: string, viewDefinitionVersion: ViewDefinitionVersion, viewDefinition: ViewDefinition) {
     this.dataCubeName = dataCubeName;
     this.viewDefinitionVersion = viewDefinitionVersion;
     this.viewDefinition = viewDefinition;

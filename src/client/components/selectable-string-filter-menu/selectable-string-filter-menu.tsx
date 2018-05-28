@@ -107,7 +107,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
             dataset,
             error: null
           });
-        }, error => {
+        },
+        error => {
           if (!this.mounted) return;
           this.setState({
             loading: false,

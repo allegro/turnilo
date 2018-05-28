@@ -248,9 +248,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       window.location.hash = `#${hash}`;
     }
 
-    setTimeout(() => {
-      this.hashUpdating = false;
-    },         5);
+    setTimeout(() => this.hashUpdating = false, 5);
     if (force) this.hashToState(hash);
   }
 

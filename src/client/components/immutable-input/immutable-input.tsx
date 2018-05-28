@@ -95,10 +95,13 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
   }
 
   reset(callback?: () => void) {
-    this.setState({
-      invalidString: undefined,
-      validString: undefined
-    },            callback);
+    this.setState(
+      {
+        invalidString: undefined,
+        validString: undefined
+      },
+      callback
+    );
   }
 
   componentWillReceiveProps(nextProps: ImmutableInputProps) {

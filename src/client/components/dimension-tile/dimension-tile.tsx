@@ -204,7 +204,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
             dataset,
             error: null
           });
-        }, error => {
+        },
+        error => {
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -554,7 +555,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const rowsHeightWithPaddingAndTitle = Math.max(2, rowsCount) * PIN_ITEM_HEIGHT + titleAndPaddingHeight;
 
     if (isFoldable) {
-      return rowsHeightWithPaddingAndTitle +  DimensionTile.FOLDER_BOX_HEIGHT;
+      return rowsHeightWithPaddingAndTitle + DimensionTile.FOLDER_BOX_HEIGHT;
     } else {
       return rowsHeightWithPaddingAndTitle;
     }

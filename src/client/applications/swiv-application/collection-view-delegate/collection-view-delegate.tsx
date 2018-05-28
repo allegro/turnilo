@@ -143,14 +143,17 @@ export class CollectionViewDelegate {
       />;
     };
 
-    this.setState({
-      cubeViewSupervisor: {
-        title: STRINGS.addVisualization + ": " + collection.title,
-        cancel: onCancel,
-        getConfirmationModal,
-        saveLabel: STRINGS.add
-      }
-    },            () => window.location.hash = "#" + dataCube.name);
+    this.setState(
+      {
+        cubeViewSupervisor: {
+          title: STRINGS.addVisualization + ": " + collection.title,
+          cancel: onCancel,
+          getConfirmationModal,
+          saveLabel: STRINGS.add
+        }
+      },
+      () => window.location.hash = "#" + dataCube.name
+    );
   }
 
   updateCollection(collection: Collection): Promise<any> {
@@ -195,12 +198,15 @@ export class CollectionViewDelegate {
 
     const { essence } = tile;
 
-    this.setState({
-      cubeViewSupervisor: {
-        title: STRINGS.editVisualization + ": " + collection.title + " / " + tile.title,
-        cancel: onCancel,
-        save: onSave
-      }
-    },            () => window.location.hash = `#${essence.dataCube.name}/${this.app.getCubeViewHash(essence)}`);
+    this.setState(
+      {
+        cubeViewSupervisor: {
+          title: STRINGS.editVisualization + ": " + collection.title + " / " + tile.title,
+          cancel: onCancel,
+          save: onSave
+        }
+      },
+      () => window.location.hash = `#${essence.dataCube.name}/${this.app.getCubeViewHash(essence)}`
+    );
   }
 }

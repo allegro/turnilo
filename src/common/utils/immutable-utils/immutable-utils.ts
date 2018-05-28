@@ -24,8 +24,8 @@ export class ImmutableUtils {
     var getLastObject = () => {
       let o: any = instance;
 
-      for (let i = 0; i < bits.length; i++) {
-        o = o[bits[i]];
+      for (const bit of bits) {
+        o = o[bit];
       }
 
       return o;

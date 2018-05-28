@@ -34,7 +34,7 @@ export interface ResizeHandleProps extends React.Props<any> {
 }
 
 export interface ResizeHandleState {
-  dragging?: Boolean;
+  dragging?: boolean;
 
   startValue?: number;
   currentValue?: number;

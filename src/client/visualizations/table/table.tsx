@@ -134,14 +134,17 @@ export class Table extends BaseVisualization<TableState> {
     if (pos.what === "corner" || pos.what === "header") {
       if (!clicker.changeSplits) return;
 
-      var sortExpression = $(pos.what === "corner" ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : pos.measure.name);
-      var commonSort = essence.getCommonSort();
-      var myDescending = (commonSort && commonSort.expression.equals(sortExpression) && commonSort.direction === SortExpression.DESCENDING);
-      clicker.changeSplits(essence.splits.changeSortExpressionFromNormalized(new SortExpression({
-        expression: sortExpression,
+      const sortReference = $(pos.what === "corner" ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : pos.measure.name);
+      const commonSort = essence.getCommonSort();
+      const myDescending = (commonSort && commonSort.expression.equals(sortReference) && commonSort.direction === SortExpression.DESCENDING);
+      const sortExpression = new SortExpression({
+        expression: sortReference,
         direction: myDescending ? SortExpression.ASCENDING : SortExpression.DESCENDING
-      }),                                                                    essence.dataCube.dimensions), VisStrategy.KeepAlways);
-
+      });
+      clicker.changeSplits(
+        essence.splits.changeSortExpressionFromNormalized(sortExpression, essence.dataCube.dimensions),
+        VisStrategy.KeepAlways
+      );
     } else if (pos.what === "row") {
       if (!clicker.dropHighlight || !clicker.changeHighlight) return;
 

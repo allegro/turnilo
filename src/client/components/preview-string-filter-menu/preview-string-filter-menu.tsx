@@ -107,7 +107,8 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
             dataset,
             queryError: null
           });
-        }, error => {
+        },
+        error => {
           if (!this.mounted) return;
           this.setState({
             loading: false,

@@ -81,9 +81,12 @@ describe("Router", () => {
       let spy = sinon.spy();
 
       // Cloning components so that react doesn't complain about the lack of keys...
-      component = ReactDOM.render(<Router rootFragment="root" onURLChange={spy}>
-        {children.map((c, i) => React.cloneElement(c, { key: i })) }
-      </Router>,                  node) as React.Component;
+      component = ReactDOM.render(
+        <Router rootFragment="root" onURLChange={spy}>
+          {children.map((c, i) => React.cloneElement(c, { key: i })) }
+        </Router>,
+        node
+      ) as React.Component;
     };
 
     isActiveRoute = (route: string) => {
@@ -195,11 +198,14 @@ describe("Router", () => {
 
     it("initializes to the location", (done: any) => {
       // Timeout because the router waits for a bit before initializing
-      setTimeout(() => {
-        expect((findNode(component) as any).className, "should contain class").to.equal("bar-class");
-        isActiveRoute("#root/bar");
-        done();
-      },         2);
+      setTimeout(
+        () => {
+          expect((findNode(component) as any).className, "should contain class").to.equal("bar-class");
+          isActiveRoute("#root/bar");
+          done();
+        },
+        2
+      );
     });
 
     it("fixes multiple slashes", () => {
@@ -281,10 +287,13 @@ describe("Router", () => {
 
     it("defaults to the first route", (done: any) => {
       // Timeout because the router waits for a bit before initializing
-      setTimeout(() => {
-        isActiveRoute("#root/foo");
-        done();
-      },         2);
+      setTimeout(
+        () => {
+          isActiveRoute("#root/foo");
+          done();
+        },
+        2
+      );
     });
 
     it("follows the window.location.hash's changes", () => {
