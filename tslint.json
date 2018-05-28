@@ -30,7 +30,6 @@
       true,
       "Copyright 2017-2018 Allegro.pl"
     ],
-    "forin": true,
     "indent": [true, "spaces", 2],
     "interface-name": [true, "never-prefix"],
     "jsdoc-format": [true, "check-multiline-start"],
@@ -53,7 +52,6 @@
       "trace"
     ],
     "no-duplicate-variable": false,
-    "no-empty": true,
     "no-inferrable-types": true,
     "no-require-imports": false,
     "no-string-literal": false,
@@ -63,11 +61,23 @@
     "no-var-requires": false,
     "object-curly-spacing": [true, "always"],
     "object-literal-sort-keys": false,
-    "quotemark": [false, "double", "jsx-double", "avoid-escape"],
+    "quotemark": [true, "double", "jsx-double", "avoid-escape"],
     "switch-default": false,
     "trailing-comma": [true, {
       "singleline": "never",
       "multiline": "never"
-    }]
+    }],
+
+    // TODO: fix those rules manually at some point
+    "ban-types": false,
+    "forin": false,
+    "max-classes-per-file": false,
+    "no-conditional-assignment": false,
+    "no-empty": false,
+    "no-empty-interface": false,
+    "no-shadowed-variable": false,
+    "no-unused-expression": false,
+    "only-arrow-functions": false,
+    "variable-name": false
   }
 }
