@@ -207,11 +207,11 @@ export function granularityFromJS(input: GranularityJS): Granularity {
 
   if (typeof input === "object") {
     if (!hasOwnProperty(input, "op")) {
-      throw new Error(`could not recognize object as expression`);
+      throw new Error("could not recognize object as expression");
     }
     return (Expression.fromJS(input as ExpressionJS) as Granularity);
   }
-  throw new Error(`input should be of type number, string, or action`);
+  throw new Error("input should be of type number, string, or action");
 }
 
 export function granularityToString(input: Granularity): string {

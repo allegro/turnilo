@@ -103,7 +103,7 @@ export class ItemCard extends React.Component< ItemCardProps, ItemCardState> {
               onClick={this.onMoreIconClick.bind(this)}
               ref="more-button"
             >
-              <SvgIcon svg={require(`../../../icons/caret.svg`)}/>
+              <SvgIcon svg={require("../../../icons/caret.svg")}/>
             </div>
           : null
         }

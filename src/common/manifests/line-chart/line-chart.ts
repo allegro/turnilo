@@ -174,7 +174,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     let timeSplit = splits.toArray().filter(split => split.getDimension(dataCube.dimensions).kind === "time")[0];
     return Resolve.manual(3, "Too many splits on the line chart", [
       {
-        description: `Remove all but the time split`,
+        description: "Remove all but the time split",
         adjustment: {
           splits: Splits.fromSplitCombine(timeSplit)
         }

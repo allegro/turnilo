@@ -140,11 +140,11 @@ export class CollectionTileCard extends React.Component<CollectionTileCardProps,
           <div className="grid-col-20 middle right">
           { editionMode ?
             <div className="delete-button" onClick={this.remove.bind(this)}>
-              <SvgIcon svg={require(`../../../icons/full-delete.svg`)}/>
+              <SvgIcon svg={require("../../../icons/full-delete.svg")}/>
             </div>
           :
             <div className="expand-button">
-              <SvgIcon svg={require(`../../../icons/full-expand.svg`)}/>
+              <SvgIcon svg={require("../../../icons/full-expand.svg")}/>
             </div>
           }
           </div>

@@ -30,14 +30,14 @@ describe("HighlightString", () => {
         highlight={/[0-9]*/}
         text="2me2"
       />
-    )).to.equal(`<span class="highlight-string"><span class="pre"></span><span class="bold">2</span><span class="post">me2</span></span>`);
+    )).to.equal('<span class="highlight-string"><span class="pre"></span><span class="bold">2</span><span class="post">me2</span></span>');
 
     expect(ReactDOM.renderToStaticMarkup(
       <HighlightString
         highlight="me"
         text="2me2"
       />
-    )).to.equal(`<span class="highlight-string"><span class="pre">2</span><span class="bold">me</span><span class="post">2</span></span>`);
+    )).to.equal('<span class="highlight-string"><span class="pre">2</span><span class="bold">me</span><span class="post">2</span></span>');
     // expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
     // expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('highlight-string');
   });

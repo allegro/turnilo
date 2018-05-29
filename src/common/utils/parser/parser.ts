@@ -33,7 +33,7 @@ export function parseJSON(text: string): any[] {
     try {
       return JSON.parse(text);
     } catch (e) {
-      throw new Error(`could not parse`);
+      throw new Error("could not parse");
     }
 
   } else if (firstChar[0] === "{") { // Also support line json

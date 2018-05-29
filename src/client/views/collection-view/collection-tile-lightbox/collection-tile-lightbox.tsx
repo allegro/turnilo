@@ -236,7 +236,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
         onClick={this.onEditIconClick.bind(this)}
         ref="edit-button"
       >
-        <SvgIcon svg={require(`../../../icons/full-edit.svg`)}/>
+        <SvgIcon svg={require("../../../icons/full-edit.svg")}/>
       </div>;
 
       moreButton = <div
@@ -244,7 +244,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
         onClick={this.onMoreIconClick.bind(this)}
         ref="more-button"
       >
-        <SvgIcon svg={require(`../../../icons/full-more.svg`)}/>
+        <SvgIcon svg={require("../../../icons/full-more.svg")}/>
       </div>;
     }
 
@@ -262,7 +262,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
           {moreButton}
           <div className="separator"/>
           <div className="close-button icon" onClick={this.closeModal.bind(this)}>
-            <SvgIcon svg={require(`../../../icons/full-remove.svg`)}/>
+            <SvgIcon svg={require("../../../icons/full-remove.svg")}/>
           </div>
         </div>
       </div>;
@@ -335,11 +335,11 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
           </div>
         </GoldenCenter>
         <div className="left-arrow" onClick={this.swipe.bind(this, -1)} ref="left-arrow">
-          <SvgIcon svg={require(`../../../icons/full-caret-left-line.svg`)}/>
+          <SvgIcon svg={require("../../../icons/full-caret-left-line.svg")}/>
         </div>
 
         <div className="right-arrow" onClick={this.swipe.bind(this, 1)} ref="right-arrow">
-          <SvgIcon svg={require(`../../../icons/full-caret-right-line.svg`)}/>
+          <SvgIcon svg={require("../../../icons/full-caret-right-line.svg")}/>
         </div>
 
         {editMenuOpen ? this.renderEditMenu() : null}

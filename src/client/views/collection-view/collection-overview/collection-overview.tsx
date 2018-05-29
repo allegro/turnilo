@@ -154,7 +154,7 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
       className="collection-overview empty"
     >
     <div className="container">
-      <SvgIcon svg={require(`../../../icons/full-collection.svg`)}/>
+      <SvgIcon svg={require("../../../icons/full-collection.svg")}/>
       <div className="placeholder">{STRINGS.noTilesInThisCollection}</div>
     </div>
     </div>;

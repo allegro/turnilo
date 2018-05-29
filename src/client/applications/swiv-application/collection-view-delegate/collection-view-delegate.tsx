@@ -172,7 +172,7 @@ export class CollectionViewDelegate {
     };
 
     return this.save(appSettings.deleteCollection(collection)).then( () => {
-      window.location.hash = `#/home`;
+      window.location.hash = "#/home";
       Notifier.success("Collection removed", { label: STRINGS.undo, callback: undo });
     });
   }

@@ -257,7 +257,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
   static fromJS(parameters: DataCubeJS, context: DataCubeContext = {}): DataCube {
     const { cluster, executor } = context;
-    if (!parameters.name) throw new Error(`DataCube must have a name`);
+    if (!parameters.name) throw new Error("DataCube must have a name");
 
     var clusterName = parameters.clusterName;
     var introspection = parameters.introspection;
@@ -397,7 +397,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
   constructor(parameters: DataCubeValue) {
     var name = parameters.name;
-    if (!parameters.name) throw new Error(`DataCube must have a name`);
+    if (!parameters.name) throw new Error("DataCube must have a name");
     verifyUrlSafeName(name);
     this.name = name;
 
@@ -550,7 +550,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public toExternal(): External {
-    if (this.clusterName === "native") throw new Error(`there is no external on a native data cube`);
+    if (this.clusterName === "native") throw new Error("there is no external on a native data cube");
     const { cluster, options } = this;
     if (!cluster) throw new Error("must have a cluster");
 

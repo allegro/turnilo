@@ -237,7 +237,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     if (timeSelection && timeSelection.type !== "TIME_RANGE") {
       let { value } = timeSelection as LiteralExpression;
       if (!Set.isSet(value)) throw new Error(`Unrecognized filter value ${value}`);
-      if (value.size() !== 1) throw new Error(`Can only filter on one time`);
+      if (value.size() !== 1) throw new Error("Can only filter on one time");
 
       let time = value.elements[0];
       previewTimeRange = makeDateIntoTimeRange(time, timezone);

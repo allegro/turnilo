@@ -340,7 +340,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public toString(): string {
-    return `[Essence]`;
+    return "[Essence]";
   }
 
   public equals(other: Essence): boolean {

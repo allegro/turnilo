@@ -175,7 +175,7 @@ export function CollectionTileToYAML(item: CollectionTile): string[] {
     .add("dataCube")
     ;
 
-  lines.push(`essence:`);
+  lines.push("essence:");
   lines.push(yaml.safeDump(item.essence.toJSON()));
 
   lines.push("");
@@ -244,8 +244,8 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   var timeAttribute = dataCube.timeAttribute;
   if (timeAttribute && !(dataCube.clusterName === "druid" && timeAttribute.name === "__time")) {
     if (withComments) {
-      lines.push(`# The primary time attribute of the data refers to the attribute that must always be filtered on`);
-      lines.push(`# This is particularly useful for Druid data cubes as they must always have a time filter.`);
+      lines.push("# The primary time attribute of the data refers to the attribute that must always be filtered on");
+      lines.push("# This is particularly useful for Druid data cubes as they must always have a time filter.");
     }
     lines.push(`timeAttribute: ${timeAttribute.name}`, "");
   }
@@ -254,7 +254,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   if (withComments) {
     lines.push("# The refresh rule describes how often the data cube looks for new data. Default: 'query'/PT1M (every minute)");
   }
-  lines.push(`refreshRule:`);
+  lines.push("refreshRule:");
   lines.push(`  rule: ${refreshRule.rule}`);
   if (refreshRule.time) {
     lines.push(`  time: ${refreshRule.time.toISOString()}`);
@@ -276,7 +276,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   if (defaultSelectedMeasures) {
     lines.push(`defaultSelectedMeasures: ${JSON.stringify(defaultSelectedMeasures)}`);
   } else if (withComments) {
-    lines.push(`#defaultSelectedMeasures: []`);
+    lines.push("#defaultSelectedMeasures: []");
   }
 
   var defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions.toArray() : null;
@@ -286,7 +286,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   if (defaultPinnedDimensions) {
     lines.push("", `defaultPinnedDimensions: ${JSON.stringify(defaultPinnedDimensions)}`);
   } else if (withComments) {
-    lines.push("", `#defaultPinnedDimensions: []`);
+    lines.push("", "#defaultPinnedDimensions: []");
   }
 
   var introspection = dataCube.getIntrospection();
@@ -374,7 +374,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   if (withComments) {
     lines.push("", "# The list of measures defined in the UI. The order here will be reflected in the UI");
   }
-  lines.push(`measures:`);
+  lines.push("measures:");
   if (withComments) {
     lines.push(
       "  # A general measure looks like so:",
@@ -440,7 +440,7 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
     if (withComments) {
       lines.push("# Run Swiv in verbose mode so it prints out the queries that it issues");
     }
-    lines.push(`verbose: true`, "");
+    lines.push("verbose: true", "");
   }
 
   if (extra.port) {

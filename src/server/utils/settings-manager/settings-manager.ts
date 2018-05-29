@@ -166,7 +166,7 @@ export class SettingsManager {
     if (timeout !== 0) {
       currentWork = currentWork.timeout(timeout)
         .catch(e => {
-          this.logger.error(`Settings load timeout hit, continuing`);
+          this.logger.error("Settings load timeout hit, continuing");
         });
     }
 
@@ -215,7 +215,7 @@ export class SettingsManager {
         if (oldDataCube.clusterName === "native") {
           this.removeFileManager(oldDataCube);
         } else {
-          throw new Error(`only native data cubes work for now`); // ToDo: fix
+          throw new Error("only native data cubes work for now"); // ToDo: fix
         }
       },
       onUpdate: newDataCube => {
@@ -225,7 +225,7 @@ export class SettingsManager {
         if (newDataCube.clusterName === "native") {
           tasks.push(this.addFileManager(newDataCube));
         } else {
-          throw new Error(`only native data cube work for now`); // ToDo: fix
+          throw new Error("only native data cube work for now"); // ToDo: fix
         }
       }
     });

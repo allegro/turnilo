@@ -77,7 +77,7 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
             settings: AppSettings.fromJS(resp.appSettings, { visualizations: MANIFESTS })
           });
         },
-            (xhr: XMLHttpRequest) => Notifier.failure("Sorry", `The settings couldn't be loaded`)
+            (xhr: XMLHttpRequest) => Notifier.failure("Sorry", "The settings couldn't be loaded")
       );
   }
 

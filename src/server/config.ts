@@ -160,9 +160,9 @@ if (numSettingsInputs === 0) {
 if (numSettingsInputs > 1) {
   console.error(`only one of --${SETTINGS_INPUTS.join(", --")} can be given on the command line`);
   if (parsedArgs["druid"] && parsedArgs["config"]) {
-    console.error(`Looks like you are using --config and --druid in conjunction with each other`);
-    console.error(`This usage is no longer supported. If you are migrating from Swiv < 0.9.x`);
-    console.error(`Please visit: (https://github.com/yahoo/swiv/blob/master/docs/swiv-0.9.x-migration.md)`);
+    console.error("Looks like you are using --config and --druid in conjunction with each other");
+    console.error("This usage is no longer supported. If you are migrating from Swiv < 0.9.x");
+    console.error("Please visit: (https://github.com/yahoo/swiv/blob/master/docs/swiv-0.9.x-migration.md)");
   }
   process.exit(1);
 }
@@ -176,7 +176,7 @@ if (START_SERVER) LOGGER.init();
 var serverSettingsFilePath = parsedArgs["config"];
 
 if (parsedArgs["examples"]) {
-  serverSettingsFilePath = path.join(__dirname, `../../config-examples.yaml`);
+  serverSettingsFilePath = path.join(__dirname, "../../config-examples.yaml");
 }
 
 var anchorPath: string;
@@ -235,7 +235,7 @@ if (auth && auth !== "none") {
   if (authModule.version !== AUTH_MODULE_VERSION) {
     exitWithError(`incorrect auth module version ${authModule.version} needed ${AUTH_MODULE_VERSION}`);
   }
-  if (typeof authModule.auth !== "function") exitWithError(`Invalid auth module: must export 'auth' function`);
+  if (typeof authModule.auth !== "function") exitWithError("Invalid auth module: must export 'auth' function");
   authMiddleware = authModule.auth({
     logger: LOGGER,
     tracker: TRACKER,

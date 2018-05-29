@@ -114,7 +114,7 @@ describe("ImmutableInput", () => {
   describe("with stringToValue/valueToString", () => {
     beforeEach(() => {
       let stringToValue = (str: string) => {
-        if (str === "PLATYPUS") throw new Error(`It's not even like a real animal amirite`);
+        if (str === "PLATYPUS") throw new Error("It's not even like a real animal amirite");
         return str.toLowerCase();
       };
 
