@@ -391,7 +391,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       {this.renderShadow("bottom")}
       {this.renderShadow("left")}
 
-      { overlay ? <div className="overlay">{overlay}</div> : null }
+      {overlay ? <div className="overlay">{overlay}</div> : null}
 
       <div
         className={eventContainerClasses}

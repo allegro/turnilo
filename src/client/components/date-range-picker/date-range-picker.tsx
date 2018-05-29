@@ -201,7 +201,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
       >
         <SvgIcon svg={require("../../icons/full-caret-left.svg")}/>
       </div>
-      { getWallTimeMonthWithYear(startDate, timezone) }
+      {getWallTimeMonthWithYear(startDate, timezone)}
       <div
         className="caret right"
         onClick={this.goToNextMonth.bind(this)}

@@ -252,7 +252,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     </div>;
 
     return <div className="cont">
-      { essence.dataCube.isTimeAttribute(dimension.expression) ? maxTimeBasedPresets : null}
+      {essence.dataCube.isTimeAttribute(dimension.expression) ? maxTimeBasedPresets : null}
       <div className="type">{STRINGS.current}</div>
       <div className="buttons">{currentPresets.map(presetToButton)}</div>
       <div className="type">{STRINGS.previous}</div>

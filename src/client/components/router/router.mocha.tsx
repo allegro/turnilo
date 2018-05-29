@@ -83,7 +83,7 @@ describe("Router", () => {
       // Cloning components so that react doesn't complain about the lack of keys...
       component = ReactDOM.render(
         <Router rootFragment="root" onURLChange={spy}>
-          {children.map((c, i) => React.cloneElement(c, { key: i })) }
+          {children.map((c, i) => React.cloneElement(c, { key: i }))}
         </Router>,
         node
       ) as React.Component;

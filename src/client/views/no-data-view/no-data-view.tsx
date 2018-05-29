@@ -113,8 +113,8 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
         {this.renderSettingsIcon()}
       </NoDataHeaderBar>
       <div className="container">
-        { this.renderTitle(mode) }
-        { stateful ? this.renderLink(mode) : null }
+        {this.renderTitle(mode)}
+        {stateful ? this.renderLink(mode) : null}
       </div>
     </div>;
   }

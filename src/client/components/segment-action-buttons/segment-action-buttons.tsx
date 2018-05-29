@@ -124,7 +124,7 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
       onClose={this.closeMoreMenu.bind(this)}
     >
       <ul className="bubble-list">
-        { bubbleListItems }
+        {bubbleListItems}
       </ul>
     </BubbleMenu>;
   }

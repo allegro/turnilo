@@ -206,7 +206,7 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
       </div>;
     } else {
       return <div className="collection-picker">
-        { FormLabel.dumbLabel("Collection title") }
+        {FormLabel.dumbLabel("Collection title")}
         <ImmutableInput
           className="actionable"
           instance={collection}
@@ -256,13 +256,13 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
       onEnter={this.save.bind(this)}
     >
       <form className="general vertical">
-        { this.renderCollectionPicker() }
+        {this.renderCollectionPicker()}
 
-        { makeLabel("title") }
-        { makeTextInput("title", /^.+$/, collectionMode !== "adding") }
+        {makeLabel("title")}
+        {makeTextInput("title", /^.+$/, collectionMode !== "adding")}
 
-        { makeLabel("description") }
-        { makeTextInput("description", /^.*$/) }
+        {makeLabel("description")}
+        {makeTextInput("description", /^.*$/)}
 
         { isRelative ?
           <Checkbox

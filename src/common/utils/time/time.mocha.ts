@@ -112,7 +112,7 @@ describe("Time", () => {
     var locale = {
       shortDays: ["2"],
       weekStart: 0,
-      shortMonths: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec" ]
+      shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
     };
 
     var start = new Date("1965-02-02T13:00:00.000Z");

@@ -260,7 +260,7 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
             <Clusters settings={settings} onSave={this.onSave.bind(this)}/>
 
             <Route fragment="new-cluster">
-              { tempCluster ? null : <Clusters settings={settings} onSave={this.onSave.bind(this)}/> }
+              {tempCluster ? null : <Clusters settings={settings} onSave={this.onSave.bind(this)}/>}
 
               { tempCluster
                 ? <ClusterEdit
@@ -288,7 +288,7 @@ export class SettingsView extends React.Component<SettingsViewProps, SettingsVie
             <DataCubes settings={settings} onSave={this.onSave.bind(this)}/>
 
             <Route fragment="new-data-cube">
-              { tempDataCube ? null : <DataCubes settings={settings} onSave={this.onSave.bind(this)}/> }
+              {tempDataCube ? null : <DataCubes settings={settings} onSave={this.onSave.bind(this)}/>}
 
               { tempDataCube
                 ? <DataCubeEdit

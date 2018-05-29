@@ -150,8 +150,8 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
       className={classNames(`notification-card ${priority} ${rowsClass}`, { appearing, disappearing, muted })}
      >
       <div className="title">{title}</div>
-      { message ? <div className="message">{message}</div> : null }
-      { action ? <div className="action"><span>{action.label}</span></div> : null }
+      {message ? <div className="message">{message}</div> : null}
+      {action ? <div className="action"><span>{action.label}</span></div> : null}
     </div>;
   }
 }

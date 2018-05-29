@@ -134,7 +134,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
       <div className="list-title">
         <div className="label">{label}</div>
         <div className="actions">
-          { toggleSuggestions ? <button key="suggestions" onClick={toggleSuggestions}>Suggestions</button> : null }
+          {toggleSuggestions ? <button key="suggestions" onClick={toggleSuggestions}>Suggestions</button> : null}
           <button key="add" onClick={this.addItem.bind(this)}>Add item</button>
         </div>
       </div>

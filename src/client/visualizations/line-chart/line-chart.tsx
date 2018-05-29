@@ -548,7 +548,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           y2={chartStage.height - 0.5}
         />
       </svg>
-      { !isThumbnail ? <VisMeasureLabel measure={measure} datum={myDatum}/> : null }
+      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={myDatum}/> : null}
       {this.renderHighlighter()}
       {bubble}
     </div>;

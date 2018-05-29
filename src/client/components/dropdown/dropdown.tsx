@@ -135,7 +135,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
       <div className={classNames("selected-item", { active : open })}>{renderSelectedItem(selectedItem)}
         <SvgIcon className="caret-icon" svg={require("../../icons/dropdown-caret.svg")}/>
       </div>
-      { open ? this.renderMenu() : null }
+      {open ? this.renderMenu() : null}
     </div>;
   }
 }
