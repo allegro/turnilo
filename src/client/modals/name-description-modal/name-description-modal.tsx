@@ -26,7 +26,7 @@ import { Button, FormLabel, ImmutableInput, Modal } from "../../components/index
 
 import { COLLECTION as LABELS } from "../../../common/models/labels";
 
-export interface NameDescriptionModalProps<T> extends React.Props<any> {
+export interface NameDescriptionModalProps<T> {
   onCancel?: () => void;
   onSave?: (newItem: T) => void;
   item: T;

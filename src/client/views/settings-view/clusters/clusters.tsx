@@ -27,7 +27,7 @@ import { AppSettings, Cluster } from "../../../../common/models/index";
 import { Notifier } from "../../../components/index";
 import { SimpleTable, SimpleTableAction, SimpleTableColumn } from "../../../components/simple-table/simple-table";
 
-export interface ClustersProps extends React.Props<any> {
+export interface ClustersProps {
   settings?: AppSettings;
   onSave?: (settings: AppSettings, message?: string) => void;
 }

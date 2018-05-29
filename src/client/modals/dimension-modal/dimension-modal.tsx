@@ -28,7 +28,7 @@ import { DIMENSION as LABELS } from "../../../common/models/labels";
 
 import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 
-export interface DimensionModalProps extends React.Props<any> {
+export interface DimensionModalProps {
   dimension?: Dimension;
   onSave?: (dimension: Dimension) => void;
   onClose?: () => void;

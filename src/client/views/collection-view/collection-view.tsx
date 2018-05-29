@@ -33,7 +33,7 @@ import { CollectionHeaderBar } from "./collection-header-bar/collection-header-b
 import { CollectionOverview } from "./collection-overview/collection-overview";
 import { CollectionTileLightbox } from "./collection-tile-lightbox/collection-tile-lightbox";
 
-export interface CollectionViewProps extends React.Props<any> {
+export interface CollectionViewProps {
   dataCubes: DataCube[];
   collections: Collection[];
   timekeeper: Timekeeper;

@@ -22,7 +22,7 @@ import { Customization, User } from "../../../../common/models/index";
 import { Fn } from "../../../../common/utils/general/general";
 import { SvgIcon, UserMenu } from "../../../components/index";
 
-export interface SettingsHeaderBarProps extends React.Props<any> {
+export interface SettingsHeaderBarProps {
   user?: User;
   onNavClick: Fn;
   customization?: Customization;

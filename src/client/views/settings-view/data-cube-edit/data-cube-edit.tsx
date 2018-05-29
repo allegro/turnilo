@@ -38,7 +38,7 @@ import { DATA_CUBE as LABELS } from "../../../../common/models/labels";
 
 import { ImmutableFormDelegate, ImmutableFormState } from "../../../utils/immutable-form-delegate/immutable-form-delegate";
 
-export interface DataCubeEditProps extends React.Props<any> {
+export interface DataCubeEditProps {
   isNewDataCube?: boolean;
   dataCube?: DataCube;
   clusters?: Cluster[];

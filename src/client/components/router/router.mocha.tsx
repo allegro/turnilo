@@ -25,7 +25,7 @@ import * as sinon from "sinon";
 import { Route, Router } from "./router";
 
 // Fake class to show the usage of variables in URLs
-interface FakeProps extends React.Props<any> {
+interface FakeProps {
   itemId?: string;
   action?: string;
 

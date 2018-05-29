@@ -26,7 +26,7 @@ import { SvgIcon } from "../svg-icon/svg-icon";
 
 const ACTION_SIZE = 60;
 
-export interface DimensionActionsMenuProps extends React.Props<any> {
+export interface DimensionActionsMenuProps {
   clicker: Clicker;
   essence: Essence;
   direction: string;

@@ -28,7 +28,7 @@ import { AutoRefreshMenu, HilukMenu, SettingsMenu, SvgIcon, UserMenu } from "../
 
 import { Clicker, Customization, DataCube, Essence, ExternalView, Timekeeper, User } from "../../../../common/models/index";
 
-export interface CubeHeaderBarProps extends React.Props<any> {
+export interface CubeHeaderBarProps {
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;

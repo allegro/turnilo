@@ -31,7 +31,7 @@ import { QueryError } from "../query-error/query-error";
 
 const TOP_N = 100;
 
-export interface PreviewStringFilterMenuProps extends React.Props<any> {
+export interface PreviewStringFilterMenuProps {
   clicker: Clicker;
   dimension: Dimension;
   essence: Essence;

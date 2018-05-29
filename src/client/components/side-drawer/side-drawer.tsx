@@ -27,7 +27,7 @@ import { NavList } from "../nav-list/nav-list";
 import { NavLogo } from "../nav-logo/nav-logo";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-export interface SideDrawerProps extends React.Props<any> {
+export interface SideDrawerProps {
   user: User;
   selectedItem: DataCube | Collection;
   collections: Collection[];

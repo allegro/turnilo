@@ -26,7 +26,7 @@ import { ChangeFn } from "../../utils/immutable-form-delegate/immutable-form-del
 
 export type InputType = "text" | "textarea";
 
-export interface ImmutableInputProps extends React.Props<any> {
+export interface ImmutableInputProps {
   instance: any;
   className?: string;
   path: string;

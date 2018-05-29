@@ -25,7 +25,7 @@ import { roundToHalfPx } from "../../utils/dom/dom";
 const TICK_WIDTH = 5;
 const TEXT_OFFSET = 2;
 
-export interface VerticalAxisProps extends React.Props<any> {
+export interface VerticalAxisProps {
   stage: Stage;
   ticks: number[];
   scale: any;

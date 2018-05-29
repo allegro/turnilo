@@ -35,7 +35,7 @@ import { Cluster, DataCube } from "../../../../common/models/index";
 
 import { CLUSTER as LABELS } from "../../../../common/models/labels";
 
-export interface ClusterEditProps extends React.Props<any> {
+export interface ClusterEditProps {
   cluster?: Cluster;
   onSave: (newCluster: Cluster) => void;
   isNewCluster?: boolean;

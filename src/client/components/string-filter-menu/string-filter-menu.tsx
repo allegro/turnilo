@@ -27,7 +27,7 @@ import { FilterOption, FilterOptionsDropdown } from "../filter-options-dropdown/
 import { PreviewStringFilterMenu } from "../preview-string-filter-menu/preview-string-filter-menu";
 import { SelectableStringFilterMenu  } from "../selectable-string-filter-menu/selectable-string-filter-menu";
 
-export interface StringFilterMenuProps extends React.Props<any> {
+export interface StringFilterMenuProps {
   clicker: Clicker;
   dimension: Dimension;
   essence: Essence;

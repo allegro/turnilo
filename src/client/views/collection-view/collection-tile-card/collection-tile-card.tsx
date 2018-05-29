@@ -29,7 +29,7 @@ import { CollectionTile, Device, DeviceSize, Stage, Timekeeper, VisualizationPro
 
 import { getVisualizationComponent } from "../../../visualizations/index";
 
-export interface CollectionTileCardProps extends React.Props<any> {
+export interface CollectionTileCardProps {
   tile: CollectionTile;
   timekeeper: Timekeeper;
   className?: string;

@@ -21,7 +21,7 @@ import * as React from "react";
 import { Dimension, Essence, SortOn } from "../../../common/models/index";
 import { Dropdown } from "../dropdown/dropdown";
 
-export interface PinboardMeasureTileProps extends React.Props<any> {
+export interface PinboardMeasureTileProps {
   essence: Essence;
   title: string;
   dimension?: Dimension;

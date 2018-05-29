@@ -32,7 +32,7 @@ import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable
 
 export type CollectionMode = "adding" | "picking" | "none";
 
-export interface AddCollectionTileModalProps extends React.Props<any> {
+export interface AddCollectionTileModalProps {
   essence: Essence;
   timekeeper: Timekeeper;
 

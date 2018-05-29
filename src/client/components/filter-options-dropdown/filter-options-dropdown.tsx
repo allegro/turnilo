@@ -58,7 +58,7 @@ const FILTER_OPTIONS: FilterOption[] = [
   }
 ];
 
-export interface FilterOptionsDropdownProps extends React.Props<any> {
+export interface FilterOptionsDropdownProps {
   selectedOption: FilterMode;
   onSelectOption: (o: FilterMode) => void;
   filterOptions?: FilterOption[];

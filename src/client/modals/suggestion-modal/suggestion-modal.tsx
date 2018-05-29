@@ -35,7 +35,7 @@ export interface Suggestion {
   label: string;
 }
 
-export interface SuggestionModalProps extends React.Props<any> {
+export interface SuggestionModalProps {
   onAdd: (suggestions: Option[]) => void;
   onClose: () => void;
   getLabel: (o: Option) => string;

@@ -28,7 +28,7 @@ import { STRINGS } from "../../config/constants";
 
 import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 
-export interface ClusterSeedModalProps extends React.Props<any> {
+export interface ClusterSeedModalProps {
   onNext: (newCluster: Cluster) => void;
   onCancel: () => void;
   clusters: Cluster[];

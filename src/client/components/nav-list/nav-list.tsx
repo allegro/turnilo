@@ -31,7 +31,7 @@ export interface NavLink {
   onClick?: Fn;
 }
 
-export interface NavListProps extends React.Props<any> {
+export interface NavListProps {
   title?: string;
   navLinks: NavLink[];
   iconSvg?: string;

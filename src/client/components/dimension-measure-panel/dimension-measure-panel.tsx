@@ -28,7 +28,7 @@ const TOTAL_FLEXES = 100;
 const MIN_FLEX = 20;
 const MIN_HEIGHT = 150;
 
-export interface DimensionMeasurePanelProps extends React.Props<any> {
+export interface DimensionMeasurePanelProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;

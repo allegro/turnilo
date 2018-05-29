@@ -45,7 +45,7 @@ const REFRESH_DURATIONS: Duration[] = [
   Duration.fromJS("PT30M")
 ];
 
-export interface AutoRefreshMenuProps extends React.Props<any> {
+export interface AutoRefreshMenuProps {
   openOn: Element;
   onClose: Fn;
   autoRefreshRate: Duration;

@@ -23,7 +23,7 @@ import { classNames, findParentWithClass } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { VisSelectorMenu } from "../vis-selector-menu/vis-selector-menu";
 
-export interface VisSelectorProps extends React.Props<any> {
+export interface VisSelectorProps {
   clicker: Clicker;
   essence: Essence;
 }

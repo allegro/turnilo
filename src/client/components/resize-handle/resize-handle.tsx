@@ -24,7 +24,7 @@ import { clamp } from "../../utils/dom/dom";
 import { getXFromEvent } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-export interface ResizeHandleProps extends React.Props<any> {
+export interface ResizeHandleProps {
   side: "left" | "right";
   min: number;
   max: number;

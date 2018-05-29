@@ -21,7 +21,7 @@ import * as React from "react";
 
 // Inspired by: https://gist.github.com/MoOx/1eb30eac43b2114de73a
 
-export interface SvgIconProps extends React.Props<any> {
+export interface SvgIconProps {
   svg: string;
   className?: string;
   style?: any;

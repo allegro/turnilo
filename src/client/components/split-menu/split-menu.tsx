@@ -47,7 +47,7 @@ function formatLimit(limit: number | string): string {
   return limit === null ? "None" : String(limit);
 }
 
-export interface SplitMenuProps extends React.Props<any> {
+export interface SplitMenuProps {
   clicker: Clicker;
   essence: Essence;
   openOn: Element;

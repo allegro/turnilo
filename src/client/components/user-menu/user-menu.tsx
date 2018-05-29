@@ -23,7 +23,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 
-export interface UserMenuProps extends React.Props<any> {
+export interface UserMenuProps {
   openOn: Element;
   onClose: Fn;
   user: User;

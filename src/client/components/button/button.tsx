@@ -24,7 +24,7 @@ import { SvgIcon } from "../svg-icon/svg-icon";
 
 export type ButtonType = "primary" | "secondary" | "warn";
 
-export interface ButtonProps extends React.Props<any> {
+export interface ButtonProps {
   type: ButtonType;
   className?: string;
   title?: string;

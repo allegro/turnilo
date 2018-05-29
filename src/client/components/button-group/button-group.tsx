@@ -29,7 +29,7 @@ export interface GroupMember {
   isSelected?: boolean;
 }
 
-export interface ButtonGroupProps extends React.Props<any> {
+export interface ButtonGroupProps {
   groupMembers: GroupMember[];
   title?: string;
   className?: string;

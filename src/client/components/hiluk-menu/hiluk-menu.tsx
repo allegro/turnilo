@@ -26,7 +26,7 @@ import { exportOptions, STRINGS } from "../../config/constants";
 import { download, FileFormat, makeFileName } from "../../utils/download/download";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 
-export interface HilukMenuProps extends React.Props<any> {
+export interface HilukMenuProps {
   essence: Essence;
   timekeeper: Timekeeper;
   openOn: Element;

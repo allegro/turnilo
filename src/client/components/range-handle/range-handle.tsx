@@ -20,7 +20,7 @@ import "./range-handle.scss";
 import * as React from "react";
 import { clamp, classNames, getXFromEvent } from "../../utils/dom/dom";
 
-export interface RangeHandleProps extends React.Props<any> {
+export interface RangeHandleProps {
   positionLeft: number;
   onChange: (x: number) => void;
   offset: number;

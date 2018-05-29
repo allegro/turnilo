@@ -26,7 +26,7 @@ import { DimensionTile } from "../dimension-tile/dimension-tile";
 import { PinboardMeasureTile } from "../pinboard-measure-tile/pinboard-measure-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-export interface PinboardPanelProps extends React.Props<any> {
+export interface PinboardPanelProps {
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;

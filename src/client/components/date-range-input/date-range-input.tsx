@@ -22,7 +22,7 @@ import "moment-timezone";
 import * as React from "react";
 import { combineDateAndTimeIntoMoment, getWallTimeDateOnlyString, getWallTimeTimeOnlyString, maybeFullyDefinedDate, maybeFullyDefinedTime } from "../../../common/utils";
 
-export interface DateRangeInputProps extends React.Props<any> {
+export interface DateRangeInputProps {
   time: Date;
   timezone: Timezone;
   onChange: (t: Date) => void;

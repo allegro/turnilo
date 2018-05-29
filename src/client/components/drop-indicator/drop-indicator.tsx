@@ -20,7 +20,7 @@ import "./drop-indicator.scss";
 import * as React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-export interface DropIndicatorProps extends React.Props<any> {
+export interface DropIndicatorProps {
 }
 
 export interface DropIndicatorState {

@@ -20,7 +20,7 @@ import "./body-portal.scss";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-export interface BodyPortalProps extends React.Props<any> {
+export interface BodyPortalProps {
   left?: number | string;
   top?: number | string;
   fullSize?: boolean;

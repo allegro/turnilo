@@ -25,7 +25,7 @@ import { SettingsMenu, SvgIcon, UserMenu } from "../../../components/index";
 
 import { Customization, User } from "../../../../common/models/index";
 
-export interface LinkHeaderBarProps extends React.Props<any> {
+export interface LinkHeaderBarProps {
   title: string;
   user?: User;
   onNavClick: Fn;

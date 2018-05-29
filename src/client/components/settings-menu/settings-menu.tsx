@@ -25,7 +25,7 @@ import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Dropdown } from "../dropdown/dropdown";
 
-export interface SettingsMenuProps extends React.Props<any> {
+export interface SettingsMenuProps {
   dataCube?: DataCube;
   openOn: Element;
   onClose: Fn;

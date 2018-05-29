@@ -32,7 +32,7 @@ import { NameDescriptionModal } from "../../modals";
 import { HomeHeaderBar } from "./home-header-bar/home-header-bar";
 import { ItemCard } from "./item-card/item-card";
 
-export interface HomeViewProps extends React.Props<any> {
+export interface HomeViewProps {
   dataCubes?: DataCube[];
   collections?: Collection[];
   user?: User;

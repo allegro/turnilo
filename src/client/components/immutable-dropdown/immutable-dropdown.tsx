@@ -24,7 +24,7 @@ import { ListItem } from "../../../common/models/index";
 import { ChangeFn } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 import { Dropdown } from "../dropdown/dropdown";
 
-export interface ImmutableDropdownProps<T> extends React.Props<any> {
+export interface ImmutableDropdownProps<T> {
   instance: any;
   path: string;
   label?: string;

@@ -28,7 +28,7 @@ const TICK_HEIGHT = 5;
 const TEXT_OFFSET = 12;
 const floatFormat =  d3.format(".1f");
 
-export interface LineChartAxisProps extends React.Props<any> {
+export interface LineChartAxisProps {
   stage: Stage;
   ticks: Array<Date | number>;
   scale: any;

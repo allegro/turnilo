@@ -25,7 +25,7 @@ import { BubbleMenu, Button, SvgIcon, UserMenu } from "../../../components/index
 
 import { STRINGS } from "../../../config/constants";
 
-export interface CollectionHeaderBarProps extends React.Props<any> {
+export interface CollectionHeaderBarProps {
   user?: User;
   onNavClick: Fn;
   customization?: Customization;

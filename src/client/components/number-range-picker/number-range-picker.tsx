@@ -54,7 +54,7 @@ function getAdjustedStartHalf(start: number) {
   return start + NUB_SIZE / 2;
 }
 
-export interface NumberRangePickerProps extends React.Props<any> {
+export interface NumberRangePickerProps {
   start: number;
   end: number;
   essence: Essence;

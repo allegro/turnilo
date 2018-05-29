@@ -31,7 +31,7 @@ const SCREEN_OFFSET = 5;
 export type BubbleLayout = "normal" | "mini";
 export type Align = "start" | "center" | "end";
 
-export interface BubbleMenuProps extends React.Props<any> {
+export interface BubbleMenuProps {
   className: string;
   id?: string;
   direction: string;

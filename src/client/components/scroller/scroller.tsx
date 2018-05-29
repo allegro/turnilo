@@ -37,7 +37,7 @@ export interface ScrollerLayout {
   left: number;
 }
 
-export interface ScrollerProps extends React.Props<any> {
+export interface ScrollerProps {
   layout: ScrollerLayout;
 
   onClick?: (x: number, y: number, part: ScrollerPart) => void;

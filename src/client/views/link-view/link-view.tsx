@@ -49,7 +49,7 @@ export interface LinkViewLayout {
   pinboardWidth: number;
 }
 
-export interface LinkViewProps extends React.Props<any> {
+export interface LinkViewProps {
   timekeeper: Timekeeper;
   collection: Collection;
   user?: User;

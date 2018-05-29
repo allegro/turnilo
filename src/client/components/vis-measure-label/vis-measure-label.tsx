@@ -21,7 +21,7 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { Measure } from "../../../common/models/index";
 
-export interface VisMeasureLabelProps extends React.Props<any> {
+export interface VisMeasureLabelProps {
   measure: Measure;
   datum: Datum;
 }

@@ -39,7 +39,7 @@ const BOOLEAN_COL_WIDTH = 100;
 const NUMBER_COL_WIDTH = 100;
 const DEFAULT_COL_WIDTH = 200;
 
-export interface RawDataModalProps extends React.Props<any> {
+export interface RawDataModalProps {
   onClose: Fn;
   essence: Essence;
   timekeeper: Timekeeper;

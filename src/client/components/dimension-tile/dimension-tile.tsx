@@ -77,7 +77,7 @@ import { SearchableTile, TileAction } from "../searchable-tile/searchable-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { TileHeaderIcon } from "../tile-header/tile-header";
 
-export interface DimensionTileProps extends React.Props<any> {
+export interface DimensionTileProps {
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;

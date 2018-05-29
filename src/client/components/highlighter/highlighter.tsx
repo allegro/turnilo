@@ -20,7 +20,7 @@ import "./highlighter.scss";
 import { PlywoodRange } from "plywood";
 import * as React from "react";
 
-export interface HighlighterProps extends React.Props<any> {
+export interface HighlighterProps {
   highlightRange: PlywoodRange;
   scaleX: any;
 }

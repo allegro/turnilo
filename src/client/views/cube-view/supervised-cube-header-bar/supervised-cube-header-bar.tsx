@@ -23,7 +23,7 @@ import * as React from "react";
 import { Customization, Essence, ViewSupervisor } from "../../../../common/models/index";
 import { Button, SettingsMenu, SvgIcon } from "../../../components/index";
 
-export interface SupervisedCubeHeaderBarProps extends React.Props<any> {
+export interface SupervisedCubeHeaderBarProps {
   essence: Essence;
   supervisor: ViewSupervisor;
   customization?: Customization;

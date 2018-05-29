@@ -23,7 +23,7 @@ import { Fn } from "../../../common/utils/general/general";
 
 import { SimpleList, SimpleRow } from "../simple-list/simple-list";
 
-export interface ImmutableListProps<T> extends React.Props<any> {
+export interface ImmutableListProps<T> {
   label?: string;
   items: List<T>;
   onChange: (newItems: List<T>) => void;

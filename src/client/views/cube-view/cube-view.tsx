@@ -48,7 +48,7 @@ export interface CubeViewLayout {
   pinboardWidth: number;
 }
 
-export interface CubeViewProps extends React.Props<any> {
+export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
   maxSplits?: number;

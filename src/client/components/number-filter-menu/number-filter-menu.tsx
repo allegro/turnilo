@@ -42,7 +42,7 @@ function stringToNumberOrAny(startInput: string): number {
 const MENU_WIDTH = 250;
 const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(Filter.INCLUDED, Filter.EXCLUDED);
 
-export interface NumberFilterMenuProps extends React.Props<any> {
+export interface NumberFilterMenuProps {
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;

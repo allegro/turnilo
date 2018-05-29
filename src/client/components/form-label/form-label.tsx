@@ -22,7 +22,7 @@ import { firstUp } from "../../../common/utils/string/string";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-export interface FormLabelProps extends React.Props<any> {
+export interface FormLabelProps {
   label?: string;
   helpText?: string;
   errorText?: string;

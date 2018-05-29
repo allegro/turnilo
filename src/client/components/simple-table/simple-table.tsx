@@ -37,7 +37,7 @@ export interface SimpleTableAction {
   inEllipsis?: boolean;
 }
 
-export interface SimpleTableProps extends React.Props<any> {
+export interface SimpleTableProps {
   columns: SimpleTableColumn[];
   rows: any[];
   actions?: SimpleTableAction[];

@@ -28,7 +28,7 @@ import { NoDataHeaderBar } from "./no-data-header-bar/no-data-header-bar";
 
 export type Mode = "no-cluster" | "no-cube";
 
-export interface NoDataViewProps extends React.Props<any> {
+export interface NoDataViewProps {
   user?: User;
   appSettings?: AppSettings;
   onNavClick?: Fn;

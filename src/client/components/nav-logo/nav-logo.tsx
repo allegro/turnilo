@@ -20,7 +20,7 @@ import "./nav-logo.scss";
 import * as React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-export interface NavLogoProps extends React.Props<any> {
+export interface NavLogoProps {
   onClick?: React.MouseEventHandler<HTMLElement>;
   customLogoSvg?: string;
 }

@@ -68,7 +68,7 @@ const previousPresets: Preset[] = [
 
 const MENU_WIDTH = 250;
 
-export interface TimeFilterMenuProps extends React.Props<any> {
+export interface TimeFilterMenuProps {
   clicker: Clicker;
   timekeeper: Timekeeper;
   essence: Essence;

@@ -23,7 +23,7 @@ import { BubbleMenu, SvgIcon } from "../../../components/index";
 import { STRINGS } from "../../../config/constants";
 import { classNames, isInside } from "../../../utils/dom/dom";
 
-export interface ItemCardProps extends React.Props<any> {
+export interface ItemCardProps {
   title: string;
   count?: number;
   description: string;

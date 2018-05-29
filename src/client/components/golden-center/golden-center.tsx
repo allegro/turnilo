@@ -20,7 +20,7 @@ import "./golden-center.scss";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-export interface GoldenCenterProps extends React.Props<any> {
+export interface GoldenCenterProps {
   topRatio?: number;
   minPadding?: number;
 }

@@ -19,7 +19,7 @@ import * as React from "react";
 import { firstUp } from "../../../common/utils/string/string";
 import { enterKey, escapeKey, leftKey, rightKey } from "../../utils/dom/dom";
 
-export interface GlobalEventListenerProps extends React.Props<any> {
+export interface GlobalEventListenerProps {
   resize?: () => void;
   scroll?: () => void;
   mouseDown?: (e: MouseEvent) => void;

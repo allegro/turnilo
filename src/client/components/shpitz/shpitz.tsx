@@ -20,7 +20,7 @@ import "./shpitz.scss";
 import * as React from "react";
 import { classNames } from "../../utils/dom/dom";
 
-export interface ShpitzProps extends React.Props<any> {
+export interface ShpitzProps {
   direction: string;
   style?: any;
 }

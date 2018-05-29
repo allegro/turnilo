@@ -34,7 +34,7 @@ export interface TileAction {
   displayValue?: string;
 }
 
-export interface SearchableTileProps extends React.Props<any> {
+export interface SearchableTileProps {
   toggleChangeFn: Fn;
   onSearchChange: (text: string) => void;
   searchText: string;

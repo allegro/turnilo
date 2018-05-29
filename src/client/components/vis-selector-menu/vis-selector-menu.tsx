@@ -24,7 +24,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-export interface VisSelectorMenuProps extends React.Props<any> {
+export interface VisSelectorMenuProps {
   clicker: Clicker;
   essence: Essence;
   openOn: Element;

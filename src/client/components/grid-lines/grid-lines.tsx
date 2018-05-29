@@ -21,7 +21,7 @@ import * as React from "react";
 import { Stage } from "../../../common/models/index";
 import { classNames, roundToHalfPx } from "../../utils/dom/dom";
 
-export interface GridLinesProps extends React.Props<any> {
+export interface GridLinesProps {
   orientation: string;
   stage: Stage;
   ticks: any[];

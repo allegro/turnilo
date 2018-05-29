@@ -27,7 +27,7 @@ import { STRINGS } from "../../../config/constants";
 
 import { classNames, getXFromEvent, setDragGhost } from "../../../utils/dom/dom";
 
-export interface CollectionOverviewProps extends React.Props<any> {
+export interface CollectionOverviewProps {
   timekeeper: Timekeeper;
   collection: Collection;
   collectionId?: string;

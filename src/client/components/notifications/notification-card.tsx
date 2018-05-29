@@ -22,7 +22,7 @@ import { clamp, classNames } from "../../utils/dom/dom";
 
 import { Notification, Notifier } from "./notifications";
 
-export interface NotificationCardProps extends React.Props<any> {
+export interface NotificationCardProps {
   model: Notification;
   top: number;
 }

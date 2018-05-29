@@ -20,7 +20,7 @@ import "./query-error.scss";
 import * as React from "react";
 import { STRINGS } from "../../config/constants";
 
-export interface QueryErrorProps extends React.Props<any> {
+export interface QueryErrorProps {
   error: any;
 }
 

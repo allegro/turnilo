@@ -20,7 +20,7 @@ import "./loader.scss";
 import * as React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-export interface LoaderProps extends React.Props<any> {
+export interface LoaderProps {
 }
 
 export interface LoaderState {

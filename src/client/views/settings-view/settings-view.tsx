@@ -43,7 +43,7 @@ import { DataCubes } from "./data-cubes/data-cubes";
 import { General } from "./general/general";
 import { SettingsHeaderBar } from "./settings-header-bar/settings-header-bar";
 
-export interface SettingsViewProps extends React.Props<any> {
+export interface SettingsViewProps {
   user?: User;
   customization?: Customization;
   onNavClick?: Fn;

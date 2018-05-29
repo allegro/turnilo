@@ -23,7 +23,7 @@ import { replaceHash } from "../../utils/url/url";
 
 export type Inflater = (key: string, value: string) => {key: string, value: any};
 
-export interface RouteProps extends React.Props<any> {
+export interface RouteProps {
   fragment: string;
   alwaysShowOrphans?: boolean;
   transmit?: string[];
@@ -42,7 +42,7 @@ export interface QualifiedPath {
   parentRoutes: JSX.Element[];
 }
 
-export interface RouterProps extends React.Props<any> {
+export interface RouterProps {
   // this callback is mandatory because the outer parent needs to react (lulz)
   // to a change and update its state so it rerenders. The router can't trigger
   // the rerendering by itself, nor should it.

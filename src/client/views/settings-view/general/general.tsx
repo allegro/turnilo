@@ -30,7 +30,7 @@ import { AppSettings } from "../../../../common/models/index";
 
 import { ImmutableFormDelegate, ImmutableFormState } from "../../../utils/immutable-form-delegate/immutable-form-delegate";
 
-export interface GeneralProps extends React.Props<any> {
+export interface GeneralProps {
   settings?: AppSettings;
   onSave?: (settings: AppSettings) => void;
 }

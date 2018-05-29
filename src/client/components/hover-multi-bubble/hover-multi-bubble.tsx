@@ -31,7 +31,7 @@ export interface ColorEntry {
   measureLabel: string;
 }
 
-export interface HoverMultiBubbleProps extends React.Props<any> {
+export interface HoverMultiBubbleProps {
   left: number;
   top: number;
   dimension?: Dimension;

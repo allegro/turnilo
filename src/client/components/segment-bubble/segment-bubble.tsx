@@ -28,7 +28,7 @@ import { Shpitz } from "../shpitz/shpitz";
 const OFFSET_V = -10;
 const PER_LETTER_PIXELS = 8;
 
-export interface SegmentBubbleProps extends React.Props<any> {
+export interface SegmentBubbleProps {
   left: number;
   top: number;
   dimension?: Dimension;

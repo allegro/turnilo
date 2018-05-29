@@ -29,7 +29,7 @@ import { classNames } from "../../utils/dom/dom";
 import { DateRangeInput } from "../date-range-input/date-range-input";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-export interface DateRangePickerProps extends React.Props<any> {
+export interface DateRangePickerProps {
   startTime?: Date;
   endTime?: Date;
   maxTime?: Date;

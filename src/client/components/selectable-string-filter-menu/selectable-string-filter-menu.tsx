@@ -32,7 +32,7 @@ import { QueryError } from "../query-error/query-error";
 
 const TOP_N = 100;
 
-export interface SelectableStringFilterMenuProps extends React.Props<any> {
+export interface SelectableStringFilterMenuProps {
   clicker: Clicker;
   dimension: Dimension;
   essence: Essence;

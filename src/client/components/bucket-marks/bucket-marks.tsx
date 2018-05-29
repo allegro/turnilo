@@ -24,7 +24,7 @@ import { roundToHalfPx } from "../../utils/dom/dom";
 
 const TICK_HEIGHT = 5;
 
-export interface BucketMarksProps extends React.Props<any> {
+export interface BucketMarksProps {
   stage: Stage;
   ticks: PlywoodValue[];
   scale: any;

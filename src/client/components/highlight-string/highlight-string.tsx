@@ -20,7 +20,7 @@ import "./highlight-string.scss";
 import * as React from "react";
 import { classNames } from "../../utils/dom/dom";
 
-export interface HighlightStringProps extends React.Props<any> {
+export interface HighlightStringProps {
   className?: string;
   text: string;
   highlight: string | RegExp;

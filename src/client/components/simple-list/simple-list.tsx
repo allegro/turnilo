@@ -28,7 +28,7 @@ export interface SimpleRow {
   icon?: string;
 }
 
-export interface SimpleListProps extends React.Props<any> {
+export interface SimpleListProps {
   rows: SimpleRow[];
   onEdit?: (index: number) => void;
   onRemove?: (index: number) => void;

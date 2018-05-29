@@ -25,7 +25,7 @@ import { GlobalEventListener } from "../global-event-listener/global-event-liste
 import { GoldenCenter } from "../golden-center/golden-center";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
-export interface ModalProps extends React.Props<any> {
+export interface ModalProps {
   className?: string;
   id?: string;
   title?: string;

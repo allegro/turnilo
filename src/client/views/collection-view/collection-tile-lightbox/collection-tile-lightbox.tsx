@@ -29,7 +29,7 @@ import { BodyPortal, BubbleMenu, GlobalEventListener, GoldenCenter, ImmutableInp
 
 import { getVisualizationComponent } from "../../../visualizations/index";
 
-export interface CollectionTileLightboxProps extends React.Props<any> {
+export interface CollectionTileLightboxProps {
   collection?: Collection;
   tileId?: string;
   timekeeper: Timekeeper;

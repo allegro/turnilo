@@ -26,7 +26,7 @@ import { Button } from "../button/button";
 
 // I am: import { SegmentActionButtons } from '../segment-action-buttons/segment-action-buttons';
 
-export interface SegmentActionButtonsProps extends React.Props<any> {
+export interface SegmentActionButtonsProps {
   clicker: Clicker;
   dimension?: Dimension;
   segmentLabel?: string;

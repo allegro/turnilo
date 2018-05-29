@@ -25,7 +25,7 @@ import { Stage } from "../../../common/models/index";
 
 const lineFn = d3.svg.line();
 
-export interface ChartLineProps extends React.Props<any> {
+export interface ChartLineProps {
   stage: Stage;
   dataset: Dataset;
   getX: (d: Datum) => PlywoodRange;

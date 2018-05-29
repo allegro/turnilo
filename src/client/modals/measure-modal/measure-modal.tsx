@@ -28,7 +28,7 @@ import { MEASURE as LABELS } from "../../../common/models/labels";
 
 import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 
-export interface MeasureModalProps extends React.Props<any> {
+export interface MeasureModalProps {
   measure?: Measure;
   onSave?: (measure: Measure) => void;
   onClose?: () => void;

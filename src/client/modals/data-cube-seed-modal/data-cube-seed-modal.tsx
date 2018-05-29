@@ -28,7 +28,7 @@ import { STRINGS } from "../../config/constants";
 
 import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 
-export interface DataCubeSeedModalProps extends React.Props<any> {
+export interface DataCubeSeedModalProps {
   onNext: (newDataCube: DataCube, autoFill: boolean) => void;
   onCancel: () => void;
   dataCubes: DataCube[];

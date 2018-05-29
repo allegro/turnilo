@@ -22,7 +22,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { Button, Modal } from "../../components/index";
 import { STRINGS } from "../../config/constants";
 
-export interface AboutModalProps extends React.Props<any> {
+export interface AboutModalProps {
   version: string;
   onClose: Fn;
 }

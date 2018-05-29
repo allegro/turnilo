@@ -23,7 +23,7 @@ import { AppSettings, DataCube } from "../../../../common/models/index";
 
 import { Button, Notifier, SimpleTable, SimpleTableAction, SimpleTableColumn } from "../../../components/index";
 
-export interface DataCubesProps extends React.Props<any> {
+export interface DataCubesProps {
   settings?: AppSettings;
   onSave?: (settings: AppSettings, message?: string) => void;
 }
