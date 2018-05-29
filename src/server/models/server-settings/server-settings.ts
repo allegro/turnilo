@@ -87,7 +87,11 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
     { name: "pageMustLoadTimeout", defaultValue: ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT },
     { name: "iframe", defaultValue: ServerSettings.DEFAULT_IFRAME, possibleValues: ServerSettings.IFRAME_VALUES },
     { name: "trustProxy", defaultValue: ServerSettings.DEFAULT_TRUST_PROXY, possibleValues: ServerSettings.TRUST_PROXY_VALUES },
-    { name: "strictTransportSecurity", defaultValue: ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY, possibleValues: ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES },
+    {
+      name: "strictTransportSecurity",
+      defaultValue: ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY,
+      possibleValues: ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES
+    },
     { name: "auth", defaultValue: null },
     { name: "settingsLocation", defaultValue: null, immutableClass: SettingsLocation }
   ];
@@ -123,4 +127,5 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public getStrictTransportSecurity: () => StrictTransportSecurity;
   public getSettingsLocation: () => SettingsLocation;
 }
+
 BaseImmutable.finalize(ServerSettings);

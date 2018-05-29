@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-import "./geo.scss";
-
 import * as React from "react";
 import { GEO_MANIFEST } from "../../../common/manifests/geo/geo";
 import { VisualizationProps } from "../../../common/models/index";
-
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import "./geo.scss";
 
 export interface GeoState extends BaseVisualizationState {
 }

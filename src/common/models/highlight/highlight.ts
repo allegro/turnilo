@@ -33,6 +33,7 @@ export interface HighlightJS {
 }
 
 var check: Class<HighlightValue, HighlightJS>;
+
 export class Highlight implements Instance<HighlightValue, HighlightJS> {
 
   static isHighlight(candidate: any): candidate is Highlight {
@@ -106,4 +107,5 @@ export class Highlight implements Instance<HighlightValue, HighlightJS> {
     return new Highlight(value);
   }
 }
+
 check = Highlight;

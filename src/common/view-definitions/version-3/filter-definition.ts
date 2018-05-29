@@ -86,7 +86,7 @@ const stringActionMap: { [action in StringFilterAction]: SupportedAction } = {
 const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClauseDefinition> = {
   toFilterClause(clauseDefinition: BooleanFilterClauseDefinition, dimension: Dimension): FilterClause {
     const { not, values } = clauseDefinition;
-    const { expression }  = dimension;
+    const { expression } = dimension;
     const selection = r(values);
 
     return new FilterClause({ action: SupportedAction.overlap, exclude: not, expression, selection });

@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import "./filter-tile.scss";
-
 import { Timezone } from "chronoshift";
 import * as Q from "q";
 import * as React from "react";
@@ -24,18 +22,14 @@ import * as ReactDOM from "react-dom";
 import { Clicker, Dimension, DragPosition, Essence, Filter, FilterClause, Stage, Timekeeper } from "../../../common/models/index";
 import { getFormattedClause } from "../../../common/utils/formatter/formatter";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
-import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
-
-import {
-  classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId
-} from "../../utils/dom/dom";
-
+import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
-
+import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
 import { FilterMenu } from "../filter-menu/filter-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./filter-tile.scss";
 
 const FILTER_CLASS_NAME = "filter";
 const ANIMATION_DURATION = 400;
@@ -419,7 +413,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const dataCube = essence.dataCube;
     if (itemBlank.dimension.expression.equals(dataCube.timeAttribute)) return null;
     return <div className="remove" onClick={this.removeFilter.bind(this, itemBlank)}>
-      <SvgIcon svg={require("../../icons/x.svg")}/>
+      <SvgIcon svg={require("../../icons/x.svg")} />
     </div>;
   }
 
@@ -575,7 +569,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       <div className="items" ref="items">
         {filterItems}
       </div>
-      {dragPosition ? <FancyDragIndicator dragPosition={dragPosition}/> : null}
+      {dragPosition ? <FancyDragIndicator dragPosition={dragPosition} /> : null}
       {dragPosition ? <div
         className="drag-mask"
         onDragOver={this.dragOver.bind(this)}

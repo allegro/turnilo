@@ -123,9 +123,17 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: "healthCheckTimeout", defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT },
     { name: "sourceListScan", defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
     { name: "sourceListRefreshOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD },
-    { name: "sourceListRefreshInterval", defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
+    {
+      name: "sourceListRefreshInterval",
+      defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
+      validate: [BaseImmutable.ensure.number, ensureNotTiny]
+    },
     { name: "sourceReintrospectOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD },
-    { name: "sourceReintrospectInterval", defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL, validate: [BaseImmutable.ensure.number, ensureNotTiny] },
+    {
+      name: "sourceReintrospectInterval",
+      defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
+      validate: [BaseImmutable.ensure.number, ensureNotTiny]
+    },
 
     // Druid
     { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
@@ -213,4 +221,5 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     return this.getSourceListScan() === "auto";
   }
 }
+
 BaseImmutable.finalize(Cluster);

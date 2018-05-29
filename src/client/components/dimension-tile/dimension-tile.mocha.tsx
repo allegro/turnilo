@@ -18,14 +18,10 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
-
-import { DimensionTile } from "./dimension-tile";
-
 import { DimensionMock, EssenceMock, SortOnMock, TimekeeperMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
+import { DimensionTile } from "./dimension-tile";
 
 describe("DimensionTile", () => {
   it("adds the correct class", () => {

@@ -15,14 +15,10 @@
  * limitations under the License.
  */
 
-import "./resize-handle.scss";
-
 import * as React from "react";
-
-import { clamp } from "../../utils/dom/dom";
-
-import { getXFromEvent } from "../../utils/dom/dom";
+import { clamp, getXFromEvent } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./resize-handle.scss";
 
 export interface ResizeHandleProps {
   side: "left" | "right";
@@ -118,7 +114,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     let { side } = this.props;
 
     let style: React.CSSProperties = {};
-    style[side] = this.state.currentValue ;
+    style[side] = this.state.currentValue;
 
     let className = "resize-handle " + side;
 
@@ -127,7 +123,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
       style={style}
       onMouseDown={this.onMouseDown.bind(this)}
     >
-      <SvgIcon svg={require("../../icons/drag-handle.svg")}/>
+      <SvgIcon svg={require("../../icons/drag-handle.svg")} />
     </div>;
   }
 }

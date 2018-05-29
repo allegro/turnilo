@@ -98,49 +98,49 @@ describe("Dimension", () => {
         kind: "string"
       });
     });
-/* TODO: check the correctness of the test */
-/*    it('neverBucket -> default no bucket', () => {
-      expect(Dimension.fromJS({
-        name: 'country',
-        title: 'important countries',
-        expression: '$country',
-        kind: 'string',
-        bucketingStrategy: 'neverBucket'
-      } as any).toJS()).to.deep.equal({
-        name: 'country',
-        title: 'important countries',
-        formula: '$country',
-        kind: 'string',
-        bucketingStrategy: 'defaultNoBucket'
-      });
-    });*/
-/* TODO: check the correctness of the test */
-/*    it('alwaysBucket -> default bucket', () => {
-      expect(Dimension.fromJS({
-        name: 'country',
-        title: 'important countries',
-        expression: '$country',
-        kind: 'string',
-        bucketingStrategy: 'alwaysBucket'
-      } as any).toJS()).to.deep.equal({
-        name: 'country',
-        title: 'important countries',
-        formula: '$country',
-        kind: 'string',
-        bucketingStrategy: 'defaultBucket'
-      });
-    });*/
+    /* TODO: check the correctness of the test */
+    /*    it('neverBucket -> default no bucket', () => {
+          expect(Dimension.fromJS({
+            name: 'country',
+            title: 'important countries',
+            expression: '$country',
+            kind: 'string',
+            bucketingStrategy: 'neverBucket'
+          } as any).toJS()).to.deep.equal({
+            name: 'country',
+            title: 'important countries',
+            formula: '$country',
+            kind: 'string',
+            bucketingStrategy: 'defaultNoBucket'
+          });
+        });*/
+    /* TODO: check the correctness of the test */
+    /*    it('alwaysBucket -> default bucket', () => {
+          expect(Dimension.fromJS({
+            name: 'country',
+            title: 'important countries',
+            expression: '$country',
+            kind: 'string',
+            bucketingStrategy: 'alwaysBucket'
+          } as any).toJS()).to.deep.equal({
+            name: 'country',
+            title: 'important countries',
+            formula: '$country',
+            kind: 'string',
+            bucketingStrategy: 'defaultBucket'
+          });
+        });*/
 
   });
 
   describe("errors", () => {
     it("throws on invalid type", () => {
       var dimJS = {
-          name: "mixed_granularities",
-          title: "Mixed Granularities",
-          kind: "string",
-          granularities: [5, 50, "P1W", 800, 1000]
-        };
+        name: "mixed_granularities",
+        title: "Mixed Granularities",
+        kind: "string",
+        granularities: [5, 50, "P1W", 800, 1000]
+      };
 
       expect(() => { Dimension.fromJS(dimJS); }).to.throw("granularities must have the same type of actions");
 

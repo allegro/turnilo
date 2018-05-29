@@ -60,7 +60,7 @@ ${content}
 </body>
 </html>
 `;
-  }
+}
 
 export function mainLayout(options: ViewOptions): string {
   const { version, user, appSettings, timekeeper, stateful } = options;

@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-import "./base-visualization.scss";
-
 import { $, Dataset, Expression, ply } from "plywood";
 import * as React from "react";
 import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
-
-import { SPLIT } from "../../config/constants";
-
 import { GlobalEventListener, Loader, QueryError } from "../../components/index";
+import { SPLIT } from "../../config/constants";
+import "./base-visualization.scss";
 
 export interface BaseVisualizationState {
   datasetLoad?: DatasetLoad;
@@ -113,9 +110,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       } else if (limitAction) {
         subQuery = subQuery.performAction(limitAction);
       } else if (splitDimension.kind === "number") {
-      // Hack: Plywood converts groupBys to topN if the limit is below a certain threshold.  Currently sorting on dimension in a groupBy query does not
-      // behave as expected and in the future plywood will handle this, but for now add a limit so a topN query is performed.
-      // 5000 is just a randomly selected number that's high enough that it's not immediately obvious that there's a limit.
+        // Hack: Plywood converts groupBys to topN if the limit is below a certain threshold.  Currently sorting on dimension in a groupBy query does not
+        // behave as expected and in the future plywood will handle this, but for now add a limit so a topN query is performed.
+        // 5000 is just a randomly selected number that's high enough that it's not immediately obvious that there's a limit.
         subQuery = subQuery.limit(5000);
       }
 
@@ -197,7 +194,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   protected globalMouseMoveListener(e: MouseEvent) {}
+
   protected globalMouseUpListener(e: MouseEvent) {}
+
   protected globalKeyDownListener(e: KeyboardEvent) {}
 
   protected renderInternals(): JSX.Element {
@@ -222,8 +221,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         keyDown={this.globalKeyDownListener.bind(this)}
       />
       {this.lastRenderResult}
-      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
-      {datasetLoad.loading ? <Loader/> : null}
+      {datasetLoad.error ? <QueryError error={datasetLoad.error} /> : null}
+      {datasetLoad.loading ? <Loader /> : null}
     </div>;
   }
 }

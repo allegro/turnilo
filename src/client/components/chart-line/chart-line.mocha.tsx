@@ -16,17 +16,13 @@
  */
 
 import { expect } from "chai";
+import { Dataset, TimeRange } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
-
-import { Dataset, TimeRange } from "plywood";
-import { ChartLine } from "./chart-line";
-
 import { StageMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
+import { ChartLine } from "./chart-line";
 
 describe("ChartLine", () => {
   it("adds the correct class", () => {

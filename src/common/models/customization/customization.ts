@@ -39,6 +39,7 @@ export interface CustomizationJS {
 }
 
 var check: Class<CustomizationValue, CustomizationJS>;
+
 export class Customization implements Instance<CustomizationValue, CustomizationJS> {
   static DEFAULT_TITLE = "Turnilo (%v)";
 
@@ -139,7 +140,8 @@ export class Customization implements Instance<CustomizationValue, Customization
   }
 
   public toString(): string {
-    return `[custom: (${this.headerBackground}) logo: ${Boolean(this.customLogoSvg)}, externalViews: ${Boolean(this.externalViews)}, timezones: ${Boolean(this.timezones)}]`;
+    return `[custom: (${this.headerBackground}) logo: ${Boolean(this.customLogoSvg)}, externalViews: ${Boolean(this.externalViews)}, timezones: ${Boolean(
+      this.timezones)}]`;
   }
 
   public equals(other: Customization): boolean {

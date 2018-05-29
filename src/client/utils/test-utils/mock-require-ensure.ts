@@ -17,6 +17,7 @@
 
 import { dirname, resolve } from "path";
 import { getCallerFile } from "./get-caller-file";
+
 const rewire = require("rewire");
 
 export function mockRequireEnsure(path: string): any {

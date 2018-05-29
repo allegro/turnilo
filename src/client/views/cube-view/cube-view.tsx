@@ -15,33 +15,53 @@
  * limitations under the License.
  */
 
-import "./cube-view.scss";
-
 import { Timezone } from "chronoshift";
 import { Dataset, Expression } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { MANIFESTS } from "../../../common/manifests/index";
-import { Clicker, Colors, Customization, DataCube, Device, DeviceSize, Dimension, Essence, Filter,
-  Manifest, Measure, SplitCombine, Splits, Stage,
-  Timekeeper, User, ViewSupervisor, VisStrategy, VisualizationProps } from "../../../common/models/index";
+import {
+  Clicker,
+  Colors,
+  Customization,
+  DataCube,
+  Device,
+  DeviceSize,
+  Dimension,
+  Essence,
+  Filter,
+  Manifest,
+  Measure,
+  SplitCombine,
+  Splits,
+  Stage,
+  Timekeeper,
+  User,
+  ViewSupervisor,
+  VisStrategy,
+  VisualizationProps
+} from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
+import {
+  DimensionMeasurePanel,
+  DropIndicator,
+  FilterTile,
+  GlobalEventListener,
+  ManualFallback,
+  PinboardPanel,
+  ResizeHandle,
+  SplitTile,
+  VisSelector
+} from "../../components/index";
+import { RawDataModal } from "../../modals/index";
+import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { FunctionSlot } from "../../utils/function-slot/function-slot";
-
-import { RawDataModal } from "../../modals/index";
-
-import {
-  DimensionMeasurePanel, DropIndicator, FilterTile, GlobalEventListener, ManualFallback,
-  PinboardPanel, ResizeHandle, SplitTile, VisSelector
-} from "../../components/index";
-
-import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
-import { SupervisedCubeHeaderBar } from "./supervised-cube-header-bar/supervised-cube-header-bar";
-
-import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import { getVisualizationComponent } from "../../visualizations/index";
+import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
+import "./cube-view.scss";
+import { SupervisedCubeHeaderBar } from "./supervised-cube-header-bar/supervised-cube-header-bar";
 
 export interface CubeViewLayout {
   dimensionPanelWidth: number;
@@ -535,7 +555,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 menuStage={visualizationStage}
               />
             </div>
-            <VisSelector clicker={clicker} essence={essence}/>
+            <VisSelector clicker={clicker} essence={essence} />
           </div>
           <div
             className="center-main"
@@ -543,7 +563,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           >
             <div className="visualization" ref="visualization">{visElement}</div>
             {manualFallback}
-            {dragOver ? <DropIndicator/> : null}
+            {dragOver ? <DropIndicator /> : null}
             {dragOver ? <div
               className="drag-mask"
               onDragOver={this.dragOver.bind(this)}

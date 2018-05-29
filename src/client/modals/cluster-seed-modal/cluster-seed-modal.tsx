@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-import "./cluster-seed-modal.scss";
-
 import * as React from "react";
 import { Cluster } from "../../../common/models/cluster/cluster";
-
 import { CLUSTER as LABELS } from "../../../common/models/labels";
 import { indexByAttribute } from "../../../common/utils/array/array";
 import { generateUniqueName } from "../../../common/utils/string/string";
 import { Button, FormLabel, ImmutableDropdown, ImmutableInput, Modal } from "../../components/index";
 import { STRINGS } from "../../config/constants";
-
 import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
+import "./cluster-seed-modal.scss";
 
 export interface ClusterSeedModalProps {
   onNext: (newCluster: Cluster) => void;
@@ -91,8 +88,8 @@ export class ClusterSeedModal extends React.Component<ClusterSeedModalProps, Imm
 
       </form>
       <div className="button-bar">
-        <Button type="primary" title={`${STRINGS.next}: ${STRINGS.configureCluster}`} onClick={this.onNext.bind(this)}/>
-        <Button className="cancel" title="Cancel" type="secondary" onClick={onCancel}/>
+        <Button type="primary" title={`${STRINGS.next}: ${STRINGS.configureCluster}`} onClick={this.onNext.bind(this)} />
+        <Button className="cancel" title="Cancel" type="secondary" onClick={onCancel} />
       </div>
 
     </Modal>;

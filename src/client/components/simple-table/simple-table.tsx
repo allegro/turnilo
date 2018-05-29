@@ -15,14 +15,11 @@
  * limitations under the License.
  */
 
-import "./simple-table.scss";
-
 import * as React from "react";
-
 import { classNames } from "../../utils/dom/dom";
-
 import { Scroller, ScrollerPart } from "../scroller/scroller";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./simple-table.scss";
 
 export interface SimpleTableColumn {
   label: string;
@@ -101,7 +98,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
         className="cell action"
         key={`action-${i}`}
         onClick={action.callback.bind(this, row)}
-      ><SvgIcon svg={require(`../../icons/${action.icon}.svg`)}/></div>);
+      ><SvgIcon svg={require(`../../icons/${action.icon}.svg`)} /></div>);
     }
 
     return items;
@@ -122,7 +119,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
     for (let i = 0; i < columns.length; i++) {
       let col = columns[i];
 
-      let icon = col.cellIcon ? <SvgIcon svg={require(`../../icons/${col.cellIcon}.svg`)}/> : null;
+      let icon = col.cellIcon ? <SvgIcon svg={require(`../../icons/${col.cellIcon}.svg`)} /> : null;
 
       items.push(<div
         className={classNames("cell", { "has-icon": !!col.cellIcon })}
@@ -219,7 +216,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
           key={`icon-${j}`}
           style={{ width: ACTION_WIDTH }}
         >
-          <SvgIcon svg={require(`../../icons/${action.icon}.svg`)}/>
+          <SvgIcon svg={require(`../../icons/${action.icon}.svg`)} />
         </div>;
       });
 

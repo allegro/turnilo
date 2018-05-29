@@ -48,7 +48,7 @@ function findDuplicateNames(items: List<MeasureOrGroup>): List<string> {
 }
 
 function filterMeasures(items: List<MeasureOrGroup>): List<Measure> {
-  return List<Measure> (items
+  return List<Measure>(items
     .filter(item => item.type === "measure")
     .toList());
 }

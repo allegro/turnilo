@@ -15,17 +15,13 @@
  * limitations under the License.
  */
 
-import "./clusters.scss";
-
 import * as React from "react";
-
-import { Button } from "../../../components/button/button";
-import { STRINGS } from "../../../config/constants";
-
 import { AppSettings, Cluster } from "../../../../common/models/index";
-
+import { Button } from "../../../components/button/button";
 import { Notifier } from "../../../components/index";
 import { SimpleTable, SimpleTableAction, SimpleTableColumn } from "../../../components/simple-table/simple-table";
+import { STRINGS } from "../../../config/constants";
+import "./clusters.scss";
 
 export interface ClustersProps {
   settings?: AppSettings;
@@ -44,9 +40,10 @@ export class Clusters extends React.Component<ClustersProps, ClustersState> {
   }
 
   componentWillReceiveProps(nextProps: ClustersProps) {
-    if (nextProps.settings) { this.setState({
-      newSettings: nextProps.settings
-    });
+    if (nextProps.settings) {
+      this.setState({
+        newSettings: nextProps.settings
+      });
     }
   }
 
@@ -117,7 +114,7 @@ export class Clusters extends React.Component<ClustersProps, ClustersState> {
     return <div className="clusters">
       <div className="title-bar">
         <div className="title">Clusters</div>
-        <Button className="add" title={STRINGS.connectNewCluster} type="primary" onClick={this.startSeed.bind(this)}/>
+        <Button className="add" title={STRINGS.connectNewCluster} type="primary" onClick={this.startSeed.bind(this)} />
       </div>
       <div className="content">
         <SimpleTable

@@ -22,6 +22,7 @@ import { Equalable, immutableArraysEqual } from "immutable-class";
 export type Fn = () => void;
 
 var objectHasOwnProperty = Object.prototype.hasOwnProperty;
+
 export function hasOwnProperty(obj: any, key: string | number): boolean {
   if (!obj) return false;
   return objectHasOwnProperty.call(obj, key);

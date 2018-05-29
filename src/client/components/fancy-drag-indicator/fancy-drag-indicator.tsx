@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import "./fancy-drag-indicator.scss";
-
 import * as React from "react";
 import { DragPosition } from "../../../common/models/index";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH } from "../../config/constants";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./fancy-drag-indicator.scss";
 
 export interface FancyDragIndicatorProps {
   dragPosition: DragPosition;
@@ -49,7 +48,7 @@ export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps,
 
     return <div className="fancy-drag-indicator">
       {dragGhostElement}
-      <SvgIcon className="drag-ghost-arrow" svg={require("../../icons/drag-arrow.svg")} style={{ left: ghostArrowLeft }}/>
+      <SvgIcon className="drag-ghost-arrow" svg={require("../../icons/drag-arrow.svg")} style={{ left: ghostArrowLeft }} />
     </div>;
   }
 }

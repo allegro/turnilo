@@ -18,9 +18,28 @@
 import { Duration, Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
 import { Class, immutableArraysEqual, immutableEqual, immutableLookupsEqual, Instance, NamedArray } from "immutable-class";
-import { $, AttributeInfo, AttributeJSs, Attributes, basicExecutorFactory, CustomDruidAggregations, CustomDruidTransforms, Dataset, DatasetFullType, Executor,
-  Expression, ExpressionJS, External, ExternalValue, ply, PlyTypeSimple, r,
-  RefExpression, SimpleFullType, SortExpression } from "plywood";
+import {
+  $,
+  AttributeInfo,
+  AttributeJSs,
+  Attributes,
+  basicExecutorFactory,
+  CustomDruidAggregations,
+  CustomDruidTransforms,
+  Dataset,
+  DatasetFullType,
+  Executor,
+  Expression,
+  ExpressionJS,
+  External,
+  ExternalValue,
+  ply,
+  PlyTypeSimple,
+  r,
+  RefExpression,
+  SimpleFullType,
+  SortExpression
+} from "plywood";
 import { hasOwnProperty, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { getWallTimeString } from "../../utils/time/time";
 import { Cluster } from "../cluster/cluster";
@@ -218,6 +237,7 @@ function filterFromLongForm(longForm: LongForm): Expression {
 }
 
 var check: Class<DataCubeValue, DataCubeJS>;
+
 export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   static DEFAULT_INTROSPECTION: Introspection = "autofill-all";
   static INTROSPECTION_VALUES: Introspection[] = ["none", "no-autofill", "autofill-dimensions-only", "autofill-measures-only", "autofill-all"];
@@ -731,7 +751,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public getDimensionByExpression(expression: Expression): Dimension {
-    return this.dimensions.getDimensionByExpression( expression);
+    return this.dimensions.getDimensionByExpression(expression);
   }
 
   public getDimensionsByKind(kind: string): Dimension[] {
@@ -1024,4 +1044,5 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return Boolean(this.group && this.group === otherDataCube.group);
   }
 }
+
 check = DataCube;

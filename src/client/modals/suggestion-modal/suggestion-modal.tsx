@@ -19,16 +19,16 @@ import { List } from "immutable";
 import * as React from "react";
 import { DataCube, Dimension, Measure } from "../../../common/models/index";
 import { pluralIfNeeded } from "../../../common/utils/general/general";
+import { Checkbox } from "../../components/checkbox/checkbox";
 import { Button, Modal } from "../../components/index";
 import { STRINGS } from "../../config/constants";
 import "./suggestion-modal.scss";
-
-import { Checkbox } from "../../components/checkbox/checkbox";
 
 const BRAND_BLUE = "hsl(200, 80%, 51%)";
 const GRAY = "#cccccc";
 
 export type Option = Dimension | Measure | DataCube;
+
 export interface Suggestion {
   option: Option;
   selected: boolean;
@@ -114,7 +114,7 @@ export class SuggestionModal extends React.Component<SuggestionModalProps, Sugge
           label={label}
           selected={selected}
         />
-        </div>;
+      </div>;
     }));
   }
 
@@ -132,8 +132,9 @@ export class SuggestionModal extends React.Component<SuggestionModalProps, Sugge
         {this.renderSuggestions()}
       </form>
       <div className="button-bar">
-        <Button type="primary" title={okLabel ? okLabel(length) : `${STRINGS.add} ${pluralIfNeeded(length, title)}`} disabled={length === 0} onClick={this.onAdd.bind(this)}/>
-        <Button className="cancel" title={cancelLabel || STRINGS.cancel} type="secondary" onClick={onClose}/>
+        <Button type="primary" title={okLabel ? okLabel(length) : `${STRINGS.add} ${pluralIfNeeded(length, title)}`} disabled={length === 0}
+                onClick={this.onAdd.bind(this)} />
+        <Button className="cancel" title={cancelLabel || STRINGS.cancel} type="secondary" onClick={onClose} />
       </div>
     </Modal>;
   }

@@ -67,4 +67,5 @@ export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
     return new TimeTag(value);
   }
 }
+
 BaseImmutable.finalize(TimeTag);

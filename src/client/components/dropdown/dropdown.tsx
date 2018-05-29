@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import "./dropdown.scss";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./dropdown.scss";
 
 function simpleEqual(item1: any, item2: any): boolean {
   return item1 === item2;
@@ -50,7 +49,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
   // const MyDropdown = Dropdown.specialize<MyItemClass>();
   // then : <MyDropdown ... />
   static specialize<U>() {
-    return Dropdown as { new (props: DropdownProps<U>): Dropdown<U>; };
+    return Dropdown as { new(props: DropdownProps<U>): Dropdown<U>; };
   }
 
   constructor(props: DropdownProps<T>) {
@@ -132,8 +131,8 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
 
     return <div className={classNames("dropdown", direction, className)} onClick={this.onClick.bind(this)}>
       {labelElement}
-      <div className={classNames("selected-item", { active : open })}>{renderSelectedItem(selectedItem)}
-        <SvgIcon className="caret-icon" svg={require("../../icons/dropdown-caret.svg")}/>
+      <div className={classNames("selected-item", { active: open })}>{renderSelectedItem(selectedItem)}
+        <SvgIcon className="caret-icon" svg={require("../../icons/dropdown-caret.svg")} />
       </div>
       {open ? this.renderMenu() : null}
     </div>;

@@ -27,7 +27,7 @@ export class DragManager {
       DragManager.dragOrigin = null;
       DragManager.dragDimension = null;
       DragManager.dragSplit = null;
-    },                        false);
+    }, false);
   }
 
   static getDragOrigin(): string {

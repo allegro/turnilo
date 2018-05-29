@@ -105,6 +105,7 @@ export interface EssenceContext {
 }
 
 var check: Class<EssenceValue, EssenceJS>;
+
 export class Essence implements Instance<EssenceValue, EssenceJS> {
   static isEssence(candidate: any): candidate is Essence {
     return candidate instanceof Essence;
@@ -164,7 +165,9 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     var defaultSortMeasureName = dataCube.getDefaultSortMeasure();
 
-    var multiMeasureMode = hasOwnProperty(parameters, "multiMeasureMode") ? parameters.multiMeasureMode : !hasOwnProperty(parameters, "singleMeasure");
+    var multiMeasureMode = hasOwnProperty(parameters, "multiMeasureMode") ? parameters.multiMeasureMode : !hasOwnProperty(
+      parameters,
+      "singleMeasure");
     var singleMeasure = dataCube.getMeasure(parameters.singleMeasure) ? parameters.singleMeasure : defaultSortMeasureName;
 
     var selectedMeasures = constrainMeasures(OrderedSet(parameters.selectedMeasures || []), dataCube);
@@ -757,4 +760,5 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
 }
+
 check = Essence;

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import "./golden-center.scss";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import "./golden-center.scss";
 
 export interface GoldenCenterProps {
   topRatio?: number;
@@ -30,7 +29,7 @@ export interface GoldenCenterState {
 }
 
 export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCenterState> {
-  static defaultProps: Partial<GoldenCenterProps>  = {
+  static defaultProps: Partial<GoldenCenterProps> = {
     topRatio: 0.618 / 1.618,
     minPadding: 50
   };

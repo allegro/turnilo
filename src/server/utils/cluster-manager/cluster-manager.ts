@@ -315,11 +315,12 @@ export class ClusterManager {
 
     if (verbose) logger.log(`Cluster '${cluster.name}' introspecting '${managedExternal.name}'`);
     return managedExternal.external.introspect()
-      .then(introspectedExternal => {
+      .then(
+        introspectedExternal => {
           this.introspectedSources[String(introspectedExternal.source)] = true;
           return this.updateManagedExternal(managedExternal, introspectedExternal);
         },
-            (e: Error) => {
+        (e: Error) => {
           logger.error(`Cluster '${cluster.name}' could not introspect '${managedExternal.name}' because: ${e.message}`);
         }
       );

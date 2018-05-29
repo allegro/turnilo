@@ -18,10 +18,9 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { renderIntoDocument } from "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
 import { TimekeeperMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
 
 import { Table } from "./table";
 

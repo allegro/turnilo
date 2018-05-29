@@ -16,9 +16,8 @@
  */
 
 import { expect } from "chai";
-import { testImmutableClass } from "immutable-class-tester";
-
 import { Timezone } from "chronoshift";
+import { testImmutableClass } from "immutable-class-tester";
 import { FilterClause, FilterClauseJS, SupportedAction } from "./filter-clause";
 
 describe("FilterClause", () => {

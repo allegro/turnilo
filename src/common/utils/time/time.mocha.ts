@@ -18,7 +18,15 @@
 import { expect } from "chai";
 import { day, Duration, month, Timezone } from "chronoshift";
 import { TimeRange } from "plywood";
-import { appendDays, datesEqual, formatTimeBasedOnGranularity, getEndWallTimeInclusive, getWallTimeDay, getWallTimeMonthWithYear, prependDays } from "./time";
+import {
+  appendDays,
+  datesEqual,
+  formatTimeBasedOnGranularity,
+  getEndWallTimeInclusive,
+  getWallTimeDay,
+  getWallTimeMonthWithYear,
+  prependDays
+} from "./time";
 
 describe("Time", () => {
   it("calculates date equality properly", () => {

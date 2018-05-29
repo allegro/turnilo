@@ -18,17 +18,14 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import * as sinon from "sinon";
-import { mockReactComponent, renderIntoDocument } from "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
-
+import * as sinon from "sinon";
 import { DataCubeMock, TimekeeperMock } from "../../../common/models/mocks";
-
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { FilterTile } from "../../components/filter-tile/filter-tile";
 import { SplitTile } from "../../components/split-tile/split-tile";
 import * as localStorage from "../../utils/local-storage/local-storage";
+import { mockReactComponent, renderIntoDocument } from "../../utils/test-utils";
 import { CubeView } from "./cube-view";
 
 describe("CubeView", () => {

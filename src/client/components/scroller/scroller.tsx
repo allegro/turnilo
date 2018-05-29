@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-import "./scroller.scss";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Stage } from "../../../common/models";
 import { firstUp } from "../../../common/utils/string/string";
 import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";
+import "./scroller.scss";
 
 export type XSide = "left" | "right";
 export type YSide = "top" | "bottom";
-export type ScrollerPart = "top-left-corner" | "top-gutter" | "top-right-corner" | "left-gutter" | "body" | "right-gutter" | "bottom-left-corner" | "bottom-gutter" | "bottom-right-corner";
+export type ScrollerPart =
+  "top-left-corner"
+  | "top-gutter"
+  | "top-right-corner"
+  | "left-gutter"
+  | "body"
+  | "right-gutter"
+  | "bottom-left-corner"
+  | "bottom-gutter"
+  | "bottom-right-corner";
 
 export interface ScrollerLayout {
   bodyWidth: number;
@@ -222,7 +230,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       this.setState({
         scrollTop,
         scrollLeft
-      },            () => this.props.onScroll(scrollTop, scrollLeft));
+      }, () => this.props.onScroll(scrollTop, scrollLeft));
     } else {
       this.setState({
         scrollTop,
@@ -231,7 +239,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     }
   }
 
-  getRelativeMouseCoordinates(event: MouseEvent): {x: number, y: number, part: ScrollerPart} {
+  getRelativeMouseCoordinates(event: MouseEvent): { x: number, y: number, part: ScrollerPart } {
     const { top, left, bodyWidth, bodyHeight } = this.props.layout;
     const container = this.getDOMElement("eventContainer");
     const { scrollLeft, scrollTop, viewportHeight, viewportWidth } = this.state;
@@ -303,7 +311,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     if (!(this.props.layout as any)[side]) return null; // no gutter ? no shadow.
     if (!this.shouldHaveShadow(side)) return null;
 
-    return <div className={`${side}-shadow`} style={this.getShadowStyle(side)}/>;
+    return <div className={`${side}-shadow`} style={this.getShadowStyle(side)} />;
   }
 
   renderCorner(yPos: YSide, xPos: XSide): JSX.Element {
@@ -400,8 +408,8 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
         onClick={this.onClick.bind(this)}
         onMouseMove={this.onMouseMove.bind(this)}
         onMouseLeave={onMouseLeave || null}
-       >
-        <div className="event-target" style={this.getTargetStyle()}/>
+      >
+        <div className="event-target" style={this.getTargetStyle()} />
       </div>
 
     </div>;

@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-import "./dimension-actions-menu.scss";
-
 import * as React from "react";
 import { Clicker, Dimension, Essence, SplitCombine, Stage, VisStrategy } from "../../../common/models";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./dimension-actions-menu.scss";
 
 const ACTION_SIZE = 60;
 

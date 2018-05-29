@@ -18,10 +18,7 @@
 import { Duration, Timezone } from "chronoshift";
 import { List } from "immutable";
 import { Class, Instance } from "immutable-class";
-import {
-  AndExpression, Expression, ExpressionJS, r,
-  Range, Set, TimeRange
-} from "plywood";
+import { AndExpression, Expression, ExpressionJS, r, Range, Set, TimeRange } from "plywood";
 import { immutableListsEqual } from "../../utils/general/general";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
@@ -51,6 +48,7 @@ export type FilterValue = List<FilterClause>;
 export type FilterJS = ExpressionJS | string;
 
 var check: Class<FilterValue, FilterJS>;
+
 export class Filter implements Instance<FilterValue, FilterJS> {
   static EMPTY: Filter;
 
@@ -280,7 +278,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
   }
 
   public getClausesForDimension(dimension: Dimension): List<FilterClause> {
-     return this.clauses.filter(clause => {
+    return this.clauses.filter(clause => {
       return clause.expression.equals(dimension.expression);
     }) as List<FilterClause>;
   }
@@ -390,6 +388,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     return new Filter(clauses as List<FilterClause>);
   }
 }
+
 check = Filter;
 
 Filter.EMPTY = new Filter(<List<FilterClause>> List());

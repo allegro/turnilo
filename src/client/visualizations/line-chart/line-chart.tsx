@@ -15,29 +15,44 @@
  * limitations under the License.
  */
 
-import "./line-chart.scss";
-
 import * as d3 from "d3";
 import { immutableEqual } from "immutable-class";
-import { Dataset, Datum, NumberBucketExpression, NumberRange, NumberRangeJS, PlywoodRange, r,
-  Range, TimeBucketExpression, TimeRange, TimeRangeJS } from "plywood";
+import {
+  Dataset,
+  Datum,
+  NumberBucketExpression,
+  NumberRange,
+  NumberRangeJS,
+  PlywoodRange,
+  r,
+  Range,
+  TimeBucketExpression,
+  TimeRange,
+  TimeRangeJS
+} from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
-import { DatasetLoad, Dimension, Filter,
-  FilterClause, Measure, Stage, VisualizationProps } from "../../../common/models/index";
+import { getLineChartTicks } from "../../../common/models/granularity/granularity";
+import { DatasetLoad, Dimension, Filter, FilterClause, Measure, Stage, VisualizationProps } from "../../../common/models/index";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
-
-import { getLineChartTicks } from "../../../common/models/granularity/granularity";
-
+import {
+  ChartLine,
+  ColorEntry,
+  GlobalEventListener,
+  GridLines,
+  Highlighter,
+  HoverMultiBubble,
+  LineChartAxis,
+  SegmentBubble,
+  VerticalAxis,
+  VisMeasureLabel
+} from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
-
-import { ChartLine, ColorEntry, GlobalEventListener, GridLines, Highlighter, HoverMultiBubble,
-  LineChartAxis, SegmentBubble, VerticalAxis, VisMeasureLabel } from "../../components/index";
-
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import "./line-chart.scss";
 
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
@@ -300,11 +315,11 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { dragRange, scaleX } = this.state;
 
     if (dragRange !== null) {
-      return <Highlighter highlightRange={dragRange} scaleX={scaleX}/>;
+      return <Highlighter highlightRange={dragRange} scaleX={scaleX} />;
     }
     if (essence.highlightOn(LineChart.id)) {
       var highlightRange = essence.getSingleHighlightSet().elements[0];
-      return <Highlighter highlightRange={highlightRange} scaleX={scaleX}/>;
+      return <Highlighter highlightRange={highlightRange} scaleX={scaleX} />;
     }
     return null;
   }
@@ -321,7 +336,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { clicker, essence, openRawDataModal } = this.props;
     const { colors, timezone } = essence;
 
-    const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange }  = this.state;
+    const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
     const { dragOnMeasure, hoverRange, hoverMeasure, scaleX, continuousDimension } = this.state;
 
     if (essence.highlightOnDifferentMeasure(LineChart.id, measure.name)) return null;
@@ -548,7 +563,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           y2={chartStage.height - 0.5}
         />
       </svg>
-      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={myDatum}/> : null}
+      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={myDatum} /> : null}
       {this.renderHighlighter()}
       {bubble}
     </div>;
@@ -683,7 +698,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         width={xAxisStage.width}
         height={xAxisStage.height}
       >
-        <LineChartAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone}/>
+        <LineChartAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone} />
       </svg>;
     }
 

@@ -32,6 +32,7 @@ export interface RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>
 
 export interface RulesEvaluatorBuilderWithPartialRule<PredicateVars, ActionVars> {
   or(predicate: Predicate<PredicateVars>): RulesEvaluatorBuilderWithPartialRule<PredicateVars, ActionVars>;
+
   then(action: Action<ActionVars>): RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>;
 }
 
@@ -39,12 +40,14 @@ export interface RulesEvaluatorBuilderComplete<PredicateVars, ActionVars> {
   build(): RulesEvaluator<PredicateVars, ActionVars>;
 }
 
-interface PartialRule<PredicateVars> { predicates: Array<Predicate<PredicateVars>>; }
+interface PartialRule<PredicateVars> {
+  predicates: Array<Predicate<PredicateVars>>;
+}
+
 type Rule<PredicateVars, ActionVars> = PartialRule<PredicateVars> & { action: Action<ActionVars> };
 
 export class RulesEvaluatorBuilder<PredicateVars, ActionVars>
-  implements
-    RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>,
+  implements RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>,
     RulesEvaluatorBuilderWithPartialRule<PredicateVars, ActionVars>,
     RulesEvaluatorBuilderComplete<PredicateVars, ActionVars> {
 

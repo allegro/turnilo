@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import "./notification-card.scss";
-
 import * as React from "react";
 import { clamp, classNames } from "../../utils/dom/dom";
+import "./notification-card.scss";
 
 import { Notification, Notifier } from "./notifications";
 
@@ -75,7 +74,7 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
       this.setState({ appearing: false });
     } else {
       this.setState({ appearing: false }, () => {
-        this.timeoutID = window.setTimeout(this.onDisappearTimerEnd.bind(this), (d ? d : DEFAULT_DURATION) * 1000 );
+        this.timeoutID = window.setTimeout(this.onDisappearTimerEnd.bind(this), (d ? d : DEFAULT_DURATION) * 1000);
       });
     }
   }
@@ -148,7 +147,7 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
       onMouseOver={this.onMouseOver.bind(this)}
       onMouseLeave={this.onMouseLeave.bind(this)}
       className={classNames(`notification-card ${priority} ${rowsClass}`, { appearing, disappearing, muted })}
-     >
+    >
       <div className="title">{title}</div>
       {message ? <div className="message">{message}</div> : null}
       {action ? <div className="action"><span>{action.label}</span></div> : null}

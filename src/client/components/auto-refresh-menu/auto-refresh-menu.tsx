@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import "./auto-refresh-menu.scss";
-
 import { Duration, Timezone } from "chronoshift";
 import * as React from "react";
 import { DataCube, Stage, Timekeeper } from "../../../common/models/index";
@@ -24,6 +22,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Dropdown } from "../dropdown/dropdown";
+import "./auto-refresh-menu.scss";
 
 const AUTO_REFRESH_LABELS: Record<string, string> = {
   null: "Off",

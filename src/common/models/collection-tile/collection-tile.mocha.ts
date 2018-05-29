@@ -17,7 +17,6 @@
 
 import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
-
 import { CollectionTile } from "./collection-tile";
 import { CollectionTileMock } from "./collection-tile.mock";
 
@@ -28,7 +27,7 @@ describe("CollectionTile", () => {
     testImmutableClass(CollectionTile, [
       CollectionTileMock.testOneJS(),
       CollectionTileMock.testTwoJS()
-    ],                 { context });
+    ], { context });
   });
 
   describe("errors", () => {
@@ -55,7 +54,7 @@ describe("CollectionTile", () => {
           selectedMeasures: ["count"],
           splits: "time"
         }
-      },                                   context);
+      }, context);
 
       expect(linkItem.toJS()).to.deep.equal({
         dataCube: "wiki",

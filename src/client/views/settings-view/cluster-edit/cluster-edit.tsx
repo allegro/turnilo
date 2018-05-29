@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-import "./cluster-edit.scss";
-
 import * as React from "react";
+import { Cluster, DataCube } from "../../../../common/models/index";
+import { CLUSTER as LABELS } from "../../../../common/models/labels";
 import { pluralIfNeeded } from "../../../../common/utils/general/general";
 import { IP_REGEX, NUM_REGEX } from "../../../../common/utils/string/string";
-import { STRINGS } from "../../../config/constants";
-import { classNames } from "../../../utils/dom/dom";
-
 import { Button } from "../../../components/button/button";
 import { FormLabel } from "../../../components/form-label/form-label";
 import { ImmutableDropdown } from "../../../components/immutable-dropdown/immutable-dropdown";
 import { ImmutableInput } from "../../../components/immutable-input/immutable-input";
+import { STRINGS } from "../../../config/constants";
 import { SuggestionModal } from "../../../modals/suggestion-modal/suggestion-modal";
-
+import { classNames } from "../../../utils/dom/dom";
 import { ImmutableFormDelegate, ImmutableFormState } from "../../../utils/immutable-form-delegate/immutable-form-delegate";
-
-import { Cluster, DataCube } from "../../../../common/models/index";
-
-import { CLUSTER as LABELS } from "../../../../common/models/labels";
+import "./cluster-edit.scss";
 
 export interface ClusterEditProps {
   cluster?: Cluster;
@@ -161,7 +156,7 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
 
     const cancelButton = <Button
       className="cancel"
-      title={isNewCluster ?  "Cancel" : "Revert changes"}
+      title={isNewCluster ? "Cancel" : "Revert changes"}
       type="secondary"
       onClick={this.cancel.bind(this)}
     />;
@@ -205,11 +200,11 @@ export class ClusterEdit extends React.Component<ClusterEditProps, ClusterEditSt
         {isNewCluster
           ? null
           : <Button
-              className="button back"
-              type="secondary"
-              svg={require("../../../icons/full-back.svg")}
-              onClick={this.goBack.bind(this)}
-            />
+            className="button back"
+            type="secondary"
+            svg={require("../../../icons/full-back.svg")}
+            onClick={this.goBack.bind(this)}
+          />
         }
         <div className="title">{this.getTitle()}</div>
         {this.renderButtons()}

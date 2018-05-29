@@ -16,7 +16,6 @@
  */
 
 import { Class, immutableArraysEqual, Instance, NamedArray } from "immutable-class";
-
 import { CollectionTile, CollectionTileContext, CollectionTileJS } from "../index";
 
 export interface CollectionValue {
@@ -39,6 +38,7 @@ export interface CollectionJS {
 export type CollectionContext = CollectionTileContext;
 
 var check: Class<CollectionValue, CollectionJS>;
+
 export class Collection implements Instance<CollectionValue, CollectionJS> {
 
   static isCollection(candidate: any): candidate is Collection {
@@ -174,4 +174,5 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
     return this.change("title", title);
   }
 }
+
 check = Collection;

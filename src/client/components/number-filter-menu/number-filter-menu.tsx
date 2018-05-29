@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-import "./number-filter-menu.scss";
-
 import { LiteralExpression, NumberRange, Set } from "plywood";
 import * as React from "react";
-
 import { Clicker, Dimension, Essence, Filter, FilterClause, FilterMode, Stage, Timekeeper } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
-
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Button } from "../button/button";
 import { FilterOption, FilterOptionsDropdown } from "../filter-options-dropdown/filter-options-dropdown";
 import { ANY_VALUE, NumberRangePicker } from "../number-range-picker/number-range-picker";
+import "./number-filter-menu.scss";
 
 function numberOrAnyToString(start: number): string {
   if (start === ANY_VALUE) return STRINGS.any;
@@ -39,6 +36,7 @@ function stringToNumberOrAny(startInput: string): number {
   var parse = parseFloat(startInput);
   return isNaN(parse) ? ANY_VALUE : parse;
 }
+
 const MENU_WIDTH = 250;
 const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(Filter.INCLUDED, Filter.EXCLUDED);
 

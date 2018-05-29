@@ -17,9 +17,7 @@
 
 import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
-
-import { $ } from "plywood";
-import { RefExpression } from "plywood";
+import { $, RefExpression } from "plywood";
 import { Highlight } from "..";
 import { MANIFESTS } from "../../manifests";
 import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
@@ -104,13 +102,13 @@ describe("Essence", () => {
         selectedMeasures: ["count"],
         splits: []
       }
-    ],                            { context });
+    ], { context });
   });
 
   describe("removes highlight when necessary", () => {
     const { lineChartWithAddedMeasure, lineChartWithAvgAddedMeasure, tableNoMeasure } = HighlightFixtures;
 
-    const tests: Array<{highlight: Highlight, expected: Highlight, description: string}> = [
+    const tests: Array<{ highlight: Highlight, expected: Highlight, description: string }> = [
       { highlight: lineChartWithAddedMeasure(), expected: lineChartWithAddedMeasure(), description: "is kept when measure is selected" },
       { highlight: tableNoMeasure(), expected: tableNoMeasure(), description: "is kept when contains no measure" },
       { highlight: lineChartWithAvgAddedMeasure(), expected: null, description: "is removed when measure is not selected" }
@@ -145,7 +143,7 @@ describe("Essence", () => {
         pinnedDimensions: [],
         selectedMeasures: [],
         splits: []
-      },                           context);
+      }, context);
 
       expect(essence.toJS()).to.deep.equal({
         filter: {
@@ -181,7 +179,7 @@ describe("Essence", () => {
         selectedMeasures: ["count"],
         splits: [],
         filter: "true"
-      },                            context);
+      }, context);
 
       expect(linkItem.toJS()).to.deep.equal({
         filter: {

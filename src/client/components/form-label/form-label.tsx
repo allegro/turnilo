@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import "./form-label.scss";
-
 import * as React from "react";
 import { firstUp } from "../../../common/utils/string/string";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./form-label.scss";
 
 export interface FormLabelProps {
   label?: string;
@@ -83,18 +82,18 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
 
     if (errorText) {
       return <div className="icon-container error" onClick={this.onHelpClick.bind(this)}>
-        <SvgIcon className="icon" svg={require("../../icons/help.svg")}/>
+        <SvgIcon className="icon" svg={require("../../icons/help.svg")} />
       </div>;
     }
 
     if (helpVisible) {
       return <div className="icon-container visible" onClick={this.onHelpClick.bind(this)}>
-        <SvgIcon className="icon" svg={require("../../icons/help.svg")}/>
+        <SvgIcon className="icon" svg={require("../../icons/help.svg")} />
       </div>;
     }
 
     return <div className="icon-container" onClick={this.onHelpClick.bind(this)}>
-      <SvgIcon className="icon" svg={require("../../icons/help.svg")}/>
+      <SvgIcon className="icon" svg={require("../../icons/help.svg")} />
     </div>;
   }
 

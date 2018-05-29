@@ -70,7 +70,8 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displa
   if (startWallTime.year() !== endWallTimeInclusive.year()) {
     formatted = [startWallTime.format(FORMAT_WITH_YEAR), endWallTimeInclusive.format(FORMAT_WITH_YEAR)].join(" - ");
   } else {
-    showingYear = displayYear === DisplayYear.ALWAYS || (displayYear === DisplayYear.IF_DIFF && !isCurrentYear(endWallTimeInclusive.year(), timezone));
+    showingYear = displayYear === DisplayYear.ALWAYS ||
+      (displayYear === DisplayYear.IF_DIFF && !isCurrentYear(endWallTimeInclusive.year(), timezone));
     const fmt = showingYear ? FORMAT_WITH_YEAR : FORMAT_WITHOUT_YEAR;
     if (startWallTime.month() !== endWallTimeInclusive.month() || startWallTime.date() !== endWallTimeInclusive.date()) {
       formatted = [startWallTime.format(FORMAT_WITHOUT_YEAR), endWallTimeInclusive.format(fmt)].join(" - ");
@@ -145,7 +146,7 @@ export function shiftOneDay(floored: Date, timezone: Timezone) {
 
 export function datesEqual(d1: Date, d2: Date): boolean {
   if (!Boolean(d1) === Boolean(d2)) return false;
-  if (d1 === d2 ) return true;
+  if (d1 === d2) return true;
   return d1.valueOf() === d2.valueOf();
 }
 
@@ -159,7 +160,7 @@ export function getWallTimeMonthWithYear(date: Date, timezone: Timezone) {
 
 export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone): boolean {
   if (!Boolean(d1) === Boolean(d2)) return false;
-  if (d1 === d2 ) return true;
+  if (d1 === d2) return true;
   const d1InclusiveEnd = getEndWallTimeInclusive(d1, timezone);
   const d2InclusiveEnd = getEndWallTimeInclusive(d2, timezone);
   return datesEqual(d1InclusiveEnd.toDate(), d2InclusiveEnd.toDate());

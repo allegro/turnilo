@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
+import * as bodyParser from "body-parser";
+import * as compress from "compression";
 import * as express from "express";
 import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
-
-import * as bodyParser from "body-parser";
-import * as compress from "compression";
 import { logAndTrack, LOGGER } from "logger-tracker";
 import * as path from "path";
-
 import { GetSettingsOptions } from "../server/utils/settings-manager/settings-manager";
 import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
 import * as collectionsRoutes from "./routes/collections/collections";
@@ -35,7 +33,6 @@ import * as plywoodRoutes from "./routes/plywood/plywood";
 import * as settingsRoutes from "./routes/settings/settings";
 import * as swivRoutes from "./routes/swiv/swiv";
 import { SwivRequest } from "./utils/index";
-
 import { errorLayout } from "./views";
 
 function makeGuard(guard: string): Handler {
@@ -121,7 +118,7 @@ if (app.get("env") === "dev-hmr") {
 }
 
 if (app.get("env") === "development") { // NODE_ENV
-  // add hot module replacement
+                                        // add hot module replacement
 
   // error handlers
   // will print stacktrace

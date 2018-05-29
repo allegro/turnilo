@@ -20,7 +20,6 @@ import { Timezone } from "chronoshift";
 import { $ } from "plywood";
 import { DimensionMock } from "../../../common/models/mocks";
 import { FilterClause } from "../../models/filter-clause/filter-clause";
-
 import { formatFilterClause, formatterFromData, getMiddleNumber } from "./formatter";
 import { FormatterFixtures } from "./formatter.fixtures";
 
@@ -167,11 +166,15 @@ describe("General", () => {
     });
 
     it("formats string", () => {
-      expect(formatFilterClause(DimensionMock.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC)).to.equal("important countries: iceland");
+      expect(
+        formatFilterClause(DimensionMock.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC)
+      ).to.equal("important countries: iceland");
     });
 
     it("formats string verbose", () => {
-      expect(formatFilterClause(DimensionMock.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC, true)).to.equal("important countries: iceland");
+      expect(
+        formatFilterClause(DimensionMock.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC, true)
+      ).to.equal("important countries: iceland");
     });
   });
 });

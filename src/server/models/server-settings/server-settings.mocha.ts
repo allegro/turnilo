@@ -17,7 +17,6 @@
 
 import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
-
 import { ServerSettings } from "./server-settings";
 
 describe("ServerSettings", () => {

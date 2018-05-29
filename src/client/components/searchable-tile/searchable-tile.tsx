@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-import "./searchable-tile.scss";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Stage } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
-
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { ClearableInput } from "../clearable-input/clearable-input";
 import { TileHeader, TileHeaderIcon } from "../tile-header/tile-header";
+import "./searchable-tile.scss";
 
 export interface TileAction {
   selected: boolean;
@@ -160,8 +158,10 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
   }
 
   render() {
-    const { className, style, icons, title, onSearchChange, showSearch, searchText,
-            children, onDragStart, actions } = this.props;
+    const {
+      className, style, icons, title, onSearchChange, showSearch, searchText,
+      children, onDragStart, actions
+    } = this.props;
     const { actionsMenuOpenOn } = this.state;
     var tileIcons = icons;
 

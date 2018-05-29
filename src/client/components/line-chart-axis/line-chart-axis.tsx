@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-import "./line-chart-axis.scss";
-
 import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import * as moment from "moment-timezone";
 import * as React from "react";
 import { Stage } from "../../../common/models/index";
 import { roundToHalfPx } from "../../utils/dom/dom";
+import "./line-chart-axis.scss";
 
 const TICK_HEIGHT = 5;
 const TEXT_OFFSET = 12;
-const floatFormat =  d3.format(".1f");
+const floatFormat = d3.format(".1f");
 
 export interface LineChartAxisProps {
   stage: Stage;
@@ -49,7 +48,9 @@ export class LineChartAxis extends React.Component<LineChartAxisProps, LineChart
     var timezoneString = timezone.toString();
 
     function formatLabel(v: Date | number) {
-      if (v instanceof Date) { return formatWithTimezone(v); }
+      if (v instanceof Date) {
+        return formatWithTimezone(v);
+      }
       return String(floatFormat(v as number));
     }
 
@@ -59,7 +60,7 @@ export class LineChartAxis extends React.Component<LineChartAxisProps, LineChart
 
     var lines = ticks.map((tick: any) => {
       var x = roundToHalfPx(scale(tick));
-      return <line key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_HEIGHT}/>;
+      return <line key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_HEIGHT} />;
     });
 
     var labelY = TICK_HEIGHT + TEXT_OFFSET;

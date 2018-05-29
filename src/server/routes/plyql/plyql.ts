@@ -17,14 +17,14 @@
 
 import { Response, Router } from "express";
 import { $, Dataset, Expression, RefExpression } from "plywood";
-import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
-
 import { SwivRequest } from "../../utils/index";
+import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 
 var router = Router();
 
 interface PlyqlOutputFunctions {
   [key: string]: (data: Dataset) => string;
+
   json: (data: Dataset) => string;
   csv: (data: Dataset) => string;
   tsv: (data: Dataset) => string;

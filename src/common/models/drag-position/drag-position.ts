@@ -29,6 +29,7 @@ export interface DragPositionJS {
 }
 
 var check: Class<DragPositionValue, DragPositionJS>;
+
 export class DragPosition implements Instance<DragPositionValue, DragPositionJS> {
 
   static isDragPosition(candidate: any): candidate is DragPosition {
@@ -122,4 +123,5 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   }
 
 }
+
 check = DragPosition;

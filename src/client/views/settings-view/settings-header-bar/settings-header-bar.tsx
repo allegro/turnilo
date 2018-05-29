@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import "./settings-header-bar.scss";
-
 import * as React from "react";
 import { Customization, User } from "../../../../common/models/index";
 import { Fn } from "../../../../common/utils/general/general";
 import { SvgIcon, UserMenu } from "../../../components/index";
+import "./settings-header-bar.scss";
 
 export interface SettingsHeaderBarProps {
   user?: User;
@@ -76,7 +75,7 @@ export class SettingsHeaderBar extends React.Component<SettingsHeaderBarProps, S
     var userButton: JSX.Element = null;
     if (user) {
       userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
-        <SvgIcon svg={require("../../../icons/full-user.svg")}/>
+        <SvgIcon svg={require("../../../icons/full-user.svg")} />
       </div>;
     }
 
@@ -90,7 +89,7 @@ export class SettingsHeaderBar extends React.Component<SettingsHeaderBarProps, S
     return <header className="settings-header-bar" style={headerStyle}>
       <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
-          <SvgIcon svg={require("../../../icons/menu.svg")}/>
+          <SvgIcon svg={require("../../../icons/menu.svg")} />
         </div>
         <div className="title">{title}</div>
       </div>

@@ -49,7 +49,7 @@ export class ImmutableFormDelegate<T> {
     return this.form.setState.call(this.form, state, callback);
   }
 
-  updateErrors(path: string, isValid: boolean, error: string): {errors: any, canSave: boolean} {
+  updateErrors(path: string, isValid: boolean, error: string): { errors: any, canSave: boolean } {
     var { errors } = this.form.state;
 
     errors[path] = isValid ? false : error;

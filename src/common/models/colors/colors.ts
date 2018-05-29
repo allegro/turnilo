@@ -89,6 +89,7 @@ export interface ColorsJS {
 }
 
 var check: Class<ColorsValue, ColorsJS>;
+
 export class Colors implements Instance<ColorsValue, ColorsJS> {
 
   static isColors(candidate: any): candidate is Colors {
@@ -330,4 +331,5 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     }
   }
 }
+
 check = Colors;

@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-import "./simple-list.scss";
-
 import * as React from "react";
-
 import { classNames, getYFromEvent, setDragGhost } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./simple-list.scss";
 
 export interface SimpleRow {
   title: string;
@@ -98,13 +96,13 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
     const { onEdit, onRemove, onReorder } = this.props;
     const { draggedItem, dropIndex } = this.state;
 
-    const svgize = (iconName: string) => iconName ? <SvgIcon svg={require(`../../icons/${iconName}.svg`)}/> : null;
+    const svgize = (iconName: string) => iconName ? <SvgIcon svg={require(`../../icons/${iconName}.svg`)} /> : null;
 
     return rows.map((row, i) => {
       let { title, description, icon } = row;
 
       let dragHandle = <div className="drag-handle">
-        <SvgIcon svg={require("../../icons/dragger.svg")}/>
+        <SvgIcon svg={require("../../icons/dragger.svg")} />
       </div>;
 
       let svg = svgize(icon);

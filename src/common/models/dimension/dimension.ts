@@ -22,6 +22,7 @@ import { Granularity, granularityEquals, granularityFromJS, GranularityJS, granu
 import { DimensionOrGroupVisitor } from "./dimension-group";
 
 var geoName = /continent|country|city|region/i;
+
 function isGeo(name: string): boolean {
   return geoName.test(name);
 }
@@ -66,6 +67,7 @@ export interface DimensionJS {
 }
 
 var check: Class<DimensionValue, DimensionJS>;
+
 export class Dimension implements Instance<DimensionValue, DimensionJS> {
   static isDimension(candidate: any): candidate is Dimension {
     return candidate instanceof Dimension;
@@ -244,4 +246,5 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
 }
+
 check = Dimension;

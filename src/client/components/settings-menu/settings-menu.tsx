@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import "./settings-menu.scss";
-
 import { Timezone } from "chronoshift";
 import * as React from "react";
 import { DataCube, Stage, User } from "../../../common/models/index";
@@ -24,6 +22,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Dropdown } from "../dropdown/dropdown";
+import "./settings-menu.scss";
 
 export interface SettingsMenuProps {
   dataCube?: DataCube;
@@ -52,9 +51,13 @@ export class SettingsMenu extends React.Component<SettingsMenuProps, SettingsMen
     if (!stateful || !dataCube || !user || !user.allow["settings"]) return null;
 
     return <div>
-      <a href={`#settings/data-cubes/${dataCube.name}`}><div className="simple-item">{STRINGS.editThisCube}</div></a>
-      <a href="#settings"><div className="simple-item">{STRINGS.generalSettings}</div></a>
-      <div className="separator"/>
+      <a href={`#settings/data-cubes/${dataCube.name}`}>
+        <div className="simple-item">{STRINGS.editThisCube}</div>
+      </a>
+      <a href="#settings">
+        <div className="simple-item">{STRINGS.generalSettings}</div>
+      </a>
+      <div className="separator" />
     </div>;
   }
 

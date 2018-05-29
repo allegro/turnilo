@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-import "./number-range-picker.scss";
-
+import { $, Dataset, ply } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
-import { $, Dataset, ply } from "plywood";
-
 import { Dimension, Essence, Timekeeper } from "../../../common/models/index";
 import { getNumberOfWholeDigits, toSignificantDigits } from "../../../common/utils/general/general";
-
 import { clamp, classNames, getXFromEvent } from "../../utils/dom/dom";
-
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
 import { RangeHandle } from "../range-handle/range-handle";
+import "./number-range-picker.scss";
 
 export const ANY_VALUE: any = null;
 
@@ -230,7 +225,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       var absoluteRightBound = leftOffset + rightBound;
 
       content = <div className="range-slider" onMouseDown={this.onBarClick.bind(this, positionStart, positionEnd)}>
-        <div className="range-bar full"/>
+        <div className="range-bar full" />
         <div className="range-bar selected" style={rangeBarSelected} />
         <RangeHandle
           positionLeft={positionStart}
@@ -255,8 +250,8 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
 
     return <div className={classNames("number-range-picker", { inverted: exclude })} ref="number-range-picker">
       {content}
-      {loading ? <Loader/> : null}
-      {error ? <QueryError error={error}/> : null}
+      {loading ? <Loader /> : null}
+      {error ? <QueryError error={error} /> : null}
     </div>;
   }
 }

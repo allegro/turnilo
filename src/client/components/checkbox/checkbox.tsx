@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import "./checkbox.scss";
-
 import * as React from "react";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./checkbox.scss";
 
 export type CheckboxType = "check" | "cross" | "radio";
 
@@ -44,9 +43,9 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
     const { selected, type } = this.props;
     if (!selected) return null;
     if (type === "check") {
-      return <SvgIcon svg={require("../../icons/check.svg")}/>;
+      return <SvgIcon svg={require("../../icons/check.svg")} />;
     } else if (type === "cross") {
-      return <SvgIcon svg={require("../../icons/x.svg")}/>;
+      return <SvgIcon svg={require("../../icons/x.svg")} />;
     }
     return null;
   }

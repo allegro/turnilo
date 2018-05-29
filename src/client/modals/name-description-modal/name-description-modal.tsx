@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-import "./name-description-modal.scss";
-
 import * as React from "react";
-
+import { COLLECTION as LABELS } from "../../../common/models/labels";
+import { Button, FormLabel, ImmutableInput, Modal } from "../../components/index";
 import { classNames } from "../../utils/dom/dom";
 import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
-
-import { Button, FormLabel, ImmutableInput, Modal } from "../../components/index";
-
-import { COLLECTION as LABELS } from "../../../common/models/labels";
+import "./name-description-modal.scss";
 
 export interface NameDescriptionModalProps<T> {
   onCancel?: () => void;
@@ -37,7 +33,7 @@ export interface NameDescriptionModalProps<T> {
 export class NameDescriptionModal<T> extends React.Component<NameDescriptionModalProps<T>, ImmutableFormState<T>> {
 
   static specialize<U>() {
-    return NameDescriptionModal as { new (props: NameDescriptionModalProps<U>): NameDescriptionModal<U>; };
+    return NameDescriptionModal as { new(props: NameDescriptionModalProps<U>): NameDescriptionModal<U>; };
   }
 
   private delegate: ImmutableFormDelegate<T>;
@@ -96,7 +92,7 @@ export class NameDescriptionModal<T> extends React.Component<NameDescriptionModa
           type="primary"
           onClick={this.save.bind(this)}
         />
-        <Button className="cancel" title="Cancel" type="secondary" onClick={this.props.onCancel}/>
+        <Button className="cancel" title="Cancel" type="secondary" onClick={this.props.onCancel} />
       </div>
 
     </Modal>;

@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import "./vis-measure-label.scss";
-
 import { Datum } from "plywood";
 import * as React from "react";
 import { Measure } from "../../../common/models/index";
+import "./vis-measure-label.scss";
 
 export interface VisMeasureLabelProps {
   measure: Measure;

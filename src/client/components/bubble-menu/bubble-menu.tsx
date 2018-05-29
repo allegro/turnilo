@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-import "./bubble-menu.scss";
-
 import * as React from "react";
 import { Stage } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames, escapeKey, isInside, uniqueId } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";
 import { Shpitz } from "../shpitz/shpitz";
+import "./bubble-menu.scss";
 
 const OFFSET_H = 10;
 const OFFSET_V = 0;
@@ -196,7 +195,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
     var shpitzElement: JSX.Element = null;
     if (align === "center") {
-      shpitzElement = <Shpitz style={shpitzStyle} direction={direction}/>;
+      shpitzElement = <Shpitz style={shpitzStyle} direction={direction} />;
     }
 
     var myClass = classNames("bubble-menu", direction, className, { mini: layout === "mini" });

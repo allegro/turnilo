@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import "./main.scss";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { AppSettingsJS, DataCube, TimekeeperJS } from "../common/models";
-import { addErrorMonitor } from "./utils/error-monitor/error-monitor";
-
 import { Loader } from "./components/loader/loader";
+import "./main.scss";
+import { addErrorMonitor } from "./utils/error-monitor/error-monitor";
 
 addErrorMonitor();
 
@@ -75,7 +73,7 @@ require.ensure([], require => {
     />;
 
   ReactDOM.render(app, container);
-},             "app");
+}, "app");
 
 // Polyfill =====================================
 
@@ -90,11 +88,11 @@ if (needsPatch) {
   require.ensure([
     "../../lib/polyfill/drag-drop-polyfill.min.js",
     "../../lib/polyfill/drag-drop-polyfill.css"
-  ],             require => {
+  ], require => {
     var DragDropPolyfill = require("../../lib/polyfill/drag-drop-polyfill.min.js");
     require("../../lib/polyfill/drag-drop-polyfill.css");
     DragDropPolyfill.Initialize({});
-  },             "ios-drag-drop");
+  }, "ios-drag-drop");
 }
 
 if (process.env.NODE_ENV === "dev-hmr" && module.hot) {

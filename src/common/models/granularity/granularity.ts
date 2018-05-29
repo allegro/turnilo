@@ -16,11 +16,25 @@
  */
 
 import { day, Duration, hour, minute, Timezone } from "chronoshift";
-import { Expression, ExpressionJS, ExpressionValue, NumberBucketExpression, NumberRange, PlywoodRange, TimeBucketExpression, TimeRange } from "plywood";
-
 import {
-  findBiggerClosestToIdeal, findExactIndex, findFirstBiggerIndex, findMaxValueIndex, findMinValueIndex,
-  getNumberOfWholeDigits, hasOwnProperty, toSignificantDigits
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+  NumberBucketExpression,
+  NumberRange,
+  PlywoodRange,
+  TimeBucketExpression,
+  TimeRange
+} from "plywood";
+import {
+  findBiggerClosestToIdeal,
+  findExactIndex,
+  findFirstBiggerIndex,
+  findMaxValueIndex,
+  findMinValueIndex,
+  getNumberOfWholeDigits,
+  hasOwnProperty,
+  toSignificantDigits
 } from "../../../common/utils/general/general";
 
 const MENU_LENGTH = 5;
@@ -81,11 +95,11 @@ export class TimeHelper {
 
   static supportedGranularities = function() {
     return [
-        "PT1S", "PT1M", "PT5M", "PT15M",
-        "PT1H", "PT6H", "PT8H", "PT12H",
-        "P1D", "P1W", "P1M", "P3M", "P6M",
-        "P1Y", "P2Y"
-      ].map(granularityFromJS);
+      "PT1S", "PT1M", "PT5M", "PT15M",
+      "PT1H", "PT6H", "PT8H", "PT12H",
+      "P1D", "P1W", "P1M", "P3M", "P6M",
+      "P1Y", "P2Y"
+    ].map(granularityFromJS);
   };
 
   static checkers = [
@@ -226,7 +240,7 @@ export function granularityToString(input: Granularity): string {
 
 export function granularityEquals(g1: Granularity, g2: Granularity) {
   if (!Boolean(g1) === Boolean(g2)) return false;
-  if (g1 === g2 ) return true;
+  if (g1 === g2) return true;
   return (g1 as Expression).equals(g2 as Expression);
 }
 
@@ -269,7 +283,7 @@ export function getGranularities(kind: ContinuousDimensionKind, bucketedBy?: Gra
 
 export function getDefaultGranularityForKind(kind: ContinuousDimensionKind, bucketedBy?: Granularity, customGranularities?: Granularity[]): Granularity {
   if (bucketedBy) return bucketedBy;
-  if (customGranularities)return customGranularities[2];
+  if (customGranularities) return customGranularities[2];
   return getHelperForKind(kind).defaultGranularity;
 }
 

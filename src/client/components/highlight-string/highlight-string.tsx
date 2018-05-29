@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import "./highlight-string.scss";
-
 import * as React from "react";
 import { classNames } from "../../utils/dom/dom";
+import "./highlight-string.scss";
 
 export interface HighlightStringProps {
   className?: string;

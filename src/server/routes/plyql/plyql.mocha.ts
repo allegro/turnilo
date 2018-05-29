@@ -18,16 +18,13 @@
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import { Response } from "express";
-import mime = require("mime");
+import * as mime from "mime";
 import * as Q from "q";
 import * as supertest from "supertest";
-
+import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
 import { AppSettings } from "../../../common/models/index";
 import { SwivRequest } from "../../utils/index";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
-
-import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
-
 import * as plyqlRouter from "./plyql";
 
 var app = express();

@@ -18,7 +18,6 @@
 import { Response, Router } from "express";
 import { MANIFESTS } from "../../../common/manifests/index";
 import { AppSettings } from "../../../common/models/index";
-
 import { SETTINGS_MANAGER } from "../../config";
 import { SwivRequest } from "../../utils/index";
 
@@ -26,10 +25,11 @@ var router = Router();
 
 router.get("/", (req: SwivRequest, res: Response) => {
   SETTINGS_MANAGER.getSettings()
-    .then(appSettings => {
+    .then(
+      appSettings => {
         res.send({ appSettings });
       },
-          (e: Error) => {
+      (e: Error) => {
         console.log("error:", e.message);
         if (e.hasOwnProperty("stack")) {
           console.log((<any> e).stack);

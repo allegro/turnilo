@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-import "./time-filter-menu.scss";
-
 import { day, second, Timezone } from "chronoshift";
 import { $, Expression, LiteralExpression, r, Range, Set, TimeRange } from "plywood";
 import * as React from "react";
-import { Stage } from "../../../common/models";
-import { Clicker, Dimension, Essence, Filter, FilterClause, Timekeeper } from "../../../common/models";
-import { Fn } from "../../../common/utils";
-import { DisplayYear, formatTimeRange } from "../../../common/utils";
+import { Clicker, Dimension, Essence, Filter, FilterClause, Stage, Timekeeper } from "../../../common/models";
+import { DisplayYear, Fn, formatTimeRange } from "../../../common/utils";
 import { STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { ButtonGroup } from "../button-group/button-group";
 import { Button } from "../button/button";
 import { DateRangePicker } from "../date-range-picker/date-range-picker";
+import "./time-filter-menu.scss";
 
 function makeDateIntoTimeRange(input: Date, timezone: Timezone): TimeRange {
-  return new TimeRange({ start: second.shift(input, timezone, - 1), end: second.shift(input, timezone, 1) });
+  return new TimeRange({ start: second.shift(input, timezone, -1), end: second.shift(input, timezone, 1) });
 }
 
 export interface Preset {
@@ -42,10 +39,10 @@ export interface Preset {
 
 const $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
 const latestPresets: Preset[] = [
-  { name: "1H",  selection: $maxTime.timeRange("PT1H", -1) },
-  { name: "6H",  selection: $maxTime.timeRange("PT6H", -1) },
-  { name: "1D",  selection: $maxTime.timeRange("P1D", -1)  },
-  { name: "7D",  selection: $maxTime.timeRange("P1D", -7)  },
+  { name: "1H", selection: $maxTime.timeRange("PT1H", -1) },
+  { name: "6H", selection: $maxTime.timeRange("PT6H", -1) },
+  { name: "1D", selection: $maxTime.timeRange("P1D", -1) },
+  { name: "7D", selection: $maxTime.timeRange("P1D", -7) },
   { name: "30D", selection: $maxTime.timeRange("P1D", -30) }
 ];
 

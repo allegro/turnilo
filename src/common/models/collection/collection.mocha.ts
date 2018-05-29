@@ -16,7 +16,6 @@
  */
 
 import { testImmutableClass } from "immutable-class-tester";
-
 import { Collection } from "./collection";
 import { CollectionMock } from "./collection.mock";
 
@@ -27,7 +26,7 @@ describe("Collection", () => {
     testImmutableClass(Collection, [
       CollectionMock.testOneOnlyJS(),
       CollectionMock.testOneTwoJS()
-    ],                 { context });
+    ], { context });
   });
 
 });

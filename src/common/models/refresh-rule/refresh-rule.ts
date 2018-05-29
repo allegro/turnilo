@@ -28,6 +28,7 @@ export interface RefreshRuleJS {
 }
 
 var check: Class<RefreshRuleValue, RefreshRuleJS>;
+
 export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
   static FIXED = "fixed";
@@ -113,4 +114,5 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
   }
 
 }
+
 check = RefreshRule;

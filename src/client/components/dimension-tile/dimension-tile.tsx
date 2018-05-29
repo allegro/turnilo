@@ -15,20 +15,7 @@
  * limitations under the License.
  */
 
-import "./dimension-tile.scss";
-
-import {
-  $,
-  Dataset,
-  Datum,
-  Expression,
-  NumberRange,
-  r,
-  RefExpression,
-  SortExpression,
-  TimeBucketExpression,
-  TimeRange
-} from "plywood";
+import { $, Dataset, Datum, Expression, NumberRange, r, RefExpression, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
 import * as React from "react";
 import {
   Clicker,
@@ -48,27 +35,10 @@ import {
   SortOn,
   Timekeeper
 } from "../../../common/models";
-import {
-  collect,
-  Fn,
-  formatGranularity,
-  formatNumberRange,
-  formatterFromData,
-  formatTimeBasedOnGranularity
-} from "../../../common/utils";
-
-import {
-  getLocale,
-  MAX_SEARCH_LENGTH,
-  PIN_ITEM_HEIGHT,
-  PIN_PADDING_BOTTOM,
-  PIN_TITLE_HEIGHT,
-  SEARCH_WAIT,
-  STRINGS
-} from "../../config/constants";
+import { collect, Fn, formatGranularity, formatNumberRange, formatterFromData, formatTimeBasedOnGranularity } from "../../../common/utils";
+import { getLocale, MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
-
 import { Checkbox } from "../checkbox/checkbox";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
@@ -76,6 +46,7 @@ import { QueryError } from "../query-error/query-error";
 import { SearchableTile, TileAction } from "../searchable-tile/searchable-tile";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { TileHeaderIcon } from "../tile-header/tile-header";
+import "./dimension-tile.scss";
 
 export interface DimensionTileProps {
   clicker: Clicker;
@@ -168,10 +139,15 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
       if (!selectedGranularity) {
         if (filterSelection) {
-          const range = dimension.kind === "time" ? essence.evaluateSelection(filterSelection as Expression, timekeeper) : (filterSelection as Expression).getLiteralValue().extent();
+          const range = dimension.kind === "time" ? essence.evaluateSelection(
+            filterSelection as Expression,
+            timekeeper) : (filterSelection as Expression).getLiteralValue().extent();
           selectedGranularity = getBestGranularityForRange(range, true, dimension.bucketedBy, dimension.granularities);
         } else {
-          selectedGranularity = getDefaultGranularityForKind(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy, dimension.granularities);
+          selectedGranularity = getDefaultGranularityForKind(
+            dimension.kind as ContinuousDimensionKind,
+            dimension.bucketedBy,
+            dimension.granularities);
         }
       }
 
@@ -512,7 +488,11 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
       let segmentValueStr = String(segmentValue);
       if (segmentValue instanceof TimeRange) {
-        segmentValueStr = formatTimeBasedOnGranularity(segmentValue, (selectedGranularity as TimeBucketExpression).duration, essence.timezone, getLocale());
+        segmentValueStr = formatTimeBasedOnGranularity(
+          segmentValue,
+          (selectedGranularity as TimeBucketExpression).duration,
+          essence.timezone,
+          getLocale());
       } else if (segmentValue instanceof NumberRange) {
         segmentValueStr = formatNumberRange(segmentValue);
       }
@@ -529,7 +509,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       >
         <div className="segment-value" title={segmentValueStr}>
           {checkbox}
-          <HighlightString className="label" text={segmentValueStr} highlight={searchText}/>
+          <HighlightString className="label" text={segmentValueStr} highlight={searchText} />
         </div>
         {measureValueElement}
       </div>;

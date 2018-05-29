@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-import "./data-cube-edit.scss";
-
+import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { AttributeInfo } from "plywood";
 import * as React from "react";
 import { Dimensions } from "../../../../common/models/dimension/dimensions";
-import { classNames } from "../../../utils/dom/dom";
-
+import { Cluster, DataCube, Dimension, ListItem, Measure } from "../../../../common/models/index";
+import { DATA_CUBE as LABELS } from "../../../../common/models/labels";
 import { ImmutableUtils } from "../../../../common/utils/immutable-utils/immutable-utils";
 import { generateUniqueName } from "../../../../common/utils/string/string";
-
-import { Timezone } from "chronoshift";
-
-import { DATA_CUBES_STRATEGIES_LABELS, STRINGS } from "../../../config/constants";
-
-import { Cluster, DataCube, Dimension, ListItem, Measure } from "../../../../common/models/index";
 import { Button, FormLabel, ImmutableDropdown, ImmutableInput, ImmutableList } from "../../../components/index";
+import { DATA_CUBES_STRATEGIES_LABELS, STRINGS } from "../../../config/constants";
 import { DimensionModal, MeasureModal, SuggestionModal } from "../../../modals/index";
-
-import { DATA_CUBE as LABELS } from "../../../../common/models/labels";
-
+import { classNames } from "../../../utils/dom/dom";
 import { ImmutableFormDelegate, ImmutableFormState } from "../../../utils/immutable-form-delegate/immutable-form-delegate";
+import "./data-cube-edit.scss";
 
 export interface DataCubeEditProps {
   isNewDataCube?: boolean;
@@ -220,7 +213,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
       });
     };
 
-    const getModal = (item: Dimension) => <DimensionModal dimension={item}/>;
+    const getModal = (item: Dimension) => <DimensionModal dimension={item} />;
 
     const getNewItem = () => Dimension.fromJS({
       name: generateUniqueName("d", name => !newInstance.dimensions.containsDimensionWithName(name)),
@@ -300,7 +293,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
       });
     };
 
-    const getModal = (item: Measure) => <MeasureModal measure={item}/>;
+    const getModal = (item: Measure) => <MeasureModal measure={item} />;
 
     const getNewItem = () => Measure.fromJS({
       name: generateUniqueName("m", name => !newInstance.measures.containsMeasureWithName(name)),
@@ -346,7 +339,7 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
 
     const cancelButton = <Button
       className="cancel"
-      title={isNewDataCube ?  "Cancel" : "Revert changes"}
+      title={isNewDataCube ? "Cancel" : "Revert changes"}
       type="secondary"
       onClick={this.cancel.bind(this)}
     />;
@@ -390,11 +383,11 @@ export class DataCubeEdit extends React.Component<DataCubeEditProps, DataCubeEdi
         {isNewDataCube
           ? null
           : <Button
-              className="button back"
-              type="secondary"
-              svg={require("../../../icons/full-back.svg")}
-              onClick={this.goBack.bind(this)}
-            />
+            className="button back"
+            type="secondary"
+            svg={require("../../../icons/full-back.svg")}
+            onClick={this.goBack.bind(this)}
+          />
         }
         <div className="title">{this.getTitle()}</div>
         {this.renderButtons()}

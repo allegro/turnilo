@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-import "./swiv-application.scss";
-
 import { NamedArray } from "immutable-class";
 import * as React from "react";
 import { CSSTransition } from "react-transition-group";
-import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
-
 import { AppSettings, Collection, CollectionTile, DataCube, Essence, Timekeeper, User, ViewSupervisor } from "../../../common/models";
-import { replaceHash } from "../../utils/url/url";
-
+import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { Notifications, Notifier, Questions, SideDrawer } from "../../components";
 import { AboutModal, AddCollectionTileModal } from "../../modals";
 import { Ajax } from "../../utils/ajax/ajax";
 import { createFunctionSlot, FunctionSlot } from "../../utils/function-slot/function-slot";
-
+import { replaceHash } from "../../utils/url/url";
 import { CollectionView } from "../../views/collection-view/collection-view";
 import { CubeView } from "../../views/cube-view/cube-view";
 import { HomeView } from "../../views/home-view/home-view";
@@ -37,6 +32,7 @@ import { LinkView } from "../../views/link-view/link-view";
 import { NoDataView } from "../../views/no-data-view/no-data-view";
 import { SettingsView } from "../../views/settings-view/settings-view";
 import { CollectionViewDelegate } from "./collection-view-delegate/collection-view-delegate";
+import "./swiv-application.scss";
 
 export interface SwivApplicationProps {
   version: string;
@@ -412,10 +408,11 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
         dataCubes: newSettings.dataCubes
       }
     })
-      .then(status => this.setState({
+      .then(
+        status => this.setState({
           appSettings: newSettings
         }),
-            (xhr: XMLHttpRequest) => {
+        (xhr: XMLHttpRequest) => {
           Notifier.failure("Woops", "Something bad happened");
         }
       );

@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-import "./split-tile.scss";
-
 import * as Q from "q";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
 import { Clicker, Dimension, DragPosition, Essence, SplitCombine, Stage, VisStrategy } from "../../../common/models/index";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
-import {
-  classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle,
-  uniqueId
-} from "../../utils/dom/dom";
-import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
-import { SvgIcon } from "../svg-icon/svg-icon";
-
+import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { getMaxItems, SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { FancyDragIndicator } from "../fancy-drag-indicator/fancy-drag-indicator";
 import { SplitMenu } from "../split-menu/split-menu";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./split-tile.scss";
 
 const SPLIT_CLASS_NAME = "split";
 
@@ -357,7 +351,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     >
       <div className="reading">{split.getTitle(dataCube.dimensions)}</div>
       <div className="remove" onClick={this.removeSplit.bind(this, split)}>
-        <SvgIcon svg={require("../../icons/x.svg")}/>
+        <SvgIcon svg={require("../../icons/x.svg")} />
       </div>
     </div>;
   }
@@ -374,7 +368,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       var style = transformStyle(itemX, 0);
       itemX += SECTION_WIDTH;
       return this.renderSplit(split, style, i);
-    },                                                  this);
+    }, this);
 
     var overflowItems = splitsArray.slice(maxItems);
     if (overflowItems.length > 0) {
@@ -390,7 +384,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       <div className="items" ref="items">
         {splitItems}
       </div>
-      {dragPosition ? <FancyDragIndicator dragPosition={dragPosition}/> : null}
+      {dragPosition ? <FancyDragIndicator dragPosition={dragPosition} /> : null}
       {dragPosition ? <div
         className="drag-mask"
         onDragOver={this.dragOver.bind(this)}

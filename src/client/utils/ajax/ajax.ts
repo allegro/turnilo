@@ -35,6 +35,7 @@ function getSplitsDescription(ex: Expression): string {
 }
 
 var reloadRequested = false;
+
 function reload() {
   if (reloadRequested) return;
   reloadRequested = true;

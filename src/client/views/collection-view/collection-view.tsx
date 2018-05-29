@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-import "./collection-view.scss";
-
 import * as React from "react";
-
 import { Collection, CollectionTile, Customization, DataCube, Essence, Timekeeper, User } from "../../../common/models";
-import { Fn } from "../../../common/utils/general/general";
-
-import { STRINGS } from "../../config/constants";
-
 import { move } from "../../../common/utils/array/array";
-import { replaceHash } from "../../utils/url/url";
-
+import { Fn } from "../../../common/utils/general/general";
 import { Notifier, Route, Router } from "../../components";
-
+import { STRINGS } from "../../config/constants";
+import { replaceHash } from "../../utils/url/url";
 import { CollectionHeaderBar } from "./collection-header-bar/collection-header-bar";
 import { CollectionOverview } from "./collection-overview/collection-overview";
 import { CollectionTileLightbox } from "./collection-tile-lightbox/collection-tile-lightbox";
+import "./collection-view.scss";
 
 export interface CollectionViewProps {
   dataCubes: DataCube[];

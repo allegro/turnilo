@@ -92,4 +92,5 @@ export class SettingsLocation extends BaseImmutable<SettingsLocationValue, Setti
   public getReadOnly: () => boolean;
 
 }
+
 BaseImmutable.finalize(SettingsLocation);

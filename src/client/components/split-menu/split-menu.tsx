@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import "./split-menu.scss";
-
 import { NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
 import * as React from "react";
 import {
@@ -41,6 +39,7 @@ import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { ButtonGroup } from "../button-group/button-group";
 import { Dropdown } from "../dropdown/dropdown";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./split-menu.scss";
 
 function formatLimit(limit: number | string): string {
   if (limit === "custom") return "Custom";
@@ -213,7 +212,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     return <div className="sort-direction">
       {this.renderSortDropdown()}
       <div className={"direction " + direction} onClick={this.onToggleDirection.bind(this)}>
-        <SvgIcon svg={require("../../icons/sort-arrow.svg")}/>
+        <SvgIcon svg={require("../../icons/sort-arrow.svg")} />
       </div>
     </div>;
   }

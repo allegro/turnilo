@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import "./immutable-input.scss";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
 import { ImmutableUtils } from "../../../common/utils/index";
 import { classNames } from "../../utils/dom/dom";
 import { ChangeFn } from "../../utils/immutable-form-delegate/immutable-form-delegate";
+import "./immutable-input.scss";
 
 export type InputType = "text" | "textarea";
 
@@ -53,7 +51,7 @@ export class ImmutableInput extends React.Component<ImmutableInputProps, Immutab
   };
 
   static simpleGenerator(instance: any, changeFn: ChangeFn) {
-    return (name: string, validator= /^.+$/, focusOnStartUp= false) => {
+    return (name: string, validator = /^.+$/, focusOnStartUp = false) => {
       return <ImmutableInput
         key={name}
         instance={instance}

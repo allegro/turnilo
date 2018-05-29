@@ -18,17 +18,14 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
-
+import { renderIntoDocument } from "../../utils/test-utils";
 import { DropIndicator } from "./drop-indicator";
 
 describe("DropIndicator", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
-      <DropIndicator/>
+      <DropIndicator />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);

@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-import "./collection-tile-card.scss";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
-import { GlobalEventListener, SvgIcon } from "../../../components/index";
-import { classNames } from "../../../utils/dom/dom";
-
-import { STRINGS } from "../../../config/constants";
-
 import { CollectionTile, Device, DeviceSize, Stage, Timekeeper, VisualizationProps } from "../../../../common/models/index";
-
+import { GlobalEventListener, SvgIcon } from "../../../components/index";
+import { STRINGS } from "../../../config/constants";
+import { classNames } from "../../../utils/dom/dom";
 import { getVisualizationComponent } from "../../../visualizations/index";
+import "./collection-tile-card.scss";
 
 export interface CollectionTileCardProps {
   tile: CollectionTile;
@@ -128,30 +123,30 @@ export class CollectionTileCard extends React.Component<CollectionTileCardProps,
       draggable={draggable}
       onDragStart={onDragStart}
     >
-        <GlobalEventListener
-          resize={this.updateVisualizationStage.bind(this)}
-        />
+      <GlobalEventListener
+        resize={this.updateVisualizationStage.bind(this)}
+      />
 
-        <div className="headband grid-row" onClick={onExpandClick}>
-          <div className="grid-col-80 vertical">
-            <div className="title">{tile.title}</div>
-            <div className="description">{tile.description || STRINGS.noDescription}</div>
-          </div>
-          <div className="grid-col-20 middle right">
-          { editionMode ?
+      <div className="headband grid-row" onClick={onExpandClick}>
+        <div className="grid-col-80 vertical">
+          <div className="title">{tile.title}</div>
+          <div className="description">{tile.description || STRINGS.noDescription}</div>
+        </div>
+        <div className="grid-col-20 middle right">
+          {editionMode ?
             <div className="delete-button" onClick={this.remove.bind(this)}>
-              <SvgIcon svg={require("../../../icons/full-delete.svg")}/>
+              <SvgIcon svg={require("../../../icons/full-delete.svg")} />
             </div>
-          :
+            :
             <div className="expand-button">
-              <SvgIcon svg={require("../../../icons/full-expand.svg")}/>
+              <SvgIcon svg={require("../../../icons/full-expand.svg")} />
             </div>
           }
-          </div>
         </div>
-        <div className="content" ref="visualization">
-          {visElement}
-        </div>
+      </div>
+      <div className="content" ref="visualization">
+        {visElement}
+      </div>
     </div>;
   }
 }

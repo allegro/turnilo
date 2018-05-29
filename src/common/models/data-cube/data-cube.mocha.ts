@@ -389,7 +389,7 @@ describe("DataCube", () => {
             formula: "$main.countDistinct($unique_user)"
           }
         ]
-      },                             context);
+      }, context);
 
       expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
         {
@@ -440,226 +440,226 @@ describe("DataCube", () => {
         rule: "realtime"
       }
     });
-/* TODO: check the correctness of the test */
-/*
-    it("works in basic case (no count) + re-add", () => {
-      var attributes1 = AttributeInfo.fromJSs([
-        { name: '__time', type: 'TIME' },
-        { name: 'page', type: 'STRING' },
-        { name: 'added', type: 'NUMBER' },
-        { name: 'unique_user', special: 'unique' }
-      ]);
+    /* TODO: check the correctness of the test */
+    /*
+        it("works in basic case (no count) + re-add", () => {
+          var attributes1 = AttributeInfo.fromJSs([
+            { name: '__time', type: 'TIME' },
+            { name: 'page', type: 'STRING' },
+            { name: 'added', type: 'NUMBER' },
+            { name: 'unique_user', special: 'unique' }
+          ]);
 
-      var dataCube1 = dataCubeStub.addAttributes(attributes1);
-      expect(dataCube1.toJS()).to.deep.equal({
-        "name": "wiki",
-        "title": "Wiki",
-        "description": "",
-        "clusterName": "druid",
-        "source": "wiki",
-        "refreshRule": {
-          "rule": "realtime",
-          "refresh": "PT1M"
-        },
-        "introspection": "autofill-all",
-        "defaultFilter": { "op": "literal", "value": true },
-        "defaultSortMeasure": "added",
-        "defaultTimezone": "Etc/UTC",
-        "timeAttribute": '__time',
-        "attributes": [
-          {
-            "name": "__time",
-            "type": "TIME"
-          },
-          {
-            "name": "page",
-            "type": "STRING"
-          },
-          {
-            "name": "added",
-            "type": "NUMBER"
-          },
-          {
-            "name": "unique_user",
-            "special": "unique",
-            "type": "STRING"
-          }
-        ],
-        "dimensions": [
-          {
-            "kind": "time",
-            "name": "__time",
-            "title": "Time",
-            "formula": "$__time"
-          },
-          {
-            "kind": "string",
-            "name": "page",
-            "title": "Page",
-            "formula": "$page"
-          }
-        ],
-        "measures": [
-          {
-            "name": "added",
-            "title": "Added",
-            "formula": "$main.sum($added)"
-          },
-          {
-            "name": "unique_user",
-            "title": "Unique User",
-            "formula": "$main.countDistinct($unique_user)"
-          }
-        ]
-      });
+          var dataCube1 = dataCubeStub.addAttributes(attributes1);
+          expect(dataCube1.toJS()).to.deep.equal({
+            "name": "wiki",
+            "title": "Wiki",
+            "description": "",
+            "clusterName": "druid",
+            "source": "wiki",
+            "refreshRule": {
+              "rule": "realtime",
+              "refresh": "PT1M"
+            },
+            "introspection": "autofill-all",
+            "defaultFilter": { "op": "literal", "value": true },
+            "defaultSortMeasure": "added",
+            "defaultTimezone": "Etc/UTC",
+            "timeAttribute": '__time',
+            "attributes": [
+              {
+                "name": "__time",
+                "type": "TIME"
+              },
+              {
+                "name": "page",
+                "type": "STRING"
+              },
+              {
+                "name": "added",
+                "type": "NUMBER"
+              },
+              {
+                "name": "unique_user",
+                "special": "unique",
+                "type": "STRING"
+              }
+            ],
+            "dimensions": [
+              {
+                "kind": "time",
+                "name": "__time",
+                "title": "Time",
+                "formula": "$__time"
+              },
+              {
+                "kind": "string",
+                "name": "page",
+                "title": "Page",
+                "formula": "$page"
+              }
+            ],
+            "measures": [
+              {
+                "name": "added",
+                "title": "Added",
+                "formula": "$main.sum($added)"
+              },
+              {
+                "name": "unique_user",
+                "title": "Unique User",
+                "formula": "$main.countDistinct($unique_user)"
+              }
+            ]
+          });
 
-      var attributes2 = AttributeInfo.fromJSs([
-        { name: '__time', type: 'TIME' },
-        { name: 'page', type: 'STRING' },
-        { name: 'added', type: 'NUMBER' },
-        { name: 'deleted', type: 'NUMBER' },
-        { name: 'unique_user', special: 'unique' },
-        { name: 'user', type: 'STRING' }
-      ]);
+          var attributes2 = AttributeInfo.fromJSs([
+            { name: '__time', type: 'TIME' },
+            { name: 'page', type: 'STRING' },
+            { name: 'added', type: 'NUMBER' },
+            { name: 'deleted', type: 'NUMBER' },
+            { name: 'unique_user', special: 'unique' },
+            { name: 'user', type: 'STRING' }
+          ]);
 
-      var dataCube2 = dataCube1.addAttributes(attributes2);
-      expect(dataCube2.toJS()).to.deep.equal({
-        "name": "wiki",
-        "title": "Wiki",
-        "description": "",
-        "clusterName": "druid",
-        "source": "wiki",
-        "refreshRule": {
-          "refresh": "PT1M",
-          "rule": "realtime"
-        },
-        "introspection": "autofill-all",
-        "defaultFilter": { "op": "literal", "value": true },
-        "defaultSortMeasure": "added",
-        "defaultTimezone": "Etc/UTC",
-        "timeAttribute": '__time',
-        "attributes": [
-          { "name": "__time", "type": "TIME" },
-          { "name": "page", "type": "STRING" },
-          { "name": "added", "type": "NUMBER" },
-          { "name": "unique_user", "special": "unique", "type": "STRING" },
-          { "name": "deleted", "type": "NUMBER" },
-          { "name": "user", "type": "STRING" }
-        ],
-        "dimensions": [
-          {
-            "kind": "time",
-            "name": "__time",
-            "title": "Time",
-            "formula": "$__time"
-          },
-          {
-            "kind": "string",
-            "name": "page",
-            "title": "Page",
-            "formula": "$page"
-          },
-          {
-            "kind": "string",
-            "name": "user",
-            "title": "User",
-            "formula": "$user"
-          }
-        ],
-        "measures": [
-          {
-            "name": "added",
-            "title": "Added",
-            "formula": "$main.sum($added)"
-          },
-          {
-            "name": "unique_user",
-            "title": "Unique User",
-            "formula": "$main.countDistinct($unique_user)"
-          },
-          {
-            "name": "deleted",
-            "title": "Deleted",
-            "formula": "$main.sum($deleted)"
-          }
-        ]
-      });
-    });
+          var dataCube2 = dataCube1.addAttributes(attributes2);
+          expect(dataCube2.toJS()).to.deep.equal({
+            "name": "wiki",
+            "title": "Wiki",
+            "description": "",
+            "clusterName": "druid",
+            "source": "wiki",
+            "refreshRule": {
+              "refresh": "PT1M",
+              "rule": "realtime"
+            },
+            "introspection": "autofill-all",
+            "defaultFilter": { "op": "literal", "value": true },
+            "defaultSortMeasure": "added",
+            "defaultTimezone": "Etc/UTC",
+            "timeAttribute": '__time',
+            "attributes": [
+              { "name": "__time", "type": "TIME" },
+              { "name": "page", "type": "STRING" },
+              { "name": "added", "type": "NUMBER" },
+              { "name": "unique_user", "special": "unique", "type": "STRING" },
+              { "name": "deleted", "type": "NUMBER" },
+              { "name": "user", "type": "STRING" }
+            ],
+            "dimensions": [
+              {
+                "kind": "time",
+                "name": "__time",
+                "title": "Time",
+                "formula": "$__time"
+              },
+              {
+                "kind": "string",
+                "name": "page",
+                "title": "Page",
+                "formula": "$page"
+              },
+              {
+                "kind": "string",
+                "name": "user",
+                "title": "User",
+                "formula": "$user"
+              }
+            ],
+            "measures": [
+              {
+                "name": "added",
+                "title": "Added",
+                "formula": "$main.sum($added)"
+              },
+              {
+                "name": "unique_user",
+                "title": "Unique User",
+                "formula": "$main.countDistinct($unique_user)"
+              },
+              {
+                "name": "deleted",
+                "title": "Deleted",
+                "formula": "$main.sum($deleted)"
+              }
+            ]
+          });
+        });
 
-    it("works with non-url-safe names", () => {
-      var attributes1 = AttributeInfo.fromJSs([
-        { name: '__time', type: 'TIME' },
-        { name: 'page:#love$', type: 'STRING' },
-        { name: 'added:#love$', type: 'NUMBER' },
-        { name: 'unique_user:#love$', special: 'unique' }
-      ]);
+        it("works with non-url-safe names", () => {
+          var attributes1 = AttributeInfo.fromJSs([
+            { name: '__time', type: 'TIME' },
+            { name: 'page:#love$', type: 'STRING' },
+            { name: 'added:#love$', type: 'NUMBER' },
+            { name: 'unique_user:#love$', special: 'unique' }
+          ]);
 
-      var dataCube = dataCubeStub.addAttributes(attributes1);
-      expect(dataCube.toJS()).to.deep.equal({
-        "attributes": [
-          {
-            "name": "__time",
-            "type": "TIME"
-          },
-          {
-            "name": "page:#love$",
-            "type": "STRING"
-          },
-          {
-            "name": "added:#love$",
-            "type": "NUMBER"
-          },
-          {
-            "name": "unique_user:#love$",
-            "special": "unique",
-            "type": "STRING"
-          }
-        ],
-        "clusterName": "druid",
-        "defaultFilter": {
-          "op": "literal",
-          "value": true
-        },
-        "defaultSortMeasure": "added_love_",
-        "defaultTimezone": "Etc/UTC",
-        "dimensions": [
-          {
-            "kind": "time",
-            "name": "__time",
-            "title": "Time",
-            "formula": "$__time"
-          },
-          {
-            "kind": "string",
-            "name": "page_love_",
-            "title": "Page Love",
-            "formula": "${page:#love$}"
-          }
-        ],
-        "introspection": "autofill-all",
-        "measures": [
-          {
-            "name": "added_love_",
-            "title": "Added Love",
-            "formula": "$main.sum(${added:#love$})"
-          },
-          {
-            "name": "unique_user_love_",
-            "title": "Unique User Love",
-            "formula": "$main.countDistinct(${unique_user:#love$})"
-          }
-        ],
-        "name": "wiki",
-        "refreshRule": {
-          "refresh": "PT1M",
-          "rule": "fixed"
-        },
-        "source": "wiki",
-        "timeAttribute": "__time",
-        "title": "Wiki",
-        "description": ""
-      });
-    });*/
+          var dataCube = dataCubeStub.addAttributes(attributes1);
+          expect(dataCube.toJS()).to.deep.equal({
+            "attributes": [
+              {
+                "name": "__time",
+                "type": "TIME"
+              },
+              {
+                "name": "page:#love$",
+                "type": "STRING"
+              },
+              {
+                "name": "added:#love$",
+                "type": "NUMBER"
+              },
+              {
+                "name": "unique_user:#love$",
+                "special": "unique",
+                "type": "STRING"
+              }
+            ],
+            "clusterName": "druid",
+            "defaultFilter": {
+              "op": "literal",
+              "value": true
+            },
+            "defaultSortMeasure": "added_love_",
+            "defaultTimezone": "Etc/UTC",
+            "dimensions": [
+              {
+                "kind": "time",
+                "name": "__time",
+                "title": "Time",
+                "formula": "$__time"
+              },
+              {
+                "kind": "string",
+                "name": "page_love_",
+                "title": "Page Love",
+                "formula": "${page:#love$}"
+              }
+            ],
+            "introspection": "autofill-all",
+            "measures": [
+              {
+                "name": "added_love_",
+                "title": "Added Love",
+                "formula": "$main.sum(${added:#love$})"
+              },
+              {
+                "name": "unique_user_love_",
+                "title": "Unique User Love",
+                "formula": "$main.countDistinct(${unique_user:#love$})"
+              }
+            ],
+            "name": "wiki",
+            "refreshRule": {
+              "refresh": "PT1M",
+              "rule": "fixed"
+            },
+            "source": "wiki",
+            "timeAttribute": "__time",
+            "title": "Wiki",
+            "description": ""
+          });
+        });*/
 
     it("works with existing dimension", () => {
       var attributes1 = AttributeInfo.fromJSs([

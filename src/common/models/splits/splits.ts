@@ -18,8 +18,7 @@
 import { Duration, Timezone } from "chronoshift";
 import { List } from "immutable";
 import { Class, Instance } from "immutable-class";
-import { $, Expression, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
-import { NumberBucketExpression } from "plywood";
+import { $, Expression, NumberBucketExpression, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
 import { immutableListsEqual } from "../../utils/general/general";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
@@ -46,6 +45,7 @@ export type SplitsJS = SplitCombineJS | SplitCombineJS[];
 export type SplitContext = SplitCombineContext;
 
 var check: Class<SplitsValue, SplitsJS>;
+
 export class Splits implements Instance<SplitsValue, SplitsJS> {
   static EMPTY: Splits;
 
@@ -202,7 +202,11 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
 
       if (splitKind === "time") {
         return splitCombine.changeBucketAction(new TimeBucketExpression({
-          duration: TimeRange.isTimeRange(extent) ? (getBestBucketUnitForRange(extent, false, splitDimension.bucketedBy, splitDimension.granularities) as Duration) :
+          duration: TimeRange.isTimeRange(extent) ? (getBestBucketUnitForRange(
+            extent,
+            false,
+            splitDimension.bucketedBy,
+            splitDimension.granularities) as Duration) :
             (getDefaultGranularityForKind("time", splitDimension.bucketedBy, splitDimension.granularities) as TimeBucketExpression).duration
         }));
 
@@ -277,6 +281,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   }
 
 }
+
 check = Splits;
 
 Splits.EMPTY = new Splits(<List<SplitCombine>> List());

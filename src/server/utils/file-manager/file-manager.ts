@@ -20,7 +20,6 @@ import { Logger } from "logger-tracker";
 import * as path from "path";
 import { Dataset, Expression, PseudoDatum } from "plywood";
 import * as Q from "q";
-
 import { parseData } from "../../../common/utils/parser/parser";
 
 export function getFileData(filePath: string): Promise<any[]> {

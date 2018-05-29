@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import "./notifications.scss";
-
 import * as React from "react";
 import { BodyPortal, Button, ButtonType, Modal } from "../index";
 import { NotificationCard } from "./notification-card";
+import "./notifications.scss";
 
 export interface NotificationAction {
   label: string;
@@ -191,7 +190,7 @@ export class Notifications extends React.Component<React.Props<any>, Notificatio
 
       cumuledHeight += [title, message, action].filter(Boolean).length * 30 + 5;
 
-      return <NotificationCard model={n} key={n.id} top={top}/>;
+      return <NotificationCard model={n} key={n.id} top={top} />;
     });
   }
 
@@ -242,7 +241,7 @@ export class Questions extends React.Component<React.Props<any>, QuestionsState>
 
       <div className="button-bar">
         {question.choices.map(({ label, callback, type, className }, i) => {
-          return <Button key={i} className={className} title={label} type={type} onClick={callback}/>;
+          return <Button key={i} className={className} title={label} type={type} onClick={callback} />;
         })}
       </div>
 

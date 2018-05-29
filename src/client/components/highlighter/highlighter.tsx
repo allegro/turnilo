@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import "./highlighter.scss";
-
 import { PlywoodRange } from "plywood";
 import * as React from "react";
+import "./highlighter.scss";
 
 export interface HighlighterProps {
   highlightRange: PlywoodRange;

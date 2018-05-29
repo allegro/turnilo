@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-import "./date-range-input.scss";
-
 import { Timezone } from "chronoshift";
 import "moment-timezone";
 import * as React from "react";
-import { combineDateAndTimeIntoMoment, getWallTimeDateOnlyString, getWallTimeTimeOnlyString, maybeFullyDefinedDate, maybeFullyDefinedTime } from "../../../common/utils";
+import {
+  combineDateAndTimeIntoMoment,
+  getWallTimeDateOnlyString,
+  getWallTimeTimeOnlyString,
+  maybeFullyDefinedDate,
+  maybeFullyDefinedTime
+} from "../../../common/utils";
+import "./date-range-input.scss";
 
 export interface DateRangeInputProps {
   time: Date;
@@ -108,8 +113,8 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
 
     return <div className="date-range-input">
       <div className="label">{this.props.label}</div>
-      <input placeholder="YYYY-MM-DD" className="date-field" value={dateValue} onChange={this.dateChange.bind(this)}/>
-      <input placeholder="HH:MM" className="time-field" value={timeValue} onChange={this.timeChange.bind(this)}/>
+      <input placeholder="YYYY-MM-DD" className="date-field" value={dateValue} onChange={this.dateChange.bind(this)} />
+      <input placeholder="HH:MM" className="time-field" value={timeValue} onChange={this.timeChange.bind(this)} />
     </div>;
   }
 }

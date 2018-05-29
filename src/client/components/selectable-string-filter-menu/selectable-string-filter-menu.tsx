@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import "./selectable-string-filter-menu.scss";
-
 import { $, Dataset, r, Set, SortExpression } from "plywood";
 import * as React from "react";
 import { Clicker, Colors, Dimension, Essence, Filter, FilterClause, FilterMode, Timekeeper } from "../../../common/models/index";
@@ -29,6 +27,7 @@ import { GlobalEventListener } from "../global-event-listener/global-event-liste
 import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
+import "./selectable-string-filter-menu.scss";
 
 const TOP_N = 100;
 
@@ -244,20 +243,20 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
       var checkboxType = filterMode === Filter.EXCLUDED ? "cross" : "check";
       rows = rowStrings.map(segmentValue => {
-          var segmentValueStr = String(segmentValue);
-          var selected = selectedValues && selectedValues.contains(segmentValue);
+        var segmentValueStr = String(segmentValue);
+        var selected = selectedValues && selectedValues.contains(segmentValue);
 
-          return <div
-            className={classNames("row", { selected })}
-            key={segmentValueStr}
-            title={segmentValueStr}
-            onClick={this.onValueClick.bind(this, segmentValue)}
-          >
-            <div className="row-wrapper">
-              <Checkbox type={checkboxType as CheckboxType} selected={selected}/>
-              <HighlightString className="label" text={segmentValueStr} highlight={searchText}/>
-            </div>
-          </div>;
+        return <div
+          className={classNames("row", { selected })}
+          key={segmentValueStr}
+          title={segmentValueStr}
+          onClick={this.onValueClick.bind(this, segmentValue)}
+        >
+          <div className="row-wrapper">
+            <Checkbox type={checkboxType as CheckboxType} selected={selected} />
+            <HighlightString className="label" text={segmentValueStr} highlight={searchText} />
+          </div>
+        </div>;
       });
     }
 
@@ -267,9 +266,9 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     }
 
     return <div className="rows">
-        {rows}
-        {message}
-      </div>;
+      {rows}
+      {message}
+    </div>;
   }
 
   render() {
@@ -283,8 +282,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       />
       <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
         {this.renderRows()}
-        {error ? <QueryError error={error}/> : null}
-        {loading ? <Loader/> : null}
+        {error ? <QueryError error={error} /> : null}
+        {loading ? <Loader /> : null}
       </div>
       <div className="ok-cancel-bar">
         <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} />

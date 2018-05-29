@@ -264,4 +264,5 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   public getFormat: () => string;
   public changeFormat: (newFormat: string) => this;
 }
+
 BaseImmutable.finalize(Measure);

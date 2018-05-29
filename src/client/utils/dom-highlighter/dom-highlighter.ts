@@ -58,6 +58,6 @@ export class DOMHighlighter {
 
     window.setTimeout(() => {
       element.classList.remove("dom-highlighter-wiggle");
-    },                1000);
+    }, 1000);
   }
 }

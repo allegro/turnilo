@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-import "./filter-options-dropdown.scss";
-
 import * as React from "react";
-import { STRINGS } from "../../config/constants";
-
 import { Filter, FilterMode } from "../../../common/models/index";
-
+import { STRINGS } from "../../config/constants";
 import { CheckboxType } from "../checkbox/checkbox";
 import { Dropdown } from "../dropdown/dropdown";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./filter-options-dropdown.scss";
 
 export interface FilterOption {
   label: string;
@@ -78,7 +75,7 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
 
   renderFilterOption(option: FilterOption) {
     return <span className="filter-option">
-      <SvgIcon className="icon" svg={option.svg}/>
+      <SvgIcon className="icon" svg={option.svg} />
       <span className="option-label">{option.label}</span>
     </span>;
   }
@@ -98,7 +95,7 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
         equal={(a, b) => a.value === b.value}
         keyItem={d => d.value}
         renderItem={this.renderFilterOption.bind(this)}
-        renderSelectedItem={d => <SvgIcon className="icon" svg={d.svg}/>}
+        renderSelectedItem={d => <SvgIcon className="icon" svg={d.svg} />}
         onSelect={this.onSelectOption.bind(this)}
       />
     </div>;

@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-import "./vis-selector-menu.scss";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Clicker, Essence, Manifest } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./vis-selector-menu.scss";
 
 export interface VisSelectorMenuProps {
   clicker: Clicker;
@@ -86,7 +85,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
       key={v.name}
       onClick={this.onVisSelect.bind(this, v)}
     >
-      <SvgIcon svg={require("../../icons/vis-" + v.name + ".svg")}/>
+      <SvgIcon svg={require("../../icons/vis-" + v.name + ".svg")} />
       <div className="vis-title">{v.title}</div>
     </div>;
   }

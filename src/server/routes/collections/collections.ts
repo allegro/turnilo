@@ -18,7 +18,6 @@
 import { Response, Router } from "express";
 import { MANIFESTS } from "../../../common/manifests/index";
 import { Collection, CollectionJS } from "../../../common/models/index";
-
 import { SETTINGS_MANAGER } from "../../config";
 import { SwivRequest } from "../../utils/index";
 

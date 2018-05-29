@@ -57,7 +57,7 @@ export class TimeMonitor {
     return check().then(updatedTime => {
         logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
         this.timekeeper = this.timekeeper.updateTime(name, updatedTime);
-      },                e => {
+      }, e => {
         logger.error(`Error getting time for '${name}': ${e.message}`);
       }
     );

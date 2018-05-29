@@ -16,6 +16,7 @@
  */
 
 import { Dimension, DimensionJS } from "./dimension";
+
 export class DimensionMock {
   public static get COUNTRY_STRING_JS(): DimensionJS {
     return {

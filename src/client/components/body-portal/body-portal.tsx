@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import "./body-portal.scss";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import "./body-portal.scss";
 
 export interface BodyPortalProps {
   left?: number | string;

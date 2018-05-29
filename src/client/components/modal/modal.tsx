@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import "./modal.scss";
-
 import * as React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames, isInside, uniqueId } from "../../utils/dom/dom";
@@ -24,6 +22,7 @@ import { BodyPortal } from "../body-portal/body-portal";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
 import { GoldenCenter } from "../golden-center/golden-center";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./modal.scss";
 
 export interface ModalProps {
   className?: string;
@@ -40,7 +39,7 @@ export interface ModalState {
 }
 
 export class Modal extends React.Component<ModalProps, ModalState> {
-  private focusAlreadyGiven =  false;
+  private focusAlreadyGiven = false;
 
   constructor(props: ModalProps) {
     super(props);
@@ -132,7 +131,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
       titleElement = <div className="modal-title">
         <div className="text">{title}</div>
         <div className="close" onClick={onClose}>
-          <SvgIcon svg={require("../../icons/full-remove.svg")}/>
+          <SvgIcon svg={require("../../icons/full-remove.svg")} />
         </div>
       </div>;
     }

@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import { findDOMNode } from "../../utils/test-utils";
-
 import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as sinon from "sinon";
+import { findDOMNode } from "../../utils/test-utils";
 
 import { Route, Router } from "./router";
 
@@ -29,10 +28,11 @@ interface FakeProps {
   itemId?: string;
   action?: string;
 
-  object?: {label: string};
+  object?: { label: string };
 }
 
-interface FakeState {}
+interface FakeState {
+}
 
 class Fake extends React.Component<FakeProps, FakeState> {
 
@@ -44,6 +44,7 @@ class Fake extends React.Component<FakeProps, FakeState> {
     return <div className="fakey-fakey">{str}</div>;
   }
 }
+
 // -- end of Fake class
 
 describe("Router", () => {
@@ -100,8 +101,9 @@ describe("Router", () => {
 
       children = [
         <Route fragment=":itemId" alwaysShowOrphans={true}>
-          <div className="pouet-class">baz</div> // Should alway be visible
-          <Route transmit={["itemId"]} fragment=":action"><Fake/></Route>
+          <div className="pouet-class">baz</div>
+          // Should alway be visible
+          <Route transmit={["itemId"]} fragment=":action"><Fake /></Route>
         </Route>
       ];
 
@@ -130,15 +132,16 @@ describe("Router", () => {
     beforeEach(() => {
       node = window.document.createElement("div");
 
-      var pump = (key: string, value: string): {key: string, value: any} => {
+      var pump = (key: string, value: string): { key: string, value: any } => {
         if (key === "action") return { key, value };
         return { key: "object", value: { label: value.toUpperCase() } };
       };
 
       children = [
         <Route fragment=":itemId" alwaysShowOrphans={true}>
-          <div className="pouet-class">baz</div> // Should alway be visible
-          <Route transmit={["itemId"]} fragment=":action" inflate={pump}><Fake/></Route>
+          <div className="pouet-class">baz</div>
+          // Should alway be visible
+          <Route transmit={["itemId"]} fragment=":action" inflate={pump}><Fake /></Route>
         </Route>
       ];
 
@@ -184,12 +187,12 @@ describe("Router", () => {
 
         <Route fragment="baz">
           <div className="baz-class">baz</div>
-          <Route fragment=":itemId"><Fake/></Route> // Fake is gonna get passed whatever replaces :bazId in the hash
+          <Route fragment=":itemId"><Fake /></Route> // Fake is gonna get passed whatever replaces :bazId in the hash
         </Route>,
 
         <Route fragment="qux">
           <div className="qux-class">qux</div>
-          <Route fragment=":itemId/:action=edit"><Fake/></Route> // default value for variable
+          <Route fragment=":itemId/:action=edit"><Fake /></Route> // default value for variable
         </Route>
       ];
 

@@ -21,13 +21,11 @@ import * as http from "http";
 import * as nock from "nock";
 import * as Q from "q";
 import * as supertest from "supertest";
-
 import { AppSettings } from "../../../common/models";
 import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
 import { ClusterFixtures } from "../../../common/models/cluster/cluster.fixtures";
 import { SwivRequest } from "../../utils";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
-
 import * as healthRouter from "./health";
 
 const appSettingsHandlerProvider = (appSettings: AppSettings): RequestHandler => {
@@ -98,22 +96,30 @@ describe("health router", () => {
     });
 
     const multipleClustersTests = [
-      { scenario: "all healthy brokers",
+      {
+        scenario: "all healthy brokers",
         wikiBroker: { status: 200, initialized: true, delay: 0 },
         twitterBroker: { status: 200, initialized: true, delay: 0 },
-        expectedStatus: 200 },
-      { scenario: "single unhealthy broker",
+        expectedStatus: 200
+      },
+      {
+        scenario: "single unhealthy broker",
         wikiBroker: { status: 500, initialized: true, delay: 0 },
         twitterBroker: { status: 200, initialized: true, delay: 0 },
-        expectedStatus: 503 },
-      { scenario: "single uninitialized broker",
+        expectedStatus: 503
+      },
+      {
+        scenario: "single uninitialized broker",
         wikiBroker: { status: 200, initialized: true, delay: 0 },
         twitterBroker: { status: 200, initialized: false, delay: 0 },
-        expectedStatus: 503 },
-      { scenario: "timeout to single broker",
+        expectedStatus: 503
+      },
+      {
+        scenario: "timeout to single broker",
         wikiBroker: { status: 200, initialized: true, delay: 100 },
         twitterBroker: { status: 200, initialized: true, delay: 0 },
-        expectedStatus: 503 }
+        expectedStatus: 503
+      }
     ];
 
     multipleClustersTests.forEach(({ scenario, wikiBroker, twitterBroker, expectedStatus }) => {

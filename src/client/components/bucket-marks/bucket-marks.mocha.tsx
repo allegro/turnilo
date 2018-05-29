@@ -19,12 +19,9 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
-import { BucketMarks } from "./bucket-marks";
-
 import { StageMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
+import { BucketMarks } from "./bucket-marks";
 
 describe("BucketMarks", () => {
   it("adds the correct class", () => {

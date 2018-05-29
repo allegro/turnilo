@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import "./totals.scss";
-
 import { $, Expression, ply } from "plywood";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
 import { DatasetLoad, Essence, Timekeeper, VisualizationProps } from "../../../common/models/index";
-
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import "./totals.scss";
 
 const PADDING_H = 60;
 const TOTAL_WIDTH = 176;

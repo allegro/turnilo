@@ -19,12 +19,9 @@ import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
 import { StageMock } from "../../../common/models/mocks";
-
+import { renderIntoDocument } from "../../utils/test-utils";
 import { LineChartAxis } from "./line-chart-axis";
 
 describe("LineChartAxis", () => {

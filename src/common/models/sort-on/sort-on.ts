@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
@@ -32,6 +33,7 @@ export interface SortOnJS {
 }
 
 var check: Class<SortOnValue, SortOnJS>;
+
 export class SortOn implements Instance<SortOnValue, SortOnJS> {
 
   static isSortOn(candidate: any): candidate is SortOn {
@@ -128,4 +130,5 @@ export class SortOn implements Instance<SortOnValue, SortOnJS> {
     return $(this.toName());
   }
 }
+
 check = SortOn;

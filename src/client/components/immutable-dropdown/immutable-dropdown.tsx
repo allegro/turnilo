@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import "./immutable-dropdown.scss";
-
-import { ImmutableUtils } from "../../../common/utils/index";
-
 import * as React from "react";
 import { ListItem } from "../../../common/models/index";
+import { ImmutableUtils } from "../../../common/utils/index";
 import { ChangeFn } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 import { Dropdown } from "../dropdown/dropdown";
+import "./immutable-dropdown.scss";
 
 export interface ImmutableDropdownProps<T> {
   instance: any;
@@ -44,7 +42,7 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
   // const MyDropdown = ImmutableDropdown.specialize<MyImmutableClass>();
   // then : <MyDropdown ... />
   static specialize<U>() {
-    return ImmutableDropdown as { new (props: ImmutableDropdownProps<U>): ImmutableDropdown<U>; };
+    return ImmutableDropdown as { new(props: ImmutableDropdownProps<U>): ImmutableDropdown<U>; };
   }
 
   static simpleGenerator(instance: any, changeFn: ChangeFn) {

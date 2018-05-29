@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-import "./link-header-bar.scss";
-
 import { Timezone } from "chronoshift";
 import * as React from "react";
-import { Fn } from "../../../../common/utils/general/general";
-
-import { SettingsMenu, SvgIcon, UserMenu } from "../../../components/index";
-
 import { Customization, User } from "../../../../common/models/index";
+import { Fn } from "../../../../common/utils/general/general";
+import { SettingsMenu, SvgIcon, UserMenu } from "../../../components/index";
+import "./link-header-bar.scss";
 
 export interface LinkHeaderBarProps {
   title: string;
@@ -119,7 +116,7 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
     var userButton: JSX.Element = null;
     if (user) {
       userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
-        <SvgIcon svg={require("../../../icons/full-user.svg")}/>
+        <SvgIcon svg={require("../../../icons/full-user.svg")} />
       </div>;
     }
 
@@ -133,17 +130,17 @@ export class LinkHeaderBar extends React.Component<LinkHeaderBarProps, LinkHeade
     return <header className="link-header-bar" style={headerStyle}>
       <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
-          <SvgIcon svg={require("../../../icons/menu.svg")}/>
+          <SvgIcon svg={require("../../../icons/menu.svg")} />
         </div>
         <div className="title">{title}</div>
       </div>
       <div className="right-bar">
         <div className="text-button" onClick={onExploreClick}>Explore</div>
         <a className="icon-button help" href="https://groups.google.com/forum/#!forum/imply-user-group" target="_blank">
-          <SvgIcon className="help-icon" svg={require("../../../icons/help.svg")}/>
+          <SvgIcon className="help-icon" svg={require("../../../icons/help.svg")} />
         </a>
         <div className="icon-button settings" onClick={this.onSettingsMenuClick.bind(this)}>
-          <SvgIcon className="settings-icon" svg={require("../../../icons/full-settings.svg")}/>
+          <SvgIcon className="settings-icon" svg={require("../../../icons/full-settings.svg")} />
         </div>
         {userButton}
       </div>

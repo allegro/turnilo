@@ -16,6 +16,7 @@
  */
 
 import * as jsdom from "jsdom";
+
 var kickstart = () => {
   let g: any = <any> global;
   let document = jsdom.jsdom("<!doctype html><html><body></body></html>");

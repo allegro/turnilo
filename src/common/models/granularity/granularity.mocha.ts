@@ -19,7 +19,15 @@ import { expect } from "chai";
 import { Duration } from "chronoshift";
 import { immutableArraysEqual } from "immutable-class";
 import { NumberBucketExpression, NumberRange, TimeBucketExpression, TimeRange } from "plywood";
-import { getBestBucketUnitForRange, getDefaultGranularityForKind, getGranularities, granularityEquals, granularityFromJS, granularityToString, updateBucketSize } from "./granularity";
+import {
+  getBestBucketUnitForRange,
+  getDefaultGranularityForKind,
+  getGranularities,
+  granularityEquals,
+  granularityFromJS,
+  granularityToString,
+  updateBucketSize
+} from "./granularity";
 
 describe("Granularity", () => {
   it("fromJSes appropriately", () => {

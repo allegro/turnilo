@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import "./side-drawer.scss";
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Collection, Customization, DataCube, User } from "../../../common/models";
@@ -26,6 +24,7 @@ import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { NavList } from "../nav-list/nav-list";
 import { NavLogo } from "../nav-logo/nav-logo";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./side-drawer.scss";
 
 export interface SideDrawerProps {
   user: User;

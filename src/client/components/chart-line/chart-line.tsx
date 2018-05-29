@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-import "./chart-line.scss";
-
 import * as d3 from "d3";
 import { immutableEqual } from "immutable-class";
 import { Dataset, Datum, NumberRange, PlywoodRange, Range, TimeRange } from "plywood";
 import * as React from "react";
 import { Stage } from "../../../common/models/index";
+import "./chart-line.scss";
 
 const lineFn = d3.svg.line();
 
@@ -106,10 +105,10 @@ export class ChartLine extends React.Component<ChartLineProps, ChartLineState> {
     if (dataPoints.length > 1) {
       if (showArea) {
         var areaFn = d3.svg.area().y0(scaleY(0));
-        areaPath = <path className="area" d={areaFn(dataPoints)}/>;
+        areaPath = <path className="area" d={areaFn(dataPoints)} />;
       }
 
-      linePath = <path className="line" d={lineFn(dataPoints)} style={strokeStyle}/>;
+      linePath = <path className="line" d={lineFn(dataPoints)} style={strokeStyle} />;
     } else if (dataPoints.length === 1) {
       singletonCircle = <circle
         className="singleton"

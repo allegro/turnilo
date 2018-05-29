@@ -40,7 +40,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
       pinnedSort: definition.pinnedSort,
       colors: definition.legend && legendConverter.toColors(definition.legend),
       highlight: definition.highlight && highlightConverter(dataCube).toHighlight(definition.highlight).toJS()
-    },                    { dataCube, visualizations });
+    }, { dataCube, visualizations });
   }
 
   toViewDefinition(essence: Essence): ViewDefinition3 {

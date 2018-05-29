@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-import "./add-collection-tile-modal.scss";
-
 import * as React from "react";
 import { Collection, CollectionTile, DataCube, Essence, Timekeeper } from "../../../common/models/index";
-import { generateUniqueName } from "../../../common/utils/string/string";
-import { classNames } from "../../utils/dom/dom";
-
-import { Button, Checkbox, Dropdown, FormLabel, ImmutableInput, Modal } from "../../components/index";
-
-import { STRINGS } from "../../config/constants";
-
 import { COLLECTION_ITEM as LABELS } from "../../../common/models/labels";
-
+import { generateUniqueName } from "../../../common/utils/string/string";
+import { Button, Checkbox, Dropdown, FormLabel, ImmutableInput, Modal } from "../../components/index";
+import { STRINGS } from "../../config/constants";
+import { classNames } from "../../utils/dom/dom";
 import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
+import "./add-collection-tile-modal.scss";
 
 export type CollectionMode = "adding" | "picking" | "none";
 
@@ -138,7 +133,7 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
     const { collection, newInstance } = this.state;
     const { collections } = this.props;
 
-    if (!collections || collections.length === 0)  return null;
+    if (!collections || collections.length === 0) return null;
 
     const MyDropDown = Dropdown.specialize<Collection>();
 
@@ -214,9 +209,9 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
           onChange={onCollectionChange}
           focusOnStartUp={true}
         />
-        { collections.length > 0 ?
+        {collections.length > 0 ?
           <div className="new-collection" onClick={toggleCollectionMode}>Or pick an existing collection</div>
-        : <div className="new-collection disabled">This will be a new collection</div> }
+          : <div className="new-collection disabled">This will be a new collection</div>}
       </div>;
     }
   }
@@ -264,13 +259,13 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
         {makeLabel("description")}
         {makeTextInput("description", /^.*$/)}
 
-        { isRelative ?
+        {isRelative ?
           <Checkbox
             selected={convertToFixedTime}
             onClick={this.toggleConvertToFixed.bind(this)}
             label={STRINGS.convertToFixedTime}
           />
-        : null }
+          : null}
 
       </form>
 
@@ -281,7 +276,7 @@ export class AddCollectionTileModal extends React.Component<AddCollectionTileMod
           type="primary"
           onClick={this.save.bind(this)}
         />
-        <Button className="cancel" title="Cancel" type="secondary" onClick={onCancel}/>
+        <Button className="cancel" title="Cancel" type="secondary" onClick={onCancel} />
       </div>
     </Modal>;
   }

@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-import "./dimension-modal.scss";
-
 import * as React from "react";
-import { classNames } from "../../utils/dom/dom";
-
-import { Button, FormLabel, ImmutableDropdown, ImmutableInput, Modal } from "../../components/index";
-
 import { BucketingStrategy, Dimension, granularityFromJS, granularityToString, ListItem } from "../../../common/models/index";
-
 import { DIMENSION as LABELS } from "../../../common/models/labels";
-
+import { Button, FormLabel, ImmutableDropdown, ImmutableInput, Modal } from "../../components/index";
+import { classNames } from "../../utils/dom/dom";
 import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
+import "./dimension-modal.scss";
 
 export interface DimensionModalProps {
   dimension?: Dimension;
@@ -127,8 +122,8 @@ export class DimensionModal extends React.Component<DimensionModalProps, Immutab
       </form>
 
       <div className="button-bar">
-        <Button className={classNames("save", { disabled: saveButtonDisabled })} title="OK" type="primary" onClick={this.save.bind(this)}/>
-        <Button className="cancel" title="Cancel" type="secondary" onClick={this.props.onClose}/>
+        <Button className={classNames("save", { disabled: saveButtonDisabled })} title="OK" type="primary" onClick={this.save.bind(this)} />
+        <Button className="cancel" title="Cancel" type="secondary" onClick={this.props.onClose} />
       </div>
 
     </Modal>;

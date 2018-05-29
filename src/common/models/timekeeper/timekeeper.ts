@@ -88,5 +88,6 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   }
 
 }
+
 BaseImmutable.finalize(Timekeeper);
 Timekeeper.EMPTY = new Timekeeper({ timeTags: [] });

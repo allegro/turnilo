@@ -18,11 +18,8 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-
 import { DataCubeMock } from "../../../../common/models/mocks";
-
 import { findDOMNode, renderIntoDocument } from "../../../utils/test-utils";
-
 import { CollectionHeaderBar } from "./collection-header-bar";
 
 describe("CollectionHeaderBar", () => {

@@ -21,13 +21,11 @@ import { Response } from "express";
 import { $ } from "plywood";
 import * as Q from "q";
 import * as supertest from "supertest";
-
+import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
 import { AppSettings } from "../../../common/models/index";
 import { UrlHashConverterFixtures } from "../../../common/utils/url-hash-converter/url-hash-converter.fixtures";
 import { SwivRequest } from "../../utils/index";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
-
-import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
 
 import * as mkurlRouter from "./mkurl";
 

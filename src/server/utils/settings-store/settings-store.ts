@@ -29,9 +29,12 @@ function readSettingsFactory(filepath: string, format: Format, inline = false) {
     return Q(fs.readFile(filepath, "utf-8")
       .then(fileData => {
         switch (format) {
-          case "json": return JSON.parse(fileData);
-          case "yaml": return yaml.safeLoad(fileData);
-          default: throw new Error(`unsupported format '${format}'`);
+          case "json":
+            return JSON.parse(fileData);
+          case "yaml":
+            return yaml.safeLoad(fileData);
+          default:
+            throw new Error(`unsupported format '${format}'`);
         }
       })
       .then(appSettingsJS => {
@@ -46,9 +49,12 @@ function writeSettingsFactory(filepath: string, format: Format) {
   return (appSettings: AppSettings) => {
     return Q.fcall(() => {
       switch (format) {
-        case "json": return JSON.stringify(appSettings);
-        case "yaml": return appSettingsToYAML(appSettings, false);
-        default: throw new Error(`unsupported format '${format}'`);
+        case "json":
+          return JSON.stringify(appSettings);
+        case "yaml":
+          return appSettingsToYAML(appSettings, false);
+        default:
+          throw new Error(`unsupported format '${format}'`);
       }
     })
       .then(appSettingsYAML => {

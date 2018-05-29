@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
@@ -18,14 +19,10 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
-
 import { SortOn } from "../../../common/models/index";
 import { EssenceMock } from "../../../common/models/mocks";
-
+import { renderIntoDocument } from "../../utils/test-utils";
 import { PinboardMeasureTile } from "./pinboard-measure-tile";
 
 describe("PinboardMeasureTile", () => {

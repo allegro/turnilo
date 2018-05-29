@@ -19,10 +19,8 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
 import { DimensionMock, EssenceMock, StageMock, TimekeeperMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
 import { TimeFilterMenu } from "./time-filter-menu";
 
 describe.skip("TimeFilterMenu", () => {

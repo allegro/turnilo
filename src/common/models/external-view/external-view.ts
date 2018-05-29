@@ -29,6 +29,7 @@ export interface ExternalViewValue {
 }
 
 var check: Class<ExternalViewValue, ExternalViewValue>;
+
 export class ExternalView implements Instance<ExternalViewValue, ExternalViewValue> {
 
   static isExternalView(candidate: any): candidate is ExternalView {
@@ -110,4 +111,5 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
     return `${this.title}: ${this.linkGenerator}`;
   }
 }
+
 check = ExternalView;

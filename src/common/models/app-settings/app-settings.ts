@@ -49,6 +49,7 @@ export interface AppSettingsContext {
 }
 
 var check: Class<AppSettingsValue, AppSettingsJS>;
+
 export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   static BLANK = AppSettings.fromJS({}, { visualizations: [] });
 
@@ -303,4 +304,5 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 
 }
+
 check = AppSettings;

@@ -18,12 +18,10 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
 import { TimekeeperMock } from "../../../common/models/mocks";
+import "../../utils/test-utils";
 import { renderIntoDocument } from "../../utils/test-utils";
-
 import { Geo } from "./geo";
 
 describe("Geo", () => {

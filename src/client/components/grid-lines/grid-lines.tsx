@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import "./grid-lines.scss";
-
 import * as React from "react";
 import { Stage } from "../../../common/models/index";
 import { classNames, roundToHalfPx } from "../../utils/dom/dom";
+import "./grid-lines.scss";
 
 export interface GridLinesProps {
   orientation: string;

@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import "./nav-list.scss";
-
 import * as React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./nav-list.scss";
 
 export interface NavLink {
   name: string;
@@ -41,12 +40,12 @@ export interface NavListProps {
 export interface NavListState {
 }
 
-export class NavList extends React.Component< NavListProps, NavListState> {
+export class NavList extends React.Component<NavListProps, NavListState> {
 
   renderIcon(iconSvg: string): any {
     if (!iconSvg) return null;
     return <span className="icon">
-      <SvgIcon svg={iconSvg}/>
+      <SvgIcon svg={iconSvg} />
     </span>;
   }
 

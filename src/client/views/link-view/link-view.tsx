@@ -15,33 +15,41 @@
  * limitations under the License.
  */
 
-import "./link-view.scss";
-
 import { Timezone } from "chronoshift";
 import { SimpleArray } from "immutable-class";
 import { $, Expression } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Clicker, Collection, CollectionTile, Colors, Customization, Essence, Filter, FilterClause,
-  Measure, Stage, Timekeeper, User, VisualizationProps } from "../../../common/models/index";
+import {
+  Clicker,
+  Collection,
+  CollectionTile,
+  Colors,
+  Customization,
+  Essence,
+  Filter,
+  FilterClause,
+  Measure,
+  Stage,
+  Timekeeper,
+  User,
+  VisualizationProps
+} from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
-import { classNames } from "../../utils/dom/dom";
-
-import { STRINGS } from "../../config/constants";
-import * as localStorage from "../../utils/local-storage/local-storage";
-
 import { Dropdown, ManualFallback, PinboardPanel, Preset, ResizeHandle } from "../../components/index";
-
+import { STRINGS } from "../../config/constants";
+import { classNames } from "../../utils/dom/dom";
+import * as localStorage from "../../utils/local-storage/local-storage";
 import { getVisualizationComponent } from "../../visualizations/index";
-
 import { LinkHeaderBar } from "./link-header-bar/link-header-bar";
+import "./link-view.scss";
 
 var $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
 var latestPresets: Preset[] = [
-  { name: STRINGS.last5Minutes,  selection: $maxTime.timeRange("PT5M", -1) },
-  { name: STRINGS.lastHour,  selection: $maxTime.timeRange("PT1H", -1) },
-  { name: STRINGS.lastDay,  selection: $maxTime.timeRange("P1D", -1)  },
-  { name: STRINGS.lastWeek,  selection: $maxTime.timeRange("P1W", -1)  }
+  { name: STRINGS.last5Minutes, selection: $maxTime.timeRange("PT5M", -1) },
+  { name: STRINGS.lastHour, selection: $maxTime.timeRange("PT1H", -1) },
+  { name: STRINGS.lastDay, selection: $maxTime.timeRange("P1D", -1) },
+  { name: STRINGS.lastWeek, selection: $maxTime.timeRange("P1W", -1) }
 ];
 
 export interface LinkViewLayout {
@@ -253,10 +261,10 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       items={latestPresets}
       selectedItem={selected}
       equal={(a, b) => {
-          if (a === b) return true;
-          if (!a !== !b) return false;
-          return a.selection === b.selection;
-        }
+        if (a === b) return true;
+        if (!a !== !b) return false;
+        return a.selection === b.selection;
+      }
       }
       renderItem={p => p ? p.name : ""}
       onSelect={this.selectPreset.bind(this)}
@@ -357,7 +365,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       <div className="container" ref="container">
         {this.renderLinkPanel(styles.linkMeasurePanel)}
 
-        {deviceSize !== "small" ?  <ResizeHandle
+        {deviceSize !== "small" ? <ResizeHandle
           side="left"
           initialValue={layout.linkPanelWidth}
           onResize={this.onLinkPanelResize.bind(this)}

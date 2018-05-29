@@ -16,7 +16,6 @@
  */
 
 import { $ } from "plywood";
-
 import { MANIFESTS } from "../../manifests/index";
 import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { CollectionTile, CollectionTileContext, CollectionTileJS } from "./collection-tile";

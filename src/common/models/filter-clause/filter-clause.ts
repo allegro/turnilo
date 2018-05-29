@@ -39,6 +39,7 @@ import {
 // Basically these represent
 // expression.in(selection) .not()?
 export type FilterSelection = Expression | string;
+
 export enum SupportedAction {
   overlap = "overlap",
   contains = "contains",

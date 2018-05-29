@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import "./query-error.scss";
-
 import * as React from "react";
 import { STRINGS } from "../../config/constants";
+import "./query-error.scss";
 
 export interface QueryErrorProps {
   error: any;

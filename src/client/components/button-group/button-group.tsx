@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import "./button-group.scss";
-
 import * as React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
+import "./button-group.scss";
 
 export interface GroupMember {
   title: string;
@@ -43,7 +42,8 @@ export class ButtonGroup extends React.Component<ButtonGroupProps, ButtonGroupSt
   renderMembers() {
     const { groupMembers } = this.props;
     return groupMembers.map(button => {
-      return <li className={classNames("group-member", button.className, { selected : button.isSelected })}
+      return <li
+        className={classNames("group-member", button.className, { selected: button.isSelected })}
         key={button.key}
         onClick={button.onClick}
       >

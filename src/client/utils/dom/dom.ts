@@ -76,7 +76,7 @@ export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
   // Remove the host after a ms because it is no longer needed
   setTimeout(() => {
     dragGhost.remove();
-  },         1);
+  }, 1);
 }
 
 export function enterKey(e: KeyboardEvent): boolean {
@@ -96,6 +96,7 @@ export function rightKey(e: KeyboardEvent): boolean {
 }
 
 var lastID = 0;
+
 export function uniqueId(prefix: string): string {
   lastID++;
   return prefix + lastID;

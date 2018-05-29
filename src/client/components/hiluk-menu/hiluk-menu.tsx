@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import "./hiluk-menu.scss";
-
 import { Dataset } from "plywood";
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
@@ -25,6 +23,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { download, FileFormat, makeFileName } from "../../utils/download/download";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import "./hiluk-menu.scss";
 
 export interface HilukMenuProps {
   essence: Essence;
@@ -110,17 +109,17 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
 
     shareOptions.push(<CopyToClipboard text={url}>
       <li
-      className="copy-url clipboard"
-      key="copy-url"
-      onClick={onClose}>{fixedTimeUrl ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}</li>
+        className="copy-url clipboard"
+        key="copy-url"
+        onClick={onClose}>{fixedTimeUrl ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}</li>
     </CopyToClipboard>);
 
     if (fixedTimeUrl) {
       shareOptions.push(<CopyToClipboard text={fixedTimeUrl}>
         <li
-        className="copy-specific-url clipboard"
-        key="copy-specific-url"
-        onClick={onClose}>{STRINGS.copyFixedTimeUrl}</li>
+          className="copy-specific-url clipboard"
+          key="copy-specific-url"
+          onClick={onClose}>{STRINGS.copyFixedTimeUrl}</li>
       </CopyToClipboard>);
     }
 

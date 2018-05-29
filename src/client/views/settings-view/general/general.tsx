@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-import "./general.scss";
-
 import { Timezone } from "chronoshift";
 import * as React from "react";
-
+import { AppSettings } from "../../../../common/models/index";
+import { GENERAL as LABELS } from "../../../../common/models/labels";
 import { Button } from "../../../components/button/button";
 import { FormLabel } from "../../../components/form-label/form-label";
 import { ImmutableInput } from "../../../components/immutable-input/immutable-input";
-
-import { GENERAL as LABELS } from "../../../../common/models/labels";
-
-import { AppSettings } from "../../../../common/models/index";
-
 import { ImmutableFormDelegate, ImmutableFormState } from "../../../utils/immutable-form-delegate/immutable-form-delegate";
+import "./general.scss";
 
 export interface GeneralProps {
   settings?: AppSettings;
@@ -46,10 +41,11 @@ export class General extends React.Component<GeneralProps, ImmutableFormState<Ap
   }
 
   componentWillReceiveProps(nextProps: GeneralProps) {
-    if (nextProps.settings) { this.setState({
-      newInstance: nextProps.settings,
-      errors: {}
-    });
+    if (nextProps.settings) {
+      this.setState({
+        newInstance: nextProps.settings,
+        errors: {}
+      });
     }
   }
 
@@ -75,7 +71,7 @@ export class General extends React.Component<GeneralProps, ImmutableFormState<Ap
     return <div className="general">
       <div className="title-bar">
         <div className="title">General</div>
-        {canSave ? <Button className="save" title="Save" type="primary" onClick={this.save.bind(this)}/> : null}
+        {canSave ? <Button className="save" title="Save" type="primary" onClick={this.save.bind(this)} /> : null}
       </div>
       <div className="content">
         <form className="vertical">

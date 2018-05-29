@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import "./bucket-marks.scss";
-
 import { PlywoodValue } from "plywood";
 import * as React from "react";
 import { Stage } from "../../../common/models/index";
 import { roundToHalfPx } from "../../utils/dom/dom";
+import "./bucket-marks.scss";
 
 const TICK_HEIGHT = 5;
 
@@ -40,9 +39,10 @@ export class BucketMarks extends React.Component<BucketMarksProps, BucketMarksSt
     var stageWidth = stage.width;
 
     var lines: JSX.Element[] = [];
+
     function addLine(x: number, key: string) {
       if (stageWidth < x) return;
-      lines.push(<line key={key} x1={x} y1={0} x2={x} y2={TICK_HEIGHT}/>);
+      lines.push(<line key={key} x1={x} y1={0} x2={x} y2={TICK_HEIGHT} />);
     }
 
     for (var tick of ticks) {

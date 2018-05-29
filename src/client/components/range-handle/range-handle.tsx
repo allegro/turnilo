@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import "./range-handle.scss";
-
 import * as React from "react";
 import { clamp, classNames, getXFromEvent } from "../../utils/dom/dom";
+import "./range-handle.scss";
 
 export interface RangeHandleProps {
   positionLeft: number;
@@ -41,7 +40,7 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
   constructor(props: RangeHandleProps) {
     super(props);
     this.state = {
-      anchor:  null
+      anchor: null
     };
 
     this.onGlobalMouseUp = this.onGlobalMouseUp.bind(this);

@@ -16,7 +16,6 @@
  */
 
 import { Response, Router } from "express";
-
 import { SETTINGS_MANAGER } from "../../config";
 import { SwivRequest } from "../../utils";
 import { mainLayout } from "../../views";

@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-import "./cube-header-bar.scss";
-
 import { Duration, Timezone } from "chronoshift";
 import { immutableEqual } from "immutable-class";
 import { Dataset } from "plywood";
 import * as React from "react";
-import { Fn } from "../../../../common/utils/general/general";
-import { classNames } from "../../../utils/dom/dom";
-
-import { AutoRefreshMenu, HilukMenu, SettingsMenu, SvgIcon, UserMenu } from "../../../components/index";
-
 import { Clicker, Customization, DataCube, Essence, ExternalView, Timekeeper, User } from "../../../../common/models/index";
+import { Fn } from "../../../../common/utils/general/general";
+import { AutoRefreshMenu, HilukMenu, SettingsMenu, SvgIcon, UserMenu } from "../../../components/index";
+import { classNames } from "../../../utils/dom/dom";
+import "./cube-header-bar.scss";
 
 export interface CubeHeaderBarProps {
   clicker: Clicker;
@@ -88,7 +85,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       setTimeout(() => {
         if (!this.mounted) return;
         this.setState({ animating: false });
-      },         1000);
+      }, 1000);
     }
   }
 
@@ -114,7 +111,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     if (refreshMaxTime && rate) {
       this.autoRefreshTimer = window.setInterval(() => {
         refreshMaxTime();
-      },                                         rate.getCanonicalLength());
+      }, rate.getCanonicalLength());
     }
 
     this.setState({
@@ -287,7 +284,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     var userButton: JSX.Element = null;
     if (user) {
       userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
-        <SvgIcon svg={require("../../../icons/full-user.svg")}/>
+        <SvgIcon svg={require("../../../icons/full-user.svg")} />
       </div>;
     }
 
@@ -301,19 +298,19 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     return <header className="cube-header-bar" style={headerStyle}>
       <div className="left-bar" onClick={onNavClick}>
         <div className="menu-icon">
-          <SvgIcon svg={require("../../../icons/menu.svg")}/>
+          <SvgIcon svg={require("../../../icons/menu.svg")} />
         </div>
         <div className="title">{essence.dataCube.title}</div>
       </div>
       <div className="right-bar">
         <div className={classNames("icon-button", "auto-refresh", { refreshing: animating })} onClick={this.onAutoRefreshMenuClick.bind(this)}>
-          <SvgIcon className="auto-refresh-icon" svg={require("../../../icons/full-refresh.svg")}/>
+          <SvgIcon className="auto-refresh-icon" svg={require("../../../icons/full-refresh.svg")} />
         </div>
         <div className="icon-button hiluk" onClick={this.onHilukMenuClick.bind(this)}>
-          <SvgIcon className="hiluk-icon" svg={require("../../../icons/full-hiluk.svg")}/>
+          <SvgIcon className="hiluk-icon" svg={require("../../../icons/full-hiluk.svg")} />
         </div>
         <div className="icon-button settings" onClick={this.onSettingsMenuClick.bind(this)}>
-          <SvgIcon className="settings-icon" svg={require("../../../icons/full-settings.svg")}/>
+          <SvgIcon className="settings-icon" svg={require("../../../icons/full-settings.svg")} />
         </div>
         {userButton}
       </div>

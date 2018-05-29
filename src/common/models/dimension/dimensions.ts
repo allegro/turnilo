@@ -47,7 +47,7 @@ function findDuplicateNames(items: List<DimensionOrGroup>): List<string> {
 }
 
 function filterDimensions(items: List<DimensionOrGroup>): List<Dimension> {
-  return List<Dimension> (items
+  return List<Dimension>(items
     .filter(item => item.type === "dimension")
     .toList()
   );

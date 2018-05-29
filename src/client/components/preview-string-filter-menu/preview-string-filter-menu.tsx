@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import "./preview-string-filter-menu.scss";
-
 import { $, Dataset, r, SortExpression } from "plywood";
 import * as React from "react";
 import { Clicker, Dimension, Essence, Filter, FilterClause, FilterMode, SupportedAction, Timekeeper } from "../../../common/models/index";
@@ -28,6 +26,7 @@ import { GlobalEventListener } from "../global-event-listener/global-event-liste
 import { HighlightString } from "../highlight-string/highlight-string";
 import { Loader } from "../loader/loader";
 import { QueryError } from "../query-error/query-error";
+import "./preview-string-filter-menu.scss";
 
 const TOP_N = 100;
 
@@ -211,7 +210,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   renderRows() {
-    var { loading, dataset, fetchQueued, regexErrorMessage  } = this.state;
+    var { loading, dataset, fetchQueued, regexErrorMessage } = this.state;
     var { dimension, searchText, filterMode } = this.props;
 
     var rows: JSX.Element[] = [];
@@ -246,7 +245,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
           title={segmentValueStr}
         >
           <div className="row-wrapper">
-            <HighlightString className="label" text={segmentValueStr} highlight={search}/>
+            <HighlightString className="label" text={segmentValueStr} highlight={search} />
           </div>
         </div>;
       });
@@ -260,10 +259,10 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     }
 
     return <div className="rows">
-        {(rows.length === 0 || !searchText) ? null : <div className="matching-values-message">Matching Values</div>}
-        {rows}
-        {grayMessage}
-      </div>;
+      {(rows.length === 0 || !searchText) ? null : <div className="matching-values-message">Matching Values</div>}
+      {rows}
+      {grayMessage}
+    </div>;
   }
 
   render() {
@@ -277,8 +276,8 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
       />
       <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
         {this.renderRows()}
-        {queryError ? <QueryError error={queryError}/> : null}
-        {loading ? <Loader/> : null}
+        {queryError ? <QueryError error={queryError} /> : null}
+        {loading ? <Loader /> : null}
       </div>
       <div className="ok-cancel-bar">
         <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} />

@@ -16,14 +16,11 @@
  */
 
 import { expect } from "chai";
+import { TimeRange } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
-import { renderIntoDocument } from "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
-
-import { TimeRange } from "plywood";
+import { renderIntoDocument } from "../../utils/test-utils";
 import { Highlighter } from "./highlighter";
 
 describe("Highlighter", () => {

@@ -20,12 +20,10 @@ import * as express from "express";
 import * as Q from "q";
 import * as supertest from "supertest";
 import { Response } from "supertest";
-
+import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
 import { AppSettings } from "../../../common/models/index";
 import { SwivRequest } from "../../utils/index";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
-
-import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
 
 import * as swivRouter from "./swiv";
 

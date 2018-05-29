@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-import "./table.scss";
-
 import * as d3 from "d3";
 import { List } from "immutable";
 import { $, Datum, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
-import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, SplitCombine, Splits, VisStrategy, VisualizationProps } from "../../../common/models/index";
+import {
+  DataCube,
+  DatasetLoad,
+  Essence,
+  Filter,
+  FilterClause,
+  Measure,
+  SplitCombine,
+  Splits,
+  VisStrategy,
+  VisualizationProps
+} from "../../../common/models/index";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { classNames } from "../../utils/dom/dom";
-
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import "./table.scss";
 
 const HEADER_HEIGHT = 38;
 const SEGMENT_WIDTH = 300;

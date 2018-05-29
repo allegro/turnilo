@@ -25,6 +25,7 @@ export interface LegendDefinition {
 
 export interface LegendDefinitionConverter {
   toColors(legend: LegendDefinition): Colors;
+
   fromColors(colors: Colors): LegendDefinition;
 }
 

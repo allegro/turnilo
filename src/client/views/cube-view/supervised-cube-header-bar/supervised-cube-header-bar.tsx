@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-import "./supervised-cube-header-bar.scss";
-
 import { Timezone } from "chronoshift";
 import * as React from "react";
-
 import { Customization, Essence, ViewSupervisor } from "../../../../common/models/index";
 import { Button, SettingsMenu, SvgIcon } from "../../../components/index";
+import "./supervised-cube-header-bar.scss";
 
 export interface SupervisedCubeHeaderBarProps {
   essence: Essence;
@@ -112,11 +110,11 @@ export class SupervisedCubeHeaderBar extends React.Component<SupervisedCubeHeade
       </div>
       <div className="right-bar">
         <div className="icon-button settings" onClick={this.onSettingsMenuClick.bind(this)}>
-          <SvgIcon className="settings-icon" svg={require("../../../icons/full-settings.svg")}/>
+          <SvgIcon className="settings-icon" svg={require("../../../icons/full-settings.svg")} />
         </div>
         <div className="button-group">
-          <Button className="cancel" title="Cancel" type="secondary" onClick={supervisor.cancel}/>
-          <Button className="save" title={supervisor.saveLabel || "Save"} type="primary" onClick={this.onSave.bind(this)}/>
+          <Button className="cancel" title="Cancel" type="secondary" onClick={supervisor.cancel} />
+          <Button className="save" title={supervisor.saveLabel || "Save"} type="primary" onClick={this.onSave.bind(this)} />
         </div>
       </div>
       {this.renderSettingsMenu()}

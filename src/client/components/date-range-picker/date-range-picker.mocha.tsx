@@ -20,9 +20,7 @@ import { Timezone } from "chronoshift";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-
 import { renderIntoDocument } from "../../utils/test-utils";
-
 import { DateRangePicker } from "./date-range-picker";
 
 describe("DateRangePicker", () => {
@@ -41,36 +39,36 @@ describe("DateRangePicker", () => {
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
     expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("date-range-picker");
   });
-/* TODO: remove comments after the bug will be resolved https://github.com/chaijs/chai/pull/1071 */
-/*
-  it('throws on non round start time input', () => {
-    expect(() => {
-      return renderIntoDocument(
+  /* TODO: remove comments after the bug will be resolved https://github.com/chaijs/chai/pull/1071 */
+  /*
+    it('throws on non round start time input', () => {
+      expect(() => {
+        return renderIntoDocument(
+          <DateRangePicker
+            startTime={new Date(Date.UTC(2003, 11, 2, 2, 4))}
+            endTime={new Date(Date.UTC(2004, 11, 2))}
+            maxTime={new Date(Date.UTC(2004, 11, 2))}
+            timezone={Timezone.UTC}
+            onStartChange={() => {}}
+            onEndChange={() => {}}
+          />);
+      }).to.throw('start time must be round');
+    });*/
+
+  /* TODO: remove comments after the bug will be resolved https://github.com/chaijs/chai/pull/1071 */
+  /*  it('throws on non round end time input', () => {
+      expect(() => {
+        return renderIntoDocument(
         <DateRangePicker
-          startTime={new Date(Date.UTC(2003, 11, 2, 2, 4))}
-          endTime={new Date(Date.UTC(2004, 11, 2))}
+          startTime={new Date(Date.UTC(2003, 11, 2))}
+          endTime={new Date(Date.UTC(2004, 11, 2, 2, 3))}
           maxTime={new Date(Date.UTC(2004, 11, 2))}
           timezone={Timezone.UTC}
           onStartChange={() => {}}
           onEndChange={() => {}}
         />);
-    }).to.throw('start time must be round');
-  });*/
-
-/* TODO: remove comments after the bug will be resolved https://github.com/chaijs/chai/pull/1071 */
-/*  it('throws on non round end time input', () => {
-    expect(() => {
-      return renderIntoDocument(
-      <DateRangePicker
-        startTime={new Date(Date.UTC(2003, 11, 2))}
-        endTime={new Date(Date.UTC(2004, 11, 2, 2, 3))}
-        maxTime={new Date(Date.UTC(2004, 11, 2))}
-        timezone={Timezone.UTC}
-        onStartChange={() => {}}
-        onEndChange={() => {}}
-      />);
-    }).to.throw('end time must be round'));
-  });*/
+      }).to.throw('end time must be round'));
+    });*/
 
   it("does not error on null end time", () => {
     expect(() => {

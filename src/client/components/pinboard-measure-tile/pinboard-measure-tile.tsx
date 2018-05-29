@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import "./pinboard-measure-tile.scss";
-
 import * as React from "react";
 import { Dimension, Essence, SortOn } from "../../../common/models/index";
 import { Dropdown } from "../dropdown/dropdown";
+import "./pinboard-measure-tile.scss";
 
 export interface PinboardMeasureTileProps {
   essence: Essence;

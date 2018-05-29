@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-import "./filter-menu.scss";
-
 import * as React from "react";
 import { Clicker, Dimension, DragPosition, Essence, Stage, Timekeeper } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
 import { NumberFilterMenu } from "../number-filter-menu/number-filter-menu";
 import { StringFilterMenu } from "../string-filter-menu/string-filter-menu";
 import { TimeFilterMenu } from "../time-filter-menu/time-filter-menu";
+import "./filter-menu.scss";
 
 export interface FilterMenuProps {
   essence: Essence;

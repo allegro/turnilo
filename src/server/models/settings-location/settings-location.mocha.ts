@@ -17,7 +17,6 @@
 
 import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
-
 import { SettingsLocation } from "./settings-location";
 
 describe("SettingsLocation", () => {

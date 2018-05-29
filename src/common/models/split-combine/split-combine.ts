@@ -16,15 +16,7 @@
  */
 
 import { Class, Instance } from "immutable-class";
-import {
-  $,
-  Expression,
-  ExpressionJS,
-  LimitExpression,
-  NumberBucketExpression,
-  SortExpression,
-  TimeBucketExpression
-} from "plywood";
+import { $, Expression, ExpressionJS, LimitExpression, NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
 

@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-import "./immutable-list.scss";
-
 import { List } from "immutable";
 import * as React from "react";
 import { Fn } from "../../../common/utils/general/general";
-
 import { SimpleList, SimpleRow } from "../simple-list/simple-list";
+import "./immutable-list.scss";
 
 export interface ImmutableListProps<T> {
   label?: string;
@@ -45,7 +43,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   // const MyList = ImmutableList.specialize<MyImmutableClass>();
   // then : <MyList ... />
   static specialize<U>() {
-    return ImmutableList as { new (props: ImmutableListProps<U>): ImmutableList<U>; };
+    return ImmutableList as { new(props: ImmutableListProps<U>): ImmutableList<U>; };
   }
 
   constructor(props: ImmutableListProps<T>) {
@@ -87,7 +85,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
       tempItems: tempItems
         .delete(oldIndex)
         .insert(newIndex > oldIndex ? newIndex - 1 : newIndex, item)
-    },            this.onChange);
+    }, this.onChange);
   }
 
   onChange() {

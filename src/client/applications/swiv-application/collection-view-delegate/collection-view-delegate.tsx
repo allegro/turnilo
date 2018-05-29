@@ -16,15 +16,13 @@
  */
 
 import * as React from "react";
-
-import { SwivApplication, SwivApplicationState } from "../swiv-application";
-
 import { AppSettings, Collection, CollectionTile, DataCube, Essence, Timekeeper } from "../../../../common/models/index";
 import { generateUniqueName } from "../../../../common/utils/string/string";
 import { Notifier } from "../../../components/index";
 import { STRINGS } from "../../../config/constants";
 import { AddCollectionTileModal } from "../../../modals/index";
 import { Ajax } from "../../../utils/ajax/ajax";
+import { SwivApplication, SwivApplicationState } from "../swiv-application";
 
 export class CollectionViewDelegate {
 
@@ -56,8 +54,9 @@ export class CollectionViewDelegate {
         collections: appSettings.toJS().collections || []
       }
     })
-      .then(status => this.setState({ appSettings }),
-            (xhr: XMLHttpRequest) => {
+      .then(
+        status => this.setState({ appSettings }),
+        (xhr: XMLHttpRequest) => {
           Notifier.failure("Woops", "Something bad happened");
         }
       );
@@ -87,7 +86,7 @@ export class CollectionViewDelegate {
 
     const undo = () => this.addTile(newCollection, tile, oldIndex);
 
-    this.save(newSettings).then( () => {
+    this.save(newSettings).then(() => {
       window.location.hash = collectionURL;
       Notifier.success("Tile removed", { label: STRINGS.undo, callback: undo });
     });
@@ -107,14 +106,14 @@ export class CollectionViewDelegate {
     return this
       .save(appSettings.addOrUpdateCollection(collection.changeTiles(newTiles)))
       .then(() => `#collection/${collection.name}/${tile.name}`)
-    ;
+      ;
   }
 
   duplicateTile(collection: Collection, tile: CollectionTile): Promise<string> {
     var newTile = new CollectionTile(tile.valueOf())
       .changeName(generateUniqueName("i", collection.isNameAvailable))
       .changeTitle(tile.title + " (copy)")
-      ;
+    ;
 
     return this.addTile(collection, newTile);
   }
@@ -171,7 +170,7 @@ export class CollectionViewDelegate {
       this.save(this.getSettings().addCollectionAt(collection, oldIndex));
     };
 
-    return this.save(appSettings.deleteCollection(collection)).then( () => {
+    return this.save(appSettings.deleteCollection(collection)).then(() => {
       window.location.hash = "#/home";
       Notifier.success("Collection removed", { label: STRINGS.undo, callback: undo });
     });

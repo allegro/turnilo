@@ -24,5 +24,6 @@ export interface SwivRequest extends Request {
   version: string;
   stateful: boolean;
   user: User;
+
   getSettings(opts?: GetSettingsOptions): Q.Promise<AppSettings>;
 }

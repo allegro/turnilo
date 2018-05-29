@@ -21,23 +21,23 @@ import { Timekeeper } from "./timekeeper";
 
 describe("Timekeeper", () => {
   it("is an immutable class", () => {
-/* TODO: check the correctness of the test */
-/*    testImmutableClass(Timekeeper, [
-      {
-        timeTags: []
-      },
-      {
-        timeTags: [
-          { name: 'lol', time: new Date('2016-01-01T01:02:03Z'), updated: new Date('2016-01-01T01:02:03Z') }
-        ]
-      },
-      {
-        timeTags: [
-          { name: 'lol', time: new Date('2016-01-01T01:02:03Z'), updated: new Date('2016-01-01T01:02:03Z') }
-        ],
-        nowOverride: new Date('2016-01-01T01:02:03Z')
-      }
-    ]);*/
+    /* TODO: check the correctness of the test */
+    /*    testImmutableClass(Timekeeper, [
+          {
+            timeTags: []
+          },
+          {
+            timeTags: [
+              { name: 'lol', time: new Date('2016-01-01T01:02:03Z'), updated: new Date('2016-01-01T01:02:03Z') }
+            ]
+          },
+          {
+            timeTags: [
+              { name: 'lol', time: new Date('2016-01-01T01:02:03Z'), updated: new Date('2016-01-01T01:02:03Z') }
+            ],
+            nowOverride: new Date('2016-01-01T01:02:03Z')
+          }
+        ]);*/
   });
 
   it("works with now", () => {

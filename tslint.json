@@ -5,13 +5,6 @@
     "tslint-react"
   ],
   "rules": {
-    "align": [true, // enforce alignment of all types of elements
-      "parameters",
-      "arguments",
-      "statements",
-      "members",
-      "elements"
-    ],
     "arrow-parens": [true, // disallow parens around single argument arrow functions
       "ban-single-arg-parens"
     ],

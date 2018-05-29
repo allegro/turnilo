@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import "./nav-logo.scss";
-
 import * as React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./nav-logo.scss";
 
 export interface NavLogoProps {
   onClick?: React.MouseEventHandler<HTMLElement>;
@@ -36,7 +35,7 @@ export class NavLogo extends React.Component<NavLogoProps, NavLogoState> {
 
     return <div className="nav-logo" onClick={onClick}>
       <div className="logo">
-        <SvgIcon svg={svg}/>
+        <SvgIcon svg={svg} />
       </div>
     </div>;
   }

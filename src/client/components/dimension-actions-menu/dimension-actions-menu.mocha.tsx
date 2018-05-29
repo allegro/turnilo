@@ -17,14 +17,10 @@
 
 import { expect } from "chai";
 import * as React from "react";
-
-import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
-
-import { DimensionActionsMenu } from "./dimension-actions-menu";
-
 import { DimensionMock, EssenceMock, StageMock } from "../../../common/models/mocks";
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
+import { DimensionActionsMenu } from "./dimension-actions-menu";
 
 describe("DimensionActionsMenu", () => {
   it("adds the correct class", () => {

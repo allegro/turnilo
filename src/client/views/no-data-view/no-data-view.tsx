@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-import "./no-data-view.scss";
-
 import * as React from "react";
 import { AppSettings, Customization, User } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
-import { STRINGS } from "../../config/constants";
-
 import { SvgIcon } from "../../components/index";
-
+import { STRINGS } from "../../config/constants";
 import { NoDataHeaderBar } from "./no-data-header-bar/no-data-header-bar";
+import "./no-data-view.scss";
 
 export type Mode = "no-cluster" | "no-cube";
 
@@ -74,14 +71,14 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
     if (!user || !user.allow["settings"] || !stateful) return null;
 
     return <div className="icon-button" onClick={this.goToSettings.bind(this)}>
-      <SvgIcon svg={require("../../icons/full-settings.svg")}/>
+      <SvgIcon svg={require("../../icons/full-settings.svg")} />
     </div>;
   }
 
   renderTitle(mode: Mode): JSX.Element {
     return <div className="title">
       <div className="icon">
-        <SvgIcon svg={require("../../icons/data-cubes.svg")}/>
+        <SvgIcon svg={require("../../icons/data-cubes.svg")} />
       </div>
       <div className="label">{mode === NoDataView.NO_CUBE ? STRINGS.noQueryableDataCubes : STRINGS.noConnectedData}</div>
     </div>;

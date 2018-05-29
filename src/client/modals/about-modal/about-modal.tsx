@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import "./about-modal.scss";
-
 import * as React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { Button, Modal } from "../../components/index";
 import { STRINGS } from "../../config/constants";
+import "./about-modal.scss";
 
 export interface AboutModalProps {
   version: string;
@@ -46,11 +45,12 @@ export class AboutModal extends React.Component<AboutModalProps, AboutModalState
           the <a href="https://github.com/allegro/turnilo/blob/master/LICENSE" target="_blank">Apache 2.0</a> license.
         </p>
         <p>
-          For bug reports, feedback or support please create an issue on <a href="https://github.com/allegro/turnilo/issues" target="_blank">GitHub</a>.
+          For bug reports, feedback or support please create an issue on <a href="https://github.com/allegro/turnilo/issues"
+                                                                            target="_blank">GitHub</a>.
         </p>
       </div>
       <div className="button-bar">
-        <Button type="primary" onClick={onClose} title={STRINGS.close}/>
+        <Button type="primary" onClick={onClose} title={STRINGS.close} />
       </div>
     </Modal>;
   }

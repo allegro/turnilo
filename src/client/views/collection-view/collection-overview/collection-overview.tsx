@@ -15,17 +15,13 @@
  * limitations under the License.
  */
 
-import "./collection-overview.scss";
-
 import * as React from "react";
 import { Collection, CollectionTile, Timekeeper } from "../../../../common/models/index";
 import { SvgIcon } from "../../../components/index";
-
-import { CollectionTileCard } from "../collection-tile-card/collection-tile-card";
-
 import { STRINGS } from "../../../config/constants";
-
 import { classNames, getXFromEvent, setDragGhost } from "../../../utils/dom/dom";
+import { CollectionTileCard } from "../collection-tile-card/collection-tile-card";
+import "./collection-overview.scss";
 
 export interface CollectionOverviewProps {
   timekeeper: Timekeeper;
@@ -153,10 +149,10 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     return <div
       className="collection-overview empty"
     >
-    <div className="container">
-      <SvgIcon svg={require("../../../icons/full-collection.svg")}/>
-      <div className="placeholder">{STRINGS.noTilesInThisCollection}</div>
-    </div>
+      <div className="container">
+        <SvgIcon svg={require("../../../icons/full-collection.svg")} />
+        <div className="placeholder">{STRINGS.noTilesInThisCollection}</div>
+      </div>
     </div>;
   }
 
@@ -171,8 +167,8 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
       className="collection-overview"
       onDragEnd={this.dragEnd.bind(this)}
     >
-     {collection.tiles.map(this.renderTile, this)}
-     <div className="collection-tile-card empty"/>
+      {collection.tiles.map(this.renderTile, this)}
+      <div className="collection-tile-card empty" />
     </div>;
   }
 }

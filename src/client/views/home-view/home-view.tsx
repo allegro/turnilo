@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-import "./home-view.scss";
-
 import * as React from "react";
-
 import { Collection, Customization, DataCube, User } from "../../../common/models";
 import { Fn } from "../../../common/utils";
-import { STRINGS } from "../../config/constants";
-
 import { indexByAttribute } from "../../../common/utils/array/array";
 import { generateUniqueName } from "../../../common/utils/string/string";
-
 import { SvgIcon } from "../../components";
+import { STRINGS } from "../../config/constants";
 import { NameDescriptionModal } from "../../modals";
-
 import { HomeHeaderBar } from "./home-header-bar/home-header-bar";
+import "./home-view.scss";
 import { ItemCard } from "./item-card/item-card";
 
 export interface HomeViewProps {

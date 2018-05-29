@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-import "./segment-action-buttons.scss";
-
 import * as React from "react";
 import { Clicker, Dimension, Stage } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Button } from "../button/button";
+import "./segment-action-buttons.scss";
 
 // I am: import { SegmentActionButtons } from '../segment-action-buttons/segment-action-buttons';
 
@@ -146,13 +145,13 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
         onClick={this.onCancel.bind(this)}
         title={STRINGS.cancel}
       />
-      { disableMoreMenu ? null : <Button
+      {disableMoreMenu ? null : <Button
         type="secondary"
         className="mini"
         onClick={this.onMore.bind(this)}
         svg={require("../../icons/full-more-mini.svg")}
         active={Boolean(moreMenuOpenOn)}
-      /> }
+      />}
       {this.renderMoreMenu()}
     </div>;
   }

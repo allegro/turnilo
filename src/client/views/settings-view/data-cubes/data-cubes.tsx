@@ -15,13 +15,10 @@
  * limitations under the License.
  */
 
-import "./data-cubes.scss";
-
 import * as React from "react";
-
 import { AppSettings, DataCube } from "../../../../common/models/index";
-
 import { Button, Notifier, SimpleTable, SimpleTableAction, SimpleTableColumn } from "../../../components/index";
+import "./data-cubes.scss";
 
 export interface DataCubesProps {
   settings?: AppSettings;
@@ -41,10 +38,11 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
   }
 
   componentWillReceiveProps(nextProps: DataCubesProps) {
-    if (nextProps.settings) { this.setState({
-      newSettings: nextProps.settings,
-      hasChanged: false
-    });
+    if (nextProps.settings) {
+      this.setState({
+        newSettings: nextProps.settings,
+        hasChanged: false
+      });
     }
   }
 
@@ -117,7 +115,7 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
     return <div className="data-cubes">
       <div className="title-bar">
         <div className="title">Data Cubes</div>
-        <Button className="save" title="Add a cube" type="primary" onClick={this.startSeed.bind(this)}/>
+        <Button className="save" title="Add a cube" type="primary" onClick={this.startSeed.bind(this)} />
       </div>
       <div className="content">
         <SimpleTable

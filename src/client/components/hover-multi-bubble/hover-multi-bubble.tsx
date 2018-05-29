@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-import "./hover-multi-bubble.scss";
-
 import * as React from "react";
 import { Clicker, Dimension } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
 import { BodyPortal } from "../body-portal/body-portal";
 import { SegmentActionButtons } from "../segment-action-buttons/segment-action-buttons";
+import "./hover-multi-bubble.scss";
 
 const LEFT_OFFSET = 22;
 
@@ -71,7 +70,8 @@ export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, Hov
       <div className="hover-multi-bubble">
         <div className="bucket">{segmentLabel}</div>
         {this.renderColorSwabs()}
-        {clicker ? <SegmentActionButtons clicker={clicker} dimension={dimension} segmentLabel={segmentLabel} disableMoreMenu={true} onClose={onClose}/> : null}
+        {clicker ? <SegmentActionButtons clicker={clicker} dimension={dimension} segmentLabel={segmentLabel} disableMoreMenu={true}
+                                         onClose={onClose} /> : null}
       </div>
     </BodyPortal>;
   }

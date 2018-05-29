@@ -18,7 +18,6 @@
 import { LOGGER, TRACKER } from "logger-tracker";
 import * as nopt from "nopt";
 import * as path from "path";
-
 import { AppSettings, Cluster, DataCube, SupportedType } from "../common/models/index";
 import { arraySum } from "../common/utils/general/general";
 import { appSettingsToYAML } from "../common/utils/yaml-helper/yaml-helper";
@@ -32,7 +31,10 @@ function exitWithMessage(message: string): void {
   console.log(message);
 
   // Hack: load the package file for no reason other than to make some time for console.log to flush
-  try { loadFileSync(PACKAGE_FILE, "json"); } catch (e) { }
+  try {
+    loadFileSync(PACKAGE_FILE, "json");
+  } catch (e) {
+  }
 
   process.exit();
 }
@@ -277,8 +279,8 @@ if (serverSettingsFilePath) {
 
       case "mysql":
         throw new Error("todo"); // ToDo: make this not incomplete.
-        // settingsStore = SettingsStore.fromStateStore(require('../../../swiv-mysql-state-store/index.js').stateStoreFactory());
-        // break;
+      // settingsStore = SettingsStore.fromStateStore(require('../../../swiv-mysql-state-store/index.js').stateStoreFactory());
+      // break;
 
       case "postgres":
         throw new Error("todo");

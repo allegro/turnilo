@@ -61,17 +61,18 @@ function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdde
       );
     }
   } else {
-    if (withComments) { lines.push(
-      "",
-      `# ${comment}`
-    );
+    if (withComments) {
+      lines.push(
+        "",
+        `# ${comment}`
+      );
     }
     lines.push(`${propName}: ${value}`);
   }
 }
 
 function getYamlPropAdder(object: any, labels: any, lines: string[], withComments = false) {
-  var adder = (propName: string, additionalOptions?: {defaultValue?: any}) => {
+  var adder = (propName: string, additionalOptions?: { defaultValue?: any }) => {
     let propVerbiage = labels[propName];
     let comment: string;
 
@@ -111,7 +112,7 @@ export function clusterToYAML(cluster: Cluster, withComments: boolean): string[]
     .add("sourceListRefreshInterval", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL })
     .add("sourceReintrospectOnLoad", { defaultValue: false })
     .add("sourceReintrospectInterval", { defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL })
-    ;
+  ;
 
   if (withComments) {
     lines.push(
@@ -124,7 +125,7 @@ export function clusterToYAML(cluster: Cluster, withComments: boolean): string[]
       props
         .add("introspectionStrategy", { defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY })
         .add("requestDecorator")
-        ;
+      ;
       break;
 
     case "postgres":
@@ -133,7 +134,7 @@ export function clusterToYAML(cluster: Cluster, withComments: boolean): string[]
         .add("database")
         .add("user")
         .add("password")
-        ;
+      ;
 
       break;
   }
@@ -152,7 +153,7 @@ export function collectionToYAML(collection: Collection, withComments: boolean):
   addProps
     .add("title")
     .add("description")
-    ;
+  ;
 
   lines.push("tiles:");
   lines = lines.concat.apply(lines, collection.tiles.map(CollectionTileToYAML));
@@ -173,7 +174,7 @@ export function CollectionTileToYAML(item: CollectionTile): string[] {
     .add("description")
     .add("group")
     .add("dataCube")
-    ;
+  ;
 
   lines.push("essence:");
   lines.push(yaml.safeDump(item.essence.toJSON()));
@@ -267,7 +268,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
     .add("defaultTimezone", { defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE })
     .add("defaultDuration", { defaultValue: DataCube.DEFAULT_DEFAULT_DURATION })
     .add("defaultSortMeasure", { defaultValue: dataCube.getDefaultSortMeasure() })
-    ;
+  ;
 
   var defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures.toArray() : null;
   if (withComments) {

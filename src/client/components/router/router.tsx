@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-import "./router.scss";
-
 import * as React from "react";
 import { extend } from "../../../common/utils/object/object";
 import { replaceHash } from "../../utils/url/url";
+import "./router.scss";
 
-export type Inflater = (key: string, value: string) => {key: string, value: any};
+export type Inflater = (key: string, value: string) => { key: string, value: any };
 
 export interface RouteProps {
   fragment: string;
@@ -29,8 +28,12 @@ export interface RouteProps {
   transmit?: string[];
   inflate?: Inflater;
 }
-export interface RouteState {}
-export class Route extends React.Component<RouteProps, RouteState> {}
+
+export interface RouteState {
+}
+
+export class Route extends React.Component<RouteProps, RouteState> {
+}
 
 export interface QualifiedPath {
   route: JSX.Element;
@@ -336,7 +339,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     if (this.hasSingleChild(path.route)) {
       elements = path.orphans.map((orphan, i) => this.fillProperties(orphan, path, i))
         .concat([this.fillProperties(path.route.props.children, path, path.orphans.length)])
-        ;
+      ;
 
     } else {
       var children = this.getSimpleChildren(path.route);
@@ -346,7 +349,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
       elements = children
         .map((child, i) => this.fillProperties(child, path, i))
         .concat(path.orphans.map((orphan, i) => this.fillProperties(orphan, path, children.length + i)))
-        ;
+      ;
     }
 
     if (!elements) return null;

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import "./clearable-input.scss";
-
 import * as React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./clearable-input.scss";
 
 function focusOnInput(component: HTMLInputElement): any {
   if (!component) return;
@@ -67,7 +66,7 @@ export class ClearableInput extends React.Component<ClearableInputProps, Clearab
         ref={ref}
       />
       <div className="clear" onClick={this.onClear.bind(this)}>
-        <SvgIcon svg={require("../../icons/x.svg")}/>
+        <SvgIcon svg={require("../../icons/x.svg")} />
       </div>
     </div>;
   }

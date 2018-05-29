@@ -40,6 +40,7 @@ export interface StageJS {
 }
 
 var check: Class<StageValue, StageJS>;
+
 export class Stage implements Instance<StageValue, StageJS> {
   static isStage(candidate: any): candidate is Stage {
     return candidate instanceof Stage;
@@ -197,4 +198,5 @@ export class Stage implements Instance<StageValue, StageJS> {
     return new Stage(value);
   }
 }
+
 check = Stage;

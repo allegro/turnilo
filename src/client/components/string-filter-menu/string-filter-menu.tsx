@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-import "./string-filter-menu.scss";
-
 import * as React from "react";
 import { Clicker, Dimension, DragPosition, Essence, Filter, FilterClause, FilterMode, Stage, Timekeeper } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
-
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { ClearableInput } from "../clearable-input/clearable-input";
 import { FilterOption, FilterOptionsDropdown } from "../filter-options-dropdown/filter-options-dropdown";
 import { PreviewStringFilterMenu } from "../preview-string-filter-menu/preview-string-filter-menu";
-import { SelectableStringFilterMenu  } from "../selectable-string-filter-menu/selectable-string-filter-menu";
+import { SelectableStringFilterMenu } from "../selectable-string-filter-menu/selectable-string-filter-menu";
+import "./string-filter-menu.scss";
 
 export interface StringFilterMenuProps {
   clicker: Clicker;

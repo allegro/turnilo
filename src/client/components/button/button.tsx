@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import "./button.scss";
-
 import * as React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
+import "./button.scss";
 
 export type ButtonType = "primary" | "secondary" | "warn";
 
@@ -44,7 +43,7 @@ export class Button extends React.Component<ButtonProps, ButtonState> {
 
     var icon: JSX.Element = null;
     if (svg) {
-      icon = <SvgIcon svg={svg}/>;
+      icon = <SvgIcon svg={svg} />;
     }
 
     return <button

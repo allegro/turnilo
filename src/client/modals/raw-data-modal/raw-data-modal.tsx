@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-import "./raw-data-modal.scss";
-
 import { isDate } from "chronoshift";
 import { List } from "immutable";
 import { $, AttributeInfo, Dataset, Datum, Expression } from "plywood";
 import * as React from "react";
 import { DataCube, Essence, Stage, Timekeeper } from "../../../common/models";
-
 import { arraySum, Fn, formatFilterClause, makeTitle } from "../../../common/utils";
+import { Button, Loader, Modal, QueryError, Scroller, ScrollerLayout } from "../../components";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { download, makeFileName } from "../../utils/download/download";
 import { getVisibleSegments } from "../../utils/sizing/sizing";
-
-import { Button, Loader, Modal, QueryError, Scroller, ScrollerLayout } from "../../components";
+import "./raw-data-modal.scss";
 
 const HEADER_HEIGHT = 30;
 const ROW_HEIGHT = 30;

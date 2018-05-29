@@ -26,7 +26,7 @@ function getWidthNoOverflowAdjustment(stageWidth: number) {
 export function getMaxItems(stageWidth: number, itemsLength: number): number {
   var maxWidth = getWidthNoOverflowAdjustment(stageWidth);
   var includedItems = itemsLength;
-  var initialMax = Math.floor((maxWidth - OVERFLOW_WIDTH ) / SECTION_WIDTH);
+  var initialMax = Math.floor((maxWidth - OVERFLOW_WIDTH) / SECTION_WIDTH);
 
   if (initialMax < includedItems) {
 

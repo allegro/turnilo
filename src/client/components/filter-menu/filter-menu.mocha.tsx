@@ -17,13 +17,10 @@
 
 import { expect } from "chai";
 import * as React from "react";
-import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
-
 import * as TestUtils from "react-dom/test-utils";
-
-import { FilterMenu } from "./filter-menu";
-
 import { DimensionMock, EssenceMock, TimekeeperMock } from "../../../common/models/mocks";
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
+import { FilterMenu } from "./filter-menu";
 
 describe("FilterMenu", () => {
   it("adds the correct class", () => {

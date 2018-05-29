@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-import "./data-cube-seed-modal.scss";
-
 import * as React from "react";
 import { Cluster, DataCube } from "../../../common/models/index";
-
 import { DATA_CUBE as LABELS } from "../../../common/models/labels";
 import { indexByAttribute } from "../../../common/utils/array/array";
 import { generateUniqueName } from "../../../common/utils/string/string";
 import { Button, Checkbox, FormLabel, ImmutableDropdown, ImmutableInput, Modal } from "../../components/index";
 import { STRINGS } from "../../config/constants";
-
 import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
+import "./data-cube-seed-modal.scss";
 
 export interface DataCubeSeedModalProps {
   onNext: (newDataCube: DataCube, autoFill: boolean) => void;
@@ -109,8 +106,8 @@ export class DataCubeSeedModal extends React.Component<DataCubeSeedModalProps, D
         />
       </form>
       <div className="button-bar">
-        <Button type="primary" title={`${STRINGS.next}: ${STRINGS.configureDataCube}`} onClick={this.onNext.bind(this)}/>
-        <Button className="cancel" title="Cancel" type="secondary" onClick={onCancel}/>
+        <Button type="primary" title={`${STRINGS.next}: ${STRINGS.configureDataCube}`} onClick={this.onNext.bind(this)} />
+        <Button className="cancel" title="Cancel" type="secondary" onClick={onCancel} />
       </div>
 
     </Modal>;

@@ -45,6 +45,7 @@ export interface CollectionTileContext {
 }
 
 var check: Class<CollectionTileValue, CollectionTileJS>;
+
 export class CollectionTile implements Instance<CollectionTileValue, CollectionTileJS> {
 
   static isCollectionTile(candidate: any): candidate is CollectionTile {
@@ -152,4 +153,5 @@ export class CollectionTile implements Instance<CollectionTileValue, CollectionT
     return this.change("title", title);
   }
 }
+
 check = CollectionTile;
