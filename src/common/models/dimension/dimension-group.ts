@@ -56,7 +56,7 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
     const { name, title, dimensions } = dimensionGroup;
 
     if (name == null) {
-      throw new Error(`dimension group requires a name`);
+      throw new Error("dimension group requires a name");
     }
 
     if (dimensions == null || dimensions.length === 0) {
@@ -98,7 +98,7 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
     return {
       name: this.name,
       title: this.title,
-      dimensions: this.dimensions.map((dimension) => dimension.toJS())
+      dimensions: this.dimensions.map(dimension => dimension.toJS())
     };
   }
 

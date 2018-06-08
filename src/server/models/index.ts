@@ -15,5 +15,5 @@
  * limitations under the License.
  */
 
-export * from './server-settings/server-settings';
-export * from './settings-location/settings-location';
+export * from "./server-settings/server-settings";
+export * from "./settings-location/settings-location";

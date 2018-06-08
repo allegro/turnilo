@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Resolve } from '../../models/manifest/manifest';
+import { Resolve } from "../../models/manifest/manifest";
 import { RulesEvaluator } from "./rules-evaluator";
 
 export type Predicate<Variables> = (predicateVariables: Variables) => boolean;
@@ -32,6 +32,7 @@ export interface RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>
 
 export interface RulesEvaluatorBuilderWithPartialRule<PredicateVars, ActionVars> {
   or(predicate: Predicate<PredicateVars>): RulesEvaluatorBuilderWithPartialRule<PredicateVars, ActionVars>;
+
   then(action: Action<ActionVars>): RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>;
 }
 
@@ -39,12 +40,14 @@ export interface RulesEvaluatorBuilderComplete<PredicateVars, ActionVars> {
   build(): RulesEvaluator<PredicateVars, ActionVars>;
 }
 
-type PartialRule<PredicateVars> = { predicates: Predicate<PredicateVars>[] };
+interface PartialRule<PredicateVars> {
+  predicates: Array<Predicate<PredicateVars>>;
+}
+
 type Rule<PredicateVars, ActionVars> = PartialRule<PredicateVars> & { action: Action<ActionVars> };
 
 export class RulesEvaluatorBuilder<PredicateVars, ActionVars>
-  implements
-    RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>,
+  implements RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>,
     RulesEvaluatorBuilderWithPartialRule<PredicateVars, ActionVars>,
     RulesEvaluatorBuilderComplete<PredicateVars, ActionVars> {
 
@@ -52,11 +55,11 @@ export class RulesEvaluatorBuilder<PredicateVars, ActionVars>
     return new RulesEvaluatorBuilder();
   }
 
-  private readonly rules: Rule<PredicateVars, ActionVars>[];
+  private readonly rules: Array<Rule<PredicateVars, ActionVars>>;
   private readonly partialRule?: PartialRule<PredicateVars>;
   private readonly otherwiseAction: Action<ActionVars>;
 
-  private constructor(rules?: Rule<PredicateVars, ActionVars>[], partialRule?: PartialRule<PredicateVars>, otherwiseAction?: Action<ActionVars>) {
+  private constructor(rules?: Array<Rule<PredicateVars, ActionVars>>, partialRule?: PartialRule<PredicateVars>, otherwiseAction?: Action<ActionVars>) {
     this.partialRule = partialRule;
     this.otherwiseAction = otherwiseAction;
     this.rules = rules || [];
@@ -92,7 +95,7 @@ export class RulesEvaluatorBuilder<PredicateVars, ActionVars>
     return (variables: PredicateVars & ActionVars): Resolve => {
       for (let rule of this.rules) {
         const { predicates, action } = rule;
-        if (predicates.some((predicate) => predicate(variables))) {
+        if (predicates.some(predicate => predicate(variables))) {
           return action(variables);
         }
       }

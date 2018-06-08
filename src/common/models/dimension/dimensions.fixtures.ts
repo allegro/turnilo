@@ -31,41 +31,41 @@ export class DimensionsFixtures {
     return [
       DimensionMock.wikiTimeJS(),
       {
-        kind: 'string',
-        name: 'channel',
-        title: 'Channel',
-        formula: '$channel'
+        kind: "string",
+        name: "channel",
+        title: "Channel",
+        formula: "$channel"
       },
       DimensionGroupFixtures.commentsJS(),
       {
-        kind: 'string',
-        name: 'isRobot',
-        title: 'Is Robot',
-        formula: '$isRobot'
+        kind: "string",
+        name: "isRobot",
+        title: "Is Robot",
+        formula: "$isRobot"
       },
       {
-        kind: 'string',
-        name: 'namespace',
-        title: 'Namespace',
-        formula: '$namespace'
+        kind: "string",
+        name: "namespace",
+        title: "Namespace",
+        formula: "$namespace"
       },
       {
-        kind: 'string',
-        name: 'articleName',
-        title: 'Article Name',
-        formula: '$articleName'
+        kind: "string",
+        name: "articleName",
+        title: "Article Name",
+        formula: "$articleName"
       },
       {
-        kind: 'string',
-        name: 'page',
-        title: 'Page',
-        formula: '$page'
+        kind: "string",
+        name: "page",
+        title: "Page",
+        formula: "$page"
       },
       {
-        kind: 'string',
-        name: 'userChars',
-        title: 'User Chars',
-        formula: '$userChars'
+        kind: "string",
+        name: "userChars",
+        title: "User Chars",
+        formula: "$userChars"
       }
     ];
   }
@@ -73,22 +73,22 @@ export class DimensionsFixtures {
   static twitterJS(): DimensionOrGroupJS[] {
     return [
       {
-        kind: 'time',
-        name: 'time',
-        title: 'Time',
-        formula: '$time'
+        kind: "time",
+        name: "time",
+        title: "Time",
+        formula: "$time"
       },
       {
-        kind: 'string',
-        name: 'twitterHandle',
-        title: 'Twitter Handle',
-        formula: '$twitterHandle'
+        kind: "string",
+        name: "twitterHandle",
+        title: "Twitter Handle",
+        formula: "$twitterHandle"
       },
       {
-        kind: 'number',
-        name: 'tweetLength',
-        title: 'Tweet Length',
-        formula: '$tweetLength'
+        kind: "number",
+        name: "tweetLength",
+        title: "Tweet Length",
+        formula: "$tweetLength"
       }
     ];
   }

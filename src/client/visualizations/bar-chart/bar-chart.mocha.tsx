@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import * as TestUtils from 'react-dom/test-utils';
-import { EssenceMock, TimekeeperMock, StageMock } from '../../../common/models/mocks';
-import { renderIntoDocument } from '../../utils/test-utils';
+import * as TestUtils from "react-dom/test-utils";
+import { EssenceMock, StageMock, TimekeeperMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
 
-import { BarChart } from './bar-chart';
+import { BarChart } from "./bar-chart";
 
-describe.skip('BarChart', () => {
-  it('adds the correct class', () => {
+describe.skip("BarChart", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <BarChart
         clicker={null}
@@ -37,8 +36,8 @@ describe.skip('BarChart', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('bar-chart');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("bar-chart");
   });
 
 });

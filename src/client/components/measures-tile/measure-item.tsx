@@ -38,10 +38,10 @@ export class MeasureItem extends PureComponent<MeasureItemProps, {}> {
 
   render() {
     const { title, multiMeasureMode, searchText, selected } = this.props;
-    const checkboxType = multiMeasureMode ? 'check' : 'radio';
+    const checkboxType = multiMeasureMode ? "check" : "radio";
 
     return <div
-      className={classNames('row', { selected })}
+      className={classNames("row", { selected })}
       onClick={this.handleClick}
     >
       <Checkbox type={checkboxType} selected={selected} />

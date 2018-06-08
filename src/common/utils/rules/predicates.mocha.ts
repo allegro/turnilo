@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
+import { expect } from "chai";
 
-import { Predicates } from './predicates';
+import { Predicates } from "./predicates";
 
-describe('dimension kind matcher', () => {
+describe("dimension kind matcher", () => {
   let strictCompare = Predicates.strictCompare;
 
-  it('should work in various cases', () => {
+  it("should work in various cases", () => {
     var cases: any[] = [
       [[], [], true],
-      [['time'], ['time'], true],
-      [['time', '*'], ['pouet', 'time'], false],
-      [['time', '*'], ['time', 'tut'], true],
-      [['!time'], ['pouet'], true],
-      [['!time'], ['time'], false],
-      [['*'], ['time'], true]
+      [["time"], ["time"], true],
+      [["time", "*"], ["pouet", "time"], false],
+      [["time", "*"], ["time", "tut"], true],
+      [["!time"], ["pouet"], true],
+      [["!time"], ["time"], false],
+      [["*"], ["time"], true]
     ];
 
     cases.forEach((c, i) => {

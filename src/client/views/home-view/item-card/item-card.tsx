@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-import './item-card.scss';
+import * as React from "react";
+import { Stage } from "../../../../common/models/index";
+import { BubbleMenu, SvgIcon } from "../../../components/index";
+import { STRINGS } from "../../../config/constants";
+import { classNames, isInside } from "../../../utils/dom/dom";
+import "./item-card.scss";
 
-import * as React from 'react';
-import { STRINGS } from '../../../config/constants';
-import { Stage } from '../../../../common/models/index';
-import { isInside, classNames } from '../../../utils/dom/dom';
-import { SvgIcon, BubbleMenu } from '../../../components/index';
-
-export interface ItemCardProps extends React.Props<any> {
+export interface ItemCardProps {
   title: string;
   count?: number;
   description: string;
@@ -38,11 +37,11 @@ export interface ItemCardState {
   moreMenuOpen?: boolean;
 }
 
-export class ItemCard extends React.Component< ItemCardProps, ItemCardState> {
+export class ItemCard extends React.Component<ItemCardProps, ItemCardState> {
   static getNewItemCard(onClick: () => void): JSX.Element {
     return <div className="item-card new-one" onClick={onClick}>
       <div className="inner-container">
-        <SvgIcon svg={require('../../../icons/full-add.svg')}/>
+        <SvgIcon svg={require("../../../icons/full-add.svg")} />
       </div>
     </div>;
   }
@@ -55,18 +54,18 @@ export class ItemCard extends React.Component< ItemCardProps, ItemCardState> {
 
   onMoreIconClick(event: MouseEvent) {
     event.preventDefault();
-    this.setState({moreMenuOpen: !this.state.moreMenuOpen});
+    this.setState({ moreMenuOpen: !this.state.moreMenuOpen });
   }
 
   renderMoreMenu() {
     const { onDelete, onEdit } = this.props;
-    var onClose = () => this.setState({moreMenuOpen: false});
+    var onClose = () => this.setState({ moreMenuOpen: false });
 
     return <BubbleMenu
       className="more-menu"
       direction="down"
       stage={Stage.fromSize(80, 80)}
-      openOn={this.refs['more-button'] as any}
+      openOn={this.refs["more-button"] as any}
       onClose={onClose}
     >
       <ul className="bubble-list">
@@ -77,7 +76,7 @@ export class ItemCard extends React.Component< ItemCardProps, ItemCardState> {
   }
 
   onClick(event: MouseEvent) {
-    if (isInside(event.target as any, this.refs['more-button'] as any)) return;
+    if (isInside(event.target as any, this.refs["more-button"] as any)) return;
 
     if (this.state.moreMenuOpen) return;
 
@@ -92,19 +91,19 @@ export class ItemCard extends React.Component< ItemCardProps, ItemCardState> {
 
     return <div className="item-card" onClick={this.onClick.bind(this)}>
       <div className="inner-container">
-        <SvgIcon className="view-icon" svg={require(`../../../icons/${icon}.svg`)}/>
+        <SvgIcon className="view-icon" svg={require(`../../../icons/${icon}.svg`)} />
         <div className="text">
           <div className="title">{title} {count !== undefined ? <span className="count">{count}</span> : null}</div>
           <div className="description">{description || STRINGS.noDescription}</div>
         </div>
-        { hasActions
+        {hasActions
           ? <div
-              className={classNames('more-button icon', {active: moreMenuOpen})}
-              onClick={this.onMoreIconClick.bind(this)}
-              ref="more-button"
-            >
-              <SvgIcon svg={require(`../../../icons/caret.svg`)}/>
-            </div>
+            className={classNames("more-button icon", { active: moreMenuOpen })}
+            onClick={this.onMoreIconClick.bind(this)}
+            ref="more-button"
+          >
+            <SvgIcon svg={require("../../../icons/caret.svg")} />
+          </div>
           : null
         }
       </div>

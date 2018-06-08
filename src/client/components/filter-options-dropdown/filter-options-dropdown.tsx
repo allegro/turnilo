@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-import './filter-options-dropdown.scss';
-
-import * as React from 'react';
-import { STRINGS } from '../../config/constants';
-
-import { Filter, FilterMode } from '../../../common/models/index';
-
+import * as React from "react";
+import { Filter, FilterMode } from "../../../common/models/index";
+import { STRINGS } from "../../config/constants";
+import { CheckboxType } from "../checkbox/checkbox";
 import { Dropdown } from "../dropdown/dropdown";
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { CheckboxType } from '../checkbox/checkbox';
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./filter-options-dropdown.scss";
 
 export interface FilterOption {
   label: string;
@@ -37,29 +34,28 @@ const FILTER_OPTIONS: FilterOption[] = [
   {
     label: STRINGS.include,
     value: Filter.INCLUDED,
-    svg: require('../../icons/filter-include.svg'),
-    checkType: 'check'
+    svg: require("../../icons/filter-include.svg"),
+    checkType: "check"
   },
   {
     label: STRINGS.exclude,
     value: Filter.EXCLUDED,
-    svg: require('../../icons/filter-exclude.svg'),
-    checkType: 'cross'
+    svg: require("../../icons/filter-exclude.svg"),
+    checkType: "cross"
   },
   {
     label: STRINGS.contains,
     value: Filter.CONTAINS,
-    svg: require('../../icons/filter-contains.svg')
+    svg: require("../../icons/filter-contains.svg")
   },
   {
     label: STRINGS.regex,
     value: Filter.REGEX,
-    svg: require('../../icons/filter-regex.svg')
+    svg: require("../../icons/filter-regex.svg")
   }
 ];
 
-
-export interface FilterOptionsDropdownProps extends React.Props<any> {
+export interface FilterOptionsDropdownProps {
   selectedOption: FilterMode;
   onSelectOption: (o: FilterMode) => void;
   filterOptions?: FilterOption[];
@@ -69,7 +65,7 @@ export interface FilterOptionsDropdownState {
 }
 
 export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdownProps, FilterOptionsDropdownState> {
-  static getFilterOptions(...filterTypes: Array<string>) {
+  static getFilterOptions(...filterTypes: string[]) {
     return FILTER_OPTIONS.filter(option => filterTypes.indexOf(option.value) !== -1);
   }
 
@@ -79,7 +75,7 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
 
   renderFilterOption(option: FilterOption) {
     return <span className="filter-option">
-      <SvgIcon className="icon" svg={option.svg}/>
+      <SvgIcon className="icon" svg={option.svg} />
       <span className="option-label">{option.label}</span>
     </span>;
   }
@@ -97,9 +93,9 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
         items={options}
         selectedItem={selectedItem}
         equal={(a, b) => a.value === b.value}
-        keyItem={(d) => d.value}
+        keyItem={d => d.value}
         renderItem={this.renderFilterOption.bind(this)}
-        renderSelectedItem={(d) => <SvgIcon className="icon" svg={d.svg}/>}
+        renderSelectedItem={d => <SvgIcon className="icon" svg={d.svg} />}
         onSelect={this.onSelectOption.bind(this)}
       />
     </div>;

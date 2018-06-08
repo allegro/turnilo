@@ -15,61 +15,62 @@
  * limitations under the License.
  */
 
-import { Dimension, DimensionJS } from './dimension';
+import { Dimension, DimensionJS } from "./dimension";
+
 export class DimensionMock {
   public static get COUNTRY_STRING_JS(): DimensionJS {
     return {
-      name: 'country',
-      title: 'important countries',
-      formula: '$country',
-      kind: 'string'
+      name: "country",
+      title: "important countries",
+      formula: "$country",
+      kind: "string"
     };
   }
 
   public static get COUNTRY_URL_JS(): DimensionJS {
     return {
-      name: 'country',
-      title: 'important countries',
-      formula: '$country',
-      kind: 'string',
-      url: 'https://www.country.com/%s' // country.com redirects to a CMT.com. Could've been worse.
+      name: "country",
+      title: "important countries",
+      formula: "$country",
+      kind: "string",
+      url: "https://www.country.com/%s" // country.com redirects to a CMT.com. Could've been worse.
     };
   }
 
   public static get TIME_JS(): DimensionJS {
     return {
-      name: 'time',
-      title: 'time',
-      formula: '$time',
-      kind: 'time',
-      url: 'http://www.time.com/%s'
+      name: "time",
+      title: "time",
+      formula: "$time",
+      kind: "time",
+      url: "http://www.time.com/%s"
     };
   }
 
   public static get NUMBER_JS(): DimensionJS {
     return {
-      name: 'numeric',
-      title: 'Numeric',
-      formula: '$n',
-      kind: 'number'
+      name: "numeric",
+      title: "Numeric",
+      formula: "$n",
+      kind: "number"
     };
   }
 
   static wikiTimeJS(): DimensionJS {
     return {
-      name: 'time',
-      title: 'Time',
-      formula: '$time',
-      kind: 'time'
+      name: "time",
+      title: "Time",
+      formula: "$time",
+      kind: "time"
     };
   }
 
   static wikiTime(): Dimension {
     return new Dimension({
-      name: 'time',
-      title: 'Time',
-      formula: '$time',
-      kind: 'time'
+      name: "time",
+      title: "Time",
+      formula: "$time",
+      kind: "time"
     });
   }
 

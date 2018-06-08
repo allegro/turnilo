@@ -25,8 +25,7 @@ export function getVisibleSegments(segmentWidths: number[], offset: number, visi
   var shownColumns = 0;
 
   var curWidth = 0;
-  for (var i = 0; i < segmentWidths.length; i++) {
-    let segmentWidth = segmentWidths[i];
+  for (const segmentWidth of segmentWidths) {
     let afterWidth = curWidth + segmentWidth;
     if (afterWidth < offset) {
       startIndex++;

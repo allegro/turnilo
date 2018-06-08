@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import './range-handle.scss';
+import * as React from "react";
+import { clamp, classNames, getXFromEvent } from "../../utils/dom/dom";
+import "./range-handle.scss";
 
-import * as React from 'react';
-import { getXFromEvent, classNames, clamp } from '../../utils/dom/dom';
-
-export interface RangeHandleProps extends React.Props<any> {
+export interface RangeHandleProps {
   positionLeft: number;
   onChange: (x: number) => void;
   offset: number;
@@ -41,7 +40,7 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
   constructor(props: RangeHandleProps) {
     super(props);
     this.state = {
-      anchor:  null
+      anchor: null
     };
 
     this.onGlobalMouseUp = this.onGlobalMouseUp.bind(this);
@@ -67,14 +66,14 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
     });
 
     event.preventDefault();
-    window.addEventListener('mouseup', this.onGlobalMouseUp);
-    window.addEventListener('mousemove', this.onGlobalMouseMove);
+    window.addEventListener("mouseup", this.onGlobalMouseUp);
+    window.addEventListener("mousemove", this.onGlobalMouseMove);
 
   }
 
   onGlobalMouseUp() {
-    window.removeEventListener('mouseup', this.onGlobalMouseUp);
-    window.removeEventListener('mousemove', this.onGlobalMouseMove);
+    window.removeEventListener("mouseup", this.onGlobalMouseUp);
+    window.removeEventListener("mousemove", this.onGlobalMouseMove);
   }
 
   render() {
@@ -83,7 +82,7 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
     var style = { left: positionLeft };
 
     return <div
-      className={classNames("range-handle", { empty: isAny, "beyond min": isBeyondMin, "beyond max": isBeyondMax })}
+      className={classNames("range-handle", { "empty": isAny, "beyond min": isBeyondMin, "beyond max": isBeyondMax })}
       style={style}
       onMouseDown={this.onMouseDown.bind(this)}
     />;

@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-import { Class, Instance, immutableArraysEqual } from 'immutable-class';
-import { $, Expression } from 'plywood';
-import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
-import { Granularity, GranularityJS, granularityFromJS, granularityToJS, granularityEquals } from "../granularity/granularity";
+import { Class, immutableArraysEqual, Instance } from "immutable-class";
+import { $, Expression } from "plywood";
+import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
+import { Granularity, granularityEquals, granularityFromJS, GranularityJS, granularityToJS } from "../granularity/granularity";
 import { DimensionOrGroupVisitor } from "./dimension-group";
 
 var geoName = /continent|country|city|region/i;
+
 function isGeo(name: string): boolean {
   return geoName.test(name);
 }
 
 function typeToKind(type: string): string {
   if (!type) return type;
-  return type.toLowerCase().replace(/_/g, '-').replace(/-range$/, '');
+  return type.toLowerCase().replace(/_/g, "-").replace(/-range$/, "");
 }
 
 export enum BucketingStrategy {
@@ -37,8 +38,8 @@ export enum BucketingStrategy {
 }
 
 const bucketingStrategies: { [strategy in BucketingStrategy]: BucketingStrategy } = {
-  "defaultBucket": BucketingStrategy.defaultBucket,
-  "defaultNoBucket": BucketingStrategy.defaultNoBucket
+  defaultBucket: BucketingStrategy.defaultBucket,
+  defaultNoBucket: BucketingStrategy.defaultNoBucket
 };
 
 export interface DimensionValue {
@@ -66,6 +67,7 @@ export interface DimensionJS {
 }
 
 var check: Class<DimensionValue, DimensionJS>;
+
 export class Dimension implements Instance<DimensionValue, DimensionJS> {
   static isDimension(candidate: any): candidate is Dimension {
     return candidate instanceof Dimension;
@@ -77,7 +79,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     const value: DimensionValue = {
       name: parameters.name,
       title: parameters.title,
-      formula: parameters.formula || (typeof parameterExpression === 'string' ? parameterExpression : null),
+      formula: parameters.formula || (typeof parameterExpression === "string" ? parameterExpression : null),
       kind: parameters.kind || typeToKind((parameters as any).type),
       url: parameters.url
     };
@@ -121,16 +123,16 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     this.formula = formula;
     this.expression = Expression.parse(formula);
 
-    var kind = parameters.kind || typeToKind(this.expression.type) || 'string';
+    var kind = parameters.kind || typeToKind(this.expression.type) || "string";
     this.kind = kind;
 
-    if (kind === 'string' && isGeo(name)) {
-      this.className = 'string-geo';
+    if (kind === "string" && isGeo(name)) {
+      this.className = "string-geo";
     } else {
       this.className = kind;
     }
     if (parameters.url) {
-      if (typeof parameters.url !== 'string') {
+      if (typeof parameters.url !== "string") {
         throw new Error(`unsupported url: ${parameters.url}: only strings are supported`);
       }
       this.url = parameters.url;
@@ -142,7 +144,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
         throw new Error(`must have list of 5 granularities in dimension '${parameters.name}'`);
       }
       var runningActionType: string = null;
-      this.granularities = granularities.map((g) => {
+      this.granularities = granularities.map(g => {
         if (runningActionType === null) runningActionType = g.op;
         if (g.op !== runningActionType) throw new Error("granularities must have the same type of actions");
         return g;
@@ -179,7 +181,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       kind: this.kind
     };
     if (this.url) js.url = this.url;
-    if (this.granularities) js.granularities = this.granularities.map((g) => { return granularityToJS(g); });
+    if (this.granularities) js.granularities = this.granularities.map(g => granularityToJS(g));
     if (this.bucketedBy) js.bucketedBy = granularityToJS(this.bucketedBy);
     if (this.bucketingStrategy) js.bucketingStrategy = this.bucketingStrategy;
     if (this.sortStrategy) js.sortStrategy = this.sortStrategy;
@@ -213,7 +215,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
 
   public isContinuous() {
     const { kind } = this;
-    return kind === 'time' || kind === 'number';
+    return kind === "time" || kind === "number";
   }
 
   change(propertyName: string, newValue: any): Dimension {
@@ -228,20 +230,21 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   changeKind(newKind: string): Dimension {
-    return this.change('kind', newKind);
+    return this.change("kind", newKind);
   }
 
   changeName(newName: string): Dimension {
-    return this.change('name', newName);
+    return this.change("name", newName);
   }
 
   changeTitle(newTitle: string): Dimension {
-    return this.change('title', newTitle);
+    return this.change("title", newTitle);
   }
 
   public changeFormula(newFormula: string): Dimension {
-    return this.change('formula', newFormula);
+    return this.change("formula", newFormula);
   }
 
 }
+
 check = Dimension;

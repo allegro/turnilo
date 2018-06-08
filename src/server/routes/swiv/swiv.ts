@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-import { Response, Router } from 'express';
-
-import { SwivRequest } from '../../utils';
-import { mainLayout } from '../../views';
-import { SETTINGS_MANAGER } from '../../config';
+import { Response, Router } from "express";
+import { SETTINGS_MANAGER } from "../../config";
+import { SwivRequest } from "../../utils";
+import { mainLayout } from "../../views";
 
 var router = Router();
 
-router.get('/', (req: SwivRequest, res: Response, next: Function) => {
+router.get("/", (req: SwivRequest, res: Response, next: Function) => {
   req.getSettings()
-    .then((appSettings) => {
+    .then(appSettings => {
       var clientSettings = appSettings.toClientSettings();
       res.send(mainLayout({
         version: req.version,

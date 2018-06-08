@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-import { SortOn, SortOnJS } from './sort-on';
-import { $ } from 'plywood';
+import { SortOn, SortOnJS } from "./sort-on";
 
 export class SortOnMock {
   public static get DEFAULT_A_JS(): SortOnJS {
     return {
       measure: {
-        name: 'price',
-        title: 'Price',
-        formula: '$main.min($price)'
+        name: "price",
+        title: "Price",
+        formula: "$main.min($price)"
       }
     };
   }
@@ -32,9 +31,9 @@ export class SortOnMock {
   public static get DEFAULT_B_JS(): SortOnJS {
     return {
       measure: {
-        name: 'price',
-        title: 'Price',
-        formula: '$main.sum($price)'
+        name: "price",
+        title: "Price",
+        formula: "$main.sum($price)"
       }
     };
   }
@@ -42,10 +41,10 @@ export class SortOnMock {
   public static get DEFAULT_C_JS(): SortOnJS {
     return {
       dimension: {
-        name: 'country',
-        title: 'important countries',
-        formula: '$country',
-        kind: 'string'
+        name: "country",
+        title: "important countries",
+        formula: "$country",
+        kind: "string"
       }
     };
   }

@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import './button-group.scss';
-
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { classNames } from '../../utils/dom/dom';
+import * as React from "react";
+import { Fn } from "../../../common/utils/general/general";
+import { classNames } from "../../utils/dom/dom";
+import "./button-group.scss";
 
 export interface GroupMember {
   title: string;
@@ -29,7 +28,7 @@ export interface GroupMember {
   isSelected?: boolean;
 }
 
-export interface ButtonGroupProps extends React.Props<any> {
+export interface ButtonGroupProps {
   groupMembers: GroupMember[];
   title?: string;
   className?: string;
@@ -42,8 +41,9 @@ export class ButtonGroup extends React.Component<ButtonGroupProps, ButtonGroupSt
 
   renderMembers() {
     const { groupMembers } = this.props;
-    return groupMembers.map((button) => {
-      return <li className={classNames('group-member', button.className, {'selected' : button.isSelected})}
+    return groupMembers.map(button => {
+      return <li
+        className={classNames("group-member", button.className, { selected: button.isSelected })}
         key={button.key}
         onClick={button.onClick}
       >
@@ -55,7 +55,7 @@ export class ButtonGroup extends React.Component<ButtonGroupProps, ButtonGroupSt
   render() {
     const { title, className } = this.props;
 
-    return <div className={classNames('button-group', className)}>
+    return <div className={classNames("button-group", className)}>
       {title ? <div className="button-group-title">{title}</div> : null}
       <ul className="group-container">{this.renderMembers()}</ul>
     </div>;

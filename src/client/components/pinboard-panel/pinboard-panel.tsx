@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-import './pinboard-panel.scss';
+import { SortExpression } from "plywood";
+import * as React from "react";
+import { Clicker, Colors, Essence, SortOn, Timekeeper, VisStrategy } from "../../../common/models/index";
+import { STRINGS } from "../../config/constants";
+import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { DimensionTile } from "../dimension-tile/dimension-tile";
+import { PinboardMeasureTile } from "../pinboard-measure-tile/pinboard-measure-tile";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./pinboard-panel.scss";
 
-import * as React from 'react';
-import { $, Expression, SortExpression } from 'plywood';
-import { STRINGS } from '../../config/constants';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { Clicker, Essence, Timekeeper, SortOn, VisStrategy, Colors } from '../../../common/models/index';
-import { DragManager } from '../../utils/drag-manager/drag-manager';
-import { PinboardMeasureTile } from '../pinboard-measure-tile/pinboard-measure-tile';
-import { DimensionTile } from '../dimension-tile/dimension-tile';
-
-export interface PinboardPanelProps extends React.Props<any> {
+export interface PinboardPanelProps {
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;
@@ -63,7 +62,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
   dragOver(e: DragEvent) {
     if (!this.canDrop(e)) return;
-    e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = "move";
     e.preventDefault();
   }
 
@@ -173,7 +172,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
     var pinnedSortSortOn = SortOn.fromMeasure(essence.getPinnedSortMeasure());
     var dimensionTiles: JSX.Element[] = [];
-    pinnedDimensions.forEach((dimensionName) => {
+    pinnedDimensions.forEach(dimensionName => {
       var dimension = dataCube.getDimension(dimensionName);
       if (!dimension) return null;
 
@@ -191,7 +190,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     var placeholder: JSX.Element = null;
     if (!dragOver && !dimensionTiles.length) {
       placeholder = <div className="placeholder">
-        <SvgIcon svg={require('../../icons/preview-pin.svg')}/>
+        <SvgIcon svg={require("../../icons/preview-pin.svg")} />
         <div className="placeholder-message">{STRINGS.pinboardPlaceholder}</div>
       </div>;
     }
@@ -210,7 +209,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         onSelect={this.onPinboardSortOnSelect.bind(this)}
       />
       {dimensionTiles}
-      {dragOver ? <div className="drop-indicator-tile"/> : null}
+      {dragOver ? <div className="drop-indicator-tile" /> : null}
       {placeholder}
       {dragOver ? <div
         className="drag-mask"

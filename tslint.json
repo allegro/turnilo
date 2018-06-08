@@ -1,39 +1,33 @@
 {
-  "_extends": "tslint:recommended",
+  "extends": [
+    "tslint:recommended",
+    "tslint-eslint-rules",
+    "tslint-react"
+  ],
   "rules": {
-    "align": [true,
-      "parameters",
-      "statements"
+    "arrow-parens": [true, // disallow parens around single argument arrow functions
+      "ban-single-arg-parens"
     ],
-    "ban": [false,
+    "ban": [true,
       ["_", "extend"],
       ["_", "isNull"],
       ["_", "isDefined"]
     ],
-    "class-name": true,
-    "comment-format": [false,
-      "check-space"
+    "curly": [true,
+      "ignore-same-line" // don't enforce braces in single line conditionals
     ],
-    "curly": false,
-    "eofline": true,
     "file-header": [
       true,
       "Copyright 2017-2018 Allegro.pl"
     ],
-    "forin": false,
-    "indent": [true, 2],
-    "interface-name": false,
-    "jsdoc-format": true,
-    "label-position": true,
+    "indent": [true, "spaces", 2],
+    "interface-name": [true, "never-prefix"], // don't allow prefixing interface names with "I"
+    "jsdoc-format": [true, "check-multiline-start"], // don't allow text after "/**" in first line
     "max-line-length": [true, 200],
-    "member-access": false,
+    "member-access": false, // don't require explicit member access declaration
     "member-ordering": [true,
       "static-before-instance"
     ],
-    "no-any": false,
-    "no-arg": true,
-    "no-bitwise": false,
-    "no-consecutive-blank-lines": false,
     "no-console": [true,
       "debug",
       "info",
@@ -41,65 +35,58 @@
       "timeEnd",
       "trace"
     ],
-    "no-construct": false,
-    "no-parameter-properties": false,
-    "no-debugger": true,
-    "no-duplicate-variable": false,
-    "no-empty": false,
-    "no-eval": true,
-    "no-inferrable-types": true,
-    "no-internal-module": false,
-    "no-null-keyword": false,
-    "no-require-imports": false,
-    "no-shadowed-variable": false,
-    "no-string-literal": false,
-    "no-switch-case-fall-through": false,
-    "no-trailing-whitespace": true,
-    "no-unreachable": false,
-    "no-unused-expression": false,
-    "no-unused-variable": false,
-    "no-use-before-declare": false,
-    "no-var-keyword": false,
-    "no-var-requires": false,
-    "object-literal-sort-keys": false,
-    "one-line": [true,
-      "check-catch",
-      "check-else",
-      "check-finally",
-      "check-open-brace",
-      "check-whitespace"
+    "no-inferrable-types": true, // enforce const x = 1 instead of const x: number = 1
+    "no-require-imports": false, // allow require() style imports
+    "no-string-literal": false, // allow opj["property"] syntax
+    "no-var-requires": false, // allow assignment of required modules
+    "object-literal-sort-keys": false, // allow unordered keys in object literals
+    "ordered-imports": true,
+    "quotemark": [true, // enforce double quotes, single only to avoid escapes, disallow unnecessary templates
+      "double",
+      "jsx-double",
+      "avoid-escape",
+      "avoid-template"
     ],
-    "quotemark": [false, "double", "jsx-double", "avoid-escape"],
-    "radix": true,
-    "semicolon": true,
-    "switch-default": false,
-    "trailing-comma": [true, {
-      "singleline": "never",
-      "multiline": "never"
-    }],
-    "triple-equals": [true, "allow-null-check"],
-    "typedef": false,
-    "typedef-whitespace": [true, {
-      "call-signature": "nospace",
-      "index-signature": "nospace",
-      "parameter": "nospace",
-      "property-declaration": "nospace",
-      "variable-declaration": "nospace"
-    }, {
-      "call-signature": "onespace",
-      "index-signature": "onespace",
-      "parameter": "onespace",
-      "property-declaration": "onespace",
-      "variable-declaration": "onespace"
-    }],
-    "use-strict": false,
-    "variable-name": false,
-    "whitespace": [true,
-      "check-branch",
-      "check-decl",
-      "check-operator",
-      "check-separator",
-      "check-type"
-    ]
+    "trailing-comma": [true, // disallow a trailing comma after last element of list like constructs
+      {
+        "singleline": "never",
+        "multiline": "never"
+      }
+    ],
+
+    // tslint-eslint-rules
+    "array-bracket-spacing": [true, // disallow spaces after opening and before closing array brackets
+      "never"
+    ],
+    "object-curly-spacing": [true, // enforce spaces in curly braces in objects literals, imports and destructuring
+      "always"
+    ],
+
+    // TODO: fix those rules manually at some point
+    "ban-types": false, // ban general Function type and uppercase simple types (String, Number, Boolean, ...)
+    "forin": false, // enforces iteration on own properties only
+    "jsx-alignment": false, // enforces consistent multiline elements alignment
+    "jsx-key": false, // enforce key properties on elements in lists (reconciliation performance)
+    "jsx-no-bind": false, // disallow function binding in props (binding creates new function value and forces rerender of component)
+    "jsx-no-lambda": false, // disallow lambda in props (creates new function value and forces rerender of component)
+    "jsx-no-multiline-js": false, // disallow multiline js in jsx (reduces readability)
+    "jsx-no-string-ref": false, // passing string refs is discouraged in React now
+    "jsx-self-close": false, // enforce self closing of empty jsx elements
+    "jsx-wrap-multiline": false, // enforce wrapping of multiline jsx elements in parens (React's de facto standard)
+    "jsx-space-before-trailing-slash": false, // enforce space before "/>" in empty jsx elements
+    "max-classes-per-file": false, // disallow multiple classes in a single file
+    "no-angle-bracket-type-assertion": false, // enforce consistent "as X" type assertion style, "<X>" style is not compatible with TSX
+    "no-any": false, // disallow declarations of "any" type
+    "no-conditional-assignment": false, // disallow assignment in conditional condition statements
+    "no-duplicate-variable": false, // disallow duplicate variable declaration in the same block, not needed after we get rid of vars
+    "no-empty": false, // disallow empty function / method bodies
+    "no-empty-interface": false, // disallow empty named interfaces, replace with {}
+    "no-shadowed-variable": false, // disallow variable shadowing
+    "no-unused-expression": false, // disallow unused expressions, currently many "to.be.true" expectations trigger it
+    "no-unused-variable": false, // disallow unused variables
+    "no-var-keyword": false,
+    "only-arrow-functions": false, // disallow anonymous functions (function() { })
+    "prefer-const": false, // prefer consts where possible instead of lets
+    "variable-name": false // enforce consistent variable naming
   }
 }

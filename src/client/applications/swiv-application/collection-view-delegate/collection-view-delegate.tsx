@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import * as Q from 'q';
-
-import { SwivApplication, SwivApplicationProps, SwivApplicationState } from '../swiv-application';
-
-import { Ajax } from '../../../utils/ajax/ajax';
-import { Collection, CollectionTile, DataCube, Essence, Timekeeper, AppSettings } from '../../../../common/models/index';
-import { generateUniqueName } from '../../../../common/utils/string/string';
-import { STRINGS } from '../../../config/constants';
-import { AddCollectionTileModal } from '../../../modals/index';
-import { Notifier } from '../../../components/index';
-
+import * as React from "react";
+import { AppSettings, Collection, CollectionTile, DataCube, Essence, Timekeeper } from "../../../../common/models/index";
+import { generateUniqueName } from "../../../../common/utils/string/string";
+import { Notifier } from "../../../components/index";
+import { STRINGS } from "../../../config/constants";
+import { AddCollectionTileModal } from "../../../modals/index";
+import { Ajax } from "../../../utils/ajax/ajax";
+import { SwivApplication, SwivApplicationState } from "../swiv-application";
 
 export class CollectionViewDelegate {
 
@@ -53,15 +49,15 @@ export class CollectionViewDelegate {
   private save(appSettings: AppSettings): Promise<any> {
     return Ajax.query({
       method: "POST",
-      url: 'collections',
+      url: "collections",
       data: {
         collections: appSettings.toJS().collections || []
       }
     })
       .then(
-        (status) => this.setState({appSettings}),
+        status => this.setState({ appSettings }),
         (xhr: XMLHttpRequest) => {
-          Notifier.failure('Woops', 'Something bad happened');
+          Notifier.failure("Woops", "Something bad happened");
         }
       );
   }
@@ -90,9 +86,9 @@ export class CollectionViewDelegate {
 
     const undo = () => this.addTile(newCollection, tile, oldIndex);
 
-    this.save(newSettings).then( () => {
+    this.save(newSettings).then(() => {
       window.location.hash = collectionURL;
-      Notifier.success('Tile removed', {label: STRINGS.undo, callback: undo});
+      Notifier.success("Tile removed", { label: STRINGS.undo, callback: undo });
     });
   }
 
@@ -110,14 +106,14 @@ export class CollectionViewDelegate {
     return this
       .save(appSettings.addOrUpdateCollection(collection.changeTiles(newTiles)))
       .then(() => `#collection/${collection.name}/${tile.name}`)
-    ;
+      ;
   }
 
   duplicateTile(collection: Collection, tile: CollectionTile): Promise<string> {
     var newTile = new CollectionTile(tile.valueOf())
-      .changeName(generateUniqueName('i', collection.isNameAvailable))
-      .changeTitle(tile.title + ' (copy)')
-      ;
+      .changeName(generateUniqueName("i", collection.isNameAvailable))
+      .changeTitle(tile.title + " (copy)")
+    ;
 
     return this.addTile(collection, newTile);
   }
@@ -127,12 +123,12 @@ export class CollectionViewDelegate {
     const collectionURL = `#collection/${collection.name}`;
 
     var onCancel = () => {
-      this.setState({cubeViewSupervisor: undefined});
+      this.setState({ cubeViewSupervisor: undefined });
       window.location.hash = collectionURL;
     };
 
     var onSave = (_collection: Collection, CollectionTile: CollectionTile) => {
-      this.setState({cubeViewSupervisor: undefined});
+      this.setState({ cubeViewSupervisor: undefined });
       this.addTile(_collection, CollectionTile).then(url => window.location.hash = `#collection/${_collection.name}`);
     };
 
@@ -146,14 +142,17 @@ export class CollectionViewDelegate {
       />;
     };
 
-    this.setState({
-      cubeViewSupervisor: {
-        title: STRINGS.addVisualization + ': ' + collection.title,
-        cancel: onCancel,
-        getConfirmationModal: getConfirmationModal,
-        saveLabel: STRINGS.add
-      }
-    }, () => window.location.hash = '#' + dataCube.name);
+    this.setState(
+      {
+        cubeViewSupervisor: {
+          title: STRINGS.addVisualization + ": " + collection.title,
+          cancel: onCancel,
+          getConfirmationModal,
+          saveLabel: STRINGS.add
+        }
+      },
+      () => window.location.hash = "#" + dataCube.name
+    );
   }
 
   updateCollection(collection: Collection): Promise<any> {
@@ -171,9 +170,9 @@ export class CollectionViewDelegate {
       this.save(this.getSettings().addCollectionAt(collection, oldIndex));
     };
 
-    return this.save(appSettings.deleteCollection(collection)).then( () => {
-      window.location.hash = `#/home`;
-      Notifier.success('Collection removed', {label: STRINGS.undo, callback: undo});
+    return this.save(appSettings.deleteCollection(collection)).then(() => {
+      window.location.hash = "#/home";
+      Notifier.success("Collection removed", { label: STRINGS.undo, callback: undo });
     });
   }
 
@@ -198,12 +197,15 @@ export class CollectionViewDelegate {
 
     const { essence } = tile;
 
-    this.setState({
-      cubeViewSupervisor: {
-        title: STRINGS.editVisualization + ': ' + collection.title + ' / ' + tile.title,
-        cancel: onCancel,
-        save: onSave
-      }
-    }, () => window.location.hash = `#${essence.dataCube.name}/${this.app.getCubeViewHash(essence)}`);
+    this.setState(
+      {
+        cubeViewSupervisor: {
+          title: STRINGS.editVisualization + ": " + collection.title + " / " + tile.title,
+          cancel: onCancel,
+          save: onSave
+        }
+      },
+      () => window.location.hash = `#${essence.dataCube.name}/${this.app.getCubeViewHash(essence)}`
+    );
   }
 }

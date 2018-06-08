@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Colors, Measure, Splits } from '../';
+import { Colors, Measure, Splits } from "../";
 import { VisualizationDependentEvaluator } from "../../utils/rules/visualization-dependent-evaluator";
 
 export interface Adjustment {
@@ -30,7 +30,7 @@ export interface Resolution {
 }
 
 export class Resolve {
-  static NEVER: Resolve = new Resolve(-1, 'never', null, null, null);
+  static NEVER: Resolve = new Resolve(-1, "never", null, null, null);
 
   // static READY: Resolve;
 
@@ -39,15 +39,15 @@ export class Resolve {
   }
 
   static automatic(score: number, adjustment: Adjustment) {
-    return new Resolve(score, 'automatic', adjustment, null, null);
+    return new Resolve(score, "automatic", adjustment, null, null);
   }
 
   static manual(score: number, message: string, resolutions: Resolution[]) {
-    return new Resolve(score, 'manual', null, message, resolutions);
+    return new Resolve(score, "manual", null, message, resolutions);
   }
 
   static ready(score: number) {
-    return new Resolve(score, 'ready', null, null, null);
+    return new Resolve(score, "ready", null, null, null);
   }
 
   public score: number;
@@ -73,19 +73,19 @@ export class Resolve {
   }
 
   public isReady(): boolean {
-    return this.state === 'ready';
+    return this.state === "ready";
   }
 
   public isAutomatic(): boolean {
-    return this.state === 'automatic';
+    return this.state === "automatic";
   }
 
   public isManual(): boolean {
-    return this.state === 'manual';
+    return this.state === "manual";
   }
 }
 
-export type MeasureModeNeeded = 'any' | 'single' | 'multi';
+export type MeasureModeNeeded = "any" | "single" | "multi";
 
 export class Manifest {
   public name: string;
@@ -93,7 +93,7 @@ export class Manifest {
   public evaluateRules: VisualizationDependentEvaluator;
   public measureModeNeed: MeasureModeNeeded;
 
-  constructor(name: string, title: string, evaluateRules: VisualizationDependentEvaluator, measureModeNeed: MeasureModeNeeded = 'any') {
+  constructor(name: string, title: string, evaluateRules: VisualizationDependentEvaluator, measureModeNeed: MeasureModeNeeded = "any") {
     this.name = name;
     this.title = title;
     this.evaluateRules = evaluateRules;

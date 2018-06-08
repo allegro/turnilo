@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
-import { Customization, CustomizationJS } from './customization';
+import { expect } from "chai";
+import { testImmutableClass } from "immutable-class-tester";
+import { Customization, CustomizationJS } from "./customization";
 
-describe('Customization', () => {
-  it('is an immutable class', () => {
+describe("Customization", () => {
+  it("is an immutable class", () => {
     testImmutableClass<CustomizationJS>(Customization, [
       {
         title: "Hello World",
@@ -37,10 +37,12 @@ describe('Customization', () => {
             title: "corporate dashboard",
             linkGenerator: "{ return 'https://dashboard.corporate.com/'+filter.toString() }",
             sameWindow: true
-          }, {
+          },
+          {
             title: "google docs",
             linkGenerator: "{ return 'http://182.343.32.2273:8080/'+dataCube.name }"
-          }, {
+          },
+          {
             title: "google docs",
             linkGenerator: "{ return 'http://182.343.32.2273:8080/'+timezone.timezone }"
           }

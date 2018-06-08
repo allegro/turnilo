@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property } from 'immutable-class';
-import { SettingsLocation, SettingsLocationJS } from '../settings-location/settings-location';
+import { BaseImmutable } from "immutable-class";
+import { SettingsLocation } from "../settings-location/settings-location";
 
 export type Iframe = "allow" | "deny";
 export type TrustProxy = "none" | "always";
@@ -43,7 +43,7 @@ export type ServerSettingsJS = ServerSettingsValue;
 function ensureOneOfOrNull<T>(name: string, thing: T, things: T[]): void {
   if (thing == null) return;
   if (things.indexOf(thing) === -1) {
-    throw new Error(`'${thing}' is not a valid value for ${name}, must be one of: ${things.join(', ')}`);
+    throw new Error(`'${thing}' is not a valid value for ${name}, must be one of: ${things.join(", ")}`);
   }
 }
 
@@ -53,9 +53,9 @@ function basicEqual(a: any, b: any): boolean {
 
 export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSettingsJS> {
   static DEFAULT_PORT = 9090;
-  static DEFAULT_SERVER_ROOT = '/turnilo';
-  static DEFAULT_HEALTH_ENDPOINT = '/health';
-  static DEFAULT_REQUEST_LOG_FORMAT = 'common';
+  static DEFAULT_SERVER_ROOT = "/turnilo";
+  static DEFAULT_HEALTH_ENDPOINT = "/health";
+  static DEFAULT_REQUEST_LOG_FORMAT = "common";
   static DEFAULT_PAGE_MUST_LOAD_TIMEOUT = 800;
   static IFRAME_VALUES: Iframe[] = ["allow", "deny"];
   static DEFAULT_IFRAME: Iframe = "allow";
@@ -69,27 +69,31 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   }
 
   static fromJS(parameters: ServerSettingsJS): ServerSettings {
-    if (typeof parameters.port === 'string') parameters.port = parseInt(parameters.port, 10);
-    if (parameters.serverRoot && parameters.serverRoot[0] !== '/') parameters.serverRoot = '/' + parameters.serverRoot;
-    if (parameters.serverRoot === '/') parameters.serverRoot = null;
+    if (typeof parameters.port === "string") parameters.port = parseInt(parameters.port, 10);
+    if (parameters.serverRoot && parameters.serverRoot[0] !== "/") parameters.serverRoot = "/" + parameters.serverRoot;
+    if (parameters.serverRoot === "/") parameters.serverRoot = null;
     return new ServerSettings(BaseImmutable.jsToValue(ServerSettings.PROPERTIES, parameters));
   }
 
   // TODO, back to: static PROPERTIES: Property[] = [
   static PROPERTIES: any[] = [
-    { name: 'port', defaultValue: ServerSettings.DEFAULT_PORT, validate: BaseImmutable.ensure.number },
-    { name: 'serverHost', defaultValue: null },
-    { name: 'serverRoot', defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },
-    { name: 'healthEndpoint', defaultValue: ServerSettings.DEFAULT_HEALTH_ENDPOINT },
-    { name: 'requestLogFormat', defaultValue: ServerSettings.DEFAULT_REQUEST_LOG_FORMAT },
-    { name: 'trackingUrl', defaultValue: null },
-    { name: 'trackingContext', defaultValue: null, equal: basicEqual },
-    { name: 'pageMustLoadTimeout', defaultValue: ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT },
-    { name: 'iframe', defaultValue: ServerSettings.DEFAULT_IFRAME, possibleValues: ServerSettings.IFRAME_VALUES },
-    { name: 'trustProxy', defaultValue: ServerSettings.DEFAULT_TRUST_PROXY, possibleValues: ServerSettings.TRUST_PROXY_VALUES },
-    { name: 'strictTransportSecurity', defaultValue: ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY, possibleValues: ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES },
-    { name: 'auth', defaultValue: null },
-    { name: 'settingsLocation', defaultValue: null, immutableClass: SettingsLocation }
+    { name: "port", defaultValue: ServerSettings.DEFAULT_PORT, validate: BaseImmutable.ensure.number },
+    { name: "serverHost", defaultValue: null },
+    { name: "serverRoot", defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },
+    { name: "healthEndpoint", defaultValue: ServerSettings.DEFAULT_HEALTH_ENDPOINT },
+    { name: "requestLogFormat", defaultValue: ServerSettings.DEFAULT_REQUEST_LOG_FORMAT },
+    { name: "trackingUrl", defaultValue: null },
+    { name: "trackingContext", defaultValue: null, equal: basicEqual },
+    { name: "pageMustLoadTimeout", defaultValue: ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT },
+    { name: "iframe", defaultValue: ServerSettings.DEFAULT_IFRAME, possibleValues: ServerSettings.IFRAME_VALUES },
+    { name: "trustProxy", defaultValue: ServerSettings.DEFAULT_TRUST_PROXY, possibleValues: ServerSettings.TRUST_PROXY_VALUES },
+    {
+      name: "strictTransportSecurity",
+      defaultValue: ServerSettings.DEFAULT_STRICT_TRANSPORT_SECURITY,
+      possibleValues: ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES
+    },
+    { name: "auth", defaultValue: null },
+    { name: "settingsLocation", defaultValue: null, immutableClass: SettingsLocation }
   ];
 
   public port: number;
@@ -123,4 +127,5 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public getStrictTransportSecurity: () => StrictTransportSecurity;
   public getSettingsLocation: () => SettingsLocation;
 }
+
 BaseImmutable.finalize(ServerSettings);

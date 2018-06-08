@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { immutableEqual, Equalable } from 'immutable-class';
-import { hasOwnProperty } from '../../../common/utils/general/general';
+import { Equalable, immutableEqual } from "immutable-class";
+import { hasOwnProperty } from "../../../common/utils/general/general";
 
 function getName(thing: any): string {
   return thing.name;
@@ -40,15 +40,13 @@ export function updater<T extends Equalable>(oldThings: T[], newThings: T[], upd
   const onExit = updatedOptions.onExit || noop;
 
   var initialByKey: Record<string, T> = {};
-  for (var i = 0; i < oldThings.length; i++) {
-    var initialThing = oldThings[i];
+  for (const initialThing of oldThings) {
     var initialThingKey = key(initialThing);
     if (initialByKey[initialThingKey]) throw new Error(`duplicate key '${initialThingKey}'`);
     initialByKey[initialThingKey] = initialThing;
   }
 
-  for (var j = 0; j < newThings.length; j++) {
-    var newThing = newThings[j];
+  for (const newThing of newThings) {
     var newThingKey = key(newThing);
     var oldThing = initialByKey[newThingKey];
     if (oldThing) {

@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-import './scroller.scss';
-
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { clamp, classNames, getXFromEvent, getYFromEvent } from '../../utils/dom/dom';
-import { firstUp } from '../../../common/utils/string/string';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { Stage } from "../../../common/models";
+import { firstUp } from "../../../common/utils/string/string";
+import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";
+import "./scroller.scss";
 
-export type XSide = 'left' | 'right';
-export type YSide = 'top' | 'bottom';
-export type ScrollerPart = 'top-left-corner' | 'top-gutter' | 'top-right-corner' | 'left-gutter' | 'body' | 'right-gutter' | 'bottom-left-corner' | 'bottom-gutter' | 'bottom-right-corner';
+export type XSide = "left" | "right";
+export type YSide = "top" | "bottom";
+export type ScrollerPart =
+  "top-left-corner"
+  | "top-gutter"
+  | "top-right-corner"
+  | "left-gutter"
+  | "body"
+  | "right-gutter"
+  | "bottom-left-corner"
+  | "bottom-gutter"
+  | "bottom-right-corner";
 
 export interface ScrollerLayout {
   bodyWidth: number;
@@ -37,7 +45,7 @@ export interface ScrollerLayout {
   left: number;
 }
 
-export interface ScrollerProps extends React.Props<any> {
+export interface ScrollerProps {
   layout: ScrollerLayout;
 
   onClick?: (x: number, y: number, part: ScrollerPart) => void;
@@ -68,15 +76,15 @@ export interface ScrollerState {
 }
 
 export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
-  static TOP_LEFT_CORNER: ScrollerPart = 'top-left-corner';
-  static TOP_GUTTER: ScrollerPart = 'top-gutter';
-  static TOP_RIGHT_CORNER: ScrollerPart = 'top-right-corner';
-  static LEFT_GUTTER: ScrollerPart = 'left-gutter';
-  static BODY: ScrollerPart = 'body';
-  static RIGHT_GUTTER: ScrollerPart = 'right-gutter';
-  static BOTTOM_LEFT_CORNER: ScrollerPart = 'bottom-left-corner';
-  static BOTTOM_GUTTER: ScrollerPart = 'bottom-gutter';
-  static BOTTOM_RIGHT_CORNER: ScrollerPart = 'bottom-right-corner';
+  static TOP_LEFT_CORNER: ScrollerPart = "top-left-corner";
+  static TOP_GUTTER: ScrollerPart = "top-gutter";
+  static TOP_RIGHT_CORNER: ScrollerPart = "top-right-corner";
+  static LEFT_GUTTER: ScrollerPart = "left-gutter";
+  static BODY: ScrollerPart = "body";
+  static RIGHT_GUTTER: ScrollerPart = "right-gutter";
+  static BOTTOM_LEFT_CORNER: ScrollerPart = "bottom-left-corner";
+  static BOTTOM_GUTTER: ScrollerPart = "bottom-gutter";
+  static BOTTOM_RIGHT_CORNER: ScrollerPart = "bottom-right-corner";
 
   static PARTS: ScrollerPart[][] = [
     [Scroller.TOP_LEFT_CORNER, Scroller.TOP_GUTTER, Scroller.TOP_RIGHT_CORNER],
@@ -145,7 +153,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     const { layout } = this.props;
 
     var style: any = {};
-    if (xPos === 'left') {
+    if (xPos === "left") {
       style.left = 0;
       style.width = layout.left;
     } else {
@@ -153,7 +161,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       style.width = layout.right;
     }
 
-    if (yPos === 'top') {
+    if (yPos === "top") {
       style.top = 0;
       style.height = layout.top;
     } else {
@@ -169,16 +177,16 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
 
     switch (side) {
       case "top":
-        return {top: 0, height: layout.top, left: 0, right: 0};
+        return { top: 0, height: layout.top, left: 0, right: 0 };
 
       case "right":
-        return {width: layout.right, right: 0, top: 0, bottom: 0};
+        return { width: layout.right, right: 0, top: 0, bottom: 0 };
 
       case "bottom":
-        return {height: layout.bottom, bottom: 0, left: 0, right: 0};
+        return { height: layout.bottom, bottom: 0, left: 0, right: 0 };
 
       case "left":
-        return {width: layout.left, left: 0, top: 0, bottom: 0};
+        return { width: layout.left, left: 0, top: 0, bottom: 0 };
 
       default:
         throw new Error("Unknown side for shadow. This shouldn't happen.");
@@ -231,9 +239,9 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     }
   }
 
-  getRelativeMouseCoordinates(event: MouseEvent): {x: number, y: number, part: ScrollerPart} {
+  getRelativeMouseCoordinates(event: MouseEvent): { x: number, y: number, part: ScrollerPart } {
     const { top, left, bodyWidth, bodyHeight } = this.props.layout;
-    const container = this.getDOMElement('eventContainer');
+    const container = this.getDOMElement("eventContainer");
     const { scrollLeft, scrollTop, viewportHeight, viewportWidth } = this.state;
     const rect = container.getBoundingClientRect();
 
@@ -259,13 +267,13 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       y += bodyHeight - viewportHeight;
     }
 
-    return {x, y, part: Scroller.PARTS[i][j]};
+    return { x, y, part: Scroller.PARTS[i][j] };
   }
 
   onClick(event: MouseEvent) {
     if (this.props.onClick === undefined) return;
 
-    const { x, y, part} = this.getRelativeMouseCoordinates(event);
+    const { x, y, part } = this.getRelativeMouseCoordinates(event);
     if (y < 0 || x < 0) return;
 
     this.props.onClick(x, y, part);
@@ -291,36 +299,36 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     const { layout } = this.props;
     const { scrollLeft, scrollTop, viewportHeight, viewportWidth } = this.state;
 
-    if (side === 'top') return scrollTop > 0;
-    if (side === 'left') return scrollLeft > 0;
-    if (side === 'bottom') return layout.bodyHeight - scrollTop > viewportHeight;
-    if (side === 'right') return layout.bodyWidth - scrollLeft > viewportWidth;
+    if (side === "top") return scrollTop > 0;
+    if (side === "left") return scrollLeft > 0;
+    if (side === "bottom") return layout.bodyHeight - scrollTop > viewportHeight;
+    if (side === "right") return layout.bodyWidth - scrollLeft > viewportWidth;
 
-    throw new Error('Unknown side for shadow : ' + side);
+    throw new Error("Unknown side for shadow : " + side);
   }
 
   renderShadow(side: XSide | YSide): JSX.Element {
     if (!(this.props.layout as any)[side]) return null; // no gutter ? no shadow.
     if (!this.shouldHaveShadow(side)) return null;
 
-    return <div className={`${side}-shadow`} style={this.getShadowStyle(side)}/>;
+    return <div className={`${side}-shadow`} style={this.getShadowStyle(side)} />;
   }
 
   renderCorner(yPos: YSide, xPos: XSide): JSX.Element {
     var style = this.getCornerStyle(yPos, xPos);
-    var element = (this.props as any)[yPos + firstUp(xPos) + 'Corner'];
+    var element = (this.props as any)[yPos + firstUp(xPos) + "Corner"];
     if (!element) return null;
 
-    return <div className={[yPos, xPos, 'corner'].join('-')} style={style}>{element}</div>;
+    return <div className={[yPos, xPos, "corner"].join("-")} style={style}>{element}</div>;
   }
 
   componentDidMount() {
-    window.addEventListener('resize', this.globalResizeListener);
+    window.addEventListener("resize", this.globalResizeListener);
     this.updateViewport();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.globalResizeListener);
+    window.removeEventListener("resize", this.globalResizeListener);
   }
 
   componentDidUpdate() {
@@ -328,7 +336,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   }
 
   updateViewport() {
-    const scroller = this.getDOMElement('Scroller');
+    const scroller = this.getDOMElement("Scroller");
     if (!scroller) return;
 
     const rect = scroller.getBoundingClientRect();
@@ -338,7 +346,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     const newWidth = rect.width - left - right;
 
     if (this.state.viewportHeight !== newHeight || this.state.viewportWidth !== newWidth) {
-      this.setState({viewportHeight: newHeight, viewportWidth: newWidth});
+      this.setState({ viewportHeight: newHeight, viewportWidth: newWidth });
 
       const { x, y } = rect;
       const { onViewportUpdate } = this.props;
@@ -358,17 +366,17 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     let blockVerticalScroll = bodyHeight <= viewportHeight;
 
     const eventContainerClasses = classNames(
-      'event-container',
+      "event-container",
       {
-        'no-x-scroll': blockHorizontalScroll,
-        'no-y-scroll': blockVerticalScroll
+        "no-x-scroll": blockHorizontalScroll,
+        "no-y-scroll": blockVerticalScroll
       }
     );
 
     const scrollerClasses = classNames(
-      'scroller',
+      "scroller",
       {
-        'has-top-shadow': this.shouldHaveShadow('top')
+        "has-top-shadow": this.shouldHaveShadow("top")
       }
     );
 
@@ -391,7 +399,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       {this.renderShadow("bottom")}
       {this.renderShadow("left")}
 
-      { overlay ? <div className="overlay">{overlay}</div> : null }
+      {overlay ? <div className="overlay">{overlay}</div> : null}
 
       <div
         className={eventContainerClasses}
@@ -400,8 +408,8 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
         onClick={this.onClick.bind(this)}
         onMouseMove={this.onMouseMove.bind(this)}
         onMouseLeave={onMouseLeave || null}
-       >
-        <div className="event-target" style={this.getTargetStyle()}/>
+      >
+        <div className="event-target" style={this.getTargetStyle()} />
       </div>
 
     </div>;

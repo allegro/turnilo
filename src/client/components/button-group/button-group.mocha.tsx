@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
 
-import { renderIntoDocument } from '../../utils/test-utils';
+import { renderIntoDocument } from "../../utils/test-utils";
 
-import { $, Expression } from 'plywood';
-import { ButtonGroup } from './button-group';
+import { ButtonGroup } from "./button-group";
 
-describe('ButtonGroup', () => {
-  it('adds the correct class', () => {
+describe("ButtonGroup", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <ButtonGroup
         title="my-buttons"
@@ -35,8 +33,8 @@ describe('ButtonGroup', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('button-group');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("button-group");
   });
 
 });

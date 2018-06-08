@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
-import { AppSettings, Collection, CollectionJS } from '../../../common/models/index';
-import { MANIFESTS } from '../../../common/manifests/index';
-
-import { SwivRequest } from '../../utils/index';
-import { VERSION, SETTINGS_MANAGER } from '../../config';
+import { Response, Router } from "express";
+import { MANIFESTS } from "../../../common/manifests/index";
+import { Collection, CollectionJS } from "../../../common/models/index";
+import { SETTINGS_MANAGER } from "../../config";
+import { SwivRequest } from "../../utils/index";
 
 var router = Router();
 
-router.post('/', (req: SwivRequest, res: Response) => {
+router.post("/", (req: SwivRequest, res: Response) => {
   var { collections } = req.body;
 
   if (!Array.isArray(collections)) {
     res.status(400).send({
-      error: 'bad collections',
-      message: 'not an array'
+      error: "bad collections",
+      message: "not an array"
     });
     return;
   }
 
   SETTINGS_MANAGER.getSettings()
-    .then((appSettings) => {
+    .then(appSettings => {
       var collectionContext = {
         dataCubes: appSettings.dataCubes,
         visualizations: MANIFESTS
@@ -46,18 +45,18 @@ router.post('/', (req: SwivRequest, res: Response) => {
         return Collection.fromJS(collection, collectionContext);
       }));
     })
-    .then((newAppSettings) => SETTINGS_MANAGER.updateSettings(newAppSettings))
+    .then(newAppSettings => SETTINGS_MANAGER.updateSettings(newAppSettings))
     .then(
       () => {
-        res.send({ status: 'ok' });
+        res.send({ status: "ok" });
       },
       (e: Error) => {
-        console.log('error:', e.message);
-        if (e.hasOwnProperty('stack')) {
-          console.log((<any>e).stack);
+        console.log("error:", e.message);
+        if (e.hasOwnProperty("stack")) {
+          console.log((<any> e).stack);
         }
         res.status(500).send({
-          error: 'could not compute',
+          error: "could not compute",
           message: e.message
         });
       }

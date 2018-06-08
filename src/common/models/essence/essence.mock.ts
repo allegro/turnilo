@@ -22,26 +22,26 @@ import { MANIFESTS } from "../../manifests";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { SortDirection } from "../../view-definitions/version-3/split-definition";
+import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
 import { SplitCombineFixtures } from "../split-combine/split-combine.fixtures";
-import { Essence, EssenceJS, EssenceContext } from './essence';
-import { DataCubeMock } from "../data-cube/data-cube.mock";
+import { Essence, EssenceContext, EssenceJS } from "./essence";
 
 export class EssenceMock {
   static noVisualisationJS(): EssenceJS {
     return {
-      visualization: 'totals',
-      timezone: 'Etc/UTC',
+      visualization: "totals",
+      timezone: "Etc/UTC",
       pinnedDimensions: [],
-      selectedMeasures: ['count'],
+      selectedMeasures: ["count"],
       splits: []
     };
   }
 
   static totalsJS(): EssenceJS {
     return {
-      visualization: 'totals',
-      timezone: 'Etc/UTC',
+      visualization: "totals",
+      timezone: "Etc/UTC",
       pinnedDimensions: [],
       selectedMeasures: [],
       splits: []
@@ -50,8 +50,8 @@ export class EssenceMock {
 
   static lineChartNoSplitJS(): EssenceJS {
     return {
-      visualization: 'line-chart',
-      timezone: 'Etc/UTC',
+      visualization: "line-chart",
+      timezone: "Etc/UTC",
       pinnedDimensions: [],
       selectedMeasures: [],
       splits: []
@@ -128,7 +128,7 @@ export class EssenceMock {
       singleMeasure: "delta",
       selectedMeasures: OrderedSet(["count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      colors: new Colors({ dimension: "channel", values: { "0": "no", "1": "sv", "3": "fr", "4": "cs", "5": "en" } }),
+      colors: new Colors({ dimension: "channel", values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
       pinnedSort: "delta",
       compare: null,
       highlight: new Highlight({ owner: "line-chart", measure: "count", delta: Filter.fromClauses(highlightClauses) })

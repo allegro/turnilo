@@ -18,14 +18,14 @@
 import { OrderedSet } from "immutable";
 import * as React from "react";
 import { Component, MouseEvent } from "react";
-import { Clicker, Essence, Measure } from '../../../common/models';
-import { MAX_SEARCH_LENGTH, STRINGS } from '../../config/constants';
-import * as localStorage from '../../utils/local-storage/local-storage';
-import { SearchableTile } from '../searchable-tile/searchable-tile';
-import { TileHeaderIcon } from '../tile-header/tile-header';
+import { Clicker, Essence, Measure } from "../../../common/models";
+import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
+import * as localStorage from "../../utils/local-storage/local-storage";
+import { SearchableTile } from "../searchable-tile/searchable-tile";
+import { TileHeaderIcon } from "../tile-header/tile-header";
 import { MeasureOrGroupForView, MeasuresConverter } from "./measures-converter";
 import { MeasuresRenderer } from "./measures-renderer";
-import './measures-tile.scss';
+import "./measures-tile.scss";
 
 export interface MeasuresTileProps {
   clicker: Clicker;
@@ -62,7 +62,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
   toggleSearch = () => {
     var { showSearch } = this.state;
     this.setState({ showSearch: !showSearch });
-    this.onSearchChange('');
+    this.onSearchChange("");
   }
 
   onSearchChange = (text: string) => {
@@ -79,7 +79,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
   toggleMultiMeasure = () => {
     var { clicker, essence } = this.props;
     clicker.toggleMultiMeasureMode();
-    localStorage.set('is-multi-measure', !essence.getEffectiveMultiMeasureMode());
+    localStorage.set("is-multi-measure", !essence.getEffectiveMultiMeasureMode());
   }
 
   renderMessageIfNoMeasuresFound(measuresForView: MeasureOrGroupForView[]): JSX.Element {
@@ -111,18 +111,18 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
     if (!essence.isFixedMeasureMode()) {
       icons.push({
-        name: 'multi',
+        name: "multi",
         onClick: this.toggleMultiMeasure,
-        svg: require('../../icons/full-multi.svg'),
+        svg: require("../../icons/full-multi.svg"),
         active: multiMeasureMode
       });
     }
 
     icons.push({
-      name: 'search',
-      ref: 'search',
+      name: "search",
+      ref: "search",
       onClick: this.toggleSearch,
-      svg: require('../../icons/full-search.svg'),
+      svg: require("../../icons/full-search.svg"),
       active: showSearch
     });
 
@@ -134,7 +134,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
       searchText={searchText}
       showSearch={showSearch}
       icons={icons}
-      className='measures-tile'
+      className="measures-tile"
     >
       <div className="rows">
         {rows}

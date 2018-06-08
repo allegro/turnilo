@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import { Timekeeper, TimekeeperJS } from './timekeeper';
+import { Timekeeper, TimekeeperJS } from "./timekeeper";
 
 export class TimekeeperMock {
   static fixedJS(): TimekeeperJS {
     return {
       timeTags: [],
-      nowOverride: new Date('2016-08-08T08:08:08Z')
+      nowOverride: new Date("2016-08-08T08:08:08Z")
     };
   }
 

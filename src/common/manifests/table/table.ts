@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { $, SortExpression } from 'plywood';
-import { Manifest, Resolve } from '../../models/manifest/manifest';
+import { $, SortExpression } from "plywood";
+import { Manifest, Resolve } from "../../models/manifest/manifest";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -33,7 +33,7 @@ var rulesEvaluator = visualizationDependentEvaluatorBuilder
 
       if (!split.sortAction) {
         if (sortStrategy) {
-          if (sortStrategy === 'self') {
+          if (sortStrategy === "self") {
             split = split.changeSortExpression(new SortExpression({
               expression: $(splitDimension.name),
               direction: SortExpression.DESCENDING
@@ -51,7 +51,7 @@ var rulesEvaluator = visualizationDependentEvaluatorBuilder
       }
 
       // ToDo: review this
-      if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
+      if (!split.limitAction && (autoChanged || splitDimension.kind !== "time")) {
         split = split.changeLimit(i ? 5 : 50);
         autoChanged = true;
       }
@@ -69,7 +69,7 @@ var rulesEvaluator = visualizationDependentEvaluatorBuilder
   .build();
 
 export const TABLE_MANIFEST = new Manifest(
-  'table',
-  'Table',
+  "table",
+  "Table",
   rulesEvaluator
 );

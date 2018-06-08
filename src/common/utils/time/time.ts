@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-import { Timezone, Duration, month, day, hour, minute } from 'chronoshift';
-import { Moment } from 'moment';
-import * as moment from 'moment-timezone';
-import { TimeRange } from 'plywood';
+import { day, Duration, month, Timezone } from "chronoshift";
+import { Moment } from "moment";
+import * as moment from "moment-timezone";
+import { TimeRange } from "plywood";
 
 const FORMAT_ISO_WITHOUT_TIMEZONE = "YYYY-MM-DD[T]HH:mm:ss";
 const FORMAT_DATE = "YYYY-MM-DD";
 const FORMAT_TIME = "HH:mm";
 
-const FORMAT_WITH_YEAR = 'MMM D, YYYY';
-const FORMAT_WITHOUT_YEAR = 'MMM D';
+const FORMAT_WITH_YEAR = "MMM D, YYYY";
+const FORMAT_WITHOUT_YEAR = "MMM D";
 
-const FORMAT_TIME_OF_DAY_WITHOUT_MINUTES = 'Ha';
-const FORMAT_TIME_OF_DAY_WITH_MINUTES = 'H:mma';
+const FORMAT_TIME_OF_DAY_WITHOUT_MINUTES = "Ha";
+const FORMAT_TIME_OF_DAY_WITH_MINUTES = "H:mma";
 
-const FORMAT_FULL_MONTH_WITH_YEAR = 'MMMM YYYY';
+const FORMAT_FULL_MONTH_WITH_YEAR = "MMMM YYYY";
 
 function formatTimeOfDay(d: Moment): string {
   return d.minute() ? d.format(FORMAT_TIME_OF_DAY_WITH_MINUTES) : d.format(FORMAT_TIME_OF_DAY_WITHOUT_MINUTES);
@@ -68,19 +68,20 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displa
   let showingYear = true;
   let formatted: string;
   if (startWallTime.year() !== endWallTimeInclusive.year()) {
-    formatted = [startWallTime.format(FORMAT_WITH_YEAR), endWallTimeInclusive.format(FORMAT_WITH_YEAR)].join(' - ');
+    formatted = [startWallTime.format(FORMAT_WITH_YEAR), endWallTimeInclusive.format(FORMAT_WITH_YEAR)].join(" - ");
   } else {
-    showingYear = displayYear === DisplayYear.ALWAYS || (displayYear === DisplayYear.IF_DIFF && !isCurrentYear(endWallTimeInclusive.year(), timezone));
+    showingYear = displayYear === DisplayYear.ALWAYS ||
+      (displayYear === DisplayYear.IF_DIFF && !isCurrentYear(endWallTimeInclusive.year(), timezone));
     const fmt = showingYear ? FORMAT_WITH_YEAR : FORMAT_WITHOUT_YEAR;
     if (startWallTime.month() !== endWallTimeInclusive.month() || startWallTime.date() !== endWallTimeInclusive.date()) {
-      formatted = [startWallTime.format(FORMAT_WITHOUT_YEAR), endWallTimeInclusive.format(fmt)].join(' - ');
+      formatted = [startWallTime.format(FORMAT_WITHOUT_YEAR), endWallTimeInclusive.format(fmt)].join(" - ");
     } else {
       formatted = startWallTime.format(fmt);
     }
   }
 
   if (startWallTime.hour() || startWallTime.minute() || endWallTime.hour() || endWallTime.minute()) {
-    formatted += (showingYear ? ' ' : ', ');
+    formatted += (showingYear ? " " : ", ");
 
     let startTimeStr = formatTimeOfDay(startWallTime).toLowerCase();
     const endTimeStr = formatTimeOfDay(endWallTime).toLowerCase();
@@ -91,7 +92,7 @@ export function formatTimeRange(timeRange: TimeRange, timezone: Timezone, displa
       if (startTimeStr.substr(-2) === endTimeStr.substr(-2)) {
         startTimeStr = startTimeStr.substr(0, startTimeStr.length - 2);
       }
-      formatted += [startTimeStr, endTimeStr].join('-');
+      formatted += [startTimeStr, endTimeStr].join("-");
     }
   }
 
@@ -145,7 +146,7 @@ export function shiftOneDay(floored: Date, timezone: Timezone) {
 
 export function datesEqual(d1: Date, d2: Date): boolean {
   if (!Boolean(d1) === Boolean(d2)) return false;
-  if (d1 === d2 ) return true;
+  if (d1 === d2) return true;
   return d1.valueOf() === d2.valueOf();
 }
 
@@ -159,7 +160,7 @@ export function getWallTimeMonthWithYear(date: Date, timezone: Timezone) {
 
 export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone): boolean {
   if (!Boolean(d1) === Boolean(d2)) return false;
-  if (d1 === d2 ) return true;
+  if (d1 === d2) return true;
   const d1InclusiveEnd = getEndWallTimeInclusive(d1, timezone);
   const d2InclusiveEnd = getEndWallTimeInclusive(d2, timezone);
   return datesEqual(d1InclusiveEnd.toDate(), d2InclusiveEnd.toDate());
@@ -167,7 +168,7 @@ export function wallTimeInclusiveEndEqual(d1: Date, d2: Date, timezone: Timezone
 
 export function getWallTimeString(date: Date, timezone: Timezone): string {
   const wallTimeISOString = moment.tz(date, timezone.toString()).format(FORMAT_ISO_WITHOUT_TIMEZONE);
-  return wallTimeISOString.replace('T', ', ');
+  return wallTimeISOString.replace("T", ", ");
 }
 
 export function getWallTimeDateOnlyString(date: Date, timezone: Timezone): string {
@@ -195,22 +196,22 @@ export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Dura
 
   const monthString = locale.shortMonths[month];
   const hourToTwelve = hour % 12 === 0 ? 12 : hour % 12;
-  const amPm = (hour / 12) >= 1 ? 'pm' : 'am';
+  const amPm = (hour / 12) >= 1 ? "pm" : "am";
 
   const granularityString = granularity.toJS();
   const unit = granularityString.substring(granularityString.length - 1);
 
   switch (unit) {
-    case 'S':
+    case "S":
       return `${monthString} ${day}, ${pad(hour)}:${pad(minute)}:${pad(second)}`;
-    case 'M':
+    case "M":
       const prefix = granularityString.substring(0, 2);
       return prefix === "PT" ? `${monthString} ${day}, ${hourToTwelve}:${pad(minute)}${amPm}` : `${monthString}, ${year}`;
-    case 'H':
+    case "H":
       return `${monthString} ${day}, ${year}, ${hourToTwelve}${amPm}`;
-    case 'D':
+    case "D":
       return `${monthString} ${day}, ${year}`;
-    case 'W':
+    case "W":
       return `${formatTimeRange(range, timezone, DisplayYear.ALWAYS)}`;
     default:
       return wallTimeStart.format(FORMAT_ISO_WITHOUT_TIMEZONE);
@@ -218,7 +219,7 @@ export function formatTimeBasedOnGranularity(range: TimeRange, granularity: Dura
 }
 
 export function formatGranularity(granularity: string): string {
-  return granularity.replace(/^PT?/, '');
+  return granularity.replace(/^PT?/, "");
 }
 
 export function maybeFullyDefinedDate(date: string): boolean {

@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
 
-import { renderIntoDocument } from '../../utils/test-utils';
+import { renderIntoDocument } from "../../utils/test-utils";
 
-import { $, Expression } from 'plywood';
-import { UserMenu } from './user-menu';
+import { UserMenu } from "./user-menu";
 
-describe.skip('UserMenu', () => {
-  it('adds the correct class', () => {
+describe.skip("UserMenu", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <UserMenu
         onClose={null}
@@ -37,8 +35,8 @@ describe.skip('UserMenu', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('user-menu');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("user-menu");
   });
 
 });

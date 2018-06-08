@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { AppSettings, Timekeeper } from '../common/models/index';
+import { AppSettings, Timekeeper } from "../common/models/index";
 
 export interface ViewOptions {
   version: string;
@@ -60,7 +60,7 @@ ${content}
 </body>
 </html>
 `;
-  }
+}
 
 export function mainLayout(options: ViewOptions): string {
   const { version, user, appSettings, timekeeper, stateful } = options;

@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
+import { EssenceMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
+import { ManualFallback } from "./manual-fallback";
 
-import { renderIntoDocument } from '../../utils/test-utils';
-
-import * as TestUtils from 'react-dom/test-utils';
-
-import { EssenceMock } from '../../../common/models/mocks';
-
-import { $, Expression } from 'plywood';
-import { ManualFallback } from './manual-fallback';
-
-describe('ManualFallback', () => {
-  it('adds the correct class', () => {
+describe("ManualFallback", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <ManualFallback
         clicker={null}
@@ -38,7 +32,7 @@ describe('ManualFallback', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('manual-fallback');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("manual-fallback");
   });
 });

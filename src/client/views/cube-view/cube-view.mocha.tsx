@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { mockReactComponent, renderIntoDocument } from '../../utils/test-utils';
-
-import * as TestUtils from 'react-dom/test-utils';
-
-import { DataCubeMock, TimekeeperMock } from '../../../common/models/mocks';
-
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
+import * as sinon from "sinon";
+import { DataCubeMock, TimekeeperMock } from "../../../common/models/mocks";
+import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
+import { FilterTile } from "../../components/filter-tile/filter-tile";
+import { SplitTile } from "../../components/split-tile/split-tile";
+import * as localStorage from "../../utils/local-storage/local-storage";
+import { mockReactComponent, renderIntoDocument } from "../../utils/test-utils";
 import { CubeView } from "./cube-view";
-import { DimensionMeasurePanel } from '../../components/dimension-measure-panel/dimension-measure-panel';
-import { FilterTile } from '../../components/filter-tile/filter-tile';
-import { SplitTile } from '../../components/split-tile/split-tile';
-import * as localStorage from '../../utils/local-storage/local-storage';
 
-describe('CubeView', () => {
+describe("CubeView", () => {
   before(() => {
     mockReactComponent(DimensionMeasurePanel);
     mockReactComponent(FilterTile);
@@ -44,7 +41,7 @@ describe('CubeView', () => {
     (SplitTile as any).restore();
   });
 
-  it('adds the correct class', () => {
+  it("adds the correct class", () => {
     var updateViewHash = sinon.stub();
     const getEssenceFromHash = sinon.stub();
     const getCubeViewHash = sinon.stub();
@@ -61,17 +58,17 @@ describe('CubeView', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('cube-view');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("cube-view");
 
   });
 
-  it('remembers measure mode toggle click', () => {
+  it("remembers measure mode toggle click", () => {
     var updateViewHash = sinon.stub();
     const getEssenceFromHash = sinon.stub();
     const getCubeViewHash = sinon.stub();
     var stub = sinon.stub(localStorage, "get");
-    stub.withArgs('is-multi-measure').returns(undefined);
+    stub.withArgs("is-multi-measure").returns(undefined);
 
     var initialCubeView: any = renderIntoDocument(
       <CubeView
@@ -84,11 +81,11 @@ describe('CubeView', () => {
         getEssenceFromHash={getEssenceFromHash}
       />
     );
-    expect(initialCubeView.state.essence.multiMeasureMode, 'default is single measure').to.equal(false);
+    expect(initialCubeView.state.essence.multiMeasureMode, "default is single measure").to.equal(false);
 
     stub.restore();
     stub = sinon.stub(localStorage, "get");
-    stub.withArgs('is-multi-measure').returns(true);
+    stub.withArgs("is-multi-measure").returns(true);
 
     var wikiCubeView: any = renderIntoDocument(
       <CubeView
@@ -102,11 +99,11 @@ describe('CubeView', () => {
       />
     );
 
-    expect(wikiCubeView.state.essence.multiMeasureMode, 'multi measure in local storage is respected -> true').to.equal(true);
+    expect(wikiCubeView.state.essence.multiMeasureMode, "multi measure in local storage is respected -> true").to.equal(true);
 
     stub.restore();
     stub = sinon.stub(localStorage, "get");
-    stub.withArgs('is-multi-measure').returns(false);
+    stub.withArgs("is-multi-measure").returns(false);
 
     var wikiCubeView2: any = renderIntoDocument(
       <CubeView
@@ -120,8 +117,6 @@ describe('CubeView', () => {
       />
     );
 
-    expect(wikiCubeView2.state.essence.multiMeasureMode, 'multi measure in local storage is respected -> false').to.equal(false);
+    expect(wikiCubeView2.state.essence.multiMeasureMode, "multi measure in local storage is respected -> false").to.equal(false);
   });
 });
-
-

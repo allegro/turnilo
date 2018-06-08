@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { testImmutableClass } from "immutable-class-tester";
+import { Collection } from "./collection";
+import { CollectionMock } from "./collection.mock";
 
-import { CollectionMock } from './collection.mock';
-import { Collection } from './collection';
-
-describe('Collection', () => {
+describe("Collection", () => {
   var context = CollectionMock.getContext();
 
-  it('is an immutable class', () => {
+  it("is an immutable class", () => {
     testImmutableClass(Collection, [
       CollectionMock.testOneOnlyJS(),
       CollectionMock.testOneTwoJS()

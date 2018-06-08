@@ -31,8 +31,8 @@ export class MeasuresFixtures {
     return [
       MeasureFixtures.wikiCountJS(),
       {
-        name: 'other',
-        title: 'Other',
+        name: "other",
+        title: "Other",
         measures: [
           MeasureGroupFixtures.wikiAddedJS(),
           MeasureGroupFixtures.wikiDeltaJS()
@@ -44,9 +44,9 @@ export class MeasuresFixtures {
   static twitterJS(): MeasureOrGroupJS[] {
     return [
       {
-        name: 'count',
-        title: 'count',
-        formula: '$main.count()'
+        name: "count",
+        title: "count",
+        formula: "$main.count()"
       }
     ];
   }

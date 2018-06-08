@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-import { Router, Response } from 'express';
-import { Essence } from '../../../common/models/index';
-import { MANIFESTS } from '../../../common/manifests';
+import { Response, Router } from "express";
+import { MANIFESTS } from "../../../common/manifests";
+import { Essence } from "../../../common/models/index";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
-import { SwivRequest } from '../../utils/index';
-import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
+import { SwivRequest } from "../../utils/index";
+import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 
 const router = Router();
 
-router.post('/', (req: SwivRequest, res: Response) => {
+router.post("/", (req: SwivRequest, res: Response) => {
   const { dataCubeName, viewDefinitionVersion, viewDefinition } = req.body;
 
-  if (typeof viewDefinitionVersion !== 'string') {
+  if (typeof viewDefinitionVersion !== "string") {
     res.status(400).send({
-      error: 'must have a viewDefinitionVersion'
+      error: "must have a viewDefinitionVersion"
     });
     return;
   }
@@ -39,30 +39,30 @@ router.post('/', (req: SwivRequest, res: Response) => {
 
   if (definitionConverter == null) {
     res.status(400).send({
-      error: 'unsupported viewDefinitionVersion value'
+      error: "unsupported viewDefinitionVersion value"
     });
     return;
   }
 
-  if (typeof dataCubeName !== 'string') {
+  if (typeof dataCubeName !== "string") {
     res.status(400).send({
-      error: 'must have a dataCubeName'
+      error: "must have a dataCubeName"
     });
     return;
   }
 
-  if (typeof viewDefinition !== 'object') {
+  if (typeof viewDefinition !== "object") {
     res.status(400).send({
-      error: 'viewDefinition must be an object'
+      error: "viewDefinition must be an object"
     });
     return;
   }
 
-  req.getSettings(<GetSettingsOptions>{ dataCubeOfInterest: dataCubeName })
+  req.getSettings(<GetSettingsOptions> { dataCubeOfInterest: dataCubeName })
     .then((appSettings: any) => {
       const myDataCube = appSettings.getDataCube(dataCubeName);
       if (!myDataCube) {
-        res.status(400).send({ error: 'unknown data cube' });
+        res.status(400).send({ error: "unknown data cube" });
         return;
       }
 
@@ -72,7 +72,7 @@ router.post('/', (req: SwivRequest, res: Response) => {
         essence = definitionConverter.fromViewDefinition(viewDefinition, myDataCube, MANIFESTS);
       } catch (e) {
         res.status(400).send({
-          error: 'invalid viewDefinition object',
+          error: "invalid viewDefinition object",
           message: e.message
         });
         return;

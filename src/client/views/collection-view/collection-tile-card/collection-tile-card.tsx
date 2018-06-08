@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-import './collection-tile-card.scss';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { CollectionTile, Device, DeviceSize, Stage, Timekeeper, VisualizationProps } from "../../../../common/models/index";
+import { GlobalEventListener, SvgIcon } from "../../../components/index";
+import { STRINGS } from "../../../config/constants";
+import { classNames } from "../../../utils/dom/dom";
+import { getVisualizationComponent } from "../../../visualizations/index";
+import "./collection-tile-card.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-
-import { SvgIcon, GlobalEventListener } from '../../../components/index';
-import { classNames } from '../../../utils/dom/dom';
-
-import { STRINGS } from '../../../config/constants';
-
-import { Collection, CollectionTile, VisualizationProps, Stage, Timekeeper, Device, DeviceSize } from '../../../../common/models/index';
-
-import { getVisualizationComponent } from '../../../visualizations/index';
-
-export interface CollectionTileCardProps extends React.Props<any> {
+export interface CollectionTileCardProps {
   tile: CollectionTile;
   timekeeper: Timekeeper;
   className?: string;
@@ -123,35 +118,35 @@ export class CollectionTileCard extends React.Component<CollectionTileCardProps,
     };
 
     return <div
-      className={classNames("collection-tile-card", {editing: editionMode}, className)}
+      className={classNames("collection-tile-card", { editing: editionMode }, className)}
       onDragOver={onDragOver}
       draggable={draggable}
       onDragStart={onDragStart}
     >
-        <GlobalEventListener
-          resize={this.updateVisualizationStage.bind(this)}
-        />
+      <GlobalEventListener
+        resize={this.updateVisualizationStage.bind(this)}
+      />
 
-        <div className="headband grid-row" onClick={onExpandClick}>
-          <div className="grid-col-80 vertical">
-            <div className="title">{tile.title}</div>
-            <div className="description">{tile.description || STRINGS.noDescription}</div>
-          </div>
-          <div className="grid-col-20 middle right">
-          { editionMode ?
+      <div className="headband grid-row" onClick={onExpandClick}>
+        <div className="grid-col-80 vertical">
+          <div className="title">{tile.title}</div>
+          <div className="description">{tile.description || STRINGS.noDescription}</div>
+        </div>
+        <div className="grid-col-20 middle right">
+          {editionMode ?
             <div className="delete-button" onClick={this.remove.bind(this)}>
-              <SvgIcon svg={require(`../../../icons/full-delete.svg`)}/>
+              <SvgIcon svg={require("../../../icons/full-delete.svg")} />
             </div>
-          :
+            :
             <div className="expand-button">
-              <SvgIcon svg={require(`../../../icons/full-expand.svg`)}/>
+              <SvgIcon svg={require("../../../icons/full-expand.svg")} />
             </div>
           }
-          </div>
         </div>
-        <div className="content" ref="visualization">
-          {visElement}
-        </div>
+      </div>
+      <div className="content" ref="visualization">
+        {visElement}
+      </div>
     </div>;
   }
 }

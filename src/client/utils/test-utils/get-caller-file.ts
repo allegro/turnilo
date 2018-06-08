@@ -16,14 +16,14 @@
  */
 
 function getStack(): any[] {
-  let ErrorConstructor = <any>Error;
+  let ErrorConstructor = <any> Error;
 
   var origPrepareStackTrace = ErrorConstructor.prepareStackTrace;
 
   ErrorConstructor.prepareStackTrace = (_: any, stack: any) => stack;
 
   var err = new Error() as any;
-  var stack = err['stack'] as any[];
+  var stack = err["stack"] as any[];
   ErrorConstructor.prepareStackTrace = origPrepareStackTrace;
   stack.shift(); // getStack --> Error
 

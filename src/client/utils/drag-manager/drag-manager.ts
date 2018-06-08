@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Dimension, SplitCombine } from '../../../common/models/index';
+import { Dimension, SplitCombine } from "../../../common/models/index";
 
 export class DragManager {
   static dragOrigin: string = null;

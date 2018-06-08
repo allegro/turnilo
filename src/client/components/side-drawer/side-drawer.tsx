@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-import './side-drawer.scss';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { Collection, Customization, DataCube, User } from "../../../common/models";
+import { Fn } from "../../../common/utils/general/general";
+import { STRINGS } from "../../config/constants";
+import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
+import { NavList } from "../nav-list/nav-list";
+import { NavLogo } from "../nav-logo/nav-logo";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./side-drawer.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { Fn } from '../../../common/utils/general/general';
-import { STRINGS } from '../../config/constants';
-import { isInside, escapeKey, classNames } from '../../utils/dom/dom';
-import { DataCube, Customization, User, Collection } from '../../../common/models';
-import { NavLogo } from '../nav-logo/nav-logo';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { NavList } from '../nav-list/nav-list';
-
-export interface SideDrawerProps extends React.Props<any> {
+export interface SideDrawerProps {
   user: User;
   selectedItem: DataCube | Collection;
   collections: Collection[];
@@ -36,7 +35,7 @@ export interface SideDrawerProps extends React.Props<any> {
   onClose: Fn;
   customization?: Customization;
   itemHrefFn?: (oldItem?: DataCube | Collection, newItem?: DataCube | Collection) => string;
-  viewType: 'home' | 'cube' | 'collection' | 'link' | 'settings' | 'no-data';
+  viewType: "home" | "cube" | "collection" | "link" | "settings" | "no-data";
 }
 
 export interface SideDrawerState {
@@ -52,13 +51,13 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   componentDidMount() {
-    window.addEventListener('mousedown', this.globalMouseDownListener);
-    window.addEventListener('keydown', this.globalKeyDownListener);
+    window.addEventListener("mousedown", this.globalMouseDownListener);
+    window.addEventListener("keydown", this.globalKeyDownListener);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('mousedown', this.globalMouseDownListener);
-    window.removeEventListener('keydown', this.globalKeyDownListener);
+    window.removeEventListener("mousedown", this.globalMouseDownListener);
+    window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
   globalMouseDownListener(e: MouseEvent) {
@@ -75,11 +74,11 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   onHomeClick() {
-    window.location.hash = '#';
+    window.location.hash = "#";
   }
 
   onOpenSettings() {
-    window.location.hash = '#settings';
+    window.location.hash = "#settings";
   }
 
   renderOverviewLink() {
@@ -87,16 +86,16 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
     return <div className="home-container">
       <div
-        className={classNames('home-link', { selected: viewType === 'home' })}
+        className={classNames("home-link", { selected: viewType === "home" })}
         onClick={this.onHomeClick.bind(this)}
       >
-        <SvgIcon svg={require('../../icons/home.svg')} />
-        <span>{viewType === 'link' ? 'Overview' : 'Home'}</span>
+        <SvgIcon svg={require("../../icons/home.svg")} />
+        <span>{viewType === "link" ? "Overview" : "Home"}</span>
       </div>
     </div>;
   }
 
-  renderItems(items: (DataCube | Collection)[], icon: string, urlPrefix = ''): JSX.Element {
+  renderItems(items: Array<DataCube | Collection>, icon: string, urlPrefix = ""): JSX.Element {
     if (!items || items.length === 0) return null;
 
     const { itemHrefFn, selectedItem } = this.props;
@@ -122,11 +121,11 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
 
     const infoAndFeedback: any[] = [];
 
-    if (user && user.allow['settings']) {
+    if (user && user.allow["settings"]) {
       infoAndFeedback.push({
-        name: 'settings',
+        name: "settings",
         title: STRINGS.settings,
-        tooltip: 'Settings',
+        tooltip: "Settings",
         onClick: () => {
           onClose();
           this.onOpenSettings();
@@ -135,9 +134,9 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     }
 
     infoAndFeedback.push({
-      name: 'info',
+      name: "info",
       title: STRINGS.infoAndFeedback,
-      tooltip: 'Learn more about Turnilo',
+      tooltip: "Learn more about Turnilo",
       onClick: () => {
         onClose();
         onOpenAbout();
@@ -152,8 +151,8 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     return <div className="side-drawer">
       <NavLogo customLogoSvg={customLogoSvg} onClick={onClose} />
       {this.renderOverviewLink()}
-      {this.renderItems(dataCubes, 'full-cube.svg')}
-      {this.renderItems(collections, 'full-collection.svg', 'collection/')}
+      {this.renderItems(dataCubes, "full-cube.svg")}
+      {this.renderItems(collections, "full-collection.svg", "collection/")}
       <NavList navLinks={infoAndFeedback} />
     </div>;
   }

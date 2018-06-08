@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-import './grid-lines.scss';
+import * as React from "react";
+import { Stage } from "../../../common/models/index";
+import { classNames, roundToHalfPx } from "../../utils/dom/dom";
+import "./grid-lines.scss";
 
-import * as React from 'react';
-import { Stage } from '../../../common/models/index';
-import { classNames, roundToHalfPx } from '../../utils/dom/dom';
-
-export interface GridLinesProps extends React.Props<any> {
+export interface GridLinesProps {
   orientation: string;
   stage: Stage;
   ticks: any[];
@@ -41,7 +40,7 @@ export class GridLines extends React.Component<GridLinesProps, GridLinesState> {
         key: String(tick)
       };
 
-      if (orientation === 'horizontal') {
+      if (orientation === "horizontal") {
         var y = roundToHalfPx(scale(tick));
         lineProps.x1 = 0;
         lineProps.x2 = stage.width;
@@ -55,10 +54,10 @@ export class GridLines extends React.Component<GridLinesProps, GridLinesState> {
         lineProps.y2 = stage.height;
       }
 
-      return React.createElement('line', lineProps);
+      return React.createElement("line", lineProps);
     });
 
-    return <g className={classNames('grid-lines', orientation)} transform={stage.getTransform()}>
+    return <g className={classNames("grid-lines", orientation)} transform={stage.getTransform()}>
       {lines}
     </g>;
   }

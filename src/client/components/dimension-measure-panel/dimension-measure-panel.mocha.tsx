@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
 
-import { mockReactComponent, renderIntoDocument } from '../../utils/test-utils';
-import { EssenceMock } from '../../../common/models/mocks';
+import { EssenceMock } from "../../../common/models/mocks";
+import { mockReactComponent, renderIntoDocument } from "../../utils/test-utils";
 
-import { DimensionListTile } from '../dimension-list-tile/dimension-list-tile';
+import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
 
-import { DimensionMeasurePanel } from './dimension-measure-panel';
+import { DimensionMeasurePanel } from "./dimension-measure-panel";
 
-describe('DimensionMeasurePanel', () => {
+describe("DimensionMeasurePanel", () => {
   before(() => {
     mockReactComponent(DimensionListTile);
   });
@@ -36,8 +36,8 @@ describe('DimensionMeasurePanel', () => {
     (DimensionListTile as any).restore();
   });
 
-  it('adds the correct class', () => {
-    var clickyMcClickFace = {toggleMultiMeasureMode: () => {}};
+  it("adds the correct class", () => {
+    var clickyMcClickFace = { toggleMultiMeasureMode: () => {} };
 
     var renderedComponent = renderIntoDocument(
       <DimensionMeasurePanel
@@ -49,8 +49,8 @@ describe('DimensionMeasurePanel', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('dimension-measure-panel');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("dimension-measure-panel");
   });
 
 });

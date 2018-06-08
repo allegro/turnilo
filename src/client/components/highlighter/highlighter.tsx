@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-import './highlighter.scss';
+import { PlywoodRange } from "plywood";
+import * as React from "react";
+import "./highlighter.scss";
 
-import * as React from 'react';
-import { Timezone, Duration } from 'chronoshift';
-import { PlywoodRange } from 'plywood';
-
-export interface HighlighterProps extends React.Props<any> {
+export interface HighlighterProps {
   highlightRange: PlywoodRange;
   scaleX: any;
 }

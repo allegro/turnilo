@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import * as CopyToClipboard from 'react-copy-to-clipboard';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { githubGist } from 'react-syntax-highlighter/styles/hljs';
+import * as React from "react";
+import * as CopyToClipboard from "react-copy-to-clipboard";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { githubGist } from "react-syntax-highlighter/styles/hljs";
 
-import { Essence } from '../../../common/models';
-import { Fn, makeTitle } from '../../../common/utils';
+import { Essence } from "../../../common/models";
+import { Fn, makeTitle } from "../../../common/utils";
 import { DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter, ViewDefinition, ViewDefinitionVersion } from "../../../common/view-definitions";
-import { Button, Modal } from '../../components';
-import { STRINGS } from '../../config/constants';
+import { Button, Modal } from "../../components";
+import { STRINGS } from "../../config/constants";
 
-import './view-definition-modal.scss';
+import "./view-definition-modal.scss";
 
 export interface ViewDefinitionModalProps {
   onClose: Fn;
@@ -37,11 +37,11 @@ export interface ViewDefinitionModalState {
 }
 
 class MakeUrlData {
-  private dataCubeName: String;
+  private dataCubeName: string;
   private viewDefinitionVersion: ViewDefinitionVersion;
   private viewDefinition: ViewDefinition;
 
-  constructor(dataCubeName: String, viewDefinitionVersion: ViewDefinitionVersion, viewDefinition: ViewDefinition) {
+  constructor(dataCubeName: string, viewDefinitionVersion: ViewDefinitionVersion, viewDefinition: ViewDefinition) {
     this.dataCubeName = dataCubeName;
     this.viewDefinitionVersion = viewDefinitionVersion;
     this.viewDefinition = viewDefinition;

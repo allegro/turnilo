@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as TestUtils from 'react-dom/test-utils';
-import { $, Expression } from 'plywood';
+import { expect } from "chai";
+import * as React from "react";
+import * as TestUtils from "react-dom/test-utils";
+import * as sinon from "sinon";
 
-import { DataCubeMock } from '../../../common/models/mocks';
-import { DataCube, ListItem, Cluster } from '../../../common/models/index';
+import { Cluster, DataCube, ListItem } from "../../../common/models/index";
+import { DataCubeMock } from "../../../common/models/mocks";
 
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
-import { ImmutableDropdown } from './immutable-dropdown';
+import { ImmutableDropdown } from "./immutable-dropdown";
 
-describe('ImmutableDropdown', () => {
+describe("ImmutableDropdown", () => {
   var component: any;
   var node: any;
   var onChange: any;
@@ -39,12 +38,12 @@ describe('ImmutableDropdown', () => {
 
     var MyDropdown = ImmutableDropdown.specialize<ListItem>();
 
-    const clusterNames = Cluster.TYPE_VALUES.map(type => {return {value: type, label: type}; });
+    const clusterNames = Cluster.TYPE_VALUES.map(type => ({ value: type, label: type }));
 
     component = renderIntoDocument(
       <MyDropdown
         instance={DataCubeMock.twitter()}
-        path={'clusterName'}
+        path={"clusterName"}
         label="Cluster"
 
         onChange={onChange}
@@ -60,18 +59,17 @@ describe('ImmutableDropdown', () => {
     node = findDOMNode(component) as any;
   });
 
-  it('adds the correct class', () => {
-    expect(TestUtils.isCompositeComponent(component), 'should be composite').to.equal(true);
-    expect(node.className, 'should contain class').to.contain('immutable-dropdown');
+  it("adds the correct class", () => {
+    expect(TestUtils.isCompositeComponent(component), "should be composite").to.equal(true);
+    expect(node.className, "should contain class").to.contain("immutable-dropdown");
   });
 
-
-  it('selects an item and calls onChange', () => {
+  it("selects an item and calls onChange", () => {
     expect(onChange.callCount).to.equal(0);
 
     TestUtils.Simulate.click(node);
 
-    var items = TestUtils.scryRenderedDOMComponentsWithClass(component, 'dropdown-item');
+    var items = TestUtils.scryRenderedDOMComponentsWithClass(component, "dropdown-item");
 
     TestUtils.Simulate.click(items[1]);
 
@@ -84,7 +82,7 @@ describe('ImmutableDropdown', () => {
 
     expect(args[1]).to.equal(true);
 
-    expect(args[2]).to.equal('clusterName');
+    expect(args[2]).to.equal("clusterName");
   });
 
 });

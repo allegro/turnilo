@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
-import * as express from 'express';
-import { Response } from 'express';
-import * as supertest from 'supertest';
-import { $ } from 'plywood';
-import * as bodyParser from 'body-parser';
-
-import { AppSettings } from '../../../common/models/index';
+import * as bodyParser from "body-parser";
+import * as express from "express";
+import { Response } from "express";
+import { $ } from "plywood";
+import * as Q from "q";
+import * as supertest from "supertest";
+import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
+import { AppSettings } from "../../../common/models/index";
 import { UrlHashConverterFixtures } from "../../../common/utils/url-hash-converter/url-hash-converter.fixtures";
-import { SwivRequest } from '../../utils/index';
-import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
+import { SwivRequest } from "../../utils/index";
+import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 
-import { AppSettingsMock } from '../../../common/models/app-settings/app-settings.mock';
-
-import * as mkurlRouter from './mkurl';
+import * as mkurlRouter from "./mkurl";
 
 var app = express();
 
@@ -38,7 +36,7 @@ app.use(bodyParser.json());
 var appSettings: AppSettings = AppSettingsMock.wikiOnlyWithExecutor();
 app.use((req: SwivRequest, res: Response, next: Function) => {
   req.user = null;
-  req.version = '0.9.4';
+  req.version = "0.9.4";
   req.getSettings = (dataCubeOfInterest?: GetSettingsOptions) => Q(appSettings);
   next();
 });
@@ -46,146 +44,152 @@ app.use((req: SwivRequest, res: Response, next: Function) => {
 const mkurlPath = "/mkurl";
 app.use(mkurlPath, mkurlRouter);
 
-describe('mkurl router', () => {
-  it('gets a simple url back', (testComplete: any) => {
+describe("mkurl router", () => {
+  it("gets a simple url back", (testComplete: any) => {
     supertest(app)
       .post(mkurlPath)
-      .set('Content-Type', "application/json")
+      .set("Content-Type", "application/json")
       .send({
-        dataCubeName: 'wiki',
-        viewDefinitionVersion: '2',
+        dataCubeName: "wiki",
+        viewDefinitionVersion: "2",
         viewDefinition: {
-          visualization: 'totals',
-          timezone: 'Etc/UTC',
+          visualization: "totals",
+          timezone: "Etc/UTC",
           filter: {
             op: "literal",
             value: true
           },
           pinnedDimensions: [],
-          singleMeasure: 'count',
+          singleMeasure: "count",
           selectedMeasures: [],
           splits: []
         }
       })
-      .expect('Content-Type', "application/json; charset=utf-8")
+      .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)
-      .expect({
-        hash: "#wiki/3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6l" +
-        "KAAckaGQsp04sSbRmhoAWRjiI+YaVpKI2AOYImBdphjY0Q6qYz4FAX0plW2xaABMAERpabCgsGN9FECDsENCAZUxJD2dXdyFHO2jQ/GxTBEoACwg7CqQa7NKEBD8gA"
-      }, testComplete);
+      .expect(
+        {
+          hash: "#wiki/3/N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0hEAtgKbI634gCiaAxgPQCqAKgMIUQAMwgI0tAE5k8AbQC6l" +
+          "KAAckaGQsp04sSbRmhoAWRjiI+YaVpKI2AOYImBdphjY0Q6qYz4FAX0plW2xaABMAERpabCgsGN9FECDsENCAZUxJD2dXdyFHO2jQ/GxTBEoACwg7CqQa7NKEBD8gA"
+        },
+        testComplete
+      );
   });
 
-  it('gets a complex url back', (testComplete: any) => {
+  it("gets a complex url back", (testComplete: any) => {
     supertest(app)
       .post(mkurlPath)
-      .set('Content-Type', "application/json")
+      .set("Content-Type", "application/json")
       .send({
-        dataCubeName: 'wiki',
-        viewDefinitionVersion: '2',
+        dataCubeName: "wiki",
+        viewDefinitionVersion: "2",
         viewDefinition: {
-          visualization: 'table',
-          timezone: 'Etc/UTC',
+          visualization: "table",
+          timezone: "Etc/UTC",
           filter:
-            $('time')
-              .overlap(new Date('2015-09-12Z'), new Date('2015-09-13Z'))
-              .and($('channel').overlap(['en']))
-              .and($('isRobot').overlap([true]).not())
-              .and($('page').contains('Jeremy'))
-              .and($('userChars').match('^A$'))
-              .and($('commentLength').overlap([{ start: 3, end: null, type: "NUMBER_RANGE" }]))
+            $("time")
+              .overlap(new Date("2015-09-12Z"), new Date("2015-09-13Z"))
+              .and($("channel").overlap(["en"]))
+              .and($("isRobot").overlap([true]).not())
+              .and($("page").contains("Jeremy"))
+              .and($("userChars").match("^A$"))
+              .and($("commentLength").overlap([{ start: 3, end: null, type: "NUMBER_RANGE" }]))
               .toJS(),
           pinnedDimensions: ["channel", "namespace", "isRobot"],
           pinnedSort: "delta",
-          singleMeasure: 'delta',
+          singleMeasure: "delta",
           selectedMeasures: ["count", "added"],
           multiMeasureMode: true,
           splits: [
             {
-              "expression": {
-                "op": "ref",
-                "name": "channel"
+              expression: {
+                op: "ref",
+                name: "channel"
               },
-              "sortAction": {
-                "op": "sort",
-                "expression": {
-                  "op": "ref",
-                  "name": "delta"
+              sortAction: {
+                op: "sort",
+                expression: {
+                  op: "ref",
+                  name: "delta"
                 },
-                "direction": "descending"
+                direction: "descending"
               },
-              "limitAction": {
-                "op": "limit",
-                "value": 50
+              limitAction: {
+                op: "limit",
+                value: 50
               }
             },
             {
-              "expression": {
-                "op": "ref",
-                "name": "isRobot"
+              expression: {
+                op: "ref",
+                name: "isRobot"
               },
-              "sortAction": {
-                "op": "sort",
-                "expression": {
-                  "op": "ref",
-                  "name": "delta"
+              sortAction: {
+                op: "sort",
+                expression: {
+                  op: "ref",
+                  name: "delta"
                 },
-                "direction": "descending"
+                direction: "descending"
               },
-              "limitAction": {
-                "op": "limit",
-                "value": 5
+              limitAction: {
+                op: "limit",
+                value: 5
               }
             },
             {
-              "expression": {
-                "op": "ref",
-                "name": "commentLength"
+              expression: {
+                op: "ref",
+                name: "commentLength"
               },
-              "bucketAction": {
-                "op": "numberBucket",
-                "size": 10,
-                "offset": 0
+              bucketAction: {
+                op: "numberBucket",
+                size: 10,
+                offset: 0
               },
-              "sortAction": {
-                "op": "sort",
-                "expression": {
-                  "op": "ref",
-                  "name": "delta"
+              sortAction: {
+                op: "sort",
+                expression: {
+                  op: "ref",
+                  name: "delta"
                 },
-                "direction": "descending"
+                direction: "descending"
               },
-              "limitAction": {
-                "op": "limit",
-                "value": 5
+              limitAction: {
+                op: "limit",
+                value: 5
               }
             },
             {
-              "expression": {
-                "op": "ref",
-                "name": "time"
+              expression: {
+                op: "ref",
+                name: "time"
               },
-              "bucketAction": {
-                "op": "timeBucket",
-                "duration": "PT1H"
+              bucketAction: {
+                op: "timeBucket",
+                duration: "PT1H"
               },
-              "sortAction": {
-                "op": "sort",
-                "expression": {
-                  "op": "ref",
-                  "name": "delta"
+              sortAction: {
+                op: "sort",
+                expression: {
+                  op: "ref",
+                  name: "delta"
                 },
-                "direction": "descending"
+                direction: "descending"
               }
             }
 
           ]
         }
       })
-      .expect('Content-Type', "application/json; charset=utf-8")
+      .expect("Content-Type", "application/json; charset=utf-8")
       .expect(200)
-      .expect({
-        hash: "#wiki/" + UrlHashConverterFixtures.tableHashVersion3()
-      }, testComplete);
+      .expect(
+        {
+          hash: "#wiki/" + UrlHashConverterFixtures.tableHashVersion3()
+        },
+        testComplete
+      );
   });
 
 });

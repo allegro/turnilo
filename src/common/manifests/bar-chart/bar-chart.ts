@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { $, SortExpression } from 'plywood';
-import { Dimension, SplitCombine, Splits } from '../../models';
-import { Manifest, Resolve } from '../../models/manifest/manifest';
+import { $, SortExpression } from "plywood";
+import { Dimension, SplitCombine, Splits } from "../../models";
+import { Manifest, Resolve } from "../../models/manifest/manifest";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -26,8 +26,8 @@ var rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(Actions.manualDimensionSelection("The Bar Chart requires at least one split"))
 
-  .when(Predicates.areExactSplitKinds('*'))
-  .or(Predicates.areExactSplitKinds('*', '*'))
+  .when(Predicates.areExactSplitKinds("*"))
+  .or(Predicates.areExactSplitKinds("*", "*"))
   .then(({ splits, dataCube, colors, isSelectedVisualization }) => {
     var continuousBoost = 0;
 
@@ -39,7 +39,7 @@ var rulesEvaluator = visualizationDependentEvaluatorBuilder
       var sortStrategy = splitDimension.sortStrategy;
       if (!split.sortAction) {
         if (sortStrategy) {
-          if (sortStrategy === 'self') {
+          if (sortStrategy === "self") {
             split = split.changeSortExpression(new SortExpression({
               expression: $(splitDimension.name),
               direction: SortExpression.DESCENDING
@@ -50,7 +50,7 @@ var rulesEvaluator = visualizationDependentEvaluatorBuilder
               direction: SortExpression.DESCENDING
             }));
           }
-        } else if (splitDimension.kind === 'boolean') {  // Must sort boolean in deciding order!
+        } else if (splitDimension.kind === "boolean") {  // Must sort boolean in deciding order!
           split = split.changeSortExpression(new SortExpression({
             expression: $(splitDimension.name),
             direction: SortExpression.DESCENDING
@@ -74,12 +74,12 @@ var rulesEvaluator = visualizationDependentEvaluatorBuilder
         autoChanged = true;
       }
 
-      if (splitDimension.kind === 'number') {
+      if (splitDimension.kind === "number") {
         continuousBoost = 4;
       }
 
       // ToDo: review this
-      if (!split.limitAction && (autoChanged || splitDimension.kind !== 'time')) {
+      if (!split.limitAction && (autoChanged || splitDimension.kind !== "time")) {
         split = split.changeLimit(25);
         autoChanged = true;
       }
@@ -100,11 +100,11 @@ var rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .otherwise(({ splits, dataCube }) => {
-    const categoricalDimensions = dataCube.dimensions.filterDimensions((dimension) => dimension.kind !== 'time');
+    const categoricalDimensions = dataCube.dimensions.filterDimensions(dimension => dimension.kind !== "time");
 
     return Resolve.manual(
       3,
-      'The Bar Chart needs one or two splits',
+      "The Bar Chart needs one or two splits",
       categoricalDimensions.slice(0, 2).map((dimension: Dimension) => {
         return {
           description: `Split on ${dimension.title} instead`,
@@ -118,7 +118,7 @@ var rulesEvaluator = visualizationDependentEvaluatorBuilder
   .build();
 
 export const BAR_CHART_MANIFEST = new Manifest(
-  'bar-chart',
-  'Bar Chart',
+  "bar-chart",
+  "Bar Chart",
   rulesEvaluator
 );

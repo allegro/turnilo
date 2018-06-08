@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { expect } from "chai";
+import { TimeRange } from "plywood";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
+import { renderIntoDocument } from "../../utils/test-utils";
+import { Highlighter } from "./highlighter";
 
-import { renderIntoDocument } from '../../utils/test-utils';
-
-import * as TestUtils from 'react-dom/test-utils';
-
-import { TimeRange } from 'plywood';
-import { Highlighter } from './highlighter';
-
-describe('Highlighter', () => {
-  it('adds the correct class', () => {
+describe("Highlighter", () => {
+  it("adds the correct class", () => {
     var fakeTimeRange = TimeRange.fromJS({
-      start: new Date('2015-01-26T04:54:10Z'),
-      end: new Date('2015-01-26T05:54:10Z')
+      start: new Date("2015-01-26T04:54:10Z"),
+      end: new Date("2015-01-26T05:54:10Z")
     });
 
-    var myScaleX = (value: any) => { return 42; };
+    var myScaleX = (value: any) => 42;
 
     var renderedComponent = renderIntoDocument(
       <Highlighter
@@ -43,8 +39,8 @@ describe('Highlighter', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('highlighter');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("highlighter");
   });
 
 });

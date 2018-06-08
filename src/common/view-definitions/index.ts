@@ -34,12 +34,12 @@ export const DEFAULT_VIEW_DEFINITION_VERSION = "3";
 export const LEGACY_VIEW_DEFINITION_VERSION = "2";
 
 export const definitionConverters: { [version in ViewDefinitionVersion]: ViewDefinitionConverter<ViewDefinition, Essence> } = {
-  "2": new ViewDefinitionConverter2(),
-  "3": new ViewDefinitionConverter3()
+  2: new ViewDefinitionConverter2(),
+  3: new ViewDefinitionConverter3()
 };
 export const definitionUrlEncoders: { [version in ViewDefinitionVersion]: ViewDefinitionHashEncoder<ViewDefinition> } = {
-  "2": new ViewDefinitionHashEncoder2(),
-  "3": new ViewDefinitionHashEncoder3()
+  2: new ViewDefinitionHashEncoder2(),
+  3: new ViewDefinitionHashEncoder3()
 };
 
 export const defaultDefinitionConverter = definitionConverters[DEFAULT_VIEW_DEFINITION_VERSION];

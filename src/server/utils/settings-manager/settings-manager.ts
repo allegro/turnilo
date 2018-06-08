@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
-import { SimpleArray} from "immutable-class";
-import { External, Dataset, basicExecutorFactory } from 'plywood';
-import { Logger } from 'logger-tracker';
-import { pluralIfNeeded } from '../../../common/utils/general/general';
+import { SimpleArray } from "immutable-class";
+import { Logger } from "logger-tracker";
+import { basicExecutorFactory, Dataset, External } from "plywood";
+import * as Q from "q";
+import { AppSettings, Cluster, DataCube, Timekeeper } from "../../../common/models/index";
+import { pluralIfNeeded } from "../../../common/utils/general/general";
 import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";
-import { AppSettings, Timekeeper, Cluster, DataCube } from '../../../common/models/index';
-import { SettingsStore } from '../settings-store/settings-store';
-import { FileManager } from '../file-manager/file-manager';
-import { ClusterManager } from '../cluster-manager/cluster-manager';
-import { updater } from '../updater/updater';
+import { ClusterManager } from "../cluster-manager/cluster-manager";
+import { FileManager } from "../file-manager/file-manager";
+import { SettingsStore } from "../settings-store/settings-store";
+import { updater } from "../updater/updater";
 
 export interface SettingsManagerOptions {
   logger: Logger;
@@ -66,7 +66,7 @@ export class SettingsManager {
     this.appSettings = AppSettings.BLANK;
 
     this.currentWork = settingsStore.readSettings()
-      .then((appSettings) => {
+      .then(appSettings => {
         return this.reviseSettings(appSettings);
       })
       .catch(e => {
@@ -81,7 +81,7 @@ export class SettingsManager {
   }
 
   private getClusterManagerFor(clusterName: string): ClusterManager {
-    return SimpleArray.find(this.clusterManagers, (clusterManager) => clusterManager.cluster.name === clusterName);
+    return SimpleArray.find(this.clusterManagers, clusterManager => clusterManager.cluster.name === clusterName);
   }
 
   private addClusterManager(cluster: Cluster, dataCubes: DataCube[]): Q.Promise<any> {
@@ -91,12 +91,12 @@ export class SettingsManager {
       return {
         name: dataCube.name,
         external: dataCube.toExternal(),
-        suppressIntrospection: dataCube.getIntrospection() === 'none'
+        suppressIntrospection: dataCube.getIntrospection() === "none"
       };
     });
 
     // Make a cluster manager for each cluster and assign the correct initial externals to it.
-    logger.log(`Adding cluster manager for '${cluster.name}' with ${pluralIfNeeded(dataCubes.length, 'dataCube')}`);
+    logger.log(`Adding cluster manager for '${cluster.name}' with ${pluralIfNeeded(dataCubes.length, "dataCube")}`);
     var clusterManager = new ClusterManager(cluster, {
       logger,
       verbose,
@@ -111,7 +111,7 @@ export class SettingsManager {
   }
 
   private removeClusterManager(cluster: Cluster): void {
-    this.clusterManagers = this.clusterManagers.filter((clusterManager) => {
+    this.clusterManagers = this.clusterManagers.filter(clusterManager => {
       if (clusterManager.cluster.name !== cluster.name) return true;
       clusterManager.destroy();
       return false;
@@ -119,11 +119,11 @@ export class SettingsManager {
   }
 
   private getFileManagerFor(uri: string): FileManager {
-    return SimpleArray.find(this.fileManagers, (fileManager) => fileManager.uri === uri);
+    return SimpleArray.find(this.fileManagers, fileManager => fileManager.uri === uri);
   }
 
   private addFileManager(dataCube: DataCube): Q.Promise<any> {
-    if (dataCube.clusterName !== 'native') throw new Error(`data cube '${dataCube.name}' must be native to have a file manager`);
+    if (dataCube.clusterName !== "native") throw new Error(`data cube '${dataCube.name}' must be native to have a file manager`);
     const { verbose, logger, anchorPath } = this;
 
     var fileManager = new FileManager({
@@ -140,9 +140,9 @@ export class SettingsManager {
   }
 
   private removeFileManager(dataCube: DataCube): void {
-    if (dataCube.clusterName !== 'native') throw new Error(`data cube '${dataCube.name}' must be native to have a file manager`);
+    if (dataCube.clusterName !== "native") throw new Error(`data cube '${dataCube.name}' must be native to have a file manager`);
 
-    this.fileManagers = this.fileManagers.filter((fileManager) => {
+    this.fileManagers = this.fileManagers.filter(fileManager => {
       if (fileManager.uri !== dataCube.source) return true;
       fileManager.destroy();
       return false;
@@ -166,7 +166,7 @@ export class SettingsManager {
     if (timeout !== 0) {
       currentWork = currentWork.timeout(timeout)
         .catch(e => {
-          this.logger.error(`Settings load timeout hit, continuing`);
+          this.logger.error("Settings load timeout hit, continuing");
         });
     }
 
@@ -186,16 +186,16 @@ export class SettingsManager {
   reviseClusters(newSettings: AppSettings): Q.Promise<any> {
     const { verbose, logger } = this;
     var oldSettings = this.appSettings;
-    var tasks: Q.Promise<any>[] = [];
+    var tasks: Array<Q.Promise<any>> = [];
 
     updater(oldSettings.clusters, newSettings.clusters, {
-      onExit: (oldCluster) => {
+      onExit: oldCluster => {
         this.removeClusterManager(oldCluster);
       },
-      onUpdate: (newCluster) => {
+      onUpdate: newCluster => {
         logger.log(`${newCluster.name} UPDATED cluster`);
       },
-      onEnter: (newCluster) => {
+      onEnter: newCluster => {
         tasks.push(this.addClusterManager(newCluster, newSettings.getDataCubesForCluster(newCluster.name)));
       }
     });
@@ -206,26 +206,26 @@ export class SettingsManager {
   reviseDataCubes(newSettings: AppSettings): Q.Promise<any> {
     const { verbose, logger } = this;
     var oldSettings = this.appSettings;
-    var tasks: Q.Promise<any>[] = [];
+    var tasks: Array<Q.Promise<any>> = [];
 
-    var oldNativeDataCubes = oldSettings.getDataCubesForCluster('native');
-    var newNativeDataCubes = newSettings.getDataCubesForCluster('native');
+    var oldNativeDataCubes = oldSettings.getDataCubesForCluster("native");
+    var newNativeDataCubes = newSettings.getDataCubesForCluster("native");
     updater(oldNativeDataCubes, newNativeDataCubes, {
-      onExit: (oldDataCube) => {
-        if (oldDataCube.clusterName === 'native') {
+      onExit: oldDataCube => {
+        if (oldDataCube.clusterName === "native") {
           this.removeFileManager(oldDataCube);
         } else {
-          throw new Error(`only native data cubes work for now`); // ToDo: fix
+          throw new Error("only native data cubes work for now"); // ToDo: fix
         }
       },
-      onUpdate: (newDataCube) => {
+      onUpdate: newDataCube => {
         logger.log(`${newDataCube.name} UPDATED datasource`);
       },
-      onEnter: (newDataCube) => {
-        if (newDataCube.clusterName === 'native') {
+      onEnter: newDataCube => {
+        if (newDataCube.clusterName === "native") {
           tasks.push(this.addFileManager(newDataCube));
         } else {
-          throw new Error(`only native data cube work for now`); // ToDo: fix
+          throw new Error("only native data cube work for now"); // ToDo: fix
         }
       }
     });
@@ -234,10 +234,10 @@ export class SettingsManager {
   }
 
   updateSettings(newSettings: AppSettings): Q.Promise<any> {
-    if (!this.settingsStore.writeSettings) return Q.reject(new Error('must be writable'));
+    if (!this.settingsStore.writeSettings) return Q.reject(new Error("must be writable"));
 
-    var loadedNewSettings = newSettings.attachExecutors((dataCube) => {
-      if (dataCube.clusterName === 'native') {
+    var loadedNewSettings = newSettings.attachExecutors(dataCube => {
+      if (dataCube.clusterName === "native") {
         var fileManager = this.getFileManagerFor(dataCube.source);
         if (fileManager) {
           var dataset = fileManager.dataset;

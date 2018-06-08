@@ -15,19 +15,15 @@
  * limitations under the License.
  */
 
-import './collection-overview.scss';
+import * as React from "react";
+import { Collection, CollectionTile, Timekeeper } from "../../../../common/models/index";
+import { SvgIcon } from "../../../components/index";
+import { STRINGS } from "../../../config/constants";
+import { classNames, getXFromEvent, setDragGhost } from "../../../utils/dom/dom";
+import { CollectionTileCard } from "../collection-tile-card/collection-tile-card";
+import "./collection-overview.scss";
 
-import * as React from 'react';
-import { Collection, CollectionTile, Timekeeper } from '../../../../common/models/index';
-import { SvgIcon } from '../../../components/index';
-
-import { CollectionTileCard } from '../collection-tile-card/collection-tile-card';
-
-import { STRINGS } from '../../../config/constants';
-
-import { setDragGhost, classNames, getYFromEvent, getXFromEvent } from '../../../utils/dom/dom';
-
-export interface CollectionOverviewProps extends React.Props<any> {
+export interface CollectionOverviewProps {
   timekeeper: Timekeeper;
   collection: Collection;
   collectionId?: string;
@@ -56,10 +52,10 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
   }
 
   dragStart(tile: CollectionTile, e: React.DragEvent<HTMLElement>) {
-    this.setState({draggedTile: tile});
+    this.setState({ draggedTile: tile });
 
     var dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = 'move';
+    dataTransfer.effectAllowed = "move";
     dataTransfer.setData("text/html", tile.title);
 
     setDragGhost(dataTransfer, tile.title);
@@ -130,9 +126,9 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     const onDeleteClick = (tile: CollectionTile) => onDelete(collection, tile);
 
     const classes = classNames({
-      dragged: draggedTile === tile,
-      'drop-before': dropIndex === i && !dropAfter,
-      'drop-after': dropIndex === i && dropAfter
+      "dragged": draggedTile === tile,
+      "drop-before": dropIndex === i && !dropAfter,
+      "drop-after": dropIndex === i && dropAfter
     });
 
     return <CollectionTileCard
@@ -153,10 +149,10 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
     return <div
       className="collection-overview empty"
     >
-    <div className="container">
-      <SvgIcon svg={require(`../../../icons/full-collection.svg`)}/>
-      <div className="placeholder">{STRINGS.noTilesInThisCollection}</div>
-    </div>
+      <div className="container">
+        <SvgIcon svg={require("../../../icons/full-collection.svg")} />
+        <div className="placeholder">{STRINGS.noTilesInThisCollection}</div>
+      </div>
     </div>;
   }
 
@@ -171,8 +167,8 @@ export class CollectionOverview extends React.Component<CollectionOverviewProps,
       className="collection-overview"
       onDragEnd={this.dragEnd.bind(this)}
     >
-     {collection.tiles.map(this.renderTile, this)}
-     <div className="collection-tile-card empty"/>
+      {collection.tiles.map(this.renderTile, this)}
+      <div className="collection-tile-card empty" />
     </div>;
   }
 }

@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as TestUtils from 'react-dom/test-utils';
-import { $, Expression } from 'plywood';
+import { expect } from "chai";
+import * as React from "react";
+import * as TestUtils from "react-dom/test-utils";
 
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
-import { TimekeeperMock } from '../../../common/models/mocks';
+import { TimekeeperMock } from "../../../common/models/mocks";
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
-import { AddCollectionTileModal } from './add-collection-tile-modal';
+import { AddCollectionTileModal } from "./add-collection-tile-modal";
 
-describe.skip('AddCollectionTileModal', () => {
-  it('adds the correct class', () => {
+describe.skip("AddCollectionTileModal", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <AddCollectionTileModal
         essence={null}
@@ -37,8 +35,8 @@ describe.skip('AddCollectionTileModal', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('add-collection-tile-modal');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("add-collection-tile-modal");
   });
 
 });

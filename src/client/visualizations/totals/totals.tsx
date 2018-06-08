@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-import './totals.scss';
-
-import * as React from 'react';
-import { $, ply, Expression } from 'plywood';
-import { TOTALS_MANIFEST } from '../../../common/manifests/totals/totals';
-import { Stage, Essence, Timekeeper, VisualizationProps, DatasetLoad } from '../../../common/models/index';
-
-import { BaseVisualization, BaseVisualizationState } from '../base-visualization/base-visualization';
+import { $, Expression, ply } from "plywood";
+import * as React from "react";
+import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
+import { DatasetLoad, Essence, Timekeeper, VisualizationProps } from "../../../common/models/index";
+import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import "./totals.scss";
 
 const PADDING_H = 60;
 const TOTAL_WIDTH = 176;
@@ -56,9 +54,9 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
 
   makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
     let query: Expression = ply()
-      .apply('main', $('main').filter(essence.getEffectiveFilter(timekeeper, Totals.id).toExpression()));
+      .apply("main", $("main").filter(essence.getEffectiveFilter(timekeeper, Totals.id).toExpression()));
 
-    essence.getEffectiveMeasures().forEach((measure) => {
+    essence.getEffectiveMeasures().forEach(measure => {
       query = query.performAction(measure.toApplyExpression());
     });
 
@@ -97,13 +95,13 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     let single = measures.size === 1;
 
     const totals = measures.map(measure => {
-      let measureValueStr = '-';
+      let measureValueStr = "-";
       if (myDatum) {
         measureValueStr = measure.formatDatum(myDatum);
       }
 
       return <div
-        className={'total' + (single ? ' single' : '')}
+        className={"total" + (single ? " single" : "")}
         key={measure.name}
       >
         <div className="measure-name">{measure.title}</div>
@@ -116,7 +114,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       const numColumns = Math.min(totals.size, Math.max(1, Math.floor((stage.width - 2 * PADDING_H) / TOTAL_WIDTH)));
       let containerWidth = numColumns * TOTAL_WIDTH;
       totalContainerStyle = {
-        left: '50%',
+        left: "50%",
         width: containerWidth,
         marginLeft: -containerWidth / 2
       };
