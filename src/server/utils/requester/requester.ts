@@ -56,7 +56,8 @@ export function properRequesterFactory(options: ProperRequesterOptions): Plywood
       requester = druidRequesterFactory({
         host,
         timeout: timeout || 30000,
-        requestDecorator: options.druidRequestDecorator
+        requestDecorator: options.druidRequestDecorator,
+        protocol: options.protocol
       });
       break;
 

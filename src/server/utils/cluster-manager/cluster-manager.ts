@@ -189,7 +189,8 @@ export class ClusterManager {
 
       database: cluster.database,
       user: cluster.user,
-      password: cluster.password
+      password: cluster.password,
+      protocol: cluster.protocol
     });
   }
 

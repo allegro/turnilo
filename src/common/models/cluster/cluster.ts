@@ -39,6 +39,7 @@ export interface ClusterValue {
   introspectionStrategy?: string;
   requestDecorator?: string;
   decoratorOptions?: any;
+  protocol?: string;
 
   database?: string;
   user?: string;
@@ -62,6 +63,7 @@ export interface ClusterJS {
   introspectionStrategy?: string;
   requestDecorator?: string;
   decoratorOptions?: any;
+  protocol?: string;
 
   database?: string;
   user?: string;
@@ -131,6 +133,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: 'introspectionStrategy', defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
     { name: 'requestDecorator', defaultValue: null },
     { name: 'decoratorOptions', defaultValue: null },
+    { name: 'protocol', defaultValue: null }
 
     // SQLs
     { name: 'database', defaultValue: null },
@@ -156,6 +159,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public introspectionStrategy: string;
   public requestDecorator: string;
   public decoratorOptions: any;
+  public protocol: string;
 
   // SQLs
   public database: string;
@@ -170,6 +174,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
         this.database = null;
         this.user = null;
         this.password = null;
+	this.protocol = null;
         break;
 
       case 'mysql':
