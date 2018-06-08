@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-import './swiv-application.scss';
-
-import * as React from 'react';
-import { CSSTransition } from 'react-transition-group';
-import { NamedArray} from "immutable-class";
+import { NamedArray } from "immutable-class";
+import * as React from "react";
+import { CSSTransition } from "react-transition-group";
+import { AppSettings, Collection, CollectionTile, DataCube, Essence, Timekeeper, User, ViewSupervisor } from "../../../common/models";
 import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
-
-import { replaceHash } from '../../utils/url/url';
-import { DataCube, AppSettings, User, Collection, CollectionTile, Essence, Timekeeper, ViewSupervisor } from '../../../common/models';
-
-import { createFunctionSlot, FunctionSlot } from '../../utils/function-slot/function-slot';
-import { Ajax } from '../../utils/ajax/ajax';
-import { AboutModal, AddCollectionTileModal } from '../../modals';
-import { SideDrawer, Notifications, Questions, Notifier } from '../../components';
-
-import { NoDataView } from '../../views/no-data-view/no-data-view';
-import { HomeView } from '../../views/home-view/home-view';
-import { LinkView } from '../../views/link-view/link-view';
-import { CubeView } from '../../views/cube-view/cube-view';
-import { SettingsView } from '../../views/settings-view/settings-view';
-import { CollectionView } from '../../views/collection-view/collection-view';
-import { CollectionViewDelegate } from './collection-view-delegate/collection-view-delegate';
+import { Notifications, Notifier, Questions, SideDrawer } from "../../components";
+import { AboutModal, AddCollectionTileModal } from "../../modals";
+import { Ajax } from "../../utils/ajax/ajax";
+import { createFunctionSlot, FunctionSlot } from "../../utils/function-slot/function-slot";
+import { replaceHash } from "../../utils/url/url";
+import { CollectionView } from "../../views/collection-view/collection-view";
+import { CubeView } from "../../views/cube-view/cube-view";
+import { HomeView } from "../../views/home-view/home-view";
+import { LinkView } from "../../views/link-view/link-view";
+import { NoDataView } from "../../views/no-data-view/no-data-view";
+import { SettingsView } from "../../views/settings-view/settings-view";
+import { CollectionViewDelegate } from "./collection-view-delegate/collection-view-delegate";
+import "./swiv-application.scss";
 
 export interface SwivApplicationProps {
   version: string;
@@ -101,11 +97,11 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     let viewType = this.getViewTypeFromHash(hash);
 
     if (viewType !== SETTINGS && !dataCubes.length) {
-      window.location.hash = '';
+      window.location.hash = "";
 
       this.setState({
         viewType: NO_DATA,
-        viewHash: '',
+        viewHash: "",
         appSettings
       });
 
@@ -125,7 +121,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
       // If datacube / collection does not exist, then bounce to home
       if (!selectedItem) {
-        this.changeHash('');
+        this.changeHash("");
         viewType = HOME;
       }
     }
@@ -149,14 +145,14 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   componentDidMount() {
-    window.addEventListener('hashchange', this.globalHashChangeListener);
+    window.addEventListener("hashchange", this.globalHashChangeListener);
 
     Ajax.settingsVersionGetter = () => {
       const { appSettings } = this.state;
       return appSettings.getVersion();
     };
     Ajax.onUpdate = () => {
-      console.log('UPDATE!!');
+      console.log("UPDATE!!");
     };
 
     // There was a clipboard module that did nothing here
@@ -164,7 +160,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   componentWillUnmount() {
-    window.removeEventListener('hashchange', this.globalHashChangeListener);
+    window.removeEventListener("hashchange", this.globalHashChangeListener);
   }
 
   globalHashChangeListener(): void {
@@ -194,8 +190,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   parseHash(hash: string): string[] {
-    if (hash[0] === '#') hash = hash.substr(1);
-    return hash.split('/');
+    if (hash[0] === "#") hash = hash.substr(1);
+    return hash.split("/");
   }
 
   getViewTypeFromHash(hash: string): ViewType {
@@ -204,7 +200,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     const { dataCubes } = appSettings;
     const viewType = this.parseHash(hash)[0];
 
-    if (viewType === SETTINGS && user && user.allow['settings']) return SETTINGS;
+    if (viewType === SETTINGS && user && user.allow["settings"]) return SETTINGS;
 
     if (!dataCubes || !dataCubes.length) return NO_DATA;
 
@@ -219,7 +215,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     return CUBE;
   }
 
-  getSelectedItemFromHash(items: (DataCube | Collection)[], hash: string, viewType: ViewType): DataCube | Collection {
+  getSelectedItemFromHash(items: Array<DataCube | Collection>, hash: string, viewType: ViewType): DataCube | Collection {
     // can change header from hash
     const parts = this.parseHash(hash);
     const itemName = parts[viewType === COLLECTION ? 1 : 0];
@@ -231,7 +227,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     const parts = this.parseHash(hash);
     if (parts.length < 2) return null;
     parts.shift();
-    return parts.join('/');
+    return parts.join("/");
   }
 
   sideDrawerOpen(drawerOpen: boolean): void {
@@ -242,15 +238,13 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     this.hashUpdating = true;
 
     // Hash initialization, no need to add the intermediary url in the history
-    if (window.location.hash === `#${hash.split('/')[0]}`) {
-      replaceHash('#' + hash);
+    if (window.location.hash === `#${hash.split("/")[0]}`) {
+      replaceHash("#" + hash);
     } else {
       window.location.hash = `#${hash}`;
     }
 
-    setTimeout(() => {
-      this.hashUpdating = false;
-    }, 5);
+    setTimeout(() => this.hashUpdating = false, 5);
     if (force) this.hashToState(hash);
   }
 
@@ -290,7 +284,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       newPrefix = viewType;
     }
 
-    return urlBase + '#' + newPrefix;
+    return urlBase + "#" + newPrefix;
   }
 
   openAboutModal() {
@@ -337,8 +331,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     const onSave = (_collection: Collection, CollectionTile: CollectionTile) => {
       closeModal();
       this.collectionViewDelegate.addTile(_collection, CollectionTile).then(url => {
-        Notifier.success('Item added', {
-          label: 'View collection',
+        Notifier.success("Item added", {
+          label: "View collection",
           callback: () => window.location.hash = `#collection/${_collection.name}`
         });
       });
@@ -380,7 +374,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     const closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
 
     return <SideDrawer
-      key='drawer'
+      key="drawer"
       selectedItem={selectedItem}
       collections={collections}
       dataCubes={dataCubes}
@@ -409,17 +403,17 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   saveDataCubes(newSettings: AppSettings): Promise<any> {
     return Ajax.query({
       method: "POST",
-      url: 'dataCubes',
+      url: "dataCubes",
       data: {
         dataCubes: newSettings.dataCubes
       }
     })
       .then(
-        (status) => this.setState({
+        status => this.setState({
           appSettings: newSettings
         }),
         (xhr: XMLHttpRequest) => {
-          Notifier.failure('Woops', 'Something bad happened');
+          Notifier.failure("Woops", "Something bad happened");
         }
       );
   }
@@ -520,12 +514,12 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
         />;
 
       default:
-        throw new Error('unknown view');
+        throw new Error("unknown view");
     }
   }
 
   render() {
-    return <main className='swiv-application'>
+    return <main className="swiv-application">
       {this.renderView()}
       {this.renderSideDrawerTransition()}
       {this.renderAboutModal()}

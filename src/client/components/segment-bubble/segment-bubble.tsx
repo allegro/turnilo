@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-import './segment-bubble.scss';
-
-import * as React from 'react';
-import { Timezone } from 'chronoshift';
-import { Fn } from '../../../common/utils/general/general';
-import { Stage, Clicker, Dimension } from '../../../common/models/index';
-import { clamp } from '../../utils/dom/dom';
-import { BodyPortal } from '../body-portal/body-portal';
-import { Shpitz } from '../shpitz/shpitz';
-import { SegmentActionButtons } from '../segment-action-buttons/segment-action-buttons';
+import * as React from "react";
+import { Clicker, Dimension } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { clamp } from "../../utils/dom/dom";
+import { BodyPortal } from "../body-portal/body-portal";
+import { SegmentActionButtons } from "../segment-action-buttons/segment-action-buttons";
+import { Shpitz } from "../shpitz/shpitz";
+import "./segment-bubble.scss";
 
 const OFFSET_V = -10;
 const PER_LETTER_PIXELS = 8;
 
-export interface SegmentBubbleProps extends React.Props<any> {
+export interface SegmentBubbleProps {
   left: number;
   top: number;
   dimension?: Dimension;
@@ -74,7 +72,7 @@ export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBu
       <div className="segment-bubble" ref="bubble">
         {textElement}
         {actionsElement}
-        <Shpitz direction="up"/>
+        <Shpitz direction="up" />
       </div>
     </BodyPortal>;
   }

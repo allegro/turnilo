@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
-import { BodyPortal } from '../../components/body-portal/body-portal';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
+import { BodyPortal } from "../../components/body-portal/body-portal";
 
-export function findDOMNode(element: React.Component<any, any> | Element ): Element {
+export function findDOMNode(element: React.Component<any, any> | Element): Element {
   var portal: any = TestUtils.scryRenderedComponentsWithType(element as React.Component, BodyPortal)[0];
   return portal ? portal.target.childNodes[0] : ReactDOM.findDOMNode(element);
 }

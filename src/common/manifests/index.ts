@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { Manifest } from '../models/manifest/manifest';
+import { Manifest } from "../models/manifest/manifest";
 
-import { BAR_CHART_MANIFEST } from './bar-chart/bar-chart';
-import { LINE_CHART_MANIFEST } from './line-chart/line-chart';
-import { TABLE_MANIFEST } from './table/table';
-import { TOTALS_MANIFEST } from './totals/totals';
+import { BAR_CHART_MANIFEST } from "./bar-chart/bar-chart";
+import { LINE_CHART_MANIFEST } from "./line-chart/line-chart";
+import { TABLE_MANIFEST } from "./table/table";
+import { TOTALS_MANIFEST } from "./totals/totals";
 
 export const MANIFESTS: Manifest[] = [
   TOTALS_MANIFEST,

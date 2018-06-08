@@ -36,8 +36,9 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<Essence
 }
 
 function filterJSConverter(filter: FilterJS): FilterJS {
-  if (typeof filter === "string")
+  if (typeof filter === "string") {
     return filter;
+  }
 
   const filterExpression = Expression.fromJSLoose(filter);
   if (filterExpression instanceof AndExpression) {

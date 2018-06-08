@@ -17,7 +17,7 @@
 import * as React from "react";
 import { SearchableFolder } from "../searchable-tile/searchable-folder";
 import { MeasureItem } from "./measure-item";
-import { MeasureForViewType, MeasureGroupForView, MeasureOrGroupForView, MeasureForView } from "./measures-converter";
+import { MeasureForView, MeasureForViewType, MeasureGroupForView, MeasureOrGroupForView } from "./measures-converter";
 import { MeasureClickHandler } from "./measures-tile";
 
 export class MeasuresRenderer {
@@ -38,10 +38,11 @@ export class MeasuresRenderer {
     return children
       .filter(notInSearchModeOrHasSearchTextOrIsGroup)
       .map(child => {
-        if (child.type === MeasureForViewType.group)
+        if (child.type === MeasureForViewType.group) {
           return this.renderFolder(child);
-        else
+        } else {
           return this.renderMeasure(child);
+        }
       });
   }
 

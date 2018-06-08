@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { testImmutableClass } from "immutable-class-tester";
+import { ExternalView } from "./external-view";
 
-import { $, Expression } from 'plywood';
-import { ExternalView } from './external-view';
-
-describe('ExternalView', () => {
-  it('is an immutable class', () => {
+describe("ExternalView", () => {
+  it("is an immutable class", () => {
     testImmutableClass(ExternalView, [
       {
         title: "yahoo",
-        linkGenerator : "'http://www.yahoo.com/filters/' + visualization.id"
+        linkGenerator: "'http://www.yahoo.com/filters/' + visualization.id"
       },
       {
         title: "google",
-        linkGenerator : "'http://www.google.com/datasource/' + datasource.name",
+        linkGenerator: "'http://www.google.com/datasource/' + datasource.name",
         sameWindow: true
       }
     ]);

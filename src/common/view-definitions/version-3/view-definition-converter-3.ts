@@ -31,8 +31,8 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     return Essence.fromJS({
       visualization: definition.visualization,
       timezone: Timezone.fromJS(definition.timezone).toJS(),
-      filter: Filter.fromClauses(definition.filters.map((fc) => filterDefinitionConverter.toFilterClause(fc, dataCube))).toJS(),
-      splits: definition.splits.map(splitConverter.toSplitCombine).map((sc) => sc.toJS()),
+      filter: Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube))).toJS(),
+      splits: definition.splits.map(splitConverter.toSplitCombine).map(sc => sc.toJS()),
       multiMeasureMode: measuresDefinitionConverter.toMultiMeasureMode(definition.measures),
       singleMeasure: measuresDefinitionConverter.toSingleMeasure(definition.measures),
       selectedMeasures: measuresDefinitionConverter.toSelectedMeasures(definition.measures).toArray(),
@@ -49,7 +49,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     return {
       visualization: essence.visualization.name,
       timezone: essence.timezone.toJS(),
-      filters: essence.filter.clauses.map((fc) => filterDefinitionConverter.fromFilterClause(fc, dataCube)).toArray(),
+      filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc, dataCube)).toArray(),
       splits: essence.splits.splitCombines.map(splitConverter.fromSplitCombine).toArray(),
       measures: measuresDefinitionConverter.fromSimpleValues(essence.multiMeasureMode, essence.singleMeasure, essence.selectedMeasures),
       pinnedDimensions: essence.pinnedDimensions.toArray(),

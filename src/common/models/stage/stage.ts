@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
-import { Class, Instance } from 'immutable-class';
+import { Class, Instance } from "immutable-class";
+import * as React from "react";
 
 export interface MarginParameters {
   left?: number;
@@ -40,6 +40,7 @@ export interface StageJS {
 }
 
 var check: Class<StageValue, StageJS>;
+
 export class Stage implements Instance<StageValue, StageJS> {
   static isStage(candidate: any): candidate is Stage {
     return candidate instanceof Stage;
@@ -53,7 +54,6 @@ export class Stage implements Instance<StageValue, StageJS> {
       height: parameters.height
     });
   }
-
 
   static fromClientRect(rect: ClientRect): Stage {
     return new Stage({
@@ -72,7 +72,6 @@ export class Stage implements Instance<StageValue, StageJS> {
       height
     });
   }
-
 
   public x: number;
   public y: number;
@@ -199,4 +198,5 @@ export class Stage implements Instance<StageValue, StageJS> {
     return new Stage(value);
   }
 }
+
 check = Stage;

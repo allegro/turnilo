@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-import './clusters.scss';
-
-import * as React from 'react';
-
-import { Button } from '../../../components/button/button';
-import { ClusterSeedModal } from "../../../modals/index";
+import * as React from "react";
+import { AppSettings, Cluster } from "../../../../common/models/index";
+import { Button } from "../../../components/button/button";
+import { Notifier } from "../../../components/index";
+import { SimpleTable, SimpleTableAction, SimpleTableColumn } from "../../../components/simple-table/simple-table";
 import { STRINGS } from "../../../config/constants";
+import "./clusters.scss";
 
-import { AppSettings, Cluster, SupportedType } from '../../../../common/models/index';
-
-import { SimpleTable, SimpleTableColumn, SimpleTableAction } from '../../../components/simple-table/simple-table';
-import { Notifier } from '../../../components/index';
-
-export interface ClustersProps extends React.Props<any> {
+export interface ClustersProps {
   settings?: AppSettings;
   onSave?: (settings: AppSettings, message?: string) => void;
 }
@@ -45,9 +40,11 @@ export class Clusters extends React.Component<ClustersProps, ClustersState> {
   }
 
   componentWillReceiveProps(nextProps: ClustersProps) {
-    if (nextProps.settings) this.setState({
-      newSettings: nextProps.settings
-    });
+    if (nextProps.settings) {
+      this.setState({
+        newSettings: nextProps.settings
+      });
+    }
   }
 
   editCluster(cluster: Cluster) {
@@ -55,7 +52,7 @@ export class Clusters extends React.Component<ClustersProps, ClustersState> {
   }
 
   startSeed() {
-    window.location.hash += '/new-cluster';
+    window.location.hash += "/new-cluster";
   }
 
   renderEmpty(): JSX.Element {
@@ -75,7 +72,7 @@ export class Clusters extends React.Component<ClustersProps, ClustersState> {
       var newClusters = settings.clusters;
       newClusters.splice(index, 1);
 
-      this.props.onSave(settings.changeClusters(newClusters), 'Cluster removed');
+      this.props.onSave(settings.changeClusters(newClusters), "Cluster removed");
       Notifier.removeQuestion();
     };
 
@@ -84,14 +81,14 @@ export class Clusters extends React.Component<ClustersProps, ClustersState> {
     };
 
     Notifier.ask({
-      title: 'Remove this cluster',
+      title: "Remove this cluster",
       message: [
         `Are you sure you would like to delete the cluster "${cluster.title}"?`,
-        'This action is not reversible.'
+        "This action is not reversible."
       ],
       choices: [
-        {label: 'Remove', callback: remove, type: 'warn'},
-        {label: 'Cancel', callback: cancel, type: 'secondary'}
+        { label: "Remove", callback: remove, type: "warn" },
+        { label: "Cancel", callback: cancel, type: "secondary" }
       ],
       onClose: Notifier.removeQuestion
     });
@@ -104,20 +101,20 @@ export class Clusters extends React.Component<ClustersProps, ClustersState> {
     if (!newSettings.clusters.length) return this.renderEmpty();
 
     const columns: SimpleTableColumn[] = [
-      {label: 'Title', field: 'title', width: 200, cellIcon: 'full-cluster'},
-      {label: 'Host', field: 'host', width: 200},
-      {label: 'Type', field: 'type', width: 300}
+      { label: "Title", field: "title", width: 200, cellIcon: "full-cluster" },
+      { label: "Host", field: "host", width: 200 },
+      { label: "Type", field: "type", width: 300 }
     ];
 
     const actions: SimpleTableAction[] = [
-      {icon: 'full-edit', callback: this.editCluster.bind(this)},
-      {icon: 'full-remove', callback: this.removeCluster.bind(this)}
+      { icon: "full-edit", callback: this.editCluster.bind(this) },
+      { icon: "full-remove", callback: this.removeCluster.bind(this) }
     ];
 
     return <div className="clusters">
       <div className="title-bar">
         <div className="title">Clusters</div>
-        <Button className="add" title={STRINGS.connectNewCluster} type="primary" onClick={this.startSeed.bind(this)}/>
+        <Button className="add" title={STRINGS.connectNewCluster} type="primary" onClick={this.startSeed.bind(this)} />
       </div>
       <div className="content">
         <SimpleTable

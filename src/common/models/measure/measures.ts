@@ -41,15 +41,15 @@ class FlattenMeasuresWithGroupsVisitor implements MeasureOrGroupVisitor<void> {
 
 function findDuplicateNames(items: List<MeasureOrGroup>): List<string> {
   return items
-    .groupBy((measure) => measure.name)
-    .filter((names) => names.size > 1)
+    .groupBy(measure => measure.name)
+    .filter(names => names.size > 1)
     .map((names, name) => name)
     .toList();
 }
 
 function filterMeasures(items: List<MeasureOrGroup>): List<Measure> {
-  return List<Measure> (items
-    .filter((item) => item.type === "measure")
+  return List<Measure>(items
+    .filter(item => item.type === "measure")
     .toList());
 }
 
@@ -96,11 +96,11 @@ export class Measures {
     return this === other || immutableArraysEqual(this.measures, other.measures);
   }
 
-  mapMeasures<R>(mapper: (measure: Measure) => R): Array<R> {
+  mapMeasures<R>(mapper: (measure: Measure) => R): R[] {
     return this.flattenedMeasures.map(mapper).toArray();
   }
 
-  filterMeasures(predicate: (dimension: Measure) => boolean): Array<Measure> {
+  filterMeasures(predicate: (dimension: Measure) => boolean): Measure[] {
     return this.flattenedMeasures.filter(predicate).toArray();
   }
 
@@ -109,34 +109,34 @@ export class Measures {
   }
 
   getMeasureByName(measureName: string): Measure {
-    return this.flattenedMeasures.find((measure) => measure.name === measureName);
+    return this.flattenedMeasures.find(measure => measure.name === measureName);
   }
 
   getMeasureByExpression(expression: Expression): Measure {
-    return this.flattenedMeasures.find((measure) => measure.expression.equals(expression));
+    return this.flattenedMeasures.find(measure => measure.expression.equals(expression));
   }
 
   getMeasureNames(): List<string> {
-    return this.flattenedMeasures.map((measure) => measure.name).toList();
+    return this.flattenedMeasures.map(measure => measure.name).toList();
   }
 
   containsMeasureWithName(name: string): boolean {
-    return this.flattenedMeasures.some((measure) => measure.name === name);
+    return this.flattenedMeasures.some(measure => measure.name === name);
   }
 
   getFirstNMeasureNames(n: number): OrderedSet<string> {
-    return OrderedSet(this.flattenedMeasures.slice(0, n).map((measure) => measure.name));
+    return OrderedSet(this.flattenedMeasures.slice(0, n).map(measure => measure.name));
   }
 
-  append(...measures: Array<Measure>): Measures {
+  append(...measures: Measure[]): Measures {
     return new Measures([...this.measures, ...measures]);
   }
 
-  prepend(...measures: Array<Measure>): Measures {
+  prepend(...measures: Measure[]): Measures {
     return new Measures([...measures, ...this.measures]);
   }
 
   toJS(): MeasureOrGroupJS[] {
-    return this.measures.map((measure) => measure.toJS());
+    return this.measures.map(measure => measure.toJS());
   }
 }

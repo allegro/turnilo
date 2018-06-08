@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from 'immutable-class';
-import { day, minute, Timezone } from 'chronoshift';
+import { day, minute, Timezone } from "chronoshift";
+import { Class, Instance } from "immutable-class";
 import {
   ChainableExpression,
   ContainsExpression,
@@ -34,15 +34,16 @@ import {
   RefExpression,
   Set,
   TimeRange
-} from 'plywood';
+} from "plywood";
 
 // Basically these represent
 // expression.in(selection) .not()?
 export type FilterSelection = Expression | string;
+
 export enum SupportedAction {
-  overlap = 'overlap',
-  contains = 'contains',
-  match = 'match'
+  overlap = "overlap",
+  contains = "contains",
+  match = "match"
 }
 
 export interface FilterClauseValue {
@@ -66,7 +67,7 @@ function isLiteral(ex: Expression): boolean {
 
 function isRelative(ex: Expression): boolean {
   if (ex instanceof ChainableExpression) {
-    if (ex.type !== 'TIME_RANGE') return false;
+    if (ex.type !== "TIME_RANGE") return false;
     const expression = ex.getHeadOperand();
     if (expression instanceof RefExpression) {
       return expression.name === FilterClause.NOW_REF_NAME || expression.name === FilterClause.MAX_TIME_REF_NAME;
@@ -80,7 +81,7 @@ function selectionsEqual(a: any, b: any) {
   if (a === b) return true;
   if (!a !== !b) return false;
   if (typeof a !== typeof b) return false;
-  if (typeof a === 'string' && typeof b === 'string') return a === b;
+  if (typeof a === "string" && typeof b === "string") return a === b;
   return (a as Expression).equals(b as Expression);
 }
 
@@ -92,8 +93,8 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     return candidate instanceof FilterClause;
   }
 
-  static NOW_REF_NAME = 'n';
-  static MAX_TIME_REF_NAME = 'm';
+  static NOW_REF_NAME = "n";
+  static MAX_TIME_REF_NAME = "m";
 
   static evaluate(selection: Expression, now: Date, maxTime: Date, timezone: Timezone): TimeRange {
     if (!selection) return null;
@@ -157,7 +158,6 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     return new FilterClause(value);
   }
 
-
   public action: SupportedAction;
   public expression: Expression;
   public selection: FilterSelection;
@@ -172,9 +172,9 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
       this.relative = true;
     } else if (isLiteral(selection as Expression)) {
       this.relative = false;
-    } else if (action === 'match' && typeof selection !== 'string') {
+    } else if (action === "match" && typeof selection !== "string") {
       throw new Error(`invalid match selection: ${selection}`);
-    } else if (action === 'contains' && !(selection instanceof Expression)) {
+    } else if (action === "contains" && !(selection instanceof Expression)) {
       throw new Error(`invalid contains expression: ${selection}`);
     }
     this.selection = selection;
@@ -222,14 +222,14 @@ export class FilterClause implements Instance<FilterClauseValue, FilterClauseJS>
     let ex: ChainableExpression = null;
     if (selection instanceof Expression) {
       const selectionType = (selection as Expression).type;
-      if (selectionType === 'TIME_RANGE' || selectionType === 'SET/TIME_RANGE' || selectionType === 'NUMBER_RANGE' || selectionType === 'SET/NUMBER_RANGE') {
+      if (selectionType === "TIME_RANGE" || selectionType === "SET/TIME_RANGE" || selectionType === "NUMBER_RANGE" || selectionType === "SET/NUMBER_RANGE") {
         ex = expression.in(selection);
-      } else if (action === 'contains') {
+      } else if (action === "contains") {
         ex = expression.contains(selection);
       } else {
         ex = expression.overlap(selection);
       }
-    } else if (action === 'match') {
+    } else if (action === "match") {
       ex = expression.match(selection);
     }
     if (this.exclude) ex = ex.not();

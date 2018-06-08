@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-import { Class, Instance, immutableArraysEqual, NamedArray } from 'immutable-class';
-
-import { Manifest } from '../manifest/manifest';
-import { CollectionTile, CollectionTileJS, CollectionTileContext } from '../index';
+import { Class, immutableArraysEqual, Instance, NamedArray } from "immutable-class";
+import { CollectionTile, CollectionTileContext, CollectionTileJS } from "../index";
 
 export interface CollectionValue {
   name: string;
@@ -40,6 +38,7 @@ export interface CollectionJS {
 export type CollectionContext = CollectionTileContext;
 
 var check: Class<CollectionValue, CollectionJS>;
+
 export class Collection implements Instance<CollectionValue, CollectionJS> {
 
   static isCollection(candidate: any): candidate is Collection {
@@ -47,9 +46,9 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
   }
 
   static fromJS(parameters: CollectionJS, context?: CollectionContext): Collection {
-    if (!context) throw new Error('Collection must have context');
+    if (!context) throw new Error("Collection must have context");
 
-    if (!parameters.name) throw new Error('Collection must have a name');
+    if (!parameters.name) throw new Error("Collection must have a name");
 
     var tiles: CollectionTileJS[] = parameters.tiles || parameters.items || (parameters as any).linkItems || [];
 
@@ -132,7 +131,7 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
     var newTiles = this.tiles.concat();
     newTiles.splice(index, 1);
 
-    return this.change('tiles', newTiles);
+    return this.change("tiles", newTiles);
   }
 
   public change(propertyName: string, newValue: any): Collection {
@@ -149,7 +148,7 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
   public updateTile(tile: CollectionTile): Collection {
     var index = -1;
 
-    this.tiles.forEach(({name}, i) => {
+    this.tiles.forEach(({ name }, i) => {
       if (name === tile.name) {
         index = i;
         return;
@@ -164,15 +163,16 @@ export class Collection implements Instance<CollectionValue, CollectionJS> {
 
     newTiles[index] = tile;
 
-    return this.change('tiles', newTiles);
+    return this.change("tiles", newTiles);
   }
 
   public changeTiles(tiles: CollectionTile[]): Collection {
-    return this.change('tiles', tiles);
+    return this.change("tiles", tiles);
   }
 
   public changeTitle(title: string): Collection {
-    return this.change('title', title);
+    return this.change("title", title);
   }
 }
+
 check = Collection;

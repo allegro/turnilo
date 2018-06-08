@@ -17,16 +17,16 @@
 
 import * as React from "react";
 import { Component, CSSProperties, DragEvent, MouseEvent } from "react";
-import { Clicker, DataCube, Dimension, Essence, Filter, Splits, Stage } from '../../../common/models/index';
-import { Fn } from '../../../common/utils/general/general';
-import { MAX_SEARCH_LENGTH, STRINGS } from '../../config/constants';
-import { findParentWithClass, setDragGhost } from '../../utils/dom/dom';
-import { DragManager } from '../../utils/drag-manager/drag-manager';
-import { DimensionActionsMenu } from '../dimension-actions-menu/dimension-actions-menu';
-import { SearchableTile } from '../searchable-tile/searchable-tile';
-import { TileHeaderIcon } from '../tile-header/tile-header';
+import { Clicker, DataCube, Dimension, Essence, Filter, Splits, Stage } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
+import { findParentWithClass, setDragGhost } from "../../utils/dom/dom";
+import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { DimensionActionsMenu } from "../dimension-actions-menu/dimension-actions-menu";
+import { SearchableTile } from "../searchable-tile/searchable-tile";
+import { TileHeaderIcon } from "../tile-header/tile-header";
 import { DIMENSION_CLASS_NAME } from "./dimension-item";
-import './dimension-list-tile.scss';
+import "./dimension-list-tile.scss";
 import { DimensionOrGroupForView, DimensionsConverter } from "./dimensions-converter";
 import { DimensionsRenderer } from "./dimensions-renderer";
 
@@ -58,14 +58,14 @@ const isFilteredOrSplitPredicate = (essence: Essence) => (dimension: Dimension):
 const isSplit = (dimension: Dimension, splits: Splits, dataCube: DataCube): boolean => {
   return splits
     .splitCombines
-    .map((split) => dataCube.dimensions.getDimensionByExpression(split.expression))
+    .map(split => dataCube.dimensions.getDimensionByExpression(split.expression))
     .contains(dimension);
 };
 
 const isFiltered = (dimension: Dimension, filter: Filter, dataCube: DataCube): boolean => {
   return filter
     .clauses
-    .map((clause) => dataCube.dimensions.getDimensionByExpression(clause.expression))
+    .map(clause => dataCube.dimensions.getDimensionByExpression(clause.expression))
     .contains(dimension);
 };
 
@@ -81,7 +81,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       menuOpenOn: null,
       menuDimension: null,
       showSearch: false,
-      searchText: ''
+      searchText: ""
     };
   }
 
@@ -116,10 +116,10 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     const dimension = dataCube.dimensions.getDimensionByName(dimensionName);
 
     const dataTransfer = e.dataTransfer;
-    dataTransfer.effectAllowed = 'all';
-    dataTransfer.setData('text/plain', dimension.title);
+    dataTransfer.effectAllowed = "all";
+    dataTransfer.setData("text/plain", dimension.title);
 
-    DragManager.setDragDimension(dimension, 'dimension-list-tile');
+    DragManager.setDragDimension(dimension, "dimension-list-tile");
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
@@ -128,7 +128,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
   toggleSearch() {
     var { showSearch } = this.state;
     this.setState({ showSearch: !showSearch });
-    this.onSearchChange('');
+    this.onSearchChange("");
   }
 
   onSearchChange(text: string) {
@@ -190,10 +190,10 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
 
     var icons: TileHeaderIcon[] = [
       {
-        name: 'search',
-        ref: 'search',
+        name: "search",
+        ref: "search",
         onClick: this.toggleSearch.bind(this),
-        svg: require('../../icons/full-search.svg'),
+        svg: require("../../icons/full-search.svg"),
         active: showSearch
       }
     ];
@@ -206,7 +206,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       searchText={searchText}
       showSearch={showSearch}
       icons={icons}
-      className='dimension-list-tile'
+      className="dimension-list-tile"
     >
       <div className="rows" ref="items">
         {items}

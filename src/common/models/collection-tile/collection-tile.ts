@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import { Class, Instance, SimpleArray } from 'immutable-class';
-import { verifyUrlSafeName, makeTitle } from '../../utils/general/general';
-import { DataCube } from '../data-cube/data-cube';
-import { Essence, EssenceJS } from '../essence/essence';
-import { Manifest } from '../manifest/manifest';
+import { Class, Instance, SimpleArray } from "immutable-class";
+import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
+import { DataCube } from "../data-cube/data-cube";
+import { Essence, EssenceJS } from "../essence/essence";
+import { Manifest } from "../manifest/manifest";
 
 export interface CollectionTileValue {
   name: string;
@@ -45,6 +45,7 @@ export interface CollectionTileContext {
 }
 
 var check: Class<CollectionTileValue, CollectionTileJS>;
+
 export class CollectionTile implements Instance<CollectionTileValue, CollectionTileJS> {
 
   static isCollectionTile(candidate: any): candidate is CollectionTile {
@@ -52,7 +53,7 @@ export class CollectionTile implements Instance<CollectionTileValue, CollectionT
   }
 
   static fromJS(parameters: CollectionTileJS, context?: CollectionTileContext): CollectionTile {
-    if (!context) throw new Error('CollectionTile must have context');
+    if (!context) throw new Error("CollectionTile must have context");
     const { dataCubes, visualizations } = context;
 
     var dataCubeName = parameters.dataCube;
@@ -83,7 +84,7 @@ export class CollectionTile implements Instance<CollectionTileValue, CollectionT
     verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
-    this.description = parameters.description || '';
+    this.description = parameters.description || "";
     this.group = parameters.group;
     this.dataCube = parameters.dataCube;
     this.essence = parameters.essence;
@@ -141,15 +142,16 @@ export class CollectionTile implements Instance<CollectionTileValue, CollectionT
   }
 
   public changeEssence(essence: Essence) {
-    return this.change('essence', essence);
+    return this.change("essence", essence);
   }
 
   public changeName(name: string): CollectionTile {
-    return this.change('name', name);
+    return this.change("name", name);
   }
 
   public changeTitle(title: string): CollectionTile {
-    return this.change('title', title);
+    return this.change("title", title);
   }
 }
+
 check = CollectionTile;

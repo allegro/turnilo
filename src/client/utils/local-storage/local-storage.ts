@@ -26,5 +26,6 @@ export function get(key: string): any {
 export function set(key: string, value: any) {
   try {
     localStorage[key] = JSON.stringify(value);
-  } catch (e) {}
+  } catch (e) {
+  }
 }

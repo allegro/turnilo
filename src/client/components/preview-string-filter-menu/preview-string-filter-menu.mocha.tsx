@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
 
 import { Filter } from "../../../common/models/filter/filter";
 
-import { renderIntoDocument } from '../../utils/test-utils';
-import { EssenceMock, TimekeeperMock, StageMock } from '../../../common/models/mocks';
+import { TimekeeperMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
 
 import { PreviewStringFilterMenu } from "./preview-string-filter-menu";
 
-describe.skip('SelectableStringFilterMenu', () => {
-  it('adds the correct class', () => {
+describe.skip("SelectableStringFilterMenu", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <PreviewStringFilterMenu
         filterMode={Filter.REGEX}
@@ -42,8 +42,8 @@ describe.skip('SelectableStringFilterMenu', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('string-filter-menu');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("string-filter-menu");
   });
 
 });

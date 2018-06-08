@@ -15,37 +15,35 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from 'chronoshift';
-import * as numeral from 'numeral';
+import { Duration, Timezone } from "chronoshift";
+import * as numeral from "numeral";
 
-import { $, LiteralExpression, NumberRange, TimeBucketExpression, TimeRange, TimeRangeExpression } from 'plywood';
+import { $, LiteralExpression, NumberRange, TimeRange, TimeRangeExpression } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 
-import { Dimension, Filter, FilterClause, FilterSelection } from '../../models';
-import { DisplayYear, formatTimeRange } from '../../utils/time/time';
+import { Dimension, Filter, FilterClause, FilterSelection } from "../../models";
+import { DisplayYear, formatTimeRange } from "../../utils/time/time";
 
-export interface Formatter {
-  (n: number): string;
-}
+export type Formatter = (n: number) => string;
 
 const scales: Record<string, Record<string, number>> = {
-  'a': {
-    '': 1,
-    'k': 1e3,
-    'm': 1e6,
-    'b': 1e9,
-    't': 1e12
+  a: {
+    "": 1,
+    "k": 1e3,
+    "m": 1e6,
+    "b": 1e9,
+    "t": 1e12
   },
-  'b': {
-    'B': 1,
-    'KB': 1024,
-    'MB': 1024 * 1024,
-    'GB': 1024 * 1024 * 1024,
-    'TB': 1024 * 1024 * 1024 * 1024,
-    'PB': 1024 * 1024 * 1024 * 1024 * 1024,
-    'EB': 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
-    'ZB': 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
-    'YB': 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024
+  b: {
+    B: 1,
+    KB: 1024,
+    MB: 1024 * 1024,
+    GB: 1024 * 1024 * 1024,
+    TB: 1024 * 1024 * 1024 * 1024,
+    PB: 1024 * 1024 * 1024 * 1024 * 1024,
+    EB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
+    ZB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
+    YB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024
   }
 };
 
@@ -72,25 +70,25 @@ export function formatterFromData(values: number[], format: string): Formatter {
     const space = match[2];
     const formatType = match[3];
     const middle = getMiddleNumber(values);
-    const formatMiddle = numeral(middle).format('0 ' + formatType);
-    const unit = formatMiddle.split(' ')[1] || '';
+    const formatMiddle = numeral(middle).format("0 " + formatType);
+    const unit = formatMiddle.split(" ")[1] || "";
     const scale = scales[formatType][unit];
-    const append = unit ? space + unit : '';
+    const append = unit ? space + unit : "";
 
     return (n: number) => {
-      if (isNaN(n) || !isFinite(n)) return '-';
+      if (isNaN(n) || !isFinite(n)) return "-";
       return numeral(n / scale).format(numberFormat) + append;
     };
   } else {
     return (n: number) => {
-      if (isNaN(n) || !isFinite(n)) return '-';
+      if (isNaN(n) || !isFinite(n)) return "-";
       return numeral(n).format(format);
     };
   }
 }
 
 export function formatNumberRange(value: NumberRange) {
-  return `${formatValue(value.start || `any`)} to ${formatValue(value.end || `any`)}`;
+  return `${formatValue(value.start || "any")} to ${formatValue(value.end || "any")}`;
 }
 
 export function formatValue(value: any, timezone?: Timezone, displayYear?: DisplayYear): string {
@@ -99,7 +97,7 @@ export function formatValue(value: any, timezone?: Timezone, displayYear?: Displ
   } else if (TimeRange.isTimeRange(value)) {
     return formatTimeRange(value, timezone, displayYear);
   } else {
-    return '' + value;
+    return "" + value;
   }
 }
 
@@ -115,17 +113,17 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
 
   function getClauseLabel() {
     const dimTitle = dimension.title;
-    if (dimKind === 'time' && !verbose) return '';
-    const delimiter = ["regex", "contains"].indexOf(clause.action) !== -1 ? ' ~' : ":";
+    if (dimKind === "time" && !verbose) return "";
+    const delimiter = ["regex", "contains"].indexOf(clause.action) !== -1 ? " ~" : ":";
 
     if (clauseSet && clauseSet.elements.length > 1 && !verbose) return `${dimTitle}`;
     return `${dimTitle}${delimiter}`;
   }
 
   switch (dimKind) {
-    case 'boolean':
-    case 'number':
-    case 'string':
+    case "boolean":
+    case "number":
+    case "string":
       if (verbose) {
         values = clauseSet.toString();
       } else {
@@ -136,11 +134,11 @@ export function getFormattedClause(dimension: Dimension, clause: FilterClause, t
           values = formatValue(setElements[0]);
         }
       }
-      if (clause.action === 'match') values = `/${values}/`;
+      if (clause.action === "match") values = `/${values}/`;
       if (clause.action === Filter.CONTAINS) values = `"${values}"`;
 
       break;
-    case 'time':
+    case "time":
       values = getFormattedTimeClauseValues(clause, timezone);
       break;
     default:
@@ -207,7 +205,7 @@ function getQualifiedDurationDescription(selection: TimeRangeExpression) {
 }
 
 function normalizeDurationDescription(description: string, duration: Duration) {
-  if (duration.toString() === 'P3M') {
+  if (duration.toString() === "P3M") {
     return STRINGS.quarter.toLowerCase();
   } else {
     return description;

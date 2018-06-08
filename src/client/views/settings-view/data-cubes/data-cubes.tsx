@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-import './data-cubes.scss';
+import * as React from "react";
+import { AppSettings, DataCube } from "../../../../common/models/index";
+import { Button, Notifier, SimpleTable, SimpleTableAction, SimpleTableColumn } from "../../../components/index";
+import "./data-cubes.scss";
 
-import * as React from 'react';
-import { Fn } from '../../../../common/utils/general/general';
-import { classNames } from '../../../utils/dom/dom';
-
-import { AppSettings, Cluster, DataCube} from '../../../../common/models/index';
-
-import { SimpleTable, SimpleTableColumn, SimpleTableAction, SvgIcon, FormLabel, Button, Notifier } from '../../../components/index';
-
-export interface DataCubesProps extends React.Props<any> {
+export interface DataCubesProps {
   settings?: AppSettings;
   onSave?: (settings: AppSettings, message?: string) => void;
 }
@@ -43,10 +38,12 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
   }
 
   componentWillReceiveProps(nextProps: DataCubesProps) {
-    if (nextProps.settings) this.setState({
-      newSettings: nextProps.settings,
-      hasChanged: false
-    });
+    if (nextProps.settings) {
+      this.setState({
+        newSettings: nextProps.settings,
+        hasChanged: false
+      });
+    }
   }
 
   editCube(cube: DataCube) {
@@ -63,7 +60,7 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
       var newCubes = settings.dataCubes;
       newCubes.splice(index, 1);
 
-      this.props.onSave(settings.changeDataCubes(newCubes), 'Cube removed');
+      this.props.onSave(settings.changeDataCubes(newCubes), "Cube removed");
       Notifier.removeQuestion();
     };
 
@@ -72,21 +69,21 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
     };
 
     Notifier.ask({
-      title: 'Remove this cube',
+      title: "Remove this cube",
       message: [
         `Are you sure you would like to delete the data cube "${cube.title}"?`,
-        'This action is not reversible.'
+        "This action is not reversible."
       ],
       choices: [
-        {label: 'Remove', callback: remove, type: 'warn'},
-        {label: 'Cancel', callback: cancel, type: 'secondary'}
+        { label: "Remove", callback: remove, type: "warn" },
+        { label: "Cancel", callback: cancel, type: "secondary" }
       ],
       onClose: Notifier.removeQuestion
     });
   }
 
   startSeed() {
-    window.location.hash += '/new-data-cube';
+    window.location.hash += "/new-data-cube";
   }
 
   renderEmpty(): JSX.Element {
@@ -104,21 +101,21 @@ export class DataCubes extends React.Component<DataCubesProps, DataCubesState> {
     if (!newSettings.dataCubes.length) return this.renderEmpty();
 
     const columns: SimpleTableColumn[] = [
-      {label: 'Name', field: 'title', width: 170, cellIcon: 'full-cube'},
-      {label: 'Source', field: 'source', width: 400},
-      {label: 'Dimensions', field: (cube: DataCube) => cube.dimensions.size, width: 120},
-      {label: 'Measures', field: (cube: DataCube) => cube.measures.size, width: 80}
+      { label: "Name", field: "title", width: 170, cellIcon: "full-cube" },
+      { label: "Source", field: "source", width: 400 },
+      { label: "Dimensions", field: (cube: DataCube) => cube.dimensions.size, width: 120 },
+      { label: "Measures", field: (cube: DataCube) => cube.measures.size, width: 80 }
     ];
 
     const actions: SimpleTableAction[] = [
-      {icon: 'full-edit', callback: this.editCube.bind(this)},
-      {icon: 'full-remove', callback: this.removeCube.bind(this)}
+      { icon: "full-edit", callback: this.editCube.bind(this) },
+      { icon: "full-remove", callback: this.removeCube.bind(this) }
     ];
 
     return <div className="data-cubes">
       <div className="title-bar">
         <div className="title">Data Cubes</div>
-        <Button className="save" title="Add a cube" type="primary" onClick={this.startSeed.bind(this)}/>
+        <Button className="save" title="Add a cube" type="primary" onClick={this.startSeed.bind(this)} />
       </div>
       <div className="content">
         <SimpleTable

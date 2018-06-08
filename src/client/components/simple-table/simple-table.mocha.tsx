@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as TestUtils from 'react-dom/test-utils';
-import { $, Expression } from 'plywood';
+import { expect } from "chai";
+import * as React from "react";
+import * as TestUtils from "react-dom/test-utils";
 
-import { DataCubeMock, EssenceMock } from '../../../common/models/mocks';
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
+import { SimpleTable } from "./simple-table";
 
-import { SimpleTable } from './simple-table';
-
-describe.skip('SimpleTable', () => {
-  it('adds the correct class', () => {
+describe.skip("SimpleTable", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <SimpleTable
         columns={[]}
@@ -36,8 +32,8 @@ describe.skip('SimpleTable', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('simple-table');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("simple-table");
   });
 
 });

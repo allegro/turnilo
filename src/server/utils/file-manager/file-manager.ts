@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-import * as path from 'path';
-import * as Q from 'q';
-import * as fs from 'fs-promise';
-import { Dataset, Expression, PseudoDatum } from 'plywood';
-import { Logger } from 'logger-tracker';
-
-import { parseData } from '../../../common/utils/parser/parser';
-
+import * as fs from "fs-promise";
+import { Logger } from "logger-tracker";
+import * as path from "path";
+import { Dataset, Expression, PseudoDatum } from "plywood";
+import * as Q from "q";
+import { parseData } from "../../../common/utils/parser/parser";
 
 export function getFileData(filePath: string): Promise<any[]> {
-  return fs.readFile(filePath, 'utf-8')
-    .then((fileData) => {
+  return fs.readFile(filePath, "utf-8")
+    .then(fileData => {
       try {
         return parseData(fileData, path.extname(filePath));
       } catch (e) {
         throw new Error(`could not parse '${filePath}': ${e.message}`);
       }
     })
-    .then((fileJSON) => {
+    .then(fileJSON => {
       fileJSON.forEach((d: PseudoDatum) => {
-        d['time'] = new Date(d['time']);
+        d["time"] = new Date(d["time"]);
       });
       return fileJSON;
     });
@@ -80,7 +78,7 @@ export class FileManager {
     logger.log(`Loading file ${filePath}`);
     return Q(getFileData(filePath)
       .then(
-        (rawData) => {
+        rawData => {
           logger.log(`Loaded file ${filePath} (rows = ${rawData.length})`);
           var dataset = Dataset.fromJS(rawData).hide();
 
@@ -91,7 +89,7 @@ export class FileManager {
           this.dataset = dataset;
           this.onDatasetChange(dataset);
         },
-        (e) => {
+        e => {
           logger.error(`Failed to load file ${filePath} because: ${e.message}`);
         }
       ));

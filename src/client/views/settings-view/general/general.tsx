@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-import './general.scss';
+import { Timezone } from "chronoshift";
+import * as React from "react";
+import { AppSettings } from "../../../../common/models/index";
+import { GENERAL as LABELS } from "../../../../common/models/labels";
+import { Button } from "../../../components/button/button";
+import { FormLabel } from "../../../components/form-label/form-label";
+import { ImmutableInput } from "../../../components/immutable-input/immutable-input";
+import { ImmutableFormDelegate, ImmutableFormState } from "../../../utils/immutable-form-delegate/immutable-form-delegate";
+import "./general.scss";
 
-import { Timezone } from 'chronoshift';
-import * as React from 'react';
-import { Fn } from '../../../../common/utils/general/general';
-import { classNames } from '../../../utils/dom/dom';
-
-import { SvgIcon } from '../../../components/svg-icon/svg-icon';
-import { FormLabel } from '../../../components/form-label/form-label';
-import { Button } from '../../../components/button/button';
-import { ImmutableInput } from '../../../components/immutable-input/immutable-input';
-
-import { GENERAL as LABELS } from '../../../../common/models/labels';
-
-import { AppSettings, AppSettingsJS } from '../../../../common/models/index';
-
-import { ImmutableFormDelegate, ImmutableFormState } from '../../../utils/immutable-form-delegate/immutable-form-delegate';
-
-export interface GeneralProps extends React.Props<any> {
+export interface GeneralProps {
   settings?: AppSettings;
   onSave?: (settings: AppSettings) => void;
 }
@@ -49,10 +41,12 @@ export class General extends React.Component<GeneralProps, ImmutableFormState<Ap
   }
 
   componentWillReceiveProps(nextProps: GeneralProps) {
-    if (nextProps.settings) this.setState({
-      newInstance: nextProps.settings,
-      errors: {}
-    });
+    if (nextProps.settings) {
+      this.setState({
+        newInstance: nextProps.settings,
+        errors: {}
+      });
+    }
   }
 
   save() {
@@ -77,20 +71,20 @@ export class General extends React.Component<GeneralProps, ImmutableFormState<Ap
     return <div className="general">
       <div className="title-bar">
         <div className="title">General</div>
-        {canSave ? <Button className="save" title="Save" type="primary" onClick={this.save.bind(this)}/> : null}
+        {canSave ? <Button className="save" title="Save" type="primary" onClick={this.save.bind(this)} /> : null}
       </div>
       <div className="content">
         <form className="vertical">
-          {makeLabel('customization.title')}
-          {makeTextInput('customization.title', /^.+$/, true)}
+          {makeLabel("customization.title")}
+          {makeTextInput("customization.title", /^.+$/, true)}
 
-          {makeLabel('customization.timezones')}
+          {makeLabel("customization.timezones")}
           <ImmutableInput
             instance={newInstance}
-            path={'customization.timezones'}
+            path={"customization.timezones"}
             onChange={this.delegate.onChange}
 
-            valueToString={(value: any) => value ? value.join(', ') : undefined}
+            valueToString={(value: any) => value ? value.join(", ") : undefined}
             stringToValue={this.parseTimezones.bind(this)}
           />
 

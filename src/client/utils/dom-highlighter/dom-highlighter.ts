@@ -24,7 +24,7 @@ export class DOMHighlighter {
     var bit: string;
 
     while (bits.length && element) {
-      bit = bits.shift().replace(/^\./, '').replace(/\./, ' ');
+      bit = bits.shift().replace(/^\./, "").replace(/\./, " ");
       element = element.getElementsByClassName(bit)[0];
     }
 
@@ -40,24 +40,24 @@ export class DOMHighlighter {
     var element = this.select(selector);
     if (!element) return;
 
-    element.classList.add('dom-highlighter-on');
+    element.classList.add("dom-highlighter-on");
   }
 
   public static unhighlight(selector: string) {
     var element = this.select(selector);
     if (!element) return;
 
-    element.classList.remove('dom-highlighter-on');
+    element.classList.remove("dom-highlighter-on");
   }
 
   public static wiggle(selector: string) {
     var element = this.select(selector);
     if (!element) return;
 
-    element.classList.add('dom-highlighter-wiggle');
+    element.classList.add("dom-highlighter-wiggle");
 
     window.setTimeout(() => {
-      element.classList.remove('dom-highlighter-wiggle');
+      element.classList.remove("dom-highlighter-wiggle");
     }, 1000);
   }
 }

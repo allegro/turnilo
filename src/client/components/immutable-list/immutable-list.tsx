@@ -15,20 +15,13 @@
  * limitations under the License.
  */
 
-import './immutable-list.scss';
-
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { List } from 'immutable';
+import { List } from "immutable";
+import * as React from "react";
 import { Fn } from "../../../common/utils/general/general";
+import { SimpleList, SimpleRow } from "../simple-list/simple-list";
+import "./immutable-list.scss";
 
-import { Button } from '../button/button';
-import { Modal } from '../modal/modal';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { FormLabel } from '../form-label/form-label';
-import { SimpleList, SimpleRow } from '../simple-list/simple-list';
-
-export interface ImmutableListProps<T> extends React.Props<any> {
+export interface ImmutableListProps<T> {
   label?: string;
   items: List<T>;
   onChange: (newItems: List<T>) => void;
@@ -50,7 +43,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   // const MyList = ImmutableList.specialize<MyImmutableClass>();
   // then : <MyList ... />
   static specialize<U>() {
-    return ImmutableList as { new (props: ImmutableListProps<U>): ImmutableList<U>; };
+    return ImmutableList as { new(props: ImmutableListProps<U>): ImmutableList<U>; };
   }
 
   constructor(props: ImmutableListProps<T>) {
@@ -59,28 +52,28 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
   }
 
   editItem(index: number) {
-    this.setState({editedIndex: index});
+    this.setState({ editedIndex: index });
   }
 
   addItem() {
-    this.setState({pendingAddItem: this.props.getNewItem()});
+    this.setState({ pendingAddItem: this.props.getNewItem() });
   }
 
   componentWillReceiveProps(nextProps: ImmutableListProps<T>) {
     if (nextProps.items) {
-      this.setState({tempItems: nextProps.items});
+      this.setState({ tempItems: nextProps.items });
     }
   }
 
   componentDidMount() {
     if (this.props.items) {
-      this.setState({tempItems: this.props.items});
+      this.setState({ tempItems: this.props.items });
     }
   }
 
   deleteItem(index: number) {
     const { tempItems } = this.state;
-    this.setState({tempItems: tempItems.delete(index)}, this.onChange);
+    this.setState({ tempItems: tempItems.delete(index) }, this.onChange);
   }
 
   onReorder(oldIndex: number, newIndex: number) {
@@ -106,12 +99,12 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
 
     var onSave = (newItem: T) => {
       const newItems = tempItems.update(itemIndex, () => newItem);
-      this.setState({tempItems: newItems, editedIndex: undefined}, this.onChange);
+      this.setState({ tempItems: newItems, editedIndex: undefined }, this.onChange);
     };
 
-    var onClose = () => this.setState({editedIndex: undefined});
+    var onClose = () => this.setState({ editedIndex: undefined });
 
-    return React.cloneElement(this.props.getModal(item), {onSave, onClose});
+    return React.cloneElement(this.props.getModal(item), { onSave, onClose });
   }
 
   renderAddModal(item: T): JSX.Element {
@@ -120,14 +113,14 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
       const newItems = tempItems.push(newItem);
 
       this.setState(
-        {tempItems: newItems, pendingAddItem: null},
+        { tempItems: newItems, pendingAddItem: null },
         this.onChange
       );
     };
 
-    var onClose = () => this.setState({pendingAddItem: null});
+    var onClose = () => this.setState({ pendingAddItem: null });
 
-    return React.cloneElement(this.props.getModal(item), {onSave, onClose});
+    return React.cloneElement(this.props.getModal(item), { onSave, onClose });
   }
 
   render() {
@@ -139,8 +132,8 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
       <div className="list-title">
         <div className="label">{label}</div>
         <div className="actions">
-          { toggleSuggestions ? <button key='suggestions' onClick={toggleSuggestions}>Suggestions</button> : null }
-          <button key='add' onClick={this.addItem.bind(this)}>Add item</button>
+          {toggleSuggestions ? <button key="suggestions" onClick={toggleSuggestions}>Suggestions</button> : null}
+          <button key="add" onClick={this.addItem.bind(this)}>Add item</button>
         </div>
       </div>
       <SimpleList

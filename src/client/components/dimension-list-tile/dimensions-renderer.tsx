@@ -17,7 +17,7 @@
 import * as React from "react";
 import { SearchableFolder } from "../searchable-tile/searchable-folder";
 import { DimensionClickHandler, DimensionItem } from "./dimension-item";
-import { DimensionGroupForView, DimensionOrGroupForView, DimensionForView, DimensionForViewType } from "./dimensions-converter";
+import { DimensionForView, DimensionForViewType, DimensionGroupForView, DimensionOrGroupForView } from "./dimensions-converter";
 
 export class DimensionsRenderer {
   constructor(
@@ -32,10 +32,11 @@ export class DimensionsRenderer {
     return children
       .filter(child => !searchText || child.hasSearchText || child.type === DimensionForViewType.group)
       .map(child => {
-        if (child.type === DimensionForViewType.group)
+        if (child.type === DimensionForViewType.group) {
           return this.renderFolder(child);
-        else
+        } else {
           return this.renderMeasure(child);
+        }
       });
   }
 

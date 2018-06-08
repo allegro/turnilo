@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-import { resolve, dirname } from 'path';
-import { getCallerFile } from './get-caller-file';
-const rewire = require('rewire');
+import { dirname, resolve } from "path";
+import { getCallerFile } from "./get-caller-file";
+
+const rewire = require("rewire");
 
 export function mockRequireEnsure(path: string): any {
   // Gets the absolute path based on the caller's path
@@ -25,7 +26,7 @@ export function mockRequireEnsure(path: string): any {
 
   let mod = rewire(path);
 
-  let mockedRequire = mod.__get__('require');
+  let mockedRequire = mod.__get__("require");
   mockedRequire.ensure = (path: any, callback: any) => callback(mockedRequire);
 
   return mod;

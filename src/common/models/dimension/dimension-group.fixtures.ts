@@ -20,7 +20,7 @@ import { DimensionMock } from "./dimension.mock";
 export class DimensionGroupFixtures {
   static noTitleJS(): DimensionGroupJS {
     return {
-      name: 'dummyName',
+      name: "dummyName",
       dimensions: [
         DimensionMock.wikiTimeJS()
       ]
@@ -29,8 +29,8 @@ export class DimensionGroupFixtures {
 
   static withTitleInferredJS(): DimensionGroupJS {
     return {
-      name: 'dummyName',
-      title: 'Dummy Name',
+      name: "dummyName",
+      title: "Dummy Name",
       dimensions: [
         DimensionMock.wikiTimeJS()
       ]
@@ -45,39 +45,39 @@ export class DimensionGroupFixtures {
 
   static noDimensionsJS(): DimensionGroupJS {
     return {
-      name: 'dummyName'
+      name: "dummyName"
     } as DimensionGroupJS;
   }
 
   static emptyDimensionsJS(): DimensionGroupJS {
     return {
-      name: 'dummyName',
+      name: "dummyName",
       dimensions: []
     } as DimensionGroupJS;
   }
 
   static commentsJS(): DimensionGroupJS {
     return {
-      name: 'comment_group',
-      title: 'Comment Group',
+      name: "comment_group",
+      title: "Comment Group",
       dimensions: [
         {
-          kind: 'string',
-          name: 'comment',
-          title: 'Comment',
-          formula: '$comment'
+          kind: "string",
+          name: "comment",
+          title: "Comment",
+          formula: "$comment"
         },
         {
-          kind: 'number',
-          name: 'commentLength',
-          title: 'Comment Length',
-          formula: '$commentLength'
+          kind: "number",
+          name: "commentLength",
+          title: "Comment Length",
+          formula: "$commentLength"
         },
         {
-          kind: 'boolean',
-          name: 'commentLengthOver100',
-          title: 'Comment Length Over 100',
-          formula: '$commentLength > 100'
+          kind: "boolean",
+          name: "commentLengthOver100",
+          title: "Comment Length Over 100",
+          formula: "$commentLength > 100"
         }
       ]
     };

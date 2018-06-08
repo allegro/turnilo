@@ -15,26 +15,29 @@
  * limitations under the License.
  */
 
-import * as Q from 'q';
-import * as fs from 'fs-promise';
-import * as yaml from 'js-yaml';
-import { inlineVars } from '../../../common/utils/general/general';
-import { MANIFESTS } from '../../../common/manifests/index';
-import { AppSettings } from '../../../common/models/index';
-import { appSettingsToYAML } from '../../../common/utils/yaml-helper/yaml-helper';
-import { Format } from '../../models/index';
+import * as fs from "fs-promise";
+import * as yaml from "js-yaml";
+import * as Q from "q";
+import { MANIFESTS } from "../../../common/manifests/index";
+import { AppSettings } from "../../../common/models/index";
+import { inlineVars } from "../../../common/utils/general/general";
+import { appSettingsToYAML } from "../../../common/utils/yaml-helper/yaml-helper";
+import { Format } from "../../models/index";
 
 function readSettingsFactory(filepath: string, format: Format, inline = false) {
   return () => {
-    return Q(fs.readFile(filepath, 'utf-8')
-      .then((fileData) => {
+    return Q(fs.readFile(filepath, "utf-8")
+      .then(fileData => {
         switch (format) {
-          case 'json': return JSON.parse(fileData);
-          case 'yaml': return yaml.safeLoad(fileData);
-          default: throw new Error(`unsupported format '${format}'`);
+          case "json":
+            return JSON.parse(fileData);
+          case "yaml":
+            return yaml.safeLoad(fileData);
+          default:
+            throw new Error(`unsupported format '${format}'`);
         }
       })
-      .then((appSettingsJS) => {
+      .then(appSettingsJS => {
         if (inline) appSettingsJS = inlineVars(appSettingsJS, process.env);
         return AppSettings.fromJS(appSettingsJS, { visualizations: MANIFESTS });
       })
@@ -46,12 +49,15 @@ function writeSettingsFactory(filepath: string, format: Format) {
   return (appSettings: AppSettings) => {
     return Q.fcall(() => {
       switch (format) {
-        case 'json': return JSON.stringify(appSettings);
-        case 'yaml': return appSettingsToYAML(appSettings, false);
-        default: throw new Error(`unsupported format '${format}'`);
+        case "json":
+          return JSON.stringify(appSettings);
+        case "yaml":
+          return appSettingsToYAML(appSettings, false);
+        default:
+          throw new Error(`unsupported format '${format}'`);
       }
     })
-      .then((appSettingsYAML) => {
+      .then(appSettingsYAML => {
         return fs.writeFile(filepath, appSettingsYAML);
       });
   };
@@ -87,13 +93,13 @@ export class SettingsStore {
 
     settingsStore.readSettings = () => {
       return Q(stateStore.readState()
-        .then((stateData) => AppSettings.fromJS(JSON.parse(stateData), { visualizations: MANIFESTS }))
+        .then(stateData => AppSettings.fromJS(JSON.parse(stateData), { visualizations: MANIFESTS }))
       );
     };
 
     settingsStore.writeSettings = (appSettings: AppSettings) => {
       return Q.fcall(() => JSON.stringify(appSettings))
-        .then((appSettingsJSON) => {
+        .then(appSettingsJSON => {
           return stateStore.writeState(appSettingsJSON);
         });
     };
@@ -101,11 +107,8 @@ export class SettingsStore {
     return settingsStore;
   }
 
-
   public readSettings: () => Q.Promise<AppSettings>;
   public writeSettings: (appSettings: AppSettings) => Q.Promise<any>;
 
   constructor() {}
 }
-
-

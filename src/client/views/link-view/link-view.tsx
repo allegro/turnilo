@@ -15,33 +15,41 @@
  * limitations under the License.
  */
 
-import './link-view.scss';
-
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { SimpleArray} from "immutable-class";
-import { Expression, $ } from 'plywood';
-import { Timezone } from 'chronoshift';
-import { classNames } from '../../utils/dom/dom';
-import { Fn } from '../../../common/utils/general/general';
-import { Colors, Clicker, Essence, Timekeeper, Filter, FilterClause, Stage, Measure,
-  VisualizationProps, Collection, CollectionTile, User, Customization } from '../../../common/models/index';
-
-import * as localStorage from '../../utils/local-storage/local-storage';
+import { Timezone } from "chronoshift";
+import { SimpleArray } from "immutable-class";
+import { $, Expression } from "plywood";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import {
+  Clicker,
+  Collection,
+  CollectionTile,
+  Colors,
+  Customization,
+  Essence,
+  Filter,
+  FilterClause,
+  Measure,
+  Stage,
+  Timekeeper,
+  User,
+  VisualizationProps
+} from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { Dropdown, ManualFallback, PinboardPanel, Preset, ResizeHandle } from "../../components/index";
 import { STRINGS } from "../../config/constants";
-
-import { ManualFallback, PinboardPanel, Preset, ResizeHandle, Dropdown } from '../../components/index';
-
-import { getVisualizationComponent } from '../../visualizations/index';
-
-import { LinkHeaderBar } from './link-header-bar/link-header-bar';
+import { classNames } from "../../utils/dom/dom";
+import * as localStorage from "../../utils/local-storage/local-storage";
+import { getVisualizationComponent } from "../../visualizations/index";
+import { LinkHeaderBar } from "./link-header-bar/link-header-bar";
+import "./link-view.scss";
 
 var $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
 var latestPresets: Preset[] = [
-  { name: STRINGS.last5Minutes,  selection: $maxTime.timeRange('PT5M', -1) },
-  { name: STRINGS.lastHour,  selection: $maxTime.timeRange('PT1H', -1) },
-  { name: STRINGS.lastDay,  selection: $maxTime.timeRange('P1D', -1)  },
-  { name: STRINGS.lastWeek,  selection: $maxTime.timeRange('P1W', -1)  }
+  { name: STRINGS.last5Minutes, selection: $maxTime.timeRange("PT5M", -1) },
+  { name: STRINGS.lastHour, selection: $maxTime.timeRange("PT1H", -1) },
+  { name: STRINGS.lastDay, selection: $maxTime.timeRange("P1D", -1) },
+  { name: STRINGS.lastWeek, selection: $maxTime.timeRange("P1W", -1) }
 ];
 
 export interface LinkViewLayout {
@@ -49,7 +57,7 @@ export interface LinkViewLayout {
   pinboardWidth: number;
 }
 
-export interface LinkViewProps extends React.Props<any> {
+export interface LinkViewProps {
   timekeeper: Timekeeper;
   collection: Collection;
   user?: User;
@@ -143,7 +151,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   componentDidMount() {
-    window.addEventListener('resize', this.globalResizeListener);
+    window.addEventListener("resize", this.globalResizeListener);
     this.globalResizeListener();
   }
 
@@ -165,7 +173,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.globalResizeListener);
+    window.removeEventListener("resize", this.globalResizeListener);
   }
 
   globalResizeListener() {
@@ -174,9 +182,9 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     var visualizationDOM = ReactDOM.findDOMNode(visualization);
     if (!containerDOM || !visualizationDOM) return;
 
-    let deviceSize = 'large';
-    if (window.innerWidth <= 1250) deviceSize = 'medium';
-    if (window.innerWidth <= 1080) deviceSize = 'small';
+    let deviceSize = "large";
+    if (window.innerWidth <= 1250) deviceSize = "medium";
+    if (window.innerWidth <= 1080) deviceSize = "small";
 
     this.setState({
       deviceSize,
@@ -213,18 +221,18 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
   }
 
   getStoredLayout(): LinkViewLayout {
-    return localStorage.get('link-view-layout') || {linkPanelWidth: 240, pinboardWidth: 240};
+    return localStorage.get("link-view-layout") || { linkPanelWidth: 240, pinboardWidth: 240 };
   }
 
   storeLayout(layout: LinkViewLayout) {
-    localStorage.set('link-view-layout', layout);
+    localStorage.set("link-view-layout", layout);
   }
 
   onLinkPanelResize(value: number) {
     let { layout } = this.state;
     layout.linkPanelWidth = value;
 
-    this.setState({layout});
+    this.setState({ layout });
     this.storeLayout(layout);
   }
 
@@ -232,7 +240,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     let { layout } = this.state;
     layout.pinboardWidth = value;
 
-    this.setState({layout});
+    this.setState({ layout });
     this.storeLayout(layout);
   }
 
@@ -253,12 +261,12 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       items={latestPresets}
       selectedItem={selected}
       equal={(a, b) => {
-          if (a === b) return true;
-          if (!a !== !b) return false;
-          return a.selection === b.selection;
-        }
+        if (a === b) return true;
+        if (!a !== !b) return false;
+        return a.selection === b.selection;
       }
-      renderItem={(p) => p ? p.name : ""}
+      }
+      renderItem={p => p ? p.name : ""}
       onSelect={this.selectPreset.bind(this)}
     />;
   }
@@ -275,7 +283,7 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       if (lastGroup !== li.group) {
         items.push(<div
           className="link-group-title"
-          key={'group_' + groupId}
+          key={"group_" + groupId}
         >
           {li.group}
         </div>);
@@ -284,8 +292,8 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
       }
 
       items.push(<div
-        className={classNames('link-item', { selected: li === linkTile })}
-        key={'li_' + li.name}
+        className={classNames("link-item", { selected: li === linkTile })}
+        key={"li_" + li.name}
         onClick={this.selectLinkItem.bind(this, li)}
       >
         {li.title}
@@ -330,20 +338,20 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
     }
 
     var styles = {
-      linkMeasurePanel: {width: layout.linkPanelWidth},
-      centerPanel: {left: layout.linkPanelWidth, right: layout.pinboardWidth},
-      pinboardPanel: {width: layout.pinboardWidth}
+      linkMeasurePanel: { width: layout.linkPanelWidth },
+      centerPanel: { left: layout.linkPanelWidth, right: layout.pinboardWidth },
+      pinboardPanel: { width: layout.pinboardWidth }
     };
 
-    if (deviceSize === 'small') {
+    if (deviceSize === "small") {
       styles = {
-        linkMeasurePanel: {width: 200},
-        centerPanel: {left: 200, right: 200},
-        pinboardPanel: {width: 200}
+        linkMeasurePanel: { width: 200 },
+        centerPanel: { left: 200, right: 200 },
+        pinboardPanel: { width: 200 }
       };
     }
 
-    return <div className='link-view'>
+    return <div className="link-view">
       <LinkHeaderBar
         title={collection.title}
         user={user}
@@ -354,10 +362,10 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
         timezone={essence.timezone}
         stateful={stateful}
       />
-      <div className="container" ref='container'>
+      <div className="container" ref="container">
         {this.renderLinkPanel(styles.linkMeasurePanel)}
 
-        {deviceSize !== 'small' ?  <ResizeHandle
+        {deviceSize !== "small" ? <ResizeHandle
           side="left"
           initialValue={layout.linkPanelWidth}
           onResize={this.onLinkPanelResize.bind(this)}
@@ -366,21 +374,21 @@ export class LinkView extends React.Component<LinkViewProps, LinkViewState> {
           max={MAX_PANEL_WIDTH}
         /> : null}
 
-        <div className='center-panel' style={styles.centerPanel}>
-          <div className='center-top-bar'>
-            <div className='link-title'>{linkTile.title}</div>
-            <div className='link-description'>{linkTile.description}</div>
+        <div className="center-panel" style={styles.centerPanel}>
+          <div className="center-top-bar">
+            <div className="link-title">{linkTile.title}</div>
+            <div className="link-description">{linkTile.description}</div>
             <div className="right-align">
               {this.renderPresets()}
             </div>
           </div>
-          <div className='center-main'>
-            <div className='visualization' ref='visualization'>{visElement}</div>
+          <div className="center-main">
+            <div className="visualization" ref="visualization">{visElement}</div>
             {manualFallback}
           </div>
         </div>
 
-        {deviceSize !== 'small' ? <ResizeHandle
+        {deviceSize !== "small" ? <ResizeHandle
           side="right"
           initialValue={layout.pinboardWidth}
           onResize={this.onPinboardPanelResize.bind(this)}

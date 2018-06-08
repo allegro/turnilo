@@ -15,33 +15,32 @@
  * limitations under the License.
  */
 
-import { Router, Request, Response } from 'express';
-import { $, Expression, RefExpression, External, Datum, Dataset, PlywoodValue, TimeRange, basicExecutorFactory, Executor, AttributeJSs } from 'plywood';
-import { Timezone } from 'chronoshift';
-import { GetSettingsOptions } from '../../utils/settings-manager/settings-manager';
-
-import { SwivRequest } from '../../utils/index';
+import { Timezone } from "chronoshift";
+import { Response, Router } from "express";
+import { Dataset, Expression, PlywoodValue } from "plywood";
+import { SwivRequest } from "../../utils/index";
+import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 
 var router = Router();
 
-router.post('/', (req: SwivRequest, res: Response) => {
+router.post("/", (req: SwivRequest, res: Response) => {
   var { dataCube, dataSource, expression, timezone, settingsVersion } = req.body;
   dataCube = dataCube || dataSource; // back compat
 
-  if (typeof dataCube !== 'string') {
+  if (typeof dataCube !== "string") {
     res.status(400).send({
-      error: 'must have a dataCube'
+      error: "must have a dataCube"
     });
     return;
   }
 
   var queryTimezone: Timezone = null;
-  if (typeof timezone === 'string') {
+  if (typeof timezone === "string") {
     try {
       queryTimezone = Timezone.fromJS(timezone);
     } catch (e) {
       res.status(400).send({
-        error: 'bad timezone',
+        error: "bad timezone",
         message: e.message
       });
       return;
@@ -53,13 +52,13 @@ router.post('/', (req: SwivRequest, res: Response) => {
     ex = Expression.fromJS(expression);
   } catch (e) {
     res.status(400).send({
-      error: 'bad expression',
+      error: "bad expression",
       message: e.message
     });
     return;
   }
 
-  req.getSettings(<GetSettingsOptions>{ dataCubeOfInterest: dataCube }) // later: , settingsVersion)
+  req.getSettings(<GetSettingsOptions> { dataCubeOfInterest: dataCube }) // later: , settingsVersion)
     .then((appSettings: any) => {
       // var settingsBehind = false;
       // if (appSettings.getVersion() < settingsVersion) {
@@ -68,12 +67,12 @@ router.post('/', (req: SwivRequest, res: Response) => {
 
       var myDataCube = appSettings.getDataCube(dataCube);
       if (!myDataCube) {
-        res.status(400).send({ error: 'unknown data cube' });
+        res.status(400).send({ error: "unknown data cube" });
         return null;
       }
 
       if (!myDataCube.executor) {
-        res.status(400).send({ error: 'un queryable data cube' });
+        res.status(400).send({ error: "un queryable data cube" });
         return null;
       }
 
@@ -82,16 +81,16 @@ router.post('/', (req: SwivRequest, res: Response) => {
           var reply: any = {
             result: Dataset.isDataset(data) ? data.toJS() : data
           };
-          //if (settingsBehind) reply.action = 'update';
+          // if (settingsBehind) reply.action = 'update';
           res.json(reply);
         },
         (e: Error) => {
-          console.log('error:', e.message);
-          if (e.hasOwnProperty('stack')) {
-            console.log((<any>e).stack);
+          console.log("error:", e.message);
+          if (e.hasOwnProperty("stack")) {
+            console.log((<any> e).stack);
           }
           res.status(500).send({
-            error: 'could not compute',
+            error: "could not compute",
             message: e.message
           });
         }

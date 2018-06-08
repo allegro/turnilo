@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-import './date-range-picker.scss';
-
-import * as React from 'react';
-import { Timezone, Duration, second, minute, hour, day, week, month, year } from 'chronoshift';
-import { TimeRange } from 'plywood';
+import { day, month, Timezone } from "chronoshift";
+import { TimeRange } from "plywood";
+import * as React from "react";
 import {
-  prependDays, appendDays, datesEqual, monthToWeeks, shiftOneDay, getWallTimeMonthWithYear,
-  getWallTimeDay, wallTimeInclusiveEndEqual, getEndWallTimeInclusive
-} from '../../../common/utils/time/time';
-import { classNames } from '../../utils/dom/dom';
-import { getLocale } from '../../config/constants';
-import { SvgIcon } from "../svg-icon/svg-icon";
+  appendDays,
+  datesEqual,
+  getEndWallTimeInclusive,
+  getWallTimeDay,
+  getWallTimeMonthWithYear,
+  monthToWeeks,
+  prependDays,
+  shiftOneDay,
+  wallTimeInclusiveEndEqual
+} from "../../../common/utils/time/time";
+import { getLocale } from "../../config/constants";
+import { classNames } from "../../utils/dom/dom";
 import { DateRangeInput } from "../date-range-input/date-range-input";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./date-range-picker.scss";
 
-
-export interface DateRangePickerProps extends React.Props<any> {
+export interface DateRangePickerProps {
   startTime?: Date;
   endTime?: Date;
   maxTime?: Date;
@@ -93,7 +98,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
         start = mouseEnteredDay;
         end = startTime;
       }
-      hoverTimeRange = new TimeRange({ start, end, bounds: '[]' });
+      hoverTimeRange = new TimeRange({ start, end, bounds: "[]" });
     }
 
     this.setState({ hoverTimeRange });
@@ -151,10 +156,10 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
   renderDays(weeks: Date[][], monthStart: Date, isSingleDate: boolean): JSX.Element[] {
     const { startTime, endTime, maxTime, timezone } = this.props;
-    const nextMonthStart =  month.shift(monthStart, timezone, 1);
+    const nextMonthStart = month.shift(monthStart, timezone, 1);
 
     return weeks.map((daysInWeek: Date[], row: number) => {
-      return <div className="week" key={row}> { daysInWeek.map((dayDate: Date, column: number) => {
+      return <div className="week" key={row}> {daysInWeek.map((dayDate: Date, column: number) => {
         const isPast = dayDate < monthStart;
         const isFuture = dayDate >= nextMonthStart;
         const isBeyondMaxRange = dayDate > maxTime;
@@ -162,8 +167,8 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
         const isSelectedEdgeEnd = this.getIsSelectedEdgeEnd(isSingleDate, dayDate);
         const className = classNames("day", "value",
           {
-            past: isPast,
-            future: isFuture,
+            "past": isPast,
+            "future": isFuture,
             "beyond-max-range": isBeyondMaxRange,
             "selectable": this.getIsSelectable(dayDate),
             "selected": startTime < dayDate && dayDate < endTime,
@@ -197,17 +202,17 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
     return <div className="calendar-nav">
       <div
-        className='caret left'
+        className="caret left"
         onClick={this.goToPreviousMonth.bind(this)}
       >
-        <SvgIcon svg={require('../../icons/full-caret-left.svg')}/>
+        <SvgIcon svg={require("../../icons/full-caret-left.svg")} />
       </div>
-      { getWallTimeMonthWithYear(startDate, timezone) }
+      {getWallTimeMonthWithYear(startDate, timezone)}
       <div
-        className='caret right'
+        className="caret right"
         onClick={this.goToNextMonth.bind(this)}
       >
-        <SvgIcon svg={require('../../icons/full-caret-right.svg')}/>
+        <SvgIcon svg={require("../../icons/full-caret-right.svg")} />
       </div>
     </div>;
   }
@@ -220,7 +225,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     const isSingleDate = endTime ? getWallTimeDay(startTime, timezone) === getEndWallTimeInclusive(endTime, timezone).date() : true;
     return <div className="date-range-picker">
       <div>
-        <DateRangeInput label="Start" type="start" time={startTime} timezone={timezone} onChange={onStartChange.bind(this)}/>
+        <DateRangeInput label="Start" type="start" time={startTime} timezone={timezone} onChange={onStartChange.bind(this)} />
         <DateRangeInput label="End" type="end" time={endTime} timezone={timezone} onChange={onEndChange.bind(this)} hide={!selectionSet} />
       </div>
       <div
@@ -229,9 +234,9 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
       >
         {this.renderCalendarNav(activeMonthStartDate)}
         <div className="week">
-          { getLocale().shortDays.map((day, i) => {
-              return <div className="day label" key={day + i}><span className="space"/>{day}</div>;
-            })
+          {getLocale().shortDays.map((day, i) => {
+            return <div className="day label" key={day + i}><span className="space" />{day}</div>;
+          })
           }
         </div>
         {this.renderCalendar(activeMonthStartDate, isSingleDate)}

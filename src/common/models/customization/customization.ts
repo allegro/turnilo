@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isImmutableClass, immutableArraysEqual } from 'immutable-class';
-import { ImmutableUtils } from '../../utils/index';
-import { Timezone } from 'chronoshift';
-import { ExternalView, ExternalViewValue} from '../external-view/external-view';
+import { Timezone } from "chronoshift";
+import { Class, immutableArraysEqual, Instance } from "immutable-class";
+import { ImmutableUtils } from "../../utils/index";
+import { ExternalView, ExternalViewValue } from "../external-view/external-view";
 
 export interface CustomizationValue {
   title?: string;
@@ -39,8 +39,9 @@ export interface CustomizationJS {
 }
 
 var check: Class<CustomizationValue, CustomizationJS>;
+
 export class Customization implements Instance<CustomizationValue, CustomizationJS> {
-  static DEFAULT_TITLE = 'Turnilo (%v)';
+  static DEFAULT_TITLE = "Turnilo (%v)";
 
   static DEFAULT_TIMEZONES: Timezone[] = [
     new Timezone("America/Juneau"), // -9.0
@@ -61,7 +62,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     new Timezone("Pacific/Guam") // +10.0
   ];
 
-  static DEFAULT_LOGOUT_HREF = 'logout';
+  static DEFAULT_LOGOUT_HREF = "logout";
 
   static isCustomization(candidate: any): candidate is Customization {
     return candidate instanceof Customization;
@@ -99,7 +100,6 @@ export class Customization implements Instance<CustomizationValue, Customization
   public title: string;
   public logoutHref: string;
 
-
   constructor(parameters: CustomizationValue) {
     this.title = parameters.title || null;
     this.headerBackground = parameters.headerBackground || null;
@@ -108,7 +108,6 @@ export class Customization implements Instance<CustomizationValue, Customization
     if (parameters.timezones) this.timezones = parameters.timezones;
     this.logoutHref = parameters.logoutHref;
   }
-
 
   public valueOf(): CustomizationValue {
     return {
@@ -141,7 +140,8 @@ export class Customization implements Instance<CustomizationValue, Customization
   }
 
   public toString(): string {
-    return `[custom: (${this.headerBackground}) logo: ${Boolean(this.customLogoSvg)}, externalViews: ${Boolean(this.externalViews)}, timezones: ${Boolean(this.timezones)}]`;
+    return `[custom: (${this.headerBackground}) logo: ${Boolean(this.customLogoSvg)}, externalViews: ${Boolean(this.externalViews)}, timezones: ${Boolean(
+      this.timezones)}]`;
   }
 
   public equals(other: Customization): boolean {
@@ -164,7 +164,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   }
 
   public changeTitle(title: string): Customization {
-    return this.change('title', title);
+    return this.change("title", title);
   }
 
   public getTimezones() {

@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-import { Collection, List } from 'immutable';
-import { immutableArraysEqual, Equalable } from 'immutable-class';
-import { TimeRange, NumberRange, PlywoodRange } from 'plywood';
+import { Collection, List } from "immutable";
+import { Equalable, immutableArraysEqual } from "immutable-class";
 
 // The most generic function
-export interface Fn {
-  (): void;
-}
+export type Fn = () => void;
 
 var objectHasOwnProperty = Object.prototype.hasOwnProperty;
+
 export function hasOwnProperty(obj: any, key: string | number): boolean {
   if (!obj) return false;
   return objectHasOwnProperty.call(obj, key);
@@ -32,8 +30,8 @@ export function hasOwnProperty(obj: any, key: string | number): boolean {
 
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {
   var n = list.size;
-  if (itemIndex < 0 || itemIndex >= n) throw new Error('itemIndex out of range');
-  if (insertPoint < 0 || insertPoint > n) throw new Error('insertPoint out of range');
+  if (itemIndex < 0 || itemIndex >= n) throw new Error("itemIndex out of range");
+  if (insertPoint < 0 || insertPoint > n) throw new Error("insertPoint out of range");
   var newArray: T[] = [];
   list.forEach((value, i) => {
     if (i === insertPoint) newArray.push(list.get(itemIndex));
@@ -45,12 +43,12 @@ export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: num
 
 export function makeTitle(name: string): string {
   return name
-    .replace(/^[ _\-]+|[ _\-]+$/g, '')
-    .replace(/(^|[_\-]+)\w/g, (s) => { // 'hello_world-love' -> 'Hello World Love'
-      return s.replace(/[_\-]+/, ' ').toUpperCase();
+    .replace(/^[ _\-]+|[ _\-]+$/g, "")
+    .replace(/(^|[_\-]+)\w/g, s => { // 'hello_world-love' -> 'Hello World Love'
+      return s.replace(/[_\-]+/, " ").toUpperCase();
     })
-    .replace(/[a-z0-9][A-Z]/g, (s) => { // 'HelloWorld' -> 'Hello World'
-      return s[0] + ' ' + s[1];
+    .replace(/[a-z0-9][A-Z]/g, s => { // 'HelloWorld' -> 'Hello World'
+      return s[0] + " " + s[1];
     });
 }
 
@@ -76,12 +74,12 @@ export function collect(wait: number, fn: Fn): Fn {
 const URL_UNSAFE_CHARS = /[^\w.~\-]+/g;
 
 export function makeUrlSafeName(name: string): string {
-  return name.replace(URL_UNSAFE_CHARS, '_');
+  return name.replace(URL_UNSAFE_CHARS, "_");
 }
 
 export function verifyUrlSafeName(name: string): void {
-  if (typeof name !== 'string') throw new TypeError('name must be a string');
-  if (!name.length) throw new Error('can not have empty name');
+  if (typeof name !== "string") throw new TypeError("name must be a string");
+  if (!name.length) throw new Error("can not have empty name");
   var urlSafeName = makeUrlSafeName(name);
   if (name !== urlSafeName) {
     throw new Error(`'${name}' is not a URL safe name. Try '${urlSafeName}' instead?`);
@@ -89,9 +87,7 @@ export function verifyUrlSafeName(name: string): void {
 }
 
 export function arraySum(inputArray: number[]) {
-  return inputArray.reduce((pV: number, cV: number) => {
-    return pV + cV;
-  }, 0);
+  return inputArray.reduce((pV: number, cV: number) => pV + cV, 0);
 }
 
 export function findFirstBiggerIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {
@@ -132,10 +128,10 @@ export function getNumberOfWholeDigits(n: number) {
 
 // replaces things like %{PORT_NAME}% with the value of vs.PORT_NAME
 export function inlineVars(obj: any, vs: Record<string, string>): any {
-  return JSON.parse(JSON.stringify(obj).replace(/%\{[\w\-]+\}%/g, (varName) => {
+  return JSON.parse(JSON.stringify(obj).replace(/%\{[\w\-]+\}%/g, varName => {
     varName = varName.substr(2, varName.length - 4);
     var v = vs[varName];
-    if (typeof v !== 'string') throw new Error(`could not find variable '${varName}'`);
+    if (typeof v !== "string") throw new Error(`could not find variable '${varName}'`);
     var v = JSON.stringify(v);
     return v.substr(1, v.length - 2);
   }));
@@ -143,12 +139,12 @@ export function inlineVars(obj: any, vs: Record<string, string>): any {
 
 export function ensureOneOf(value: string, values: string[], messagePrefix: string): void {
   if (values.indexOf(value) !== -1) return;
-  var isMessage = typeof value === 'undefined' ? 'not defined' : `'${value}'`;
+  var isMessage = typeof value === "undefined" ? "not defined" : `'${value}'`;
   throw new Error(`${messagePrefix} must be on of '${values.join("', '")}' (is ${isMessage})`);
 }
 
 export function pluralIfNeeded(n: number, thing: string): string {
-  return `${n} ${thing}${n === 1 ? '' : 's'}`;
+  return `${n} ${thing}${n === 1 ? "" : "s"}`;
 }
 
 export function quoteNames(names: Collection.Indexed<string>): string {

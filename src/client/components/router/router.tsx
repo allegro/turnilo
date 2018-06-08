@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-import './router.scss';
+import * as React from "react";
+import { extend } from "../../../common/utils/object/object";
+import { replaceHash } from "../../utils/url/url";
+import "./router.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
-import { replaceHash } from '../../utils/url/url';
-import { extend } from '../../../common/utils/object/object';
-import { SvgIcon } from '../svg-icon/svg-icon';
+export type Inflater = (key: string, value: string) => { key: string, value: any };
 
-export type Inflater = (key: string, value: string) => {key: string, value: any};
-
-export interface RouteProps extends React.Props<any> {
+export interface RouteProps {
   fragment: string;
   alwaysShowOrphans?: boolean;
   transmit?: string[];
   inflate?: Inflater;
 }
-export interface RouteState {}
-export class Route extends React.Component<RouteProps, RouteState> {}
 
+export interface RouteState {
+}
+
+export class Route extends React.Component<RouteProps, RouteState> {
+}
 
 export interface QualifiedPath {
   route: JSX.Element;
@@ -47,7 +45,7 @@ export interface QualifiedPath {
   parentRoutes: JSX.Element[];
 }
 
-export interface RouterProps extends React.Props<any> {
+export interface RouterProps {
   // this callback is mandatory because the outer parent needs to react (lulz)
   // to a change and update its state so it rerenders. The router can't trigger
   // the rerendering by itself, nor should it.
@@ -72,16 +70,15 @@ export class Router extends React.Component<RouterProps, RouterState> {
     this.globalHashChangeListener = this.globalHashChangeListener.bind(this);
   }
 
-
   componentDidMount() {
-    window.addEventListener('hashchange', this.globalHashChangeListener);
+    window.addEventListener("hashchange", this.globalHashChangeListener);
 
     // Timeout to avoid race conditions between renders
     window.setTimeout(() => this.onHashChange(window.location.hash), 1);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('hashchange', this.globalHashChangeListener);
+    window.removeEventListener("hashchange", this.globalHashChangeListener);
   }
 
   globalHashChangeListener(): void {
@@ -99,7 +96,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
     if (!rootFragment) return hash;
 
-    return hash.replace(new RegExp('^#' + rootFragment, 'gi'), '');
+    return hash.replace(new RegExp("^#" + rootFragment, "gi"), "");
   }
 
   componentWillReceiveProps(nextProps: RouterProps) {
@@ -118,9 +115,9 @@ export class Router extends React.Component<RouterProps, RouterState> {
     const { rootFragment } = this.props;
     const fragments = this.parseHash(hash);
 
-    if (fragments.length === 0) return '#' + rootFragment;
+    if (fragments.length === 0) return "#" + rootFragment;
 
-    return `#${rootFragment}/${fragments.join('/')}`;
+    return `#${rootFragment}/${fragments.join("/")}`;
   }
 
   replaceHash(newHash: string) {
@@ -136,16 +133,16 @@ export class Router extends React.Component<RouterProps, RouterState> {
     const { rootFragment } = this.props;
     const fragments = path.fragment.split(HASH_SEPARATOR);
 
-    const parentFragment = crumbs.join('/').replace(path.crumbs.join('/'), '').replace(/\/$/, '');
+    const parentFragment = crumbs.join("/").replace(path.crumbs.join("/"), "").replace(/\/$/, "");
     const strippedRouteCrumbs = path.crumbs.slice(0, path.fragment.split(HASH_SEPARATOR).length);
 
     const strippedCrumbs = [
       rootFragment,
       parentFragment,
-      strippedRouteCrumbs.join('/')
+      strippedRouteCrumbs.join("/")
     ].filter(Boolean);
 
-    this.replaceHash('#' + strippedCrumbs.join('/'));
+    this.replaceHash("#" + strippedCrumbs.join("/"));
   }
 
   onHashChange(hash: string) {
@@ -166,7 +163,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
       let defaultFragment = this.getDefaultFragment(children);
 
       if (defaultFragment) {
-        this.replaceHash(hash + '/' + defaultFragment);
+        this.replaceHash(hash + "/" + defaultFragment);
         return;
       }
     }
@@ -176,7 +173,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     if (path.wasDefaultChoice) {
       crumbs.pop();
       crumbs.push(path.fragment);
-      this.replaceHash('#' + [rootFragment].concat(crumbs).join('/'));
+      this.replaceHash("#" + [rootFragment].concat(crumbs).join("/"));
       return;
     }
 
@@ -189,14 +186,14 @@ export class Router extends React.Component<RouterProps, RouterState> {
     // Default child for this path
     if (this.canDefaultDeeper(path.fragment, path.crumbs)) {
       crumbs = crumbs.concat(this.getDefaultDeeperCrumbs(path.fragment, path.crumbs));
-      this.replaceHash('#' + [rootFragment].concat(crumbs).join('/'));
+      this.replaceHash("#" + [rootFragment].concat(crumbs).join("/"));
     }
 
     if (this.props.onURLChange) {
       this.props.onURLChange(crumbs);
     }
 
-    this.setState({hash: window.location.hash});
+    this.setState({ hash: window.location.hash });
   }
 
   getDefaultDeeperCrumbs(fragment: string, crumbs: string[]): string[] {
@@ -204,7 +201,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
     bits.splice(0, crumbs.length);
 
-    return bits.map((bit) => bit.match(/^:[^=]+=(\w+)$/)[1]);
+    return bits.map(bit => bit.match(/^:[^=]+=(\w+)$/)[1]);
   }
 
   canDefaultDeeper(fragment: string, crumbs: string[]): boolean {
@@ -214,13 +211,11 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
     bits.splice(0, crumbs.length);
 
-    return bits.every((bit) => /^:[^=]+=\w+$/.test(bit));
+    return bits.every(bit => /^:[^=]+=\w+$/.test(bit));
   }
 
   getDefaultFragment(children: JSX.Element[]): string {
-    for (let i = 0; i < children.length; i++) {
-      let child = children[i];
-
+    for (const child of children) {
       if (child.type === Route) {
         return child.props.fragment;
       }
@@ -235,9 +230,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
       candidates = ([candidates as any]) as JSX.Element[];
     }
 
-    for (let i = 0; i < candidates.length; i++) {
-      let candidate = candidates[i];
-
+    for (const candidate of candidates) {
       if (this.isAComment(candidate)) continue;
 
       let fragment = candidate.props.fragment;
@@ -246,12 +239,12 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
       properties = extend(this.getPropertiesFromCrumbs(crumbs, fragment), properties);
 
-      if (crumbs[0] === fragment || fragment.charAt(0) === ':') {
+      if (crumbs[0] === fragment || fragment.charAt(0) === ":") {
         let children = candidate.props.children;
         let parents = parentRoutes.concat([candidate]);
 
         if (!(Array.isArray(children)) || crumbs.length === 1) {
-          return {fragment, route: candidate, crumbs, properties, orphans, parentRoutes: parents};
+          return { fragment, route: candidate, crumbs, properties, orphans, parentRoutes: parents };
         } else {
           if (candidate.props.alwaysShowOrphans === true) {
             orphans = orphans.concat(children.filter(this.isSimpleChild, this));
@@ -267,7 +260,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     var route = candidates.filter(this.isRoute)[0];
     var fragment = route.props.fragment;
     properties = extend(this.getPropertiesFromCrumbs(crumbs, fragment), properties);
-    return {fragment, route, crumbs, wasDefaultChoice: true, properties, orphans, parentRoutes};
+    return { fragment, route, crumbs, wasDefaultChoice: true, properties, orphans, parentRoutes };
   }
 
   hasSingleChild(route: JSX.Element): boolean {
@@ -298,11 +291,11 @@ export class Router extends React.Component<RouterProps, RouterState> {
   }
 
   getPropertiesFromCrumbs(crumbs: string[], fragment: string, props: any = {}): any {
-    let fragmentToKey = (f: string) => f.slice(1).replace(/=.*$/, '');
+    let fragmentToKey = (f: string) => f.slice(1).replace(/=.*$/, "");
 
     let myCrumbs = crumbs.concat();
     fragment.split(HASH_SEPARATOR).forEach((bit, i) => {
-      if (bit.charAt(0) !== ':') return;
+      if (bit.charAt(0) !== ":") return;
       props[fragmentToKey(bit)] = myCrumbs.shift();
     });
 
@@ -315,7 +308,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     let newProperties: any = {};
 
     for (let originalKey in properties) {
-      let {key, value} = pump(originalKey, properties[originalKey]);
+      let { key, value } = pump(originalKey, properties[originalKey]);
       newProperties[key] = value;
     }
 
@@ -335,7 +328,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
     propsToTransmit = this.inflate(path.route.props.inflate, propsToTransmit);
 
-    return React.cloneElement(child, extend(propsToTransmit, {key: i}));
+    return React.cloneElement(child, extend(propsToTransmit, { key: i }));
   }
 
   getQualifiedChild(candidates: JSX.Element[], crumbs: string[]): JSX.Element | JSX.Element[] {
@@ -346,7 +339,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     if (this.hasSingleChild(path.route)) {
       elements = path.orphans.map((orphan, i) => this.fillProperties(orphan, path, i))
         .concat([this.fillProperties(path.route.props.children, path, path.orphans.length)])
-        ;
+      ;
 
     } else {
       var children = this.getSimpleChildren(path.route);
@@ -356,7 +349,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
       elements = children
         .map((child, i) => this.fillProperties(child, path, i))
         .concat(path.orphans.map((orphan, i) => this.fillProperties(orphan, path, children.length + i)))
-        ;
+      ;
     }
 
     if (!elements) return null;
@@ -377,6 +370,6 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
     // I wish it wouldn't need an enclosing element but...
     // https://github.com/facebook/react/issues/2127
-    return <div className="route-wrapper" style={{width: '100%', height: '100%'}}>{qualifiedChildren}</div>;
+    return <div className="route-wrapper" style={{ width: "100%", height: "100%" }}>{qualifiedChildren}</div>;
   }
 }

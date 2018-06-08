@@ -108,7 +108,7 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
 
   valueOf(): MeasureGroupValue {
     return {
-      name: this.name ,
+      name: this.name,
       title: this.title,
       measures: this.measures
     };

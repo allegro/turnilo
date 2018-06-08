@@ -15,15 +15,11 @@
  * limitations under the License.
  */
 
-import './nav-logo.scss';
+import * as React from "react";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./nav-logo.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
-import { SvgIcon } from '../svg-icon/svg-icon';
-
-export interface NavLogoProps extends React.Props<any> {
+export interface NavLogoProps {
   onClick?: React.MouseEventHandler<HTMLElement>;
   customLogoSvg?: string;
 }
@@ -35,11 +31,11 @@ export class NavLogo extends React.Component<NavLogoProps, NavLogoState> {
 
   render() {
     const { onClick, customLogoSvg } = this.props;
-    const svg = customLogoSvg || require('../../icons/turnilo-logo.svg');
+    const svg = customLogoSvg || require("../../icons/turnilo-logo.svg");
 
     return <div className="nav-logo" onClick={onClick}>
       <div className="logo">
-        <SvgIcon svg={svg}/>
+        <SvgIcon svg={svg} />
       </div>
     </div>;
   }

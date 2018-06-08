@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import '../../utils/test-utils';
-import { Dataset } from 'plywood';
-import { datasetToFileString, getMIMEType } from './download';
+import { expect } from "chai";
+import { Dataset } from "plywood";
+import "../../utils/test-utils";
+import { datasetToFileString, getMIMEType } from "./download";
 
-describe('Download', () => {
-  describe('datasetToFileString', () => {
+describe("Download", () => {
+  describe("datasetToFileString", () => {
 
-    it('defaults to JSON if no type specified', () => {
+    it("defaults to JSON if no type specified", () => {
       const dsJS = [
         { x: 1, y: "hello", z: 2 },
         { x: 2, y: "world", z: 3 }
@@ -33,25 +33,23 @@ describe('Download', () => {
       expect(JSON.parse(datasetToFileString(ds))).to.deep.equal(dsJS);
     });
 
-    it('encloses set/string in brackets appropriately', () => {
+    it("encloses set/string in brackets appropriately", () => {
       const ds = Dataset.fromJS([
         { y: ["dear", "john"] },
         { y: ["from", "peter"] }
       ]);
-      expect(datasetToFileString(ds, 'csv').indexOf("\"dear, john\""), 'csv').to.not.equal(-1);
-      expect(datasetToFileString(ds, 'tsv').indexOf("dear, john"), 'tsv').to.not.equal(-1);
+      expect(datasetToFileString(ds, "csv").indexOf("\"dear, john\""), "csv").to.not.equal(-1);
+      expect(datasetToFileString(ds, "tsv").indexOf("dear, john"), "tsv").to.not.equal(-1);
     });
   });
 
-  describe('getMIMEType', () => {
-    it('works as expected', () => {
-      expect(getMIMEType('csv'), 'csv').to.equal("text/csv");
-      expect(getMIMEType('tsv'), 'tsv').to.equal("text/tsv");
-      expect(getMIMEType(''), 'csv').to.equal('application/json');
-      expect(getMIMEType('json'), 'csv').to.equal('application/json');
-      expect(getMIMEType('invalid'), 'csv').to.equal('application/json');
+  describe("getMIMEType", () => {
+    it("works as expected", () => {
+      expect(getMIMEType("csv"), "csv").to.equal("text/csv");
+      expect(getMIMEType("tsv"), "tsv").to.equal("text/tsv");
+      expect(getMIMEType(""), "csv").to.equal("application/json");
+      expect(getMIMEType("json"), "csv").to.equal("application/json");
+      expect(getMIMEType("invalid"), "csv").to.equal("application/json");
     });
   });
 });
-
-

@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-import './modal.scss';
+import * as React from "react";
+import { Fn } from "../../../common/utils/general/general";
+import { classNames, isInside, uniqueId } from "../../utils/dom/dom";
+import { BodyPortal } from "../body-portal/body-portal";
+import { GlobalEventListener } from "../global-event-listener/global-event-listener";
+import { GoldenCenter } from "../golden-center/golden-center";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./modal.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { Fn } from '../../../common/utils/general/general';
-import { isInside, uniqueId, classNames } from '../../utils/dom/dom';
-import { BodyPortal } from '../body-portal/body-portal';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { GoldenCenter } from '../golden-center/golden-center';
-import { GlobalEventListener } from '../global-event-listener/global-event-listener';
-
-export interface ModalProps extends React.Props<any> {
+export interface ModalProps {
   className?: string;
   id?: string;
   title?: string;
@@ -41,7 +39,7 @@ export interface ModalState {
 }
 
 export class Modal extends React.Component<ModalProps, ModalState> {
-  private focusAlreadyGiven =  false;
+  private focusAlreadyGiven = false;
 
   constructor(props: ModalProps) {
     super(props);
@@ -54,7 +52,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     var { id } = this.props;
 
     this.setState({
-      id: id || uniqueId('modal-')
+      id: id || uniqueId("modal-")
     });
   }
 
@@ -74,7 +72,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     for (let i = 0; i < n; i++) {
       let child = children[i] as HTMLElement;
 
-      if (child.getAttribute && child.getAttribute('id') === id) return child;
+      if (child.getAttribute && child.getAttribute("id") === id) return child;
 
       if (child.childNodes) {
         let foundChild = this.getChildByID(child.childNodes, id);
@@ -129,17 +127,17 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     var { id } = this.state;
 
     var titleElement: JSX.Element = null;
-    if (typeof title === 'string') {
+    if (typeof title === "string") {
       titleElement = <div className="modal-title">
         <div className="text">{title}</div>
         <div className="close" onClick={onClose}>
-          <SvgIcon svg={require('../../icons/full-remove.svg')}/>
+          <SvgIcon svg={require("../../icons/full-remove.svg")} />
         </div>
       </div>;
     }
 
     return <BodyPortal fullSize={true}>
-      <div className={classNames('modal', className)}>
+      <div className={classNames("modal", className)}>
         <GlobalEventListener
           enter={this.onEnter.bind(this)}
           escape={this.onEscape.bind(this)}

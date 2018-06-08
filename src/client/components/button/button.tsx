@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-import  './button.scss';
-
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { classNames } from '../../utils/dom/dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
+import * as React from "react";
+import { Fn } from "../../../common/utils/general/general";
+import { classNames } from "../../utils/dom/dom";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./button.scss";
 
 export type ButtonType = "primary" | "secondary" | "warn";
 
-export interface ButtonProps extends React.Props<any> {
+export interface ButtonProps {
   type: ButtonType;
   className?: string;
   title?: string;
@@ -44,11 +43,11 @@ export class Button extends React.Component<ButtonProps, ButtonState> {
 
     var icon: JSX.Element = null;
     if (svg) {
-      icon = <SvgIcon svg={svg}/>;
+      icon = <SvgIcon svg={svg} />;
     }
 
     return <button
-      className={classNames('button', type, className, { icon, active })}
+      className={classNames("button", type, className, { icon, active })}
       onClick={onClick}
       disabled={disabled}
     >

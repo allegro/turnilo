@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-import './body-portal.scss';
-import { ReactElement } from "react";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import "./body-portal.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-
-export interface BodyPortalProps extends React.Props<any> {
+export interface BodyPortalProps {
   left?: number | string;
   top?: number | string;
   fullSize?: boolean;
@@ -56,20 +54,20 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     var { left, top, disablePointerEvents, isAboveAll } = this.props;
     var style = this._target.style;
 
-    if (typeof left === 'number') {
-      style.left = Math.round(left) + 'px';
-    } else if (typeof left === 'string') {
+    if (typeof left === "number") {
+      style.left = Math.round(left) + "px";
+    } else if (typeof left === "string") {
       style.left = left;
     }
-    if (typeof top === 'number') {
-      style.top = Math.round(top) + 'px';
-    } else if (typeof top === 'string') {
+    if (typeof top === "number") {
+      style.top = Math.round(top) + "px";
+    } else if (typeof top === "string") {
       style.top = top;
     }
 
-    style['z-index'] = 200 + (isAboveAll ? 1 : 0);
+    style["z-index"] = 200 + (isAboveAll ? 1 : 0);
 
-    style['pointer-events'] = disablePointerEvents ? 'none' : 'auto';
+    style["pointer-events"] = disablePointerEvents ? "none" : "auto";
   }
 
   componentDidMount() {
@@ -80,15 +78,15 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     if (onMount) onMount();
 
     if (isAboveAll) {
-      if (BodyPortal.aboveAll) throw new Error('There can be only one');
+      if (BodyPortal.aboveAll) throw new Error("There can be only one");
       BodyPortal.aboveAll = this;
     }
   }
 
   teleport() {
     var { fullSize } = this.props;
-    var newDiv = document.createElement('div');
-    newDiv.className = 'body-portal' + (fullSize ? ' full-size' : '');
+    var newDiv = document.createElement("div");
+    newDiv.className = "body-portal" + (fullSize ? " full-size" : "");
     this._target = document.body.appendChild(newDiv);
     this.updateStyle();
     this._component = ReactDOM.render(React.Children.only(this.props.children) as any, this._target);

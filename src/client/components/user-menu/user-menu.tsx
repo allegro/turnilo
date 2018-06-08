@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-import './user-menu.scss';
+import * as React from "react";
+import { Customization, Stage, User } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { STRINGS } from "../../config/constants";
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
+import "./user-menu.scss";
 
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { Stage, User, Customization } from '../../../common/models/index';
-import { STRINGS } from '../../config/constants';
-import { BubbleMenu } from '../bubble-menu/bubble-menu';
-
-export interface UserMenuProps extends React.Props<any> {
+export interface UserMenuProps {
   openOn: Element;
   onClose: Fn;
   user: User;
@@ -52,7 +51,9 @@ export class UserMenu extends React.Component<UserMenuProps, UserMenuState> {
         >{user.displayName}</li>
         <li
           className="logout"
-        ><a href={customization.getLogoutHref()}><div>{STRINGS.logout}</div></a></li>
+        ><a href={customization.getLogoutHref()}>
+          <div>{STRINGS.logout}</div>
+        </a></li>
       </ul>
     </BubbleMenu>;
   }

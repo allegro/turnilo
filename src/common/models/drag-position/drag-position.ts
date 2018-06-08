@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from 'immutable-class';
-import { hasOwnProperty } from '../../utils/general/general';
+import { Class, Instance } from "immutable-class";
+import { hasOwnProperty } from "../../utils/general/general";
 
 export interface DragPositionValue {
   insert?: number;
@@ -29,6 +29,7 @@ export interface DragPositionJS {
 }
 
 var check: Class<DragPositionValue, DragPositionJS>;
+
 export class DragPosition implements Instance<DragPositionValue, DragPositionJS> {
 
   static isDragPosition(candidate: any): candidate is DragPosition {
@@ -72,14 +73,13 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
     return new DragPosition(parameters);
   }
 
-
   public insert: number;
   public replace: number;
 
   constructor(parameters: DragPositionValue) {
-    this.insert = hasOwnProperty(parameters, 'insert') ? parameters.insert : null;
-    this.replace = hasOwnProperty(parameters, 'replace') ? parameters.replace : null;
-    if (this.insert == null && this.replace == null) throw new Error('invalid drag position');
+    this.insert = hasOwnProperty(parameters, "insert") ? parameters.insert : null;
+    this.replace = hasOwnProperty(parameters, "replace") ? parameters.replace : null;
+    if (this.insert == null && this.replace == null) throw new Error("invalid drag position");
   }
 
   public valueOf(): DragPositionValue {
@@ -123,4 +123,5 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   }
 
 }
+
 check = DragPosition;

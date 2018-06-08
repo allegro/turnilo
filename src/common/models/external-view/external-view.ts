@@ -15,14 +15,11 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from 'immutable-class';
-import { Timezone } from 'chronoshift';
-import { $, Expression } from 'plywood';
-import { Essence, DataCube, Filter, Splits, Customization} from '../../../common/models/index';
+import { Timezone } from "chronoshift";
+import { Class, Instance } from "immutable-class";
+import { DataCube, Filter, Splits } from "../../../common/models/index";
 
-export interface LinkGenerator {
-  (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits): string;
-}
+export type LinkGenerator = (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits) => string;
 
 export interface ExternalViewValue {
   title: string;
@@ -32,6 +29,7 @@ export interface ExternalViewValue {
 }
 
 var check: Class<ExternalViewValue, ExternalViewValue>;
+
 export class ExternalView implements Instance<ExternalViewValue, ExternalViewValue> {
 
   static isExternalView(candidate: any): candidate is ExternalView {
@@ -56,14 +54,14 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
   constructor(parameters: ExternalViewValue) {
     const { title, linkGenerator } = parameters;
     if (!title) throw new Error("External view must have title");
-    if (typeof linkGenerator !== 'string') throw new Error("Must provide link generator function");
+    if (typeof linkGenerator !== "string") throw new Error("Must provide link generator function");
 
     this.title = title;
     this.linkGenerator = linkGenerator;
     var linkGeneratorFnRaw: any = null;
     try {
       // dataSource is for back compat.
-      linkGeneratorFnRaw = new Function('dataCube', 'dataSource', 'timezone', 'filter', 'splits', linkGenerator) as LinkGenerator;
+      linkGeneratorFnRaw = new Function("dataCube", "dataSource", "timezone", "filter", "splits", linkGenerator) as LinkGenerator;
     } catch (e) {
       throw new Error(`Error constructing link generator function: ${e.message}`);
     }
@@ -113,4 +111,5 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
     return `${this.title}: ${this.linkGenerator}`;
   }
 }
+
 check = ExternalView;

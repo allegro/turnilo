@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-import './collection-tile-lightbox.scss';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { Collection, CollectionTile, Essence, Stage, Timekeeper, VisualizationProps } from "../../../../common/models/index";
+import { indexByAttribute } from "../../../../common/utils/array/array";
+import { BodyPortal, BubbleMenu, GlobalEventListener, GoldenCenter, ImmutableInput, Notifier, SvgIcon } from "../../../components/index";
+import { STRINGS } from "../../../config/constants";
+import { classNames, isInside } from "../../../utils/dom/dom";
+import { getVisualizationComponent } from "../../../visualizations/index";
+import "./collection-tile-lightbox.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as Q from 'q';
-
-import { STRINGS } from '../../../config/constants';
-import { isInside, classNames } from '../../../utils/dom/dom';
-import { indexByAttribute } from '../../../../common/utils/array/array';
-
-import { SvgIcon, GlobalEventListener, BodyPortal, GoldenCenter, BubbleMenu, ImmutableInput, Notifier } from '../../../components/index';
-import { Collection, CollectionTile, VisualizationProps, Stage, Essence, Timekeeper } from '../../../../common/models/index';
-
-import { COLLECTION_ITEM as LABELS } from '../../../../common/models/labels';
-
-import { getVisualizationComponent } from '../../../visualizations/index';
-
-export interface CollectionTileLightboxProps extends React.Props<any> {
+export interface CollectionTileLightboxProps {
   collection?: Collection;
   tileId?: string;
   timekeeper: Timekeeper;
@@ -63,7 +56,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
     const { collection, tileId } = nextProps;
 
     if (collection) {
-      let tile = collection.tiles.filter(({name}) => tileId === name)[0];
+      let tile = collection.tiles.filter(({ name }) => tileId === name)[0];
 
       this.setState({
         tile
@@ -131,7 +124,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
   renderEditMenu() {
     const { onEdit, collection } = this.props;
     const { tile } = this.state;
-    var onClose = () => this.setState({editMenuOpen: false});
+    var onClose = () => this.setState({ editMenuOpen: false });
 
     const edit = () => onEdit(collection, tile);
 
@@ -139,7 +132,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
       className="edit-menu"
       direction="down"
       stage={Stage.fromSize(200, 200)}
-      openOn={this.refs['edit-button'] as any}
+      openOn={this.refs["edit-button"] as any}
       onClose={onClose}
     >
       <ul className="bubble-list">
@@ -152,14 +145,14 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
   renderMoreMenu() {
     const { onDelete, collection, onDuplicate } = this.props;
     const { tile } = this.state;
-    var onClose = () => this.setState({moreMenuOpen: false});
+    var onClose = () => this.setState({ moreMenuOpen: false });
 
     const remove = () => onDelete(collection, tile);
     const duplicate = () => {
       onDuplicate(collection, tile).then(url => {
         window.location.hash = url;
         onClose();
-        Notifier.success('Tile duplicated');
+        Notifier.success("Tile duplicated");
       });
     };
 
@@ -167,7 +160,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
       className="more-menu"
       direction="down"
       stage={Stage.fromSize(200, 200)}
-      openOn={this.refs['more-button'] as any}
+      openOn={this.refs["more-button"] as any}
       onClose={onClose}
     >
       <ul className="bubble-list">
@@ -181,9 +174,9 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
     const { editMenuOpen, moreMenuOpen } = this.state;
 
     const target = e.target as Element;
-    const modal = this.refs['modal'] as any;
-    const leftArrow = this.refs['left-arrow'] as any;
-    const rightArrow = this.refs['right-arrow'] as any;
+    const modal = this.refs["modal"] as any;
+    const leftArrow = this.refs["left-arrow"] as any;
+    const rightArrow = this.refs["right-arrow"] as any;
 
     if (isInside(target, modal)) return;
     if (isInside(target, leftArrow)) return;
@@ -200,7 +193,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
 
     const tiles = collection.tiles;
 
-    const index = indexByAttribute(collection.tiles, 'name', tile.name);
+    const index = indexByAttribute(collection.tiles, "name", tile.name);
 
     var newIndex = index + direction;
 
@@ -235,19 +228,19 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
     var moreButton: JSX.Element = null;
     if (onEdit) {
       editButton = <div
-        className={classNames('edit-button icon', {active: editMenuOpen})}
+        className={classNames("edit-button icon", { active: editMenuOpen })}
         onClick={this.onEditIconClick.bind(this)}
         ref="edit-button"
       >
-        <SvgIcon svg={require(`../../../icons/full-edit.svg`)}/>
+        <SvgIcon svg={require("../../../icons/full-edit.svg")} />
       </div>;
 
       moreButton = <div
-        className={classNames('more-button icon', {active: moreMenuOpen})}
+        className={classNames("more-button icon", { active: moreMenuOpen })}
         onClick={this.onMoreIconClick.bind(this)}
         ref="more-button"
       >
-        <SvgIcon svg={require(`../../../icons/full-more.svg`)}/>
+        <SvgIcon svg={require("../../../icons/full-more.svg")} />
       </div>;
     }
 
@@ -263,16 +256,16 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
           </div>
           {editButton}
           {moreButton}
-          <div className="separator"/>
+          <div className="separator" />
           <div className="close-button icon" onClick={this.closeModal.bind(this)}>
-            <SvgIcon svg={require(`../../../icons/full-remove.svg`)}/>
+            <SvgIcon svg={require("../../../icons/full-remove.svg")} />
           </div>
         </div>
       </div>;
     }
 
     var onChange = (newItem: CollectionTile) => {
-      this.setState({tempTile: newItem});
+      this.setState({ tempTile: newItem });
     };
 
     var makeTextInput = ImmutableInput.simpleGenerator(tempTile, onChange);
@@ -286,8 +279,8 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
 
     return <div className="headband grid-row">
       <div className="grid-col-70 vertical enable-overflow">
-        {makeTextInput('title', /.*/, true)}
-        {makeTextInput('description')}
+        {makeTextInput("title", /.*/, true)}
+        {makeTextInput("description")}
       </div>
       <div className="grid-col-30 right middle">
         <div className="cancel-button" onClick={cancel}>{STRINGS.cancel}</div>
@@ -328,7 +321,7 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
           right={this.swipe.bind(this, 1)}
         />
 
-        <div className="backdrop"/>
+        <div className="backdrop" />
         <GoldenCenter>
           <div className="modal-window" ref="modal">
             {this.renderHeadBand()}
@@ -338,11 +331,11 @@ export class CollectionTileLightbox extends React.Component<CollectionTileLightb
           </div>
         </GoldenCenter>
         <div className="left-arrow" onClick={this.swipe.bind(this, -1)} ref="left-arrow">
-          <SvgIcon svg={require(`../../../icons/full-caret-left-line.svg`)}/>
+          <SvgIcon svg={require("../../../icons/full-caret-left-line.svg")} />
         </div>
 
         <div className="right-arrow" onClick={this.swipe.bind(this, 1)} ref="right-arrow">
-          <SvgIcon svg={require(`../../../icons/full-caret-right-line.svg`)}/>
+          <SvgIcon svg={require("../../../icons/full-caret-right-line.svg")} />
         </div>
 
         {editMenuOpen ? this.renderEditMenu() : null}

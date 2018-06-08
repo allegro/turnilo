@@ -15,23 +15,15 @@
  * limitations under the License.
  */
 
-import './dimension-modal.scss';
+import * as React from "react";
+import { BucketingStrategy, Dimension, granularityFromJS, granularityToString, ListItem } from "../../../common/models/index";
+import { DIMENSION as LABELS } from "../../../common/models/labels";
+import { Button, FormLabel, ImmutableDropdown, ImmutableInput, Modal } from "../../components/index";
+import { classNames } from "../../utils/dom/dom";
+import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
+import "./dimension-modal.scss";
 
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { classNames, enterKey } from '../../utils/dom/dom';
-import { List } from 'immutable';
-
-import { SvgIcon, FormLabel, Button, ImmutableInput, Modal, ImmutableDropdown } from '../../components/index';
-
-import { Dimension, ListItem, granularityFromJS, granularityToString, BucketingStrategy } from '../../../common/models/index';
-
-import { DIMENSION as LABELS } from '../../../common/models/labels';
-
-import { ImmutableFormDelegate, ImmutableFormState } from '../../utils/immutable-form-delegate/immutable-form-delegate';
-
-
-export interface DimensionModalProps extends React.Props<any> {
+export interface DimensionModalProps {
   dimension?: Dimension;
   onSave?: (dimension: Dimension) => void;
   onClose?: () => void;
@@ -39,15 +31,15 @@ export interface DimensionModalProps extends React.Props<any> {
 
 export class DimensionModal extends React.Component<DimensionModalProps, ImmutableFormState<Dimension>> {
   static KINDS: ListItem[] = [
-    {label: 'Time', value: 'time'},
-    {label: 'String', value: 'string'},
-    {label: 'Boolean', value: 'boolean'},
-    {label: 'String-geo', value: 'string-geo'}
+    { label: "Time", value: "time" },
+    { label: "String", value: "string" },
+    { label: "Boolean", value: "boolean" },
+    { label: "String-geo", value: "string-geo" }
   ];
 
   static BUCKETING_STRATEGIES = [
-    {label: 'Bucket', value: BucketingStrategy.defaultBucket},
-    {label: 'Don’t Bucket', value: BucketingStrategy.defaultNoBucket}
+    { label: "Bucket", value: BucketingStrategy.defaultBucket },
+    { label: "Don’t Bucket", value: BucketingStrategy.defaultNoBucket }
   ];
 
   private delegate: ImmutableFormDelegate<Dimension>;
@@ -88,7 +80,7 @@ export class DimensionModal extends React.Component<DimensionModalProps, Immutab
 
     if (!newInstance) return null;
 
-    const isTime = newInstance.kind === 'time';
+    const isTime = newInstance.kind === "time";
     const isContinuous = newInstance.isContinuous();
 
     var makeLabel = FormLabel.simpleGenerator(LABELS, errors, true);
@@ -102,36 +94,36 @@ export class DimensionModal extends React.Component<DimensionModalProps, Immutab
       onEnter={this.save.bind(this)}
     >
       <form className="general vertical">
-        {makeLabel('title')}
-        {makeTextInput('title', /^.+$/, true)}
+        {makeLabel("title")}
+        {makeTextInput("title", /^.+$/, true)}
 
-        {makeLabel('kind')}
-        {makeDropDownInput('kind', DimensionModal.KINDS)}
+        {makeLabel("kind")}
+        {makeDropDownInput("kind", DimensionModal.KINDS)}
 
-        {makeLabel('formula')}
-        {makeTextInput('formula')}
+        {makeLabel("formula")}
+        {makeTextInput("formula")}
 
-        {makeLabel('url')}
-        {makeTextInput('url')}
+        {makeLabel("url")}
+        {makeTextInput("url")}
 
-        {isTime ? makeLabel('granularities') : null}
+        {isTime ? makeLabel("granularities") : null}
         {isTime ? <ImmutableInput
           instance={newInstance}
-          path={'granularities'}
+          path={"granularities"}
           onChange={this.delegate.onChange}
 
-          valueToString={(value: any) => value ? value.map(granularityToString).join(', ') : undefined}
+          valueToString={(value: any) => value ? value.map(granularityToString).join(", ") : undefined}
           stringToValue={(str: string) => str.split(/\s*,\s*/).map(granularityFromJS)}
         /> : null}
 
-        {isContinuous ? makeLabel('bucketingStrategy') : null}
-        {isContinuous ? makeDropDownInput('bucketingStrategy', DimensionModal.BUCKETING_STRATEGIES) : null}
+        {isContinuous ? makeLabel("bucketingStrategy") : null}
+        {isContinuous ? makeDropDownInput("bucketingStrategy", DimensionModal.BUCKETING_STRATEGIES) : null}
 
       </form>
 
       <div className="button-bar">
-        <Button className={classNames("save", {disabled: saveButtonDisabled})} title="OK" type="primary" onClick={this.save.bind(this)}/>
-        <Button className="cancel" title="Cancel" type="secondary" onClick={this.props.onClose}/>
+        <Button className={classNames("save", { disabled: saveButtonDisabled })} title="OK" type="primary" onClick={this.save.bind(this)} />
+        <Button className="cancel" title="Cancel" type="secondary" onClick={this.props.onClose} />
       </div>
 
     </Modal>;

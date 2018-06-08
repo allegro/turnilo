@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-import './preview-string-filter-menu.scss';
-
+import { $, Dataset, r, SortExpression } from "plywood";
 import * as React from "react";
-import { $, Dataset, SortExpression, r } from "plywood";
-import { Fn, collect } from "../../../common/utils/general/general";
-import { STRINGS, SEARCH_WAIT } from "../../config/constants";
-import { Clicker, Essence, Timekeeper, Filter, FilterClause, FilterMode, Dimension, SupportedAction } from "../../../common/models/index";
-import { enterKey, classNames } from "../../utils/dom/dom";
-import { Loader } from "../loader/loader";
-import { QueryError } from "../query-error/query-error";
-import { HighlightString } from "../highlight-string/highlight-string";
+import { Clicker, Dimension, Essence, Filter, FilterClause, FilterMode, SupportedAction, Timekeeper } from "../../../common/models/index";
+import { collect, Fn } from "../../../common/utils/general/general";
+import { SEARCH_WAIT, STRINGS } from "../../config/constants";
+import { classNames, enterKey } from "../../utils/dom/dom";
 import { Button } from "../button/button";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
+import { HighlightString } from "../highlight-string/highlight-string";
+import { Loader } from "../loader/loader";
+import { QueryError } from "../query-error/query-error";
+import "./preview-string-filter-menu.scss";
 
 const TOP_N = 100;
 
-export interface PreviewStringFilterMenuProps extends React.Props<any> {
+export interface PreviewStringFilterMenuProps {
   clicker: Clicker;
   dimension: Dimension;
   essence: Essence;
@@ -73,8 +72,8 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, searchText: string): void {
     var { dataCube } = essence;
-    var nativeCount = dataCube.getMeasure('count');
-    var measureExpression = nativeCount ? nativeCount.expression : $('main').count();
+    var nativeCount = dataCube.getMeasure("count");
+    var measureExpression = nativeCount ? nativeCount.expression : $("main").count();
 
     var filterExpression = essence.getEffectiveFilter(timekeeper, null, dimension).toExpression();
 
@@ -87,11 +86,11 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
       }
     }
 
-    var query = $('main')
+    var query = $("main")
       .filter(filterExpression)
       .split(dimension.expression, dimension.name)
-      .apply('MEASURE', measureExpression)
-      .sort($('MEASURE'), SortExpression.DESCENDING)
+      .apply("MEASURE", measureExpression)
+      .sort($("MEASURE"), SortExpression.DESCENDING)
       .limit(TOP_N + 1);
 
     this.setState({
@@ -108,7 +107,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
             queryError: null
           });
         },
-        (error) => {
+        error => {
           if (!this.mounted) return;
           this.setState({
             loading: false,
@@ -211,20 +210,20 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   renderRows() {
-    var { loading, dataset, fetchQueued, regexErrorMessage  } = this.state;
+    var { loading, dataset, fetchQueued, regexErrorMessage } = this.state;
     var { dimension, searchText, filterMode } = this.props;
 
-    var rows: Array<JSX.Element> = [];
+    var rows: JSX.Element[] = [];
     var search: string | RegExp = null;
 
     if (dataset) {
-      var rowStrings = dataset.data.slice(0, TOP_N).map((d) => d[dimension.name]);
+      var rowStrings = dataset.data.slice(0, TOP_N).map(d => d[dimension.name]);
 
       if (searchText) {
-        rowStrings = rowStrings.filter((d) => {
+        rowStrings = rowStrings.filter(d => {
           if (filterMode === Filter.REGEX) {
             try {
-              var escaped = searchText.replace(/\\[^\\]]/g, '\\\\');
+              var escaped = searchText.replace(/\\[^\\]]/g, "\\\\");
               search = new RegExp(escaped);
               return search.test(String(d));
             } catch (e) {
@@ -238,7 +237,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
         });
       }
 
-      rows = rowStrings.map((segmentValue) => {
+      rows = rowStrings.map(segmentValue => {
         var segmentValueStr = String(segmentValue);
         return <div
           className="row no-select"
@@ -246,7 +245,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
           title={segmentValueStr}
         >
           <div className="row-wrapper">
-            <HighlightString className="label" text={segmentValueStr} highlight={search}/>
+            <HighlightString className="label" text={segmentValueStr} highlight={search} />
           </div>
         </div>;
       });
@@ -260,10 +259,10 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     }
 
     return <div className="rows">
-        {(rows.length === 0 || !searchText) ? null : <div className="matching-values-message">Matching Values</div>}
-        {rows}
-        {grayMessage}
-      </div>;
+      {(rows.length === 0 || !searchText) ? null : <div className="matching-values-message">Matching Values</div>}
+      {rows}
+      {grayMessage}
+    </div>;
   }
 
   render() {
@@ -275,10 +274,10 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
       <GlobalEventListener
         keyDown={this.globalKeyDownListener.bind(this)}
       />
-      <div className={classNames('menu-table', hasMore ? 'has-more' : 'no-more')}>
+      <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
         {this.renderRows()}
-        {queryError ? <QueryError error={queryError}/> : null}
-        {loading ? <Loader/> : null}
+        {queryError ? <QueryError error={queryError} /> : null}
+        {loading ? <Loader /> : null}
       </div>
       <div className="ok-cancel-bar">
         <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} />

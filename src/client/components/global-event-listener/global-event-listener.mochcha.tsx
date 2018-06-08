@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as TestUtils from 'react-dom/test-utils';
-import { $, Expression } from 'plywood';
+import * as React from "react";
 
-import { renderIntoDocument } from '../../utils/test-utils';
+import { renderIntoDocument } from "../../utils/test-utils";
 
-import { GlobalEventListener } from './global-event-listener';
+import { GlobalEventListener } from "./global-event-listener";
 
-describe('GlobalEventListener', () => {
-  it('adds the correct class', () => {
+describe("GlobalEventListener", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <GlobalEventListener
 

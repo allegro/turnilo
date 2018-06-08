@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-import './resize-handle.scss';
+import * as React from "react";
+import { clamp, getXFromEvent } from "../../utils/dom/dom";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./resize-handle.scss";
 
-import * as React from 'react';
-
-import { clamp } from '../../utils/dom/dom';
-
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { getXFromEvent } from '../../utils/dom/dom';
-
-
-export interface ResizeHandleProps extends React.Props<any> {
-  side: 'left' | 'right';
+export interface ResizeHandleProps {
+  side: "left" | "right";
   min: number;
   max: number;
   initialValue: number;
@@ -35,7 +30,7 @@ export interface ResizeHandleProps extends React.Props<any> {
 }
 
 export interface ResizeHandleState {
-  dragging?: Boolean;
+  dragging?: boolean;
 
   startValue?: number;
   currentValue?: number;
@@ -61,8 +56,8 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
   }
 
   onMouseDown(event: MouseEvent) {
-    window.addEventListener('mouseup', this.onGlobalMouseUp);
-    window.addEventListener('mousemove', this.onGlobalMouseMove);
+    window.addEventListener("mouseup", this.onGlobalMouseUp);
+    window.addEventListener("mousemove", this.onGlobalMouseMove);
 
     var newX = this.state.currentValue;
     var eventX = this.getValueFromX(getXFromEvent(event));
@@ -78,7 +73,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
   }
 
   getValueFromX(x: number): number {
-    if (this.props.side !== 'right') {
+    if (this.props.side !== "right") {
       return this.constrainValue(x);
     }
 
@@ -107,29 +102,28 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     this.setState({
       dragging: false
     });
-    window.removeEventListener('mouseup', this.onGlobalMouseUp);
-    window.removeEventListener('mousemove', this.onGlobalMouseMove);
+    window.removeEventListener("mouseup", this.onGlobalMouseUp);
+    window.removeEventListener("mousemove", this.onGlobalMouseMove);
 
     if (!!this.props.onResizeEnd) {
       this.props.onResizeEnd(this.state.currentValue);
     }
   }
 
-
   render() {
     let { side } = this.props;
 
     let style: React.CSSProperties = {};
-    style[side] = this.state.currentValue ;
+    style[side] = this.state.currentValue;
 
-    let className = 'resize-handle ' + side;
+    let className = "resize-handle " + side;
 
     return <div
       className={className}
       style={style}
       onMouseDown={this.onMouseDown.bind(this)}
     >
-      <SvgIcon svg={require('../../icons/drag-handle.svg')}/>
+      <SvgIcon svg={require("../../icons/drag-handle.svg")} />
     </div>;
   }
 }

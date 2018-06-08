@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import './loader.scss';
+import * as React from "react";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./loader.scss";
 
-import * as React from 'react';
-import { SvgIcon } from '../svg-icon/svg-icon';
-
-export interface LoaderProps extends React.Props<any> {
+export interface LoaderProps {
 }
 
 export interface LoaderState {
@@ -30,7 +29,7 @@ export class Loader extends React.Component<LoaderProps, LoaderState> {
 
   render() {
     return <div className="loader">
-      <SvgIcon svg={require('../../icons/grid-loader.svg')}/>
+      <SvgIcon svg={require("../../icons/grid-loader.svg")} />
     </div>;
   }
 }

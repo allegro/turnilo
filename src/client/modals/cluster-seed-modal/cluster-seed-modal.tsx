@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-import './cluster-seed-modal.scss';
-
-import * as React from 'react';
-import { SupportedType, Cluster } from "../../../common/models/cluster/cluster";
-
-import { FormLabel, Button, Modal, ImmutableInput, ImmutableDropdown } from '../../components/index';
+import * as React from "react";
+import { Cluster } from "../../../common/models/cluster/cluster";
+import { CLUSTER as LABELS } from "../../../common/models/labels";
+import { indexByAttribute } from "../../../common/utils/array/array";
+import { generateUniqueName } from "../../../common/utils/string/string";
+import { Button, FormLabel, ImmutableDropdown, ImmutableInput, Modal } from "../../components/index";
 import { STRINGS } from "../../config/constants";
-import { CLUSTER as LABELS } from '../../../common/models/labels';
-import { generateUniqueName } from '../../../common/utils/string/string';
-import { indexByAttribute } from '../../../common/utils/array/array';
+import { ImmutableFormDelegate, ImmutableFormState } from "../../utils/immutable-form-delegate/immutable-form-delegate";
+import "./cluster-seed-modal.scss";
 
-import { ImmutableFormDelegate, ImmutableFormState } from '../../utils/immutable-form-delegate/immutable-form-delegate';
-
-export interface ClusterSeedModalProps extends React.Props<any> {
+export interface ClusterSeedModalProps {
   onNext: (newCluster: Cluster) => void;
   onCancel: () => void;
   clusters: Cluster[];
@@ -49,8 +46,8 @@ export class ClusterSeedModal extends React.Component<ClusterSeedModalProps, Imm
 
     this.setState({
       newInstance: new Cluster({
-        name: generateUniqueName('cl', name => indexByAttribute(clusters, 'name', name) === -1),
-        type: 'druid'
+        name: generateUniqueName("cl", name => indexByAttribute(clusters, "name", name) === -1),
+        type: "druid"
       })
     });
   }
@@ -83,16 +80,16 @@ export class ClusterSeedModal extends React.Component<ClusterSeedModalProps, Imm
       onClose={this.props.onCancel}
     >
       <form>
-        {makeLabel('type')}
-        {makeDropDownInput('type', Cluster.TYPE_VALUES.map(type => {return {value: type, label: type}; }))}
+        {makeLabel("type")}
+        {makeDropDownInput("type", Cluster.TYPE_VALUES.map(type => ({ value: type, label: type })))}
 
-        {makeLabel('host')}
-        {makeTextInput('host', /^.+$/)}
+        {makeLabel("host")}
+        {makeTextInput("host", /^.+$/)}
 
       </form>
       <div className="button-bar">
-        <Button type="primary" title={`${STRINGS.next}: ${STRINGS.configureCluster}`} onClick={this.onNext.bind(this)}/>
-        <Button className="cancel" title="Cancel" type="secondary" onClick={onCancel}/>
+        <Button type="primary" title={`${STRINGS.next}: ${STRINGS.configureCluster}`} onClick={this.onNext.bind(this)} />
+        <Button className="cancel" title="Cancel" type="secondary" onClick={onCancel} />
       </div>
 
     </Modal>;

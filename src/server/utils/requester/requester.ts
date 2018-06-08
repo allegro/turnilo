@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { $, retryRequesterFactory, verboseRequesterFactory, concurrentLimitRequesterFactory } from 'plywood';
-import { PlywoodRequester } from 'plywood-base-api';
-import { druidRequesterFactory, DruidRequestDecorator } from 'plywood-druid-requester';
-import { mySqlRequesterFactory } from 'plywood-mysql-requester';
-import { postgresRequesterFactory } from 'plywood-postgres-requester';
-import { SupportedType } from '../../../common/models/index';
+import { concurrentLimitRequesterFactory, retryRequesterFactory, verboseRequesterFactory } from "plywood";
+import { PlywoodRequester } from "plywood-base-api";
+import { DruidRequestDecorator, druidRequesterFactory } from "plywood-druid-requester";
+import { mySqlRequesterFactory } from "plywood-mysql-requester";
+import { postgresRequesterFactory } from "plywood-postgres-requester";
+import { SupportedType } from "../../../common/models/index";
 
 export interface ProperRequesterOptions {
   type: SupportedType;
@@ -52,7 +52,7 @@ export function properRequesterFactory(options: ProperRequesterOptions): Plywood
   var requester: PlywoodRequester<any>;
 
   switch (type) {
-    case 'druid':
+    case "druid":
       requester = druidRequesterFactory({
         host,
         timeout: timeout || 30000,
@@ -60,7 +60,7 @@ export function properRequesterFactory(options: ProperRequesterOptions): Plywood
       });
       break;
 
-    case 'mysql':
+    case "mysql":
       requester = mySqlRequesterFactory({
         host,
         database: options.database,
@@ -69,7 +69,7 @@ export function properRequesterFactory(options: ProperRequesterOptions): Plywood
       });
       break;
 
-    case 'postgres':
+    case "postgres":
       requester = postgresRequesterFactory({
         host,
         database: options.database,
@@ -84,8 +84,8 @@ export function properRequesterFactory(options: ProperRequesterOptions): Plywood
 
   if (retry) {
     requester = retryRequesterFactory({
-      requester: requester,
-      retry: retry,
+      requester,
+      retry,
       delay: 500,
       retryOnTimeout: false
     });
@@ -93,14 +93,14 @@ export function properRequesterFactory(options: ProperRequesterOptions): Plywood
 
   if (verbose) {
     requester = verboseRequesterFactory({
-      requester: requester
+      requester
     });
   }
 
   if (concurrentLimit) {
     requester = concurrentLimitRequesterFactory({
-      requester: requester,
-      concurrentLimit: concurrentLimit
+      requester,
+      concurrentLimit
     });
   }
 

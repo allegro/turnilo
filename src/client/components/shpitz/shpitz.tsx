@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import './shpitz.scss';
+import * as React from "react";
+import { classNames } from "../../utils/dom/dom";
+import "./shpitz.scss";
 
-import * as React from 'react';
-import { classNames } from '../../utils/dom/dom';
-
-export interface ShpitzProps extends React.Props<any> {
+export interface ShpitzProps {
   direction: string;
   style?: any;
 }
@@ -33,7 +32,7 @@ export class Shpitz extends React.Component<ShpitzProps, ShpitzState> {
   render() {
     const { direction, style } = this.props;
 
-    return <div className={classNames('shpitz', direction)} style={style}>
+    return <div className={classNames("shpitz", direction)} style={style}>
       <div className="rectangle"></div>
     </div>;
   }

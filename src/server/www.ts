@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-import * as http from 'http';
+import * as http from "http";
 
-import * as app from './app';
-import { START_SERVER, SERVER_SETTINGS } from './config';
+import * as app from "./app";
+import { SERVER_SETTINGS, START_SERVER } from "./config";
 
 if (START_SERVER) {
   var server = http.createServer(app);
 
-  server.on('error', (error: any) => {
-    if (error.syscall !== 'listen') {
+  server.on("error", (error: any) => {
+    if (error.syscall !== "listen") {
       throw error;
     }
 
     // handle specific listen errors with friendly messages
     switch (error.code) {
-      case 'EACCES':
+      case "EACCES":
         console.error(`Port ${SERVER_SETTINGS.getPort()} requires elevated privileges`);
         process.exit(1);
         break;
 
-      case 'EADDRINUSE':
+      case "EADDRINUSE":
         console.error(`Port ${SERVER_SETTINGS.getPort()} is already in use`);
         process.exit(1);
         break;
@@ -45,11 +45,11 @@ if (START_SERVER) {
     }
   });
 
-  server.on('listening', () => {
+  server.on("listening", () => {
     var address = server.address();
     console.log(`Turnilo is listening on address ${address.address} port ${address.port}`);
   });
 
-  app.set('port', SERVER_SETTINGS.getPort());
+  app.set("port", SERVER_SETTINGS.getPort());
   server.listen(SERVER_SETTINGS.getPort(), SERVER_SETTINGS.getServerHost());
 }

@@ -15,17 +15,13 @@
  * limitations under the License.
  */
 
-import './form-label.scss';
+import * as React from "react";
+import { firstUp } from "../../../common/utils/string/string";
+import { classNames } from "../../utils/dom/dom";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./form-label.scss";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { $, Expression, Executor, Dataset } from 'plywood';
-import { Stage, Clicker, Essence, DataCube, Filter, Dimension, Measure } from '../../../common/models/index';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { classNames } from '../../utils/dom/dom';
-import { firstUp } from '../../../common/utils/string/string';
-
-export interface FormLabelProps extends React.Props<any> {
+export interface FormLabelProps {
   label?: string;
   helpText?: string;
   errorText?: string;
@@ -46,7 +42,7 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
 
   static simpleGenerator(labels: any, errors: any, isBubble = false) {
     return (name: string) => {
-      let myLabels = labels[name] || {label: '', description: ''};
+      let myLabels = labels[name] || { label: "", description: "" };
 
       return <FormLabel
         isBubble={isBubble}
@@ -60,21 +56,21 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
   constructor(props: FormLabelProps) {
     super(props);
 
-    this.state = {helpVisible: false};
+    this.state = { helpVisible: false };
   }
 
   componentWillReceiveProps(nextProps: FormLabelProps) {
     if (nextProps.errorText) {
-      if (!this.state.helpVisible) this.setState({helpVisible: true, hideHelpIfNoError: true});
+      if (!this.state.helpVisible) this.setState({ helpVisible: true, hideHelpIfNoError: true });
     } else if (this.state.hideHelpIfNoError) {
-      this.setState({helpVisible: false, hideHelpIfNoError: false});
+      this.setState({ helpVisible: false, hideHelpIfNoError: false });
     } else {
-      this.setState({hideHelpIfNoError: false});
+      this.setState({ hideHelpIfNoError: false });
     }
   }
 
   onHelpClick() {
-    this.setState({helpVisible: !this.state.helpVisible, hideHelpIfNoError: false});
+    this.setState({ helpVisible: !this.state.helpVisible, hideHelpIfNoError: false });
   }
 
   renderIcon(): JSX.Element {
@@ -86,18 +82,18 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
 
     if (errorText) {
       return <div className="icon-container error" onClick={this.onHelpClick.bind(this)}>
-        <SvgIcon className="icon" svg={require(`../../icons/help.svg`)}/>
+        <SvgIcon className="icon" svg={require("../../icons/help.svg")} />
       </div>;
     }
 
     if (helpVisible) {
       return <div className="icon-container visible" onClick={this.onHelpClick.bind(this)}>
-        <SvgIcon className="icon" svg={require(`../../icons/help.svg`)}/>
+        <SvgIcon className="icon" svg={require("../../icons/help.svg")} />
       </div>;
     }
 
     return <div className="icon-container" onClick={this.onHelpClick.bind(this)}>
-      <SvgIcon className="icon" svg={require(`../../icons/help.svg`)}/>
+      <SvgIcon className="icon" svg={require("../../icons/help.svg")} />
     </div>;
   }
 
@@ -109,14 +105,14 @@ export class FormLabel extends React.Component<FormLabelProps, FormLabelState> {
 
     return <div className="additional-text">
       {errorText ? <div className="error-text">{firstUp(errorText)}</div> : null}
-      {helpVisible ? <div className="help-text" dangerouslySetInnerHTML={{__html: helpText}}></div> : null}
+      {helpVisible ? <div className="help-text" dangerouslySetInnerHTML={{ __html: helpText }}></div> : null}
     </div>;
   }
 
   render() {
     const { label, errorText, isBubble } = this.props;
 
-    return <div className={classNames('form-label', {error: !!errorText, bubble: isBubble})}>
+    return <div className={classNames("form-label", { error: !!errorText, bubble: isBubble })}>
       <div className="label">{label}</div>
       {this.renderIcon()}
       {this.renderAdditionalText()}

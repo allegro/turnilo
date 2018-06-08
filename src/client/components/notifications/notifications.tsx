@@ -15,15 +15,10 @@
  * limitations under the License.
  */
 
-import './notifications.scss';
-
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { classNames } from '../../utils/dom/dom';
-import { SvgIcon } from '../svg-icon/svg-icon';
-import { Fn } from '../../../common/utils/general/general';
-import { BodyPortal, Modal, Button, ButtonType } from '../index';
-import { NotificationCard } from './notification-card';
+import * as React from "react";
+import { BodyPortal, Button, ButtonType, Modal } from "../index";
+import { NotificationCard } from "./notification-card";
+import "./notifications.scss";
 
 export interface NotificationAction {
   label: string;
@@ -61,7 +56,7 @@ export class Notifier {
 
   static question: Question = null;
 
-  static listeners: ((notifications: Notification[], question?: Question) => void)[] = [];
+  static listeners: Array<(notifications: Notification[], question?: Question) => void> = [];
 
   private static create(notification: Notification): number {
     notification.id = Notifier.counter++;
@@ -73,19 +68,19 @@ export class Notifier {
   }
 
   private static callListeners() {
-    Notifier.listeners.forEach((cb) => cb(Notifier.notifications, Notifier.question));
+    Notifier.listeners.forEach(cb => cb(Notifier.notifications, Notifier.question));
   }
 
   public static info(title: string, message?: string) {
-    Notifier.create({title, message, priority: 'info'});
+    Notifier.create({ title, message, priority: "info" });
   }
 
   public static failure(title: string, message?: string) {
-    Notifier.create({title, message, priority: 'failure'});
+    Notifier.create({ title, message, priority: "failure" });
   }
 
   public static success(title: string, action?: NotificationAction) {
-    Notifier.create({title, priority: 'success', action});
+    Notifier.create({ title, priority: "success", action });
   }
 
   public static subscribe(callback: (notifications: Notification[], question: Question) => void) {
@@ -94,7 +89,7 @@ export class Notifier {
 
   // Stickers
   public static stick(text: string): number {
-    return Notifier.create({title: text, priority: 'info', muted: true});
+    return Notifier.create({ title: text, priority: "info", muted: true });
   }
 
   public static removeSticker(id: number) {
@@ -109,7 +104,7 @@ export class Notifier {
     });
 
     if (!notification) {
-      console.warn('Trying to remove a non existing sticker');
+      console.warn("Trying to remove a non existing sticker");
       return;
     }
 
@@ -121,7 +116,7 @@ export class Notifier {
 
   // Questions
   public static ask(question: Question) {
-    if (Notifier.question) throw new Error('There is already a pending question');
+    if (Notifier.question) throw new Error("There is already a pending question");
 
     Notifier.question = question;
 
@@ -129,7 +124,7 @@ export class Notifier {
   }
 
   public static removeQuestion() {
-    if (!Notifier.question) throw new Error('No question to remove');
+    if (!Notifier.question) throw new Error("No question to remove");
 
     Notifier.question = undefined;
 
@@ -145,24 +140,23 @@ export class Notifier {
     const index = Notifier.notifications.indexOf(notification);
 
     if (index === -1) {
-      throw new Error('Trying to remove an unknown notification');
+      throw new Error("Trying to remove an unknown notification");
     }
 
     Notifier.notifications.splice(index, 1);
-    Notifier.listeners.forEach((cb) => cb(Notifier.notifications));
+    Notifier.listeners.forEach(cb => cb(Notifier.notifications));
   }
 
   public static unsubscribe(callback: (notifications: Notification[], question: Question) => void) {
     const index = Notifier.listeners.indexOf(callback);
 
     if (index === -1) {
-      throw new Error('Trying to unsubscribe something that never subscribed');
+      throw new Error("Trying to unsubscribe something that never subscribed");
     }
 
     Notifier.listeners.splice(index, 1);
   }
 }
-
 
 export interface NotificationsState {
   notifications: Notification[];
@@ -171,7 +165,7 @@ export interface NotificationsState {
 export class Notifications extends React.Component<React.Props<any>, NotificationsState> {
   constructor(props: React.Props<any>) {
     super(props);
-    this.state = {notifications: []};
+    this.state = { notifications: [] };
     this.onChange = this.onChange.bind(this);
   }
 
@@ -184,7 +178,7 @@ export class Notifications extends React.Component<React.Props<any>, Notificatio
   }
 
   onChange(notifications: Notification[]) {
-    this.setState({notifications});
+    this.setState({ notifications });
   }
 
   renderCards(): JSX.Element[] {
@@ -196,17 +190,16 @@ export class Notifications extends React.Component<React.Props<any>, Notificatio
 
       cumuledHeight += [title, message, action].filter(Boolean).length * 30 + 5;
 
-      return <NotificationCard model={n} key={n.id} top={top}/>;
+      return <NotificationCard model={n} key={n.id} top={top} />;
     });
   }
 
   render() {
-    return <BodyPortal left={'50%'} top={'10px'} isAboveAll={true}>
+    return <BodyPortal left={"50%"} top={"10px"} isAboveAll={true}>
       <div className="notifications">{this.renderCards()}</div>
     </BodyPortal>;
   }
 }
-
 
 export interface QuestionsState {
   question?: Question;
@@ -228,7 +221,7 @@ export class Questions extends React.Component<React.Props<any>, QuestionsState>
   }
 
   onChange(notifications: Notification[], question: Question) {
-    this.setState({question});
+    this.setState({ question });
   }
 
   render() {
@@ -247,8 +240,8 @@ export class Questions extends React.Component<React.Props<any>, QuestionsState>
       }
 
       <div className="button-bar">
-        {question.choices.map(({label, callback, type, className}, i) => {
-          return <Button key={i} className={className} title={label} type={type} onClick={callback}/>;
+        {question.choices.map(({ label, callback, type, className }, i) => {
+          return <Button key={i} className={className} title={label} type={type} onClick={callback} />;
         })}
       </div>
 

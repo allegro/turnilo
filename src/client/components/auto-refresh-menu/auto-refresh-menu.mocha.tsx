@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as TestUtils from 'react-dom/test-utils';
-import { findDOMNode, renderIntoDocument } from '../../utils/test-utils';
+import { expect } from "chai";
+import * as React from "react";
+import * as TestUtils from "react-dom/test-utils";
+import { DataCubeMock, TimekeeperMock } from "../../../common/models/mocks";
+import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
+import { AutoRefreshMenu } from "./auto-refresh-menu";
 
-import { DataCubeMock, TimekeeperMock } from '../../../common/models/mocks';
-
-import { AutoRefreshMenu } from './auto-refresh-menu';
-
-describe('AutoRefreshMenu', () => {
-  it('adds the correct class', () => {
-    var openOn = document.createElement('div');
+describe("AutoRefreshMenu", () => {
+  it("adds the correct class", () => {
+    var openOn = document.createElement("div");
 
     var dataCube = DataCubeMock.wiki();
 
@@ -44,8 +41,8 @@ describe('AutoRefreshMenu', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(findDOMNode(renderedComponent).className, 'should contain class').to.contain('auto-refresh-menu');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("auto-refresh-menu");
   });
 
 });

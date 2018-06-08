@@ -15,40 +15,60 @@
  * limitations under the License.
  */
 
-import './cube-view.scss';
-
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { Expression, Dataset } from 'plywood';
-import { Timezone } from 'chronoshift';
-import { Fn } from '../../../common/utils/general/general';
-import { FunctionSlot } from '../../utils/function-slot/function-slot';
-import { DragManager } from '../../utils/drag-manager/drag-manager';
-import { Colors, Clicker, Timekeeper, DataCube, Dimension, Essence, Filter, Stage, Measure,
-  SplitCombine, Splits, VisStrategy, VisualizationProps, User,
-  Customization, Manifest, ViewSupervisor, Device, DeviceSize } from '../../../common/models/index';
-import { MANIFESTS } from '../../../common/manifests/index';
-
-import { RawDataModal } from '../../modals/index';
-
+import { Timezone } from "chronoshift";
+import { Dataset, Expression } from "plywood";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { MANIFESTS } from "../../../common/manifests/index";
 import {
-  DimensionMeasurePanel, FilterTile, SplitTile, VisSelector, ManualFallback, DropIndicator,
-  PinboardPanel, ResizeHandle, GlobalEventListener, Modal
-} from '../../components/index';
-
-import { SupervisedCubeHeaderBar } from './supervised-cube-header-bar/supervised-cube-header-bar';
-import { CubeHeaderBar } from './cube-header-bar/cube-header-bar';
-
-import { getVisualizationComponent } from '../../visualizations/index';
-import * as localStorage from '../../utils/local-storage/local-storage';
-import {ViewDefinitionModal} from "../../modals/view-definition-modal/view-definition-modal";
+  Clicker,
+  Colors,
+  Customization,
+  DataCube,
+  Device,
+  DeviceSize,
+  Dimension,
+  Essence,
+  Filter,
+  Manifest,
+  Measure,
+  SplitCombine,
+  Splits,
+  Stage,
+  Timekeeper,
+  User,
+  ViewSupervisor,
+  VisStrategy,
+  VisualizationProps
+} from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import {
+  DimensionMeasurePanel,
+  DropIndicator,
+  FilterTile,
+  GlobalEventListener,
+  ManualFallback,
+  PinboardPanel,
+  ResizeHandle,
+  SplitTile,
+  VisSelector
+} from "../../components/index";
+import { RawDataModal } from "../../modals/index";
+import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
+import { DragManager } from "../../utils/drag-manager/drag-manager";
+import { FunctionSlot } from "../../utils/function-slot/function-slot";
+import * as localStorage from "../../utils/local-storage/local-storage";
+import { getVisualizationComponent } from "../../visualizations/index";
+import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
+import "./cube-view.scss";
+import { SupervisedCubeHeaderBar } from "./supervised-cube-header-bar/supervised-cube-header-bar";
 
 export interface CubeViewLayout {
   dimensionPanelWidth: number;
   pinboardWidth: number;
 }
 
-export interface CubeViewProps extends React.Props<any> {
+export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
   maxSplits?: number;
@@ -105,73 +125,73 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
     this.clicker = {
       changeFilter: (filter: Filter, colors?: Colors) => {
-        let {essence} = this.state;
+        let { essence } = this.state;
         essence = essence.changeFilter(filter);
         if (colors) essence = essence.changeColors(colors);
-        this.setState({essence});
+        this.setState({ essence });
       },
       changeTimeSelection: (selection: Expression) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.changeTimeSelection(selection)});
+        const { essence } = this.state;
+        this.setState({ essence: essence.changeTimeSelection(selection) });
       },
       changeSplits: (splits: Splits, strategy: VisStrategy, colors?: Colors) => {
-        let {essence} = this.state;
+        let { essence } = this.state;
         if (colors) essence = essence.changeColors(colors);
-        this.setState({essence: essence.changeSplits(splits, strategy)});
+        this.setState({ essence: essence.changeSplits(splits, strategy) });
       },
       changeSplit: (split: SplitCombine, strategy: VisStrategy) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.changeSplit(split, strategy)});
+        const { essence } = this.state;
+        this.setState({ essence: essence.changeSplit(split, strategy) });
       },
       addSplit: (split: SplitCombine, strategy: VisStrategy) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.addSplit(split, strategy)});
+        const { essence } = this.state;
+        this.setState({ essence: essence.addSplit(split, strategy) });
       },
       removeSplit: (split: SplitCombine, strategy: VisStrategy) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.removeSplit(split, strategy)});
+        const { essence } = this.state;
+        this.setState({ essence: essence.removeSplit(split, strategy) });
       },
       changeColors: (colors: Colors) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.changeColors(colors)});
+        const { essence } = this.state;
+        this.setState({ essence: essence.changeColors(colors) });
       },
       changeVisualization: (visualization: Manifest) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.changeVisualization(visualization)});
+        const { essence } = this.state;
+        this.setState({ essence: essence.changeVisualization(visualization) });
       },
       pin: (dimension: Dimension) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.pin(dimension)});
+        const { essence } = this.state;
+        this.setState({ essence: essence.pin(dimension) });
       },
       unpin: (dimension: Dimension) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.unpin(dimension)});
+        const { essence } = this.state;
+        this.setState({ essence: essence.unpin(dimension) });
       },
       changePinnedSortMeasure: (measure: Measure) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.changePinnedSortMeasure(measure)});
+        const { essence } = this.state;
+        this.setState({ essence: essence.changePinnedSortMeasure(measure) });
       },
       toggleMultiMeasureMode: () => {
-        const {essence} = this.state;
-        this.setState({essence: essence.toggleMultiMeasureMode()});
+        const { essence } = this.state;
+        this.setState({ essence: essence.toggleMultiMeasureMode() });
       },
       toggleEffectiveMeasure: (measure: Measure) => {
-        this.setState((prevState) => {
+        this.setState(prevState => {
           const { essence: prevEssence } = prevState;
           return { essence: prevEssence.toggleEffectiveMeasure(measure) };
         });
       },
       changeHighlight: (owner: string, measure: string, delta: Filter) => {
-        const {essence} = this.state;
-        this.setState({essence: essence.changeHighlight(owner, measure, delta)});
+        const { essence } = this.state;
+        this.setState({ essence: essence.changeHighlight(owner, measure, delta) });
       },
       acceptHighlight: () => {
-        const {essence} = this.state;
-        this.setState({essence: essence.acceptHighlight()});
+        const { essence } = this.state;
+        this.setState({ essence: essence.acceptHighlight() });
       },
       dropHighlight: () => {
-        const {essence} = this.state;
-        this.setState({essence: essence.dropHighlight()});
+        const { essence } = this.state;
+        this.setState({ essence: essence.dropHighlight() });
       }
     };
   }
@@ -182,7 +202,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({ updatingMaxTime: true });
 
     DataCube.queryMaxTime(dataCube)
-      .then((updatedMaxTime) => {
+      .then(updatedMaxTime => {
         if (!this.mounted) return;
         this.setState({
           timekeeper: timekeeper.updateTime(dataCube.name, updatedMaxTime),
@@ -193,8 +213,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
-    if (!dataCube)
+    if (!dataCube) {
       throw new Error("Data cube is required.");
+    }
 
     this.setState({
       timekeeper: initTimekeeper || Timekeeper.EMPTY
@@ -224,8 +245,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   componentWillReceiveProps(nextProps: CubeViewProps) {
     const { hash, dataCube } = this.props;
-    if (!nextProps.dataCube)
+    if (!nextProps.dataCube) {
       throw new Error("Data cube is required.");
+    }
 
     if (dataCube.name !== nextProps.dataCube.name || hash !== nextProps.hash) {
       this.updateEssenceFromHashOrDataCube(nextProps.hash, nextProps.dataCube);
@@ -260,17 +282,19 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   getEssenceFromDataCube(dataCube: DataCube): Essence {
-    const essence = Essence.fromDataCube(dataCube, { dataCube: dataCube, visualizations: MANIFESTS });
-    const isMulti = !!localStorage.get('is-multi-measure');
+    const essence = Essence.fromDataCube(dataCube, { dataCube, visualizations: MANIFESTS });
+    const isMulti = !!localStorage.get("is-multi-measure");
     return essence.multiMeasureMode !== isMulti ? essence.toggleMultiMeasureMode() : essence;
   }
 
   getEssenceFromHash(hash: string, dataCube: DataCube): Essence {
-    if (!dataCube)
+    if (!dataCube) {
       throw new Error("Data cube is required.");
+    }
 
-    if (!hash)
+    if (!hash) {
       throw new Error("Hash is required.");
+    }
 
     const { getEssenceFromHash } = this.props;
     return getEssenceFromHash(hash, dataCube, MANIFESTS);
@@ -301,7 +325,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   dragOver(e: DragEvent) {
     if (!this.canDrop(e)) return;
-    e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = "move";
     e.preventDefault();
   }
 
@@ -366,12 +390,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   triggerFilterMenu(dimension: Dimension) {
     if (!dimension) return;
-    (this.refs['filterTile'] as FilterTile).filterMenuRequest(dimension);
+    (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
   }
 
   triggerSplitMenu(dimension: Dimension) {
     if (!dimension) return;
-    (this.refs['splitTile'] as SplitTile).splitMenuRequest(dimension);
+    (this.refs["splitTile"] as SplitTile).splitMenuRequest(dimension);
   }
 
   changeTimezone(newTimezone: Timezone): void {
@@ -381,18 +405,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   getStoredLayout(): CubeViewLayout {
-    return localStorage.get('cube-view-layout') || {dimensionPanelWidth: 240, pinboardWidth: 240};
+    return localStorage.get("cube-view-layout") || { dimensionPanelWidth: 240, pinboardWidth: 240 };
   }
 
   storeLayout(layout: CubeViewLayout) {
-    localStorage.set('cube-view-layout', layout);
+    localStorage.set("cube-view-layout", layout);
   }
 
   onDimensionPanelResize(value: number) {
     let { layout } = this.state;
     layout.dimensionPanelWidth = value;
 
-    this.setState({layout});
+    this.setState({ layout });
     this.storeLayout(layout);
   }
 
@@ -400,7 +424,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     let { layout } = this.state;
     layout.pinboardWidth = value;
 
-    this.setState({layout});
+    this.setState({ layout });
     this.storeLayout(layout);
   }
 
@@ -448,16 +472,16 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     }
 
     let styles = {
-      dimensionMeasurePanel: {width: layout.dimensionPanelWidth},
-      centerPanel: {left: layout.dimensionPanelWidth, right: layout.pinboardWidth},
-      pinboardPanel: {width: layout.pinboardWidth}
+      dimensionMeasurePanel: { width: layout.dimensionPanelWidth },
+      centerPanel: { left: layout.dimensionPanelWidth, right: layout.pinboardWidth },
+      pinboardPanel: { width: layout.pinboardWidth }
     };
 
-    if (deviceSize === 'small') {
+    if (deviceSize === "small") {
       styles = {
-        dimensionMeasurePanel: {width: 200},
-        centerPanel: {left: 200, right: 200},
-        pinboardPanel: {width: 200}
+        dimensionMeasurePanel: { width: 200 },
+        centerPanel: { left: 200, right: 200 },
+        pinboardPanel: { width: 200 }
       };
     }
 
@@ -490,12 +514,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       />;
     }
 
-    return <div className='cube-view'>
+    return <div className="cube-view">
       <GlobalEventListener
         resize={this.globalResizeListener.bind(this)}
       />
       {headerBar}
-      <div className="container" ref='container'>
+      <div className="container" ref="container">
         <DimensionMeasurePanel
           style={styles.dimensionMeasurePanel}
           clicker={clicker}
@@ -505,7 +529,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           triggerSplitMenu={this.triggerSplitMenu.bind(this)}
         />
 
-        {deviceSize !== 'small' ? <ResizeHandle
+        {deviceSize !== "small" ? <ResizeHandle
           side="left"
           initialValue={layout.dimensionPanelWidth}
           onResize={this.onDimensionPanelResize.bind(this)}
@@ -514,9 +538,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           max={MAX_PANEL_WIDTH}
         /> : null}
 
-        <div className='center-panel' style={styles.centerPanel}>
-          <div className='center-top-bar'>
-            <div className='filter-split-section'>
+        <div className="center-panel" style={styles.centerPanel}>
+          <div className="center-top-bar">
+            <div className="filter-split-section">
               <FilterTile
                 ref="filterTile"
                 clicker={clicker}
@@ -531,15 +555,15 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 menuStage={visualizationStage}
               />
             </div>
-            <VisSelector clicker={clicker} essence={essence}/>
+            <VisSelector clicker={clicker} essence={essence} />
           </div>
           <div
-            className='center-main'
+            className="center-main"
             onDragEnter={this.dragEnter.bind(this)}
           >
-            <div className='visualization' ref='visualization'>{visElement}</div>
+            <div className="visualization" ref="visualization">{visElement}</div>
             {manualFallback}
-            {dragOver ? <DropIndicator/> : null}
+            {dragOver ? <DropIndicator /> : null}
             {dragOver ? <div
               className="drag-mask"
               onDragOver={this.dragOver.bind(this)}
@@ -550,7 +574,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           </div>
         </div>
 
-        {deviceSize !== 'small' ? <ResizeHandle
+        {deviceSize !== "small" ? <ResizeHandle
           side="right"
           initialValue={layout.pinboardWidth}
           onResize={this.onPinboardPanelResize.bind(this)}

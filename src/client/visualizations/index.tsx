@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import { SimpleArray } from 'immutable-class';
-import { Manifest } from '../../common/models/manifest/manifest';
+import { SimpleArray } from "immutable-class";
+import { Manifest } from "../../common/models/manifest/manifest";
 
-import { BarChart } from './bar-chart/bar-chart';
-import { BaseVisualization } from './base-visualization/base-visualization';
-import { LineChart } from './line-chart/line-chart';
-import { Table } from './table/table';
-import { Totals } from './totals/totals';
+import { BarChart } from "./bar-chart/bar-chart";
+import { BaseVisualization } from "./base-visualization/base-visualization";
+import { LineChart } from "./line-chart/line-chart";
+import { Table } from "./table/table";
+import { Totals } from "./totals/totals";
 
 // TODO, back to: const VIS_COMPONENTS: Array<typeof BaseVisualization> = [
-const VIS_COMPONENTS: Array<any> = [
+const VIS_COMPONENTS: any[] = [
   Totals,
   Table,
   LineChart,
@@ -34,5 +34,5 @@ const VIS_COMPONENTS: Array<any> = [
 
 export function getVisualizationComponent(manifest: Manifest): typeof BaseVisualization {
   var manifestName = manifest.name;
-  return SimpleArray.find(VIS_COMPONENTS, (v) => (v as any).id === manifestName);
+  return SimpleArray.find(VIS_COMPONENTS, v => (v as any).id === manifestName);
 }

@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-import './supervised-cube-header-bar.scss';
+import { Timezone } from "chronoshift";
+import * as React from "react";
+import { Customization, Essence, ViewSupervisor } from "../../../../common/models/index";
+import { Button, SettingsMenu, SvgIcon } from "../../../components/index";
+import "./supervised-cube-header-bar.scss";
 
-import * as React from 'react';
-import { Duration, Timezone } from 'chronoshift';
-import { classNames } from "../../../utils/dom/dom";
-
-import { STRINGS } from '../../../config/constants';
-
-import { SvgIcon, HilukMenu, AutoRefreshMenu, UserMenu, Button, SettingsMenu } from '../../../components/index';
-import { Clicker, Essence, DataCube, User, Customization, ExternalView, ViewSupervisor } from '../../../../common/models/index';
-
-export interface SupervisedCubeHeaderBarProps extends React.Props<any> {
+export interface SupervisedCubeHeaderBarProps {
   essence: Essence;
   supervisor: ViewSupervisor;
   customization?: Customization;
@@ -45,7 +40,6 @@ export class SupervisedCubeHeaderBar extends React.Component<SupervisedCubeHeade
     super(props);
     this.state = {};
   }
-
 
   // Settings menu
 
@@ -86,7 +80,7 @@ export class SupervisedCubeHeaderBar extends React.Component<SupervisedCubeHeade
     if (supervisor.save) {
       supervisor.save(essence);
     } else if (supervisor.getConfirmationModal) {
-      this.setState({needsConfirmation: true});
+      this.setState({ needsConfirmation: true });
     }
   }
 
@@ -106,7 +100,7 @@ export class SupervisedCubeHeaderBar extends React.Component<SupervisedCubeHeade
     if (needsConfirmation) {
       modal = React.cloneElement(
         supervisor.getConfirmationModal(essence),
-        {onCancel: () => this.setState({needsConfirmation: false})}
+        { onCancel: () => this.setState({ needsConfirmation: false }) }
       );
     }
 
@@ -116,11 +110,11 @@ export class SupervisedCubeHeaderBar extends React.Component<SupervisedCubeHeade
       </div>
       <div className="right-bar">
         <div className="icon-button settings" onClick={this.onSettingsMenuClick.bind(this)}>
-          <SvgIcon className="settings-icon" svg={require('../../../icons/full-settings.svg')}/>
+          <SvgIcon className="settings-icon" svg={require("../../../icons/full-settings.svg")} />
         </div>
         <div className="button-group">
-          <Button className="cancel" title="Cancel" type="secondary" onClick={supervisor.cancel}/>
-          <Button className="save" title={supervisor.saveLabel || 'Save'} type="primary" onClick={this.onSave.bind(this)}/>
+          <Button className="cancel" title="Cancel" type="secondary" onClick={supervisor.cancel} />
+          <Button className="save" title={supervisor.saveLabel || "Save"} type="primary" onClick={this.onSave.bind(this)} />
         </div>
       </div>
       {this.renderSettingsMenu()}

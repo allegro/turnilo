@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
+import { renderIntoDocument } from "../../utils/test-utils";
+import { QueryError } from "./query-error";
 
-import { renderIntoDocument } from '../../utils/test-utils';
-
-import * as TestUtils from 'react-dom/test-utils';
-
-import { $, Expression } from 'plywood';
-import { QueryError } from './query-error';
-
-describe('QueryError', () => {
-  it('adds the correct class', () => {
+describe("QueryError", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <QueryError
         error="This is a bad query!"
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('query-error');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("query-error");
   });
 
 });

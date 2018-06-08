@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-export type DeviceSize = 'small' | 'medium' | 'large';
+export type DeviceSize = "small" | "medium" | "large";
 
 export class Device {
   static getSize(): DeviceSize {
-    if (window.innerWidth <= 1080) return 'small';
-    if (window.innerWidth <= 1250) return 'medium';
+    if (window.innerWidth <= 1080) return "small";
+    if (window.innerWidth <= 1250) return "medium";
 
-    return 'large';
+    return "large";
   }
 }

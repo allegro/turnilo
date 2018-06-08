@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
@@ -15,11 +16,11 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from 'immutable-class';
-import { $, Expression, RefExpression, SortExpression } from 'plywood';
-import { Dimension, DimensionJS } from '../dimension/dimension';
-import { Measure, MeasureJS } from '../measure/measure';
-import { DataCube } from '../data-cube/data-cube';
+import { Class, Instance } from "immutable-class";
+import { $, Expression, RefExpression, SortExpression } from "plywood";
+import { DataCube } from "../data-cube/data-cube";
+import { Dimension, DimensionJS } from "../dimension/dimension";
+import { Measure, MeasureJS } from "../measure/measure";
 
 export interface SortOnValue {
   dimension?: Dimension;
@@ -32,6 +33,7 @@ export interface SortOnJS {
 }
 
 var check: Class<SortOnValue, SortOnJS>;
+
 export class SortOn implements Instance<SortOnValue, SortOnJS> {
 
   static isSortOn(candidate: any): candidate is SortOn {
@@ -128,4 +130,5 @@ export class SortOn implements Instance<SortOnValue, SortOnJS> {
     return $(this.toName());
   }
 }
+
 check = SortOn;

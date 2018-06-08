@@ -15,41 +15,39 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { testImmutableClass } from "immutable-class-tester";
 
-import { $, Expression } from 'plywood';
-import { SplitCombine, SplitCombineJS } from './split-combine';
+import { SplitCombine, SplitCombineJS } from "./split-combine";
 
-describe('SplitCombine', () => {
-  it('is an immutable class', () => {
+describe("SplitCombine", () => {
+  it("is an immutable class", () => {
     testImmutableClass<SplitCombineJS>(SplitCombine, [
       {
-        expression: { op: 'ref', name: 'language' }
+        expression: { op: "ref", name: "language" }
       },
       {
-        expression: { op: 'ref', name: 'lookup' }
+        expression: { op: "ref", name: "lookup" }
       },
       {
-        expression: { op: 'ref', name: 'time' },
+        expression: { op: "ref", name: "time" },
         bucketAction: {
-          op: 'in',
+          op: "in",
           expression: {
-            'op': 'literal',
-            'value': { 'setType': 'STRING', 'elements': ['he'] },
-            'type': 'SET'
+            op: "literal",
+            value: { setType: "STRING", elements: ["he"] },
+            type: "SET"
           }
         },
         sortAction: {
-          op: 'sort',
-          direction: 'ascending',
+          op: "sort",
+          direction: "ascending",
           expression: {
-            op: 'ref',
-            name: 'time'
+            op: "ref",
+            name: "time"
           }
         },
         limitAction: {
-          op: 'limit',
+          op: "limit",
           value: 2
         }
       }

@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Manifest, Resolve } from '../../models/manifest/manifest';
-import { Splits } from '../../models/splits/splits';
+import { Manifest, Resolve } from "../../models/manifest/manifest";
+import { Splits } from "../../models/splits/splits";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
@@ -27,8 +27,8 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .build();
 
 export const TOTALS_MANIFEST = new Manifest(
-  'totals',
-  'Totals',
+  "totals",
+  "Totals",
   rulesEvaluator,
-  'multi'
+  "multi"
 );

@@ -15,31 +15,46 @@
  * limitations under the License.
  */
 
-import { Expression } from 'plywood';
-import { Manifest } from '../manifest/manifest';
-import { Filter } from '../filter/filter';
-import { SplitCombine } from '../split-combine/split-combine';
-import { Splits } from '../splits/splits';
-import { Dimension } from '../dimension/dimension';
-import { Measure } from '../measure/measure';
-import { Colors } from '../colors/colors';
-import { VisStrategy } from '../essence/essence';
+import { Expression } from "plywood";
+import { Colors } from "../colors/colors";
+import { Dimension } from "../dimension/dimension";
+import { VisStrategy } from "../essence/essence";
+import { Filter } from "../filter/filter";
+import { Manifest } from "../manifest/manifest";
+import { Measure } from "../measure/measure";
+import { SplitCombine } from "../split-combine/split-combine";
+import { Splits } from "../splits/splits";
 
 export interface Clicker {
   changeTimeSelection?(selection: Expression): void;
+
   changeFilter?(filter: Filter, colors?: Colors): void;
+
   changeSplits?(splits: Splits, strategy: VisStrategy, colors?: Colors): void;
+
   changeSplit?(split: SplitCombine, strategy: VisStrategy): void;
+
   addSplit?(split: SplitCombine, strategy: VisStrategy): void;
+
   removeSplit?(split: SplitCombine, strategy: VisStrategy): void;
+
   changeColors?(colors: Colors): void;
+
   changeVisualization?(visualization: Manifest): void;
+
   pin?(dimension: Dimension): void;
+
   unpin?(dimension: Dimension): void;
+
   changePinnedSortMeasure?(measure: Measure): void;
+
   toggleMultiMeasureMode?(): void;
+
   toggleEffectiveMeasure?(measure: Measure): void;
+
   changeHighlight?(owner: string, measure: string, delta: Filter): void;
+
   acceptHighlight?(): void;
+
   dropHighlight?(): void;
 }

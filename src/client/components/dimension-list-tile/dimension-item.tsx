@@ -19,7 +19,7 @@ import { DragEvent, MouseEvent, PureComponent } from "react";
 import { HighlightString, SvgIcon } from "..";
 import { classNames } from "../../utils/dom/dom";
 
-export const DIMENSION_CLASS_NAME = 'dimension';
+export const DIMENSION_CLASS_NAME = "dimension";
 
 export interface DimensionItemProps {
   name: string;
@@ -50,7 +50,7 @@ export class DimensionItem extends PureComponent<DimensionItemProps, {}> {
 
     const className = classNames(
       DIMENSION_CLASS_NAME,
-      'type-' + classSuffix,
+      "type-" + classSuffix,
       {
         selected
       }
@@ -64,7 +64,7 @@ export class DimensionItem extends PureComponent<DimensionItemProps, {}> {
       onDragStart={this.handleDragStart}
     >
       <div className="icon">
-        <SvgIcon svg={require('../../icons/dim-' + classSuffix + '.svg')} />
+        <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
       </div>
       <HighlightString className={classNames("label")} text={title} highlight={searchText} />
 

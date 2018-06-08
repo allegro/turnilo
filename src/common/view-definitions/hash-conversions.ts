@@ -18,7 +18,7 @@ import { compressToBase64, decompressFromBase64 } from "lz-string";
 
 export function arrayToHash(array: string[]): string {
   const concatenated = array
-    .map((element) => JSON.stringify(element || null))
+    .map(element => JSON.stringify(element || null))
     .join(",");
 
   return compressToBase64(concatenated);
@@ -30,10 +30,11 @@ export function objectToHash(anyObject: any): string {
 
 export function hashToArray(hash: string): any[] {
   const decompressed = decompressFromBase64(hash);
-  const jsArray = JSON.parse('[' + decompressed + ']');
+  const jsArray = JSON.parse("[" + decompressed + "]");
 
-  if (!Array.isArray(jsArray))
+  if (!Array.isArray(jsArray)) {
     throw new Error("Decoded hash should be an array.");
+  }
 
   return jsArray;
 }
@@ -41,8 +42,9 @@ export function hashToArray(hash: string): any[] {
 export function hashToObject(hash: string): any {
   const jsObject = JSON.parse(decompressFromBase64(hash));
 
-  if (!jsObject || jsObject.constructor !== Object)
+  if (!jsObject || jsObject.constructor !== Object) {
     throw new Error("Decoded hash should be an object.");
+  }
 
   return jsObject;
 }

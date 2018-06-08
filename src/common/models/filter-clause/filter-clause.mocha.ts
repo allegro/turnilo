@@ -15,87 +15,85 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { expect } from "chai";
+import { Timezone } from "chronoshift";
+import { testImmutableClass } from "immutable-class-tester";
+import { FilterClause, FilterClauseJS, SupportedAction } from "./filter-clause";
 
-import { Timezone, Duration } from 'chronoshift';
-import { $, Expression } from 'plywood';
-import { FilterClause, FilterClauseJS, SupportedAction } from './filter-clause';
-
-describe('FilterClause', () => {
-  it('is an immutable class', () => {
+describe("FilterClause", () => {
+  it("is an immutable class", () => {
     testImmutableClass<FilterClauseJS>(FilterClause, [
       {
-        expression: { op: 'ref', name: 'language' },
+        expression: { op: "ref", name: "language" },
         selection: {
-          op: 'literal',
+          op: "literal",
           value: {
-            "setType": "STRING",
-            "elements": ["en"]
+            setType: "STRING",
+            elements: ["en"]
           },
-          "type": "SET"
+          type: "SET"
         }
       },
       {
-        expression: { op: 'ref', name: 'language' },
+        expression: { op: "ref", name: "language" },
         selection: {
-          op: 'literal',
+          op: "literal",
           value: {
-            "setType": "STRING",
-            "elements": ["en", null]
+            setType: "STRING",
+            elements: ["en", null]
           },
-          "type": "SET"
+          type: "SET"
         }
       },
       {
-        expression: { op: 'ref', name: 'language' },
+        expression: { op: "ref", name: "language" },
         selection: {
-          op: 'literal',
+          op: "literal",
           value: {
-            "setType": "STRING",
-            "elements": ["en"]
+            setType: "STRING",
+            elements: ["en"]
           },
-          "type": "SET"
+          type: "SET"
         },
         exclude: true
       },
       {
-        expression: { op: 'ref', name: 'time' },
+        expression: { op: "ref", name: "time" },
         selection: {
-          op: 'literal',
+          op: "literal",
           value: {
-            "setType": "TIME_RANGE",
-            "elements": [{ start: new Date('2015-11-11'), end: new Date('2015-11-12') }]
+            setType: "TIME_RANGE",
+            elements: [{ start: new Date("2015-11-11"), end: new Date("2015-11-12") }]
           },
-          "type": "SET"
+          type: "SET"
         },
         exclude: true
       },
       {
-        expression: { op: 'ref', name: 'language' },
+        expression: { op: "ref", name: "language" },
         selection: "%David\\_R_ss%?",
         action: SupportedAction.match
       },
 
       // Dynamic!
       {
-        expression: { op: 'ref', name: 'language' },
+        expression: { op: "ref", name: "language" },
         selection: {
-          operand: { op: 'ref', name: 'n' },
-          op: 'timeRange',
-          duration: 'P1D',
+          operand: { op: "ref", name: "n" },
+          op: "timeRange",
+          duration: "P1D",
           step: -1
         }
       },
       {
-        expression: { op: 'ref', name: 'language' },
+        expression: { op: "ref", name: "language" },
         selection: {
-          op: 'timeRange',
-          duration: 'P1D',
+          op: "timeRange",
+          duration: "P1D",
           step: -1,
           operand: {
-            op: 'timeShift',
-            duration: 'P5D',
+            op: "timeShift",
+            duration: "P5D",
             step: -1
           }
         }
@@ -106,58 +104,58 @@ describe('FilterClause', () => {
   describe("evaluate", () => {
     it("works with now", () => {
       var clause = FilterClause.fromJS({
-        expression: { op: 'ref', name: 'language' },
+        expression: { op: "ref", name: "language" },
         selection: {
-          op: 'chain',
-          expression: { op: 'ref', name: 'n' },
-          action: { action: 'timeRange', duration: 'P1D', step: -1 }
+          op: "chain",
+          expression: { op: "ref", name: "n" },
+          action: { action: "timeRange", duration: "P1D", step: -1 }
         }
       });
 
-      var now = new Date('2016-01-15T11:22:33Z');
-      var maxTime = new Date('2016-01-15T08:22:00Z');
+      var now = new Date("2016-01-15T11:22:33Z");
+      var maxTime = new Date("2016-01-15T08:22:00Z");
 
       expect(clause.evaluate(now, maxTime, Timezone.UTC).toJS()).to.deep.equal({
-        "selection": {
-          "op": "literal",
-          "type": "TIME_RANGE",
-          "value": {
-            "end": new Date('2016-01-15T11:22:33.000Z'),
-            "start": new Date('2016-01-14T11:22:33.000Z')
+        selection: {
+          op: "literal",
+          type: "TIME_RANGE",
+          value: {
+            end: new Date("2016-01-15T11:22:33.000Z"),
+            start: new Date("2016-01-14T11:22:33.000Z")
           }
         },
-        "expression": {
-          "name": "language",
-          "op": "ref"
+        expression: {
+          name: "language",
+          op: "ref"
         }
       });
     });
 
     it("works with maxTime", () => {
       var clause = FilterClause.fromJS({
-        expression: { op: 'ref', name: 'language' },
+        expression: { op: "ref", name: "language" },
         selection: {
-          op: 'chain',
-          expression: { op: 'ref', name: 'm' },
-          action: { action: 'timeRange', duration: 'P1D', step: -1 }
+          op: "chain",
+          expression: { op: "ref", name: "m" },
+          action: { action: "timeRange", duration: "P1D", step: -1 }
         }
       });
 
-      var now = new Date('2016-01-15T11:22:33Z');
-      var maxTime = new Date('2016-01-15T08:22:00Z');
+      var now = new Date("2016-01-15T11:22:33Z");
+      var maxTime = new Date("2016-01-15T08:22:00Z");
 
       expect(clause.evaluate(now, maxTime, Timezone.UTC).toJS()).to.deep.equal({
-        "selection": {
-          "op": "literal",
-          "type": "TIME_RANGE",
-          "value": {
-            "end": new Date('2016-01-15T08:23:00Z'),
-            "start": new Date('2016-01-14T08:23:00Z')
+        selection: {
+          op: "literal",
+          type: "TIME_RANGE",
+          value: {
+            end: new Date("2016-01-15T08:23:00Z"),
+            start: new Date("2016-01-14T08:23:00Z")
           }
         },
-        "expression": {
-          "name": "language",
-          "op": "ref"
+        expression: {
+          name: "language",
+          op: "ref"
         }
       });
     });
@@ -166,14 +164,14 @@ describe('FilterClause', () => {
   describe("isLessThanFullDay", () => {
     it("works with less than full day", () => {
       var clause = FilterClause.fromJS({
-        expression: { op: 'ref', name: 'time' },
+        expression: { op: "ref", name: "time" },
         selection: {
-          op: 'literal',
+          op: "literal",
           value: {
-            "setType": "TIME_RANGE",
-            "elements": [{ start: new Date('2015-01-26T01:00:00Z'), end: new Date('2015-01-26T04:00:00Z') }]
+            setType: "TIME_RANGE",
+            elements: [{ start: new Date("2015-01-26T01:00:00Z"), end: new Date("2015-01-26T04:00:00Z") }]
           },
-          "type": "SET"
+          type: "SET"
         }
       });
       expect(clause.isLessThanFullDay()).to.equal(true);
@@ -181,15 +179,15 @@ describe('FilterClause', () => {
 
     it("returns false for exactly one day", () => {
       var clause = FilterClause.fromJS({
-        expression: { op: 'ref', name: 'time' },
+        expression: { op: "ref", name: "time" },
         selection: {
-          op: 'literal',
+          op: "literal",
           value: {
-            "setType": "TIME_RANGE",
-            "elements": [{ start: new Date('2015-01-26T01:00:00Z'), end: new Date('2015-01-27T01:00:00Z') }],
-            "bounds": "()"
+            setType: "TIME_RANGE",
+            elements: [{ start: new Date("2015-01-26T01:00:00Z"), end: new Date("2015-01-27T01:00:00Z") }],
+            bounds: "()"
           },
-          "type": "SET"
+          type: "SET"
         }
       });
       expect(clause.isLessThanFullDay()).to.equal(false);

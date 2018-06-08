@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { expect } from "chai";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as TestUtils from "react-dom/test-utils";
+import { DimensionMock, EssenceMock, SortOnMock, TimekeeperMock } from "../../../common/models/mocks";
+import { renderIntoDocument } from "../../utils/test-utils";
+import { DimensionTile } from "./dimension-tile";
 
-import { renderIntoDocument } from '../../utils/test-utils';
-
-import * as TestUtils from 'react-dom/test-utils';
-
-import { DimensionTile } from './dimension-tile';
-
-import { EssenceMock, TimekeeperMock, DimensionMock, SortOnMock } from '../../../common/models/mocks';
-
-describe('DimensionTile', () => {
-  it('adds the correct class', () => {
+describe("DimensionTile", () => {
+  it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <DimensionTile
         clicker={null}
@@ -40,8 +35,8 @@ describe('DimensionTile', () => {
       />
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, 'should contain class').to.contain('dimension-tile');
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("dimension-tile");
   });
 
 });

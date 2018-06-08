@@ -15,41 +15,39 @@
  * limitations under the License.
  */
 
-import { expect } from 'chai';
-import { testImmutableClass } from 'immutable-class-tester';
+import { testImmutableClass } from "immutable-class-tester";
 
-import { $, Expression } from 'plywood';
-import { Highlight, HighlightJS } from './highlight';
+import { Highlight, HighlightJS } from "./highlight";
 
-describe('Highlight', () => {
-  it('is an immutable class', () => {
+describe("Highlight", () => {
+  it("is an immutable class", () => {
     testImmutableClass<HighlightJS>(Highlight, [
       {
-        owner: 'Sunkist',
+        owner: "Sunkist",
         delta: {
-          "op": "and",
-          "operand": {
-            "expression": {
-              "op": "literal",
-              "value": { "setType": "STRING", "elements": ["he"] },
-              "type": "SET"
+          op: "and",
+          operand: {
+            expression: {
+              op: "literal",
+              value: { setType: "STRING", elements: ["he"] },
+              type: "SET"
             },
-            "op": "overlap",
-            "operand": { "op": "ref", "name": "language" }
+            op: "overlap",
+            operand: { op: "ref", name: "language" }
           },
-          "expression": {
-            "op": "overlap", "operand": { "op": "ref", "name": "namespace" },
-            "expression": {
-              "op": "literal",
-              "value": { "setType": "STRING", "elements": ["wikipedia"] },
-              "type": "SET"
+          expression: {
+            op: "overlap", operand: { op: "ref", name: "namespace" },
+            expression: {
+              op: "literal",
+              value: { setType: "STRING", elements: ["wikipedia"] },
+              type: "SET"
             }
           }
         }
       },
       {
-        owner: 'Dole',
-        delta: { op: 'literal', value: true }
+        owner: "Dole",
+        delta: { op: "literal", value: true }
       }
     ]);
   });

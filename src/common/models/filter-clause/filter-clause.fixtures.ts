@@ -20,8 +20,9 @@ import { FilterClause, SupportedAction } from "./filter-clause";
 export class FilterClauseFixtures {
 
   static stringWithAction(ref: string, action: SupportedAction, values: string | string[], exclude = false): FilterClause {
-    if (action !== SupportedAction.overlap && values instanceof Array && values.length !== 1)
+    if (action !== SupportedAction.overlap && values instanceof Array && values.length !== 1) {
       throw new Error(`Unsupported values: ${values} for action: ${action}.`);
+    }
 
     switch (action) {
       case SupportedAction.overlap:

@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-import './bubble-menu.scss';
-
-import * as React from 'react';
-import { Fn } from '../../../common/utils/general/general';
-import { Stage } from '../../../common/models/index';
-import { isInside, escapeKey, uniqueId, classNames } from '../../utils/dom/dom';
-import { BodyPortal } from '../body-portal/body-portal';
-import { Shpitz } from '../shpitz/shpitz';
+import * as React from "react";
+import { Stage } from "../../../common/models/index";
+import { Fn } from "../../../common/utils/general/general";
+import { classNames, escapeKey, isInside, uniqueId } from "../../utils/dom/dom";
+import { BodyPortal } from "../body-portal/body-portal";
+import { Shpitz } from "../shpitz/shpitz";
+import "./bubble-menu.scss";
 
 const OFFSET_H = 10;
 const OFFSET_V = 0;
 const SCREEN_OFFSET = 5;
 
-export type BubbleLayout = 'normal' | 'mini';
-export type Align = 'start' | 'center' | 'end';
+export type BubbleLayout = "normal" | "mini";
+export type Align = "start" | "center" | "end";
 
-export interface BubbleMenuProps extends React.Props<any> {
+export interface BubbleMenuProps {
   className: string;
   id?: string;
   direction: string;
@@ -54,7 +53,7 @@ export interface BubbleMenuState {
 
 export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState> {
   static defaultProps: Partial<BubbleMenuProps> = {
-    align: 'center'
+    align: "center"
   };
 
   constructor(props: BubbleMenuProps) {
@@ -73,15 +72,15 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     var x: number;
     var y: number;
     switch (direction) {
-      case 'right':
+      case "right":
         x = rect.left + rect.width - OFFSET_H;
         y = rect.top + rect.height / 2;
         break;
 
-      case 'down':
-        if (align === 'center') {
+      case "down":
+        if (align === "center") {
           x = rect.left + rect.width / 2;
-        } else if (align === 'start') {
+        } else if (align === "start") {
           x = rect.left;
         } else { // align === 'end'
           x = rect.left + rect.width;
@@ -94,20 +93,20 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     }
 
     this.setState({
-      id: id || uniqueId('bubble-menu-'),
+      id: id || uniqueId("bubble-menu-"),
       x,
       y
     });
   }
 
   componentDidMount() {
-    window.addEventListener('mousedown', this.globalMouseDownListener);
-    window.addEventListener('keydown', this.globalKeyDownListener);
+    window.addEventListener("mousedown", this.globalMouseDownListener);
+    window.addEventListener("keydown", this.globalKeyDownListener);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('mousedown', this.globalMouseDownListener);
-    window.removeEventListener('keydown', this.globalKeyDownListener);
+    window.removeEventListener("mousedown", this.globalMouseDownListener);
+    window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
   globalMouseDownListener(e: MouseEvent) {
@@ -157,7 +156,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     }
 
     switch (direction) {
-      case 'right':
+      case "right":
         var top = y - menuHeight / 2;
         // constrain
         top = Math.min(Math.max(top, containerStage.y), containerStage.y + containerStage.height - menuHeight);
@@ -167,11 +166,11 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
         menuStyle.height = menuHeight;
         break;
 
-      case 'down':
+      case "down":
         var left: number;
-        if (align === 'center') {
+        if (align === "center") {
           left = x - menuWidth / 2;
-        } else if (align === 'start') {
+        } else if (align === "start") {
           left = x;
         } else { // align === 'end'
           left = x - menuWidth;
@@ -191,15 +190,15 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     var insideId: string = null;
     if (inside) {
       insideId = inside.id;
-      if (!insideId) throw new Error('inside element must have id');
+      if (!insideId) throw new Error("inside element must have id");
     }
 
     var shpitzElement: JSX.Element = null;
-    if (align === 'center') {
-      shpitzElement = <Shpitz style={shpitzStyle} direction={direction}/>;
+    if (align === "center") {
+      shpitzElement = <Shpitz style={shpitzStyle} direction={direction} />;
     }
 
-    var myClass = classNames('bubble-menu', direction, className, { mini: layout === 'mini' });
+    var myClass = classNames("bubble-menu", direction, className, { mini: layout === "mini" });
     return <BodyPortal left={menuLeft} top={menuTop}>
       <div className={myClass} id={id} data-parent={insideId} style={menuStyle}>
         {children}
