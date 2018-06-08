@@ -32,6 +32,7 @@ export interface ProperRequesterOptions {
 
   // Specific to type 'druid'
   druidRequestDecorator?: DruidRequestDecorator;
+  protocol?: string;
 
   // Specific to SQL drivers
   database?: string;

@@ -141,7 +141,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
     { name: "requestDecorator", defaultValue: null },
     { name: "decoratorOptions", defaultValue: null },
-    { name: "protocol", defaultValue: null }
+    { name: "protocol", defaultValue: null },
 
     // SQLs
     { name: "database", defaultValue: null },
