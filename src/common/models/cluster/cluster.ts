@@ -138,10 +138,10 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     },
 
     // Druid
-    { name: 'introspectionStrategy', defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
-    { name: 'requestDecorator', defaultValue: null },
-    { name: 'decoratorOptions', defaultValue: null },
-    { name: 'protocol', defaultValue: null }
+    { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
+    { name: "requestDecorator", defaultValue: null },
+    { name: "decoratorOptions", defaultValue: null },
+    { name: "protocol", defaultValue: null }
 
     // SQLs
     { name: "database", defaultValue: null },
@@ -181,7 +181,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
         this.database = null;
         this.user = null;
         this.password = null;
-	this.protocol = null;
+        this.protocol = null;
         break;
 
       case "mysql":

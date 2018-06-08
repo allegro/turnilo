@@ -84,7 +84,7 @@ Data connection options:
       --examples               Start Turnilo with some example data for testing / demo
   -f, --file <path>            Start Turnilo on top of this file based data cube (must be JSON, CSV, or TSV)
   -d, --druid <host>           The Druid broker node to connect to
-      --protocol	       Connection protocol to be used. Set this to 'tls' if connecting to a https broker endpoint	
+      --protocol	       Connection protocol to be used. Set this to 'tls' if connecting to a https broker endpoint
       --postgres <host>        The Postgres cluster to connect to
       --mysql <host>           The MySQL cluster to connect to
 
@@ -320,10 +320,10 @@ if (serverSettingsFilePath) {
         sourceReintrospectInterval: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
         sourceReintrospectOnLoad: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD,
 
-        user: parsedArgs['user'],
-        password: parsedArgs['password'],
-        database: parsedArgs['database'],
-	protocol: parsedArgs['protocol']
+        user: parsedArgs["user"],
+        password: parsedArgs["password"],
+        database: parsedArgs["database"],
+        protocol: parsedArgs["protocol"]
       }));
     }
   }
