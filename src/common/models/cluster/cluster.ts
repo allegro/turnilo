@@ -21,7 +21,7 @@ import { verifyUrlSafeName } from "../../utils/general/general";
 
 export type SupportedType = "druid" | "mysql" | "postgres";
 export type SourceListScan = "disable" | "auto";
-export type Protocol = 'plain' | 'tls-loose' | 'tls';
+export type Protocol = "plain" | "tls-loose" | "tls";
 
 export interface ClusterValue {
   name: string;
