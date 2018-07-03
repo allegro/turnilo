@@ -82,7 +82,8 @@
     "react-syntax-highlighter": "7.0.2",
     "react-transition-group": "2.2.1",
     "request": "2.83.0",
-    "request-promise-native": "1.0.5"
+    "request-promise-native": "1.0.5",
+    "validator": "9.4.1"
   },
   "devDependencies": {
     "@types/body-parser": "1.16.8",
@@ -117,6 +118,7 @@
     "@types/sinon": "4.1.4",
     "@types/superagent": "3.5.6",
     "@types/supertest": "2.0.4",
+    "@types/validator": "9.4.1",
     "@types/webpack": "3.8.10",
     "@types/webpack-env": "1.13.3",
     "awesome-typescript-loader": "3.4.1",

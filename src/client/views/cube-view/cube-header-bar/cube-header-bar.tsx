@@ -19,6 +19,7 @@ import { Duration, Timezone } from "chronoshift";
 import { immutableEqual } from "immutable-class";
 import { Dataset } from "plywood";
 import * as React from "react";
+import { ExternalSystem } from "../../../../common/models/external-system/external-system";
 import { Clicker, Customization, DataCube, Essence, ExternalView, Timekeeper, User } from "../../../../common/models/index";
 import { Fn } from "../../../../common/utils/general/general";
 import { AutoRefreshMenu, HilukMenu, SettingsMenu, SvgIcon, UserMenu } from "../../../components/index";
@@ -147,12 +148,10 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     const { hilukMenuOpenOn } = this.state;
     if (!hilukMenuOpenOn) return null;
 
-    var externalViews: ExternalView[] = null;
-    if (customization && customization.externalViews) {
-      externalViews = customization.externalViews;
-    }
+    const externalViews: ExternalView[] = Boolean(customization) ? customization.externalViews : null;
+    const externalSystem: ExternalSystem = Boolean(customization) ? customization.externalSystem : null;
 
-    var onAddEssenceToCollectionClick: any = null;
+    let onAddEssenceToCollectionClick: any = null;
     if (stateful) {
       onAddEssenceToCollectionClick = () => {
         this.setState({
@@ -171,6 +170,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       openRawDataModal={openRawDataModal}
       openViewDefinitionModal={openViewDefinitionModal}
       externalViews={externalViews}
+      externalSystem={externalSystem}
       getDownloadableDataset={getDownloadableDataset}
       addEssenceToCollection={onAddEssenceToCollectionClick}
     />;

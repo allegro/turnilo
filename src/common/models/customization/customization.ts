@@ -18,6 +18,7 @@
 import { Timezone } from "chronoshift";
 import { Class, immutableArraysEqual, Instance } from "immutable-class";
 import { ImmutableUtils } from "../../utils/index";
+import { ExternalSystem, ExternalSystemValue } from "../external-system/external-system";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
 
 export interface CustomizationValue {
@@ -25,6 +26,7 @@ export interface CustomizationValue {
   headerBackground?: string;
   customLogoSvg?: string;
   externalViews?: ExternalView[];
+  externalSystem?: ExternalSystem;
   timezones?: Timezone[];
   logoutHref?: string;
 }
@@ -34,6 +36,7 @@ export interface CustomizationJS {
   headerBackground?: string;
   customLogoSvg?: string;
   externalViews?: ExternalViewValue[];
+  externalSystem?: ExternalSystemValue;
   timezones?: string[];
   logoutHref?: string;
 }
@@ -83,6 +86,10 @@ export class Customization implements Instance<CustomizationValue, Customization
       value.externalViews = externalViews;
     }
 
+    if (parameters.externalSystem) {
+      value.externalSystem = ExternalSystem.fromJS(parameters.externalSystem);
+    }
+
     var timezonesJS = parameters.timezones;
     var timezones: Timezone[] = null;
     if (Array.isArray(timezonesJS)) {
@@ -96,6 +103,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   public headerBackground: string;
   public customLogoSvg: string;
   public externalViews: ExternalView[];
+  public externalSystem: ExternalSystem;
   public timezones: Timezone[];
   public title: string;
   public logoutHref: string;
@@ -105,6 +113,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     this.headerBackground = parameters.headerBackground || null;
     this.customLogoSvg = parameters.customLogoSvg || null;
     if (parameters.externalViews) this.externalViews = parameters.externalViews;
+    if (parameters.externalSystem) this.externalSystem = parameters.externalSystem;
     if (parameters.timezones) this.timezones = parameters.timezones;
     this.logoutHref = parameters.logoutHref;
   }
@@ -115,6 +124,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       headerBackground: this.headerBackground,
       customLogoSvg: this.customLogoSvg,
       externalViews: this.externalViews,
+      externalSystem: this.externalSystem,
       timezones: this.timezones,
       logoutHref: this.logoutHref
     };
@@ -128,6 +138,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     if (this.externalViews) {
       js.externalViews = this.externalViews.map(view => view.toJS());
     }
+    if (this.externalSystem) js.externalSystem = this.externalSystem;
     if (this.timezones) {
       js.timezones = this.timezones.map(tz => tz.toJS());
     }
@@ -140,8 +151,8 @@ export class Customization implements Instance<CustomizationValue, Customization
   }
 
   public toString(): string {
-    return `[custom: (${this.headerBackground}) logo: ${Boolean(this.customLogoSvg)}, externalViews: ${Boolean(this.externalViews)}, timezones: ${Boolean(
-      this.timezones)}]`;
+    return `[custom: (${this.headerBackground}) logo: ${Boolean(this.customLogoSvg)}, externalViews: ${Boolean(this.externalViews)},
+      exportToExternalSystem: ${Boolean(this.externalSystem)}, timezones: ${Boolean(this.timezones)}]`;
   }
 
   public equals(other: Customization): boolean {
@@ -150,6 +161,7 @@ export class Customization implements Instance<CustomizationValue, Customization
       this.headerBackground === other.headerBackground &&
       this.customLogoSvg === other.customLogoSvg &&
       immutableArraysEqual(this.externalViews, other.externalViews) &&
+      this.externalSystem === other.externalSystem &&
       immutableArraysEqual(this.timezones, other.timezones) &&
       this.logoutHref === other.logoutHref;
   }

@@ -18,10 +18,15 @@
 import { Dataset } from "plywood";
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
+import { Notifier } from "..";
+import { ExternalSystem } from "../../../common/models/external-system/external-system";
 import { Essence, ExternalView, Stage, Timekeeper } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
+import { DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter } from "../../../common/view-definitions";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { download, FileFormat, makeFileName } from "../../utils/download/download";
+import { exportToExternalSystem } from "../../utils/export-to-external-system/export-to-external-system";
+import { ViewDefinitionPrinter } from "../../utils/view-definition-printer/view-definition-printer";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import "./hiluk-menu.scss";
 
@@ -33,6 +38,7 @@ export interface HilukMenuProps {
   getCubeViewHash: (essence: Essence, withPrefix?: boolean) => string;
   openRawDataModal: Fn;
   openViewDefinitionModal: Fn;
+  externalSystem?: ExternalSystem;
   externalViews?: ExternalView[];
   getDownloadableDataset?: () => Dataset;
   addEssenceToCollection?: () => void;
@@ -41,6 +47,7 @@ export interface HilukMenuProps {
 export interface HilukMenuState {
   url?: string;
   fixedTimeUrl?: string;
+  openExternalSystemView?: boolean;
 }
 
 export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
@@ -49,7 +56,8 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     super(props);
     this.state = {
       url: null,
-      fixedTimeUrl: null
+      fixedTimeUrl: null,
+      openExternalSystemView: null
     };
   }
 
@@ -59,11 +67,22 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     const withPrefix = true;
     const url = getCubeViewHash(essence, withPrefix);
     const fixedTimeUrl = essence.filter.isRelative() ? getCubeViewHash(essence.convertToSpecificFilter(timekeeper), withPrefix) : null;
+    const openExternalSystemView = false;
 
     this.setState({
       url,
-      fixedTimeUrl
+      fixedTimeUrl,
+      openExternalSystemView
     });
+  }
+
+  componentWillUpdate(nextProps: Readonly<HilukMenuProps>, nextState: Readonly<HilukMenuState>, nextContext: any): void {
+    if (nextState.openExternalSystemView) {
+      const { redirectLink } = nextProps.externalSystem;
+      const target = "_self";
+      const win = window.open(redirectLink, target);
+      win.focus();
+    }
   }
 
   openRawDataModal() {
@@ -94,8 +113,24 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
     onClose();
   }
 
+  onExportToExternalSystem() {
+    const { essence } = this.props;
+    const viewDefinitionPrinter = new ViewDefinitionPrinter(essence.dataCube.name, DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter.toViewDefinition(essence));
+    const viewDefinitionAsJson = viewDefinitionPrinter.printAsJson();
+    const errorHandler = (message: string) => Notifier.failure("Export to external system failed", message);
+
+    exportToExternalSystem(viewDefinitionAsJson, errorHandler)
+      .then(() => {
+        const externalSystem = this.props.externalSystem;
+
+        if (externalSystem && externalSystem.redirectLink) {
+          this.setState({ openExternalSystemView: true });
+        }
+      });
+  }
+
   render() {
-    const { openOn, onClose, externalViews, essence, getDownloadableDataset, addEssenceToCollection } = this.props;
+    const { openOn, onClose, externalSystem, externalViews, essence, getDownloadableDataset, addEssenceToCollection } = this.props;
     const { url, fixedTimeUrl } = this.state;
 
     const shareOptions: JSX.Element[] = [];
@@ -150,6 +185,14 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
           <a href={url} target={target}>{title}</a>
         </li>);
       });
+    }
+
+    if (externalSystem && externalSystem.enabled) {
+      const title = STRINGS.exportToExternalSystem;
+
+      shareOptions.push(<li
+        key="export-to-external-system"
+        onClick={this.onExportToExternalSystem.bind(this)}>{title}</li>);
     }
 
     const stage = Stage.fromSize(200, 200);

@@ -335,6 +335,16 @@ export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
   initialLoadTimeout: SERVER_SETTINGS.getPageMustLoadTimeout()
 });
 
+SETTINGS_MANAGER.getSettings({
+  timeout: 10000
+})
+  .then( appSettings => {
+    if (appSettings.customization && appSettings.customization.externalSystem && !SERVER_SETTINGS.getExternalSystem()) {
+      throw new Error("ExternalSystemURL must be set when using export to external system");
+    }
+  })
+  .done();
+
 // --- Printing -------------------------------
 
 if (PRINT_CONFIG) {

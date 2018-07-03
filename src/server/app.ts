@@ -26,6 +26,7 @@ import { GetSettingsOptions } from "../server/utils/settings-manager/settings-ma
 import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
 import * as collectionsRoutes from "./routes/collections/collections";
 import * as errorRoutes from "./routes/error/error";
+import * as externalSystemRoutes from "./routes/export-to-external-system/export-to-external-system";
 import * as healthRoutes from "./routes/health/health";
 import * as mkurlRoutes from "./routes/mkurl/mkurl";
 import * as plyqlRoutes from "./routes/plyql/plyql";
@@ -193,6 +194,10 @@ addRoutes("/error", errorRoutes);
 if (stateful) {
   addRoutes("/collections", collectionsRoutes);
   addGuardedRoutes("/settings", "settings", settingsRoutes);
+}
+
+if (SERVER_SETTINGS.externalSystem) {
+  addRoutes(SERVER_SETTINGS.getExternalSystemEndpoint(), externalSystemRoutes);
 }
 
 // View routes

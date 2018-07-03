@@ -26,7 +26,7 @@ export interface ServerSettingsValue {
   port?: number;
   serverHost?: string;
   serverRoot?: string;
-  healthEnpoint?: string;
+  healthEndpoint?: string;
   requestLogFormat?: string;
   trackingUrl?: string;
   trackingContext?: Record<string, string>;
@@ -36,6 +36,7 @@ export interface ServerSettingsValue {
   strictTransportSecurity?: StrictTransportSecurity;
   auth?: string;
   settingsLocation?: SettingsLocation;
+  externalSystem?: string;
 }
 
 export type ServerSettingsJS = ServerSettingsValue;
@@ -63,6 +64,7 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   static DEFAULT_TRUST_PROXY: TrustProxy = "none";
   static STRICT_TRANSPORT_SECURITY_VALUES: StrictTransportSecurity[] = ["none", "always"];
   static DEFAULT_STRICT_TRANSPORT_SECURITY: StrictTransportSecurity = "none";
+  static DEFAULT_EXPORT_TO_EXTERNAL_SYSTEM_ENDPOINT = "/external";
 
   static isServerSettings(candidate: any): candidate is ServerSettings {
     return candidate instanceof ServerSettings;
@@ -93,7 +95,9 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
       possibleValues: ServerSettings.STRICT_TRANSPORT_SECURITY_VALUES
     },
     { name: "auth", defaultValue: null },
-    { name: "settingsLocation", defaultValue: null, immutableClass: SettingsLocation }
+    { name: "settingsLocation", defaultValue: null, immutableClass: SettingsLocation },
+    { name: "externalSystem", defaultValue: null },
+    { name: "externalSystemEndpoint", defaultValue: ServerSettings.DEFAULT_EXPORT_TO_EXTERNAL_SYSTEM_ENDPOINT }
   ];
 
   public port: number;
@@ -109,6 +113,8 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public strictTransportSecurity: StrictTransportSecurity;
   public auth: string;
   public settingsLocation: SettingsLocation;
+  public externalSystem: string;
+  public externalSystemEndpoint: string;
 
   constructor(parameters: ServerSettingsValue) {
     super(parameters);
@@ -126,6 +132,8 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public getTrustProxy: () => TrustProxy;
   public getStrictTransportSecurity: () => StrictTransportSecurity;
   public getSettingsLocation: () => SettingsLocation;
+  public getExternalSystem: () => string;
+  public getExternalSystemEndpoint: () => string;
 }
 
 BaseImmutable.finalize(ServerSettings);

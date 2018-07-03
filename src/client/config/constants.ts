@@ -88,6 +88,7 @@ export const STRINGS: any = {
   exclude: "Exclude",
   explore: "Explore",
   exportToCSV: "Export to CSV",
+  exportToExternalSystem: "Export to external system",
   exportToTSV: "Export to TSV",
   filter: "Filter",
   generalSettings: "General settings",
