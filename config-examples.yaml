@@ -167,8 +167,3 @@ dataCubes:
         title: Unique Users
         formula: $main.countDistinct($user)
 
-externalSystem: "http://localhost:8080/g8dkkecqnzkmzbfaj9r69bf4waj7mejy/segments"
-
-customization:
-    externalSystem:
-      redirectLink: "http://google.com"
