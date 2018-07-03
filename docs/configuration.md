@@ -67,6 +67,10 @@ Should the server trust the `X-Forwarded-*` headers.
 
 Specify that Turnilo should set the [StrictTransportSecurity](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security) header.
 
+**externalSystem** (url | "none"), default "none"  
+
+External system address. If set to valid url address Turnilo will support export view definition to external system.   
+
 Note that Turnilo can itself only run an http server.
 This option is intended to be used when when Turnilo is running behind a HTTPS terminator like AWS ELB.
 
@@ -657,6 +661,32 @@ customization:
       </svg>
 
     headerBackground: '#2D95CA'
+```
+
+### External system
+
+Turnilo supports exporting view definition to external system.
+
+**enable** (true | false)
+
+Enables view definition export
+
+**redirectLink**  
+
+URL address to redirect after successful export.  
+Note: setting `redirectLink` enables export, except when `enable` is set to false.
+
+**exportTimeout** (number) default: 1000
+
+Export timeout in millis
+
+External system configuration example:
+
+```yaml
+customization:
+    externalSystem:
+          redirectLink: "https://some-external-system.com/view"
+          exportTimeout: 500
 ```
 
 ### External links

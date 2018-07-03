@@ -26,9 +26,8 @@ export function exportToExternalSystem(viewDefinition: string, errorHandler: (me
       if (!response.ok) {
         return Promise.reject(
          response.json()
-          .then(res => {
-            errorHandler(res.message);
-          }));
+          .then(res => errorHandler(res.message))
+        );
       }
       return Promise.resolve(response);
     });
