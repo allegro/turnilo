@@ -21,6 +21,7 @@ import { verifyUrlSafeName } from "../../utils/general/general";
 
 export type SupportedType = "druid" | "mysql" | "postgres";
 export type SourceListScan = "disable" | "auto";
+export type Protocol = "plain" | "tls-loose" | "tls";
 
 export interface ClusterValue {
   name: string;
@@ -39,6 +40,7 @@ export interface ClusterValue {
   introspectionStrategy?: string;
   requestDecorator?: string;
   decoratorOptions?: any;
+  protocol?: Protocol;
 
   database?: string;
   user?: string;
@@ -62,6 +64,7 @@ export interface ClusterJS {
   introspectionStrategy?: string;
   requestDecorator?: string;
   decoratorOptions?: any;
+  protocol?: Protocol;
 
   database?: string;
   user?: string;
@@ -92,6 +95,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   static DEFAULT_SOURCE_REINTROSPECT_INTERVAL = 0;
   static DEFAULT_SOURCE_REINTROSPECT_ON_LOAD = false;
   static DEFAULT_INTROSPECTION_STRATEGY = "segment-metadata-fallback";
+  static DEFAULT_PROTOCOL_TYPE = "plain";
 
   static isCluster(candidate: any): candidate is Cluster {
     return candidate instanceof Cluster;
@@ -139,6 +143,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
     { name: "requestDecorator", defaultValue: null },
     { name: "decoratorOptions", defaultValue: null },
+    { name: "protocol", defaultValue: Cluster.DEFAULT_PROTOCOL_TYPE },
 
     // SQLs
     { name: "database", defaultValue: null },
@@ -163,6 +168,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public introspectionStrategy: string;
   public requestDecorator: string;
   public decoratorOptions: any;
+  public protocol: Protocol;
 
   // SQLs
   public database: string;
@@ -177,6 +183,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
         this.database = null;
         this.user = null;
         this.password = null;
+        this.protocol = null;
         break;
 
       case "mysql":
