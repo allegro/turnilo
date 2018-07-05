@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
+import { Duration, Timezone } from "chronoshift";
+import { List } from "immutable";
 import { Dataset, Expression } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
@@ -41,6 +42,7 @@ import {
   VisStrategy,
   VisualizationProps
 } from "../../../common/models/index";
+import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Fn } from "../../../common/utils/general/general";
 import {
   DimensionMeasurePanel,
@@ -129,6 +131,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         essence = essence.changeFilter(filter);
         if (colors) essence = essence.changeColors(colors);
         this.setState({ essence });
+      },
+      changeComparisonShift: (timeShift: TimeShift) => {
+        const { essence } = this.state;
+        this.setState({ essence: essence.changeComparisonShift(timeShift) });
       },
       changeTimeSelection: (selection: Expression) => {
         const { essence } = this.state;
@@ -555,7 +561,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 menuStage={visualizationStage}
               />
             </div>
-            <VisSelector clicker={clicker} essence={essence} />
+            <VisSelector clicker={clicker} essence={essence}/>
           </div>
           <div
             className="center-main"
@@ -563,7 +569,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           >
             <div className="visualization" ref="visualization">{visElement}</div>
             {manualFallback}
-            {dragOver ? <DropIndicator /> : null}
+            {dragOver ? <DropIndicator/> : null}
             {dragOver ? <div
               className="drag-mask"
               onDragOver={this.dragOver.bind(this)}

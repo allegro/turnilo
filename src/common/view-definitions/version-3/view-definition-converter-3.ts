@@ -31,6 +31,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     return Essence.fromJS({
       visualization: definition.visualization,
       timezone: Timezone.fromJS(definition.timezone).toJS(),
+      timeShift: null,
       filter: Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube))).toJS(),
       splits: definition.splits.map(splitConverter.toSplitCombine).map(sc => sc.toJS()),
       multiMeasureMode: measuresDefinitionConverter.toMultiMeasureMode(definition.measures),

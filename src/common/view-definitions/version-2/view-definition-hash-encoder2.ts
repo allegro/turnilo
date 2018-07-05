@@ -36,7 +36,8 @@ export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<Ess
       pinnedSort: jsArray[7],
       colors: jsArray[8] || null,
       compare: jsArray[9] || null,
-      highlight: jsArray[10] || null
+      highlight: jsArray[10] || null,
+      timeShift: null
     };
   }
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
+import { Duration, Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
 import { Colors, Filter, Highlight, Splits } from "../";
 import { MANIFESTS } from "../../manifests";
@@ -25,6 +25,7 @@ import { SortDirection } from "../../view-definitions/version-3/split-definition
 import { DataCubeMock } from "../data-cube/data-cube.mock";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
 import { SplitCombineFixtures } from "../split-combine/split-combine.fixtures";
+import { TimeShift } from "../time-shift/time-shift";
 import { Essence, EssenceContext, EssenceJS } from "./essence";
 
 export class EssenceMock {
@@ -34,7 +35,8 @@ export class EssenceMock {
       timezone: "Etc/UTC",
       pinnedDimensions: [],
       selectedMeasures: ["count"],
-      splits: []
+      splits: [],
+      timeShift: null
     };
   }
 
@@ -44,7 +46,8 @@ export class EssenceMock {
       timezone: "Etc/UTC",
       pinnedDimensions: [],
       selectedMeasures: [],
-      splits: []
+      splits: [],
+      timeShift: null
     };
   }
 
@@ -54,7 +57,8 @@ export class EssenceMock {
       timezone: "Etc/UTC",
       pinnedDimensions: [],
       selectedMeasures: [],
-      splits: []
+      splits: [],
+      timeShift: null
     };
   }
 
@@ -92,6 +96,7 @@ export class EssenceMock {
       visualizations: MANIFESTS,
       visualization: TABLE_MANIFEST,
       timezone: Timezone.fromJS("Etc/UTC"),
+      timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits(List(splitCombines)),
       multiMeasureMode: true,
@@ -122,6 +127,7 @@ export class EssenceMock {
       visualizations: MANIFESTS,
       visualization: LINE_CHART_MANIFEST,
       timezone: Timezone.fromJS("Etc/UTC"),
+      timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits(List(splitCombines)),
       multiMeasureMode: true,

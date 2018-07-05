@@ -968,7 +968,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public getDefaultFilter(): Filter {
-    var filter = this.defaultFilter || DataCube.DEFAULT_DEFAULT_FILTER;
+    let filter = this.defaultFilter || DataCube.DEFAULT_DEFAULT_FILTER;
     if (this.timeAttribute) {
       filter = filter.setSelection(
         this.timeAttribute,
