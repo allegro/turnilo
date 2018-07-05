@@ -31,6 +31,7 @@ import {
   RefExpression
 } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
+import { Period } from "../periods/periods";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
 function formatFnFactory(format: string): (n: number) => string {
@@ -209,30 +210,34 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return this === other || Measure.isMeasure(other) && super.equals(other);
   }
 
-  public toApplyExpression(nestingLevel = 0): ApplyExpression {
+  public nameWithPeriod(period: Period): string {
+    return `${period}${this.name}`;
+  }
+
+  public toApplyExpression(nestingLevel = 0, period = Period.CURRENT): ApplyExpression {
     switch (this.transformation) {
       case "percent-of-parent": {
         const referencedLevelDelta = Math.min(nestingLevel, 1);
-        return this.percentOfParentExpression(referencedLevelDelta);
+        return this.percentOfParentExpression(referencedLevelDelta, period);
       }
       case "percent-of-total": {
-        return this.percentOfParentExpression(nestingLevel);
+        return this.percentOfParentExpression(nestingLevel, period);
       }
       default: {
         const { name, expression } = this;
-        return new ApplyExpression({ name, expression });
+        return new ApplyExpression({ name: this.nameWithPeriod(period), expression });
       }
     }
   }
 
-  private percentOfParentExpression(nestingLevel: number): ApplyExpression {
+  private percentOfParentExpression(nestingLevel: number, period: Period): ApplyExpression {
     const { name, expression } = this;
     const formulaName = "__formula_" + name;
     const formulaExpression = new ApplyExpression({ name: formulaName, expression });
 
     if (nestingLevel > 0) {
       return new ApplyExpression({
-        name,
+        name: this.nameWithPeriod(period),
         operand: formulaExpression,
         expression: $(formulaName).divide($(formulaName, nestingLevel)).multiply(100)
       });
@@ -244,7 +249,11 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   public formatDatum(datum: Datum): string {
-    return this.formatFn(datum[this.name] as number);
+    return this.formatValue(datum[this.name] as number);
+  }
+
+  public formatValue(value: number): string {
+    return this.formatFn(value);
   }
 
   public getTitle: () => string;

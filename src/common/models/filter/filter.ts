@@ -122,7 +122,7 @@ export class Filter implements Instance<FilterValue, FilterJS> {
   }
 
   public insertByIndex(index: number, insert: FilterClause): Filter {
-    var { clauses } = this;
+    let { clauses } = this;
     clauses = <List<FilterClause>> clauses.splice(index, 0, insert);
     clauses = withholdClause(clauses, insert, index);
     return new Filter(clauses);

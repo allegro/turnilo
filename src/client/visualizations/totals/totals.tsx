@@ -18,7 +18,9 @@
 import { $, Expression, ply } from "plywood";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
-import { DatasetLoad, Essence, Timekeeper, VisualizationProps } from "../../../common/models/index";
+import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
+import { Period } from "../../../common/models/periods/periods";
+import { classNames } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./totals.scss";
 
@@ -52,12 +54,12 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     this._isMounted = false;
   }
 
-  makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+  makeQuery(essence: Essence, timekeeper: Timekeeper, period: Period = Period.CURRENT): Expression {
     let query: Expression = ply()
-      .apply("main", $("main").filter(essence.getEffectiveFilter(timekeeper, Totals.id).toExpression()));
+      .apply("main", $("main").filter(essence.getEffectiveFilter(timekeeper, { period, highlightId: Totals.id }).toExpression()));
 
     essence.getEffectiveMeasures().forEach(measure => {
-      query = query.performAction(measure.toApplyExpression());
+      query = query.performAction(measure.toApplyExpression(0, period));
     });
 
     return query;
@@ -86,26 +88,53 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     this.setState(newState);
   }
 
+  printDelta(currentValue: number, previousValue: number, measure: Measure): JSX.Element {
+    if (currentValue === undefined || previousValue === undefined) {
+      return null;
+    }
+    const deltaValue = currentValue - previousValue;
+    const deltaPositive = deltaValue >= 0;
+    const deltaPercentage = Math.floor((deltaValue / currentValue) * 100);
+    const deltaPercentageStr = ` (${deltaPercentage}%)`;
+    return <div className={classNames("measure-delta-value", { "measure-delta-value--positive": deltaPositive })}>
+      {deltaPositive ? "▲" : "▼"}
+      {measure.formatValue(Math.abs(deltaValue))}
+      {deltaPercentageStr}
+    </div>;
+  }
+
   renderInternals() {
     const { essence, stage } = this.props;
-    const { datasetLoad } = this.state;
+    const { datasetLoad: { dataset } } = this.state;
 
-    const myDatum = datasetLoad.dataset ? datasetLoad.dataset.data[0] : null;
+    const myDatum = dataset ? dataset.data[0] : null;
     const measures = essence.getEffectiveMeasures();
-    let single = measures.size === 1;
+    const previous = essence.hasComparison();
+    const single = measures.size === 1;
 
     const totals = measures.map(measure => {
       let measureValueStr = "-";
+      let previousElement: JSX.Element;
       if (myDatum) {
-        measureValueStr = measure.formatDatum(myDatum);
+        const currentValue = myDatum[measure.name] as number;
+        measureValueStr = measure.formatValue(currentValue);
+        if (previous) {
+          const previousValue = myDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+
+          previousElement = <div className="measure-value measure-value--previous">
+            {measure.formatValue(previousValue)}
+            {this.printDelta(currentValue, previousValue, measure)}
+          </div>;
+        }
       }
 
       return <div
-        className={"total" + (single ? " single" : "")}
+        className={classNames("total", { single })}
         key={measure.name}
       >
         <div className="measure-name">{measure.title}</div>
         <div className="measure-value">{measureValueStr}</div>
+        {previous ? previousElement : null}
       </div>;
     });
 

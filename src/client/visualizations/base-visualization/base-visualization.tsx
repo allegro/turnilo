@@ -16,10 +16,13 @@
  */
 
 import { $, Dataset, Expression, ply } from "plywood";
+import { all } from "q";
 import * as React from "react";
 import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
+import { Period } from "../../../common/models/periods/periods";
 import { GlobalEventListener, Loader, QueryError } from "../../components/index";
 import { SPLIT } from "../../config/constants";
+import mergeDataSets from "../../utils/merge-dataset/merge-dataset";
 import "./base-visualization.scss";
 
 export interface BaseVisualizationState {
@@ -64,17 +67,21 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     } as BaseVisualizationState as S); // Geez, TypeScript
   }
 
-  protected makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+  protected makeQuery(essence: Essence, timekeeper: Timekeeper, period: Period = Period.CURRENT): Expression {
     const { splits, colors, dataCube } = essence;
     const measures = essence.getEffectiveMeasures();
 
     const $main = $("main");
 
+    const filters = essence.getEffectiveFilter(timekeeper, { period, highlightId: this.id });
+
     let query: Expression = ply()
-      .apply("main", $main.filter(essence.getEffectiveFilter(timekeeper, this.id).toExpression()));
+      .apply("main", $main.filter(filters.toExpression()));
 
     measures.forEach(measure => {
-      query = query.performAction(measure.toApplyExpression());
+      query = query.performAction(
+        measure.toApplyExpression(0, period)
+      );
     });
 
     function makeSubQuery(i: number): Expression {
@@ -85,7 +92,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         throw new Error("something went wrong during query generation");
       }
 
-      let subQuery: Expression = $main.split(split.toSplitExpression(), splitDimension.name);
+      let subQuery: Expression =
+        $main.split(split.toSplitExpression(), splitDimension.name);
 
       if (colors && colors.dimension === splitDimension.name) {
         const havingFilter = colors.toHavingFilter(splitDimension.name);
@@ -96,7 +104,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
       const nestingLevel = i + 1;
       measures.forEach(measure => {
-        subQuery = subQuery.performAction(measure.toApplyExpression(nestingLevel));
+        subQuery = subQuery.performAction(
+          measure.toApplyExpression(nestingLevel, period)
+        );
       });
 
       const applyForSort = essence.getApplyForSort(sortAction, nestingLevel);
@@ -127,31 +137,39 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   protected fetchData(essence: Essence, timekeeper: Timekeeper): void {
-    const { registerDownloadableDataset } = this.props;
-
-    let query = this.makeQuery(essence, timekeeper);
-
     this.precalculate(this.props, { loading: true });
-    essence.dataCube.executor(query, { timezone: essence.timezone })
-      .then(
-        (dataset: Dataset) => {
-          if (!this._isMounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset,
-            error: null
-          });
-        },
-        error => {
-          if (registerDownloadableDataset) registerDownloadableDataset(null);
-          if (!this._isMounted) return;
-          this.precalculate(this.props, {
-            loading: false,
-            dataset: null,
-            error
-          });
-        }
-      ); // Not calling done() prevents potential error from being bubbled up
+
+    const { registerDownloadableDataset } = this.props;
+    let queries = [this.makeQuery(essence, timekeeper)];
+    if (essence.hasComparison()) {
+      queries.push(this.makeQuery(essence, timekeeper, Period.PREVIOUS));
+    }
+
+    const requests = queries.map(query =>
+      essence.dataCube.executor(query, { timezone: essence.timezone }));
+
+    all(requests).then(
+      ([current, previous]: Dataset[]) => {
+        if (!this._isMounted) return;
+
+        const dataset = previous ? mergeDataSets(current, previous) : current;
+
+        this.precalculate(this.props, {
+          loading: false,
+          dataset,
+          error: null
+        });
+      },
+      error => {
+        if (registerDownloadableDataset) registerDownloadableDataset(null);
+        if (!this._isMounted) return;
+        this.precalculate(this.props, {
+          loading: false,
+          dataset: null,
+          error
+        });
+      }
+    ); // Not calling done() prevents potential error from being bubbled up
   }
 
   private lastRenderResult: JSX.Element = null;
@@ -193,11 +211,14 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     this._isMounted = false;
   }
 
-  protected globalMouseMoveListener(e: MouseEvent) {}
+  protected globalMouseMoveListener(e: MouseEvent) {
+  }
 
-  protected globalMouseUpListener(e: MouseEvent) {}
+  protected globalMouseUpListener(e: MouseEvent) {
+  }
 
-  protected globalKeyDownListener(e: KeyboardEvent) {}
+  protected globalKeyDownListener(e: KeyboardEvent) {
+  }
 
   protected renderInternals(): JSX.Element {
     return null;
@@ -221,8 +242,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         keyDown={this.globalKeyDownListener.bind(this)}
       />
       {this.lastRenderResult}
-      {datasetLoad.error ? <QueryError error={datasetLoad.error} /> : null}
-      {datasetLoad.loading ? <Loader /> : null}
+      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
+      {datasetLoad.loading ? <Loader/> : null}
     </div>;
   }
 }
