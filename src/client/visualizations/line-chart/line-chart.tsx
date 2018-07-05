@@ -35,6 +35,7 @@ import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
 import { getLineChartTicks } from "../../../common/models/granularity/granularity";
 import { DatasetLoad, Dimension, Filter, FilterClause, Measure, Stage, VisualizationProps } from "../../../common/models/index";
+import { Period } from "../../../common/models/periods/periods";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
 import {
@@ -51,6 +52,7 @@ import {
 } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
+import { flatMap } from "../../utils/functional/funcitonal.js";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
 
@@ -315,11 +317,11 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { dragRange, scaleX } = this.state;
 
     if (dragRange !== null) {
-      return <Highlighter highlightRange={dragRange} scaleX={scaleX} />;
+      return <Highlighter highlightRange={dragRange} scaleX={scaleX}/>;
     }
     if (essence.highlightOn(LineChart.id)) {
       var highlightRange = essence.getSingleHighlightSet().elements[0];
-      return <Highlighter highlightRange={highlightRange} scaleX={scaleX} />;
+      return <Highlighter highlightRange={highlightRange} scaleX={scaleX}/>;
     }
     return null;
   }
@@ -442,29 +444,28 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     const { hoverRange, hoverMeasure, dragRange, scaleX, xTicks, continuousDimension } = this.state;
     const { splits, colors } = essence;
-    var splitLength = splits.length();
 
-    var lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
-    var yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
+    const lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
+    const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
 
-    var measureName = measure.name;
-    var getX = (d: Datum) => d[continuousDimension.name] as (TimeRange | NumberRange);
-    var getY = (d: Datum) => d[measureName] as number;
+    const getX = (d: Datum) => d[continuousDimension.name] as (TimeRange | NumberRange);
+    const getY = (d: Datum) => d[measure.name] as number;
+    const getYP = (d: Datum) => d[measure.nameWithPeriod(Period.PREVIOUS)] as number;
 
-    var myDatum: Datum = dataset.data[0];
-    var mySplitDataset = myDatum[SPLIT] as Dataset;
+    const myDatum: Datum = dataset.data[0];
+    const mySplitDataset = myDatum[SPLIT] as Dataset;
 
-    var extentY: number[] = null;
-    if (splitLength === 1) {
+    let extentY: number[] = null;
+    if (splits.length() === 1) {
       extentY = d3.extent(mySplitDataset.data, getY);
     } else {
-      var minY = 0;
-      var maxY = 0;
+      let minY = 0;
+      let maxY = 0;
 
       mySplitDataset.data.forEach(datum => {
-        var subDataset = datum[SPLIT] as Dataset;
+        const subDataset = datum[SPLIT] as Dataset;
         if (subDataset) {
-          var tempExtentY = d3.extent(subDataset.data, getY);
+          const tempExtentY = d3.extent(subDataset.data, getY);
           minY = Math.min(tempExtentY[0], minY);
           maxY = Math.max(tempExtentY[1], maxY);
         }
@@ -473,10 +474,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
       extentY = [minY, maxY];
     }
 
-    var horizontalGridLines: JSX.Element;
-    var chartLines: JSX.Element[];
-    var verticalAxis: JSX.Element;
-    var bubble: JSX.Element;
+    let horizontalGridLines: JSX.Element;
+    let chartLines: JSX.Element[];
+    let verticalAxis: JSX.Element;
+    let bubble: JSX.Element;
     if (!isNaN(extentY[0]) && !isNaN(extentY[1])) {
       let scaleY = d3.scale.linear()
         .domain([Math.min(extentY[0] * 1.1, 0), Math.max(extentY[1] * 1.1, 0)])
@@ -497,7 +498,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         scale={scaleY}
       />;
 
-      if (splitLength === 1) {
+      if (splits.length() === 1) {
         chartLines = [];
         chartLines.push(<ChartLine
           key="single"
@@ -511,16 +512,33 @@ export class LineChart extends BaseVisualization<LineChartState> {
           hoverRange={(!dragRange && hoverMeasure === measure) ? hoverRange : null}
           color="default"
         />);
+        if (essence.hasComparison()) {
+          chartLines.push(<ChartLine
+            key="single-p"
+            dataset={mySplitDataset}
+            getX={getX}
+            getY={getYP}
+            dashed={true}
+            scaleX={scaleX}
+            scaleY={scaleY}
+            stage={lineStage}
+            showArea={true}
+            hoverRange={(!dragRange && hoverMeasure === measure) ? hoverRange : null}
+            color="default"
+          />);
+        }
       } else {
-        var colorValues: string[] = null;
-        var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+        let colorValues: string[] = null;
+        const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
 
-        if (colors) colorValues = colors.getColors(mySplitDataset.data.map(d => d[categoryDimension.name]));
+        if (colors) {
+          colorValues = colors.getColors(mySplitDataset.data.map(d => d[categoryDimension.name]));
+        }
 
-        chartLines = mySplitDataset.data.map((datum, i) => {
-          var subDataset = datum[SPLIT] as Dataset;
-          if (!subDataset) return null;
-          return <ChartLine
+        chartLines = flatMap(mySplitDataset.data, (datum, i) => {
+          const subDataset = datum[SPLIT] as Dataset;
+          if (!subDataset) return [];
+          return [<ChartLine
             key={"single" + i}
             dataset={subDataset}
             getX={getX}
@@ -531,7 +549,20 @@ export class LineChart extends BaseVisualization<LineChartState> {
             showArea={false}
             hoverRange={(!dragRange && hoverMeasure === measure) ? hoverRange : null}
             color={colorValues ? colorValues[i] : null}
-          />;
+          />, <ChartLine
+            key={"single-p" + i}
+            dataset={subDataset}
+            getX={getX}
+            getY={getYP}
+            scaleX={scaleX}
+            scaleY={scaleY}
+            stage={lineStage}
+            dashed={true}
+            showArea={false}
+            hoverRange={(!dragRange && hoverMeasure === measure) ? hoverRange : null}
+            color={colorValues ? colorValues[i] : null}
+          />
+          ];
         });
       }
 
@@ -540,7 +571,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     return <div
       className="measure-line-chart"
-      key={measureName}
+      key={measure.name}
       onMouseDown={this.onMouseDown.bind(this, measure)}
       onMouseMove={this.onMouseMove.bind(this, mySplitDataset, measure, scaleX)}
       onMouseLeave={this.onMouseLeave.bind(this, measure)}
@@ -563,7 +594,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           y2={chartStage.height - 0.5}
         />
       </svg>
-      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={myDatum} /> : null}
+      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={myDatum}/> : null}
       {this.renderHighlighter()}
       {bubble}
     </div>;
@@ -574,8 +605,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { registerDownloadableDataset, essence, timekeeper, stage } = props;
     const { splits, timezone, dataCube } = essence;
 
-    var existingDatasetLoad = this.state.datasetLoad;
-    var newState: LineChartState = {};
+    const existingDatasetLoad = this.state.datasetLoad;
+    let newState: LineChartState = {};
     if (datasetLoad) {
       // Always keep the old dataset while loading (for now)
       if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
@@ -585,27 +616,27 @@ export class LineChart extends BaseVisualization<LineChartState> {
       datasetLoad = this.state.datasetLoad;
     }
 
-    if (splits.length()) {
-      var { dataset } = datasetLoad;
+    if (splits.length() > 0) {
+      const { dataset } = datasetLoad;
       if (dataset) {
         if (registerDownloadableDataset) registerDownloadableDataset(dataset);
       }
 
-      var continuousSplit = splits.length() === 1 ? splits.get(0) : splits.get(1);
-      var continuousDimension = continuousSplit.getDimension(essence.dataCube.dimensions);
+      const continuousSplit = splits.length() === 1 ? splits.get(0) : splits.get(1);
+      const continuousDimension = continuousSplit.getDimension(essence.dataCube.dimensions);
       if (continuousDimension) {
         newState.continuousDimension = continuousDimension;
 
-        var axisRange = essence.getEffectiveFilter(timekeeper, LineChart.id).getExtent(continuousDimension.expression) as PlywoodRange;
+        let axisRange = essence.getEffectiveFilter(timekeeper, { highlightId: LineChart.id }).getExtent(continuousDimension.expression) as PlywoodRange;
         if (axisRange) {
           // Special treatment for realtime data, i.e. time data where the maxTime is within Duration of the filter end
-          var maxTime = dataCube.getMaxTime(timekeeper);
-          var continuousBucketAction = continuousSplit.bucketAction;
+          const maxTime = dataCube.getMaxTime(timekeeper);
+          const continuousBucketAction = continuousSplit.bucketAction;
           if (maxTime && continuousBucketAction instanceof TimeBucketExpression) {
-            var continuousDuration = continuousBucketAction.duration;
-            var axisRangeEnd = axisRange.end as Date;
-            var axisRangeEndFloor = continuousDuration.floor(axisRangeEnd, timezone);
-            var axisRangeEndCeil = continuousDuration.shift(axisRangeEndFloor, timezone);
+            const continuousDuration = continuousBucketAction.duration;
+            const axisRangeEnd = axisRange.end as Date;
+            const axisRangeEndFloor = continuousDuration.floor(axisRangeEnd, timezone);
+            const axisRangeEndCeil = continuousDuration.shift(axisRangeEndFloor, timezone);
             if (maxTime && axisRangeEndFloor < maxTime && maxTime < axisRangeEndCeil) {
               axisRange = Range.fromJS({ start: axisRange.start, end: axisRangeEndCeil });
             }
@@ -698,7 +729,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         width={xAxisStage.width}
         height={xAxisStage.height}
       >
-        <LineChartAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone} />
+        <LineChartAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone}/>
       </svg>;
     }
 
