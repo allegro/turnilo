@@ -137,6 +137,7 @@ export const STRINGS: any = {
   stringSearch: "String search",
   subsplit: "Split",
   suggestion: "suggestion",
+  timeShift: "Time shift",
   timezone: "Timezone",
   undo: "Click here to undo",
   updateTimezone: "Update Timezone",
