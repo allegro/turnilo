@@ -171,7 +171,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     const timezone = parameters.timezone ? Timezone.fromJS(parameters.timezone) : null;
     const filter = parameters.filter ? Filter.fromJS(parameters.filter).constrainToDimensions(dataCube.dimensions, dataCube.timeAttribute) : null;
-    const comparisonShift = parameters.timeShift ? TimeShift.fromJS(parameters.timeShift) : TimeShift.empty();
+    const timeShift = parameters.timeShift ? TimeShift.fromJS(parameters.timeShift) : TimeShift.empty();
     const splits = Splits.fromJS(parameters.splits || [], dataCube).constrainToDimensionsAndMeasures(dataCube.dimensions, dataCube.measures);
 
     const defaultSortMeasureName = dataCube.getDefaultSortMeasure();
@@ -206,7 +206,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       visualization,
       timezone,
       filter,
-      timeShift: comparisonShift,
+      timeShift,
       splits,
       multiMeasureMode,
       singleMeasure,
