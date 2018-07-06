@@ -107,18 +107,16 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
         onClick={addEssenceToCollection}>{STRINGS.addToCollection}</li>);
     }
 
-    shareOptions.push(<CopyToClipboard text={url}>
+    shareOptions.push(<CopyToClipboard key="copy-url" text={url}>
       <li
         className="copy-url clipboard"
-        key="copy-url"
         onClick={onClose}>{fixedTimeUrl ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}</li>
     </CopyToClipboard>);
 
     if (fixedTimeUrl) {
-      shareOptions.push(<CopyToClipboard text={fixedTimeUrl}>
+      shareOptions.push(<CopyToClipboard key="copy-specific-url" text={fixedTimeUrl}>
         <li
           className="copy-specific-url clipboard"
-          key="copy-specific-url"
           onClick={onClose}>{STRINGS.copyFixedTimeUrl}</li>
       </CopyToClipboard>);
     }
