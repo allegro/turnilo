@@ -21,6 +21,7 @@ import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
 import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
 import { Period } from "../../../common/models/periods/periods";
 import { classNames } from "../../utils/dom/dom";
+import { deltaElement } from "../../utils/format-delta/format-delta";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./totals.scss";
 
@@ -92,14 +93,8 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     if (currentValue === undefined || previousValue === undefined) {
       return null;
     }
-    const deltaValue = currentValue - previousValue;
-    const deltaPositive = deltaValue >= 0;
-    const deltaPercentage = Math.floor((deltaValue / currentValue) * 100);
-    const deltaPercentageStr = ` (${deltaPercentage}%)`;
-    return <div className={classNames("measure-delta-value", { "measure-delta-value--positive": deltaPositive })}>
-      {deltaPositive ? "▲" : "▼"}
-      {measure.formatValue(Math.abs(deltaValue))}
-      {deltaPercentageStr}
+    return <div className="measure-delta-value">
+      {deltaElement(currentValue, previousValue, measure.formatValue.bind(measure))}
     </div>;
   }
 

@@ -23,8 +23,6 @@ import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Button } from "../button/button";
 import "./segment-action-buttons.scss";
 
-// I am: import { SegmentActionButtons } from '../segment-action-buttons/segment-action-buttons';
-
 export interface SegmentActionButtonsProps {
   clicker: Clicker;
   dimension?: Dimension;

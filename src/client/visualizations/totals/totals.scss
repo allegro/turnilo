@@ -57,11 +57,14 @@ $total-width: 176px;
     }
 
     .measure-delta-value {
-      color: #E14040;
       font-size: 15px;
       margin-top: 5px;
 
-      &--positive {
+      .delta-negative {
+        color: #E14040;
+      }
+
+      .delta-positive {
         color: #08B157;
       }
     }

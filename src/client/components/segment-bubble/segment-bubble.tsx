@@ -32,48 +32,40 @@ export interface SegmentBubbleProps {
   top: number;
   dimension?: Dimension;
   segmentLabel?: string;
-  measureLabel?: string;
+  measureLabel?: string | JSX.Element;
   clicker?: Clicker;
   onClose?: Fn;
   openRawDataModal?: Fn;
 }
 
-export interface SegmentBubbleState {
-  moreMenuOpenOn?: Element;
-}
+export const SegmentBubble: React.SFC<SegmentBubbleProps> = ({ left, top, dimension, segmentLabel, measureLabel, clicker, openRawDataModal, onClose }) => {
 
-export class SegmentBubble extends React.Component<SegmentBubbleProps, SegmentBubbleState> {
-
-  render() {
-    const { left, top, dimension, segmentLabel, measureLabel, clicker, openRawDataModal, onClose } = this.props;
-
-    var textElement: JSX.Element;
-    if (segmentLabel) {
-      var minTextWidth = clamp(segmentLabel.length * PER_LETTER_PIXELS, 80, 300);
-      textElement = <div className="text" style={{ minWidth: minTextWidth }}>
-        <div className="segment">{segmentLabel}</div>
-        {measureLabel ? <div className="measure-value">{measureLabel}</div> : null}
-      </div>;
-    }
-
-    var actionsElement: JSX.Element = null;
-
-    if (clicker) {
-      actionsElement = <SegmentActionButtons
-        clicker={clicker}
-        dimension={dimension}
-        segmentLabel={segmentLabel}
-        openRawDataModal={openRawDataModal}
-        onClose={onClose}
-      />;
-    }
-
-    return <BodyPortal left={left} top={top + OFFSET_V} disablePointerEvents={!clicker}>
-      <div className="segment-bubble" ref="bubble">
-        {textElement}
-        {actionsElement}
-        <Shpitz direction="up" />
-      </div>
-    </BodyPortal>;
+  let textElement: JSX.Element;
+  if (segmentLabel) {
+    const minTextWidth = clamp(segmentLabel.length * PER_LETTER_PIXELS, 80, 300);
+    textElement = <div className="text" style={{ minWidth: minTextWidth }}>
+      <div className="segment">{segmentLabel}</div>
+      {measureLabel ? <div className="measure-value">{measureLabel}</div> : null}
+    </div>;
   }
-}
+
+  let actionsElement: JSX.Element = null;
+
+  if (clicker) {
+    actionsElement = <SegmentActionButtons
+      clicker={clicker}
+      dimension={dimension}
+      segmentLabel={segmentLabel}
+      openRawDataModal={openRawDataModal}
+      onClose={onClose}
+    />;
+  }
+
+  return <BodyPortal left={left} top={top + OFFSET_V} disablePointerEvents={!clicker}>
+    <div className="segment-bubble">
+      {textElement}
+      {actionsElement}
+      <Shpitz direction="up"/>
+    </div>
+  </BodyPortal>;
+};

@@ -22,11 +22,13 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BAR_CHART_MANIFEST } from "../../../common/manifests/bar-chart/bar-chart";
 import { DataCube, DatasetLoad, Dimension, Filter, FilterClause, Measure, Splits, Stage, VisualizationProps } from "../../../common/models/index";
+import { Period } from "../../../common/models/periods/periods";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
 import { BucketMarks, GridLines, Scroller, ScrollerLayout, SegmentBubble, VerticalAxis, VisMeasureLabel } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
+import { deltaElement } from "../../utils/format-delta/format-delta";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./bar-chart.scss";
 import { BarCoordinates } from "./bar-coordinates";
@@ -373,7 +375,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   canShowBubble(leftOffset: number, topOffset: number): boolean {
     const { stage } = this.props;
-    const { scrollLeft, scrollerYPosition, scrollerXPosition } = this.state;
+    const { scrollerYPosition, scrollerXPosition } = this.state;
 
     if (topOffset <= 0) return false;
     if (topOffset > scrollerYPosition + stage.height - X_AXIS_HEIGHT) return false;
@@ -413,7 +415,6 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   renderHoverBubble(hoverInfo: BubbleInfo): JSX.Element {
-    const { stage } = this.props;
     const chartStage = this.getSingleChartStage();
     const { measure, path, chartIndex, segmentLabel, coordinates } = hoverInfo;
 
@@ -422,11 +423,23 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     if (!this.canShowBubble(leftOffset, topOffset)) return null;
 
+    const currentValue = path[path.length - 1][measure.name] as number;
+    let measureElement: JSX.Element | string = measure.formatValue(currentValue);
+    if (this.props.essence.hasComparison()) {
+      const formatter = measure.formatValue.bind(measure);
+      const previousValue = path[path.length - 1][measure.nameWithPeriod(Period.PREVIOUS)] as number;
+      measureElement = <span>
+        {measureElement}
+        {formatter(previousValue)}
+        {deltaElement(currentValue, previousValue, formatter)}
+      </span>;
+    }
+
     return <SegmentBubble
       top={topOffset}
       left={leftOffset}
       segmentLabel={segmentLabel}
-      measureLabel={measure.formatDatum(path[path.length - 1])}
+      measureLabel={measureElement}
     />;
   }
 
@@ -563,7 +576,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       height: roundToPx(Math.abs(height) + SELECTION_PAD * 2)
     };
 
-    return <div className="selection-highlight" style={style} />;
+    return <div className="selection-highlight" style={style}/>;
   }
 
   renderXAxis(data: Datum[], coordinates: BarCoordinates[], xAxisStage: Stage): JSX.Element {
@@ -615,7 +628,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     return <div className="x-axis" style={{ width: xAxisStage.width }}>
       <svg style={xAxisStage.getWidthHeight()} viewBox={xAxisStage.getViewBox()}>
-        <BucketMarks stage={xAxisStage} ticks={xTicks} scale={xScale} />
+        <BucketMarks stage={xAxisStage} ticks={xTicks} scale={xScale}/>
       </svg>
       {labels}
     </div>;
@@ -677,13 +690,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { isThumbnail } = this.props;
     const mySplitDataset = dataset.data[0][SPLIT] as Dataset;
 
-    const measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]} /> : null;
+    const measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]}/> : null;
 
     // Invalid data, early return
     if (!this.hasValidYExtent(measure, mySplitDataset.data)) {
       return {
         chart: <div className="measure-bar-chart" key={measure.name} style={{ width: chartStage.width }}>
-          <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)} />
+          <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}/>
           {measureLabel}
         </div>,
         yAxis: null,
