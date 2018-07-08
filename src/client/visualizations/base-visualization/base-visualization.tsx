@@ -152,7 +152,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       ([current, previous]: Dataset[]) => {
         if (!this._isMounted) return;
 
-        const dataset = previous ? mergeDataSets(current, previous) : current;
+        const dataset = previous ?
+          mergeDataSets(current, previous, essence.timeShift.valueOf(), essence.timezone) :
+          current;
 
         this.precalculate(this.props, {
           loading: false,
