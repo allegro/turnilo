@@ -18,6 +18,33 @@
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, S, R> = (arg: T, arg2: S) => R;
 
+export function cons<T>(coll: T[], element: T): T[] {
+  return coll.concat([element]);
+}
+
 export function flatMap<T, S>(coll: T[], mapper: Binary<T, number, S[]>): S[] {
   return [].concat(...coll.map(mapper));
+}
+
+function isTruthy(element: any): boolean {
+  return element !== null && element !== undefined && element !== false;
+}
+
+export function concatTruthy<T>(...elements: T[]): T[] {
+  return elements.reduce((result: T[], element: T) => isTruthy(element) ? cons(result, element) : result, []);
+}
+
+export function mapTruthy<T, S>(coll: T[], f: Unary<T, S>): S[] {
+  return coll.reduce((result: S[], element: T) => {
+    const mapped: S = f(element);
+    return isTruthy(mapped) ? cons(result, mapped) : result;
+  }, []);
+}
+
+export function thread(x: any, ...fns: Function[]) {
+  return fns.reduce((x, f) => f(x), x);
+}
+
+export function threadTruthy(x: any, ...fns: Function[]) {
+  return fns.reduce((x, f) => isTruthy(x) ? x : f(x), x);
 }

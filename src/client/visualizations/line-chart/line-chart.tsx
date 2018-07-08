@@ -52,7 +52,7 @@ import {
 } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
-import { flatMap } from "../../utils/functional/funcitonal.js";
+import { flatMap } from "../../utils/functional/funcitonal";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
 

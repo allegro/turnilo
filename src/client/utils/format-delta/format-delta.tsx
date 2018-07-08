@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Unary } from "../functional/funcitonal.js";
+import { Unary } from "../functional/funcitonal";
 
 export type DeltaSign = -1 | 0 | 1;
 
