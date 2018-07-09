@@ -55,15 +55,26 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     this._isMounted = false;
   }
 
-  makeQuery(essence: Essence, timekeeper: Timekeeper, period: Period = Period.CURRENT): Expression {
-    let query: Expression = ply()
+  makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+    const period = essence.hasComparison() ? Period.COMBINE : Period.CURRENT;
+
+    const mainExp: Expression = ply()
       .apply("main", $("main").filter(essence.getEffectiveFilter(timekeeper, { period, highlightId: Totals.id }).toExpression()));
 
-    essence.getEffectiveMeasures().forEach(measure => {
-      query = query.performAction(measure.toApplyExpression(0, period));
-    });
+    const previousFilter = essence.previousTimeFilter(timekeeper);
+    const currentFilter = essence.currentTimeFilter(timekeeper);
 
-    return query;
+    return essence.getEffectiveMeasures().reduce((query, measure) => {
+      if (!essence.hasComparison()) {
+        return query.performAction(
+          measure.toApplyExpression()
+        );
+      } else {
+        return query
+          .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter))
+          .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter));
+      }
+    }, mainExp);
   }
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {

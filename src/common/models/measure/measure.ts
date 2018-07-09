@@ -214,30 +214,46 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return `${period}${this.name}`;
   }
 
-  public toApplyExpression(nestingLevel = 0, period = Period.CURRENT): ApplyExpression {
+  public filteredApplyExpression(period: Period, filter: Expression, nesting = 0): ApplyExpression {
+    const applyExpression = this.toApplyExpression(nesting);
+    const { expression } = applyExpression;
+    const name = this.nameWithPeriod(period);
+    return new ApplyExpression({
+      ...applyExpression,
+      name,
+      expression: expression.substitute(function(e) {
+        if (e instanceof RefExpression && e.name === "main") {
+          return $("main").filter(filter);
+        }
+        return null;
+      })
+    });
+  }
+
+  public toApplyExpression(nestingLevel = 0): ApplyExpression {
     switch (this.transformation) {
       case "percent-of-parent": {
         const referencedLevelDelta = Math.min(nestingLevel, 1);
-        return this.percentOfParentExpression(referencedLevelDelta, period);
+        return this.percentOfParentExpression(referencedLevelDelta);
       }
       case "percent-of-total": {
-        return this.percentOfParentExpression(nestingLevel, period);
+        return this.percentOfParentExpression(nestingLevel);
       }
       default: {
-        const { name, expression } = this;
-        return new ApplyExpression({ name: this.nameWithPeriod(period), expression });
+        const { expression } = this;
+        return new ApplyExpression({ name: this.name, expression });
       }
     }
   }
 
-  private percentOfParentExpression(nestingLevel: number, period: Period): ApplyExpression {
+  private percentOfParentExpression(nestingLevel: number): ApplyExpression {
     const { name, expression } = this;
     const formulaName = "__formula_" + name;
     const formulaExpression = new ApplyExpression({ name: formulaName, expression });
 
     if (nestingLevel > 0) {
       return new ApplyExpression({
-        name: this.nameWithPeriod(period),
+        name,
         operand: formulaExpression,
         expression: $(formulaName).divide($(formulaName, nestingLevel)).multiply(100)
       });

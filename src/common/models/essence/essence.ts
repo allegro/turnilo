@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from "chronoshift";
+import { Timezone } from "chronoshift";
 import { Iterable, List, OrderedSet } from "immutable";
 import { Class, immutableEqual, Instance, NamedArray } from "immutable-class";
-import { ApplyExpression, Expression, LiteralExpression, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
+import { ApplyExpression, Expression, LiteralExpression, PlywoodValue, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { Colors, ColorsJS } from "../colors/colors";
@@ -32,7 +32,7 @@ import { Measure } from "../measure/measure";
 import { Period } from "../periods/periods";
 import { SplitCombine } from "../split-combine/split-combine";
 import { Splits, SplitsJS } from "../splits/splits";
-import { TimeShift, TimeShiftJS, TimeShiftValue } from "../time-shift/time-shift";
+import { TimeShift, TimeShiftJS } from "../time-shift/time-shift";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
@@ -405,7 +405,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (unfilterDimension) filter = filter.remove(unfilterDimension.expression);
     filter = filter.getSpecificFilter(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
     if (this.hasComparison() && period !== Period.CURRENT) {
-      filter = this.shiftFilterByPeriod(filter);
+      filter = this.calculateTimeFilter(period, filter);
     }
     return filter;
   }
@@ -414,28 +414,65 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return !this.timeShift.isEmpty();
   }
 
-  private shiftFilterByPeriod(filter: Filter): Filter {
+  private calculateTimeFilter(period: Period, filter: Filter): Filter {
+    if (period === Period.CURRENT) {
+      return filter;
+    }
+    if (!this.hasComparison()) {
+      throw new Error(`Can't calculate ${period === Period.PREVIOUS ? "previous" : "combined"} period without or empty TimeShift`);
+    }
     const timeDimension: Dimension = this.getTimeDimension();
     const timeFilter = filter.getClausesForDimension(timeDimension).first();
     if (!timeFilter) {
       throw new Error("Can't compare previous period without time filter");
     }
-    // Currently we have only one comparison period - Previous
-    return this.filter.setClause(this.shiftToPrevious(timeFilter));
+    const filterExpression = period === Period.PREVIOUS ? this.shiftToPrevious(timeFilter) : this.combinePeriods(timeFilter);
+    const filterClause = timeFilter.changeSelection(r(filterExpression));
+    return this.filter.setClause(filterClause);
   }
 
-  private shiftToPrevious(timeFilter: FilterClause): FilterClause {
+  private combinePeriods(timeFilter: FilterClause): PlywoodValue {
+    const { timezone, timeShift } = this;
+    const duration = timeShift.valueOf();
+    const filterSelection = timeFilter.selection as LiteralExpression;
+    const { start, end, bounds } = filterSelection.value;
+    const shiftedFilterValue = TimeRange.fromJS({
+      start: duration.shift(start, timezone, -1),
+      end: duration.shift(end, timezone, -1),
+      bounds
+    });
+    const elements = [filterSelection.value, shiftedFilterValue];
+    return Set.fromJS({ setType: "TIME_RANGE", elements });
+  }
+
+  private shiftToPrevious(timeFilter: FilterClause): PlywoodValue {
     const { timezone, timeShift } = this;
     const filterSelection = timeFilter.selection as LiteralExpression;
     const { start, end, bounds } = filterSelection.value;
     const duration = timeShift.valueOf();
-    return timeFilter.changeSelection(
-      r(TimeRange.fromJS({
-        start: duration.shift(start, timezone, -1),
-        end: duration.shift(end, timezone, -1),
-        bounds
-      }))
-    );
+    return TimeRange.fromJS({
+      start: duration.shift(start, timezone, -1),
+      end: duration.shift(end, timezone, -1),
+      bounds
+    });
+  }
+
+  private timeFilter(timekeeper: Timekeeper) {
+    const { dataCube, timezone } = this;
+    const specificFilter = this.filter.getSpecificFilter(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
+    const timeDimension: Dimension = this.getTimeDimension();
+    return specificFilter.getClausesForDimension(timeDimension).first();
+  }
+
+  public previousTimeFilter(timekeeper: Timekeeper): Expression {
+    const timeFilter = this.timeFilter(timekeeper);
+    const shiftedFilterExpression = this.shiftToPrevious(timeFilter);
+    return this.dataCube.timeAttribute.overlap(shiftedFilterExpression);
+  }
+
+  public currentTimeFilter(timekeeper: Timekeeper): Expression {
+    const timeFilter = this.timeFilter(timekeeper);
+    return this.dataCube.timeAttribute.overlap(timeFilter.getLiteralSet());
   }
 
   public changeComparisonShift(timeShift: TimeShift): Essence {

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { Duration } from "chronoshift";
 import { Class, Instance } from "immutable-class";
 import { $, Expression, ExpressionJS, LimitExpression, NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
 import { Dimension } from "../dimension/dimension";
@@ -141,10 +142,24 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     return SplitCombine.isSplitCombine(other) && expression.equals(other.expression);
   }
 
-  public toSplitExpression(): Expression {
-    const { expression, bucketAction } = this;
+  private withBucket(expression: Expression): Expression {
+    const { bucketAction } = this;
     if (!bucketAction) return expression;
     return expression.performAction(bucketAction);
+  }
+
+  private withTimeShift(expression: Expression, timeShift?: { filter: Expression, shift: Duration}): Expression {
+    if (timeShift) {
+      const { filter, shift } = timeShift;
+      return filter.then(expression).fallback(expression.timeShift(shift));
+    }
+    return expression;
+  }
+
+  public toSplitExpression(timeShift?: { filter: Expression, shift: Duration }): Expression {
+    const { expression } = this;
+    const afterTimeShift = this.withTimeShift(expression, timeShift);
+    return this.withBucket(afterTimeShift);
   }
 
   public toKey(): string {

@@ -67,22 +67,32 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     } as BaseVisualizationState as S); // Geez, TypeScript
   }
 
-  protected makeQuery(essence: Essence, timekeeper: Timekeeper, period: Period = Period.CURRENT): Expression {
+  protected makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
     const { splits, colors, dataCube } = essence;
     const measures = essence.getEffectiveMeasures();
 
     const $main = $("main");
 
-    const filters = essence.getEffectiveFilter(timekeeper, { period, highlightId: this.id });
+    const period = essence.hasComparison() ? Period.COMBINE : Period.CURRENT;
+    const mainFilter = essence.getEffectiveFilter(timekeeper, { period, highlightId: this.id });
 
-    let query: Expression = ply()
-      .apply("main", $main.filter(filters.toExpression()));
+    const previousFilter = essence.previousTimeFilter(timekeeper);
+    const currentFilter = essence.currentTimeFilter(timekeeper);
 
-    measures.forEach(measure => {
-      query = query.performAction(
-        measure.toApplyExpression(0, period)
-      );
-    });
+    const mainExp: Expression = ply()
+      .apply("main", $main.filter(mainFilter.toExpression()));
+
+    const queryWithMeasures = measures.reduce((query, measure) => {
+      if (!essence.hasComparison()) {
+        return query.performAction(
+          measure.toApplyExpression()
+        );
+      } else {
+        return query
+          .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter))
+          .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter));
+      }
+    }, mainExp);
 
     function makeSubQuery(i: number): Expression {
       const split = splits.get(i);
@@ -93,7 +103,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       }
 
       let subQuery: Expression =
-        $main.split(split.toSplitExpression(), splitDimension.name);
+        $main.split(split.toSplitExpression({ filter: currentFilter, shift: essence.timeShift.valueOf() }), splitDimension.name);
 
       if (colors && colors.dimension === splitDimension.name) {
         const havingFilter = colors.toHavingFilter(splitDimension.name);
@@ -103,11 +113,18 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       }
 
       const nestingLevel = i + 1;
-      measures.forEach(measure => {
-        subQuery = subQuery.performAction(
-          measure.toApplyExpression(nestingLevel, period)
-        );
-      });
+
+      subQuery = measures.reduce((query, measure) => {
+        if (!essence.hasComparison()) {
+          return query.performAction(
+            measure.toApplyExpression(nestingLevel)
+          );
+        } else {
+          return query
+            .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter, nestingLevel))
+            .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter, nestingLevel));
+        }
+      }, subQuery);
 
       const applyForSort = essence.getApplyForSort(sortAction, nestingLevel);
       if (applyForSort) {
@@ -133,45 +150,36 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       return subQuery;
     }
 
-    return query.apply(SPLIT, makeSubQuery(0));
+    return queryWithMeasures.apply(SPLIT, makeSubQuery(0));
   }
 
   protected fetchData(essence: Essence, timekeeper: Timekeeper): void {
     this.precalculate(this.props, { loading: true });
 
     const { registerDownloadableDataset } = this.props;
-    let queries = [this.makeQuery(essence, timekeeper)];
-    if (essence.hasComparison()) {
-      queries.push(this.makeQuery(essence, timekeeper, Period.PREVIOUS));
-    }
 
-    const requests = queries.map(query =>
-      essence.dataCube.executor(query, { timezone: essence.timezone }));
+    const query = this.makeQuery(essence, timekeeper);
+    essence.dataCube.executor(query, { timezone: essence.timezone })
+      .then(
+        (dataset: Dataset) => {
+          if (!this._isMounted) return;
 
-    all(requests).then(
-      ([current, previous]: Dataset[]) => {
-        if (!this._isMounted) return;
-
-        const dataset = previous ?
-          mergeDataSets(current, previous, essence.timeShift.valueOf(), essence.timezone) :
-          current;
-
-        this.precalculate(this.props, {
-          loading: false,
-          dataset,
-          error: null
-        });
-      },
-      error => {
-        if (registerDownloadableDataset) registerDownloadableDataset(null);
-        if (!this._isMounted) return;
-        this.precalculate(this.props, {
-          loading: false,
-          dataset: null,
-          error
-        });
-      }
-    ); // Not calling done() prevents potential error from being bubbled up
+          this.precalculate(this.props, {
+            loading: false,
+            dataset,
+            error: null
+          });
+        },
+        error => {
+          if (registerDownloadableDataset) registerDownloadableDataset(null);
+          if (!this._isMounted) return;
+          this.precalculate(this.props, {
+            loading: false,
+            dataset: null,
+            error
+          });
+        }
+      ); // Not calling done() prevents potential error from being bubbled up
   }
 
   private lastRenderResult: JSX.Element = null;
