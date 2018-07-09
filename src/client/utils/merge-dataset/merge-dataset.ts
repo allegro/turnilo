@@ -21,7 +21,7 @@ import { cloneDeep, mapValues, merge, mergeWith, property, unionBy } from "lodas
 import { AttributeInfo, Dataset, Datum, TimeRange } from "plywood";
 import { Period } from "../../../common/models/periods/periods";
 import { SPLIT } from "../../config/constants";
-import { Unary } from "../functional/funcitonal";
+import { Unary } from "../functional/functional";
 
 interface WithSplit {
   [SPLIT]?: Dataset;
