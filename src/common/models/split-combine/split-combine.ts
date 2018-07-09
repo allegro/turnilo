@@ -17,7 +17,7 @@
 
 import { Duration } from "chronoshift";
 import { Class, Instance } from "immutable-class";
-import { $, Expression, ExpressionJS, LimitExpression, NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
+import { $, Expression, ExpressionJS, LimitExpression, NumberBucketExpression, RefExpression, SortExpression, TimeBucketExpression } from "plywood";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
 
@@ -149,7 +149,7 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
   }
 
   private withTimeShift(expression: Expression, timeShift?: { filter: Expression, shift: Duration}): Expression {
-    if (timeShift) {
+    if (timeShift && expression instanceof RefExpression && expression.name === "__time") {
       const { filter, shift } = timeShift;
       return filter.then(expression).fallback(expression.timeShift(shift));
     }
