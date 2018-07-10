@@ -34,9 +34,9 @@ export function concatTruthy<T>(...elements: T[]): T[] {
   return elements.reduce((result: T[], element: T) => isTruthy(element) ? cons(result, element) : result, []);
 }
 
-export function mapTruthy<T, S>(coll: T[], f: Unary<T, S>): S[] {
-  return coll.reduce((result: S[], element: T) => {
-    const mapped: S = f(element);
+export function mapTruthy<T, S>(coll: T[], f: Binary<T, number, S>): S[] {
+  return coll.reduce((result: S[], element: T, idx: number) => {
+    const mapped: S = f(element, idx);
     return isTruthy(mapped) ? cons(result, mapped) : result;
   }, []);
 }
