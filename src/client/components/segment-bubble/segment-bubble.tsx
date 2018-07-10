@@ -38,33 +38,30 @@ export interface SegmentBubbleProps {
   openRawDataModal?: Fn;
 }
 
-export const SegmentBubble: React.SFC<SegmentBubbleProps> = ({ left, top, dimension, segmentLabel, measureLabel, clicker, openRawDataModal, onClose }) => {
+function label(segmentLabel: string, measureLabel: string | JSX.Element) {
+  const minTextWidth = clamp(segmentLabel.length * PER_LETTER_PIXELS, 80, 300);
+  return <div className="text" style={{ minWidth: minTextWidth }}>
+    <div className="segment">{segmentLabel}</div>
+    {measureLabel ? <div className="measure-value">{measureLabel}</div> : null}
+  </div>;
+}
 
-  let textElement: JSX.Element;
-  if (segmentLabel) {
-    const minTextWidth = clamp(segmentLabel.length * PER_LETTER_PIXELS, 80, 300);
-    textElement = <div className="text" style={{ minWidth: minTextWidth }}>
-      <div className="segment">{segmentLabel}</div>
-      {measureLabel ? <div className="measure-value">{measureLabel}</div> : null}
-    </div>;
-  }
+function actions({ clicker, dimension, segmentLabel, openRawDataModal, onClose }: SegmentBubbleProps) {
+  return <SegmentActionButtons
+    clicker={clicker}
+    dimension={dimension}
+    segmentLabel={segmentLabel}
+    openRawDataModal={openRawDataModal}
+    onClose={onClose}
+  />;
+}
 
-  let actionsElement: JSX.Element = null;
-
-  if (clicker) {
-    actionsElement = <SegmentActionButtons
-      clicker={clicker}
-      dimension={dimension}
-      segmentLabel={segmentLabel}
-      openRawDataModal={openRawDataModal}
-      onClose={onClose}
-    />;
-  }
-
+export const SegmentBubble: React.SFC<SegmentBubbleProps> = (props: SegmentBubbleProps) => {
+  const { left, top, segmentLabel, measureLabel, clicker  } = props;
   return <BodyPortal left={left} top={top + OFFSET_V} disablePointerEvents={!clicker}>
     <div className="segment-bubble">
-      {textElement}
-      {actionsElement}
+      {segmentLabel && label(segmentLabel, measureLabel)}
+      {clicker && actions(props)}
       <Shpitz direction="up"/>
     </div>
   </BodyPortal>;

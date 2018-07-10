@@ -52,7 +52,8 @@ import {
 } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
-import { flatMap } from "../../utils/functional/functional";
+import { deltaElement } from "../../utils/format-delta/format-delta";
+import { flatMap, mapTruthy } from "../../utils/functional/functional";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
 
@@ -343,7 +344,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     if (essence.highlightOnDifferentMeasure(LineChart.id, measure.name)) return null;
 
-    var topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
+    let topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
     if (topOffset < 0) return null;
 
     topOffset += containerYPosition;
@@ -399,20 +400,21 @@ export class LineChart extends BaseVisualization<LineChartState> {
       var segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
 
       if (colors) {
-        var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
-        var hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, hoverRange));
-        var colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
-        var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
-          var segment = d[categoryDimension.name];
-          var hoverDatum = hoverDatums[i];
+        const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+        const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, hoverRange));
+        const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
+        const colorEntries: ColorEntry[] = mapTruthy(dataset.data, (d, i) => {
+          const segment = d[categoryDimension.name];
+          const hoverDatum = hoverDatums[i];
           if (!hoverDatum) return null;
 
           return {
             color: colorValues[i],
             segmentLabel: String(segment),
-            measureLabel: measure.formatDatum(hoverDatum)
+            measureLabel: this.renderMeasureLabel(measure, hoverDatum)
           };
-        }).filter(Boolean);
+        });
+
         return <HoverMultiBubble
           left={leftOffset}
           top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
@@ -421,22 +423,38 @@ export class LineChart extends BaseVisualization<LineChartState> {
         />;
 
       } else {
-        var hoverDatum = dataset.findDatumByAttribute(continuousDimension.name, hoverRange);
+        const hoverDatum = dataset.findDatumByAttribute(continuousDimension.name, hoverRange);
         if (!hoverDatum) return null;
-        var segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+        const segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+        const measureLabel = this.renderMeasureLabel(measure, hoverDatum);
 
         return <SegmentBubble
           left={leftOffset}
           top={topOffset + HOVER_BUBBLE_V_OFFSET}
           segmentLabel={segmentLabel}
-          measureLabel={measure.formatDatum(hoverDatum)}
+          measureLabel={measureLabel}
         />;
-
       }
 
     }
 
     return null;
+  }
+
+  private renderMeasureLabel(measure: Measure, datum: Datum): JSX.Element | string {
+    const currentValue = datum[measure.name] as number;
+    const currentStr = measure.formatValue(currentValue);
+    if (!this.props.essence.hasComparison()) {
+      return currentStr;
+    } else {
+      const formatter = measure.formatValue.bind(measure);
+      const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+      return <span>
+        {currentStr}
+        {formatter(previousValue)}
+        {deltaElement(currentValue, previousValue, formatter)}
+      </span>;
+    }
   }
 
   renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage): JSX.Element {

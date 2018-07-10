@@ -27,7 +27,7 @@ const LEFT_OFFSET = 22;
 export interface ColorEntry {
   color: string;
   segmentLabel: string;
-  measureLabel: string;
+  measureLabel: string | JSX.Element;
 }
 
 export interface HoverMultiBubbleProps {
@@ -40,39 +40,33 @@ export interface HoverMultiBubbleProps {
   onClose?: Fn;
 }
 
-export interface HoverMultiBubbleState {
+function renderColorSwabs(colorEntries: ColorEntry[]): JSX.Element {
+  if (!colorEntries || !colorEntries.length) return null;
+
+  const colorSwabs = colorEntries.map((colorEntry: ColorEntry) => {
+    const { color, segmentLabel, measureLabel } = colorEntry;
+    const swabStyle = { background: color };
+    return <div className="color" key={segmentLabel}>
+      <div className="color-swab" style={swabStyle}/>
+      <div className="color-name">{segmentLabel}</div>
+      <div className="color-value">{measureLabel}</div>
+    </div>;
+  });
+
+  return <div className="colors">{colorSwabs}</div>;
 }
 
-export class HoverMultiBubble extends React.Component<HoverMultiBubbleProps, HoverMultiBubbleState> {
-  public mounted: boolean;
-
-  renderColorSwabs(): JSX.Element {
-    const { colorEntries } = this.props;
-    if (!colorEntries || !colorEntries.length) return null;
-
-    var colorSwabs = colorEntries.map(colorEntry => {
-      const { color, segmentLabel, measureLabel } = colorEntry;
-      var swabStyle = { background: color };
-      return <div className="color" key={segmentLabel}>
-        <div className="color-swab" style={swabStyle}></div>
-        <div className="color-name">{segmentLabel}</div>
-        <div className="color-value">{measureLabel}</div>
-      </div>;
-    });
-
-    return <div className="colors">{colorSwabs}</div>;
-  }
-
-  render() {
-    const { left, top, dimension, segmentLabel, clicker, onClose } = this.props;
-
-    return <BodyPortal left={left + LEFT_OFFSET} top={top} disablePointerEvents={!clicker}>
-      <div className="hover-multi-bubble">
-        <div className="bucket">{segmentLabel}</div>
-        {this.renderColorSwabs()}
-        {clicker ? <SegmentActionButtons clicker={clicker} dimension={dimension} segmentLabel={segmentLabel} disableMoreMenu={true}
-                                         onClose={onClose} /> : null}
-      </div>
-    </BodyPortal>;
-  }
-}
+export const HoverMultiBubble: React.SFC<HoverMultiBubbleProps> = ({ colorEntries, left, top, dimension, segmentLabel, clicker, onClose }) => {
+  return <BodyPortal left={left + LEFT_OFFSET} top={top} disablePointerEvents={!clicker}>
+    <div className="hover-multi-bubble">
+      <div className="bucket">{segmentLabel}</div>
+      {renderColorSwabs(colorEntries)}
+      {clicker && <SegmentActionButtons
+        clicker={clicker}
+        dimension={dimension}
+        segmentLabel={segmentLabel}
+        disableMoreMenu={true}
+        onClose={onClose}/>}
+    </div>
+  </BodyPortal>;
+};

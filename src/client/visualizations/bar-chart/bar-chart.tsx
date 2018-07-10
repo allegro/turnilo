@@ -423,24 +423,29 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     if (!this.canShowBubble(leftOffset, topOffset)) return null;
 
-    const currentValue = path[path.length - 1][measure.name] as number;
-    let measureElement: JSX.Element | string = measure.formatValue(currentValue);
-    if (this.props.essence.hasComparison()) {
-      const formatter = measure.formatValue.bind(measure);
-      const previousValue = path[path.length - 1][measure.nameWithPeriod(Period.PREVIOUS)] as number;
-      measureElement = <span>
-        {measureElement}
-        {formatter(previousValue)}
-        {deltaElement(currentValue, previousValue, formatter)}
-      </span>;
-    }
-
+    const measureLabel = this.renderMeasureLabel(measure, path[path.length - 1]);
     return <SegmentBubble
       top={topOffset}
       left={leftOffset}
       segmentLabel={segmentLabel}
-      measureLabel={measureElement}
+      measureLabel={measureLabel}
     />;
+  }
+
+  private renderMeasureLabel(measure: Measure, datum: Datum): JSX.Element | string {
+    const currentValue = datum[measure.name] as number;
+    const currentStr = measure.formatValue(currentValue);
+    if (!this.props.essence.hasComparison()) {
+      return currentStr;
+    } else {
+      const formatter = measure.formatValue.bind(measure);
+      const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+      return <span>
+        {currentStr}
+        {formatter(previousValue)}
+        {deltaElement(currentValue, previousValue, formatter)}
+      </span>;
+    }
   }
 
   isSelected(path: Datum[], measure: Measure): boolean {
