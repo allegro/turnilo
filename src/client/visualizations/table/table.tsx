@@ -117,10 +117,12 @@ export class Table extends BaseVisualization<TableState> {
       const measureWidth = this.getIdealColumnWidth(this.props.essence);
       const measureIndex = Math.floor(x / measureWidth);
       if (essence.hasComparison()) {
+        if (measureIndex % 3 === 2) return { what: "whitespace" };
         const nominalIndex = integerDivision(measureIndex, 3);
         const measure = effectiveMeasures.get(nominalIndex);
         if (!measure) return { what: "whitespace" };
-        return { what: "header", measure, period: Period.PREVIOUS };
+        const period = measureIndex % 3 === 0 ? Period.CURRENT : Period.PREVIOUS;
+        return { what: "header", measure, period };
       }
       const measure = effectiveMeasures.get(measureIndex);
       if (!measure) return { what: "whitespace" };
@@ -173,14 +175,14 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   onMouseMove(x: number, y: number) {
-    const { hoverMeasure, hoverRow } = this.state;
-    const pos = this.calculateMousePosition(x, y);
-    if (hoverMeasure !== pos.measure || hoverRow !== pos.row) {
-      this.setState({
-        hoverMeasure: pos.measure,
-        hoverRow: pos.row
-      });
-    }
+    // const { hoverMeasure, hoverRow } = this.state;
+    // const pos = this.calculateMousePosition(x, y);
+    // if (hoverMeasure !== pos.measure || hoverRow !== pos.row) {
+    //   this.setState({
+    //     hoverMeasure: pos.measure,
+    //     hoverRow: pos.row
+    //   });
+    // }
   }
 
   onMouseLeave() {
