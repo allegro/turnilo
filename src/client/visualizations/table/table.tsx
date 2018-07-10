@@ -22,6 +22,7 @@ import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
 import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, SplitCombine, Splits, VisStrategy, VisualizationProps } from "../../../common/models/index";
 import { Period } from "../../../common/models/periods/periods";
+import { integerDivision } from "../../../common/utils";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
@@ -74,6 +75,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataCube: Da
 export interface PositionHover {
   what: string;
   measure?: Measure;
+  period?: Period;
   row?: Datum;
 }
 
@@ -109,13 +111,20 @@ export class Table extends BaseVisualization<TableState> {
 
     if (y <= HEADER_HEIGHT) {
       if (x <= this.getSegmentWidth()) return { what: "corner" };
+      const effectiveMeasures = essence.getEffectiveMeasures();
 
       x = x - this.getSegmentWidth();
       const measureWidth = this.getIdealColumnWidth(this.props.essence);
       const measureIndex = Math.floor(x / measureWidth);
-      const measure = essence.getEffectiveMeasures().get(measureIndex);
+      if (essence.hasComparison()) {
+        const nominalIndex = integerDivision(measureIndex, 3);
+        const measure = effectiveMeasures.get(nominalIndex);
+        if (!measure) return { what: "whitespace" };
+        return { what: "header", measure, period: Period.PREVIOUS };
+      }
+      const measure = effectiveMeasures.get(measureIndex);
       if (!measure) return { what: "whitespace" };
-      return { what: "header", measure };
+      return { what: "header", measure, period: Period.CURRENT };
     }
 
     y = y - HEADER_HEIGHT;
@@ -129,13 +138,12 @@ export class Table extends BaseVisualization<TableState> {
     const { clicker, essence } = this.props;
     const { splits, dataCube } = essence;
 
-    debugger;
-    const pos = this.calculateMousePosition(x, y);
+    const { measure, period, row, what } = this.calculateMousePosition(x, y);
 
-    if (pos.what === "corner" || pos.what === "header") {
+    if (what === "corner" || what === "header") {
       if (!clicker.changeSplits) return;
 
-      const sortReference = $(pos.what === "corner" ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : pos.measure.name);
+      const sortReference = $(what === "corner" ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : measure.nameWithPeriod(period));
       const commonSort = essence.getCommonSort();
       const myDescending = (commonSort && commonSort.expression.equals(sortReference) && commonSort.direction === SortExpression.DESCENDING);
       const sortExpression = new SortExpression({
@@ -146,10 +154,10 @@ export class Table extends BaseVisualization<TableState> {
         splits.changeSortExpressionFromNormalized(sortExpression, essence.dataCube.dimensions),
         VisStrategy.KeepAlways
       );
-    } else if (pos.what === "row") {
+    } else if (what === "row") {
       if (!clicker.dropHighlight || !clicker.changeHighlight) return;
 
-      const rowHighlight = getFilterFromDatum(splits, pos.row, dataCube);
+      const rowHighlight = getFilterFromDatum(splits, row, dataCube);
 
       if (!rowHighlight) return;
 

@@ -279,7 +279,6 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
     }
     return commonSort;
   }
-
 }
 
 check = Splits;

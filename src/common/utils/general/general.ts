@@ -117,6 +117,11 @@ function log10(n: number) {
   return Math.log(n) * Math.LOG10E;
 }
 
+export function integerDivision(x: number, y: number): number {
+  // noinspection TsLint
+  return ~~(x / y);
+}
+
 export function toSignificantDigits(n: number, digits: number) {
   var multiplier = Math.pow(10, digits - Math.floor(Math.log(n) / Math.LN10) - 1);
   return Math.round(n * multiplier) / multiplier;
