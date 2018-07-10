@@ -16,13 +16,11 @@
  */
 
 import { $, Dataset, Expression, ply } from "plywood";
-import { all } from "q";
 import * as React from "react";
 import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
 import { Period } from "../../../common/models/periods/periods";
 import { GlobalEventListener, Loader, QueryError } from "../../components/index";
 import { SPLIT } from "../../config/constants";
-import mergeDataSets from "../../utils/merge-dataset/merge-dataset";
 import "./base-visualization.scss";
 
 export interface BaseVisualizationState {
@@ -73,8 +71,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
     const $main = $("main");
 
-    const period = essence.hasComparison() ? Period.COMBINE : Period.CURRENT;
-    const mainFilter = essence.getEffectiveFilter(timekeeper, { period, highlightId: this.id });
+    const combineWithPrevious = essence.hasComparison();
+    const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious, highlightId: this.id });
 
     const previousFilter = essence.previousTimeFilter(timekeeper);
     const currentFilter = essence.currentTimeFilter(timekeeper);
@@ -102,8 +100,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         throw new Error("something went wrong during query generation");
       }
 
+      const currentSplit = !essence.hasComparison() ? split : split.withTimeShift(currentFilter, essence.timeShift.valueOf());
       let subQuery: Expression =
-        $main.split(split.toSplitExpression({ filter: currentFilter, shift: essence.timeShift.valueOf() }), splitDimension.name);
+        $main.split(currentSplit.toSplitExpression(), splitDimension.name);
 
       if (colors && colors.dimension === splitDimension.name) {
         const havingFilter = colors.toHavingFilter(splitDimension.name);

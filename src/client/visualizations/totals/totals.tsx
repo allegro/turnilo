@@ -56,10 +56,10 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
   }
 
   makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-    const period = essence.hasComparison() ? Period.COMBINE : Period.CURRENT;
+    const combineWithPrevious = essence.hasComparison();
 
     const mainExp: Expression = ply()
-      .apply("main", $("main").filter(essence.getEffectiveFilter(timekeeper, { period, highlightId: Totals.id }).toExpression()));
+      .apply("main", $("main").filter(essence.getEffectiveFilter(timekeeper, { combineWithPrevious, highlightId: Totals.id }).toExpression()));
 
     const previousFilter = essence.previousTimeFilter(timekeeper);
     const currentFilter = essence.currentTimeFilter(timekeeper);

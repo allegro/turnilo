@@ -110,7 +110,7 @@ export interface EssenceContext {
 export interface EffectiveFilterOptions {
   highlightId?: string;
   unfilterDimension?: Dimension;
-  period?: Period;
+  combineWithPrevious?: boolean;
 }
 
 let check: Class<EssenceValue, EssenceJS>;
@@ -396,16 +396,25 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return clause.evaluate(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
   }
 
+  private combineWithPrevious(filter: Filter) {
+    const timeDimension: Dimension = this.getTimeDimension();
+    const timeFilter = filter.getClausesForDimension(timeDimension).first();
+    if (!timeFilter) {
+      throw new Error("Can't combine current time filter with previous period without time filter");
+    }
+    return filter.setClause(this.combinePeriods(timeFilter));
+  }
+
   public getEffectiveFilter(
     timekeeper: Timekeeper,
-    { highlightId = null, period = Period.CURRENT, unfilterDimension = null }: EffectiveFilterOptions = {}): Filter {
+    { highlightId = null, combineWithPrevious = false, unfilterDimension = null }: EffectiveFilterOptions = {}): Filter {
     const { dataCube, highlight, timezone } = this;
     let filter = this.filter;
     if (highlight && (highlightId !== highlight.owner)) filter = highlight.applyToFilter(filter);
     if (unfilterDimension) filter = filter.remove(unfilterDimension.expression);
     filter = filter.getSpecificFilter(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
-    if (this.hasComparison() && period !== Period.CURRENT) {
-      filter = this.calculateTimeFilter(period, filter);
+    if (combineWithPrevious) {
+      filter = this.combineWithPrevious(filter);
     }
     return filter;
   }
@@ -414,24 +423,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return !this.timeShift.isEmpty();
   }
 
-  private calculateTimeFilter(period: Period, filter: Filter): Filter {
-    if (period === Period.CURRENT) {
-      return filter;
-    }
-    if (!this.hasComparison()) {
-      throw new Error(`Can't calculate ${period === Period.PREVIOUS ? "previous" : "combined"} period without or empty TimeShift`);
-    }
-    const timeDimension: Dimension = this.getTimeDimension();
-    const timeFilter = filter.getClausesForDimension(timeDimension).first();
-    if (!timeFilter) {
-      throw new Error("Can't compare previous period without time filter");
-    }
-    const filterExpression = period === Period.PREVIOUS ? this.shiftToPrevious(timeFilter) : this.combinePeriods(timeFilter);
-    const filterClause = timeFilter.changeSelection(r(filterExpression));
-    return this.filter.setClause(filterClause);
-  }
-
-  private combinePeriods(timeFilter: FilterClause): PlywoodValue {
+  private combinePeriods(timeFilter: FilterClause): FilterClause {
     const { timezone, timeShift } = this;
     const duration = timeShift.valueOf();
     const filterSelection = timeFilter.selection as LiteralExpression;
@@ -442,7 +434,19 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       bounds
     });
     const elements = [filterSelection.value, shiftedFilterValue];
-    return Set.fromJS({ setType: "TIME_RANGE", elements });
+    return timeFilter.changeSelection(r(Set.fromJS({ setType: "TIME_RANGE", elements })));
+  }
+
+  private timeFilter(timekeeper: Timekeeper) {
+    const { dataCube, timezone } = this;
+    const specificFilter = this.filter.getSpecificFilter(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
+    const timeDimension: Dimension = this.getTimeDimension();
+    return specificFilter.getClausesForDimension(timeDimension).first();
+  }
+
+  public currentTimeFilter(timekeeper: Timekeeper): Expression {
+    const timeFilter = this.timeFilter(timekeeper);
+    return this.dataCube.timeAttribute.overlap(timeFilter.getLiteralSet());
   }
 
   private shiftToPrevious(timeFilter: FilterClause): PlywoodValue {
@@ -457,22 +461,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     });
   }
 
-  private timeFilter(timekeeper: Timekeeper) {
-    const { dataCube, timezone } = this;
-    const specificFilter = this.filter.getSpecificFilter(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
-    const timeDimension: Dimension = this.getTimeDimension();
-    return specificFilter.getClausesForDimension(timeDimension).first();
-  }
-
   public previousTimeFilter(timekeeper: Timekeeper): Expression {
     const timeFilter = this.timeFilter(timekeeper);
     const shiftedFilterExpression = this.shiftToPrevious(timeFilter);
     return this.dataCube.timeAttribute.overlap(shiftedFilterExpression);
-  }
-
-  public currentTimeFilter(timekeeper: Timekeeper): Expression {
-    const timeFilter = this.timeFilter(timekeeper);
-    return this.dataCube.timeAttribute.overlap(timeFilter.getLiteralSet());
   }
 
   public changeComparisonShift(timeShift: TimeShift): Essence {

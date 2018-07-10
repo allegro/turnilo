@@ -142,24 +142,21 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
     return SplitCombine.isSplitCombine(other) && expression.equals(other.expression);
   }
 
-  private withBucket(expression: Expression): Expression {
-    const { bucketAction } = this;
+  public withTimeShift(filter: Expression, shift: Duration): SplitCombine {
+    const { expression } = this;
+    if (expression instanceof RefExpression && expression.name === "__time") {
+      return new SplitCombine({
+        ...this.valueOf(),
+        expression: filter.then(expression).fallback(expression.timeShift(shift))
+      });
+    }
+    return this;
+  }
+
+  public toSplitExpression(): Expression {
+    const { expression, bucketAction } = this;
     if (!bucketAction) return expression;
     return expression.performAction(bucketAction);
-  }
-
-  private withTimeShift(expression: Expression, timeShift?: { filter: Expression, shift: Duration}): Expression {
-    if (timeShift && expression instanceof RefExpression && expression.name === "__time") {
-      const { filter, shift } = timeShift;
-      return filter.then(expression).fallback(expression.timeShift(shift));
-    }
-    return expression;
-  }
-
-  public toSplitExpression(timeShift?: { filter: Expression, shift: Duration }): Expression {
-    const { expression } = this;
-    const afterTimeShift = this.withTimeShift(expression, timeShift);
-    return this.withBucket(afterTimeShift);
   }
 
   public toKey(): string {

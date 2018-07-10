@@ -15,4 +15,4 @@
  * limitations under the License.
  */
 
-export enum Period {PREVIOUS = "__previous_", CURRENT = "", COMBINE = "__combined_"}
+export enum Period {PREVIOUS = "__previous_", CURRENT = ""}
