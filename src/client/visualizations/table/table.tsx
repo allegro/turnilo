@@ -272,10 +272,11 @@ export class Table extends BaseVisualization<TableState> {
           background = makeBackground(hScales[i](measureValue));
         }
 
-        let cells = [<div className={className} key={measure.name} style={{ width: idealWidth }}>
-          {background}
-          <div className="label">{measureValueStr}</div>
-        </div>];
+        let cells = [
+          <div className={className} key={measure.name} style={{ width: idealWidth }}>
+            {background}
+            <div className="label">{measureValueStr}</div>
+          </div>];
         if (essence.hasComparison()) {
           const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
           const previousValueStr = formatters[i](previousValue);
@@ -319,36 +320,40 @@ export class Table extends BaseVisualization<TableState> {
     }) : null;
 
     return flatMap(essence.getEffectiveMeasures().toArray(), measure => {
-      let amISorted = commonSortName === measure.name;
+      const isCurrentSorted = commonSortName === measure.name;
 
-      let measureHeaders = [<div
-        className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: amISorted })}
+      const currentMeasure = <div
+        className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isCurrentSorted })}
         key={measure.name}
         style={{ width: measureWidth }}
       >
         <div className="title-wrap">{measure.title}</div>
-        {amISorted ? sortArrowIcon : null}
-      </div>];
+        {isCurrentSorted ? sortArrowIcon : null}
+      </div>;
 
-      if (essence.hasComparison()) {
-        measureHeaders.push(<div
-          className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: amISorted })}
+      if (!essence.hasComparison()) {
+        return [currentMeasure];
+      }
+
+      const isPreviousSorted = commonSortName === measure.nameWithPeriod(Period.PREVIOUS);
+      return [
+        currentMeasure,
+        <div
+          className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
           key={measure.nameWithPeriod(Period.PREVIOUS)}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Previous {measure.title}</div>
-          {amISorted ? sortArrowIcon : null}
-        </div>);
-        measureHeaders.push(<div
-          className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: amISorted })}
+          {isPreviousSorted ? sortArrowIcon : null}
+        </div>,
+        <div
+          className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
           key={measure.name + "-delta"}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Difference</div>
-        </div>);
-      }
-
-      return measureHeaders;
+        </div>
+      ];
     });
   }
 
