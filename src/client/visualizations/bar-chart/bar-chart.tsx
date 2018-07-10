@@ -434,11 +434,11 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   private renderMeasureLabel(measure: Measure, datum: Datum): JSX.Element | string {
     const currentValue = datum[measure.name] as number;
-    const currentStr = measure.formatValue(currentValue);
+    const currentStr = measure.formatFn(currentValue);
     if (!this.props.essence.hasComparison()) {
       return currentStr;
     } else {
-      const formatter = measure.formatValue.bind(measure);
+      const formatter = measure.formatFn;
       const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
       return <span>
         {currentStr}

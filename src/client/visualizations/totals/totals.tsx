@@ -105,7 +105,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       return null;
     }
     return <div className="measure-delta-value">
-      {deltaElement(currentValue, previousValue, measure.formatValue.bind(measure))}
+      {deltaElement(currentValue, previousValue, measure.formatFn)}
     </div>;
   }
 
@@ -123,12 +123,12 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       let previousElement: JSX.Element;
       if (myDatum) {
         const currentValue = myDatum[measure.name] as number;
-        measureValueStr = measure.formatValue(currentValue);
+        measureValueStr = measure.formatFn(currentValue);
         if (previous) {
           const previousValue = myDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
 
           previousElement = <div className="measure-value measure-value--previous">
-            {measure.formatValue(previousValue)}
+            {measure.formatFn(previousValue)}
             {this.printDelta(currentValue, previousValue, measure)}
           </div>;
         }

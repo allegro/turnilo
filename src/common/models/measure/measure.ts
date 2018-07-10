@@ -265,11 +265,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   public formatDatum(datum: Datum): string {
-    return this.formatValue(datum[this.name] as number);
-  }
-
-  public formatValue(value: number): string {
-    return this.formatFn(value);
+    return this.formatFn(datum[this.name] as number);
   }
 
   public getTitle: () => string;
