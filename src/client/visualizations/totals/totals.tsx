@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { $, Expression, ply } from "plywood";
+import { List, Iterable } from "immutable";
+import { $, Dataset, Datum, Expression, ply } from "plywood";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
 import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
@@ -109,40 +110,54 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     </div>;
   }
 
+  renderTotal(key: string, single: boolean, name: string, value: string, previous?: JSX.Element): JSX.Element {
+    return <div className={classNames("total", { single })} key={key}>
+      <div className="measure-name">{name}</div>
+      <div className="measure-value">{value}</div>
+      {previous && previous}
+    </div>;
+  }
+
+  renderPrevious(datum: Datum, measure: Measure): JSX.Element {
+    if (!this.props.essence.hasComparison()) {
+      return null;
+    }
+    const currentValue = datum[measure.name] as number;
+    const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+
+    return <div className="measure-value measure-value--previous">
+      {measure.formatFn(previousValue)}
+      {this.printDelta(currentValue, previousValue, measure)}
+    </div>;
+  }
+
+  renderTotals(dataset: Dataset, measures: List<Measure>): Iterable<number, JSX.Element> {
+    const single = measures.size === 1;
+    const datum = dataset ? dataset.data[0] : null;
+    if (!datum) {
+      return measures.map(measure => {
+        return this.renderTotal(measure.name, single, measure.title, "-");
+      });
+    }
+
+    return measures.map(measure => {
+      const currentValue = datum[measure.name] as number;
+      const formattedCurrent = measure.formatFn(currentValue);
+      const previousElement = this.renderPrevious(datum, measure);
+
+      return this.renderTotal(measure.name, single, measure.title, formattedCurrent, previousElement);
+    });
+
+  }
+
   renderInternals() {
     const { essence, stage } = this.props;
     const { datasetLoad: { dataset } } = this.state;
 
-    const myDatum = dataset ? dataset.data[0] : null;
-    const measures = essence.getEffectiveMeasures();
-    const previous = essence.hasComparison();
+    const measures: List<Measure> = essence.getEffectiveMeasures();
     const single = measures.size === 1;
 
-    const totals = measures.map(measure => {
-      let measureValueStr = "-";
-      let previousElement: JSX.Element;
-      if (myDatum) {
-        const currentValue = myDatum[measure.name] as number;
-        measureValueStr = measure.formatFn(currentValue);
-        if (previous) {
-          const previousValue = myDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
-
-          previousElement = <div className="measure-value measure-value--previous">
-            {measure.formatFn(previousValue)}
-            {this.printDelta(currentValue, previousValue, measure)}
-          </div>;
-        }
-      }
-
-      return <div
-        className={classNames("total", { single })}
-        key={measure.name}
-      >
-        <div className="measure-name">{measure.title}</div>
-        <div className="measure-value">{measureValueStr}</div>
-        {previous ? previousElement : null}
-      </div>;
-    });
+    const totals = this.renderTotals(dataset, measures);
 
     let totalContainerStyle: React.CSSProperties = null;
     if (!single) {
