@@ -482,13 +482,13 @@ export class LineChart extends BaseVisualization<LineChartState> {
       return [d3.min([currMin, prevMin]), d3.max([currMax, prevMax])];
     } else {
       return dataset.data.reduce((acc, datum) => {
-        const subDataset = datum[SPLIT] as Dataset;
-        if (!subDataset) {
+        const split = datum[SPLIT] as Dataset;
+        if (!split) {
           return acc;
         }
         const [accMin, accMax] = acc;
-        const [currMin, currMax] = extentForData(dataset.data, getY);
-        const [prevMin, prevMax] = extentForData(dataset.data, getYP);
+        const [currMin, currMax] = extentForData(split.data, getY);
+        const [prevMin, prevMax] = extentForData(split.data, getYP);
         return [d3.min([currMin, prevMin, accMin]), d3.max([currMax, prevMax, accMax])];
       }, [0, 0]);
     }
