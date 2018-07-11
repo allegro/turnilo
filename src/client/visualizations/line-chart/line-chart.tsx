@@ -34,7 +34,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
 import { getLineChartTicks } from "../../../common/models/granularity/granularity";
-import { DatasetLoad, Dimension, Filter, FilterClause, Measure, Stage, VisualizationProps } from "../../../common/models/index";
+import { DatasetLoad, Dimension, Filter, FilterClause, Measure, Splits, Stage, VisualizationProps } from "../../../common/models/index";
 import { Period } from "../../../common/models/periods/periods";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
@@ -53,9 +53,11 @@ import {
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
 import { deltaElement } from "../../utils/format-delta/format-delta";
-import { flatMap, mapTruthy } from "../../utils/functional/functional";
+import { concatTruthy, flatMap, mapTruthy, Unary } from "../../utils/functional/functional";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
+import Scale = d3.time.Scale;
+import Linear = d3.scale.Linear;
 
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
@@ -457,153 +459,168 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
   }
 
-  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage): JSX.Element {
-    const { essence, isThumbnail } = this.props;
+  calculateExtend(dataset: Dataset, splits: Splits, getY: Unary<Datum, number>, getYP: Unary<Datum, number>) {
 
-    const { hoverRange, hoverMeasure, dragRange, scaleX, xTicks, continuousDimension } = this.state;
-    const { splits, colors } = essence;
+    function extentForData(data: Datum[], accessor: Unary<Datum, number>) {
+      return d3.extent(data, accessor);
+    }
 
-    const lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
-    const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
-
-    const getX = (d: Datum) => d[continuousDimension.name] as (TimeRange | NumberRange);
-    const getY = (d: Datum) => d[measure.name] as number;
-    const getYP = (d: Datum) => d[measure.nameWithPeriod(Period.PREVIOUS)] as number;
-
-    const myDatum: Datum = dataset.data[0];
-    const mySplitDataset = myDatum[SPLIT] as Dataset;
-
-    let extentY: number[] = null;
     if (splits.length() === 1) {
-      extentY = d3.extent(mySplitDataset.data, getY);
+      const [currMin, currMax] = extentForData(dataset.data, getY);
+      const [prevMin, prevMax] = extentForData(dataset.data, getYP);
+      return [d3.min([currMin, prevMin]), d3.max([currMax, prevMax])];
     } else {
       let minY = 0;
       let maxY = 0;
 
-      mySplitDataset.data.forEach(datum => {
+      dataset.data.reduce((acc, datum) => {
         const subDataset = datum[SPLIT] as Dataset;
-        if (subDataset) {
-          const tempExtentY = d3.extent(subDataset.data, getY);
-          minY = Math.min(tempExtentY[0], minY);
-          maxY = Math.max(tempExtentY[1], maxY);
+        if (!subDataset) {
+          return acc;
         }
-      });
+        const [accMin, accMax] = acc;
+        const [currMin, currMax] = extentForData(dataset.data, getY);
+        const [prevMin, prevMax] = extentForData(dataset.data, getYP);
+        return [d3.min([currMin, prevMin, accMin]), d3.max([currMax, prevMax, accMax])];
+      }, [0, 0]);
 
-      extentY = [minY, maxY];
+      return [minY, maxY];
     }
+  }
 
-    let horizontalGridLines: JSX.Element;
-    let chartLines: JSX.Element[];
-    let verticalAxis: JSX.Element;
-    let bubble: JSX.Element;
-    if (!isNaN(extentY[0]) && !isNaN(extentY[1])) {
-      let scaleY = d3.scale.linear()
-        .domain([Math.min(extentY[0] * 1.1, 0), Math.max(extentY[1] * 1.1, 0)])
-        .range([lineStage.height, 0]);
+  renderChartLines(splitData: Dataset, isHovered: boolean, lineStage: Stage, getY: Unary<Datum, number>, getYP: Unary<Datum, number>, scaleY: Linear<number, number>) {
+    const { essence } = this.props;
+    const hasComparison = essence.hasComparison();
+    const { splits, colors } = essence;
 
-      let yTicks = scaleY.ticks(5).filter((n: number) => n !== 0);
+    const { hoverRange, scaleX, continuousDimension } = this.state;
+    const getX = (d: Datum) => d[continuousDimension.name] as (TimeRange | NumberRange);
 
-      horizontalGridLines = <GridLines
-        orientation="horizontal"
-        scale={scaleY}
-        ticks={yTicks}
-        stage={lineStage}
-      />;
-
-      verticalAxis = <VerticalAxis
-        stage={yAxisStage}
-        ticks={yTicks}
-        scale={scaleY}
-      />;
-
-      if (splits.length() === 1) {
-        chartLines = [];
-        chartLines.push(<ChartLine
+    if (splits.length() === 1) {
+      const curriedSingleChartLine = (getter: Unary<Datum, number>, dashed = false) =>
+        <ChartLine
           key="single"
-          dataset={mySplitDataset}
+          dataset={splitData}
           getX={getX}
-          getY={getY}
+          getY={getter}
           scaleX={scaleX}
           scaleY={scaleY}
           stage={lineStage}
+          dashed={dashed}
           showArea={true}
-          hoverRange={(!dragRange && hoverMeasure === measure) ? hoverRange : null}
+          hoverRange={isHovered ? hoverRange : null}
           color="default"
-        />);
-        if (essence.hasComparison()) {
-          chartLines.push(<ChartLine
-            key="single-p"
-            dataset={mySplitDataset}
-            getX={getX}
-            getY={getYP}
-            dashed={true}
-            scaleX={scaleX}
-            scaleY={scaleY}
-            stage={lineStage}
-            showArea={true}
-            hoverRange={(!dragRange && hoverMeasure === measure) ? hoverRange : null}
-            color="default"
-          />);
-        }
-      } else {
-        let colorValues: string[] = null;
-        const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+        />;
 
-        if (colors) {
-          colorValues = colors.getColors(mySplitDataset.data.map(d => d[categoryDimension.name]));
-        }
-
-        chartLines = flatMap(mySplitDataset.data, (datum, i) => {
-          const subDataset = datum[SPLIT] as Dataset;
-          if (!subDataset) return [];
-          return [<ChartLine
-            key={"single" + i}
-            dataset={subDataset}
-            getX={getX}
-            getY={getY}
-            scaleX={scaleX}
-            scaleY={scaleY}
-            stage={lineStage}
-            showArea={false}
-            hoverRange={(!dragRange && hoverMeasure === measure) ? hoverRange : null}
-            color={colorValues ? colorValues[i] : null}
-          />, <ChartLine
-            key={"single-p" + i}
-            dataset={subDataset}
-            getX={getX}
-            getY={getYP}
-            scaleX={scaleX}
-            scaleY={scaleY}
-            stage={lineStage}
-            dashed={true}
-            showArea={false}
-            hoverRange={(!dragRange && hoverMeasure === measure) ? hoverRange : null}
-            color={colorValues ? colorValues[i] : null}
-          />
-          ];
-        });
-      }
-
-      bubble = this.renderChartBubble(mySplitDataset, measure, chartIndex, containerStage, chartStage, extentY, scaleY);
+      return concatTruthy(
+        curriedSingleChartLine(getY),
+        hasComparison && curriedSingleChartLine(getYP, true));
     }
+    let colorValues: string[] = null;
+    const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+
+    if (colors) {
+      colorValues = colors.getColors(splitData.data.map(d => d[categoryDimension.name]));
+    }
+
+    return flatMap(splitData.data, (datum, i) => {
+      const subDataset = datum[SPLIT] as Dataset;
+      if (!subDataset) return [];
+      return concatTruthy(<ChartLine
+        key={"single" + i}
+        dataset={subDataset}
+        getX={getX}
+        getY={getY}
+        scaleX={scaleX}
+        scaleY={scaleY}
+        stage={lineStage}
+        showArea={false}
+        hoverRange={isHovered ? hoverRange : null}
+        color={colorValues ? colorValues[i] : null}
+      />, hasComparison && <ChartLine
+          key={"single-p" + i}
+          dataset={subDataset}
+          getX={getX}
+          getY={getYP}
+          scaleX={scaleX}
+          scaleY={scaleY}
+          stage={lineStage}
+          dashed={true}
+          showArea={false}
+          hoverRange={isHovered ? hoverRange : null}
+          color={colorValues ? colorValues[i] : null}
+      />);
+    });
+  }
+
+  renderVerticalAxis(scale: Linear<number, number>, yAxisStage: Stage) {
+    return <VerticalAxis
+      stage={yAxisStage}
+      ticks={this.calculateTicks(scale)}
+      scale={scale}
+    />;
+  }
+
+  renderHorizontalGridLines(scale: Linear<number, number>, lineStage: Stage) {
+    return <GridLines
+      orientation="horizontal"
+      scale={scale}
+      ticks={this.calculateTicks(scale)}
+      stage={lineStage}
+    />;
+  }
+
+  getScale(extent: number[], lineStage: Stage): Linear<number, number> {
+    if (isNaN(extent[0]) || isNaN(extent[1])) {
+      return null;
+    }
+
+    return d3.scale.linear()
+      .domain([Math.min(extent[0] * 1.1, 0), Math.max(extent[1] * 1.1, 0)])
+      .range([lineStage.height, 0]);
+  }
+
+  calculateTicks(scale: Linear<number, number>) {
+    return scale.ticks(5).filter((n: number) => n !== 0);
+  }
+
+  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage): JSX.Element {
+    const { essence, isThumbnail } = this.props;
+
+    const { hoverMeasure, dragRange, scaleX, xTicks } = this.state;
+    const { splits } = essence;
+
+    const lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
+    const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
+
+    const getY: Unary<Datum, number> = (d: Datum) => d[measure.name] as number;
+    const getYP: Unary<Datum, number> = (d: Datum) => d[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+
+    const datum: Datum = dataset.data[0];
+    const splitData = datum[SPLIT] as Dataset;
+
+    const extent = this.calculateExtend(splitData, splits, getY, getYP);
+    const scale = this.getScale(extent, lineStage);
+
+    const isHovered = !dragRange && hoverMeasure === measure;
 
     return <div
       className="measure-line-chart"
       key={measure.name}
       onMouseDown={this.onMouseDown.bind(this, measure)}
-      onMouseMove={this.onMouseMove.bind(this, mySplitDataset, measure, scaleX)}
+      onMouseMove={this.onMouseMove.bind(this, splitData, measure, scaleX)}
       onMouseLeave={this.onMouseLeave.bind(this, measure)}
     >
       <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
-        {horizontalGridLines}
+        {scale && this.renderHorizontalGridLines(scale, lineStage)}
         <GridLines
           orientation="vertical"
           scale={scaleX}
           ticks={xTicks}
           stage={lineStage}
         />
-        {chartLines}
-        {verticalAxis}
+        {scale && this.renderChartLines(splitData, isHovered, lineStage, getY, getYP, scale)}
+        {scale && this.renderHorizontalGridLines(scale, yAxisStage)}
         <line
           className="vis-bottom"
           x1="0"
@@ -612,9 +629,9 @@ export class LineChart extends BaseVisualization<LineChartState> {
           y2={chartStage.height - 0.5}
         />
       </svg>
-      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={myDatum}/> : null}
+      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={datum}/> : null}
       {this.renderHighlighter()}
-      {bubble}
+      {scale && this.renderChartBubble(splitData, measure, chartIndex, containerStage, chartStage, extent, scale)}
     </div>;
 
   }
@@ -684,7 +701,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     this.setState(newState);
   }
 
-  getXAxisRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange {
+  getXAxisRange(dataset: Dataset, continuousDimension: Dimension):
+    PlywoodRange {
     if (!dataset) return null;
     const key = continuousDimension.name;
 
