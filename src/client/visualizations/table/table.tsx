@@ -176,14 +176,14 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   onMouseMove(x: number, y: number) {
-    // const { hoverMeasure, hoverRow } = this.state;
-    // const pos = this.calculateMousePosition(x, y);
-    // if (hoverMeasure !== pos.measure || hoverRow !== pos.row) {
-    //   this.setState({
-    //     hoverMeasure: pos.measure,
-    //     hoverRow: pos.row
-    //   });
-    // }
+    const { hoverMeasure, hoverRow } = this.state;
+    const pos = this.calculateMousePosition(x, y);
+    if (hoverMeasure !== pos.measure || hoverRow !== pos.row) {
+      this.setState({
+        hoverMeasure: pos.measure,
+        hoverRow: pos.row
+      });
+    }
   }
 
   onMouseLeave() {
