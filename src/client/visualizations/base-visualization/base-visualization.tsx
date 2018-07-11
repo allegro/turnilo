@@ -74,8 +74,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const combineWithPrevious = essence.hasComparison();
     const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious, highlightId: this.id });
 
-    const previousFilter = essence.previousTimeFilter(timekeeper);
     const currentFilter = essence.currentTimeFilter(timekeeper);
+    const previousFilter = combineWithPrevious ? essence.previousTimeFilter(timekeeper) : null;
 
     const mainExp: Expression = ply()
       .apply("main", $main.filter(mainFilter.toExpression()));

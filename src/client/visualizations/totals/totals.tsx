@@ -62,19 +62,18 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     const mainExp: Expression = ply()
       .apply("main", $("main").filter(essence.getEffectiveFilter(timekeeper, { combineWithPrevious, highlightId: Totals.id }).toExpression()));
 
-    const previousFilter = essence.previousTimeFilter(timekeeper);
     const currentFilter = essence.currentTimeFilter(timekeeper);
+    const previousFilter = combineWithPrevious ? essence.previousTimeFilter(timekeeper) : null;
 
     return essence.getEffectiveMeasures().reduce((query, measure) => {
       if (!essence.hasComparison()) {
         return query.performAction(
           measure.toApplyExpression()
         );
-      } else {
-        return query
-          .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter))
-          .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter));
       }
+      return query
+        .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter))
+        .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter));
     }, mainExp);
   }
 
