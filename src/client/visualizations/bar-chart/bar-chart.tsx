@@ -25,10 +25,10 @@ import { DataCube, DatasetLoad, Dimension, Filter, FilterClause, Measure, Splits
 import { Period } from "../../../common/models/periods/periods";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
+import { Delta } from "../../components/delta/delta";
 import { BucketMarks, GridLines, Scroller, ScrollerLayout, SegmentActionButtons, SegmentBubble, VerticalAxis, VisMeasureLabel } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
-import { deltaElement } from "../../utils/format-delta/format-delta";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./bar-chart.scss";
 import { BarCoordinates } from "./bar-coordinates";
@@ -445,7 +445,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       return <span>
         {currentStr}
         {formatter(previousValue)}
-        {deltaElement(currentValue, previousValue, formatter)}
+        {<Delta currentValue={currentValue} previousValue={previousValue} formatter={formatter}/>}
       </span>;
     }
   }

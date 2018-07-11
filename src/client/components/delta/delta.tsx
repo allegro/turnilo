@@ -16,17 +16,18 @@
  */
 
 import * as React from "react";
-import { Unary } from "../functional/functional";
+import { Unary } from "../../utils/functional/functional";
+import "./delta.scss";
 
 export type DeltaSign = -1 | 0 | 1;
 
-export interface Delta {
+interface DeltaAttributes {
   delta: number;
   deltaPercentage: number;
   deltaSign: DeltaSign;
 }
 
-export function formatDelta(currentValue: number, previousValue: number): Delta {
+function formatDelta(currentValue: number, previousValue: number): DeltaAttributes {
   if (currentValue === undefined || previousValue === undefined) {
     return null;
   }
@@ -60,7 +61,13 @@ function deltaSignToClassName(deltaSign: DeltaSign): string {
   }
 }
 
-export function deltaElement(currentValue: number, previousValue: number, formatter: Unary<number, string>): JSX.Element {
+export interface DeltaProps {
+  currentValue: number;
+  previousValue: number;
+  formatter: Unary<number, string>;
+}
+
+export const Delta: React.SFC<DeltaProps> = ({ currentValue, previousValue, formatter }) => {
   const formattedDelta = formatDelta(currentValue, previousValue);
   if (formattedDelta === null) {
     return <span className="delta-neutral">-</span>;
@@ -72,4 +79,4 @@ export function deltaElement(currentValue: number, previousValue: number, format
     {formatter(Math.abs(delta))}
     {` (${Math.abs(deltaPercentage)}%)`}
   </span>;
-}
+};

@@ -38,6 +38,7 @@ import { DatasetLoad, Dimension, Filter, FilterClause, Measure, Splits, Stage, V
 import { Period } from "../../../common/models/periods/periods";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
+import { Delta } from "../../components/delta/delta";
 import {
   ChartLine,
   ColorEntry,
@@ -52,7 +53,6 @@ import {
 } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
-import { deltaElement } from "../../utils/format-delta/format-delta";
 import { concatTruthy, flatMap, mapTruthy, Unary } from "../../utils/functional/functional";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
@@ -342,7 +342,9 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { colors, timezone } = essence;
 
     const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
-    const { dragOnMeasure, hoverRange, hoverMeasure, scaleX, continuousDimension } = this.state;
+    const { dragOnMeasure, scaleX, continuousDimension } = this.state;
+    const hoverRange: PlywoodRange = (dataset as any).data[0].SPLIT.data[10].__time as PlywoodRange;
+    const hoverMeasure: Measure = essence.getMeasures().get(0);
 
     if (essence.highlightOnDifferentMeasure(LineChart.id, measure.name)) return null;
 
@@ -372,10 +374,11 @@ export class LineChart extends BaseVisualization<LineChartState> {
             color: colorValues[i],
             name: String(segment),
             value: measure.formatDatum(hoverDatum),
-            delta: deltaElement(
-              hoverDatum[measure.name] as number,
-              hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number,
-              measure.formatFn)
+            delta: <Delta
+              currentValue={hoverDatum[measure.name] as number}
+              previousValue={hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number}
+              formatter={measure.formatFn}
+            />
           };
         });
 
@@ -421,10 +424,11 @@ export class LineChart extends BaseVisualization<LineChartState> {
             color: colorValues[i],
             name: String(segment),
             value: measure.formatDatum(hoverDatum),
-            delta: deltaElement(
-              hoverDatum[measure.name] as number,
-              hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number,
-              measure.formatFn)
+            delta: <Delta
+              currentValue={hoverDatum[measure.name] as number}
+              previousValue={hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number}
+              formatter={measure.formatFn}
+            />
           };
         });
 
@@ -465,7 +469,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       return <span>
         {currentStr}
         {formatter(previousValue)}
-        {deltaElement(currentValue, previousValue, formatter)}
+        <Delta formatter={formatter} currentValue={currentValue} previousValue={previousValue}/>
       </span>;
     }
   }

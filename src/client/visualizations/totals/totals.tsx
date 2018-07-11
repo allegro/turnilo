@@ -21,8 +21,8 @@ import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
 import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
 import { Period } from "../../../common/models/periods/periods";
+import { Delta } from "../../components/delta/delta";
 import { classNames } from "../../utils/dom/dom";
-import { deltaElement } from "../../utils/format-delta/format-delta";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./totals.scss";
 
@@ -106,7 +106,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       return null;
     }
     return <div className="measure-delta-value">
-      {deltaElement(currentValue, previousValue, measure.formatFn)}
+      {<Delta currentValue={currentValue} previousValue={previousValue} formatter={measure.formatFn}/>}
     </div>;
   }
 
