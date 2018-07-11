@@ -125,7 +125,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
       exportOptions.forEach(({ label, fileFormat }) => {
         shareOptions.push(<li
           className="export"
-          key="export"
+          key={`export-${fileFormat}`}
           onClick={this.onExport.bind(this, fileFormat)}>{label}</li>);
       });
     }
