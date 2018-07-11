@@ -25,7 +25,7 @@ import { DataCube, DatasetLoad, Dimension, Filter, FilterClause, Measure, Splits
 import { Period } from "../../../common/models/periods/periods";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
-import { BucketMarks, GridLines, Scroller, ScrollerLayout, SegmentBubble, VerticalAxis, VisMeasureLabel } from "../../components/index";
+import { BucketMarks, GridLines, Scroller, ScrollerLayout, SegmentActionButtons, SegmentBubble, VerticalAxis, VisMeasureLabel } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
 import { deltaElement } from "../../utils/format-delta/format-delta";
@@ -401,12 +401,14 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return <SegmentBubble
       left={leftOffset}
       top={topOffset}
-      dimension={dimension}
-      segmentLabel={segmentLabel}
-      measureLabel={measure.formatDatum(path[path.length - 1])}
-      clicker={clicker}
-      openRawDataModal={openRawDataModal}
-      onClose={this.onBubbleClose.bind(this)}
+      title={segmentLabel}
+      content={measure.formatDatum(path[path.length - 1])}
+      actions={<SegmentActionButtons
+        dimension={dimension}
+        clicker={clicker}
+        openRawDataModal={openRawDataModal}
+        onClose={this.onBubbleClose.bind(this)}
+      />}
     />;
   }
 
@@ -423,12 +425,12 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     if (!this.canShowBubble(leftOffset, topOffset)) return null;
 
-    const measureLabel = this.renderMeasureLabel(measure, path[path.length - 1]);
+    const measureContent = this.renderMeasureLabel(measure, path[path.length - 1]);
     return <SegmentBubble
       top={topOffset}
       left={leftOffset}
-      segmentLabel={segmentLabel}
-      measureLabel={measureLabel}
+      title={segmentLabel}
+      content={measureContent}
     />;
   }
 
@@ -497,7 +499,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { essence } = this.props;
     const { timezone } = essence;
 
-    const bars: any[] = [];
+    let bars: JSX.Element[] = [];
     let highlight: JSX.Element;
 
     const dimension = essence.splits.get(splitIndex).getDimension(essence.dataCube.dimensions);

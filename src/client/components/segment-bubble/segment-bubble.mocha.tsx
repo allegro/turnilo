@@ -26,10 +26,11 @@ import { SegmentBubble } from "./segment-bubble";
 
 describe.skip("SegmentBubble", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <SegmentBubble
         left={null}
         top={null}
+        title={null}
       />
     );
 

@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Clicker, Dimension } from "../../../common/models/index";
+import { Clicker } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
 import { BodyPortal } from "../body-portal/body-portal";
 import { SegmentActionButtons } from "../segment-action-buttons/segment-action-buttons";
@@ -26,15 +26,15 @@ const LEFT_OFFSET = 22;
 
 export interface ColorEntry {
   color: string;
-  segmentLabel: string;
-  measureLabel: string | JSX.Element;
+  name: string;
+  value: string;
+  delta?: JSX.Element;
 }
 
 export interface HoverMultiBubbleProps {
   left: number;
   top: number;
-  dimension?: Dimension;
-  segmentLabel?: string;
+  title?: string;
   colorEntries?: ColorEntry[];
   clicker?: Clicker;
   onClose?: Fn;
@@ -44,27 +44,27 @@ function renderColorSwabs(colorEntries: ColorEntry[]): JSX.Element {
   if (!colorEntries || !colorEntries.length) return null;
 
   const colorSwabs = colorEntries.map((colorEntry: ColorEntry) => {
-    const { color, segmentLabel, measureLabel } = colorEntry;
+    const { color, name, value, delta } = colorEntry;
     const swabStyle = { background: color };
-    return <div className="color" key={segmentLabel}>
+    return <div className="color" key={name}>
       <div className="color-swab" style={swabStyle}/>
-      <div className="color-name">{segmentLabel}</div>
-      <div className="color-value">{measureLabel}</div>
+      <div className="color-name">{name}</div>
+      <div className="color-value">{value}</div>
+      {delta && <div className="color-delta">{delta}</div>}
     </div>;
   });
 
   return <div className="colors">{colorSwabs}</div>;
 }
 
-export const HoverMultiBubble: React.SFC<HoverMultiBubbleProps> = ({ colorEntries, left, top, dimension, segmentLabel, clicker, onClose }) => {
+export const HoverMultiBubble: React.SFC<HoverMultiBubbleProps> = ({ colorEntries, left, top, title, clicker, onClose }) => {
   return <BodyPortal left={left + LEFT_OFFSET} top={top} disablePointerEvents={!clicker}>
     <div className="hover-multi-bubble">
-      <div className="bucket">{segmentLabel}</div>
+      <div className="bucket">{title}</div>
       {renderColorSwabs(colorEntries)}
       {clicker && <SegmentActionButtons
         clicker={clicker}
-        dimension={dimension}
-        segmentLabel={segmentLabel}
+        segmentLabel={title}
         disableMoreMenu={true}
         onClose={onClose}/>}
     </div>

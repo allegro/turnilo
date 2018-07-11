@@ -45,7 +45,7 @@ import {
   GridLines,
   Highlighter,
   HoverMultiBubble,
-  LineChartAxis,
+  LineChartAxis, SegmentActionButtons,
   SegmentBubble,
   VerticalAxis,
   VisMeasureLabel
@@ -352,54 +352,61 @@ export class LineChart extends BaseVisualization<LineChartState> {
     topOffset += containerYPosition;
 
     if ((dragRange && dragOnMeasure === measure) || (!dragRange && essence.highlightOn(LineChart.id, measure.name))) {
-      var bubbleRange = dragRange || essence.getSingleHighlightSet().elements[0];
+      const bubbleRange = dragRange || essence.getSingleHighlightSet().elements[0];
 
-      var shownRange = roundDragRange || bubbleRange;
-      var segmentLabel = formatValue(bubbleRange, timezone, DisplayYear.NEVER);
+      const shownRange = roundDragRange || bubbleRange;
 
       if (colors) {
-        var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
-        var leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.end);
+        const segmentLabel = formatValue(bubbleRange, timezone, DisplayYear.NEVER);
+        const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+        const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.end);
 
-        var hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, bubbleRange));
-        var colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
-        var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
-          var segment = d[categoryDimension.name];
-          var hoverDatum = hoverDatums[i];
+        const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, bubbleRange));
+        const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
+        const colorEntries: ColorEntry[] = mapTruthy(dataset.data, (d, i) => {
+          const segment = d[categoryDimension.name];
+          const hoverDatum = hoverDatums[i];
           if (!hoverDatum) return null;
 
           return {
             color: colorValues[i],
-            segmentLabel: String(segment),
-            measureLabel: measure.formatDatum(hoverDatum)
+            name: String(segment),
+            value: measure.formatDatum(hoverDatum),
+            delta: deltaElement(
+              hoverDatum[measure.name] as number,
+              hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number,
+              measure.formatFn)
           };
-        }).filter(Boolean);
+        });
 
         return <HoverMultiBubble
           left={leftOffset}
           top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
-          segmentLabel={segmentLabel}
+          title={segmentLabel}
           colorEntries={colorEntries}
           clicker={dragRange ? null : clicker}
         />;
       } else {
-        var leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
-        var highlightDatum = dataset.findDatumByAttribute(continuousDimension.name, shownRange);
-        var segmentLabel = formatValue(shownRange, timezone, DisplayYear.NEVER);
+        const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
+        const segmentLabel = formatValue(shownRange, timezone, DisplayYear.NEVER);
+        const highlightDatum = dataset.findDatumByAttribute(continuousDimension.name, shownRange);
+        const measureLabel = highlightDatum ? measure.formatDatum(highlightDatum) : null;
 
         return <SegmentBubble
           left={leftOffset}
           top={topOffset + HOVER_BUBBLE_V_OFFSET}
-          segmentLabel={segmentLabel}
-          measureLabel={highlightDatum ? measure.formatDatum(highlightDatum) : null}
-          clicker={dragRange ? null : clicker}
-          openRawDataModal={openRawDataModal}
+          title={segmentLabel}
+          content={measureLabel}
+          actions={<SegmentActionButtons
+            clicker={dragRange ? null : clicker}
+            openRawDataModal={openRawDataModal}
+          />}
         />;
       }
 
     } else if (!dragRange && hoverRange && hoverMeasure === measure) {
-      var leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
-      var segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+      const leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
+      const segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
 
       if (colors) {
         const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
@@ -412,29 +419,33 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
           return {
             color: colorValues[i],
-            segmentLabel: String(segment),
-            measureLabel: this.renderMeasureLabel(measure, hoverDatum)
+            name: String(segment),
+            value: measure.formatDatum(hoverDatum),
+            delta: deltaElement(
+              hoverDatum[measure.name] as number,
+              hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number,
+              measure.formatFn)
           };
         });
 
         return <HoverMultiBubble
           left={leftOffset}
           top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
-          segmentLabel={segmentLabel}
+          title={segmentLabel}
           colorEntries={colorEntries}
         />;
 
       } else {
         const hoverDatum = dataset.findDatumByAttribute(continuousDimension.name, hoverRange);
         if (!hoverDatum) return null;
-        const segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
-        const measureLabel = this.renderMeasureLabel(measure, hoverDatum);
+        const title = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+        const content = this.renderMeasureLabel(measure, hoverDatum);
 
         return <SegmentBubble
           left={leftOffset}
           top={topOffset + HOVER_BUBBLE_V_OFFSET}
-          segmentLabel={segmentLabel}
-          measureLabel={measureLabel}
+          title={title}
+          content={content}
         />;
       }
 
@@ -470,10 +481,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       const [prevMin, prevMax] = extentForData(dataset.data, getYP);
       return [d3.min([currMin, prevMin]), d3.max([currMax, prevMax])];
     } else {
-      let minY = 0;
-      let maxY = 0;
-
-      dataset.data.reduce((acc, datum) => {
+      return dataset.data.reduce((acc, datum) => {
         const subDataset = datum[SPLIT] as Dataset;
         if (!subDataset) {
           return acc;
@@ -483,8 +491,6 @@ export class LineChart extends BaseVisualization<LineChartState> {
         const [prevMin, prevMax] = extentForData(dataset.data, getYP);
         return [d3.min([currMin, prevMin, accMin]), d3.max([currMax, prevMax, accMax])];
       }, [0, 0]);
-
-      return [minY, maxY];
     }
   }
 
@@ -620,7 +626,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           stage={lineStage}
         />
         {scale && this.renderChartLines(splitData, isHovered, lineStage, getY, getYP, scale)}
-        {scale && this.renderHorizontalGridLines(scale, yAxisStage)}
+        {scale && this.renderVerticalAxis(scale, yAxisStage)}
         <line
           className="vis-bottom"
           x1="0"
@@ -706,8 +712,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     if (!dataset) return null;
     const key = continuousDimension.name;
 
-    var firstDatum = dataset.data[0];
-    var ranges: PlywoodRange[];
+    const firstDatum = dataset.data[0];
+    let ranges: PlywoodRange[];
     if (firstDatum["SPLIT"]) {
       ranges = dataset.data.map(d => this.getXAxisRange(d["SPLIT"] as Dataset, continuousDimension));
     } else {
@@ -730,25 +736,25 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   renderInternals() {
-    var { essence, stage } = this.props;
-    var { datasetLoad, axisRange, scaleX, xTicks } = this.state;
-    var { splits, timezone } = essence;
+    const { essence, stage } = this.props;
+    const { datasetLoad, axisRange, scaleX, xTicks } = this.state;
+    const { splits, timezone } = essence;
 
-    var measureCharts: JSX.Element[];
-    var bottomAxis: JSX.Element;
+    let measureCharts: JSX.Element[];
+    let bottomAxis: JSX.Element;
 
     if (datasetLoad.dataset && splits.length() && axisRange) {
-      var measures = essence.getEffectiveMeasures().toArray();
+      const measures = essence.getEffectiveMeasures().toArray();
 
-      var chartWidth = stage.width - VIS_H_PADDING * 2;
-      var chartHeight = Math.max(
+      const chartWidth = stage.width - VIS_H_PADDING * 2;
+      const chartHeight = Math.max(
         MIN_CHART_HEIGHT,
         Math.floor(Math.min(
           chartWidth / MAX_ASPECT_RATIO,
           (stage.height - X_AXIS_HEIGHT) / measures.length
         ))
       );
-      var chartStage = new Stage({
+      const chartStage = new Stage({
         x: VIS_H_PADDING,
         y: 0,
         width: chartWidth,
@@ -759,7 +765,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         return this.renderChart(datasetLoad.dataset, measure, chartIndex, stage, chartStage);
       });
 
-      var xAxisStage = Stage.fromSize(chartStage.width, X_AXIS_HEIGHT);
+      const xAxisStage = Stage.fromSize(chartStage.width, X_AXIS_HEIGHT);
       bottomAxis = <svg
         className="bottom-axis"
         width={xAxisStage.width}
@@ -769,7 +775,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       </svg>;
     }
 
-    var measureChartsStyle = {
+    const measureChartsStyle = {
       maxHeight: stage.height - X_AXIS_HEIGHT
     };
 

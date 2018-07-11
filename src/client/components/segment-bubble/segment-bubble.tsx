@@ -16,11 +16,8 @@
  */
 
 import * as React from "react";
-import { Clicker, Dimension } from "../../../common/models/index";
-import { Fn } from "../../../common/utils/general/general";
 import { clamp } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";
-import { SegmentActionButtons } from "../segment-action-buttons/segment-action-buttons";
 import { Shpitz } from "../shpitz/shpitz";
 import "./segment-bubble.scss";
 
@@ -30,38 +27,25 @@ const PER_LETTER_PIXELS = 8;
 export interface SegmentBubbleProps {
   left: number;
   top: number;
-  dimension?: Dimension;
-  segmentLabel?: string;
-  measureLabel?: string | JSX.Element;
-  clicker?: Clicker;
-  onClose?: Fn;
-  openRawDataModal?: Fn;
+  title: string;
+  content?: string | JSX.Element;
+  actions?: JSX.Element;
 }
 
-function label(segmentLabel: string, measureLabel: string | JSX.Element) {
-  const minTextWidth = clamp(segmentLabel.length * PER_LETTER_PIXELS, 80, 300);
+function label(title: string, content: string | JSX.Element) {
+  const minTextWidth = clamp(title.length * PER_LETTER_PIXELS, 80, 300);
   return <div className="text" style={{ minWidth: minTextWidth }}>
-    <div className="segment">{segmentLabel}</div>
-    {measureLabel ? <div className="measure-value">{measureLabel}</div> : null}
+    <div className="title">{title}</div>
+    {content ? <div className="content">{content}</div> : null}
   </div>;
 }
 
-function actions({ clicker, dimension, segmentLabel, openRawDataModal, onClose }: SegmentBubbleProps) {
-  return <SegmentActionButtons
-    clicker={clicker}
-    dimension={dimension}
-    segmentLabel={segmentLabel}
-    openRawDataModal={openRawDataModal}
-    onClose={onClose}
-  />;
-}
-
 export const SegmentBubble: React.SFC<SegmentBubbleProps> = (props: SegmentBubbleProps) => {
-  const { left, top, segmentLabel, measureLabel, clicker  } = props;
-  return <BodyPortal left={left} top={top + OFFSET_V} disablePointerEvents={!clicker}>
+  const { left, top, title, content, actions } = props;
+  return <BodyPortal left={left} top={top + OFFSET_V} disablePointerEvents={!actions}>
     <div className="segment-bubble">
-      {segmentLabel && label(segmentLabel, measureLabel)}
-      {clicker && actions(props)}
+      {label(title, content)}
+      {actions}
       <Shpitz direction="up"/>
     </div>
   </BodyPortal>;

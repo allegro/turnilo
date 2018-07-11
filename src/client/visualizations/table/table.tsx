@@ -24,6 +24,7 @@ import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, SplitCom
 import { Period } from "../../../common/models/periods/periods";
 import { integerDivision } from "../../../common/utils";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
+import { SegmentActionButtons } from "../../components";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
@@ -474,10 +475,13 @@ export class Table extends BaseVisualization<TableState> {
           highlightBubble = <SegmentBubble
             left={stage.x + stage.width / 2}
             top={stage.y + HEADER_HEIGHT + rowY - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
-            segmentLabel={segmentName}
-            dimension={dimension}
-            clicker={clicker}
-            openRawDataModal={openRawDataModal}
+            title={segmentName}
+            actions={<SegmentActionButtons
+              clicker={clicker}
+              segmentLabel={segmentName}
+              dimension={dimension}
+              openRawDataModal={openRawDataModal}
+            />}
           />;
         }
 
