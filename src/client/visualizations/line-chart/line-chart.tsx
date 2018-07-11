@@ -497,16 +497,16 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const getX = (d: Datum) => d[continuousDimension.name] as (TimeRange | NumberRange);
 
     if (splits.length() === 1) {
-      const curriedSingleChartLine = (getter: Unary<Datum, number>, dashed = false) =>
+      const curriedSingleChartLine = (getter: Unary<Datum, number>, isPrevious = false) =>
         <ChartLine
-          key="single"
+          key={`single-${isPrevious ? "previous" : "current"}`}
           dataset={splitData}
           getX={getX}
           getY={getter}
           scaleX={scaleX}
           scaleY={scaleY}
           stage={lineStage}
-          dashed={dashed}
+          dashed={isPrevious}
           showArea={true}
           hoverRange={isHovered ? hoverRange : null}
           color="default"
@@ -527,7 +527,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       const subDataset = datum[SPLIT] as Dataset;
       if (!subDataset) return [];
       return concatTruthy(<ChartLine
-        key={"single" + i}
+        key={"single-current-" + i}
         dataset={subDataset}
         getX={getX}
         getY={getY}
@@ -538,7 +538,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         hoverRange={isHovered ? hoverRange : null}
         color={colorValues ? colorValues[i] : null}
       />, hasComparison && <ChartLine
-          key={"single-p" + i}
+          key={"single-previous-" + i}
           dataset={subDataset}
           getX={getX}
           getY={getYP}
