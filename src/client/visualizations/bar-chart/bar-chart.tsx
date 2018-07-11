@@ -26,7 +26,7 @@ import { Period } from "../../../common/models/periods/periods";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
 import { Delta } from "../../components/delta/delta";
-import { BucketMarks, GridLines, Scroller, ScrollerLayout, SegmentActionButtons, SegmentBubble, VerticalAxis, VisMeasureLabel } from "../../components/index";
+import { BucketMarks, GridLines, MeasureBubbleContent, Scroller, ScrollerLayout, SegmentActionButtons, SegmentBubble, VerticalAxis, VisMeasureLabel } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
@@ -436,17 +436,15 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   private renderMeasureLabel(measure: Measure, datum: Datum): JSX.Element | string {
     const currentValue = datum[measure.name] as number;
-    const currentStr = measure.formatFn(currentValue);
     if (!this.props.essence.hasComparison()) {
-      return currentStr;
+      return measure.formatFn(currentValue);
     } else {
-      const formatter = measure.formatFn;
       const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
-      return <span>
-        {currentStr}
-        {formatter(previousValue)}
-        {<Delta currentValue={currentValue} previousValue={previousValue} formatter={formatter}/>}
-      </span>;
+      return <MeasureBubbleContent
+        formatter={measure.formatFn}
+        current={currentValue}
+        previous={previousValue}
+      />;
     }
   }
 

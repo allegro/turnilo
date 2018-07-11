@@ -17,19 +17,7 @@
 
 import * as d3 from "d3";
 import { immutableEqual } from "immutable-class";
-import {
-  Dataset,
-  Datum,
-  NumberBucketExpression,
-  NumberRange,
-  NumberRangeJS,
-  PlywoodRange,
-  r,
-  Range,
-  TimeBucketExpression,
-  TimeRange,
-  TimeRangeJS
-} from "plywood";
+import { Dataset, Datum, NumberBucketExpression, NumberRange, NumberRangeJS, PlywoodRange, r, Range, TimeBucketExpression, TimeRange, TimeRangeJS } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
@@ -38,15 +26,17 @@ import { DatasetLoad, Dimension, Filter, FilterClause, Measure, Splits, Stage, V
 import { Period } from "../../../common/models/periods/periods";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
-import { Delta } from "../../components/delta/delta";
 import {
   ChartLine,
   ColorEntry,
+  Delta,
   GlobalEventListener,
   GridLines,
   Highlighter,
   HoverMultiBubble,
-  LineChartAxis, SegmentActionButtons,
+  LineChartAxis,
+  MeasureBubbleContent,
+  SegmentActionButtons,
   SegmentBubble,
   VerticalAxis,
   VisMeasureLabel
@@ -56,7 +46,6 @@ import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
 import { concatTruthy, flatMap, mapTruthy, Unary } from "../../utils/functional/functional";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
-import Scale = d3.time.Scale;
 import Linear = d3.scale.Linear;
 
 const TEXT_SPACER = 36;
@@ -342,9 +331,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { colors, timezone } = essence;
 
     const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
-    const { dragOnMeasure, scaleX, continuousDimension } = this.state;
-    const hoverRange: PlywoodRange = (dataset as any).data[0].SPLIT.data[10].__time as PlywoodRange;
-    const hoverMeasure: Measure = essence.getMeasures().get(0);
+    const { dragOnMeasure, scaleX, hoverRange, hoverMeasure, continuousDimension } = this.state;
 
     if (essence.highlightOnDifferentMeasure(LineChart.id, measure.name)) return null;
 
@@ -374,7 +361,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             color: colorValues[i],
             name: String(segment),
             value: measure.formatDatum(hoverDatum),
-            delta: <Delta
+            delta: essence.hasComparison() && <Delta
               currentValue={hoverDatum[measure.name] as number}
               previousValue={hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number}
               formatter={measure.formatFn}
@@ -424,7 +411,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             color: colorValues[i],
             name: String(segment),
             value: measure.formatDatum(hoverDatum),
-            delta: <Delta
+            delta: essence.hasComparison() && <Delta
               currentValue={hoverDatum[measure.name] as number}
               previousValue={hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number}
               formatter={measure.formatFn}
@@ -460,17 +447,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
   private renderMeasureLabel(measure: Measure, datum: Datum): JSX.Element | string {
     const currentValue = datum[measure.name] as number;
-    const currentStr = measure.formatFn(currentValue);
     if (!this.props.essence.hasComparison()) {
-      return currentStr;
+      return measure.formatFn(currentValue);
     } else {
-      const formatter = measure.formatFn;
-      const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
-      return <span>
-        {currentStr}
-        {formatter(previousValue)}
-        <Delta formatter={formatter} currentValue={currentValue} previousValue={previousValue}/>
-      </span>;
+      const previous = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+      return <MeasureBubbleContent
+        current={currentValue}
+        previous={previous}
+        formatter={measure.formatFn}/>;
     }
   }
 
