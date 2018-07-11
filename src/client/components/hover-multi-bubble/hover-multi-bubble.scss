@@ -35,6 +35,7 @@
       width: 15px;
       height: 15px;
       border-radius: 2px;
+      flex-shrink: 0;
     }
 
     .color-name {
@@ -42,18 +43,23 @@
       display: inline-block;
       margin-left: 5px;
       line-height: 18px;
-      flex-basis: 108px;
+      flex-basis: 100px;
       flex-grow: 1;
+      flex-shrink: 0;
     }
 
     .color-value {
       flex-basis: 60px;
+      flex-grow: 1;
+      flex-shrink: 1;
       line-height: 18px;
       text-align: right;
     }
 
     .color-delta {
       flex-basis: 80px;
+      flex-grow: 1;
+      flex-shrink: 0;
       line-height: 18px;
       margin-left: 5px;
     }

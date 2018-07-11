@@ -77,6 +77,6 @@ export const Delta: React.SFC<DeltaProps> = ({ currentValue, previousValue, form
   return <span className={deltaSignToClassName(deltaSign)}>
     {deltaSignToSymbol(deltaSign)}
     {formatter(Math.abs(delta))}
-    {` (${Math.abs(deltaPercentage)}%)`}
+    {isFinite(deltaPercentage) && ` (${Math.abs(deltaPercentage)}%)`}
   </span>;
 };
