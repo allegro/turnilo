@@ -21,7 +21,6 @@
   @extend %menu-cont;
   background: rgba($white, 0.9);
   position: absolute;
-  width: 200px;
   padding: 8px;
 
   .bucket {
@@ -30,10 +29,9 @@
   }
 
   .color {
+    display: flex;
+
     .color-swab {
-      position: absolute;
-      top: 1px;
-      left: 0;
       width: 15px;
       height: 15px;
       border-radius: 2px;
@@ -42,15 +40,22 @@
     .color-name {
       @include ellipsis;
       display: inline-block;
-      margin-left: 22px;
+      margin-left: 5px;
       line-height: 18px;
-      width: 108px;
+      flex-basis: 108px;
+      flex-grow: 1;
     }
 
     .color-value {
-      @include pin-right(60px);
+      flex-basis: 60px;
       line-height: 18px;
       text-align: right;
+    }
+
+    .color-delta {
+      flex-basis: 80px;
+      line-height: 18px;
+      margin-left: 5px;
     }
   }
 

@@ -43,8 +43,7 @@ export interface HoverMultiBubbleProps {
 function renderColorSwabs(colorEntries: ColorEntry[]): JSX.Element {
   if (!colorEntries || !colorEntries.length) return null;
 
-  const colorSwabs = colorEntries.map((colorEntry: ColorEntry) => {
-    const { color, name, value, delta } = colorEntry;
+  const colorSwabs = colorEntries.map(({ color, name, value, delta }: ColorEntry) => {
     const swabStyle = { background: color };
     return <div className="color" key={name}>
       <div className="color-swab" style={swabStyle}/>
