@@ -90,7 +90,7 @@ export interface EssenceJS {
   visualization?: string;
   timezone?: string;
   filter?: FilterJS;
-  timeShift: TimeShiftJS;
+  timeShift?: TimeShiftJS;
   splits?: SplitsJS;
   multiMeasureMode?: boolean;
   singleMeasure?: string;
@@ -338,12 +338,12 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       visualization: this.visualization.name,
       timezone: this.timezone.toJS(),
       filter: this.filter.toJS(),
-      timeShift: this.timeShift.toJS(),
       splits: this.splits.toJS(),
       singleMeasure: this.singleMeasure,
       selectedMeasures: this.selectedMeasures.toArray(),
       pinnedDimensions: this.pinnedDimensions.toArray()
     };
+    if (this.hasComparison()) js.timeShift = this.timeShift.toJS();
     if (this.multiMeasureMode) js.multiMeasureMode = true;
     if (this.colors) js.colors = this.colors.toJS();
     if (this.pinnedSort && this.pinnedDimensions.size) js.pinnedSort = this.pinnedSort;

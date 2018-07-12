@@ -55,7 +55,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
       measures: measuresDefinitionConverter.fromSimpleValues(essence.multiMeasureMode, essence.singleMeasure, essence.selectedMeasures),
       pinnedDimensions: essence.pinnedDimensions.toArray(),
       pinnedSort: essence.pinnedSort,
-      timeShift: essence.timeShift.toJS(),
+      timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined,
       legend: essence.colors && legendConverter.fromColors(essence.colors),
       highlight: essence.highlight && highlightConverter(dataCube).fromHighlight(essence.highlight)
     };
