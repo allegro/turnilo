@@ -72,7 +72,7 @@
     "node-spawn-server": "1.0.1",
     "nopt": "4.0.1",
     "numeral": "2.0.6",
-    "plywood": "^0.18.0",
+    "plywood": "0.18.0",
     "plywood-base-api": "0.2.8",
     "plywood-druid-requester": "2.4.2",
     "plywood-mysql-requester": "2.1.0",
