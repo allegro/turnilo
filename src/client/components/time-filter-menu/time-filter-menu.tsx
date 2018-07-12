@@ -317,13 +317,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     }
 
     const previewText = previewTimeRange ? formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
-
-    let timeShiftPreview;
-    if (hoverTimeShift) {
-      timeShiftPreview = !hoverTimeShift.isEmpty() ? this.shiftAndFormatTimeRange(previewTimeRange, hoverTimeShift) : null;
-    } else {
-      timeShiftPreview = essence.hasComparison() ? this.shiftAndFormatTimeRange(previewTimeRange, essence.timeShift) : null;
-    }
+    const timeShiftPreview = this.timeShiftPreviewForPreset(previewTimeRange);
 
     return <div className="cont">
       {essence.dataCube.isTimeAttribute(dimension.expression) ? maxTimeBasedPresets : null}
@@ -338,6 +332,19 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     </div>;
   }
 
+  timeShiftPreviewForPreset(previewTimeRange: TimeRange) {
+    const { hoverTimeShift } = this.state;
+    const { essence } = this.props;
+
+    if (hoverTimeShift && !hoverTimeShift.isEmpty()) {
+      return this.shiftAndFormatTimeRange(previewTimeRange, hoverTimeShift);
+    }
+    if (!hoverTimeShift && essence.hasComparison()) {
+      return this.shiftAndFormatTimeRange(previewTimeRange, essence.timeShift);
+    }
+    return null;
+  }
+
   actionEnabled() {
     const { essence } = this.props;
     const { tab, fixedTimeShift } = this.state;
@@ -346,18 +353,24 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     return (newFilter && !essence.filter.equals(newFilter)) || !essence.timeShift.equals(fixedTimeShift);
   }
 
+  timeShiftPreviewForRange(): string {
+    const { hoverTimeShift, fixedTimeShift, startTime, endTime } = this.state;
+    const timeRange = TimeRange.fromJS({ start: startTime, end: endTime });
+    if (hoverTimeShift && !hoverTimeShift.isEmpty()) {
+      return this.shiftAndFormatTimeRange(timeRange, hoverTimeShift);
+    }
+    if (!hoverTimeShift && !fixedTimeShift.isEmpty()) {
+      return this.shiftAndFormatTimeRange(timeRange, fixedTimeShift);
+    }
+    return null;
+  }
+
   renderDateRangePicker() {
     const { essence, timekeeper, dimension } = this.props;
-    const { hoverTimeShift, fixedTimeShift, startTime, endTime } = this.state;
     if (!dimension) return null;
+    const { fixedTimeShift, startTime, endTime } = this.state;
+    const timeShiftPreview = this.timeShiftPreviewForRange();
 
-    let timeShiftPreview = null;
-    const timeRange = TimeRange.fromJS({ start: startTime, end: endTime });
-    if (hoverTimeShift) {
-      timeShiftPreview = !hoverTimeShift.isEmpty() ? this.shiftAndFormatTimeRange(timeRange, hoverTimeShift) : null;
-    } else {
-      timeShiftPreview = !fixedTimeShift.isEmpty() ? this.shiftAndFormatTimeRange(timeRange, fixedTimeShift) : null;
-    }
     return <div>
       <DateRangePicker
         startTime={startTime}
