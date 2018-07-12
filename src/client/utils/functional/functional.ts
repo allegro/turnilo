@@ -46,5 +46,5 @@ export function thread(x: any, ...fns: Function[]) {
 }
 
 export function threadTruthy(x: any, ...fns: Function[]) {
-  return fns.reduce((x, f) => isTruthy(x) ? x : f(x), x);
+  return fns.reduce((x, f) => isTruthy(x) ? f(x) : x, x);
 }
