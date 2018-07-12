@@ -24,7 +24,7 @@ import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, SplitCom
 import { Period } from "../../../common/models/periods/periods";
 import { integerDivision } from "../../../common/utils";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
-import { SegmentActionButtons } from "../../components";
+import { Delta, SegmentActionButtons } from "../../components";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
@@ -261,6 +261,12 @@ export class Table extends BaseVisualization<TableState> {
     return columnsCount * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / columnsCount;
   }
 
+  makeBackground(width: number): JSX.Element {
+    return <div className="background-container">
+      <div className="background" style={{ width: width + "%" }}/>
+    </div>;
+  }
+
   makeMeasuresRenderer(essence: Essence, formatters: Formatter[], hScales: Array<d3.scale.Linear<number, number>>): (datum: PseudoDatum) => JSX.Element[] {
     const measuresArray = essence.getEffectiveMeasures().toArray();
     const idealWidth = this.getIdealColumnWidth(essence);
@@ -268,47 +274,39 @@ export class Table extends BaseVisualization<TableState> {
     const splitLength = essence.splits.length();
     const isSingleMeasure = measuresArray.length === 1;
     const className = classNames("measure", { "all-alone": isSingleMeasure });
-    const makeBackground = (width: number) => <div className="background-container">
-      <div className="background" style={{ width: width + "%" }}/>
-    </div>;
 
     return (datum: PseudoDatum): JSX.Element[] => {
+      const lastLevel = datum["__nest"] === splitLength;
 
       return flatMap(measuresArray, (measure, i) => {
-        const measureValue = datum[measure.name];
-        const measureValueStr = formatters[i](measureValue);
+        const formatter = formatters[i];
+        const currentValue = datum[measure.name];
 
-        let background: JSX.Element = null;
-        if (datum["__nest"] === splitLength) {
-          background = makeBackground(hScales[i](measureValue));
+        const currentCell = <div className={className} key={measure.name} style={{ width: idealWidth }}>
+          {lastLevel && this.makeBackground(hScales[i](currentValue))}
+          <div className="label">{formatter(currentValue)}</div>
+        </div>;
+
+        if (!essence.hasComparison()) {
+          return [currentCell];
         }
 
-        let cells = [
-          <div className={className} key={measure.name} style={{ width: idealWidth }}>
-            {background}
-            <div className="label">{measureValueStr}</div>
-          </div>];
-        if (essence.hasComparison()) {
-          const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
-          const previousValueStr = formatters[i](previousValue);
-          const deltaValueStr = formatters[i](measureValue - previousValue);
+        const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
 
-          let prevBackground: JSX.Element = null;
-          if (datum["__nest"] === splitLength && previousValue) {
-            prevBackground = makeBackground(hScales[i](previousValue));
-          }
-
-          cells.push(
-            <div className={className} key={measure.name + "-previous"} style={{ width: idealWidth }}>
-              {prevBackground}
-              <div className="label">{previousValueStr}</div>
-            </div>,
-            <div className={className} key={measure.name + "-delta"} style={{ width: idealWidth }}>
-              <div className="label">{deltaValueStr}</div>
-            </div>
-          );
-        }
-        return cells;
+        return [
+          currentCell,
+          <div className={className} key={`${measure.name}-previous`} style={{ width: idealWidth }}>
+            {lastLevel && this.makeBackground(hScales[i](previousValue))}
+            <div className="label">{formatter(previousValue)}</div>
+          </div>,
+          <div className={className} key={`${measure.name}-delta`} style={{ width: idealWidth }}>
+            <div className="label">{<Delta
+              currentValue={currentValue}
+              previousValue={previousValue}
+              formatter={formatter}
+            />}</div>
+          </div>
+        ];
       });
     };
   }
