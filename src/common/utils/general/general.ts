@@ -118,8 +118,7 @@ function log10(n: number) {
 }
 
 export function integerDivision(x: number, y: number): number {
-  // noinspection TsLint
-  return ~~(x / y);
+  return Math.floor(x / y);
 }
 
 export function toSignificantDigits(n: number, digits: number) {

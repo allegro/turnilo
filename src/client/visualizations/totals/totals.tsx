@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { List, Iterable } from "immutable";
+import { Iterable, List } from "immutable";
 import { $, Dataset, Datum, Expression, ply } from "plywood";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
