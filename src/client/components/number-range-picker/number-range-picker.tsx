@@ -250,8 +250,8 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
 
     return <div className={classNames("number-range-picker", { inverted: exclude })} ref="number-range-picker">
       {content}
-      {loading ? <Loader/> : null}
-      {error ? <QueryError error={error}/> : null}
+      {loading && <Loader/>}
+      {error && <QueryError error={error}/>}
     </div>;
   }
 }

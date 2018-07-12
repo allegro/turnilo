@@ -36,7 +36,7 @@ import { Fn, formatGranularity } from "../../../common/utils/index";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { ButtonGroup, ButtonGroupProps, GroupMember } from "../button-group/button-group";
+import { ButtonGroup } from "../button-group/button-group";
 import { Dropdown } from "../dropdown/dropdown";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./split-menu.scss";

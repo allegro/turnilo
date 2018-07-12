@@ -85,11 +85,10 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         return query.performAction(
           measure.toApplyExpression()
         );
-      } else {
-        return query
-          .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter))
-          .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter));
       }
+      return query
+        .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter))
+        .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter));
     }, mainExp);
 
     function makeSubQuery(i: number): Expression {
@@ -118,11 +117,10 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
           return query.performAction(
             measure.toApplyExpression(nestingLevel)
           );
-        } else {
-          return query
-            .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter, nestingLevel))
-            .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter, nestingLevel));
         }
+        return query
+          .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter, nestingLevel))
+          .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter, nestingLevel));
       }, subQuery);
 
       const applyForSort = essence.getApplyForSort(sortAction, nestingLevel);

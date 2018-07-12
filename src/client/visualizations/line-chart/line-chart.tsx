@@ -449,13 +449,12 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const currentValue = datum[measure.name] as number;
     if (!this.props.essence.hasComparison()) {
       return measure.formatFn(currentValue);
-    } else {
-      const previous = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
-      return <MeasureBubbleContent
-        current={currentValue}
-        previous={previous}
-        formatter={measure.formatFn}/>;
     }
+    const previous = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+    return <MeasureBubbleContent
+      current={currentValue}
+      previous={previous}
+      formatter={measure.formatFn}/>;
   }
 
   calculateExtend(dataset: Dataset, splits: Splits, getY: Unary<Datum, number>, getYP: Unary<Datum, number>) {

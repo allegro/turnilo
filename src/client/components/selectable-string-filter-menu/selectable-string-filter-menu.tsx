@@ -80,7 +80,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     var nativeCount = dataCube.getMeasure("count");
     var measureExpression = nativeCount ? nativeCount.expression : $("main").count();
 
-    var filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
+    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
 
     if (searchText) {
       filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), "ignoreCase"));

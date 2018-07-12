@@ -48,7 +48,8 @@ export const ChartLine: React.SFC<ChartLineProps> = ({ stage, dataset, getY, get
     const datum = ds[i];
     const range = getX(datum) as PlywoodRange;
 
-    if (!range || !Range.isRange(range)) return null; // !range => Incorrect data loaded, !Range.isRange => temp solution for non-bucketed reaching here
+    const incorrectData = !range; // !range => Incorrect data loaded, !Range.isRange => temp solution for non-bucketed reaching here
+    if (incorrectData || !Range.isRange(range)) return null;
 
     const rangeMidpoint = (range as NumberRange | TimeRange).midpoint();
     const measureValue = getY(datum);

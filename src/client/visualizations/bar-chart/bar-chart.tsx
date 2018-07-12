@@ -438,14 +438,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const currentValue = datum[measure.name] as number;
     if (!this.props.essence.hasComparison()) {
       return measure.formatFn(currentValue);
-    } else {
-      const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
-      return <MeasureBubbleContent
-        formatter={measure.formatFn}
-        current={currentValue}
-        previous={previousValue}
-      />;
     }
+    const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+    return <MeasureBubbleContent
+      formatter={measure.formatFn}
+      current={currentValue}
+      previous={previousValue}
+    />;
   }
 
   isSelected(path: Datum[], measure: Measure): boolean {

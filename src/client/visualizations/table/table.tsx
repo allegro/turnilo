@@ -357,7 +357,7 @@ export class Table extends BaseVisualization<TableState> {
         </div>,
         <div
           className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
-          key={measure.name + "-delta"}
+          key={`${measure.name}-delta`}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Difference</div>

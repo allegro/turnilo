@@ -23,6 +23,8 @@ import "./segment-bubble.scss";
 
 const OFFSET_V = -10;
 const PER_LETTER_PIXELS = 8;
+const MIN_TITLE_WIDTH = 80;
+const MAX_TITLE_WIDTH = 300;
 
 export interface SegmentBubbleProps {
   left: number;
@@ -33,7 +35,7 @@ export interface SegmentBubbleProps {
 }
 
 function label(title: string, content: string | JSX.Element) {
-  const minTextWidth = clamp(title.length * PER_LETTER_PIXELS, 80, 300);
+  const minTextWidth = clamp(title.length * PER_LETTER_PIXELS, MIN_TITLE_WIDTH, MAX_TITLE_WIDTH);
   return <div className="text" style={{ minWidth: minTextWidth }}>
     <div className="title">{title}</div>
     {content ? <div className="content">{content}</div> : null}
