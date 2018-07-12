@@ -421,7 +421,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const { essence } = this.props;
     if (!dimension.expression.equals(essence.dataCube.timeAttribute)) return null;
     if (!essence.hasComparison()) return null;
-    return `(Shift: ${essence.timeShift.valueOf().getDescription(true)})`;
+    return `(Shift: ${essence.timeShift.getDescription(true)})`;
   }
 
   renderItemLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): JSX.Element {

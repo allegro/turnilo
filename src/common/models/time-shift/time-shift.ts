@@ -60,4 +60,8 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
   isEmpty(): boolean {
     return this.value === null;
   }
+
+  getDescription(capitalize = false) {
+    return this.value.getDescription(capitalize);
+  }
 }
