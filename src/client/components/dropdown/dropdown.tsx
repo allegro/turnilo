@@ -17,6 +17,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { JSXNode } from "../../../common/utils";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./dropdown.scss";
@@ -32,8 +33,8 @@ export interface DropdownProps<T> {
   menuClassName?: string;
   selectedItem?: T;
   equal?: (item1: T, item2: T) => boolean;
-  renderItem?: (item: T) => (string | JSX.Element);
-  renderSelectedItem?: (item: T) => (string | JSX.Element);
+  renderItem?: (item: T) => JSXNode;
+  renderSelectedItem?: (item: T) => JSXNode;
   keyItem?: (item: T) => string;
   onSelect?: (item: T) => void;
   direction?: string;

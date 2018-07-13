@@ -16,6 +16,7 @@
  */
 
 import * as React from "react";
+import { JSXNode } from "../../../common/utils";
 import { clamp } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";
 import { Shpitz } from "../shpitz/shpitz";
@@ -30,11 +31,11 @@ export interface SegmentBubbleProps {
   left: number;
   top: number;
   title: string;
-  content?: string | JSX.Element;
+  content?: JSXNode;
   actions?: JSX.Element;
 }
 
-function label(title: string, content: string | JSX.Element) {
+function label(title: string, content: JSXNode) {
   const minTextWidth = clamp(title.length * PER_LETTER_PIXELS, MIN_TITLE_WIDTH, MAX_TITLE_WIDTH);
   return <div className="text" style={{ minWidth: minTextWidth }}>
     <div className="title">{title}</div>

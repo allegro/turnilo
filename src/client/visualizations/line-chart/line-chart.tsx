@@ -24,6 +24,7 @@ import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-c
 import { getLineChartTicks } from "../../../common/models/granularity/granularity";
 import { DatasetLoad, Dimension, Filter, FilterClause, Measure, Splits, Stage, VisualizationProps } from "../../../common/models/index";
 import { Period } from "../../../common/models/periods/periods";
+import { JSXNode } from "../../../common/utils";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
 import {
@@ -445,7 +446,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return null;
   }
 
-  private renderMeasureLabel(measure: Measure, datum: Datum): JSX.Element | string {
+  private renderMeasureLabel(measure: Measure, datum: Datum): JSXNode {
     const currentValue = datum[measure.name] as number;
     if (!this.props.essence.hasComparison()) {
       return measure.formatFn(currentValue);
