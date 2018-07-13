@@ -17,7 +17,7 @@
 
 import { concurrentLimitRequesterFactory, retryRequesterFactory, verboseRequesterFactory } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
-import { DruidRequestDecorator, druidRequesterFactory } from "plywood-druid-requester";
+import { DruidRequestDecorator, druidRequesterFactory, Protocol } from "plywood-druid-requester";
 import { mySqlRequesterFactory } from "plywood-mysql-requester";
 import { postgresRequesterFactory } from "plywood-postgres-requester";
 import { SupportedType } from "../../../common/models/index";
@@ -32,6 +32,7 @@ export interface ProperRequesterOptions {
 
   // Specific to type 'druid'
   druidRequestDecorator?: DruidRequestDecorator;
+  protocol?: Protocol;
 
   // Specific to SQL drivers
   database?: string;
@@ -56,7 +57,8 @@ export function properRequesterFactory(options: ProperRequesterOptions): Plywood
       requester = druidRequesterFactory({
         host,
         timeout: timeout || 30000,
-        requestDecorator: options.druidRequestDecorator
+        requestDecorator: options.druidRequestDecorator,
+        protocol: options.protocol
       });
       break;
 
