@@ -147,7 +147,10 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       return subQuery;
     }
 
-    return queryWithMeasures.apply(SPLIT, makeSubQuery(0));
+    if (splits.length() > 0) {
+      return queryWithMeasures.apply(SPLIT, makeSubQuery(0));
+    }
+    return queryWithMeasures;
   }
 
   protected fetchData(essence: Essence, timekeeper: Timekeeper): void {

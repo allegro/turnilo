@@ -56,27 +56,6 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     this._isMounted = false;
   }
 
-  makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-    const combineWithPrevious = essence.hasComparison();
-
-    const mainExp: Expression = ply()
-      .apply("main", $("main").filter(essence.getEffectiveFilter(timekeeper, { combineWithPrevious, highlightId: Totals.id }).toExpression()));
-
-    const currentFilter = essence.currentTimeFilter(timekeeper);
-    const previousFilter = combineWithPrevious ? essence.previousTimeFilter(timekeeper) : null;
-
-    return essence.getEffectiveMeasures().reduce((query, measure) => {
-      if (!essence.hasComparison()) {
-        return query.performAction(
-          measure.toApplyExpression()
-        );
-      }
-      return query
-        .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter))
-        .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter));
-    }, mainExp);
-  }
-
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
     const { registerDownloadableDataset, essence } = props;
     const { splits } = essence;
