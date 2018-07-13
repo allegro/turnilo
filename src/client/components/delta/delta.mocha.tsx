@@ -17,60 +17,78 @@
 import { expect } from "chai";
 import { shallow } from "enzyme";
 import * as React from "react";
-import { Delta } from "./delta";
+import { Delta, formatDelta } from "./delta";
 
 const formatter = (i: number) => i.toFixed();
 
 describe("Delta", () => {
-  it("should handle cases with empty values", () => {
-    const emptyCurrent = shallow(<Delta currentValue={undefined} previousValue={2} formatter={formatter}/>);
-    const emptyPrevious = shallow(<Delta currentValue={2} previousValue={undefined} formatter={formatter}/>);
 
-    expect(emptyCurrent.find("span").hasClass("delta-neutral")).to.be.true;
-    expect(emptyCurrent.find("span").contains("-")).to.be.true;
+  describe("formatDelta", () => {
+    it("should handle nil values", () => {
+      expect(formatDelta(null, 5)).to.equal(null);
+      expect(formatDelta(undefined, 5)).to.equal(null);
+      expect(formatDelta(5, undefined)).to.equal(null);
+      expect(formatDelta(5, null)).to.equal(null);
+    });
 
-    expect(emptyPrevious.find("span").hasClass("delta-neutral")).to.be.true;
-    expect(emptyPrevious.find("span").contains("-")).to.be.true;
+    it("should calculate delta attributes correctly", () => {
+      expect(formatDelta(10, 5)).to.deep.equal({ delta: 5, deltaPercentage: 50, deltaSign: 1 });
+      expect(formatDelta(10, 15)).to.deep.equal({ delta: -5, deltaPercentage: -50, deltaSign: -1 });
+      expect(formatDelta(10, 10)).to.deep.equal({ delta: 0, deltaPercentage: 0, deltaSign: 0 });
+    });
   });
 
-  it("should render properly positive delta", () => {
-    const delta = shallow(<Delta currentValue={100} previousValue={20} formatter={formatter}/>);
+  describe("<Delta>", () => {
+    it("should handle cases with empty values", () => {
+      const emptyCurrent = shallow(<Delta currentValue={undefined} previousValue={2} formatter={formatter}/>);
+      const emptyPrevious = shallow(<Delta currentValue={2} previousValue={undefined} formatter={formatter}/>);
 
-    const deltaNode = delta.find("span");
+      expect(emptyCurrent.find("span").hasClass("delta-neutral")).to.be.true;
+      expect(emptyCurrent.find("span").contains("-")).to.be.true;
 
-    expect(deltaNode.hasClass("delta-positive")).to.be.true;
-    expect(deltaNode.text()).to.be.equal("▲80 (80%)");
-  });
+      expect(emptyPrevious.find("span").hasClass("delta-neutral")).to.be.true;
+      expect(emptyPrevious.find("span").contains("-")).to.be.true;
+    });
 
-  it("should render properly negative delta", () => {
-    const delta = shallow(<Delta currentValue={100} previousValue={180} formatter={formatter}/>);
+    it("should render properly positive delta", () => {
+      const delta = shallow(<Delta currentValue={100} previousValue={20} formatter={formatter}/>);
 
-    const deltaNode = delta.find("span");
+      const deltaNode = delta.find("span");
 
-    expect(deltaNode.hasClass("delta-negative")).to.be.true;
-    expect(deltaNode.text()).to.be.equal("▼80 (80%)");
-  });
+      expect(deltaNode.hasClass("delta-positive")).to.be.true;
+      expect(deltaNode.text()).to.be.equal("▲80 (80%)");
+    });
 
-  it("should render properly neutral delta", () => {
-    const delta = shallow(<Delta currentValue={100} previousValue={100} formatter={formatter}/>);
+    it("should render properly negative delta", () => {
+      const delta = shallow(<Delta currentValue={100} previousValue={180} formatter={formatter}/>);
 
-    const deltaNode = delta.find("span");
+      const deltaNode = delta.find("span");
 
-    expect(deltaNode.hasClass("delta-neutral")).to.be.true;
-    expect(deltaNode.text()).to.be.equal("0 (0%)");
-  });
+      expect(deltaNode.hasClass("delta-negative")).to.be.true;
+      expect(deltaNode.text()).to.be.equal("▼80 (80%)");
+    });
 
-  it("should handle infinite cases for delta percentage", () => {
-    const positive = shallow(<Delta currentValue={0} previousValue={-100} formatter={formatter}/>);
-    const negative = shallow(<Delta currentValue={0} previousValue={100} formatter={formatter}/>);
+    it("should render properly neutral delta", () => {
+      const delta = shallow(<Delta currentValue={100} previousValue={100} formatter={formatter}/>);
 
-    const positiveNode = positive.find("span");
-    const negativeNode = negative.find("span");
+      const deltaNode = delta.find("span");
 
-    expect(positiveNode.hasClass("delta-positive")).to.be.true;
-    expect(positiveNode.text()).to.be.equal("▲100");
+      expect(deltaNode.hasClass("delta-neutral")).to.be.true;
+      expect(deltaNode.text()).to.be.equal("0 (0%)");
+    });
 
-    expect(negativeNode.hasClass("delta-negative")).to.be.true;
-    expect(negativeNode.text()).to.be.equal("▼100");
+    it("should handle infinite cases for delta percentage", () => {
+      const positive = shallow(<Delta currentValue={0} previousValue={-100} formatter={formatter}/>);
+      const negative = shallow(<Delta currentValue={0} previousValue={100} formatter={formatter}/>);
+
+      const positiveNode = positive.find("span");
+      const negativeNode = negative.find("span");
+
+      expect(positiveNode.hasClass("delta-positive")).to.be.true;
+      expect(positiveNode.text()).to.be.equal("▲100");
+
+      expect(negativeNode.hasClass("delta-negative")).to.be.true;
+      expect(negativeNode.text()).to.be.equal("▼100");
+    });
   });
 });

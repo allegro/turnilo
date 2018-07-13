@@ -27,7 +27,7 @@ interface DeltaAttributes {
   deltaSign: DeltaSign;
 }
 
-function formatDelta(currentValue: number, previousValue: number): DeltaAttributes {
+export function formatDelta(currentValue: number, previousValue: number): DeltaAttributes {
   if (isNil(currentValue) || isNil(previousValue)) {
     return null;
   }
