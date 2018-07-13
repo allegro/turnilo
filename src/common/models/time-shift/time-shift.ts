@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,10 +34,17 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
     return new TimeShift(null);
   }
 
+  static isTimeShift(candidate: any): boolean {
+    return candidate instanceof TimeShift;
+  }
+
   constructor(public value: Duration) {
   }
 
   equals(other: TimeShift): boolean {
+    if (!TimeShift.isTimeShift(other)) {
+      return false;
+    }
     if (this.value === null) {
       return other.value === null;
     }
@@ -63,5 +69,9 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
 
   getDescription(capitalize = false) {
     return this.value.getDescription(capitalize);
+  }
+
+  toString(): string {
+    return this.toJS() || "";
   }
 }
