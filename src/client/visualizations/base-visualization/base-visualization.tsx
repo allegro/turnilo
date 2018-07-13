@@ -71,27 +71,31 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
     const $main = $("main");
 
-    const combineWithPrevious = essence.hasComparison();
-    const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious, highlightId: this.id });
+    const hasComparison = essence.hasComparison();
+    const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId: this.id });
 
     const currentFilter = essence.currentTimeFilter(timekeeper);
-    const previousFilter = combineWithPrevious ? essence.previousTimeFilter(timekeeper) : null;
+    const previousFilter = hasComparison ? essence.previousTimeFilter(timekeeper) : null;
 
     const mainExp: Expression = ply()
       .apply("main", $main.filter(mainFilter.toExpression()));
 
-    const queryWithMeasures = measures.reduce((query, measure) => {
-      if (!essence.hasComparison()) {
-        return query.performAction(
-          measure.toApplyExpression()
-        );
-      }
-      return query
-        .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter))
-        .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter));
-    }, mainExp);
+    function applyMeasures(query: Expression, nestingLevel = 0): Expression {
+      return measures.reduce((query, measure) => {
+        if (!hasComparison) {
+          return query.performAction(
+            measure.toApplyExpression()
+          );
+        }
+        return query
+          .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter, nestingLevel))
+          .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter, nestingLevel));
+      }, query);
+    }
 
-    function makeSubQuery(i: number): Expression {
+    const queryWithMeasures = applyMeasures(mainExp);
+
+    function applySplit(i: number): Expression {
       const split = splits.get(i);
       const splitDimension = dataCube.getDimensionByExpression(split.expression);
       const { sortAction, limitAction } = split;
@@ -99,7 +103,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         throw new Error("something went wrong during query generation");
       }
 
-      const currentSplit = !essence.hasComparison() ? split : split.withTimeShift(currentFilter, essence.timeShift.valueOf());
+      const currentSplit = !hasComparison ? split : split.withTimeShift(currentFilter, essence.timeShift.valueOf());
       let subQuery: Expression =
         $main.split(currentSplit.toSplitExpression(), splitDimension.name);
 
@@ -112,16 +116,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
       const nestingLevel = i + 1;
 
-      subQuery = measures.reduce((query, measure) => {
-        if (!essence.hasComparison()) {
-          return query.performAction(
-            measure.toApplyExpression(nestingLevel)
-          );
-        }
-        return query
-          .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter, nestingLevel))
-          .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter, nestingLevel));
-      }, subQuery);
+      subQuery = applyMeasures(subQuery, nestingLevel);
 
       const applyForSort = essence.getApplyForSort(sortAction, nestingLevel);
       if (applyForSort) {
@@ -141,14 +136,14 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       }
 
       if (i + 1 < splits.length()) {
-        subQuery = subQuery.apply(SPLIT, makeSubQuery(i + 1));
+        subQuery = subQuery.apply(SPLIT, applySplit(i + 1));
       }
 
       return subQuery;
     }
 
     if (splits.length() > 0) {
-      return queryWithMeasures.apply(SPLIT, makeSubQuery(0));
+      return queryWithMeasures.apply(SPLIT, applySplit(0));
     }
     return queryWithMeasures;
   }
