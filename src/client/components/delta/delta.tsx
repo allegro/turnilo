@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { isNil } from "../../../common/utils";
 import { Unary } from "../../utils/functional/functional";
 import "./delta.scss";
 
@@ -27,7 +28,7 @@ interface DeltaAttributes {
 }
 
 function formatDelta(currentValue: number, previousValue: number): DeltaAttributes {
-  if (currentValue === undefined || previousValue === undefined) {
+  if (isNil(currentValue) || isNil(previousValue)) {
     return null;
   }
 

@@ -20,12 +20,17 @@ import { Equalable, immutableArraysEqual } from "immutable-class";
 
 // The most generic function
 export type Fn = () => void;
+export type JSXNode = JSX.Element | string;
 
 var objectHasOwnProperty = Object.prototype.hasOwnProperty;
 
 export function hasOwnProperty(obj: any, key: string | number): boolean {
   if (!obj) return false;
   return objectHasOwnProperty.call(obj, key);
+}
+
+export function isNil(obj: any): boolean {
+  return obj === undefined || obj === null;
 }
 
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {
