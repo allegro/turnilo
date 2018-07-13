@@ -38,33 +38,34 @@ export interface Preset {
   selection: Expression;
 }
 
-const $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
+const $MAX_TIME = $(FilterClause.MAX_TIME_REF_NAME);
+const $NOW = $(FilterClause.NOW_REF_NAME);
+
 const latestPresets: Preset[] = [
-  { name: "1H", selection: $maxTime.timeRange("PT1H", -1) },
-  { name: "6H", selection: $maxTime.timeRange("PT6H", -1) },
-  { name: "1D", selection: $maxTime.timeRange("P1D", -1) },
-  { name: "7D", selection: $maxTime.timeRange("P1D", -7) },
-  { name: "30D", selection: $maxTime.timeRange("P1D", -30) }
+  { name: "1H", selection: $MAX_TIME.timeRange("PT1H", -1) },
+  { name: "6H", selection: $MAX_TIME.timeRange("PT6H", -1) },
+  { name: "1D", selection: $MAX_TIME.timeRange("P1D", -1) },
+  { name: "7D", selection: $MAX_TIME.timeRange("P1D", -7) },
+  { name: "30D", selection: $MAX_TIME.timeRange("P1D", -30) }
 ];
 
-const $now = $(FilterClause.NOW_REF_NAME);
-const currentPresets: Preset[] = [
-  { name: "D", selection: $now.timeFloor("P1D").timeRange("P1D", 1) },
-  { name: "W", selection: $now.timeFloor("P1W").timeRange("P1W", 1) },
-  { name: "M", selection: $now.timeFloor("P1M").timeRange("P1M", 1) },
-  { name: "Q", selection: $now.timeFloor("P3M").timeRange("P3M", 1) },
-  { name: "Y", selection: $now.timeFloor("P1Y").timeRange("P1Y", 1) }
+const CURRENT_PRESETS: Preset[] = [
+  { name: "D", selection: $NOW.timeFloor("P1D").timeRange("P1D", 1) },
+  { name: "W", selection: $NOW.timeFloor("P1W").timeRange("P1W", 1) },
+  { name: "M", selection: $NOW.timeFloor("P1M").timeRange("P1M", 1) },
+  { name: "Q", selection: $NOW.timeFloor("P3M").timeRange("P3M", 1) },
+  { name: "Y", selection: $NOW.timeFloor("P1Y").timeRange("P1Y", 1) }
 ];
 
-const previousPresets: Preset[] = [
-  { name: "D", selection: $now.timeFloor("P1D").timeRange("P1D", -1) },
-  { name: "W", selection: $now.timeFloor("P1W").timeRange("P1W", -1) },
-  { name: "M", selection: $now.timeFloor("P1M").timeRange("P1M", -1) },
-  { name: "Q", selection: $now.timeFloor("P3M").timeRange("P3M", -1) },
-  { name: "Y", selection: $now.timeFloor("P1Y").timeRange("P1Y", -1) }
+const PREVIOUS_PRESETS: Preset[] = [
+  { name: "D", selection: $NOW.timeFloor("P1D").timeRange("P1D", -1) },
+  { name: "W", selection: $NOW.timeFloor("P1W").timeRange("P1W", -1) },
+  { name: "M", selection: $NOW.timeFloor("P1M").timeRange("P1M", -1) },
+  { name: "Q", selection: $NOW.timeFloor("P3M").timeRange("P3M", -1) },
+  { name: "Y", selection: $NOW.timeFloor("P1Y").timeRange("P1Y", -1) }
 ];
 
-const comparisonPresets = [
+const COMPARISON_PRESETS = [
   { label: "Off", timeShift: TimeShift.empty() },
   { label: "D", timeShift: TimeShift.fromJS("P1D") },
   { label: "W", timeShift: TimeShift.fromJS("P1W") },
@@ -322,12 +323,12 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     return <div className="cont">
       {essence.dataCube.isTimeAttribute(dimension.expression) ? maxTimeBasedPresets : null}
       <div className="type">{STRINGS.current}</div>
-      <div className="buttons">{currentPresets.map(presetToButton)}</div>
+      <div className="buttons">{CURRENT_PRESETS.map(presetToButton)}</div>
       <div className="type">{STRINGS.previous}</div>
-      <div className="buttons">{previousPresets.map(presetToButton)}</div>
+      <div className="buttons">{PREVIOUS_PRESETS.map(presetToButton)}</div>
       <div className="preview preview--with-spacing">{previewText}</div>
       <div className="type">{STRINGS.timeShift}</div>
-      <div className="buttons">{comparisonPresets.map(this.timeShiftToButton(this.saveTimeShift, essence.timeShift))}</div>
+      <div className="buttons">{COMPARISON_PRESETS.map(this.timeShiftToButton(this.saveTimeShift, essence.timeShift))}</div>
       {timeShiftPreview ? <div className="preview">{timeShiftPreview}</div> : null}
     </div>;
   }
@@ -382,7 +383,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       />
       <div className="cont">
         <div className="type">{STRINGS.timeShift}</div>
-        <div className="buttons">{comparisonPresets.map(this.timeShiftToButton(this.onClickTimeShift, fixedTimeShift))}</div>
+        <div className="buttons">{COMPARISON_PRESETS.map(this.timeShiftToButton(this.onClickTimeShift, fixedTimeShift))}</div>
         {timeShiftPreview ? <div className="preview">{timeShiftPreview}</div> : null}
       </div>
       <div className="ok-cancel-bar">
