@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+require('ts-node/register');
+
+require('ignore-styles');
+
 var enzyme = require('enzyme');
 var Adapter = require('enzyme-adapter-react-16');
 

@@ -21,7 +21,7 @@ import "./delta.scss";
 
 export type DeltaSign = -1 | 0 | 1;
 
-interface DeltaAttributes {
+export interface DeltaAttributes {
   delta: number;
   deltaPercentage: number;
   deltaSign: DeltaSign;
