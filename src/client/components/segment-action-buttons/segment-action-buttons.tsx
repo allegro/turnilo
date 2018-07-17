@@ -16,6 +16,7 @@
  */
 
 import * as React from "react";
+import * as CopyToClipboard from "react-copy-to-clipboard";
 import { Clicker, Dimension, Stage } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -90,12 +91,12 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
     var menuSize = Stage.fromSize(160, 160);
 
     const bubbleListItems = [
-      <li
-        className="clipboard"
-        key="copyValue"
-        data-clipboard-text={segmentLabel}
-        onClick={this.closeMoreMenu.bind(this)}
-      >{STRINGS.copyValue}</li>,
+      <CopyToClipboard key="copyValue" text={segmentLabel}>
+        <li
+          className="clipboard"
+          onClick={this.closeMoreMenu.bind(this)}
+        >{STRINGS.copyValue}</li>
+      </CopyToClipboard>,
       <li
         className="view-raw-data"
         key="view-raw-data"
