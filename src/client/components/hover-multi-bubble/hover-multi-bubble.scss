@@ -26,42 +26,35 @@
   .bucket {
     color: $text-lighterish;
     margin-bottom: 6px;
+    white-space: nowrap;
   }
 
-  .color {
-    display: flex;
+  .colors {
+    table-layout: fixed;
 
     .color-swab {
       width: 15px;
       height: 15px;
       border-radius: 2px;
-      flex-shrink: 0;
     }
 
     .color-name {
       @include ellipsis;
-      display: inline-block;
-      margin-left: 5px;
+      max-width: 140px;
+      padding-left: 5px;
       line-height: 18px;
-      flex-basis: 100px;
-      flex-grow: 1;
-      flex-shrink: 0;
     }
 
     .color-value {
-      flex-basis: 60px;
-      flex-grow: 1;
-      flex-shrink: 1;
       line-height: 18px;
+      white-space: nowrap;
       text-align: right;
     }
 
     .color-delta {
-      flex-basis: 80px;
-      flex-grow: 1;
-      flex-shrink: 0;
       line-height: 18px;
-      margin-left: 5px;
+      white-space: nowrap;
+      padding-left: 5px;
     }
   }
 

@@ -45,15 +45,17 @@ function renderColorSwabs(colorEntries: ColorEntry[]): JSX.Element {
 
   const colorSwabs = colorEntries.map(({ color, name, value, delta }: ColorEntry) => {
     const swabStyle = { background: color };
-    return <div className="color" key={name}>
-      <div className="color-swab" style={swabStyle}/>
-      <div className="color-name">{name}</div>
-      <div className="color-value">{value}</div>
-      {delta && <div className="color-delta">{delta}</div>}
-    </div>;
+    return <tr key={name}>
+      <td>
+        <div className="color-swab" style={swabStyle}/>
+      </td>
+      <td className="color-name">{name}</td>
+      <td className="color-value">{value}</td>
+      {delta && <td className="color-delta">{delta}</td>}
+    </tr>;
   });
 
-  return <div className="colors">{colorSwabs}</div>;
+  return <table className="colors">{colorSwabs}</table>;
 }
 
 export const HoverMultiBubble: React.SFC<HoverMultiBubbleProps> = ({ colorEntries, left, top, title, clicker, onClose }) => {
