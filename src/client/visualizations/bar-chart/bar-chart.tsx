@@ -152,6 +152,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const nextTimekeeper = nextProps.timekeeper;
     return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, BarChart.id) ||
+      nextEssence.differentTimeShift(essence) ||
       nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
       nextEssence.dataCube.refreshRule.isRealtime();

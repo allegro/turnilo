@@ -533,6 +533,10 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return this.differentSplits(other) || this.differentTimezoneMatters(other);
   }
 
+  public differentTimeShift(other: Essence): boolean {
+    return this.timeShift.equals(other.timeShift);
+  }
+
   public differentColors(other: Essence): boolean {
     if (Boolean(this.colors) !== Boolean(other.colors)) return true;
     if (!this.colors) return false;

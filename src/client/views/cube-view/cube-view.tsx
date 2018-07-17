@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from "chronoshift";
-import { List } from "immutable";
+import { Timezone } from "chronoshift";
 import { Dataset, Expression } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
@@ -44,17 +43,7 @@ import {
 } from "../../../common/models/index";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Fn } from "../../../common/utils/general/general";
-import {
-  DimensionMeasurePanel,
-  DropIndicator,
-  FilterTile,
-  GlobalEventListener,
-  ManualFallback,
-  PinboardPanel,
-  ResizeHandle,
-  SplitTile,
-  VisSelector
-} from "../../components/index";
+import { DimensionMeasurePanel, DropIndicator, FilterTile, GlobalEventListener, ManualFallback, PinboardPanel, ResizeHandle, SplitTile, VisSelector } from "../../components/index";
 import { RawDataModal } from "../../modals/index";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";

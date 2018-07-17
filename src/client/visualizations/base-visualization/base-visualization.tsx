@@ -202,6 +202,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const nextTimekeeper = nextProps.timekeeper;
     return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, this.id) ||
+      nextEssence.differentTimeShift(essence) ||
       nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
