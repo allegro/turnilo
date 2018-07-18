@@ -262,7 +262,7 @@ if (START_SERVER) {
 
 // --- Location -------------------------------
 
-const CLUSTER_TYPES: SupportedType[] = ["druid", "postgres", "mysql"];
+const CLUSTER_TYPES: SupportedType[] = ["druid"];
 
 var settingsStore: SettingsStore = null;
 
