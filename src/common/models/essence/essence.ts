@@ -534,7 +534,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public differentTimeShift(other: Essence): boolean {
-    return this.timeShift.equals(other.timeShift);
+    return !this.timeShift.equals(other.timeShift);
   }
 
   public differentColors(other: Essence): boolean {
