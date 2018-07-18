@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
 
 $total-single-width: 260px;
@@ -50,6 +49,16 @@ $total-width: 176px;
       cursor: default;
       font-size: 30px;
       user-select: text;
+      margin-bottom: 12px;
+
+      &--previous {
+        font-size: 24px;
+      }
+    }
+
+    .measure-delta-value {
+      font-size: 15px;
+      margin-top: 5px;
     }
 
     &.single {
@@ -62,6 +71,16 @@ $total-width: 176px;
 
       .measure-value {
         font-size: 44px;
+        margin-bottom: 18px;
+
+        &--previous {
+          font-size: 30px;
+        }
+
+        .measure-delta-value {
+          font-size: 24px;
+          margin-top: 8px;
+        }
       }
     }
   }

@@ -50,6 +50,10 @@
 
     .preview {
       @extend %indicator-field;
+
+      &--with-spacing {
+        margin-bottom: 14px;
+      }
     }
   }
 }

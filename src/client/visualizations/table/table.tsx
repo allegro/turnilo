@@ -20,23 +20,16 @@ import { List } from "immutable";
 import { $, Datum, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
-import {
-  DataCube,
-  DatasetLoad,
-  Essence,
-  Filter,
-  FilterClause,
-  Measure,
-  SplitCombine,
-  Splits,
-  VisStrategy,
-  VisualizationProps
-} from "../../../common/models/index";
+import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, SplitCombine, Splits, VisStrategy, VisualizationProps } from "../../../common/models/index";
+import { Period } from "../../../common/models/periods/periods";
+import { integerDivision } from "../../../common/utils";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
+import { Delta, SegmentActionButtons } from "../../components";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { classNames } from "../../utils/dom/dom";
+import { flatMap } from "../../utils/functional/functional";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./table.scss";
 
@@ -83,6 +76,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataCube: Da
 export interface PositionHover {
   what: string;
   measure?: Measure;
+  period?: Period;
   row?: Datum;
 }
 
@@ -95,7 +89,7 @@ export class Table extends BaseVisualization<TableState> {
   public static id = TABLE_MANIFEST.name;
 
   getDefaultState(): TableState {
-    var s = super.getDefaultState() as TableState;
+    let s = super.getDefaultState() as TableState;
 
     s.flatData = null;
     s.hoverRow = null;
@@ -110,40 +104,49 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   calculateMousePosition(x: number, y: number): PositionHover {
-    var { essence } = this.props;
-    var { flatData } = this.state;
+    const { essence } = this.props;
+    const { flatData } = this.state;
 
     if (x <= SPACE_LEFT) return { what: "space-left" };
     x -= SPACE_LEFT;
 
     if (y <= HEADER_HEIGHT) {
       if (x <= this.getSegmentWidth()) return { what: "corner" };
+      const effectiveMeasures = essence.getEffectiveMeasures();
 
       x = x - this.getSegmentWidth();
-      var measureWidth = this.getIdealMeasureWidth(this.props.essence);
-      var measureIndex = Math.floor(x / measureWidth);
-      var measure = essence.getEffectiveMeasures().get(measureIndex);
+      const measureWidth = this.getIdealColumnWidth(this.props.essence);
+      const measureIndex = Math.floor(x / measureWidth);
+      if (essence.hasComparison()) {
+        if (measureIndex % 3 === 2) return { what: "whitespace" };
+        const nominalIndex = integerDivision(measureIndex, 3);
+        const measure = effectiveMeasures.get(nominalIndex);
+        if (!measure) return { what: "whitespace" };
+        const period = measureIndex % 3 === 0 ? Period.CURRENT : Period.PREVIOUS;
+        return { what: "header", measure, period };
+      }
+      const measure = effectiveMeasures.get(measureIndex);
       if (!measure) return { what: "whitespace" };
-      return { what: "header", measure };
+      return { what: "header", measure, period: Period.CURRENT };
     }
 
     y = y - HEADER_HEIGHT;
-    var rowIndex = Math.floor(y / ROW_HEIGHT);
-    var datum = flatData ? flatData[rowIndex] : null;
+    const rowIndex = Math.floor(y / ROW_HEIGHT);
+    const datum = flatData ? flatData[rowIndex] : null;
     if (!datum) return { what: "whitespace" };
     return { what: "row", row: datum };
   }
 
   onClick(x: number, y: number) {
-    var { clicker, essence } = this.props;
-    var { splits, dataCube } = essence;
+    const { clicker, essence } = this.props;
+    const { splits, dataCube } = essence;
 
-    var pos = this.calculateMousePosition(x, y);
+    const { measure, period, row, what } = this.calculateMousePosition(x, y);
 
-    if (pos.what === "corner" || pos.what === "header") {
+    if (what === "corner" || what === "header") {
       if (!clicker.changeSplits) return;
 
-      const sortReference = $(pos.what === "corner" ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : pos.measure.name);
+      const sortReference = $(what === "corner" ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : measure.nameWithPeriod(period));
       const commonSort = essence.getCommonSort();
       const myDescending = (commonSort && commonSort.expression.equals(sortReference) && commonSort.direction === SortExpression.DESCENDING);
       const sortExpression = new SortExpression({
@@ -151,13 +154,13 @@ export class Table extends BaseVisualization<TableState> {
         direction: myDescending ? SortExpression.ASCENDING : SortExpression.DESCENDING
       });
       clicker.changeSplits(
-        essence.splits.changeSortExpressionFromNormalized(sortExpression, essence.dataCube.dimensions),
+        splits.changeSortExpressionFromNormalized(sortExpression, essence.dataCube.dimensions),
         VisStrategy.KeepAlways
       );
-    } else if (pos.what === "row") {
+    } else if (what === "row") {
       if (!clicker.dropHighlight || !clicker.changeHighlight) return;
 
-      var rowHighlight = getFilterFromDatum(essence.splits, pos.row, dataCube);
+      const rowHighlight = getFilterFromDatum(splits, row, dataCube);
 
       if (!rowHighlight) return;
 
@@ -173,8 +176,8 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   onMouseMove(x: number, y: number) {
-    var { hoverMeasure, hoverRow } = this.state;
-    var pos = this.calculateMousePosition(x, y);
+    const { hoverMeasure, hoverRow } = this.state;
+    const pos = this.calculateMousePosition(x, y);
     if (hoverMeasure !== pos.measure || hoverRow !== pos.row) {
       this.setState({
         hoverMeasure: pos.measure,
@@ -184,7 +187,7 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   onMouseLeave() {
-    var { hoverMeasure, hoverRow } = this.state;
+    const { hoverMeasure, hoverRow } = this.state;
     if (hoverMeasure || hoverRow) {
       this.setState({
         hoverMeasure: null,
@@ -197,8 +200,8 @@ export class Table extends BaseVisualization<TableState> {
     const { registerDownloadableDataset, essence } = props;
     const { splits } = essence;
 
-    var existingDatasetLoad = this.state.datasetLoad;
-    var newState: TableState = {};
+    const existingDatasetLoad = this.state.datasetLoad;
+    let newState: TableState = {};
     if (datasetLoad) {
       // Always keep the old dataset while loading (for now)
       if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
@@ -208,7 +211,7 @@ export class Table extends BaseVisualization<TableState> {
       datasetLoad = this.state.datasetLoad;
     }
 
-    var { dataset } = datasetLoad;
+    const { dataset } = datasetLoad;
 
     if (dataset && splits.length()) {
       if (registerDownloadableDataset) registerDownloadableDataset(dataset);
@@ -223,11 +226,11 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
-    var measuresArray = essence.getEffectiveMeasures().toArray();
-    var splitLength = essence.splits.length();
+    const measuresArray = essence.getEffectiveMeasures().toArray();
+    const splitLength = essence.splits.length();
 
     return measuresArray.map(measure => {
-      var measureValues = flatData
+      let measureValues = flatData
         .filter((d: Datum) => d["__nest"] === splitLength)
         .map((d: Datum) => d[measure.name] as number);
 
@@ -241,48 +244,69 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   getFormattersFromMeasures(essence: Essence, flatData: PseudoDatum[]): Formatter[] {
-    var measuresArray = essence.getEffectiveMeasures().toArray();
+    const measuresArray = essence.getEffectiveMeasures().toArray();
 
     return measuresArray.map(measure => {
-      var measureName = measure.name;
-      var measureValues = flatData.map((d: Datum) => d[measureName] as number);
+      const measureName = measure.name;
+      const measureValues = flatData.map((d: Datum) => d[measureName] as number);
       return formatterFromData(measureValues, measure.getFormat());
     });
   }
 
-  getIdealMeasureWidth(essence: Essence): number {
-    var availableWidth = this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
-    var columnsCount = essence.getEffectiveMeasures().size;
+  getIdealColumnWidth(essence: Essence): number {
+    const availableWidth = this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
+    const measuresCount = essence.getEffectiveMeasures().size;
+    const columnsCount = essence.hasComparison() ? measuresCount * 3 : measuresCount;
 
     return columnsCount * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / columnsCount;
   }
 
-  makeMeasuresRenderer(essence: Essence, formatters: Formatter[], hScales: Array<d3.scale.Linear<number, number>>): (datum: PseudoDatum) => JSX.Element[] {
-    var measuresArray = essence.getEffectiveMeasures().toArray();
-    var idealWidth = this.getIdealMeasureWidth(essence);
+  makeBackground(width: number): JSX.Element {
+    return <div className="background-container">
+      <div className="background" style={{ width: width + "%" }}/>
+    </div>;
+  }
 
-    var splitLength = essence.splits.length();
-    var isSingleMeasure = measuresArray.length === 1;
-    var className = classNames("measure", { "all-alone": !!isSingleMeasure });
+  makeMeasuresRenderer(essence: Essence, formatters: Formatter[], hScales: Array<d3.scale.Linear<number, number>>): (datum: PseudoDatum) => JSX.Element[] {
+    const measuresArray = essence.getEffectiveMeasures().toArray();
+    const idealWidth = this.getIdealColumnWidth(essence);
+
+    const splitLength = essence.splits.length();
+    const isSingleMeasure = measuresArray.length === 1;
+    const className = classNames("measure", { "all-alone": isSingleMeasure });
 
     return (datum: PseudoDatum): JSX.Element[] => {
+      const lastLevel = datum["__nest"] === splitLength;
 
-      return measuresArray.map((measure, i) => {
-        var measureValue = datum[measure.name];
-        var measureValueStr = formatters[i](measureValue);
+      return flatMap(measuresArray, (measure, i) => {
+        const formatter = formatters[i];
+        const currentValue = datum[measure.name];
 
-        var background: JSX.Element = null;
-        if (datum["__nest"] === splitLength) {
-          let backgroundWidth = hScales[i](measureValue);
-          background = <div className="background-container">
-            <div className="background" style={{ width: backgroundWidth + "%" }}></div>
-          </div>;
+        const currentCell = <div className={className} key={measure.name} style={{ width: idealWidth }}>
+          {lastLevel && this.makeBackground(hScales[i](currentValue))}
+          <div className="label">{formatter(currentValue)}</div>
+        </div>;
+
+        if (!essence.hasComparison()) {
+          return [currentCell];
         }
 
-        return <div className={className} key={measure.name} style={{ width: idealWidth }}>
-          {background}
-          <div className="label">{measureValueStr}</div>
-        </div>;
+        const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+
+        return [
+          currentCell,
+          <div className={className} key={`${measure.name}-previous`} style={{ width: idealWidth }}>
+            {lastLevel && this.makeBackground(hScales[i](previousValue))}
+            <div className="label">{formatter(previousValue)}</div>
+          </div>,
+          <div className={className} key={`${measure.name}-delta`} style={{ width: idealWidth }}>
+            <div className="label">{<Delta
+              currentValue={currentValue}
+              previousValue={previousValue}
+              formatter={formatter}
+            />}</div>
+          </div>
+        ];
       });
     };
   }
@@ -296,30 +320,54 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   renderHeaderColumns(essence: Essence, hoverMeasure: Measure, measureWidth: number): JSX.Element[] {
-    var commonSort = essence.getCommonSort();
-    var commonSortName = commonSort ? (commonSort.expression as RefExpression).name : null;
+    const commonSort = essence.getCommonSort();
+    const commonSortName = commonSort ? (commonSort.expression as RefExpression).name : null;
 
-    var sortArrowIcon = commonSort ? React.createElement(SvgIcon, {
+    const sortArrowIcon = commonSort ? React.createElement(SvgIcon, {
       svg: require("../../icons/sort-arrow.svg"),
       className: "sort-arrow " + commonSort.direction
     }) : null;
 
-    return essence.getEffectiveMeasures().toArray().map((measure, i) => {
-      let amISorted = commonSortName === measure.name;
+    return flatMap(essence.getEffectiveMeasures().toArray(), measure => {
+      const isCurrentSorted = commonSortName === measure.name;
 
-      return <div
-        className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: amISorted })}
+      const currentMeasure = <div
+        className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isCurrentSorted })}
         key={measure.name}
         style={{ width: measureWidth }}
       >
         <div className="title-wrap">{measure.title}</div>
-        {amISorted ? sortArrowIcon : null}
+        {isCurrentSorted ? sortArrowIcon : null}
       </div>;
+
+      if (!essence.hasComparison()) {
+        return [currentMeasure];
+      }
+
+      const isPreviousSorted = commonSortName === measure.nameWithPeriod(Period.PREVIOUS);
+      return [
+        currentMeasure,
+        <div
+          className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
+          key={measure.nameWithPeriod(Period.PREVIOUS)}
+          style={{ width: measureWidth }}
+        >
+          <div className="title-wrap">Previous {measure.title}</div>
+          {isPreviousSorted ? sortArrowIcon : null}
+        </div>,
+        <div
+          className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
+          key={`${measure.name}-delta`}
+          style={{ width: measureWidth }}
+        >
+          <div className="title-wrap">Difference</div>
+        </div>
+      ];
     });
   }
 
   renderCornerSortArrow(essence: Essence): JSX.Element {
-    var commonSort = essence.getCommonSort();
+    const commonSort = essence.getCommonSort();
     if (!commonSort) return null;
 
     if (commonSort.refName() === SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER) {
@@ -346,29 +394,29 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   renderInternals() {
-    var { clicker, essence, stage, openRawDataModal, isThumbnail } = this.props;
-    var { flatData, scrollTop, hoverMeasure, hoverRow } = this.state;
-    var { splits, dataCube } = essence;
+    const { clicker, essence, stage, openRawDataModal } = this.props;
+    const { flatData, scrollTop, hoverMeasure, hoverRow } = this.state;
+    const { splits, dataCube } = essence;
 
-    var segmentTitle = splits.getTitle(essence.dataCube.dimensions);
+    const segmentTitle = splits.getTitle(essence.dataCube.dimensions);
 
-    var cornerSortArrow: JSX.Element = this.renderCornerSortArrow(essence);
-    var idealWidth = this.getIdealMeasureWidth(essence);
+    const cornerSortArrow: JSX.Element = this.renderCornerSortArrow(essence);
+    const idealWidth = this.getIdealColumnWidth(essence);
 
-    var headerColumns = this.renderHeaderColumns(essence, hoverMeasure, idealWidth);
+    const headerColumns = this.renderHeaderColumns(essence, hoverMeasure, idealWidth);
 
-    var rowWidth = idealWidth * headerColumns.length;
+    const rowWidth = idealWidth * headerColumns.length;
 
-    var segments: JSX.Element[] = [];
-    var rows: JSX.Element[] = [];
-    var highlighter: JSX.Element = null;
-    var highlighterStyle: any = null;
-    var highlightBubble: JSX.Element = null;
+    let segments: JSX.Element[] = [];
+    let rows: JSX.Element[] = [];
+    let highlighter: JSX.Element = null;
+    let highlighterStyle: any = null;
+    let highlightBubble: JSX.Element = null;
     if (flatData) {
-      var formatters = this.getFormattersFromMeasures(essence, flatData);
-      var hScales = this.getScalesForColumns(essence, flatData);
+      const formatters = this.getFormattersFromMeasures(essence, flatData);
+      const hScales = this.getScalesForColumns(essence, flatData);
 
-      var highlightDelta: Filter = null;
+      let highlightDelta: Filter = null;
       if (essence.highlightOn(Table.id)) {
         highlightDelta = essence.highlight.delta;
       }
@@ -377,29 +425,29 @@ export class Table extends BaseVisualization<TableState> {
 
       const measuresRenderer = this.makeMeasuresRenderer(essence, formatters, hScales);
 
-      var rowY = skipNumber * ROW_HEIGHT;
-      for (var i = skipNumber; i < lastElementToShow; i++) {
-        var d = flatData[i];
+      let rowY = skipNumber * ROW_HEIGHT;
+      for (let i = skipNumber; i < lastElementToShow; i++) {
+        const d = flatData[i];
 
-        var nest = d["__nest"];
+        const nest = d["__nest"];
 
-        var split = nest > 0 ? splits.get(nest - 1) : null;
-        var dimension = split ? split.getDimension(dataCube.dimensions) : null;
+        const split = nest > 0 ? splits.get(nest - 1) : null;
+        const dimension = split ? split.getDimension(dataCube.dimensions) : null;
 
-        var segmentValue = dimension ? d[dimension.name] : "";
-        var segmentName = nest ? formatSegment(segmentValue) : "Total";
-        var left = Math.max(0, nest - 1) * INDENT_WIDTH;
-        var segmentStyle = { left, width: this.getSegmentWidth() - left, top: rowY };
-        var hoverClass = d === hoverRow ? "hover" : null;
+        const segmentValue = dimension ? d[dimension.name] : "";
+        const segmentName = nest ? formatSegment(segmentValue) : "Total";
+        const left = Math.max(0, nest - 1) * INDENT_WIDTH;
+        const segmentStyle = { left, width: this.getSegmentWidth() - left, top: rowY };
+        const hoverClass = d === hoverRow ? "hover" : null;
 
-        var selected = false;
-        var selectedClass = "";
+        let selected = false;
+        let selectedClass = "";
         if (highlightDelta) {
           selected = highlightDelta.equals(getFilterFromDatum(splits, d, dataCube));
           selectedClass = selected ? "selected" : "not-selected";
         }
 
-        var nestClass = `nest${nest}`;
+        const nestClass = `nest${nest}`;
         segments.push(<div
           className={classNames("segment", nestClass, selectedClass, hoverClass)}
           key={"_" + i}
@@ -418,17 +466,20 @@ export class Table extends BaseVisualization<TableState> {
             left
           };
 
-          var dimension = essence.dataCube.getDimensionByExpression(splits.splitCombines.get(nest - 1).expression);
+          const dimension = essence.dataCube.getDimensionByExpression(splits.splitCombines.get(nest - 1).expression);
 
-          highlighter = <div className="highlighter" key="highlight" style={highlighterStyle}></div>;
+          highlighter = <div className="highlighter" key="highlight" style={highlighterStyle}/>;
 
           highlightBubble = <SegmentBubble
             left={stage.x + stage.width / 2}
             top={stage.y + HEADER_HEIGHT + rowY - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
-            segmentLabel={segmentName}
-            dimension={dimension}
-            clicker={clicker}
-            openRawDataModal={openRawDataModal}
+            title={segmentName}
+            actions={<SegmentActionButtons
+              clicker={clicker}
+              segmentLabel={segmentName}
+              dimension={dimension}
+              openRawDataModal={openRawDataModal}
+            />}
           />;
         }
 
@@ -436,7 +487,7 @@ export class Table extends BaseVisualization<TableState> {
       }
     }
 
-    var measureWidth = this.getIdealMeasureWidth(essence);
+    const columnWidth = this.getIdealColumnWidth(essence);
 
     const segmentLabels = <div className="segment-labels">{segments}</div>;
 
@@ -450,9 +501,11 @@ export class Table extends BaseVisualization<TableState> {
       {cornerSortArrow}
     </div>;
 
+    const measuresCount = essence.getEffectiveMeasures().size;
+    const columnsCount = essence.hasComparison() ? measuresCount * 3 : measuresCount;
     const scrollerLayout: ScrollerLayout = {
       // Inner dimensions
-      bodyWidth: measureWidth * essence.getEffectiveMeasures().size + SPACE_RIGHT,
+      bodyWidth: columnWidth * columnsCount + SPACE_RIGHT,
       bodyHeight: flatData ? flatData.length * ROW_HEIGHT : 0,
 
       // Gutters

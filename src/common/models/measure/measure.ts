@@ -31,6 +31,7 @@ import {
   RefExpression
 } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
+import { Period } from "../periods/periods";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
 function formatFnFactory(format: string): (n: number) => string {
@@ -209,6 +210,26 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return this === other || Measure.isMeasure(other) && super.equals(other);
   }
 
+  public nameWithPeriod(period: Period): string {
+    return `${period}${this.name}`;
+  }
+
+  public filteredApplyExpression(period: Period, filter: Expression, nesting = 0): ApplyExpression {
+    const applyExpression = this.toApplyExpression(nesting);
+    const { expression } = applyExpression;
+    const name = this.nameWithPeriod(period);
+    return new ApplyExpression({
+      ...applyExpression,
+      name,
+      expression: expression.substitute(function(e) {
+        if (e instanceof RefExpression && e.name === "main") {
+          return $("main").filter(filter);
+        }
+        return null;
+      })
+    });
+  }
+
   public toApplyExpression(nestingLevel = 0): ApplyExpression {
     switch (this.transformation) {
       case "percent-of-parent": {
@@ -219,8 +240,8 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
         return this.percentOfParentExpression(nestingLevel);
       }
       default: {
-        const { name, expression } = this;
-        return new ApplyExpression({ name, expression });
+        const { expression } = this;
+        return new ApplyExpression({ name: this.name, expression });
       }
     }
   }

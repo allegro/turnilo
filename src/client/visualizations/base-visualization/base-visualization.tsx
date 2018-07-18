@@ -18,6 +18,7 @@
 import { $, Dataset, Expression, ply } from "plywood";
 import * as React from "react";
 import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
+import { Period } from "../../../common/models/periods/periods";
 import { GlobalEventListener, Loader, QueryError } from "../../components/index";
 import { SPLIT } from "../../config/constants";
 import "./base-visualization.scss";
@@ -70,14 +71,31 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
     const $main = $("main");
 
-    let query: Expression = ply()
-      .apply("main", $main.filter(essence.getEffectiveFilter(timekeeper, this.id).toExpression()));
+    const hasComparison = essence.hasComparison();
+    const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId: this.id });
 
-    measures.forEach(measure => {
-      query = query.performAction(measure.toApplyExpression());
-    });
+    const currentFilter = essence.currentTimeFilter(timekeeper);
+    const previousFilter = hasComparison ? essence.previousTimeFilter(timekeeper) : null;
 
-    function makeSubQuery(i: number): Expression {
+    const mainExp: Expression = ply()
+      .apply("main", $main.filter(mainFilter.toExpression()));
+
+    function applyMeasures(query: Expression, nestingLevel = 0): Expression {
+      return measures.reduce((query, measure) => {
+        if (!hasComparison) {
+          return query.performAction(
+            measure.toApplyExpression()
+          );
+        }
+        return query
+          .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter, nestingLevel))
+          .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter, nestingLevel));
+      }, query);
+    }
+
+    const queryWithMeasures = applyMeasures(mainExp);
+
+    function applySplit(i: number): Expression {
       const split = splits.get(i);
       const splitDimension = dataCube.getDimensionByExpression(split.expression);
       const { sortAction, limitAction } = split;
@@ -85,7 +103,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         throw new Error("something went wrong during query generation");
       }
 
-      let subQuery: Expression = $main.split(split.toSplitExpression(), splitDimension.name);
+      const currentSplit = !hasComparison ? split : split.withTimeShift(currentFilter, essence.timeShift.valueOf());
+      let subQuery: Expression =
+        $main.split(currentSplit.toSplitExpression(), splitDimension.name);
 
       if (colors && colors.dimension === splitDimension.name) {
         const havingFilter = colors.toHavingFilter(splitDimension.name);
@@ -95,9 +115,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       }
 
       const nestingLevel = i + 1;
-      measures.forEach(measure => {
-        subQuery = subQuery.performAction(measure.toApplyExpression(nestingLevel));
-      });
+
+      subQuery = applyMeasures(subQuery, nestingLevel);
 
       const applyForSort = essence.getApplyForSort(sortAction, nestingLevel);
       if (applyForSort) {
@@ -117,25 +136,29 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       }
 
       if (i + 1 < splits.length()) {
-        subQuery = subQuery.apply(SPLIT, makeSubQuery(i + 1));
+        subQuery = subQuery.apply(SPLIT, applySplit(i + 1));
       }
 
       return subQuery;
     }
 
-    return query.apply(SPLIT, makeSubQuery(0));
+    if (splits.length() > 0) {
+      return queryWithMeasures.apply(SPLIT, applySplit(0));
+    }
+    return queryWithMeasures;
   }
 
   protected fetchData(essence: Essence, timekeeper: Timekeeper): void {
+    this.precalculate(this.props, { loading: true });
+
     const { registerDownloadableDataset } = this.props;
 
-    let query = this.makeQuery(essence, timekeeper);
-
-    this.precalculate(this.props, { loading: true });
+    const query = this.makeQuery(essence, timekeeper);
     essence.dataCube.executor(query, { timezone: essence.timezone })
       .then(
         (dataset: Dataset) => {
           if (!this._isMounted) return;
+
           this.precalculate(this.props, {
             loading: false,
             dataset,
@@ -179,6 +202,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const nextTimekeeper = nextProps.timekeeper;
     return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, this.id) ||
+      nextEssence.differentTimeShift(essence) ||
       nextEssence.differentEffectiveSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
@@ -193,11 +217,14 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     this._isMounted = false;
   }
 
-  protected globalMouseMoveListener(e: MouseEvent) {}
+  protected globalMouseMoveListener(e: MouseEvent) {
+  }
 
-  protected globalMouseUpListener(e: MouseEvent) {}
+  protected globalMouseUpListener(e: MouseEvent) {
+  }
 
-  protected globalKeyDownListener(e: KeyboardEvent) {}
+  protected globalKeyDownListener(e: KeyboardEvent) {
+  }
 
   protected renderInternals(): JSX.Element {
     return null;
@@ -221,8 +248,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         keyDown={this.globalKeyDownListener.bind(this)}
       />
       {this.lastRenderResult}
-      {datasetLoad.error ? <QueryError error={datasetLoad.error} /> : null}
-      {datasetLoad.loading ? <Loader /> : null}
+      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
+      {datasetLoad.loading ? <Loader/> : null}
     </div>;
   }
 }

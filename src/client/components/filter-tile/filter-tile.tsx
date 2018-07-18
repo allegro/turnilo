@@ -417,12 +417,20 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     </div>;
   }
 
+  renderTimeShiftLabel(dimension: Dimension): string {
+    const { essence } = this.props;
+    if (!dimension.expression.equals(essence.dataCube.timeAttribute)) return null;
+    if (!essence.hasComparison()) return null;
+    return `(Shift: ${essence.timeShift.getDescription(true)})`;
+  }
+
   renderItemLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): JSX.Element {
     const { title, values } = getFormattedClause(dimension, clause, timezone);
+    const timeShift = this.renderTimeShiftLabel(dimension);
 
     return <div className="reading">
       {title ? <span className="dimension-title">{title}</span> : null}
-      <span className="values">{values}</span>
+      <span className="values">{values} {timeShift}</span>
     </div>;
   }
 

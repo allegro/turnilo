@@ -24,11 +24,14 @@ import { Manifest } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
 import { SplitCombine } from "../split-combine/split-combine";
 import { Splits } from "../splits/splits";
+import { TimeShift } from "../time-shift/time-shift";
 
 export interface Clicker {
   changeTimeSelection?(selection: Expression): void;
 
   changeFilter?(filter: Filter, colors?: Colors): void;
+
+  changeComparisonShift?(timeShift: TimeShift): void;
 
   changeSplits?(splits: Splits, strategy: VisStrategy, colors?: Colors): void;
 

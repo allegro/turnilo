@@ -17,17 +17,13 @@
 
 import { expect } from "chai";
 import * as React from "react";
-import * as TestUtils from "react-dom/test-utils";
 import { DimensionMock, EssenceMock, TimekeeperMock } from "../../../common/models/mocks";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { FilterMenu } from "./filter-menu";
 
-describe("FilterMenu", () => {
-  it("adds the correct class", () => {
-    var openOn = document.createElement("div");
-
-    var renderedComponent = renderIntoDocument(
-      <FilterMenu
+class Wrap extends React.Component {
+  render() {
+    return <FilterMenu
         clicker={null}
         containerStage={null}
         dimension={DimensionMock.countryURL()}
@@ -35,11 +31,18 @@ describe("FilterMenu", () => {
         timekeeper={TimekeeperMock.fixed()}
         changePosition={null}
         onClose={null}
-        openOn={openOn}
-      />
+        openOn={document.createElement("div")}
+      />;
+  }
+}
+
+describe("FilterMenu", () => {
+  it("adds the correct class", () => {
+
+    var renderedComponent = renderIntoDocument(
+      <Wrap/>
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
     expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("filter-menu");
   });
 

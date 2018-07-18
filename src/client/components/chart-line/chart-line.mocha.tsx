@@ -19,10 +19,24 @@ import { expect } from "chai";
 import { Dataset, TimeRange } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import * as TestUtils from "react-dom/test-utils";
 import { StageMock } from "../../../common/models/mocks";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { ChartLine } from "./chart-line";
+
+class Wrap extends React.Component<{dataset: Dataset}> {
+  render() {
+    return <ChartLine
+        dataset={this.props.dataset}
+        getX={d => d["TIME"] as TimeRange}
+        getY={d => d["numberOfKoalas"]}
+        scaleX={d => d["index"]}
+        scaleY={d => 2}
+        stage={StageMock.defaultA()}
+        color={"yes"}
+        showArea={null}
+      />;
+  }
+}
 
 describe("ChartLine", () => {
   it("adds the correct class", () => {
@@ -48,19 +62,9 @@ describe("ChartLine", () => {
     ]);
 
     var renderedComponent = renderIntoDocument(
-      <ChartLine
-        dataset={dataset}
-        getX={d => d["TIME"] as TimeRange}
-        getY={d => d["numberOfKoalas"]}
-        scaleX={d => d["index"]}
-        scaleY={d => 2}
-        stage={StageMock.defaultA()}
-        color={"yes"}
-        showArea={null}
-      />
+      <Wrap dataset={dataset}/>
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
     expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("chart-line");
   });
 });

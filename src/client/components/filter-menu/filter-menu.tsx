@@ -35,48 +35,41 @@ export interface FilterMenuProps {
   inside?: Element;
 }
 
-export interface FilterMenuState {
-}
-
-export class FilterMenu extends React.Component<FilterMenuProps, FilterMenuState> {
-
-  render() {
-    var { clicker, essence, timekeeper, changePosition, containerStage, openOn, dimension, onClose, inside } = this.props;
-    if (!dimension) return null;
-    if (dimension.kind === "time") {
-      return <TimeFilterMenu
-        essence={essence}
-        timekeeper={timekeeper}
-        clicker={clicker}
-        dimension={dimension}
-        onClose={onClose}
-        containerStage={containerStage}
-        openOn={openOn}
-        inside={inside}
-      />;
-    } else if (dimension.kind === "number") {
-      return <NumberFilterMenu
-        essence={essence}
-        timekeeper={timekeeper}
-        clicker={clicker}
-        dimension={dimension}
-        onClose={onClose}
-        containerStage={containerStage}
-        openOn={openOn}
-        inside={inside}
-      />;
-    } else {
-      return <StringFilterMenu
-        essence={essence}
-        timekeeper={timekeeper}
-        clicker={clicker}
-        dimension={dimension}
-        changePosition={changePosition}
-        onClose={onClose}
-        containerStage={containerStage}
-        openOn={openOn}
-        inside={inside}
-      />;
-    }
+export const FilterMenu: React.SFC<FilterMenuProps> = ({ clicker, essence, timekeeper, changePosition, containerStage, openOn, dimension, onClose, inside }) => {
+  if (!dimension) return null;
+  if (dimension.kind === "time") {
+    return <TimeFilterMenu
+      essence={essence}
+      timekeeper={timekeeper}
+      clicker={clicker}
+      dimension={dimension}
+      onClose={onClose}
+      containerStage={containerStage}
+      openOn={openOn}
+      inside={inside}
+    />;
+  } else if (dimension.kind === "number") {
+    return <NumberFilterMenu
+      essence={essence}
+      timekeeper={timekeeper}
+      clicker={clicker}
+      dimension={dimension}
+      onClose={onClose}
+      containerStage={containerStage}
+      openOn={openOn}
+      inside={inside}
+    />;
+  } else {
+    return <StringFilterMenu
+      essence={essence}
+      timekeeper={timekeeper}
+      clicker={clicker}
+      dimension={dimension}
+      changePosition={changePosition}
+      onClose={onClose}
+      containerStage={containerStage}
+      openOn={openOn}
+      inside={inside}
+    />;
   }
-}
+};

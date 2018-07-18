@@ -17,42 +17,37 @@
 
 import * as d3 from "d3";
 import { immutableEqual } from "immutable-class";
-import {
-  Dataset,
-  Datum,
-  NumberBucketExpression,
-  NumberRange,
-  NumberRangeJS,
-  PlywoodRange,
-  r,
-  Range,
-  TimeBucketExpression,
-  TimeRange,
-  TimeRangeJS
-} from "plywood";
+import { Dataset, Datum, NumberBucketExpression, NumberRange, NumberRangeJS, PlywoodRange, r, Range, TimeBucketExpression, TimeRange, TimeRangeJS } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
 import { getLineChartTicks } from "../../../common/models/granularity/granularity";
-import { DatasetLoad, Dimension, Filter, FilterClause, Measure, Stage, VisualizationProps } from "../../../common/models/index";
+import { DatasetLoad, Dimension, Filter, FilterClause, Measure, Splits, Stage, VisualizationProps } from "../../../common/models/index";
+import { Period } from "../../../common/models/periods/periods";
+import { JSXNode } from "../../../common/utils";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
 import {
   ChartLine,
   ColorEntry,
+  Delta,
   GlobalEventListener,
   GridLines,
   Highlighter,
   HoverMultiBubble,
   LineChartAxis,
+  MeasureBubbleContent,
+  SegmentActionButtons,
   SegmentBubble,
   VerticalAxis,
   VisMeasureLabel
 } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
+import { concatTruthy, flatMap, mapTruthy, Unary } from "../../utils/functional/functional";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
+import Linear = d3.scale.Linear;
 
 const TEXT_SPACER = 36;
 const X_AXIS_HEIGHT = 30;
@@ -315,11 +310,11 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { dragRange, scaleX } = this.state;
 
     if (dragRange !== null) {
-      return <Highlighter highlightRange={dragRange} scaleX={scaleX} />;
+      return <Highlighter highlightRange={dragRange} scaleX={scaleX}/>;
     }
     if (essence.highlightOn(LineChart.id)) {
       var highlightRange = essence.getSingleHighlightSet().elements[0];
-      return <Highlighter highlightRange={highlightRange} scaleX={scaleX} />;
+      return <Highlighter highlightRange={highlightRange} scaleX={scaleX}/>;
     }
     return null;
   }
@@ -337,99 +332,113 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { colors, timezone } = essence;
 
     const { containerYPosition, containerXPosition, scrollTop, dragRange, roundDragRange } = this.state;
-    const { dragOnMeasure, hoverRange, hoverMeasure, scaleX, continuousDimension } = this.state;
+    const { dragOnMeasure, scaleX, hoverRange, hoverMeasure, continuousDimension } = this.state;
 
     if (essence.highlightOnDifferentMeasure(LineChart.id, measure.name)) return null;
 
-    var topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
+    let topOffset = chartStage.height * chartIndex + scaleY(extentY[1]) + TEXT_SPACER - scrollTop;
     if (topOffset < 0) return null;
 
     topOffset += containerYPosition;
 
     if ((dragRange && dragOnMeasure === measure) || (!dragRange && essence.highlightOn(LineChart.id, measure.name))) {
-      var bubbleRange = dragRange || essence.getSingleHighlightSet().elements[0];
+      const bubbleRange = dragRange || essence.getSingleHighlightSet().elements[0];
 
-      var shownRange = roundDragRange || bubbleRange;
-      var segmentLabel = formatValue(bubbleRange, timezone, DisplayYear.NEVER);
+      const shownRange = roundDragRange || bubbleRange;
 
       if (colors) {
-        var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
-        var leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.end);
+        const segmentLabel = formatValue(bubbleRange, timezone, DisplayYear.NEVER);
+        const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+        const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.end);
 
-        var hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, bubbleRange));
-        var colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
-        var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
-          var segment = d[categoryDimension.name];
-          var hoverDatum = hoverDatums[i];
+        const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, bubbleRange));
+        const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
+        const colorEntries: ColorEntry[] = mapTruthy(dataset.data, (d, i) => {
+          const segment = d[categoryDimension.name];
+          const hoverDatum = hoverDatums[i];
           if (!hoverDatum) return null;
 
           return {
             color: colorValues[i],
-            segmentLabel: String(segment),
-            measureLabel: measure.formatDatum(hoverDatum)
+            name: String(segment),
+            value: measure.formatDatum(hoverDatum),
+            delta: essence.hasComparison() && <Delta
+              currentValue={hoverDatum[measure.name] as number}
+              previousValue={hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number}
+              formatter={measure.formatFn}
+            />
           };
-        }).filter(Boolean);
+        });
 
         return <HoverMultiBubble
           left={leftOffset}
           top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
-          segmentLabel={segmentLabel}
+          title={segmentLabel}
           colorEntries={colorEntries}
           clicker={dragRange ? null : clicker}
         />;
       } else {
-        var leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
-        var highlightDatum = dataset.findDatumByAttribute(continuousDimension.name, shownRange);
-        var segmentLabel = formatValue(shownRange, timezone, DisplayYear.NEVER);
+        const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.midpoint());
+        const segmentLabel = formatValue(shownRange, timezone, DisplayYear.NEVER);
+        const highlightDatum = dataset.findDatumByAttribute(continuousDimension.name, shownRange);
+        const measureLabel = highlightDatum ? measure.formatDatum(highlightDatum) : null;
 
         return <SegmentBubble
           left={leftOffset}
           top={topOffset + HOVER_BUBBLE_V_OFFSET}
-          segmentLabel={segmentLabel}
-          measureLabel={highlightDatum ? measure.formatDatum(highlightDatum) : null}
-          clicker={dragRange ? null : clicker}
-          openRawDataModal={openRawDataModal}
+          title={segmentLabel}
+          content={measureLabel}
+          actions={<SegmentActionButtons
+            clicker={dragRange ? null : clicker}
+            openRawDataModal={openRawDataModal}
+          />}
         />;
       }
 
     } else if (!dragRange && hoverRange && hoverMeasure === measure) {
-      var leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
-      var segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+      const leftOffset = containerXPosition + VIS_H_PADDING + scaleX((hoverRange as NumberRange | TimeRange).midpoint());
+      const segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
 
       if (colors) {
-        var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
-        var hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, hoverRange));
-        var colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
-        var colorEntries: ColorEntry[] = dataset.data.map((d, i) => {
-          var segment = d[categoryDimension.name];
-          var hoverDatum = hoverDatums[i];
+        const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+        const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, hoverRange));
+        const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
+        const colorEntries: ColorEntry[] = mapTruthy(dataset.data, (d, i) => {
+          const segment = d[categoryDimension.name];
+          const hoverDatum = hoverDatums[i];
           if (!hoverDatum) return null;
 
           return {
             color: colorValues[i],
-            segmentLabel: String(segment),
-            measureLabel: measure.formatDatum(hoverDatum)
+            name: String(segment),
+            value: measure.formatDatum(hoverDatum),
+            delta: essence.hasComparison() && <Delta
+              currentValue={hoverDatum[measure.name] as number}
+              previousValue={hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number}
+              formatter={measure.formatFn}
+            />
           };
-        }).filter(Boolean);
+        });
+
         return <HoverMultiBubble
           left={leftOffset}
           top={topOffset + HOVER_MULTI_BUBBLE_V_OFFSET}
-          segmentLabel={segmentLabel}
+          title={segmentLabel}
           colorEntries={colorEntries}
         />;
 
       } else {
-        var hoverDatum = dataset.findDatumByAttribute(continuousDimension.name, hoverRange);
+        const hoverDatum = dataset.findDatumByAttribute(continuousDimension.name, hoverRange);
         if (!hoverDatum) return null;
-        var segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+        const title = formatValue(hoverRange, timezone, DisplayYear.NEVER);
+        const content = this.renderMeasureLabel(measure, hoverDatum);
 
         return <SegmentBubble
           left={leftOffset}
           top={topOffset + HOVER_BUBBLE_V_OFFSET}
-          segmentLabel={segmentLabel}
-          measureLabel={measure.formatDatum(hoverDatum)}
+          title={title}
+          content={content}
         />;
-
       }
 
     }
@@ -437,124 +446,175 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return null;
   }
 
-  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage): JSX.Element {
-    const { essence, isThumbnail } = this.props;
+  private renderMeasureLabel(measure: Measure, datum: Datum): JSXNode {
+    const currentValue = datum[measure.name] as number;
+    if (!this.props.essence.hasComparison()) {
+      return measure.formatFn(currentValue);
+    }
+    const previous = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+    return <MeasureBubbleContent
+      current={currentValue}
+      previous={previous}
+      formatter={measure.formatFn}/>;
+  }
 
-    const { hoverRange, hoverMeasure, dragRange, scaleX, xTicks, continuousDimension } = this.state;
-    const { splits, colors } = essence;
-    var splitLength = splits.length();
+  calculateExtend(dataset: Dataset, splits: Splits, getY: Unary<Datum, number>, getYP: Unary<Datum, number>) {
 
-    var lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
-    var yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
-
-    var measureName = measure.name;
-    var getX = (d: Datum) => d[continuousDimension.name] as (TimeRange | NumberRange);
-    var getY = (d: Datum) => d[measureName] as number;
-
-    var myDatum: Datum = dataset.data[0];
-    var mySplitDataset = myDatum[SPLIT] as Dataset;
-
-    var extentY: number[] = null;
-    if (splitLength === 1) {
-      extentY = d3.extent(mySplitDataset.data, getY);
-    } else {
-      var minY = 0;
-      var maxY = 0;
-
-      mySplitDataset.data.forEach(datum => {
-        var subDataset = datum[SPLIT] as Dataset;
-        if (subDataset) {
-          var tempExtentY = d3.extent(subDataset.data, getY);
-          minY = Math.min(tempExtentY[0], minY);
-          maxY = Math.max(tempExtentY[1], maxY);
-        }
-      });
-
-      extentY = [minY, maxY];
+    function extentForData(data: Datum[], accessor: Unary<Datum, number>) {
+      return d3.extent(data, accessor);
     }
 
-    var horizontalGridLines: JSX.Element;
-    var chartLines: JSX.Element[];
-    var verticalAxis: JSX.Element;
-    var bubble: JSX.Element;
-    if (!isNaN(extentY[0]) && !isNaN(extentY[1])) {
-      let scaleY = d3.scale.linear()
-        .domain([Math.min(extentY[0] * 1.1, 0), Math.max(extentY[1] * 1.1, 0)])
-        .range([lineStage.height, 0]);
+    if (splits.length() === 1) {
+      const [currMin, currMax] = extentForData(dataset.data, getY);
+      const [prevMin, prevMax] = extentForData(dataset.data, getYP);
+      return [d3.min([currMin, prevMin]), d3.max([currMax, prevMax])];
+    } else {
+      return dataset.data.reduce((acc, datum) => {
+        const split = datum[SPLIT] as Dataset;
+        if (!split) {
+          return acc;
+        }
+        const [accMin, accMax] = acc;
+        const [currMin, currMax] = extentForData(split.data, getY);
+        const [prevMin, prevMax] = extentForData(split.data, getYP);
+        return [d3.min([currMin, prevMin, accMin]), d3.max([currMax, prevMax, accMax])];
+      }, [0, 0]);
+    }
+  }
 
-      let yTicks = scaleY.ticks(5).filter((n: number) => n !== 0);
+  renderChartLines(splitData: Dataset, isHovered: boolean, lineStage: Stage, getY: Unary<Datum, number>, getYP: Unary<Datum, number>, scaleY: Linear<number, number>) {
+    const { essence } = this.props;
+    const hasComparison = essence.hasComparison();
+    const { splits, colors } = essence;
 
-      horizontalGridLines = <GridLines
-        orientation="horizontal"
-        scale={scaleY}
-        ticks={yTicks}
-        stage={lineStage}
-      />;
+    const { hoverRange, scaleX, continuousDimension } = this.state;
+    const getX = (d: Datum) => d[continuousDimension.name] as (TimeRange | NumberRange);
 
-      verticalAxis = <VerticalAxis
-        stage={yAxisStage}
-        ticks={yTicks}
-        scale={scaleY}
-      />;
-
-      if (splitLength === 1) {
-        chartLines = [];
-        chartLines.push(<ChartLine
-          key="single"
-          dataset={mySplitDataset}
+    if (splits.length() === 1) {
+      const curriedSingleChartLine = (getter: Unary<Datum, number>, isPrevious = false) =>
+        <ChartLine
+          key={`single-${isPrevious ? "previous" : "current"}`}
+          dataset={splitData}
           getX={getX}
-          getY={getY}
+          getY={getter}
           scaleX={scaleX}
           scaleY={scaleY}
           stage={lineStage}
+          dashed={isPrevious}
           showArea={true}
-          hoverRange={(!dragRange && hoverMeasure === measure) ? hoverRange : null}
+          hoverRange={isHovered ? hoverRange : null}
           color="default"
-        />);
-      } else {
-        var colorValues: string[] = null;
-        var categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+        />;
 
-        if (colors) colorValues = colors.getColors(mySplitDataset.data.map(d => d[categoryDimension.name]));
-
-        chartLines = mySplitDataset.data.map((datum, i) => {
-          var subDataset = datum[SPLIT] as Dataset;
-          if (!subDataset) return null;
-          return <ChartLine
-            key={"single" + i}
-            dataset={subDataset}
-            getX={getX}
-            getY={getY}
-            scaleX={scaleX}
-            scaleY={scaleY}
-            stage={lineStage}
-            showArea={false}
-            hoverRange={(!dragRange && hoverMeasure === measure) ? hoverRange : null}
-            color={colorValues ? colorValues[i] : null}
-          />;
-        });
-      }
-
-      bubble = this.renderChartBubble(mySplitDataset, measure, chartIndex, containerStage, chartStage, extentY, scaleY);
+      return concatTruthy(
+        curriedSingleChartLine(getY),
+        hasComparison && curriedSingleChartLine(getYP, true));
     }
+    let colorValues: string[] = null;
+    const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+
+    if (colors) {
+      colorValues = colors.getColors(splitData.data.map(d => d[categoryDimension.name]));
+    }
+
+    return flatMap(splitData.data, (datum, i) => {
+      const subDataset = datum[SPLIT] as Dataset;
+      if (!subDataset) return [];
+      return concatTruthy(<ChartLine
+        key={"single-current-" + i}
+        dataset={subDataset}
+        getX={getX}
+        getY={getY}
+        scaleX={scaleX}
+        scaleY={scaleY}
+        stage={lineStage}
+        showArea={false}
+        hoverRange={isHovered ? hoverRange : null}
+        color={colorValues ? colorValues[i] : null}
+      />, hasComparison && <ChartLine
+          key={"single-previous-" + i}
+          dataset={subDataset}
+          getX={getX}
+          getY={getYP}
+          scaleX={scaleX}
+          scaleY={scaleY}
+          stage={lineStage}
+          dashed={true}
+          showArea={false}
+          hoverRange={isHovered ? hoverRange : null}
+          color={colorValues ? colorValues[i] : null}
+      />);
+    });
+  }
+
+  renderVerticalAxis(scale: Linear<number, number>, yAxisStage: Stage) {
+    return <VerticalAxis
+      stage={yAxisStage}
+      ticks={this.calculateTicks(scale)}
+      scale={scale}
+    />;
+  }
+
+  renderHorizontalGridLines(scale: Linear<number, number>, lineStage: Stage) {
+    return <GridLines
+      orientation="horizontal"
+      scale={scale}
+      ticks={this.calculateTicks(scale)}
+      stage={lineStage}
+    />;
+  }
+
+  getScale(extent: number[], lineStage: Stage): Linear<number, number> {
+    if (isNaN(extent[0]) || isNaN(extent[1])) {
+      return null;
+    }
+
+    return d3.scale.linear()
+      .domain([Math.min(extent[0] * 1.1, 0), Math.max(extent[1] * 1.1, 0)])
+      .range([lineStage.height, 0]);
+  }
+
+  calculateTicks(scale: Linear<number, number>) {
+    return scale.ticks(5).filter((n: number) => n !== 0);
+  }
+
+  renderChart(dataset: Dataset, measure: Measure, chartIndex: number, containerStage: Stage, chartStage: Stage): JSX.Element {
+    const { essence, isThumbnail } = this.props;
+
+    const { hoverMeasure, dragRange, scaleX, xTicks } = this.state;
+    const { splits } = essence;
+
+    const lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
+    const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
+
+    const getY: Unary<Datum, number> = (d: Datum) => d[measure.name] as number;
+    const getYP: Unary<Datum, number> = (d: Datum) => d[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+
+    const datum: Datum = dataset.data[0];
+    const splitData = datum[SPLIT] as Dataset;
+
+    const extent = this.calculateExtend(splitData, splits, getY, getYP);
+    const scale = this.getScale(extent, lineStage);
+
+    const isHovered = !dragRange && hoverMeasure === measure;
 
     return <div
       className="measure-line-chart"
-      key={measureName}
+      key={measure.name}
       onMouseDown={this.onMouseDown.bind(this, measure)}
-      onMouseMove={this.onMouseMove.bind(this, mySplitDataset, measure, scaleX)}
+      onMouseMove={this.onMouseMove.bind(this, splitData, measure, scaleX)}
       onMouseLeave={this.onMouseLeave.bind(this, measure)}
     >
       <svg style={chartStage.getWidthHeight()} viewBox={chartStage.getViewBox()}>
-        {horizontalGridLines}
+        {scale && this.renderHorizontalGridLines(scale, lineStage)}
         <GridLines
           orientation="vertical"
           scale={scaleX}
           ticks={xTicks}
           stage={lineStage}
         />
-        {chartLines}
-        {verticalAxis}
+        {scale && this.renderChartLines(splitData, isHovered, lineStage, getY, getYP, scale)}
+        {scale && this.renderVerticalAxis(scale, yAxisStage)}
         <line
           className="vis-bottom"
           x1="0"
@@ -563,9 +623,9 @@ export class LineChart extends BaseVisualization<LineChartState> {
           y2={chartStage.height - 0.5}
         />
       </svg>
-      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={myDatum} /> : null}
+      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={datum}/> : null}
       {this.renderHighlighter()}
-      {bubble}
+      {scale && this.renderChartBubble(splitData, measure, chartIndex, containerStage, chartStage, extent, scale)}
     </div>;
 
   }
@@ -574,8 +634,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { registerDownloadableDataset, essence, timekeeper, stage } = props;
     const { splits, timezone, dataCube } = essence;
 
-    var existingDatasetLoad = this.state.datasetLoad;
-    var newState: LineChartState = {};
+    const existingDatasetLoad = this.state.datasetLoad;
+    let newState: LineChartState = {};
     if (datasetLoad) {
       // Always keep the old dataset while loading (for now)
       if (datasetLoad.loading) datasetLoad.dataset = existingDatasetLoad.dataset;
@@ -585,27 +645,27 @@ export class LineChart extends BaseVisualization<LineChartState> {
       datasetLoad = this.state.datasetLoad;
     }
 
-    if (splits.length()) {
-      var { dataset } = datasetLoad;
+    if (splits.length() > 0) {
+      const { dataset } = datasetLoad;
       if (dataset) {
         if (registerDownloadableDataset) registerDownloadableDataset(dataset);
       }
 
-      var continuousSplit = splits.length() === 1 ? splits.get(0) : splits.get(1);
-      var continuousDimension = continuousSplit.getDimension(essence.dataCube.dimensions);
+      const continuousSplit = splits.length() === 1 ? splits.get(0) : splits.get(1);
+      const continuousDimension = continuousSplit.getDimension(essence.dataCube.dimensions);
       if (continuousDimension) {
         newState.continuousDimension = continuousDimension;
 
-        var axisRange = essence.getEffectiveFilter(timekeeper, LineChart.id).getExtent(continuousDimension.expression) as PlywoodRange;
+        let axisRange = essence.getEffectiveFilter(timekeeper, { highlightId: LineChart.id }).getExtent(continuousDimension.expression) as PlywoodRange;
         if (axisRange) {
           // Special treatment for realtime data, i.e. time data where the maxTime is within Duration of the filter end
-          var maxTime = dataCube.getMaxTime(timekeeper);
-          var continuousBucketAction = continuousSplit.bucketAction;
+          const maxTime = dataCube.getMaxTime(timekeeper);
+          const continuousBucketAction = continuousSplit.bucketAction;
           if (maxTime && continuousBucketAction instanceof TimeBucketExpression) {
-            var continuousDuration = continuousBucketAction.duration;
-            var axisRangeEnd = axisRange.end as Date;
-            var axisRangeEndFloor = continuousDuration.floor(axisRangeEnd, timezone);
-            var axisRangeEndCeil = continuousDuration.shift(axisRangeEndFloor, timezone);
+            const continuousDuration = continuousBucketAction.duration;
+            const axisRangeEnd = axisRange.end as Date;
+            const axisRangeEndFloor = continuousDuration.floor(axisRangeEnd, timezone);
+            const axisRangeEndCeil = continuousDuration.shift(axisRangeEndFloor, timezone);
             if (maxTime && axisRangeEndFloor < maxTime && maxTime < axisRangeEndCeil) {
               axisRange = Range.fromJS({ start: axisRange.start, end: axisRangeEndCeil });
             }
@@ -635,12 +695,13 @@ export class LineChart extends BaseVisualization<LineChartState> {
     this.setState(newState);
   }
 
-  getXAxisRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange {
+  getXAxisRange(dataset: Dataset, continuousDimension: Dimension):
+    PlywoodRange {
     if (!dataset) return null;
     const key = continuousDimension.name;
 
-    var firstDatum = dataset.data[0];
-    var ranges: PlywoodRange[];
+    const firstDatum = dataset.data[0];
+    let ranges: PlywoodRange[];
     if (firstDatum["SPLIT"]) {
       ranges = dataset.data.map(d => this.getXAxisRange(d["SPLIT"] as Dataset, continuousDimension));
     } else {
@@ -663,25 +724,25 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   renderInternals() {
-    var { essence, stage } = this.props;
-    var { datasetLoad, axisRange, scaleX, xTicks } = this.state;
-    var { splits, timezone } = essence;
+    const { essence, stage } = this.props;
+    const { datasetLoad, axisRange, scaleX, xTicks } = this.state;
+    const { splits, timezone } = essence;
 
-    var measureCharts: JSX.Element[];
-    var bottomAxis: JSX.Element;
+    let measureCharts: JSX.Element[];
+    let bottomAxis: JSX.Element;
 
     if (datasetLoad.dataset && splits.length() && axisRange) {
-      var measures = essence.getEffectiveMeasures().toArray();
+      const measures = essence.getEffectiveMeasures().toArray();
 
-      var chartWidth = stage.width - VIS_H_PADDING * 2;
-      var chartHeight = Math.max(
+      const chartWidth = stage.width - VIS_H_PADDING * 2;
+      const chartHeight = Math.max(
         MIN_CHART_HEIGHT,
         Math.floor(Math.min(
           chartWidth / MAX_ASPECT_RATIO,
           (stage.height - X_AXIS_HEIGHT) / measures.length
         ))
       );
-      var chartStage = new Stage({
+      const chartStage = new Stage({
         x: VIS_H_PADDING,
         y: 0,
         width: chartWidth,
@@ -692,17 +753,17 @@ export class LineChart extends BaseVisualization<LineChartState> {
         return this.renderChart(datasetLoad.dataset, measure, chartIndex, stage, chartStage);
       });
 
-      var xAxisStage = Stage.fromSize(chartStage.width, X_AXIS_HEIGHT);
+      const xAxisStage = Stage.fromSize(chartStage.width, X_AXIS_HEIGHT);
       bottomAxis = <svg
         className="bottom-axis"
         width={xAxisStage.width}
         height={xAxisStage.height}
       >
-        <LineChartAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone} />
+        <LineChartAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone}/>
       </svg>;
     }
 
-    var measureChartsStyle = {
+    const measureChartsStyle = {
       maxHeight: stage.height - X_AXIS_HEIGHT
     };
 

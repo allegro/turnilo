@@ -26,11 +26,11 @@ import { HoverMultiBubble } from "./hover-multi-bubble";
 
 describe.skip("HoverMultiBubble", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <HoverMultiBubble
         left={null}
         top={null}
-        segmentLabel={null}
+        title={null}
         colorEntries={null}
       />
     );

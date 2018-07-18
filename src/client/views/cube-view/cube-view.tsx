@@ -41,18 +41,9 @@ import {
   VisStrategy,
   VisualizationProps
 } from "../../../common/models/index";
+import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Fn } from "../../../common/utils/general/general";
-import {
-  DimensionMeasurePanel,
-  DropIndicator,
-  FilterTile,
-  GlobalEventListener,
-  ManualFallback,
-  PinboardPanel,
-  ResizeHandle,
-  SplitTile,
-  VisSelector
-} from "../../components/index";
+import { DimensionMeasurePanel, DropIndicator, FilterTile, GlobalEventListener, ManualFallback, PinboardPanel, ResizeHandle, SplitTile, VisSelector } from "../../components/index";
 import { RawDataModal } from "../../modals/index";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
@@ -129,6 +120,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         essence = essence.changeFilter(filter);
         if (colors) essence = essence.changeColors(colors);
         this.setState({ essence });
+      },
+      changeComparisonShift: (timeShift: TimeShift) => {
+        const { essence } = this.state;
+        this.setState({ essence: essence.changeComparisonShift(timeShift) });
       },
       changeTimeSelection: (selection: Expression) => {
         const { essence } = this.state;
@@ -555,7 +550,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 menuStage={visualizationStage}
               />
             </div>
-            <VisSelector clicker={clicker} essence={essence} />
+            <VisSelector clicker={clicker} essence={essence}/>
           </div>
           <div
             className="center-main"
@@ -563,7 +558,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           >
             <div className="visualization" ref="visualization">{visElement}</div>
             {manualFallback}
-            {dragOver ? <DropIndicator /> : null}
+            {dragOver ? <DropIndicator/> : null}
             {dragOver ? <div
               className="drag-mask"
               onDragOver={this.dragOver.bind(this)}

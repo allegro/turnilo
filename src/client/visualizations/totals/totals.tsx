@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
-import { $, Expression, ply } from "plywood";
+import { Iterable, List } from "immutable";
+import { $, Dataset, Datum, Expression, ply } from "plywood";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
-import { DatasetLoad, Essence, Timekeeper, VisualizationProps } from "../../../common/models/index";
+import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
+import { Period } from "../../../common/models/periods/periods";
+import { Delta } from "../../components/delta/delta";
+import { classNames } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./totals.scss";
 
@@ -44,23 +48,13 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     const nextTimekeeper = nextProps.timekeeper;
     return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, Totals.id) ||
+      nextEssence.differentTimeShift(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
       nextEssence.dataCube.refreshRule.isRealtime();
   }
 
   componentWillUnmount() {
     this._isMounted = false;
-  }
-
-  makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-    let query: Expression = ply()
-      .apply("main", $("main").filter(essence.getEffectiveFilter(timekeeper, Totals.id).toExpression()));
-
-    essence.getEffectiveMeasures().forEach(measure => {
-      query = query.performAction(measure.toApplyExpression());
-    });
-
-    return query;
   }
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
@@ -86,28 +80,63 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     this.setState(newState);
   }
 
+  printDelta(currentValue: number, previousValue: number, measure: Measure): JSX.Element {
+    if (currentValue === undefined || previousValue === undefined) {
+      return null;
+    }
+    return <div className="measure-delta-value">
+      {<Delta currentValue={currentValue} previousValue={previousValue} formatter={measure.formatFn}/>}
+    </div>;
+  }
+
+  renderTotal(key: string, single: boolean, name: string, value: string, previous?: JSX.Element): JSX.Element {
+    return <div className={classNames("total", { single })} key={key}>
+      <div className="measure-name">{name}</div>
+      <div className="measure-value">{value}</div>
+      {previous && previous}
+    </div>;
+  }
+
+  renderPrevious(datum: Datum, measure: Measure): JSX.Element {
+    if (!this.props.essence.hasComparison()) {
+      return null;
+    }
+    const currentValue = datum[measure.name] as number;
+    const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+
+    return <div className="measure-value measure-value--previous">
+      {measure.formatFn(previousValue)}
+      {this.printDelta(currentValue, previousValue, measure)}
+    </div>;
+  }
+
+  renderTotals(dataset: Dataset, measures: List<Measure>): Iterable<number, JSX.Element> {
+    const single = measures.size === 1;
+    const datum = dataset ? dataset.data[0] : null;
+    if (!datum) {
+      return measures.map(measure => {
+        return this.renderTotal(measure.name, single, measure.title, "-");
+      });
+    }
+
+    return measures.map(measure => {
+      const currentValue = datum[measure.name] as number;
+      const formattedCurrent = measure.formatFn(currentValue);
+      const previousElement = this.renderPrevious(datum, measure);
+
+      return this.renderTotal(measure.name, single, measure.title, formattedCurrent, previousElement);
+    });
+
+  }
+
   renderInternals() {
     const { essence, stage } = this.props;
-    const { datasetLoad } = this.state;
+    const { datasetLoad: { dataset } } = this.state;
 
-    const myDatum = datasetLoad.dataset ? datasetLoad.dataset.data[0] : null;
-    const measures = essence.getEffectiveMeasures();
-    let single = measures.size === 1;
+    const measures: List<Measure> = essence.getEffectiveMeasures();
+    const single = measures.size === 1;
 
-    const totals = measures.map(measure => {
-      let measureValueStr = "-";
-      if (myDatum) {
-        measureValueStr = measure.formatDatum(myDatum);
-      }
-
-      return <div
-        className={"total" + (single ? " single" : "")}
-        key={measure.name}
-      >
-        <div className="measure-name">{measure.title}</div>
-        <div className="measure-value">{measureValueStr}</div>
-      </div>;
-    });
+    const totals = this.renderTotals(dataset, measures);
 
     let totalContainerStyle: React.CSSProperties = null;
     if (!single) {

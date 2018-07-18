@@ -184,7 +184,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       };
     });
 
-    return <ButtonGroup title={STRINGS.granularity} groupMembers={buttons} />;
+    return <ButtonGroup title={STRINGS.granularity} groupMembers={buttons}/>;
   }
 
   renderSortDropdown() {
@@ -212,7 +212,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     return <div className="sort-direction">
       {this.renderSortDropdown()}
       <div className={"direction " + direction} onClick={this.onToggleDirection.bind(this)}>
-        <SvgIcon svg={require("../../icons/sort-arrow.svg")} />
+        <SvgIcon svg={require("../../icons/sort-arrow.svg")}/>
       </div>
     </div>;
   }

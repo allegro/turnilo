@@ -19,6 +19,7 @@ import { day, second, Timezone } from "chronoshift";
 import { $, Expression, LiteralExpression, r, Range, Set, TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker, Dimension, Essence, Filter, FilterClause, Stage, Timekeeper } from "../../../common/models";
+import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { DisplayYear, Fn, formatTimeRange } from "../../../common/utils";
 import { STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
@@ -37,30 +38,39 @@ export interface Preset {
   selection: Expression;
 }
 
-const $maxTime = $(FilterClause.MAX_TIME_REF_NAME);
+const $MAX_TIME = $(FilterClause.MAX_TIME_REF_NAME);
+const $NOW = $(FilterClause.NOW_REF_NAME);
+
 const latestPresets: Preset[] = [
-  { name: "1H", selection: $maxTime.timeRange("PT1H", -1) },
-  { name: "6H", selection: $maxTime.timeRange("PT6H", -1) },
-  { name: "1D", selection: $maxTime.timeRange("P1D", -1) },
-  { name: "7D", selection: $maxTime.timeRange("P1D", -7) },
-  { name: "30D", selection: $maxTime.timeRange("P1D", -30) }
+  { name: "1H", selection: $MAX_TIME.timeRange("PT1H", -1) },
+  { name: "6H", selection: $MAX_TIME.timeRange("PT6H", -1) },
+  { name: "1D", selection: $MAX_TIME.timeRange("P1D", -1) },
+  { name: "7D", selection: $MAX_TIME.timeRange("P1D", -7) },
+  { name: "30D", selection: $MAX_TIME.timeRange("P1D", -30) }
 ];
 
-const $now = $(FilterClause.NOW_REF_NAME);
-const currentPresets: Preset[] = [
-  { name: "D", selection: $now.timeFloor("P1D").timeRange("P1D", 1) },
-  { name: "W", selection: $now.timeFloor("P1W").timeRange("P1W", 1) },
-  { name: "M", selection: $now.timeFloor("P1M").timeRange("P1M", 1) },
-  { name: "Q", selection: $now.timeFloor("P3M").timeRange("P3M", 1) },
-  { name: "Y", selection: $now.timeFloor("P1Y").timeRange("P1Y", 1) }
+const CURRENT_PRESETS: Preset[] = [
+  { name: "D", selection: $NOW.timeFloor("P1D").timeRange("P1D", 1) },
+  { name: "W", selection: $NOW.timeFloor("P1W").timeRange("P1W", 1) },
+  { name: "M", selection: $NOW.timeFloor("P1M").timeRange("P1M", 1) },
+  { name: "Q", selection: $NOW.timeFloor("P3M").timeRange("P3M", 1) },
+  { name: "Y", selection: $NOW.timeFloor("P1Y").timeRange("P1Y", 1) }
 ];
 
-const previousPresets: Preset[] = [
-  { name: "D", selection: $now.timeFloor("P1D").timeRange("P1D", -1) },
-  { name: "W", selection: $now.timeFloor("P1W").timeRange("P1W", -1) },
-  { name: "M", selection: $now.timeFloor("P1M").timeRange("P1M", -1) },
-  { name: "Q", selection: $now.timeFloor("P3M").timeRange("P3M", -1) },
-  { name: "Y", selection: $now.timeFloor("P1Y").timeRange("P1Y", -1) }
+const PREVIOUS_PRESETS: Preset[] = [
+  { name: "D", selection: $NOW.timeFloor("P1D").timeRange("P1D", -1) },
+  { name: "W", selection: $NOW.timeFloor("P1W").timeRange("P1W", -1) },
+  { name: "M", selection: $NOW.timeFloor("P1M").timeRange("P1M", -1) },
+  { name: "Q", selection: $NOW.timeFloor("P3M").timeRange("P3M", -1) },
+  { name: "Y", selection: $NOW.timeFloor("P1Y").timeRange("P1Y", -1) }
+];
+
+const COMPARISON_PRESETS = [
+  { label: "Off", timeShift: TimeShift.empty() },
+  { label: "D", timeShift: TimeShift.fromJS("P1D") },
+  { label: "W", timeShift: TimeShift.fromJS("P1W") },
+  { label: "M", timeShift: TimeShift.fromJS("P1M") },
+  { label: "Q", timeShift: TimeShift.fromJS("P3M") }
 ];
 
 const MENU_WIDTH = 250;
@@ -83,6 +93,8 @@ export interface TimeFilterMenuState {
   startTime?: Date;
   endTime?: Date;
   hoverPreset?: Preset;
+  hoverTimeShift?: TimeShift;
+  fixedTimeShift: TimeShift;
 }
 
 export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFilterMenuState> {
@@ -99,7 +111,8 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       timeSelection: null,
       startTime: null,
       endTime: null,
-      hoverPreset: null
+      hoverPreset: null,
+      fixedTimeShift: props.essence.timeShift
     };
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
@@ -140,13 +153,14 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     }
   }
 
-  constructFilter(): Filter {
-    let { tab, startTime, endTime } = this.state;
+  constructFixedFilter(): Filter {
+    const { tab } = this.state;
+    if (tab !== TimeFilterMenu.FIXED_TAB) return null;
+
+    let { startTime, endTime } = this.state;
     const { essence, dimension } = this.props;
     const { filter } = essence;
     const { timezone } = essence;
-
-    if (tab !== TimeFilterMenu.FIXED_TAB) return null;
 
     if (startTime && !endTime) {
       endTime = day.shift(startTime, timezone, 1);
@@ -157,6 +171,12 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     } else {
       return null;
     }
+  }
+
+  saveTimeShift(timeShift: TimeShift) {
+    const { clicker, onClose } = this.props;
+    clicker.changeComparisonShift(timeShift);
+    onClose();
   }
 
   onPresetClick(preset: Preset) {
@@ -183,6 +203,30 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     });
   }
 
+  onClickTimeShift(timeShift: TimeShift) {
+    const { fixedTimeShift } = this.state;
+    if (fixedTimeShift === timeShift) return;
+    this.setState({
+      fixedTimeShift: timeShift
+    });
+  }
+
+  onTimeShiftMouseEnter(timeShift: TimeShift) {
+    const { hoverTimeShift } = this.state;
+    if (hoverTimeShift === timeShift) return;
+    this.setState({
+      hoverTimeShift: timeShift
+    });
+  }
+
+  onTimeShiftMouseLeave(timeShift: TimeShift) {
+    const { hoverTimeShift } = this.state;
+    if (hoverTimeShift !== timeShift) return;
+    this.setState({
+      hoverTimeShift: null
+    });
+  }
+
   onStartChange(start: Date) {
     this.setState({
       startTime: start
@@ -202,9 +246,13 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   onOkClick() {
     if (!this.actionEnabled()) return;
     const { clicker, onClose } = this.props;
-    const newFilter = this.constructFilter();
-    if (!newFilter) return;
+    const { fixedTimeShift } = this.state;
+    const newFilter = this.constructFixedFilter();
+    if (!newFilter) {
+      throw new Error("Couldn't construct time filter");
+    }
     clicker.changeFilter(newFilter);
+    clicker.changeComparisonShift(fixedTimeShift);
     onClose();
   }
 
@@ -213,9 +261,31 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     onClose();
   }
 
+  shiftAndFormatTimeRange(timeRange: TimeRange, timeShift: TimeShift) {
+    const { essence: { timezone } } = this.props;
+    const { bounds, start, end } = timeRange;
+    const duration = timeShift.valueOf();
+    const shiftedTimeRange = TimeRange.fromJS({
+      start: duration.shift(start, timezone, -1),
+      end: duration.shift(end, timezone, -1),
+      bounds
+    });
+    return formatTimeRange(shiftedTimeRange, timezone, DisplayYear.IF_DIFF);
+  }
+
+  timeShiftToButton(onClick: Function, selectedTimeShift: TimeShift) {
+    return ({ label, timeShift }: { label: string, timeShift: TimeShift }) => <button
+      key={timeShift.toJS()}
+      className={classNames("preset", { selected: selectedTimeShift.equals(timeShift) })}
+      onClick={onClick.bind(this, timeShift)}
+      onMouseEnter={this.onTimeShiftMouseEnter.bind(this, timeShift)}
+      onMouseLeave={this.onTimeShiftMouseLeave.bind(this, timeShift)}
+    >{label}</button>;
+  }
+
   renderPresetsTimePicker() {
     const { essence, timekeeper, dimension } = this.props;
-    const { timeSelection, hoverPreset } = this.state;
+    const { timeSelection, hoverPreset, hoverTimeShift } = this.state;
     if (!dimension) return null;
 
     const { timezone } = essence;
@@ -230,6 +300,11 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       >{preset.name}</button>;
     };
 
+    const maxTimeBasedPresets = <div>
+      <div className="type">{STRINGS.latest}</div>
+      <div className="buttons">{latestPresets.map(presetToButton)}</div>
+    </div>;
+
     let previewTimeRange: TimeRange = null;
     if (timeSelection && timeSelection.type !== "TIME_RANGE") {
       let { value } = timeSelection as LiteralExpression;
@@ -243,33 +318,59 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     }
 
     const previewText = previewTimeRange ? formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
-    const maxTimeBasedPresets = <div>
-      <div className="type">{STRINGS.latest}</div>
-      <div className="buttons">{latestPresets.map(presetToButton)}</div>
-    </div>;
+    const timeShiftPreview = this.timeShiftPreviewForPreset(previewTimeRange);
 
     return <div className="cont">
       {essence.dataCube.isTimeAttribute(dimension.expression) ? maxTimeBasedPresets : null}
       <div className="type">{STRINGS.current}</div>
-      <div className="buttons">{currentPresets.map(presetToButton)}</div>
+      <div className="buttons">{CURRENT_PRESETS.map(presetToButton)}</div>
       <div className="type">{STRINGS.previous}</div>
-      <div className="buttons">{previousPresets.map(presetToButton)}</div>
-      <div className="preview">{previewText}</div>
+      <div className="buttons">{PREVIOUS_PRESETS.map(presetToButton)}</div>
+      <div className="preview preview--with-spacing">{previewText}</div>
+      <div className="type">{STRINGS.timeShift}</div>
+      <div className="buttons">{COMPARISON_PRESETS.map(this.timeShiftToButton(this.saveTimeShift, essence.timeShift))}</div>
+      {timeShiftPreview ? <div className="preview">{timeShiftPreview}</div> : null}
     </div>;
+  }
+
+  timeShiftPreviewForPreset(previewTimeRange: TimeRange) {
+    const { hoverTimeShift } = this.state;
+    const { essence } = this.props;
+
+    if (hoverTimeShift && !hoverTimeShift.isEmpty()) {
+      return this.shiftAndFormatTimeRange(previewTimeRange, hoverTimeShift);
+    }
+    if (!hoverTimeShift && essence.hasComparison()) {
+      return this.shiftAndFormatTimeRange(previewTimeRange, essence.timeShift);
+    }
+    return null;
   }
 
   actionEnabled() {
     const { essence } = this.props;
-    const { tab } = this.state;
+    const { tab, fixedTimeShift } = this.state;
     if (tab !== TimeFilterMenu.FIXED_TAB) return false;
-    const newFilter = this.constructFilter();
-    return newFilter && !essence.filter.equals(newFilter);
+    const newFilter = this.constructFixedFilter();
+    return (newFilter && !essence.filter.equals(newFilter)) || !essence.timeShift.equals(fixedTimeShift);
+  }
+
+  timeShiftPreviewForRange(): string {
+    const { hoverTimeShift, fixedTimeShift, startTime, endTime } = this.state;
+    const timeRange = TimeRange.fromJS({ start: startTime, end: endTime });
+    if (hoverTimeShift && !hoverTimeShift.isEmpty()) {
+      return this.shiftAndFormatTimeRange(timeRange, hoverTimeShift);
+    }
+    if (!hoverTimeShift && !fixedTimeShift.isEmpty()) {
+      return this.shiftAndFormatTimeRange(timeRange, fixedTimeShift);
+    }
+    return null;
   }
 
   renderDateRangePicker() {
     const { essence, timekeeper, dimension } = this.props;
-    const { startTime, endTime } = this.state;
     if (!dimension) return null;
+    const { fixedTimeShift, startTime, endTime } = this.state;
+    const timeShiftPreview = this.timeShiftPreviewForRange();
 
     return <div>
       <DateRangePicker
@@ -280,9 +381,14 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
         onStartChange={this.onStartChange.bind(this)}
         onEndChange={this.onEndChange.bind(this)}
       />
+      <div className="cont">
+        <div className="type">{STRINGS.timeShift}</div>
+        <div className="buttons">{COMPARISON_PRESETS.map(this.timeShiftToButton(this.onClickTimeShift, fixedTimeShift))}</div>
+        {timeShiftPreview ? <div className="preview">{timeShiftPreview}</div> : null}
+      </div>
       <div className="ok-cancel-bar">
-        <Button type="primary" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} title={STRINGS.ok} />
-        <Button type="secondary" onClick={this.onCancelClick.bind(this)} title={STRINGS.cancel} />
+        <Button type="primary" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} title={STRINGS.ok}/>
+        <Button type="secondary" onClick={this.onCancelClick.bind(this)} title={STRINGS.cancel}/>
       </div>
     </div>;
   }
@@ -310,7 +416,7 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       onClose={onClose}
       inside={inside}
     >
-      <ButtonGroup groupMembers={tabs} />
+      <ButtonGroup groupMembers={tabs}/>
       {tab === TimeFilterMenu.RELATIVE_TAB ? this.renderPresetsTimePicker() : this.renderDateRangePicker()}
     </BubbleMenu>;
   }

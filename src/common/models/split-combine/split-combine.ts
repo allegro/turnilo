@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
+import { Duration } from "chronoshift";
 import { Class, Instance } from "immutable-class";
-import { $, Expression, ExpressionJS, LimitExpression, NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
+import { $, Expression, ExpressionJS, LimitExpression, NumberBucketExpression, RefExpression, SortExpression, TimeBucketExpression } from "plywood";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
 
@@ -139,6 +140,17 @@ export class SplitCombine implements Instance<SplitCombineValue, SplitCombineJS>
   public equalsByExpression(other: SplitCombine): boolean {
     const { expression } = this;
     return SplitCombine.isSplitCombine(other) && expression.equals(other.expression);
+  }
+
+  public withTimeShift(filter: Expression, shift: Duration): SplitCombine {
+    const { expression } = this;
+    if (expression instanceof RefExpression && expression.name === "__time") {
+      return new SplitCombine({
+        ...this.valueOf(),
+        expression: filter.then(expression).fallback(expression.timeShift(shift))
+      });
+    }
+    return this;
   }
 
   public toSplitExpression(): Expression {

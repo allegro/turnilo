@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,38 +14,12 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+require('ts-node/register');
 
-.segment-bubble {
-  @extend %menu-cont;
-  position: absolute;
-  background: rgba($white, 0.9);
-  padding: 10px;
-  text-align: center;
-  transform: translate(-50%, -100%);
-  max-width: 400px;
+require('ignore-styles');
 
-  .text {
-    .title {
-      color: #999;
-      line-height: 17px;
-      display: block;
-      padding-bottom: 9px;
-      overflow: hidden;
-      word-wrap: break-word;
-    }
+var enzyme = require('enzyme');
+var Adapter = require('enzyme-adapter-react-16');
 
-    .content {
-      white-space: nowrap;
-    }
-  }
+enzyme.configure({ adapter: new Adapter() });
 
-  .segment-action-buttons:nth-child(n+2) {
-    margin-top: 7px;
-  }
-
-  .shpitz {
-    left: 50%;
-    top: 100%;
-  }
-}

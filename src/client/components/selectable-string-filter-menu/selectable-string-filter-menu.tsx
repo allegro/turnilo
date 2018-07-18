@@ -80,7 +80,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     var nativeCount = dataCube.getMeasure("count");
     var measureExpression = nativeCount ? nativeCount.expression : $("main").count();
 
-    var filterExpression = essence.getEffectiveFilter(timekeeper, null, dimension).toExpression();
+    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
 
     if (searchText) {
       filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), "ignoreCase"));
@@ -253,8 +253,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
           onClick={this.onValueClick.bind(this, segmentValue)}
         >
           <div className="row-wrapper">
-            <Checkbox type={checkboxType as CheckboxType} selected={selected} />
-            <HighlightString className="label" text={segmentValueStr} highlight={searchText} />
+            <Checkbox type={checkboxType as CheckboxType} selected={selected}/>
+            <HighlightString className="label" text={segmentValueStr} highlight={searchText}/>
           </div>
         </div>;
       });
@@ -282,12 +282,12 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       />
       <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
         {this.renderRows()}
-        {error ? <QueryError error={error} /> : null}
-        {loading ? <Loader /> : null}
+        {error ? <QueryError error={error}/> : null}
+        {loading ? <Loader/> : null}
       </div>
       <div className="ok-cancel-bar">
-        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} />
-        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick.bind(this)} />
+        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}/>
+        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick.bind(this)}/>
       </div>
     </div>;
   }

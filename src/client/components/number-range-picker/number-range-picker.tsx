@@ -86,7 +86,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, rightBound: number): void {
     var { dataCube } = essence;
-    var filterExpression = essence.getEffectiveFilter(timekeeper, null, dimension).toExpression();
+    var filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
     var $main = $("main");
     var query = ply()
       .apply("main", $main.filter(filterExpression))
@@ -225,8 +225,8 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
       var absoluteRightBound = leftOffset + rightBound;
 
       content = <div className="range-slider" onMouseDown={this.onBarClick.bind(this, positionStart, positionEnd)}>
-        <div className="range-bar full" />
-        <div className="range-bar selected" style={rangeBarSelected} />
+        <div className="range-bar full"/>
+        <div className="range-bar selected" style={rangeBarSelected}/>
         <RangeHandle
           positionLeft={positionStart}
           onChange={this.updateStart.bind(this)}
@@ -250,8 +250,8 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
 
     return <div className={classNames("number-range-picker", { inverted: exclude })} ref="number-range-picker">
       {content}
-      {loading ? <Loader /> : null}
-      {error ? <QueryError error={error} /> : null}
+      {loading && <Loader/>}
+      {error && <QueryError error={error}/>}
     </div>;
   }
 }

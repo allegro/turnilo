@@ -31,6 +31,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     return Essence.fromJS({
       visualization: definition.visualization,
       timezone: Timezone.fromJS(definition.timezone).toJS(),
+      timeShift: definition.timeShift,
       filter: Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube))).toJS(),
       splits: definition.splits.map(splitConverter.toSplitCombine).map(sc => sc.toJS()),
       multiMeasureMode: measuresDefinitionConverter.toMultiMeasureMode(definition.measures),
@@ -54,6 +55,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
       measures: measuresDefinitionConverter.fromSimpleValues(essence.multiMeasureMode, essence.singleMeasure, essence.selectedMeasures),
       pinnedDimensions: essence.pinnedDimensions.toArray(),
       pinnedSort: essence.pinnedSort,
+      timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined,
       legend: essence.colors && legendConverter.fromColors(essence.colors),
       highlight: essence.highlight && highlightConverter(dataCube).fromHighlight(essence.highlight)
     };
