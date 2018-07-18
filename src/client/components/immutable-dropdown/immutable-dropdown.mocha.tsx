@@ -20,12 +20,14 @@ import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
 import * as sinon from "sinon";
 
-import { Cluster, DataCube, ListItem } from "../../../common/models/index";
+import { DataCube, ListItem } from "../../../common/models/index";
 import { DataCubeMock } from "../../../common/models/mocks";
 
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
 import { ImmutableDropdown } from "./immutable-dropdown";
+
+const ITEMS = [{ value: "value1", label: "label1" }, { value: "value2", label: "label2" }];
 
 describe("ImmutableDropdown", () => {
   var component: any;
@@ -38,8 +40,6 @@ describe("ImmutableDropdown", () => {
 
     var MyDropdown = ImmutableDropdown.specialize<ListItem>();
 
-    const clusterNames = Cluster.TYPE_VALUES.map(type => ({ value: type, label: type }));
-
     component = renderIntoDocument(
       <MyDropdown
         instance={DataCubeMock.twitter()}
@@ -48,7 +48,7 @@ describe("ImmutableDropdown", () => {
 
         onChange={onChange}
 
-        items={clusterNames}
+        items={ITEMS}
 
         equal={(a: ListItem, b: ListItem) => a.value === b.value}
         renderItem={(a: ListItem) => a.label}
@@ -78,7 +78,7 @@ describe("ImmutableDropdown", () => {
     const args = onChange.args[0];
 
     expect(args[0]).to.be.instanceOf(DataCube);
-    expect(args[0].clusterName).to.equal(Cluster.TYPE_VALUES[1]);
+    expect(args[0].clusterName).to.equal(ITEMS[1].value);
 
     expect(args[1]).to.equal(true);
 

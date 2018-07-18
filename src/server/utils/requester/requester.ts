@@ -18,8 +18,6 @@
 import { concurrentLimitRequesterFactory, retryRequesterFactory, verboseRequesterFactory } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
 import { DruidRequestDecorator, druidRequesterFactory, Protocol } from "plywood-druid-requester";
-import { mySqlRequesterFactory } from "plywood-mysql-requester";
-import { postgresRequesterFactory } from "plywood-postgres-requester";
 import { SupportedType } from "../../../common/models/index";
 
 export interface ProperRequesterOptions {
@@ -61,25 +59,6 @@ export function properRequesterFactory(options: ProperRequesterOptions): Plywood
         protocol: options.protocol
       });
       break;
-
-    case "mysql":
-      requester = mySqlRequesterFactory({
-        host,
-        database: options.database,
-        user: options.user,
-        password: options.password
-      });
-      break;
-
-    case "postgres":
-      requester = postgresRequesterFactory({
-        host,
-        database: options.database,
-        user: options.user,
-        password: options.password
-      });
-      break;
-
     default:
       throw new Error(`unknown requester type ${type}`);
   }

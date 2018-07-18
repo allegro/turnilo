@@ -127,16 +127,6 @@ export function clusterToYAML(cluster: Cluster, withComments: boolean): string[]
         .add("requestDecorator")
       ;
       break;
-
-    case "postgres":
-    case "mysql":
-      props
-        .add("database")
-        .add("user")
-        .add("password")
-      ;
-
-      break;
   }
 
   lines.push("");
