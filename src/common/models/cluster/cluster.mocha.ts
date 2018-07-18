@@ -42,20 +42,6 @@ describe("Cluster", () => {
       },
       {
         name: "my-mysql-cluster",
-        type: "mysql",
-        host: "192.168.99.100",
-        timeout: 30000,
-        sourceListScan: "auto",
-        sourceListRefreshInterval: 10000,
-        sourceReintrospectOnLoad: true,
-        sourceReintrospectInterval: 10000,
-
-        database: "datazoo",
-        user: "datazoo-user",
-        password: "koalas"
-      },
-      {
-        name: "my-mysql-cluster",
         type: "druid",
         host: "192.168.99.100",
         timeout: 30000,

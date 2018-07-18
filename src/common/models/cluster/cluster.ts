@@ -19,7 +19,7 @@ import { BaseImmutable, Property } from "immutable-class";
 import { External } from "plywood";
 import { verifyUrlSafeName } from "../../utils/general/general";
 
-export type SupportedType = "druid" | "mysql" | "postgres";
+export type SupportedType = "druid";
 export type SourceListScan = "disable" | "auto";
 export type Protocol = "plain" | "tls-loose" | "tls";
 
@@ -85,7 +85,7 @@ function ensureNotTiny(v: number): void {
 }
 
 export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
-  static TYPE_VALUES: SupportedType[] = ["druid", "mysql", "postgres"];
+  static TYPE_VALUES: SupportedType[] = ["druid"];
   static DEFAULT_TIMEOUT = 40000;
   static DEFAULT_HEALTH_CHECK_TIMEOUT = 1000;
   static DEFAULT_SOURCE_LIST_SCAN: SourceListScan = "auto";
@@ -184,13 +184,6 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
         this.user = null;
         this.password = null;
         this.protocol = null;
-        break;
-
-      case "mysql":
-      case "postgres":
-        this.introspectionStrategy = null;
-        this.requestDecorator = null;
-        this.decoratorOptions = null;
         break;
     }
 
