@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { MarkdownBubble } from "../markdown-bubble/makrdown-bubble";
+import { MarkdownBubble } from "../markdown-bubble/markdown-bubble";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./info-bubble.scss";
 
