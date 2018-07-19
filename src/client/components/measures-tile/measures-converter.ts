@@ -22,6 +22,7 @@ export type MeasureOrGroupForView = MeasureForView | MeasureGroupForView;
 export interface MeasureForView {
   name: string;
   title: string;
+  description?: string;
   hasSelectedMeasures: boolean;
   hasSearchText: boolean;
   type: MeasureForViewType.measure;
@@ -30,6 +31,7 @@ export interface MeasureForView {
 export interface MeasureGroupForView {
   name: string;
   title: string;
+  description?: string;
   hasSearchText: boolean;
   hasSelectedMeasures: boolean;
   children: MeasureOrGroupForView[];
@@ -54,6 +56,7 @@ export class MeasuresConverter implements MeasureOrGroupVisitor<MeasureOrGroupFo
     return {
       name: measure.name,
       title: measure.getTitleWithUnits(),
+      description: measure.description,
       hasSelectedMeasures: isSelectedMeasurePredicate(measure),
       hasSearchText: hasSearchTextPredicate(measure),
       type: MeasureForViewType.measure
@@ -61,12 +64,13 @@ export class MeasuresConverter implements MeasureOrGroupVisitor<MeasureOrGroupFo
   }
 
   visitMeasureGroup(measureGroup: MeasureGroup): MeasureOrGroupForView {
-    const { name, title, measures } = measureGroup;
+    const { name, title, description, measures } = measureGroup;
     const measuresForView = measures.map(measureOrGroup => measureOrGroup.accept(this));
 
     return {
       name,
       title,
+      description,
       hasSearchText: measuresForView.some(measureForView => measureForView.hasSearchText),
       hasSelectedMeasures: measuresForView.some(measureForView => measureForView.hasSelectedMeasures),
       children: measuresForView,

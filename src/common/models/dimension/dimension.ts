@@ -45,6 +45,7 @@ const bucketingStrategies: { [strategy in BucketingStrategy]: BucketingStrategy 
 export interface DimensionValue {
   name: string;
   title?: string;
+  description?: string;
   formula?: string;
   kind?: string;
   url?: string;
@@ -57,6 +58,7 @@ export interface DimensionValue {
 export interface DimensionJS {
   name: string;
   title?: string;
+  description?: string;
   formula?: string;
   kind?: string;
   url?: string;
@@ -79,6 +81,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     const value: DimensionValue = {
       name: parameters.name,
       title: parameters.title,
+      description: parameters.description,
       formula: parameters.formula || (typeof parameterExpression === "string" ? parameterExpression : null),
       kind: parameters.kind || typeToKind((parameters as any).type),
       url: parameters.url
@@ -102,6 +105,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
 
   public name: string;
   public title: string;
+  public description?: string;
   public formula: string;
   public expression: Expression;
   public kind: string;
@@ -118,6 +122,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
+    this.description = parameters.description;
 
     var formula = parameters.formula || $(name).toString();
     this.formula = formula;
@@ -164,6 +169,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       name: this.name,
       title: this.title,
       formula: this.formula,
+      description: this.description,
       kind: this.kind,
       url: this.url,
       granularities: this.granularities,
@@ -180,6 +186,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       formula: this.formula,
       kind: this.kind
     };
+    if (this.description) js.description = this.description;
     if (this.url) js.url = this.url;
     if (this.granularities) js.granularities = this.granularities.map(g => granularityToJS(g));
     if (this.bucketedBy) js.bucketedBy = granularityToJS(this.bucketedBy);
@@ -200,6 +207,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     return Dimension.isDimension(other) &&
       this.name === other.name &&
       this.title === other.title &&
+      this.description === other.description &&
       this.formula === other.formula &&
       this.kind === other.kind &&
       this.url === other.url &&
