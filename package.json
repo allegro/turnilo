@@ -67,6 +67,7 @@
     "js-yaml": "3.10.0",
     "logger-tracker": "0.0.23",
     "lz-string": "1.4.4",
+    "marked": "^0.4.0",
     "moment": "2.20.1",
     "moment-timezone": "0.5.14",
     "node-spawn-server": "1.0.1",
@@ -86,6 +87,7 @@
     "request-promise-native": "1.0.5"
   },
   "devDependencies": {
+    "@types/marked": "^0.4.0",
     "@types/body-parser": "1.16.8",
     "@types/chai": "4.0.10",
     "@types/compression": "0.0.35",
