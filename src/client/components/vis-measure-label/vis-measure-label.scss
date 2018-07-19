@@ -21,3 +21,13 @@
   pointer-events: none;
   white-space: nowrap;
 }
+
+.measure-value {
+  font-weight: $bold;
+}
+
+.measure-previous-value {
+  padding-left: 10px;
+  padding-right: 10px;
+  color: $text-lighterish;
+}
