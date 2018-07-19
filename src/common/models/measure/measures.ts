@@ -19,8 +19,9 @@ import { List, OrderedSet } from "immutable";
 import { immutableArraysEqual } from "immutable-class";
 import { Expression } from "plywood";
 import { quoteNames } from "../../utils/general/general";
+import { Period } from "../periods/periods";
 import { Measure } from "./measure";
-import { MeasureGroup, MeasureOrGroup, measureOrGroupFromJS, MeasureOrGroupJS, MeasureOrGroupVisitor } from "./measure-group";
+import { isMeasureGroupJS, MeasureGroup, MeasureOrGroup, measureOrGroupFromJS, MeasureOrGroupJS, MeasureOrGroupVisitor } from "./measure-group";
 
 class FlattenMeasuresWithGroupsVisitor implements MeasureOrGroupVisitor<void> {
   private items = List<MeasureOrGroup>().asMutable();
@@ -44,6 +45,14 @@ function findDuplicateNames(items: List<MeasureOrGroup>): List<string> {
     .groupBy(measure => measure.name)
     .filter(names => names.size > 1)
     .map((names, name) => name)
+    .toList();
+}
+
+function forbiddenPrefixInNames(items: List<MeasureOrGroup>): List<string> {
+  return items
+    .filter(measureOrGroup =>
+      !isMeasureGroupJS(measureOrGroup) && measureOrGroup.name.startsWith(Period.PREVIOUS))
+    .map(m => m.name)
     .toList();
 }
 
@@ -71,10 +80,15 @@ export class Measures {
     const duplicateNamesFindingVisitor = new FlattenMeasuresWithGroupsVisitor();
     this.measures.forEach(measureOrGroup => measureOrGroup.accept(duplicateNamesFindingVisitor));
     const flattenedMeasuresWithGroups = duplicateNamesFindingVisitor.getMeasuresAndGroups();
-    const duplicateNames = findDuplicateNames(flattenedMeasuresWithGroups);
 
+    const duplicateNames = findDuplicateNames(flattenedMeasuresWithGroups);
     if (duplicateNames.size > 0) {
       throw new Error(`found duplicate measure or group with names: ${quoteNames(duplicateNames)}`);
+    }
+
+    const forbiddenNames = forbiddenPrefixInNames(flattenedMeasuresWithGroups);
+    if (forbiddenNames.size > 0) {
+      throw new Error(`found measure that starts with forbidden prefix (${Period.PREVIOUS}): ${quoteNames(forbiddenNames)}`);
     }
 
     this.flattenedMeasures = filterMeasures(flattenedMeasuresWithGroups);
