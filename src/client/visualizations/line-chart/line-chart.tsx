@@ -403,18 +403,29 @@ export class LineChart extends BaseVisualization<LineChartState> {
         const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
         const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, hoverRange));
         const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
+        const hasComparison = essence.hasComparison();
         const colorEntries: ColorEntry[] = mapTruthy(dataset.data, (d, i) => {
           const segment = d[categoryDimension.name];
           const hoverDatum = hoverDatums[i];
           if (!hoverDatum) return null;
 
-          return {
+          const currentEntry: ColorEntry = {
             color: colorValues[i],
             name: String(segment),
-            value: measure.formatDatum(hoverDatum),
+            value: measure.formatDatum(hoverDatum)
+          };
+
+          if (!hasComparison) {
+            return currentEntry;
+          }
+
+          const hoverDatumElement = hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+          return {
+            ...currentEntry,
+            previous: measure.formatFn(hoverDatumElement),
             delta: essence.hasComparison() && <Delta
               currentValue={hoverDatum[measure.name] as number}
-              previousValue={hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number}
+              previousValue={hoverDatumElement}
               formatter={measure.formatFn}
             />
           };
