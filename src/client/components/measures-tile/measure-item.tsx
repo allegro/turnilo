@@ -19,33 +19,34 @@ import { MouseEvent, PureComponent } from "react";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
 import { HighlightString } from "../highlight-string/highlight-string";
+import { InfoBubble } from "../info-bubble/info-bubble";
+import "./measure-item.scss";
 import { MeasureClickHandler } from "./measures-tile";
 
 export interface MeasureItemProps {
   name: string;
   title: string;
+  description?: string;
   selected: boolean;
   measureClick: MeasureClickHandler;
   multiMeasureMode: boolean;
   searchText: string;
 }
 
-export class MeasureItem extends PureComponent<MeasureItemProps, {}> {
-  handleClick = (e: MouseEvent<HTMLElement>) => {
+export class MeasureItem extends PureComponent<MeasureItemProps> {
+  selectMeasure = (e: MouseEvent<HTMLElement>) => {
     const { name, measureClick } = this.props;
     measureClick(name, e);
   }
 
   render() {
-    const { title, multiMeasureMode, searchText, selected } = this.props;
+    const { title, description, multiMeasureMode, searchText, selected } = this.props;
     const checkboxType = multiMeasureMode ? "check" : "radio";
 
-    return <div
-      className={classNames("row", { selected })}
-      onClick={this.handleClick}
-    >
-      <Checkbox type={checkboxType} selected={selected} />
-      <HighlightString className="label" text={title} highlight={searchText} />
+    return <div className={classNames("row", { selected })} onClick={this.selectMeasure}>
+      <Checkbox type={checkboxType} selected={selected}/>
+      <HighlightString className="label" text={title} highlight={searchText}/>
+      {description && <div className="info-bubble"><InfoBubble description={description}/></div>}
     </div>;
   }
 }

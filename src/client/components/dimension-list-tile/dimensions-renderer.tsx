@@ -42,12 +42,13 @@ export class DimensionsRenderer {
 
   private renderFolder(groupView: DimensionGroupForView): JSX.Element {
     const { searchText } = this;
-    const { name, title, hasSearchText, isFilteredOrSplit, children } = groupView;
+    const { name, title, description, hasSearchText, isFilteredOrSplit, children } = groupView;
 
     return <SearchableFolder
       key={name}
       name={name}
       title={title}
+      description={description}
       inSearchMode={!!searchText}
       hasItemsWithSearchText={hasSearchText}
       shouldBeOpened={isFilteredOrSplit}
@@ -58,12 +59,13 @@ export class DimensionsRenderer {
 
   private renderMeasure(measureView: DimensionForView): JSX.Element {
     const { dimensionClick, dimensionDragStart, searchText } = this;
-    const { name, title, classSuffix, selected } = measureView;
+    const { name, title, description, classSuffix, selected } = measureView;
 
     return <DimensionItem
       key={name}
       name={name}
       title={title}
+      description={description}
       selected={selected}
       dimensionClick={dimensionClick}
       dimensionDragStart={dimensionDragStart}

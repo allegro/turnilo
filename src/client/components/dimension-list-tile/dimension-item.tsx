@@ -16,14 +16,18 @@
 
 import * as React from "react";
 import { DragEvent, MouseEvent, PureComponent } from "react";
-import { HighlightString, SvgIcon } from "..";
 import { classNames } from "../../utils/dom/dom";
+import { HighlightString } from "../highlight-string/highlight-string";
+import { InfoBubble } from "../info-bubble/info-bubble";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./dimension-item.scss";
 
 export const DIMENSION_CLASS_NAME = "dimension";
 
 export interface DimensionItemProps {
   name: string;
   title: string;
+  description?: string;
   classSuffix: string;
   dimensionClick: DimensionClickHandler;
   dimensionDragStart: DimensionDragStartHandler;
@@ -46,7 +50,7 @@ export class DimensionItem extends PureComponent<DimensionItemProps, {}> {
   }
 
   render() {
-    const { name, title, classSuffix, searchText, selected } = this.props;
+    const { name, title, description, classSuffix, searchText, selected } = this.props;
 
     const className = classNames(
       DIMENSION_CLASS_NAME,
@@ -67,7 +71,7 @@ export class DimensionItem extends PureComponent<DimensionItemProps, {}> {
         <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
       </div>
       <HighlightString className={classNames("label")} text={title} highlight={searchText} />
-
+      {description && <div className="info-bubble"><InfoBubble description={description}/></div>}
     </div>;
   }
 

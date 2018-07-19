@@ -16,12 +16,15 @@
 
 import * as React from "react";
 import { PureComponent } from "react";
-import { SvgIcon } from "..";
 import { classNames } from "../../utils/dom/dom";
+import { InfoBubble } from "../info-bubble/info-bubble";
+import { SvgIcon } from "../svg-icon/svg-icon";
+import "./searchable-folder.scss";
 
 export interface SearchableFolderProps {
   name: string;
   title: string;
+  description?: string;
   inSearchMode: boolean;
   hasItemsWithSearchText: boolean;
   shouldBeOpened: boolean;
@@ -35,8 +38,8 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
 
   readonly state: SearchableFolderState;
 
-  private readonly openIcon = <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")} />;
-  private readonly closedIcon = <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />;
+  private readonly openIcon = <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")}/>;
+  private readonly closedIcon = <SvgIcon svg={require("../../icons/full-caret-small-right.svg")}/>;
 
   constructor(props: SearchableFolderProps) {
     super(props);
@@ -60,7 +63,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
   }
 
   render() {
-    const { title, inSearchMode, hasItemsWithSearchText, children } = this.props;
+    const { title, description, inSearchMode, hasItemsWithSearchText, children } = this.props;
     const { opened } = this.state;
 
     const isGroupOpen = opened || inSearchMode && hasItemsWithSearchText;
@@ -70,6 +73,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
       <div className={classNames("folder-header")} onClick={this.handleClick}>
         <div className={"folder-icon"}>{isGroupOpen ? this.openIcon : this.closedIcon}</div>
         <span className={"label"}>{title}</span>
+        {description && <div className="info-bubble"><InfoBubble description={description}/></div>}
       </div>
       <div className={classNames("folder-items", { closed: !isGroupOpen })}>
         {children}
