@@ -22,6 +22,7 @@ import "./body-portal.scss";
 export interface BodyPortalProps {
   left?: number | string;
   top?: number | string;
+  bottom?: number | string;
   fullSize?: boolean;
   disablePointerEvents?: boolean;
   onMount?: () => void;
@@ -51,7 +52,7 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
   }
 
   updateStyle() {
-    var { left, top, disablePointerEvents, isAboveAll } = this.props;
+    var { left, top, bottom, disablePointerEvents, isAboveAll } = this.props;
     var style = this._target.style;
 
     if (typeof left === "number") {
@@ -63,6 +64,11 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
       style.top = Math.round(top) + "px";
     } else if (typeof top === "string") {
       style.top = top;
+    }
+    if (typeof bottom === "number") {
+      style.bottom = Math.round(bottom) + "px";
+    } else if (typeof bottom === "string") {
+      style.bottom = bottom;
     }
 
     style["z-index"] = 200 + (isAboveAll ? 1 : 0);
