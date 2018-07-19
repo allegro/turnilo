@@ -40,4 +40,12 @@
   code {
     font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   }
+
+  em {
+    font-style: italic;
+  }
+
+  strong {
+    font-weight: $bold;
+  }
 }
