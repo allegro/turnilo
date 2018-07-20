@@ -48,7 +48,7 @@ function findDuplicateNames(items: List<MeasureOrGroup>): List<string> {
     .toList();
 }
 
-function forbiddenPrefixInNames(items: List<MeasureOrGroup>): List<string> {
+function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<string> {
   return items
     .filter(measureOrGroup =>
       !isMeasureGroupJS(measureOrGroup) && measureOrGroup.name.startsWith(Period.PREVIOUS))
@@ -86,9 +86,9 @@ export class Measures {
       throw new Error(`found duplicate measure or group with names: ${quoteNames(duplicateNames)}`);
     }
 
-    const forbiddenNames = forbiddenPrefixInNames(flattenedMeasuresWithGroups);
-    if (forbiddenNames.size > 0) {
-      throw new Error(`found measure that starts with forbidden prefix (${Period.PREVIOUS}): ${quoteNames(forbiddenNames)}`);
+    const invalidNames = measureNamesWithForbiddenPrefix(flattenedMeasuresWithGroups);
+    if (invalidNames.size > 0) {
+      throw new Error(`found measure that starts with forbidden prefix (${Period.PREVIOUS}): ${quoteNames(invalidNames)}`);
     }
 
     this.flattenedMeasures = filterMeasures(flattenedMeasuresWithGroups);
