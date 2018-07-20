@@ -292,6 +292,10 @@ Changing this property will break any URLs that someone might have generated tha
 
 The title for this dimension in the UI. Can be anything and is safe to change at any time.
 
+**description** (string)
+
+The description of the dimension in the UI. Accepts Markdown format.
+
 **url** (string)
 
 A url associated with the dimension, with optional token '%s' that is replaced by the dimension value to generate
@@ -414,6 +418,10 @@ This should be a URL safe string and unique across dimensions, dimension groups,
 
 The title for this dimension group in the UI. Can be anything and is safe to change at any time.
 
+**description** (string)
+
+The description of the dimension group in the UI. Accepts Markdown format.
+
 **dimensions** (Dimension | DimensionGroup)[]
 
 An array of nested dimensions or dimension groups. It cannot be empty.
@@ -439,6 +447,10 @@ Changing this property will break any URLs that someone might have generated tha
 **title** (string)
 
 The title for this measure in the UI. Can be anything and is safe to change at any time.
+
+**description** (string)
+
+The description of the measure in the UI. Accepts Markdown format.
 
 **units** (string)
 
@@ -602,6 +614,10 @@ This should be a URL safe string and unique across dimensions, dimension groups,
 **title** (string)
 
 The title for this measure group in the UI. Can be anything and is safe to change at any time.
+
+**description** (string)
+
+The description of the measure group in the UI. Accepts Markdown format.
 
 **measures** (Measure | MeasureGroup)[]
 
