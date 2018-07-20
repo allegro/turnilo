@@ -16,21 +16,26 @@
 
 import * as React from "react";
 import parseMarkdown from "../../../common/utils/markdown/markdown";
+import { classNames } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";
 import { Shpitz } from "../shpitz/shpitz";
 import "./markdown-bubble.scss";
 
+export enum Orientation { UNDER, OVER }
+
 export interface MarkdownBubbleProps {
+  x: number;
+  y: number;
+  orientation: Orientation;
   content: string;
-  bottom: number;
-  top: number;
-  left: number;
 }
 
-export const MarkdownBubble: React.SFC<MarkdownBubbleProps> = ({ left, top, bottom, content }) =>
-  <BodyPortal left={left} bottom={bottom} top={top}>
-    <div className="markdown-bubble">
+export const MarkdownBubble: React.SFC<MarkdownBubbleProps> = ({ x, y, orientation, content }) => {
+  const isUnder = orientation === Orientation.UNDER;
+  return <BodyPortal left={x} bottom={!isUnder ? y : undefined} top={isUnder ? y : undefined}>
+    <div className={classNames("markdown-bubble", { "markdown-bubble--reverse": !isUnder })}>
       <div className="markdown-content" dangerouslySetInnerHTML={parseMarkdown(content)}/>
-      <Shpitz direction="up"/>
+      <Shpitz direction={isUnder ? "down" : "up"}/>
     </div>
   </BodyPortal>;
+};

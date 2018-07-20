@@ -20,12 +20,21 @@
   @extend %menu-cont;
   position: absolute;
   width: 300px;
+  max-height: 100px;
   background: rgba($white, 0.9);
   padding: 10px;
-  transform: translate(-50%, -100%);
+  transform: translateX(-50%);
+
+  &.markdown-bubble--reverse {
+    transform: translate(-50%, -100%);
+  }
 
   .shpitz {
     left: 50%;
+    top: 0;
+  }
+
+  &.markdown-bubble--reverse .shpitz {
     top: 100%;
   }
 }

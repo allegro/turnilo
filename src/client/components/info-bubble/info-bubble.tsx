@@ -15,35 +15,45 @@
  */
 
 import * as React from "react";
-import { MarkdownBubble } from "../markdown-bubble/markdown-bubble";
+import { MarkdownBubble, Orientation } from "../markdown-bubble/markdown-bubble";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./info-bubble.scss";
 
-const BUBBLE_OFFSET = { top: 15, left: 10 };
+const BUBBLE_OFFSET_TOP = 15;
+const BUBBLE_OFFSET_LEFT = 10;
+const BUBBLE_MAX_VERTICAL_SPACE = 120;
 
-export interface ShowInfoEvent {
-  bottom?: number;
-  top?: number;
-  left?: number;
+export interface Coordinates {
+  y: number;
+  x: number;
+  orientation: Orientation;
 }
 
 export interface InfoBubbleState {
-  showInfo: ShowInfoEvent;
+  showInfo: Coordinates;
 }
 
 export interface InfoBubbleProps {
   description: string;
 }
 
+function calculateCoordinates({ top, bottom, left }: ClientRect | DOMRect): Coordinates {
+  const willBubbleFit = top > BUBBLE_MAX_VERTICAL_SPACE;
+
+  const y = willBubbleFit ? window.innerHeight - top : bottom;
+  const orientation = willBubbleFit ? Orientation.OVER : Orientation.UNDER;
+
+  return {
+    y: y + BUBBLE_OFFSET_TOP,
+    orientation,
+    x: left + BUBBLE_OFFSET_LEFT
+  };
+}
+
 export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState> {
 
   showDescription = (e: React.MouseEvent<HTMLElement>) => {
-    const { top, left } = (e.target as HTMLElement).getBoundingClientRect();
-    // TODO: check if bubble fits over icon
-    const showInfo: ShowInfoEvent = {
-      bottom: window.innerHeight - top + BUBBLE_OFFSET.top,
-      left: left + BUBBLE_OFFSET.left
-    };
+    const showInfo = calculateCoordinates((e.target as HTMLElement).getBoundingClientRect());
     this.setState({ showInfo });
     document.addEventListener("mousedown", this.closeDescription);
     e.stopPropagation();
@@ -70,9 +80,9 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
         <SvgIcon svg={require("../../icons/help.svg")}/>
       </div>
       {showInfo && <MarkdownBubble
-        top={showInfo.top}
-        bottom={showInfo.bottom}
-        left={showInfo.left}
+        y={showInfo.y}
+        x={showInfo.x}
+        orientation={showInfo.orientation}
         content={this.props.description}/>}
     </React.Fragment>;
   }

@@ -18,24 +18,24 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import * as React from "react";
 import { BodyPortal } from "..";
-import { MarkdownBubble } from "./markdown-bubble";
+import { MarkdownBubble, Orientation } from "./markdown-bubble";
 
 describe("<MarkdownBubble>", () => {
 
   it("should pass position props to <BodyPortal>", () => {
-    const wrapper = shallow(<MarkdownBubble top={10} left={20} bottom={30} content={""}/>);
+    const wrapper = shallow(<MarkdownBubble y={10} x={20} orientation={Orientation.UNDER} content={""}/>);
     const portal = wrapper.find(BodyPortal);
 
     expect(portal.prop("top")).to.equal(10);
+    expect(portal.prop("bottom")).to.equal(undefined);
     expect(portal.prop("left")).to.equal(20);
-    expect(portal.prop("bottom")).to.equal(30);
   });
 
   it("should render html for markdown", () => {
     const wrapper = shallow(<MarkdownBubble
-      top={10}
-      left={20}
-      bottom={30}
+      y={10}
+      x={20}
+      orientation={Orientation.UNDER}
       content={"*strong* **em** [link](example.com)"}/>);
     const content = wrapper.find(".markdown-content");
 
