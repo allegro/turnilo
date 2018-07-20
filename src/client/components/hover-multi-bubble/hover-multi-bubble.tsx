@@ -28,6 +28,7 @@ export interface ColorEntry {
   color: string;
   name: string;
   value: string;
+  previous?: string;
   delta?: JSX.Element;
 }
 
@@ -43,7 +44,7 @@ export interface HoverMultiBubbleProps {
 function renderColorSwabs(colorEntries: ColorEntry[]): JSX.Element {
   if (!colorEntries || !colorEntries.length) return null;
 
-  const colorSwabs = colorEntries.map(({ color, name, value, delta }: ColorEntry) => {
+  const colorSwabs = colorEntries.map(({ color, name, value, previous, delta }: ColorEntry) => {
     const swabStyle = { background: color };
     return <tr key={name}>
       <td>
@@ -51,6 +52,7 @@ function renderColorSwabs(colorEntries: ColorEntry[]): JSX.Element {
       </td>
       <td className="color-name">{name}</td>
       <td className="color-value">{value}</td>
+      {previous && <td className="color-previous">{previous}</td>}
       {delta && <td className="color-delta">{delta}</td>}
     </tr>;
   });

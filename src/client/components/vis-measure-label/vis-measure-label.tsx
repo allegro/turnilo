@@ -17,26 +17,35 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
+import { Delta } from "..";
 import { Measure } from "../../../common/models/index";
+import { Period } from "../../../common/models/periods/periods";
 import "./vis-measure-label.scss";
 
 export interface VisMeasureLabelProps {
   measure: Measure;
   datum: Datum;
+  showPrevious: boolean;
 }
 
-export interface VisMeasureLabelState {
+function renderPrevious(measure: Measure, datum: Datum): JSX.Element {
+  const current = datum[measure.name] as number;
+  const previous = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+  return <React.Fragment>
+    <span className="measure-previous-value">
+      {measure.formatFn(previous)}
+      </span>
+    <Delta formatter={measure.formatFn}
+           currentValue={current}
+           previousValue={previous}/>
+  </React.Fragment>;
 }
 
-export class VisMeasureLabel extends React.Component<VisMeasureLabelProps, VisMeasureLabelState> {
-
-  render() {
-    const { measure, datum } = this.props;
-
-    return <div className="vis-measure-label">
-      <span className="measure-title">{measure.title}</span>
-      <span className="colon">: </span>
-      <span className="measure-value">{measure.formatDatum(datum)}</span>
-    </div>;
-  }
-}
+export const VisMeasureLabel: React.SFC<VisMeasureLabelProps> = ({ measure, datum, showPrevious }) => {
+  return <div className="vis-measure-label">
+    <span className="measure-title">{measure.title}</span>
+    <span className="colon">: </span>
+    <span className="measure-value">{measure.formatDatum(datum)}</span>
+    {showPrevious && renderPrevious(measure, datum)}
+  </div>;
+};

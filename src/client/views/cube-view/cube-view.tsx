@@ -116,14 +116,16 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
     this.clicker = {
       changeFilter: (filter: Filter, colors?: Colors) => {
-        let { essence } = this.state;
-        essence = essence.changeFilter(filter);
-        if (colors) essence = essence.changeColors(colors);
-        this.setState({ essence });
+        this.setState(state => {
+          let { essence } = state;
+          essence = essence.changeFilter(filter);
+          if (colors) essence = essence.changeColors(colors);
+          return { ...state, essence };
+        });
       },
       changeComparisonShift: (timeShift: TimeShift) => {
-        const { essence } = this.state;
-        this.setState({ essence: essence.changeComparisonShift(timeShift) });
+        this.setState(state =>
+          ({ ...state, essence: state.essence.changeComparisonShift(timeShift) }));
       },
       changeTimeSelection: (selection: Expression) => {
         const { essence } = this.state;

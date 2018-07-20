@@ -34,7 +34,7 @@ export function formatDelta(currentValue: number, previousValue: number): DeltaA
 
   const delta = currentValue - previousValue;
   const deltaSign = delta ? delta < 0 ? -1 : 1 : 0;
-  const deltaPercentage = Math.floor((delta / currentValue) * 100);
+  const deltaPercentage = Math.floor((delta / previousValue) * 100);
 
   return { deltaSign, deltaPercentage, delta };
 }

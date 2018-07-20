@@ -47,7 +47,7 @@ export function measureOrGroupFromJS(measureOrGroup: MeasureOrGroupJS): MeasureO
   }
 }
 
-function isMeasureGroupJS(measureOrGroupJS: MeasureOrGroupJS): measureOrGroupJS is MeasureGroupJS {
+export function isMeasureGroupJS(measureOrGroupJS: MeasureOrGroupJS): measureOrGroupJS is MeasureGroupJS {
   return (measureOrGroupJS as MeasureGroupJS).measures !== undefined;
 }
 
