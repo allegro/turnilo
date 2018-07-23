@@ -16,30 +16,233 @@
  */
 
 import { expect } from "chai";
+import { shallow } from "enzyme";
 import * as React from "react";
-import * as TestUtils from "react-dom/test-utils";
+import { BodyPortal, Shpitz } from "..";
 import { StageMock } from "../../../common/models/mocks";
-import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { BubbleMenu } from "./bubble-menu";
 
-describe("BubbleMenu", () => {
-  it("adds the correct class", () => {
-    var openOn = document.createElement("div");
+const openOn = {
+  getBoundingClientRect: () => ({
+    top: 101,
+    left: 102,
+    height: 201,
+    width: 202
+  })
+} as Element;
 
-    var renderedComponent = renderIntoDocument(
-      <BubbleMenu
-        children={null}
-        className={null}
-        containerStage={null}
-        direction={"right"}
-        onClose={null}
-        openOn={openOn}
-        stage={StageMock.defaultA()}
-      />
-    );
+const defaultProps = {
+  className: "bubble-menu-test",
+  openOn,
+  stage: StageMock.defaultB(),
+  onClose: () => {
+  }
+};
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("bubble-menu");
+let oldInnerHeight: number;
+
+describe("<BubbleMenu>", () => {
+
+  beforeEach(() => {
+    oldInnerHeight = window.innerHeight;
+    // Because innerHeight is readonly on window
+    (window as any).innerHeight = 405;
   });
 
+  afterEach(() => {
+    // Because innerHeight is readonly on window
+    (window as any).innerHeight = oldInnerHeight;
+  });
+
+  it("should position correctly for right direction", () => {
+    const bubble = shallow(
+      <BubbleMenu
+        {...defaultProps}
+        direction="right"
+      />
+    );
+    const portal = bubble.find(BodyPortal);
+
+    expect(portal.prop("left")).to.be.equal(294);
+    expect(portal.prop("top")).to.be.equal(200.5);
+    expect(portal.prop("bottom")).to.be.equal(undefined);
+
+    const div = bubble.find(".bubble-menu-test");
+
+    expect(div.prop("style")).to.be.deep.equal({ height: 2, width: undefined });
+
+    const shpitz = bubble.find(Shpitz);
+
+    expect(shpitz.prop("direction")).to.be.equal("right");
+    expect(shpitz.prop("style")).to.be.deep.equal({ top: 1, left: 0 });
+  });
+
+  it("should position correctly for down direction and center alignment", () => {
+    const bubble = shallow(
+      <BubbleMenu
+        {...defaultProps}
+        direction="down"
+        align="center"
+      />
+    );
+    const portal = bubble.find(BodyPortal);
+
+    expect(portal.prop("left")).to.be.equal(202);
+    expect(portal.prop("top")).to.be.equal(302);
+    expect(portal.prop("bottom")).to.be.equal(undefined);
+
+    const div = bubble.find(".bubble-menu-test");
+
+    expect(div.prop("style")).to.be.deep.equal({ height: undefined, width: 2 });
+
+    const shpitz = bubble.find(Shpitz);
+
+    expect(shpitz.prop("direction")).to.be.equal("down");
+    expect(shpitz.prop("style")).to.be.deep.equal({ top: 0, left: 1 });
+  });
+
+  it("should position correctly for down direction and start alignment", () => {
+    const bubble = shallow(
+      <BubbleMenu
+        {...defaultProps}
+        direction="down"
+        align="start"
+      />
+    );
+    const portal = bubble.find(BodyPortal);
+
+    expect(portal.prop("left")).to.be.equal(102);
+    expect(portal.prop("top")).to.be.equal(302);
+    expect(portal.prop("bottom")).to.be.equal(undefined);
+
+    const div = bubble.find(".bubble-menu-test");
+
+    expect(div.prop("style")).to.be.deep.equal({ height: undefined, width: 2 });
+
+    const shpitz = bubble.find(Shpitz);
+
+    expect(shpitz.length).to.be.equal(0);
+  });
+
+  it("should position correctly for down direction and end alignment", () => {
+    const bubble = shallow(
+      <BubbleMenu
+        {...defaultProps}
+        direction="down"
+        align="end"
+      />
+    );
+    const portal = bubble.find(BodyPortal);
+
+    expect(portal.prop("left")).to.be.equal(302);
+    expect(portal.prop("top")).to.be.equal(302);
+    expect(portal.prop("bottom")).to.be.equal(undefined);
+
+    const div = bubble.find(".bubble-menu-test");
+
+    expect(div.prop("style")).to.be.deep.equal({ height: undefined, width: 2 });
+
+    const shpitz = bubble.find(Shpitz);
+
+    expect(shpitz.length).to.be.equal(0);
+  });
+
+  it("should position correctly for up direction and center alignment", () => {
+    const bubble = shallow(
+      <BubbleMenu
+        {...defaultProps}
+        direction="up"
+        align="center"
+      />
+    );
+    const portal = bubble.find(BodyPortal);
+
+    expect(portal.prop("left")).to.be.equal(202);
+    expect(portal.prop("bottom")).to.be.equal(304);
+    expect(portal.prop("top")).to.be.equal(undefined);
+
+    const div = bubble.find(".bubble-menu-test");
+
+    expect(div.prop("style")).to.be.deep.equal({ width: 2, height: undefined });
+
+    const shpitz = bubble.find(Shpitz);
+
+    expect(shpitz.prop("direction")).to.be.equal("up");
+    expect(shpitz.prop("style")).to.be.deep.equal({ bottom: 0, left: 1 });
+  });
+
+  it("should position correctly for up direction and start alignment", () => {
+    const bubble = shallow(
+      <BubbleMenu
+        {...defaultProps}
+        direction="up"
+        align="start"
+      />
+    );
+    const portal = bubble.find(BodyPortal);
+
+    expect(portal.prop("left")).to.be.equal(102);
+    expect(portal.prop("bottom")).to.be.equal(304);
+    expect(portal.prop("top")).to.be.equal(undefined);
+
+    const div = bubble.find(".bubble-menu-test");
+
+    expect(div.prop("style")).to.be.deep.equal({ width: 2, height: undefined });
+
+    const shpitz = bubble.find(Shpitz);
+
+    expect(shpitz.length).to.be.equal(0);
+  });
+
+  it("should position correctly for up direction and end alignment", () => {
+    const bubble = shallow(
+      <BubbleMenu
+        {...defaultProps}
+        direction="up"
+        align="end"
+      />
+    );
+    const portal = bubble.find(BodyPortal);
+
+    expect(portal.prop("left")).to.be.equal(302);
+    expect(portal.prop("bottom")).to.be.equal(304);
+    expect(portal.prop("top")).to.be.equal(undefined);
+
+    const div = bubble.find(".bubble-menu-test");
+
+    expect(div.prop("style")).to.be.deep.equal({ width: 2, height: undefined });
+
+    const shpitz = bubble.find(Shpitz);
+
+    expect(shpitz.length).to.be.equal(0);
+  });
+
+  it("should set proper attributes to bubble node", () => {
+    const bubble = shallow(
+      <BubbleMenu
+        {...defaultProps}
+        direction="right"
+        id="custom-id"
+        inside={{ id: "parent" } as Element}
+      />
+    );
+    const div = bubble.find(".bubble-menu-test");
+
+    expect(div.prop("id")).to.be.equal("custom-id");
+    expect(div.hasClass("bubble-menu-test")).to.be.true;
+    expect(div.prop("data-parent")).to.be.equal("parent");
+  });
+
+  it("should respect fixed size property", () => {
+    const bubble = shallow(
+      <BubbleMenu
+        {...defaultProps}
+        direction="right"
+        fixedSize={true}
+      />
+    );
+    const div = bubble.find(".bubble-menu-test");
+
+    expect(div.prop("style")).to.be.deep.equal({ width: 2, height: 2 });
+  });
 });

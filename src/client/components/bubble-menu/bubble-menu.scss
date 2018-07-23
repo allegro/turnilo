@@ -19,7 +19,6 @@
 
 .bubble-menu {
   @extend %menu-cont;
-  position: absolute;
   padding: $padding-compact;
 
   &.mini {
