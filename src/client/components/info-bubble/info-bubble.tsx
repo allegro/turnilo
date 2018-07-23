@@ -15,52 +15,33 @@
  */
 
 import * as React from "react";
-import { MarkdownBubble, Orientation } from "../markdown-bubble/markdown-bubble";
+import { Stage } from "../../../common/models";
+import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
+import { MarkdownNode } from "../markdown-node/markdown-node";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./info-bubble.scss";
 
-const BUBBLE_OFFSET_TOP = 15;
-const BUBBLE_OFFSET_LEFT = 10;
 const BUBBLE_MAX_VERTICAL_SPACE = 120;
 
-export interface Coordinates {
-  y: number;
-  x: number;
-  orientation: Orientation;
-}
-
 export interface InfoBubbleState {
-  showInfo: Coordinates;
+  showInfo: { target: Element, direction: Direction };
 }
 
 export interface InfoBubbleProps {
   description: string;
 }
 
-function calculateCoordinates({ top, bottom, left }: ClientRect | DOMRect): Coordinates {
-  const willBubbleFit = top > BUBBLE_MAX_VERTICAL_SPACE;
-
-  const y = willBubbleFit ? window.innerHeight - top : bottom;
-  const orientation = willBubbleFit ? Orientation.OVER : Orientation.UNDER;
-
-  return {
-    y: y + BUBBLE_OFFSET_TOP,
-    orientation,
-    x: left + BUBBLE_OFFSET_LEFT
-  };
-}
-
 export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState> {
 
   showDescription = (e: React.MouseEvent<HTMLElement>) => {
-    const showInfo = calculateCoordinates((e.target as HTMLElement).getBoundingClientRect());
-    this.setState({ showInfo });
-    document.addEventListener("mousedown", this.closeDescription);
+    const target = e.currentTarget;
+    const willBubbleFit = target.getBoundingClientRect().top > BUBBLE_MAX_VERTICAL_SPACE;
+    const direction = willBubbleFit ? "up" : "down";
+    this.setState({ showInfo: { target, direction } });
     e.stopPropagation();
   }
 
   closeDescription = () => {
-    document.removeEventListener("mousedown", this.closeDescription);
     this.setState({ showInfo: null });
   }
 
@@ -69,21 +50,22 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
     this.state = { showInfo: null };
   }
 
-  componentWillUnmount() {
-    document.removeEventListener("mousedown", this.closeDescription);
-  }
-
   render() {
     const { showInfo } = this.state;
+    const { description } = this.props;
+
     return <React.Fragment>
       <div className="info-button" onClick={this.showDescription}>
         <SvgIcon svg={require("../../icons/help.svg")}/>
       </div>
-      {showInfo && <MarkdownBubble
-        y={showInfo.y}
-        x={showInfo.x}
-        orientation={showInfo.orientation}
-        content={this.props.description}/>}
+      {showInfo && <BubbleMenu
+        className="description-menu"
+        direction={showInfo.direction}
+        onClose={this.closeDescription}
+        stage={Stage.fromSize(300, 200)}
+        openOn={showInfo.target}>
+        <MarkdownNode markdown={description}/>
+      </BubbleMenu>}
     </React.Fragment>;
   }
 
