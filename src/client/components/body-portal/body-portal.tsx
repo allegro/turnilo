@@ -21,6 +21,7 @@ import "./body-portal.scss";
 
 export interface BodyPortalProps {
   left?: number | string;
+  right?: number | string;
   top?: number | string;
   bottom?: number | string;
   fullSize?: boolean;
@@ -51,26 +52,23 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     return this._target;
   }
 
+  normalizeDimension(dimension: number | string): string | undefined {
+    if (typeof dimension === "number") {
+      return Math.round(dimension) + "px";
+    }
+    if (typeof dimension === "string") {
+      return dimension;
+    }
+    return undefined;
+  }
+
   updateStyle() {
-    var { left, top, bottom, disablePointerEvents, isAboveAll } = this.props;
-    var style = this._target.style;
-
-    if (typeof left === "number") {
-      style.left = Math.round(left) + "px";
-    } else if (typeof left === "string") {
-      style.left = left;
-    }
-    if (typeof top === "number") {
-      style.top = Math.round(top) + "px";
-    } else if (typeof top === "string") {
-      style.top = top;
-    }
-    if (typeof bottom === "number") {
-      style.bottom = Math.round(bottom) + "px";
-    } else if (typeof bottom === "string") {
-      style.bottom = bottom;
-    }
-
+    const { left, top, bottom, right, disablePointerEvents, isAboveAll } = this.props;
+    let style = this._target.style;
+    style.top = this.normalizeDimension(top);
+    style.bottom = this.normalizeDimension(bottom);
+    style.left = this.normalizeDimension(left);
+    style.right = this.normalizeDimension(right);
     style["z-index"] = 200 + (isAboveAll ? 1 : 0);
 
     style["pointer-events"] = disablePointerEvents ? "none" : "auto";
