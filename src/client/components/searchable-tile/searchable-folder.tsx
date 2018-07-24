@@ -73,7 +73,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
       <div className={classNames("folder-header")} onClick={this.handleClick}>
         <div className={"folder-icon"}>{isGroupOpen ? this.openIcon : this.closedIcon}</div>
         <span className={"label"}>{title}</span>
-        {description && <div className="info-bubble"><InfoBubble description={description}/></div>}
+        {description && <InfoBubble className="info-bubble" description={description}/>}
       </div>
       <div className={classNames("folder-items", { closed: !isGroupOpen })}>
         {children}

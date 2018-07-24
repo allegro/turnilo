@@ -16,6 +16,7 @@
 
 import * as React from "react";
 import { Stage } from "../../../common/models";
+import { classNames } from "../../utils/dom/dom";
 import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
 import { MarkdownNode } from "../markdown-node/markdown-node";
 import { SvgIcon } from "../svg-icon/svg-icon";
@@ -29,6 +30,7 @@ export interface InfoBubbleState {
 
 export interface InfoBubbleProps {
   description: string;
+  className?: string;
 }
 
 export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState> {
@@ -52,10 +54,10 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
 
   render() {
     const { showInfo } = this.state;
-    const { description } = this.props;
+    const { description, className } = this.props;
 
     return <React.Fragment>
-      <div className="info-button" onClick={this.showDescription}>
+      <div className={classNames("info-button", className)} onClick={this.showDescription}>
         <SvgIcon svg={require("../../icons/help.svg")}/>
       </div>
       {showInfo && <BubbleMenu
@@ -68,5 +70,4 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
       </BubbleMenu>}
     </React.Fragment>;
   }
-
 }

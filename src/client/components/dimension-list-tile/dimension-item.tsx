@@ -71,7 +71,7 @@ export class DimensionItem extends PureComponent<DimensionItemProps, {}> {
         <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
       </div>
       <HighlightString className={classNames("label")} text={title} highlight={searchText} />
-      {description && <div className="info-bubble"><InfoBubble description={description}/></div>}
+      {description && <InfoBubble className="info-bubble" description={description}/>}
     </div>;
   }
 

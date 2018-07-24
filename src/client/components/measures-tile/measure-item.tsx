@@ -46,7 +46,7 @@ export class MeasureItem extends PureComponent<MeasureItemProps> {
     return <div className={classNames("row", { selected })} onClick={this.selectMeasure}>
       <Checkbox type={checkboxType} selected={selected}/>
       <HighlightString className="label" text={title} highlight={searchText}/>
-      {description && <div className="info-bubble"><InfoBubble description={description}/></div>}
+      {description && <InfoBubble className="info-bubble" description={description}/>}
     </div>;
   }
 }
