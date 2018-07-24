@@ -18,8 +18,8 @@
 import { basicExecutorFactory, Dataset } from "plywood";
 import { MANIFESTS } from "../../../common/manifests/index";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
-import { CollectionFixture } from "../collection/collection.fixture";
-import { DataCubeFixture } from "../data-cube/data-cube.fixture";
+import { CollectionFixtures } from "../collection/collection.fixtures";
+import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { AppSettings, AppSettingsContext, AppSettingsJS } from "./app-settings";
 
 const SMALL_WIKI_DATA = [
@@ -285,7 +285,7 @@ const SMALL_WIKI_DATA = [
   }
 ];
 
-export class AppSettingsFixture {
+export class AppSettingsFixtures {
   public static wikiOnlyJS(): AppSettingsJS {
     return {
       customization: {
@@ -297,7 +297,7 @@ export class AppSettingsFixture {
         ClusterFixtures.druidWikiClusterJS()
       ],
       dataCubes: [
-        DataCubeFixture.WIKI_JS
+        DataCubeFixtures.WIKI_JS
       ]
     };
   }
@@ -313,9 +313,9 @@ export class AppSettingsFixture {
         ClusterFixtures.druidWikiClusterJS()
       ],
       dataCubes: [
-        DataCubeFixture.WIKI_JS
+        DataCubeFixtures.WIKI_JS
       ],
-      linkViewConfig: CollectionFixture.testOneTwoJS()
+      linkViewConfig: CollectionFixtures.testOneTwoJS()
     };
   }
 
@@ -329,8 +329,8 @@ export class AppSettingsFixture {
         ClusterFixtures.druidTwitterClusterJS()
       ],
       dataCubes: [
-        DataCubeFixture.WIKI_JS,
-        DataCubeFixture.TWITTER_JS
+        DataCubeFixtures.WIKI_JS,
+        DataCubeFixtures.TWITTER_JS
       ]
     };
   }
@@ -342,11 +342,11 @@ export class AppSettingsFixture {
   }
 
   static wikiOnly() {
-    return AppSettings.fromJS(AppSettingsFixture.wikiOnlyJS(), AppSettingsFixture.getContext());
+    return AppSettings.fromJS(AppSettingsFixtures.wikiOnlyJS(), AppSettingsFixtures.getContext());
   }
 
   static wikiOnlyWithExecutor() {
-    return AppSettingsFixture.wikiOnly().attachExecutors(() => {
+    return AppSettingsFixtures.wikiOnly().attachExecutors(() => {
       return basicExecutorFactory({
         datasets: {
           main: Dataset.fromJS(SMALL_WIKI_DATA)
@@ -356,6 +356,6 @@ export class AppSettingsFixture {
   }
 
   static wikiTwitter() {
-    return AppSettings.fromJS(AppSettingsFixture.wikiTwitterJS(), AppSettingsFixture.getContext());
+    return AppSettings.fromJS(AppSettingsFixtures.wikiTwitterJS(), AppSettingsFixtures.getContext());
   }
 }

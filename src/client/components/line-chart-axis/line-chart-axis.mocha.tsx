@@ -20,7 +20,7 @@ import { Timezone } from "chronoshift";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { StageFixture } from "../../../common/models/fixtures";
+import { StageFixtures } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { LineChartAxis } from "./line-chart-axis";
 
@@ -32,7 +32,7 @@ describe("LineChartAxis", () => {
     var renderedComponent = renderIntoDocument(
       <LineChartAxis
         scale={scale}
-        stage={StageFixture.defaultA()}
+        stage={StageFixtures.defaultA()}
         ticks={[]}
         timezone={Timezone.UTC}
       />

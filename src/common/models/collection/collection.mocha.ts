@@ -17,15 +17,15 @@
 
 import { testImmutableClass } from "immutable-class-tester";
 import { Collection } from "./collection";
-import { CollectionFixture } from "./collection.fixture";
+import { CollectionFixtures } from "./collection.fixtures";
 
 describe("Collection", () => {
-  var context = CollectionFixture.getContext();
+  var context = CollectionFixtures.getContext();
 
   it("is an immutable class", () => {
     testImmutableClass(Collection, [
-      CollectionFixture.testOneOnlyJS(),
-      CollectionFixture.testOneTwoJS()
+      CollectionFixtures.testOneOnlyJS(),
+      CollectionFixtures.testOneTwoJS()
     ], { context });
   });
 

@@ -15,41 +15,17 @@
  * limitations under the License.
  */
 
-import { Stage, StageJS } from "./stage";
+import { Timekeeper, TimekeeperJS } from "./timekeeper";
 
-export class StageFixture {
-  public static get DEFAULT_A_JS(): StageJS {
+export class TimekeeperFixtures {
+  static fixedJS(): TimekeeperJS {
     return {
-      x: 10,
-      y: 5,
-      height: 2,
-      width: 2
+      timeTags: [],
+      nowOverride: new Date("2016-08-08T08:08:08Z")
     };
   }
 
-  public static get DEFAULT_B_JS(): StageJS {
-    return {
-      x: 10,
-      y: 500,
-      height: 2,
-      width: 2
-    };
-  }
-
-  public static get DEFAULT_C_JS(): StageJS {
-    return {
-      x: 10,
-      y: 5,
-      height: 3,
-      width: 2
-    };
-  }
-
-  static defaultA() {
-    return Stage.fromJS(StageFixture.DEFAULT_A_JS);
-  }
-
-  static defaultB() {
-    return Stage.fromJS(StageFixture.DEFAULT_B_JS);
+  static fixed() {
+    return Timekeeper.fromJS(TimekeeperFixtures.fixedJS());
   }
 }

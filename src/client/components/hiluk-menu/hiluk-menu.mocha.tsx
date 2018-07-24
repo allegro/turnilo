@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceFixture, TimekeeperFixture } from "../../../common/models/fixtures";
+import { EssenceFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
 import { HilukMenu } from "./hiluk-menu";
@@ -29,8 +29,8 @@ describe.skip("HilukMenu", () => {
 
     var renderedComponent = renderIntoDocument(
       <HilukMenu
-        essence={EssenceFixture.wikiTotals()}
-        timekeeper={TimekeeperFixture.fixed()}
+        essence={EssenceFixtures.wikiTotals()}
+        timekeeper={TimekeeperFixtures.fixed()}
         onClose={null}
         openOn={openOn}
         getCubeViewHash={() => "http://stackoverflow.com/"}

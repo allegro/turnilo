@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionFixture, EssenceFixture, SortOnFixture, TimekeeperFixture } from "../../../common/models/fixtures";
+import { DimensionFixtures, EssenceFixtures, SortOnFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { DimensionTile } from "./dimension-tile";
 
@@ -28,10 +28,10 @@ describe("DimensionTile", () => {
     var renderedComponent = renderIntoDocument(
       <DimensionTile
         clicker={null}
-        dimension={DimensionFixture.countryURL()}
-        sortOn={SortOnFixture.defaultA()}
-        essence={EssenceFixture.wikiTotals()}
-        timekeeper={TimekeeperFixture.fixed()}
+        dimension={DimensionFixtures.countryURL()}
+        sortOn={SortOnFixtures.defaultA()}
+        essence={EssenceFixtures.wikiTotals()}
+        timekeeper={TimekeeperFixtures.fixed()}
       />
     );
 

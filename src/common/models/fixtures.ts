@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-export * from "./essence/essence.fixture";
-export * from "./timekeeper/timekeeper.fixture";
-export * from "./dimension/dimension.fixture";
-export * from "./data-cube/data-cube.fixture";
-export * from "./stage/stage.fixture";
-export * from "./sort-on/sort-on.fixture";
+export * from "./essence/essence.fixtures";
+export * from "./timekeeper/timekeeper.fixtures";
+export * from "./dimension/dimension.fixtures";
+export * from "./data-cube/data-cube.fixtures";
+export * from "./stage/stage.fixtures";
+export * from "./sort-on/sort-on.fixtures";

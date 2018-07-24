@@ -17,7 +17,7 @@
 
 import { Dimension, DimensionJS } from "./dimension";
 
-export class DimensionFixture {
+export class DimensionFixtures {
   public static get COUNTRY_STRING_JS(): DimensionJS {
     return {
       name: "country",
@@ -75,18 +75,18 @@ export class DimensionFixture {
   }
 
   static countryString() {
-    return Dimension.fromJS(DimensionFixture.COUNTRY_STRING_JS);
+    return Dimension.fromJS(DimensionFixtures.COUNTRY_STRING_JS);
   }
 
   static countryURL() {
-    return Dimension.fromJS(DimensionFixture.COUNTRY_URL_JS);
+    return Dimension.fromJS(DimensionFixtures.COUNTRY_URL_JS);
   }
 
   static time() {
-    return Dimension.fromJS(DimensionFixture.TIME_JS);
+    return Dimension.fromJS(DimensionFixtures.TIME_JS);
   }
 
   static number() {
-    return Dimension.fromJS(DimensionFixture.NUMBER_JS);
+    return Dimension.fromJS(DimensionFixtures.NUMBER_JS);
   }
 }

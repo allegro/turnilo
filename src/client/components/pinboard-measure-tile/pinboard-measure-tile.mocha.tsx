@@ -20,7 +20,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceFixture } from "../../../common/models/fixtures";
+import { EssenceFixtures } from "../../../common/models/fixtures";
 import { SortOn } from "../../../common/models/index";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { PinboardMeasureTile } from "./pinboard-measure-tile";
@@ -28,7 +28,7 @@ import { PinboardMeasureTile } from "./pinboard-measure-tile";
 describe("PinboardMeasureTile", () => {
   it("adds the correct class", () => {
 
-    var essence = EssenceFixture.wikiTotals();
+    var essence = EssenceFixtures.wikiTotals();
     var sortOn = new SortOn({ dimension: essence.dataCube.getDimension("articleName") });
 
     var renderedComponent = renderIntoDocument(

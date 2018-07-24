@@ -18,7 +18,7 @@ import { expect } from "chai";
 import { List } from "immutable";
 import { Expression } from "plywood";
 import { DimensionJS } from "./dimension";
-import { DimensionFixture } from "./dimension.fixture";
+import { DimensionFixtures } from "./dimension.fixtures";
 import { Dimensions } from "./dimensions";
 import { DimensionsFixtures } from "./dimensions.fixtures";
 
@@ -34,7 +34,7 @@ describe("Dimensions", () => {
   });
 
   it("should throw when converting tree with duplicate dimension names", () => {
-    const dimensionsWithDuplicateDimensionName = [DimensionFixture.wikiTimeJS(), DimensionFixture.wikiTimeJS()];
+    const dimensionsWithDuplicateDimensionName = [DimensionFixtures.wikiTimeJS(), DimensionFixtures.wikiTimeJS()];
     expect(() => Dimensions.fromJS(dimensionsWithDuplicateDimensionName)).to.throw("found duplicate dimension or group with names: 'time'");
   });
 
@@ -49,7 +49,7 @@ describe("Dimensions", () => {
   });
 
   it("should return the first dimension", () => {
-    expect(dimensions.first().toJS()).to.deep.equal(DimensionFixture.wikiTimeJS());
+    expect(dimensions.first().toJS()).to.deep.equal(DimensionFixtures.wikiTimeJS());
   });
 
   it("should treat dimensions with the same structure as equal", () => {
@@ -76,7 +76,7 @@ describe("Dimensions", () => {
       .filterDimensions(dimension => dimension.name === "time")
       .map(dimension => dimension.toJS());
 
-    expect(countDimensionsJS).to.deep.equal([DimensionFixture.wikiTimeJS()]);
+    expect(countDimensionsJS).to.deep.equal([DimensionFixtures.wikiTimeJS()]);
   });
 
   it("should traverse dimensions", () => {
@@ -89,13 +89,13 @@ describe("Dimensions", () => {
   it("should find dimension by name", () => {
     const dimension = dimensions.getDimensionByName("time");
 
-    expect(dimension.toJS()).to.deep.equal(DimensionFixture.wikiTimeJS());
+    expect(dimension.toJS()).to.deep.equal(DimensionFixtures.wikiTimeJS());
   });
 
   it("should find dimension by expression", () => {
     const dimension = dimensions.getDimensionByExpression(Expression.fromJSLoose("$time"));
 
-    expect(dimension.toJS()).to.deep.equal(DimensionFixture.wikiTimeJS());
+    expect(dimension.toJS()).to.deep.equal(DimensionFixtures.wikiTimeJS());
   });
 
   it("should know it contains dimension with name", () => {
@@ -109,7 +109,7 @@ describe("Dimensions", () => {
   });
 
   it("should be immutable on append", () => {
-    const newDimensions = dimensions.append(DimensionFixture.countryString());
+    const newDimensions = dimensions.append(DimensionFixtures.countryString());
 
     expect(dimensions.size()).to.equal(10);
     expect(newDimensions).to.not.equal(dimensions);
@@ -118,7 +118,7 @@ describe("Dimensions", () => {
   });
 
   it("should be immutable on prepend", () => {
-    const newDimensions = dimensions.prepend(DimensionFixture.countryString());
+    const newDimensions = dimensions.prepend(DimensionFixtures.countryString());
 
     expect(dimensions.size()).to.equal(10);
     expect(newDimensions).to.not.equal(dimensions);

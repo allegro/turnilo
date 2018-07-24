@@ -17,7 +17,7 @@
 
 import { SortOn, SortOnJS } from "./sort-on";
 
-export class SortOnFixture {
+export class SortOnFixtures {
   public static get DEFAULT_A_JS(): SortOnJS {
     return {
       measure: {
@@ -50,14 +50,14 @@ export class SortOnFixture {
   }
 
   static defaultA() {
-    return SortOn.fromJS(SortOnFixture.DEFAULT_A_JS);
+    return SortOn.fromJS(SortOnFixtures.DEFAULT_A_JS);
   }
 
   static defaultB() {
-    return SortOn.fromJS(SortOnFixture.DEFAULT_B_JS);
+    return SortOn.fromJS(SortOnFixtures.DEFAULT_B_JS);
   }
 
   static defaultC() {
-    return SortOn.fromJS(SortOnFixture.DEFAULT_C_JS);
+    return SortOn.fromJS(SortOnFixtures.DEFAULT_C_JS);
   }
 }

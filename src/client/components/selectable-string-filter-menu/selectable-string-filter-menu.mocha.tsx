@@ -22,7 +22,7 @@ import * as TestUtils from "react-dom/test-utils";
 
 import { Filter } from "../../../common/models/filter/filter";
 
-import { TimekeeperFixture } from "../../../common/models/fixtures";
+import { TimekeeperFixtures } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 
 import { SelectableStringFilterMenu } from "./selectable-string-filter-menu";
@@ -37,7 +37,7 @@ describe.skip("SelectableStringFilterMenu", () => {
         clicker={null}
         dimension={null}
         essence={null}
-        timekeeper={TimekeeperFixture.fixed()}
+        timekeeper={TimekeeperFixtures.fixed()}
         onClose={null}
       />
     );

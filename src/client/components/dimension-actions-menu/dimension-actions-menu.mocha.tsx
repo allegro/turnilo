@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionFixture, EssenceFixture, StageFixture } from "../../../common/models/fixtures";
+import { DimensionFixtures, EssenceFixtures, StageFixtures } from "../../../common/models/fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { DimensionActionsMenu } from "./dimension-actions-menu";
 
@@ -29,10 +29,10 @@ describe("DimensionActionsMenu", () => {
     var renderedComponent = renderIntoDocument(
       <DimensionActionsMenu
         clicker={null}
-        containerStage={StageFixture.defaultA()}
-        dimension={DimensionFixture.countryURL()}
+        containerStage={StageFixtures.defaultA()}
+        dimension={DimensionFixtures.countryURL()}
         direction={"right"}
-        essence={EssenceFixture.wikiTotals()}
+        essence={EssenceFixtures.wikiTotals()}
         onClose={null}
         openOn={openOn}
         triggerFilterMenu={null}

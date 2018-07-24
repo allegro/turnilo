@@ -20,7 +20,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
 import * as sinon from "sinon";
-import { DataCubeFixture, TimekeeperFixture } from "../../../common/models/fixtures";
+import { DataCubeFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { FilterTile } from "../../components/filter-tile/filter-tile";
 import { SplitTile } from "../../components/split-tile/split-tile";
@@ -49,8 +49,8 @@ describe("CubeView", () => {
     var renderedComponent = renderIntoDocument(
       <CubeView
         hash={null}
-        initTimekeeper={TimekeeperFixture.fixed()}
-        dataCube={DataCubeFixture.wiki()}
+        initTimekeeper={TimekeeperFixtures.fixed()}
+        dataCube={DataCubeFixtures.wiki()}
         updateViewHash={updateViewHash}
         stateful={false}
         getCubeViewHash={getCubeViewHash}
@@ -73,8 +73,8 @@ describe("CubeView", () => {
     var initialCubeView: any = renderIntoDocument(
       <CubeView
         hash={null}
-        initTimekeeper={TimekeeperFixture.fixed()}
-        dataCube={DataCubeFixture.wiki()}
+        initTimekeeper={TimekeeperFixtures.fixed()}
+        dataCube={DataCubeFixtures.wiki()}
         updateViewHash={updateViewHash}
         stateful={false}
         getCubeViewHash={getCubeViewHash}
@@ -90,8 +90,8 @@ describe("CubeView", () => {
     var wikiCubeView: any = renderIntoDocument(
       <CubeView
         hash={null}
-        initTimekeeper={TimekeeperFixture.fixed()}
-        dataCube={DataCubeFixture.wiki()}
+        initTimekeeper={TimekeeperFixtures.fixed()}
+        dataCube={DataCubeFixtures.wiki()}
         updateViewHash={updateViewHash}
         stateful={false}
         getCubeViewHash={getCubeViewHash}
@@ -108,8 +108,8 @@ describe("CubeView", () => {
     var wikiCubeView2: any = renderIntoDocument(
       <CubeView
         hash={null}
-        initTimekeeper={TimekeeperFixture.fixed()}
-        dataCube={DataCubeFixture.wiki()}
+        initTimekeeper={TimekeeperFixtures.fixed()}
+        dataCube={DataCubeFixtures.wiki()}
         updateViewHash={updateViewHash}
         stateful={false}
         getCubeViewHash={getCubeViewHash}

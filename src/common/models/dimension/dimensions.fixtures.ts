@@ -16,7 +16,7 @@
 
 import { DimensionOrGroupJS } from "./dimension-group";
 import { DimensionGroupFixtures } from "./dimension-group.fixtures";
-import { DimensionFixture } from "./dimension.fixture";
+import { DimensionFixtures } from "./dimension.fixtures";
 
 export class DimensionsFixtures {
   static wikiNames(): string[] {
@@ -29,7 +29,7 @@ export class DimensionsFixtures {
 
   static wikiJS(): DimensionOrGroupJS[] {
     return [
-      DimensionFixture.wikiTimeJS(),
+      DimensionFixtures.wikiTimeJS(),
       {
         kind: "string",
         name: "channel",

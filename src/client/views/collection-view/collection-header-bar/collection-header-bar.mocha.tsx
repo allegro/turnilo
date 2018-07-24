@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DataCubeFixture } from "../../../../common/models/fixtures";
+import { DataCubeFixtures } from "../../../../common/models/fixtures";
 import { findDOMNode, renderIntoDocument } from "../../../utils/test-utils";
 import { CollectionHeaderBar } from "./collection-header-bar";
 
@@ -26,7 +26,7 @@ describe("CollectionHeaderBar", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <CollectionHeaderBar
-        dataCubes={[DataCubeFixture.twitter()]}
+        dataCubes={[DataCubeFixtures.twitter()]}
         collections={[]}
         onAddItem={null}
         onNavClick={null}

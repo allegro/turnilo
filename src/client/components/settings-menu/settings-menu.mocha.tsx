@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DataCubeFixture } from "../../../common/models/fixtures";
+import { DataCubeFixtures } from "../../../common/models/fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { SettingsMenu } from "./settings-menu";
 
@@ -30,7 +30,7 @@ describe("SettingsMenu", () => {
 
     var renderedComponent = renderIntoDocument(
       <SettingsMenu
-        dataCube={DataCubeFixture.twitter()}
+        dataCube={DataCubeFixtures.twitter()}
         onClose={null}
         openOn={openOn}
         changeTimezone={() => {}}

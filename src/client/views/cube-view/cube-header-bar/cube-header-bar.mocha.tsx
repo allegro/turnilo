@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceFixture, TimekeeperFixture } from "../../../../common/models/fixtures";
+import { EssenceFixtures, TimekeeperFixtures } from "../../../../common/models/fixtures";
 import { renderIntoDocument } from "../../../utils/test-utils";
 import { CubeHeaderBar } from "./cube-header-bar";
 
@@ -28,8 +28,8 @@ describe("CubeHeaderBar", () => {
     var renderedComponent = renderIntoDocument(
       <CubeHeaderBar
         clicker={null}
-        essence={EssenceFixture.wikiTotals()}
-        timekeeper={TimekeeperFixture.fixed()}
+        essence={EssenceFixtures.wikiTotals()}
+        timekeeper={TimekeeperFixtures.fixed()}
         onNavClick={null}
         stateful={true}
       />

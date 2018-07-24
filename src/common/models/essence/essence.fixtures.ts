@@ -22,13 +22,13 @@ import { MANIFESTS } from "../../manifests";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { SortDirection } from "../../view-definitions/version-3/split-definition";
-import { DataCubeFixture } from "../data-cube/data-cube.fixture";
+import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
 import { SplitCombineFixtures } from "../split-combine/split-combine.fixtures";
 import { TimeShift } from "../time-shift/time-shift";
 import { Essence, EssenceContext, EssenceJS } from "./essence";
 
-export class EssenceFixture {
+export class EssenceFixtures {
   static noVisualisationJS(): EssenceJS {
     return {
       visualization: "totals",
@@ -64,14 +64,14 @@ export class EssenceFixture {
 
   static getWikiContext(): EssenceContext {
     return {
-      dataCube: DataCubeFixture.wiki(),
+      dataCube: DataCubeFixtures.wiki(),
       visualizations: MANIFESTS
     };
   }
 
   static getTwitterContext(): EssenceContext {
     return {
-      dataCube: DataCubeFixture.twitter(),
+      dataCube: DataCubeFixtures.twitter(),
       visualizations: MANIFESTS
     };
   }
@@ -92,7 +92,7 @@ export class EssenceFixture {
       SplitCombineFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, 5)
     ];
     return new Essence({
-      dataCube: DataCubeFixture.wiki(),
+      dataCube: DataCubeFixtures.wiki(),
       visualizations: MANIFESTS,
       visualization: TABLE_MANIFEST,
       timezone: Timezone.fromJS("Etc/UTC"),
@@ -123,7 +123,7 @@ export class EssenceFixture {
       FilterClauseFixtures.timeRange("time", new Date("2015-09-12T10:00:00Z"), new Date("2015-09-12T11:00:00Z"), false)
     ];
     return new Essence({
-      dataCube: DataCubeFixture.wiki(),
+      dataCube: DataCubeFixtures.wiki(),
       visualizations: MANIFESTS,
       visualization: LINE_CHART_MANIFEST,
       timezone: Timezone.fromJS("Etc/UTC"),
@@ -142,14 +142,14 @@ export class EssenceFixture {
   }
 
   static wikiTotals() {
-    return Essence.fromJS(EssenceFixture.totalsJS(), EssenceFixture.getWikiContext());
+    return Essence.fromJS(EssenceFixtures.totalsJS(), EssenceFixtures.getWikiContext());
   }
 
   static wikiLineChartNoSplit() {
-    return Essence.fromJS(EssenceFixture.lineChartNoSplitJS(), EssenceFixture.getWikiContext());
+    return Essence.fromJS(EssenceFixtures.lineChartNoSplitJS(), EssenceFixtures.getWikiContext());
   }
 
   static twitterNoVisualisation() {
-    return Essence.fromJS(EssenceFixture.noVisualisationJS(), EssenceFixture.getTwitterContext());
+    return Essence.fromJS(EssenceFixtures.noVisualisationJS(), EssenceFixtures.getTwitterContext());
   }
 }

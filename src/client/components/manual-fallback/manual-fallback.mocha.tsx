@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceFixture } from "../../../common/models/fixtures";
+import { EssenceFixtures } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { ManualFallback } from "./manual-fallback";
 
@@ -28,7 +28,7 @@ describe("ManualFallback", () => {
     var renderedComponent = renderIntoDocument(
       <ManualFallback
         clicker={null}
-        essence={EssenceFixture.wikiLineChartNoSplit()}
+        essence={EssenceFixtures.wikiLineChartNoSplit()}
       />
     );
 

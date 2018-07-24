@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { CollectionTileFixture } from "../collection-tile/collection-tile.fixture";
+import { CollectionTileFixtures } from "../collection-tile/collection-tile.fixtures";
 import { Collection, CollectionContext, CollectionJS } from "./collection";
 
-export class CollectionFixture {
+export class CollectionFixtures {
   public static testOneOnlyJS(): CollectionJS {
     return {
       title: "The Links Will Rise Again!",
       name: "the_links_will_rise_again",
       tiles: [
-        CollectionTileFixture.testOneJS()
+        CollectionTileFixtures.testOneJS()
       ]
     };
   }
@@ -34,21 +34,21 @@ export class CollectionFixture {
       title: "The Links Will Be Reloaded!",
       name: "the_links_will_be_reloaded",
       tiles: [
-        CollectionTileFixture.testOneJS(),
-        CollectionTileFixture.testTwoJS()
+        CollectionTileFixtures.testOneJS(),
+        CollectionTileFixtures.testTwoJS()
       ]
     };
   }
 
   static getContext(): CollectionContext {
-    return CollectionTileFixture.getContext();
+    return CollectionTileFixtures.getContext();
   }
 
   static testOneOnly() {
-    return Collection.fromJS(CollectionFixture.testOneOnlyJS(), CollectionFixture.getContext());
+    return Collection.fromJS(CollectionFixtures.testOneOnlyJS(), CollectionFixtures.getContext());
   }
 
   static testOneTwo() {
-    return Collection.fromJS(CollectionFixture.testOneTwoJS(), CollectionFixture.getContext());
+    return Collection.fromJS(CollectionFixtures.testOneTwoJS(), CollectionFixtures.getContext());
   }
 }

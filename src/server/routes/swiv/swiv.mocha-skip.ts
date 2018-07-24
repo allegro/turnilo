@@ -20,7 +20,7 @@ import * as express from "express";
 import * as Q from "q";
 import * as supertest from "supertest";
 import { Response } from "supertest";
-import { AppSettingsFixture } from "../../../common/models/app-settings/app-settings.fixture";
+import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { AppSettings } from "../../../common/models/index";
 import { SwivRequest } from "../../utils/index";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
@@ -29,7 +29,7 @@ import * as swivRouter from "./swiv";
 
 var app = express();
 
-var appSettings: AppSettings = AppSettingsFixture.wikiOnlyWithExecutor();
+var appSettings: AppSettings = AppSettingsFixtures.wikiOnlyWithExecutor();
 app.use((req: SwivRequest, res: express.Response, next: Function) => {
   req.user = null;
   req.version = "0.9.4";

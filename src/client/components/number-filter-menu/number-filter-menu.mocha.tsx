@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionFixture, EssenceFixture, StageFixture, TimekeeperFixture } from "../../../common/models/fixtures";
+import { DimensionFixtures, EssenceFixtures, StageFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
 
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
@@ -32,11 +32,11 @@ describe("NumberFilterMenu", () => {
     var renderedComponent = renderIntoDocument(
       <NumberFilterMenu
         clicker={null}
-        dimension={DimensionFixture.time()}
-        essence={EssenceFixture.wikiTotals()}
-        timekeeper={TimekeeperFixture.fixed()}
+        dimension={DimensionFixtures.time()}
+        essence={EssenceFixtures.wikiTotals()}
+        timekeeper={TimekeeperFixtures.fixed()}
         onClose={null}
-        containerStage={StageFixture.defaultA()}
+        containerStage={StageFixtures.defaultA()}
         openOn={div}
         inside={div}
 

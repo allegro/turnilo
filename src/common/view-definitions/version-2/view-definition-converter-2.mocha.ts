@@ -17,7 +17,7 @@
 import { expect } from "chai";
 import { MANIFESTS } from "../../manifests";
 import { EssenceJS } from "../../models";
-import { DataCubeFixture } from "../../models/data-cube/data-cube.fixture";
+import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
 import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
 
@@ -52,7 +52,7 @@ describe("ViewDefinitionConverter2", () => {
   };
 
   it("should convert time bucket expression to time range", () => {
-    const essence = new ViewDefinitionConverter2().fromViewDefinition(totalsWithTimeBucket, DataCubeFixture.wiki(), MANIFESTS);
+    const essence = new ViewDefinitionConverter2().fromViewDefinition(totalsWithTimeBucket, DataCubeFixtures.wiki(), MANIFESTS);
     const convertedClause = essence.filter.clauses.first();
 
     const currentDuration = 1;

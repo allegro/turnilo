@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { TimekeeperFixture } from "../../../common/models/fixtures";
+import { TimekeeperFixtures } from "../../../common/models/fixtures";
 import "../../utils/test-utils";
 import { renderIntoDocument } from "../../utils/test-utils";
 
@@ -31,7 +31,7 @@ describe.skip("Totals", () => {
       <Totals
         clicker={null}
         essence={null}
-        timekeeper={TimekeeperFixture.fixed()}
+        timekeeper={TimekeeperFixtures.fixed()}
         stage={null}
       />
     );

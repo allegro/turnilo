@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceFixture, StageFixture, TimekeeperFixture } from "../../../common/models/fixtures";
+import { EssenceFixtures, StageFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
 import "../../utils/test-utils";
 import { renderIntoDocument } from "../../utils/test-utils";
 
@@ -30,9 +30,9 @@ describe("LineChart", () => {
     var renderedComponent = renderIntoDocument(
       <LineChart
         clicker={null}
-        essence={EssenceFixture.wikiLineChart()}
-        stage={StageFixture.defaultA()}
-        timekeeper={TimekeeperFixture.fixed()}
+        essence={EssenceFixtures.wikiLineChart()}
+        stage={StageFixtures.defaultA()}
+        timekeeper={TimekeeperFixtures.fixed()}
       />
     );
 

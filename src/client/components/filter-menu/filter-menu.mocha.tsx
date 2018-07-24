@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import * as React from "react";
-import { DimensionFixture, EssenceFixture, TimekeeperFixture } from "../../../common/models/fixtures";
+import { DimensionFixtures, EssenceFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { FilterMenu } from "./filter-menu";
 
@@ -26,9 +26,9 @@ class Wrap extends React.Component {
     return <FilterMenu
         clicker={null}
         containerStage={null}
-        dimension={DimensionFixture.countryURL()}
-        essence={EssenceFixture.wikiTotals()}
-        timekeeper={TimekeeperFixture.fixed()}
+        dimension={DimensionFixtures.countryURL()}
+        essence={EssenceFixtures.wikiTotals()}
+        timekeeper={TimekeeperFixtures.fixed()}
         changePosition={null}
         onClose={null}
         openOn={document.createElement("div")}

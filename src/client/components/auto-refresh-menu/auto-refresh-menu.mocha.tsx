@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DataCubeFixture, TimekeeperFixture } from "../../../common/models/fixtures";
+import { DataCubeFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { AutoRefreshMenu } from "./auto-refresh-menu";
 
@@ -26,7 +26,7 @@ describe("AutoRefreshMenu", () => {
   it("adds the correct class", () => {
     var openOn = document.createElement("div");
 
-    var dataCube = DataCubeFixture.wiki();
+    var dataCube = DataCubeFixtures.wiki();
 
     var renderedComponent = renderIntoDocument(
       <AutoRefreshMenu
@@ -36,7 +36,7 @@ describe("AutoRefreshMenu", () => {
         setAutoRefreshRate={null}
         refreshMaxTime={null}
         dataCube={dataCube}
-        timekeeper={TimekeeperFixture.fixed()}
+        timekeeper={TimekeeperFixtures.fixed()}
         timezone={dataCube.getDefaultTimezone()}
       />
     );
