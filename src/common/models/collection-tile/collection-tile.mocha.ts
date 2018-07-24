@@ -18,15 +18,15 @@
 import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
 import { CollectionTile } from "./collection-tile";
-import { CollectionTileMock } from "./collection-tile.mock";
+import { CollectionTileFixture } from "./collection-tile.fixture";
 
 describe("CollectionTile", () => {
-  var context = CollectionTileMock.getContext();
+  var context = CollectionTileFixture.getContext();
 
   it("is an immutable class", () => {
     testImmutableClass(CollectionTile, [
-      CollectionTileMock.testOneJS(),
-      CollectionTileMock.testTwoJS()
+      CollectionTileFixture.testOneJS(),
+      CollectionTileFixture.testTwoJS()
     ], { context });
   });
 

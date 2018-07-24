@@ -17,7 +17,7 @@
 
 import { Timekeeper, TimekeeperJS } from "./timekeeper";
 
-export class TimekeeperMock {
+export class TimekeeperFixture {
   static fixedJS(): TimekeeperJS {
     return {
       timeTags: [],
@@ -26,6 +26,6 @@ export class TimekeeperMock {
   }
 
   static fixed() {
-    return Timekeeper.fromJS(TimekeeperMock.fixedJS());
+    return Timekeeper.fromJS(TimekeeperFixture.fixedJS());
   }
 }

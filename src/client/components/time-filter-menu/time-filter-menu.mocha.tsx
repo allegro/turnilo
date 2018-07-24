@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionMock, EssenceMock, StageMock, TimekeeperMock } from "../../../common/models/mocks";
+import { DimensionFixture, EssenceFixture, StageFixture, TimekeeperFixture } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { TimeFilterMenu } from "./time-filter-menu";
 
@@ -31,11 +31,11 @@ describe.skip("TimeFilterMenu", () => {
     var renderedComponent = renderIntoDocument(
       <TimeFilterMenu
         clicker={null}
-        dimension={DimensionMock.countryURL()}
-        essence={EssenceMock.wikiLineChart()}
-        timekeeper={TimekeeperMock.fixed()}
+        dimension={DimensionFixture.countryURL()}
+        essence={EssenceFixture.wikiLineChart()}
+        timekeeper={TimekeeperFixture.fixed()}
         onClose={null}
-        containerStage={StageMock.defaultA()}
+        containerStage={StageFixture.defaultA()}
         openOn={div}
         inside={div}
       />

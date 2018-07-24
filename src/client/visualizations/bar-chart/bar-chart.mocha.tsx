@@ -20,7 +20,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceMock, StageMock, TimekeeperMock } from "../../../common/models/mocks";
+import { EssenceFixture, StageFixture, TimekeeperFixture } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 
 import { BarChart } from "./bar-chart";
@@ -30,9 +30,9 @@ describe.skip("BarChart", () => {
     var renderedComponent = renderIntoDocument(
       <BarChart
         clicker={null}
-        essence={EssenceMock.wikiTotals()}
-        timekeeper={TimekeeperMock.fixed()}
-        stage={StageMock.defaultA()}
+        essence={EssenceFixture.wikiTotals()}
+        timekeeper={TimekeeperFixture.fixed()}
+        stage={StageFixture.defaultA()}
       />
     );
 

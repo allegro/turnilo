@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionMock, EssenceMock, TimekeeperMock } from "../../../common/models/mocks";
+import { DimensionFixture, EssenceFixture, TimekeeperFixture } from "../../../common/models/fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { NumberRangePicker } from "./number-range-picker";
 
@@ -29,9 +29,9 @@ describe("NumberRangePicker", () => {
         start={2}
         end={10}
         onRangeStartChange={null}
-        essence={EssenceMock.wikiTotals()}
-        timekeeper={TimekeeperMock.fixed()}
-        dimension={DimensionMock.countryURL()}
+        essence={EssenceFixture.wikiTotals()}
+        timekeeper={TimekeeperFixture.fixed()}
+        dimension={DimensionFixture.countryURL()}
         onRangeEndChange={null}
         exclude={false}
       />

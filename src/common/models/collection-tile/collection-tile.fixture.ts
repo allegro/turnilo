@@ -17,10 +17,10 @@
 
 import { $ } from "plywood";
 import { MANIFESTS } from "../../manifests/index";
-import { DataCubeMock } from "../data-cube/data-cube.mock";
+import { DataCubeFixture } from "../data-cube/data-cube.fixture";
 import { CollectionTile, CollectionTileContext, CollectionTileJS } from "./collection-tile";
 
-export class CollectionTileMock {
+export class CollectionTileFixture {
   public static testOneJS(): CollectionTileJS {
     return {
       name: "test1",
@@ -65,16 +65,16 @@ export class CollectionTileMock {
 
   static getContext(): CollectionTileContext {
     return {
-      dataCubes: [DataCubeMock.wiki()],
+      dataCubes: [DataCubeFixture.wiki()],
       visualizations: MANIFESTS
     };
   }
 
   static testOne() {
-    return CollectionTile.fromJS(CollectionTileMock.testOneJS(), CollectionTileMock.getContext());
+    return CollectionTile.fromJS(CollectionTileFixture.testOneJS(), CollectionTileFixture.getContext());
   }
 
   static testTwo() {
-    return CollectionTile.fromJS(CollectionTileMock.testTwoJS(), CollectionTileMock.getContext());
+    return CollectionTile.fromJS(CollectionTileFixture.testTwoJS(), CollectionTileFixture.getContext());
   }
 }

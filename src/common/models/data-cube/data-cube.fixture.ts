@@ -27,7 +27,7 @@ var executor = basicExecutorFactory({
   }
 });
 
-export class DataCubeMock {
+export class DataCubeFixture {
   public static get WIKI_JS(): DataCubeJS {
     return {
       name: "wiki",
@@ -82,10 +82,10 @@ export class DataCubeMock {
   }
 
   static wiki() {
-    return DataCube.fromJS(DataCubeMock.WIKI_JS, { executor });
+    return DataCube.fromJS(DataCubeFixture.WIKI_JS, { executor });
   }
 
   static twitter() {
-    return DataCube.fromJS(DataCubeMock.TWITTER_JS, { executor });
+    return DataCube.fromJS(DataCubeFixture.TWITTER_JS, { executor });
   }
 }

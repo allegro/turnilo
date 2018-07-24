@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionMock, EssenceMock, SortOnMock, TimekeeperMock } from "../../../common/models/mocks";
+import { DimensionFixture, EssenceFixture, SortOnFixture, TimekeeperFixture } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { DimensionTile } from "./dimension-tile";
 
@@ -28,10 +28,10 @@ describe("DimensionTile", () => {
     var renderedComponent = renderIntoDocument(
       <DimensionTile
         clicker={null}
-        dimension={DimensionMock.countryURL()}
-        sortOn={SortOnMock.defaultA()}
-        essence={EssenceMock.wikiTotals()}
-        timekeeper={TimekeeperMock.fixed()}
+        dimension={DimensionFixture.countryURL()}
+        sortOn={SortOnFixture.defaultA()}
+        essence={EssenceFixture.wikiTotals()}
+        timekeeper={TimekeeperFixture.fixed()}
       />
     );
 

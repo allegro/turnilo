@@ -17,7 +17,7 @@
 
 import { Stage, StageJS } from "./stage";
 
-export class StageMock {
+export class StageFixture {
   public static get DEFAULT_A_JS(): StageJS {
     return {
       x: 10,
@@ -46,10 +46,10 @@ export class StageMock {
   }
 
   static defaultA() {
-    return Stage.fromJS(StageMock.DEFAULT_A_JS);
+    return Stage.fromJS(StageFixture.DEFAULT_A_JS);
   }
 
   static defaultB() {
-    return Stage.fromJS(StageMock.DEFAULT_B_JS);
+    return Stage.fromJS(StageFixture.DEFAULT_B_JS);
   }
 }

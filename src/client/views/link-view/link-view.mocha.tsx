@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { TimekeeperMock } from "../../../common/models/mocks";
+import { TimekeeperFixture } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { LinkView } from "./link-view";
 
@@ -27,7 +27,7 @@ describe("LinkView", () => {
   it.skip("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <LinkView
-        timekeeper={TimekeeperMock.fixed()}
+        timekeeper={TimekeeperFixture.fixed()}
         collection={null}
         hash={null}
         updateViewHash={null}

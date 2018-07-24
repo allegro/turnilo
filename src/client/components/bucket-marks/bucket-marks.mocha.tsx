@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { StageMock } from "../../../common/models/mocks";
+import { StageFixture } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { BucketMarks } from "./bucket-marks";
 
@@ -27,7 +27,7 @@ describe("BucketMarks", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <BucketMarks
-        stage={StageMock.defaultA()}
+        stage={StageFixture.defaultA()}
         ticks={[]}
         scale={null}
       />

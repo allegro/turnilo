@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { TimekeeperMock } from "../../../common/models/mocks";
+import { TimekeeperFixture } from "../../../common/models/fixtures";
 import "../../utils/test-utils";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { Geo } from "./geo";
@@ -30,7 +30,7 @@ describe("Geo", () => {
       <Geo
         clicker={null}
         essence={null}
-        timekeeper={TimekeeperMock.fixed()}
+        timekeeper={TimekeeperFixture.fixed()}
         stage={null}
       />
     );

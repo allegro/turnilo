@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-export * from "./essence/essence.mock";
-export * from "./timekeeper/timekeeper.mock";
-export * from "./dimension/dimension.mock";
-export * from "./data-cube/data-cube.mock";
-export * from "./stage/stage.mock";
-export * from "./sort-on/sort-on.mock";
+export * from "./essence/essence.fixture";
+export * from "./timekeeper/timekeeper.fixture";
+export * from "./dimension/dimension.fixture";
+export * from "./data-cube/data-cube.fixture";
+export * from "./stage/stage.fixture";
+export * from "./sort-on/sort-on.fixture";

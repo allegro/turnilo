@@ -25,13 +25,13 @@ import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
 import { DataCube, Introspection } from "../data-cube/data-cube";
-import { DataCubeMock } from "../data-cube/data-cube.mock";
+import { DataCubeFixture } from "../data-cube/data-cube.fixture";
 import { HighlightFixtures } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
 import { SplitCombine } from "../split-combine/split-combine";
 import { Splits } from "../splits/splits";
 import { Essence, EssenceJS, VisStrategy } from "./essence";
-import { EssenceMock } from "./essence.mock";
+import { EssenceFixture } from "./essence.fixture";
 
 describe("Essence", () => {
   var dataCubeJS = {
@@ -116,7 +116,7 @@ describe("Essence", () => {
 
     tests.forEach(({ highlight, expected, description }) => {
       it(`highlight ${description}`, () => {
-        const essenceValue = EssenceMock.wikiTable().valueOf();
+        const essenceValue = EssenceFixture.wikiTable().valueOf();
         const essenceValueWithHighlight = { ...essenceValue, highlight };
         const essenceWithHighlight = new Essence(essenceValueWithHighlight);
 
@@ -265,13 +265,13 @@ describe("Essence", () => {
         { splitDimensions: ["twitterHandle"], current: TOTALS_MANIFEST, expected: TABLE_MANIFEST },
         { splitDimensions: ["time"], current: BAR_CHART_MANIFEST, expected: LINE_CHART_MANIFEST }
       ];
-      const dimensions = DataCubeMock.twitter().dimensions;
+      const dimensions = DataCubeFixture.twitter().dimensions;
 
       tests.forEach(({ splitDimensions, current, expected }) => {
         it(`chooses ${expected.name} given splits: [${splitDimensions}] with current ${current && current.name}`, () => {
           const { visualization } = Essence.getBestVisualization(
             MANIFESTS,
-            DataCubeMock.twitter(),
+            DataCubeFixture.twitter(),
             Splits.fromJS(splitDimensions, { dimensions }),
             null,
             current);
@@ -283,7 +283,7 @@ describe("Essence", () => {
 
     describe("#changeSplits", () => {
       let essence: Essence = null;
-      beforeEach(() => essence = EssenceMock.twitterNoVisualisation());
+      beforeEach(() => essence = EssenceFixture.twitterNoVisualisation());
 
       const timeSplit = SplitCombine.fromJS({ expression: { op: "ref", name: "time" } });
       const tweetLengthSplit = SplitCombine.fromJS({ expression: { op: "ref", name: "tweetLength" } });
@@ -372,7 +372,7 @@ describe("Essence", () => {
 
     describe("#changeVisualisation", () => {
       let essence: Essence = null;
-      beforeEach(() => essence = EssenceMock.twitterNoVisualisation());
+      beforeEach(() => essence = EssenceFixture.twitterNoVisualisation());
 
       [TABLE_MANIFEST, LINE_CHART_MANIFEST, BAR_CHART_MANIFEST].forEach(manifest => {
         it("it sets visResolve to manual", () => {

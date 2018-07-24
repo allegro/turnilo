@@ -20,15 +20,15 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
+import { EssenceFixture } from "../../../common/models/fixtures";
 import { SortOn } from "../../../common/models/index";
-import { EssenceMock } from "../../../common/models/mocks";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { PinboardMeasureTile } from "./pinboard-measure-tile";
 
 describe("PinboardMeasureTile", () => {
   it("adds the correct class", () => {
 
-    var essence = EssenceMock.wikiTotals();
+    var essence = EssenceFixture.wikiTotals();
     var sortOn = new SortOn({ dimension: essence.dataCube.getDimension("articleName") });
 
     var renderedComponent = renderIntoDocument(

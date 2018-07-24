@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
 
-import { TimekeeperMock } from "../../../common/models/mocks";
+import { TimekeeperFixture } from "../../../common/models/fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
 import { AddCollectionTileModal } from "./add-collection-tile-modal";
@@ -29,7 +29,7 @@ describe.skip("AddCollectionTileModal", () => {
     var renderedComponent = renderIntoDocument(
       <AddCollectionTileModal
         essence={null}
-        timekeeper={TimekeeperMock.fixed()}
+        timekeeper={TimekeeperFixture.fixed()}
         dataCube={null}
         collection={null}
       />

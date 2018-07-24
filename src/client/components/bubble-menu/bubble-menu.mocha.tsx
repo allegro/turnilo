@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { StageMock } from "../../../common/models/mocks";
+import { StageFixture } from "../../../common/models/fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { BubbleMenu } from "./bubble-menu";
 
@@ -34,7 +34,7 @@ describe("BubbleMenu", () => {
         direction={"right"}
         onClose={null}
         openOn={openOn}
-        stage={StageMock.defaultA()}
+        stage={StageFixture.defaultA()}
       />
     );
 

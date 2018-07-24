@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceMock, StageMock, TimekeeperMock } from "../../../common/models/mocks";
+import { EssenceFixture, StageFixture, TimekeeperFixture } from "../../../common/models/fixtures";
 import "../../utils/test-utils";
 import { renderIntoDocument } from "../../utils/test-utils";
 
@@ -30,9 +30,9 @@ describe("LineChart", () => {
     var renderedComponent = renderIntoDocument(
       <LineChart
         clicker={null}
-        essence={EssenceMock.wikiLineChart()}
-        stage={StageMock.defaultA()}
-        timekeeper={TimekeeperMock.fixed()}
+        essence={EssenceFixture.wikiLineChart()}
+        stage={StageFixture.defaultA()}
+        timekeeper={TimekeeperFixture.fixed()}
       />
     );
 

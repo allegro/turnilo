@@ -17,7 +17,7 @@
 
 import { Dimension, DimensionJS } from "./dimension";
 
-export class DimensionMock {
+export class DimensionFixture {
   public static get COUNTRY_STRING_JS(): DimensionJS {
     return {
       name: "country",
@@ -75,18 +75,18 @@ export class DimensionMock {
   }
 
   static countryString() {
-    return Dimension.fromJS(DimensionMock.COUNTRY_STRING_JS);
+    return Dimension.fromJS(DimensionFixture.COUNTRY_STRING_JS);
   }
 
   static countryURL() {
-    return Dimension.fromJS(DimensionMock.COUNTRY_URL_JS);
+    return Dimension.fromJS(DimensionFixture.COUNTRY_URL_JS);
   }
 
   static time() {
-    return Dimension.fromJS(DimensionMock.TIME_JS);
+    return Dimension.fromJS(DimensionFixture.TIME_JS);
   }
 
   static number() {
-    return Dimension.fromJS(DimensionMock.NUMBER_JS);
+    return Dimension.fromJS(DimensionFixture.NUMBER_JS);
   }
 }

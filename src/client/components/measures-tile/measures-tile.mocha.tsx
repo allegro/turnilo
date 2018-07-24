@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceMock } from "../../../common/models/mocks";
+import { EssenceFixture } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { MeasuresTile } from "./measures-tile";
 
@@ -33,7 +33,7 @@ describe("MeasuresTile", () => {
     var renderedComponent = renderIntoDocument(
       <MeasuresTile
         clicker={fakeClicker}
-        essence={EssenceMock.wikiTotals()}
+        essence={EssenceFixture.wikiTotals()}
       />
     );
 
