@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { Dataset, TimeRange } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { StageMock } from "../../../common/models/mocks";
+import { StageFixtures } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { ChartLine } from "./chart-line";
 
@@ -31,7 +31,7 @@ class Wrap extends React.Component<{dataset: Dataset}> {
         getY={d => d["numberOfKoalas"]}
         scaleX={d => d["index"]}
         scaleY={d => 2}
-        stage={StageMock.defaultA()}
+        stage={StageFixtures.defaultA()}
         color={"yes"}
         showArea={null}
       />;

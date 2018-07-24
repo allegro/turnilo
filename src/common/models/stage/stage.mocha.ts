@@ -18,14 +18,14 @@
 import { testImmutableClass } from "immutable-class-tester";
 
 import { Stage, StageJS } from "./stage";
-import { StageMock } from "./stage.mock";
+import { StageFixtures } from "./stage.fixtures";
 
 describe("Stage", () => {
   it("is an immutable class", () => {
     testImmutableClass<StageJS>(Stage, [
-      StageMock.DEFAULT_A_JS,
-      StageMock.DEFAULT_B_JS,
-      StageMock.DEFAULT_C_JS
+      StageFixtures.DEFAULT_A_JS,
+      StageFixtures.DEFAULT_B_JS,
+      StageFixtures.DEFAULT_C_JS
     ]);
   });
 

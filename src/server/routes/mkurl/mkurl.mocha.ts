@@ -21,7 +21,7 @@ import { Response } from "express";
 import { $ } from "plywood";
 import * as Q from "q";
 import * as supertest from "supertest";
-import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
+import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { AppSettings } from "../../../common/models/index";
 import { UrlHashConverterFixtures } from "../../../common/utils/url-hash-converter/url-hash-converter.fixtures";
 import { SwivRequest } from "../../utils/index";
@@ -33,7 +33,7 @@ var app = express();
 
 app.use(bodyParser.json());
 
-var appSettings: AppSettings = AppSettingsMock.wikiOnlyWithExecutor();
+var appSettings: AppSettings = AppSettingsFixtures.wikiOnlyWithExecutor();
 app.use((req: SwivRequest, res: Response, next: Function) => {
   req.user = null;
   req.version = "0.9.4";

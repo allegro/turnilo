@@ -15,14 +15,14 @@
  */
 
 import { DimensionGroupJS } from "./dimension-group";
-import { DimensionMock } from "./dimension.mock";
+import { DimensionFixtures } from "./dimension.fixtures";
 
 export class DimensionGroupFixtures {
   static noTitleJS(): DimensionGroupJS {
     return {
       name: "dummyName",
       dimensions: [
-        DimensionMock.wikiTimeJS()
+        DimensionFixtures.wikiTimeJS()
       ]
     };
   }
@@ -32,14 +32,14 @@ export class DimensionGroupFixtures {
       name: "dummyName",
       title: "Dummy Name",
       dimensions: [
-        DimensionMock.wikiTimeJS()
+        DimensionFixtures.wikiTimeJS()
       ]
     };
   }
 
   static noNameJS(): DimensionGroupJS {
     return {
-      dimensions: [DimensionMock.wikiTimeJS()]
+      dimensions: [DimensionFixtures.wikiTimeJS()]
     } as DimensionGroupJS;
   }
 

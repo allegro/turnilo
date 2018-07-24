@@ -19,9 +19,9 @@ import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
 import * as sinon from "sinon";
+import { DataCubeFixtures } from "../../../common/models/fixtures";
 
 import { DataCube } from "../../../common/models/index";
-import { DataCubeMock } from "../../../common/models/mocks";
 
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
@@ -39,7 +39,7 @@ describe("ImmutableInput", () => {
 
     component = renderIntoDocument(
       <ImmutableInput
-        instance={DataCubeMock.twitter()}
+        instance={DataCubeFixtures.twitter()}
         path={"clusterName"}
         validator={/^.+$/}
         onChange={onChange}
@@ -83,7 +83,7 @@ describe("ImmutableInput", () => {
     var args = onChange.args[0];
 
     expect(args[0]).to.be.instanceOf(DataCube);
-    expect(args[0].clusterName).to.equal(DataCubeMock.twitter().clusterName);
+    expect(args[0].clusterName).to.equal(DataCubeFixtures.twitter().clusterName);
 
     expect(args[1]).to.equal(false);
 
@@ -122,7 +122,7 @@ describe("ImmutableInput", () => {
 
       component = renderIntoDocument(
         <ImmutableInput
-          instance={DataCubeMock.twitter()}
+          instance={DataCubeFixtures.twitter()}
           path={"clusterName"}
           validator={/^.+$/}
           onChange={onChange}
@@ -167,7 +167,7 @@ describe("ImmutableInput", () => {
       var args = onChange.args[0];
 
       expect(args[0]).to.be.instanceOf(DataCube);
-      expect(args[0].clusterName).to.equal(DataCubeMock.twitter().clusterName);
+      expect(args[0].clusterName).to.equal(DataCubeFixtures.twitter().clusterName);
 
       expect(args[1]).to.equal(false);
 

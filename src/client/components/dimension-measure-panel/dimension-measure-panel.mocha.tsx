@@ -20,7 +20,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
 
-import { EssenceMock } from "../../../common/models/mocks";
+import { EssenceFixtures } from "../../../common/models/fixtures";
 import { mockReactComponent, renderIntoDocument } from "../../utils/test-utils";
 
 import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
@@ -42,7 +42,7 @@ describe("DimensionMeasurePanel", () => {
     var renderedComponent = renderIntoDocument(
       <DimensionMeasurePanel
         clicker={clickyMcClickFace}
-        essence={EssenceMock.wikiTotals()}
+        essence={EssenceFixtures.wikiTotals()}
         menuStage={null}
         triggerFilterMenu={null}
         triggerSplitMenu={null}

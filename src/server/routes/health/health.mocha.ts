@@ -22,7 +22,7 @@ import * as nock from "nock";
 import * as Q from "q";
 import * as supertest from "supertest";
 import { AppSettings } from "../../../common/models";
-import { AppSettingsMock } from "../../../common/models/app-settings/app-settings.mock";
+import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { ClusterFixtures } from "../../../common/models/cluster/cluster.fixtures";
 import { SwivRequest } from "../../utils";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
@@ -45,7 +45,7 @@ const mockLoadStatus = (nock: nock.Scope, fixture: { status: int, initialized: b
     .reply(status, { inventoryInitialized: initialized });
 };
 
-const appSettings = AppSettingsMock.wikiOnly();
+const appSettings = AppSettingsFixtures.wikiOnly();
 const loadStatusPath = "/druid/broker/v1/loadstatus";
 const wikiBrokerNock = nock(`http://${ClusterFixtures.druidWikiClusterJS().host}`);
 const twitterBrokerNock = nock(`http://${ClusterFixtures.druidTwitterClusterJS().host}`);
@@ -86,7 +86,7 @@ describe("health router", () => {
   describe("multiple druid clusters", () => {
     before(done => {
       app = express();
-      app.use(appSettingsHandlerProvider(AppSettingsMock.wikiTwitter()));
+      app.use(appSettingsHandlerProvider(AppSettingsFixtures.wikiTwitter()));
       app.use("/", healthRouter);
       server = app.listen(0, done);
     });

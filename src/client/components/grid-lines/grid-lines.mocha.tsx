@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { StageMock } from "../../../common/models/mocks";
+import { StageFixtures } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { GridLines } from "./grid-lines";
 
@@ -29,7 +29,7 @@ describe("GridLines", () => {
       <GridLines
         orientation={null}
         scale={null}
-        stage={StageMock.defaultB()}
+        stage={StageFixtures.defaultB()}
         ticks={[]}
       />
     );

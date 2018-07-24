@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { DataCubeMock } from "../../models/data-cube/data-cube.mock";
+import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { SupportedAction } from "../../models/filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
 import { filterDefinitionConverter, StringFilterAction } from "./filter-definition";
@@ -32,7 +32,7 @@ describe("FilterDefinition v3", () => {
     booleanFilterTests.forEach(({ dimension, exclude, values }) => {
       it(`converts filter clause with values: "${values}"`, () => {
         const filterClauseDefinition = FilterDefinitionFixtures.booleanFilterDefinition(dimension, values, exclude);
-        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeMock.wiki());
+        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
         const expected = FilterClauseFixtures.booleanIn(dimension, values, exclude);
 
         expect(filterClause).to.deep.equal(expected);
@@ -44,7 +44,7 @@ describe("FilterDefinition v3", () => {
     booleanFilterTests.forEach(({ dimension, exclude, values }) => {
       it(`converts definition with values: "${values}"`, () => {
         const filterClause = FilterClauseFixtures.booleanIn(dimension, values, exclude);
-        const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeMock.wiki());
+        const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeFixtures.wiki());
         const expected = FilterDefinitionFixtures.booleanFilterDefinition(dimension, values, exclude);
 
         expect(filterClauseDefinition).to.deep.equal(expected);
@@ -63,7 +63,7 @@ describe("FilterDefinition v3", () => {
     stringFilterTests.forEach(({ dimension, action, clauseAction, exclude, values }) => {
       it(`converts definition with "${action}" action`, () => {
         const filterClauseDefinition = FilterDefinitionFixtures.stringFilterDefinition(dimension, action, values, exclude);
-        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeMock.wiki());
+        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
         const expected = FilterClauseFixtures.stringWithAction(dimension, clauseAction, values, exclude);
 
         expect(filterClause).to.deep.equal(expected);
@@ -75,7 +75,7 @@ describe("FilterDefinition v3", () => {
     stringFilterTests.forEach(({ dimension, action, clauseAction, exclude, values }) => {
       it(`converts clause with "${clauseAction}" action`, () => {
         const filterClause = FilterClauseFixtures.stringWithAction(dimension, clauseAction, values, exclude);
-        const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeMock.wiki());
+        const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeFixtures.wiki());
         const expected = FilterDefinitionFixtures.stringFilterDefinition(dimension, action, values, exclude);
 
         expect(filterClauseDefinition).to.deep.equal(expected);
@@ -94,7 +94,7 @@ describe("FilterDefinition v3", () => {
     numberFilterTests.forEach(({ dimension, exclude, start, end, bounds }) => {
       it(`converts range: ${start} - ${end} with bounds "${bounds}"`, () => {
         const filterClauseDefinition = FilterDefinitionFixtures.numberRangeFilterDefinition(dimension, start, end, bounds, exclude);
-        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeMock.wiki());
+        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
         const expected = FilterClauseFixtures.numberRange(dimension, start, end, bounds, exclude);
 
         expect(filterClause).to.deep.equal(expected);
@@ -106,7 +106,7 @@ describe("FilterDefinition v3", () => {
     numberFilterTests.forEach(({ dimension, exclude, start, end, bounds }) => {
       it(`converts range: ${start} - ${end} with bounds "${bounds}"`, () => {
         const filterClause = FilterClauseFixtures.numberRange(dimension, start, end, bounds, exclude);
-        const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeMock.wiki());
+        const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeFixtures.wiki());
         const expected = FilterDefinitionFixtures.numberRangeFilterDefinition(dimension, start, end, bounds, exclude);
 
         expect(filterClauseDefinition).to.deep.equal(expected);
@@ -120,7 +120,7 @@ describe("FilterDefinition v3", () => {
       const endDate = new Date("2018-01-02T00:00:00");
       const filterClause = FilterClauseFixtures.timeRange("time", startDate, endDate);
 
-      const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeMock.wiki());
+      const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeFixtures.wiki());
       const expected =
         FilterDefinitionFixtures.timeRangeFilterDefinition("time", startDate.toISOString(), endDate.toISOString());
 
@@ -141,7 +141,7 @@ describe("FilterDefinition v3", () => {
           it(`converts ${-multiple} of ${duration}`, () => {
             const filterClauseDefinition = FilterDefinitionFixtures.latestTimeFilterDefinition("time", multiple, duration);
 
-            const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeMock.wiki());
+            const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
             const expected = FilterClauseFixtures.timeDurationLatest("time", multiple, duration);
 
             expect(filterClause).to.deep.equal(expected);
@@ -154,7 +154,7 @@ describe("FilterDefinition v3", () => {
           it(`converts ${-multiple} of ${duration}`, () => {
             const filterClause = FilterClauseFixtures.timeDurationLatest("time", multiple, duration);
 
-            const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeMock.wiki());
+            const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeFixtures.wiki());
             const expected = FilterDefinitionFixtures.latestTimeFilterDefinition("time", multiple, duration);
 
             expect(filterClauseDefinition).to.deep.equal(expected);
@@ -184,7 +184,7 @@ describe("FilterDefinition v3", () => {
             it(`converts ${periodName} period ${duration}`, () => {
               const filterClauseDefinition = FilterDefinitionFixtures.flooredTimeFilterDefinition("time", step, duration);
 
-              const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeMock.wiki());
+              const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
               const expected = FilterClauseFixtures.timeDurationFloored("time", step, duration);
 
               expect(filterClause).to.deep.equal(expected);
@@ -199,7 +199,7 @@ describe("FilterDefinition v3", () => {
             it(`converts ${periodName} period ${duration}`, () => {
               const filterClause = FilterClauseFixtures.timeDurationFloored("time", step, duration);
 
-              const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeMock.wiki());
+              const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeFixtures.wiki());
               const expected = FilterDefinitionFixtures.flooredTimeFilterDefinition("time", step, duration);
 
               expect(filterClauseDefinition).to.deep.equal(expected);

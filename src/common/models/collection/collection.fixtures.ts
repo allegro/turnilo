@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { CollectionTileMock } from "../collection-tile/collection-tile.mock";
+import { CollectionTileFixtures } from "../collection-tile/collection-tile.fixtures";
 import { Collection, CollectionContext, CollectionJS } from "./collection";
 
-export class CollectionMock {
+export class CollectionFixtures {
   public static testOneOnlyJS(): CollectionJS {
     return {
       title: "The Links Will Rise Again!",
       name: "the_links_will_rise_again",
       tiles: [
-        CollectionTileMock.testOneJS()
+        CollectionTileFixtures.testOneJS()
       ]
     };
   }
@@ -34,21 +34,21 @@ export class CollectionMock {
       title: "The Links Will Be Reloaded!",
       name: "the_links_will_be_reloaded",
       tiles: [
-        CollectionTileMock.testOneJS(),
-        CollectionTileMock.testTwoJS()
+        CollectionTileFixtures.testOneJS(),
+        CollectionTileFixtures.testTwoJS()
       ]
     };
   }
 
   static getContext(): CollectionContext {
-    return CollectionTileMock.getContext();
+    return CollectionTileFixtures.getContext();
   }
 
   static testOneOnly() {
-    return Collection.fromJS(CollectionMock.testOneOnlyJS(), CollectionMock.getContext());
+    return Collection.fromJS(CollectionFixtures.testOneOnlyJS(), CollectionFixtures.getContext());
   }
 
   static testOneTwo() {
-    return Collection.fromJS(CollectionMock.testOneTwoJS(), CollectionMock.getContext());
+    return Collection.fromJS(CollectionFixtures.testOneTwoJS(), CollectionFixtures.getContext());
   }
 }

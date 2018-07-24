@@ -18,7 +18,7 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionMock, EssenceMock, StageMock, TimekeeperMock } from "../../../common/models/mocks";
+import { DimensionFixtures, EssenceFixtures, StageFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
 
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
@@ -32,11 +32,11 @@ describe("NumberFilterMenu", () => {
     var renderedComponent = renderIntoDocument(
       <NumberFilterMenu
         clicker={null}
-        dimension={DimensionMock.time()}
-        essence={EssenceMock.wikiTotals()}
-        timekeeper={TimekeeperMock.fixed()}
+        dimension={DimensionFixtures.time()}
+        essence={EssenceFixtures.wikiTotals()}
+        timekeeper={TimekeeperFixtures.fixed()}
         onClose={null}
-        containerStage={StageMock.defaultA()}
+        containerStage={StageFixtures.defaultA()}
         openOn={div}
         inside={div}
 

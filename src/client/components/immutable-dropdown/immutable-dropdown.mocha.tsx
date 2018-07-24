@@ -19,9 +19,9 @@ import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
 import * as sinon from "sinon";
+import { DataCubeFixtures } from "../../../common/models/fixtures";
 
 import { DataCube, ListItem } from "../../../common/models/index";
-import { DataCubeMock } from "../../../common/models/mocks";
 
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
@@ -42,7 +42,7 @@ describe("ImmutableDropdown", () => {
 
     component = renderIntoDocument(
       <MyDropdown
-        instance={DataCubeMock.twitter()}
+        instance={DataCubeFixtures.twitter()}
         path={"clusterName"}
         label="Cluster"
 
