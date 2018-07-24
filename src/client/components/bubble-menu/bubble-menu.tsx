@@ -57,7 +57,7 @@ interface Coordinates {
   y: number;
 }
 
-interface PositionStyles {
+interface PositionCSSProperties {
   left?: number;
   right?: number;
   top?: number;
@@ -173,7 +173,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     }
   }
 
-  private calcMenuCoordinates(): PositionStyles {
+  private calcMenuPosition(): PositionCSSProperties {
     const { align, direction, stage } = this.props;
     const { x, y } = this.state;
     const { height, width } = stage;
@@ -208,7 +208,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     }
   }
 
-  private calcShpitzCoordinates(menuStyle: PositionStyles): PositionStyles {
+  private calcShpitzPosition(menuStyle: PositionCSSProperties): PositionCSSProperties {
     const { y, x } = this.state;
     const { direction } = this.props;
     const { top, left } = menuStyle;
@@ -249,10 +249,10 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     const { id } = this.state;
     const insideId = this.getInsideId();
 
-    const menuCoordinates = this.calcMenuCoordinates();
+    const menuCoordinates = this.calcMenuPosition();
 
     const hasShpitz = align === "center";
-    const shpitzCoordinates = hasShpitz && this.calcShpitzCoordinates(menuCoordinates);
+    const shpitzCoordinates = hasShpitz && this.calcShpitzPosition(menuCoordinates);
 
     const { left, top, bottom, height, width } = menuCoordinates;
     const menuSize = fixedSize ? { width: stage.width, height: stage.height } : { height, width };
