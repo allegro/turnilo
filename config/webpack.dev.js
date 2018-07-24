@@ -14,62 +14,26 @@
  * limitations under the License.
  */
 
-var path = require("path");
+var common = require("./webpack.common");
+var merge = require("webpack-merge");
 var webpack = require('webpack');
 var hotMiddlewareScript = 'webpack-hot-middleware/client';
 
-
-module.exports = {
+module.exports = merge.smart(common, {
   entry: {
     main: [hotMiddlewareScript, "./src/client/main.tsx"]
   },
   output: {
-    path: path.resolve(__dirname, '../build/public'),
-    filename: "main.js",
-    chunkFilename: "[name].[hash].js",
     publicPath: '/',
     pathinfo: false
   },
   devtool: "source-map",
-  resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json"]
-  },
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: "awesome-typescript-loader",
-            options: {
-              configFileName: "./src/client/tsconfig.json"
-            }
-          }
-        ]
-      },
       {
         enforce: "pre",
         test: /\.js$/,
         use: ["source-map-loader"]
-      },
-      {
-        test: /\.css$/,
-        use: [
-          "style-loader",
-          "css-loader"
-        ]
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          "style-loader",
-          "css-loader",
-          "sass-loader"
-        ]
-      },
-      {
-        test: /\.svg$/,
-        use: ["svg-inline-loader"]
       }
     ]
   },
@@ -80,4 +44,4 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
   ]
-};
+});

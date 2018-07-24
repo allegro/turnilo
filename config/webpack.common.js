@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-var common = require("./webpack.common");
-var merge = require("webpack-merge");
-var webpack = require('webpack');
+var path = require("path");
 
-module.exports = merge.smart(common, {
-  entry: {
-    main: ["./src/client/main.tsx"]
+module.exports = {
+  output: {
+    path: path.resolve(__dirname, '../build/public'),
+    filename: "main.js",
+    chunkFilename: "[name].[hash].js"
+  },
+  devtool: "source-map",
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".json"]
   },
   module: {
     rules: [
@@ -30,17 +34,30 @@ module.exports = merge.smart(common, {
           {
             loader: "awesome-typescript-loader",
             options: {
-              declaration: false,
+              configFileName: "./src/client/tsconfig.json"
             }
           }
         ]
       },
-   ]
-  },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-    new webpack.optimize.UglifyJsPlugin()
-  ]
-});
+      {
+        test: /\.css$/,
+        use: [
+          "style-loader",
+          "css-loader"
+        ]
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          "style-loader",
+          "css-loader",
+          "sass-loader"
+        ]
+      },
+      {
+        test: /\.svg$/,
+        use: ["svg-inline-loader"]
+      }
+    ]
+  }
+};
