@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-var common = require("./webpack.common");
-var merge = require("webpack-merge");
-var webpack = require('webpack');
+const common = require("./webpack.common");
+const merge = require("webpack-merge");
+const webpack = require('webpack');
 
 module.exports = merge.smart(common, {
   entry: {

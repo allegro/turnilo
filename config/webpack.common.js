@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-var path = require("path");
+const path = require("path");
 
 module.exports = {
   output: {

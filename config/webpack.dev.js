@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-var common = require("./webpack.common");
-var merge = require("webpack-merge");
-var webpack = require('webpack');
-var hotMiddlewareScript = 'webpack-hot-middleware/client';
+const common = require("./webpack.common");
+const merge = require("webpack-merge");
+const webpack = require('webpack');
+const hotMiddlewareScript = 'webpack-hot-middleware/client';
 
 module.exports = merge.smart(common, {
   entry: {
