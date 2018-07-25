@@ -18,8 +18,10 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./body-portal.scss";
+import updateStyle from "./update-style";
 
 export interface BodyPortalProps {
+
   left?: number | string;
   right?: number | string;
   top?: number | string;
@@ -30,10 +32,7 @@ export interface BodyPortalProps {
   isAboveAll?: boolean;
 }
 
-export interface BodyPortalState {
-}
-
-export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
+export class BodyPortal extends React.Component<BodyPortalProps, {}> {
   public static defaultProps: Partial<BodyPortalProps> = {
     disablePointerEvents: false,
     isAboveAll: false
@@ -52,28 +51,6 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     return this._target;
   }
 
-  normalizeDimension(dimension: number | string): string | undefined {
-    if (typeof dimension === "number") {
-      return Math.round(dimension) + "px";
-    }
-    if (typeof dimension === "string") {
-      return dimension;
-    }
-    return undefined;
-  }
-
-  updateStyle() {
-    const { left, top, bottom, right, disablePointerEvents, isAboveAll } = this.props;
-    let style = this._target.style;
-    style.top = this.normalizeDimension(top);
-    style.bottom = this.normalizeDimension(bottom);
-    style.left = this.normalizeDimension(left);
-    style.right = this.normalizeDimension(right);
-    style["z-index"] = 200 + (isAboveAll ? 1 : 0);
-
-    style["pointer-events"] = disablePointerEvents ? "none" : "auto";
-  }
-
   componentDidMount() {
     this.teleport();
 
@@ -87,9 +64,14 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     }
   }
 
+  updateStyle() {
+    const styles = this._target.style;
+    Object.assign(styles, updateStyle(styles, this.props));
+  }
+
   teleport() {
-    var { fullSize } = this.props;
-    var newDiv = document.createElement("div");
+    const { fullSize } = this.props;
+    let newDiv = document.createElement("div");
     newDiv.className = "body-portal" + (fullSize ? " full-size" : "");
     this._target = document.body.appendChild(newDiv);
     this.updateStyle();
