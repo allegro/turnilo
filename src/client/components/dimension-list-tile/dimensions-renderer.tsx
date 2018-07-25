@@ -35,7 +35,7 @@ export class DimensionsRenderer {
         if (child.type === DimensionForViewType.group) {
           return this.renderFolder(child);
         } else {
-          return this.renderMeasure(child);
+          return this.renderDimension(child);
         }
       });
   }
@@ -57,9 +57,9 @@ export class DimensionsRenderer {
     </SearchableFolder>;
   }
 
-  private renderMeasure(measureView: DimensionForView): JSX.Element {
+  private renderDimension(dimensionView: DimensionForView): JSX.Element {
     const { dimensionClick, dimensionDragStart, searchText } = this;
-    const { name, title, description, classSuffix, selected } = measureView;
+    const { name, title, description, classSuffix, selected } = dimensionView;
 
     return <DimensionItem
       key={name}
