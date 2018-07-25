@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@import '../../utils/styles/default-info-bubble-position';
 
 .info-bubble {
-  position: absolute;
-  right: 5px;
-  top: 3px;
+  @extend %default-info-bubble-position;
 }
 
 
