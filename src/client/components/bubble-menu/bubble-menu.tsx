@@ -23,9 +23,9 @@ import { BodyPortal } from "../body-portal/body-portal";
 import { Shpitz } from "../shpitz/shpitz";
 import "./bubble-menu.scss";
 
-const OFFSET_H = 10;
-const OFFSET_V = 0;
-const SCREEN_OFFSET = 5;
+export const OFFSET_H = 10;
+export const OFFSET_V = 0;
+export const SCREEN_OFFSET = 5;
 
 export type BubbleLayout = "normal" | "mini";
 export type Align = "start" | "center" | "end";
@@ -76,22 +76,24 @@ function defaultStage(): Stage {
 }
 
 function alignHorizontalInside(align: Align, { left, width }: ClientRect): number {
-  if (align === "center") {
-    return left + width / 2;
-  } else if (align === "start") {
-    return left;
-  } else { // align === 'end'
-    return left + width;
+  switch (align) {
+    case "center":
+      return left + width / 2;
+    case "start":
+      return left;
+    case"end":
+      return left + width;
   }
 }
 
 function alignHorizontalOutside(align: Align, x: number, width: number): number {
-  if (align === "center") {
-    return x - width / 2;
-  } else if (align === "start") {
-    return x;
-  } else { // align === 'end'
-    return x - width;
+  switch (align) {
+    case "center":
+      return x - width / 2;
+    case "start":
+      return x;
+    case "end":
+      return x - width;
   }
 }
 
@@ -175,31 +177,38 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
   private calcMenuPosition(): PositionCSSProperties {
     const { align, direction, stage } = this.props;
-    const { x, y } = this.state;
-    const { height, width } = stage;
+    const { x: menuX, y: menuY } = this.state;
+    const { height: menuHeight, width: menuWidth } = stage;
+
     const container = this.props.containerStage || defaultStage();
+    const containerVerticalExtent = container.y + container.height - menuHeight;
+    const containerHorizontalExtent = container.x + container.width - menuWidth;
+
     switch (direction) {
       case "right":
-        const top = clamp(y - height / 2, container.y, container.y + container.height - height);
+        const top = menuY - menuHeight / 2;
+        const clampedTop = clamp(top, container.y, containerVerticalExtent);
         return {
-          top,
-          height,
-          left: x
+          top: clampedTop,
+          height: menuHeight,
+          left: menuX
         };
       case "down": {
-        const left = clamp(alignHorizontalOutside(align, x, width), container.x, container.x + container.width - width);
+        const left = alignHorizontalOutside(align, menuX, menuWidth);
+        const clampedLeft = clamp(left, container.x, containerHorizontalExtent);
         return {
-          left,
-          width,
-          top: y
+          left: clampedLeft,
+          width: menuWidth,
+          top: menuY
         };
       }
       case "up": {
-        const left = clamp(alignHorizontalOutside(align, x, width), container.x, container.x + container.width - width);
+        const left = alignHorizontalOutside(align, menuX, menuWidth);
+        const clampedLeft = clamp(left, container.x, containerHorizontalExtent);
         return {
-          left,
-          width,
-          bottom: y
+          left: clampedLeft,
+          width: menuWidth,
+          bottom: menuY
         };
       }
 
@@ -209,9 +218,9 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   private calcShpitzPosition(menuStyle: PositionCSSProperties): PositionCSSProperties {
-    const { y, x } = this.state;
+    const { x, y } = this.state;
     const { direction } = this.props;
-    const { top, left } = menuStyle;
+    const { left, top } = menuStyle;
 
     switch (direction) {
       case "right":
