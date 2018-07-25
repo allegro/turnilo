@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
+import { parse } from "marked";
 import * as React from "react";
-import parseMarkdown from "../../../common/utils/markdown/markdown";
 import "./markdown-node.scss";
 
 export interface MarkdownBubbleProps {
   markdown: string;
 }
 
+function innerMarkdown(input: string): { __html: string } {
+  return { __html: parse(input) };
+}
+
 export const MarkdownNode: React.SFC<MarkdownBubbleProps> = ({ markdown }) => {
   return <div
     className="markdown-content"
-    dangerouslySetInnerHTML={parseMarkdown(markdown)}/>;
+    dangerouslySetInnerHTML={innerMarkdown(markdown)}/>;
 };
