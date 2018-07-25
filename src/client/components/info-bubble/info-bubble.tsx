@@ -22,6 +22,7 @@ import { MarkdownNode } from "../markdown-node/markdown-node";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./info-bubble.scss";
 
+const helpIcon = require("../../icons/help.svg");
 const BUBBLE_MAX_VERTICAL_SPACE = 120;
 
 export interface InfoBubbleState {
@@ -35,12 +36,10 @@ export interface InfoBubbleProps {
 
 export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState> {
 
-  showDescription = (e: React.MouseEvent<HTMLElement>) => {
-    const target = e.currentTarget;
-    const willBubbleFit = target.getBoundingClientRect().top > BUBBLE_MAX_VERTICAL_SPACE;
+  showDescription = ({ currentTarget }: React.MouseEvent<HTMLElement>) => {
+    const willBubbleFit = currentTarget.getBoundingClientRect().top > BUBBLE_MAX_VERTICAL_SPACE;
     const direction = willBubbleFit ? "up" : "down";
-    this.setState({ showInfo: { target, direction } });
-    e.stopPropagation();
+    this.setState({ showInfo: { target: currentTarget, direction } });
   }
 
   closeDescription = () => {
@@ -58,7 +57,7 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
 
     return <React.Fragment>
       <div className={classNames("info-button", className)} onClick={this.showDescription}>
-        <SvgIcon svg={require("../../icons/help.svg")}/>
+        <SvgIcon svg={helpIcon}/>
       </div>
       {showInfo && <BubbleMenu
         className="description-menu"

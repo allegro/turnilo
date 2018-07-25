@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { PureComponent } from "react";
+import { MouseEvent, PureComponent } from "react";
 import { classNames } from "../../utils/dom/dom";
 import { InfoBubble } from "../info-bubble/info-bubble";
 import { SvgIcon } from "../svg-icon/svg-icon";
@@ -38,6 +38,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
 
   readonly state: SearchableFolderState;
 
+  private readonly infoBubbleClassName = "info-bubble";
   private readonly openIcon = <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")}/>;
   private readonly closedIcon = <SvgIcon svg={require("../../icons/full-caret-small-right.svg")}/>;
 
@@ -58,7 +59,9 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
     }
   }
 
-  handleClick = () => {
+  handleClick = (e: MouseEvent<HTMLElement>) => {
+    const target = e.target as Element;
+    if (target.classList && target.classList.contains(this.infoBubbleClassName)) return;
     this.setState(prevState => ({ opened: !prevState.opened }));
   }
 
@@ -73,7 +76,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
       <div className={classNames("folder-header")} onClick={this.handleClick}>
         <div className={"folder-icon"}>{isGroupOpen ? this.openIcon : this.closedIcon}</div>
         <span className={"label"}>{title}</span>
-        {description && <InfoBubble className="info-bubble" description={description}/>}
+        {description && <InfoBubble className={this.infoBubbleClassName} description={description}/>}
       </div>
       <div className={classNames("folder-items", { closed: !isGroupOpen })}>
         {children}

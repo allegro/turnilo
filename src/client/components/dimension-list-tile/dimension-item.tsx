@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { DragEvent, MouseEvent, PureComponent } from "react";
+import { DragEvent, MouseEvent } from "react";
 import { classNames } from "../../utils/dom/dom";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { InfoBubble } from "../info-bubble/info-bubble";
@@ -38,41 +38,32 @@ export interface DimensionItemProps {
 export type DimensionClickHandler = (dimensionName: string, e: MouseEvent<HTMLElement>) => void;
 export type DimensionDragStartHandler = (dimensionName: string, e: DragEvent<HTMLElement>) => void;
 
-export class DimensionItem extends PureComponent<DimensionItemProps, {}> {
-  handleClick = (e: MouseEvent<HTMLElement>) => {
-    const { name, dimensionClick } = this.props;
+export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dimensionClick, dimensionDragStart, description, classSuffix, searchText, selected }) => {
+  const infoBubbleClassName = "info-bubble";
+  const className = classNames(DIMENSION_CLASS_NAME, "type-" + classSuffix, { selected });
+
+  const handleClick = (e: MouseEvent<HTMLElement>) => {
+    const target = e.target as Element;
+    if (target.classList && target.classList.contains(infoBubbleClassName)) return;
     dimensionClick(name, e);
-  }
+  };
 
-  handleDragStart = (e: DragEvent<HTMLElement>) => {
-    const { name, dimensionDragStart } = this.props;
+  const handleDragStart = (e: DragEvent<HTMLElement>) => {
     dimensionDragStart(name, e);
-  }
+  };
 
-  render() {
-    const { name, title, description, classSuffix, searchText, selected } = this.props;
 
-    const className = classNames(
-      DIMENSION_CLASS_NAME,
-      "type-" + classSuffix,
-      {
-        selected
-      }
-    );
-
-    return <div
-      className={className}
-      key={name}
-      onClick={this.handleClick}
-      draggable={true}
-      onDragStart={this.handleDragStart}
-    >
-      <div className="icon">
-        <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
-      </div>
-      <HighlightString className={classNames("label")} text={title} highlight={searchText} />
-      {description && <InfoBubble className="info-bubble" description={description}/>}
-    </div>;
-  }
-
-}
+  return <div
+    className={className}
+    key={name}
+    onClick={handleClick}
+    draggable={true}
+    onDragStart={handleDragStart}
+  >
+    <div className="icon">
+      <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")}/>
+    </div>
+    <HighlightString className={classNames("label")} text={title} highlight={searchText}/>
+    {description && <InfoBubble className={infoBubbleClassName} description={description}/>}
+  </div>;
+};

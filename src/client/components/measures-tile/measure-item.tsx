@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { MouseEvent, PureComponent } from "react";
+import { MouseEvent } from "react";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
 import { HighlightString } from "../highlight-string/highlight-string";
@@ -33,20 +33,19 @@ export interface MeasureItemProps {
   searchText: string;
 }
 
-export class MeasureItem extends PureComponent<MeasureItemProps> {
-  selectMeasure = (e: MouseEvent<HTMLElement>) => {
-    const { name, measureClick } = this.props;
+export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureClick, description, multiMeasureMode, searchText, selected }) => {
+
+  const infoBubbleClassName = "info-bubble";
+  const checkboxType = multiMeasureMode ? "check" : "radio";
+  const handleClick = (e: MouseEvent<HTMLElement>) => {
+    const target = e.target as Element;
+    if (target.classList && target.classList.contains(infoBubbleClassName)) return;
     measureClick(name, e);
-  }
+  };
 
-  render() {
-    const { title, description, multiMeasureMode, searchText, selected } = this.props;
-    const checkboxType = multiMeasureMode ? "check" : "radio";
-
-    return <div className={classNames("row", { selected })} onClick={this.selectMeasure}>
-      <Checkbox type={checkboxType} selected={selected}/>
-      <HighlightString className="label" text={title} highlight={searchText}/>
-      {description && <InfoBubble className="info-bubble" description={description}/>}
-    </div>;
-  }
-}
+  return <div className={classNames("row", { selected })} onClick={handleClick}>
+    <Checkbox type={checkboxType} selected={selected}/>
+    <HighlightString className="label" text={title} highlight={searchText}/>
+    {description && <InfoBubble className={infoBubbleClassName} description={description}/>}
+  </div>;
+};
