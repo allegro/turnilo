@@ -52,7 +52,6 @@ export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dime
     dimensionDragStart(name, e);
   };
 
-
   return <div
     className={className}
     key={name}
