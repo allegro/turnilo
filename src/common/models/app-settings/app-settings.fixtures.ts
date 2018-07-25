@@ -18,8 +18,8 @@
 import { basicExecutorFactory, Dataset } from "plywood";
 import { MANIFESTS } from "../../../common/manifests/index";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
-import { CollectionMock } from "../collection/collection.mock";
-import { DataCubeMock } from "../data-cube/data-cube.mock";
+import { CollectionFixtures } from "../collection/collection.fixtures";
+import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { AppSettings, AppSettingsContext, AppSettingsJS } from "./app-settings";
 
 const SMALL_WIKI_DATA = [
@@ -285,7 +285,7 @@ const SMALL_WIKI_DATA = [
   }
 ];
 
-export class AppSettingsMock {
+export class AppSettingsFixtures {
   public static wikiOnlyJS(): AppSettingsJS {
     return {
       customization: {
@@ -297,7 +297,7 @@ export class AppSettingsMock {
         ClusterFixtures.druidWikiClusterJS()
       ],
       dataCubes: [
-        DataCubeMock.WIKI_JS
+        DataCubeFixtures.WIKI_JS
       ]
     };
   }
@@ -313,9 +313,9 @@ export class AppSettingsMock {
         ClusterFixtures.druidWikiClusterJS()
       ],
       dataCubes: [
-        DataCubeMock.WIKI_JS
+        DataCubeFixtures.WIKI_JS
       ],
-      linkViewConfig: CollectionMock.testOneTwoJS()
+      linkViewConfig: CollectionFixtures.testOneTwoJS()
     };
   }
 
@@ -329,8 +329,8 @@ export class AppSettingsMock {
         ClusterFixtures.druidTwitterClusterJS()
       ],
       dataCubes: [
-        DataCubeMock.WIKI_JS,
-        DataCubeMock.TWITTER_JS
+        DataCubeFixtures.WIKI_JS,
+        DataCubeFixtures.TWITTER_JS
       ]
     };
   }
@@ -342,11 +342,11 @@ export class AppSettingsMock {
   }
 
   static wikiOnly() {
-    return AppSettings.fromJS(AppSettingsMock.wikiOnlyJS(), AppSettingsMock.getContext());
+    return AppSettings.fromJS(AppSettingsFixtures.wikiOnlyJS(), AppSettingsFixtures.getContext());
   }
 
   static wikiOnlyWithExecutor() {
-    return AppSettingsMock.wikiOnly().attachExecutors(() => {
+    return AppSettingsFixtures.wikiOnly().attachExecutors(() => {
       return basicExecutorFactory({
         datasets: {
           main: Dataset.fromJS(SMALL_WIKI_DATA)
@@ -356,6 +356,6 @@ export class AppSettingsMock {
   }
 
   static wikiTwitter() {
-    return AppSettings.fromJS(AppSettingsMock.wikiTwitterJS(), AppSettingsMock.getContext());
+    return AppSettings.fromJS(AppSettingsFixtures.wikiTwitterJS(), AppSettingsFixtures.getContext());
   }
 }

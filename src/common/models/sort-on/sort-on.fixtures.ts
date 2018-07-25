@@ -15,41 +15,49 @@
  * limitations under the License.
  */
 
-import { Stage, StageJS } from "./stage";
+import { SortOn, SortOnJS } from "./sort-on";
 
-export class StageMock {
-  public static get DEFAULT_A_JS(): StageJS {
+export class SortOnFixtures {
+  public static get DEFAULT_A_JS(): SortOnJS {
     return {
-      x: 10,
-      y: 5,
-      height: 2,
-      width: 2
+      measure: {
+        name: "price",
+        title: "Price",
+        formula: "$main.min($price)"
+      }
     };
   }
 
-  public static get DEFAULT_B_JS(): StageJS {
+  public static get DEFAULT_B_JS(): SortOnJS {
     return {
-      x: 10,
-      y: 500,
-      height: 2,
-      width: 2
+      measure: {
+        name: "price",
+        title: "Price",
+        formula: "$main.sum($price)"
+      }
     };
   }
 
-  public static get DEFAULT_C_JS(): StageJS {
+  public static get DEFAULT_C_JS(): SortOnJS {
     return {
-      x: 10,
-      y: 5,
-      height: 3,
-      width: 2
+      dimension: {
+        name: "country",
+        title: "important countries",
+        formula: "$country",
+        kind: "string"
+      }
     };
   }
 
   static defaultA() {
-    return Stage.fromJS(StageMock.DEFAULT_A_JS);
+    return SortOn.fromJS(SortOnFixtures.DEFAULT_A_JS);
   }
 
   static defaultB() {
-    return Stage.fromJS(StageMock.DEFAULT_B_JS);
+    return SortOn.fromJS(SortOnFixtures.DEFAULT_B_JS);
+  }
+
+  static defaultC() {
+    return SortOn.fromJS(SortOnFixtures.DEFAULT_C_JS);
   }
 }

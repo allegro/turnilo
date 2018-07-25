@@ -15,9 +15,17 @@
  * limitations under the License.
  */
 
-export * from "./essence/essence.mock";
-export * from "./timekeeper/timekeeper.mock";
-export * from "./dimension/dimension.mock";
-export * from "./data-cube/data-cube.mock";
-export * from "./stage/stage.mock";
-export * from "./sort-on/sort-on.mock";
+import { Timekeeper, TimekeeperJS } from "./timekeeper";
+
+export class TimekeeperFixtures {
+  static fixedJS(): TimekeeperJS {
+    return {
+      timeTags: [],
+      nowOverride: new Date("2016-08-08T08:08:08Z")
+    };
+  }
+
+  static fixed() {
+    return Timekeeper.fromJS(TimekeeperFixtures.fixedJS());
+  }
+}

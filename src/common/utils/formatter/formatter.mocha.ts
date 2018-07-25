@@ -18,8 +18,8 @@
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import { $ } from "plywood";
-import { DimensionMock } from "../../../common/models/mocks";
 import { FilterClause } from "../../models/filter-clause/filter-clause";
+import { DimensionFixtures } from "../../models/fixtures";
 import { formatFilterClause, formatterFromData, getMiddleNumber } from "./formatter";
 import { FormatterFixtures } from "./formatter.fixtures";
 
@@ -73,7 +73,7 @@ describe("General", () => {
     latestDurationTests.forEach(({ duration, step, label }) => {
       it(`formats previous ${-step} * ${duration} as "${label}"`, () => {
         const timeFilterLatest = FormatterFixtures.latestDuration(duration, step);
-        expect(formatFilterClause(DimensionMock.time(), timeFilterLatest, Timezone.UTC)).to.equal(label);
+        expect(formatFilterClause(DimensionFixtures.time(), timeFilterLatest, Timezone.UTC)).to.equal(label);
       });
     });
 
@@ -86,7 +86,7 @@ describe("General", () => {
     unsupportedLatestDurationTests.forEach(({ reference, duration, step }) => {
       it(`throws on formatting latest ${-step} * ${duration} with ${reference} reference"`, () => {
         const timeFilterLatest = FormatterFixtures.timeRangeDuration(reference, duration, step);
-        expect(() => formatFilterClause(DimensionMock.time(), timeFilterLatest, Timezone.UTC)).to.throw();
+        expect(() => formatFilterClause(DimensionFixtures.time(), timeFilterLatest, Timezone.UTC)).to.throw();
       });
     });
 
@@ -101,14 +101,14 @@ describe("General", () => {
     durationTests.forEach(({ duration, previousLabel: label }) => {
       it(`formats previous ${duration} as "${label}"`, () => {
         const timeFilterPrevious = FormatterFixtures.previousDuration(duration);
-        expect(formatFilterClause(DimensionMock.time(), timeFilterPrevious, Timezone.UTC)).to.equal(label);
+        expect(formatFilterClause(DimensionFixtures.time(), timeFilterPrevious, Timezone.UTC)).to.equal(label);
       });
     });
 
     durationTests.forEach(({ duration, currentLabel: label }) => {
       it(`formats current ${duration} as "${label}"`, () => {
         const timeFilterCurrent = FormatterFixtures.currentDuration(duration);
-        expect(formatFilterClause(DimensionMock.time(), timeFilterCurrent, Timezone.UTC)).to.equal(label);
+        expect(formatFilterClause(DimensionFixtures.time(), timeFilterCurrent, Timezone.UTC)).to.equal(label);
       });
     });
 
@@ -120,7 +120,7 @@ describe("General", () => {
     unsupportedPreviousDurationTests.forEach(({ reference, duration, step }) => {
       it(`throws on formatting previous ${-step} * ${duration} with ${reference} reference"`, () => {
         const timeFilterEarlier = FormatterFixtures.flooredDuration(reference, duration, step);
-        expect(() => formatFilterClause(DimensionMock.time(), timeFilterEarlier, Timezone.UTC)).to.throw();
+        expect(() => formatFilterClause(DimensionFixtures.time(), timeFilterEarlier, Timezone.UTC)).to.throw();
       });
     });
 
@@ -133,7 +133,7 @@ describe("General", () => {
     unsupportedCurrentDurationTests.forEach(({ reference, duration }) => {
       it(`throws on formatting current ${duration} with ${reference} reference"`, () => {
         const timeFilterCurrent = FormatterFixtures.flooredDuration(reference, duration, 1);
-        expect(() => formatFilterClause(DimensionMock.time(), timeFilterCurrent, Timezone.UTC)).to.throw();
+        expect(() => formatFilterClause(DimensionFixtures.time(), timeFilterCurrent, Timezone.UTC)).to.throw();
       });
     });
 
@@ -146,34 +146,34 @@ describe("General", () => {
     fixedTimeTests.forEach(({ start, end, label }) => {
       it(`formats [${start}, ${end}) as "${label}"`, () => {
         const filterClause = FormatterFixtures.fixedTimeFilter(new Date(start), new Date(end));
-        expect(formatFilterClause(DimensionMock.time(), filterClause, Timezone.UTC)).to.equal(label);
+        expect(formatFilterClause(DimensionFixtures.time(), filterClause, Timezone.UTC)).to.equal(label);
       });
     });
 
     fixedTimeTests.forEach(({ start, end, label }) => {
       it(`formats range [${start}, ${end}) as "time: ${label}"`, () => {
         const filterClause = FormatterFixtures.fixedTimeFilter(new Date(start), new Date(end));
-        expect(formatFilterClause(DimensionMock.time(), filterClause, Timezone.UTC, true)).to.equal(`time: ${label}`);
+        expect(formatFilterClause(DimensionFixtures.time(), filterClause, Timezone.UTC, true)).to.equal(`time: ${label}`);
       });
     });
 
     it("formats number", () => {
-      expect(formatFilterClause(DimensionMock.number(), FormatterFixtures.numberFilter(), Timezone.UTC)).to.equal("Numeric (3)");
+      expect(formatFilterClause(DimensionFixtures.number(), FormatterFixtures.numberFilter(), Timezone.UTC)).to.equal("Numeric (3)");
     });
 
     it("formats number verbose", () => {
-      expect(formatFilterClause(DimensionMock.number(), FormatterFixtures.numberFilter(), Timezone.UTC, true)).to.equal("Numeric: 1, 2, 3");
+      expect(formatFilterClause(DimensionFixtures.number(), FormatterFixtures.numberFilter(), Timezone.UTC, true)).to.equal("Numeric: 1, 2, 3");
     });
 
     it("formats string", () => {
       expect(
-        formatFilterClause(DimensionMock.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC)
+        formatFilterClause(DimensionFixtures.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC)
       ).to.equal("important countries: iceland");
     });
 
     it("formats string verbose", () => {
       expect(
-        formatFilterClause(DimensionMock.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC, true)
+        formatFilterClause(DimensionFixtures.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC, true)
       ).to.equal("important countries: iceland");
     });
   });

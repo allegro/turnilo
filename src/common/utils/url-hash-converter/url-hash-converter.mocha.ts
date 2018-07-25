@@ -17,8 +17,8 @@
 import { expect } from "chai";
 import { MANIFESTS } from "../../manifests";
 import { Essence } from "../../models";
-import { DataCubeMock } from "../../models/data-cube/data-cube.mock";
-import { EssenceMock } from "../../models/essence/essence.mock";
+import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
+import { EssenceFixtures } from "../../models/essence/essence.fixtures";
 import { ViewDefinitionVersion } from "../../view-definitions";
 import { urlHashConverter } from "./url-hash-converter";
 import { UrlHashConverterFixtures } from "./url-hash-converter.fixtures";
@@ -26,30 +26,30 @@ import { UrlHashConverterFixtures } from "./url-hash-converter.fixtures";
 describe("urlHashConverter", () => {
 
   const tests: Array<{ version: ViewDefinitionVersion, hash: string, essence: Essence }> = [
-    { version: "2", hash: UrlHashConverterFixtures.tableHashVersion2(), essence: EssenceMock.wikiTable() },
-    { version: "2", hash: UrlHashConverterFixtures.lineChartVersion2(), essence: EssenceMock.wikiLineChart() },
-    { version: "3", hash: UrlHashConverterFixtures.tableHashVersion3(), essence: EssenceMock.wikiTable() },
-    { version: "3", hash: UrlHashConverterFixtures.lineChartVersion3(), essence: EssenceMock.wikiLineChart() }
+    { version: "2", hash: UrlHashConverterFixtures.tableHashVersion2(), essence: EssenceFixtures.wikiTable() },
+    { version: "2", hash: UrlHashConverterFixtures.lineChartVersion2(), essence: EssenceFixtures.wikiLineChart() },
+    { version: "3", hash: UrlHashConverterFixtures.tableHashVersion3(), essence: EssenceFixtures.wikiTable() },
+    { version: "3", hash: UrlHashConverterFixtures.lineChartVersion3(), essence: EssenceFixtures.wikiLineChart() }
   ];
 
   tests.forEach(({ version, hash, essence }) => {
     const { visualization } = essence;
 
     it(`decodes ${visualization.name} version ${version} correctly`, () => {
-      const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeMock.wiki(), MANIFESTS);
+      const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
 
       expect(decodedEssence.toJS()).to.deep.equal(essence.toJS());
     });
 
     it(`is symmetric in decode/encode for ${visualization.name} in version ${version}`, () => {
       const encodedHash = urlHashConverter.toHash(essence, version);
-      const decodedEssence = urlHashConverter.essenceFromHash(encodedHash, DataCubeMock.wiki(), MANIFESTS);
+      const decodedEssence = urlHashConverter.essenceFromHash(encodedHash, DataCubeFixtures.wiki(), MANIFESTS);
 
       expect(essence.toJS()).to.deep.equal(decodedEssence.toJS());
     });
 
     it(`is symmetric in encode/decode for ${visualization.name} in version ${version}`, () => {
-      const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeMock.wiki(), MANIFESTS);
+      const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
       const encodedHash = urlHashConverter.toHash(decodedEssence, version);
 
       expect(encodedHash).to.deep.equal(hash);
@@ -63,7 +63,7 @@ describe("urlHashConverter", () => {
 
   minimalNumberOfSegmentsTests.forEach(({ version, hash }) => {
     it(`decodes version ${version} with minimal number of segments`, () => {
-      const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeMock.wiki(), MANIFESTS);
+      const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
 
       expect(decodedEssence).to.be.an.instanceOf(Essence);
     });
@@ -78,7 +78,7 @@ describe("urlHashConverter", () => {
 
   wrongHashStructureTests.forEach(({ hash, errorMessage }) => {
     it(`throws error for hash: "${hash}" with wrong structure`, () => {
-      const essenceFromHashCall = () => urlHashConverter.essenceFromHash(hash, DataCubeMock.wiki(), MANIFESTS);
+      const essenceFromHashCall = () => urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
       expect(essenceFromHashCall).to.throw(errorMessage);
     });
   });

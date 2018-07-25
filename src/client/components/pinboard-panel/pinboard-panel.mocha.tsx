@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { TimekeeperMock } from "../../../common/models/mocks";
+import { TimekeeperFixtures } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { PinboardPanel } from "./pinboard-panel";
 
@@ -29,7 +29,7 @@ describe.skip("PinboardPanel", () => {
       <PinboardPanel
         clicker={null}
         essence={null}
-        timekeeper={TimekeeperMock.fixed()}
+        timekeeper={TimekeeperFixtures.fixed()}
       />
     );
 

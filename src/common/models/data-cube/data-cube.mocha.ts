@@ -21,7 +21,7 @@ import { testImmutableClass } from "immutable-class-tester";
 import { AttributeInfo } from "plywood";
 import { Cluster } from "../cluster/cluster";
 import { DataCube, DataCubeJS } from "./data-cube";
-import { DataCubeMock } from "./data-cube.mock";
+import { DataCubeFixtures } from "./data-cube.fixtures";
 
 describe("DataCube", () => {
   var druidCluster = Cluster.fromJS({
@@ -35,8 +35,8 @@ describe("DataCube", () => {
 
   it("is an immutable class", () => {
     testImmutableClass<DataCubeJS>(DataCube, [
-      DataCubeMock.TWITTER_JS,
-      DataCubeMock.WIKI_JS
+      DataCubeFixtures.TWITTER_JS,
+      DataCubeFixtures.WIKI_JS
     ]);
   });
 

@@ -14,10 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
 
 .vis-measure-label {
   pointer-events: none;
   white-space: nowrap;
+
+  .measure-value {
+    font-weight: $bold;
+  }
+
+  .measure-previous-value {
+    padding-left: 10px;
+    padding-right: 10px;
+    color: $text-lighterish;
+  }
 }
+

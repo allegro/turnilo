@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceMock } from "../../../common/models/mocks";
+import { EssenceFixtures } from "../../../common/models/fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { DimensionListTile } from "./dimension-list-tile";
 
@@ -28,7 +28,7 @@ describe("DimensionListTile", () => {
     var renderedComponent = renderIntoDocument(
       <DimensionListTile
         clicker={null}
-        essence={EssenceMock.wikiTotals()}
+        essence={EssenceFixtures.wikiTotals()}
         menuStage={null}
         triggerFilterMenu={null}
         triggerSplitMenu={null}

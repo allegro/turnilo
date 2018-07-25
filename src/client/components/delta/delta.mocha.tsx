@@ -32,8 +32,8 @@ describe("Delta", () => {
     });
 
     it("should calculate delta attributes correctly", () => {
-      expect(formatDelta(10, 5)).to.deep.equal({ delta: 5, deltaPercentage: 50, deltaSign: 1 });
-      expect(formatDelta(10, 15)).to.deep.equal({ delta: -5, deltaPercentage: -50, deltaSign: -1 });
+      expect(formatDelta(10, 5)).to.deep.equal({ delta: 5, deltaPercentage: 100, deltaSign: 1 });
+      expect(formatDelta(5, 10)).to.deep.equal({ delta: -5, deltaPercentage: -50, deltaSign: -1 });
       expect(formatDelta(10, 10)).to.deep.equal({ delta: 0, deltaPercentage: 0, deltaSign: 0 });
     });
   });
@@ -51,21 +51,21 @@ describe("Delta", () => {
     });
 
     it("should render properly positive delta", () => {
-      const delta = shallow(<Delta currentValue={100} previousValue={20} formatter={formatter}/>);
+      const delta = shallow(<Delta currentValue={100} previousValue={50} formatter={formatter}/>);
 
       const deltaNode = delta.find("span");
 
       expect(deltaNode.hasClass("delta-positive")).to.be.true;
-      expect(deltaNode.text()).to.be.equal("▲80 (80%)");
+      expect(deltaNode.text()).to.be.equal("▲50 (100%)");
     });
 
     it("should render properly negative delta", () => {
-      const delta = shallow(<Delta currentValue={100} previousValue={180} formatter={formatter}/>);
+      const delta = shallow(<Delta currentValue={100} previousValue={200} formatter={formatter}/>);
 
       const deltaNode = delta.find("span");
 
       expect(deltaNode.hasClass("delta-negative")).to.be.true;
-      expect(deltaNode.text()).to.be.equal("▼80 (80%)");
+      expect(deltaNode.text()).to.be.equal("▼100 (50%)");
     });
 
     it("should render properly neutral delta", () => {
@@ -78,8 +78,8 @@ describe("Delta", () => {
     });
 
     it("should handle infinite cases for delta percentage", () => {
-      const positive = shallow(<Delta currentValue={0} previousValue={-100} formatter={formatter}/>);
-      const negative = shallow(<Delta currentValue={0} previousValue={100} formatter={formatter}/>);
+      const positive = shallow(<Delta currentValue={100} previousValue={0} formatter={formatter}/>);
+      const negative = shallow(<Delta currentValue={-100} previousValue={0} formatter={formatter}/>);
 
       const positiveNode = positive.find("span");
       const negativeNode = negative.find("span");

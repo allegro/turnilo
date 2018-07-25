@@ -30,6 +30,7 @@ describe.skip("VisMeasureLabel", () => {
       <VisMeasureLabel
         measure={null}
         datum={null}
+        showPrevious={false}
       />
     );
 

@@ -18,9 +18,10 @@
 import { expect } from "chai";
 import { shallow } from "enzyme";
 import * as React from "react";
-import { Align, BodyPortal, Direction, OFFSET_H, Shpitz } from "..";
-import { StageMock } from "../../../common/models/mocks";
-import { BubbleMenu } from "./bubble-menu";
+import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
+import { BodyPortal } from "../body-portal/body-portal";
+import { Shpitz } from "../shpitz/shpitz";
+import { Align, BubbleMenu, Direction, OFFSET_H } from "./bubble-menu";
 
 const windowHeight = 405;
 const anchor = {
@@ -29,7 +30,7 @@ const anchor = {
   height: 201,
   width: 202
 };
-const stage = StageMock.defaultB();
+const stage = StageFixtures.defaultB();
 
 const openOn = {
   getBoundingClientRect: () => anchor

@@ -692,10 +692,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
     chartStage: Stage,
     getX: any
   ): { yAxis: JSX.Element, chart: JSX.Element, highlight: JSX.Element } {
-    const { isThumbnail } = this.props;
+    const { isThumbnail, essence } = this.props;
     const mySplitDataset = dataset.data[0][SPLIT] as Dataset;
 
-    const measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]}/> : null;
+    const measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]} showPrevious={essence.hasComparison()}/> : null;
 
     // Invalid data, early return
     if (!this.hasValidYExtent(measure, mySplitDataset.data)) {

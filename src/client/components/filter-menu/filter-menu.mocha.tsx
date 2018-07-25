@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import * as React from "react";
-import { DimensionMock, EssenceMock, TimekeeperMock } from "../../../common/models/mocks";
+import { DimensionFixtures, EssenceFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { FilterMenu } from "./filter-menu";
 
@@ -26,9 +26,9 @@ class Wrap extends React.Component {
     return <FilterMenu
         clicker={null}
         containerStage={null}
-        dimension={DimensionMock.countryURL()}
-        essence={EssenceMock.wikiTotals()}
-        timekeeper={TimekeeperMock.fixed()}
+        dimension={DimensionFixtures.countryURL()}
+        essence={EssenceFixtures.wikiTotals()}
+        timekeeper={TimekeeperFixtures.fixed()}
         changePosition={null}
         onClose={null}
         openOn={document.createElement("div")}

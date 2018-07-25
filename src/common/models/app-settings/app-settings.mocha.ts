@@ -18,27 +18,27 @@
 import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
 
-import { DataCubeMock } from "../data-cube/data-cube.mock";
+import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { AppSettings } from "./app-settings";
-import { AppSettingsMock } from "./app-settings.mock";
+import { AppSettingsFixtures } from "./app-settings.fixtures";
 
 describe("AppSettings", () => {
-  var context = AppSettingsMock.getContext();
+  var context = AppSettingsFixtures.getContext();
 
   it("is an immutable class", () => {
     testImmutableClass(
       AppSettings,
       [
-        AppSettingsMock.wikiOnlyJS(),
-        AppSettingsMock.wikiTwitterJS(),
-        AppSettingsMock.wikiWithLinkViewJS()
+        AppSettingsFixtures.wikiOnlyJS(),
+        AppSettingsFixtures.wikiTwitterJS(),
+        AppSettingsFixtures.wikiWithLinkViewJS()
       ],
       { context });
   });
 
   describe("errors", () => {
     it("errors if there is no matching cluster", () => {
-      var js = AppSettingsMock.wikiOnlyJS();
+      var js = AppSettingsFixtures.wikiOnlyJS();
       js.clusters = [];
       expect(() => AppSettings.fromJS(js, context)).to.throw("Can not find cluster 'druid-wiki' for data cube 'wiki'");
     });
@@ -47,14 +47,14 @@ describe("AppSettings", () => {
 
   describe("back compat", () => {
     it("works with dataSources", () => {
-      var oldJS: any = AppSettingsMock.wikiOnlyJS();
+      var oldJS: any = AppSettingsFixtures.wikiOnlyJS();
       oldJS.dataSources = oldJS.dataCubes;
       delete oldJS.dataCubes;
-      expect(AppSettings.fromJS(oldJS, context).toJS()).to.deep.equal(AppSettingsMock.wikiOnlyJS());
+      expect(AppSettings.fromJS(oldJS, context).toJS()).to.deep.equal(AppSettingsFixtures.wikiOnlyJS());
     });
 
     it("deals with old config style", () => {
-      var wikiDataCubeJS = DataCubeMock.WIKI_JS;
+      var wikiDataCubeJS = DataCubeFixtures.WIKI_JS;
       delete wikiDataCubeJS.clusterName;
       (wikiDataCubeJS as any).engine = "druid";
 
@@ -90,7 +90,7 @@ describe("AppSettings", () => {
         druidHost: "192.168.99.100",
         sourceListScan: "disable",
         dataSources: [
-          { ...DataCubeMock.WIKI_JS, clusterName: "druid" }
+          { ...DataCubeFixtures.WIKI_JS, clusterName: "druid" }
         ]
       };
 
@@ -116,7 +116,7 @@ describe("AppSettings", () => {
     });
 
     it("converts to client settings", () => {
-      const settings = AppSettingsMock.wikiOnlyWithExecutor();
+      const settings = AppSettingsFixtures.wikiOnlyWithExecutor();
 
       expect(settings.toClientSettings().toJS()).to.deep.equal({
         clusters: [
