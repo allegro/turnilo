@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { omitFalsyValues } from "../../../common/utils";
 
 function normalizeDimension(dimension: number | string): string | undefined {
   if (typeof dimension === "number") {
@@ -24,15 +25,6 @@ function normalizeDimension(dimension: number | string): string | undefined {
     return dimension;
   }
   return undefined;
-}
-
-function omitFalsyValues<T>(obj: T): Partial<T> {
-  return Object.keys(obj).reduce<Partial<T>>((res, key: keyof T) => {
-    if (obj[key]) {
-      res[key] = obj[key];
-    }
-    return res;
-  }, {});
 }
 
 export interface StyleDefinition {

@@ -15,10 +15,21 @@
  * limitations under the License.
  */
 
+import {  isTruthy } from "..";
+
 export function extend(source: any, target: any): any {
   for (let key in source) {
     target[key] = source[key];
   }
 
   return target;
+}
+
+export function omitFalsyValues<T>(obj: T): Partial<T> {
+  return Object.keys(obj).reduce<Partial<T>>((res, key: keyof T) => {
+    if (isTruthy(obj[key])) {
+      res[key] = obj[key];
+    }
+    return res;
+  }, {});
 }
