@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { $, Dataset, Expression, ply } from "plywood";
+import { $, Dataset, Expression, ply, RefExpression } from "plywood";
 import * as React from "react";
 import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
 import { Period } from "../../../common/models/periods/periods";
@@ -69,6 +69,22 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const { splits, colors, dataCube } = essence;
     const measures = essence.getEffectiveMeasures();
 
+    function measureWithPeriod(name: string): { measure: Measure, period: Period } {
+      if (name.startsWith("_delta_")) {
+        return { measure: null, period: null }; // we shouldn't not reproduce apply expression for delta here
+      }
+      if (name.startsWith(Period.PREVIOUS)) {
+        return {
+          period: Period.PREVIOUS,
+          measure: dataCube.getMeasure(name.substr(Period.PREVIOUS.length))
+        };
+      }
+      return {
+        period: Period.CURRENT,
+        measure: dataCube.getMeasure(name)
+      };
+    }
+
     const $main = $("main");
 
     const hasComparison = essence.hasComparison();
@@ -118,9 +134,10 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
       subQuery = applyMeasures(subQuery, nestingLevel);
 
-      const applyForSort = essence.getApplyForSort(sortAction, nestingLevel);
-      if (applyForSort) {
-        subQuery = subQuery.performAction(applyForSort);
+      const { measure: sortMeasure, period } = measureWithPeriod((sortAction.expression as RefExpression).name);
+      if (sortMeasure) {
+        const filter = period === Period.CURRENT ? currentFilter : previousFilter;
+        subQuery = subQuery.performAction(sortMeasure.filteredApplyExpression(period, filter, nestingLevel));
       }
       subQuery = subQuery.performAction(sortAction);
 

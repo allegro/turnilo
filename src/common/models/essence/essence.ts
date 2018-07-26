@@ -601,13 +601,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return highlight.delta.getSingleClauseSet();
   }
 
-  public getApplyForSort(sort: SortExpression, nestingLevel = 0): ApplyExpression {
-    var sortOn = (<RefExpression> sort.expression).name;
-    var sortMeasure = this.dataCube.getMeasure(sortOn);
-    if (!sortMeasure) return null;
-    return sortMeasure.toApplyExpression(nestingLevel);
-  }
-
   public getCommonSort(): SortExpression {
     return this.splits.getCommonSort(this.dataCube.dimensions);
   }
