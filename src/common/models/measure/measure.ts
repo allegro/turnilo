@@ -31,7 +31,6 @@ import {
   RefExpression
 } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
-import { Period } from "../periods/periods";
 import { MeasureOrGroupVisitor } from "./measure-group";
 
 function formatFnFactory(format: string): (n: number) => string {
@@ -59,6 +58,8 @@ export interface MeasureJS {
   transformation?: string;
 }
 
+export enum MeasureDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
+
 export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static DEFAULT_FORMAT = "0,0.0 a";
   static INTEGER_FORMAT = "0,0 a";
@@ -73,6 +74,25 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     if (!measureName) return null;
     measureName = measureName.toLowerCase(); // Case insensitive
     return measures.find(measure => measure.name.toLowerCase() === measureName);
+  }
+
+  static nominalName(name: string): { name: string, derivation: MeasureDerivation } {
+    if (name.startsWith(MeasureDerivation.DELTA)) {
+      return {
+        name: name.substr(MeasureDerivation.DELTA.length),
+        derivation: MeasureDerivation.DELTA
+      };
+    }
+    if (name.startsWith(MeasureDerivation.PREVIOUS)) {
+      return {
+        name: name.substr(MeasureDerivation.PREVIOUS.length),
+        derivation: MeasureDerivation.PREVIOUS
+      };
+    }
+    return {
+      derivation: MeasureDerivation.CURRENT,
+      name
+    };
   }
 
   /**
@@ -210,18 +230,18 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return this === other || Measure.isMeasure(other) && super.equals(other);
   }
 
-  public nameWithPeriod(period: Period): string {
-    return `${period}${this.name}`;
+  public derivedName(derivation: MeasureDerivation): string {
+    return `${derivation}${this.name}`;
   }
 
-  public filteredApplyExpression(period: Period, filter: Expression, nesting = 0): ApplyExpression {
+  public filteredApplyExpression(derivation: MeasureDerivation, filter: Expression, nesting = 0): ApplyExpression {
     const applyExpression = this.toApplyExpression(nesting);
     const { expression } = applyExpression;
-    const name = this.nameWithPeriod(period);
+    const name = this.derivedName(derivation);
     return new ApplyExpression({
       ...applyExpression,
       name,
-      expression: expression.substitute(function(e) {
+      expression: expression.substitute(e => {
         if (e instanceof RefExpression && e.name === "main") {
           return $("main").filter(filter);
         }

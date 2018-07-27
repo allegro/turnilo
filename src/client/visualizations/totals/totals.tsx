@@ -16,11 +16,10 @@
  */
 
 import { Iterable, List } from "immutable";
-import { $, Dataset, Datum, Expression, ply } from "plywood";
+import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
-import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
-import { Period } from "../../../common/models/periods/periods";
+import { DatasetLoad, Measure, MeasureDerivation, VisualizationProps } from "../../../common/models/index";
 import { Delta } from "../../components/delta/delta";
 import { classNames } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
@@ -102,7 +101,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       return null;
     }
     const currentValue = datum[measure.name] as number;
-    const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+    const previousValue = datum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
 
     return <div className="measure-value measure-value--previous">
       {measure.formatFn(previousValue)}
