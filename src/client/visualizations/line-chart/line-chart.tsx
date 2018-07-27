@@ -23,10 +23,11 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
 import { getLineChartTicks } from "../../../common/models/granularity/granularity";
-import { DatasetLoad, Dimension, Filter, FilterClause, Measure, SplitCombine, Splits, Stage, VisualizationProps } from "../../../common/models/index";
+import { DatasetLoad, Dimension, Essence, Filter, FilterClause, Measure, SplitCombine, Splits, Stage, Timekeeper, VisualizationProps } from "../../../common/models/index";
 import { Period } from "../../../common/models/periods/periods";
 import { JSXNode } from "../../../common/utils";
 import { formatValue } from "../../../common/utils/formatter/formatter";
+import { union } from "../../../common/utils/plywood/range";
 import { DisplayYear } from "../../../common/utils/time/time";
 import {
   ChartLine,
@@ -668,10 +669,9 @@ export class LineChart extends BaseVisualization<LineChartState> {
       if (continuousDimension) {
         newState.continuousDimension = continuousDimension;
 
-        const filterXRange = essence
-          .getEffectiveFilter(timekeeper, { highlightId: LineChart.id })
-          .getExtent(continuousDimension.expression) as PlywoodRange;
-        const axisRange = this.getAxisXRange(filterXRange, dataset, continuousSplit, props);
+        const filterRange = this.getFilterRange(essence, continuousSplit, timekeeper);
+        const datasetRange = this.getDatasetXRange(dataset, continuousDimension);
+        const axisRange = union(filterRange, datasetRange);
         if (axisRange) {
           const domain = [(axisRange).start, (axisRange).end] as [number, number];
           const range = [0, stage.width - VIS_H_PADDING * 2 - Y_AXIS_WIDTH];
@@ -687,21 +687,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
     this.setState(newState);
   }
 
-  private getAxisXRange(filterXRange: PlywoodRange, dataset: Dataset, continuousSplit: SplitCombine, props: VisualizationProps): PlywoodRange {
-    const { essence } = props;
+  private getFilterRange(essence: Essence, continuousSplit: SplitCombine, timekeeper: Timekeeper): PlywoodRange {
     const continuousDimension = continuousSplit.getDimension(essence.dataCube.dimensions);
-    if (!filterXRange) {
-      return this.getDatasetXRange(dataset, continuousDimension);
-    }
-    const maxTime = essence.dataCube.getMaxTime(props.timekeeper);
-    const rangeWithMaxTime = this.ensureMaxTime(filterXRange, maxTime, continuousSplit, essence.timezone);
-    if (!dataset) return rangeWithMaxTime;
-    return this.unionWithDatasetXRange(rangeWithMaxTime, dataset, continuousDimension);
-  }
+    const filterRange = essence
+      .getEffectiveFilter(timekeeper, { highlightId: LineChart.id })
+      .getExtent(continuousDimension.expression) as PlywoodRange;
 
-  private unionWithDatasetXRange(axisRange: PlywoodRange, dataset: Dataset, continuousDimension: Dimension): PlywoodRange {
-    const datasetRange = this.getDatasetXRange(dataset, continuousDimension);
-    return axisRange.union(datasetRange);
+    const maxTime = essence.dataCube.getMaxTime(timekeeper);
+    return this.ensureMaxTime(filterRange, maxTime, continuousSplit, essence.timezone);
   }
 
   private ensureMaxTime(axisRange: PlywoodRange, maxTime: Date, continuousSplit: SplitCombine, timezone: Timezone) {
