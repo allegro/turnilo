@@ -81,7 +81,7 @@ export enum ColumnType { CURRENT, PREVIOUS, DELTA }
 export enum HoverElement { CORNER, ROW, HEADER, WHITESPACE, SPACE_LEFT }
 
 export interface PositionHover {
-  what: HoverElement;
+  element: HoverElement;
   measure?: Measure;
   columnType?: ColumnType;
   row?: Datum;
@@ -114,11 +114,11 @@ export class Table extends BaseVisualization<TableState> {
     const { essence } = this.props;
     const { flatData } = this.state;
 
-    if (x <= SPACE_LEFT) return { what: HoverElement.SPACE_LEFT };
+    if (x <= SPACE_LEFT) return { element: HoverElement.SPACE_LEFT };
     x -= SPACE_LEFT;
 
     if (y <= HEADER_HEIGHT) {
-      if (x <= this.getSegmentWidth()) return { what: HoverElement.CORNER };
+      if (x <= this.getSegmentWidth()) return { element: HoverElement.CORNER };
       const effectiveMeasures = essence.getEffectiveMeasures();
 
       x = x - this.getSegmentWidth();
@@ -127,27 +127,27 @@ export class Table extends BaseVisualization<TableState> {
       if (essence.hasComparison()) {
         const nominalIndex = integerDivision(measureIndex, 3);
         const measure = effectiveMeasures.get(nominalIndex);
-        if (!measure) return { what: HoverElement.WHITESPACE };
+        if (!measure) return { element: HoverElement.WHITESPACE };
         const columnType = indexToColumnType(measureIndex);
-        return { what: HoverElement.HEADER, measure, columnType };
+        return { element: HoverElement.HEADER, measure, columnType };
       }
       const measure = effectiveMeasures.get(measureIndex);
-      if (!measure) return { what: HoverElement.WHITESPACE };
-      return { what: HoverElement.HEADER, measure, columnType: ColumnType.CURRENT };
+      if (!measure) return { element: HoverElement.WHITESPACE };
+      return { element: HoverElement.HEADER, measure, columnType: ColumnType.CURRENT };
     }
 
     y = y - HEADER_HEIGHT;
     const rowIndex = Math.floor(y / ROW_HEIGHT);
     const datum = flatData ? flatData[rowIndex] : null;
-    if (!datum) return { what: HoverElement.WHITESPACE };
-    return { what: HoverElement.ROW, row: datum };
+    if (!datum) return { element: HoverElement.WHITESPACE };
+    return { element: HoverElement.ROW, row: datum };
   }
 
-  private getSortRef({ what, columnType, measure }: PositionHover): RefExpression {
-    if (what === HoverElement.CORNER) {
+  private getSortRef({ element, columnType, measure }: PositionHover): RefExpression {
+    if (element === HoverElement.CORNER) {
       return $(SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER);
     }
-    if (what === HoverElement.HEADER) {
+    if (element === HoverElement.HEADER) {
       switch (columnType) {
         case ColumnType.CURRENT:
           return $(measure.name);
@@ -157,7 +157,7 @@ export class Table extends BaseVisualization<TableState> {
           return $(measure.derivedName(MeasureDerivation.DELTA));
       }
     }
-    throw new Error(`Can't create sort reference for position element: ${what}`);
+    throw new Error(`Can't create sort reference for position element: ${element}`);
   }
 
   private getSortAction(ref: RefExpression, { columnType, measure }: PositionHover, direction: Direction): SortExpression {
@@ -182,9 +182,9 @@ export class Table extends BaseVisualization<TableState> {
     const { splits, dataCube } = essence;
 
     const mousePos = this.calculateMousePosition(x, y);
-    const { row, what } = mousePos;
+    const { row, element } = mousePos;
 
-    if (what === HoverElement.CORNER || what === HoverElement.HEADER) {
+    if (element === HoverElement.CORNER || element === HoverElement.HEADER) {
       if (!clicker.changeSplits) return;
 
       const sortExpression = this.getSortExpression(mousePos);
@@ -192,7 +192,7 @@ export class Table extends BaseVisualization<TableState> {
         splits.changeSortExpressionFromNormalized(sortExpression, essence.dataCube.dimensions),
         VisStrategy.KeepAlways
       );
-    } else if (what === HoverElement.ROW) {
+    } else if (element === HoverElement.ROW) {
       if (!clicker.dropHighlight || !clicker.changeHighlight) return;
 
       const rowHighlight = getFilterFromDatum(splits, row, dataCube);
