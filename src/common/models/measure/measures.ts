@@ -61,7 +61,7 @@ function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<{ na
       }
       return null;
     })
-    .filter(isNil)
+    .filter(invalid => !isNil(invalid))
     .toList();
 }
 
@@ -92,12 +92,12 @@ export class Measures {
 
     const duplicateNames = findDuplicateNames(flattenedMeasuresWithGroups);
     if (duplicateNames.size > 0) {
-      throw new Error(`Found duplicate measure or group with names: ${quoteNames(duplicateNames)}`);
+      throw new Error(`found duplicate measure or group with names: ${quoteNames(duplicateNames)}`);
     }
 
     const invalidNames = measureNamesWithForbiddenPrefix(flattenedMeasuresWithGroups);
     if (invalidNames.size > 0) {
-      throw new Error(`Found measure that starts with forbidden prefixes : ${invalidNames.map(({ name, prefix }) => `${name} (${prefix}) `)}`);
+      throw new Error(`found measure that starts with forbidden prefixes : ${invalidNames.map(({ name, prefix }) => `${name} (${prefix}) `)}`);
     }
 
     this.flattenedMeasures = filterMeasures(flattenedMeasuresWithGroups);
