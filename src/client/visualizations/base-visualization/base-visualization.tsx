@@ -17,8 +17,7 @@
 
 import { $, Dataset, Expression, ply, RefExpression } from "plywood";
 import * as React from "react";
-import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
-import { Period } from "../../../common/models/periods/periods";
+import { DatasetLoad, Essence, Measure, MeasureDerivation, Timekeeper, VisualizationProps } from "../../../common/models/index";
 import { GlobalEventListener, Loader, QueryError } from "../../components/index";
 import { SPLIT } from "../../config/constants";
 import "./base-visualization.scss";
@@ -69,22 +68,6 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const { splits, colors, dataCube } = essence;
     const measures = essence.getEffectiveMeasures();
 
-    function measureWithPeriod(name: string): { measure: Measure, period: Period } {
-      if (name.startsWith("_delta_")) {
-        return { measure: null, period: null }; // we shouldn't not reproduce apply expression for delta here
-      }
-      if (name.startsWith(Period.PREVIOUS)) {
-        return {
-          period: Period.PREVIOUS,
-          measure: dataCube.getMeasure(name.substr(Period.PREVIOUS.length))
-        };
-      }
-      return {
-        period: Period.CURRENT,
-        measure: dataCube.getMeasure(name)
-      };
-    }
-
     const $main = $("main");
 
     const hasComparison = essence.hasComparison();
@@ -104,8 +87,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
           );
         }
         return query
-          .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter, nestingLevel))
-          .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter, nestingLevel));
+          .performAction(measure.filteredApplyExpression(MeasureDerivation.CURRENT, currentFilter, nestingLevel))
+          .performAction(measure.filteredApplyExpression(MeasureDerivation.PREVIOUS, previousFilter, nestingLevel));
       }, query);
     }
 
@@ -134,10 +117,12 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
       subQuery = applyMeasures(subQuery, nestingLevel);
 
-      const { measure: sortMeasure, period } = measureWithPeriod((sortAction.expression as RefExpression).name);
-      if (sortMeasure) {
-        const filter = period === Period.CURRENT ? currentFilter : previousFilter;
-        subQuery = subQuery.performAction(sortMeasure.filteredApplyExpression(period, filter, nestingLevel));
+      const { name: sortMeasureName, derivation } = Measure.nominalName((sortAction.expression as RefExpression).name);
+      if (sortMeasureName && derivation === MeasureDerivation.CURRENT) {
+        const sortMeasure = dataCube.getMeasure(sortMeasureName);
+        if (!measures.contains(sortMeasure)) {
+          subQuery = subQuery.performAction(sortMeasure.filteredApplyExpression(derivation, currentFilter, nestingLevel));
+        }
       }
       subQuery = subQuery.performAction(sortAction);
 

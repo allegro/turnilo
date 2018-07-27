@@ -29,7 +29,6 @@ import { Filter, FilterJS } from "../filter/filter";
 import { Highlight, HighlightJS } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
-import { Period } from "../periods/periods";
 import { SplitCombine } from "../split-combine/split-combine";
 import { Splits, SplitsJS } from "../splits/splits";
 import { TimeShift, TimeShiftJS } from "../time-shift/time-shift";
