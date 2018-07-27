@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-import { $, Dataset, Expression, ply } from "plywood";
+import { $, Dataset, Expression, ply, RefExpression } from "plywood";
 import * as React from "react";
-import { DatasetLoad, Essence, Measure, Timekeeper, VisualizationProps } from "../../../common/models/index";
-import { Period } from "../../../common/models/periods/periods";
+import { DatasetLoad, Essence, Measure, MeasureDerivation, Timekeeper, VisualizationProps } from "../../../common/models/index";
 import { GlobalEventListener, Loader, QueryError } from "../../components/index";
 import { SPLIT } from "../../config/constants";
 import "./base-visualization.scss";
@@ -88,8 +87,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
           );
         }
         return query
-          .performAction(measure.filteredApplyExpression(Period.CURRENT, currentFilter, nestingLevel))
-          .performAction(measure.filteredApplyExpression(Period.PREVIOUS, previousFilter, nestingLevel));
+          .performAction(measure.filteredApplyExpression(MeasureDerivation.CURRENT, currentFilter, nestingLevel))
+          .performAction(measure.filteredApplyExpression(MeasureDerivation.PREVIOUS, previousFilter, nestingLevel));
       }, query);
     }
 
@@ -118,9 +117,12 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
       subQuery = applyMeasures(subQuery, nestingLevel);
 
-      const applyForSort = essence.getApplyForSort(sortAction, nestingLevel);
-      if (applyForSort) {
-        subQuery = subQuery.performAction(applyForSort);
+      const { name: sortMeasureName, derivation } = Measure.nominalName((sortAction.expression as RefExpression).name);
+      if (sortMeasureName && derivation === MeasureDerivation.CURRENT) {
+        const sortMeasure = dataCube.getMeasure(sortMeasureName);
+        if (!measures.contains(sortMeasure)) {
+          subQuery = subQuery.performAction(sortMeasure.filteredApplyExpression(derivation, currentFilter, nestingLevel));
+        }
       }
       subQuery = subQuery.performAction(sortAction);
 

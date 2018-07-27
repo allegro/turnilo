@@ -22,8 +22,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
 import { getLineChartTicks } from "../../../common/models/granularity/granularity";
-import { DatasetLoad, Dimension, Filter, FilterClause, Measure, Splits, Stage, VisualizationProps } from "../../../common/models/index";
-import { Period } from "../../../common/models/periods/periods";
+import { DatasetLoad, Dimension, Filter, FilterClause, Measure, MeasureDerivation, Splits, Stage, VisualizationProps } from "../../../common/models/index";
 import { JSXNode } from "../../../common/utils";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
@@ -364,7 +363,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             value: measure.formatDatum(hoverDatum),
             delta: essence.hasComparison() && <Delta
               currentValue={hoverDatum[measure.name] as number}
-              previousValue={hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number}
+              previousValue={hoverDatum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number}
               formatter={measure.formatFn}
             />
           };
@@ -419,7 +418,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             return currentEntry;
           }
 
-          const hoverDatumElement = hoverDatum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+          const hoverDatumElement = hoverDatum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
           return {
             ...currentEntry,
             previous: measure.formatFn(hoverDatumElement),
@@ -462,7 +461,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     if (!this.props.essence.hasComparison()) {
       return measure.formatFn(currentValue);
     }
-    const previous = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+    const previous = datum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
     return <MeasureBubbleContent
       current={currentValue}
       previous={previous}
@@ -599,7 +598,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
 
     const getY: Unary<Datum, number> = (d: Datum) => d[measure.name] as number;
-    const getYP: Unary<Datum, number> = (d: Datum) => d[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+    const getYP: Unary<Datum, number> = (d: Datum) => d[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
 
     const datum: Datum = dataset.data[0];
     const splitData = datum[SPLIT] as Dataset;

@@ -20,8 +20,7 @@ import { List } from "immutable";
 import { $, Datum, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
-import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, SplitCombine, Splits, VisStrategy, VisualizationProps } from "../../../common/models/index";
-import { Period } from "../../../common/models/periods/periods";
+import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, MeasureDerivation, SplitCombine, Splits, VisStrategy, VisualizationProps } from "../../../common/models/index";
 import { integerDivision } from "../../../common/utils";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
 import { Delta, SegmentActionButtons } from "../../components";
@@ -76,7 +75,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataCube: Da
 export interface PositionHover {
   what: string;
   measure?: Measure;
-  period?: Period;
+  measureDerivation?: MeasureDerivation;
   row?: Datum;
 }
 
@@ -122,12 +121,12 @@ export class Table extends BaseVisualization<TableState> {
         const nominalIndex = integerDivision(measureIndex, 3);
         const measure = effectiveMeasures.get(nominalIndex);
         if (!measure) return { what: "whitespace" };
-        const period = measureIndex % 3 === 0 ? Period.CURRENT : Period.PREVIOUS;
-        return { what: "header", measure, period };
+        const measureDerivation = measureIndex % 3 === 0 ? MeasureDerivation.CURRENT : MeasureDerivation.PREVIOUS;
+        return { what: "header", measure, measureDerivation };
       }
       const measure = effectiveMeasures.get(measureIndex);
       if (!measure) return { what: "whitespace" };
-      return { what: "header", measure, period: Period.CURRENT };
+      return { what: "header", measure, measureDerivation: MeasureDerivation.CURRENT };
     }
 
     y = y - HEADER_HEIGHT;
@@ -141,12 +140,12 @@ export class Table extends BaseVisualization<TableState> {
     const { clicker, essence } = this.props;
     const { splits, dataCube } = essence;
 
-    const { measure, period, row, what } = this.calculateMousePosition(x, y);
+    const { measure, measureDerivation, row, what } = this.calculateMousePosition(x, y);
 
     if (what === "corner" || what === "header") {
       if (!clicker.changeSplits) return;
 
-      const sortReference = $(what === "corner" ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : measure.nameWithPeriod(period));
+      const sortReference = $(what === "corner" ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : measure.derivedName(measureDerivation));
       const commonSort = essence.getCommonSort();
       const myDescending = (commonSort && commonSort.expression.equals(sortReference) && commonSort.direction === SortExpression.DESCENDING);
       const sortExpression = new SortExpression({
@@ -291,7 +290,7 @@ export class Table extends BaseVisualization<TableState> {
           return [currentCell];
         }
 
-        const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+        const previousValue = datum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
 
         return [
           currentCell,
@@ -344,12 +343,12 @@ export class Table extends BaseVisualization<TableState> {
         return [currentMeasure];
       }
 
-      const isPreviousSorted = commonSortName === measure.nameWithPeriod(Period.PREVIOUS);
+      const isPreviousSorted = commonSortName === measure.derivedName(MeasureDerivation.PREVIOUS);
       return [
         currentMeasure,
         <div
           className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
-          key={measure.nameWithPeriod(Period.PREVIOUS)}
+          key={measure.derivedName(MeasureDerivation.PREVIOUS)}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Previous {measure.title}</div>
@@ -357,7 +356,7 @@ export class Table extends BaseVisualization<TableState> {
         </div>,
         <div
           className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
-          key={`${measure.name}-delta`}
+          key={measure.derivedName(MeasureDerivation.DELTA)}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Difference</div>
