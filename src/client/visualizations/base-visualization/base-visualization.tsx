@@ -117,10 +117,15 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
       subQuery = applyMeasures(subQuery, nestingLevel);
 
+      // It's possible to define sort on measure that's not selected thus we need to add apply expression for that measure.
+      // We don't need add apply expresions for:
+      //   * dimensions - they're already defined as apply expressions because of splits
+      //   * selected measures - they're defined as apply expressions already
+      //   * previos/delta - we need to define them earlier so they're present here
       const { name: sortMeasureName, derivation } = Measure.nominalName((sortAction.expression as RefExpression).name);
       if (sortMeasureName && derivation === MeasureDerivation.CURRENT) {
         const sortMeasure = dataCube.getMeasure(sortMeasureName);
-        if (!measures.contains(sortMeasure)) {
+        if (sortMeasure && !measures.contains(sortMeasure)) {
           subQuery = subQuery.performAction(sortMeasure.filteredApplyExpression(derivation, currentFilter, nestingLevel));
         }
       }
