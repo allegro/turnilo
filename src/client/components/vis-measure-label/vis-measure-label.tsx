@@ -18,8 +18,7 @@
 import { Datum } from "plywood";
 import * as React from "react";
 import { Delta } from "..";
-import { Measure } from "../../../common/models/index";
-import { Period } from "../../../common/models/periods/periods";
+import { Measure, MeasureDerivation } from "../../../common/models/index";
 import "./vis-measure-label.scss";
 
 export interface VisMeasureLabelProps {
@@ -30,7 +29,7 @@ export interface VisMeasureLabelProps {
 
 function renderPrevious(measure: Measure, datum: Datum): JSX.Element {
   const current = datum[measure.name] as number;
-  const previous = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+  const previous = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
   return <React.Fragment>
     <span className="measure-previous-value">
       {measure.formatFn(previous)}
