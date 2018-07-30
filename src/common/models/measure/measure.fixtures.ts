@@ -15,12 +15,28 @@
  */
 
 import { ExpressionJS } from "plywood";
-import { Measure, MeasureJS } from "./measure";
+import { Measure, MeasureDerivation, MeasureJS } from "./measure";
 
 export class MeasureFixtures {
   static wikiCountJS(): MeasureJS {
     return {
       name: "count",
+      title: "Count",
+      formula: "$main.sum($count)"
+    };
+  }
+
+  static previousWikiCountJS(): MeasureJS {
+    return {
+      name: Measure.derivedName("count", MeasureDerivation.PREVIOUS),
+      title: "Count",
+      formula: "$main.sum($count)"
+    };
+  }
+
+  static deltaWikiCountJS(): MeasureJS {
+    return {
+      name: Measure.derivedName("count", MeasureDerivation.DELTA),
       title: "Count",
       formula: "$main.sum($count)"
     };

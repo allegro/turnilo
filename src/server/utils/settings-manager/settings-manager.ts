@@ -16,9 +16,9 @@
  */
 
 import { SimpleArray } from "immutable-class";
-import { Logger } from "logger-tracker";
 import { basicExecutorFactory, Dataset, External } from "plywood";
 import * as Q from "q";
+import { Logger } from "../../../common/logger/logger";
 import { AppSettings, Cluster, DataCube, Timekeeper } from "../../../common/models/index";
 import { pluralIfNeeded } from "../../../common/utils/general/general";
 import { TimeMonitor } from "../../../common/utils/time-monitor/time-monitor";

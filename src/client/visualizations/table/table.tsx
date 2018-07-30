@@ -17,11 +17,10 @@
 
 import * as d3 from "d3";
 import { List } from "immutable";
-import { $, Datum, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
+import { $, ApplyExpression, Datum, Direction, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
-import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, SplitCombine, Splits, VisStrategy, VisualizationProps } from "../../../common/models/index";
-import { Period } from "../../../common/models/periods/periods";
+import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, MeasureDerivation, SplitCombine, Splits, VisStrategy, VisualizationProps } from "../../../common/models/index";
 import { integerDivision } from "../../../common/utils";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
 import { Delta, SegmentActionButtons } from "../../components";
@@ -73,10 +72,18 @@ function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataCube: Da
   return new Filter(List(filterClauses));
 }
 
+function indexToColumnType(index: number): ColumnType {
+  return [ColumnType.CURRENT, ColumnType.PREVIOUS, ColumnType.DELTA][index % 3];
+}
+
+export enum ColumnType { CURRENT, PREVIOUS, DELTA }
+
+export enum HoverElement { CORNER, ROW, HEADER, WHITESPACE, SPACE_LEFT }
+
 export interface PositionHover {
-  what: string;
+  element: HoverElement;
   measure?: Measure;
-  period?: Period;
+  columnType?: ColumnType;
   row?: Datum;
 }
 
@@ -107,57 +114,85 @@ export class Table extends BaseVisualization<TableState> {
     const { essence } = this.props;
     const { flatData } = this.state;
 
-    if (x <= SPACE_LEFT) return { what: "space-left" };
+    if (x <= SPACE_LEFT) return { element: HoverElement.SPACE_LEFT };
     x -= SPACE_LEFT;
 
     if (y <= HEADER_HEIGHT) {
-      if (x <= this.getSegmentWidth()) return { what: "corner" };
+      if (x <= this.getSegmentWidth()) return { element: HoverElement.CORNER };
       const effectiveMeasures = essence.getEffectiveMeasures();
 
       x = x - this.getSegmentWidth();
       const measureWidth = this.getIdealColumnWidth(this.props.essence);
       const measureIndex = Math.floor(x / measureWidth);
       if (essence.hasComparison()) {
-        if (measureIndex % 3 === 2) return { what: "whitespace" };
         const nominalIndex = integerDivision(measureIndex, 3);
         const measure = effectiveMeasures.get(nominalIndex);
-        if (!measure) return { what: "whitespace" };
-        const period = measureIndex % 3 === 0 ? Period.CURRENT : Period.PREVIOUS;
-        return { what: "header", measure, period };
+        if (!measure) return { element: HoverElement.WHITESPACE };
+        const columnType = indexToColumnType(measureIndex);
+        return { element: HoverElement.HEADER, measure, columnType };
       }
       const measure = effectiveMeasures.get(measureIndex);
-      if (!measure) return { what: "whitespace" };
-      return { what: "header", measure, period: Period.CURRENT };
+      if (!measure) return { element: HoverElement.WHITESPACE };
+      return { element: HoverElement.HEADER, measure, columnType: ColumnType.CURRENT };
     }
 
     y = y - HEADER_HEIGHT;
     const rowIndex = Math.floor(y / ROW_HEIGHT);
     const datum = flatData ? flatData[rowIndex] : null;
-    if (!datum) return { what: "whitespace" };
-    return { what: "row", row: datum };
+    if (!datum) return { element: HoverElement.WHITESPACE };
+    return { element: HoverElement.ROW, row: datum };
+  }
+
+  private getSortRef({ element, columnType, measure }: PositionHover): RefExpression {
+    if (element === HoverElement.CORNER) {
+      return $(SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER);
+    }
+    if (element === HoverElement.HEADER) {
+      switch (columnType) {
+        case ColumnType.CURRENT:
+          return $(measure.name);
+        case ColumnType.PREVIOUS:
+          return $(measure.getDerivedName(MeasureDerivation.PREVIOUS));
+        case ColumnType.DELTA:
+          return $(measure.getDerivedName(MeasureDerivation.DELTA));
+      }
+    }
+    throw new Error(`Can't create sort reference for position element: ${element}`);
+  }
+
+  private getSortAction(ref: RefExpression, { columnType, measure }: PositionHover, direction: Direction): SortExpression {
+    if (columnType === ColumnType.DELTA) {
+      const name = measure.getDerivedName(MeasureDerivation.DELTA);
+      const expression = $(measure.name).subtract($(measure.getDerivedName(MeasureDerivation.PREVIOUS)));
+      return new ApplyExpression({ name, expression }).sort(ref, direction);
+    }
+    return new SortExpression({ expression: ref, direction });
+  }
+
+  private getSortExpression(position: PositionHover): SortExpression {
+    const sortReference = this.getSortRef(position);
+    const commonSort = this.props.essence.getCommonSort();
+    const isDesc = (commonSort && commonSort.expression.equals(sortReference) && commonSort.direction === SortExpression.DESCENDING);
+    const direction = isDesc ? SortExpression.ASCENDING : SortExpression.DESCENDING;
+    return this.getSortAction(sortReference, position, direction);
   }
 
   onClick(x: number, y: number) {
     const { clicker, essence } = this.props;
     const { splits, dataCube } = essence;
 
-    const { measure, period, row, what } = this.calculateMousePosition(x, y);
+    const mousePos = this.calculateMousePosition(x, y);
+    const { row, element } = mousePos;
 
-    if (what === "corner" || what === "header") {
+    if (element === HoverElement.CORNER || element === HoverElement.HEADER) {
       if (!clicker.changeSplits) return;
 
-      const sortReference = $(what === "corner" ? SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER : measure.nameWithPeriod(period));
-      const commonSort = essence.getCommonSort();
-      const myDescending = (commonSort && commonSort.expression.equals(sortReference) && commonSort.direction === SortExpression.DESCENDING);
-      const sortExpression = new SortExpression({
-        expression: sortReference,
-        direction: myDescending ? SortExpression.ASCENDING : SortExpression.DESCENDING
-      });
+      const sortExpression = this.getSortExpression(mousePos);
       clicker.changeSplits(
         splits.changeSortExpressionFromNormalized(sortExpression, essence.dataCube.dimensions),
         VisStrategy.KeepAlways
       );
-    } else if (what === "row") {
+    } else if (element === HoverElement.ROW) {
       if (!clicker.dropHighlight || !clicker.changeHighlight) return;
 
       const rowHighlight = getFilterFromDatum(splits, row, dataCube);
@@ -291,7 +326,7 @@ export class Table extends BaseVisualization<TableState> {
           return [currentCell];
         }
 
-        const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+        const previousValue = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
 
         return [
           currentCell,
@@ -344,23 +379,25 @@ export class Table extends BaseVisualization<TableState> {
         return [currentMeasure];
       }
 
-      const isPreviousSorted = commonSortName === measure.nameWithPeriod(Period.PREVIOUS);
+      const isPreviousSorted = commonSortName === measure.getDerivedName(MeasureDerivation.PREVIOUS);
+      const isDeltaSorted = commonSortName === measure.getDerivedName(MeasureDerivation.DELTA);
       return [
         currentMeasure,
         <div
           className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
-          key={measure.nameWithPeriod(Period.PREVIOUS)}
+          key={measure.getDerivedName(MeasureDerivation.PREVIOUS)}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Previous {measure.title}</div>
           {isPreviousSorted ? sortArrowIcon : null}
         </div>,
         <div
-          className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
-          key={`${measure.name}-delta`}
+          className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: isDeltaSorted })}
+            key={measure.getDerivedName(MeasureDerivation.DELTA)}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Difference</div>
+          {isDeltaSorted ? sortArrowIcon : null}
         </div>
       ];
     });

@@ -28,8 +28,6 @@ export interface ServerSettingsValue {
   serverRoot?: string;
   healthEnpoint?: string;
   requestLogFormat?: string;
-  trackingUrl?: string;
-  trackingContext?: Record<string, string>;
   pageMustLoadTimeout?: number;
   iframe?: Iframe;
   trustProxy?: TrustProxy;
@@ -82,8 +80,6 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
     { name: "serverRoot", defaultValue: ServerSettings.DEFAULT_SERVER_ROOT },
     { name: "healthEndpoint", defaultValue: ServerSettings.DEFAULT_HEALTH_ENDPOINT },
     { name: "requestLogFormat", defaultValue: ServerSettings.DEFAULT_REQUEST_LOG_FORMAT },
-    { name: "trackingUrl", defaultValue: null },
-    { name: "trackingContext", defaultValue: null, equal: basicEqual },
     { name: "pageMustLoadTimeout", defaultValue: ServerSettings.DEFAULT_PAGE_MUST_LOAD_TIMEOUT },
     { name: "iframe", defaultValue: ServerSettings.DEFAULT_IFRAME, possibleValues: ServerSettings.IFRAME_VALUES },
     { name: "trustProxy", defaultValue: ServerSettings.DEFAULT_TRUST_PROXY, possibleValues: ServerSettings.TRUST_PROXY_VALUES },
@@ -101,8 +97,6 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public serverRoot: string;
   public healthEndpoint: string;
   public requestLogFormat: string;
-  public trackingUrl: string;
-  public trackingContext: Record<string, string>;
   public pageMustLoadTimeout: number;
   public iframe: Iframe;
   public trustProxy: TrustProxy;
@@ -118,9 +112,6 @@ export class ServerSettings extends BaseImmutable<ServerSettingsValue, ServerSet
   public getServerHost: () => string;
   public getServerRoot: () => string;
   public getHealthEndpoint: () => string;
-  public getRequestLogFormat: () => string;
-  public getTrackingUrl: () => string;
-  public getTrackingContext: () => Record<string, string>;
   public getPageMustLoadTimeout: () => number;
   public getIframe: () => Iframe;
   public getTrustProxy: () => TrustProxy;

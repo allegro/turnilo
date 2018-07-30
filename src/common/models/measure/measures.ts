@@ -18,9 +18,8 @@
 import { List, OrderedSet } from "immutable";
 import { immutableArraysEqual } from "immutable-class";
 import { Expression } from "plywood";
-import { quoteNames } from "../../utils/general/general";
-import { Period } from "../periods/periods";
-import { Measure } from "./measure";
+import { isNil, quoteNames } from "../../utils/general/general";
+import { Measure, MeasureDerivation } from "./measure";
 import { isMeasureGroupJS, MeasureGroup, MeasureOrGroup, measureOrGroupFromJS, MeasureOrGroupJS, MeasureOrGroupVisitor } from "./measure-group";
 
 class FlattenMeasuresWithGroupsVisitor implements MeasureOrGroupVisitor<void> {
@@ -48,11 +47,21 @@ function findDuplicateNames(items: List<MeasureOrGroup>): List<string> {
     .toList();
 }
 
-function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<string> {
+function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<{ name: string, prefix: string }> {
   return items
-    .filter(measureOrGroup =>
-      !isMeasureGroupJS(measureOrGroup) && measureOrGroup.name.startsWith(Period.PREVIOUS))
-    .map(m => m.name)
+    .map(measureOrGroup => {
+      if (isMeasureGroupJS(measureOrGroup)) {
+        return null;
+      }
+      if (measureOrGroup.name.startsWith(MeasureDerivation.PREVIOUS)) {
+        return { name: measureOrGroup.name, prefix: MeasureDerivation.PREVIOUS };
+      }
+      if (measureOrGroup.name.startsWith(MeasureDerivation.DELTA)) {
+        return { name: measureOrGroup.name, prefix: MeasureDerivation.DELTA };
+      }
+      return null;
+    })
+    .filter(invalid => !isNil(invalid))
     .toList();
 }
 
@@ -88,9 +97,8 @@ export class Measures {
 
     const invalidNames = measureNamesWithForbiddenPrefix(flattenedMeasuresWithGroups);
     if (invalidNames.size > 0) {
-      throw new Error(`found measure that starts with forbidden prefix (${Period.PREVIOUS}): ${quoteNames(invalidNames)}`);
+      throw new Error(`found measure that starts with forbidden prefixes: ${invalidNames.map(({ name, prefix }) => `'${name}' (prefix: '${prefix}')`).toArray().join(", ")}`);
     }
-
     this.flattenedMeasures = filterMeasures(flattenedMeasuresWithGroups);
   }
 

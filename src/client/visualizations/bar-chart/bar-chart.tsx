@@ -21,11 +21,9 @@ import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, r, Range, Set, 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BAR_CHART_MANIFEST } from "../../../common/manifests/bar-chart/bar-chart";
-import { DataCube, DatasetLoad, Dimension, Filter, FilterClause, Measure, Splits, Stage, VisualizationProps } from "../../../common/models/index";
-import { Period } from "../../../common/models/periods/periods";
+import { DataCube, DatasetLoad, Dimension, Filter, FilterClause, Measure, MeasureDerivation, Splits, Stage, VisualizationProps } from "../../../common/models/index";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
-import { Delta } from "../../components/delta/delta";
 import { BucketMarks, GridLines, MeasureBubbleContent, Scroller, ScrollerLayout, SegmentActionButtons, SegmentBubble, VerticalAxis, VisMeasureLabel } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { classNames, roundToPx } from "../../utils/dom/dom";
@@ -440,7 +438,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     if (!this.props.essence.hasComparison()) {
       return measure.formatFn(currentValue);
     }
-    const previousValue = datum[measure.nameWithPeriod(Period.PREVIOUS)] as number;
+    const previousValue = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
     return <MeasureBubbleContent
       formatter={measure.formatFn}
       current={currentValue}
