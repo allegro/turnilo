@@ -101,7 +101,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       return null;
     }
     const currentValue = datum[measure.name] as number;
-    const previousValue = datum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
+    const previousValue = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
 
     return <div className="measure-value measure-value--previous">
       {measure.formatFn(previousValue)}

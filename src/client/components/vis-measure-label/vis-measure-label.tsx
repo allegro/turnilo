@@ -29,7 +29,7 @@ export interface VisMeasureLabelProps {
 
 function renderPrevious(measure: Measure, datum: Datum): JSX.Element {
   const current = datum[measure.name] as number;
-  const previous = datum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
+  const previous = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
   return <React.Fragment>
     <span className="measure-previous-value">
       {measure.formatFn(previous)}

@@ -363,7 +363,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             value: measure.formatDatum(hoverDatum),
             delta: essence.hasComparison() && <Delta
               currentValue={hoverDatum[measure.name] as number}
-              previousValue={hoverDatum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number}
+              previousValue={hoverDatum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number}
               formatter={measure.formatFn}
             />
           };
@@ -418,7 +418,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
             return currentEntry;
           }
 
-          const hoverDatumElement = hoverDatum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
+          const hoverDatumElement = hoverDatum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
           return {
             ...currentEntry,
             previous: measure.formatFn(hoverDatumElement),
@@ -461,7 +461,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     if (!this.props.essence.hasComparison()) {
       return measure.formatFn(currentValue);
     }
-    const previous = datum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
+    const previous = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
     return <MeasureBubbleContent
       current={currentValue}
       previous={previous}
@@ -598,7 +598,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
 
     const getY: Unary<Datum, number> = (d: Datum) => d[measure.name] as number;
-    const getYP: Unary<Datum, number> = (d: Datum) => d[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
+    const getYP: Unary<Datum, number> = (d: Datum) => d[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
 
     const datum: Datum = dataset.data[0];
     const splitData = datum[SPLIT] as Dataset;

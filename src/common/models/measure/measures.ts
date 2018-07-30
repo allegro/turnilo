@@ -97,9 +97,8 @@ export class Measures {
 
     const invalidNames = measureNamesWithForbiddenPrefix(flattenedMeasuresWithGroups);
     if (invalidNames.size > 0) {
-      throw new Error(`found measure that starts with forbidden prefixes : ${invalidNames.map(({ name, prefix }) => `${name} (${prefix}) `)}`);
+      throw new Error(`found measure that starts with forbidden prefixes: ${invalidNames.map(({ name, prefix }) => `'${name}' (prefix: '${prefix}')`).toArray().join(", ")}`);
     }
-
     this.flattenedMeasures = filterMeasures(flattenedMeasuresWithGroups);
   }
 

@@ -438,7 +438,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     if (!this.props.essence.hasComparison()) {
       return measure.formatFn(currentValue);
     }
-    const previousValue = datum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
+    const previousValue = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
     return <MeasureBubbleContent
       formatter={measure.formatFn}
       current={currentValue}

@@ -76,6 +76,10 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return measures.find(measure => measure.name.toLowerCase() === measureName);
   }
 
+  static derivedName(name: string, derivation: MeasureDerivation): string {
+    return `${derivation}${name}`;
+  }
+
   static nominalName(name: string): { name: string, derivation: MeasureDerivation } {
     if (name.startsWith(MeasureDerivation.DELTA)) {
       return {
@@ -230,14 +234,14 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return this === other || Measure.isMeasure(other) && super.equals(other);
   }
 
-  public derivedName(derivation: MeasureDerivation): string {
-    return `${derivation}${this.name}`;
+  public getDerivedName(derivation: MeasureDerivation): string {
+    return Measure.derivedName(this.name, derivation);
   }
 
   public filteredApplyExpression(derivation: MeasureDerivation, filter: Expression, nesting = 0): ApplyExpression {
     const applyExpression = this.toApplyExpression(nesting);
     const { expression } = applyExpression;
-    const name = this.derivedName(derivation);
+    const name = this.getDerivedName(derivation);
     return new ApplyExpression({
       ...applyExpression,
       name,

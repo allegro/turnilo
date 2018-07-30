@@ -152,9 +152,9 @@ export class Table extends BaseVisualization<TableState> {
         case ColumnType.CURRENT:
           return $(measure.name);
         case ColumnType.PREVIOUS:
-          return $(measure.derivedName(MeasureDerivation.PREVIOUS));
+          return $(measure.getDerivedName(MeasureDerivation.PREVIOUS));
         case ColumnType.DELTA:
-          return $(measure.derivedName(MeasureDerivation.DELTA));
+          return $(measure.getDerivedName(MeasureDerivation.DELTA));
       }
     }
     throw new Error(`Can't create sort reference for position element: ${element}`);
@@ -162,8 +162,8 @@ export class Table extends BaseVisualization<TableState> {
 
   private getSortAction(ref: RefExpression, { columnType, measure }: PositionHover, direction: Direction): SortExpression {
     if (columnType === ColumnType.DELTA) {
-      const name = measure.derivedName(MeasureDerivation.DELTA);
-      const expression = $(measure.name).subtract($(measure.derivedName(MeasureDerivation.PREVIOUS)));
+      const name = measure.getDerivedName(MeasureDerivation.DELTA);
+      const expression = $(measure.name).subtract($(measure.getDerivedName(MeasureDerivation.PREVIOUS)));
       return new ApplyExpression({ name, expression }).sort(ref, direction);
     }
     return new SortExpression({ expression: ref, direction });
@@ -326,7 +326,7 @@ export class Table extends BaseVisualization<TableState> {
           return [currentCell];
         }
 
-        const previousValue = datum[measure.derivedName(MeasureDerivation.PREVIOUS)] as number;
+        const previousValue = datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
 
         return [
           currentCell,
@@ -379,13 +379,13 @@ export class Table extends BaseVisualization<TableState> {
         return [currentMeasure];
       }
 
-      const isPreviousSorted = commonSortName === measure.derivedName(MeasureDerivation.PREVIOUS);
-      const isDeltaSorted = commonSortName === measure.derivedName(MeasureDerivation.DELTA);
+      const isPreviousSorted = commonSortName === measure.getDerivedName(MeasureDerivation.PREVIOUS);
+      const isDeltaSorted = commonSortName === measure.getDerivedName(MeasureDerivation.DELTA);
       return [
         currentMeasure,
         <div
           className={classNames("measure-name", { hover: measure === hoverMeasure, sorted: isPreviousSorted })}
-          key={measure.derivedName(MeasureDerivation.PREVIOUS)}
+          key={measure.getDerivedName(MeasureDerivation.PREVIOUS)}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Previous {measure.title}</div>
@@ -393,7 +393,7 @@ export class Table extends BaseVisualization<TableState> {
         </div>,
         <div
           className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: isDeltaSorted })}
-            key={measure.derivedName(MeasureDerivation.DELTA)}
+            key={measure.getDerivedName(MeasureDerivation.DELTA)}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Difference</div>
