@@ -29,7 +29,6 @@ import { Filter, FilterJS } from "../filter/filter";
 import { Highlight, HighlightJS } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
-import { Period } from "../periods/periods";
 import { SplitCombine } from "../split-combine/split-combine";
 import { Splits, SplitsJS } from "../splits/splits";
 import { TimeShift, TimeShiftJS } from "../time-shift/time-shift";
@@ -599,13 +598,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     var { highlight } = this;
     if (!highlight) return null;
     return highlight.delta.getSingleClauseSet();
-  }
-
-  public getApplyForSort(sort: SortExpression, nestingLevel = 0): ApplyExpression {
-    var sortOn = (<RefExpression> sort.expression).name;
-    var sortMeasure = this.dataCube.getMeasure(sortOn);
-    if (!sortMeasure) return null;
-    return sortMeasure.toApplyExpression(nestingLevel);
   }
 
   public getCommonSort(): SortExpression {
