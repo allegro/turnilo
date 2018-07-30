@@ -53,13 +53,6 @@ describe("ServerSettings", () => {
       },
       {
         port: 9091,
-        trackingUrl: "http://mytracker-is-cool.io/trackz",
-        trackingContext: {
-          service: "me"
-        }
-      },
-      {
-        port: 9091,
         auth: "my_auth.js"
       },
       {

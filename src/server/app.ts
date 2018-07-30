@@ -20,8 +20,8 @@ import * as compress from "compression";
 import * as express from "express";
 import { Handler, Request, Response, Router } from "express";
 import { hsts } from "helmet";
-import { logAndTrack, LOGGER } from "logger-tracker";
 import * as path from "path";
+import { LOGGER } from "../common/logger/logger";
 import { GetSettingsOptions } from "../server/utils/settings-manager/settings-manager";
 import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
 import * as collectionsRoutes from "./routes/collections/collections";
@@ -78,9 +78,6 @@ function addGuardedRoutes(attach: string, guard: string, router: Router | Handle
 
 // Add compression
 app.use(compress());
-
-// Add request logging and tracking
-app.use(logAndTrack(SERVER_SETTINGS.getRequestLogFormat()));
 
 // Add Strict Transport Security
 if (SERVER_SETTINGS.getStrictTransportSecurity() === "always") {

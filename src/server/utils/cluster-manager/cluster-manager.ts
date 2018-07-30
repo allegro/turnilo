@@ -16,12 +16,12 @@
  */
 
 import { NamedArray } from "immutable-class";
-import { Logger } from "logger-tracker";
 import * as path from "path";
 import { External } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
 import { DruidRequestDecorator } from "plywood-druid-requester";
 import * as Q from "q";
+import { Logger } from "../../../common/logger/logger";
 import { Cluster } from "../../../common/models/index";
 import { properRequesterFactory } from "../requester/requester";
 

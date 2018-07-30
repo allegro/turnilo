@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Logger } from "logger-tracker";
 import * as Q from "q";
+import { Logger } from "../../logger/logger";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 
 export type Check = () => Promise<Date>;

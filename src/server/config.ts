@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { LOGGER, TRACKER } from "logger-tracker";
 import * as nopt from "nopt";
 import * as path from "path";
+import { LOGGER } from "../common/logger/logger";
 import { AppSettings, Cluster, DataCube, SupportedType } from "../common/models/index";
 import { arraySum } from "../common/utils/general/general";
 import { appSettingsToYAML } from "../common/utils/yaml-helper/yaml-helper";
@@ -174,8 +174,6 @@ if (numSettingsInputs > 1) {
 export const PRINT_CONFIG = Boolean(parsedArgs["print-config"]);
 export const START_SERVER = !PRINT_CONFIG;
 
-if (START_SERVER) LOGGER.init();
-
 // Load server settings
 var serverSettingsFilePath = parsedArgs["config"];
 
@@ -214,15 +212,6 @@ if (parsedArgs["auth"]) {
 export const VERBOSE = Boolean(parsedArgs["verbose"] || serverSettingsJS.verbose);
 export const SERVER_SETTINGS = ServerSettings.fromJS(serverSettingsJS);
 
-// --- Tracker --------------------------------
-
-if (START_SERVER) {
-  var trackingUrl = SERVER_SETTINGS.getTrackingUrl();
-  if (trackingUrl) {
-    TRACKER.init(VERSION, trackingUrl, SERVER_SETTINGS.getTrackingContext());
-  }
-}
-
 // --- Auth -------------------------------
 
 var auth = SERVER_SETTINGS.auth;
@@ -242,7 +231,6 @@ if (auth && auth !== "none") {
   if (typeof authModule.auth !== "function") exitWithError("Invalid auth module: must export 'auth' function");
   authMiddleware = authModule.auth({
     logger: LOGGER,
-    tracker: TRACKER,
     verbose: VERBOSE,
     version: VERSION,
     serverSettings: SERVER_SETTINGS
@@ -253,11 +241,6 @@ export const AUTH = authMiddleware;
 // --- Sign of Life -------------------------------
 if (START_SERVER) {
   LOGGER.log(`Starting Turnilo v${VERSION}`);
-  TRACKER.track({
-    eventType: "swiv_init",
-    metric: "init",
-    value: 1
-  });
 }
 
 // --- Location -------------------------------
