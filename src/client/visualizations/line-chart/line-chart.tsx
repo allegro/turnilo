@@ -23,7 +23,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
 import { getLineChartTicks } from "../../../common/models/granularity/granularity";
-import { DatasetLoad, Dimension, Essence, Filter, FilterClause, Measure, MeasureDerivation, SplitCombine, Splits, Stage, VisualizationProps } from "../../../common/models/index";
+import { DatasetLoad, Dimension, Essence, Filter, FilterClause, Measure, MeasureDerivation, SplitCombine, Splits, Stage, Timekeeper, VisualizationProps } from "../../../common/models/index";
 import { JSXNode } from "../../../common/utils";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { union } from "../../../common/utils/plywood/range";
