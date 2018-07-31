@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../../imports';
 
 .cube-header-bar {
@@ -25,8 +24,32 @@
     animation-duration: 1s;
 
     @keyframes rotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
     }
+  }
+
+  .left-bar .cube-description {
+    display: inline-block;
+    padding: 11px 5px;
+    width: auto;
+
+    svg path {
+      fill: #fff;
+    }
+
+    &:hover {
+      background-color: transparent;
+
+      svg path {
+        fill: #fff;
+      }
+    }
+
   }
 }

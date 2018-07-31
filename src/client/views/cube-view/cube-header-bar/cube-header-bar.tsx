@@ -22,6 +22,7 @@ import * as React from "react";
 import { Clicker, Customization, DataCube, Essence, ExternalView, Timekeeper, User } from "../../../../common/models/index";
 import { Fn } from "../../../../common/utils/general/general";
 import { AutoRefreshMenu, HilukMenu, SettingsMenu, SvgIcon, UserMenu } from "../../../components/index";
+import { InfoBubble } from "../../../components/info-bubble/info-bubble";
 import { classNames } from "../../../utils/dom/dom";
 import "./cube-header-bar.scss";
 
@@ -278,13 +279,13 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   render() {
-    var { user, onNavClick, essence, customization } = this.props;
+    var { user, onNavClick, essence: { dataCube }, customization } = this.props;
     var { animating } = this.state;
 
     var userButton: JSX.Element = null;
     if (user) {
       userButton = <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
-        <SvgIcon svg={require("../../../icons/full-user.svg")} />
+        <SvgIcon svg={require("../../../icons/full-user.svg")}/>
       </div>;
     }
 
@@ -296,21 +297,22 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     }
 
     return <header className="cube-header-bar" style={headerStyle}>
-      <div className="left-bar" onClick={onNavClick}>
-        <div className="menu-icon">
-          <SvgIcon svg={require("../../../icons/menu.svg")} />
+      <div className="left-bar">
+        <div className="menu-icon" onClick={onNavClick}>
+          <SvgIcon svg={require("../../../icons/menu.svg")}/>
         </div>
-        <div className="title">{essence.dataCube.title}</div>
+        <div className="title" onClick={onNavClick}>{dataCube.title}</div>
+        {dataCube.description && <InfoBubble className="cube-description" description={dataCube.description} icon={require("../../../icons/full-more-compact.svg")}/>}
       </div>
       <div className="right-bar">
         <div className={classNames("icon-button", "auto-refresh", { refreshing: animating })} onClick={this.onAutoRefreshMenuClick.bind(this)}>
-          <SvgIcon className="auto-refresh-icon" svg={require("../../../icons/full-refresh.svg")} />
+          <SvgIcon className="auto-refresh-icon" svg={require("../../../icons/full-refresh.svg")}/>
         </div>
         <div className="icon-button hiluk" onClick={this.onHilukMenuClick.bind(this)}>
-          <SvgIcon className="hiluk-icon" svg={require("../../../icons/full-hiluk.svg")} />
+          <SvgIcon className="hiluk-icon" svg={require("../../../icons/full-hiluk.svg")}/>
         </div>
         <div className="icon-button settings" onClick={this.onSettingsMenuClick.bind(this)}>
-          <SvgIcon className="settings-icon" svg={require("../../../icons/full-settings.svg")} />
+          <SvgIcon className="settings-icon" svg={require("../../../icons/full-settings.svg")}/>
         </div>
         {userButton}
       </div>
