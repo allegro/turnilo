@@ -9,6 +9,7 @@ rules:
   brace-style: 2
   class-name-format:
   - 2
+  - convention: hyphenatedbem
   - allow-leading-underscore: false
   clean-import-paths: 2
   declarations-before-nesting: 2
