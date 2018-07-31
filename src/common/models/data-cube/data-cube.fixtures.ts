@@ -88,4 +88,24 @@ export class DataCubeFixtures {
   static twitter() {
     return DataCube.fromJS(DataCubeFixtures.TWITTER_JS, { executor });
   }
+
+  static customCube(title: string, description: string): DataCube {
+    return DataCube.fromJS({
+      name: "custom",
+      title,
+      description,
+      clusterName: "druid-custom",
+      source: "custom",
+      introspection: "none",
+      dimensions: [],
+      measures: [],
+      timeAttribute: "time",
+      defaultTimezone: "Etc/UTC",
+      defaultFilter: { op: "literal", value: true },
+      defaultDuration: "P3D",
+      refreshRule: {
+        rule: "realtime"
+      }
+    }, { executor });
+  }
 }
