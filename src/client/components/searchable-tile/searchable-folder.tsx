@@ -21,6 +21,8 @@ import { InfoBubble } from "../info-bubble/info-bubble";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./searchable-folder.scss";
 
+const helpIcon = require("../../icons/help.svg");
+
 export interface SearchableFolderProps {
   name: string;
   title: string;
@@ -76,7 +78,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
       <div className={classNames("folder-header")} onClick={this.handleClick}>
         <div className={"folder-icon"}>{isGroupOpen ? this.openIcon : this.closedIcon}</div>
         <span className={"label"}>{title}</span>
-        {description && <InfoBubble className={this.infoBubbleClassName} description={description}/>}
+        {description && <InfoBubble icon={helpIcon} className={this.infoBubbleClassName} description={description}/>}
       </div>
       <div className={classNames("folder-items", { closed: !isGroupOpen })}>
         {children}

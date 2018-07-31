@@ -31,6 +31,7 @@ export interface InfoBubbleState {
 
 export interface InfoBubbleProps {
   description: string;
+  icon: string;
   className?: string;
 }
 
@@ -53,11 +54,11 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
 
   render() {
     const { showInfo } = this.state;
-    const { description, className } = this.props;
+    const { description, icon, className } = this.props;
 
     return <React.Fragment>
       <div className={classNames("info-button", className)} onClick={this.showDescription}>
-        <SvgIcon svg={helpIcon}/>
+        <SvgIcon svg={icon}/>
       </div>
       {showInfo && <BubbleMenu
         className="description-menu"

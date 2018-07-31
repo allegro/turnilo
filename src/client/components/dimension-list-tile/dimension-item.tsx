@@ -22,6 +22,8 @@ import { InfoBubble } from "../info-bubble/info-bubble";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./dimension-item.scss";
 
+const helpIcon = require("../../icons/help.svg");
+
 export const DIMENSION_CLASS_NAME = "dimension";
 
 export interface DimensionItemProps {
@@ -63,6 +65,6 @@ export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dime
       <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")}/>
     </div>
     <HighlightString className={classNames("label")} text={title} highlight={searchText}/>
-    {description && <InfoBubble className={infoBubbleClassName} description={description}/>}
+    {description && <InfoBubble icon={helpIcon} className={infoBubbleClassName} description={description}/>}
   </div>;
 };

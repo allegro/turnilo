@@ -23,6 +23,8 @@ import { InfoBubble } from "../info-bubble/info-bubble";
 import "./measure-item.scss";
 import { MeasureClickHandler } from "./measures-tile";
 
+const helpIcon = require("../../icons/help.svg");
+
 export interface MeasureItemProps {
   name: string;
   title: string;
@@ -46,6 +48,6 @@ export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureC
   return <div className={classNames("row", { selected })} onClick={handleClick}>
     <Checkbox type={checkboxType} selected={selected}/>
     <HighlightString className="label" text={title} highlight={searchText}/>
-    {description && <InfoBubble className={infoBubbleClassName} description={description}/>}
+    {description && <InfoBubble className={infoBubbleClassName} icon={helpIcon} description={description}/>}
   </div>;
 };
