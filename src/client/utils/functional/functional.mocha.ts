@@ -15,9 +15,10 @@
  */
 
 import { expect } from "chai";
-import { concatTruthy, cons, flatMap, mapTruthy, thread, threadTruthy } from "./functional";
+import { complement, concatTruthy, cons, flatMap, mapTruthy, thread, threadTruthy } from "./functional";
 
 const inc = (x: number) => x + 1;
+const double = (x: number) => x * 2;
 const nil = (): void => null;
 const wrap = (...numbers: number[]) => numbers;
 
@@ -61,20 +62,32 @@ describe("Functional utilities", () => {
 
   describe("thread", () => {
     it("should thread value through all functions", () => {
-      const result = thread(1, inc, inc, inc);
-      expect(result).to.eq(4);
+      const result = thread(1, inc, double, inc);
+      expect(result).to.eq(5);
     });
   });
 
   describe("threadTruthy", () => {
     it("should thread value through all function as long all return values are truthy", () => {
-      const result = threadTruthy(1, inc, inc, inc);
-      expect(result).to.eq(4);
+      const result = threadTruthy(1, inc, double, inc);
+      expect(result).to.eq(5);
     });
 
     it("should return falsy value if some function in thread returns falsy value", () => {
       const result = threadTruthy(1, inc, nil, inc, inc);
       expect(result).to.eq(null);
+    });
+  });
+
+  describe("complement", () => {
+    it("should produce complement predicate", () => {
+      const moreThanTen = (x: number) => x > 10;
+
+      expect(moreThanTen(5)).to.be.false;
+      expect(complement(moreThanTen)(5)).to.be.true;
+
+      expect(moreThanTen(15)).to.be.true;
+      expect(complement(moreThanTen)(15)).to.be.false;
     });
   });
 
