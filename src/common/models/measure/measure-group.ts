@@ -24,12 +24,14 @@ export type MeasureOrGroup = Measure | MeasureGroup;
 export interface MeasureGroupJS {
   name: string;
   title?: string;
+  description?: string;
   measures: MeasureOrGroupJS[];
 }
 
 export interface MeasureGroupValue {
   name: string;
   title?: string;
+  description?: string;
   measures: MeasureOrGroup[];
 }
 
@@ -53,7 +55,7 @@ export function isMeasureGroupJS(measureOrGroupJS: MeasureOrGroupJS): measureOrG
 
 export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS> {
   static fromJS(parameters: MeasureGroupJS): MeasureGroup {
-    const { name, title, measures } = parameters;
+    const { name, title, description, measures } = parameters;
 
     if (name == null) {
       throw new Error("measure group requires a name");
@@ -66,6 +68,7 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
     return new MeasureGroup({
       name,
       title,
+      description,
       measures: measures.map(measureOrGroupFromJS)
     });
   }
@@ -76,12 +79,14 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
 
   readonly name: string;
   readonly title: string;
+  readonly description: string;
   readonly type = "group";
   readonly measures: MeasureOrGroup[];
 
   constructor(parameters: MeasureGroupValue) {
     this.name = parameters.name;
     this.title = parameters.title || makeTitle(parameters.name);
+    this.description = parameters.description;
     this.measures = parameters.measures;
   }
 
@@ -95,11 +100,13 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
   }
 
   toJS(): MeasureGroupJS {
-    return {
+    let measureGroup: MeasureGroupJS = {
       name: this.name,
       measures: this.measures.map(measure => measure.toJS()),
       title: this.title
     };
+    if (this.description) measureGroup.description = this.description;
+    return measureGroup;
   }
 
   toJSON(): MeasureGroupJS {
@@ -107,10 +114,12 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
   }
 
   valueOf(): MeasureGroupValue {
-    return {
+    let measureGroup: MeasureGroupValue = {
       name: this.name,
       title: this.title,
       measures: this.measures
     };
+    if (this.description) measureGroup.description = this.description;
+    return measureGroup;
   }
 }

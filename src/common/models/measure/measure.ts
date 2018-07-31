@@ -47,6 +47,7 @@ export interface MeasureValue {
   formula?: string;
   format?: string;
   transformation?: string;
+  description?: string;
 }
 
 export interface MeasureJS {
@@ -56,6 +57,7 @@ export interface MeasureJS {
   formula?: string;
   format?: string;
   transformation?: string;
+  description?: string;
 }
 
 export enum MeasureDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
@@ -204,12 +206,14 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     { name: "title", defaultValue: null },
     { name: "units", defaultValue: null },
     { name: "formula" },
+    { name: "description", defaultValue: undefined },
     { name: "format", defaultValue: Measure.DEFAULT_FORMAT },
     { name: "transformation", defaultValue: Measure.DEFAULT_TRANSFORMATION, possibleValues: Measure.TRANSFORMATIONS }
   ];
 
   public name: string;
   public title: string;
+  public description?: string;
   public units: string;
   public formula: string;
   public expression: Expression;

@@ -22,6 +22,7 @@ export type DimensionOrGroupForView = DimensionForView | DimensionGroupForView;
 export interface DimensionForView {
   name: string;
   title: string;
+  description?: string;
   classSuffix: string;
   hasSearchText: boolean;
   isFilteredOrSplit: boolean;
@@ -32,6 +33,7 @@ export interface DimensionForView {
 export interface DimensionGroupForView {
   name: string;
   title: string;
+  description?: string;
   hasSearchText: boolean;
   isFilteredOrSplit: boolean;
   children: DimensionOrGroupForView[];
@@ -53,11 +55,12 @@ export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrG
 
   visitDimension(dimension: Dimension): DimensionOrGroupForView {
     const { hasSearchTextPredicate, isFilteredOrSplitPredicate, isSelectedDimensionPredicate } = this;
-    const { name, title, className } = dimension;
+    const { name, title, description, className } = dimension;
 
     return {
       name,
       title,
+      description,
       classSuffix: className,
       isFilteredOrSplit: isFilteredOrSplitPredicate(dimension),
       hasSearchText: hasSearchTextPredicate(dimension),
@@ -67,12 +70,13 @@ export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrG
   }
 
   visitDimensionGroup(dimensionGroup: DimensionGroup): DimensionOrGroupForView {
-    const { name, title, dimensions } = dimensionGroup;
+    const { name, description, title, dimensions } = dimensionGroup;
     const dimensionsForView = dimensions.map(item => item.accept(this));
 
     return {
       name,
       title,
+      description,
       hasSearchText: dimensionsForView.some(item => item.hasSearchText),
       isFilteredOrSplit: dimensionsForView.some(item => item.isFilteredOrSplit),
       children: dimensionsForView,

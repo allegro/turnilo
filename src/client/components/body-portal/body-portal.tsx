@@ -18,20 +18,21 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./body-portal.scss";
+import updateStyle from "./update-style";
 
 export interface BodyPortalProps {
+
   left?: number | string;
+  right?: number | string;
   top?: number | string;
+  bottom?: number | string;
   fullSize?: boolean;
   disablePointerEvents?: boolean;
   onMount?: () => void;
   isAboveAll?: boolean;
 }
 
-export interface BodyPortalState {
-}
-
-export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
+export class BodyPortal extends React.Component<BodyPortalProps, {}> {
   public static defaultProps: Partial<BodyPortalProps> = {
     disablePointerEvents: false,
     isAboveAll: false
@@ -50,26 +51,6 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     return this._target;
   }
 
-  updateStyle() {
-    var { left, top, disablePointerEvents, isAboveAll } = this.props;
-    var style = this._target.style;
-
-    if (typeof left === "number") {
-      style.left = Math.round(left) + "px";
-    } else if (typeof left === "string") {
-      style.left = left;
-    }
-    if (typeof top === "number") {
-      style.top = Math.round(top) + "px";
-    } else if (typeof top === "string") {
-      style.top = top;
-    }
-
-    style["z-index"] = 200 + (isAboveAll ? 1 : 0);
-
-    style["pointer-events"] = disablePointerEvents ? "none" : "auto";
-  }
-
   componentDidMount() {
     this.teleport();
 
@@ -83,9 +64,14 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
     }
   }
 
+  updateStyle() {
+    const styles = this._target.style;
+    Object.assign(styles, updateStyle(styles, this.props));
+  }
+
   teleport() {
-    var { fullSize } = this.props;
-    var newDiv = document.createElement("div");
+    const { fullSize } = this.props;
+    let newDiv = document.createElement("div");
     newDiv.className = "body-portal" + (fullSize ? " full-size" : "");
     this._target = document.body.appendChild(newDiv);
     this.updateStyle();

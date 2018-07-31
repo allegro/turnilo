@@ -35,19 +35,20 @@ export class DimensionsRenderer {
         if (child.type === DimensionForViewType.group) {
           return this.renderFolder(child);
         } else {
-          return this.renderMeasure(child);
+          return this.renderDimension(child);
         }
       });
   }
 
   private renderFolder(groupView: DimensionGroupForView): JSX.Element {
     const { searchText } = this;
-    const { name, title, hasSearchText, isFilteredOrSplit, children } = groupView;
+    const { name, title, description, hasSearchText, isFilteredOrSplit, children } = groupView;
 
     return <SearchableFolder
       key={name}
       name={name}
       title={title}
+      description={description}
       inSearchMode={!!searchText}
       hasItemsWithSearchText={hasSearchText}
       shouldBeOpened={isFilteredOrSplit}
@@ -56,14 +57,15 @@ export class DimensionsRenderer {
     </SearchableFolder>;
   }
 
-  private renderMeasure(measureView: DimensionForView): JSX.Element {
+  private renderDimension(dimensionView: DimensionForView): JSX.Element {
     const { dimensionClick, dimensionDragStart, searchText } = this;
-    const { name, title, classSuffix, selected } = measureView;
+    const { name, title, description, classSuffix, selected } = dimensionView;
 
     return <DimensionItem
       key={name}
       name={name}
       title={title}
+      description={description}
       selected={selected}
       dimensionClick={dimensionClick}
       dimensionDragStart={dimensionDragStart}

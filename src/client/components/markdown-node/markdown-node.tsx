@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +14,20 @@
  * limitations under the License.
  */
 
-import {  isTruthy } from "..";
+import { parse } from "marked";
+import * as React from "react";
+import "./markdown-node.scss";
 
-export function extend(source: any, target: any): any {
-  for (let key in source) {
-    target[key] = source[key];
-  }
-
-  return target;
+export interface MarkdownBubbleProps {
+  markdown: string;
 }
 
-export function omitFalsyValues<T>(obj: T): Partial<T> {
-  return Object.keys(obj).reduce<Partial<T>>((res, key: keyof T) => {
-    if (isTruthy(obj[key])) {
-      res[key] = obj[key];
-    }
-    return res;
-  }, {});
+function innerMarkdown(input: string): { __html: string } {
+  return { __html: parse(input) };
 }
+
+export const MarkdownNode: React.SFC<MarkdownBubbleProps> = ({ markdown }) => {
+  return <div
+    className="markdown-content"
+    dangerouslySetInnerHTML={innerMarkdown(markdown)}/>;
+};

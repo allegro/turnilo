@@ -48,11 +48,12 @@ export class MeasuresRenderer {
 
   private renderFolder(groupView: MeasureGroupForView): JSX.Element {
     const { searchText } = this;
-    const { name, title, hasSearchText, hasSelectedMeasures, children } = groupView;
+    const { name, title, description, hasSearchText, hasSelectedMeasures, children } = groupView;
 
     return <SearchableFolder
       key={name}
       name={name}
+      description={description}
       title={title}
       inSearchMode={!!searchText}
       hasItemsWithSearchText={hasSearchText}
@@ -64,12 +65,13 @@ export class MeasuresRenderer {
 
   private renderMeasure(measureView: MeasureForView): JSX.Element {
     const { measureClick, multiMeasureMode, searchText } = this;
-    const { name, title, hasSelectedMeasures } = measureView;
+    const { name, title, description, hasSelectedMeasures } = measureView;
 
     return <MeasureItem
       key={name}
       name={name}
       title={title}
+      description={description}
       selected={hasSelectedMeasures}
       measureClick={measureClick}
       multiMeasureMode={multiMeasureMode}

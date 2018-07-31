@@ -24,12 +24,14 @@ export type DimensionOrGroup = Dimension | DimensionGroup;
 export interface DimensionGroupJS {
   name: string;
   title?: string;
+  description?: string;
   dimensions: DimensionOrGroupJS[];
 }
 
 export interface DimensionGroupValue {
   name: string;
   title?: string;
+  description?: string;
   dimensions: DimensionOrGroup[];
 }
 
@@ -53,7 +55,7 @@ function isDimensionGroupJS(dimensionOrGroup: DimensionOrGroupJS): dimensionOrGr
 
 export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGroupJS> {
   static fromJS(dimensionGroup: DimensionGroupJS) {
-    const { name, title, dimensions } = dimensionGroup;
+    const { name, title, dimensions, description } = dimensionGroup;
 
     if (name == null) {
       throw new Error("dimension group requires a name");
@@ -66,6 +68,7 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
     return new DimensionGroup({
       name,
       title,
+      description,
       dimensions: dimensions.map(dimensionOrGroupFromJS)
     });
   }
@@ -76,12 +79,14 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
 
   readonly name: string;
   readonly title: string;
+  readonly description: string;
   readonly type = "group";
   readonly dimensions: DimensionOrGroup[];
 
   constructor(parameters: DimensionGroupValue) {
     this.name = parameters.name;
     this.title = parameters.title || makeTitle(parameters.name);
+    this.description = parameters.description;
     this.dimensions = parameters.dimensions;
   }
 
@@ -95,11 +100,13 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
   }
 
   toJS(): DimensionGroupJS {
-    return {
+    let dimensionGroup: DimensionGroupJS = {
       name: this.name,
       title: this.title,
       dimensions: this.dimensions.map(dimension => dimension.toJS())
     };
+    if (this.description) dimensionGroup.description = this.description;
+    return dimensionGroup;
   }
 
   toJSON(): DimensionGroupJS {
@@ -107,10 +114,12 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
   }
 
   valueOf(): DimensionGroupValue {
-    return {
+    let dimensionGroup: DimensionGroupValue = {
       name: this.name,
       title: this.title,
       dimensions: this.dimensions
     };
+    if (this.description) dimensionGroup.description = this.description;
+    return dimensionGroup;
   }
 }

@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +14,17 @@
  * limitations under the License.
  */
 
-import {  isTruthy } from "..";
+import { expect } from "chai";
+import { shallow } from "enzyme";
+import * as React from "react";
+import { MarkdownNode } from "./markdown-node";
 
-export function extend(source: any, target: any): any {
-  for (let key in source) {
-    target[key] = source[key];
-  }
+describe("<MarkdownNode>", () => {
 
-  return target;
-}
+  it("should render html for markdown", () => {
+    const wrapper = shallow(<MarkdownNode markdown={"*strong* **em** [link](example.com)"}/>);
+    const content = wrapper.find(".markdown-content");
 
-export function omitFalsyValues<T>(obj: T): Partial<T> {
-  return Object.keys(obj).reduce<Partial<T>>((res, key: keyof T) => {
-    if (isTruthy(obj[key])) {
-      res[key] = obj[key];
-    }
-    return res;
-  }, {});
-}
+    expect(content.html()).to.be.equal("<div class=\"markdown-content\"><p><em>strong</em> <strong>em</strong> <a href=\"example.com\">link</a></p>\n</div>");
+  });
+});

@@ -33,6 +33,10 @@ export function isNil(obj: any): boolean {
   return obj === undefined || obj === null;
 }
 
+export function isTruthy(element: any): boolean {
+  return element !== null && element !== undefined && element !== false;
+}
+
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {
   var n = list.size;
   if (itemIndex < 0 || itemIndex >= n) throw new Error("itemIndex out of range");

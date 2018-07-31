@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isTruthy } from "../../../common/utils";
+
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, S, R> = (arg: T, arg2: S) => R;
 
@@ -23,10 +25,6 @@ export function cons<T>(coll: T[], element: T): T[] {
 
 export function flatMap<T, S>(coll: T[], mapper: Binary<T, number, S[]>): S[] {
   return [].concat(...coll.map(mapper));
-}
-
-function isTruthy(element: any): boolean {
-  return element !== null && element !== undefined && element !== false;
 }
 
 export function concatTruthy<T>(...elements: T[]): T[] {

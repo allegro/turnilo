@@ -18,22 +18,23 @@
 import * as React from "react";
 import { Stage } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
-import { classNames, escapeKey, isInside, uniqueId } from "../../utils/dom/dom";
+import { clamp, classNames, escapeKey, isInside, uniqueId } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";
 import { Shpitz } from "../shpitz/shpitz";
 import "./bubble-menu.scss";
 
-const OFFSET_H = 10;
-const OFFSET_V = 0;
-const SCREEN_OFFSET = 5;
+export const OFFSET_H = 10;
+export const OFFSET_V = 0;
+export const SCREEN_OFFSET = 5;
 
 export type BubbleLayout = "normal" | "mini";
 export type Align = "start" | "center" | "end";
+export type Direction = "down" | "right" | "up";
 
 export interface BubbleMenuProps {
   className: string;
   id?: string;
-  direction: string;
+  direction: Direction;
   stage: Stage;
   fixedSize?: boolean;
   containerStage?: Stage;
@@ -51,6 +52,51 @@ export interface BubbleMenuState {
   y?: number;
 }
 
+interface Coordinates {
+  x: number;
+  y: number;
+}
+
+interface PositionCSSProperties {
+  left?: number;
+  right?: number;
+  top?: number;
+  bottom?: number;
+  height?: number;
+  width?: number;
+}
+
+function defaultStage(): Stage {
+  return new Stage({
+    x: SCREEN_OFFSET,
+    y: SCREEN_OFFSET,
+    width: window.innerWidth - SCREEN_OFFSET * 2,
+    height: window.innerHeight - SCREEN_OFFSET * 2
+  });
+}
+
+function alignHorizontalInside(align: Align, { left, width }: ClientRect): number {
+  switch (align) {
+    case "center":
+      return left + width / 2;
+    case "start":
+      return left;
+    case"end":
+      return left + width;
+  }
+}
+
+function alignHorizontalOutside(align: Align, x: number, width: number): number {
+  switch (align) {
+    case "center":
+      return x - width / 2;
+    case "start":
+      return x;
+    case "end":
+      return x - width;
+  }
+}
+
 export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState> {
   static defaultProps: Partial<BubbleMenuProps> = {
     align: "center"
@@ -66,36 +112,12 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   componentWillMount() {
-    var { alignOn, openOn, direction, align, id } = this.props;
-    var rect = (alignOn || openOn).getBoundingClientRect();
-
-    var x: number;
-    var y: number;
-    switch (direction) {
-      case "right":
-        x = rect.left + rect.width - OFFSET_H;
-        y = rect.top + rect.height / 2;
-        break;
-
-      case "down":
-        if (align === "center") {
-          x = rect.left + rect.width / 2;
-        } else if (align === "start") {
-          x = rect.left;
-        } else { // align === 'end'
-          x = rect.left + rect.width;
-        }
-        y = rect.top + rect.height - OFFSET_V;
-        break;
-
-      default:
-        throw new Error(`unknown direction: '${direction}'`);
-    }
+    const { alignOn, openOn, id } = this.props;
+    const rect = (alignOn || openOn).getBoundingClientRect();
 
     this.setState({
       id: id || uniqueId("bubble-menu-"),
-      x,
-      y
+      ...this.calcBubbleCoordinates(rect)
     });
   }
 
@@ -110,12 +132,12 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
   }
 
   globalMouseDownListener(e: MouseEvent) {
-    var { onClose, openOn } = this.props;
-    var { id } = this.state;
+    const { onClose, openOn } = this.props;
+    const { id } = this.state;
     // can not use ReactDOM.findDOMNode(this) because portal?
-    var myElement = document.getElementById(id) as Element;
+    const myElement = document.getElementById(id) as Element;
     if (!myElement) return;
-    var target = e.target as Element;
+    const target = e.target as Element;
 
     if (isInside(target, myElement) || isInside(target, openOn)) return;
     onClose();
@@ -123,86 +145,133 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
   globalKeyDownListener(e: KeyboardEvent) {
     if (!escapeKey(e)) return;
-    var { onClose } = this.props;
+    const { onClose } = this.props;
     onClose();
   }
 
-  render(): any {
-    var { className, direction, stage, fixedSize, containerStage, inside, layout, align, children } = this.props;
-    var { id, x, y } = this.state;
-
-    var menuWidth = stage.width;
-    var menuHeight = stage.height;
-
-    var menuLeft = 0;
-    var menuTop = 0;
-    var menuStyle: any = {};
-    if (fixedSize) {
-      menuStyle.width = menuWidth;
-      menuStyle.height = menuHeight;
-    }
-    var shpitzStyle: any = {
-      left: 0,
-      top: 0
-    };
-
-    if (!containerStage) {
-      containerStage = new Stage({
-        x: SCREEN_OFFSET,
-        y: SCREEN_OFFSET,
-        width: window.innerWidth - SCREEN_OFFSET * 2,
-        height: window.innerHeight - SCREEN_OFFSET * 2
-      });
-    }
-
+  private calcBubbleCoordinates(rect: ClientRect): Coordinates {
+    const { direction, align } = this.props;
     switch (direction) {
       case "right":
-        var top = y - menuHeight / 2;
-        // constrain
-        top = Math.min(Math.max(top, containerStage.y), containerStage.y + containerStage.height - menuHeight);
-        menuLeft = x;
-        menuTop = top;
-        shpitzStyle.top = y - top;
-        menuStyle.height = menuHeight;
-        break;
+        return {
+          x: rect.left + rect.width - OFFSET_H,
+          y: rect.top + rect.height / 2
+        };
 
       case "down":
-        var left: number;
-        if (align === "center") {
-          left = x - menuWidth / 2;
-        } else if (align === "start") {
-          left = x;
-        } else { // align === 'end'
-          left = x - menuWidth;
-        }
-        // constrain
-        left = Math.min(Math.max(left, containerStage.x), containerStage.x + containerStage.width - menuWidth);
-        menuLeft = left;
-        menuTop = y;
-        shpitzStyle.left = x - left;
-        menuStyle.width = menuWidth;
-        break;
+        return {
+          x: alignHorizontalInside(align, rect),
+          y: rect.top + rect.height - OFFSET_V
+        };
+
+      case "up":
+        return {
+          x: alignHorizontalInside(align, rect),
+          y: window.innerHeight - rect.top - OFFSET_V
+        };
 
       default:
         throw new Error(`unknown direction: '${direction}'`);
     }
+  }
 
-    var insideId: string = null;
-    if (inside) {
-      insideId = inside.id;
-      if (!insideId) throw new Error("inside element must have id");
+  private calcMenuPosition(): PositionCSSProperties {
+    const { align, direction, stage } = this.props;
+    const { x: menuX, y: menuY } = this.state;
+    const { height: menuHeight, width: menuWidth } = stage;
+
+    const container = this.props.containerStage || defaultStage();
+    const containerVerticalExtent = container.y + container.height - menuHeight;
+    const containerHorizontalExtent = container.x + container.width - menuWidth;
+
+    switch (direction) {
+      case "right":
+        const top = menuY - menuHeight / 2;
+        const clampedTop = clamp(top, container.y, containerVerticalExtent);
+        return {
+          top: clampedTop,
+          height: menuHeight,
+          left: menuX
+        };
+      case "down": {
+        const left = alignHorizontalOutside(align, menuX, menuWidth);
+        const clampedLeft = clamp(left, container.x, containerHorizontalExtent);
+        return {
+          left: clampedLeft,
+          width: menuWidth,
+          top: menuY
+        };
+      }
+      case "up": {
+        const left = alignHorizontalOutside(align, menuX, menuWidth);
+        const clampedLeft = clamp(left, container.x, containerHorizontalExtent);
+        return {
+          left: clampedLeft,
+          width: menuWidth,
+          bottom: menuY
+        };
+      }
+
+      default:
+        throw new Error(`unknown direction: '${direction}'`);
     }
+  }
 
-    var shpitzElement: JSX.Element = null;
-    if (align === "center") {
-      shpitzElement = <Shpitz style={shpitzStyle} direction={direction} />;
+  private calcShpitzPosition(menuStyle: PositionCSSProperties): PositionCSSProperties {
+    const { x, y } = this.state;
+    const { direction } = this.props;
+    const { left, top } = menuStyle;
+
+    switch (direction) {
+      case "right":
+        return {
+          top: y - top,
+          left: 0
+        };
+
+      case "down":
+        return {
+          left: x - left,
+          top: 0
+        };
+
+      case "up":
+        return {
+          left: x - left,
+          bottom: 0
+        };
+
+      default:
+        throw new Error(`unknown direction: '${direction}'`);
     }
+  }
 
-    var myClass = classNames("bubble-menu", direction, className, { mini: layout === "mini" });
-    return <BodyPortal left={menuLeft} top={menuTop}>
-      <div className={myClass} id={id} data-parent={insideId} style={menuStyle}>
+  getInsideId(): string | null {
+    const { inside } = this.props;
+    if (!inside) return null;
+    if (!inside.id) throw new Error("inside element must have id");
+    return inside.id;
+  }
+
+  render(): any {
+    const { className, direction, stage, fixedSize, layout, align, children } = this.props;
+    const { id } = this.state;
+    const insideId = this.getInsideId();
+
+    const menuCoordinates = this.calcMenuPosition();
+
+    const hasShpitz = align === "center";
+    const shpitzCoordinates = hasShpitz && this.calcShpitzPosition(menuCoordinates);
+
+    const { left, top, bottom, height, width } = menuCoordinates;
+    const menuSize = fixedSize ? { width: stage.width, height: stage.height } : { height, width };
+
+    const myClass = classNames("bubble-menu", direction, className, { mini: layout === "mini" });
+
+    return <BodyPortal left={left} top={top} bottom={bottom}>
+      <div className={myClass} id={id} data-parent={insideId} style={menuSize}>
         {children}
-        {shpitzElement}
+        {hasShpitz && <Shpitz style={shpitzCoordinates} direction={direction}/>}
       </div>
     </BodyPortal>;
   }

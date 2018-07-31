@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,22 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@import '../../utils/styles/default-info-bubble-position';
 
-import {  isTruthy } from "..";
-
-export function extend(source: any, target: any): any {
-  for (let key in source) {
-    target[key] = source[key];
-  }
-
-  return target;
+.info-bubble {
+  @extend %default-info-bubble-position;
 }
 
-export function omitFalsyValues<T>(obj: T): Partial<T> {
-  return Object.keys(obj).reduce<Partial<T>>((res, key: keyof T) => {
-    if (isTruthy(obj[key])) {
-      res[key] = obj[key];
-    }
-    return res;
-  }, {});
-}
+
