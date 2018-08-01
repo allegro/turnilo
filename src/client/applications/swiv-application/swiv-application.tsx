@@ -192,6 +192,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
     if (!dataCubes || !dataCubes.length) return NO_DATA;
 
+    if (!viewType || viewType === HOME) return HOME;
+
     if (viewType === NO_DATA) return NO_DATA;
 
     return CUBE;
