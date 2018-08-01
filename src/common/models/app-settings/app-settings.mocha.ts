@@ -30,8 +30,7 @@ describe("AppSettings", () => {
       AppSettings,
       [
         AppSettingsFixtures.wikiOnlyJS(),
-        AppSettingsFixtures.wikiTwitterJS(),
-        AppSettingsFixtures.wikiWithLinkViewJS()
+        AppSettingsFixtures.wikiTwitterJS()
       ],
       { context });
   });

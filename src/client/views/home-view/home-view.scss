@@ -26,21 +26,25 @@
   .container {
     @include unpin-top($header-height);
     overflow-y: auto;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 
     .data-cubes {
-      margin-top: 36px;
-      padding: 0 12%;
+      margin: 36px 10% 0;
+      max-width: 720px;
 
       &__search-box {
-        font-size: 24px;
-        font-weight: lighter;
+        font-size: 16px;
+        font-weight: 100;
         width: 100%;
-        margin-bottom: 32px;
+        margin-bottom: 20px;
 
         .clearable-input {
           @extend %input-cont-inset;
           width: 100%;
-          padding: 3px 0 3px 6px;
+          height: 46px;
+          padding: 3px 10px 3px 16px;
 
           .clear {
             top: 5px;
@@ -57,7 +61,9 @@
       }
 
       &__message {
-        font-size: 24px;
+        padding: 0 10px;
+        font-style: italic;
+        font-size: 16px;
       }
     }
   }

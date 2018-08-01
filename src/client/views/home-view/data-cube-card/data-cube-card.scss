@@ -18,7 +18,6 @@
 
 .data-cube-card {
   padding: 5px 0 0 0;
-
   cursor: pointer;
 
   .inner-container {
@@ -35,8 +34,9 @@
     }
 
     .svg-icon.view-icon {
-      height: 19px;
-      margin-right: 9px;
+      height: 30px;
+      margin-top: 5px;
+      margin-right: 15px;
       opacity: 0.6;
 
       path {
@@ -47,22 +47,21 @@
     .text {
       padding-top: 2px;
       white-space: normal;
-      width: calc(100% - 30px);
+      width: calc(100% - 70px);
+      line-height: 1.5;
 
       .title {
-        font-size: 13px;
+        font-size: 16px;
         color: $text-standard;
         margin-bottom: 5px;
         margin-right: 12px;
-        line-height: 15px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
       .description {
-        font-size: 12px;
-        line-height: 16px;
+        font-size: 13px;
         color: #aaa;
         overflow-y: hidden;
       }

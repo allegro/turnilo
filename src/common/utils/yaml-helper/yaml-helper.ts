@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-import * as yaml from "js-yaml";
-
 import { AttributeInfo } from "plywood";
-import { AppSettings, Cluster, Collection, CollectionTile, DataCube, Dimension, Measure } from "../../../common/models/index";
-import { CLUSTER, COLLECTION, COLLECTION_ITEM, DATA_CUBE } from "../../../common/models/labels";
+import { AppSettings, Cluster, DataCube, Dimension, Measure } from "../../../common/models/index";
+import { CLUSTER, DATA_CUBE } from "../../../common/models/labels";
 
 function spaces(n: number) {
   return (new Array(n + 1)).join(" ");
@@ -128,46 +126,6 @@ export function clusterToYAML(cluster: Cluster, withComments: boolean): string[]
       ;
       break;
   }
-
-  lines.push("");
-  return yamlObject(lines);
-}
-
-export function collectionToYAML(collection: Collection, withComments: boolean): string[] {
-  var lines: string[] = [
-    `name: ${collection.name}`
-  ];
-
-  var addProps = getYamlPropAdder(collection, COLLECTION, lines, withComments);
-
-  addProps
-    .add("title")
-    .add("description")
-  ;
-
-  lines.push("tiles:");
-  lines = lines.concat.apply(lines, collection.tiles.map(CollectionTileToYAML));
-
-  lines.push("");
-  return yamlObject(lines);
-}
-
-export function CollectionTileToYAML(item: CollectionTile): string[] {
-  var lines: string[] = [
-    `name: ${item.name}`
-  ];
-
-  var addProps = getYamlPropAdder(item, COLLECTION_ITEM, lines);
-
-  addProps
-    .add("title")
-    .add("description")
-    .add("group")
-    .add("dataCube")
-  ;
-
-  lines.push("essence:");
-  lines.push(yaml.safeDump(item.essence.toJSON()));
 
   lines.push("");
   return yamlObject(lines);
@@ -413,7 +371,7 @@ export interface Extra {
 }
 
 export function appSettingsToYAML(appSettings: AppSettings, withComments: boolean, extra: Extra = {}): string {
-  var { dataCubes, clusters, collections } = appSettings;
+  var { dataCubes, clusters } = appSettings;
 
   if (!dataCubes.length) throw new Error("Could not find any data cubes, please verify network connectivity");
 
@@ -448,12 +406,6 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
 
   lines.push("dataCubes:");
   lines = lines.concat.apply(lines, dataCubes.map(d => dataCubeToYAML(d, withComments)));
-
-  // if (collections.length) {
-  //   lines.push('collections:');
-  //   lines = lines.concat.apply(lines, collections.map(c => collectionToYAML(c, withComments)));
-
-  // }
 
   return lines.join("\n");
 }
