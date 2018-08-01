@@ -17,9 +17,11 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Collection, Customization, DataCube, User } from "../../../common/models";
+import { ClearableInput, NavLink } from "..";
+import { Customization, DataCube, User } from "../../../common/models";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
+import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { NavList } from "../nav-list/nav-list";
 import { NavLogo } from "../nav-logo/nav-logo";
@@ -28,26 +30,46 @@ import "./side-drawer.scss";
 
 export interface SideDrawerProps {
   user: User;
-  selectedItem: DataCube | Collection;
-  collections: Collection[];
+  selectedItem: DataCube;
   dataCubes: DataCube[];
   onOpenAbout: Fn;
   onClose: Fn;
   customization?: Customization;
-  itemHrefFn?: (oldItem?: DataCube | Collection, newItem?: DataCube | Collection) => string;
-  viewType: "home" | "cube" | "collection" | "link" | "settings" | "no-data";
+  itemHrefFn?: (oldItem?: DataCube, newItem?: DataCube) => string;
+  viewType: "home" | "cube" | "link" | "settings" | "no-data";
+}
+
+function openHome() {
+  window.location.hash = "#";
+}
+
+function openSettings() {
+  window.location.hash = "#settings";
 }
 
 export interface SideDrawerState {
+  query?: string;
 }
 
 export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
 
-  constructor(props: SideDrawerProps) {
-    super(props);
+  state = { query: "" };
 
-    this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
+  queryChange = (query: string) => {
+    this.setState(state => ({ ...state, query }));
+  }
+
+  globalMouseDownListener = (e: MouseEvent) => {
+    const myElement = ReactDOM.findDOMNode(this);
+    const target = e.target as Element;
+
+    if (isInside(target, myElement)) return;
+    this.props.onClose();
+  }
+
+  globalKeyDownListener = (e: KeyboardEvent) => {
+    if (!escapeKey(e)) return;
+    this.props.onClose();
   }
 
   componentDidMount() {
@@ -60,80 +82,63 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
-  globalMouseDownListener(e: MouseEvent) {
-    const myElement = ReactDOM.findDOMNode(this);
-    const target = e.target as Element;
-
-    if (isInside(target, myElement)) return;
-    this.props.onClose();
-  }
-
-  globalKeyDownListener(e: KeyboardEvent) {
-    if (!escapeKey(e)) return;
-    this.props.onClose();
-  }
-
-  onHomeClick() {
-    window.location.hash = "#";
-  }
-
-  onOpenSettings() {
-    window.location.hash = "#settings";
-  }
-
-  renderOverviewLink() {
+  private renderHomeLink() {
     const { viewType } = this.props;
 
     return <div className="home-container">
       <div
         className={classNames("home-link", { selected: viewType === "home" })}
-        onClick={this.onHomeClick.bind(this)}
+        onClick={openHome}
       >
-        <SvgIcon svg={require("../../icons/home.svg")} />
+        <SvgIcon svg={require("../../icons/home.svg")}/>
         <span>{viewType === "link" ? "Overview" : "Home"}</span>
       </div>
     </div>;
   }
 
-  renderItems(items: Array<DataCube | Collection>, icon: string, urlPrefix = ""): JSX.Element {
-    if (!items || items.length === 0) return null;
+  private renderDataCubeList(): JSX.Element {
+    const { dataCubes } = this.props;
+    const { query } = this.state;
+    if (!dataCubes || dataCubes.length === 0) return null;
 
     const { itemHrefFn, selectedItem } = this.props;
 
-    const navLinks = items.map(item => {
+    const cubes = filterDataCubes(dataCubes, query, false);
+    if (cubes.length === 0) {
+      const message = query ? `${STRINGS.noDataCubesFound}${query}` : STRINGS.noDataCubes;
+      return <div className="data-cubes__message">{message}</div>;
+    }
+    const navLinks = cubes.map(dataCube => {
       return {
-        name: item.name,
-        title: item.title,
-        tooltip: item.description,
-        href: itemHrefFn(selectedItem, item) || `#${urlPrefix}${item.name}`
+        name: dataCube.name,
+        title: dataCube.title,
+        tooltip: dataCube.description,
+        href: itemHrefFn(selectedItem, dataCube) || `#${dataCube.name}`
       };
     });
 
     return <NavList
       selected={selectedItem ? selectedItem.name : null}
       navLinks={navLinks}
-      iconSvg={require(`../../icons/${icon}`)}
+      iconSvg={require("../../icons/full-cube.svg")}
     />;
   }
 
-  render() {
-    const { onClose, collections, dataCubes, onOpenAbout, customization, user } = this.props;
+  private renderDataCubes(): JSX.Element {
+    const { query } = this.state;
 
-    const infoAndFeedback: any[] = [];
+    return <div className="data-cubes__list">
+      <div className="search-input">
+        <ClearableInput value={query} onChange={this.queryChange} placeholder="Search data cubes..."/>
+      </div>
+      {this.renderDataCubeList()}
+    </div>;
+  }
 
-    if (user && user.allow["settings"]) {
-      infoAndFeedback.push({
-        name: "settings",
-        title: STRINGS.settings,
-        tooltip: "Settings",
-        onClick: () => {
-          onClose();
-          this.onOpenSettings();
-        }
-      });
-    }
+  private otherNavLinks(): NavLink[] {
+    const { user, onClose, onOpenAbout } = this.props;
 
-    infoAndFeedback.push({
+    const info: NavLink = {
       name: "info",
       title: STRINGS.infoAndFeedback,
       tooltip: "Learn more about Turnilo",
@@ -141,19 +146,33 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
         onClose();
         onOpenAbout();
       }
-    });
+    };
 
-    let customLogoSvg: string = null;
-    if (customization && customization.customLogoSvg) {
-      customLogoSvg = customization.customLogoSvg;
+    if (user && user.allow["settings"]) {
+      const settings: NavLink = {
+        name: "settings",
+        title: STRINGS.settings,
+        tooltip: "Settings",
+        onClick: () => {
+          onClose();
+          openSettings();
+        }
+      };
+      return [settings, info];
     }
 
+    return [info];
+  }
+
+  render() {
+    const { onClose, customization } = this.props;
+    const customLogoSvg = customization ? customization.customLogoSvg : null;
+
     return <div className="side-drawer">
-      <NavLogo customLogoSvg={customLogoSvg} onClick={onClose} />
-      {this.renderOverviewLink()}
-      {this.renderItems(dataCubes, "full-cube.svg")}
-      {this.renderItems(collections, "full-collection.svg", "collection/")}
-      <NavList navLinks={infoAndFeedback} />
+      <NavLogo customLogoSvg={customLogoSvg} onClose={onClose}/>
+      {this.renderHomeLink()}
+      {this.renderDataCubes()}
+      <NavList navLinks={this.otherNavLinks()}/>
     </div>;
   }
 }
