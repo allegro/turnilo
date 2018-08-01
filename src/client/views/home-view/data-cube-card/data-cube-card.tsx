@@ -21,7 +21,7 @@ import { MarkdownNode } from "../../../components/markdown-node/markdown-node";
 import { STRINGS } from "../../../config/constants";
 import "./data-cube-card.scss";
 
-export interface ItemCardProps {
+export interface DataCubeCardProps {
   title: string;
   count?: number;
   description: string;
@@ -29,7 +29,7 @@ export interface ItemCardProps {
   onClick: () => void;
 }
 
-export const DataCubeCard: React.SFC<ItemCardProps> = ({ title, description, icon, count, onClick }) =>
+export const DataCubeCard: React.SFC<DataCubeCardProps> = ({ title, description, icon, count, onClick }) =>
   <div className="data-cube-card" onClick={onClick}>
     <div className="inner-container">
       <SvgIcon className="view-icon" svg={require(`../../../icons/${icon}.svg`)}/>
