@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { ClearableInput, NavLink } from "..";
+import { ClearableInput, NavAction } from "..";
 import { Customization, DataCube, User } from "../../../common/models";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -36,7 +36,7 @@ export interface SideDrawerProps {
   onClose: Fn;
   customization?: Customization;
   itemHrefFn?: (oldItem?: DataCube, newItem?: DataCube) => string;
-  viewType: "home" | "cube" | "link" | "settings" | "no-data";
+  viewType: "home" | "cube" | "settings" | "no-data";
 }
 
 function openHome() {
@@ -91,31 +91,26 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
         onClick={openHome}
       >
         <SvgIcon svg={require("../../icons/home.svg")}/>
-        <span>{viewType === "link" ? "Overview" : "Home"}</span>
+        <span>Home</span>
       </div>
     </div>;
   }
 
   private renderDataCubeList(): JSX.Element {
-    const { dataCubes } = this.props;
+    const { dataCubes, itemHrefFn, selectedItem } = this.props;
     const { query } = this.state;
-    if (!dataCubes || dataCubes.length === 0) return null;
-
-    const { itemHrefFn, selectedItem } = this.props;
 
     const cubes = filterDataCubes(dataCubes, query, false);
     if (cubes.length === 0) {
       const message = query ? `${STRINGS.noDataCubesFound}${query}` : STRINGS.noDataCubes;
       return <div className="data-cubes__message">{message}</div>;
     }
-    const navLinks = cubes.map(dataCube => {
-      return {
+    const navLinks = cubes.map(dataCube => ({
         name: dataCube.name,
         title: dataCube.title,
-        tooltip: dataCube.description,
         href: itemHrefFn(selectedItem, dataCube) || `#${dataCube.name}`
-      };
-    });
+      })
+    );
 
     return <NavList
       selected={selectedItem ? selectedItem.name : null}
@@ -135,10 +130,10 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     </div>;
   }
 
-  private otherNavLinks(): NavLink[] {
+  private otherNavLinks(): NavAction[] {
     const { user, onClose, onOpenAbout } = this.props;
 
-    const info: NavLink = {
+    const info: NavAction = {
       name: "info",
       title: STRINGS.infoAndFeedback,
       tooltip: "Learn more about Turnilo",
@@ -149,7 +144,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     };
 
     if (user && user.allow["settings"]) {
-      const settings: NavLink = {
+      const settings: NavAction = {
         name: "settings",
         title: STRINGS.settings,
         tooltip: "Settings",
