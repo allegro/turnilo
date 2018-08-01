@@ -302,7 +302,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
           <SvgIcon svg={require("../../../icons/menu.svg")}/>
         </div>
         <div className="title" onClick={onNavClick}>{dataCube.title}</div>
-        {dataCube.description && <InfoBubble className="cube-description" description={dataCube.description} icon={require("../../../icons/full-more-compact.svg")}/>}
+        {dataCube.description && <InfoBubble className="cube-description" description={dataCube.description}/>}
       </div>
       <div className="right-bar">
         <div className={classNames("icon-button", "auto-refresh", { refreshing: animating })} onClick={this.onAutoRefreshMenuClick.bind(this)}>
