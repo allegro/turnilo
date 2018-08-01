@@ -19,8 +19,11 @@ import * as React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./nav-logo.scss";
 
+const closeIcon = require("../../icons/full-remove-small.svg");
+const defaultLogo = require("../../icons/turnilo-logo.svg");
+
 export interface NavLogoProps {
-  onClick?: React.MouseEventHandler<HTMLElement>;
+  onClose?: React.MouseEventHandler<HTMLElement>;
   customLogoSvg?: string;
 }
 
@@ -30,12 +33,15 @@ export interface NavLogoState {
 export class NavLogo extends React.Component<NavLogoProps, NavLogoState> {
 
   render() {
-    const { onClick, customLogoSvg } = this.props;
-    const svg = customLogoSvg || require("../../icons/turnilo-logo.svg");
+    const { onClose, customLogoSvg } = this.props;
+    const svg = customLogoSvg || defaultLogo;
 
-    return <div className="nav-logo" onClick={onClick}>
+    return <div className="nav-logo">
       <div className="logo">
-        <SvgIcon svg={svg} />
+        <SvgIcon svg={svg}/>
+      </div>
+      <div className="close-icon" onClick={onClose}>
+        <SvgIcon svg={closeIcon}/>
       </div>
     </div>;
   }
