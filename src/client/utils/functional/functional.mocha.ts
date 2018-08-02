@@ -83,11 +83,8 @@ describe("Functional utilities", () => {
     it("should produce complement predicate", () => {
       const moreThanTen = (x: number) => x > 10;
 
-      expect(moreThanTen(5)).to.be.false;
-      expect(complement(moreThanTen)(5)).to.be.true;
-
-      expect(moreThanTen(15)).to.be.true;
-      expect(complement(moreThanTen)(15)).to.be.false;
+      expect(moreThanTen(5)).to.be.not.equal(complement(moreThanTen)(5));
+      expect(moreThanTen(15)).to.be.not.equal(complement(moreThanTen)(15));
     });
   });
 
