@@ -24,18 +24,57 @@ import "./data-cube-card.scss";
 export interface DataCubeCardProps {
   title: string;
   count?: number;
+  summary: string;
   description: string;
   icon: string;
   onClick: () => void;
 }
 
-export const DataCubeCard: React.SFC<DataCubeCardProps> = ({ title, description, icon, count, onClick }) =>
-  <div className="data-cube-card" onClick={onClick}>
-    <div className="inner-container">
-      <SvgIcon className="view-icon" svg={require(`../../../icons/${icon}.svg`)}/>
-      <div className="text">
-        <div className="title">{title} {count !== undefined ? <span className="count">{count}</span> : null}</div>
-        <div className="description"><MarkdownNode markdown={description || STRINGS.noDescription}/></div>
+export interface DataCubeCardState {
+  showMore: boolean;
+}
+
+export class DataCubeCard extends React.Component<DataCubeCardProps, DataCubeCardState> {
+
+  state = { showMore: false };
+
+  showLess = () => {
+    this.setState({ showMore: false });
+  }
+
+  showMore = () => {
+    this.setState({ showMore: true });
+  }
+
+  renderDescription() {
+    const { description, summary } = this.props;
+    if (!summary) {
+      return <MarkdownNode markdown={description || STRINGS.noDescription}/>;
+    }
+
+    const { showMore } = this.state;
+    const content = showMore ? description : summary;
+    const actionLabel = showMore ? "Show less" : "Show more";
+    const action = showMore ? this.showLess : this.showMore;
+
+    return <React.Fragment>
+      <MarkdownNode markdown={content}/>
+      <div className="show-more-action" onClick={action}>{actionLabel}</div>
+    </React.Fragment>;
+  }
+
+  render() {
+    const { title, icon, count, onClick } = this.props;
+    return <div className="data-cube-card">
+      <div className="inner-container">
+        <div className="view-icon-container" onClick={onClick}>
+          <SvgIcon className="view-icon" svg={require(`../../../icons/${icon}.svg`)}/>
+        </div>
+        <div className="text">
+          <div className="title" onClick={onClick} >{title} {count !== undefined ? <span className="count">{count}</span> : null}</div>
+          <div className="description">{this.renderDescription()}</div>
+        </div>
       </div>
-    </div>
-  </div>;
+    </div>;
+  }
+}

@@ -62,13 +62,14 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
     </div>;
   }
 
-  renderDataCube(item: DataCube): JSX.Element {
+  renderDataCube({ name, title, description, summary }: DataCube): JSX.Element {
     return <DataCubeCard
-      key={item.name}
-      title={item.title}
-      description={item.description}
+      key={name}
+      title={title}
+      description={description}
+      summary={summary}
       icon="full-cube"
-      onClick={() => goToDataCube(item.name)}
+      onClick={() => goToDataCube(name)}
     />;
   }
 
@@ -78,7 +79,7 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
     const cubes = filterDataCubes(dataCubes, query);
 
     if (cubes.length === 0) {
-      const message = query ?  `${STRINGS.noDataCubesFound}${query}` : STRINGS.noDataCubes;
+      const message = query ? `${STRINGS.noDataCubesFound}${query}` : STRINGS.noDataCubes;
       return <div className="data-cubes__message">{message}</div>;
     }
     return <div className="data-cubes__container">{cubes.map(this.renderDataCube)}</div>;
