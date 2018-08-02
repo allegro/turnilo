@@ -302,6 +302,7 @@ describe("DataCube", () => {
           }
         ],
         description: "",
+        summary: "",
         dimensions: [
           {
             kind: "time",

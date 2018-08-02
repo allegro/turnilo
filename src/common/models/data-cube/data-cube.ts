@@ -94,6 +94,7 @@ export type Introspection = "none" | "no-autofill" | "autofill-dimensions-only" 
 export interface DataCubeValue {
   name: string;
   title?: string;
+  summary?: string;
   description?: string;
   clusterName: string;
   source: string;
@@ -126,6 +127,7 @@ export interface DataCubeJS {
   name: string;
   title?: string;
   description?: string;
+  summary?: string;
   clusterName: string;
   source: string;
   group?: string;
@@ -356,6 +358,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       name: parameters.name,
       title: parameters.title,
       description: parameters.description,
+      summary: parameters.summary,
       clusterName,
       source: parameters.source,
       group: parameters.group,
@@ -389,6 +392,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public name: string;
   public title: string;
   public description: string;
+  public summary: string;
   public clusterName: string;
   public source: string;
   public group: string;
@@ -423,6 +427,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     this.title = parameters.title ? parameters.title : parameters.name;
     this.description = parameters.description || "";
+    this.summary = parameters.summary || "";
     this.clusterName = parameters.clusterName || "druid";
     this.source = parameters.source || name;
     this.group = parameters.group || null;
@@ -464,6 +469,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       name: this.name,
       title: this.title,
       description: this.description,
+      summary: this.summary,
       clusterName: this.clusterName,
       source: this.source,
       group: this.group,
@@ -496,6 +502,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       name: this.name,
       title: this.title,
       description: this.description,
+      summary: this.summary,
       clusterName: this.clusterName,
       source: this.source,
       dimensions: this.dimensions.toJS(),
@@ -534,6 +541,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       this.name === other.name &&
       this.title === other.title &&
       this.description === other.description &&
+      this.summary === other.summary &&
       this.clusterName === other.clusterName &&
       this.source === other.source &&
       this.group === other.group &&

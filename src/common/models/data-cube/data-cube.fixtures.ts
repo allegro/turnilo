@@ -32,7 +32,8 @@ export class DataCubeFixtures {
     return {
       name: "wiki",
       title: "Wiki",
-      description: "Wiki description",
+      description: "Wiki full description something about articles and editors",
+      summary: "Wiki short description summary - articles",
       clusterName: "druid-wiki",
       source: "wiki",
       introspection: "none",
@@ -63,7 +64,8 @@ export class DataCubeFixtures {
     return {
       name: "twitter",
       title: "Twitter",
-      description: "Twitter description should go here",
+      description: "Twitter full description should go here - tweets and followers",
+      summary: "Twitter description summary about tweets",
       clusterName: "druid-twitter",
       source: "twitter",
       introspection: "none",

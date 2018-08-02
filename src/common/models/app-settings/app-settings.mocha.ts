@@ -171,7 +171,8 @@ describe("AppSettings", () => {
             ],
             defaultSortMeasure: "count",
             defaultTimezone: "Etc/UTC",
-            description: "Wiki description",
+            description: "Wiki full description something about articles and editors",
+            summary: "Wiki short description summary - articles",
             dimensions: [
               {
                 formula: "$time",
