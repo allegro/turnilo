@@ -18,8 +18,10 @@ import { DataCube } from "../../../common/models";
 import { isNil } from "../../../common/utils";
 import { complement } from "../functional/functional";
 
+const ESCAPE_REG_EXP = /[.*+?^${}()|[\]\\]/g;
+
 function escapeRegExp(input: string): string {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return input.replace(ESCAPE_REG_EXP, "\\$&");
 }
 
 interface RankedDataCube {
