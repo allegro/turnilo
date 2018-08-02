@@ -47,13 +47,32 @@ describe("DataCubes Filter", () => {
   it("should filter based on description", () => {
     const dataCubes = [twitter, wiki];
 
-    expect(filterDataCubes(dataCubes, "should")).to.be.deep.equal([twitter]);
+    expect(filterDataCubes(dataCubes, "followers")).to.be.deep.equal([twitter]);
   });
 
   it("should be case insensitive for description", () => {
     const dataCubes = [twitter, wiki];
 
-    expect(filterDataCubes(dataCubes, "sHoUlD")).to.be.deep.equal([twitter]);
+    expect(filterDataCubes(dataCubes, "FollOwErS")).to.be.deep.equal([twitter]);
+  });
+
+  it("should filter based on summary", () => {
+    const dataCubes = [twitter, wiki];
+
+    expect(filterDataCubes(dataCubes, "short")).to.be.deep.equal([wiki]);
+  });
+
+  it("should be case insensitive for summary", () => {
+    const dataCubes = [twitter, wiki];
+
+    expect(filterDataCubes(dataCubes, "ShOrT")).to.be.deep.equal([wiki]);
+  });
+
+  it("should not search in content when passed flag", () => {
+    const dataCubes = [twitter, wiki];
+
+    expect(filterDataCubes(dataCubes, "description")).to.be.deep.equal([twitter, wiki]);
+    expect(filterDataCubes(dataCubes, "description", false)).to.be.deep.equal([]);
   });
 
   it("should sort with rank", () => {
