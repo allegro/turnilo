@@ -26,6 +26,7 @@ import { MeasureClickHandler } from "./measures-tile";
 export interface MeasureItemProps {
   name: string;
   title: string;
+  approximate: boolean;
   description?: string;
   selected: boolean;
   measureClick: MeasureClickHandler;
@@ -33,7 +34,7 @@ export interface MeasureItemProps {
   searchText: string;
 }
 
-export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureClick, description, multiMeasureMode, searchText, selected }) => {
+export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureClick, description, multiMeasureMode, searchText, approximate, selected }) => {
 
   const infoBubbleClassName = "info-bubble";
   const checkboxType = multiMeasureMode ? "check" : "radio";
@@ -43,7 +44,7 @@ export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureC
     measureClick(name, e);
   };
 
-  return <div className={classNames("row", { selected })} onClick={handleClick}>
+  return <div className={classNames("measure-item row", { selected, approximate })} onClick={handleClick}>
     <Checkbox type={checkboxType} selected={selected}/>
     <HighlightString className="label" text={title} highlight={searchText}/>
     {description && <InfoBubble className={infoBubbleClassName} description={description}/>}

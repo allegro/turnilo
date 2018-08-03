@@ -22,6 +22,7 @@ export type MeasureOrGroupForView = MeasureForView | MeasureGroupForView;
 export interface MeasureForView {
   name: string;
   title: string;
+  approximate: boolean;
   description?: string;
   hasSelectedMeasures: boolean;
   hasSearchText: boolean;
@@ -59,7 +60,8 @@ export class MeasuresConverter implements MeasureOrGroupVisitor<MeasureOrGroupFo
       description: measure.description,
       hasSelectedMeasures: isSelectedMeasurePredicate(measure),
       hasSearchText: hasSearchTextPredicate(measure),
-      type: MeasureForViewType.measure
+      type: MeasureForViewType.measure,
+      approximate: measure.isApproximate()
     };
   }
 

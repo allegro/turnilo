@@ -65,13 +65,14 @@ export class MeasuresRenderer {
 
   private renderMeasure(measureView: MeasureForView): JSX.Element {
     const { measureClick, multiMeasureMode, searchText } = this;
-    const { name, title, description, hasSelectedMeasures } = measureView;
+    const { name, title, approximate, description, hasSelectedMeasures } = measureView;
 
     return <MeasureItem
       key={name}
       name={name}
       title={title}
       description={description}
+      approximate={approximate}
       selected={hasSelectedMeasures}
       measureClick={measureClick}
       multiMeasureMode={multiMeasureMode}

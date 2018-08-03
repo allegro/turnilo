@@ -27,7 +27,7 @@ import {
   CountDistinctExpression,
   Datum,
   deduplicateSort,
-  Expression,
+  Expression, QuantileExpression,
   RefExpression
 } from "plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
@@ -305,6 +305,17 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     } else {
       return this.title;
     }
+  }
+
+  public isApproximate(): boolean {
+    // Expression.some is bugged
+    let isApproximate = false;
+    this.expression.forEach((exp: Expression) => {
+      if (exp instanceof CountDistinctExpression || exp instanceof QuantileExpression) {
+        isApproximate = true;
+      }
+    });
+    return isApproximate;
   }
 
   public getFormula: () => string;
