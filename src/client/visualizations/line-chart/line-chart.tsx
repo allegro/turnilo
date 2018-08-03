@@ -45,7 +45,7 @@ import {
 } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
-import { concatTruthy, flatMap, mapTruthy, Unary } from "../../utils/functional/functional";
+import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
 import Linear = d3.scale.Linear;

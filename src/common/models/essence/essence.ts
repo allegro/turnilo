@@ -18,7 +18,7 @@
 import { Timezone } from "chronoshift";
 import { Iterable, List, OrderedSet } from "immutable";
 import { Class, immutableEqual, Instance, NamedArray } from "immutable-class";
-import { ApplyExpression, Expression, LiteralExpression, PlywoodValue, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
+import { Expression, LiteralExpression, PlywoodValue, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { Colors, ColorsJS } from "../colors/colors";

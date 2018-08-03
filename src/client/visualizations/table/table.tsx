@@ -28,7 +28,7 @@ import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { classNames } from "../../utils/dom/dom";
-import { flatMap } from "../../utils/functional/functional";
+import { flatMap } from "../../../common/utils/functional/functional";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./table.scss";
 

@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { isNil } from "../../../common/utils";
-import { Unary } from "../../utils/functional/functional";
+import { Unary } from "../../../common/utils/functional/functional";
 import "./delta.scss";
 
 export type DeltaSign = -1 | 0 | 1;

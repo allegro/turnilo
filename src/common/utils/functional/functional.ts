@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { isTruthy } from "../../../common/utils";
+import { isTruthy } from "..";
 
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, S, R> = (arg: T, arg2: S) => R;
 
-export type Predicate<T> = Unary<T, Boolean>;
+export type Predicate<T> = Unary<T, boolean>;
 
 export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
