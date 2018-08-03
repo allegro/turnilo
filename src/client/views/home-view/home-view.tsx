@@ -34,7 +34,7 @@ export interface HomeViewProps {
 }
 
 export interface HomeViewState {
-  query?: string;
+  query: string;
 }
 
 function goToSettings() {

@@ -48,7 +48,7 @@ function openSettings() {
 }
 
 export interface SideDrawerState {
-  query?: string;
+  query: string;
 }
 
 export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {

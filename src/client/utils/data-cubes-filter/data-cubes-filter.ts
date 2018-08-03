@@ -16,7 +16,7 @@
 
 import { DataCube } from "../../../common/models";
 import { isNil } from "../../../common/utils";
-import { complement } from "../functional/functional";
+import { complement } from "../../../common/utils/functional/functional";
 
 const ESCAPE_REG_EXP = /[.*+?^${}()|[\]\\]/g;
 
@@ -46,7 +46,7 @@ function titleRank(title: string, query: string): number {
 }
 
 export default function filterDataCubes(dataCubes: DataCube[], query: string, searchInContent = true): DataCube[] {
-  if (!query || query.trim().length === 0) {
+  if (query.trim().length === 0) {
     return dataCubes;
   }
   return dataCubes
