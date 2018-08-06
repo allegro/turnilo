@@ -28,7 +28,6 @@ describe("DataCubes Filter", () => {
     const dataCubes = [twitter, wiki];
 
     expect(filterDataCubes(dataCubes, ""), "empty string").to.be.deep.equal(dataCubes);
-    expect(filterDataCubes(dataCubes, null), "<null>").to.be.deep.equal(dataCubes);
     expect(filterDataCubes(dataCubes, "   "), "blank string").to.be.deep.equal(dataCubes);
   });
 
