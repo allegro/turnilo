@@ -23,12 +23,12 @@ import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
 import { DataCube, DatasetLoad, Essence, Filter, FilterClause, Measure, MeasureDerivation, SplitCombine, Splits, VisStrategy, VisualizationProps } from "../../../common/models/index";
 import { integerDivision } from "../../../common/utils";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
+import { flatMap } from "../../../common/utils/functional/functional";
 import { Delta, SegmentActionButtons } from "../../components";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { classNames } from "../../utils/dom/dom";
-import { flatMap } from "../../../common/utils/functional/functional";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./table.scss";
 
