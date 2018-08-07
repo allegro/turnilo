@@ -1,5 +1,17 @@
+@import '../../imports';
+
 %default-info-bubble-position {
   position: absolute;
   right: 5px;
   top: 3px;
+
+  svg path {
+    fill: $text-lighterish;
+  }
+
+  &:hover {
+    svg path {
+      fill: $text-default-color;
+    }
+  }
 }

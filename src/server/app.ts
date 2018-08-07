@@ -24,7 +24,6 @@ import * as path from "path";
 import { LOGGER } from "../common/logger/logger";
 import { GetSettingsOptions } from "../server/utils/settings-manager/settings-manager";
 import { AUTH, SERVER_SETTINGS, SETTINGS_MANAGER, VERSION } from "./config";
-import * as collectionsRoutes from "./routes/collections/collections";
 import * as errorRoutes from "./routes/error/error";
 import * as healthRoutes from "./routes/health/health";
 import * as mkurlRoutes from "./routes/mkurl/mkurl";
@@ -188,7 +187,6 @@ addRoutes("/plyql", plyqlRoutes);
 addRoutes("/mkurl", mkurlRoutes);
 addRoutes("/error", errorRoutes);
 if (stateful) {
-  addRoutes("/collections", collectionsRoutes);
   addGuardedRoutes("/settings", "settings", settingsRoutes);
 }
 

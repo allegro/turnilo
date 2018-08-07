@@ -44,7 +44,7 @@ import {
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Fn } from "../../../common/utils/general/general";
 import { DimensionMeasurePanel, DropIndicator, FilterTile, GlobalEventListener, ManualFallback, PinboardPanel, ResizeHandle, SplitTile, VisSelector } from "../../components/index";
-import { RawDataModal } from "../../modals/index";
+import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { FunctionSlot } from "../../utils/function-slot/function-slot";

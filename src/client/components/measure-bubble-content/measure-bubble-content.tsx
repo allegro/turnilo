@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { Unary } from "../../utils/functional/functional";
+import { Unary } from "../../../common/utils/functional/functional";
 import { Delta } from "../delta/delta";
 import "./measure-bubble-content.scss";
 

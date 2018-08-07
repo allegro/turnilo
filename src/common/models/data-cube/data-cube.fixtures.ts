@@ -32,7 +32,7 @@ export class DataCubeFixtures {
     return {
       name: "wiki",
       title: "Wiki",
-      description: "Wiki description",
+      description: "Wiki full description something about articles and editors",
       clusterName: "druid-wiki",
       source: "wiki",
       introspection: "none",
@@ -63,7 +63,7 @@ export class DataCubeFixtures {
     return {
       name: "twitter",
       title: "Twitter",
-      description: "Twitter description should go here",
+      description: "Twitter full description should go here - tweets and followers",
       clusterName: "druid-twitter",
       source: "twitter",
       introspection: "none",
@@ -87,5 +87,26 @@ export class DataCubeFixtures {
 
   static twitter() {
     return DataCube.fromJS(DataCubeFixtures.TWITTER_JS, { executor });
+  }
+
+  static customCube(title: string, description: string, extendedDescription = ""): DataCube {
+    return DataCube.fromJS({
+      name: "custom",
+      title,
+      description,
+      extendedDescription,
+      clusterName: "druid-custom",
+      source: "custom",
+      introspection: "none",
+      dimensions: [],
+      measures: [],
+      timeAttribute: "time",
+      defaultTimezone: "Etc/UTC",
+      defaultFilter: { op: "literal", value: true },
+      defaultDuration: "P3D",
+      refreshRule: {
+        rule: "realtime"
+      }
+    }, { executor });
   }
 }

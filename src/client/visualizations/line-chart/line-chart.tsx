@@ -26,6 +26,7 @@ import { getLineChartTicks } from "../../../common/models/granularity/granularit
 import { DatasetLoad, Dimension, Essence, Filter, FilterClause, Measure, MeasureDerivation, SplitCombine, Splits, Stage, Timekeeper, VisualizationProps } from "../../../common/models/index";
 import { JSXNode } from "../../../common/utils";
 import { formatValue } from "../../../common/utils/formatter/formatter";
+import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
 import { union } from "../../../common/utils/plywood/range";
 import { DisplayYear } from "../../../common/utils/time/time";
 import {
@@ -45,7 +46,6 @@ import {
 } from "../../components/index";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
 import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
-import { concatTruthy, flatMap, mapTruthy, Unary } from "../../utils/functional/functional";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
 import Linear = d3.scale.Linear;

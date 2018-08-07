@@ -24,10 +24,9 @@ import { SideDrawer } from "./side-drawer";
 
 describe.skip("SideDrawer", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <SideDrawer
         user={null}
-        collections={null}
         dataCubes={null}
         selectedItem={null}
         onOpenAbout={null}

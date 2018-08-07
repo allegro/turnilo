@@ -18,6 +18,7 @@
 import { List, OrderedSet } from "immutable";
 import { immutableArraysEqual } from "immutable-class";
 import { Expression } from "plywood";
+import { complement } from "../../utils/functional/functional";
 import { isNil, quoteNames } from "../../utils/general/general";
 import { Measure, MeasureDerivation } from "./measure";
 import { isMeasureGroupJS, MeasureGroup, MeasureOrGroup, measureOrGroupFromJS, MeasureOrGroupJS, MeasureOrGroupVisitor } from "./measure-group";
@@ -61,7 +62,7 @@ function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<{ na
       }
       return null;
     })
-    .filter(invalid => !isNil(invalid))
+    .filter(complement(isNil))
     .toList();
 }
 

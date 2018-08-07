@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { Cluster, DataCube } from "./index";
+import { Cluster } from "./cluster/cluster";
+import { DataCube } from "./data-cube/data-cube";
 
 export const DIMENSION = {
   name: {

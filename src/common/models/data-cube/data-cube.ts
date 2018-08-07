@@ -95,6 +95,7 @@ export interface DataCubeValue {
   name: string;
   title?: string;
   description?: string;
+  extendedDescription?: string;
   clusterName: string;
   source: string;
   group?: string;
@@ -126,6 +127,7 @@ export interface DataCubeJS {
   name: string;
   title?: string;
   description?: string;
+  extendedDescription?: string;
   clusterName: string;
   source: string;
   group?: string;
@@ -187,8 +189,8 @@ export interface LongFormMeasure {
 
 function measuresFromLongForm(longForm: LongForm): Measure[] {
   const { metricColumn, measures, possibleAggregates } = longForm;
-  var myPossibleAggregates: Record<string, Expression> = {};
-  for (var agg in possibleAggregates) {
+  let myPossibleAggregates: Record<string, Expression> = {};
+  for (let agg in possibleAggregates) {
     if (!hasOwnProperty(possibleAggregates, agg)) continue;
     myPossibleAggregates[agg] = Expression.fromJSLoose(possibleAggregates[agg]);
   }
@@ -198,21 +200,21 @@ function measuresFromLongForm(longForm: LongForm): Measure[] {
       return Measure.fromJS(measure as MeasureJS);
     }
 
-    var title = measure.title;
+    const title = measure.title;
     if (!title) {
       throw new Error("must have title in longForm value");
     }
 
-    var value = (measure as LongFormMeasure).value;
-    var aggregate = (measure as LongFormMeasure).aggregate;
+    const value = (measure as LongFormMeasure).value;
+    const aggregate = (measure as LongFormMeasure).aggregate;
     if (!aggregate) {
       throw new Error("must have aggregates in longForm value");
     }
 
-    var myExpression = myPossibleAggregates[aggregate];
+    const myExpression = myPossibleAggregates[aggregate];
     if (!myExpression) throw new Error(`can not find aggregate ${aggregate} for value ${value}`);
 
-    var name = makeUrlSafeName(`${aggregate}_${value}`);
+    const name = makeUrlSafeName(`${aggregate}_${value}`);
     return new Measure({
       name,
       title,
@@ -228,15 +230,15 @@ function measuresFromLongForm(longForm: LongForm): Measure[] {
 }
 
 function filterFromLongForm(longForm: LongForm): Expression {
-  var { metricColumn, measures } = longForm;
-  var values: string[] = [];
-  for (var measure of measures) {
+  const { metricColumn, measures } = longForm;
+  let values: string[] = [];
+  for (let measure of measures) {
     if (hasOwnProperty(measure, "aggregate")) values.push((measure as LongFormMeasure).value);
   }
   return $(metricColumn).in(values).simplify();
 }
 
-var check: Class<DataCubeValue, DataCubeJS>;
+let check: Class<DataCubeValue, DataCubeJS>;
 
 export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   static DEFAULT_INTROSPECTION: Introspection = "autofill-all";
@@ -255,17 +257,17 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       return Promise.reject(new Error("dataCube not ready"));
     }
 
-    var ex = ply().apply("maxTime", $("main").max(dataCube.timeAttribute));
+    const ex = ply().apply("maxTime", $("main").max(dataCube.timeAttribute));
 
     return dataCube.executor(ex).then((dataset: Dataset) => {
-      var maxTimeDate = <Date> dataset.data[0]["maxTime"];
+      const maxTimeDate = <Date> dataset.data[0]["maxTime"];
       if (isNaN(maxTimeDate as any)) return null;
       return maxTimeDate;
     });
   }
 
   static fromClusterAndExternal(name: string, cluster: Cluster, external: External): DataCube {
-    var dataCube = DataCube.fromJS({
+    const dataCube = DataCube.fromJS({
       name,
       clusterName: cluster.name,
       source: String(external.source),
@@ -279,17 +281,17 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     const { cluster, executor } = context;
     if (!parameters.name) throw new Error("DataCube must have a name");
 
-    var clusterName = parameters.clusterName;
-    var introspection = parameters.introspection;
-    var defaultSplitsJS = parameters.defaultSplits;
-    var attributeOverrideJSs = parameters.attributeOverrides;
+    let clusterName = parameters.clusterName;
+    let introspection = parameters.introspection;
+    let defaultSplitsJS = parameters.defaultSplits;
+    let attributeOverrideJSs = parameters.attributeOverrides;
 
     // Back compat.
     if (!clusterName) {
       clusterName = (parameters as any).engine;
     }
 
-    var options = parameters.options || {};
+    let options = parameters.options || {};
     if (options.skipIntrospection) {
       if (!introspection) introspection = "none";
       delete options.skipIntrospection;
@@ -316,17 +318,17 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       throw new Error(`invalid introspection value ${introspection}, must be one of ${DataCube.INTROSPECTION_VALUES.join(", ")}`);
     }
 
-    var refreshRule = parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : null;
+    const refreshRule = parameters.refreshRule ? RefreshRule.fromJS(parameters.refreshRule) : null;
 
-    var timeAttributeName = parameters.timeAttribute;
+    let timeAttributeName = parameters.timeAttribute;
     if (cluster && cluster.type === "druid" && !timeAttributeName) {
       timeAttributeName = "__time";
     }
-    var timeAttribute = timeAttributeName ? $(timeAttributeName) : null;
+    const timeAttribute = timeAttributeName ? $(timeAttributeName) : null;
 
-    var attributeOverrides = AttributeInfo.fromJSs(attributeOverrideJSs || []);
-    var attributes = AttributeInfo.fromJSs(parameters.attributes || []);
-    var derivedAttributes: Record<string, Expression> = null;
+    const attributeOverrides = AttributeInfo.fromJSs(attributeOverrideJSs || []);
+    const attributes = AttributeInfo.fromJSs(parameters.attributes || []);
+    let derivedAttributes: Record<string, Expression> = null;
     if (parameters.derivedAttributes) {
       derivedAttributes = Expression.expressionLookupFromJS(parameters.derivedAttributes);
     }
@@ -349,13 +351,14 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       throw e;
     }
 
-    var subsetFormula = parameters.subsetFormula || (parameters as any).subsetFilter;
+    const subsetFormula = parameters.subsetFormula || (parameters as any).subsetFilter;
 
-    var value: DataCubeValue = {
+    let value: DataCubeValue = {
       executor: null,
       name: parameters.name,
       title: parameters.title,
       description: parameters.description,
+      extendedDescription: parameters.extendedDescription,
       clusterName,
       source: parameters.source,
       group: parameters.group,
@@ -389,6 +392,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public name: string;
   public title: string;
   public description: string;
+  public extendedDescription: string;
   public clusterName: string;
   public source: string;
   public group: string;
@@ -416,13 +420,12 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public executor: Executor;
 
   constructor(parameters: DataCubeValue) {
-    var name = parameters.name;
+    const name = parameters.name;
     if (!parameters.name) throw new Error("DataCube must have a name");
     verifyUrlSafeName(name);
     this.name = name;
 
     this.title = parameters.title ? parameters.title : parameters.name;
-    this.description = parameters.description || "";
     this.clusterName = parameters.clusterName || "druid";
     this.source = parameters.source || name;
     this.group = parameters.group || null;
@@ -443,14 +446,17 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     this.defaultSelectedMeasures = parameters.defaultSelectedMeasures;
     this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
 
-    var refreshRule = parameters.refreshRule || RefreshRule.query();
-    this.refreshRule = refreshRule;
+    const { description, extendedDescription } = this.parseDescription(parameters);
+    this.description = description;
+    this.extendedDescription = extendedDescription;
+
+    this.refreshRule = parameters.refreshRule || RefreshRule.query();
 
     this.cluster = parameters.cluster;
     this.executor = parameters.executor;
 
-    var dimensions = parameters.dimensions;
-    var measures = parameters.measures;
+    const dimensions = parameters.dimensions;
+    const measures = parameters.measures;
     checkDimensionsAndMeasuresNamesUniqueness(dimensions, measures, name);
 
     this.dimensions = dimensions || Dimensions.empty();
@@ -460,10 +466,11 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public valueOf(): DataCubeValue {
-    var value: DataCubeValue = {
+    let value: DataCubeValue = {
       name: this.name,
       title: this.title,
       description: this.description,
+      extendedDescription: this.extendedDescription,
       clusterName: this.clusterName,
       source: this.source,
       group: this.group,
@@ -492,7 +499,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public toJS(): DataCubeJS {
-    var js: DataCubeJS = {
+    let js: DataCubeJS = {
       name: this.name,
       title: this.title,
       description: this.description,
@@ -502,6 +509,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       measures: this.measures.toJS(),
       refreshRule: this.refreshRule.toJS()
     };
+    if (this.extendedDescription) js.extendedDescription = this.extendedDescription;
     if (this.group) js.group = this.group;
     if (this.introspection) js.introspection = this.introspection;
     if (this.subsetFormula) js.subsetFormula = this.subsetFormula;
@@ -534,6 +542,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       this.name === other.name &&
       this.title === other.title &&
       this.description === other.description &&
+      this.extendedDescription === other.extendedDescription &&
       this.clusterName === other.clusterName &&
       this.source === other.source &&
       this.group === other.group &&
@@ -559,8 +568,25 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       this.refreshRule.equals(other.refreshRule);
   }
 
+  private parseDescription({ description, extendedDescription }: DataCubeValue): { description: string, extendedDescription?: string } {
+    if (!description) {
+      return { description: "" };
+    }
+    if (extendedDescription) {
+      return { description, extendedDescription };
+    }
+    const segments = description.split(/\s---\s/);
+    if (segments.length === 0) {
+      return { description };
+    }
+    return {
+      description: segments[0],
+      extendedDescription: segments.splice(1).join(" --- ")
+    };
+  }
+
   private _validateDefaults() {
-    var { measures, defaultSortMeasure } = this;
+    const { measures, defaultSortMeasure } = this;
 
     if (defaultSortMeasure) {
       if (!measures.containsMeasureWithName(defaultSortMeasure)) {
@@ -574,7 +600,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     const { cluster, options } = this;
     if (!cluster) throw new Error("must have a cluster");
 
-    var externalValue: ExternalValue = {
+    let externalValue: ExternalValue = {
       engine: cluster.type,
       suppress: true,
       source: this.source,
@@ -591,7 +617,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       externalValue.introspectionStrategy = cluster.getIntrospectionStrategy();
       externalValue.allowSelectQueries = true;
 
-      var externalContext: Record<string, any> = options.druidContext || {};
+      let externalContext: Record<string, any> = options.druidContext || {};
       externalContext["timeout"] = cluster.getTimeout();
       externalValue.context = externalContext;
     }
@@ -608,15 +634,15 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public getMainTypeContext(): DatasetFullType {
-    var { attributes, derivedAttributes } = this;
+    const { attributes, derivedAttributes } = this;
     if (!attributes) return null;
 
-    var datasetType: Record<string, SimpleFullType> = {};
-    for (var attribute of attributes) {
+    let datasetType: Record<string, SimpleFullType> = {};
+    for (let attribute of attributes) {
       datasetType[attribute.name] = (attribute as any);
     }
 
-    for (var name in derivedAttributes) {
+    for (let name in derivedAttributes) {
       datasetType[name] = {
         type: <PlyTypeSimple> derivedAttributes[name].type
       };
@@ -629,9 +655,9 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public getIssues(): string[] {
-    var { dimensions, measures } = this;
-    var mainTypeContext = this.getMainTypeContext();
-    var issues: string[] = [];
+    const { dimensions, measures } = this;
+    const mainTypeContext = this.getMainTypeContext();
+    let issues: string[] = [];
 
     dimensions.forEachDimension(dimension => {
       try {
@@ -641,7 +667,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       }
     });
 
-    var measureTypeContext: DatasetFullType = {
+    const measureTypeContext: DatasetFullType = {
       type: "DATASET",
       datasetType: {
         main: mainTypeContext
@@ -652,7 +678,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       try {
         measure.expression.changeInTypeContext(measureTypeContext);
       } catch (e) {
-        var message = e.message;
+        let message = e.message;
         // If we get here it is possible that the user has misunderstood what the meaning of a measure is and have tried
         // to do something like $volume / $volume. We detect this here by checking for a reference to $main
         // If there is no main reference raise a more informative issue.
@@ -667,7 +693,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public updateCluster(cluster: Cluster): DataCube {
-    var value = this.valueOf();
+    let value = this.valueOf();
     value.cluster = cluster;
     return new DataCube(value);
   }
@@ -675,7 +701,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public updateWithDataset(dataset: Dataset): DataCube {
     if (this.clusterName !== "native") throw new Error("must be native to have a dataset");
 
-    var executor = basicExecutorFactory({
+    const executor = basicExecutorFactory({
       datasets: { main: dataset }
     });
 
@@ -685,7 +711,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public updateWithExternal(external: External): DataCube {
     if (this.clusterName === "native") throw new Error("can not be native and have an external");
 
-    var executor = basicExecutorFactory({
+    const executor = basicExecutorFactory({
       datasets: { main: external }
     });
 
@@ -693,13 +719,13 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public attachExecutor(executor: Executor): DataCube {
-    var value = this.valueOf();
+    let value = this.valueOf();
     value.executor = executor;
     return new DataCube(value);
   }
 
   public toClientDataCube(): DataCube {
-    var value = this.valueOf();
+    let value = this.valueOf();
 
     // Do not reveal the subset filter to the client
     value.subsetFormula = null;
@@ -720,7 +746,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public getMaxTime(timekeeper: Timekeeper): Date {
-    var { name, refreshRule } = this;
+    const { name, refreshRule } = this;
     if (refreshRule.isRealtime()) {
       return timekeeper.now();
     } else if (refreshRule.isFixed()) {
@@ -731,13 +757,13 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public updatedText(timekeeper: Timekeeper, timezone: Timezone): string {
-    var { refreshRule } = this;
+    const { refreshRule } = this;
     if (refreshRule.isRealtime()) {
       return "Updated ~1 second ago";
     } else if (refreshRule.isFixed()) {
       return `Fixed to ${getWallTimeString(refreshRule.time, timezone)}`;
     } else { // refreshRule is query
-      var maxTime = this.getMaxTime(timekeeper);
+      const maxTime = this.getMaxTime(timekeeper);
       if (maxTime) {
         return `Updated ${formatTimeDiff(timekeeper.now().valueOf() - maxTime.valueOf().valueOf())} ago`;
       } else {
@@ -781,7 +807,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public changeDimensions(dimensions: Dimensions): DataCube {
-    var value = this.valueOf();
+    let value = this.valueOf();
     value.dimensions = dimensions;
     return new DataCube(value);
   }
@@ -796,7 +822,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
    */
   public deduceAttributes(): Attributes {
     const { dimensions, measures, timeAttribute, attributeOverrides } = this;
-    var attributes: Attributes = [];
+    let attributes: Attributes = [];
 
     if (timeAttribute) {
       attributes.push(AttributeInfo.fromJS({ name: timeAttribute.name, type: "TIME" }));
@@ -805,17 +831,17 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     dimensions.forEachDimension(dimension => {
       const expression = dimension.expression;
       if (expression.equals(timeAttribute)) return;
-      var references = expression.getFreeReferences();
-      for (var reference of references) {
+      const references = expression.getFreeReferences();
+      for (let reference of references) {
         if (NamedArray.findByName(attributes, reference)) continue;
         attributes.push(AttributeInfo.fromJS({ name: reference, type: "STRING" }));
       }
     });
 
     measures.forEachMeasure(measure => {
-      var references = Measure.getReferences(measure.expression);
-      var countDistinctReferences = Measure.getCountDistinctReferences(measure.expression);
-      for (var reference of references) {
+      const references = Measure.getReferences(measure.expression);
+      const countDistinctReferences = Measure.getCountDistinctReferences(measure.expression);
+      for (let reference of references) {
         if (NamedArray.findByName(attributes, reference)) continue;
         if (countDistinctReferences.indexOf(reference) !== -1) {
           attributes.push(AttributeInfo.fromJS({ name: reference, type: "STRING", nativeType: "hyperUnique" }));
@@ -833,26 +859,26 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public addAttributes(newAttributes: Attributes): DataCube {
-    var { dimensions, measures, attributes } = this;
+    let { dimensions, measures, attributes } = this;
     const introspection = this.getIntrospection();
     if (introspection === "none") return this;
 
-    var autofillDimensions = introspection === "autofill-dimensions-only" || introspection === "autofill-all";
-    var autofillMeasures = introspection === "autofill-measures-only" || introspection === "autofill-all";
+    const autofillDimensions = introspection === "autofill-dimensions-only" || introspection === "autofill-all";
+    const autofillMeasures = introspection === "autofill-measures-only" || introspection === "autofill-all";
 
-    var $main = $("main");
+    const $main = $("main");
 
-    for (var newAttribute of newAttributes) {
-      var { name, type, nativeType } = newAttribute;
+    for (let newAttribute of newAttributes) {
+      const { name, type, nativeType } = newAttribute;
 
       // Already exists as a current attribute
       if (attributes && NamedArray.findByName(attributes, name)) continue;
 
       // Already exists as a current dimension or a measure
-      var urlSafeName = makeUrlSafeName(name);
+      const urlSafeName = makeUrlSafeName(name);
       if (this.getDimension(urlSafeName) || this.getMeasure(urlSafeName)) continue;
 
-      var expression: Expression;
+      let expression: Expression;
       switch (type) {
         case "TIME":
           if (!autofillDimensions) continue;
@@ -870,7 +896,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           if (nativeType === "hyperUnique" || nativeType === "thetaSketch") {
             if (!autofillMeasures) continue;
 
-            var newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
+            const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
             newMeasures.forEach(newMeasure => {
               if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
               measures = measures.append(newMeasure);
@@ -910,7 +936,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
         case "NUMBER":
           if (!autofillMeasures) continue;
 
-          var newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
+          const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
           newMeasures.forEach(newMeasure => {
             if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
             measures = (name === "count") ? measures.prepend(newMeasure) : measures.append(newMeasure);
@@ -922,7 +948,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
           if (nativeType === "hyperUnique" || nativeType === "thetaSketch" || nativeType === "approximateHistogram") {
             if (!autofillMeasures) continue;
 
-            var newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
+            const newMeasures = Measure.measuresFromAttributeInfo(newAttribute);
             newMeasures.forEach(newMeasure => {
               if (this.measures.getMeasureByExpression(newMeasure.expression)) return;
               measures = measures.append(newMeasure);
@@ -943,7 +969,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       }));
     }
 
-    var value = this.valueOf();
+    let value = this.valueOf();
     value.attributes = attributes ? AttributeInfo.override(attributes, newAttributes) : newAttributes;
     value.dimensions = dimensions;
     value.measures = measures;
@@ -1007,7 +1033,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public change(propertyName: string, newValue: any): DataCube {
-    var v = this.valueOf();
+    let v = this.valueOf();
 
     if (!v.hasOwnProperty(propertyName)) {
       throw new Error(`Unknown property : ${propertyName}`);
