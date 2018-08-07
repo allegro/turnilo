@@ -20,7 +20,6 @@ import { Executor } from "plywood";
 import { hasOwnProperty } from "../../utils/general/general";
 import { ImmutableUtils } from "../../utils/index";
 import { Cluster, ClusterJS } from "../cluster/cluster";
-import { Collection, CollectionJS } from "../collection/collection";
 import { Customization, CustomizationJS } from "../customization/customization";
 import { DataCube, DataCubeJS } from "../data-cube/data-cube";
 import { Manifest } from "../manifest/manifest";
@@ -30,8 +29,6 @@ export interface AppSettingsValue {
   clusters?: Cluster[];
   customization?: Customization;
   dataCubes?: DataCube[];
-  linkViewConfig?: Collection;
-  collections?: Collection[];
 }
 
 export interface AppSettingsJS {
@@ -39,8 +36,6 @@ export interface AppSettingsJS {
   clusters?: ClusterJS[];
   customization?: CustomizationJS;
   dataCubes?: DataCubeJS[];
-  linkViewConfig?: CollectionJS;
-  collections?: CollectionJS[];
 }
 
 export interface AppSettingsContext {
@@ -90,18 +85,11 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       return dataCubeObject;
     });
 
-    var collectionContext = { dataCubes, visualizations: context.visualizations };
-    var makeCollection = (js: CollectionJS) => {
-      return js ? Collection.fromJS(js, collectionContext) : null;
-    };
-
     var value: AppSettingsValue = {
       version: parameters.version,
       clusters,
       customization: Customization.fromJS(parameters.customization || {}),
-      dataCubes,
-      linkViewConfig: makeCollection(parameters.linkViewConfig),
-      collections: parameters.collections ? parameters.collections.map(makeCollection).filter(Boolean) : []
+      dataCubes
     };
 
     return new AppSettings(value);
@@ -111,17 +99,13 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   public clusters: Cluster[];
   public customization: Customization;
   public dataCubes: DataCube[];
-  public linkViewConfig: Collection;
-  public collections: Collection[];
 
   constructor(parameters: AppSettingsValue) {
     const {
       version,
       clusters,
       customization,
-      dataCubes,
-      linkViewConfig,
-      collections
+      dataCubes
     } = parameters;
 
     for (var dataCube of dataCubes) {
@@ -135,8 +119,6 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     this.clusters = clusters;
     this.customization = customization;
     this.dataCubes = dataCubes;
-    this.linkViewConfig = linkViewConfig;
-    this.collections = collections;
   }
 
   public valueOf(): AppSettingsValue {
@@ -144,9 +126,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       version: this.version,
       clusters: this.clusters,
       customization: this.customization,
-      dataCubes: this.dataCubes,
-      linkViewConfig: this.linkViewConfig,
-      collections: this.collections
+      dataCubes: this.dataCubes
     };
   }
 
@@ -156,8 +136,6 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     js.clusters = this.clusters.map(cluster => cluster.toJS());
     js.customization = this.customization.toJS();
     js.dataCubes = this.dataCubes.map(dataCube => dataCube.toJS());
-    if (this.collections.length > 0) js.collections = this.collections.map(c => c.toJS());
-    if (this.linkViewConfig) js.linkViewConfig = this.linkViewConfig.toJS();
     return js;
   }
 
@@ -174,9 +152,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       this.version === other.version &&
       immutableArraysEqual(this.clusters, other.clusters) &&
       immutableEqual(this.customization, other.customization) &&
-      immutableArraysEqual(this.dataCubes, other.dataCubes) &&
-      Boolean(this.linkViewConfig) === Boolean(other.linkViewConfig) &&
-      immutableArraysEqual(this.collections, other.collections);
+      immutableArraysEqual(this.dataCubes, other.dataCubes);
   }
 
   public toClientSettings(): AppSettings {
@@ -209,27 +185,6 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     return new AppSettings(value);
   }
 
-  public addOrUpdateCollection(collection: Collection): AppSettings {
-    var value = this.valueOf();
-    value.collections = NamedArray.overrideByName(value.collections, collection);
-    return new AppSettings(value);
-  }
-
-  public deleteCollection(collection: Collection): AppSettings {
-    var value = this.valueOf();
-    var index = value.collections.indexOf(collection);
-
-    if (index === -1) {
-      throw new Error(`Unknown collection : ${collection.toString()}`);
-    }
-
-    var newCollections = value.collections.concat();
-    newCollections.splice(index, 1);
-
-    value.collections = newCollections;
-    return new AppSettings(value);
-  }
-
   public deleteDataCube(dataCube: DataCube): AppSettings {
     var value = this.valueOf();
     var index = value.dataCubes.indexOf(dataCube);
@@ -242,16 +197,6 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     newDataCubes.splice(index, 1);
 
     value.dataCubes = newDataCubes;
-    return new AppSettings(value);
-  }
-
-  public addCollectionAt(collection: Collection, index: number): AppSettings {
-    var value = this.valueOf();
-
-    var newCollections = value.collections.concat();
-    newCollections.splice(index, 0, collection);
-
-    value.collections = newCollections;
     return new AppSettings(value);
   }
 
@@ -287,10 +232,6 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
   changeDataCubes(dataCubes: DataCube[]): AppSettings {
     return this.change("dataCubes", dataCubes);
-  }
-
-  changeCollections(collections: Collection[]): AppSettings {
-    return this.change("collections", collections);
   }
 
   addDataCube(dataCube: DataCube): AppSettings {

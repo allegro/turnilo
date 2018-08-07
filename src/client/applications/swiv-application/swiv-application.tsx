@@ -18,20 +18,17 @@
 import { NamedArray } from "immutable-class";
 import * as React from "react";
 import { CSSTransition } from "react-transition-group";
-import { AppSettings, Collection, CollectionTile, DataCube, Essence, Timekeeper, User, ViewSupervisor } from "../../../common/models";
+import { AppSettings, DataCube, Essence, Timekeeper, User, ViewSupervisor } from "../../../common/models";
 import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
-import { Notifications, Notifier, Questions, SideDrawer } from "../../components";
-import { AboutModal, AddCollectionTileModal } from "../../modals";
+import { Notifications, Questions, SideDrawer } from "../../components";
+import { AboutModal } from "../../modals/about-modal/about-modal";
 import { Ajax } from "../../utils/ajax/ajax";
 import { createFunctionSlot, FunctionSlot } from "../../utils/function-slot/function-slot";
 import { replaceHash } from "../../utils/url/url";
-import { CollectionView } from "../../views/collection-view/collection-view";
 import { CubeView } from "../../views/cube-view/cube-view";
 import { HomeView } from "../../views/home-view/home-view";
-import { LinkView } from "../../views/link-view/link-view";
 import { NoDataView } from "../../views/no-data-view/no-data-view";
 import { SettingsView } from "../../views/settings-view/settings-view";
-import { CollectionViewDelegate } from "./collection-view-delegate/collection-view-delegate";
 import "./swiv-application.scss";
 
 export interface SwivApplicationProps {
@@ -48,7 +45,7 @@ export interface SwivApplicationState {
   appSettings?: AppSettings;
   timekeeper?: Timekeeper;
   drawerOpen?: boolean;
-  selectedItem?: DataCube | Collection;
+  selectedItem?: DataCube;
   viewType?: ViewType;
   viewHash?: string;
   showAboutModal?: boolean;
@@ -57,26 +54,22 @@ export interface SwivApplicationState {
   cubeViewSupervisor?: ViewSupervisor;
 }
 
-export type ViewType = "home" | "cube" | "collection" | "link" | "settings" | "no-data";
+export type ViewType = "home" | "cube" | "settings" | "no-data";
 
 export const HOME: ViewType = "home";
 export const CUBE: ViewType = "cube";
-export const COLLECTION: ViewType = "collection";
-export const LINK: ViewType = "link";
 export const SETTINGS: ViewType = "settings";
 export const NO_DATA: ViewType = "no-data";
 
 export class SwivApplication extends React.Component<SwivApplicationProps, SwivApplicationState> {
   private hashUpdating = false;
   private readonly sideBarHrefFn: FunctionSlot<string>;
-  private readonly collectionViewDelegate: CollectionViewDelegate;
   private readonly urlHashConverter: UrlHashConverter;
 
   constructor(props: SwivApplicationProps) {
     super(props);
 
     this.urlHashConverter = urlHashConverter;
-    this.collectionViewDelegate = new CollectionViewDelegate(this);
     this.sideBarHrefFn = createFunctionSlot<string>();
     this.state = {
       appSettings: null,
@@ -91,7 +84,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
   componentWillMount() {
     const { appSettings, initTimekeeper } = this.props;
-    const { dataCubes, collections } = appSettings;
+    const { dataCubes } = appSettings;
 
     const hash = window.location.hash;
     let viewType = this.getViewTypeFromHash(hash);
@@ -110,14 +103,10 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
     const viewHash = this.getViewHashFromHash(hash);
 
-    let selectedItem: DataCube | Collection;
+    let selectedItem: DataCube;
 
     if (this.viewTypeNeedsAnItem(viewType)) {
-      selectedItem = this.getSelectedItemFromHash(
-        viewType === CUBE ? dataCubes : collections,
-        hash,
-        viewType
-      );
+      selectedItem = this.getSelectedDataCubeFromHash(dataCubes, hash);
 
       // If datacube / collection does not exist, then bounce to home
       if (!selectedItem) {
@@ -126,7 +115,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       }
     }
 
-    if (viewType === HOME && dataCubes.length === 1 && collections.length === 0) {
+    if (viewType === HOME && dataCubes.length === 1) {
       viewType = CUBE;
       selectedItem = dataCubes[0];
     }
@@ -141,7 +130,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   viewTypeNeedsAnItem(viewType: ViewType): boolean {
-    return [CUBE, COLLECTION].indexOf(viewType) > -1;
+    return viewType === CUBE;
   }
 
   componentDidMount() {
@@ -169,7 +158,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   }
 
   hashToState(hash: string) {
-    const { dataCubes, collections } = this.state.appSettings;
+    const { dataCubes } = this.state.appSettings;
     const viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
     const newState: SwivApplicationState = {
@@ -179,9 +168,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     };
 
     if (this.viewTypeNeedsAnItem(viewType)) {
-      const items = viewType === CUBE ? dataCubes : collections;
-      const item = this.getSelectedItemFromHash(items, hash, viewType);
-      newState.selectedItem = item ? item : items[0];
+      const item = this.getSelectedDataCubeFromHash(dataCubes, hash);
+      newState.selectedItem = item ? item : dataCubes[0];
     } else {
       newState.selectedItem = null;
     }
@@ -204,23 +192,19 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
     if (!dataCubes || !dataCubes.length) return NO_DATA;
 
-    if (!viewType || viewType === HOME) return appSettings.linkViewConfig ? LINK : HOME;
-
-    if (appSettings.linkViewConfig && viewType === LINK) return LINK;
-
-    if (viewType === COLLECTION) return COLLECTION;
+    if (!viewType || viewType === HOME) return HOME;
 
     if (viewType === NO_DATA) return NO_DATA;
 
     return CUBE;
   }
 
-  getSelectedItemFromHash(items: Array<DataCube | Collection>, hash: string, viewType: ViewType): DataCube | Collection {
+  getSelectedDataCubeFromHash(dataCubes: DataCube[], hash: string): DataCube {
     // can change header from hash
     const parts = this.parseHash(hash);
-    const itemName = parts[viewType === COLLECTION ? 1 : 0];
+    const dataCubeName = parts[0];
 
-    return NamedArray.findByName(items, itemName);
+    return NamedArray.findByName(dataCubes, dataCubeName);
   }
 
   getViewHashFromHash(hash: string): string {
@@ -254,10 +238,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     let newHash: string;
     if (viewType === CUBE) {
       newHash = `${this.state.selectedItem.name}/${viewHash}`;
-    } else if (viewType === COLLECTION) {
-      newHash = `collection/${this.state.selectedItem.name}`;
-    } else if (viewType === LINK) {
-      newHash = `${viewType}/${viewHash}`;
     } else {
       newHash = viewType;
     }
@@ -312,42 +292,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     });
   }
 
-  renderAddTileModal() {
-    const { appSettings, selectedItem, timekeeper, showAddTileModal, essenceToAddToACollection } = this.state;
-
-    if (!showAddTileModal) return null;
-
-    if (!DataCube.isDataCube(selectedItem)) {
-      throw new Error(`Can't call this method without a valid dataCube. It's
-        probably called from the wrong view.`);
-    }
-
-    const closeModal = () => {
-      this.setState({
-        showAddTileModal: false
-      });
-    };
-
-    const onSave = (_collection: Collection, CollectionTile: CollectionTile) => {
-      closeModal();
-      this.collectionViewDelegate.addTile(_collection, CollectionTile).then(url => {
-        Notifier.success("Item added", {
-          label: "View collection",
-          callback: () => window.location.hash = `#collection/${_collection.name}`
-        });
-      });
-    };
-
-    return <AddCollectionTileModal
-      collections={appSettings.collections}
-      essence={essenceToAddToACollection}
-      timekeeper={timekeeper}
-      dataCube={selectedItem as DataCube}
-      onSave={onSave}
-      onCancel={closeModal}
-    />;
-  }
-
   renderAboutModal() {
     const { version } = this.props;
     const { showAboutModal } = this.state;
@@ -369,14 +313,13 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   renderSideDrawer() {
     const { user } = this.props;
     const { viewType, selectedItem, appSettings } = this.state;
-    const { dataCubes, collections, customization } = appSettings;
+    const { dataCubes, customization } = appSettings;
 
     const closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
 
     return <SideDrawer
       key="drawer"
       selectedItem={selectedItem}
-      collections={collections}
       dataCubes={dataCubes}
       onOpenAbout={this.openAboutModal.bind(this)}
       onClose={closeSideDrawer}
@@ -400,40 +343,10 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     </CSSTransition>;
   }
 
-  saveDataCubes(newSettings: AppSettings): Promise<any> {
-    return Ajax.query({
-      method: "POST",
-      url: "dataCubes",
-      data: {
-        dataCubes: newSettings.dataCubes
-      }
-    })
-      .then(
-        status => this.setState({
-          appSettings: newSettings
-        }),
-        (xhr: XMLHttpRequest) => {
-          Notifier.failure("Woops", "Something bad happened");
-        }
-      );
-  }
-
-  updateDataCube(dataCube: DataCube) {
-    const appSettings = this.state.appSettings as AppSettings;
-
-    this.saveDataCubes(appSettings.addOrUpdateDataCube(dataCube));
-  }
-
-  deleteDataCube(dataCube: DataCube) {
-    const appSettings = this.state.appSettings as AppSettings;
-
-    this.saveDataCubes(appSettings.deleteDataCube(dataCube));
-  }
-
   renderView() {
     const { maxFilters, maxSplits, user, stateful } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, cubeViewSupervisor } = this.state;
-    const { dataCubes, collections, customization, linkViewConfig } = appSettings;
+    const { dataCubes, customization } = appSettings;
 
     switch (viewType) {
       case NO_DATA:
@@ -450,14 +363,9 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
         return <HomeView
           user={user}
           dataCubes={dataCubes}
-          collections={collections}
           onNavClick={this.sideDrawerOpen.bind(this, true)}
           onOpenAbout={this.openAboutModal.bind(this)}
           customization={customization}
-          collectionsDelegate={this.collectionViewDelegate}
-          updateDataCube={this.updateDataCube.bind(this)}
-          deleteDataCube={this.deleteDataCube.bind(this)}
-          stateful={stateful}
         />;
 
       case CUBE:
@@ -479,32 +387,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           stateful={stateful}
         />;
 
-      case COLLECTION:
-        return <CollectionView
-          user={user}
-          collections={collections}
-          timekeeper={timekeeper}
-          dataCubes={dataCubes}
-          onNavClick={this.sideDrawerOpen.bind(this, true)}
-          customization={customization}
-          delegate={stateful ? this.collectionViewDelegate : null}
-          getCubeViewHash={this.getCubeViewHash}
-        />;
-
-      case LINK:
-        return <LinkView
-          user={user}
-          collection={linkViewConfig}
-          timekeeper={timekeeper}
-          hash={viewHash}
-          updateViewHash={this.updateViewHash.bind(this)}
-          changeHash={this.changeHash.bind(this)}
-          getCubeViewHash={this.getCubeViewHash}
-          onNavClick={this.sideDrawerOpen.bind(this, true)}
-          customization={customization}
-          stateful={stateful}
-        />;
-
       case SETTINGS:
         return <SettingsView
           user={user}
@@ -523,7 +405,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       {this.renderView()}
       {this.renderSideDrawerTransition()}
       {this.renderAboutModal()}
-      {this.renderAddTileModal()}
       {this.renderNotifications()}
       {this.renderQuestions()}
     </main>;

@@ -38,8 +38,6 @@ export * from "./colors/colors";
 export * from "./visualization-props/visualization-props";
 export * from "./manifest/manifest";
 export * from "./essence/essence";
-export * from "./collection-tile/collection-tile";
-export * from "./collection/collection";
 
 export * from "./user/user";
 export * from "./customization/customization";

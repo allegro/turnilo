@@ -16,7 +16,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import { Dataset, Expression } from "plywood";
+import { Dataset, Expression, TabulatorOptions } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { MANIFESTS } from "../../../common/manifests/index";
@@ -44,11 +44,12 @@ import {
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Fn } from "../../../common/utils/general/general";
 import { DimensionMeasurePanel, DropIndicator, FilterTile, GlobalEventListener, ManualFallback, PinboardPanel, ResizeHandle, SplitTile, VisSelector } from "../../components/index";
-import { RawDataModal } from "../../modals/index";
+import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { FunctionSlot } from "../../utils/function-slot/function-slot";
 import * as localStorage from "../../utils/local-storage/local-storage";
+import tabularOptions from "../../utils/tabular-options/tabular-options";
 import { getVisualizationComponent } from "../../visualizations/index";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
@@ -93,6 +94,11 @@ export interface CubeViewState {
 const MIN_PANEL_WIDTH = 240;
 const MAX_PANEL_WIDTH = 400;
 
+export interface DataSetWithTabOptions {
+  dataset: Dataset;
+  options: TabulatorOptions;
+}
+
 export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   static defaultProps: Partial<CubeViewProps> = {
     maxFilters: 20,
@@ -101,7 +107,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   public mounted: boolean;
   private clicker: Clicker;
-  private downloadableDataset: Dataset;
+  private downloadableDataset: DataSetWithTabOptions;
 
   constructor(props: CubeViewProps) {
     super(props);
@@ -453,7 +459,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         deviceSize,
         openRawDataModal: this.openRawDataModal.bind(this),
         registerDownloadableDataset: (dataset: Dataset) => {
-          this.downloadableDataset = dataset;
+          this.downloadableDataset = { dataset, options: tabularOptions(essence) };
         }
       };
 

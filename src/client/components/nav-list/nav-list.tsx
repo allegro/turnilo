@@ -24,66 +24,62 @@ import "./nav-list.scss";
 export interface NavLink {
   name: string;
   title: string;
-  tooltip?: string;
-  href?: string;
+  href: string;
   newTab?: boolean;
-  onClick?: Fn;
+  tooltip?: string;
+}
+
+export interface NavAction {
+  name: string;
+  title: string;
+  onClick: Fn;
+  tooltip?: string;
+}
+
+export type NavItem = NavLink | NavAction;
+
+function isNavLink(item: NavItem): item is NavLink {
+  return "href" in item;
 }
 
 export interface NavListProps {
   title?: string;
-  navLinks: NavLink[];
+  navLinks: NavItem[];
   iconSvg?: string;
   selected?: string;
 }
 
-export interface NavListState {
+function renderIcon(iconSvg: string): JSX.Element {
+  return iconSvg ? <span className="icon"><SvgIcon svg={iconSvg}/></span> : null;
 }
 
-export class NavList extends React.Component<NavListProps, NavListState> {
-
-  renderIcon(iconSvg: string): any {
-    if (!iconSvg) return null;
-    return <span className="icon">
-      <SvgIcon svg={iconSvg} />
-    </span>;
-  }
-
-  renderNavList() {
-    const { navLinks, iconSvg, selected } = this.props;
-    return navLinks.map(navLink => {
-      return React.createElement(
-        navLink.href ? "a" : "div",
-        {
-          className: classNames("item", { selected: selected && selected === navLink.name }),
-          key: navLink.name,
-          title: navLink.tooltip,
-          href: navLink.href,
-          target: navLink.newTab ? "_blank" : null,
-          onClick: navLink.onClick
-        },
-        this.renderIcon(iconSvg),
-        navLink.title
-      );
-    });
-  }
-
-  render() {
-    const { title } = this.props;
-
-    var className = "nav-list";
-    var titleSection: JSX.Element = null;
-    if (title) {
-      titleSection = <div className="group-title">{title}</div>;
-    } else {
-      className += " no-title";
-    }
-
-    return <div className={className}>
-      {titleSection}
-      <div className="items">
-        {this.renderNavList()}
-      </div>
-    </div>;
-  }
+function renderLink({ name, title, href, newTab, tooltip }: NavLink, icon: string, selected: boolean): JSX.Element {
+  const target = newTab ? "_blank" : null;
+  const className = classNames("item", { selected });
+  return <a className={className} href={href} title={tooltip} target={target} key={name}>
+    {renderIcon(icon)}
+    {title}
+  </a>;
 }
+
+function renderAction({ name, title, onClick, tooltip }: NavAction, icon: string, selected: boolean): JSX.Element {
+  const className = classNames("item", { selected });
+  return <div className={className} title={tooltip} key={name} onClick={onClick}>
+    {renderIcon(icon)}
+    {title}
+  </div>;
+}
+
+function renderItem(item: NavItem, iconSvg: string, selectedName: string): JSX.Element {
+  const selected = selectedName && selectedName === item.name;
+  return isNavLink(item) ? renderLink(item, iconSvg, selected) : renderAction(item, iconSvg, selected);
+}
+
+export const NavList: React.SFC<NavListProps> = ({ title, navLinks, iconSvg, selected }) => {
+  return <div className={classNames("nav-list", { "no-title": !title })}>
+    {title && <div className="group-title">{title}</div>}
+    <div className="items">
+      {navLinks.map(navLink => renderItem(navLink, iconSvg, selected))}
+    </div>
+  </div>;
+};

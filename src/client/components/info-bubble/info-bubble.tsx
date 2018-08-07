@@ -22,7 +22,9 @@ import { MarkdownNode } from "../markdown-node/markdown-node";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./info-bubble.scss";
 
-const helpIcon = require("../../icons/help.svg");
+const defaultIcon = require("../../icons/info.svg");
+const defaultTitle = "More info";
+
 const BUBBLE_MAX_VERTICAL_SPACE = 120;
 
 export interface InfoBubbleState {
@@ -31,6 +33,8 @@ export interface InfoBubbleState {
 
 export interface InfoBubbleProps {
   description: string;
+  icon?: string;
+  title?: string;
   className?: string;
 }
 
@@ -53,11 +57,11 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
 
   render() {
     const { showInfo } = this.state;
-    const { description, className } = this.props;
+    const { description, icon, className, title } = this.props;
 
     return <React.Fragment>
-      <div className={classNames("info-button", className)} onClick={this.showDescription}>
-        <SvgIcon svg={helpIcon}/>
+      <div className={classNames("info-button", className)} title={title || defaultTitle} onClick={this.showDescription}>
+        <SvgIcon svg={icon || defaultIcon}/>
       </div>
       {showInfo && <BubbleMenu
         className="description-menu"

@@ -26,7 +26,9 @@ import { ImmutableUtils } from "../../../../common/utils/immutable-utils/immutab
 import { generateUniqueName } from "../../../../common/utils/string/string";
 import { Button, FormLabel, ImmutableDropdown, ImmutableInput, ImmutableList } from "../../../components/index";
 import { DATA_CUBES_STRATEGIES_LABELS, STRINGS } from "../../../config/constants";
-import { DimensionModal, MeasureModal, SuggestionModal } from "../../../modals/index";
+import { DimensionModal } from "../../../modals/dimension-modal/dimension-modal";
+import { MeasureModal } from "../../../modals/measure-modal/measure-modal";
+import { SuggestionModal } from "../../../modals/suggestion-modal/suggestion-modal";
 import { classNames } from "../../../utils/dom/dom";
 import { ImmutableFormDelegate, ImmutableFormState } from "../../../utils/immutable-form-delegate/immutable-form-delegate";
 import "./data-cube-edit.scss";

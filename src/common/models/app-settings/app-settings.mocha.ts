@@ -30,8 +30,7 @@ describe("AppSettings", () => {
       AppSettings,
       [
         AppSettingsFixtures.wikiOnlyJS(),
-        AppSettingsFixtures.wikiTwitterJS(),
-        AppSettingsFixtures.wikiWithLinkViewJS()
+        AppSettingsFixtures.wikiTwitterJS()
       ],
       { context });
   });
@@ -172,7 +171,7 @@ describe("AppSettings", () => {
             ],
             defaultSortMeasure: "count",
             defaultTimezone: "Etc/UTC",
-            description: "Wiki description",
+            description: "Wiki full description something about articles and editors",
             dimensions: [
               {
                 formula: "$time",
