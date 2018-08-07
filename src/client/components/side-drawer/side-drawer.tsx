@@ -17,14 +17,13 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { ClearableInput, NavAction } from "..";
 import { Customization, DataCube, User } from "../../../common/models";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
-import { NavList } from "../nav-list/nav-list";
-import { NavLogo } from "../nav-logo/nav-logo";
+import { ClearableInput } from "../clearable-input/clearable-input";
+import { NavAction, NavList } from "../nav-list/nav-list";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./side-drawer.scss";
 
@@ -164,7 +163,6 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     const customLogoSvg = customization ? customization.customLogoSvg : null;
 
     return <div className="side-drawer">
-      <NavLogo customLogoSvg={customLogoSvg} onClose={onClose}/>
       {this.renderHomeLink()}
       {this.renderDataCubes()}
       <NavList navLinks={this.otherNavLinks()}/>
