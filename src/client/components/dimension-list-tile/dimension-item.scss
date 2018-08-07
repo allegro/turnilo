@@ -13,10 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../utils/styles/default-info-bubble-position';
+@import '../../imports';
 
-.info-bubble {
-  @extend %default-info-bubble-position;
+.dimension {
+  background: $white;
+  cursor: pointer;
+  overflow: hidden;
+  padding-left: 14px;
+  height: $dimension-height;
+  display: flex;
+
+  &:last-child {
+    margin-bottom: $searchable-tile-last-child-margin;
+  }
+
+  &:hover {
+    background: $hover;
+  }
+
+  &.selected {
+    background: $highlight;
+  }
+
+  .icon {
+    top: 4px;
+    left: -2px;
+    width: 19px;
+
+    svg {
+      width: 19px;
+
+      path {
+        fill: hsla(0, 0, 0, 0.35);
+      }
+    }
+  }
+
+  .label {
+    @include ellipsis;
+    flex-grow: 1;
+    min-width: 0;
+    display: block;
+    padding: 7px 0.15em;
+  }
+
+  .info-icon {
+    flex-shrink: 0;
+    top: 4px;
+    right: 3px;
+    height: 19px;
+    @extend %hoverable-icon;
+  }
 }
-
-

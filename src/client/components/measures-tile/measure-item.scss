@@ -64,9 +64,6 @@
   right: 0;
   height: 19px;
   flex-shrink: 0;
-
-  svg path {
-    fill: $icon-light;
-  }
+  @extend %hoverable-icon;
 }
 

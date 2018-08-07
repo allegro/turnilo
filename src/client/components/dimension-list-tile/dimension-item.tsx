@@ -39,7 +39,7 @@ export type DimensionClickHandler = (dimensionName: string, e: MouseEvent<HTMLEl
 export type DimensionDragStartHandler = (dimensionName: string, e: DragEvent<HTMLElement>) => void;
 
 export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dimensionClick, dimensionDragStart, description, classSuffix, searchText, selected }) => {
-  const infoBubbleClassName = "info-bubble";
+  const infoBubbleClassName = "info-icon";
   const className = classNames(DIMENSION_CLASS_NAME, "type-" + classSuffix, { selected });
 
   const handleClick = (e: MouseEvent<HTMLElement>) => {
