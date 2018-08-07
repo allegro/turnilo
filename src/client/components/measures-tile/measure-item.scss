@@ -60,10 +60,10 @@
 }
 
 .measure-info-icon {
+  @extend %hoverable-icon;
   top: 4px;
   right: 0;
   height: 19px;
   flex-shrink: 0;
-  @extend %hoverable-icon;
 }
 

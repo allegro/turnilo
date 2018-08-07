@@ -58,10 +58,10 @@
   }
 
   .info-icon {
+    @extend %hoverable-icon;
     flex-shrink: 0;
     top: 4px;
     right: 3px;
     height: 19px;
-    @extend %hoverable-icon;
   }
 }
