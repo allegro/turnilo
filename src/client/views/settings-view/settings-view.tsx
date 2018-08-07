@@ -24,7 +24,8 @@ import { ImmutableUtils } from "../../../common/utils/immutable-utils/immutable-
 import { Button, Route, Router } from "../../components/index";
 import { Notifier } from "../../components/notifications/notifications";
 import { STRINGS } from "../../config/constants";
-import { ClusterSeedModal, DataCubeSeedModal } from "../../modals/index";
+import { ClusterSeedModal } from "../../modals/cluster-seed-modal/cluster-seed-modal";
+import { DataCubeSeedModal } from "../../modals/data-cube-seed-modal/data-cube-seed-modal";
 import { Ajax } from "../../utils/ajax/ajax";
 import { classNames } from "../../utils/dom/dom";
 import { ClusterEdit } from "./cluster-edit/cluster-edit";

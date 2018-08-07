@@ -21,7 +21,7 @@ import { CSSTransition } from "react-transition-group";
 import { AppSettings, DataCube, Essence, Timekeeper, User, ViewSupervisor } from "../../../common/models";
 import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { Notifications, Questions, SideDrawer } from "../../components";
-import { AboutModal } from "../../modals";
+import { AboutModal } from "../../modals/about-modal/about-modal";
 import { Ajax } from "../../utils/ajax/ajax";
 import { createFunctionSlot, FunctionSlot } from "../../utils/function-slot/function-slot";
 import { replaceHash } from "../../utils/url/url";
