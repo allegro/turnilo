@@ -17,12 +17,12 @@
 
 import { Duration, Timezone } from "chronoshift";
 import { immutableEqual } from "immutable-class";
-import { Dataset } from "plywood";
 import * as React from "react";
 import { Clicker, Customization, DataCube, Essence, ExternalView, Timekeeper, User } from "../../../../common/models/index";
 import { Fn } from "../../../../common/utils/general/general";
 import { AutoRefreshMenu, HilukMenu, SettingsMenu, SvgIcon, UserMenu } from "../../../components/index";
 import { classNames } from "../../../utils/dom/dom";
+import { DataSetWithTabOptions } from "../cube-view";
 import "./cube-header-bar.scss";
 
 export interface CubeHeaderBarProps {
@@ -37,7 +37,7 @@ export interface CubeHeaderBarProps {
   openRawDataModal?: Fn;
   openViewDefinitionModal?: Fn;
   customization?: Customization;
-  getDownloadableDataset?: () => Dataset;
+  getDownloadableDataset?: () => DataSetWithTabOptions;
   addEssenceToCollection?: () => void;
   changeTimezone?: (timezone: Timezone) => void;
   timezone?: Timezone;
