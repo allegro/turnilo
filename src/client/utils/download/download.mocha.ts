@@ -22,17 +22,6 @@ import { datasetToFileString, getMIMEType } from "./download";
 
 describe("Download", () => {
   describe("datasetToFileString", () => {
-
-    it("defaults to JSON if no type specified", () => {
-      const dsJS = [
-        { x: 1, y: "hello", z: 2 },
-        { x: 2, y: "world", z: 3 }
-      ];
-      const ds = Dataset.fromJS(dsJS);
-      expect(() => { JSON.parse(datasetToFileString(ds)); }).to.not.throw();
-      expect(JSON.parse(datasetToFileString(ds))).to.deep.equal(dsJS);
-    });
-
     it("encloses set/string in brackets appropriately", () => {
       const ds = Dataset.fromJS([
         { y: ["dear", "john"] },

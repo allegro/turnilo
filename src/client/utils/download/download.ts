@@ -16,9 +16,10 @@
  */
 
 import * as filesaver from "file-saver";
-import { Dataset, DatasetJSFull } from "plywood";
+import { Dataset, DatasetJSFull, TabulatorOptions } from "plywood";
+import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 
-export type FileFormat = "csv" | "tsv" | "json" | "txt";
+export type FileFormat = "csv" | "tsv" | "json";
 
 export function getMIMEType(fileType: string) {
   switch (fileType) {
@@ -31,19 +32,19 @@ export function getMIMEType(fileType: string) {
   }
 }
 
-export function download(dataset: Dataset, fileName?: string, fileFormat?: FileFormat): void {
+export function download({ dataset, options }: DataSetWithTabOptions, fileFormat: FileFormat, fileName?: string): void {
   const type = `${getMIMEType(fileFormat)};charset=utf-8`;
-  const blob = new Blob([datasetToFileString(dataset, fileFormat)], { type });
+  const blob = new Blob([datasetToFileString(dataset, fileFormat, options)], { type });
   if (!fileName) fileName = `${new Date()}-data`;
   fileName += `.${fileFormat}`;
   filesaver.saveAs(blob, fileName, true); // true == disable auto BOM
 }
 
-export function datasetToFileString(dataset: Dataset, fileFormat?: FileFormat): string {
+export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, options?: TabulatorOptions): string {
   if (fileFormat === "csv") {
-    return dataset.toCSV();
+    return dataset.toCSV(options);
   } else if (fileFormat === "tsv") {
-    return dataset.toTSV();
+    return dataset.toTSV(options);
   } else {
     const datasetJS = dataset.toJS() as DatasetJSFull;
     return JSON.stringify(datasetJS.data, null, 2);

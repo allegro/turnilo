@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import { Dataset } from "plywood";
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
 import { Essence, ExternalView, Stage, Timekeeper } from "../../../common/models/index";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { download, FileFormat, makeFileName } from "../../utils/download/download";
+import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import "./hiluk-menu.scss";
 
@@ -34,7 +34,7 @@ export interface HilukMenuProps {
   openRawDataModal: Fn;
   openViewDefinitionModal: Fn;
   externalViews?: ExternalView[];
-  getDownloadableDataset?: () => Dataset;
+  getDownloadableDataset?: () => DataSetWithTabOptions;
   addEssenceToCollection?: () => void;
 }
 
@@ -90,7 +90,7 @@ export class HilukMenu extends React.Component<HilukMenuProps, HilukMenuState> {
       return `${STRINGS.splitDelimiter}_${dimension.name}`;
     }).join("_");
 
-    download(getDownloadableDataset(), makeFileName(dataCube.name, filters, splitsString), fileFormat);
+    download(getDownloadableDataset(), fileFormat, makeFileName(dataCube.name, filters, splitsString));
     onClose();
   }
 
