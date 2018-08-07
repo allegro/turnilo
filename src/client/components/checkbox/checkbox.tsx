@@ -28,6 +28,7 @@ export interface CheckboxProps {
   type?: CheckboxType;
   color?: string;
   label?: string;
+  className?: string;
 }
 
 export interface CheckboxState {
@@ -51,14 +52,14 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
   }
 
   render() {
-    const { onClick, type, color, selected, label } = this.props;
+    const { onClick, type, color, selected, label, className } = this.props;
 
     var style: React.CSSProperties = null;
     if (color) {
       style = { background: color };
     }
 
-    return <div className={classNames("checkbox", type, { selected, color })} onClick={onClick}>
+    return <div className={classNames("checkbox", type, className, { selected, color })} onClick={onClick}>
       <div className="checkbox-body" style={style}></div>
       {this.renderIcon()}
       {label ? <div className="label">{label}</div> : null}

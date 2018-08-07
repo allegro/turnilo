@@ -39,13 +39,13 @@
       margin-left: 3px;
 
       svg path {
-        fill: #bbb;
+        fill: $icon-light;
       }
 
       &:hover,
       &.active {
         svg path {
-          fill: #888;
+          fill: $icon-hover;
         }
       }
     }
