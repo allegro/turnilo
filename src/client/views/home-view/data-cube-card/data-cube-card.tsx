@@ -24,38 +24,38 @@ import "./data-cube-card.scss";
 export interface DataCubeCardProps {
   title: string;
   count?: number;
-  summary: string;
+  extendedDescription: string;
   description: string;
   icon: string;
   onClick: () => void;
 }
 
 export interface DataCubeCardState {
-  showMore: boolean;
+  showingMore: boolean;
 }
 
 export class DataCubeCard extends React.Component<DataCubeCardProps, DataCubeCardState> {
 
-  state = { showMore: false };
+  state = { showingMore: false };
 
   showLess = () => {
-    this.setState({ showMore: false });
+    this.setState({ showingMore: false });
   }
 
   showMore = () => {
-    this.setState({ showMore: true });
+    this.setState({ showingMore: true });
   }
 
   renderDescription() {
-    const { description, summary } = this.props;
-    if (!summary) {
+    const { description, extendedDescription } = this.props;
+    if (!extendedDescription) {
       return <MarkdownNode markdown={description || STRINGS.noDescription}/>;
     }
 
-    const { showMore } = this.state;
-    const content = showMore ? description : summary;
-    const actionLabel = showMore ? "Show less" : "Show more";
-    const action = showMore ? this.showLess : this.showMore;
+    const { showingMore } = this.state;
+    const content = showingMore ? `${description} ${extendedDescription}` : description;
+    const actionLabel = showingMore ? "Show less" : "Show more";
+    const action = showingMore ? this.showLess : this.showMore;
 
     return <React.Fragment>
       <MarkdownNode markdown={content}/>

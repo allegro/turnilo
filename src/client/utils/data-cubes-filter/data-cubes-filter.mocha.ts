@@ -32,46 +32,46 @@ describe("DataCubes Filter", () => {
   });
 
   it("should filter based on title", () => {
-    const dataCubes = [twitter, wiki];
+    const cube = custom("foobar", "description");
+    const dataCubes = [cube, wiki, twitter];
 
-    expect(filterDataCubes(dataCubes, "wiki")).to.be.deep.equal([wiki]);
+    expect(filterDataCubes(dataCubes, "foobar")).to.be.deep.equal([cube]);
   });
 
   it("should be case insensitive for title", () => {
-    const dataCubes = [twitter, wiki];
+    const cube = custom("foobar", "description");
+    const dataCubes = [cube, wiki, twitter];
 
-    expect(filterDataCubes(dataCubes, "WiKi")).to.be.deep.equal([wiki]);
+    expect(filterDataCubes(dataCubes, "FooBar")).to.be.deep.equal([cube]);
   });
 
   it("should filter based on description", () => {
-    const dataCubes = [twitter, wiki];
+    const cube = custom("title", "foobar");
+    const dataCubes = [cube, wiki, twitter];
 
-    expect(filterDataCubes(dataCubes, "followers")).to.be.deep.equal([twitter]);
+    expect(filterDataCubes(dataCubes, "foobar")).to.be.deep.equal([cube]);
   });
 
   it("should be case insensitive for description", () => {
-    const dataCubes = [twitter, wiki];
+    const cube = custom("title", "foobar");
+    const dataCubes = [cube, wiki, twitter];
 
-    expect(filterDataCubes(dataCubes, "FollOwErS")).to.be.deep.equal([twitter]);
+    expect(filterDataCubes(dataCubes, "FooBaR")).to.be.deep.equal([cube]);
   });
 
-  it("should filter based on summary", () => {
-    const dataCubes = [twitter, wiki];
+  it("should ignore extended description", () => {
+    const cube = custom("title", "description", "foobar");
+    const dataCubes = [cube, twitter, wiki];
 
-    expect(filterDataCubes(dataCubes, "short")).to.be.deep.equal([wiki]);
-  });
-
-  it("should be case insensitive for summary", () => {
-    const dataCubes = [twitter, wiki];
-
-    expect(filterDataCubes(dataCubes, "ShOrT")).to.be.deep.equal([wiki]);
+    expect(filterDataCubes(dataCubes, "foobar")).to.be.deep.equal([]);
   });
 
   it("should not search in content when passed flag", () => {
-    const dataCubes = [twitter, wiki];
+    const cube = custom("title", "foobar");
+    const dataCubes = [cube, twitter, wiki];
 
-    expect(filterDataCubes(dataCubes, "description")).to.be.deep.equal([twitter, wiki]);
-    expect(filterDataCubes(dataCubes, "description", false)).to.be.deep.equal([]);
+    expect(filterDataCubes(dataCubes, "foobar")).to.be.deep.equal([cube]);
+    expect(filterDataCubes(dataCubes, "foobar", false)).to.be.deep.equal([]);
   });
 
   it("should sort with rank", () => {

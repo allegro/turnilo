@@ -29,11 +29,10 @@ interface RankedDataCube {
   rank: number;
 }
 
-function contentRank(description: string, summary: string, query: string): number {
+function contentRank(description: string, query: string): number {
   const regExp = new RegExp(escapeRegExp(query), "gi");
   const descriptionMatches = description.match(regExp) || [];
-  const summaryMatches = summary.match(regExp) || [];
-  return descriptionMatches.length + summaryMatches.length;
+  return descriptionMatches.length;
 }
 
 function titleRank(title: string, query: string): number {
@@ -51,8 +50,8 @@ export default function filterDataCubes(dataCubes: DataCube[], query: string, se
   }
   return dataCubes
     .map((dataCube: DataCube) => {
-      const { title, summary, description } = dataCube;
-      const rank = titleRank(title, query) + (searchInContent ? contentRank(description, summary, query) : 0);
+      const { title, description } = dataCube;
+      const rank = titleRank(title, query) + (searchInContent ? contentRank(description, query) : 0);
       return rank > 0 ? { dataCube, rank } : null;
     })
     .filter(complement(isNil))

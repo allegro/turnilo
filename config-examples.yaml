@@ -1,6 +1,11 @@
 dataCubes:
   - name: wiki
     title: Wikipedia Example
+    description: >-
+      Data cube with *Wikipedia* data.
+      ---
+      Contains data about Wikipedia editors and articles
+      with information about edits, comments and article metadata
     clusterName: native
     source: assets/data/wikiticker-2015-09-12-sampled.json
     timeAttribute: time

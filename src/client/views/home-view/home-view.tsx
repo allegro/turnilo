@@ -62,12 +62,12 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
     </div>;
   }
 
-  renderDataCube({ name, title, description, summary }: DataCube): JSX.Element {
+  renderDataCube({ name, title, description, extendedDescription }: DataCube): JSX.Element {
     return <DataCubeCard
       key={name}
       title={title}
       description={description}
-      summary={summary}
+      extendedDescription={extendedDescription}
       icon="full-cube"
       onClick={() => goToDataCube(name)}
     />;
