@@ -42,8 +42,8 @@
   min-width: 0;
 
   .measure-item-label {
-    flex-grow: 0;
     @include ellipsis;
+    flex-grow: 0;
     display: block;
     padding: 7px 0.15em;
 
