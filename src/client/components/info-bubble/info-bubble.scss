@@ -19,17 +19,4 @@
 .info-button {
   right: 5px;
   width: 19px;
-
-  svg path {
-    fill: $icon-light;
-  }
-
-  &:hover {
-    background-color: $background-brand-light;
-    border-radius: 9px;
-
-    svg path {
-      fill: $icon-hover;
-    }
-  }
 }

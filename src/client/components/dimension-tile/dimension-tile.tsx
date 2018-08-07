@@ -161,7 +161,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     }
 
     if (sortOn.measure) {
-      query = query.performAction(sortOn.measure.toApplyExpression());
+      query = query.performAction(sortOn.measure.toApplyExpression(0));
     }
 
     query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);

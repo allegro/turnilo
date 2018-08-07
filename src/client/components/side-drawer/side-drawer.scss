@@ -27,6 +27,22 @@
   overflow: auto;
   z-index: 80;
 
+  .data-cubes__message {
+    border-top: 1px solid #ddd;
+    padding: 8px 18px;
+  }
+
+  .data-cubes__list {
+    .search-input {
+      border-top: 1px solid #ddd;
+      padding: 8px 18px;
+
+      .clearable-input .clear {
+        top: 1px;
+      }
+    }
+  }
+
   .home-container {
     padding-top: $drawer-v-padding;
     padding-bottom: $drawer-v-padding;
@@ -90,10 +106,6 @@
         }
       }
     }
-  }
-
-  .nav-logo {
-    cursor: pointer;
   }
 }
 

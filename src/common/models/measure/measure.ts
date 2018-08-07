@@ -62,6 +62,25 @@ export interface MeasureJS {
 
 export enum MeasureDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
 
+export interface DerivationFilter {
+  derivation: MeasureDerivation;
+  filter: Expression;
+}
+
+export class PreviousFilter implements DerivationFilter {
+  derivation = MeasureDerivation.PREVIOUS;
+
+  constructor(public filter: Expression) {
+  }
+}
+
+export class CurrentFilter implements DerivationFilter {
+  derivation = MeasureDerivation.CURRENT;
+
+  constructor(public filter: Expression) {
+  }
+}
+
 export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static DEFAULT_FORMAT = "0,0.0 a";
   static INTEGER_FORMAT = "0,0 a";
@@ -242,51 +261,53 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     return Measure.derivedName(this.name, derivation);
   }
 
-  public filteredApplyExpression(derivation: MeasureDerivation, filter: Expression, nesting = 0): ApplyExpression {
-    const applyExpression = this.toApplyExpression(nesting);
-    const { expression } = applyExpression;
-    const name = this.getDerivedName(derivation);
-    return new ApplyExpression({
-      ...applyExpression,
-      name,
-      expression: expression.substitute(e => {
-        if (e instanceof RefExpression && e.name === "main") {
-          return $("main").filter(filter);
-        }
-        return null;
-      })
+  private filterMainRefs(exp: Expression, filter: Expression): Expression {
+    return exp.substitute(e => {
+      if (e instanceof RefExpression && e.name === "main") {
+        return $("main").filter(filter);
+      }
+      return null;
     });
   }
 
-  public toApplyExpression(nestingLevel = 0): ApplyExpression {
+  public toApplyExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
     switch (this.transformation) {
-      case "percent-of-parent": {
+      case "percent-of-parent":
         const referencedLevelDelta = Math.min(nestingLevel, 1);
-        return this.percentOfParentExpression(referencedLevelDelta);
-      }
-      case "percent-of-total": {
-        return this.percentOfParentExpression(nestingLevel);
-      }
-      default: {
-        const { expression } = this;
-        return new ApplyExpression({ name: this.name, expression });
-      }
+        return this.percentOfParentExpression(referencedLevelDelta, derivationFilter);
+      case "percent-of-total":
+        return this.percentOfParentExpression(nestingLevel, derivationFilter);
+      default:
+        return this.withDerivationFilter(derivationFilter);
     }
   }
 
-  private percentOfParentExpression(nestingLevel: number): ApplyExpression {
-    const { name, expression } = this;
-    const formulaName = "__formula_" + name;
-    const formulaExpression = new ApplyExpression({ name: formulaName, expression });
+  private withDerivationFilter(derivationFilter?: DerivationFilter) {
+    const { expression } = this;
+    if (!derivationFilter) {
+      return new ApplyExpression({ name: this.name, expression });
+    }
+    const { derivation, filter } = derivationFilter;
+    return new ApplyExpression({
+      name: this.getDerivedName(derivation),
+      expression: this.filterMainRefs(expression, filter)
+    });
+  }
+
+  private percentOfParentExpression(nestingLevel: number, derivationFilter?: DerivationFilter): ApplyExpression {
+    const formulaApplyExp = this.withDerivationFilter(derivationFilter);
+    const formulaName = `__formula_${formulaApplyExp.name}`;
+    const formula = formulaApplyExp.changeName(formulaName);
 
     if (nestingLevel > 0) {
+      const name = derivationFilter ? this.getDerivedName(derivationFilter.derivation) : this.name;
       return new ApplyExpression({
         name,
-        operand: formulaExpression,
+        operand: formula,
         expression: $(formulaName).divide($(formulaName, nestingLevel)).multiply(100)
       });
     } else if (nestingLevel === 0) {
-      return formulaExpression;
+      return formula;
     } else {
       throw new Error(`wrong nesting level: ${nestingLevel}`);
     }
@@ -323,6 +344,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
 
   public getFormat: () => string;
   public changeFormat: (newFormat: string) => this;
+
 }
 
 BaseImmutable.finalize(Measure);

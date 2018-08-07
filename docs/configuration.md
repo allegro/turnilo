@@ -163,9 +163,11 @@ cube in the past.
 
 The user visible name that will be used to describe this data cube in the UI. It is always safe to change this.
 
-**description** (string)
+**description** (markdown)
 
-The description of the data cube shown in the homepage.
+The description of the data cube in markdown format. Description is shown on home page. 
+If description contains horizontal line (markdown: ` --- `) it will split description and 
+later part will be visible after clicking "Show more" button on UI.
 
 **clusterName** (string)
 

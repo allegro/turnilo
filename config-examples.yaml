@@ -1,6 +1,11 @@
 dataCubes:
   - name: wiki
     title: Wikipedia Example
+    description: >-
+      Data cube with *Wikipedia* data.
+      ---
+      Contains data about Wikipedia editors and articles
+      with information about edits, comments and article metadata
     clusterName: native
     source: assets/data/wikiticker-2015-09-12-sampled.json
     timeAttribute: time
@@ -49,15 +54,20 @@ dataCubes:
 
           - name: commentLengths
             title: Comment Lengths
+            description: Length of the comment
             dimensions:
 
               - name: commentLength
                 title: Comment Length
                 kind: number
+                description: >-
+                  Lengths of *all* comments
                 formula: $commentLength
 
               - name: commentLengthOver100
                 title: Comment Length Over 100
+                description: >-
+                  `true` only if comment length is over `100`
                 kind: boolean
                 formula: $commentLength > 100
 
@@ -149,6 +159,8 @@ dataCubes:
 
       - name: added
         title: Added
+        description: >-
+          Sum of all additions
         formula: $main.sum($added)
 
       - name: avg_added
@@ -157,6 +169,8 @@ dataCubes:
 
       - name: deleted
         title: Deleted
+        description: >-
+          Sum of all deletions
         formula: $main.sum($deleted)
 
       - name: avg_deleted

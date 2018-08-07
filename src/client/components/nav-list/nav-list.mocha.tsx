@@ -16,24 +16,15 @@
  */
 
 import { expect } from "chai";
+import { shallow } from "enzyme";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as TestUtils from "react-dom/test-utils";
-
-import { renderIntoDocument } from "../../utils/test-utils";
 
 import { NavList } from "./nav-list";
 
 describe("NavList", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
-      <NavList
-        navLinks={[]}
-      />
-    );
+    const navList = shallow(<NavList navLinks={[]}/>);
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("nav-list");
+    expect(navList.hasClass("nav-list"), "should contain class").to.be.true;
   });
-
 });

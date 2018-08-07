@@ -18,7 +18,6 @@
 import { basicExecutorFactory, Dataset } from "plywood";
 import { MANIFESTS } from "../../../common/manifests/index";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
-import { CollectionFixtures } from "../collection/collection.fixtures";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { AppSettings, AppSettingsContext, AppSettingsJS } from "./app-settings";
 
@@ -299,23 +298,6 @@ export class AppSettingsFixtures {
       dataCubes: [
         DataCubeFixtures.WIKI_JS
       ]
-    };
-  }
-
-  public static wikiWithLinkViewJS(): AppSettingsJS {
-    return {
-      customization: {
-        title: "Hello World",
-        headerBackground: "brown",
-        customLogoSvg: "ansvgstring"
-      },
-      clusters: [
-        ClusterFixtures.druidWikiClusterJS()
-      ],
-      dataCubes: [
-        DataCubeFixtures.WIKI_JS
-      ],
-      linkViewConfig: CollectionFixtures.testOneTwoJS()
     };
   }
 

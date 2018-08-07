@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { isTruthy } from "../../../common/utils";
+import { isTruthy } from "..";
 
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, S, R> = (arg: T, arg2: S) => R;
+
+export type Predicate<T> = Unary<T, boolean>;
 
 export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
@@ -44,4 +46,8 @@ export function thread(x: any, ...fns: Function[]) {
 
 export function threadTruthy(x: any, ...fns: Function[]) {
   return fns.reduce((x, f) => isTruthy(x) ? f(x) : x, x);
+}
+
+export function complement<T>(p: Predicate<T>): Predicate<T> {
+ return (x: T) => !p(x);
 }

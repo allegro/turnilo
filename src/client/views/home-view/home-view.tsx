@@ -16,244 +16,78 @@
  */
 
 import * as React from "react";
-import { Collection, Customization, DataCube, User } from "../../../common/models";
+import { Customization, DataCube, User } from "../../../common/models";
 import { Fn } from "../../../common/utils";
-import { indexByAttribute } from "../../../common/utils/array/array";
-import { generateUniqueName } from "../../../common/utils/string/string";
-import { SvgIcon } from "../../components";
+import { ClearableInput, SvgIcon } from "../../components";
 import { STRINGS } from "../../config/constants";
-import { NameDescriptionModal } from "../../modals";
+import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
+import { DataCubeCard } from "./data-cube-card/data-cube-card";
 import { HomeHeaderBar } from "./home-header-bar/home-header-bar";
 import "./home-view.scss";
-import { ItemCard } from "./item-card/item-card";
 
 export interface HomeViewProps {
   dataCubes?: DataCube[];
-  collections?: Collection[];
   user?: User;
   onNavClick?: Fn;
   onOpenAbout: Fn;
   customization?: Customization;
-  stateful?: boolean;
-  collectionsDelegate?: {
-    addCollection: (collection: Collection) => Promise<string>;
-    deleteCollection: (collection: Collection) => void;
-    updateCollection: (collection: Collection) => Promise<any>;
-  };
-
-  updateDataCube?: (dataCube: DataCube) => void;
-  deleteDataCube?: (dataCube: DataCube) => void;
 }
 
 export interface HomeViewState {
-  showAddCollectionModal?: boolean;
-  editedItem?: DataCube | Collection;
+  query: string;
+}
+
+function goToSettings() {
+  window.location.hash = "#settings";
+}
+
+function goToDataCube(name: string) {
+  window.location.hash = "#" + name;
 }
 
 export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
 
-  constructor(props: HomeViewProps) {
-    super(props);
-    this.state = {};
-  }
+  state = { query: "" };
 
-  goToItem(item: DataCube | Collection) {
-    const itemPrefix = Collection.isCollection(item) ? "collection/" : "";
-
-    window.location.hash = "#" + itemPrefix + item.name;
-  }
-
-  goToSettings() {
-    window.location.hash = "#settings";
+  queryChange = (query: string) => {
+    this.setState(state => ({ ...state, query }));
   }
 
   renderSettingsIcon() {
-    const { user, stateful } = this.props;
-    if (!user || !user.allow["settings"] || !stateful) return null;
+    const { user } = this.props;
+    if (!user || !user.allow["settings"]) return null;
 
-    return <div className="icon-button" onClick={this.goToSettings.bind(this)}>
-      <SvgIcon svg={require("../../icons/full-settings.svg")} />
+    return <div className="icon-button" onClick={goToSettings}>
+      <SvgIcon svg={require("../../icons/full-settings.svg")}/>
     </div>;
   }
 
-  editItem(item: DataCube | Collection) {
-    this.setState({
-      editedItem: item
-    });
-  }
-
-  deleteCollection(collection: Collection) {
-    this.props.collectionsDelegate.deleteCollection(collection);
-  }
-
-  renderItem(item: DataCube | Collection): JSX.Element {
-    const isDataCube = DataCube.isDataCube(item);
-    const { stateful } = this.props;
-
-    if (!stateful) {
-      return <ItemCard
-        key={item.name}
-        title={item.title}
-        count={isDataCube ? undefined : (item as Collection).tiles.length}
-        description={item.description}
-        icon={isDataCube ? "full-cube" : "full-collection"}
-        onClick={this.goToItem.bind(this, item)}
-      />;
-    }
-
-    return <ItemCard
-      key={item.name}
-      title={item.title}
-      count={isDataCube ? undefined : (item as Collection).tiles.length}
-      description={item.description}
-      icon={isDataCube ? "full-cube" : "full-collection"}
-      onClick={this.goToItem.bind(this, item)}
-      onEdit={this.editItem.bind(this, item)}
-      onDelete={isDataCube ? this.props.deleteDataCube.bind(this, item) : this.deleteCollection.bind(this, item)}
+  renderDataCube({ name, title, description, extendedDescription }: DataCube): JSX.Element {
+    return <DataCubeCard
+      key={name}
+      title={title}
+      description={description}
+      extendedDescription={extendedDescription}
+      icon="full-cube"
+      onClick={() => goToDataCube(name)}
     />;
   }
 
-  renderItems(items: Array<DataCube | Collection>, adder?: JSX.Element): JSX.Element {
-    return <div className="items-container">
-      {items.map(this.renderItem, this)}
-
-      {/* So that the last item doesn't span on the entire row*/}
-      {adder || <div className="item-card empty" />}
-      <div className="item-card empty" />
-      <div className="item-card empty" />
-      <div className="item-card empty" />
-    </div>;
-  }
-
-  createCollection() {
-    this.setState({
-      showAddCollectionModal: true
-    });
-  }
-
-  renderAddCollectionModal(): JSX.Element {
-    const { collections, collectionsDelegate } = this.props;
-
-    const newCollection = new Collection({
-      name: generateUniqueName("c", name => indexByAttribute(collections, "name", name) === -1),
-      tiles: [],
-      title: "New collection"
-    });
-
-    const closeModal = () => {
-      this.setState({
-        showAddCollectionModal: false
-      });
-    };
-
-    const addCollection = (collection: Collection) => {
-      collectionsDelegate.addCollection(collection).then(url => {
-        closeModal();
-        window.location.hash = url;
-      });
-    };
-
-    const CollectionModal = NameDescriptionModal.specialize<Collection>();
-
-    return <CollectionModal
-      title={STRINGS.addNewCollection}
-      onCancel={closeModal}
-      onSave={addCollection}
-      item={newCollection}
-      okTitle={STRINGS.create}
-    />;
-  }
-
-  renderDataCubes() {
+  renderDataCubes(): JSX.Element {
     const { dataCubes } = this.props;
+    const { query } = this.state;
+    const cubes = filterDataCubes(dataCubes, query);
 
-    return <div className="datacubes">
-      <div className="section-title">{STRINGS.dataCubes}</div>
-      {this.renderItems(dataCubes)}
-    </div>;
-  }
-
-  renderCollections() {
-    const { collections, collectionsDelegate } = this.props;
-    if (!collectionsDelegate && collections.length === 0) return null;
-
-    const create = this.createCollection.bind(this);
-
-    return <div className="collections">
-      <div className="grid-row">
-        <div className="grid-col-90 section-title">{STRINGS.collections}</div>
-        <div className="grid-col-10 right actions">
-          {collectionsDelegate && collections.length > 4 ?
-            <div className="add" onClick={create}>
-              <SvgIcon svg={require("../../icons/full-add-framed.svg")} />
-            </div>
-            : null}
-        </div>
-      </div>
-      {this.renderItems(
-        collections,
-        collectionsDelegate ? ItemCard.getNewItemCard(create) : null
-      )}
-    </div>;
-  }
-
-  renderEditModal() {
-    const { editedItem } = this.state;
-
-    if (DataCube.isDataCube(editedItem)) return this.renderEditDataCubeModal();
-
-    return this.renderEditCollectionModal();
-  }
-
-  renderEditCollectionModal(): JSX.Element {
-    const { collectionsDelegate } = this.props;
-    const editedItem = this.state.editedItem as Collection;
-
-    const EditionModal = NameDescriptionModal.specialize<Collection>();
-
-    const closeModal = () => {
-      this.setState({
-        editedItem: undefined
-      });
-    };
-
-    const update = (collection: Collection) => {
-      collectionsDelegate.updateCollection(collection).then(closeModal);
-    };
-
-    return <EditionModal
-      title={STRINGS.editCollection}
-      onCancel={closeModal}
-      onSave={update}
-      item={editedItem}
-      okTitle={STRINGS.save}
-    />;
-  }
-
-  renderEditDataCubeModal(): JSX.Element {
-    const { updateDataCube } = this.props;
-    const editedItem = this.state.editedItem as DataCube;
-
-    const EditionModal = NameDescriptionModal.specialize<DataCube>();
-
-    const closeModal = () => {
-      this.setState({
-        editedItem: undefined
-      });
-    };
-
-    return <EditionModal
-      title={STRINGS.editDataCube}
-      onCancel={closeModal}
-      onSave={updateDataCube}
-      item={editedItem}
-      okTitle={STRINGS.save}
-    />;
+    if (cubes.length === 0) {
+      const message = query ? `${STRINGS.noDataCubesFound}${query}` : STRINGS.noDataCubes;
+      return <div className="data-cubes__message">{message}</div>;
+    }
+    return <div className="data-cubes__container">{cubes.map(this.renderDataCube)}</div>;
   }
 
   render() {
     const { user, onNavClick, onOpenAbout, customization } = this.props;
-    const { showAddCollectionModal, editedItem } = this.state;
+    const { query } = this.state;
 
     return <div className="home-view">
       <HomeHeaderBar
@@ -269,10 +103,17 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
       </HomeHeaderBar>
 
       <div className="container">
-        {this.renderDataCubes()}
+        <div className="data-cubes">
+          <div className="data-cubes__search-box">
+            <ClearableInput
+              onChange={this.queryChange}
+              value={query}
+              placeholder="Search data cubes..."
+              focusOnMount={true}/>
+          </div>
+          {this.renderDataCubes()}
+        </div>
       </div>
-      {showAddCollectionModal ? this.renderAddCollectionModal() : null}
-      {editedItem ? this.renderEditModal() : null}
     </div>;
   }
 }

@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-import * as yaml from "js-yaml";
-
 import { AttributeInfo } from "plywood";
-import { AppSettings, Cluster, Collection, CollectionTile, DataCube, Dimension, Measure } from "../../../common/models/index";
-import { CLUSTER, COLLECTION, COLLECTION_ITEM, DATA_CUBE } from "../../../common/models/labels";
+import { AppSettings, Cluster, DataCube, Dimension, Measure } from "../../../common/models/index";
+import { CLUSTER, DATA_CUBE } from "../../../common/models/labels";
 
 function spaces(n: number) {
   return (new Array(n + 1)).join(" ");
@@ -34,7 +32,7 @@ function extend(a: any, b: any): any {
 }
 
 function yamlObject(lines: string[], indent = 2): string[] {
-  var pad = spaces(indent);
+  const pad = spaces(indent);
   return lines.map((line, i) => {
     if (line === "") return "";
     return pad + (i ? "  " : "- ") + line;
@@ -51,7 +49,7 @@ interface PropAdderOptions {
 function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdderOptions): void {
   const { object, propName, defaultValue, comment } = options;
 
-  var value = object[propName];
+  const value = object[propName];
   if (value == null) {
     if (withComments && typeof defaultValue !== "undefined") {
       lines.push(
@@ -72,7 +70,7 @@ function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdde
 }
 
 function getYamlPropAdder(object: any, labels: any, lines: string[], withComments = false) {
-  var adder = (propName: string, additionalOptions?: { defaultValue?: any }) => {
+  const adder = (propName: string, additionalOptions?: { defaultValue?: any }) => {
     let propVerbiage = labels[propName];
     let comment: string;
 
@@ -96,11 +94,11 @@ function getYamlPropAdder(object: any, labels: any, lines: string[], withComment
 }
 
 export function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
-  var lines: string[] = [
+  let lines: string[] = [
     `name: ${cluster.name}`
   ];
 
-  var props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
+  let props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
 
   props
     .add("type")
@@ -133,48 +131,8 @@ export function clusterToYAML(cluster: Cluster, withComments: boolean): string[]
   return yamlObject(lines);
 }
 
-export function collectionToYAML(collection: Collection, withComments: boolean): string[] {
-  var lines: string[] = [
-    `name: ${collection.name}`
-  ];
-
-  var addProps = getYamlPropAdder(collection, COLLECTION, lines, withComments);
-
-  addProps
-    .add("title")
-    .add("description")
-  ;
-
-  lines.push("tiles:");
-  lines = lines.concat.apply(lines, collection.tiles.map(CollectionTileToYAML));
-
-  lines.push("");
-  return yamlObject(lines);
-}
-
-export function CollectionTileToYAML(item: CollectionTile): string[] {
-  var lines: string[] = [
-    `name: ${item.name}`
-  ];
-
-  var addProps = getYamlPropAdder(item, COLLECTION_ITEM, lines);
-
-  addProps
-    .add("title")
-    .add("description")
-    .add("group")
-    .add("dataCube")
-  ;
-
-  lines.push("essence:");
-  lines.push(yaml.safeDump(item.essence.toJSON()));
-
-  lines.push("");
-  return yamlObject(lines);
-}
-
 export function attributeToYAML(attribute: AttributeInfo): string[] {
-  var lines: string[] = [
+  let lines: string[] = [
     `name: ${attribute.name}`,
     `type: ${attribute.type}`
   ];
@@ -188,7 +146,7 @@ export function attributeToYAML(attribute: AttributeInfo): string[] {
 }
 
 export function dimensionToYAML(dimension: Dimension): string[] {
-  var lines: string[] = [
+  let lines: string[] = [
     `name: ${dimension.name}`,
     `title: ${dimension.title}`
   ];
@@ -204,7 +162,7 @@ export function dimensionToYAML(dimension: Dimension): string[] {
 }
 
 export function measureToYAML(measure: Measure): string[] {
-  var lines: string[] = [
+  let lines: string[] = [
     `name: ${measure.name}`,
     `title: ${measure.title}`
   ];
@@ -215,7 +173,7 @@ export function measureToYAML(measure: Measure): string[] {
 
   lines.push(`formula: ${measure.formula}`);
 
-  var format = measure.format;
+  const format = measure.format;
   if (!!format) {
     lines.push(`format: ${format}`);
   }
@@ -225,14 +183,14 @@ export function measureToYAML(measure: Measure): string[] {
 }
 
 export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
-  var lines: string[] = [
+  let lines: string[] = [
     `name: ${dataCube.name}`,
     `title: ${dataCube.title}`,
     `clusterName: ${dataCube.clusterName}`,
     `source: ${dataCube.source}`
   ];
 
-  var timeAttribute = dataCube.timeAttribute;
+  const timeAttribute = dataCube.timeAttribute;
   if (timeAttribute && !(dataCube.clusterName === "druid" && timeAttribute.name === "__time")) {
     if (withComments) {
       lines.push("# The primary time attribute of the data refers to the attribute that must always be filtered on");
@@ -241,7 +199,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
     lines.push(`timeAttribute: ${timeAttribute.name}`, "");
   }
 
-  var refreshRule = dataCube.refreshRule;
+  const refreshRule = dataCube.refreshRule;
   if (withComments) {
     lines.push("# The refresh rule describes how often the data cube looks for new data. Default: 'query'/PT1M (every minute)");
   }
@@ -252,7 +210,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   }
   lines.push("");
 
-  var addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
+  let addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
 
   addProps
     .add("defaultTimezone", { defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE })
@@ -260,7 +218,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
     .add("defaultSortMeasure", { defaultValue: dataCube.getDefaultSortMeasure() })
   ;
 
-  var defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures.toArray() : null;
+  const defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures.toArray() : null;
   if (withComments) {
     lines.push("", "# The names of measures that are selected by default");
   }
@@ -270,7 +228,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
     lines.push("#defaultSelectedMeasures: []");
   }
 
-  var defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions.toArray() : null;
+  const defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions.toArray() : null;
   if (withComments) {
     lines.push("", "# The names of dimensions that are pinned by default (in order that they will appear in the pin bar)");
   }
@@ -280,7 +238,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
     lines.push("", "#defaultPinnedDimensions: []");
   }
 
-  var introspection = dataCube.getIntrospection();
+  const introspection = dataCube.getIntrospection();
   if (withComments) {
     lines.push(
       "",
@@ -295,7 +253,7 @@ export function dataCubeToYAML(dataCube: DataCube, withComments: boolean): strin
   }
   lines.push(`introspection: ${introspection}`);
 
-  var attributeOverrides = dataCube.attributeOverrides;
+  const attributeOverrides = dataCube.attributeOverrides;
   if (withComments) {
     lines.push("", "# The list of attribute overrides in case introspection get something wrong");
   }
@@ -413,11 +371,11 @@ export interface Extra {
 }
 
 export function appSettingsToYAML(appSettings: AppSettings, withComments: boolean, extra: Extra = {}): string {
-  var { dataCubes, clusters, collections } = appSettings;
+  const { dataCubes, clusters } = appSettings;
 
   if (!dataCubes.length) throw new Error("Could not find any data cubes, please verify network connectivity");
 
-  var lines: string[] = [];
+  let lines: string[] = [];
 
   if (extra.header && extra.version) {
     lines.push(
@@ -448,12 +406,6 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
 
   lines.push("dataCubes:");
   lines = lines.concat.apply(lines, dataCubes.map(d => dataCubeToYAML(d, withComments)));
-
-  // if (collections.length) {
-  //   lines.push('collections:');
-  //   lines = lines.concat.apply(lines, collections.map(c => collectionToYAML(c, withComments)));
-
-  // }
 
   return lines.join("\n");
 }
