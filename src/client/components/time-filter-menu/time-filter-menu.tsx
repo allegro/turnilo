@@ -359,6 +359,9 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
     if (startTime === null || endTime === null) {
       return null;
     }
+    if (startTime > endTime) {
+      return null;
+    }
     const timeRange = TimeRange.fromJS({ start: startTime, end: endTime });
     if (hoverTimeShift && !hoverTimeShift.isEmpty()) {
       return this.shiftAndFormatTimeRange(timeRange, hoverTimeShift);
