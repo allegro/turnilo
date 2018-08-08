@@ -38,7 +38,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
 
   readonly state: SearchableFolderState;
 
-  private readonly infoBubbleClassName = "info-bubble";
+  private readonly infoBubbleClassName = "info-icon";
   private readonly openIcon = <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")}/>;
   private readonly closedIcon = <SvgIcon svg={require("../../icons/full-caret-small-right.svg")}/>;
 
@@ -74,8 +74,8 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
 
     return <div className={classNames("folder", { hidden })}>
       <div className={classNames("folder-header")} onClick={this.handleClick}>
-        <div className={"folder-icon"}>{isGroupOpen ? this.openIcon : this.closedIcon}</div>
-        <span className={"label"}>{title}</span>
+        <div className="folder-icon">{isGroupOpen ? this.openIcon : this.closedIcon}</div>
+        <span className="label">{title}</span>
         {description && <InfoBubble className={this.infoBubbleClassName} description={description}/>}
       </div>
       <div className={classNames("folder-items", { closed: !isGroupOpen })}>

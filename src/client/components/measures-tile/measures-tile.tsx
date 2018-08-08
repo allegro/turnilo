@@ -25,7 +25,6 @@ import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { TileHeaderIcon } from "../tile-header/tile-header";
 import { MeasureOrGroupForView, MeasuresConverter } from "./measures-converter";
 import { MeasuresRenderer } from "./measures-renderer";
-import "./measures-tile.scss";
 
 export interface MeasuresTileProps {
   clicker: Clicker;

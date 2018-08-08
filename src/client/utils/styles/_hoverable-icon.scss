@@ -1,0 +1,12 @@
+@import '../styles/variables';
+
+
+%hoverable-icon {
+  svg path {
+    fill: $icon-light;
+  }
+
+  &:hover svg path {
+    fill: $icon-hover;
+  }
+}

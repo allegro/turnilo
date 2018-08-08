@@ -16,6 +16,7 @@
 
 import * as React from "react";
 import { MouseEvent } from "react";
+import { SvgIcon } from "..";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
 import { HighlightString } from "../highlight-string/highlight-string";
@@ -26,6 +27,7 @@ import { MeasureClickHandler } from "./measures-tile";
 export interface MeasureItemProps {
   name: string;
   title: string;
+  approximate: boolean;
   description?: string;
   selected: boolean;
   measureClick: MeasureClickHandler;
@@ -33,9 +35,9 @@ export interface MeasureItemProps {
   searchText: string;
 }
 
-export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureClick, description, multiMeasureMode, searchText, selected }) => {
+export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureClick, description, multiMeasureMode, searchText, approximate, selected }) => {
 
-  const infoBubbleClassName = "info-bubble";
+  const infoBubbleClassName = "measure-info-icon";
   const checkboxType = multiMeasureMode ? "check" : "radio";
   const handleClick = (e: MouseEvent<HTMLElement>) => {
     const target = e.target as Element;
@@ -43,9 +45,12 @@ export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureC
     measureClick(name, e);
   };
 
-  return <div className={classNames("row", { selected })} onClick={handleClick}>
-    <Checkbox type={checkboxType} selected={selected}/>
-    <HighlightString className="label" text={title} highlight={searchText}/>
+  return <div className={classNames("measure-item row", { selected })} onClick={handleClick}>
+    <Checkbox className="measure-item-checkbox" type={checkboxType} selected={selected}/>
+    <div className="measure-item-name">
+      <HighlightString className="label measure-item-label" text={title} highlight={searchText}/>
+      {approximate && <SvgIcon className="approximate-measure-icon" svg={require("../../icons/approx.svg")}/>}
+    </div>
     {description && <InfoBubble className={infoBubbleClassName} description={description}/>}
   </div>;
 };

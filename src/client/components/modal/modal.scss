@@ -52,7 +52,7 @@
 
       &:hover {
         svg path {
-          fill: #888;
+          fill: $icon-hover;
         }
       }
 
@@ -60,7 +60,7 @@
         width: 19px;
 
         path {
-          fill: #bbb;
+          fill: $icon-light;
         }
       }
     }

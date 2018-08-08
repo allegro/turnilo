@@ -13,10 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../utils/styles/default-info-bubble-position';
+@import '../../imports';
 
-.info-bubble {
-  @extend %default-info-bubble-position;
+.measure-item {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 3px;
+
+  padding-left: $padding-compact;
+  height: $measure-height;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+
+  &:hover {
+    background: $hover;
+  }
 }
 
+.measure-item-checkbox {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.measure-item-name {
+  display: flex;
+  flex-grow: 1;
+  min-width: 0;
+
+  .measure-item-label {
+    @include ellipsis;
+    flex-grow: 0;
+    display: block;
+    padding: 7px 0.15em;
+
+  }
+
+  .approximate-measure-icon {
+    width: 19px;
+    flex-shrink: 0;
+
+    path {
+      fill: $icon-light;
+    }
+  }
+}
+
+.measure-info-icon {
+  @extend %hoverable-icon;
+  top: 4px;
+  right: 0;
+  height: 19px;
+  flex-shrink: 0;
+}
 
