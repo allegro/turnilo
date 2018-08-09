@@ -53,7 +53,7 @@ export class DataCubeCard extends React.Component<DataCubeCardProps, DataCubeCar
     }
 
     const { showingMore } = this.state;
-    const content = showingMore ? `${description} ${extendedDescription}` : description;
+    const content = showingMore ? `${description}\n\n${extendedDescription}` : description;
     const actionLabel = showingMore ? "Show less" : "Show more";
     const action = showingMore ? this.showLess : this.showMore;
 
