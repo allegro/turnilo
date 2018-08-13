@@ -36,7 +36,7 @@ export interface StyleDefinition {
   isAboveAll?: boolean;
 }
 
-export default function updateStyle(target: React.CSSProperties, source: StyleDefinition): React.CSSProperties {
+export default function normalizeStyles(source: StyleDefinition): React.CSSProperties {
   const { left, top, bottom, right, disablePointerEvents, isAboveAll } = source;
   const dimensions = {
     top: normalizeDimension(top),
@@ -45,7 +45,6 @@ export default function updateStyle(target: React.CSSProperties, source: StyleDe
     right: normalizeDimension(right)
   };
   return {
-    ...target,
     ...omitFalsyValues(dimensions),
     "z-index": 200 + (isAboveAll ? 1 : 0),
     "pointer-events": disablePointerEvents ? "none" : "auto"

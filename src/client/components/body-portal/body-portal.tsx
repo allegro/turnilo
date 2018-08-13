@@ -18,7 +18,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./body-portal.scss";
-import updateStyle from "./update-style";
+import normalizeStyles from "./normalize-styles";
 
 export interface BodyPortalProps {
 
@@ -65,8 +65,7 @@ export class BodyPortal extends React.Component<BodyPortalProps, {}> {
   }
 
   updateStyle() {
-    const styles = this._target.style;
-    Object.assign(styles, updateStyle(styles, this.props));
+    Object.assign(this._target.style, normalizeStyles(this.props));
   }
 
   teleport() {
