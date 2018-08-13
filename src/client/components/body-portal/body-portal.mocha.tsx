@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 import "../../utils/test-utils";
-import updateStyle from "./update-style";
+import normalizeStyles from "./normalize-styles";
 
 const defaultRest = {
   "pointer-events": "auto",
@@ -25,37 +25,26 @@ const defaultRest = {
 };
 
 describe("BodyPortal", () => {
-  describe("update-style", () => {
-
-    it("should overwrite target styles", () => {
-      const target = { left: "100%" };
-      expect(updateStyle(target, { left: 20 })).to.be.deep.equal({ left: "20px", ...defaultRest });
-    });
+  describe("normalize-styles", () => {
 
     it("should add 'px' prefix to number dimensions", () => {
       const source = { left: 10, right: 20, top: 30, bottom: 40 };
       const result = { left: "10px", right: "20px", top: "30px", bottom: "40px", ...defaultRest };
-      expect(updateStyle({}, source)).to.be.deep.equal(result);
+      expect(normalizeStyles(source)).to.be.deep.equal(result);
     });
   });
 
   it("should pass string dimensions unchanged", () => {
     const source = { left: "auto", right: "100%", top: "inherit", bottom: "10em" };
     const result = { left: "auto", right: "100%", top: "inherit", bottom: "10em", ...defaultRest };
-    expect(updateStyle({}, source)).to.be.deep.equal(result);
+    expect(normalizeStyles(source)).to.be.deep.equal(result);
   });
 
   it("should set pointer events to 'none' when passed 'dissablePointerEvents", () => {
-    expect(updateStyle({}, { disablePointerEvents: true })).to.be.deep.equal({ ...defaultRest, "pointer-events": "none" });
+    expect(normalizeStyles({ disablePointerEvents: true })).to.be.deep.equal({ ...defaultRest, "pointer-events": "none" });
   });
 
   it("should set bigger z-index when aboveAll", () => {
-    expect(updateStyle({}, { isAboveAll: true })).to.be.deep.equal({ ...defaultRest, "z-index": 201 });
+    expect(normalizeStyles({ isAboveAll: true })).to.be.deep.equal({ ...defaultRest, "z-index": 201 });
   });
-
-  it("should leave rest of styles unchanged", () => {
-    const target = { "font-size": "2em", "transform": "translateX(50%)" };
-    expect(updateStyle(target, {})).to.be.deep.equal({ ...target, ...defaultRest });
-  });
-
 });
