@@ -16,13 +16,12 @@
  */
 
 import { Equalable, immutableEqual } from "immutable-class";
+import { noop } from "../../../common/utils/functional/functional";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 
 function getName(thing: any): string {
   return thing.name;
 }
-
-function noop() {}
 
 export interface UpdatedOptions<T> {
   key?: (thing: T, index?: number) => string;
