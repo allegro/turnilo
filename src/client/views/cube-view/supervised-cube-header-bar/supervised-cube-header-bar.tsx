@@ -18,7 +18,7 @@
 import { Timezone } from "chronoshift";
 import * as React from "react";
 import { Customization, Essence, ViewSupervisor } from "../../../../common/models/index";
-import { Button, SettingsMenu, SvgIcon } from "../../../components/index";
+import { Button, SvgIcon, TimezoneMenu } from "../../../components/index";
 import "./supervised-cube-header-bar.scss";
 
 export interface SupervisedCubeHeaderBarProps {
@@ -63,14 +63,12 @@ export class SupervisedCubeHeaderBar extends React.Component<SupervisedCubeHeade
     const { settingsMenuOpen } = this.state;
     if (!settingsMenuOpen) return null;
 
-    return <SettingsMenu
-      dataCube={essence.dataCube}
+    return <TimezoneMenu
       timezone={timezone}
       timezones={customization.getTimezones()}
       changeTimezone={changeTimezone}
       openOn={settingsMenuOpen}
       onClose={this.onSettingsMenuClose.bind(this)}
-      stateful={true}
     />;
   }
 

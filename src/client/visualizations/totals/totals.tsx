@@ -72,7 +72,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     }
 
     const { dataset } = datasetLoad;
-    if (dataset && splits.length()) {
+    if (dataset) {
       if (registerDownloadableDataset) registerDownloadableDataset(dataset);
     }
 

@@ -25,13 +25,12 @@ import { CubeHeaderBar } from "./cube-header-bar";
 
 describe("CubeHeaderBar", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <CubeHeaderBar
         clicker={null}
         essence={EssenceFixtures.wikiTotals()}
         timekeeper={TimekeeperFixtures.fixed()}
         onNavClick={null}
-        stateful={true}
       />
     );
 

@@ -53,7 +53,6 @@ import tabularOptions from "../../utils/tabular-options/tabular-options";
 import { getVisualizationComponent } from "../../visualizations/index";
 import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
-import { SupervisedCubeHeaderBar } from "./supervised-cube-header-bar/supervised-cube-header-bar";
 
 export interface CubeViewLayout {
   dimensionPanelWidth: number;
@@ -74,7 +73,6 @@ export interface CubeViewProps {
   customization?: Customization;
   transitionFnSlot?: FunctionSlot<string>;
   supervisor?: ViewSupervisor;
-  addEssenceToCollection?: (essence: Essence) => void;
   stateful: boolean;
 }
 
@@ -435,10 +433,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.globalResizeListener();
   }
 
-  onAddEssenceToCollection() {
-    this.props.addEssenceToCollection(this.state.essence);
-  }
-
   render() {
     const clicker = this.clicker;
 
@@ -488,11 +482,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       };
     }
 
-    let headerBar = <CubeHeaderBar
+    const headerBar = <CubeHeaderBar
       clicker={clicker}
       essence={essence}
       timekeeper={timekeeper}
-      user={user}
       onNavClick={onNavClick}
       getCubeViewHash={getCubeViewHash}
       refreshMaxTime={this.refreshMaxTime.bind(this)}
@@ -501,21 +494,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       customization={customization}
       getDownloadableDataset={() => this.downloadableDataset}
       changeTimezone={this.changeTimezone.bind(this)}
-      timezone={essence.timezone}
       updatingMaxTime={updatingMaxTime}
-      addEssenceToCollection={this.onAddEssenceToCollection.bind(this)}
-      stateful={stateful}
     />;
-
-    if (supervisor) {
-      headerBar = <SupervisedCubeHeaderBar
-        essence={essence}
-        customization={customization}
-        changeTimezone={this.changeTimezone.bind(this)}
-        timezone={essence.timezone}
-        supervisor={supervisor}
-      />;
-    }
 
     return <div className="cube-view">
       <GlobalEventListener

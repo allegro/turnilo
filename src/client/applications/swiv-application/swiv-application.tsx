@@ -49,8 +49,6 @@ export interface SwivApplicationState {
   viewType?: ViewType;
   viewHash?: string;
   showAboutModal?: boolean;
-  showAddTileModal?: boolean;
-  essenceToAddToACollection?: Essence;
   cubeViewSupervisor?: ViewSupervisor;
 }
 
@@ -285,13 +283,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     });
   }
 
-  addEssenceToCollection(essence: Essence) {
-    this.setState({
-      essenceToAddToACollection: essence,
-      showAddTileModal: true
-    });
-  }
-
   renderAboutModal() {
     const { version } = this.props;
     const { showAboutModal } = this.state;
@@ -383,7 +374,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           customization={customization}
           transitionFnSlot={this.sideBarHrefFn}
           supervisor={cubeViewSupervisor}
-          addEssenceToCollection={this.addEssenceToCollection.bind(this)}
           stateful={stateful}
         />;
 
