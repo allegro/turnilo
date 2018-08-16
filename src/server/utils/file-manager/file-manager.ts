@@ -20,6 +20,7 @@ import * as path from "path";
 import { Dataset, Expression, PseudoDatum } from "plywood";
 import * as Q from "q";
 import { Logger } from "../../../common/logger/logger";
+import { noop } from "../../../common/utils/functional/functional";
 import { parseData } from "../../../common/utils/parser/parser";
 
 export function getFileData(filePath: string): Promise<any[]> {
@@ -47,8 +48,6 @@ export interface FileManagerOptions {
   subsetExpression?: Expression;
   onDatasetChange?: (dataset: Dataset) => void;
 }
-
-function noop() {}
 
 export class FileManager {
   public logger: Logger;
