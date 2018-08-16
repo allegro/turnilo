@@ -17,7 +17,7 @@
 
 import * as nopt from "nopt";
 import * as path from "path";
-import { LOGGER } from "../common/logger/logger";
+import { NULL_LOGGER, LOGGER } from "../common/logger/logger";
 import { AppSettings, Cluster, DataCube, SupportedType } from "../common/models/index";
 import { arraySum } from "../common/utils/general/general";
 import { appSettingsToYAML } from "../common/utils/yaml-helper/yaml-helper";
@@ -173,6 +173,7 @@ if (numSettingsInputs > 1) {
 
 export const PRINT_CONFIG = Boolean(parsedArgs["print-config"]);
 export const START_SERVER = !PRINT_CONFIG;
+const logger = START_SERVER ? LOGGER : NULL_LOGGER;
 
 // Load server settings
 var serverSettingsFilePath = parsedArgs["config"];
@@ -187,7 +188,7 @@ if (serverSettingsFilePath) {
   anchorPath = path.dirname(serverSettingsFilePath);
   try {
     serverSettingsJS = loadFileSync(serverSettingsFilePath, "yaml");
-    LOGGER.log(`Using config ${serverSettingsFilePath}`);
+    logger.log(`Using config ${serverSettingsFilePath}`);
   } catch (e) {
     exitWithError(`Could not load config from '${serverSettingsFilePath}': ${e.message}`);
   }
@@ -218,7 +219,7 @@ var auth = SERVER_SETTINGS.auth;
 var authMiddleware: any = null;
 if (auth && auth !== "none") {
   auth = path.resolve(anchorPath, auth);
-  LOGGER.log(`Using auth ${auth}`);
+  logger.log(`Using auth ${auth}`);
   try {
     var authModule = require(auth);
   } catch (e) {
@@ -230,7 +231,7 @@ if (auth && auth !== "none") {
   }
   if (typeof authModule.auth !== "function") exitWithError("Invalid auth module: must export 'auth' function");
   authMiddleware = authModule.auth({
-    logger: LOGGER,
+    logger: logger,
     verbose: VERBOSE,
     version: VERSION,
     serverSettings: SERVER_SETTINGS
@@ -240,7 +241,7 @@ export const AUTH = authMiddleware;
 
 // --- Sign of Life -------------------------------
 if (START_SERVER) {
-  LOGGER.log(`Starting Turnilo v${VERSION}`);
+  logger.log(`Starting Turnilo v${VERSION}`);
 }
 
 // --- Location -------------------------------
@@ -315,7 +316,7 @@ if (serverSettingsFilePath) {
 }
 
 export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
-  logger: LOGGER,
+  logger: logger,
   verbose: VERBOSE,
   anchorPath,
   initialLoadTimeout: SERVER_SETTINGS.getPageMustLoadTimeout()
