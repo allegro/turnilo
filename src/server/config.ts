@@ -17,7 +17,7 @@
 
 import * as nopt from "nopt";
 import * as path from "path";
-import { NULL_LOGGER, LOGGER } from "../common/logger/logger";
+import { LOGGER, NULL_LOGGER } from "../common/logger/logger";
 import { AppSettings, Cluster, DataCube, SupportedType } from "../common/models/index";
 import { arraySum } from "../common/utils/general/general";
 import { appSettingsToYAML } from "../common/utils/yaml-helper/yaml-helper";
@@ -231,7 +231,7 @@ if (auth && auth !== "none") {
   }
   if (typeof authModule.auth !== "function") exitWithError("Invalid auth module: must export 'auth' function");
   authMiddleware = authModule.auth({
-    logger: logger,
+    logger,
     verbose: VERBOSE,
     version: VERSION,
     serverSettings: SERVER_SETTINGS
@@ -316,7 +316,7 @@ if (serverSettingsFilePath) {
 }
 
 export const SETTINGS_MANAGER = new SettingsManager(settingsStore, {
-  logger: logger,
+  logger,
   verbose: VERBOSE,
   anchorPath,
   initialLoadTimeout: SERVER_SETTINGS.getPageMustLoadTimeout()
