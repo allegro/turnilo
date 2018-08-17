@@ -17,7 +17,8 @@
 
 import * as React from "react";
 import { Fn } from "../../../common/utils/general/general";
-import { Button, Modal } from "../../components/index";
+import { Button } from "../../components/button/button";
+import { Modal } from "../../components/modal/modal";
 import { STRINGS } from "../../config/constants";
 import "./about-modal.scss";
 

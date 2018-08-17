@@ -16,8 +16,9 @@
  */
 
 import * as React from "react";
-
-import { Clicker, Essence, Resolution, VisStrategy } from "../../../common/models";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Essence, VisStrategy } from "../../../common/models/essence/essence";
+import { Resolution } from "../../../common/models/manifest/manifest";
 import "./manual-fallback.scss";
 
 export interface ManualFallbackProps {

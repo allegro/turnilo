@@ -17,7 +17,9 @@
 
 import { Timezone } from "chronoshift";
 import { Class, Instance } from "immutable-class";
-import { DataCube, Filter, Splits } from "../../../common/models/index";
+import { DataCube } from "../data-cube/data-cube";
+import { Filter } from "../filter/filter";
+import { Splits } from "../splits/splits";
 
 export type LinkGenerator = (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits) => string;
 

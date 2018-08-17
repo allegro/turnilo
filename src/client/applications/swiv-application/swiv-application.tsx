@@ -18,9 +18,15 @@
 import { NamedArray } from "immutable-class";
 import * as React from "react";
 import { CSSTransition } from "react-transition-group";
-import { AppSettings, DataCube, Essence, Timekeeper, User, ViewSupervisor } from "../../../common/models";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { Essence } from "../../../common/models/essence/essence";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { User } from "../../../common/models/user/user";
+import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
 import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
-import { Notifications, Questions, SideDrawer } from "../../components";
+import { Notifications, Questions } from "../../components/notifications/notifications";
+import { SideDrawer } from "../../components/side-drawer/side-drawer";
 import { AboutModal } from "../../modals/about-modal/about-modal";
 import { Ajax } from "../../utils/ajax/ajax";
 import { createFunctionSlot, FunctionSlot } from "../../utils/function-slot/function-slot";

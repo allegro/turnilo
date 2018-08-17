@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { DataCube } from "../../../common/models";
-import { isNil } from "../../../common/utils";
+import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { complement } from "../../../common/utils/functional/functional";
+import { isNil } from "../../../common/utils/general/general";
 
 const ESCAPE_REG_EXP = /[.*+?^${}()|[\]\\]/g;
 

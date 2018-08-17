@@ -17,7 +17,9 @@
 
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
-import { Clicker, Dimension, Stage } from "../../../common/models/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";

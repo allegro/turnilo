@@ -17,8 +17,8 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { Delta } from "..";
-import { Measure, MeasureDerivation } from "../../../common/models/index";
+import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
+import { Delta } from "../delta/delta";
 import "./vis-measure-label.scss";
 
 export interface VisMeasureLabelProps {

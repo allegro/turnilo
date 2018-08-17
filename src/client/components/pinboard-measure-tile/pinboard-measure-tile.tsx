@@ -16,7 +16,9 @@
  */
 
 import * as React from "react";
-import { Dimension, Essence, SortOn } from "../../../common/models/index";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence } from "../../../common/models/essence/essence";
+import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Dropdown } from "../dropdown/dropdown";
 import "./pinboard-measure-tile.scss";
 

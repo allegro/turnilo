@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { ImmutableUtils } from "../../../common/utils/index";
+import { ImmutableUtils } from "../../../common/utils/immutable-utils/immutable-utils";
 import { classNames } from "../../utils/dom/dom";
 import { ChangeFn } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 import "./immutable-input.scss";

@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { Dimension, SplitCombine } from "../../../common/models/index";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { SplitCombine } from "../../../common/models/split-combine/split-combine";
 
 export class DragManager {
   static dragOrigin: string = null;
@@ -23,7 +24,7 @@ export class DragManager {
   static dragSplit: SplitCombine = null;
 
   static init() {
-    document.addEventListener("dragend", function() {
+    document.addEventListener("dragend", () => {
       DragManager.dragOrigin = null;
       DragManager.dragDimension = null;
       DragManager.dragSplit = null;

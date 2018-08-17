@@ -18,8 +18,8 @@
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import { $ } from "plywood";
+import { DimensionFixtures } from "../../models/dimension/dimension.fixtures";
 import { FilterClause } from "../../models/filter-clause/filter-clause";
-import { DimensionFixtures } from "../../models/fixtures";
 import { formatFilterClause, formatterFromData, getMiddleNumber } from "./formatter";
 import { FormatterFixtures } from "./formatter.fixtures";
 

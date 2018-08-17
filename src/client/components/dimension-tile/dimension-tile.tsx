@@ -17,25 +17,26 @@
 
 import { $, Dataset, Datum, Expression, NumberRange, r, RefExpression, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
 import * as React from "react";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Colors } from "../../../common/models/colors/colors";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence } from "../../../common/models/essence/essence";
+import { FilterSelection } from "../../../common/models/filter-clause/filter-clause";
+import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import {
-  Clicker,
-  Colors,
   ContinuousDimensionKind,
-  Dimension,
-  Essence,
-  Filter,
-  FilterMode,
-  FilterSelection,
   getBestGranularityForRange,
   getDefaultGranularityForKind,
   getGranularities,
   Granularity,
   granularityEquals,
-  granularityToString,
-  SortOn,
-  Timekeeper
-} from "../../../common/models";
-import { collect, Fn, formatGranularity, formatNumberRange, formatterFromData, formatTimeBasedOnGranularity } from "../../../common/utils";
+  granularityToString
+} from "../../../common/models/granularity/granularity";
+import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { formatNumberRange, formatterFromData } from "../../../common/utils/formatter/formatter";
+import { collect, Fn } from "../../../common/utils/general/general";
+import { formatGranularity, formatTimeBasedOnGranularity } from "../../../common/utils/time/time";
 import { getLocale, MAX_SEARCH_LENGTH, PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT, SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";

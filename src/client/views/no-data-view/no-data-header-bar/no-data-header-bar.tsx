@@ -16,9 +16,11 @@
  */
 
 import * as React from "react";
-import { Customization, User } from "../../../../common/models/index";
+import { Customization } from "../../../../common/models/customization/customization";
+import { User } from "../../../../common/models/user/user";
 import { Fn } from "../../../../common/utils/general/general";
-import { SvgIcon, UserMenu } from "../../../components/index";
+import { SvgIcon } from "../../../components/svg-icon/svg-icon";
+import { UserMenu } from "../../../components/user-menu/user-menu";
 import "./no-data-header-bar.scss";
 
 export interface NoDataHeaderBarProps {

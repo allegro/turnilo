@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { DataCube, Essence, Manifest } from "../../models";
+import { DataCube } from "../../models/data-cube/data-cube";
+import { Essence } from "../../models/essence/essence";
+import { Manifest } from "../../models/manifest/manifest";
 import {
   DEFAULT_VIEW_DEFINITION_VERSION,
   definitionConverters,

@@ -16,8 +16,8 @@
 
 import { expect } from "chai";
 import { MANIFESTS } from "../../manifests";
-import { Essence } from "../../models";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
+import { Essence } from "../../models/essence/essence";
 import { EssenceFixtures } from "../../models/essence/essence.fixtures";
 import { ViewDefinitionVersion } from "../../view-definitions";
 import { urlHashConverter } from "./url-hash-converter";

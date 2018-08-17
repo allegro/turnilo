@@ -18,7 +18,9 @@
 import { $, Dataset, ply } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Dimension, Essence, Timekeeper } from "../../../common/models/index";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence } from "../../../common/models/essence/essence";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { getNumberOfWholeDigits, toSignificantDigits } from "../../../common/utils/general/general";
 import { clamp, classNames, getXFromEvent } from "../../utils/dom/dom";
 import { Loader } from "../loader/loader";

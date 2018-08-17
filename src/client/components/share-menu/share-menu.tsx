@@ -17,7 +17,9 @@
 
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
-import { Essence, Stage, Timekeeper } from "../../../common/models/index";
+import { Essence } from "../../../common/models/essence/essence";
+import { Stage } from "../../../common/models/stage/stage";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { download, FileFormat, makeFileName } from "../../utils/download/download";

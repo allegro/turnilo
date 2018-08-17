@@ -17,8 +17,8 @@
 
 import { Response, Router } from "express";
 import * as request from "request-promise-native";
-import { Cluster } from "../../../common/models";
-import { SwivRequest } from "../../utils";
+import { Cluster } from "../../../common/models/cluster/cluster";
+import { SwivRequest } from "../../utils/general/general";
 
 var router = Router();
 

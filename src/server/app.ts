@@ -31,7 +31,7 @@ import * as plyqlRoutes from "./routes/plyql/plyql";
 import * as plywoodRoutes from "./routes/plywood/plywood";
 import * as settingsRoutes from "./routes/settings/settings";
 import * as swivRoutes from "./routes/swiv/swiv";
-import { SwivRequest } from "./utils/index";
+import { SwivRequest } from "./utils/general/general";
 import { errorLayout } from "./views";
 
 function makeGuard(guard: string): Handler {

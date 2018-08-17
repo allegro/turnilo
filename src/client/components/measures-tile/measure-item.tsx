@@ -16,11 +16,11 @@
 
 import * as React from "react";
 import { MouseEvent } from "react";
-import { SvgIcon } from "..";
 import { classNames } from "../../utils/dom/dom";
 import { Checkbox } from "../checkbox/checkbox";
 import { HighlightString } from "../highlight-string/highlight-string";
 import { InfoBubble } from "../info-bubble/info-bubble";
+import { SvgIcon } from "../svg-icon/svg-icon";
 import "./measure-item.scss";
 import { MeasureClickHandler } from "./measures-tile";
 

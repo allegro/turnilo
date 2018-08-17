@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EssenceJS } from "../../models";
+import { EssenceJS } from "../../models/essence/essence";
 import { arrayToHash, hashToArray } from "../hash-conversions";
 import { ViewDefinitionHashEncoder } from "../view-definition-hash-encoder";
 

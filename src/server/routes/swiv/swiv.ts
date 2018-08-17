@@ -17,7 +17,7 @@
 
 import { Response, Router } from "express";
 import { SETTINGS_MANAGER } from "../../config";
-import { SwivRequest } from "../../utils";
+import { SwivRequest } from "../../utils/general/general";
 import { mainLayout } from "../../views";
 
 var router = Router();

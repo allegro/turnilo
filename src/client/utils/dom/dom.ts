@@ -18,6 +18,8 @@
 import * as d3 from "d3";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 
+export type JSXNode = JSX.Element | string;
+
 const DRAG_GHOST_OFFSET_X = -12;
 const DRAG_GHOST_OFFSET_Y = -12;
 

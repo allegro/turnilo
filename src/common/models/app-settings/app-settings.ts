@@ -18,7 +18,7 @@
 import { Class, immutableArraysEqual, immutableEqual, Instance, NamedArray } from "immutable-class";
 import { Executor } from "plywood";
 import { hasOwnProperty } from "../../utils/general/general";
-import { ImmutableUtils } from "../../utils/index";
+import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { Cluster, ClusterJS } from "../cluster/cluster";
 import { Customization, CustomizationJS } from "../customization/customization";
 import { DataCube, DataCubeJS } from "../data-cube/data-cube";

@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Clicker } from "../../../common/models/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
 import { Fn } from "../../../common/utils/general/general";
 import { BodyPortal } from "../body-portal/body-portal";
 import { SegmentActionButtons } from "../segment-action-buttons/segment-action-buttons";

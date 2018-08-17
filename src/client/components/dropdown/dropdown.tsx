@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { JSXNode } from "../../../common/utils";
+import { JSXNode } from "../../utils/dom/dom";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./dropdown.scss";

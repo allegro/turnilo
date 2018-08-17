@@ -16,8 +16,8 @@
 
 import { expect } from "chai";
 import { MANIFESTS } from "../../manifests";
-import { EssenceJS } from "../../models";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
+import { EssenceJS } from "../../models/essence/essence";
 import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
 import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
 

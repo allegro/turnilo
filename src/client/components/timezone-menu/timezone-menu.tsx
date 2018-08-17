@@ -16,7 +16,7 @@
 
 import { Timezone } from "chronoshift";
 import * as React from "react";
-import { Stage } from "../../../common/models/index";
+import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";

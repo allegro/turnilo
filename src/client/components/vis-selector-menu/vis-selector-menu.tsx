@@ -17,7 +17,9 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Clicker, Essence, Manifest } from "../../../common/models/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Essence } from "../../../common/models/essence/essence";
+import { Manifest } from "../../../common/models/manifest/manifest";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";

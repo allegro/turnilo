@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Essence } from "../index";
+import { Essence } from "../essence/essence";
 
 export interface ViewSupervisor {
   cancel: () => void;

@@ -15,7 +15,8 @@
  */
 
 import { AttributeInfo, TabulatorOptions } from "plywood";
-import { Essence, Measure, MeasureDerivation } from "../../../common/models";
+import { Essence } from "../../../common/models/essence/essence";
+import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
 
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {

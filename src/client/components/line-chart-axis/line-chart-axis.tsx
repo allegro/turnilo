@@ -19,7 +19,7 @@ import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import * as moment from "moment-timezone";
 import * as React from "react";
-import { Stage } from "../../../common/models/index";
+import { Stage } from "../../../common/models/stage/stage";
 import { roundToHalfPx } from "../../utils/dom/dom";
 import "./line-chart-axis.scss";
 

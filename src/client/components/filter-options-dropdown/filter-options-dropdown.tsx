@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Filter, FilterMode } from "../../../common/models/index";
+import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { STRINGS } from "../../config/constants";
 import { CheckboxType } from "../checkbox/checkbox";
 import { Dropdown } from "../dropdown/dropdown";

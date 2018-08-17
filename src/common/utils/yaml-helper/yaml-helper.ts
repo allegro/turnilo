@@ -16,8 +16,12 @@
  */
 
 import { AttributeInfo } from "plywood";
-import { AppSettings, Cluster, DataCube, Dimension, Measure } from "../../../common/models/index";
 import { CLUSTER, DATA_CUBE } from "../../../common/models/labels";
+import { AppSettings } from "../../models/app-settings/app-settings";
+import { Cluster } from "../../models/cluster/cluster";
+import { DataCube } from "../../models/data-cube/data-cube";
+import { Dimension } from "../../models/dimension/dimension";
+import { Measure } from "../../models/measure/measure";
 
 function spaces(n: number) {
   return (new Array(n + 1)).join(" ");

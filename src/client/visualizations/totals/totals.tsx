@@ -18,7 +18,8 @@
 import { Iterable } from "immutable";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
-import { DatasetLoad, MeasureDerivation, VisualizationProps } from "../../../common/models/index";
+import { MeasureDerivation } from "../../../common/models/measure/measure";
+import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Total } from "./total";
 import "./totals.scss";
