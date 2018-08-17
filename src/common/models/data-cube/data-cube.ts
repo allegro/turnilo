@@ -575,13 +575,13 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     if (extendedDescription) {
       return { description, extendedDescription };
     }
-    const segments = description.split(/\s---\s/);
+    const segments = description.split(/\n---\n/);
     if (segments.length === 0) {
       return { description };
     }
     return {
       description: segments[0],
-      extendedDescription: segments.splice(1).join(" --- ")
+      extendedDescription: segments.splice(1).join("\n---\n ")
     };
   }
 

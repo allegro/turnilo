@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { noop } from "../utils/functional/functional";
+
 export interface Logger {
   log: Function;
   warn: Function;
@@ -24,4 +26,10 @@ export const LOGGER: Logger = {
   error: console.error.bind(console),
   warn: console.warn.bind(console),
   log: console.log.bind(console)
+};
+
+export const NULL_LOGGER: Logger = {
+  error: noop,
+  warn: noop,
+  log: noop
 };

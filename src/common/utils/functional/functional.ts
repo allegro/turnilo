@@ -21,6 +21,9 @@ export type Binary<T, S, R> = (arg: T, arg2: S) => R;
 
 export type Predicate<T> = Unary<T, boolean>;
 
+export function noop(...args: any[]): any {
+}
+
 export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
 }
