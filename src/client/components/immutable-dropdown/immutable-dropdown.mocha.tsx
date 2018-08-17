@@ -20,7 +20,7 @@ import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
 import * as sinon from "sinon";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
-import { DataCubeFixtures } from "../../../common/models/fixtures";
+import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
 import { ListItem } from "../../../common/models/list-item/list-item";
 
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";

@@ -17,22 +17,16 @@
 
 import { NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
 import * as React from "react";
-import {
-  Clicker,
-  Colors,
-  ContinuousDimensionKind,
-  Dimension,
-  Essence,
-  getGranularities,
-  Granularity,
-  granularityToString,
-  SortOn,
-  SplitCombine,
-  Stage,
-  updateBucketSize,
-  VisStrategy
-} from "../../../common/models/index";
-import { Fn, formatGranularity } from "../../../common/utils/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Colors } from "../../../common/models/colors/colors";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence, VisStrategy } from "../../../common/models/essence/essence";
+import { ContinuousDimensionKind, getGranularities, Granularity, granularityToString, updateBucketSize } from "../../../common/models/granularity/granularity";
+import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Stage } from "../../../common/models/stage/stage";
+import { Fn } from "../../../common/utils/general/general";
+import { formatGranularity } from "../../../common/utils/time/time";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";

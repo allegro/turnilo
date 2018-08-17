@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Resolve } from "../../models";
+import { Resolve } from "../../models/manifest/manifest";
 import { Resolutions } from "./resolutions";
 import { Action } from "./rules-evaluator-builder";
 import { VisualizationDependentAction } from "./visualization-dependent-evaluator";

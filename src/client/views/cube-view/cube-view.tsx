@@ -20,30 +20,34 @@ import { Dataset, Expression, TabulatorOptions } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { MANIFESTS } from "../../../common/manifests/index";
-import {
-  Clicker,
-  Colors,
-  Customization,
-  DataCube,
-  Device,
-  DeviceSize,
-  Dimension,
-  Essence,
-  Filter,
-  Manifest,
-  Measure,
-  SplitCombine,
-  Splits,
-  Stage,
-  Timekeeper,
-  User,
-  ViewSupervisor,
-  VisStrategy,
-  VisualizationProps
-} from "../../../common/models/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Colors } from "../../../common/models/colors/colors";
+import { Customization } from "../../../common/models/customization/customization";
+import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { Device, DeviceSize } from "../../../common/models/device/device";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence, VisStrategy } from "../../../common/models/essence/essence";
+import { Filter } from "../../../common/models/filter/filter";
+import { Manifest } from "../../../common/models/manifest/manifest";
+import { Measure } from "../../../common/models/measure/measure";
+import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Splits } from "../../../common/models/splits/splits";
+import { Stage } from "../../../common/models/stage/stage";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { User } from "../../../common/models/user/user";
+import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { Fn } from "../../../common/utils/general/general";
-import { DimensionMeasurePanel, DropIndicator, FilterTile, GlobalEventListener, ManualFallback, PinboardPanel, ResizeHandle, SplitTile, VisSelector } from "../../components/index";
+import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
+import { DropIndicator } from "../../components/drop-indicator/drop-indicator";
+import { FilterTile } from "../../components/filter-tile/filter-tile";
+import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
+import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
+import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
+import { ResizeHandle } from "../../components/resize-handle/resize-handle";
+import { SplitTile } from "../../components/split-tile/split-tile";
+import { VisSelector } from "../../components/vis-selector/vis-selector";
 import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";

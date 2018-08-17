@@ -18,9 +18,16 @@
 import { day, second, Timezone } from "chronoshift";
 import { $, Expression, LiteralExpression, r, Range, Set, TimeRange } from "plywood";
 import * as React from "react";
-import { Clicker, Dimension, Essence, Filter, FilterClause, Stage, Timekeeper } from "../../../common/models";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence } from "../../../common/models/essence/essence";
+import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { Filter } from "../../../common/models/filter/filter";
+import { Stage } from "../../../common/models/stage/stage";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
-import { DisplayYear, Fn, formatTimeRange } from "../../../common/utils";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { Fn } from "../../../common/utils/general/general";
+import { DisplayYear, formatTimeRange } from "../../../common/utils/time/time";
 import { STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";

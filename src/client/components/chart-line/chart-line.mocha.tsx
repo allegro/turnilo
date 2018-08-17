@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { Dataset, TimeRange } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { StageFixtures } from "../../../common/models/fixtures";
+import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { ChartLine } from "./chart-line";
 

@@ -16,7 +16,9 @@
  */
 
 import * as React from "react";
-import { Clicker, Essence, Stage } from "../../../common/models/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Essence } from "../../../common/models/essence/essence";
+import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { clamp } from "../../utils/dom/dom";
 import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";

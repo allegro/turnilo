@@ -16,8 +16,8 @@
  */
 
 import * as React from "react";
-import { ListItem } from "../../../common/models/index";
-import { ImmutableUtils } from "../../../common/utils/index";
+import { ListItem } from "../../../common/models/list-item/list-item";
+import { ImmutableUtils } from "../../../common/utils/immutable-utils/immutable-utils";
 import { ChangeFn } from "../../utils/immutable-form-delegate/immutable-form-delegate";
 import { Dropdown } from "../dropdown/dropdown";
 import "./immutable-dropdown.scss";

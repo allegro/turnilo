@@ -17,8 +17,10 @@
 
 import { List } from "immutable";
 import { $, SortExpression } from "plywood";
-import { Colors, SplitCombine, Splits } from "../../models";
+import { Colors } from "../../models/colors/colors";
 import { Manifest, Resolve } from "../../models/manifest/manifest";
+import { SplitCombine } from "../../models/split-combine/split-combine";
+import { Splits } from "../../models/splits/splits";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 

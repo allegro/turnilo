@@ -17,9 +17,9 @@
 
 import { Response, Router } from "express";
 import { MANIFESTS } from "../../../common/manifests/index";
-import { AppSettings } from "../../../common/models/index";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { SETTINGS_MANAGER } from "../../config";
-import { SwivRequest } from "../../utils/index";
+import { SwivRequest } from "../../utils/general/general";
 
 var router = Router();
 

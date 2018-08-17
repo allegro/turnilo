@@ -21,9 +21,9 @@ import { Response } from "express";
 import * as mime from "mime";
 import * as Q from "q";
 import * as supertest from "supertest";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
-import { AppSettings } from "../../../common/models/index";
-import { SwivRequest } from "../../utils/index";
+import { SwivRequest } from "../../utils/general/general";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 import * as plyqlRouter from "./plyql";
 

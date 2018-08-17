@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { DataCube, Filter, Highlight } from "../../models";
+import { DataCube } from "../../models/data-cube/data-cube";
+import { Filter } from "../../models/filter/filter";
+import { Highlight } from "../../models/highlight/highlight";
 import { FilterClauseDefinition, filterDefinitionConverter } from "./filter-definition";
 
 export interface HighlightDefinition {

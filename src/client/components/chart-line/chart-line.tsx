@@ -19,7 +19,7 @@ import * as d3 from "d3";
 import { immutableEqual } from "immutable-class";
 import { Dataset, Datum, NumberRange, PlywoodRange, Range, TimeRange } from "plywood";
 import * as React from "react";
-import { Stage } from "../../../common/models/index";
+import { Stage } from "../../../common/models/stage/stage";
 import "./chart-line.scss";
 
 const lineFn = d3.svg.line();

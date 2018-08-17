@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Measure } from "../../../common/models";
+import { Measure } from "../../../common/models/measure/measure";
 import { MeasureGroup, MeasureOrGroupVisitor } from "../../../common/models/measure/measure-group";
 
 export type MeasureOrGroupForView = MeasureForView | MeasureGroupForView;

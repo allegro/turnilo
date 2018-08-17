@@ -17,7 +17,7 @@
 
 import { Timezone } from "chronoshift";
 import { Class, immutableArraysEqual, Instance } from "immutable-class";
-import { ImmutableUtils } from "../../utils/index";
+import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { ExternalView, ExternalViewValue } from "../external-view/external-view";
 
 export interface CustomizationValue {

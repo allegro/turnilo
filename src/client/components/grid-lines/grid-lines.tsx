@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Stage } from "../../../common/models/index";
+import { Stage } from "../../../common/models/stage/stage";
 import { classNames, roundToHalfPx } from "../../utils/dom/dom";
 import "./grid-lines.scss";
 

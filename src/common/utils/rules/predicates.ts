@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { SplitCombine } from "../../models";
+import { SplitCombine } from "../../models/split-combine/split-combine";
 import { VisualizationDependentPredicate } from "./visualization-dependent-evaluator";
 import { VisualizationIndependentPredicate } from "./visualization-independent-evaluator";
 

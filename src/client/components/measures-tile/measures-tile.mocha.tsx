@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceFixtures } from "../../../common/models/fixtures";
+import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { MeasuresTile } from "./measures-tile";
 

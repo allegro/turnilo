@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-import { Resolve } from "../../models";
+import { Resolve } from "../../models/manifest/manifest";
 
 export type RulesEvaluator<PredicateVars, ActionVars> = (variables: PredicateVars & ActionVars) => Resolve;

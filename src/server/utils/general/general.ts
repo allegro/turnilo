@@ -17,7 +17,8 @@
 
 import { Request } from "express";
 import * as Q from "q";
-import { AppSettings, User } from "../../../common/models/index";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import { User } from "../../../common/models/user/user";
 import { GetSettingsOptions } from "../settings-manager/settings-manager";
 
 export interface SwivRequest extends Request {

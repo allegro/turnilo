@@ -16,8 +16,10 @@
  */
 
 import { $, SortExpression } from "plywood";
-import { Dimension, SplitCombine, Splits } from "../../models";
+import { Dimension } from "../../models/dimension/dimension";
 import { Manifest, Resolve } from "../../models/manifest/manifest";
+import { SplitCombine } from "../../models/split-combine/split-combine";
+import { Splits } from "../../models/splits/splits";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";

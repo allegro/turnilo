@@ -19,12 +19,9 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-
-import { EssenceFixtures } from "../../../common/models/fixtures";
+import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { mockReactComponent, renderIntoDocument } from "../../utils/test-utils";
-
 import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
-
 import { DimensionMeasurePanel } from "./dimension-measure-panel";
 
 describe("DimensionMeasurePanel", () => {

@@ -16,7 +16,11 @@
  */
 
 import * as React from "react";
-import { Clicker, Dimension, Essence, SplitCombine, Stage, VisStrategy } from "../../../common/models";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence, VisStrategy } from "../../../common/models/essence/essence";
+import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";

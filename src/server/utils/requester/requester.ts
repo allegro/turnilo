@@ -18,7 +18,7 @@
 import { concurrentLimitRequesterFactory, retryRequesterFactory, verboseRequesterFactory } from "plywood";
 import { PlywoodRequester } from "plywood-base-api";
 import { DruidRequestDecorator, druidRequesterFactory, Protocol } from "plywood-druid-requester";
-import { SupportedType } from "../../../common/models/index";
+import { SupportedType } from "../../../common/models/cluster/cluster";
 
 export interface ProperRequesterOptions {
   type: SupportedType;

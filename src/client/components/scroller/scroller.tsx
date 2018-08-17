@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Stage } from "../../../common/models";
+import { Stage } from "../../../common/models/stage/stage";
 import { firstUp } from "../../../common/utils/string/string";
 import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";
 import "./scroller.scss";

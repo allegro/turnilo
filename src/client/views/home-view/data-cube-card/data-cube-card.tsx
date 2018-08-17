@@ -16,8 +16,8 @@
  */
 
 import * as React from "react";
-import { SvgIcon } from "../../../components/index";
 import { MarkdownNode } from "../../../components/markdown-node/markdown-node";
+import { SvgIcon } from "../../../components/svg-icon/svg-icon";
 import { STRINGS } from "../../../config/constants";
 import "./data-cube-card.scss";
 

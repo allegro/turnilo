@@ -17,7 +17,9 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { AppSettingsJS, DataCube, TimekeeperJS } from "../common/models";
+import { AppSettingsJS } from "../common/models/app-settings/app-settings";
+import { DataCube } from "../common/models/data-cube/data-cube";
+import { TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { Loader } from "./components/loader/loader";
 import "./main.scss";
 import { addErrorMonitor } from "./utils/error-monitor/error-monitor";
@@ -50,7 +52,8 @@ var version = config.version;
 
 require.ensure([], require => {
   const { Ajax } = require("./utils/ajax/ajax");
-  const { AppSettings, Timekeeper } = require("../common/models/index");
+  const { Timekeeper } = require("../common/models/timekeeper/timekeeper");
+  const { AppSettings } = require("../common/models/app-settings/app-settings");
   const { MANIFESTS } = require("../common/manifests/index");
   const { SwivApplication } = require("./applications/swiv-application/swiv-application");
 

@@ -21,10 +21,10 @@ import * as http from "http";
 import * as nock from "nock";
 import * as Q from "q";
 import * as supertest from "supertest";
-import { AppSettings } from "../../../common/models";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { AppSettingsFixtures } from "../../../common/models/app-settings/app-settings.fixtures";
 import { ClusterFixtures } from "../../../common/models/cluster/cluster.fixtures";
-import { SwivRequest } from "../../utils";
+import { SwivRequest } from "../../utils/general/general";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 import * as healthRouter from "./health";
 

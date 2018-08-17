@@ -17,7 +17,12 @@
 
 import { $, Dataset, r, SortExpression } from "plywood";
 import * as React from "react";
-import { Clicker, Dimension, Essence, Filter, FilterClause, FilterMode, SupportedAction, Timekeeper } from "../../../common/models/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence } from "../../../common/models/essence/essence";
+import { FilterClause, SupportedAction } from "../../../common/models/filter-clause/filter-clause";
+import { Filter, FilterMode } from "../../../common/models/filter/filter";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { collect, Fn } from "../../../common/utils/general/general";
 import { SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";

@@ -17,7 +17,11 @@
 
 import { Dataset } from "plywood";
 import { Fn } from "../../utils/general/general";
-import { Clicker, DeviceSize, Essence, Stage, Timekeeper } from "../index";
+import { Clicker } from "../clicker/clicker";
+import { DeviceSize } from "../device/device";
+import { Essence } from "../essence/essence";
+import { Stage } from "../stage/stage";
+import { Timekeeper } from "../timekeeper/timekeeper";
 
 export interface VisualizationProps {
   clicker: Clicker;

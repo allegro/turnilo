@@ -19,7 +19,8 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
+import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
+import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { FilterTile } from "./filter-tile";
 

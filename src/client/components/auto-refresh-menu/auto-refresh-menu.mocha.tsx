@@ -18,7 +18,8 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DataCubeFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
+import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
+import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { AutoRefreshMenu } from "./auto-refresh-menu";
 

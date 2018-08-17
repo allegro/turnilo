@@ -16,7 +16,12 @@
  */
 
 import * as React from "react";
-import { Clicker, Dimension, DragPosition, Essence, Stage, Timekeeper } from "../../../common/models/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { DragPosition } from "../../../common/models/drag-position/drag-position";
+import { Essence } from "../../../common/models/essence/essence";
+import { Stage } from "../../../common/models/stage/stage";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../common/utils/general/general";
 import { NumberFilterMenu } from "../number-filter-menu/number-filter-menu";
 import { StringFilterMenu } from "../string-filter-menu/string-filter-menu";

@@ -22,30 +22,35 @@ import { Dataset, Datum, NumberBucketExpression, NumberRange, NumberRangeJS, Ply
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence } from "../../../common/models/essence/essence";
+import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { Filter } from "../../../common/models/filter/filter";
 import { getLineChartTicks } from "../../../common/models/granularity/granularity";
-import { DatasetLoad, Dimension, Essence, Filter, FilterClause, Measure, MeasureDerivation, SplitCombine, Splits, Stage, Timekeeper, VisualizationProps } from "../../../common/models/index";
-import { JSXNode } from "../../../common/utils";
+import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
+import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Splits } from "../../../common/models/splits/splits";
+import { Stage } from "../../../common/models/stage/stage";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
 import { union } from "../../../common/utils/plywood/range";
 import { DisplayYear } from "../../../common/utils/time/time";
-import {
-  ChartLine,
-  ColorEntry,
-  Delta,
-  GlobalEventListener,
-  GridLines,
-  Highlighter,
-  HoverMultiBubble,
-  LineChartAxis,
-  MeasureBubbleContent,
-  SegmentActionButtons,
-  SegmentBubble,
-  VerticalAxis,
-  VisMeasureLabel
-} from "../../components/index";
+import { ChartLine } from "../../components/chart-line/chart-line";
+import { Delta } from "../../components/delta/delta";
+import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
+import { GridLines } from "../../components/grid-lines/grid-lines";
+import { Highlighter } from "../../components/highlighter/highlighter";
+import { ColorEntry, HoverMultiBubble } from "../../components/hover-multi-bubble/hover-multi-bubble";
+import { LineChartAxis } from "../../components/line-chart-axis/line-chart-axis";
+import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
+import { SegmentActionButtons } from "../../components/segment-action-buttons/segment-action-buttons";
+import { SegmentBubble } from "../../components/segment-bubble/segment-bubble";
+import { VerticalAxis } from "../../components/vertical-axis/vertical-axis";
+import { VisMeasureLabel } from "../../components/vis-measure-label/vis-measure-label";
 import { SPLIT, VIS_H_PADDING } from "../../config/constants";
-import { escapeKey, getXFromEvent } from "../../utils/dom/dom";
+import { escapeKey, getXFromEvent, JSXNode } from "../../utils/dom/dom";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./line-chart.scss";
 import Linear = d3.scale.Linear;

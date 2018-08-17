@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { DragPosition } from "../../../common/models/index";
+import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { FancyDragIndicator } from "./fancy-drag-indicator";
 

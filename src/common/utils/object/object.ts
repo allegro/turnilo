@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {  isTruthy } from "..";
+import { isTruthy } from "../general/general";
 
 export function extend(source: any, target: any): any {
   for (let key in source) {

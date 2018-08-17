@@ -18,7 +18,7 @@
 import { Timezone } from "chronoshift";
 import { Response, Router } from "express";
 import { Dataset, Expression, PlywoodValue } from "plywood";
-import { SwivRequest } from "../../utils/index";
+import { SwivRequest } from "../../utils/general/general";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 
 var router = Router();

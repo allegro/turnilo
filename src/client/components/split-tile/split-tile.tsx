@@ -18,7 +18,12 @@
 import * as Q from "q";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Clicker, Dimension, DragPosition, Essence, SplitCombine, Stage, VisStrategy } from "../../../common/models/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { DragPosition } from "../../../common/models/drag-position/drag-position";
+import { Essence, VisStrategy } from "../../../common/models/essence/essence";
+import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Stage } from "../../../common/models/stage/stage";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";

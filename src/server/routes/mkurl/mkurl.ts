@@ -17,10 +17,10 @@
 
 import { Response, Router } from "express";
 import { MANIFESTS } from "../../../common/manifests";
-import { Essence } from "../../../common/models/index";
+import { Essence } from "../../../common/models/essence/essence";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { definitionConverters, ViewDefinitionVersion } from "../../../common/view-definitions";
-import { SwivRequest } from "../../utils/index";
+import { SwivRequest } from "../../utils/general/general";
 import { GetSettingsOptions } from "../../utils/settings-manager/settings-manager";
 
 const router = Router();

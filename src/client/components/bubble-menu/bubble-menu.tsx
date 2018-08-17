@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { Stage } from "../../../common/models/index";
+import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { clamp, classNames, escapeKey, isInside, uniqueId } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";

@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Colors } from "../../models";
+import { Colors } from "../../models/colors/colors";
 
 export interface LegendDefinition {
   dimension: string;

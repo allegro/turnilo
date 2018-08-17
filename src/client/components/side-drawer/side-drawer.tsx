@@ -17,7 +17,9 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Customization, DataCube, User } from "../../../common/models";
+import { Customization } from "../../../common/models/customization/customization";
+import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { User } from "../../../common/models/user/user";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";

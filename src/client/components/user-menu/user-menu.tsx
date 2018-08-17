@@ -16,7 +16,9 @@
  */
 
 import * as React from "react";
-import { Customization, Stage, User } from "../../../common/models/index";
+import { Customization } from "../../../common/models/customization/customization";
+import { Stage } from "../../../common/models/stage/stage";
+import { User } from "../../../common/models/user/user";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";

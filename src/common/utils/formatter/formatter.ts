@@ -20,8 +20,10 @@ import * as numeral from "numeral";
 
 import { $, LiteralExpression, NumberRange, TimeRange, TimeRangeExpression } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
+import { Dimension } from "../../models/dimension/dimension";
+import { FilterClause, FilterSelection } from "../../models/filter-clause/filter-clause";
+import { Filter } from "../../models/filter/filter";
 
-import { Dimension, Filter, FilterClause, FilterSelection } from "../../models";
 import { DisplayYear, formatTimeRange } from "../../utils/time/time";
 
 export type Formatter = (n: number) => string;

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Colors, DataCube, Splits } from "../../models";
+import { Colors } from "../../models/colors/colors";
+import { DataCube } from "../../models/data-cube/data-cube";
+import { Splits } from "../../models/splits/splits";
 import { RulesEvaluator } from "./rules-evaluator";
 import { Action, Predicate, RulesEvaluatorBuilder, RulesEvaluatorBuilderEmpty } from "./rules-evaluator-builder";
 

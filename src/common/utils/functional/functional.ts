@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isTruthy } from "..";
+import { isTruthy } from "../general/general";
 
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, S, R> = (arg: T, arg2: S) => R;

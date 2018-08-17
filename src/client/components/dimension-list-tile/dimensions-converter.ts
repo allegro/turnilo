@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dimension } from "../../../common/models";
+import { Dimension } from "../../../common/models/dimension/dimension";
 import { DimensionGroup, DimensionOrGroupVisitor } from "../../../common/models/dimension/dimension-group";
 
 export type DimensionOrGroupForView = DimensionForView | DimensionGroupForView;

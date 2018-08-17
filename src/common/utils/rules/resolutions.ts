@@ -15,7 +15,10 @@
  */
 
 import { OrderedSet } from "immutable";
-import { DataCube, Resolution, SplitCombine, Splits } from "../../models";
+import { DataCube } from "../../models/data-cube/data-cube";
+import { Resolution } from "../../models/manifest/manifest";
+import { SplitCombine } from "../../models/split-combine/split-combine";
+import { Splits } from "../../models/splits/splits";
 
 export class Resolutions {
   static someDimensions = (dataCube: DataCube): Resolution[] => {
