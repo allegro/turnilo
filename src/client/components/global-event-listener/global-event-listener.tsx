@@ -21,7 +21,7 @@ import { enterKey, escapeKey, leftKey, rightKey } from "../../utils/dom/dom";
 
 export interface GlobalEventListenerProps {
   resize?: () => void;
-  scroll?: () => void;
+  scroll?: (e: MouseEvent) => void;
   mouseDown?: (e: MouseEvent) => void;
   mouseMove?: (e: MouseEvent) => void;
   mouseUp?: (e: MouseEvent) => void;
@@ -108,8 +108,8 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
     if (this.props.resize) this.props.resize();
   }
 
-  onScroll() {
-    if (this.props.scroll) this.props.scroll();
+  onScroll(e: MouseEvent) {
+    if (this.props.scroll) this.props.scroll(e);
   }
 
   onMousedown(e: MouseEvent) {

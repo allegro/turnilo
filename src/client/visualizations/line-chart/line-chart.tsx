@@ -727,15 +727,16 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return ranges.reduce((a: PlywoodRange, b: PlywoodRange) => (a && b) ? a.extend(b) : (a || b));
   }
 
-  hideBubble() {
-    const { hoverRange, hoverMeasure } = this.state;
+  scrollCharts(scrollEvent: MouseEvent) {
+    const { scrollTop, scrollLeft } = scrollEvent.target as Element;
 
-    if (!hoverRange || !hoverMeasure) return;
-
-    this.setState({
+    this.setState(state => ({
+      ...state,
+      scrollLeft,
+      scrollTop,
       hoverRange: null,
       hoverMeasure: null
-    });
+    }));
   }
 
   renderInternals() {
@@ -784,7 +785,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     return <div className="internals line-chart-inner">
       <GlobalEventListener
-        scroll={this.hideBubble.bind(this)}
+        scroll={this.scrollCharts.bind(this)}
       />
       <div
         className="measure-line-charts"
