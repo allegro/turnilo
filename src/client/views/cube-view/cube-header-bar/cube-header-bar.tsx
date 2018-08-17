@@ -18,9 +18,10 @@
 import { Duration, Timezone } from "chronoshift";
 import { immutableEqual } from "immutable-class";
 import * as React from "react";
-import { Clicker, Customization, DataCube, Essence, ExternalView, Timekeeper, User } from "../../../../common/models";
+import { Clicker, Customization, DataCube, Essence, Timekeeper, User } from "../../../../common/models";
 import { Fn } from "../../../../common/utils";
-import { AutoRefreshMenu, HilukMenu, SettingsMenu, SvgIcon, UserMenu } from "../../../components";
+import { AutoRefreshMenu, ShareMenu, SvgIcon, TimezoneMenu } from "../../../components";
+import { DebugMenu } from "../../../components/debug-menu/debug-menu";
 import { InfoBubble } from "../../../components/info-bubble/info-bubble";
 import { classNames } from "../../../utils/dom/dom";
 import { DataSetWithTabOptions } from "../cube-view";
@@ -30,7 +31,6 @@ export interface CubeHeaderBarProps {
   clicker: Clicker;
   essence: Essence;
   timekeeper: Timekeeper;
-  user?: User;
   onNavClick: Fn;
   getCubeViewHash?: (essence: Essence, withPrefix?: boolean) => string;
   refreshMaxTime?: Fn;
@@ -39,18 +39,15 @@ export interface CubeHeaderBarProps {
   openViewDefinitionModal?: Fn;
   customization?: Customization;
   getDownloadableDataset?: () => DataSetWithTabOptions;
-  addEssenceToCollection?: () => void;
   changeTimezone?: (timezone: Timezone) => void;
-  timezone?: Timezone;
-  stateful: boolean;
 }
 
 export interface CubeHeaderBarState {
-  hilukMenuOpenOn?: Element;
-  autoRefreshMenuOpenOn?: Element;
+  shareMenuAnchor?: Element;
+  autoRefreshMenuAnchor?: Element;
   autoRefreshRate?: Duration;
-  settingsMenuOpenOn?: Element;
-  userMenuOpenOn?: Element;
+  timezoneMenuAnchor?: Element;
+  debugMenuAnchor?: Element;
   animating?: boolean;
 }
 
@@ -58,17 +55,14 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   public mounted: boolean;
   private autoRefreshTimer: number;
 
-  constructor(props: CubeHeaderBarProps) {
-    super(props);
-    this.state = {
-      hilukMenuOpenOn: null,
-      autoRefreshMenuOpenOn: null,
-      autoRefreshRate: null,
-      settingsMenuOpenOn: null,
-      userMenuOpenOn: null,
-      animating: false
-    };
-  }
+  state: CubeHeaderBarState = {
+    shareMenuAnchor: null,
+    autoRefreshMenuAnchor: null,
+    autoRefreshRate: null,
+    timezoneMenuAnchor: null,
+    debugMenuAnchor: null,
+    animating: false
+  };
 
   componentDidMount() {
     this.mounted = true;
@@ -127,81 +121,48 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     }
   }
 
-  // Share menu ("hiluk" = share in Hebrew, kind of)
-
-  onHilukMenuClick(e: MouseEvent) {
-    const { hilukMenuOpenOn } = this.state;
-    if (hilukMenuOpenOn) return this.onHilukMenuClose();
-    this.setState({
-      hilukMenuOpenOn: e.target as Element
-    });
+  toggleShareMenu = (e: React.MouseEvent<Element>) => {
+    const { shareMenuAnchor } = this.state;
+    shareMenuAnchor ? this.closeShareMenu() : this.openShareMenu(e.currentTarget);
   }
 
-  onHilukMenuClose() {
-    this.setState({
-      hilukMenuOpenOn: null
-    });
-  }
+  openShareMenu = (anchor: Element) => this.setState({ shareMenuAnchor: anchor });
 
-  renderHilukMenu() {
-    const { essence, timekeeper, getCubeViewHash, customization, openRawDataModal, openViewDefinitionModal, getDownloadableDataset, addEssenceToCollection, stateful } = this.props;
-    const { hilukMenuOpenOn } = this.state;
-    if (!hilukMenuOpenOn) return null;
+  closeShareMenu = () => this.setState({ shareMenuAnchor: null });
 
-    let externalViews: ExternalView[] = null;
-    if (customization && customization.externalViews) {
-      externalViews = customization.externalViews;
-    }
+  renderShareMenu() {
+    const { essence, timekeeper, getCubeViewHash, getDownloadableDataset } = this.props;
+    const { shareMenuAnchor } = this.state;
+    if (!shareMenuAnchor) return null;
 
-    let onAddEssenceToCollectionClick: any = null;
-    if (stateful) {
-      onAddEssenceToCollectionClick = () => {
-        this.setState({
-          hilukMenuOpenOn: null
-        });
-        addEssenceToCollection();
-      };
-    }
-
-    return <HilukMenu
+    return <ShareMenu
       essence={essence}
       timekeeper={timekeeper}
-      openOn={hilukMenuOpenOn}
-      onClose={this.onHilukMenuClose.bind(this)}
+      openOn={shareMenuAnchor}
+      onClose={this.closeShareMenu}
       getCubeViewHash={getCubeViewHash}
-      openRawDataModal={openRawDataModal}
-      openViewDefinitionModal={openViewDefinitionModal}
-      externalViews={externalViews}
       getDownloadableDataset={getDownloadableDataset}
-      addEssenceToCollection={onAddEssenceToCollectionClick}
     />;
   }
 
-  // Auto Refresh menu
-
-  onAutoRefreshMenuClick(e: MouseEvent) {
-    const { autoRefreshMenuOpenOn } = this.state;
-    if (autoRefreshMenuOpenOn) return this.onAutoRefreshMenuClose();
-    this.setState({
-      autoRefreshMenuOpenOn: e.target as Element
-    });
+  toggleAutoRefreshMenu = (e: React.MouseEvent<Element>) => {
+    const { autoRefreshMenuAnchor } = this.state;
+    autoRefreshMenuAnchor ? this.closeAutoRefreshMenu() : this.openAutoRefreshMenu(e.currentTarget);
   }
 
-  onAutoRefreshMenuClose() {
-    this.setState({
-      autoRefreshMenuOpenOn: null
-    });
-  }
+  openAutoRefreshMenu = (anchor: Element) => this.setState({ autoRefreshMenuAnchor: anchor });
+
+  closeAutoRefreshMenu = () => this.setState({ autoRefreshMenuAnchor: null });
 
   renderAutoRefreshMenu() {
     const { refreshMaxTime, essence, timekeeper } = this.props;
-    const { autoRefreshMenuOpenOn, autoRefreshRate } = this.state;
-    if (!autoRefreshMenuOpenOn) return null;
+    const { autoRefreshMenuAnchor, autoRefreshRate } = this.state;
+    if (!autoRefreshMenuAnchor) return null;
 
     return <AutoRefreshMenu
       timekeeper={timekeeper}
-      openOn={autoRefreshMenuOpenOn}
-      onClose={this.onAutoRefreshMenuClose.bind(this)}
+      openOn={autoRefreshMenuAnchor}
+      onClose={this.closeAutoRefreshMenu.bind(this)}
       autoRefreshRate={autoRefreshRate}
       setAutoRefreshRate={this.setAutoRefreshRate.bind(this)}
       refreshMaxTime={refreshMaxTime}
@@ -210,72 +171,48 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     />;
   }
 
-  // User menu
-
-  onUserMenuClick(e: MouseEvent) {
-    const { userMenuOpenOn } = this.state;
-    if (userMenuOpenOn) return this.onUserMenuClose();
-    this.setState({
-      userMenuOpenOn: e.target as Element
-    });
+  toggleTimezoneMenu = (e: React.MouseEvent<Element>) => {
+    const { timezoneMenuAnchor } = this.state;
+    timezoneMenuAnchor ? this.closeTimezoneMenu() : this.openTimezoneMenu(e.currentTarget);
   }
 
-  onUserMenuClose() {
-    this.setState({
-      userMenuOpenOn: null
-    });
-  }
+  openTimezoneMenu = (anchor: Element) => this.setState({ timezoneMenuAnchor: anchor });
 
-  renderUserMenu() {
-    const { user, customization } = this.props;
-    const { userMenuOpenOn } = this.state;
-    if (!userMenuOpenOn) return null;
+  closeTimezoneMenu = () => this.setState({ timezoneMenuAnchor: null });
 
-    return <UserMenu
-      openOn={userMenuOpenOn}
-      onClose={this.onUserMenuClose.bind(this)}
-      user={user}
-      customization={customization}
-    />;
-  }
+  renderTimezoneMenu() {
+    const { changeTimezone, essence: { timezone }, customization } = this.props;
+    const { timezoneMenuAnchor } = this.state;
+    if (!timezoneMenuAnchor) return null;
 
-  // Settings menu
-
-  onSettingsMenuClick(e: MouseEvent) {
-    const { settingsMenuOpenOn } = this.state;
-    if (settingsMenuOpenOn) return this.onSettingsMenuClose();
-
-    if (e.metaKey && e.altKey) {
-      console.log(this.props.essence.toJS());
-      return;
-    }
-
-    this.setState({
-      settingsMenuOpenOn: e.target as Element
-    });
-  }
-
-  onSettingsMenuClose() {
-    this.setState({
-      settingsMenuOpenOn: null
-    });
-  }
-
-  renderSettingsMenu() {
-    const { changeTimezone, timezone, customization, essence, user, stateful } = this.props;
-    const { settingsMenuOpenOn } = this.state;
-    if (!settingsMenuOpenOn) return null;
-
-    return <SettingsMenu
-      dataCube={essence.dataCube}
-      user={user}
+    return <TimezoneMenu
       timezone={timezone}
       timezones={customization.getTimezones()}
       changeTimezone={changeTimezone}
-      openOn={settingsMenuOpenOn}
-      onClose={this.onSettingsMenuClose.bind(this)}
-      stateful={stateful}
+      openOn={timezoneMenuAnchor}
+      onClose={this.closeTimezoneMenu}
     />;
+  }
+
+  toggleDebugMenu = (e: React.MouseEvent<Element>) => {
+    const { debugMenuAnchor } = this.state;
+    debugMenuAnchor ? this.closeDebugMenu() : this.openDebugMenu(e.currentTarget);
+  }
+
+  openDebugMenu = (anchor: Element) => this.setState({ debugMenuAnchor: anchor });
+
+  closeDebugMenu = () => this.setState({ debugMenuAnchor: null });
+
+  renderDebugMenu() {
+    const { debugMenuAnchor } = this.state;
+    if (!debugMenuAnchor) return null;
+
+    const { openRawDataModal, openViewDefinitionModal } = this.props;
+    return <DebugMenu
+      openRawDataModal={openRawDataModal}
+      openViewDefinitionModal={openViewDefinitionModal}
+      openOn={debugMenuAnchor}
+      onClose={this.closeDebugMenu}/>;
   }
 
   render() {
@@ -291,27 +228,27 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     return <header className="cube-header-bar" style={headerStyle}>
       {this.renderLeftBar()}
       {this.renderRightBar()}
-      {this.renderHilukMenu()}
+      {this.renderShareMenu()}
       {this.renderAutoRefreshMenu()}
-      {this.renderSettingsMenu()}
-      {this.renderUserMenu()}
+      {this.renderTimezoneMenu()}
+      {this.renderDebugMenu()}
     </header>;
   }
 
   private renderRightBar(): JSX.Element {
     return <div className="right-bar">
-      <div className={classNames("icon-button", "auto-refresh", { refreshing: this.state.animating })} onClick={this.onAutoRefreshMenuClick.bind(this)}>
-        <SvgIcon className="auto-refresh-icon" svg={require("../../../icons/full-refresh.svg")}/>
+      <div className="text-button" onClick={this.toggleTimezoneMenu}>
+        {this.props.essence.timezone.toString()}
       </div>
-      <div className="icon-button hiluk" onClick={this.onHilukMenuClick.bind(this)}>
-        <SvgIcon className="hiluk-icon" svg={require("../../../icons/full-hiluk.svg")}/>
+      <div className={classNames("icon-button", "auto-refresh", { refreshing: this.state.animating })} onClick={this.toggleAutoRefreshMenu}>
+        <SvgIcon svg={require("../../../icons/full-refresh.svg")}/>
       </div>
-      <div className="icon-button settings" onClick={this.onSettingsMenuClick.bind(this)}>
-        <SvgIcon className="settings-icon" svg={require("../../../icons/full-settings.svg")}/>
+      <div className="icon-button" onClick={this.toggleShareMenu}>
+        <SvgIcon svg={require("../../../icons/full-hiluk.svg")}/>
       </div>
-      {this.props.user && <div className="icon-button user" onClick={this.onUserMenuClick.bind(this)}>
-        <SvgIcon svg={require("../../../icons/full-user.svg")}/>
-      </div>}
+      <div className="icon-button" onClick={this.toggleDebugMenu}>
+        <SvgIcon svg={require("../../../icons/full-settings.svg")}/>
+      </div>
     </div>;
   }
 

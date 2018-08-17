@@ -28,7 +28,6 @@ import { replaceHash } from "../../utils/url/url";
 import { CubeView } from "../../views/cube-view/cube-view";
 import { HomeView } from "../../views/home-view/home-view";
 import { NoDataView } from "../../views/no-data-view/no-data-view";
-import { SettingsView } from "../../views/settings-view/settings-view";
 import "./swiv-application.scss";
 
 export interface SwivApplicationProps {
@@ -49,16 +48,13 @@ export interface SwivApplicationState {
   viewType?: ViewType;
   viewHash?: string;
   showAboutModal?: boolean;
-  showAddTileModal?: boolean;
-  essenceToAddToACollection?: Essence;
   cubeViewSupervisor?: ViewSupervisor;
 }
 
-export type ViewType = "home" | "cube" | "settings" | "no-data";
+export type ViewType = "home" | "cube" | "no-data";
 
 export const HOME: ViewType = "home";
 export const CUBE: ViewType = "cube";
-export const SETTINGS: ViewType = "settings";
 export const NO_DATA: ViewType = "no-data";
 
 export class SwivApplication extends React.Component<SwivApplicationProps, SwivApplicationState> {
@@ -89,7 +85,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     const hash = window.location.hash;
     let viewType = this.getViewTypeFromHash(hash);
 
-    if (viewType !== SETTINGS && !dataCubes.length) {
+    if (!dataCubes.length) {
       window.location.hash = "";
 
       this.setState({
@@ -188,8 +184,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     const { dataCubes } = appSettings;
     const viewType = this.parseHash(hash)[0];
 
-    if (viewType === SETTINGS && user && user.allow["settings"]) return SETTINGS;
-
     if (!dataCubes || !dataCubes.length) return NO_DATA;
 
     if (!viewType || viewType === HOME) return HOME;
@@ -276,19 +270,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   onAboutModalClose() {
     this.setState({
       showAboutModal: false
-    });
-  }
-
-  onSettingsChange(newSettings: AppSettings) {
-    this.setState({
-      appSettings: newSettings
-    });
-  }
-
-  addEssenceToCollection(essence: Essence) {
-    this.setState({
-      essenceToAddToACollection: essence,
-      showAddTileModal: true
     });
   }
 
@@ -383,16 +364,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           customization={customization}
           transitionFnSlot={this.sideBarHrefFn}
           supervisor={cubeViewSupervisor}
-          addEssenceToCollection={this.addEssenceToCollection.bind(this)}
           stateful={stateful}
-        />;
-
-      case SETTINGS:
-        return <SettingsView
-          user={user}
-          onNavClick={this.sideDrawerOpen.bind(this, true)}
-          onSettingsChange={this.onSettingsChange.bind(this)}
-          customization={customization}
         />;
 
       default:
