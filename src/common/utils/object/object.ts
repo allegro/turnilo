@@ -26,7 +26,7 @@ export function extend(source: any, target: any): any {
 }
 
 export function omitFalsyValues<T>(obj: T): Partial<T> {
-  return Object.keys(obj).reduce<Partial<T>>((res, key: keyof T) => {
+  return Object.keys(obj).reduce<Partial<T>>((res, key: keyof T & string) => {
     if (isTruthy(obj[key])) {
       res[key] = obj[key];
     }
