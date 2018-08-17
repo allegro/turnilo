@@ -81,14 +81,13 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
   }
 
   render() {
-    var { selectedOption, onSelectOption, filterOptions } = this.props;
-    const FilterDropdown = Dropdown.specialize<FilterOption>();
+    const { selectedOption, filterOptions } = this.props;
 
-    var options = filterOptions || FILTER_OPTIONS;
-    var selectedItem = options.filter(o => o.value === selectedOption)[0] || options[0];
+    const options = filterOptions || FILTER_OPTIONS;
+    const selectedItem = options.filter(o => o.value === selectedOption)[0] || options[0];
 
     return <div className="filter-options-dropdown">
-      <FilterDropdown
+      <Dropdown<FilterOption>
         menuClassName="filter-options"
         items={options}
         selectedItem={selectedItem}

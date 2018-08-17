@@ -30,18 +30,16 @@ import { ImmutableDropdown } from "./immutable-dropdown";
 const ITEMS = [{ value: "value1", label: "label1" }, { value: "value2", label: "label2" }];
 
 describe("ImmutableDropdown", () => {
-  var component: any;
-  var node: any;
-  var onChange: any;
+  let component: any;
+  let node: any;
+  let onChange: any;
 
   beforeEach(() => {
 
     onChange = sinon.spy();
 
-    var MyDropdown = ImmutableDropdown.specialize<ListItem>();
-
     component = renderIntoDocument(
-      <MyDropdown
+      <ImmutableDropdown<ListItem>
         instance={DataCubeFixtures.twitter()}
         path={"clusterName"}
         label="Cluster"
@@ -69,7 +67,7 @@ describe("ImmutableDropdown", () => {
 
     TestUtils.Simulate.click(node);
 
-    var items = TestUtils.scryRenderedDOMComponentsWithClass(component, "dropdown-item");
+    const items = TestUtils.scryRenderedDOMComponentsWithClass(component, "dropdown-item");
 
     TestUtils.Simulate.click(items[1]);
 

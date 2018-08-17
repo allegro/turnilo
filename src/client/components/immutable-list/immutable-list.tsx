@@ -39,13 +39,6 @@ export interface ImmutableListState<T> {
 
 export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, ImmutableListState<T>> {
 
-  // Allows usage in TSX :
-  // const MyList = ImmutableList.specialize<MyImmutableClass>();
-  // then : <MyList ... />
-  static specialize<U>() {
-    return ImmutableList as { new(props: ImmutableListProps<U>): ImmutableList<U>; };
-  }
-
   constructor(props: ImmutableListProps<T>) {
     super(props);
     this.state = {};
