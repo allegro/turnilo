@@ -15,10 +15,10 @@
  */
 
 import * as React from "react";
-import { BubbleMenu } from "..";
-import { Stage } from "../../../common/models";
-import { Fn } from "../../../common/utils";
+import { Stage } from "../../../common/models/stage/stage";
+import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
+import { BubbleMenu } from "../bubble-menu/bubble-menu";
 
 export interface DebugMenuProps {
   openOn: Element;

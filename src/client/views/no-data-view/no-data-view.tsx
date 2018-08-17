@@ -16,9 +16,11 @@
  */
 
 import * as React from "react";
-import { AppSettings, Customization, User } from "../../../common/models/index";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
+import { Customization } from "../../../common/models/customization/customization";
+import { User } from "../../../common/models/user/user";
 import { Fn } from "../../../common/utils/general/general";
-import { SvgIcon } from "../../components/index";
+import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { STRINGS } from "../../config/constants";
 import { NoDataHeaderBar } from "./no-data-header-bar/no-data-header-bar";
 import "./no-data-view.scss";

@@ -15,7 +15,10 @@
  */
 
 import { AndExpression, Expression, OverlapExpression, TimeBucketExpression } from "plywood";
-import { DataCube, Essence, EssenceJS, FilterJS, Manifest } from "../../models";
+import { DataCube } from "../../models/data-cube/data-cube";
+import { Essence, EssenceJS } from "../../models/essence/essence";
+import { FilterJS } from "../../models/filter/filter";
+import { Manifest } from "../../models/manifest/manifest";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 
 export class ViewDefinitionConverter2 implements ViewDefinitionConverter<EssenceJS, Essence> {

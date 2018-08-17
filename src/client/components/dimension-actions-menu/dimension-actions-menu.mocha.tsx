@@ -18,7 +18,9 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionFixtures, EssenceFixtures, StageFixtures } from "../../../common/models/fixtures";
+import { DimensionFixtures } from "../../../common/models/dimension/dimension.fixtures";
+import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
+import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { DimensionActionsMenu } from "./dimension-actions-menu";
 

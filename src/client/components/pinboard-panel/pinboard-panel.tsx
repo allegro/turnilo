@@ -17,7 +17,11 @@
 
 import { SortExpression } from "plywood";
 import * as React from "react";
-import { Clicker, Colors, Essence, SortOn, Timekeeper, VisStrategy } from "../../../common/models/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Colors } from "../../../common/models/colors/colors";
+import { Essence, VisStrategy } from "../../../common/models/essence/essence";
+import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { STRINGS } from "../../config/constants";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionTile } from "../dimension-tile/dimension-tile";

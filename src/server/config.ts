@@ -18,11 +18,15 @@
 import * as nopt from "nopt";
 import * as path from "path";
 import { LOGGER, NULL_LOGGER } from "../common/logger/logger";
-import { AppSettings, Cluster, DataCube, SupportedType } from "../common/models/index";
+import { AppSettings } from "../common/models/app-settings/app-settings";
+import { Cluster, SupportedType } from "../common/models/cluster/cluster";
+import { DataCube } from "../common/models/data-cube/data-cube";
 import { arraySum } from "../common/utils/general/general";
 import { appSettingsToYAML } from "../common/utils/yaml-helper/yaml-helper";
-import { ServerSettings } from "./models/index";
-import { loadFileSync, SettingsManager, SettingsStore } from "./utils/index";
+import { ServerSettings } from "./models/server-settings/server-settings";
+import { loadFileSync } from "./utils/file/file";
+import { SettingsManager } from "./utils/settings-manager/settings-manager";
+import { SettingsStore } from "./utils/settings-store/settings-store";
 
 const AUTH_MODULE_VERSION = 1;
 const PACKAGE_FILE = path.join(__dirname, "../../package.json");

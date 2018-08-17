@@ -16,9 +16,12 @@
  */
 
 import * as React from "react";
-import { Customization, DataCube, User } from "../../../common/models";
-import { Fn } from "../../../common/utils";
-import { ClearableInput, SvgIcon } from "../../components";
+import { Customization } from "../../../common/models/customization/customization";
+import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { User } from "../../../common/models/user/user";
+import { Fn } from "../../../common/utils/general/general";
+import { ClearableInput } from "../../components/clearable-input/clearable-input";
+import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { DataCubeCard } from "./data-cube-card/data-cube-card";

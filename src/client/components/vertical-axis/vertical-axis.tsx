@@ -16,7 +16,8 @@
  */
 
 import * as React from "react";
-import { Measure, Stage } from "../../../common/models/index";
+import { Measure } from "../../../common/models/measure/measure";
+import { Stage } from "../../../common/models/stage/stage";
 import { formatterFromData } from "../../../common/utils/formatter/formatter";
 import { roundToHalfPx } from "../../utils/dom/dom";
 import "./vertical-axis.scss";

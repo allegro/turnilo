@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Filter } from "..";
 import { LineChart } from "../../../client/visualizations/line-chart/line-chart";
 import { Table } from "../../../client/visualizations/table/table";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
+import { Filter } from "../filter/filter";
 import { Highlight } from "./highlight";
 
 export class HighlightFixtures {

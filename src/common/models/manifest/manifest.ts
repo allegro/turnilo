@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-import { Colors, Measure, Splits } from "../";
 import { VisualizationDependentEvaluator } from "../../utils/rules/visualization-dependent-evaluator";
+import { Colors } from "../colors/colors";
+import { Measure } from "../measure/measure";
+import { Splits } from "../splits/splits";
 
 export interface Adjustment {
   selectedMeasures?: Measure[];

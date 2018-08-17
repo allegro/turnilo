@@ -20,8 +20,8 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { EssenceFixtures } from "../../../common/models/fixtures";
-import { SortOn } from "../../../common/models/index";
+import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
+import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { PinboardMeasureTile } from "./pinboard-measure-tile";
 

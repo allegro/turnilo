@@ -17,7 +17,7 @@
 
 import * as React from "react";
 import { GEO_MANIFEST } from "../../../common/manifests/geo/geo";
-import { VisualizationProps } from "../../../common/models/index";
+import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./geo.scss";
 

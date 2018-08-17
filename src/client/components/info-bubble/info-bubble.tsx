@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { Stage } from "../../../common/models";
+import { Stage } from "../../../common/models/stage/stage";
 import { classNames } from "../../utils/dom/dom";
 import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
 import { MarkdownNode } from "../markdown-node/markdown-node";

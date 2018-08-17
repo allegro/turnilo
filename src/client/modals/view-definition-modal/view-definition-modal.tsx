@@ -18,11 +18,12 @@ import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { githubGist } from "react-syntax-highlighter/styles/hljs";
+import { Essence } from "../../../common/models/essence/essence";
+import { Fn, makeTitle } from "../../../common/utils/general/general";
 
-import { Essence } from "../../../common/models";
-import { Fn, makeTitle } from "../../../common/utils";
 import { DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter, ViewDefinition, ViewDefinitionVersion } from "../../../common/view-definitions";
-import { Button, Modal } from "../../components";
+import { Button } from "../../components/button/button";
+import { Modal } from "../../components/modal/modal";
 import { STRINGS } from "../../config/constants";
 
 import "./view-definition-modal.scss";

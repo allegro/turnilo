@@ -17,8 +17,13 @@
 
 import { $, Dataset, Expression, ply, RefExpression } from "plywood";
 import * as React from "react";
-import { CurrentFilter, DatasetLoad, Essence, Measure, MeasureDerivation, PreviousFilter, Timekeeper, VisualizationProps } from "../../../common/models/index";
-import { GlobalEventListener, Loader, QueryError } from "../../components/index";
+import { Essence } from "../../../common/models/essence/essence";
+import { CurrentFilter, Measure, MeasureDerivation, PreviousFilter } from "../../../common/models/measure/measure";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
+import { Loader } from "../../components/loader/loader";
+import { QueryError } from "../../components/query-error/query-error";
 import { SPLIT } from "../../config/constants";
 import "./base-visualization.scss";
 

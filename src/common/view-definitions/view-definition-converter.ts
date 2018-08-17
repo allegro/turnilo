@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { DataCube, Essence, Manifest } from "../models";
+import { DataCube } from "../models/data-cube/data-cube";
+import { Essence } from "../models/essence/essence";
+import { Manifest } from "../models/manifest/manifest";
 
 export interface ViewDefinitionConverter<VD extends object, E extends Essence> {
   version: number;

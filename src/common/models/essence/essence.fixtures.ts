@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from "chronoshift";
+import { Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
-import { Colors, Filter, Highlight, Splits } from "../";
 import { MANIFESTS } from "../../manifests";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
 import { SortDirection } from "../../view-definitions/version-3/split-definition";
+import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
+import { Filter } from "../filter/filter";
+import { Highlight } from "../highlight/highlight";
 import { SplitCombineFixtures } from "../split-combine/split-combine.fixtures";
+import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
 import { Essence, EssenceContext, EssenceJS } from "./essence";
 

@@ -17,7 +17,13 @@
 
 import { LiteralExpression, NumberRange, Set } from "plywood";
 import * as React from "react";
-import { Clicker, Dimension, Essence, Filter, FilterClause, FilterMode, Stage, Timekeeper } from "../../../common/models/index";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Dimension } from "../../../common/models/dimension/dimension";
+import { Essence } from "../../../common/models/essence/essence";
+import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { Filter, FilterMode } from "../../../common/models/filter/filter";
+import { Stage } from "../../../common/models/stage/stage";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";

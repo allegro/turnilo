@@ -20,7 +20,6 @@ import { Equalable, immutableArraysEqual } from "immutable-class";
 
 // The most generic function
 export type Fn = () => void;
-export type JSXNode = JSX.Element | string;
 
 var objectHasOwnProperty = Object.prototype.hasOwnProperty;
 

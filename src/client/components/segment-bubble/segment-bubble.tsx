@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import { JSXNode } from "../../../common/utils";
+import { JSXNode } from "../../utils/dom/dom";
 import { clamp } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";
 import { Shpitz } from "../shpitz/shpitz";

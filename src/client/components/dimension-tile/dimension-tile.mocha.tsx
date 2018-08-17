@@ -19,7 +19,10 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionFixtures, EssenceFixtures, SortOnFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
+import { DimensionFixtures } from "../../../common/models/dimension/dimension.fixtures";
+import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
+import { SortOnFixtures } from "../../../common/models/sort-on/sort-on.fixtures";
+import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { DimensionTile } from "./dimension-tile";
 

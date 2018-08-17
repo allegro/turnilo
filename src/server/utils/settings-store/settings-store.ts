@@ -19,10 +19,10 @@ import * as fs from "fs-promise";
 import * as yaml from "js-yaml";
 import * as Q from "q";
 import { MANIFESTS } from "../../../common/manifests/index";
-import { AppSettings } from "../../../common/models/index";
+import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { inlineVars } from "../../../common/utils/general/general";
 import { appSettingsToYAML } from "../../../common/utils/yaml-helper/yaml-helper";
-import { Format } from "../../models/index";
+import { Format } from "../../models/settings-location/settings-location";
 
 function readSettingsFactory(filepath: string, format: Format, inline = false) {
   return () => {

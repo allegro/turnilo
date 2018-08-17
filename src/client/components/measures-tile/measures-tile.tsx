@@ -18,7 +18,9 @@
 import { OrderedSet } from "immutable";
 import * as React from "react";
 import { Component, MouseEvent } from "react";
-import { Clicker, Essence, Measure } from "../../../common/models";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { Essence } from "../../../common/models/essence/essence";
+import { Measure } from "../../../common/models/measure/measure";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import { SearchableTile } from "../searchable-tile/searchable-tile";

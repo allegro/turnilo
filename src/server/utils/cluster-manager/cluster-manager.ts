@@ -22,7 +22,7 @@ import { PlywoodRequester } from "plywood-base-api";
 import { DruidRequestDecorator } from "plywood-druid-requester";
 import * as Q from "q";
 import { Logger } from "../../../common/logger/logger";
-import { Cluster } from "../../../common/models/index";
+import { Cluster } from "../../../common/models/cluster/cluster";
 import { properRequesterFactory } from "../requester/requester";
 
 const CONNECTION_RETRY_TIMEOUT = 20000;

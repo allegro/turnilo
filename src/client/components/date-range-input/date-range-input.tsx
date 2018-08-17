@@ -18,13 +18,7 @@
 import { Timezone } from "chronoshift";
 import "moment-timezone";
 import * as React from "react";
-import {
-  combineDateAndTimeIntoMoment,
-  getWallTimeDateOnlyString,
-  getWallTimeTimeOnlyString,
-  maybeFullyDefinedDate,
-  maybeFullyDefinedTime
-} from "../../../common/utils";
+import { combineDateAndTimeIntoMoment, getWallTimeDateOnlyString, getWallTimeTimeOnlyString, maybeFullyDefinedDate, maybeFullyDefinedTime } from "../../../common/utils/time/time";
 import "./date-range-input.scss";
 
 export interface DateRangeInputProps {

@@ -15,7 +15,7 @@
  */
 
 import { OrderedSet } from "immutable";
-import { DataCube } from "../../models";
+import { DataCube } from "../../models/data-cube/data-cube";
 import { Actions } from "./actions";
 import { Predicates } from "./predicates";
 import { RulesEvaluator } from "./rules-evaluator";

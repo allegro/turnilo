@@ -18,7 +18,9 @@
 import { expect } from "chai";
 import * as React from "react";
 import * as TestUtils from "react-dom/test-utils";
-import { DimensionFixtures, EssenceFixtures, TimekeeperFixtures } from "../../../common/models/fixtures";
+import { DimensionFixtures } from "../../../common/models/dimension/dimension.fixtures";
+import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
+import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { NumberRangePicker } from "./number-range-picker";
 

@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
-import { Delta } from "../../components";
+import { Delta } from "../../components/delta/delta";
 import "./total.scss";
 
 interface PreviousProps {

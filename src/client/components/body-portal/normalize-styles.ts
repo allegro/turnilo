@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { omitFalsyValues } from "../../../common/utils";
+import { omitFalsyValues } from "../../../common/utils/object/object";
 
 function normalizeDimension(dimension: number | string): string | undefined {
   if (typeof dimension === "number") {

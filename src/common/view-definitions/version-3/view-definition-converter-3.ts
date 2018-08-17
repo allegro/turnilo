@@ -15,7 +15,10 @@
  */
 
 import { Timezone } from "chronoshift";
-import { DataCube, Essence, Filter, Manifest } from "../../models";
+import { DataCube } from "../../models/data-cube/data-cube";
+import { Essence } from "../../models/essence/essence";
+import { Filter } from "../../models/filter/filter";
+import { Manifest } from "../../models/manifest/manifest";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 import { filterDefinitionConverter } from "./filter-definition";
 import { highlightConverter } from "./highlight-definition";
