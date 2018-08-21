@@ -58,9 +58,9 @@ function initialState(essence: Essence, dimension: Dimension): PresetTimeTabStat
 
 export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTimeTabState> {
 
-  setFilter = (filterPeriod: TimeFilterPeriod, filterDuration: string) => this.setState(state => ({ ...state, filterDuration, filterPeriod }));
+  setFilter = (filterPeriod: TimeFilterPeriod, filterDuration: string) => this.setState({ filterDuration, filterPeriod });
 
-  setTimeShift = (timeShift: string) => this.setState(state => ({ ...state, timeShift }));
+  setTimeShift = (timeShift: string) => this.setState({ timeShift });
 
   state: PresetTimeTabState = initialState(this.props.essence, this.props.dimension);
 

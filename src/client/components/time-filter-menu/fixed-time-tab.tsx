@@ -64,11 +64,11 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     };
   }
 
-  onStartChange = (start: Date) => this.setState(state => ({ ...state, start }));
+  onStartChange = (start: Date) => this.setState({ start });
 
-  onEndChange = (end: Date) => this.setState(state => ({ ...state, end }));
+  onEndChange = (end: Date) => this.setState({ end });
 
-  setTimeShift = (shift: string) => this.setState(state => ({ ...state, shift }));
+  setTimeShift = (shift: string) => this.setState({ shift });
 
   state: FixedTimeTabState = this.initialState();
 
