@@ -82,8 +82,12 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   }
 
   validateFilter(): boolean {
-    const newFilter = this.constructFixedFilter();
-    return newFilter && !this.props.essence.filter.equals(newFilter);
+    try {
+      const newFilter = this.constructFixedFilter();
+      return !this.props.essence.filter.equals(newFilter);
+    } catch {
+      return false;
+    }
   }
 
   constructFixedFilter(): Filter {
@@ -98,9 +102,8 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
 
     if (start && end && start < end) {
       return filter.setSelection(dimension.expression, r(TimeRange.fromJS({ start, end })));
-    } else {
-      return null;
     }
+    throw new Error("Couldn't construct time filter");
   }
 
   constructTimeShift(): TimeShift {
@@ -111,9 +114,6 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     if (!this.validate()) return;
     const { clicker, onClose } = this.props;
     const newFilter = this.constructFixedFilter();
-    if (!newFilter) {
-      throw new Error("Couldn't construct time filter");
-    }
     clicker.changeFilter(newFilter);
     const timeShift = this.constructTimeShift();
     clicker.changeComparisonShift(timeShift);
