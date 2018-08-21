@@ -20,7 +20,7 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { TimeShift, isValidTimeShift } from "../../../common/models/time-shift/time-shift";
+import { isValidTimeShift, TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../common/utils/general/general";
 import { isValidDuration } from "../../../common/utils/plywood/duration";

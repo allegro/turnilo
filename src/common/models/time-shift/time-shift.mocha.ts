@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
-import { TimeShift, isValidTimeShift } from "./time-shift";
+import { isValidTimeShift, TimeShift } from "./time-shift";
 
 describe("TimeShift", () => {
   it("is an immutable class", () => {
