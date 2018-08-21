@@ -14,11 +14,31 @@
  * limitations under the License.
  */
 
+import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
-import { TimeShift } from "./time-shift";
+import { TimeShift, isValidTimeShift } from "./time-shift";
 
-describe("Collection", () => {
+describe("TimeShift", () => {
   it("is an immutable class", () => {
     testImmutableClass(TimeShift, [null, "P1D"]);
+  });
+});
+
+describe("isValidTimeShift", () => {
+  it("should return false for invalid timeshifts", () => {
+
+    expect(isValidTimeShift(""), "empty string").to.be.false;
+    expect(isValidTimeShift("1234"), "number").to.be.false;
+    expect(isValidTimeShift("1D"), "duration without leading P").to.be.false;
+    expect(isValidTimeShift("P1H"), "hour duration without T").to.be.false;
+  });
+
+  it("should return true for valid timeshifts", () => {
+    expect(isValidTimeShift(null), "<null>").to.be.true;
+    expect(isValidTimeShift("PT1H"), "one hour").to.be.true;
+    expect(isValidTimeShift("P2D"), "two days").to.be.true;
+    expect(isValidTimeShift("P3W"), "three weeks").to.be.true;
+    expect(isValidTimeShift("P2M"), "two months").to.be.true;
+    expect(isValidTimeShift("P5Y"), "five years").to.be.true;
   });
 });

@@ -17,6 +17,15 @@
 import { Duration } from "chronoshift";
 import { Instance } from "immutable-class";
 
+export function isValidTimeShift(input: string): boolean {
+  try {
+    TimeShift.fromJS(input);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export type TimeShiftValue = Duration;
 
 export type TimeShiftJS = string;
@@ -41,7 +50,7 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
   constructor(public value: Duration) {
   }
 
-  equals(other: TimeShift): boolean {
+  equals(other: any): boolean {
     if (!TimeShift.isTimeShift(other)) {
       return false;
     }
