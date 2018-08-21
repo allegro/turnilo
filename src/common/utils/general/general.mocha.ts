@@ -18,7 +18,7 @@
 import { expect } from "chai";
 
 import { List } from "immutable";
-import { ensureOneOf, inlineVars, makeTitle, moveInList, verifyUrlSafeName } from "./general";
+import { ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, verifyUrlSafeName } from "./general";
 
 describe("General", () => {
   describe("moveInList", () => {
@@ -140,4 +140,26 @@ describe("General", () => {
 
   });
 
+  describe("isDecimalInteger", () => {
+    it("should return false for invalid numbers", () => {
+      expect(isDecimalInteger(null), "<null>").to.be.false;
+      expect(isDecimalInteger(""), "empty string").to.be.false;
+      expect(isDecimalInteger("foobar"), "foobar").to.be.false;
+    });
+
+    it("should return false for floats", () => {
+      expect(isDecimalInteger("1.23"), "float").to.be.false;
+      expect(isDecimalInteger("1e4"), "scientific notation").to.be.false;
+    });
+
+    it("should return false for non decimal numbers", () => {
+      expect(isDecimalInteger("0xdeadbeef"), "hex").to.be.false;
+      expect(isDecimalInteger("0o1234"), "octal").to.be.false;
+      expect(isDecimalInteger("0b010101"), "binary").to.be.false;
+    });
+
+    it("should return false for numbers with additional characters", () => {
+      expect(isDecimalInteger("1234foobar"), "1234foobar").to.be.false;
+    });
+  });
 });
