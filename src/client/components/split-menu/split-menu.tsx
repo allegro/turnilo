@@ -147,9 +147,9 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       inside={inside}
     >
       <GranularityPicker
-      dimension={dimension}
-      granularityChange={this.saveGranularity}
-      granularity={granularity}
+        dimension={dimension}
+        granularityChange={this.saveGranularity}
+        granularity={granularity}
       />
       <SortDropdown
         sort={sort}
