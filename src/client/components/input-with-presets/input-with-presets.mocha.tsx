@@ -24,7 +24,7 @@ import { InputWithPresets, Preset } from "./input-with-presets";
 const PRESETS: Preset[] = [{
   name: "A", identity: "a"
 }, {
-  name: "A", identity: "b"
+  name: "B", identity: "b"
 }];
 
 function renderInputWithPresets(selected: string, errorMessage?: string) {
@@ -35,7 +35,6 @@ describe("<InputWithPresets>", () => {
 
   it("should select one of <ButtonGroup> members if one of presets selected", () => {
     const inputWithPresets = renderInputWithPresets("a");
-
     const buttonGroup = inputWithPresets.find(ButtonGroup);
     const groupMembers = buttonGroup.prop("groupMembers");
     const selectedMember = groupMembers.find(({ isSelected }) => isSelected);
@@ -45,9 +44,15 @@ describe("<InputWithPresets>", () => {
     expect(selectedMember.key, "members key is equal to selected prop").to.equal("a");
   });
 
+  it("should hide input if one of presets selected", () => {
+    const inputWithPresets = renderInputWithPresets("a");
+    const input = inputWithPresets.find("input");
+
+    expect(input.length).to.equal(0);
+  });
+
   it("should set input for custom value", () => {
     const inputWithPresets = renderInputWithPresets("c");
-
     const input = inputWithPresets.find("input");
 
     expect(input.length).to.equal(1);
