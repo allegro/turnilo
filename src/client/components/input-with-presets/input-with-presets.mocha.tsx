@@ -33,16 +33,16 @@ function renderInputWithPresets(selected: string, errorMessage?: string) {
 
 describe("<InputWithPresets>", () => {
 
-  it("should pass selection to <ButtonGroup> if preset is selected", () => {
+  it("should select one of <ButtonGroup> members if one of presets selected", () => {
     const inputWithPresets = renderInputWithPresets("a");
 
     const buttonGroup = inputWithPresets.find(ButtonGroup);
     const groupMembers = buttonGroup.prop("groupMembers");
     const selectedMember = groupMembers.find(({ isSelected }) => isSelected);
 
-    expect(selectedMember).to.exist;
-    expect(selectedMember.title).to.equal("A");
-    expect(selectedMember.key).to.equal("a");
+    expect(selectedMember, "one member is selected").to.exist;
+    expect(selectedMember.title, "member has correct title").to.equal("A");
+    expect(selectedMember.key, "members key is equal to selected prop").to.equal("a");
   });
 
   it("should set input for custom value", () => {
