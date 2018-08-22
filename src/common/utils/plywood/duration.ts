@@ -27,8 +27,7 @@ export function isValidDuration(input: string): boolean {
 
 export function isFloorableDuration(input: string): boolean {
   try {
-    const duration = Duration.fromJS(input);
-    return duration.isFloorable();
+    return Duration.fromJS(input).isFloorable();
   } catch {
     return false;
   }
