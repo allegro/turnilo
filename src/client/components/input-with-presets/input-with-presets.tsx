@@ -48,6 +48,7 @@ export const InputWithPresets: React.SFC<InputWithPresetsProps> = ({ errorMessag
   }));
 
   const customSelected = selected !== undefined && !presets.some(({ identity }) => identity === selected);
+  const customValueNotEmpty = customSelected && selected !== "";
 
   const customButton: GroupMember = {
     key: "custom",
@@ -65,6 +66,6 @@ export const InputWithPresets: React.SFC<InputWithPresetsProps> = ({ errorMessag
                               placeholder={placeholder}
                               value={selected}
                               onChange={changeCustomValue}/>}
-    {selected !== "" && errorMessage && <span className="error-message">{errorMessage}</span>}
+    {customValueNotEmpty && errorMessage && <span className="error-message">{errorMessage}</span>}
   </React.Fragment>;
 };
