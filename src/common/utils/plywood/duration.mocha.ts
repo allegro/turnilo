@@ -19,9 +19,7 @@ import { isFloorableDuration, isValidDuration } from "./duration";
 
 describe("Chronoshift Duration", () => {
   describe("isValidDuration", () => {
-
     it("should return false for invalid durations", () => {
-
       expect(isValidDuration(null), "<null>").to.be.false;
       expect(isValidDuration(""), "empty string").to.be.false;
       expect(isValidDuration("1234"), "number").to.be.false;
@@ -39,7 +37,6 @@ describe("Chronoshift Duration", () => {
   });
 
   describe("isFloorableDuration", () => {
-
     it("should return false for invalid durations", () => {
       expect(isFloorableDuration(null), "<null>").to.be.false;
       expect(isFloorableDuration(""), "empty string").to.be.false;

@@ -26,7 +26,6 @@ describe("TimeShift", () => {
 
 describe("isValidTimeShift", () => {
   it("should return false for invalid timeshifts", () => {
-
     expect(isValidTimeShift(""), "empty string").to.be.false;
     expect(isValidTimeShift("1234"), "number").to.be.false;
     expect(isValidTimeShift("1D"), "duration without leading P").to.be.false;
