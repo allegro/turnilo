@@ -186,9 +186,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
     var sortOns = [SortOn.fromDimension(dimension)].concat(essence.dataCube.measures.mapMeasures(SortOn.fromMeasure));
 
-    const SortOnDropdown = Dropdown.specialize<SortOn>();
-
-    return <SortOnDropdown
+    return <Dropdown<SortOn>
       label={STRINGS.sortBy}
       items={sortOns}
       selectedItem={this.getSortOn()}
@@ -225,9 +223,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
     if (includeNone) items.unshift(null);
 
-    const MyDropdown = Dropdown.specialize<number | string>();
-
-    return <MyDropdown
+    return <Dropdown<number | string>
       label={STRINGS.limit}
       items={items}
       selectedItem={selectedItem}

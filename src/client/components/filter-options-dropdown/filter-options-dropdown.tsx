@@ -61,42 +61,37 @@ export interface FilterOptionsDropdownProps {
   filterOptions?: FilterOption[];
 }
 
-export interface FilterOptionsDropdownState {
-}
-
-export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdownProps, FilterOptionsDropdownState> {
+export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdownProps> {
   static getFilterOptions(...filterTypes: string[]) {
     return FILTER_OPTIONS.filter(option => filterTypes.indexOf(option.value) !== -1);
   }
 
-  onSelectOption(option: FilterOption) {
+  onSelectOption = (option: FilterOption) => {
     this.props.onSelectOption(option.value);
   }
 
-  renderFilterOption(option: FilterOption) {
+  renderFilterOption = (option: FilterOption) => {
     return <span className="filter-option">
-      <SvgIcon className="icon" svg={option.svg} />
+      <SvgIcon className="icon" svg={option.svg}/>
       <span className="option-label">{option.label}</span>
     </span>;
   }
 
   render() {
-    var { selectedOption, onSelectOption, filterOptions } = this.props;
-    const FilterDropdown = Dropdown.specialize<FilterOption>();
+    const { selectedOption, filterOptions = FILTER_OPTIONS } = this.props;
 
-    var options = filterOptions || FILTER_OPTIONS;
-    var selectedItem = options.filter(o => o.value === selectedOption)[0] || options[0];
+    const selectedItem = filterOptions.find(({ value }) => value === selectedOption) || filterOptions[0];
 
     return <div className="filter-options-dropdown">
-      <FilterDropdown
+      <Dropdown<FilterOption>
         menuClassName="filter-options"
-        items={options}
+        items={filterOptions}
         selectedItem={selectedItem}
         equal={(a, b) => a.value === b.value}
         keyItem={d => d.value}
-        renderItem={this.renderFilterOption.bind(this)}
-        renderSelectedItem={d => <SvgIcon className="icon" svg={d.svg} />}
-        onSelect={this.onSelectOption.bind(this)}
+        renderItem={this.renderFilterOption}
+        renderSelectedItem={d => <SvgIcon className="icon" svg={d.svg}/>}
+        onSelect={this.onSelectOption}
       />
     </div>;
   }

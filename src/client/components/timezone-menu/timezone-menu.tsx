@@ -31,8 +31,6 @@ export interface TimezoneMenuProps {
   timezones?: Timezone[];
 }
 
-const TimezoneDropdown = Dropdown.specialize<Timezone>();
-
 export const TimezoneMenu: React.SFC<TimezoneMenuProps> = ({ timezone, timezones, onClose, changeTimezone, openOn }) => {
 
   function selectTimezone(newTimezone: Timezone) {
@@ -47,12 +45,12 @@ export const TimezoneMenu: React.SFC<TimezoneMenuProps> = ({ timezone, timezones
     openOn={openOn}
     onClose={onClose}
   >
-    <TimezoneDropdown
+    <Dropdown<Timezone>
       label={STRINGS.timezone}
       selectedItem={timezone}
       renderItem={(d: Timezone) => d.toString().replace(/_/g, " ")}
       items={timezones}
       onSelect={selectTimezone}
-    />
+      />
   </BubbleMenu>;
 };
