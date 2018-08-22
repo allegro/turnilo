@@ -117,7 +117,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
 
     const { essence, timekeeper } = this.props;
     if (preset && preset.type !== "TIME_RANGE") {
-      let { value } = preset as LiteralExpression;
+      const { value } = preset as LiteralExpression;
       if (!Set.isSet(value)) throw new Error(`Unrecognized filter value ${value}`);
       if (value.size() !== 1) throw new Error("Can only filter on one time");
 
