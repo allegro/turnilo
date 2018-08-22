@@ -51,7 +51,8 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     const dimensionExpression = dimension.expression;
     const selectedTimeRangeSet = essence.getEffectiveFilter(timekeeper).getLiteralSet(dimensionExpression);
     let selectedTimeRange = (selectedTimeRangeSet && selectedTimeRangeSet.size() === 1) ? selectedTimeRangeSet.elements[0] : null;
-    if (selectedTimeRange && !Range.isRange(selectedTimeRange)) {
+    const isSelectedRangeValid = selectedTimeRange && !Range.isRange(selectedTimeRange);
+    if (isSelectedRangeValid) {
       selectedTimeRange = new TimeRange({
         start: second.shift(selectedTimeRange, essence.timezone, -1),
         end: second.shift(selectedTimeRange, essence.timezone, 1)
@@ -92,18 +93,20 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
 
   constructFixedFilter(): Filter {
     let { start, end } = this.state;
-    const { essence, dimension } = this.props;
-    const { filter } = essence;
-    const { timezone } = essence;
+    const { essence: { filter, timezone }, dimension } = this.props;
 
-    if (start && !end) {
+    if (!start) {
+      throw new Error("Couldn't construct time filter");
+    }
+
+    if (!end) {
       end = day.shift(start, timezone, 1);
     }
 
-    if (start && end && start < end) {
-      return filter.setSelection(dimension.expression, r(TimeRange.fromJS({ start, end })));
+    if (start >= end) {
+      throw new Error("Couldn't construct time filter");
     }
-    throw new Error("Couldn't construct time filter");
+    return filter.setSelection(dimension.expression, r(TimeRange.fromJS({ start, end })));
   }
 
   constructTimeShift(): TimeShift {
@@ -113,10 +116,8 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   onOkClick = () => {
     if (!this.validate()) return;
     const { clicker, onClose } = this.props;
-    const newFilter = this.constructFixedFilter();
-    clicker.changeFilter(newFilter);
-    const timeShift = this.constructTimeShift();
-    clicker.changeComparisonShift(timeShift);
+    clicker.changeFilter(this.constructFixedFilter());
+    clicker.changeComparisonShift(this.constructTimeShift());
     onClose();
   }
 
