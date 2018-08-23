@@ -38,18 +38,10 @@ export interface ImmutableDropdownState {
 }
 
 export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps<T>, ImmutableDropdownState> {
-  // Allows usage in TSX :
-  // const MyDropdown = ImmutableDropdown.specialize<MyImmutableClass>();
-  // then : <MyDropdown ... />
-  static specialize<U>() {
-    return ImmutableDropdown as { new(props: ImmutableDropdownProps<U>): ImmutableDropdown<U>; };
-  }
 
   static simpleGenerator(instance: any, changeFn: ChangeFn) {
     return (name: string, items: ListItem[]) => {
-      let MyDropDown = ImmutableDropdown.specialize<ListItem>();
-
-      return <MyDropDown
+      return <ImmutableDropdown<ListItem>
         items={items}
         instance={instance}
         path={name}
@@ -74,13 +66,11 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
 
   render() {
     const { label, items, equal, renderItem, keyItem, instance, path } = this.props;
-    const MyDropDown = Dropdown.specialize<T>();
-
     const selectedValue = ImmutableUtils.getProperty(instance, path);
 
     const selectedItem: T = items.filter(item => keyItem(item) === selectedValue)[0] || items[0];
 
-    return <MyDropDown
+    return <Dropdown<T>
       className="immutable-dropdown input"
       label={label}
       items={items}

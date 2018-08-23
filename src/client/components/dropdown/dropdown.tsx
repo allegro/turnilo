@@ -46,13 +46,6 @@ export interface DropdownState {
 
 export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState> {
 
-  // Allows usage in TSX :
-  // const MyDropdown = Dropdown.specialize<MyItemClass>();
-  // then : <MyDropdown ... />
-  static specialize<U>() {
-    return Dropdown as { new(props: DropdownProps<U>): Dropdown<U>; };
-  }
-
   constructor(props: DropdownProps<T>) {
     super(props);
     this.state = {
