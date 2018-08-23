@@ -69,7 +69,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       expression,
       sort,
       limit: limitAction && limitAction.value,
-      granularity: granularityToString(bucketAction as Granularity),
+      granularity: bucketAction && granularityToString(bucketAction as Granularity),
       colors: colorsDimensionMatch ? colors : null
     });
   }
