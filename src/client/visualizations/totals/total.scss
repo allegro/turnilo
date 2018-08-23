@@ -20,7 +20,6 @@ $total-width: 176px;
 
 .total {
   display: inline-block;
-  min-width: $total-width;
   text-align: center;
   padding: 0 10px;
   margin-bottom: 34px;
@@ -37,6 +36,7 @@ $total-width: 176px;
 
   .measure-value {
     cursor: default;
+    min-width: $total-width;
     font-size: 30px;
     user-select: text;
     margin-bottom: 12px;
@@ -53,6 +53,7 @@ $total-width: 176px;
 
   &:only-child {
     .measure-name {
+      max-width: none;
       font-size: 22px;
       padding-bottom: 11px;
     }
