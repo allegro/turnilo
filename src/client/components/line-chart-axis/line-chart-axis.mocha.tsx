@@ -16,30 +16,51 @@
  */
 
 import { expect } from "chai";
-import { Timezone } from "chronoshift";
+import * as d3 from "d3";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as TestUtils from "react-dom/test-utils";
-import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
-import { renderIntoDocument } from "../../utils/test-utils";
-import { LineChartAxis } from "./line-chart-axis";
+import { timeFormat } from "./line-chart-axis";
+
+const start = new Date(0);
+const hoursAfter = (hs: number) => new Date(hs * 1000 * 60 * 60);
+const scaleWithHoursAfter = (hs: number) =>
+  d3.time.scale().range([0, 100]).domain([start, hoursAfter(hs)]);
 
 describe("LineChartAxis", () => {
-  it("adds the correct class", () => {
-    var scale = {
-      tickFormat: () => {}
-    };
-    var renderedComponent = renderIntoDocument(
-      <LineChartAxis
-        scale={scale}
-        stage={StageFixtures.defaultA()}
-        ticks={[]}
-        timezone={Timezone.UTC}
-      />
-    );
+  describe("timeFormat", () => {
+    it("should format across different years", () => {
+      const formatter = timeFormat(scaleWithHoursAfter(24 * 365 * 3));
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("line-chart-axis");
+      expect(formatter(start)).to.equal(d3.time.format("%Y-%m-%d")(start));
+    });
+    it("should format across different months", () => {
+      const formatter = timeFormat(scaleWithHoursAfter(24 * 30 * 2));
+
+      expect(formatter(start)).to.equal(d3.time.format("%b %d")(start));
+    });
+    it("should format when days differ by one", () => {
+      const formatter = timeFormat(scaleWithHoursAfter(24));
+
+      expect(formatter(start)).to.equal(d3.time.format("%a %d, %H %p")(start));
+    });
+    it("should format across different days", () => {
+      const formatter = timeFormat(scaleWithHoursAfter(24 * 5));
+
+      expect(formatter(start)).to.equal(d3.time.format("%a %d")(start));
+    });
+    it("should format across different hours", () => {
+      const formatter = timeFormat(scaleWithHoursAfter(12));
+
+      expect(formatter(start)).to.equal(d3.time.format("%H %p")(start));
+    });
+    it("should format with smaller than hour difference", () => {
+      const formatter = timeFormat(scaleWithHoursAfter(0.2));
+
+      expect(formatter(start)).to.equal(d3.time.format("%H:%M %p")(start));
+    });
+    it("should format correctly with not enough ticks", () => {
+      const formatter = timeFormat(scaleWithHoursAfter(0));
+
+      expect(formatter(start)).to.equal(d3.time.format("%c")(start));
+    });
   });
-
 });
