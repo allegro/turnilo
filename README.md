@@ -35,7 +35,7 @@ this is how Turnilo emerged.
 * Unified view for historical and real-time data
 * Blazingly fast
 
-![Turnilo UI](https://github.com/allegro/turnilo/raw/master/docs/images/drag-and-drop.gif)
+![Turnilo UI](https://github.com/allegro/turnilo/raw/master/docs/images/showcase.gif)
 
 ## Pre-requisites
 
