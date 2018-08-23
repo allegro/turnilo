@@ -696,8 +696,6 @@ customization:
 
 These custom links will appear in the share menu.
 
-![custom-link](./images/custom-link.png)
-
 By default, external views are opened in a new tab but you can disable this by setting `sameWindow: true`
 
 ### Timezones
