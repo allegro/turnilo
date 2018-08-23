@@ -26,10 +26,14 @@ interface PreviousProps {
 }
 
 const Previous: React.SFC<PreviousProps> = ({ currentValue, previousValue, formatter }) => {
-  return <div className="measure-value measure-value--previous">
-    {formatter(previousValue)}
-    <Delta previousValue={previousValue} currentValue={currentValue} formatter={formatter}/>
-  </div>;
+  return <React.Fragment>
+    <div className="measure-value measure-value--previous">
+      {formatter(previousValue)}
+    </div>
+    <div className="measure-delta-value">
+      <Delta previousValue={previousValue} currentValue={currentValue} formatter={formatter}/>
+    </div>
+  </React.Fragment>;
 };
 
 export interface TotalProps {
