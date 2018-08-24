@@ -37,12 +37,12 @@ function timeShiftPreviewForRange({ shiftValue, time, timezone }: Pick<TimeShift
 }
 
 export interface TimeShiftSelectorProps {
-  shiftValue?: TimeShift;
-  errorMessage?: string;
   shift: string;
   time: TimeRange;
   timezone: Timezone;
   onShiftChange: Unary<string, void>;
+  errorMessage?: string;
+  shiftValue?: TimeShift;
 }
 
 export const TimeShiftSelector: React.SFC<TimeShiftSelectorProps> = props => {

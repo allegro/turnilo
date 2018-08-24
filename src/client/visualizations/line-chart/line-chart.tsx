@@ -65,14 +65,14 @@ const MAX_HOVER_DIST = 50;
 const MAX_ASPECT_RATIO = 1; // width / height
 
 function findClosest(data: Datum[], dragDate: Date, scaleX: (v: continuousValueType) => number, continuousDimension: Dimension) {
-  var closestDatum: Datum = null;
-  var minDist = Infinity;
-  for (var datum of data) {
-    var continuousSegmentValue = datum[continuousDimension.name] as (TimeRange | NumberRange);
+  let closestDatum: Datum = null;
+  let minDist = Infinity;
+  for (const datum of data) {
+    const continuousSegmentValue = datum[continuousDimension.name] as (TimeRange | NumberRange);
     if (!continuousSegmentValue || !Range.isRange(continuousSegmentValue)) continue; // !Range.isRange => temp solution for non-bucketed reaching here
-    var mid = continuousSegmentValue.midpoint();
-    var dist = Math.abs(mid.valueOf() - dragDate.valueOf());
-    var distPx = Math.abs(scaleX(mid) - scaleX(dragDate));
+    const mid = continuousSegmentValue.midpoint();
+    const dist = Math.abs(mid.valueOf() - dragDate.valueOf());
+    const distPx = Math.abs(scaleX(mid) - scaleX(dragDate));
     if ((!closestDatum || dist < minDist) && distPx < MAX_HOVER_DIST) { // Make sure it is not too far way
       closestDatum = datum;
       minDist = dist;
@@ -113,7 +113,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
   public static id = LINE_CHART_MANIFEST.name;
 
   getDefaultState(): LineChartState {
-    var s = super.getDefaultState() as LineChartState;
+    let s = super.getDefaultState() as LineChartState;
 
     s.dragStartValue = null;
     s.dragRange = null;
@@ -125,10 +125,10 @@ export class LineChart extends BaseVisualization<LineChartState> {
   componentDidUpdate() {
     const { containerYPosition, containerXPosition } = this.state;
 
-    var node = ReactDOM.findDOMNode(this.refs["container"]);
+    const node = ReactDOM.findDOMNode(this.refs["container"]);
     if (!node) return;
 
-    var rect = node.getBoundingClientRect();
+    const rect = node.getBoundingClientRect();
 
     if (containerYPosition !== rect.top || containerXPosition !== rect.left) {
       this.setState({
@@ -139,8 +139,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   getMyEventX(e: MouseEvent): number {
-    var myDOM = ReactDOM.findDOMNode(this);
-    var rect = myDOM.getBoundingClientRect();
+    const myDOM = ReactDOM.findDOMNode(this);
+    const rect = myDOM.getBoundingClientRect();
     return getXFromEvent(e) - (rect.left + VIS_H_PADDING);
   }
 
@@ -149,7 +149,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { scaleX } = this.state;
     if (!scaleX || !clicker.dropHighlight || !clicker.changeHighlight) return;
 
-    var dragStartValue = scaleX.invert(this.getMyEventX(e));
+    const dragStartValue = scaleX.invert(this.getMyEventX(e));
     this.setState({
       dragStartValue,
       dragRange: null,
@@ -158,25 +158,25 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   onMouseMove(dataset: Dataset, measure: Measure, scaleX: any, e: MouseEvent) {
-    var { essence } = this.props;
-    var { continuousDimension, hoverRange, hoverMeasure } = this.state;
+    const { essence } = this.props;
+    const { continuousDimension, hoverRange, hoverMeasure } = this.state;
     if (!dataset) return;
 
-    var splitLength = essence.splits.length();
+    const splitLength = essence.splits.length();
 
-    var myDOM = ReactDOM.findDOMNode(this);
-    var rect = myDOM.getBoundingClientRect();
-    var dragDate = scaleX.invert(getXFromEvent(e) - (rect.left + VIS_H_PADDING));
+    const myDOM = ReactDOM.findDOMNode(this);
+    const rect = myDOM.getBoundingClientRect();
+    const dragDate = scaleX.invert(getXFromEvent(e) - (rect.left + VIS_H_PADDING));
 
-    var closestDatum: Datum;
+    let closestDatum: Datum;
     if (splitLength > 1) {
-      var flattened = dataset.flatten();
+      const flattened = dataset.flatten();
       closestDatum = findClosest(flattened.data, dragDate, scaleX, continuousDimension);
     } else {
       closestDatum = findClosest(dataset.data, dragDate, scaleX, continuousDimension);
     }
 
-    var currentHoverRange: any = closestDatum ? (closestDatum[continuousDimension.name]) : null;
+    const currentHoverRange: any = closestDatum ? (closestDatum[continuousDimension.name]) : null;
 
     if (!hoverRange || !immutableEqual(hoverRange, currentHoverRange) || measure !== hoverMeasure) {
       this.setState({
@@ -189,8 +189,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
   getDragRange(e: MouseEvent): PlywoodRange {
     const { dragStartValue, axisRange, scaleX } = this.state;
 
-    var dragEndValue = scaleX.invert(this.getMyEventX(e));
-    var rangeJS: TimeRangeJS | NumberRangeJS = null;
+    let dragEndValue = scaleX.invert(this.getMyEventX(e));
+    let rangeJS: TimeRangeJS | NumberRangeJS = null;
 
     if (dragStartValue.valueOf() === dragEndValue.valueOf()) {
       dragEndValue = TimeRange.isTimeRange(axisRange) ? new Date(dragEndValue.valueOf() + 1) : dragEndValue + 1;
@@ -209,21 +209,21 @@ export class LineChart extends BaseVisualization<LineChartState> {
   floorRange(dragRange: PlywoodRange): PlywoodRange {
     const { essence } = this.props;
     const { splits, timezone } = essence;
-    var continuousSplit = splits.last();
+    const continuousSplit = splits.last();
     if (!continuousSplit.bucketAction) return dragRange; // temp solution for non-bucketed reaching here
 
     if (TimeRange.isTimeRange(dragRange)) {
-      var timeBucketAction = continuousSplit.bucketAction as TimeBucketExpression;
-      var duration = timeBucketAction.duration;
+      const timeBucketAction = continuousSplit.bucketAction as TimeBucketExpression;
+      const duration = timeBucketAction.duration;
       return TimeRange.fromJS({
         start: duration.floor(dragRange.start, timezone),
         end: duration.shift(duration.floor(dragRange.end, timezone), timezone, 1)
       });
     } else {
-      var numberBucketAction = continuousSplit.bucketAction as NumberBucketExpression;
-      var bucketSize = numberBucketAction.size;
-      var startFloored = roundTo((dragRange as NumberRange).start, bucketSize);
-      var endFloored = roundTo((dragRange as NumberRange).end, bucketSize);
+      const numberBucketAction = continuousSplit.bucketAction as NumberBucketExpression;
+      const bucketSize = numberBucketAction.size;
+      const startFloored = roundTo((dragRange as NumberRange).start, bucketSize);
+      let endFloored = roundTo((dragRange as NumberRange).end, bucketSize);
 
       if (endFloored - startFloored < bucketSize) {
         endFloored += bucketSize;
@@ -240,7 +240,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { dragStartValue } = this.state;
     if (dragStartValue === null) return;
 
-    var dragRange = this.getDragRange(e);
+    const dragRange = this.getDragRange(e);
     this.setState({
       dragRange,
       roundDragRange: this.floorRange(dragRange)
@@ -252,14 +252,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { continuousDimension, dragStartValue, dragRange, dragOnMeasure } = this.state;
     if (dragStartValue === null) return;
 
-    var highlightRange = this.floorRange(this.getDragRange(e));
+    const highlightRange = this.floorRange(this.getDragRange(e));
     this.resetDrag();
 
     // If already highlighted and user clicks within it switches measure
     if (!dragRange && essence.highlightOn(LineChart.id)) {
-      var existingHighlightRange = essence.getSingleHighlightSet().elements[0];
+      const existingHighlightRange = essence.getSingleHighlightSet().elements[0];
       if (existingHighlightRange.contains(highlightRange.start)) {
-        var { highlight } = essence;
+        const { highlight } = essence;
         if (highlight.measure === dragOnMeasure.name) {
           clicker.dropHighlight();
         } else {
@@ -301,7 +301,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     });
   }
 
-  onMouseLeave(measure: Measure, e: MouseEvent) {
+  onMouseLeave(measure: Measure) {
     const { hoverMeasure } = this.state;
     if (hoverMeasure === measure) {
       this.setState({
@@ -319,7 +319,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       return <Highlighter highlightRange={dragRange} scaleX={scaleX}/>;
     }
     if (essence.highlightOn(LineChart.id)) {
-      var highlightRange = essence.getSingleHighlightSet().elements[0];
+      const highlightRange = essence.getSingleHighlightSet().elements[0];
       return <Highlighter highlightRange={highlightRange} scaleX={scaleX}/>;
     }
     return null;

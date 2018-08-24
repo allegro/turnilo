@@ -91,7 +91,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
       errorMessage={latestPeriod && !isValidDuration(filterDuration) && "Invalid format"}
       selected={latestPeriod ? filterDuration : undefined}
       onChange={(duration: string) => this.setFilter(TimeFilterPeriod.LATEST, duration)}
-      placeholder={STRINGS.latest}/>;
+      placeholder="Custom period"/>;
   }
 
   private renderButtonGroup(title: string, period: TimeFilterPeriod) {

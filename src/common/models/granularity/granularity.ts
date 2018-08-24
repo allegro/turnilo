@@ -63,14 +63,15 @@ function makeNumberBuckets(centerAround: number, count: number, coarse?: boolean
   let granularities: Granularity[] = [];
   let logTen = Math.log(centerAround) / Math.LN10;
   const digits = getNumberOfWholeDigits(centerAround);
+  const decimalBase = 10;
 
   while (granularities.length <= count) {
     if (!coarse) {
-      const halfStep = toSignificantDigits(5 * Math.pow(10, logTen - 1), digits);
+      const halfStep = toSignificantDigits(5 * Math.pow(decimalBase, logTen - 1), digits);
       granularities.push(granularityFromJS(halfStep));
     }
     if (granularities.length >= count) break;
-    const wholeStep = toSignificantDigits(Math.pow(10, logTen), digits);
+    const wholeStep = toSignificantDigits(Math.pow(decimalBase, logTen), digits);
     granularities.push(granularityFromJS(wholeStep));
     logTen++;
   }

@@ -96,7 +96,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     const { essence: { filter, timezone }, dimension } = this.props;
 
     if (!start) {
-      throw new Error("Couldn't construct time filter");
+      throw new Error("Couldn't construct time filter: No starting date.");
     }
 
     if (!end) {
@@ -104,7 +104,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     }
 
     if (start >= end) {
-      throw new Error("Couldn't construct time filter");
+      throw new Error("Couldn't construct time filter: Start should be earlier than end.");
     }
     return filter.setSelection(dimension.expression, r(TimeRange.fromJS({ start, end })));
   }

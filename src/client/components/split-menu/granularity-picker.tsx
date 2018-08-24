@@ -45,5 +45,6 @@ export const GranularityPicker: React.SFC<GranularityPickerProps> = ({ dimension
     selected={granularity}
     errorMessage={!isGranularityValid(dimension.kind, granularity) && "Invalid granularity format"}
     onChange={granularityChange}
+    placeholder="Custom granularity"
     presets={presets}/>;
 };
