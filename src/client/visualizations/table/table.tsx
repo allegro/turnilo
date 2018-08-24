@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
+import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { List } from "immutable";
-import { $, ApplyExpression, Datum, Direction, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
+import * as moment from "moment-timezone";
+import { $, ApplyExpression, Datum, Direction, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
@@ -50,9 +52,24 @@ const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
-function formatSegment(value: any): string {
+function formatSegment(value: any, timezone: Timezone, split?: SplitCombine): string {
   if (TimeRange.isTimeRange(value)) {
-    return value.start.toISOString();
+    const time = moment(value.start, timezone.toString()).toDate();
+    if (split && split.bucketAction instanceof TimeBucketExpression) {
+      const duration = split.bucketAction.duration;
+      switch (duration.getSingleSpan()) {
+        case "year":
+          return d3.time.format("%Y")(time);
+        case "month":
+          return d3.time.format("%Y %B")(time);
+        case "week":
+        case "day":
+          return d3.time.format("%Y-%M-%d")(time);
+        default:
+          return d3.time.format("%Y-%M-%d %H:%M %p")(time);
+      }
+    }
+    return d3.time.format("%Y-%M-%d %H:%M %p")(time);
   } else if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   }
@@ -306,7 +323,7 @@ export class Table extends BaseVisualization<TableState> {
 
   makeBackground(width: number): JSX.Element {
     return <div className="background-container">
-      <div className="background" style={{ width: width + "%" }}/>
+      <div className="background" style={{ width: width + "%" }} />
     </div>;
   }
 
@@ -401,7 +418,7 @@ export class Table extends BaseVisualization<TableState> {
         </div>,
         <div
           className={classNames("measure-name measure-delta", { hover: measure === hoverMeasure, sorted: isDeltaSorted })}
-            key={measure.getDerivedName(MeasureDerivation.DELTA)}
+          key={measure.getDerivedName(MeasureDerivation.DELTA)}
           style={{ width: measureWidth }}
         >
           <div className="title-wrap">Difference</div>
@@ -480,7 +497,7 @@ export class Table extends BaseVisualization<TableState> {
         const dimension = split ? split.getDimension(dataCube.dimensions) : null;
 
         const segmentValue = dimension ? d[dimension.name] : "";
-        const segmentName = nest ? formatSegment(segmentValue) : "Total";
+        const segmentName = nest ? formatSegment(segmentValue, essence.timezone, split) : "Total";
         const left = Math.max(0, nest - 1) * INDENT_WIDTH;
         const segmentStyle = { left, width: this.getSegmentWidth() - left, top: rowY };
         const hoverClass = d === hoverRow ? "hover" : null;
@@ -513,7 +530,7 @@ export class Table extends BaseVisualization<TableState> {
 
           const dimension = essence.dataCube.getDimensionByExpression(splits.splitCombines.get(nest - 1).expression);
 
-          highlighter = <div className="highlighter" key="highlight" style={highlighterStyle}/>;
+          highlighter = <div className="highlighter" key="highlight" style={highlighterStyle} />;
 
           highlightBubble = <SegmentBubble
             left={stage.x + stage.width / 2}
