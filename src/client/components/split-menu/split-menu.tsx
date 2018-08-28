@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-import { NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
+import { Duration } from "chronoshift";
+import { Expression, LimitExpression, NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { ContinuousDimensionKind, getGranularities, Granularity, granularityToString, updateBucketSize } from "../../../common/models/granularity/granularity";
-import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { Granularity, granularityToString, isGranularityValid } from "../../../common/models/granularity/granularity";
 import { SplitCombine } from "../../../common/models/split-combine/split-combine";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
-import { formatGranularity } from "../../../common/utils/time/time";
 import { STRINGS } from "../../config/constants";
 import { enterKey } from "../../utils/dom/dom";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
-import { ButtonGroup } from "../button-group/button-group";
-import { Dropdown } from "../dropdown/dropdown";
-import { SvgIcon } from "../svg-icon/svg-icon";
+import { GranularityPicker } from "./granularity-picker";
+import { LimitDropdown } from "./limit-dropdown";
+import { SortDropdown } from "./sort-dropdown";
 import "./split-menu.scss";
-
-function formatLimit(limit: number | string): string {
-  if (limit === "custom") return "Custom";
-  return limit === null ? "None" : String(limit);
-}
 
 export interface SplitMenuProps {
   clicker: Clicker;
@@ -52,37 +46,31 @@ export interface SplitMenuProps {
 }
 
 export interface SplitMenuState {
-  split?: SplitCombine;
+  expression?: Expression;
+  granularity?: string;
+  sort?: SortExpression;
+  limit?: number;
   colors?: Colors;
 }
 
 export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   public mounted: boolean;
 
-  constructor(props: SplitMenuProps) {
-    super(props);
-    this.state = {
-      split: null,
-      colors: null
-    };
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
-  }
+  state: SplitMenuState = {};
 
   componentWillMount() {
-    var { essence, split } = this.props;
-    var { dataCube, colors } = essence;
+    const { essence, split } = this.props;
+    const { dataCube, colors } = essence;
+    const { bucketAction, expression, sortAction: sort, limitAction } = split;
 
-    var myColors: Colors = null;
-    if (colors) {
-      var colorDimension = dataCube.getDimension(colors.dimension);
-      if (colorDimension.expression.equals(split.expression)) {
-        myColors = colors;
-      }
-    }
+    const colorsDimensionMatch = colors && dataCube.getDimension(colors.dimension).expression.equals(split.expression);
 
     this.setState({
-      split,
-      colors: myColors
+      expression,
+      sort,
+      limit: limitAction && limitAction.value,
+      granularity: bucketAction && granularityToString(bucketAction as Granularity),
+      colors: colorsDimensionMatch ? colors : null
     });
   }
 
@@ -94,205 +82,89 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
-  globalKeyDownListener(e: KeyboardEvent) {
-    if (enterKey(e)) {
-      this.onOkClick();
-    }
-  }
+  globalKeyDownListener = (e: KeyboardEvent) => enterKey(e) && this.onOkClick();
 
-  onSelectGranularity(granularity: Granularity): void {
-    var { split } = this.state;
-    var bucketAction = split.bucketAction as Granularity;
-    this.setState({
-      split: split.changeBucketAction(updateBucketSize(bucketAction, granularity))
-    });
-  }
+  saveGranularity = (granularity: string) => this.setState({ granularity });
 
-  onSelectSortOn(sortOn: SortOn): void {
-    var { split } = this.state;
-    var sortAction = split.sortAction;
-    var direction = sortAction ? sortAction.direction : SortExpression.DESCENDING;
-    this.setState({
-      split: split.changeSortExpression(new SortExpression({
-        expression: sortOn.getExpression(),
-        direction
-      }))
-    });
-  }
+  saveSort = (sort: SortExpression) => this.setState({ sort });
 
-  onToggleDirection(): void {
-    var { split } = this.state;
-    var { sortAction } = split;
-    this.setState({
-      split: split.changeSortExpression(sortAction.toggleDirection())
-    });
-  }
+  saveLimit = (limit: number, colors: Colors) => this.setState({ colors, limit });
 
-  onSelectLimit(limit: number): void {
-    var { essence } = this.props;
-    var { split } = this.state;
-    var { colors } = essence;
-
-    if (colors) {
-      colors = Colors.fromLimit(colors.dimension, limit);
-    }
-
-    this.setState({
-      split: split.changeLimit(limit),
-      colors
-    });
-  }
+  onCancelClick = () => this.props.onClose();
 
   onOkClick() {
-    if (!this.actionEnabled()) return;
-    var { clicker, essence, onClose } = this.props;
-    var { split, colors } = this.state;
-
-    clicker.changeSplits(essence.splits.replace(this.props.split, split), VisStrategy.UnfairGame, colors);
+    if (!this.validate()) return;
+    const { split: originalSplit, clicker, essence, onClose } = this.props;
+    const split = this.constructSplitCombine();
+    clicker.changeSplits(essence.splits.replace(originalSplit, split), VisStrategy.UnfairGame, this.state.colors);
     onClose();
   }
 
-  onCancelClick() {
-    var { onClose } = this.props;
-    onClose();
-  }
-
-  getSortOn(): SortOn {
-    var { essence, dimension } = this.props;
-    var { split } = this.state;
-    return SortOn.fromSortExpression(split.sortAction, essence.dataCube, dimension);
-  }
-
-  renderGranularityPicker(type: ContinuousDimensionKind) {
-    var { split } = this.state;
-    var { dimension } = this.props;
-    var selectedGran = granularityToString(split.bucketAction as Granularity);
-    const granularities = dimension.granularities || getGranularities(type, dimension.bucketedBy);
-    var buttons = granularities.map((g: Granularity) => {
-      const granularityStr = granularityToString(g);
-      return {
-        isSelected: granularityStr === selectedGran,
-        title: formatGranularity(granularityStr),
-        key: granularityStr,
-        onClick: this.onSelectGranularity.bind(this, g)
-      };
-    });
-
-    return <ButtonGroup title={STRINGS.granularity} groupMembers={buttons}/>;
-  }
-
-  renderSortDropdown() {
-    var { essence, dimension } = this.props;
-
-    var sortOns = [SortOn.fromDimension(dimension)].concat(essence.dataCube.measures.mapMeasures(SortOn.fromMeasure));
-
-    return <Dropdown<SortOn>
-      label={STRINGS.sortBy}
-      items={sortOns}
-      selectedItem={this.getSortOn()}
-      equal={SortOn.equal}
-      renderItem={SortOn.getTitle}
-      keyItem={SortOn.getName}
-      onSelect={this.onSelectSortOn.bind(this)}
-    />;
-  }
-
-  renderSortDirection() {
-    var { split } = this.state;
-    var direction = split.sortAction.direction;
-
-    return <div className="sort-direction">
-      {this.renderSortDropdown()}
-      <div className={"direction " + direction} onClick={this.onToggleDirection.bind(this)}>
-        <SvgIcon svg={require("../../icons/sort-arrow.svg")}/>
-      </div>
-    </div>;
-  }
-
-  renderLimitDropdown(includeNone: boolean) {
-    var { essence } = this.props;
-    var { split, colors } = this.state;
-    var { limitAction } = split;
-
-    var items: Array<number | string> = [5, 10, 25, 50, 100];
-    var selectedItem: number | string = limitAction ? limitAction.value : null;
-    if (colors) {
-      items = [3, 5, 7, 9, 10];
-      selectedItem = colors.values ? "custom" : colors.limit;
+  private constructGranularity(): Granularity {
+    const { dimension: { kind } } = this.props;
+    const { granularity } = this.state;
+    if (kind === "time") {
+      return new TimeBucketExpression({ duration: Duration.fromJS(granularity) });
     }
-
-    if (includeNone) items.unshift(null);
-
-    return <Dropdown<number | string>
-      label={STRINGS.limit}
-      items={items}
-      selectedItem={selectedItem}
-      renderItem={formatLimit}
-      onSelect={this.onSelectLimit.bind(this)}
-    />;
+    if (kind === "number") {
+      return new NumberBucketExpression({ size: parseInt(granularity, 10) });
+    }
+    return null;
   }
 
-  renderTimeControls() {
-    return <div>
-      {this.renderGranularityPicker("time")}
-      {this.renderSortDirection()}
-      {this.renderLimitDropdown(true)}
-    </div>;
+  private constructSplitCombine(): SplitCombine {
+    const { limit, sort, expression } = this.state;
+    return new SplitCombine({
+      expression,
+      bucketAction: this.constructGranularity(),
+      limitAction: limit && LimitExpression.fromJS({ value: limit }),
+      sortAction: sort
+    });
   }
 
-  renderNumberControls() {
-    return <div>
-      {this.renderGranularityPicker("number")}
-      {this.renderSortDirection()}
-      {this.renderLimitDropdown(true)}
-    </div>;
-  }
-
-  renderStringControls() {
-    return <div>
-      {this.renderSortDirection()}
-      {this.renderLimitDropdown(false)}
-    </div>;
-  }
-
-  actionEnabled() {
-    var originalSplit = this.props.split;
-    var originalColors = this.props.essence.colors;
-    var newSplit = this.state.split;
-    var newColors = this.state.colors;
-
-    return !originalSplit.equals(newSplit) || (originalColors && !originalColors.equals(newColors));
+  validate() {
+    const { dimension: { kind }, split: originalSplit, essence: { colors: originalColors } } = this.props;
+    if (!isGranularityValid(kind, this.state.granularity)) {
+      return false;
+    }
+    const newSplit: SplitCombine = this.constructSplitCombine();
+    return !originalSplit.equals(newSplit)
+      || (originalColors && !originalColors.equals(this.state.colors));
   }
 
   render() {
-    var { containerStage, openOn, dimension, onClose, inside } = this.props;
-    var { split } = this.state;
+    const { essence: { dataCube }, containerStage, openOn, dimension, onClose, inside } = this.props;
+    const { colors, sort, granularity, limit } = this.state;
     if (!dimension) return null;
-
-    var menuSize = Stage.fromSize(250, 240);
-
-    var menuControls: JSX.Element = null;
-    if (split.bucketAction instanceof TimeBucketExpression) {
-      menuControls = this.renderTimeControls();
-    } else if (split.bucketAction instanceof NumberBucketExpression) {
-      menuControls = this.renderNumberControls();
-    } else {
-      menuControls = this.renderStringControls();
-    }
 
     return <BubbleMenu
       className="split-menu"
       direction="down"
       containerStage={containerStage}
-      stage={menuSize}
+      stage={Stage.fromSize(250, 240)}
       openOn={openOn}
       onClose={onClose}
       inside={inside}
     >
-      {menuControls}
+      <GranularityPicker
+        dimension={dimension}
+        granularityChange={this.saveGranularity}
+        granularity={granularity}
+      />
+      <SortDropdown
+        sort={sort}
+        dataCube={dataCube}
+        dimension={dimension}
+        onChange={this.saveSort}
+      />
+      <LimitDropdown
+        colors={colors}
+        onLimitSelect={this.saveLimit}
+        limit={limit}
+        includeNone={dimension.isContinuous()}/>
       <div className="button-bar">
-        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}>{STRINGS.ok}</button>
-        <button className="cancel" onClick={this.onCancelClick.bind(this)}>{STRINGS.cancel}</button>
+        <button className="ok" onClick={this.onOkClick.bind(this)} disabled={!this.validate()}>{STRINGS.ok}</button>
+        <button className="cancel" onClick={this.onCancelClick}>{STRINGS.cancel}</button>
       </div>
     </BubbleMenu>;
   }
