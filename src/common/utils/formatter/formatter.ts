@@ -169,7 +169,7 @@ function getFormattedTimeClauseValues(clause: FilterClause, timezone: Timezone):
   }
 }
 
-function isLatestDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
+export function isLatestDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
   function isEarlierTimeRange(selection: TimeRangeExpression) {
     return selection.step < 0;
   }
@@ -180,7 +180,7 @@ function isLatestDuration(isRelative: boolean, selection: FilterSelection): sele
     && isEarlierTimeRange(selection);
 }
 
-function isCurrentDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
+export function isCurrentDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
   function isCurrentTimeRange(selection: TimeRangeExpression) {
     return selection.step === 1;
   }
@@ -191,7 +191,7 @@ function isCurrentDuration(isRelative: boolean, selection: FilterSelection): sel
     && isCurrentTimeRange(selection);
 }
 
-function isPreviousDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
+export function isPreviousDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
   function isPreviousTimeRange(selection: TimeRangeExpression) {
     return selection.step === -1;
   }

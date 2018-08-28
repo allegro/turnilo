@@ -162,3 +162,7 @@ export function pluralIfNeeded(n: number, thing: string): string {
 export function quoteNames(names: Collection.Indexed<string>): string {
   return names.map(name => `'${name}'`).join(", ");
 }
+
+export function isDecimalInteger(input: string): boolean {
+  return parseInt(input, 10) === Number(input);
+}
