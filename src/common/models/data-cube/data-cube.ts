@@ -79,7 +79,7 @@ function checkDimensionsAndMeasuresNamesUniqueness(dimensions: Dimensions, measu
     const duplicateNames = dimensionNames
       .concat(measureNames)
       .groupBy(name => name)
-      .filter(names => names.size > 1)
+      .filter(names => names.count() > 1)
       .map((names, name) => name)
       .toList();
 

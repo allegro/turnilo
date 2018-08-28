@@ -106,7 +106,7 @@ export class Splits implements Instance<SplitsValue, SplitsJS> {
   }
 
   public addSplit(split: SplitCombine): Splits {
-    var { splitCombines } = this;
+    const { splitCombines } = this;
     return this.insertByIndex(splitCombines.size, split);
   }
 

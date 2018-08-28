@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import { TimeShiftJS } from "../../models/time-shift/time-shift";
-import { FilterClauseDefinition } from "./filter-definition";
-import { HighlightDefinition } from "./highlight-definition";
-import { LegendDefinition } from "./legend-definition";
-import { MeasuresDefinitionJS } from "./measures-definition";
-import { SplitDefinition } from "./split-definition";
+import { ColorsJS } from "../../models/colors/colors";
+import { FilterJS } from "../../models/filter/filter";
+import { HighlightJS } from "../../models/highlight/highlight";
+import { SplitsJS } from "../../models/splits/splits";
+import { MeasuresDefinitionJS } from "../version-3/measures-definition";
 
-export interface ViewDefinition3 {
-  visualization: string;
-  timezone: string;
-  filters: FilterClauseDefinition[];
-  splits: SplitDefinition[];
+export interface ViewDefinition2 {
+  visualization?: string;
+  timezone?: string;
+  filter?: FilterJS;
+  splits?: SplitsJS;
   measures: MeasuresDefinitionJS;
   pinnedDimensions?: string[];
+  colors?: ColorsJS;
   pinnedSort?: string;
-  legend?: LegendDefinition;
-  highlight?: HighlightDefinition;
-  timeShift?: TimeShiftJS;
+  compare?: FilterJS;
+  highlight?: HighlightJS;
 }

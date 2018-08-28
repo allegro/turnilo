@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Iterable } from "immutable";
+import { List } from "immutable";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
 import { MeasureDerivation } from "../../../common/models/measure/measure";
@@ -74,7 +74,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     this.setState(newState);
   }
 
-  renderTotals(): Iterable<number, JSX.Element> {
+  renderTotals(): JSX.Element[] {
     const { essence } = this.props;
     const { datasetLoad: { dataset } } = this.state;
     const measures = essence.getEffectiveMeasures();
@@ -86,7 +86,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
           formatter={measure.formatFn}
           name={measure.title}
           value={null}/>;
-      });
+      }).toArray();
     }
 
     return measures.map(measure => {
@@ -100,7 +100,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
         previous={previousValue}
         formatter={measure.formatFn}
       />;
-    });
+    }).toArray();
 
   }
 

@@ -20,6 +20,7 @@ import { List, OrderedSet } from "immutable";
 import { MANIFESTS } from "../../manifests";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
+import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
 import { SortDirection } from "../../view-definitions/version-3/split-definition";
 import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
@@ -29,39 +30,44 @@ import { Highlight } from "../highlight/highlight";
 import { SplitCombineFixtures } from "../split-combine/split-combine.fixtures";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
-import { Essence, EssenceContext, EssenceJS } from "./essence";
+import { createMeasures, Essence, EssenceContext, EssenceValue } from "./essence";
+
+const defaultEssence: EssenceValue = {
+  dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
+  visualizations: MANIFESTS,
+  visualization: null,
+  timezone: Timezone.UTC,
+  pinnedDimensions: OrderedSet([]),
+  filter: null,
+  colors: null,
+  pinnedSort: null,
+  compare: null,
+  highlight: null,
+  splits: Splits.fromJS([]),
+  timeShift: null,
+  measures: createMeasures()
+};
 
 export class EssenceFixtures {
-  static noVisualisationJS(): EssenceJS {
+  static noViz(): EssenceValue {
     return {
-      visualization: "totals",
-      timezone: "Etc/UTC",
-      pinnedDimensions: [],
-      selectedMeasures: ["count"],
-      splits: [],
-      timeShift: null
+      ...defaultEssence,
+      visualization: TOTALS_MANIFEST,
+      measures: createMeasures({ isMulti: true, multi: OrderedSet(["count"]) })
     };
   }
 
-  static totalsJS(): EssenceJS {
+  static totals(): EssenceValue {
     return {
-      visualization: "totals",
-      timezone: "Etc/UTC",
-      pinnedDimensions: [],
-      selectedMeasures: [],
-      splits: [],
-      timeShift: null
+      ...defaultEssence,
+      visualization: TOTALS_MANIFEST
     };
   }
 
-  static lineChartNoSplitJS(): EssenceJS {
+  static lineChart(): EssenceValue {
     return {
-      visualization: "line-chart",
-      timezone: "Etc/UTC",
-      pinnedDimensions: [],
-      selectedMeasures: [],
-      splits: [],
-      timeShift: null
+      ...defaultEssence,
+      visualization: LINE_CHART_MANIFEST
     };
   }
 
@@ -102,9 +108,7 @@ export class EssenceFixtures {
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits(List(splitCombines)),
-      multiMeasureMode: true,
-      singleMeasure: "delta",
-      selectedMeasures: OrderedSet(["count", "added"]),
+      measures: createMeasures({ isMulti: true, single: "delta", multi: OrderedSet(["count", "added"]) }),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       colors: null,
       pinnedSort: "delta",
@@ -133,9 +137,7 @@ export class EssenceFixtures {
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
       splits: new Splits(List(splitCombines)),
-      multiMeasureMode: true,
-      singleMeasure: "delta",
-      selectedMeasures: OrderedSet(["count", "added"]),
+      measures: createMeasures({ isMulti: true, single: "delta", multi: OrderedSet(["count", "added"]) }),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       colors: new Colors({ dimension: "channel", values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
       pinnedSort: "delta",
@@ -145,14 +147,14 @@ export class EssenceFixtures {
   }
 
   static wikiTotals() {
-    return Essence.fromJS(EssenceFixtures.totalsJS(), EssenceFixtures.getWikiContext());
+    return new Essence({ ...EssenceFixtures.totals(), ...EssenceFixtures.getWikiContext() });
   }
 
   static wikiLineChartNoSplit() {
-    return Essence.fromJS(EssenceFixtures.lineChartNoSplitJS(), EssenceFixtures.getWikiContext());
+    return new Essence({ ...EssenceFixtures.lineChart(), ...EssenceFixtures.getWikiContext() });
   }
 
   static twitterNoVisualisation() {
-    return Essence.fromJS(EssenceFixtures.noVisualisationJS(), EssenceFixtures.getTwitterContext());
+    return new Essence({ ...EssenceFixtures.noViz(), ...EssenceFixtures.getTwitterContext() });
   }
 }
