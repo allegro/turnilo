@@ -14,26 +14,46 @@
  * limitations under the License.
  */
 
+import { Timezone } from "chronoshift";
+import { OrderedSet } from "immutable";
+import { NamedArray } from "immutable-class";
 import { AndExpression, Expression, OverlapExpression, TimeBucketExpression } from "plywood";
+import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
-import { Essence, EssenceJS } from "../../models/essence/essence";
-import { FilterJS } from "../../models/filter/filter";
+import { createMeasures, Essence } from "../../models/essence/essence";
+import { Filter, FilterJS } from "../../models/filter/filter";
+import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
+import { Splits } from "../../models/splits/splits";
+import { TimeShift } from "../../models/time-shift/time-shift";
 import { ViewDefinitionConverter } from "../view-definition-converter";
+import { ViewDefinition2 } from "./view-definition-2";
 
-export class ViewDefinitionConverter2 implements ViewDefinitionConverter<EssenceJS, Essence> {
+export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDefinition2, Essence> {
   version = 2;
 
-  fromViewDefinition(definition: EssenceJS, dataCube: DataCube, visualizations: Manifest[]): Essence {
-    const preProcessedDefinition = {
-      ...definition,
-      filter: filterJSConverter(definition.filter)
-    };
+  fromViewDefinition(definition: ViewDefinition2, dataCube: DataCube, visualizations: Manifest[]): Essence {
+    const visualization = NamedArray.findByName(visualizations, definition.visualization);
+    const { isMulti, single, multi } = definition.measures;
 
-    return Essence.fromJS(preProcessedDefinition, { dataCube, visualizations });
+    return new Essence({
+      dataCube,
+      visualizations,
+      visualization,
+      timezone: definition.timezone && Timezone.fromJS(definition.timezone),
+      filter: Filter.fromJS(filterJSConverter(definition.filter)),
+      timeShift: TimeShift.empty(),
+      splits: Splits.fromJS(definition.splits),
+      pinnedDimensions: OrderedSet(definition.pinnedDimensions),
+      measures: createMeasures({ isMulti, single, multi: OrderedSet(multi) }),
+      colors: definition.colors && Colors.fromJS(definition.colors),
+      pinnedSort: dataCube.getMeasure(definition.pinnedSort) ? definition.pinnedSort : dataCube.getDefaultSortMeasure(),
+      compare: null,
+      highlight: definition.highlight && Highlight.fromJS(definition.highlight)
+    });
   }
 
-  toViewDefinition(essence: Essence): EssenceJS {
+  toViewDefinition(essence: Essence): ViewDefinition2 {
     return essence.toJS();
   }
 }

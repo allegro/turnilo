@@ -41,16 +41,13 @@ class FlattenDimensionsWithGroupsVisitor implements DimensionOrGroupVisitor<void
 function findDuplicateNames(items: List<DimensionOrGroup>): List<string> {
   return items
     .groupBy(dimension => dimension.name)
-    .filter(names => names.size > 1)
+    .filter(names => names.count() > 1)
     .map((names, name) => name)
     .toList();
 }
 
 function filterDimensions(items: List<DimensionOrGroup>): List<Dimension> {
-  return List<Dimension>(items
-    .filter(item => item.type === "dimension")
-    .toList()
-  );
+  return items.filter(item => item.type === "dimension") as List<Dimension>;
 }
 
 export class Dimensions {

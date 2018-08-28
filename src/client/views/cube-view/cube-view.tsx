@@ -289,7 +289,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   getEssenceFromDataCube(dataCube: DataCube): Essence {
     const essence = Essence.fromDataCube(dataCube, { dataCube, visualizations: MANIFESTS });
     const isMulti = !!localStorage.get("is-multi-measure");
-    return essence.multiMeasureMode !== isMulti ? essence.toggleMultiMeasureMode() : essence;
+    return essence.measures.isMulti !== isMulti ? essence.toggleMultiMeasureMode() : essence;
   }
 
   getEssenceFromHash(hash: string, dataCube: DataCube): Essence {

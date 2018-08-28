@@ -16,22 +16,20 @@
  */
 
 import { Timezone } from "chronoshift";
-import { Iterable, List, OrderedSet } from "immutable";
-import { Class, immutableEqual, Instance, NamedArray } from "immutable-class";
+import { List, OrderedSet, Record } from "immutable";
 import { Expression, LiteralExpression, PlywoodValue, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
-import { hasOwnProperty } from "../../../common/utils/general/general";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
-import { Colors, ColorsJS } from "../colors/colors";
+import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
 import { Dimension } from "../dimension/dimension";
 import { FilterClause } from "../filter-clause/filter-clause";
-import { Filter, FilterJS } from "../filter/filter";
-import { Highlight, HighlightJS } from "../highlight/highlight";
+import { Filter } from "../filter/filter";
+import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
 import { SplitCombine } from "../split-combine/split-combine";
-import { Splits, SplitsJS } from "../splits/splits";
-import { TimeShift, TimeShiftJS } from "../time-shift/time-shift";
+import { Splits } from "../splits/splits";
+import { TimeShift } from "../time-shift/time-shift";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
@@ -42,7 +40,7 @@ function constrainMeasures(measures: OrderedSet<string>, dataCube: DataCube): Or
   return <OrderedSet<string>> measures.filter(measureName => Boolean(dataCube.getMeasure(measureName)));
 }
 
-function addToSetInOrder<T>(order: Iterable<any, T>, setToAdd: OrderedSet<T>, thing: T): OrderedSet<T> {
+function addToSetInOrder<T = string>(order: List<T>, setToAdd: OrderedSet<T>, thing: T): OrderedSet<T> {
   return OrderedSet(order.toArray().filter(name => setToAdd.has(name) || name === thing));
 }
 
@@ -67,6 +65,19 @@ export enum VisStrategy {
   KeepAlways
 }
 
+type MeasureId = string;
+type DimensionId = string;
+
+interface MeasuresDefinition {
+  isMulti: boolean;
+  single: MeasureId;
+  multi: OrderedSet<MeasureId>;
+}
+
+export type Measures = Record<MeasuresDefinition> & Readonly<MeasuresDefinition>;
+
+export const createMeasures = Record<MeasuresDefinition>({ isMulti: false, multi: OrderedSet.of(), single: null });
+
 export interface EssenceValue {
   visualizations?: Manifest[];
   dataCube?: DataCube;
@@ -75,31 +86,27 @@ export interface EssenceValue {
   filter: Filter;
   timeShift: TimeShift;
   splits: Splits;
-  multiMeasureMode: boolean;
-  singleMeasure: string;
-  selectedMeasures: OrderedSet<string>;
-  pinnedDimensions: OrderedSet<string>;
+  measures: Measures;
+  pinnedDimensions: OrderedSet<DimensionId>;
   colors: Colors;
   pinnedSort: string;
   compare: Filter;
   highlight: Highlight;
 }
 
-export interface EssenceJS {
-  visualization?: string;
-  timezone?: string;
-  filter?: FilterJS;
-  timeShift?: TimeShiftJS;
-  splits?: SplitsJS;
-  multiMeasureMode?: boolean;
-  singleMeasure?: string;
-  selectedMeasures?: string[];
-  pinnedDimensions?: string[];
-  colors?: ColorsJS;
-  pinnedSort?: string;
-  compare?: FilterJS;
-  highlight?: HighlightJS;
-}
+const defaultEssence: EssenceValue = {
+  visualization: null,
+  timezone: Timezone.UTC,
+  filter: null,
+  splits: null,
+  measures: null,
+  pinnedDimensions: OrderedSet.of(),
+  pinnedSort: null,
+  colors: null,
+  highlight: null,
+  compare: null,
+  timeShift: TimeShift.empty()
+};
 
 export interface EssenceContext {
   dataCube: DataCube;
@@ -112,13 +119,7 @@ export interface EffectiveFilterOptions {
   combineWithPrevious?: boolean;
 }
 
-let check: Class<EssenceValue, EssenceJS>;
-
-export class Essence implements Instance<EssenceValue, EssenceJS> {
-
-  static isEssence(candidate: any): candidate is Essence {
-    return candidate instanceof Essence;
-  }
+export class Essence extends Record<EssenceValue>(defaultEssence) {
 
   static getBestVisualization(
     visualizations: Manifest[],
@@ -148,9 +149,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       filter: null,
       timeShift: TimeShift.empty(),
       splits: dataCube.getDefaultSplits(),
-      multiMeasureMode: false,
-      singleMeasure: dataCube.getDefaultSortMeasure(),
-      selectedMeasures: dataCube.getDefaultSelectedMeasures(),
+      measures: createMeasures({ isMulti: false, single: dataCube.getDefaultSortMeasure(), multi: dataCube.getDefaultSelectedMeasures() }),
       pinnedDimensions: dataCube.getDefaultPinnedDimensions(),
       colors: null,
       pinnedSort: dataCube.getDefaultSortMeasure(),
@@ -161,92 +160,16 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return essence.updateSplitsWithFilter();
   }
 
-  static fromJS(parameters: EssenceJS, context?: EssenceContext): Essence {
-    if (!context) throw new Error("Essence must have context");
-    const { dataCube, visualizations } = context;
-
-    const visualizationName = parameters.visualization;
-    const visualization = NamedArray.findByName(visualizations, visualizationName);
-
-    const timezone = parameters.timezone ? Timezone.fromJS(parameters.timezone) : null;
-    const filter = parameters.filter ? Filter.fromJS(parameters.filter).constrainToDimensions(dataCube.dimensions, dataCube.timeAttribute) : null;
-    const timeShift = parameters.timeShift ? TimeShift.fromJS(parameters.timeShift) : TimeShift.empty();
-    const splits = Splits.fromJS(parameters.splits || [], dataCube).constrainToDimensionsAndMeasures(dataCube.dimensions, dataCube.measures);
-
-    const defaultSortMeasureName = dataCube.getDefaultSortMeasure();
-
-    const multiMeasureMode = hasOwnProperty(parameters, "multiMeasureMode") ? parameters.multiMeasureMode : !hasOwnProperty(
-      parameters,
-      "singleMeasure");
-    const singleMeasure = dataCube.getMeasure(parameters.singleMeasure) ? parameters.singleMeasure : defaultSortMeasureName;
-
-    const selectedMeasures = constrainMeasures(OrderedSet(parameters.selectedMeasures || []), dataCube);
-    const pinnedDimensions = constrainDimensions(OrderedSet(parameters.pinnedDimensions || []), dataCube);
-
-    const colors = parameters.colors ? Colors.fromJS(parameters.colors) : null;
-
-    const pinnedSort = dataCube.getMeasure(parameters.pinnedSort) ? parameters.pinnedSort : defaultSortMeasureName;
-
-    let compare: Filter = null;
-    const compareJS = parameters.compare;
-    if (compareJS) {
-      compare = Filter.fromJS(compareJS).constrainToDimensions(dataCube.dimensions, dataCube.timeAttribute);
-    }
-
-    let highlight: Highlight = null;
-    const highlightJS = parameters.highlight;
-    if (highlightJS) {
-      highlight = Highlight.fromJS(highlightJS).constrainToDimensions(dataCube.dimensions, dataCube.timeAttribute);
-    }
-
-    return new Essence({
-      dataCube,
-      visualizations,
-      visualization,
-      timezone,
-      filter,
-      timeShift,
-      splits,
-      multiMeasureMode,
-      singleMeasure,
-      selectedMeasures,
-      pinnedDimensions,
-      colors,
-      pinnedSort,
-      compare,
-      highlight
-    });
-  }
-
-  public dataCube: DataCube;
-  public visualizations: Manifest[];
-
-  public visualization: Manifest;
-  public timezone: Timezone;
-  public filter: Filter;
-  public timeShift: TimeShift;
-  public splits: Splits;
-  public multiMeasureMode: boolean;
-  public singleMeasure: string;
-  public selectedMeasures: OrderedSet<string>;
-  public pinnedDimensions: OrderedSet<string>;
-  public colors: Colors;
-  public pinnedSort: string;
-  public compare: Filter;
-  public highlight: Highlight;
-
   public visResolve: Resolve;
 
   constructor(parameters: EssenceValue) {
     const {
+      filter,
       visualizations,
       dataCube,
       timezone,
-      filter,
       timeShift,
-      multiMeasureMode,
-      singleMeasure,
-      selectedMeasures,
+      measures,
       pinnedDimensions,
       pinnedSort,
       compare,
@@ -255,6 +178,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
     let { visualization, splits, colors } = parameters;
 
+    // TODO: that's stupid!
     if (!dataCube) throw new Error("Essence must have a dataCube");
 
     function hasNoMeasureOrMeasureIsSelected(highlight: Highlight): boolean {
@@ -263,7 +187,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       }
 
       const { measure } = highlight;
-      return multiMeasureMode ? selectedMeasures.has(measure) : measure === singleMeasure;
+      return measures.isMulti ? measures.multi.has(measure) : measure === measures.single;
     }
 
     let visResolve: Resolve;
@@ -289,92 +213,33 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       }
 
       if (visResolve.isReady()) {
-        const effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(multiMeasureMode, visualization);
-        visResolve = visualizationIndependentEvaluator({ dataCube, multiMeasureMode: effectiveMultiMeasureMode, selectedMeasures });
+        const effectiveMultiMeasureMode = getEffectiveMultiMeasureMode(measures.isMulti, visualization);
+        visResolve = visualizationIndependentEvaluator({ dataCube, multiMeasureMode: effectiveMultiMeasureMode, selectedMeasures: measures.multi });
       }
     }
 
-    this.visualizations = visualizations;
-    this.dataCube = dataCube;
-    this.visualization = visualization;
-    this.timezone = timezone || Timezone.UTC;
-    this.filter = filter || dataCube.getDefaultFilter();
-    this.timeShift = timeShift;
-    this.splits = splits;
-    this.multiMeasureMode = multiMeasureMode;
-    this.singleMeasure = singleMeasure;
-    this.selectedMeasures = selectedMeasures;
-    this.pinnedDimensions = pinnedDimensions;
-    this.colors = colors;
-    this.pinnedSort = pinnedSort;
-    this.highlight = hasNoMeasureOrMeasureIsSelected(highlight) ? highlight : null;
-    this.compare = compare;
+    super({
+      ...parameters,
+      visualizations,
+      dataCube,
+      visualization,
+      timezone: timezone || Timezone.UTC,
+      timeShift,
+      splits: splits.constrainToDimensionsAndMeasures(dataCube.dimensions, dataCube.measures),
+      filter: filter.constrainToDimensions(dataCube.dimensions, dataCube.timeAttribute),
+      measures: measures.update("multi", multi => constrainMeasures(multi, dataCube)),
+      pinnedDimensions: constrainDimensions(pinnedDimensions, dataCube),
+      pinnedSort: dataCube.getMeasure(pinnedSort) ? pinnedSort : dataCube.getDefaultSortMeasure(),
+      colors,
+      highlight: hasNoMeasureOrMeasureIsSelected(highlight) ? highlight.constrainToDimensions(dataCube.dimensions, dataCube.timeAttribute) : null,
+      compare
+    });
+
     this.visResolve = visResolve;
-  }
-
-  public valueOf(): EssenceValue {
-    return {
-      dataCube: this.dataCube,
-      visualizations: this.visualizations,
-      visualization: this.visualization,
-      timezone: this.timezone,
-      filter: this.filter,
-      timeShift: this.timeShift,
-      splits: this.splits,
-      multiMeasureMode: this.multiMeasureMode,
-      singleMeasure: this.singleMeasure,
-      selectedMeasures: this.selectedMeasures,
-      pinnedDimensions: this.pinnedDimensions,
-      colors: this.colors,
-      pinnedSort: this.pinnedSort,
-      compare: this.compare,
-      highlight: this.highlight
-    };
-  }
-
-  public toJS(): EssenceJS {
-    var js: EssenceJS = {
-      visualization: this.visualization.name,
-      timezone: this.timezone.toJS(),
-      filter: this.filter.toJS(),
-      splits: this.splits.toJS(),
-      singleMeasure: this.singleMeasure,
-      selectedMeasures: this.selectedMeasures.toArray(),
-      pinnedDimensions: this.pinnedDimensions.toArray()
-    };
-    if (this.hasComparison()) js.timeShift = this.timeShift.toJS();
-    if (this.multiMeasureMode) js.multiMeasureMode = true;
-    if (this.colors) js.colors = this.colors.toJS();
-    if (this.pinnedSort && this.pinnedDimensions.size) js.pinnedSort = this.pinnedSort;
-    if (this.compare) js.compare = this.compare.toJS();
-    if (this.highlight) js.highlight = this.highlight.toJS();
-    return js;
-  }
-
-  public toJSON(): EssenceJS {
-    return this.toJS();
   }
 
   public toString(): string {
     return "[Essence]";
-  }
-
-  public equals(other: Essence): boolean {
-    return Essence.isEssence(other) &&
-      this.dataCube.equals(other.dataCube) &&
-      this.visualization.name === other.visualization.name &&
-      this.timezone.equals(other.timezone) &&
-      this.filter.equals(other.filter) &&
-      this.timeShift.equals(other.timeShift) &&
-      this.splits.equals(other.splits) &&
-      this.multiMeasureMode === other.multiMeasureMode &&
-      this.singleMeasure === other.singleMeasure &&
-      this.selectedMeasures.equals(other.selectedMeasures) &&
-      this.pinnedDimensions.equals(other.pinnedDimensions) &&
-      immutableEqual(this.colors, other.colors) &&
-      this.pinnedSort === other.pinnedSort &&
-      immutableEqual(this.compare, other.compare) &&
-      immutableEqual(this.highlight, other.highlight);
   }
 
   public getTimeAttribute(): RefExpression {
@@ -386,13 +251,8 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public evaluateSelection(selection: Expression, timekeeper: Timekeeper): TimeRange {
-    var { timezone, dataCube } = this;
+    const { timezone, dataCube } = this;
     return FilterClause.evaluate(selection, timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
-  }
-
-  public evaluateClause(clause: FilterClause, timekeeper: Timekeeper): FilterClause {
-    var { timezone, dataCube } = this;
-    return clause.evaluate(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
   }
 
   private combineWithPrevious(filter: Filter) {
@@ -467,7 +327,7 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public changeComparisonShift(timeShift: TimeShift): Essence {
-    return new Essence({ ...this.valueOf(), timeShift });
+    return this.set("timeShift", timeShift);
   }
 
   public getTimeSelection(): Expression {
@@ -484,27 +344,27 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     if (measureModeNeed !== "any") {
       return measureModeNeed === "multi";
     }
-    return this.multiMeasureMode;
+    return this.measures.isMulti;
   }
 
   public getEffectiveMeasures(): List<Measure> {
     if (this.getEffectiveMultiMeasureMode()) {
       return this.getMeasures();
     } else {
-      return List([this.dataCube.getMeasure(this.singleMeasure)]);
+      return List([this.dataCube.getMeasure(this.measures.single)]);
     }
   }
 
   public getMeasures(): List<Measure> {
-    var dataCube = this.dataCube;
-    return <List<Measure>> this.selectedMeasures.toList().map(measureName => dataCube.getMeasure(measureName));
+    const { dataCube, measures: { multi } } = this;
+    return multi.map(measureName => dataCube.getMeasure(measureName)).toList();
   }
 
   public getEffectiveSelectedMeasure(): OrderedSet<string> {
     if (this.getEffectiveMultiMeasureMode()) {
-      return this.selectedMeasures;
+      return this.measures.multi;
     } else {
-      return OrderedSet([this.singleMeasure]);
+      return OrderedSet([this.measures.single]);
     }
   }
 
@@ -518,10 +378,6 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
 
   public differentTimezoneMatters(other: Essence): boolean {
     return this.splits.timezoneDependant() && this.differentTimezone(other);
-  }
-
-  public differentFilter(other: Essence): boolean {
-    return !this.filter.equals(other.filter);
   }
 
   public differentSplits(other: Essence): boolean {
@@ -542,60 +398,30 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
     return !this.colors.equals(other.colors);
   }
 
-  public differentSelectedMeasures(other: Essence): boolean {
-    return !this.selectedMeasures.equals(other.selectedMeasures);
-  }
-
-  public differentEffectiveMeasures(other: Essence): boolean {
-    return !this.getEffectiveSelectedMeasure().equals(other.getEffectiveSelectedMeasure());
-  }
-
-  public newSelectedMeasures(other: Essence): boolean {
-    return !this.selectedMeasures.isSubset(other.selectedMeasures);
-  }
-
   public newEffectiveMeasures(other: Essence): boolean {
     return !this.getEffectiveSelectedMeasure().isSubset(other.getEffectiveSelectedMeasure());
   }
 
-  public differentPinnedDimensions(other: Essence): boolean {
-    return !this.pinnedDimensions.equals(other.pinnedDimensions);
-  }
-
-  public differentPinnedSort(other: Essence): boolean {
-    return this.pinnedSort !== other.pinnedSort;
-  }
-
-  public differentCompare(other: Essence): boolean {
-    if (Boolean(this.compare) !== Boolean(other.compare)) return true;
-    return Boolean(this.compare && !this.compare.equals(other.compare));
-  }
-
-  public differentHighligh(other: Essence): boolean {
-    if (Boolean(this.highlight) !== Boolean(other.highlight)) return true;
-    return Boolean(this.highlight && !this.highlight.equals(other.highlight));
-  }
-
   public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, highlightId: string = null, unfilterDimension: Dimension = null): boolean {
-    var myEffectiveFilter = this.getEffectiveFilter(myTimekeeper, { highlightId, unfilterDimension });
-    var otherEffectiveFilter = other.getEffectiveFilter(otherTimekeeper, { highlightId, unfilterDimension });
+    const myEffectiveFilter = this.getEffectiveFilter(myTimekeeper, { highlightId, unfilterDimension });
+    const otherEffectiveFilter = other.getEffectiveFilter(otherTimekeeper, { highlightId, unfilterDimension });
     return !myEffectiveFilter.equals(otherEffectiveFilter);
   }
 
   public highlightOn(owner: string, measure?: string): boolean {
-    var { highlight } = this;
+    const { highlight } = this;
     if (!highlight) return false;
     return highlight.owner === owner && (!measure || highlight.measure === measure);
   }
 
   public highlightOnDifferentMeasure(owner: string, measure: string): boolean {
-    var { highlight } = this;
+    const { highlight } = this;
     if (!highlight) return false;
     return highlight.owner === owner && measure && highlight.measure !== measure;
   }
 
   public getSingleHighlightSet(): Set {
-    var { highlight } = this;
+    const { highlight } = this;
     if (!highlight) return null;
     return highlight.delta.getSingleClauseSet();
   }
@@ -605,77 +431,59 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public updateDataCube(newDataCube: DataCube): Essence {
-    var { dataCube, visualizations } = this;
-
-    if (dataCube.equals(newDataCube)) return this; // nothing to do
-
-    var value = this.valueOf();
-    value.dataCube = newDataCube;
-
-    // Make sure that all the elements of state are still valid
-    value.filter = value.filter.constrainToDimensions(newDataCube.dimensions, newDataCube.timeAttribute, dataCube.timeAttribute);
-    value.splits = value.splits.constrainToDimensionsAndMeasures(newDataCube.dimensions, newDataCube.measures);
-    value.selectedMeasures = constrainMeasures(value.selectedMeasures, newDataCube);
-    if (value.selectedMeasures.size === 0) {
-      value.selectedMeasures = newDataCube.getDefaultSelectedMeasures();
-    }
-
-    value.pinnedDimensions = constrainDimensions(value.pinnedDimensions, newDataCube);
-
-    if (value.colors && !newDataCube.getDimension(value.colors.dimension)) {
-      value.colors = null;
-    }
-
-    if (!newDataCube.getMeasure(value.pinnedSort)) value.pinnedSort = newDataCube.getDefaultSortMeasure();
-
-    if (value.compare) {
-      value.compare = value.compare.constrainToDimensions(newDataCube.dimensions, newDataCube.timeAttribute);
-    }
-
-    if (value.highlight) {
-      value.highlight = value.highlight.constrainToDimensions(newDataCube.dimensions, newDataCube.timeAttribute);
-    }
-
-    return new Essence(value);
+    const { dataCube } = this;
+    if (dataCube.equals(newDataCube)) return this;
+    return this
+      .set("dataCube", newDataCube)
+      // Make sure that all the elements of state are still valid
+      .update("filter", filter => filter.constrainToDimensions(newDataCube.dimensions, newDataCube.timeAttribute, dataCube.timeAttribute))
+      .update("splits", splits => splits.constrainToDimensionsAndMeasures(newDataCube.dimensions, newDataCube.measures))
+      .updateIn(["measures", "multi"], multi => {
+        const constrained = constrainMeasures(multi, newDataCube);
+        return constrained.count() > 0 ? constrained : newDataCube.getDefaultSelectedMeasures();
+      })
+      .update("pinnedDimensions", pinned => constrainDimensions(pinned, newDataCube))
+      .update("colors", colors => colors && !newDataCube.getDimension(colors.dimension) ? null : colors)
+      .update("pinnedSort", sort => !newDataCube.getMeasure(sort) ? newDataCube.getDefaultSortMeasure() : sort)
+      .update("compare", compare => compare && compare.constrainToDimensions(newDataCube.dimensions, newDataCube.timeAttribute))
+      .update("highlight", highlight => highlight && highlight.constrainToDimensions(newDataCube.dimensions, newDataCube.timeAttribute));
   }
 
   // Modification
 
   public changeFilter(filter: Filter, removeHighlight = false): Essence {
-    var value = this.valueOf();
-    value.filter = filter;
+    const { filter: oldFilter } = this;
 
-    if (removeHighlight) {
-      value.highlight = null;
-    }
-
-    var differentAttributes = filter.getDifferentAttributes(this.filter);
-    value.splits = value.splits.removeBucketingFrom(differentAttributes);
-    return (new Essence(value)).updateSplitsWithFilter();
+    return this
+      .set("filter", filter)
+      .update("highlight", highlight => removeHighlight ? null : highlight)
+      .update("splits", splits => {
+        const differentAttributes = filter.getDifferentAttributes(oldFilter);
+        return splits.removeBucketingFrom(differentAttributes);
+      })
+      .updateSplitsWithFilter();
   }
 
   public changeTimezone(newTimezone: Timezone): Essence {
-    var { timezone } = this;
+    const { timezone } = this;
     if (timezone === newTimezone) return this;
-    var value = this.valueOf();
-    value.timezone = newTimezone;
-    return new Essence(value);
+    return this.set("timezone", newTimezone);
   }
 
   public changeTimeSelection(check: Expression): Essence {
-    var { filter } = this;
-    var timeAttribute = this.getTimeAttribute();
+    const { filter } = this;
+    const timeAttribute = this.getTimeAttribute();
     return this.changeFilter(filter.setSelection(timeAttribute, check));
   }
 
   public convertToSpecificFilter(timekeeper: Timekeeper): Essence {
-    var { dataCube, filter, timezone } = this;
+    const { dataCube, filter, timezone } = this;
     if (!filter.isRelative()) return this;
     return this.changeFilter(filter.getSpecificFilter(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone));
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
-    const { visualizations, dataCube, multiMeasureMode, selectedMeasures, visualization, visResolve, filter, colors } = this;
+    const { visualizations, highlight, dataCube, visualization, visResolve, filter, colors } = this;
 
     splits = splits.updateWithFilter(filter, dataCube.dimensions);
 
@@ -694,14 +502,15 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
       changedVisualisation = visAndResolve.visualization;
     }
 
-    const value = this.valueOf();
-    value.splits = splits;
-    value.visualization = changedVisualisation || visualization;
-    if (value.highlight) {
-      value.filter = value.highlight.applyToFilter(value.filter);
-      value.highlight = null;
+    const essence = this
+      .set("splits", splits)
+      .set("visualization", changedVisualisation || visualization);
+    if (highlight) {
+      return essence
+        .update("filter", filter => highlight.applyToFilter(filter))
+        .set("highlight", null);
     }
-    return new Essence(value);
+    return essence;
   }
 
   public changeSplit(splitCombine: SplitCombine, strategy: VisStrategy): Essence {
@@ -709,94 +518,75 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public addSplit(split: SplitCombine, strategy: VisStrategy): Essence {
-    var { splits } = this;
-    return this.changeSplits(splits.addSplit(split), strategy);
+    return this.changeSplits(this.splits.addSplit(split), strategy);
   }
 
   public removeSplit(split: SplitCombine, strategy: VisStrategy): Essence {
-    var { splits } = this;
-    return this.changeSplits(splits.removeSplit(split), strategy);
+    return this.changeSplits(this.splits.removeSplit(split), strategy);
   }
 
   public updateSplitsWithFilter(): Essence {
-    var value = this.valueOf();
-    var newSplits = value.splits.updateWithFilter(this.filter, this.dataCube.dimensions);
-    if (value.splits === newSplits) return this;
-    value.splits = newSplits;
-    return new Essence(value);
+    const { filter, dataCube: { dimensions }, splits } = this;
+    const newSplits = splits.updateWithFilter(filter, dimensions);
+    if (splits === newSplits) return this;
+    return this.set("splits", newSplits);
   }
 
   public changeColors(colors: Colors): Essence {
-    var value = this.valueOf();
-    value.colors = colors;
-    return new Essence(value);
+    return this.set("colors", colors);
   }
 
   public changeVisualization(visualization: Manifest): Essence {
-    var value = this.valueOf();
-    value.visualization = visualization;
-    return new Essence(value);
+    return this.set("visualization", visualization);
   }
 
-  public pin(dimension: Dimension): Essence {
-    var value = this.valueOf();
-    value.pinnedDimensions = value.pinnedDimensions.add(dimension.name);
-    return new Essence(value);
+  public pin({ name }: Dimension): Essence {
+    return this.update("pinnedDimensions", pinned => pinned.add(name));
   }
 
-  public unpin(dimension: Dimension): Essence {
-    var value = this.valueOf();
-    value.pinnedDimensions = value.pinnedDimensions.remove(dimension.name);
-    return new Essence(value);
+  public unpin({ name }: Dimension): Essence {
+    return this.update("pinnedDimensions", pinned => pinned.remove(name));
   }
 
   public getPinnedSortMeasure(): Measure {
     return this.dataCube.getMeasure(this.pinnedSort);
   }
 
-  public changePinnedSortMeasure(measure: Measure): Essence {
-    var value = this.valueOf();
-    value.pinnedSort = measure.name;
-    return new Essence(value);
+  public changePinnedSortMeasure({ name }: Measure): Essence {
+    return this.set("pinnedSort", name);
+  }
+
+  public changeSingleMeasure({ name }: Measure): Essence {
+    if (name === this.measures.single) return this;
+    return this
+      .update("splits", splits => splits.changeSortIfOnMeasure(this.measures.single, name))
+      .set("pinnedSort", name)
+      .setIn(["measures", "single"], name);
   }
 
   public toggleMultiMeasureMode(): Essence {
-    const { dataCube, multiMeasureMode, selectedMeasures, singleMeasure } = this;
-    var value = this.valueOf();
-    value.multiMeasureMode = !multiMeasureMode;
-    if (multiMeasureMode) {
+    const { dataCube, measures: { single, multi, isMulti } } = this;
+    const newEssence = this.setIn(["measure", "isMulti"], !isMulti);
+    if (isMulti) {
       // Ensure that the singleMeasure is in the selectedMeasures
-      if (selectedMeasures.size && !selectedMeasures.has(singleMeasure)) {
-        value.singleMeasure = selectedMeasures.first();
+      if (multi.count() > 0 && !multi.has(single)) {
+        return newEssence.setIn(["measure", "single"], multi.first());
       }
-    } else {
-      value.selectedMeasures = addToSetInOrder(dataCube.measures.getMeasureNames(), value.selectedMeasures, singleMeasure);
+      return newEssence;
     }
-    return new Essence(value);
+    return newEssence.setIn(["measures", "multi"], addToSetInOrder(dataCube.measures.getMeasureNames(), multi, single));
   }
 
-  public changeSingleMeasure(measure: Measure): Essence {
-    if (measure.name === this.singleMeasure) return this;
-    var value = this.valueOf();
-    value.singleMeasure = measure.name;
-    value.splits = value.splits.changeSortIfOnMeasure(this.singleMeasure, measure.name);
-    value.pinnedSort = measure.name;
-    return new Essence(value);
-  }
-
-  public toggleSelectedMeasure(measure: Measure): Essence {
-    var dataCube = this.dataCube;
-    var value = this.valueOf();
-    var selectedMeasures = value.selectedMeasures;
-    var measureName = measure.name;
-
-    if (selectedMeasures.has(measureName)) {
-      value.selectedMeasures = selectedMeasures.delete(measureName);
-    } else {
-      value.selectedMeasures = addToSetInOrder(dataCube.measures.getMeasureNames(), selectedMeasures, measureName);
-    }
-
-    return new Essence(value);
+  public toggleSelectedMeasure({ name }: Measure): Essence {
+    const { dataCube } = this;
+    return this.update("measures", measures =>
+      measures.update("multi", multi => {
+        if (multi.has(name)) {
+          return multi.delete(name);
+        } else {
+          return addToSetInOrder(dataCube.measures.getMeasureNames(), multi, name);
+        }
+      }));
   }
 
   public toggleEffectiveMeasure(measure: Measure): Essence {
@@ -808,36 +598,22 @@ export class Essence implements Instance<EssenceValue, EssenceJS> {
   }
 
   public acceptHighlight(): Essence {
-    var { highlight } = this;
+    const { highlight } = this;
     if (!highlight) return this;
     return this.changeFilter(highlight.applyToFilter(this.filter), true);
   }
 
   public changeHighlight(owner: string, measure: string, delta: Filter): Essence {
-    var { highlight } = this;
+    const { highlight, filter } = this;
 
     // If there is already a highlight from someone else accept it
-    var value: EssenceValue;
-    if (highlight && highlight.owner !== owner) {
-      value = this.changeFilter(highlight.applyToFilter(this.filter)).valueOf();
-    } else {
-      value = this.valueOf();
-    }
+    const differentHighlight = highlight && highlight.owner !== owner;
+    const essence = differentHighlight ? this.changeFilter(highlight.applyToFilter(filter)) : this;
+    return essence.set("highlight", new Highlight({ owner, delta, measure }));
 
-    value.highlight = new Highlight({
-      owner,
-      delta,
-      measure
-    });
-    return new Essence(value);
   }
 
   public dropHighlight(): Essence {
-    var value = this.valueOf();
-    value.highlight = null;
-    return new Essence(value);
+    return this.set("highlight", null);
   }
-
 }
-
-check = Essence;

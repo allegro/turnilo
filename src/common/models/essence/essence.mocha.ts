@@ -33,7 +33,7 @@ import { Splits } from "../splits/splits";
 import { Essence, EssenceJS, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
-describe("Essence", () => {
+describe("EssenceProps", () => {
   var dataCubeJS = {
     name: "twitter",
     title: "Twitter",
