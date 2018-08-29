@@ -22,7 +22,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { Granularity, granularityToString, isGranularityValid } from "../../../common/models/granularity/granularity";
+import { ContinuousDimensionKind, Granularity, granularityToString, isGranularityValid, validateGranularity } from "../../../common/models/granularity/granularity";
 import { SplitCombine } from "../../../common/models/split-combine/split-combine";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";

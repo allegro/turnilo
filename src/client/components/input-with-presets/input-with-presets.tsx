@@ -34,38 +34,68 @@ export interface InputWithPresetsProps {
   title?: string;
 }
 
-export const InputWithPresets: React.SFC<InputWithPresetsProps> = ({ errorMessage, onChange, presets, selected, placeholder, title }) => {
+interface InputWithPresetsState {
+  customPicked: boolean;
+  customValue: string;
+}
 
-  function changeCustomValue(e: React.ChangeEvent<HTMLInputElement>) {
-    onChange(e.currentTarget.value);
+export class InputWithPresets extends React.Component<InputWithPresetsProps, InputWithPresetsState> {
+
+  initialState(): InputWithPresetsState {
+    const { selected, presets } = this.props;
+    const presetPicked = presets.some(({ identity }) => identity === selected);
+    return {
+      customPicked: !presetPicked,
+      customValue: presetPicked ? "" : this.props.selected
+    };
   }
 
-  const presetButtons = presets.map(({ name, identity }) => ({
-    key: identity,
-    title: name,
-    isSelected: identity === selected,
-    onClick: () => onChange(identity)
-  }));
+  state = this.initialState();
 
-  const customSelected = selected !== undefined && !presets.some(({ identity }) => identity === selected);
-  const customValueNotEmpty = customSelected && selected !== "";
+  customValueUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const customValue = e.currentTarget.value;
+    this.props.onChange(customValue);
+    this.setState({ customValue });
+  }
 
-  const customButton: GroupMember = {
-    key: "custom",
-    title: "...",
-    onClick: () => onChange(""),
-    isSelected: customSelected
-  };
+  pickCustom = () => {
+    this.setState({ customPicked: true });
+    this.props.onChange(this.state.customValue);
+  }
 
-  const members = [...presetButtons, customButton];
+  pickPreset = (value: string) => {
+    this.setState({ customPicked: false });
+    this.props.onChange(value);
+  }
 
-  return <React.Fragment>
-    <ButtonGroup title={title} groupMembers={members}/>
-    {customSelected && <input type="text"
+  render() {
+    const { errorMessage, selected, presets, placeholder, title } = this.props;
+    const { customPicked, customValue } = this.state;
+
+    const presetButtons = presets.map(({ name, identity }) => ({
+      key: identity,
+      title: name,
+      isSelected: !customPicked && identity === selected,
+      onClick: () => this.pickPreset(identity)
+    }));
+
+    const customButton: GroupMember = {
+      key: "custom",
+      title: "...",
+      onClick: this.pickCustom,
+      isSelected: customPicked
+    };
+
+    const members = [...presetButtons, customButton];
+
+    return <React.Fragment>
+      <ButtonGroup title={title} groupMembers={members} />
+      {customPicked && <input type="text"
                               className={classNames("custom-input", { invalid: errorMessage })}
                               placeholder={placeholder}
-                              value={selected}
-                              onChange={changeCustomValue}/>}
-    {customValueNotEmpty && errorMessage && <span className="error-message">{errorMessage}</span>}
-  </React.Fragment>;
-};
+                              value={customValue}
+                              onChange={this.customValueUpdate} />}
+      {errorMessage && <span className="error-message">{errorMessage}</span>}
+    </React.Fragment>;
+  }
+}

@@ -28,7 +28,7 @@ import {
   isDecimalInteger,
   toSignificantDigits
 } from "../../../common/utils/general/general";
-import { isFloorableDuration } from "../../utils/plywood/duration";
+import { isFloorableDuration, isValidDuration } from "../../utils/plywood/duration";
 
 const MENU_LENGTH = 5;
 
@@ -37,14 +37,25 @@ export type GranularityJS = string | number | ExpressionJS;
 export type BucketUnit = Duration | number;
 export type ContinuousDimensionKind = "time" | "number";
 
-export function isGranularityValid(kind: string, granularity: string): boolean {
+export function validateGranularity(kind: string, granularity: string): string {
   if (kind === "time") {
-    return isFloorableDuration(granularity);
+    if (!isValidDuration(granularity)) {
+      return "Invalid duration format";
+    }
+    if (!isFloorableDuration(granularity)) {
+      return "Duration is not floorable";
+    }
   }
   if (kind === "number") {
-    return isDecimalInteger(granularity);
+    if (!isDecimalInteger(granularity)) {
+      return "Invalid number format";
+    }
   }
-  return true;
+  return null;
+}
+
+export function isGranularityValid(kind: string, granularity: string): boolean {
+  return validateGranularity(kind, granularity) === null;
 }
 
 export interface Checker {

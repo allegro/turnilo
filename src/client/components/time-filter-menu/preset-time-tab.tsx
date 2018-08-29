@@ -49,10 +49,12 @@ export interface PresetTimeTabState {
 function initialState(essence: Essence, dimension: Dimension): PresetTimeTabState {
   const filterClause = essence.filter.getClausesForDimension(dimension).get(0);
   const filterSelection = essence.filter.getSelection(dimension.expression) as TimeRangeExpression;
+  const filterPeriod = getFilterPeriod(filterClause);
+  const isValidPreset = filterPeriod !== null;
   return {
+    filterPeriod: isValidPreset && filterPeriod,
     timeShift: essence.timeShift.toJS(),
-    filterPeriod: getFilterPeriod(filterClause),
-    filterDuration: filterSelection.duration.toJS()
+    filterDuration: isValidPreset && filterSelection.duration.toJS()
   };
 }
 
@@ -74,8 +76,8 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
   }
 
   validate(): boolean {
-    const { timeShift, filterDuration } = this.state;
-    return isValidTimeShift(timeShift) && isValidDuration(filterDuration);
+    const { timeShift, filterPeriod, filterDuration } = this.state;
+    return filterPeriod && isValidTimeShift(timeShift) && isValidDuration(filterDuration);
   }
 
   private renderLatestPresets() {
@@ -91,7 +93,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
       errorMessage={latestPeriod && !isValidDuration(filterDuration) && "Invalid format"}
       selected={latestPeriod ? filterDuration : undefined}
       onChange={(duration: string) => this.setFilter(TimeFilterPeriod.LATEST, duration)}
-      placeholder="Custom period"/>;
+      placeholder={STRINGS.durationsExamples} />;
   }
 
   private renderButtonGroup(title: string, period: TimeFilterPeriod) {
@@ -106,7 +108,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
         onClick: () => this.setFilter(period, duration)
       };
     });
-    return <ButtonGroup title={title} groupMembers={groupMembers}/>;
+    return <ButtonGroup title={title} groupMembers={groupMembers} />;
   }
 
   private getPreviewTimeRange() {
@@ -151,10 +153,10 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
         timezone={essence.timezone}
         shiftValue={isValidTimeShift(timeShift) ? TimeShift.fromJS(timeShift) : null}
         errorMessage={!isValidTimeShift(timeShift) && "Invalid format"}
-        onShiftChange={this.setTimeShift}/>
+        onShiftChange={this.setTimeShift} />
       <div className="ok-cancel-bar">
-        <Button type="primary" onClick={this.saveTimeFilter} disabled={!this.validate()} title={STRINGS.ok}/>
-        <Button type="secondary" onClick={this.props.onClose} title={STRINGS.cancel}/>
+        <Button type="primary" onClick={this.saveTimeFilter} disabled={!this.validate()} title={STRINGS.ok} />
+        <Button type="secondary" onClick={this.props.onClose} title={STRINGS.cancel} />
       </div>
     </div>;
   }
