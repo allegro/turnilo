@@ -142,7 +142,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
           onShiftChange={this.setTimeShift}
           timezone={essence.timezone}
           shiftValue={isValidTimeShift(shift) ? TimeShift.fromJS(shift) : null}
-          errorMessage={!isValidTimeShift(shift) && "Invalid format"}
+          errorMessage={!isValidTimeShift(shift) && STRINGS.invalidDurationFormat}
         />
       </div>
       <div className="ok-cancel-bar">

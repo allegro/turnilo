@@ -17,6 +17,7 @@
 
 import { day, Duration, hour, minute, Timezone } from "chronoshift";
 import { Expression, ExpressionJS, ExpressionValue, NumberBucketExpression, NumberRange, PlywoodRange, TimeBucketExpression, TimeRange } from "plywood";
+import { STRINGS } from "../../../client/config/constants";
 import {
   findBiggerClosestToIdeal,
   findExactIndex,
@@ -40,15 +41,15 @@ export type ContinuousDimensionKind = "time" | "number";
 export function validateGranularity(kind: string, granularity: string): string {
   if (kind === "time") {
     if (!isValidDuration(granularity)) {
-      return "Invalid duration format";
+      return STRINGS.invalidDurationFormat;
     }
     if (!isFloorableDuration(granularity)) {
-      return "Duration is not floorable";
+      return STRINGS.notFloorableDuration;
     }
   }
   if (kind === "number") {
     if (!isDecimalInteger(granularity)) {
-      return "Invalid number format";
+      return STRINGS.invalidNumberFormat;
     }
   }
   return null;

@@ -90,7 +90,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     return <InputWithPresets
       title={STRINGS.latest}
       presets={presets}
-      errorMessage={latestPeriod && !isValidDuration(filterDuration) && "Invalid format"}
+      errorMessage={latestPeriod && !isValidDuration(filterDuration) && STRINGS.invalidDurationFormat}
       selected={latestPeriod ? filterDuration : undefined}
       onChange={(duration: string) => this.setFilter(TimeFilterPeriod.LATEST, duration)}
       placeholder={STRINGS.durationsExamples} />;
@@ -152,7 +152,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
         time={previewTimeRange}
         timezone={essence.timezone}
         shiftValue={isValidTimeShift(timeShift) ? TimeShift.fromJS(timeShift) : null}
-        errorMessage={!isValidTimeShift(timeShift) && "Invalid format"}
+        errorMessage={!isValidTimeShift(timeShift) && STRINGS.invalidDurationFormat}
         onShiftChange={this.setTimeShift} />
       <div className="ok-cancel-bar">
         <Button type="primary" onClick={this.saveTimeFilter} disabled={!this.validate()} title={STRINGS.ok} />
