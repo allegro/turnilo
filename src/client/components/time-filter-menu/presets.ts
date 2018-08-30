@@ -19,7 +19,7 @@ import { FilterClause } from "../../../common/models/filter-clause/filter-clause
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
 import { isCurrentDuration, isLatestDuration, isPreviousDuration } from "../../../common/utils/formatter/formatter";
 
-export enum TimeFilterPeriod { LATEST, CURRENT, PREVIOUS }
+export enum TimeFilterPeriod { LATEST = "latest", CURRENT = "current", PREVIOUS = "previous" }
 
 const $MAX_TIME = $(FilterClause.MAX_TIME_REF_NAME);
 const $NOW = $(FilterClause.NOW_REF_NAME);
@@ -92,7 +92,7 @@ export function getFilterPeriod(clause: FilterClause): TimeFilterPeriod {
   } else if (isCurrentDuration(relative, selection)) {
     return TimeFilterPeriod.CURRENT;
   } else {
-    throw Error(`Can't calculate period for clause: ${clause.selection}`);
+    return null;
   }
 }
 
@@ -104,6 +104,8 @@ export function constructFilter(period: TimeFilterPeriod, duration: string): Exp
       return constructLatestFilter(duration);
     case TimeFilterPeriod.CURRENT:
       return constructCurrentFilter(duration);
+    default:
+      return null;
   }
 }
 

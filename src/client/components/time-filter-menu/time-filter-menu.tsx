@@ -37,7 +37,6 @@ export interface TimeFilterMenuProps {
   essence: Essence;
   dimension: Dimension;
   onClose: Fn;
-
   containerStage: Stage;
   openOn: Element;
   inside: Element;

@@ -16,7 +16,7 @@
 
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { ContinuousDimensionKind, getGranularities, Granularity, granularityToString, isGranularityValid } from "../../../common/models/granularity/granularity";
+import { ContinuousDimensionKind, getGranularities, Granularity, granularityToString, validateGranularity } from "../../../common/models/granularity/granularity";
 import { Unary } from "../../../common/utils/functional/functional";
 import { formatGranularity } from "../../../common/utils/time/time";
 import { STRINGS } from "../../config/constants";
@@ -40,11 +40,13 @@ export const GranularityPicker: React.SFC<GranularityPickerProps> = ({ dimension
     };
   });
 
+  const placeholder = dimension.kind === "time" ? STRINGS.floorableDurationsExamples : "Bucket size";
+
   return <InputWithPresets
     title={STRINGS.granularity}
     selected={granularity}
-    errorMessage={!isGranularityValid(dimension.kind, granularity) && "Invalid granularity format"}
+    errorMessage={validateGranularity(dimension.kind, granularity)}
     onChange={granularityChange}
-    placeholder="Custom granularity"
-    presets={presets}/>;
+    placeholder={placeholder}
+    presets={presets} />;
 };
