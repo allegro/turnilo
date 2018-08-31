@@ -53,8 +53,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
   }
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
-    const { registerDownloadableDataset, essence } = props;
-    const { splits } = essence;
+    const { registerDownloadableDataset } = props;
 
     const existingDatasetLoad = this.state.datasetLoad;
     const newState: BaseVisualizationState = {};
