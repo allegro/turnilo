@@ -90,7 +90,7 @@ export class InputWithPresets extends React.Component<InputWithPresetsProps, Inp
 
     const members = [...presetButtons, customButton];
 
-    const renderErrorMessage = customSelected && errorMessage && customValue.length;
+    const renderErrorMessage = customSelected && errorMessage && customValue.length > 0;
 
     return <React.Fragment>
       <ButtonGroup title={title} groupMembers={members} />
