@@ -146,6 +146,7 @@ export const STRINGS: any = {
   subsplit: "Split",
   suggestion: "suggestion",
   timeShift: "Time shift",
+  timeShiftExamples: "e.g. P2W or P1Y",
   timezone: "Timezone",
   undo: "Click here to undo",
   updateTimezone: "Update Timezone",

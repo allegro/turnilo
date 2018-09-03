@@ -60,7 +60,7 @@ export const TimeShiftSelector: React.SFC<TimeShiftSelectorProps> = props => {
       selected={selectedTimeShift}
       onChange={onShiftChange}
       errorMessage={errorMessage}
-      placeholder={STRINGS.durationsExamples} />
+      placeholder={STRINGS.timeShiftExamples} />
     {timeShiftPreview ? <div className="preview">{timeShiftPreview}</div> : null}
   </React.Fragment>;
 };

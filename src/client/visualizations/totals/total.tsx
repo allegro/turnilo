@@ -16,6 +16,7 @@
 
 import * as React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
+import { isTruthy } from "../../../common/utils/general/general";
 import { Delta } from "../../components/delta/delta";
 import "./total.scss";
 
@@ -48,6 +49,6 @@ export const Total: React.SFC<TotalProps> = ({ key, name, value, previous, forma
   return <div className="total" key={key}>
     <div className="measure-name" title={name}>{name}</div>
     <div className="measure-value">{value ? formatter(value) : "-"}</div>
-    {previous && <Previous currentValue={value} previousValue={previous} formatter={formatter}/>}
+    {isTruthy(previous) && <Previous currentValue={value} previousValue={previous} formatter={formatter}/>}
   </div>;
 };

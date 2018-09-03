@@ -47,10 +47,8 @@ export function validateGranularity(kind: string, granularity: string): string {
       return STRINGS.notFloorableDuration;
     }
   }
-  if (kind === "number") {
-    if (!isDecimalInteger(granularity)) {
-      return STRINGS.invalidNumberFormat;
-    }
+  if (kind === "number" && !isDecimalInteger(granularity)) {
+    return STRINGS.invalidNumberFormat;
   }
   return null;
 }
