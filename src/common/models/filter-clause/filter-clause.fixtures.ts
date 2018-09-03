@@ -15,29 +15,29 @@
  */
 
 import { $, r } from "plywood";
-import { FilterClause, SupportedAction } from "./filter-clause";
+import { FilterClause, PlywoodFilterMethod } from "./filter-clause";
 
 export class FilterClauseFixtures {
 
-  static stringWithAction(ref: string, action: SupportedAction, values: string | string[], exclude = false): FilterClause {
-    if (action !== SupportedAction.overlap && values instanceof Array && values.length !== 1) {
+  static stringWithAction(ref: string, action: PlywoodFilterMethod, values: string | string[], exclude = false): FilterClause {
+    if (action !== PlywoodFilterMethod.OVERLAP && values instanceof Array && values.length !== 1) {
       throw new Error(`Unsupported values: ${values} for action: ${action}.`);
     }
 
     switch (action) {
-      case SupportedAction.overlap:
+      case PlywoodFilterMethod.OVERLAP:
       case undefined:
         return this.stringIn(ref, typeof values === "string" ? [values] : values, exclude);
-      case SupportedAction.contains:
+      case PlywoodFilterMethod.CONTAINS:
         return this.stringContains(ref, typeof values === "string" ? values : values[0], exclude);
-      case SupportedAction.match:
+      case PlywoodFilterMethod.MATCH:
         return this.stringMatch(ref, typeof values === "string" ? values : values[0], exclude);
     }
   }
 
   static stringIn(ref: string, values: string[], exclude = false): FilterClause {
     return new FilterClause({
-      action: SupportedAction.overlap,
+      action: PlywoodFilterMethod.OVERLAP,
       exclude,
       selection: r(values),
       expression: $(ref)
@@ -46,7 +46,7 @@ export class FilterClauseFixtures {
 
   static stringContains(dimension: string, value: string, exclude = false): FilterClause {
     return new FilterClause({
-      action: SupportedAction.contains,
+      action: PlywoodFilterMethod.CONTAINS,
       exclude,
       selection: r(value),
       expression: $(dimension)
@@ -55,7 +55,7 @@ export class FilterClauseFixtures {
 
   static stringMatch(dimension: string, value: string, exclude = false): FilterClause {
     return new FilterClause({
-      action: SupportedAction.match,
+      action: PlywoodFilterMethod.MATCH,
       exclude,
       selection: value,
       expression: $(dimension)
@@ -64,7 +64,7 @@ export class FilterClauseFixtures {
 
   static booleanIn(ref: string, values: boolean[], exclude = false): FilterClause {
     return new FilterClause({
-      action: SupportedAction.overlap,
+      action: PlywoodFilterMethod.OVERLAP,
       exclude,
       selection: r(values),
       expression: $(ref)
@@ -73,7 +73,7 @@ export class FilterClauseFixtures {
 
   static numberRange(dimension: string, start: number, end: number, bounds = "[)", exclude = false): FilterClause {
     return new FilterClause({
-      action: SupportedAction.overlap,
+      action: PlywoodFilterMethod.OVERLAP,
       exclude,
       selection: r([{ start, end, bounds, type: "NUMBER_RANGE" }]),
       expression: $(dimension)
@@ -82,7 +82,7 @@ export class FilterClauseFixtures {
 
   static timeRange(dimension: string, start: Date, end: Date, exclude = false): FilterClause {
     return new FilterClause({
-      action: SupportedAction.overlap,
+      action: PlywoodFilterMethod.OVERLAP,
       exclude,
       selection: r({ start, end, type: "TIME_RANGE" }),
       expression: $(dimension)
@@ -91,7 +91,7 @@ export class FilterClauseFixtures {
 
   static timeDurationLatest(dimension: string, step: number, duration: string): FilterClause {
     return new FilterClause({
-      action: SupportedAction.overlap,
+      action: PlywoodFilterMethod.OVERLAP,
       selection: $(FilterClause.MAX_TIME_REF_NAME).timeRange(duration, step),
       expression: $(dimension)
     });
@@ -99,7 +99,7 @@ export class FilterClauseFixtures {
 
   static timeDurationFloored(dimension: string, step: number, duration: string, exclude = false): FilterClause {
     return new FilterClause({
-      action: SupportedAction.overlap,
+      action: PlywoodFilterMethod.OVERLAP,
       exclude,
       selection: $(FilterClause.NOW_REF_NAME).timeFloor(duration).timeRange(duration, step),
       expression: $(dimension)

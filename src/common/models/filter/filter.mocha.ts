@@ -26,7 +26,7 @@ describe("Filter", () => {
     testImmutableClass<FilterJS>(Filter, [
       { op: "literal", value: true },
       {
-        op: "overlap", operand: { op: "ref", name: "language" },
+        op: "OVERLAP", operand: { op: "ref", name: "language" },
         expression: {
           op: "literal",
           value: { setType: "STRING", elements: ["en"] },
@@ -34,7 +34,7 @@ describe("Filter", () => {
         }
       },
       {
-        op: "overlap", operand: { op: "ref", name: "time" },
+        op: "OVERLAP", operand: { op: "ref", name: "time" },
         expression: {
           op: "literal",
           value: { start: new Date("2013-02-26T19:00:00.000Z"), end: new Date("2013-02-26T22:00:00.000Z") },
@@ -42,7 +42,7 @@ describe("Filter", () => {
         }
       },
       {
-        op: "overlap", operand: { op: "ref", name: "language" },
+        op: "OVERLAP", operand: { op: "ref", name: "language" },
         expression: {
           op: "literal",
           value: { setType: "STRING", elements: ["he"] },
@@ -57,11 +57,11 @@ describe("Filter", () => {
             value: { setType: "STRING", elements: ["he"] },
             type: "SET"
           },
-          op: "overlap",
+          op: "OVERLAP",
           operand: { op: "ref", name: "language" }
         },
         expression: {
-          op: "overlap", operand: { op: "ref", name: "namespace" },
+          op: "OVERLAP", operand: { op: "ref", name: "namespace" },
           expression: {
             op: "literal",
             value: { setType: "STRING", elements: ["wikipedia"] },
@@ -72,7 +72,7 @@ describe("Filter", () => {
 
       // Dynamic
       {
-        op: "overlap", operand: { op: "ref", name: "time" },
+        op: "OVERLAP", operand: { op: "ref", name: "time" },
         expression: {
           op: "timeRange",
           operand: { op: "ref", name: "n" },
@@ -145,11 +145,11 @@ describe("Filter", () => {
           value: { setType: "STRING", elements: ["he"] },
           type: "SET"
         },
-        op: "overlap",
+        op: "OVERLAP",
         operand: { op: "ref", name: "language" }
       },
       expression: {
-        op: "overlap", operand: { op: "ref", name: "namespace" },
+        op: "OVERLAP", operand: { op: "ref", name: "namespace" },
         expression: {
           op: "literal",
           value: { setType: "STRING", elements: ["wikipedia"] },

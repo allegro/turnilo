@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
-import { SupportedAction } from "../../models/filter-clause/filter-clause";
+import { PlywoodFilterMethod } from "../../models/filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
 import { filterDefinitionConverter, StringFilterAction } from "./filter-definition";
 import { FilterDefinitionFixtures } from "./filter-definition.fixtures";
@@ -53,10 +53,10 @@ describe("FilterDefinition v3", () => {
   });
 
   const stringFilterTests = [
-    { dimension: "channel", action: StringFilterAction.in, clauseAction: SupportedAction.overlap, exclude: false, values: ["en", "pl"] },
-    { dimension: "channel", action: StringFilterAction.in, clauseAction: SupportedAction.overlap, exclude: true, values: ["en", "pl"] },
-    { dimension: "channel", action: StringFilterAction.contains, clauseAction: SupportedAction.contains, exclude: false, values: ["en"] },
-    { dimension: "channel", action: StringFilterAction.match, clauseAction: SupportedAction.match, exclude: false, values: ["^en$"] }
+    { dimension: "channel", action: StringFilterAction.IN, clauseAction: PlywoodFilterMethod.OVERLAP, exclude: false, values: ["en", "pl"] },
+    { dimension: "channel", action: StringFilterAction.IN, clauseAction: PlywoodFilterMethod.OVERLAP, exclude: true, values: ["en", "pl"] },
+    { dimension: "channel", action: StringFilterAction.CONTAINS, clauseAction: PlywoodFilterMethod.CONTAINS, exclude: false, values: ["en"] },
+    { dimension: "channel", action: StringFilterAction.MATCH, clauseAction: PlywoodFilterMethod.MATCH, exclude: false, values: ["^en$"] }
   ];
 
   describe("string filter conversion to filter clause", () => {

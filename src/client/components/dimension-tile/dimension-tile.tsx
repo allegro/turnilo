@@ -21,7 +21,6 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterSelection } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import {
   ContinuousDimensionKind,
@@ -110,10 +109,10 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     let filter = essence.getEffectiveFilter(timekeeper);
     // don't remove filter if time
     if (unfolded && dimension !== essence.getTimeDimension()) {
-      filter = filter.remove(dimension.expression);
+      filter = filter.removeClause(dimension.name);
     }
 
-    filter = filter.setExclusionforDimension(false, dimension);
+    filter = filter.setExclusionForDimension(false, dimension);
 
     let filterExpression = filter.toExpression();
 
@@ -196,7 +195,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   updateFoldability(essence: Essence, dimension: Dimension, colors: Colors): boolean {
     let { unfolded } = this.state;
     let foldable = true;
-    if (essence.filter.filteredOn(dimension.expression)) { // has filter
+    if (essence.filter.filteredOn(dimension.name)) { // has filter
       if (colors) {
         foldable = false;
         unfolded = false;
@@ -232,8 +231,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const unfolded = this.updateFoldability(nextEssence, nextDimension, nextColors);
 
     // keep granularity selection if measures change or if autoupdate
-    const currentSelection = essence.getTimeSelection();
-    const nextSelection = nextEssence.getTimeSelection();
+    const currentSelection = essence.getTimeClause();
+    const nextSelection = nextEssence.getTimeClause();
     const differentTimeFilterSelection = currentSelection ? !currentSelection.equals(nextSelection) : Boolean(nextSelection);
     if (differentTimeFilterSelection) {
       // otherwise render will try to format exiting dataset based off of new granularity (before fetchData returns)
@@ -258,7 +257,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   setFilterModeFromProps(props: DimensionTileProps) {
     if (props.colors) {
-      this.setState({ filterMode: Filter.INCLUDED });
+      this.setState({ filterMode: FilterMode.INCLUDE });
     } else {
       const filterMode = props.essence.filter.getModeForDimension(props.dimension);
       if (filterMode) this.setState({ filterMode });
@@ -292,32 +291,32 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       clicker.changeColors(colors);
     } else {
       if (e.altKey || e.ctrlKey || e.metaKey) {
-        let filteredOnMe = filter.filteredOnValue(dimension.expression, value);
+        let filteredOnMe = filter.filteredOnValue(dimension.name, value);
         let singleFilter = filter.getLiteralSet(dimension.expression).size() === 1;
 
         if (filteredOnMe && singleFilter) {
-          filter = filter.remove(dimension.expression);
+          filter = filter.removeClause(dimension.name);
         } else {
-          filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
+          filter = filter.removeClause(dimension.name).addValue(dimension.name, value);
         }
       } else {
-        filter = filter.toggleValue(dimension.expression, value);
+        filter = filter.toggleValue(dimension.name, value);
       }
 
       // If no longer filtered switch unfolded to true for later
       const { unfolded } = this.state;
-      if (!unfolded && !filter.filteredOn(dimension.expression)) {
+      if (!unfolded && !filter.filteredOn(dimension.name)) {
         this.setState({ unfolded: true });
       }
 
-      clicker.changeFilter(filter.setExclusionforDimension(filterMode === Filter.EXCLUDED, dimension));
+      clicker.changeFilter(filter.setExclusionForDimension(filterMode === FilterMode.EXCLUDE, dimension));
     }
   }
 
   changeFilterMode(value: FilterMode) {
     const { clicker, essence, dimension } = this.props;
     this.setState({ filterMode: value }, () => {
-      clicker.changeFilter(essence.filter.setExclusionforDimension(value === Filter.EXCLUDED, dimension));
+      clicker.changeFilter(essence.filter.setExclusionForDimension(value === FilterMode.EXCLUDE, dimension));
     });
   }
 
@@ -327,7 +326,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     if (!essence || !dimension) return null;
 
-    const options: FilterMode[] = [Filter.INCLUDED, Filter.EXCLUDED];
+    const options: FilterMode[] = [FilterMode.INCLUDE, FilterMode.EXCLUDE];
 
     return options.map(value => {
       return {
@@ -464,7 +463,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.getFormat()) : null;
     const colorValues = this.prepareColorValues(colors, dimension, rowData);
     const filterSet = essence.filter.getLiteralSet(dimension.expression);
-    const isExcluded = filterMode === Filter.EXCLUDED;
+    const isExcluded = filterMode === FilterMode.EXCLUDE;
 
     return rowData.map((datum, i) => {
       const segmentValue = datum[dimension.name];
@@ -477,7 +476,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           selected = false;
           className += " color";
         } else {
-          selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
+          selected = essence.filter.filteredOnValue(dimension.name, segmentValue as string);
           className += " " + (selected ? "selected" : "not-selected");
         }
         checkbox = <Checkbox

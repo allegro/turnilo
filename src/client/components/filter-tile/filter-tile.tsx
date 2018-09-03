@@ -216,7 +216,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       if (itemBlank.source === "from-highlight") {
         clicker.dropHighlight();
       } else {
-        clicker.changeFilter(essence.filter.remove(itemBlank.clause.expression));
+        clicker.changeFilter(essence.filter.removeClause(itemBlank.clause.reference));
       }
     }
     this.closeMenu();
@@ -290,7 +290,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         tryingToReplaceTime = targetClause && targetClause.expression.equals(dataCube.timeAttribute);
       }
 
-      const existingClause = filter.clauseForExpression(dimension.expression);
+      const existingClause = filter.clauseForReference(dimension.name);
       if (existingClause) {
         let newFilter: Filter;
         if (dragPosition.isReplace()) {
@@ -341,7 +341,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   // This will be called externally
   filterMenuRequest(dimension: Dimension) {
     const { filter } = this.props.essence;
-    if (filter.filteredOn(dimension.expression)) {
+    if (filter.filteredOn(dimension.name)) {
       this.openMenuOnDimension(dimension);
     } else {
       this.addDummy(dimension, new DragPosition({ insert: filter.length() }));
@@ -452,7 +452,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       FILTER_CLASS_NAME,
       "type-" + dimension.className,
       source,
-      (clause && clause.exclude) ? "excluded" : "included",
+      (clause && clause.not) ? "excluded" : "included",
       dimension === menuDimension ? "selected" : undefined
     ].filter(Boolean).join(" ");
 
@@ -504,7 +504,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     let itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
-        let dimension = dataCube.getDimensionByExpression(clause.expression);
+        const dimension = dataCube.getDimension(clause.reference);
         if (!dimension) return null;
         return {
           dimension,
@@ -530,7 +530,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           }
         });
         if (!added) {
-          const dimension = dataCube.getDimensionByExpression(clause.expression);
+          const dimension = dataCube.getDimension(clause.reference);
           if (dimension) {
             itemBlanks.push({
               dimension,

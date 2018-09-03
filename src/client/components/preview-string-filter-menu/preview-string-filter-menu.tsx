@@ -20,7 +20,7 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause, SupportedAction } from "../../../common/models/filter-clause/filter-clause";
+import { FilterClause, PlywoodFilterMethod } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { collect, Fn } from "../../../common/utils/general/general";
@@ -181,13 +181,13 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
         clause = new FilterClause({
           expression,
           selection: searchText,
-          action: SupportedAction.match
+          action: PlywoodFilterMethod.MATCH
         });
       } else if (filterMode === Filter.CONTAINS) {
         clause = new FilterClause({
           expression,
           selection: r(searchText),
-          action: SupportedAction.contains
+          action: PlywoodFilterMethod.CONTAINS
         });
       }
     }

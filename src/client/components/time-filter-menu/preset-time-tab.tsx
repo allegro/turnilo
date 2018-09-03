@@ -47,7 +47,7 @@ export interface PresetTimeTabState {
 }
 
 function initialState(essence: Essence, dimension: Dimension): PresetTimeTabState {
-  const filterClause = essence.filter.getClausesForDimension(dimension).get(0);
+  const filterClause = essence.filter.getClauseForDimension(dimension);
   const filterSelection = essence.filter.getSelection(dimension.expression) as TimeRangeExpression;
   const filterPeriod = getFilterPeriod(filterClause);
   const isValidPreset = filterPeriod !== null;

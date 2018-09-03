@@ -27,7 +27,7 @@ describe("ViewDefinitionConverter2", () => {
     visualization: "totals",
     timezone: "Etc/UTC",
     filter: {
-      op: "overlap",
+      op: "OVERLAP",
       operand: {
         op: "ref",
         name: "time"

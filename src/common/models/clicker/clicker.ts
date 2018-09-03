@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import { Expression } from "plywood";
 import { Colors } from "../colors/colors";
 import { Dimension } from "../dimension/dimension";
 import { VisStrategy } from "../essence/essence";
@@ -27,8 +26,6 @@ import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
 
 export interface Clicker {
-  changeTimeSelection?(selection: Expression): void;
-
   changeFilter?(filter: Filter, colors?: Colors): void;
 
   changeComparisonShift?(timeShift: TimeShift): void;

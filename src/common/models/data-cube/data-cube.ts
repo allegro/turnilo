@@ -47,7 +47,7 @@ import { Dimension } from "../dimension/dimension";
 import { DimensionOrGroupJS } from "../dimension/dimension-group";
 import { Dimensions } from "../dimension/dimensions";
 import { FilterClause } from "../filter-clause/filter-clause";
-import { Filter, FilterJS } from "../filter/filter";
+import { EMPTY_FILTER, Filter } from "../filter/filter";
 import { Measure, MeasureJS } from "../measure/measure";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
@@ -244,7 +244,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   static DEFAULT_INTROSPECTION: Introspection = "autofill-all";
   static INTROSPECTION_VALUES: Introspection[] = ["none", "no-autofill", "autofill-dimensions-only", "autofill-measures-only", "autofill-all"];
   static DEFAULT_DEFAULT_TIMEZONE = Timezone.UTC;
-  static DEFAULT_DEFAULT_FILTER = Filter.EMPTY;
+  static DEFAULT_DEFAULT_FILTER = EMPTY_FILTER;
   static DEFAULT_DEFAULT_SPLITS = Splits.EMPTY;
   static DEFAULT_DEFAULT_DURATION = Duration.fromJS("P1D");
 

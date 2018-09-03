@@ -32,11 +32,11 @@ describe("Highlight", () => {
               value: { setType: "STRING", elements: ["he"] },
               type: "SET"
             },
-            op: "overlap",
+            op: "OVERLAP",
             operand: { op: "ref", name: "language" }
           },
           expression: {
-            op: "overlap", operand: { op: "ref", name: "namespace" },
+            op: "OVERLAP", operand: { op: "ref", name: "namespace" },
             expression: {
               op: "literal",
               value: { setType: "STRING", elements: ["wikipedia"] },

@@ -39,12 +39,12 @@ function numberOrAnyToString(start: number): string {
 }
 
 function stringToNumberOrAny(startInput: string): number {
-  var parse = parseFloat(startInput);
+  const parse = parseFloat(startInput);
   return isNaN(parse) ? ANY_VALUE : parse;
 }
 
 const MENU_WIDTH = 250;
-const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(Filter.INCLUDED, Filter.EXCLUDED);
+const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(FilterMode.INCLUDE, FilterMode.EXCLUDE);
 
 export interface NumberFilterMenuProps {
   clicker: Clicker;

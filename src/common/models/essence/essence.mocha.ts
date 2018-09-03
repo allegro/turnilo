@@ -113,7 +113,7 @@ describe("Essence", () => {
               op: "ref"
             }
           },
-          op: "overlap",
+          op: "OVERLAP",
           operand: {
             name: "time",
             op: "ref"
