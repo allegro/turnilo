@@ -17,8 +17,7 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet, Record as ImmutableRecord } from "immutable";
-import { Expression, LiteralExpression, PlywoodValue, r, RefExpression, Set, SortExpression, TimeRange } from "plywood";
-import { Fix } from "tslint";
+import { Expression, RefExpression, Set, SortExpression, TimeRange } from "plywood";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
@@ -154,7 +153,6 @@ function resolveVisualization({ visualization, visualizations, dataCube, splits,
       visResolve = visualizationIndependentEvaluator({ dataCube, multiMeasureMode: effectiveMultiMeasureMode, selectedMeasures: measures.multi });
     }
   }
-
   return { visualization, splits, colors, visResolve };
 }
 
@@ -199,8 +197,11 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return essence.updateSplitsWithFilter();
   }
 
+  public visResolve: Resolve;
+
   constructor(parameters: EssenceValue) {
     const {
+      filter,
       visualizations,
       dataCube,
       timezone,
@@ -214,10 +215,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
     // TODO: that's stupid!
     if (!dataCube) throw new Error("Essence must have a dataCube");
-
     const { visResolve, visualization, colors, splits } = resolveVisualization(parameters);
-
-    const filter = parameters.filter || dataCube.getDefaultFilter();
 
     function hasNoMeasureOrMeasureIsSelected(highlight: Highlight): boolean {
       if (!highlight || !highlight.measure) {
@@ -363,7 +361,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     }
   }
 
-  private getMeasures(): List<Measure> {
+  public getMeasures(): List<Measure> {
     const { dataCube, measures: { multi } } = this;
     return multi.map(measureName => dataCube.getMeasure(measureName)).toList();
   }
