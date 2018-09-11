@@ -16,12 +16,12 @@
  */
 
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Split } from "../../../common/models/split/split";
 
 export class DragManager {
   static dragOrigin: string = null;
   static dragDimension: Dimension = null;
-  static dragSplit: SplitCombine = null;
+  static dragSplit: Split = null;
 
   static init() {
     document.addEventListener("dragend", () => {
@@ -44,12 +44,12 @@ export class DragManager {
     return DragManager.dragDimension;
   }
 
-  static setDragSplit(split: SplitCombine, origin: string): void {
+  static setDragSplit(split: Split, origin: string): void {
     DragManager.dragSplit = split;
     DragManager.dragOrigin = origin;
   }
 
-  static getDragSplit(): SplitCombine {
+  static getDragSplit(): Split {
     return DragManager.dragSplit;
   }
 }

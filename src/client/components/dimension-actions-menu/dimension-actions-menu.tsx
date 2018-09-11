@@ -19,7 +19,7 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -57,7 +57,7 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
     if (essence.splits.hasSplitOn(dimension) && essence.splits.length() === 1) {
       triggerSplitMenu(dimension);
     } else {
-      clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
+      clicker.changeSplit(Split.fromDimension(dimension.expression), VisStrategy.FairGame);
     }
     onClose();
   }
@@ -67,7 +67,7 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
     if (essence.splits.hasSplitOn(dimension)) {
       triggerSplitMenu(dimension);
     } else {
-      clicker.addSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
+      clicker.addSplit(Split.fromDimension(dimension.expression), VisStrategy.FairGame);
     }
     onClose();
   }

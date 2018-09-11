@@ -15,9 +15,8 @@
  */
 
 import { $, Expression } from "plywood";
-import { FilterClause, MAX_TIME_REF_NAME, NOW_REF_NAME, TimeFilterPeriod } from "../../../common/models/filter-clause/filter-clause";
+import { MAX_TIME_REF_NAME, NOW_REF_NAME, TimeFilterPeriod } from "../../../common/models/filter-clause/filter-clause";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
-import { isCurrentDuration, isLatestDuration, isPreviousDuration } from "../../../common/utils/formatter/formatter";
 
 const $MAX_TIME = $(MAX_TIME_REF_NAME);
 const $NOW = $(NOW_REF_NAME);
@@ -25,18 +24,6 @@ const $NOW = $(NOW_REF_NAME);
 export interface TimeFilterPreset {
   name: string;
   duration: string;
-}
-
-export function constructLatestFilter(duration: string): Expression {
-  return $MAX_TIME.timeRange(duration, -1);
-}
-
-export function constructCurrentFilter(duration: string): Expression {
-  return $NOW.timeFloor(duration).timeRange(duration, 1);
-}
-
-export function constructPreviousFilter(duration: string): Expression {
-  return $NOW.timeFloor(duration).timeRange(duration, -1);
 }
 
 export const LATEST_PRESETS: TimeFilterPreset[] = [
@@ -76,32 +63,14 @@ export const COMPARISON_PRESETS: ShiftPreset[] = [
   { label: "Q", shift: TimeShift.fromJS("P3M") }
 ];
 
-export function isShiftPreset(candidate: TimeShift): boolean {
-  return COMPARISON_PRESETS.some(({ shift }) => shift.equals(candidate));
-}
-
-export function getFilterPeriod(clause: FilterClause): TimeFilterPeriod {
-  const { relative, selection } = clause;
-
-  if (isLatestDuration(relative, selection)) {
-    return TimeFilterPeriod.LATEST;
-  } else if (isPreviousDuration(relative, selection)) {
-    return TimeFilterPeriod.PREVIOUS;
-  } else if (isCurrentDuration(relative, selection)) {
-    return TimeFilterPeriod.CURRENT;
-  } else {
-    return null;
-  }
-}
-
 export function constructFilter(period: TimeFilterPeriod, duration: string): Expression {
   switch (period) {
     case TimeFilterPeriod.PREVIOUS:
-      return constructPreviousFilter(duration);
+      return $NOW.timeFloor(duration).timeRange(duration, -1);
     case TimeFilterPeriod.LATEST:
-      return constructLatestFilter(duration);
+      return $MAX_TIME.timeRange(duration, -1);
     case TimeFilterPeriod.CURRENT:
-      return constructCurrentFilter(duration);
+      return $NOW.timeFloor(duration).timeRange(duration, 1);
     default:
       return null;
   }

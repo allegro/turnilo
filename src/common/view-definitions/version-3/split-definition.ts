@@ -15,8 +15,8 @@
  */
 
 import { Duration } from "chronoshift";
-import { $, Direction, LimitExpression, NumberBucketExpression, RefExpression, SortExpression, TimeBucketExpression } from "plywood";
-import { SplitCombine } from "../../models/split-combine/split-combine";
+import { Direction } from "plywood";
+import { createSort, Split } from "../../models/split/split";
 
 export enum SplitType {
   number = "number",
@@ -57,41 +57,31 @@ export const sortDirectionMapper: { [sort in SortDirection]: Direction; } = {
   descending: "descending"
 };
 
-export const directionMapper: { [sort in Direction]: SortDirection; } = {
-  ascending: SortDirection.ascending,
-  descending: SortDirection.descending
-};
-
 interface SplitDefinitionConversion<In extends SplitDefinition> {
-  toSplitCombine(split: In): SplitCombine;
+  toSplitCombine(split: In): Split;
 
-  fromSplitCombine(splitCombine: SplitCombine): In;
+  fromSplitCombine(splitCombine: Split): In;
 }
 
 const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = {
-  toSplitCombine(split: NumberSplitDefinition): SplitCombine {
+  toSplitCombine(split: NumberSplitDefinition): Split {
     const { dimension, limit, sort, granularity } = split;
-
-    const expression = $(dimension);
-    const bucketAction = new NumberBucketExpression({ size: granularity });
-    const sortAction = sort && new SortExpression({ expression: $(sort.ref), direction: sortDirectionMapper[sort.direction] });
-    const limitAction = limit && new LimitExpression({ value: limit });
-
-    return new SplitCombine({ expression, bucketAction, sortAction, limitAction });
+    return new Split({
+      reference: dimension,
+      bucket: granularity,
+      sort: sort && createSort({ reference: sort.ref, direction: sort.direction }),
+      limit
+    });
   },
 
-  fromSplitCombine(splitCombine: SplitCombine): NumberSplitDefinition {
-    const { expression, bucketAction, sortAction, limitAction } = splitCombine;
-
-    if (bucketAction instanceof NumberBucketExpression) {
-      const { name: dimension } = expression as RefExpression;
-
+  fromSplitCombine({ bucket, sort, reference, limit }: Split): NumberSplitDefinition {
+    if (typeof bucket === "number") {
       return {
         type: SplitType.number,
-        dimension,
-        granularity: bucketAction.size,
-        sort: sortAction && { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
-        limit: limitAction && limitAction.value
+        dimension: reference,
+        granularity: bucket,
+        sort: sort && { ref: sort.reference, direction: sort.direction },
+        limit
       };
     } else {
       throw new Error("");
@@ -100,29 +90,24 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
 };
 
 const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
-  toSplitCombine(split: TimeSplitDefinition): SplitCombine {
+  toSplitCombine(split: TimeSplitDefinition): Split {
     const { dimension, limit, sort, granularity } = split;
-
-    const expression = $(dimension);
-    const bucketAction: any = new TimeBucketExpression({ duration: Duration.fromJS(granularity) });
-    const sortAction = sort && new SortExpression({ expression: $(sort.ref), direction: sortDirectionMapper[sort.direction] });
-    const limitAction = limit && new LimitExpression({ value: limit });
-
-    return new SplitCombine({ expression, bucketAction, sortAction, limitAction });
+    return new Split({
+      reference: dimension,
+      bucket: Duration.fromJS(granularity),
+      sort: sort && createSort({ reference: sort.ref, direction: sort.direction }),
+      limit
+    });
   },
 
-  fromSplitCombine(splitCombine: SplitCombine): TimeSplitDefinition {
-    const { expression, bucketAction, sortAction, limitAction } = splitCombine;
-
-    if (bucketAction instanceof TimeBucketExpression) {
-      const { name: dimension } = expression as RefExpression;
-
+  fromSplitCombine({ limit, sort, reference, bucket }: Split): TimeSplitDefinition {
+    if (bucket instanceof Duration) {
       return {
         type: SplitType.time,
-        dimension,
-        granularity: bucketAction.duration.toJS(),
-        sort: sortAction && { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
-        limit: limitAction && limitAction.value
+        dimension: reference,
+        granularity: bucket.toJS(),
+        sort: sort && { ref: sort.reference, direction: sort.direction },
+        limit
       };
     } else {
       throw new Error("");
@@ -132,26 +117,21 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
 };
 
 const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = {
-  toSplitCombine(split: StringSplitDefinition): SplitCombine {
+  toSplitCombine(split: StringSplitDefinition): Split {
     const { dimension, limit, sort } = split;
-
-    const expression = $(dimension);
-    const bucketAction: null = null;
-    const sortAction = sort && new SortExpression({ expression: $(sort.ref), direction: sortDirectionMapper[sort.direction] });
-    const limitAction = limit && new LimitExpression({ value: limit });
-
-    return new SplitCombine({ expression, bucketAction, sortAction, limitAction });
+    return new Split({
+      reference: dimension,
+      sort: sort && createSort({ reference: sort.ref, direction: sort.direction }),
+      limit
+    });
   },
 
-  fromSplitCombine(splitCombine: SplitCombine): StringSplitDefinition {
-    const { expression, sortAction, limitAction } = splitCombine;
-    const { name: dimension } = expression as RefExpression;
-
+  fromSplitCombine({ limit, sort, reference }: Split): StringSplitDefinition {
     return {
       type: SplitType.string,
-      dimension,
-      sort: sortAction && { ref: sortAction.refName(), direction: directionMapper[sortAction.direction] },
-      limit: limitAction && limitAction.value
+      dimension: reference,
+      sort: sort && { ref: sort.reference, direction: sort.direction },
+      limit
     };
   }
 };
@@ -163,23 +143,23 @@ const splitConversions: { [type in SplitType]: SplitDefinitionConversion<SplitDe
 };
 
 export interface SplitDefinitionConverter {
-  toSplitCombine(split: SplitDefinition): SplitCombine;
+  toSplitCombine(split: SplitDefinition): Split;
 
-  fromSplitCombine(splitCombine: SplitCombine): SplitDefinition;
+  fromSplitCombine(splitCombine: Split): SplitDefinition;
 }
 
 export const splitConverter: SplitDefinitionConverter = {
-  toSplitCombine(split: SplitDefinition): SplitCombine {
+  toSplitCombine(split: SplitDefinition): Split {
     return splitConversions[split.type].toSplitCombine(split);
   },
 
-  fromSplitCombine(splitCombine: SplitCombine): SplitDefinition {
-    const { bucketAction } = splitCombine;
+  fromSplitCombine(splitCombine: Split): SplitDefinition {
+    const { bucket } = splitCombine;
 
-    if (bucketAction instanceof NumberBucketExpression) {
-      return numberSplitConversion.fromSplitCombine(splitCombine);
-    } else if (bucketAction instanceof TimeBucketExpression) {
+    if (bucket instanceof Duration) {
       return timeSplitConversion.fromSplitCombine(splitCombine);
+    } else if (typeof bucket === "number") {
+      return numberSplitConversion.fromSplitCombine(splitCombine);
     } else {
       return stringSplitConversion.fromSplitCombine(splitCombine);
     }

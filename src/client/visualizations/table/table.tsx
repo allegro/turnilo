@@ -27,7 +27,7 @@ import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
@@ -52,7 +52,7 @@ const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
-function formatSegment(value: any, timezone: Timezone, split?: SplitCombine): string {
+function formatSegment(value: any, timezone: Timezone, split?: Split): string {
   if (TimeRange.isTimeRange(value)) {
     const time = moment(value.start, timezone.toString()).toDate();
     if (split && split.bucketAction instanceof TimeBucketExpression) {
@@ -170,7 +170,7 @@ export class Table extends BaseVisualization<TableState> {
 
   private getSortRef({ element, columnType, measure }: PositionHover): RefExpression {
     if (element === HoverElement.CORNER) {
-      return $(SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER);
+      return $(Split.SORT_ON_DIMENSION_PLACEHOLDER);
     }
     if (element === HoverElement.HEADER) {
       switch (columnType) {
@@ -432,7 +432,7 @@ export class Table extends BaseVisualization<TableState> {
     const commonSort = essence.getCommonSort();
     if (!commonSort) return null;
 
-    if (commonSort.refName() === SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER) {
+    if (commonSort.refName() === Split.SORT_ON_DIMENSION_PLACEHOLDER) {
       return <SvgIcon
         svg={require("../../icons/sort-arrow.svg")}
         className={"sort-arrow " + commonSort.direction}

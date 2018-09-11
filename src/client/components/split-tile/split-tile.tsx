@@ -22,7 +22,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { classNames, findParentWithClass, getXFromEvent, isInside, setDragGhost, transformStyle, uniqueId } from "../../utils/dom/dom";
@@ -45,7 +45,7 @@ export interface SplitTileProps {
 export interface SplitTileState {
   menuOpenOn?: Element;
   menuDimension?: Dimension;
-  menuSplit?: SplitCombine;
+  menuSplit?: Split;
   dragPosition?: DragPosition;
   overflowMenuOpenOn?: Element;
   maxItems?: number;
@@ -69,10 +69,10 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   componentWillReceiveProps(nextProps: SplitTileProps) {
     const { menuStage, essence } = nextProps;
-    var { splits } = essence;
+    const { splits } = essence;
 
     if (menuStage) {
-      var newMaxItems = getMaxItems(menuStage.width, splits.toArray().length);
+      const newMaxItems = getMaxItems(menuStage.width, splits.splits.count());
       if (newMaxItems !== this.state.maxItems) {
         this.setState({
           menuOpenOn: null,
@@ -94,12 +94,12 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     }
   }
 
-  selectDimensionSplit(dimension: Dimension, split: SplitCombine, e: MouseEvent) {
+  selectDimensionSplit(dimension: Dimension, split: Split, e: MouseEvent) {
     var target = findParentWithClass(e.target as Element, SPLIT_CLASS_NAME);
     this.openMenu(dimension, split, target);
   }
 
-  openMenu(dimension: Dimension, split: SplitCombine, target: Element) {
+  openMenu(dimension: Dimension, split: Split, target: Element) {
     var { menuOpenOn } = this.state;
     if (menuOpenOn === target) {
       this.closeMenu();
@@ -157,7 +157,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     });
   }
 
-  removeSplit(split: SplitCombine, e: MouseEvent) {
+  removeSplit(split: Split, e: MouseEvent) {
     var { clicker } = this.props;
     clicker.removeSplit(split, VisStrategy.FairGame);
     this.closeMenu();
@@ -165,7 +165,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     e.stopPropagation();
   }
 
-  dragStart(dimension: Dimension, split: SplitCombine, splitIndex: number, e: DragEvent) {
+  dragStart(dimension: Dimension, split: Split, splitIndex: number, e: DragEvent) {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
     dataTransfer.setData("text/plain", dimension.title);
@@ -223,11 +223,11 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
     var { splits } = essence;
 
-    var newSplitCombine: SplitCombine = null;
+    var newSplitCombine: Split = null;
     if (DragManager.getDragSplit()) {
       newSplitCombine = DragManager.getDragSplit();
     } else if (DragManager.getDragDimension()) {
-      newSplitCombine = SplitCombine.fromExpression(DragManager.getDragDimension().expression);
+      newSplitCombine = Split.fromDimension(DragManager.getDragDimension());
     }
 
     if (newSplitCombine) {
@@ -287,7 +287,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     />;
   }
 
-  renderOverflowMenu(items: SplitCombine[]): JSX.Element {
+  renderOverflowMenu(items: Split[]): JSX.Element {
     var { overflowMenuOpenOn } = this.state;
     if (!overflowMenuOpenOn) return null;
 
@@ -313,14 +313,14 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     </BubbleMenu>;
   }
 
-  renderOverflow(items: SplitCombine[], itemX: number): JSX.Element {
+  renderOverflow(items: Split[], itemX: number): JSX.Element {
     var { essence } = this.props;
     var { dataCube } = essence;
 
     var style = transformStyle(itemX, 0);
 
     return <div
-      className={classNames("overflow", { "all-continuous": items.every(item => item.getDimension(dataCube.dimensions).isContinuous()) })}
+      className={classNames("overflow", { "all-continuous": items.every(item => dataCube.getDimension(item.reference).isContinuous()) })}
       ref="overflow"
       key="overflow"
       style={style}
@@ -331,12 +331,12 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     </div>;
   }
 
-  renderSplit(split: SplitCombine, style: React.CSSProperties, i: number) {
+  renderSplit(split: Split, style: React.CSSProperties, i: number) {
     var { essence } = this.props;
     var { menuDimension } = this.state;
     var { dataCube } = essence;
 
-    var dimension = split.getDimension(dataCube.dimensions);
+    var dimension = dataCube.getDimension(split.reference);
     if (!dimension) throw new Error("dimension not found");
     var dimensionName = dimension.name;
 
@@ -354,7 +354,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       onDragStart={this.dragStart.bind(this, dimension, split, i)}
       style={style}
     >
-      <div className="reading">{split.getTitle(dataCube.dimensions)}</div>
+      <div className="reading">{split.getTitle(dataCube.getDimension(split.reference))}</div>
       <div className="remove" onClick={this.removeSplit.bind(this, split)}>
         <SvgIcon svg={require("../../icons/x.svg")} />
       </div>
@@ -366,7 +366,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var { dragPosition, maxItems } = this.state;
     var { splits } = essence;
 
-    var splitsArray = splits.toArray();
+    var splitsArray = splits.splits.toArray();
 
     var itemX = 0;
     var splitItems = splitsArray.slice(0, maxItems).map((split, i) => {

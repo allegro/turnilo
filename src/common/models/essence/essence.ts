@@ -16,8 +16,8 @@
  */
 
 import { Timezone } from "chronoshift";
-import { List, OrderedSet, Record as ImmutableRecord } from "immutable";
-import { Expression, RefExpression, Set, SortExpression, TimeRange } from "plywood";
+import { List, OrderedSet, Record as ImmutableRecord, Set } from "immutable";
+import { RefExpression, Set as PlywoodSet, SortExpression } from "plywood";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
@@ -27,7 +27,7 @@ import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
-import { SplitCombine } from "../split-combine/split-combine";
+import { Sort, Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
 import { Timekeeper } from "../timekeeper/timekeeper";
@@ -215,6 +215,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
     // TODO: that's stupid!
     if (!dataCube) throw new Error("Essence must have a dataCube");
+
     const { visResolve, visualization, colors, splits } = resolveVisualization(parameters);
 
     function hasNoMeasureOrMeasureIsSelected(highlight: Highlight): boolean {
@@ -313,10 +314,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return timeFilter.evaluate(timekeeper.now(), dataCube.getMaxTime(timekeeper), timezone);
   }
 
-  // TODO: should return just filter clause, overlap should be done in makeQuery
-  public currentTimeFilter(timekeeper: Timekeeper): Expression {
-    const timeFilter = this.timeFilter(timekeeper);
-    return this.dataCube.timeAttribute.overlap(timeFilter.getLiteralSet());
+  public currentTimeFilter(timekeeper: Timekeeper): FixedTimeFilterClause {
+    return this.timeFilter(timekeeper);
   }
 
   private shiftToPrevious(timeFilter: FixedTimeFilterClause): FixedTimeFilterClause {
@@ -329,11 +328,9 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       })));
   }
 
-  // TODO: should return just filter clause, overlap should be done in makeQuery
-  public previousTimeFilter(timekeeper: Timekeeper): Expression {
+  public previousTimeFilter(timekeeper: Timekeeper): FixedTimeFilterClause {
     const timeFilter = this.timeFilter(timekeeper);
-    const shiftedFilterExpression = this.shiftToPrevious(timeFilter);
-    return this.dataCube.timeAttribute.overlap(shiftedFilterExpression);
+    return this.shiftToPrevious(timeFilter);
   }
 
   public getTimeClause(): TimeFilterClause {
@@ -426,14 +423,14 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return highlight.owner === owner && measure && highlight.measure !== measure;
   }
 
-  public getSingleHighlightSet(): Set {
+  public getSingleHighlightSet(): PlywoodSet {
     const { highlight } = this;
     if (!highlight) return null;
     return highlight.delta.getSingleClauseSet();
   }
 
-  public getCommonSort(): SortExpression {
-    return this.splits.getCommonSort(this.dataCube.dimensions);
+  public getCommonSort(): Sort {
+    return this.splits.getCommonSort();
   }
 
   // Setters
@@ -473,11 +470,11 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       .set("filter", filter)
       .update("highlight", highlight => removeHighlight ? null : highlight)
       .update("splits", splits => {
-        const differentAttributes = filter.clauses.filter(clause => {
+        const differentClauses = filter.clauses.filter(clause => {
           const otherClause = oldFilter.clauseForReference(clause.reference);
           return !clause.equals(otherClause);
         });
-        return splits.removeBucketingFrom(differentAttributes);
+        return splits.removeBucketingFrom(Set(differentClauses.map(clause => clause.reference)));
       })
       .updateSplitsWithFilter();
   }
@@ -527,15 +524,15 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       .changeVisualization(changedVisualisation || visualization);
   }
 
-  public changeSplit(splitCombine: SplitCombine, strategy: VisStrategy): Essence {
-    return this.changeSplits(Splits.fromSplitCombine(splitCombine), strategy);
+  public changeSplit(splitCombine: Split, strategy: VisStrategy): Essence {
+    return this.changeSplits(Splits.fromSplit(splitCombine), strategy);
   }
 
-  public addSplit(split: SplitCombine, strategy: VisStrategy): Essence {
+  public addSplit(split: Split, strategy: VisStrategy): Essence {
     return this.changeSplits(this.splits.addSplit(split), strategy);
   }
 
-  public removeSplit(split: SplitCombine, strategy: VisStrategy): Essence {
+  public removeSplit(split: Split, strategy: VisStrategy): Essence {
     return this.changeSplits(this.splits.removeSplit(split), strategy);
   }
 

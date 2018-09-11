@@ -27,7 +27,7 @@ import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
-import { SplitCombineFixtures } from "../split-combine/split-combine.fixtures";
+import { SplitFixtures } from "../split/split.fixtures";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
 import { createMeasures, Essence, EssenceContext, EssenceValue } from "./essence";
@@ -95,10 +95,10 @@ export class EssenceFixtures {
       FilterClauseFixtures.numberRange("commentLength", 3, null, "[)", false)
     ];
     const splitCombines = [
-      SplitCombineFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
-      SplitCombineFixtures.stringSplitCombine("isRobot", "delta", SortDirection.descending, 5),
-      SplitCombineFixtures.numberSplitCombine("commentLength", 10, "delta", SortDirection.descending, 5),
-      SplitCombineFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, 5)
+      SplitFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
+      SplitFixtures.stringSplitCombine("isRobot", "delta", SortDirection.descending, 5),
+      SplitFixtures.numberSplitCombine("commentLength", 10, "delta", SortDirection.descending, 5),
+      SplitFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, 5)
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
@@ -123,8 +123,8 @@ export class EssenceFixtures {
       FilterClauseFixtures.stringIn("channel", ["en", "no", "sv", "de", "fr", "cs"])
     ];
     const splitCombines = [
-      SplitCombineFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
-      SplitCombineFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, null)
+      SplitFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
+      SplitFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, null)
     ];
     const highlightClauses = [
       FilterClauseFixtures.timeRange("time", new Date("2015-09-12T10:00:00Z"), new Date("2015-09-12T11:00:00Z"), false)

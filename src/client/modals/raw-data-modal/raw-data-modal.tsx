@@ -146,7 +146,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataCube } = essence;
 
     return essence.getEffectiveFilter(timekeeper).clauses.map(clause => {
-      const dimension = dataCube.getDimensionByExpression(clause.expression);
+      const dimension = dataCube.getDimension(clause.reference);
       if (!dimension) return null;
       return formatFilterClause(dimension, clause, essence.timezone);
     }).toList();

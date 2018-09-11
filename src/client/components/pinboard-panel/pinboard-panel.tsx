@@ -110,7 +110,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         if (split) {
           var sortAction = split.sortAction;
           var direction = sortAction ? sortAction.direction : SortExpression.DESCENDING;
-          var newSplit = split.changeSortExpression(new SortExpression({
+          var newSplit = split.changeSort(new SortExpression({
             expression: sortOn.getExpression(),
             direction
           }));

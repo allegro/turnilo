@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
+import { Set as ImmutableSet } from "immutable";
 import { $, Dataset, r, Set, SortExpression } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FilterClause, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { collect, Fn } from "../../../common/utils/general/general";
@@ -174,14 +175,14 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   constructFilter(): Filter {
     var { dimension, filterMode, onClauseChange } = this.props;
     var { selectedValues } = this.state;
-    var { expression } = dimension;
+    var { name } = dimension;
 
-    var clause: FilterClause = null;
+    var clause: StringFilterClause = null;
     if (selectedValues.size()) {
-      clause = new FilterClause({
-        expression,
-        selection: r(selectedValues),
-        exclude: filterMode === Filter.EXCLUDED
+      clause = new StringFilterClause({
+        reference: name,
+        values: ImmutableSet(selectedValues),
+        not: filterMode === FilterMode.EXCLUDE
       });
     }
     return onClauseChange(clause);
@@ -247,7 +248,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
         });
       }
 
-      var checkboxType = filterMode === Filter.EXCLUDED ? "cross" : "check";
+      var checkboxType = filterMode === FilterMode.EXCLUDE ? "cross" : "check";
       rows = rowStrings.map(segmentValue => {
         var segmentValueStr = String(segmentValue);
         var selected = selectedValues && selectedValues.contains(segmentValue);

@@ -30,7 +30,7 @@ import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
 import { Manifest } from "../../../common/models/manifest/manifest";
 import { Measure } from "../../../common/models/measure/measure";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
@@ -140,15 +140,15 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         if (colors) essence = essence.changeColors(colors);
         this.setState({ essence: essence.changeSplits(splits, strategy) });
       },
-      changeSplit: (split: SplitCombine, strategy: VisStrategy) => {
+      changeSplit: (split: Split, strategy: VisStrategy) => {
         const { essence } = this.state;
         this.setState({ essence: essence.changeSplit(split, strategy) });
       },
-      addSplit: (split: SplitCombine, strategy: VisStrategy) => {
+      addSplit: (split: Split, strategy: VisStrategy) => {
         const { essence } = this.state;
         this.setState({ essence: essence.addSplit(split, strategy) });
       },
-      removeSplit: (split: SplitCombine, strategy: VisStrategy) => {
+      removeSplit: (split: Split, strategy: VisStrategy) => {
         const { essence } = this.state;
         this.setState({ essence: essence.removeSplit(split, strategy) });
       },
@@ -339,7 +339,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     e.preventDefault();
     const dimension = DragManager.getDragDimension();
     if (dimension) {
-      this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
+      this.clicker.changeSplit(Split.fromDimension(dimension.expression), VisStrategy.FairGame);
     }
     this.setState({ dragOver: false });
   }

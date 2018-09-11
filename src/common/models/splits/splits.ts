@@ -16,271 +16,166 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { List } from "immutable";
-import { Class, Instance } from "immutable-class";
-import { $, Expression, NumberBucketExpression, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
-import { immutableListsEqual } from "../../utils/general/general";
+import { List, Record, Set } from "immutable";
+import { NumberBucketExpression, PlywoodRange, TimeBucketExpression, TimeRange } from "plywood";
+import { Unary } from "../../utils/functional/functional";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
 import { Filter } from "../filter/filter";
 import { getBestBucketUnitForRange, getDefaultGranularityForKind } from "../granularity/granularity";
 import { Measures } from "../measure/measures";
-import { SplitCombine, SplitCombineContext, SplitCombineJS } from "../split-combine/split-combine";
+import { Sort, Split } from "../split/split";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
-function withholdSplit(splits: List<SplitCombine>, split: SplitCombine, allowIndex: number): List<SplitCombine> {
-  return <List<SplitCombine>> splits.filter((s, i) => {
-    return i === allowIndex || !s.equalsByExpression(split);
-  });
+export interface SplitsValue {
+  splits: List<Split>;
 }
 
-function swapSplit(splits: List<SplitCombine>, split: SplitCombine, other: SplitCombine, allowIndex: number): List<SplitCombine> {
-  return <List<SplitCombine>> splits.map((s, i) => {
-    return (i === allowIndex || !s.equalsByExpression(split)) ? s : other;
-  });
-}
+const defaultSplits: SplitsValue = { splits: List([]) };
 
-export type SplitsValue = List<SplitCombine>;
-export type SplitsJS = SplitCombineJS | SplitCombineJS[];
-export type SplitContext = SplitCombineContext;
+export class Splits extends Record<SplitsValue>(defaultSplits) {
 
-var check: Class<SplitsValue, SplitsJS>;
-
-export class Splits implements Instance<SplitsValue, SplitsJS> {
-  static EMPTY: Splits;
-
-  static isSplits(candidate: any): candidate is Splits {
-    return candidate instanceof Splits;
+  static fromSplit(split: Split): Splits {
+    return new Splits({ splits: List([split]) });
   }
 
-  static fromSplitCombine(splitCombine: SplitCombine): Splits {
-    return new Splits(<List<SplitCombine>> List([splitCombine]));
-  }
-
-  static fromJS(parameters: SplitsJS, context?: SplitContext): Splits {
-    if (!Array.isArray(parameters)) parameters = [parameters as any];
-    return new Splits(List((parameters as SplitCombineJS[]).map(splitCombine => SplitCombine.fromJS(splitCombine, context))));
-  }
-
-  public splitCombines: List<SplitCombine>;
-
-  constructor(parameters: SplitsValue) {
-    this.splitCombines = parameters;
-  }
-
-  public valueOf(): SplitsValue {
-    return this.splitCombines;
-  }
-
-  public toJS(): SplitsJS {
-    return this.splitCombines.toArray().map(splitCombine => splitCombine.toJS());
-  }
-
-  public toJSON(): SplitsJS {
-    return this.toJS();
+  static fromJS(parameters: any): Splits {
+    const splits = List(parameters.splits).map(split => Split.fromJS(split));
+    return new Splits({ splits });
   }
 
   public toString() {
-    return this.splitCombines.map(splitCombine => splitCombine.toString()).join(",");
+    return this.splits.map(split => split.toString()).join(",");
   }
 
-  public equals(other: Splits): boolean {
-    return Splits.isSplits(other) &&
-      immutableListsEqual(this.splitCombines, other.splitCombines);
+  public replaceByIndex(index: number, replace: Split): Splits {
+    const { splits } = this;
+    if (splits.count() === index) {
+      return this.insertByIndex(index, replace);
+    }
+    return this.updateSplits(splits => {
+      const newSplitIndex = splits.findIndex(split => split.equals(replace));
+      if (newSplitIndex === -1) return splits.set(index, replace);
+      const oldSplit = splits.get(index);
+      return splits
+        .set(index, replace)
+        .set(newSplitIndex, oldSplit);
+    });
   }
 
-  public replaceByIndex(index: number, replace: SplitCombine): Splits {
-    var { splitCombines } = this;
-    if (splitCombines.size === index) return this.insertByIndex(index, replace);
-    var replacedSplit = splitCombines.get(index);
-    splitCombines = <List<SplitCombine>> splitCombines.map((s, i) => i === index ? replace : s);
-    splitCombines = swapSplit(splitCombines, replace, replacedSplit, index);
-    return new Splits(splitCombines);
+  public insertByIndex(index: number, insert: Split): Splits {
+    return this.updateSplits(splits =>
+      splits
+        .insert(index, insert)
+        .filterNot((split, idx) => split.equals(insert) && idx !== index));
   }
 
-  public insertByIndex(index: number, insert: SplitCombine): Splits {
-    var { splitCombines } = this;
-    splitCombines = <List<SplitCombine>> splitCombines.splice(index, 0, insert);
-    splitCombines = withholdSplit(splitCombines, insert, index);
-    return new Splits(splitCombines);
+  public addSplit(split: Split): Splits {
+    const { splits } = this;
+    return this.insertByIndex(splits.count(), split);
   }
 
-  public addSplit(split: SplitCombine): Splits {
-    const { splitCombines } = this;
-    return this.insertByIndex(splitCombines.size, split);
+  public removeSplit(split: Split): Splits {
+    return this.updateSplits(splits => splits.filter(s => s !== split));
   }
 
-  public removeSplit(split: SplitCombine): Splits {
-    return new Splits(<List<SplitCombine>> this.splitCombines.filter(s => s !== split));
-  }
-
-  public changeSortExpression(sort: SortExpression): Splits {
-    return new Splits(<List<SplitCombine>> this.splitCombines.map(s => s.changeSortExpression(sort)));
-  }
-
-  public changeSortExpressionFromNormalized(sort: SortExpression, dimensions: Dimensions): Splits {
-    return new Splits(<List<SplitCombine>> this.splitCombines.map(s => s.changeSortExpressionFromNormalized(sort, dimensions)));
-  }
-
-  public getTitle(dimensions: Dimensions): string {
-    return this.splitCombines.map(s => s.getDimension(dimensions).title).join(", ");
+  public changeSortExpressionFromNormalized(sort: Sort): Splits {
+    return this.updateSplits(splits => splits.map(s => s.changeSortFromNormalized(sort)));
   }
 
   public length(): number {
-    return this.splitCombines.size;
+    return this.splits.count();
   }
 
-  public forEach(sideEffect: (value?: SplitCombine, key?: number, iter?: List<SplitCombine>) => any, context?: any): number {
-    return this.splitCombines.forEach(sideEffect, context);
+  public getSplit(index: number): Split {
+    return this.splits.get(index);
   }
 
-  public get(index: number): SplitCombine {
-    return this.splitCombines.get(index);
-  }
-
-  public first(): SplitCombine {
-    return this.splitCombines.first();
-  }
-
-  public last(): SplitCombine {
-    return this.splitCombines.last();
-  }
-
-  public findSplitForDimension(dimension: Dimension): SplitCombine {
-    var dimensionExpression = dimension.expression;
-    return this.splitCombines.find(s => s.expression.equals(dimensionExpression));
+  public findSplitForDimension({ name }: Dimension): Split {
+    return this.splits.find(s => s.reference === name);
   }
 
   public hasSplitOn(dimension: Dimension): boolean {
     return Boolean(this.findSplitForDimension(dimension));
   }
 
-  public replace(search: SplitCombine, replace: SplitCombine): Splits {
-    return new Splits(<List<SplitCombine>> this.splitCombines.map(s => s.equals(search) ? replace : s));
+  public replace(search: Split, replace: Split): Splits {
+    return this.updateSplits(splits => splits.map(s => s.equals(search) ? replace : s));
   }
 
-  public map(mapper: (value?: SplitCombine, key?: number) => SplitCombine, context?: any): Splits {
-    return new Splits(<List<SplitCombine>> this.splitCombines.map(mapper, context));
-  }
-
-  public toArray(): SplitCombine[] {
-    return this.splitCombines.toArray();
-  }
-
-  public removeBucketingFrom(expressions: Expression[]) {
-    var changed = false;
-    var newSplitCombines = <List<SplitCombine>> this.splitCombines.map(splitCombine => {
-      if (!splitCombine.bucketAction) return splitCombine;
-      var splitCombineExpression = splitCombine.expression;
-      if (expressions.every(ex => !ex.equals(splitCombineExpression))) return splitCombine;
-
-      changed = true;
-      return splitCombine.changeBucketAction(null);
-    });
-
-    return changed ? new Splits(newSplitCombines) : this;
+  public removeBucketingFrom(references: Set<string>) {
+    return this.updateSplits(splits => splits.map(split => {
+      if (!split.bucket || !references.has(split.reference)) return split;
+      return split.changeBucket(null);
+    }));
   }
 
   public updateWithFilter(filter: Filter, dimensions: Dimensions): Splits {
-    if (filter.isRelative()) {
-      // Make specific
-      filter = filter.getSpecificFilter(Timekeeper.globalNow(), Timekeeper.globalNow(), Timezone.UTC);
-    }
+    const specificFilter = filter.getSpecificFilter(Timekeeper.globalNow(), Timekeeper.globalNow(), Timezone.UTC);
 
-    var changed = false;
-    var newSplitCombines = <List<SplitCombine>> this.splitCombines.map(splitCombine => {
-      if (splitCombine.bucketAction) return splitCombine;
+    return this.updateSplits(splits => splits.map(split => {
+      const { bucket, reference } = split;
+      if (bucket) return split;
 
-      var splitExpression = splitCombine.expression;
-      var splitDimension = dimensions.getDimensionByExpression(splitExpression);
-      var splitKind = splitDimension.kind;
-      if (!splitDimension || !(splitKind === "time" || splitKind === "number") || !splitDimension.canBucketByDefault()) return splitCombine;
-      changed = true;
-
-      var selectionSet = filter.getLiteralSet(splitExpression);
-      var extent = selectionSet ? selectionSet.extent() : null;
+      const splitDimension = dimensions.getDimensionByName(reference);
+      const splitKind = splitDimension.kind;
+      if (!splitDimension || !(splitKind === "time" || splitKind === "number") || !splitDimension.canBucketByDefault()) {
+        return split;
+      }
+      // TODO: calculate extent from specificFilter and don't use plywood range (prolly something inside granularity to fix)
+      const extent: PlywoodRange = null;
 
       if (splitKind === "time") {
-        return splitCombine.changeBucketAction(new TimeBucketExpression({
-          duration: TimeRange.isTimeRange(extent) ? (getBestBucketUnitForRange(
-            extent,
-            false,
-            splitDimension.bucketedBy,
-            splitDimension.granularities) as Duration) :
-            (getDefaultGranularityForKind("time", splitDimension.bucketedBy, splitDimension.granularities) as TimeBucketExpression).duration
-        }));
+        return split.changeBucket(TimeRange.isTimeRange(extent)
+          ? (getBestBucketUnitForRange(extent, false, splitDimension.bucketedBy, splitDimension.granularities) as Duration)
+          : (getDefaultGranularityForKind("time", splitDimension.bucketedBy, splitDimension.granularities) as TimeBucketExpression).duration
+        );
 
       } else if (splitKind === "number") {
-        return splitCombine.changeBucketAction(new NumberBucketExpression({
-          size: extent ? (getBestBucketUnitForRange(extent, false, splitDimension.bucketedBy, splitDimension.granularities) as number) :
-            (getDefaultGranularityForKind("number", splitDimension.bucketedBy, splitDimension.granularities) as NumberBucketExpression).size
-        }));
+        return split.changeBucket(extent
+          ? (getBestBucketUnitForRange(extent, false, splitDimension.bucketedBy, splitDimension.granularities) as number)
+          : (getDefaultGranularityForKind("number", splitDimension.bucketedBy, splitDimension.granularities) as NumberBucketExpression).size
+        );
 
       }
 
       throw new Error("unknown extent type");
-    });
-
-    return changed ? new Splits(newSplitCombines) : this;
+    }));
   }
 
   public constrainToDimensionsAndMeasures(dimensions: Dimensions, measures: Measures): Splits {
-    function validSplit(split: SplitCombine): boolean {
-      if (!split.getDimension(dimensions)) return false;
-      if (!split.sortAction) return true;
-      var sortRef = split.sortAction.refName();
+    function validSplit(split: Split): boolean {
+      if (!dimensions.getDimensionByName(split.reference)) return false;
+      if (!split.sort) return true;
+      const sortRef = split.sort.reference;
       return dimensions.containsDimensionWithName(sortRef) || measures.containsMeasureWithName(sortRef);
     }
 
-    var changed = false;
-    var splitCombines: SplitCombine[] = [];
-    this.splitCombines.forEach(split => {
-      if (validSplit(split)) {
-        splitCombines.push(split);
-      } else {
-        changed = true;
-        // Potential special handling for time split would go here
-      }
-    });
-
-    return changed ? new Splits(List(splitCombines)) : this;
+    return this.updateSplits(splits => splits.filter(validSplit));
   }
 
   public timezoneDependant(): boolean {
-    return this.splitCombines.some(splitCombine => splitCombine.timezoneDependant());
+    return this.splits.some(split => split.timezoneDependant());
   }
 
   public changeSortIfOnMeasure(fromMeasure: string, toMeasure: string): Splits {
-    var changed = false;
-    var newSplitCombines = <List<SplitCombine>> this.splitCombines.map(splitCombine => {
-      const { sortAction } = splitCombine;
-      if (!sortAction || sortAction.refName() !== fromMeasure) return splitCombine;
-
-      changed = true;
-      return splitCombine.changeSortExpression(new SortExpression({
-        expression: $(toMeasure),
-        direction: sortAction.direction
-      }));
-    });
-
-    return changed ? new Splits(newSplitCombines) : this;
+    return this.updateSplits(splits => splits.map(split => {
+      const { sort } = split;
+      if (!sort || sort.reference !== fromMeasure) return split;
+      return split.setIn(["sort", "reference"], toMeasure);
+    }));
   }
 
-  public getCommonSort(dimensions: Dimensions): SortExpression {
-    var splitCombines = this.splitCombines.toArray();
-    var commonSort: SortExpression = null;
-    for (var splitCombine of splitCombines) {
-      var sort = splitCombine.getNormalizedSortExpression(dimensions);
-      if (commonSort) {
-        if (!commonSort.equals(sort)) return null;
-      } else {
-        commonSort = sort;
-      }
-    }
-    return commonSort;
+  public getCommonSort(): Sort {
+    const { splits } = this;
+    if (splits.count() === 0) return null;
+    const commonSort = splits.get(0).sort;
+    return splits.every(({ sort }) => sort.equals(commonSort)) ? commonSort : null;
+  }
+
+  private updateSplits(updater: Unary<List<Split>, List<Split>>) {
+    return this.update("splits", updater);
   }
 }
 
-check = Splits;
-
-Splits.EMPTY = new Splits(<List<SplitCombine>> List());
+export const EMPTY_SPLITS = new Splits({ splits: List([]) });

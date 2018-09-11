@@ -18,11 +18,10 @@
 import { Duration, Timezone } from "chronoshift";
 import * as numeral from "numeral";
 
-import { $, LiteralExpression, NumberRange, TimeRange, TimeRangeExpression } from "plywood";
+import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { Dimension } from "../../models/dimension/dimension";
-import { FilterClause, FilterSelection } from "../../models/filter-clause/filter-clause";
-import { Filter } from "../../models/filter/filter";
+import { FilterClause, FixedTimeFilterClause, isTimeFilter, StringFilterAction, StringFilterClause, TimeFilterClause, TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 
 import { DisplayYear, formatTimeRange } from "../../utils/time/time";
 
@@ -103,113 +102,60 @@ export function formatValue(value: any, timezone?: Timezone, displayYear?: Displ
   }
 }
 
-export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone, verbose?: boolean): string {
-  const { title, values } = this.getFormattedClause(dimension, clause, timezone, verbose);
+export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
+  const { title, values } = this.getFormattedClause(dimension, clause, timezone);
   return title ? `${title} ${values}` : values;
 }
 
-export function getFormattedClause(dimension: Dimension, clause: FilterClause, timezone: Timezone, verbose?: boolean): { title: string, values: string } {
-  const dimKind = dimension.kind;
+function getFilterClauseValues(clause: FilterClause, timezone: Timezone): string {
+  if (isTimeFilter(clause)) {
+    return getFormattedTimeClauseValues(clause as TimeFilterClause, timezone);
+  }
   let values: string;
-  const clauseSet = clause.getLiteralSet();
-
-  function getClauseLabel() {
-    const dimTitle = dimension.title;
-    if (dimKind === "time" && !verbose) return "";
-    const delimiter = ["regex", "contains"].indexOf(clause.action) !== -1 ? " ~" : ":";
-
-    if (clauseSet && clauseSet.elements.length > 1 && !verbose) return `${dimTitle}`;
-    return `${dimTitle}${delimiter}`;
-  }
-
-  switch (dimKind) {
-    case "boolean":
-    case "number":
-    case "string":
-      if (verbose) {
-        values = clauseSet.toString();
-      } else {
-        const setElements = clauseSet.elements;
-        if (setElements.length > 1) {
-          values = `(${setElements.length})`;
-        } else {
-          values = formatValue(setElements[0]);
-        }
-      }
-      if (clause.action === "match") values = `/${values}/`;
-      if (clause.action === Filter.CONTAINS) values = `"${values}"`;
-
-      break;
-    case "time":
-      values = getFormattedTimeClauseValues(clause, timezone);
-      break;
-    default:
-      throw new Error(`unknown kind ${dimKind}`);
-  }
-
-  return { title: getClauseLabel(), values };
-}
-
-const $now = $(FilterClause.NOW_REF_NAME);
-const $max = $(FilterClause.MAX_TIME_REF_NAME);
-
-function getFormattedTimeClauseValues(clause: FilterClause, timezone: Timezone): string {
-  const { relative, selection } = clause;
-
-  if (isLatestDuration(relative, selection)) {
-    return `${STRINGS.latest} ${getQualifiedDurationDescription(selection)}`;
-  } else if (isPreviousDuration(relative, selection)) {
-    return `${STRINGS.previous} ${getQualifiedDurationDescription(selection)}`;
-  } else if (isCurrentDuration(relative, selection)) {
-    return `${STRINGS.current} ${getQualifiedDurationDescription(selection)}`;
-  } else if (selection instanceof LiteralExpression && selection.value instanceof TimeRange) {
-    return formatTimeRange(selection.value, timezone, DisplayYear.IF_DIFF);
+  const setElements = clause.values;
+  if (setElements.count() > 1) {
+    values = `(${setElements.count()})`;
   } else {
-    throw Error(`unsupported time filter clause: ${clause.selection}`);
+    values = formatValue(setElements.first());
+  }
+  if (clause instanceof StringFilterClause && clause.action === StringFilterAction.MATCH) values = `/${values}/`;
+  if (clause instanceof StringFilterClause && clause.action === StringFilterAction.CONTAINS) values = `"${values}"`;
+  return values;
+}
+
+function getClauseLabel(clause: FilterClause, dimension: Dimension) {
+  const dimensionTitle = dimension.title;
+  if (isTimeFilter(clause)) return "";
+  const delimiter = clause instanceof StringFilterClause && [StringFilterAction.MATCH, StringFilterAction.CONTAINS].indexOf(clause.action) !== -1 ? " ~" : ":";
+
+  const clauseValues = clause.values;
+  if (clauseValues && clauseValues.count() > 1) return `${dimensionTitle}`;
+  return `${dimensionTitle}${delimiter}`;
+}
+
+export function getFormattedClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): { title: string, values: string } {
+  return { title: getClauseLabel(clause, dimension), values: getFilterClauseValues(clause, timezone) };
+}
+
+function getFormattedTimeClauseValues(clause: TimeFilterClause, timezone: Timezone): string {
+  if (clause instanceof FixedTimeFilterClause) {
+    return formatTimeRange(TimeRange.fromJS(clause.values.get(0)), timezone, DisplayYear.IF_DIFF);
+  }
+  const { period, duration } = clause;
+  switch (period) {
+    case TimeFilterPeriod.PREVIOUS:
+      return `${STRINGS.previous} ${getQualifiedDurationDescription(duration)}`;
+    case TimeFilterPeriod.CURRENT:
+      return `${STRINGS.current} ${getQualifiedDurationDescription(duration)}`;
+    case TimeFilterPeriod.LATEST:
+      return `${STRINGS.latest} ${getQualifiedDurationDescription(duration)}`;
   }
 }
 
-export function isLatestDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
-  function isEarlierTimeRange(selection: TimeRangeExpression) {
-    return selection.step < 0;
-  }
-
-  return isRelative
-    && selection instanceof TimeRangeExpression
-    && selection.getHeadOperand().equals($max)
-    && isEarlierTimeRange(selection);
-}
-
-export function isCurrentDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
-  function isCurrentTimeRange(selection: TimeRangeExpression) {
-    return selection.step === 1;
-  }
-
-  return isRelative
-    && selection instanceof TimeRangeExpression
-    && selection.getHeadOperand().equals($now)
-    && isCurrentTimeRange(selection);
-}
-
-export function isPreviousDuration(isRelative: boolean, selection: FilterSelection): selection is TimeRangeExpression {
-  function isPreviousTimeRange(selection: TimeRangeExpression) {
-    return selection.step === -1;
-  }
-
-  return isRelative
-    && selection instanceof TimeRangeExpression
-    && selection.getHeadOperand().equals($now)
-    && isPreviousTimeRange(selection);
-}
-
-function getQualifiedDurationDescription(selection: TimeRangeExpression) {
-  return normalizeDurationDescription(selection.getQualifiedDurationDescription(), selection.duration);
-}
-
-function normalizeDurationDescription(description: string, duration: Duration) {
+function getQualifiedDurationDescription(duration: Duration) {
   if (duration.toString() === "P3M") {
     return STRINGS.quarter.toLowerCase();
   } else {
-    return description;
+    return duration.getDescription();
   }
 }

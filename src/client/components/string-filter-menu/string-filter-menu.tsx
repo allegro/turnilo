@@ -69,7 +69,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     if (filterMode && !this.state.filterMode) {
       this.setState({ filterMode });
     } else if (colors) {
-      this.setState({ filterMode: Filter.INCLUDED });
+      this.setState({ filterMode: FilterMode.INCLUDE });
     }
   }
 
@@ -85,7 +85,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const { essence, dimension, changePosition } = this.props;
     var { filter } = essence;
 
-    if (!clause) return filter.remove(dimension.expression);
+    if (!clause) return filter.removeClause(dimension.name);
     if (changePosition) {
       if (changePosition.isInsert()) {
         return filter.insertByIndex(changePosition.insert, clause);
@@ -101,8 +101,8 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const { dimension } = this.props;
     const dimensionKind = dimension.kind;
 
-    var filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(Filter.INCLUDED, Filter.EXCLUDED);
-    if (dimensionKind !== "boolean") filterOptions = filterOptions.concat(FilterOptionsDropdown.getFilterOptions(Filter.REGEX, Filter.CONTAINS));
+    var filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(FilterMode.INCLUDE, FilterMode.EXCLUDE);
+    if (dimensionKind !== "boolean") filterOptions = filterOptions.concat(FilterOptionsDropdown.getFilterOptions(FilterMode.REGEX, FilterMode.CONTAINS));
 
     return filterOptions;
   }
@@ -137,7 +137,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     var menuSize: Stage = null;
     var menuCont: JSX.Element = null;
 
-    if (filterMode === Filter.REGEX || filterMode === Filter.CONTAINS) {
+    if (filterMode === FilterMode.REGEX || filterMode === FilterMode.CONTAINS) {
       menuSize = Stage.fromSize(350, 410);
       menuCont = <PreviewStringFilterMenu
         dimension={dimension}

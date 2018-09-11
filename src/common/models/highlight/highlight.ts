@@ -98,7 +98,7 @@ export class Highlight implements Instance<HighlightValue, HighlightJS> {
 
   public constrainToDimensions(dimensions: Dimensions, timeAttribute: Expression): Highlight {
     var { delta } = this;
-    var newDelta = delta.constrainToDimensions(dimensions, timeAttribute);
+    var newDelta = delta.constrainToDimensions(dimensions);
     if (newDelta === delta) return this;
     if (newDelta.length() === 0) return null;
 

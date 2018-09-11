@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { day, second } from "chronoshift";
-import { r, Range, TimeRange } from "plywood";
+import { day } from "chronoshift";
+import { List } from "immutable";
+import { TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
+import { FixedTimeFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { isValidTimeShift, TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -46,23 +48,15 @@ export interface FixedTimeTabState {
 export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTabState> {
 
   initialState = (): FixedTimeTabState => {
-    const { essence, timekeeper, dimension } = this.props;
+    const { essence, timekeeper, dimension: { name } } = this.props;
+    const shift = essence.timeShift.toJS();
 
-    const dimensionExpression = dimension.expression;
-    const selectedTimeRangeSet = essence.getEffectiveFilter(timekeeper).getLiteralSet(dimensionExpression);
-    let selectedTimeRange = (selectedTimeRangeSet && selectedTimeRangeSet.size() === 1) ? selectedTimeRangeSet.elements[0] : null;
-    const isSelectedRangeValid = selectedTimeRange && !Range.isRange(selectedTimeRange);
-    if (isSelectedRangeValid) {
-      selectedTimeRange = new TimeRange({
-        start: second.shift(selectedTimeRange, essence.timezone, -1),
-        end: second.shift(selectedTimeRange, essence.timezone, 1)
-      });
+    const timeFilter = essence.getEffectiveFilter(timekeeper).clauseForReference(name);
+    if (timeFilter && timeFilter instanceof FixedTimeFilterClause && !timeFilter.values.isEmpty()) {
+      const { start, end } = timeFilter.values.get(0);
+      return { start, end, shift };
     }
-    return {
-      start: selectedTimeRange ? selectedTimeRange.start : null,
-      end: selectedTimeRange ? selectedTimeRange.end : null,
-      shift: essence.timeShift.toJS()
-    };
+    return { start: null, end: null, shift };
   }
 
   onStartChange = (start: Date) => this.setState({ start });
@@ -93,7 +87,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
 
   constructFixedFilter(): Filter {
     let { start, end } = this.state;
-    const { essence: { filter, timezone }, dimension } = this.props;
+    const { essence: { filter, timezone }, dimension: { name } } = this.props;
 
     if (!start) {
       throw new Error("Couldn't construct time filter: No starting date.");
@@ -106,7 +100,8 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     if (start >= end) {
       throw new Error("Couldn't construct time filter: Start should be earlier than end.");
     }
-    return filter.setSelection(dimension.expression, r(TimeRange.fromJS({ start, end })));
+    const clause = new FixedTimeFilterClause({ reference: name, values: List.of({ start, end }) });
+    return filter.setClause(clause);
   }
 
   constructTimeShift(): TimeShift {
@@ -146,8 +141,8 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
         />
       </div>
       <div className="ok-cancel-bar">
-        <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok}/>
-        <Button type="secondary" onClick={this.props.onClose} title={STRINGS.cancel}/>
+        <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok} />
+        <Button type="secondary" onClick={this.props.onClose} title={STRINGS.cancel} />
       </div>
     </div>;
   }

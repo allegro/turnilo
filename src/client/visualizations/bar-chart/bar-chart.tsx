@@ -80,7 +80,7 @@ export interface BarChartState extends BaseVisualizationState {
 
 function getFilterFromDatum(splits: Splits, dataPath: Datum[], dataCube: DataCube): Filter {
   return new Filter(List(dataPath.map((datum, i) => {
-    const split = splits.get(i);
+    const split = splits.getSplit(i);
     const segment: any = datum[split.getDimension(dataCube.dimensions).name];
 
     return new FilterClause({

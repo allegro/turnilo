@@ -15,56 +15,57 @@
  * limitations under the License.
  */
 
-import { $, SortExpression } from "plywood";
 import { Manifest, Resolve } from "../../models/manifest/manifest";
+import { createSort } from "../../models/split/split";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
+import { SortDirection } from "../../view-definitions/version-3/split-definition";
 
-var rulesEvaluator = visualizationDependentEvaluatorBuilder
+const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(Actions.manualDimensionSelection("The Table requires at least one split"))
 
   .otherwise(({ splits, dataCube, colors, isSelectedVisualization }) => {
-    var autoChanged = false;
-    splits = splits.map((split, i) => {
-      var splitDimension = splits.get(0).getDimension(dataCube.dimensions);
-      var sortStrategy = splitDimension.sortStrategy;
+    let autoChanged = false;
+    const newSplits = splits.update("splits", splits => splits.map((split, i) => {
+      const splitDimension = dataCube.getDimension(splits.get(0).reference);
+      const sortStrategy = splitDimension.sortStrategy;
 
-      if (!split.sortAction) {
+      if (!split.sort) {
         if (sortStrategy) {
           if (sortStrategy === "self") {
-            split = split.changeSortExpression(new SortExpression({
-              expression: $(splitDimension.name),
-              direction: SortExpression.DESCENDING
+            split = split.changeSort(createSort({
+              reference: splitDimension.name,
+              direction: SortDirection.descending
             }));
           } else {
-            split = split.changeSortExpression(new SortExpression({
-              expression: $(sortStrategy),
-              direction: SortExpression.DESCENDING
+            split = split.changeSort(createSort({
+              reference: sortStrategy,
+              direction: SortDirection.descending
             }));
           }
         } else {
-          split = split.changeSortExpression(dataCube.getDefaultSortExpression());
+          split = split.changeSort(dataCube.getDefaultSortExpression());
           autoChanged = true;
         }
       }
 
       // ToDo: review this
-      if (!split.limitAction && (autoChanged || splitDimension.kind !== "time")) {
+      if (!split.limit && (autoChanged || splitDimension.kind !== "time")) {
         split = split.changeLimit(i ? 5 : 50);
         autoChanged = true;
       }
 
       return split;
-    });
+    }));
 
     if (colors) {
       colors = null;
       autoChanged = true;
     }
 
-    return autoChanged ? Resolve.automatic(6, { splits }) : Resolve.ready(isSelectedVisualization ? 10 : 8);
+    return autoChanged ? Resolve.automatic(6, { splits: newSplits }) : Resolve.ready(isSelectedVisualization ? 10 : 8);
   })
   .build();
 

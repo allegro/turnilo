@@ -19,6 +19,7 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
+import { isTimeFilter, RelativeTimeFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../common/utils/general/general";
@@ -57,9 +58,12 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
 
   componentWillMount() {
     const { essence: { filter }, dimension } = this.props;
-    const clause = filter.clauseForExpression(dimension.expression);
+    const clause = filter.clauseForReference(dimension.name);
+    if (clause && !isTimeFilter(clause)) {
+      throw new Error(`Expected TimeFilter. Got ${clause}`);
+    }
     this.setState({
-      tab: (!clause || clause.relative) ? TimeFilterMenu.RELATIVE_TAB : TimeFilterMenu.FIXED_TAB
+      tab: (!clause || clause instanceof RelativeTimeFilterClause) ? TimeFilterMenu.RELATIVE_TAB : TimeFilterMenu.FIXED_TAB
     });
   }
 

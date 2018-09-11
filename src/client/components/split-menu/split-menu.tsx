@@ -23,7 +23,7 @@ import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { ContinuousDimensionKind, Granularity, granularityToString, isGranularityValid, validateGranularity } from "../../../common/models/granularity/granularity";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Sort, Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -41,14 +41,14 @@ export interface SplitMenuProps {
   containerStage: Stage;
   onClose: Fn;
   dimension: Dimension;
-  split: SplitCombine;
+  split: Split;
   inside?: Element;
 }
 
 export interface SplitMenuState {
-  expression?: Expression;
+  reference?: string;
   granularity?: string;
-  sort?: SortExpression;
+  sort?: Sort;
   limit?: number;
   colors?: Colors;
 }
@@ -60,16 +60,16 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   componentWillMount() {
     const { essence, split } = this.props;
-    const { dataCube, colors } = essence;
-    const { bucketAction, expression, sortAction: sort, limitAction } = split;
+    const { colors } = essence;
+    const { bucket, reference, sort, limit } = split;
 
-    const colorsDimensionMatch = colors && dataCube.getDimension(colors.dimension).expression.equals(split.expression);
+    const colorsDimensionMatch = colors && colors.dimension === split.reference;
 
     this.setState({
-      expression,
+      reference,
       sort,
-      limit: limitAction && limitAction.value,
-      granularity: bucketAction && granularityToString(bucketAction as Granularity),
+      limit,
+      granularity: bucket && granularityToString(bucket),
       colors: colorsDimensionMatch ? colors : null
     });
   }
@@ -86,7 +86,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
 
   saveGranularity = (granularity: string) => this.setState({ granularity });
 
-  saveSort = (sort: SortExpression) => this.setState({ sort });
+  saveSort = (sort: Sort) => this.setState({ sort });
 
   saveLimit = (limit: number, colors: Colors) => this.setState({ colors, limit });
 
@@ -112,10 +112,10 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     return null;
   }
 
-  private constructSplitCombine(): SplitCombine {
-    const { limit, sort, expression } = this.state;
-    return new SplitCombine({
-      expression,
+  private constructSplitCombine(): Split {
+    const { limit, sort, reference } = this.state;
+    return new Split({
+      reference,
       bucketAction: this.constructGranularity(),
       limitAction: limit && LimitExpression.fromJS({ value: limit }),
       sortAction: sort
@@ -127,7 +127,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     if (!isGranularityValid(kind, this.state.granularity)) {
       return false;
     }
-    const newSplit: SplitCombine = this.constructSplitCombine();
+    const newSplit: Split = this.constructSplitCombine();
     return !originalSplit.equals(newSplit)
       || (originalColors && !originalColors.equals(this.state.colors));
   }

@@ -21,7 +21,7 @@ import { VisStrategy } from "../essence/essence";
 import { Filter } from "../filter/filter";
 import { Manifest } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
-import { SplitCombine } from "../split-combine/split-combine";
+import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
 
@@ -32,11 +32,11 @@ export interface Clicker {
 
   changeSplits?(splits: Splits, strategy: VisStrategy, colors?: Colors): void;
 
-  changeSplit?(split: SplitCombine, strategy: VisStrategy): void;
+  changeSplit?(split: Split, strategy: VisStrategy): void;
 
-  addSplit?(split: SplitCombine, strategy: VisStrategy): void;
+  addSplit?(split: Split, strategy: VisStrategy): void;
 
-  removeSplit?(split: SplitCombine, strategy: VisStrategy): void;
+  removeSplit?(split: Split, strategy: VisStrategy): void;
 
   changeColors?(colors: Colors): void;
 

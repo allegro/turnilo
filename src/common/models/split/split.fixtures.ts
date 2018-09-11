@@ -18,12 +18,12 @@
 import { Duration } from "chronoshift";
 import { $, LimitExpression, NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
 import { SortDirection, sortDirectionMapper } from "../../view-definitions/version-3/split-definition";
-import { SplitCombine } from "./split-combine";
+import { Split } from "./split";
 
-export class SplitCombineFixtures {
+export class SplitFixtures {
 
-  static stringSplitCombine(dimension: string, sortOn: string, sortDirection: SortDirection, limit: number): SplitCombine {
-    return new SplitCombine({
+  static stringSplitCombine(dimension: string, sortOn: string, sortDirection: SortDirection, limit: number): Split {
+    return new Split({
       expression: $(dimension),
       bucketAction: null,
       sortAction: new SortExpression({ expression: $(sortOn), direction: sortDirectionMapper[sortDirection] }),
@@ -31,8 +31,8 @@ export class SplitCombineFixtures {
     });
   }
 
-  static numberSplitCombine(dimension: string, granularity: number, sortOn: string, sortDirection: SortDirection, limit: number): SplitCombine {
-    return new SplitCombine({
+  static numberSplitCombine(dimension: string, granularity: number, sortOn: string, sortDirection: SortDirection, limit: number): Split {
+    return new Split({
       expression: $(dimension),
       bucketAction: new NumberBucketExpression({ size: granularity, offset: 0 }),
       sortAction: new SortExpression({ expression: $(sortOn), direction: sortDirectionMapper[sortDirection] }),
@@ -40,8 +40,8 @@ export class SplitCombineFixtures {
     });
   }
 
-  static timeSplitCombine(dimension: string, granularity: string, sortOn: string, sortDirection: SortDirection, limit: number): SplitCombine {
-    return new SplitCombine({
+  static timeSplitCombine(dimension: string, granularity: string, sortOn: string, sortDirection: SortDirection, limit: number): Split {
+    return new Split({
       expression: $(dimension),
       bucketAction: new TimeBucketExpression({ duration: Duration.fromJS(granularity) }),
       sortAction: new SortExpression({ expression: $(sortOn), direction: sortDirectionMapper[sortDirection] }),

@@ -17,11 +17,11 @@
 
 import { testImmutableClass } from "immutable-class-tester";
 
-import { SplitCombine, SplitCombineJS } from "./split-combine";
+import { Split, SplitCombineJS } from "./split";
 
-describe("SplitCombine", () => {
+describe("Split", () => {
   it("is an immutable class", () => {
-    testImmutableClass<SplitCombineJS>(SplitCombine, [
+    testImmutableClass<SplitCombineJS>(Split, [
       {
         expression: { op: "ref", name: "language" }
       },

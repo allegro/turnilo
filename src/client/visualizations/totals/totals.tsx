@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import { List } from "immutable";
 import * as React from "react";
 import { TOTALS_MANIFEST } from "../../../common/manifests/totals/totals";
 import { MeasureDerivation } from "../../../common/models/measure/measure";

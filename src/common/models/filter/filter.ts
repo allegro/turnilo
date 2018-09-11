@@ -33,10 +33,6 @@ const defaultFilter: FilterValue = { clauses: List([]) };
 
 export class Filter extends Record<FilterValue>(defaultFilter) {
 
-  static isFilter(candidate: any): candidate is Filter {
-    return candidate instanceof Filter;
-  }
-
   static fromClause(clause: FilterClause): Filter {
     return this.fromClauses([clause]);
   }

@@ -61,17 +61,16 @@ const isFilteredOrSplitPredicate = (essence: Essence) => (dimension: Dimension):
   return isFiltered(dimension, filter, dataCube) || isSplit(dimension, splits, dataCube);
 };
 
-const isSplit = (dimension: Dimension, splits: Splits, dataCube: DataCube): boolean => {
+const isSplit = (dimension: Dimension, { splits }: Splits, dataCube: DataCube): boolean => {
   return splits
-    .splitCombines
-    .map(split => dataCube.dimensions.getDimensionByExpression(split.expression))
+    .map(split => dataCube.dimensions.getDimensionByName(split.reference))
     .contains(dimension);
 };
 
 const isFiltered = (dimension: Dimension, filter: Filter, dataCube: DataCube): boolean => {
   return filter
     .clauses
-    .map(clause => dataCube.dimensions.getDimensionByExpression(clause.expression))
+    .map(clause => dataCube.dimensions.getDimensionByName(clause.reference))
     .contains(dimension);
 };
 

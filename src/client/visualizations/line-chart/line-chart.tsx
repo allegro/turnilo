@@ -28,7 +28,7 @@ import { FilterClause } from "../../../common/models/filter-clause/filter-clause
 import { Filter } from "../../../common/models/filter/filter";
 import { getLineChartTicks } from "../../../common/models/granularity/granularity";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -691,7 +691,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     this.setState(newState);
   }
 
-  private getFilterRange(essence: Essence, continuousSplit: SplitCombine, timekeeper: Timekeeper): PlywoodRange {
+  private getFilterRange(essence: Essence, continuousSplit: Split, timekeeper: Timekeeper): PlywoodRange {
     const continuousDimension = continuousSplit.getDimension(essence.dataCube.dimensions);
     const filterRange = essence
       .getEffectiveFilter(timekeeper, { highlightId: LineChart.id })
@@ -701,7 +701,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return this.ensureMaxTime(filterRange, maxTime, continuousSplit, essence.timezone);
   }
 
-  private ensureMaxTime(axisRange: PlywoodRange, maxTime: Date, continuousSplit: SplitCombine, timezone: Timezone) {
+  private ensureMaxTime(axisRange: PlywoodRange, maxTime: Date, continuousSplit: Split, timezone: Timezone) {
     // Special treatment for realtime data, i.e. time data where the maxTime is within Duration of the filter end
     const continuousBucketAction = continuousSplit.bucketAction;
     if (maxTime && continuousBucketAction instanceof TimeBucketExpression) {

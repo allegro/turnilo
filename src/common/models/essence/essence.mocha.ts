@@ -27,7 +27,7 @@ import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { Highlight } from "../highlight/highlight";
 import { HighlightFixtures } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
-import { SplitCombine } from "../split-combine/split-combine";
+import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { Essence, EssenceValue, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
@@ -180,9 +180,9 @@ describe("EssenceProps", () => {
     });
 
     describe("#changeSplits", () => {
-      const timeSplit = SplitCombine.fromJS({ expression: { op: "ref", name: "time" } });
-      const tweetLengthSplit = SplitCombine.fromJS({ expression: { op: "ref", name: "tweetLength" } });
-      const twitterHandleSplit = SplitCombine.fromJS({ expression: { op: "ref", name: "twitterHandle" } });
+      const timeSplit = Split.fromJS({ expression: { op: "ref", name: "time" } });
+      const tweetLengthSplit = Split.fromJS({ expression: { op: "ref", name: "tweetLength" } });
+      const twitterHandleSplit = Split.fromJS({ expression: { op: "ref", name: "twitterHandle" } });
 
       it("defaults to bar chart with numeric dimension and is sorted on self", () => {
         const essence = EssenceFixtures.twitterNoVisualisation().addSplit(tweetLengthSplit, VisStrategy.FairGame);

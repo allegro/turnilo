@@ -42,6 +42,7 @@ import {
 } from "plywood";
 import { hasOwnProperty, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { getWallTimeString } from "../../utils/time/time";
+import { SortDirection } from "../../view-definitions/version-3/split-definition";
 import { Cluster } from "../cluster/cluster";
 import { Dimension } from "../dimension/dimension";
 import { DimensionOrGroupJS } from "../dimension/dimension-group";
@@ -52,7 +53,8 @@ import { Measure, MeasureJS } from "../measure/measure";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
-import { Splits, SplitsJS } from "../splits/splits";
+import { createSort, Sort } from "../split/split";
+import { Splits } from "../splits/splits";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
 function formatTimeDiff(diff: number): string {
@@ -1059,10 +1061,10 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return this.change("measures", measures);
   }
 
-  public getDefaultSortExpression(): SortExpression {
-    return new SortExpression({
-      expression: $(this.defaultSortMeasure),
-      direction: SortExpression.DESCENDING
+  public getDefaultSortExpression(): Sort {
+    return createSort({
+      reference: this.defaultSortMeasure,
+      direction: SortDirection.descending
     });
   }
 

@@ -76,7 +76,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     return {
       visualization: essence.visualization.name,
       timezone: essence.timezone.toJS(),
-      filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc, dataCube)).toArray(),
+      filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray(),
       splits: essence.splits.splitCombines.map(splitConverter.fromSplitCombine).toArray(),
       measures: measuresDefinitionConverter.fromEssenceMeasures(essence.measures),
       pinnedDimensions: essence.pinnedDimensions.toArray(),
