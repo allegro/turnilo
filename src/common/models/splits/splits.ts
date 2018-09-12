@@ -44,6 +44,11 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     return new Splits({ splits });
   }
 
+  static fromDimensions(dimensions: List<string>): Splits {
+    const splits = dimensions.map(reference => new Split({ reference }));
+    return new Splits({ splits });
+  }
+
   public toString() {
     return this.splits.map(split => split.toString()).join(",");
   }
@@ -152,10 +157,6 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     }
 
     return this.updateSplits(splits => splits.filter(validSplit));
-  }
-
-  public timezoneDependant(): boolean {
-    return this.splits.some(split => split.timezoneDependant());
   }
 
   public changeSortIfOnMeasure(fromMeasure: string, toMeasure: string): Splits {

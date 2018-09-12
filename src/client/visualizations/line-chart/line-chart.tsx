@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
+import { Duration, Timezone } from "chronoshift";
 import * as d3 from "d3";
+import { List } from "immutable";
 import { immutableEqual } from "immutable-class";
-import { Dataset, Datum, NumberBucketExpression, NumberRange, NumberRangeJS, PlywoodRange, r, Range, TimeBucketExpression, TimeRange, TimeRangeJS } from "plywood";
+import { Dataset, Datum, NumberRange, NumberRangeJS, PlywoodRange, Range, TimeRange, TimeRangeJS } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FixedTimeFilterClause, NumberFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { getLineChartTicks } from "../../../common/models/granularity/granularity";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
@@ -209,19 +210,17 @@ export class LineChart extends BaseVisualization<LineChartState> {
   floorRange(dragRange: PlywoodRange): PlywoodRange {
     const { essence } = this.props;
     const { splits, timezone } = essence;
-    const continuousSplit = splits.last();
-    if (!continuousSplit.bucketAction) return dragRange; // temp solution for non-bucketed reaching here
+    const continuousSplit = splits.splits.last();
+    if (!continuousSplit.bucket) return dragRange; // temp solution for non-bucketed reaching here
 
     if (TimeRange.isTimeRange(dragRange)) {
-      const timeBucketAction = continuousSplit.bucketAction as TimeBucketExpression;
-      const duration = timeBucketAction.duration;
+      const duration = continuousSplit.bucket as Duration;
       return TimeRange.fromJS({
         start: duration.floor(dragRange.start, timezone),
         end: duration.shift(duration.floor(dragRange.end, timezone), timezone, 1)
       });
     } else {
-      const numberBucketAction = continuousSplit.bucketAction as NumberBucketExpression;
-      const bucketSize = numberBucketAction.size;
+      const bucketSize = continuousSplit.bucket as number;
       const startFloored = roundTo((dragRange as NumberRange).start, bucketSize);
       let endFloored = roundTo((dragRange as NumberRange).end, bucketSize);
 
@@ -257,7 +256,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
     // If already highlighted and user clicks within it switches measure
     if (!dragRange && essence.highlightOn(LineChart.id)) {
-      const existingHighlightRange = essence.getSingleHighlightSet().elements[0];
+      const existingHighlightRange = essence.getHighlightRange();
       if (existingHighlightRange.contains(highlightRange.start)) {
         const { highlight } = essence;
         if (highlight.measure === dragOnMeasure.name) {
@@ -273,13 +272,16 @@ export class LineChart extends BaseVisualization<LineChartState> {
       }
     }
 
+    const reference = continuousDimension.name;
+    const { start, end } = highlightRange;
+    const filterClause = continuousDimension.kind === "number"
+      ? new NumberFilterClause({ reference, values: List.of({ start: start as number, end: end as number }) })
+      : new FixedTimeFilterClause({ reference, values: List.of({ start: start as Date, end: end as Date }) });
+
     clicker.changeHighlight(
       LineChart.id,
       dragOnMeasure.name,
-      Filter.fromClause(new FilterClause({
-        expression: continuousDimension.expression,
-        selection: r(highlightRange)
-      }))
+      Filter.fromClause(filterClause)
     );
   }
 
@@ -316,11 +318,11 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { dragRange, scaleX } = this.state;
 
     if (dragRange !== null) {
-      return <Highlighter highlightRange={dragRange} scaleX={scaleX}/>;
+      return <Highlighter highlightRange={dragRange} scaleX={scaleX} />;
     }
     if (essence.highlightOn(LineChart.id)) {
-      const highlightRange = essence.getSingleHighlightSet().elements[0];
-      return <Highlighter highlightRange={highlightRange} scaleX={scaleX}/>;
+      const highlightRange = essence.getHighlightRange();
+      return <Highlighter highlightRange={highlightRange} scaleX={scaleX} />;
     }
     return null;
   }
@@ -348,13 +350,14 @@ export class LineChart extends BaseVisualization<LineChartState> {
     topOffset += containerYPosition;
 
     if ((dragRange && dragOnMeasure === measure) || (!dragRange && essence.highlightOn(LineChart.id, measure.name))) {
-      const bubbleRange = dragRange || essence.getSingleHighlightSet().elements[0];
+      const bubbleRange = dragRange || essence.getHighlightRange();
 
       const shownRange = roundDragRange || bubbleRange;
 
       if (colors) {
         const segmentLabel = formatValue(bubbleRange, timezone, DisplayYear.NEVER);
-        const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+        const firstSplit = essence.splits.splits.first();
+        const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
         const leftOffset = containerXPosition + VIS_H_PADDING + scaleX(bubbleRange.end);
 
         const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, bubbleRange));
@@ -406,7 +409,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
       const segmentLabel = formatValue(hoverRange, timezone, DisplayYear.NEVER);
 
       if (colors) {
-        const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+        const firstSplit = essence.splits.splits.first();
+        const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
         const hoverDatums = dataset.data.map(splitRangeExtractor(continuousDimension.name, hoverRange));
         const colorValues = colors.getColors(dataset.data.map(d => d[categoryDimension.name]));
         const hasComparison = essence.hasComparison();
@@ -472,7 +476,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return <MeasureBubbleContent
       current={currentValue}
       previous={previous}
-      formatter={measure.formatFn}/>;
+      formatter={measure.formatFn} />;
   }
 
   calculateExtend(dataset: Dataset, splits: Splits, getY: Unary<Datum, number>, getYP: Unary<Datum, number>) {
@@ -528,7 +532,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
         hasComparison && curriedSingleChartLine(getYP, true));
     }
     let colorValues: string[] = null;
-    const categoryDimension = essence.splits.get(0).getDimension(essence.dataCube.dimensions);
+    const firstSplit = essence.splits.splits.first();
+    const categoryDimension = essence.dataCube.getDimension(firstSplit.reference);
 
     if (colors) {
       colorValues = colors.getColors(splitData.data.map(d => d[categoryDimension.name]));
@@ -640,7 +645,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           y2={chartStage.height - 0.5}
         />
       </svg>
-      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={datum} showPrevious={essence.hasComparison()}/> : null}
+      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={datum} showPrevious={essence.hasComparison()} /> : null}
       {this.renderHighlighter()}
       {scale && this.renderChartBubble(splitData, measure, chartIndex, containerStage, chartStage, extent, scale)}
     </div>;
@@ -668,8 +673,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
         if (registerDownloadableDataset) registerDownloadableDataset(dataset);
       }
 
-      const continuousSplit = splits.length() === 1 ? splits.get(0) : splits.get(1);
-      const continuousDimension = continuousSplit.getDimension(dataCube.dimensions);
+      const continuousSplit = splits.length() === 1 ? splits.splits.get(0) : splits.splits.get(1);
+      const continuousDimension = dataCube.getDimension(continuousSplit.reference);
       if (continuousDimension) {
         newState.continuousDimension = continuousDimension;
 
@@ -692,23 +697,29 @@ export class LineChart extends BaseVisualization<LineChartState> {
   }
 
   private getFilterRange(essence: Essence, continuousSplit: Split, timekeeper: Timekeeper): PlywoodRange {
-    const continuousDimension = continuousSplit.getDimension(essence.dataCube.dimensions);
-    const filterRange = essence
-      .getEffectiveFilter(timekeeper, { highlightId: LineChart.id })
-      .getExtent(continuousDimension.expression) as PlywoodRange;
-
     const maxTime = essence.dataCube.getMaxTime(timekeeper);
-    return this.ensureMaxTime(filterRange, maxTime, continuousSplit, essence.timezone);
+    const continuousDimension = essence.dataCube.getDimension(continuousSplit.reference);
+    const effectiveFilter = essence
+      .getEffectiveFilter(timekeeper, { highlightId: LineChart.id });
+    const continuousFilter = effectiveFilter.getClauseForDimension(continuousDimension);
+
+    let range = null;
+    if (continuousFilter instanceof NumberFilterClause) {
+      range = NumberRange.fromJS(continuousFilter.values.first());
+    }
+    if (continuousFilter instanceof FixedTimeFilterClause) {
+      range = TimeRange.fromJS(continuousFilter.values.first());
+    }
+    return this.ensureMaxTime(range, maxTime, continuousSplit, essence.timezone);
   }
 
   private ensureMaxTime(axisRange: PlywoodRange, maxTime: Date, continuousSplit: Split, timezone: Timezone) {
     // Special treatment for realtime data, i.e. time data where the maxTime is within Duration of the filter end
-    const continuousBucketAction = continuousSplit.bucketAction;
-    if (maxTime && continuousBucketAction instanceof TimeBucketExpression) {
-      const continuousDuration = continuousBucketAction.duration;
+    const continuousBucket = continuousSplit.bucket;
+    if (maxTime && continuousBucket instanceof Duration) {
       const axisRangeEnd = axisRange.end as Date;
-      const axisRangeEndFloor = continuousDuration.floor(axisRangeEnd, timezone);
-      const axisRangeEndCeil = continuousDuration.shift(axisRangeEndFloor, timezone);
+      const axisRangeEndFloor = continuousBucket.floor(axisRangeEnd, timezone);
+      const axisRangeEndCeil = continuousBucket.shift(axisRangeEndFloor, timezone);
       if (maxTime && axisRangeEndFloor < maxTime && maxTime < axisRangeEndCeil) {
         return Range.fromJS({ start: axisRange.start, end: axisRangeEndCeil });
       }
@@ -780,7 +791,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         width={xAxisStage.width}
         height={xAxisStage.height}
       >
-        <LineChartAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone}/>
+        <LineChartAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone} />
       </svg>;
     }
 

@@ -47,42 +47,42 @@ export interface DimensionActionsMenuState {
 export class DimensionActionsMenu extends React.Component<DimensionActionsMenuProps, DimensionActionsMenuState> {
 
   onFilter(): void {
-    var { dimension, triggerFilterMenu, onClose } = this.props;
+    const { dimension, triggerFilterMenu, onClose } = this.props;
     triggerFilterMenu(dimension);
     onClose();
   }
 
   onSplit(): void {
-    var { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
+    const { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
     if (essence.splits.hasSplitOn(dimension) && essence.splits.length() === 1) {
       triggerSplitMenu(dimension);
     } else {
-      clicker.changeSplit(Split.fromDimension(dimension.expression), VisStrategy.FairGame);
+      clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     onClose();
   }
 
   onSubsplit(): void {
-    var { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
+    const { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
     if (essence.splits.hasSplitOn(dimension)) {
       triggerSplitMenu(dimension);
     } else {
-      clicker.addSplit(Split.fromDimension(dimension.expression), VisStrategy.FairGame);
+      clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     onClose();
   }
 
   onPin(): void {
-    var { clicker, dimension, onClose } = this.props;
+    const { clicker, dimension, onClose } = this.props;
     clicker.pin(dimension);
     onClose();
   }
 
   render() {
-    var { direction, containerStage, openOn, dimension, onClose } = this.props;
+    const { direction, containerStage, openOn, dimension, onClose } = this.props;
     if (!dimension) return null;
 
-    var menuSize: Stage = Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2);
+    const menuSize: Stage = Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2);
     return <BubbleMenu
       className="dimension-actions-menu"
       direction={direction}

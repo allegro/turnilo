@@ -135,34 +135,6 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return this.indexOfClause(reference) !== -1;
   }
 
-  public filteredOnValue(reference: string, value: string): boolean {
-    const clause = this.clauseForReference(reference);
-    return !!clause && clause instanceof StringFilterClause && clause.values.has(value);
-  }
-
-  public addValue(reference: string, value: string): Filter {
-    const idx = this.indexOfClause(reference);
-    if (idx === -1) {
-      const newClause = new StringFilterClause({ reference, values: OrderedSet([value]) });
-      return this.updateClauses(clauses => clauses.concat([newClause]));
-    }
-    return this.updateIn(["clauses", idx, "values"], (values: OrderedSet<string>) => values.add(value));
-  }
-
-  public removeClauseValue(reference: string, value: string): Filter {
-    const idx = this.indexOfClause(reference);
-    if (idx === -1) return this;
-    return this.updateClauses(clauses => {
-      const clause = clauses.get(idx) as StringFilterClause;
-      const newClause = clause.update("values", values => values.remove(value));
-      return newClause.values.isEmpty() ? clauses.remove(idx) : clauses.set(idx, newClause);
-    });
-  }
-
-  public toggleValue(reference: string, value: string): Filter {
-    return this.filteredOnValue(reference, value) ? this.removeClauseValue(reference, value) : this.addValue(reference, value);
-  }
-
   public getClauseForDimension({ name }: Dimension): FilterClause {
     return this.clauses.find(clause => clause.reference === name);
   }

@@ -22,7 +22,7 @@ import { isTruthy } from "../../utils/general/general";
 import { SortDirection, SplitType } from "../../view-definitions/version-3/split-definition";
 import { Dimension } from "../dimension/dimension";
 
-const SORT_ON_DIMENSION_PLACEHOLDER = "__SWIV_SORT_ON_DIMENSIONS__";
+export const SORT_ON_DIMENSION_PLACEHOLDER = "__SWIV_SORT_ON_DIMENSIONS__";
 
 interface SortDefinition {
   reference: string;
@@ -113,13 +113,6 @@ export class Split extends Record<SplitValue>(defaultSplit) {
 
   public changeLimit(limit: number): Split {
     return this.set("limit", limit);
-  }
-
-  public timezoneDependant(): boolean {
-    const { bucket } = this;
-    if (!bucket) return false;
-    // TODO: dunno
-    return bucket.needsEnvironment();
   }
 
   public getTitle(dimension: Dimension): string {

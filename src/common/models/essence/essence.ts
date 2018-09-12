@@ -17,12 +17,12 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet, Record as ImmutableRecord, Set } from "immutable";
-import { RefExpression, Set as PlywoodSet, SortExpression } from "plywood";
+import { Range, PlywoodRange, RefExpression, TimeRange } from "plywood";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
 import { Dimension } from "../dimension/dimension";
-import { FilterClause, FixedTimeFilterClause, isTimeFilter, TimeFilterClause } from "../filter-clause/filter-clause";
+import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, TimeFilterClause } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
@@ -242,7 +242,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       pinnedDimensions: constrainDimensions(pinnedDimensions, dataCube),
       pinnedSort: dataCube.getMeasure(pinnedSort) ? pinnedSort : dataCube.getDefaultSortMeasure(),
       colors,
-      highlight: newHighlight && newHighlight.constrainToDimensions(dataCube.dimensions, dataCube.timeAttribute),
+      highlight: newHighlight && newHighlight.constrainToDimensions(dataCube.dimensions),
       compare,
       visResolve
     });
@@ -375,20 +375,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.dataCube !== other.dataCube;
   }
 
-  public differentTimezone(other: Essence): boolean {
-    return !this.timezone.equals(other.timezone);
-  }
-
-  public differentTimezoneMatters(other: Essence): boolean {
-    return this.splits.timezoneDependant() && this.differentTimezone(other);
-  }
-
   public differentSplits(other: Essence): boolean {
     return !this.splits.equals(other.splits);
-  }
-
-  public differentEffectiveSplits(other: Essence): boolean {
-    return this.differentSplits(other) || this.differentTimezoneMatters(other);
   }
 
   public differentTimeShift(other: Essence): boolean {
@@ -423,10 +411,14 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return highlight.owner === owner && measure && highlight.measure !== measure;
   }
 
-  public getSingleHighlightSet(): PlywoodSet {
+  public getHighlightRange(): PlywoodRange {
     const { highlight } = this;
     if (!highlight) return null;
-    return highlight.delta.getSingleClauseSet();
+    const clause = highlight.delta.clauses.first();
+    if ((clause instanceof NumberFilterClause) || (clause instanceof FixedTimeFilterClause)) {
+      return Range.fromJS(clause.values.first());
+    }
+    return null;
   }
 
   public getCommonSort(): Sort {
@@ -459,7 +451,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       .update("colors", colors => colors && !newDataCube.getDimension(colors.dimension) ? null : colors)
       .update("pinnedSort", sort => !newDataCube.getMeasure(sort) ? newDataCube.getDefaultSortMeasure() : sort)
       .update("compare", compare => compare && compare.constrainToDimensions(newDataCube.dimensions))
-      .update("highlight", highlight => highlight && highlight.constrainToDimensions(newDataCube.dimensions, newDataCube.timeAttribute))
+      .update("highlight", highlight => highlight && highlight.constrainToDimensions(newDataCube.dimensions))
       .resolveVisualizationAndUpdate();
   }
 

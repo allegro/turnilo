@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
+import { Set } from "immutable";
 import { $, Dataset, r, SortExpression } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause, PlywoodFilterMethod } from "../../../common/models/filter-clause/filter-clause";
+import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { collect, Fn } from "../../../common/utils/general/general";
@@ -70,28 +71,28 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
     this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
       if (!this.mounted) return;
-      var { essence, timekeeper, dimension, searchText } = this.props;
+      const { essence, timekeeper, dimension, searchText } = this.props;
       this.fetchData(essence, timekeeper, dimension, searchText);
     });
   }
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, searchText: string): void {
-    var { dataCube } = essence;
-    var nativeCount = dataCube.getMeasure("count");
-    var measureExpression = nativeCount ? nativeCount.expression : $("main").count();
+    const { dataCube } = essence;
+    const nativeCount = dataCube.getMeasure("count");
+    const measureExpression = nativeCount ? nativeCount.expression : $("main").count();
 
-    var filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
+    let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
 
     if (searchText) {
       const { filterMode } = this.props;
-      if (filterMode === Filter.CONTAINS) {
+      if (filterMode === FilterMode.CONTAINS) {
         filterExpression = filterExpression.and(dimension.expression.contains(r(searchText)));
-      } else if (filterMode === Filter.REGEX) {
+      } else if (filterMode === FilterMode.REGEX) {
         filterExpression = filterExpression.and(dimension.expression.match(searchText));
       }
     }
 
-    var query = $("main")
+    const query = $("main")
       .filter(filterExpression)
       .split(dimension.expression, dimension.name)
       .apply("MEASURE", measureExpression)
@@ -124,8 +125,8 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   componentWillMount() {
-    var { essence, timekeeper, dimension, searchText, filterMode } = this.props;
-    if (searchText && filterMode === Filter.REGEX && !this.checkRegex(searchText)) return;
+    const { essence, timekeeper, dimension, searchText, filterMode } = this.props;
+    if (searchText && filterMode === FilterMode.REGEX && !this.checkRegex(searchText)) return;
     this.fetchData(essence, timekeeper, dimension, searchText);
   }
 
@@ -138,10 +139,10 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   componentWillReceiveProps(nextProps: PreviewStringFilterMenuProps) {
-    var { searchText, filterMode } = this.props;
-    var incomingSearchText = nextProps.searchText;
+    const { searchText, filterMode } = this.props;
+    const incomingSearchText = nextProps.searchText;
     const { fetchQueued, loading, dataset } = this.state;
-    if (incomingSearchText && filterMode === Filter.REGEX) this.checkRegex(incomingSearchText);
+    if (incomingSearchText && filterMode === FilterMode.REGEX) this.checkRegex(incomingSearchText);
 
     // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
     if (incomingSearchText && incomingSearchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
@@ -172,96 +173,50 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   }
 
   constructFilter(): Filter {
-    var { dimension, filterMode, onClauseChange, searchText } = this.props;
-    var { expression } = dimension;
+    const { dimension, filterMode, onClauseChange, searchText } = this.props;
+    const { name: reference } = dimension;
 
-    var clause: FilterClause = null;
     if (searchText) {
-      if (filterMode === Filter.REGEX) {
-        clause = new FilterClause({
-          expression,
-          selection: searchText,
-          action: PlywoodFilterMethod.MATCH
-        });
-      } else if (filterMode === Filter.CONTAINS) {
-        clause = new FilterClause({
-          expression,
-          selection: r(searchText),
-          action: PlywoodFilterMethod.CONTAINS
-        });
+      if (filterMode === FilterMode.REGEX) {
+        return onClauseChange(new StringFilterClause({
+          reference,
+          values: Set.of(searchText),
+          action: StringFilterAction.MATCH
+        }));
+      } else if (filterMode === FilterMode.CONTAINS) {
+        return onClauseChange(new StringFilterClause({
+          reference,
+          values: Set.of(searchText),
+          action: StringFilterAction.CONTAINS
+        }));
       }
     }
-
-    return onClauseChange(clause);
+    return null;
   }
 
   onOkClick() {
     if (!this.actionEnabled()) return;
-    var { clicker, onClose } = this.props;
+    const { clicker, onClose } = this.props;
     clicker.changeFilter(this.constructFilter());
     onClose();
   }
 
   onCancelClick() {
-    var { onClose } = this.props;
+    const { onClose } = this.props;
     onClose();
   }
 
   actionEnabled() {
     const { regexErrorMessage } = this.state;
-    var { essence } = this.props;
+    const { essence } = this.props;
     if (regexErrorMessage) return false;
     return !essence.filter.equals(this.constructFilter());
   }
 
-  renderRows() {
-    var { loading, dataset, fetchQueued, regexErrorMessage } = this.state;
-    var { dimension, searchText, filterMode } = this.props;
-
-    var rows: JSX.Element[] = [];
-    var search: string | RegExp = null;
-
-    if (dataset) {
-      var rowStrings = dataset.data.slice(0, TOP_N).map(d => d[dimension.name]);
-
-      if (searchText) {
-        rowStrings = rowStrings.filter(d => {
-          if (filterMode === Filter.REGEX) {
-            try {
-              var escaped = searchText.replace(/\\[^\\]]/g, "\\\\");
-              search = new RegExp(escaped);
-              return search.test(String(d));
-            } catch (e) {
-              return false;
-            }
-          } else if (filterMode === Filter.CONTAINS) {
-            search = searchText;
-            return String(d).indexOf(searchText) !== -1;
-          }
-          return false;
-        });
-      }
-
-      rows = rowStrings.map(segmentValue => {
-        var segmentValueStr = String(segmentValue);
-        return <div
-          className="row no-select"
-          key={segmentValueStr}
-          title={segmentValueStr}
-        >
-          <div className="row-wrapper">
-            <HighlightString className="label" text={segmentValueStr} highlight={search} />
-          </div>
-        </div>;
-      });
-    }
-
-    var grayMessage: JSX.Element = null;
-    if (regexErrorMessage) {
-      grayMessage = <div className="message">{regexErrorMessage}</div>;
-    } else if (!loading && dataset && !fetchQueued && searchText && !rows.length) {
-      grayMessage = <div className="message">{'No results for "' + searchText + '"'}</div>;
-    }
+  renderList() {
+    const { searchText } = this.props;
+    const rows = this.renderRow();
+    const grayMessage = this.renderMessage(rows.length > 0);
 
     return <div className="rows">
       {(rows.length === 0 || !searchText) ? null : <div className="matching-values-message">Matching Values</div>}
@@ -270,17 +225,71 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     </div>;
   }
 
+  private renderMessage(hasRows: boolean) {
+    const { loading, dataset, fetchQueued, regexErrorMessage } = this.state;
+    const { searchText } = this.props;
+    if (regexErrorMessage) {
+      return <div className="message">{regexErrorMessage}</div>;
+    }
+    if (!loading && dataset && !fetchQueued && searchText && !hasRows) {
+      return <div className="message">{'No results for "' + searchText + '"'}</div>;
+    }
+    return null;
+  }
+
+  private renderRow() {
+    const { dataset } = this.state;
+    if (!dataset) {
+      return null;
+    }
+
+    const { dimension, searchText, filterMode } = this.props;
+    let search: string | RegExp = null;
+    let rowStrings = dataset.data.slice(0, TOP_N).map(d => d[dimension.name]);
+
+    if (searchText) {
+      rowStrings = rowStrings.filter(d => {
+        if (filterMode === FilterMode.REGEX) {
+          try {
+            const escaped = searchText.replace(/\\[^\\]]/g, "\\\\");
+            search = new RegExp(escaped);
+            return search.test(String(d));
+          } catch (e) {
+            return false;
+          }
+        } else if (filterMode === FilterMode.CONTAINS) {
+          search = searchText;
+          return String(d).indexOf(searchText) !== -1;
+        }
+        return false;
+      });
+    }
+
+    return rowStrings.map(segmentValue => {
+      const segmentValueStr = String(segmentValue);
+      return <div
+        className="row no-select"
+        key={segmentValueStr}
+        title={segmentValueStr}
+      >
+        <div className="row-wrapper">
+          <HighlightString className="label" text={segmentValueStr} highlight={search} />
+        </div>
+      </div>;
+    });
+  }
+
   render() {
     const { filterMode } = this.props;
     const { dataset, loading, queryError } = this.state;
 
-    var hasMore = dataset && dataset.data.length > TOP_N;
+    const hasMore = dataset && dataset.data.length > TOP_N;
     return <div className={classNames("string-filter-menu", filterMode)}>
       <GlobalEventListener
         keyDown={this.globalKeyDownListener.bind(this)}
       />
       <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
-        {this.renderRows()}
+        {this.renderList()}
         {queryError ? <QueryError error={queryError} /> : null}
         {loading ? <Loader /> : null}
       </div>

@@ -15,97 +15,36 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from "immutable-class";
-import { Expression } from "plywood";
+import { Record } from "immutable";
 import { Dimensions } from "../dimension/dimensions";
-import { Filter, FilterJS } from "../filter/filter";
+import { EMPTY_FILTER, Filter } from "../filter/filter";
 
 export interface HighlightValue {
   owner: string;
   delta: Filter;
-  measure?: string;
+  measure: string;
 }
 
-export interface HighlightJS {
-  owner: string;
-  delta: FilterJS;
-  measure?: string;
-}
+const defaultHighlight: HighlightValue = {
+  owner: null,
+  delta: EMPTY_FILTER,
+  measure: null
+};
 
-var check: Class<HighlightValue, HighlightJS>;
-
-export class Highlight implements Instance<HighlightValue, HighlightJS> {
-
-  static isHighlight(candidate: any): candidate is Highlight {
-    return candidate instanceof Highlight;
-  }
-
-  static fromJS(parameters: HighlightJS): Highlight {
-    return new Highlight({
-      owner: parameters.owner,
-      delta: Filter.fromJS(parameters.delta),
-      measure: parameters.measure
-    });
-  }
-
-  public owner: string;
-  public delta: Filter;
-  public measure: string;
-
-  constructor(parameters: HighlightValue) {
-    var owner = parameters.owner;
-    if (typeof owner !== "string") throw new TypeError("owner must be a string");
-    this.owner = owner;
-    this.delta = parameters.delta;
-    this.measure = parameters.measure || null;
-  }
-
-  public valueOf(): HighlightValue {
-    return {
-      owner: this.owner,
-      delta: this.delta,
-      measure: this.measure
-    };
-  }
-
-  public toJS(): HighlightJS {
-    var js: HighlightJS = {
-      owner: this.owner,
-      delta: this.delta.toJS()
-    };
-    if (this.measure) js.measure = this.measure;
-    return js;
-  }
-
-  public toJSON(): HighlightJS {
-    return this.toJS();
-  }
+export class Highlight extends Record<HighlightValue>(defaultHighlight) {
 
   public toString(): string {
     return `[Highlight ${this.owner}]`;
-  }
-
-  public equals(other: Highlight): boolean {
-    return Highlight.isHighlight(other) &&
-      this.owner === other.owner &&
-      this.delta.equals(other.delta) &&
-      this.measure === other.measure;
   }
 
   public applyToFilter(filter: Filter): Filter {
     return filter.applyDelta(this.delta);
   }
 
-  public constrainToDimensions(dimensions: Dimensions, timeAttribute: Expression): Highlight {
-    var { delta } = this;
-    var newDelta = delta.constrainToDimensions(dimensions);
-    if (newDelta === delta) return this;
-    if (newDelta.length() === 0) return null;
-
-    var value = this.valueOf();
-    value.delta = newDelta;
-    return new Highlight(value);
+  public constrainToDimensions(dimensions: Dimensions): Highlight {
+    const { delta } = this;
+    const newDelta = delta.constrainToDimensions(dimensions);
+    if (newDelta.empty()) return null;
+    return this.set("delta", newDelta);
   }
 }
-
-check = Highlight;

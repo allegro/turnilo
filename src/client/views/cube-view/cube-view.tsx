@@ -339,7 +339,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     e.preventDefault();
     const dimension = DragManager.getDragDimension();
     if (dimension) {
-      this.clicker.changeSplit(Split.fromDimension(dimension.expression), VisStrategy.FairGame);
+      this.clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     this.setState({ dragOver: false });
   }

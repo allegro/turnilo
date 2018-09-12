@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-import { $, Dataset, Datum, Expression, NumberRange, r, RefExpression, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
+import { Set } from "immutable";
+import { $, Dataset, Datum, Expression, NumberRange, r, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { Filter, FilterMode } from "../../../common/models/filter/filter";
+import { isTimeFilter, NumberFilterClause, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FilterMode } from "../../../common/models/filter/filter";
 import {
   ContinuousDimensionKind,
   getBestGranularityForRange,
@@ -31,6 +33,7 @@ import {
   granularityEquals,
   granularityToString
 } from "../../../common/models/granularity/granularity";
+import { Measure } from "../../../common/models/measure/measure";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { formatNumberRange, formatterFromData } from "../../../common/utils/formatter/formatter";
@@ -132,16 +135,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     let sortExpression: Expression = null;
 
     if (dimension.canBucketByDefault()) {
-      const dimensionExpression = dimension.expression as RefExpression;
-      const attributeName = dimensionExpression.name;
 
-      const filterSelection: FilterSelection = essence.filter.getSelection(dimensionExpression);
+      const filterClause = essence.filter.getClauseForDimension(dimension);
 
       if (!selectedGranularity) {
-        if (filterSelection) {
-          const range = dimension.kind === "time" ? essence.evaluateSelection(
-            filterSelection as Expression,
-            timekeeper) : (filterSelection as Expression).getLiteralValue().extent();
+        if (filterClause) {
+          const range = isTimeFilter(filterClause)
+            ? essence.evaluateSelection(filterClause, timekeeper)
+            : filterClause.values.extent();
           selectedGranularity = getBestGranularityForRange(range, true, dimension.bucketedBy, dimension.granularities);
         } else {
           selectedGranularity = getDefaultGranularityForKind(
@@ -153,15 +154,15 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
       this.setState({ selectedGranularity });
 
-      query = query.split($(attributeName).performAction(selectedGranularity), dimension.name);
+      query = query.split($(dimension.name).performAction(selectedGranularity), dimension.name);
       sortExpression = $(dimension.name);
     } else {
       query = query.split(dimension.expression, dimension.name);
-      sortExpression = sortOn.getExpression();
+      sortExpression = $(sortOn.getName());
     }
 
-    if (sortOn.measure) {
-      query = query.performAction(sortOn.measure.toApplyExpression(0));
+    if (sortOn.reference instanceof Measure) {
+      query = query.performAction(sortOn.reference.toApplyExpression(0));
     }
 
     query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);
@@ -245,7 +246,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       essence.differentDataCube(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, null, unfolded ? dimension : null) ||
       essence.differentColors(nextEssence) || !dimension.equals(nextDimension) || !sortOn.equals(nextSortOn) ||
-      essence.differentTimezoneMatters(nextEssence) ||
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
       differentTimeFilterSelection
     ) {
@@ -290,17 +290,23 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       colors = colors.toggle(value);
       clicker.changeColors(colors);
     } else {
+      const filterClause = filter.getClauseForDimension(dimension);
+      if (!(filterClause instanceof StringFilterClause)) {
+        throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
+      }
+      const values = filterClause.values;
       if (e.altKey || e.ctrlKey || e.metaKey) {
-        let filteredOnMe = filter.filteredOnValue(dimension.name, value);
-        let singleFilter = filter.getLiteralSet(dimension.expression).size() === 1;
+        const filteredOnMe = values.has(value);
+        let singleFilter = values.count() === 1;
 
         if (filteredOnMe && singleFilter) {
           filter = filter.removeClause(dimension.name);
         } else {
-          filter = filter.removeClause(dimension.name).addValue(dimension.name, value);
+          filter = filter.removeClause(dimension.name).setClause(filterClause.update("values", values => values.add(value)));
         }
       } else {
-        filter = filter.toggleValue(dimension.name, value);
+        filter = filter.setClause(filterClause.update("values", values =>
+          values.has(value) ? values.remove(value) : values.add(value)));
       }
 
       // If no longer filtered switch unfolded to true for later
@@ -422,14 +428,18 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { essence, dimension } = this.props;
     const { dataset, unfolded, searchText } = this.state;
 
-    const filterSet = essence.filter.getLiteralSet(dimension.expression);
+    const filterClause = essence.filter.getClauseForDimension(dimension);
+    if (!(filterClause instanceof StringFilterClause)) {
+      throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
+    }
+    const values = filterClause.values;
 
     if (dataset) {
       let rowData = dataset.data.slice(0, DimensionTile.TOP_N);
 
       if (!unfolded) {
-        if (filterSet) {
-          rowData = rowData.filter(d => filterSet.contains(d[dimension.name]));
+        if (values) {
+          rowData = rowData.filter(d => values.has(d[dimension.name] as string));
         }
       }
 
@@ -458,11 +468,16 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { essence, dimension, sortOn, colors } = this.props;
     const { searchText, selectedGranularity, filterMode } = this.state;
 
-    const measure = sortOn.measure;
-    const measureName = measure ? measure.name : null;
-    const formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.getFormat()) : null;
+    const measure = sortOn.reference;
+    const sortOnMeasure = measure && measure instanceof Measure;
+    const measureName = sortOnMeasure ? measure.name : null;
+    const formatter = sortOnMeasure ? formatterFromData(rowData.map(d => d[measureName] as number), (measure as Measure).getFormat()) : null;
     const colorValues = this.prepareColorValues(colors, dimension, rowData);
-    const filterSet = essence.filter.getLiteralSet(dimension.expression);
+    const filterClause = essence.filter.getClauseForDimension(dimension);
+    if (!(filterClause instanceof StringFilterClause)) {
+      throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
+    }
+    const filterSet = filterClause.values;
     const isExcluded = filterMode === FilterMode.EXCLUDE;
 
     return rowData.map((datum, i) => {
@@ -476,7 +491,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
           selected = false;
           className += " color";
         } else {
-          selected = essence.filter.filteredOnValue(dimension.name, segmentValue as string);
+          selected = filterSet.has(segmentValue as string);
           className += " " + (selected ? "selected" : "not-selected");
         }
         checkbox = <Checkbox

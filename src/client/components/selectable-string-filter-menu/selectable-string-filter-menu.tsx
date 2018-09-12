@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Set as ImmutableSet } from "immutable";
-import { $, Dataset, r, Set, SortExpression } from "plywood";
+import { Set } from "immutable";
+import { $, Dataset, r, SortExpression } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
@@ -54,9 +54,13 @@ export interface SelectableStringFilterMenuState {
   dataset?: Dataset;
   error?: any;
   fetchQueued?: boolean;
-  selectedValues?: Set;
-  promotedValues?: Set; // initial selected values
+  selectedValues?: Set<string>;
+  promotedValues?: Set<string>; // initial selected values
   colors?: Colors;
+}
+
+function toggle(set: Set<string>, value: string): Set<string> {
+  return set.has(value) ? set.remove(value) : set.add(value);
 }
 
 export class SelectableStringFilterMenu extends React.Component<SelectableStringFilterMenuProps, SelectableStringFilterMenuState> {
@@ -77,15 +81,16 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
     this.collectTriggerSearch = collect(SEARCH_WAIT, () => {
       if (!this.mounted) return;
-      var { essence, timekeeper, dimension, searchText } = this.props;
+      const { essence, timekeeper, dimension, searchText } = this.props;
       this.fetchData(essence, timekeeper, dimension, searchText);
     });
   }
 
   fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, searchText: string): void {
-    var { dataCube } = essence;
-    var nativeCount = dataCube.getMeasure("count");
-    var measureExpression = nativeCount ? nativeCount.expression : $("main").count();
+    const { dataCube } = essence;
+    const nativeCount = dataCube.getMeasure("count");
+    const $main = $("main");
+    const measureExpression = nativeCount ? nativeCount.expression : $main.count();
 
     let filterExpression = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression();
 
@@ -93,7 +98,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       filterExpression = filterExpression.and(dimension.expression.contains(r(searchText), "ignoreCase"));
     }
 
-    var query = $("main")
+    const query = $main
       .filter(filterExpression)
       .split(dimension.expression, dimension.name)
       .apply("MEASURE", measureExpression)
@@ -126,15 +131,20 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   componentWillMount() {
-    var { essence, timekeeper, dimension, searchText } = this.props;
-    var { filter, colors } = essence;
+    const { essence, timekeeper, dimension, searchText } = this.props;
+    const { filter, colors } = essence;
 
-    var myColors = (colors && colors.dimension === dimension.name ? colors : null);
+    const myColors = (colors && colors.dimension === dimension.name ? colors : null);
 
-    var existingMode = filter.getModeForDimension(dimension);
+    const existingMode = filter.getModeForDimension(dimension);
 
-    var valueSet = filter.getLiteralSet(dimension.expression);
-    var selectedValues = (existingMode !== "regex" && valueSet) || (myColors ? myColors.toSet() : null) || Set.EMPTY; // don't want regex to show up as a promoted value
+    const clause = filter.getClauseForDimension(dimension);
+    if (!(clause instanceof StringFilterClause)) {
+      throw new Error(`Expected string filter clause, got: ${clause}`);
+    }
+
+    const valueSet = clause.values;
+    const selectedValues = (existingMode !== "regex" && valueSet) || (myColors ? Set(myColors.toArray()) : null) || Set.of(); // don't want regex to show up as a promoted value
     this.setState({
       selectedValues,
       promotedValues: selectedValues,
@@ -153,7 +163,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   componentWillReceiveProps(nextProps: SelectableStringFilterMenuProps) {
-    var { searchText } = this.props;
+    const { searchText } = this.props;
     const { fetchQueued, loading, dataset } = this.state;
     // If the user is just typing in more and there are already < TOP_N results then there is nothing to do
     if (nextProps.searchText && nextProps.searchText.indexOf(searchText) !== -1 && !fetchQueued && !loading && dataset && dataset.data.length < TOP_N) {
@@ -173,48 +183,33 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   constructFilter(): Filter {
-    var { dimension, filterMode, onClauseChange } = this.props;
-    var { selectedValues } = this.state;
-    var { name } = dimension;
+    const { dimension, filterMode, onClauseChange } = this.props;
+    const { selectedValues } = this.state;
+    const { name } = dimension;
+    if (selectedValues.count() === 0) return onClauseChange(null);
 
-    var clause: StringFilterClause = null;
-    if (selectedValues.size()) {
-      clause = new StringFilterClause({
-        reference: name,
-        values: ImmutableSet(selectedValues),
-        not: filterMode === FilterMode.EXCLUDE
-      });
-    }
+    const clause = new StringFilterClause({
+      reference: name,
+      values: selectedValues,
+      not: filterMode === FilterMode.EXCLUDE
+    });
     return onClauseChange(clause);
   }
 
   onValueClick(value: any, e: MouseEvent) {
-    var { selectedValues, colors } = this.state;
-    if (colors) {
-      colors = colors.toggle(value);
-      selectedValues = selectedValues.toggle(value);
-    } else {
-      if (e.altKey || e.ctrlKey || e.metaKey) {
-        if (selectedValues.contains(value) && selectedValues.size() === 1) {
-          selectedValues = Set.EMPTY;
-        } else {
-          selectedValues = Set.EMPTY.add(value);
-        }
-      } else {
-        selectedValues = selectedValues.toggle(value);
-      }
+    const { selectedValues, colors: oldColors } = this.state;
+    const colors = oldColors && oldColors.toggle(value);
+    if (e.altKey || e.ctrlKey || e.metaKey) {
+      const isValueSingleSelected = selectedValues.contains(value) && selectedValues.count() === 1;
+      return this.setState({ colors, selectedValues: isValueSingleSelected ? Set.of() : Set.of(value) });
     }
-
-    this.setState({
-      selectedValues,
-      colors
-    });
+    return this.setState({ colors, selectedValues: toggle(selectedValues, value) });
   }
 
   onOkClick() {
     if (!this.actionEnabled()) return;
-    var { clicker, onClose } = this.props;
-    var { colors } = this.state;
+    const { clicker, onClose } = this.props;
+    const { colors } = this.state;
     clicker.changeFilter(this.constructFilter(), colors);
     onClose();
   }
@@ -225,52 +220,12 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   actionEnabled() {
-    var { essence } = this.props;
-    return !essence.filter.equals(this.constructFilter());
+    return !this.props.essence.filter.equals(this.constructFilter());
   }
 
-  renderRows() {
-    var { loading, dataset, fetchQueued, selectedValues, promotedValues } = this.state;
-    var { dimension, filterMode, searchText } = this.props;
-
-    var rows: JSX.Element[] = [];
-    if (dataset) {
-      var promotedElements = promotedValues ? promotedValues.elements : [];
-      var rowData = dataset.data.slice(0, TOP_N).filter(d => {
-        return promotedElements.indexOf(d[dimension.name]) === -1;
-      });
-      var rowStrings = promotedElements.concat(rowData.map(d => d[dimension.name]));
-
-      if (searchText) {
-        var searchTextLower = searchText.toLowerCase();
-        rowStrings = rowStrings.filter(d => {
-          return String(d).toLowerCase().indexOf(searchTextLower) !== -1;
-        });
-      }
-
-      var checkboxType = filterMode === FilterMode.EXCLUDE ? "cross" : "check";
-      rows = rowStrings.map(segmentValue => {
-        var segmentValueStr = String(segmentValue);
-        var selected = selectedValues && selectedValues.contains(segmentValue);
-
-        return <div
-          className={classNames("row", { selected })}
-          key={segmentValueStr}
-          title={segmentValueStr}
-          onClick={this.onValueClick.bind(this, segmentValue)}
-        >
-          <div className="row-wrapper">
-            <Checkbox type={checkboxType as CheckboxType} selected={selected}/>
-            <HighlightString className="label" text={segmentValueStr} highlight={searchText}/>
-          </div>
-        </div>;
-      });
-    }
-
-    var message: JSX.Element = null;
-    if (!loading && dataset && !fetchQueued && searchText && !rows.length) {
-      message = <div className="message">{'No results for "' + searchText + '"'}</div>;
-    }
+  renderList() {
+    const rows = this.renderRows();
+    const message = this.renderMessage(rows.length > 0);
 
     return <div className="rows">
       {rows}
@@ -278,23 +233,68 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     </div>;
   }
 
+  private renderMessage(hasRows: boolean) {
+    const { searchText } = this.props;
+    const { loading, dataset, fetchQueued } = this.state;
+    if (loading || !dataset || fetchQueued || !searchText || hasRows) {
+      return null;
+    }
+    return <div className="message">{'No results for "' + searchText + '"'}</div>;
+  }
+
+  private renderRows() {
+    const { dataset, selectedValues, promotedValues } = this.state;
+    if (!dataset) return null;
+    const { dimension, filterMode, searchText } = this.props;
+    const promotedElements = promotedValues ? promotedValues.toArray() : [];
+    const rowData = dataset.data.slice(0, TOP_N).filter(d => {
+      return promotedElements.indexOf(d[dimension.name] as string) === -1;
+    });
+    let rowStrings = promotedElements.concat(rowData.map(d => d[dimension.name] as string));
+
+    if (searchText) {
+      const searchTextLower = searchText.toLowerCase();
+      rowStrings = rowStrings.filter(d => {
+        return String(d).toLowerCase().indexOf(searchTextLower) !== -1;
+      });
+    }
+
+    const checkboxType = filterMode === FilterMode.EXCLUDE ? "cross" : "check";
+    return rowStrings.map(segmentValue => {
+      const segmentValueStr = String(segmentValue);
+      const selected = selectedValues && selectedValues.contains(segmentValue);
+
+      return <div
+        className={classNames("row", { selected })}
+        key={segmentValueStr}
+        title={segmentValueStr}
+        onClick={this.onValueClick.bind(this, segmentValue)}
+      >
+        <div className="row-wrapper">
+          <Checkbox type={checkboxType as CheckboxType} selected={selected} />
+          <HighlightString className="label" text={segmentValueStr} highlight={searchText} />
+        </div>
+      </div>;
+    });
+  }
+
   render() {
     const { filterMode } = this.props;
     const { dataset, loading, error } = this.state;
 
-    var hasMore = dataset && dataset.data.length > TOP_N;
+    const hasMore = dataset && dataset.data.length > TOP_N;
     return <div className={classNames("string-filter-menu", filterMode)}>
       <GlobalEventListener
         keyDown={this.globalKeyDownListener.bind(this)}
       />
       <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
-        {this.renderRows()}
-        {error ? <QueryError error={error}/> : null}
-        {loading ? <Loader/> : null}
+        {this.renderList()}
+        {error ? <QueryError error={error} /> : null}
+        {loading ? <Loader /> : null}
       </div>
       <div className="ok-cancel-bar">
-        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()}/>
-        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick.bind(this)}/>
+        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick.bind(this)} disabled={!this.actionEnabled()} />
+        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick.bind(this)} />
       </div>
     </div>;
   }

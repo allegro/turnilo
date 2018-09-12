@@ -21,7 +21,7 @@ import { AndExpression, Expression, OverlapExpression, TimeBucketExpression } fr
 import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { createMeasures, Essence } from "../../models/essence/essence";
-import { Filter, FilterJS } from "../../models/filter/filter";
+import { Filter } from "../../models/filter/filter";
 import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
 import { Splits } from "../../models/splits/splits";

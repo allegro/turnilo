@@ -43,8 +43,8 @@ export const ShareMenu: React.SFC<ShareMenuProps> = props => {
     if (!getDownloadableDataset) return;
 
     const filters = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
-    const splitsString = splits.toArray().map(split => {
-      const dimension = split.getDimension(dataCube.dimensions);
+    const splitsString = splits.splits.toArray().map(split => {
+      const dimension = dataCube.getDimension(split.reference);
       if (!dimension) return "";
       return `${STRINGS.splitDelimiter}_${dimension.name}`;
     }).join("_");

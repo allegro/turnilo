@@ -44,7 +44,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     const filter = Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
 
     const splitDefinitions = List(definition.splits);
-    const splits = new Splits(splitDefinitions.map(splitConverter.toSplitCombine));
+    const splits = new Splits({ splits: splitDefinitions.map(splitConverter.toSplitCombine) });
 
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
     const colors = definition.legend && legendConverter.toColors(definition.legend);
@@ -77,7 +77,7 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
       visualization: essence.visualization.name,
       timezone: essence.timezone.toJS(),
       filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray(),
-      splits: essence.splits.splitCombines.map(splitConverter.fromSplitCombine).toArray(),
+      splits: essence.splits.splits.map(splitConverter.fromSplitCombine).toArray(),
       measures: measuresDefinitionConverter.fromEssenceMeasures(essence.measures),
       pinnedDimensions: essence.pinnedDimensions.toArray(),
       pinnedSort: essence.pinnedSort,

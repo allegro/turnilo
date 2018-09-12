@@ -22,7 +22,7 @@ import { Measure } from "../measure/measure";
 export class SortOn {
 
   static equal(s1: SortOn, s2: SortOn): boolean {
-    return s1 === s2 || s1.reference.equals(s2.reference);
+    return s1.equals(s2);
   }
 
   static getName(s: SortOn): string {
@@ -50,5 +50,9 @@ export class SortOn {
 
   public getTitle(): string {
     return this.reference.title;
+  }
+
+  public equals(other: SortOn): boolean {
+    return this.reference.equals(other.reference);
   }
 }

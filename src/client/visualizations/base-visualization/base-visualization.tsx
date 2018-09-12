@@ -220,7 +220,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, this.id) ||
       nextEssence.differentTimeShift(essence) ||
-      nextEssence.differentEffectiveSplits(essence) ||
+      nextEssence.differentSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
       nextEssence.dataCube.refreshRule.isRealtime();
