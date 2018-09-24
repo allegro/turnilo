@@ -166,3 +166,7 @@ export function quoteNames(names: Collection.Indexed<string>): string {
 export function isDecimalInteger(input: string): boolean {
   return parseInt(input, 10) === Number(input);
 }
+
+export function readNumber(input: any): number {
+  return typeof input === "number" ? input : parseFloat(input);
+}
