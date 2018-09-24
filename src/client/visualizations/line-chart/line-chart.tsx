@@ -35,6 +35,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
+import { readNumber } from "../../../common/utils/general/general";
 import { union } from "../../../common/utils/plywood/range";
 import { DisplayYear } from "../../../common/utils/time/time";
 import { ChartLine } from "../../components/chart-line/chart-line";
@@ -316,11 +317,11 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const { dragRange, scaleX } = this.state;
 
     if (dragRange !== null) {
-      return <Highlighter highlightRange={dragRange} scaleX={scaleX}/>;
+      return <Highlighter highlightRange={dragRange} scaleX={scaleX} />;
     }
     if (essence.highlightOn(LineChart.id)) {
       const highlightRange = essence.getSingleHighlightSet().elements[0];
-      return <Highlighter highlightRange={highlightRange} scaleX={scaleX}/>;
+      return <Highlighter highlightRange={highlightRange} scaleX={scaleX} />;
     }
     return null;
   }
@@ -472,7 +473,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     return <MeasureBubbleContent
       current={currentValue}
       previous={previous}
-      formatter={measure.formatFn}/>;
+      formatter={measure.formatFn} />;
   }
 
   calculateExtend(dataset: Dataset, splits: Splits, getY: Unary<Datum, number>, getYP: Unary<Datum, number>) {
@@ -604,8 +605,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
     const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
 
-    const getY: Unary<Datum, number> = (d: Datum) => d[measure.name] as number;
-    const getYP: Unary<Datum, number> = (d: Datum) => d[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
+    const getY: Unary<Datum, number> = (d: Datum) => readNumber(d[measure.name]);
+    const getYP: Unary<Datum, number> = (d: Datum) => readNumber(d[measure.getDerivedName(MeasureDerivation.PREVIOUS)]);
 
     const datum: Datum = dataset.data[0];
     const splitData = datum[SPLIT] as Dataset;
@@ -640,7 +641,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
           y2={chartStage.height - 0.5}
         />
       </svg>
-      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={datum} showPrevious={essence.hasComparison()}/> : null}
+      {!isThumbnail ? <VisMeasureLabel measure={measure} datum={datum} showPrevious={essence.hasComparison()} /> : null}
       {this.renderHighlighter()}
       {scale && this.renderChartBubble(splitData, measure, chartIndex, containerStage, chartStage, extent, scale)}
     </div>;
@@ -780,7 +781,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
         width={xAxisStage.width}
         height={xAxisStage.height}
       >
-        <LineChartAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone}/>
+        <LineChartAxis stage={xAxisStage} ticks={xTicks} scale={scaleX} timezone={timezone} />
       </svg>;
     }
 
