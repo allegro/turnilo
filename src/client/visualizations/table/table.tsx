@@ -64,12 +64,12 @@ function formatSegment(value: any, timezone: Timezone, split?: SplitCombine): st
           return d3.time.format("%Y %B")(time);
         case "week":
         case "day":
-          return d3.time.format("%Y-%M-%d")(time);
+          return d3.time.format("%Y-%m-%d")(time);
         default:
-          return d3.time.format("%Y-%M-%d %H:%M %p")(time);
+          return d3.time.format("%Y-%m-%d %H:%M %p")(time);
       }
     }
-    return d3.time.format("%Y-%M-%d %H:%M %p")(time);
+    return d3.time.format("%Y-%m-%d %H:%M %p")(time);
   } else if (NumberRange.isNumberRange(value)) {
     return formatNumberRange(value);
   }
