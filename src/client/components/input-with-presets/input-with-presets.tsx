@@ -44,10 +44,9 @@ export class InputWithPresets extends React.Component<InputWithPresetsProps, Inp
   initialState(): InputWithPresetsState {
     const { selected, presets } = this.props;
     const presetPicked = presets.some(({ identity }) => identity === selected);
-    return {
-      customPicked: !presetPicked,
-      customValue: presetPicked ? "" : this.props.selected
-    };
+    const customPicked = selected !== undefined && !presetPicked;
+    const customValue = presetPicked ? "" : (selected || "");
+    return { customPicked, customValue };
   }
 
   state = this.initialState();
