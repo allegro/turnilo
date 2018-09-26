@@ -32,8 +32,9 @@ import { QueryError } from "../../components/query-error/query-error";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
-import { download, makeFileName } from "../../utils/download/download";
+import { download, FileFormat, makeFileName } from "../../utils/download/download";
 import { getVisibleSegments } from "../../utils/sizing/sizing";
+import tabularOptions from "../../utils/tabular-options/tabular-options";
 import "./raw-data-modal.scss";
 
 const HEADER_HEIGHT = 30;
@@ -262,22 +263,20 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
   }
 
   renderButtons(): JSX.Element {
-    const { essence, onClose, timekeeper } = this.props;
-    const { dataset, loading, error } = this.state;
-    const { dataCube } = essence;
-
-    const filtersString = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
+    const { onClose } = this.props;
+    const { loading, error } = this.state;
 
     const buttons: JSX.Element[] = [];
 
-    buttons.push(<Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />);
+    buttons.push(<Button type="primary" key="close" className="close" onClick={onClose} title={STRINGS.close} />);
 
     exportOptions.forEach(({ label, fileFormat }) => {
       buttons.push(
         <Button
           type="secondary"
           className="download"
-          onClick={download.bind(this, dataset, makeFileName(dataCube.name, filtersString, "raw"), fileFormat)}
+          key={`download-${fileFormat}`}
+          onClick={() => this.download(fileFormat)}
           title={label}
           disabled={Boolean(loading || error)}
         />
@@ -287,6 +286,16 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     return <div className="button-bar">
       {buttons}
     </div>;
+  }
+
+  download(fileFormat: FileFormat) {
+    const { dataset } = this.state;
+    const { essence, timekeeper } = this.props;
+    const { dataCube } = essence;
+
+    const options = tabularOptions(essence);
+    const filtersString = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
+    download({ dataset, options }, fileFormat, makeFileName(dataCube.name, filtersString, "raw"));
   }
 
   render() {
