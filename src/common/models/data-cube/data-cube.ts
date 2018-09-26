@@ -994,14 +994,12 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public getDefaultFilter(): Filter {
-    let filter = this.defaultFilter || DataCube.DEFAULT_DEFAULT_FILTER;
-    if (this.timeAttribute) {
-      filter = filter.setSelection(
-        this.timeAttribute,
-        $(FilterClause.MAX_TIME_REF_NAME).timeRange(this.getDefaultDuration(), -1)
-      );
-    }
-    return filter;
+    const filter = this.defaultFilter || DataCube.DEFAULT_DEFAULT_FILTER;
+    if (!this.timeAttribute) return filter;
+    return filter.insertByIndex(0, new FilterClause({
+      expression: this.timeAttribute,
+      selection: $(FilterClause.MAX_TIME_REF_NAME).timeRange(this.getDefaultDuration(), -1)
+    }));
   }
 
   public getDefaultSplits(): Splits {
