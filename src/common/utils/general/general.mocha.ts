@@ -18,7 +18,7 @@
 import { expect } from "chai";
 
 import { List } from "immutable";
-import { ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, verifyUrlSafeName } from "./general";
+import { ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, readNumber, verifyUrlSafeName } from "./general";
 
 describe("General", () => {
   describe("moveInList", () => {
@@ -160,6 +160,24 @@ describe("General", () => {
 
     it("should return false for numbers with additional characters", () => {
       expect(isDecimalInteger("1234foobar"), "1234foobar").to.be.false;
+    });
+  });
+
+  describe("readNumber", () => {
+    it("should return number if number passed", () => {
+      expect(readNumber(123)).to.equal(123);
+    });
+
+    it("should parse string to float", () => {
+      expect(readNumber("1"), "integer").to.equal(1);
+      expect(readNumber("1.1"), "float").to.equal(1.1);
+    });
+
+    it("should return NaN if not a number", () => {
+      expect(readNumber("foobar"), "foobar").to.be.NaN;
+      expect(readNumber("NaN"), "NaN").to.be.NaN;
+      expect(readNumber(null), "<null>").to.be.NaN;
+      expect(readNumber(undefined), "<undefined>").to.be.NaN;
     });
   });
 });
