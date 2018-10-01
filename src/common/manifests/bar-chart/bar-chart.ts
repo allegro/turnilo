@@ -17,7 +17,8 @@
 
 import { Dimension } from "../../models/dimension/dimension";
 import { Manifest, Resolve } from "../../models/manifest/manifest";
-import { createSort, Split } from "../../models/split/split";
+import { Sort } from "../../models/sort/sort";
+import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
@@ -39,27 +40,27 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     const newSplits = splits.update("splits", splits => splits.map((split: Split) => {
       const splitDimension = dataCube.getDimension(split.reference);
       const sortStrategy = splitDimension.sortStrategy;
-      if (!split.sort) {
+      if (split.sort.empty()) {
         if (sortStrategy) {
           if (sortStrategy === "self") {
-            split = split.changeSort(createSort({
+            split = split.changeSort(new Sort({
               reference: splitDimension.name,
               direction: SortDirection.descending
             }));
           } else {
-            split = split.changeSort(createSort({
+            split = split.changeSort(new Sort({
               reference: sortStrategy,
               direction: SortDirection.descending
             }));
           }
         } else if (splitDimension.kind === "boolean") {  // Must sort boolean in deciding order!
-          split = split.changeSort(createSort({
+          split = split.changeSort(new Sort({
             reference: splitDimension.name,
             direction: SortDirection.descending
           }));
         } else {
           if (splitDimension.isContinuous()) {
-            split = split.changeSort(createSort({
+            split = split.changeSort(new Sort({
               reference: splitDimension.name,
               direction: SortDirection.ascending
             }));
@@ -69,7 +70,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
         }
         autoChanged = true;
       } else if (splitDimension.canBucketByDefault() && split.sort.reference !== splitDimension.name) {
-        split = split.changeSort(createSort({
+        split = split.changeSort(new Sort({
           reference: splitDimension.name,
           direction: split.sort.direction
         }));

@@ -16,7 +16,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import { Dataset, Expression, TabulatorOptions } from "plywood";
+import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { MANIFESTS } from "../../../common/manifests/index";
@@ -28,6 +28,7 @@ import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
+import { Highlight } from "../../../common/models/highlight/highlight";
 import { Manifest } from "../../../common/models/manifest/manifest";
 import { Measure } from "../../../common/models/measure/measure";
 import { Split } from "../../../common/models/split/split";
@@ -184,7 +185,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       },
       changeHighlight: (owner: string, measure: string, delta: Filter) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(owner, measure, delta) });
+        this.setState({ essence: essence.changeHighlight(new Highlight({ owner, measure, delta })) });
       },
       acceptHighlight: () => {
         const { essence } = this.state;
@@ -538,7 +539,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 menuStage={visualizationStage}
               />
             </div>
-            <VisSelector clicker={clicker} essence={essence}/>
+            <VisSelector clicker={clicker} essence={essence} />
           </div>
           <div
             className="center-main"
@@ -546,7 +547,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           >
             <div className="visualization" ref="visualization">{visElement}</div>
             {manualFallback}
-            {dragOver ? <DropIndicator/> : null}
+            {dragOver ? <DropIndicator /> : null}
             {dragOver ? <div
               className="drag-mask"
               onDragOver={this.dragOver.bind(this)}

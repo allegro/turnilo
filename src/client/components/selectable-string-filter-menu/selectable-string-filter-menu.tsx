@@ -138,13 +138,15 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
     const existingMode = filter.getModeForDimension(dimension);
 
+    console.log("clauses", filter.clauses.toJS());
+    console.log("dimension", dimension);
     const clause = filter.getClauseForDimension(dimension);
     if (!(clause instanceof StringFilterClause)) {
       throw new Error(`Expected string filter clause, got: ${clause}`);
     }
 
     const valueSet = clause.values;
-    const selectedValues = (existingMode !== "regex" && valueSet) || (myColors ? Set(myColors.toArray()) : null) || Set.of(); // don't want regex to show up as a promoted value
+    const selectedValues = (existingMode !== FilterMode.REGEX && valueSet) || (myColors ? Set(myColors.toArray()) : null) || Set.of(); // don't want regex to show up as a promoted value
     this.setState({
       selectedValues,
       promotedValues: selectedValues,

@@ -16,75 +16,14 @@
  */
 
 import { expect } from "chai";
-import { testImmutableClass } from "immutable-class-tester";
-
+import { Set } from "immutable";
 import { $ } from "plywood";
-import { Filter, FilterJS } from "./filter";
+import { StringFilterAction, StringFilterClause } from "../filter-clause/filter-clause";
+import { EMPTY_FILTER, Filter } from "./filter";
 
 describe("Filter", () => {
-  it("is an immutable class", () => {
-    testImmutableClass<FilterJS>(Filter, [
-      { op: "literal", value: true },
-      {
-        op: "OVERLAP", operand: { op: "ref", name: "language" },
-        expression: {
-          op: "literal",
-          value: { setType: "STRING", elements: ["en"] },
-          type: "SET"
-        }
-      },
-      {
-        op: "OVERLAP", operand: { op: "ref", name: "time" },
-        expression: {
-          op: "literal",
-          value: { start: new Date("2013-02-26T19:00:00.000Z"), end: new Date("2013-02-26T22:00:00.000Z") },
-          type: "TIME_RANGE"
-        }
-      },
-      {
-        op: "OVERLAP", operand: { op: "ref", name: "language" },
-        expression: {
-          op: "literal",
-          value: { setType: "STRING", elements: ["he"] },
-          type: "SET"
-        }
-      },
-      {
-        op: "and",
-        operand: {
-          expression: {
-            op: "literal",
-            value: { setType: "STRING", elements: ["he"] },
-            type: "SET"
-          },
-          op: "OVERLAP",
-          operand: { op: "ref", name: "language" }
-        },
-        expression: {
-          op: "OVERLAP", operand: { op: "ref", name: "namespace" },
-          expression: {
-            op: "literal",
-            value: { setType: "STRING", elements: ["wikipedia"] },
-            type: "SET"
-          }
-        }
-      },
-
-      // Dynamic
-      {
-        op: "OVERLAP", operand: { op: "ref", name: "time" },
-        expression: {
-          op: "timeRange",
-          operand: { op: "ref", name: "n" },
-          duration: "P1D",
-          step: -1
-        }
-      }
-    ]);
-  });
-
   it("works in empty case", () => {
-    var filter = Filter.EMPTY;
+    const filter = EMPTY_FILTER;
 
     expect(filter.toExpression().toJS()).to.deep.equal({
       op: "literal",
@@ -93,70 +32,19 @@ describe("Filter", () => {
   });
 
   it("add works", () => {
-    var filter = Filter.EMPTY;
-    var $language = $("language");
+    let filter = EMPTY_FILTER;
+    const reference = "language";
+    const $language = $(reference);
 
-    filter = filter.addValue($language, "en");
+    const clause = new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of("en") })
+    filter = filter.addClause(clause);
 
-    var ex = $language.overlap(["en"]);
-    expect(filter.toExpression().toJS()).to.deep.equal(ex.toJS());
+    const en = $language.overlap(["en"]);
+    expect(filter.toExpression().toJS(), "lang: en").to.deep.equal(en.toJS());
 
-    filter = filter.addValue($language, null);
+    filter = filter.setClause(clause.update("values", values => values.add(null)));
 
-    var ex = $language.overlap(["en", null]);
-    expect(filter.toExpression().toJS()).to.deep.equal(ex.toJS());
-  });
-
-  it("upgrades", () => {
-    var filter = Filter.fromJS({
-      op: "chain",
-      expression: { op: "ref", name: "language" },
-      actions: [
-        {
-          action: "in",
-          expression: {
-            op: "literal",
-            value: { setType: "STRING", elements: ["he"] },
-            type: "SET"
-          }
-        },
-        {
-          action: "and",
-          expression: {
-            op: "chain", expression: { op: "ref", name: "namespace" },
-            action: {
-              action: "in",
-              expression: {
-                op: "literal",
-                value: { setType: "STRING", elements: ["wikipedia"] },
-                type: "SET"
-              }
-            }
-          }
-        }
-      ]
-    });
-
-    expect(filter.toJS()).to.deep.equal({
-      op: "and",
-      operand: {
-        expression: {
-          op: "literal",
-          value: { setType: "STRING", elements: ["he"] },
-          type: "SET"
-        },
-        op: "OVERLAP",
-        operand: { op: "ref", name: "language" }
-      },
-      expression: {
-        op: "OVERLAP", operand: { op: "ref", name: "namespace" },
-        expression: {
-          op: "literal",
-          value: { setType: "STRING", elements: ["wikipedia"] },
-          type: "SET"
-        }
-      }
-    });
-
+    const langNull = $language.overlap(["en", null]);
+    expect(filter.toExpression().toJS(), "lang: null").to.deep.equal(langNull.toJS());
   });
 });

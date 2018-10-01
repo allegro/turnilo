@@ -16,183 +16,61 @@
  */
 
 import { expect } from "chai";
-import { Timezone } from "chronoshift";
-import { testImmutableClass } from "immutable-class-tester";
-import { FilterClause, FilterClauseJS, PlywoodFilterMethod } from "./filter-clause";
+import { Duration, Timezone } from "chronoshift";
+import { List } from "immutable";
+import { DateRange, FilterClause, FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterPeriod } from "./filter-clause";
 
 describe("FilterClause", () => {
-  it("is an immutable class", () => {
-    testImmutableClass<FilterClauseJS>(FilterClause, [
-      {
-        expression: { op: "ref", name: "language" },
-        selection: {
-          op: "literal",
-          value: {
-            setType: "STRING",
-            elements: ["en"]
-          },
-          type: "SET"
-        }
-      },
-      {
-        expression: { op: "ref", name: "language" },
-        selection: {
-          op: "literal",
-          value: {
-            setType: "STRING",
-            elements: ["en", null]
-          },
-          type: "SET"
-        }
-      },
-      {
-        expression: { op: "ref", name: "language" },
-        selection: {
-          op: "literal",
-          value: {
-            setType: "STRING",
-            elements: ["en"]
-          },
-          type: "SET"
-        },
-        exclude: true
-      },
-      {
-        expression: { op: "ref", name: "time" },
-        selection: {
-          op: "literal",
-          value: {
-            setType: "TIME_RANGE",
-            elements: [{ start: new Date("2015-11-11"), end: new Date("2015-11-12") }]
-          },
-          type: "SET"
-        },
-        exclude: true
-      },
-      {
-        expression: { op: "ref", name: "language" },
-        selection: "%David\\_R_ss%?",
-        action: PlywoodFilterMethod.MATCH
-      },
-
-      // Dynamic!
-      {
-        expression: { op: "ref", name: "language" },
-        selection: {
-          operand: { op: "ref", name: "n" },
-          op: "timeRange",
-          duration: "P1D",
-          step: -1
-        }
-      },
-      {
-        expression: { op: "ref", name: "language" },
-        selection: {
-          op: "timeRange",
-          duration: "P1D",
-          step: -1,
-          operand: {
-            op: "timeShift",
-            duration: "P5D",
-            step: -1
-          }
-        }
-      }
-    ]);
-  });
-
   describe("evaluate", () => {
-    it("works with now", () => {
-      var clause = FilterClause.fromJS({
-        expression: { op: "ref", name: "language" },
-        selection: {
-          op: "chain",
-          expression: { op: "ref", name: "n" },
-          action: { action: "timeRange", duration: "P1D", step: -1 }
-        }
+    it("works with now for previous", () => {
+      const previousRelative = new RelativeTimeFilterClause({ reference: "time", period: TimeFilterPeriod.PREVIOUS, duration: Duration.fromJS("P1D") });
+
+      const now = new Date("2016-01-15T11:22:33Z");
+      const maxTime = new Date("2016-01-15T08:22:00Z");
+
+      const previousFixed = new FixedTimeFilterClause({
+        reference: "time",
+        values: List.of(new DateRange({
+          start: new Date("2016-01-14"),
+          end: new Date("2016-01-15")
+        }))
       });
 
-      var now = new Date("2016-01-15T11:22:33Z");
-      var maxTime = new Date("2016-01-15T08:22:00Z");
-
-      expect(clause.evaluate(now, maxTime, Timezone.UTC).toJS()).to.deep.equal({
-        selection: {
-          op: "literal",
-          type: "TIME_RANGE",
-          value: {
-            end: new Date("2016-01-15T11:22:33.000Z"),
-            start: new Date("2016-01-14T11:22:33.000Z")
-          }
-        },
-        expression: {
-          name: "language",
-          op: "ref"
-        }
-      });
+      expect(previousRelative.evaluate(now, maxTime, Timezone.UTC).equals(previousFixed)).to.be.true;
     });
 
-    it("works with maxTime", () => {
-      var clause = FilterClause.fromJS({
-        expression: { op: "ref", name: "language" },
-        selection: {
-          op: "chain",
-          expression: { op: "ref", name: "m" },
-          action: { action: "timeRange", duration: "P1D", step: -1 }
-        }
+    it("works with now for current", () => {
+      const currentRelative = new RelativeTimeFilterClause({ reference: "time", period: TimeFilterPeriod.CURRENT, duration: Duration.fromJS("P1D") });
+
+      const now = new Date("2016-01-15T11:22:33Z");
+      const maxTime = new Date("2016-01-15T08:22:00Z");
+
+      const currentFixed = new FixedTimeFilterClause({
+        reference: "time",
+        values: List.of(new DateRange({
+          start: new Date("2016-01-15"),
+          end: new Date("2016-01-16")
+        }))
       });
 
-      var now = new Date("2016-01-15T11:22:33Z");
-      var maxTime = new Date("2016-01-15T08:22:00Z");
+      expect(currentRelative.evaluate(now, maxTime, Timezone.UTC).equals(currentFixed)).to.be.true;
+    });
 
-      expect(clause.evaluate(now, maxTime, Timezone.UTC).toJS()).to.deep.equal({
-        selection: {
-          op: "literal",
-          type: "TIME_RANGE",
-          value: {
-            end: new Date("2016-01-15T08:23:00Z"),
-            start: new Date("2016-01-14T08:23:00Z")
-          }
-        },
-        expression: {
-          name: "language",
-          op: "ref"
-        }
+    it("works with maxTime for latest", () => {
+      const relativeClause = new RelativeTimeFilterClause({ reference: "time", period: TimeFilterPeriod.LATEST, duration: Duration.fromJS("P1D") });
+
+      const now = new Date("2016-01-15T11:22:33Z");
+      const maxTime = new Date("2016-01-15T08:22:00Z");
+
+      const fixedClause = new FixedTimeFilterClause({
+        reference: "time",
+        values: List.of(new DateRange({
+          end: new Date("2016-01-15T08:23:00Z"),
+          start: new Date("2016-01-14T08:23:00Z")
+        }))
       });
+
+      expect(relativeClause.evaluate(now, maxTime, Timezone.UTC).equals(fixedClause)).to.be.true;
     });
   });
-
-  describe("isLessThanFullDay", () => {
-    it("works with less than full day", () => {
-      var clause = FilterClause.fromJS({
-        expression: { op: "ref", name: "time" },
-        selection: {
-          op: "literal",
-          value: {
-            setType: "TIME_RANGE",
-            elements: [{ start: new Date("2015-01-26T01:00:00Z"), end: new Date("2015-01-26T04:00:00Z") }]
-          },
-          type: "SET"
-        }
-      });
-      expect(clause.isLessThanFullDay()).to.equal(true);
-    });
-
-    it("returns false for exactly one day", () => {
-      var clause = FilterClause.fromJS({
-        expression: { op: "ref", name: "time" },
-        selection: {
-          op: "literal",
-          value: {
-            setType: "TIME_RANGE",
-            elements: [{ start: new Date("2015-01-26T01:00:00Z"), end: new Date("2015-01-27T01:00:00Z") }],
-            bounds: "()"
-          },
-          type: "SET"
-        }
-      });
-      expect(clause.isLessThanFullDay()).to.equal(false);
-    });
-
-  });
-
 });

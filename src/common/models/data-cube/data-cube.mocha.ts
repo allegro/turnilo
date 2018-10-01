@@ -243,12 +243,12 @@ describe("DataCube", () => {
     });
   });
 
-  describe("back compat", () => {
+  describe.skip("back compat", () => {
     it("works in a generic case", () => {
       var legacyDataCubeJS: any = {
         name: "wiki",
         title: "Wiki",
-        engine: "druid",
+        clusterName: "druid",
         source: "wiki",
         subsetFilter: "$page.in(['en', 'fr'])",
         dimensions: [

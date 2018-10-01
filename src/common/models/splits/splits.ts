@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from "chronoshift";
+import { Timezone } from "chronoshift";
 import { List, Record, Set } from "immutable";
-import { NumberBucketExpression, PlywoodRange, TimeBucketExpression, TimeRange } from "plywood";
 import { Unary } from "../../utils/functional/functional";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
+import { FixedTimeFilterClause, NumberFilterClause } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
 import { getBestBucketUnitForRange, getDefaultGranularityForKind } from "../granularity/granularity";
 import { Measures } from "../measure/measures";
-import { Sort, Split } from "../split/split";
+import { Sort } from "../sort/sort";
+import { Split } from "../split/split";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
 export interface SplitsValue {
@@ -39,8 +40,8 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     return new Splits({ splits: List([split]) });
   }
 
-  static fromJS(parameters: any): Splits {
-    const splits = List(parameters.splits).map(split => Split.fromJS(split));
+  static fromJS(splitsJs: any[]): Splits {
+    const splits = List(splitsJs).map(split => Split.fromJS(split));
     return new Splits({ splits });
   }
 
@@ -127,19 +128,18 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
       if (!splitDimension || !(splitKind === "time" || splitKind === "number") || !splitDimension.canBucketByDefault()) {
         return split;
       }
-      // TODO: calculate extent from specificFilter and don't use plywood range (prolly something inside granularity to fix)
-      const extent: PlywoodRange = null;
-
       if (splitKind === "time") {
-        return split.changeBucket(TimeRange.isTimeRange(extent)
-          ? (getBestBucketUnitForRange(extent, false, splitDimension.bucketedBy, splitDimension.granularities) as Duration)
-          : (getDefaultGranularityForKind("time", splitDimension.bucketedBy, splitDimension.granularities) as TimeBucketExpression).duration
+        const clause = specificFilter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
+        return split.changeBucket(clause
+          ? getBestBucketUnitForRange(clause.values.first(), false, splitDimension.bucketedBy, splitDimension.granularities)
+          : getDefaultGranularityForKind("time", splitDimension.bucketedBy, splitDimension.granularities)
         );
 
       } else if (splitKind === "number") {
-        return split.changeBucket(extent
-          ? (getBestBucketUnitForRange(extent, false, splitDimension.bucketedBy, splitDimension.granularities) as number)
-          : (getDefaultGranularityForKind("number", splitDimension.bucketedBy, splitDimension.granularities) as NumberBucketExpression).size
+        const clause = specificFilter.clauses.find(clause => clause instanceof NumberFilterClause) as NumberFilterClause;
+        return split.changeBucket(clause
+          ? getBestBucketUnitForRange(clause.values.first(), false, splitDimension.bucketedBy, splitDimension.granularities)
+          : getDefaultGranularityForKind("number", splitDimension.bucketedBy, splitDimension.granularities)
         );
 
       }
@@ -151,7 +151,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   public constrainToDimensionsAndMeasures(dimensions: Dimensions, measures: Measures): Splits {
     function validSplit(split: Split): boolean {
       if (!dimensions.getDimensionByName(split.reference)) return false;
-      if (!split.sort) return true;
+      if (split.sort.empty()) return true;
       const sortRef = split.sort.reference;
       return dimensions.containsDimensionWithName(sortRef) || measures.containsMeasureWithName(sortRef);
     }

@@ -15,42 +15,7 @@
  * limitations under the License.
  */
 
-import { testImmutableClass } from "immutable-class-tester";
-
-import { Split, SplitCombineJS } from "./split";
+import { Split } from "./split";
 
 describe("Split", () => {
-  it("is an immutable class", () => {
-    testImmutableClass<SplitCombineJS>(Split, [
-      {
-        expression: { op: "ref", name: "language" }
-      },
-      {
-        expression: { op: "ref", name: "lookup" }
-      },
-      {
-        expression: { op: "ref", name: "time" },
-        bucketAction: {
-          op: "in",
-          expression: {
-            op: "literal",
-            value: { setType: "STRING", elements: ["he"] },
-            type: "SET"
-          }
-        },
-        sortAction: {
-          op: "sort",
-          direction: "ascending",
-          expression: {
-            op: "ref",
-            name: "time"
-          }
-        },
-        limitAction: {
-          op: "limit",
-          value: 2
-        }
-      }
-    ]);
-  });
 });

@@ -23,7 +23,7 @@ import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { formatFilterClause } from "../../../common/utils/formatter/formatter";
+import { formatFilterClause, getFileString } from "../../../common/utils/formatter/formatter";
 import { arraySum, Fn, makeTitle } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
 import { Loader } from "../../components/loader/loader";
@@ -266,7 +266,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataset, loading, error } = this.state;
     const { dataCube } = essence;
 
-    const filtersString = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
+    const filtersString = getFileString(essence.getEffectiveFilter(timekeeper));
 
     const buttons: JSX.Element[] = [];
 

@@ -19,19 +19,14 @@ import { Duration } from "chronoshift";
 import { Record } from "immutable";
 import { $, Expression, NumberBucketExpression, TimeBucketExpression } from "plywood";
 import { isTruthy } from "../../utils/general/general";
-import { SortDirection, SplitType } from "../../view-definitions/version-3/split-definition";
 import { Dimension } from "../dimension/dimension";
+import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../sort/sort";
 
-export const SORT_ON_DIMENSION_PLACEHOLDER = "__SWIV_SORT_ON_DIMENSIONS__";
-
-interface SortDefinition {
-  reference: string;
-  direction: SortDirection;
+export enum SplitType {
+  number = "number",
+  string = "string",
+  time = "time"
 }
-
-export type Sort = Record<SortDefinition> & Readonly<SortDefinition>;
-
-export const createSort = Record<SortDefinition>({ reference: null, direction: null });
 
 export type Bucket = number | Duration;
 
@@ -48,19 +43,22 @@ const defaultSplit: SplitValue = {
   type: SplitType.string,
   reference: null,
   bucket: null,
-  sort: createSort(),
+  sort: new Sort(),
   limit: null
 };
+
+export function bucketToAction(bucket: Bucket): Expression {
+  return bucket instanceof Duration
+    ? new TimeBucketExpression({ duration: bucket })
+    : new NumberBucketExpression({ size: bucket });
+}
 
 export function toExpression({ reference, bucket }: Split, filter?: Expression, shift?: Duration) {
   const ref = $(reference);
   const withShift = shift && filter;
   const expression = withShift ? filter.then(ref).fallback(ref.timeShift((shift))) : ref;
   if (!bucket) return expression;
-  const bucketAction = bucket instanceof Duration
-    ? new TimeBucketExpression({ duration: bucket })
-    : new NumberBucketExpression({ size: bucket });
-  return expression.performAction(bucketAction);
+  return expression.performAction(bucketToAction(bucket));
 }
 
 export class Split extends Record<SplitValue>(defaultSplit) {
@@ -73,9 +71,9 @@ export class Split extends Record<SplitValue>(defaultSplit) {
     return new Split({
       type,
       reference,
-      bucket: type === SplitType.time ? Duration.fromJS(bucket) : bucket,
+      bucket: type === SplitType.time && bucket ? Duration.fromJS(bucket) : bucket,
       limit,
-      sort: createSort(sort)
+      sort: new Sort(sort)
     });
   }
 

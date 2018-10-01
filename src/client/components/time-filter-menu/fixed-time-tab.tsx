@@ -21,7 +21,7 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FixedTimeFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { DateRange, FixedTimeFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { isValidTimeShift, TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -100,7 +100,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
     if (start >= end) {
       throw new Error("Couldn't construct time filter: Start should be earlier than end.");
     }
-    const clause = new FixedTimeFilterClause({ reference: name, values: List.of({ start, end }) });
+    const clause = new FixedTimeFilterClause({ reference: name, values: List.of(new DateRange({ start, end })) });
     return filter.setClause(clause);
   }
 

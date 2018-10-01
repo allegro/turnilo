@@ -19,7 +19,7 @@ import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import { $ } from "plywood";
 import { DimensionFixtures } from "../../models/dimension/dimension.fixtures";
-import { FilterClause } from "../../models/filter-clause/filter-clause";
+import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../../models/time/time";
 import { formatFilterClause, formatterFromData, getMiddleNumber } from "./formatter";
 import { FormatterFixtures } from "./formatter.fixtures";
 
@@ -59,34 +59,21 @@ describe("General", () => {
   });
 
   describe("formatFilterClause", () => {
-    const $now = $(FilterClause.NOW_REF_NAME);
-    const $max = $(FilterClause.MAX_TIME_REF_NAME);
+    const $now = $(NOW_REF_NAME);
+    const $max = $(MAX_TIME_REF_NAME);
 
     const latestDurationTests = [
-      { duration: "PT1H", step: -1, label: "Latest hour" },
-      { duration: "PT1H", step: -6, label: "Latest 6 hours" },
-      { duration: "P1D", step: -1, label: "Latest day" },
-      { duration: "P1D", step: -7, label: "Latest 7 days" },
-      { duration: "P1D", step: -30, label: "Latest 30 days" }
+      { duration: "PT1H", label: "Latest hour" },
+      { duration: "PT6H", label: "Latest 6 hours" },
+      { duration: "P1D", label: "Latest day" },
+      { duration: "P7D", label: "Latest 7 days" },
+      { duration: "P30D",  label: "Latest 30 days" }
     ];
 
-    latestDurationTests.forEach(({ duration, step, label }) => {
-      it(`formats previous ${-step} * ${duration} as "${label}"`, () => {
-        const timeFilterLatest = FormatterFixtures.latestDuration(duration, step);
+    latestDurationTests.forEach(({ duration, label }) => {
+      it(`formats latest ${duration} as "${label}"`, () => {
+        const timeFilterLatest = FormatterFixtures.latestDuration(duration);
         expect(formatFilterClause(DimensionFixtures.time(), timeFilterLatest, Timezone.UTC)).to.equal(label);
-      });
-    });
-
-    const unsupportedLatestDurationTests = [
-      { reference: $now, duration: "P1D", step: -2 },
-      { reference: $max, duration: "PT1H", step: 0 },
-      { reference: $max, duration: "P1D", step: 1 }
-    ];
-
-    unsupportedLatestDurationTests.forEach(({ reference, duration, step }) => {
-      it(`throws on formatting latest ${-step} * ${duration} with ${reference} reference"`, () => {
-        const timeFilterLatest = FormatterFixtures.timeRangeDuration(reference, duration, step);
-        expect(() => formatFilterClause(DimensionFixtures.time(), timeFilterLatest, Timezone.UTC)).to.throw();
       });
     });
 
@@ -112,31 +99,6 @@ describe("General", () => {
       });
     });
 
-    const unsupportedPreviousDurationTests = [
-      { reference: $now, duration: "P1D", step: -2 },
-      { reference: $now, duration: "P1M", step: 2 }
-    ];
-
-    unsupportedPreviousDurationTests.forEach(({ reference, duration, step }) => {
-      it(`throws on formatting previous ${-step} * ${duration} with ${reference} reference"`, () => {
-        const timeFilterEarlier = FormatterFixtures.flooredDuration(reference, duration, step);
-        expect(() => formatFilterClause(DimensionFixtures.time(), timeFilterEarlier, Timezone.UTC)).to.throw();
-      });
-    });
-
-    const unsupportedCurrentDurationTests = [
-      { reference: $max, duration: "P1D" },
-      { reference: $max, duration: "P1W" },
-      { reference: $max, duration: "P1M" }
-    ];
-
-    unsupportedCurrentDurationTests.forEach(({ reference, duration }) => {
-      it(`throws on formatting current ${duration} with ${reference} reference"`, () => {
-        const timeFilterCurrent = FormatterFixtures.flooredDuration(reference, duration, 1);
-        expect(() => formatFilterClause(DimensionFixtures.time(), timeFilterCurrent, Timezone.UTC)).to.throw();
-      });
-    });
-
     const fixedTimeTests = [
       { start: "2016-11-11", end: "2016-12-12", label: "Nov 11 - Dec 11, 2016" },
       { start: "2015-11-11", end: "2016-12-12", label: "Nov 11, 2015 - Dec 11, 2016" },
@@ -150,30 +112,13 @@ describe("General", () => {
       });
     });
 
-    fixedTimeTests.forEach(({ start, end, label }) => {
-      it(`formats range [${start}, ${end}) as "time: ${label}"`, () => {
-        const filterClause = FormatterFixtures.fixedTimeFilter(new Date(start), new Date(end));
-        expect(formatFilterClause(DimensionFixtures.time(), filterClause, Timezone.UTC, true)).to.equal(`time: ${label}`);
-      });
-    });
-
     it("formats number", () => {
-      expect(formatFilterClause(DimensionFixtures.number(), FormatterFixtures.numberFilter(), Timezone.UTC)).to.equal("Numeric (3)");
-    });
-
-    it("formats number verbose", () => {
-      expect(formatFilterClause(DimensionFixtures.number(), FormatterFixtures.numberFilter(), Timezone.UTC, true)).to.equal("Numeric: 1, 2, 3");
+      expect(formatFilterClause(DimensionFixtures.number(), FormatterFixtures.numberFilter(), Timezone.UTC)).to.equal("Numeric: 1 to 3");
     });
 
     it("formats string", () => {
       expect(
         formatFilterClause(DimensionFixtures.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC)
-      ).to.equal("important countries: iceland");
-    });
-
-    it("formats string verbose", () => {
-      expect(
-        formatFilterClause(DimensionFixtures.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC, true)
       ).to.equal("important countries: iceland");
     });
   });

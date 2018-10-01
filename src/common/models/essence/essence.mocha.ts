@@ -16,7 +16,6 @@
  */
 
 import { expect } from "chai";
-import { RefExpression } from "plywood";
 import { MANIFESTS } from "../../manifests";
 import { BAR_CHART_MANIFEST } from "../../manifests/bar-chart/bar-chart";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
@@ -27,9 +26,9 @@ import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
 import { Highlight } from "../highlight/highlight";
 import { HighlightFixtures } from "../highlight/highlight.fixtures";
 import { MeasureFixtures } from "../measure/measure.fixtures";
-import { Split } from "../split/split";
+import { Split, SplitType } from "../split/split";
 import { Splits } from "../splits/splits";
-import { Essence, EssenceValue, VisStrategy } from "./essence";
+import { Essence, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
 describe("EssenceProps", () => {
@@ -89,7 +88,7 @@ describe("EssenceProps", () => {
     tests.forEach(({ highlight, expected, description }) => {
       it(`highlight ${description}`, () => {
         const wikiEssence = EssenceFixtures.wikiTable();
-        const essenceWithHighlight = new Essence({ ...wikiEssence.toObject(), highlight } as EssenceValue);
+        const essenceWithHighlight = wikiEssence.changeHighlight(highlight);
 
         expect(essenceWithHighlight.highlight).to.deep.equal(expected);
 
@@ -159,18 +158,17 @@ describe("EssenceProps", () => {
     describe("#getBestVisualization", () => {
       const tests = [
         { splitDimensions: [], current: null, expected: TOTALS_MANIFEST },
-        { splitDimensions: ["tweetLength"], current: TOTALS_MANIFEST, expected: BAR_CHART_MANIFEST },
-        { splitDimensions: ["twitterHandle"], current: TOTALS_MANIFEST, expected: TABLE_MANIFEST },
-        { splitDimensions: ["time"], current: BAR_CHART_MANIFEST, expected: LINE_CHART_MANIFEST }
+        { splitDimensions: [{ reference: "tweetLength", type: SplitType.number }], current: TOTALS_MANIFEST, expected: BAR_CHART_MANIFEST },
+        { splitDimensions: [{ reference: "twitterHandle", type: SplitType.string }], current: TOTALS_MANIFEST, expected: TABLE_MANIFEST },
+        { splitDimensions: [{ reference: "time", type: SplitType.time }], current: BAR_CHART_MANIFEST, expected: LINE_CHART_MANIFEST }
       ];
-      const dimensions = DataCubeFixtures.twitter().dimensions;
 
       tests.forEach(({ splitDimensions, current, expected }) => {
         it(`chooses ${expected.name} given splits: [${splitDimensions}] with current ${current && current.name}`, () => {
           const { visualization } = Essence.getBestVisualization(
             MANIFESTS,
             DataCubeFixtures.twitter(),
-            Splits.fromJS(splitDimensions, { dimensions }),
+            Splits.fromJS(splitDimensions),
             null,
             current);
 
@@ -180,14 +178,14 @@ describe("EssenceProps", () => {
     });
 
     describe("#changeSplits", () => {
-      const timeSplit = Split.fromJS({ expression: { op: "ref", name: "time" } });
-      const tweetLengthSplit = Split.fromJS({ expression: { op: "ref", name: "tweetLength" } });
-      const twitterHandleSplit = Split.fromJS({ expression: { op: "ref", name: "twitterHandle" } });
+      const timeSplit = Split.fromJS({ type: SplitType.time, reference: "time" });
+      const tweetLengthSplit = Split.fromJS({ type: SplitType.number, reference: "tweetLength" });
+      const twitterHandleSplit = Split.fromJS({ type: SplitType.string, reference: "twitterHandle" });
 
       it("defaults to bar chart with numeric dimension and is sorted on self", () => {
         const essence = EssenceFixtures.twitterNoVisualisation().addSplit(tweetLengthSplit, VisStrategy.FairGame);
         expect(essence.visualization).to.deep.equal(BAR_CHART_MANIFEST);
-        expect((essence.splits.get(0).sortAction.expression as RefExpression).name).to.deep.equal("tweetLength");
+        expect(essence.splits.splits.get(0).sort.reference).to.equal("tweetLength");
         expect(essence.visResolve.isReady()).to.be.true;
       });
 
@@ -233,7 +231,7 @@ describe("EssenceProps", () => {
         expect(essence.visualization).to.deep.equal(LINE_CHART_MANIFEST);
         expect(essence.visResolve.isReady()).to.be.true;
 
-        const withoutSplit = essence.removeSplit(essence.splits.first(), VisStrategy.FairGame);
+        const withoutSplit = essence.removeSplit(essence.splits.splits.first(), VisStrategy.FairGame);
         expect(withoutSplit.visualization).to.deep.equal(TOTALS_MANIFEST);
         expect(withoutSplit.visResolve.isReady()).to.be.true;
       });
@@ -256,7 +254,7 @@ describe("EssenceProps", () => {
           expect(toggledMeasure.visualization).to.deep.equal(visualization);
           expect(toggledMeasure.visResolve.isManual(), "is manual after toggling selected measure").to.be.true;
 
-          const withoutSplit = toggledMeasure.removeSplit(toggledMeasure.splits.first(), VisStrategy.FairGame);
+          const withoutSplit = toggledMeasure.removeSplit(toggledMeasure.splits.splits.first(), VisStrategy.FairGame);
           expect(withoutSplit.visualization).to.deep.equal(visualization);
           expect(withoutSplit.visResolve.isManual(), "is manual after removing split").to.be.true;
 

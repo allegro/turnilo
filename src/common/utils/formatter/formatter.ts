@@ -21,7 +21,18 @@ import * as numeral from "numeral";
 import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { Dimension } from "../../models/dimension/dimension";
-import { FilterClause, FixedTimeFilterClause, isTimeFilter, StringFilterAction, StringFilterClause, TimeFilterClause, TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause,
+  FilterClause,
+  FixedTimeFilterClause,
+  isTimeFilter,
+  NumberFilterClause,
+  StringFilterAction,
+  StringFilterClause,
+  TimeFilterClause,
+  TimeFilterPeriod
+} from "../../models/filter-clause/filter-clause";
+import { Filter } from "../../models/filter/filter";
 
 import { DisplayYear, formatTimeRange } from "../../utils/time/time";
 
@@ -107,20 +118,29 @@ export function formatFilterClause(dimension: Dimension, clause: FilterClause, t
   return title ? `${title} ${values}` : values;
 }
 
+function getFormattedStringClauseValues({ values, action }: StringFilterClause): string {
+  switch (action) {
+    case StringFilterAction.MATCH:
+      return `/${values.first()}/`;
+    case StringFilterAction.CONTAINS:
+      return `"${values.first()}"`;
+    case StringFilterAction.IN:
+      return values.count() > 1 ? `(${values.count()})` : values.first();
+  }
+}
+
 function getFilterClauseValues(clause: FilterClause, timezone: Timezone): string {
   if (isTimeFilter(clause)) {
-    return getFormattedTimeClauseValues(clause as TimeFilterClause, timezone);
+    return getFormattedTimeClauseValues(clause, timezone);
   }
-  let values: string;
-  const setElements = clause.values;
-  if (setElements.count() > 1) {
-    values = `(${setElements.count()})`;
-  } else {
-    values = formatValue(setElements.first());
+  if (clause instanceof StringFilterClause) {
+    return getFormattedStringClauseValues(clause);
   }
-  if (clause instanceof StringFilterClause && clause.action === StringFilterAction.MATCH) values = `/${values}/`;
-  if (clause instanceof StringFilterClause && clause.action === StringFilterAction.CONTAINS) values = `"${values}"`;
-  return values;
+  if (clause instanceof NumberFilterClause) {
+    const { start, end } = clause.values.first();
+    return `${start} to ${end}`;
+  }
+  return clause.values.first().toString();
 }
 
 function getClauseLabel(clause: FilterClause, dimension: Dimension) {
@@ -158,4 +178,22 @@ function getQualifiedDurationDescription(duration: Duration) {
   } else {
     return duration.getDescription();
   }
+}
+
+function dateToFileString(date: Date): string {
+  return date.toISOString()
+    .replace("T", "_")
+    .replace("Z", "")
+    .replace(".000", "");
+}
+
+export function getFileString(filter: Filter): string {
+  const timeFilter: FixedTimeFilterClause = filter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
+  const nonTimeClauseSize = filter.clauses.filter(clause => !(clause instanceof FixedTimeFilterClause)).count();
+  const filtersPart = nonTimeClauseSize === 0 ? "" : `_filters-${nonTimeClauseSize}`;
+  if (timeFilter) {
+    const { start, end } = timeFilter.values.first();
+    return `${dateToFileString(start)}_${dateToFileString(end)}${filtersPart}`;
+  }
+  return filtersPart;
 }

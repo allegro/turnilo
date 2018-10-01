@@ -21,7 +21,7 @@ import { Colors } from "../../../common/models/colors/colors";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
-import { createSort } from "../../../common/models/split/split";
+import { Sort } from "../../../common/models/sort/sort";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
 import { STRINGS } from "../../config/constants";
@@ -113,7 +113,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         if (split) {
           const sort = split.sort;
           const direction = sort ? sort.direction : SortDirection.descending;
-          const newSplit = split.changeSort(createSort({
+          const newSplit = split.changeSort(new Sort({
             reference: sortOn.getName(),
             direction
           }));

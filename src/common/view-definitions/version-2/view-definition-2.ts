@@ -15,20 +15,20 @@
  */
 
 import { ColorsJS } from "../../models/colors/colors";
-import { FilterJS } from "../../models/filter/filter";
-import { HighlightJS } from "../../models/highlight/highlight";
-import { SplitsJS } from "../../models/splits/splits";
+// import { FilterJS } from "../../models/filter/filter";
+// import { HighlightJS } from "../../models/highlight/highlight";
+// import { SplitsJS } from "../../models/splits/splits";
 import { MeasuresDefinitionJS } from "../version-3/measures-definition";
 
 export interface ViewDefinition2 {
   visualization?: string;
   timezone?: string;
-  filter?: FilterJS;
-  splits?: SplitsJS;
+  filter?: any;
+  splits?: any;
   measures: MeasuresDefinitionJS;
   pinnedDimensions?: string[];
   colors?: ColorsJS;
   pinnedSort?: string;
-  compare?: FilterJS;
-  highlight?: HighlightJS;
+  compare?: any;
+  highlight?: any;
 }

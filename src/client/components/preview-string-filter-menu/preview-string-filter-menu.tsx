@@ -215,7 +215,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
   renderList() {
     const { searchText } = this.props;
-    const rows = this.renderRow();
+    const rows = this.renderRows();
     const grayMessage = this.renderMessage(rows.length > 0);
 
     return <div className="rows">
@@ -237,10 +237,10 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     return null;
   }
 
-  private renderRow() {
+  private renderRows() {
     const { dataset } = this.state;
     if (!dataset) {
-      return null;
+      return [];
     }
 
     const { dimension, searchText, filterMode } = this.props;

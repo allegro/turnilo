@@ -28,13 +28,7 @@ describe("Dimension", () => {
         title: "important countries",
         formula: "$country",
         kind: "string",
-        granularities: [
-          { op: "numberBucket", size: 5 },
-          { op: "numberBucket", size: 50 },
-          { op: "numberBucket", size: 500 },
-          { op: "numberBucket", size: 800 },
-          { op: "numberBucket", size: 1000 }
-        ],
+        granularities: [5, 50, 500, 800, 1000],
         sortStrategy: "self"
       },
       {
@@ -43,10 +37,7 @@ describe("Dimension", () => {
         formula: "$country",
         kind: "string",
         url: "https://www.country.com/%s",
-        bucketedBy: {
-          op: "numberBucket",
-          size: 1
-        },
+        bucketedBy: 1,
         bucketingStrategy: BucketingStrategy.defaultBucket
       },
       {
@@ -55,13 +46,7 @@ describe("Dimension", () => {
         formula: "$time",
         kind: "time",
         url: "http://www.time.com/%s",
-        granularities: [
-          { op: "timeBucket", duration: "PT1M" },
-          { op: "timeBucket", duration: "P6M", timezone: "Etc/UTC" },
-          { op: "timeBucket", duration: "PT6H" },
-          { op: "timeBucket", duration: "P1D" },
-          { op: "timeBucket", duration: "P1W" }
-        ]
+        granularities: ["PT1M" , "P6M", "PT6H" , "P1D" , "P1W"]
       },
       {
         name: "time",
@@ -69,17 +54,8 @@ describe("Dimension", () => {
         formula: "$time",
         kind: "time",
         url: "http://www.time.com/%s",
-        granularities: [
-          { op: "timeBucket", duration: "PT1M" },
-          { op: "timeBucket", duration: "P6M" },
-          { op: "timeBucket", duration: "PT6H" },
-          { op: "timeBucket", duration: "P1D" },
-          { op: "timeBucket", duration: "P1W" }
-        ],
-        bucketedBy: {
-          op: "timeBucket",
-          duration: "PT6H"
-        }
+        granularities: ["PT1M" , "P6M", "PT6H" , "P1D" , "P1W"],
+        bucketedBy: "PT6H"
       }
     ]);
   });
@@ -151,7 +127,7 @@ describe("Dimension", () => {
         granularities: [false, true, true, false, false]
       };
 
-      expect(() => { Dimension.fromJS(dimJS2 as DimensionJS); }).to.throw("input should be of type number, string, or action");
+      expect(() => { Dimension.fromJS(dimJS2 as any); }).to.throw("input should be number or Duration");
 
     });
 

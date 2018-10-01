@@ -52,7 +52,7 @@ import { Measure, MeasureJS } from "../measure/measure";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
-import { createSort, Sort } from "../split/split";
+import { Sort } from "../sort/sort";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
@@ -144,7 +144,7 @@ export interface DataCubeJS {
   measures?: MeasureOrGroupJS[];
   timeAttribute?: string;
   defaultTimezone?: string;
-  defaultFilter?: FilterJS;
+  defaultFilter?: any;
   defaultSplitDimensions?: string[];
   defaultDuration?: string;
   defaultSortMeasure?: string;
@@ -333,7 +333,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       timeAttribute,
       defaultTimezone: parameters.defaultTimezone ? Timezone.fromJS(parameters.defaultTimezone) : null,
       defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : null,
-      defaultSplitDimensions: List(parameters.defaultSplitDimensions),
+      defaultSplitDimensions: parameters.defaultSplitDimensions ? List(parameters.defaultSplitDimensions) : null,
       defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : null,
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size() ? measures.first().name : null),
       defaultSelectedMeasures: parameters.defaultSelectedMeasures ? OrderedSet(parameters.defaultSelectedMeasures) : null,
@@ -399,7 +399,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     this.timeAttribute = parameters.timeAttribute;
     this.defaultTimezone = parameters.defaultTimezone;
     this.defaultFilter = parameters.defaultFilter;
-    this.defaultSplitDimensions = List(parameters.defaultSplitDimensions);
+    this.defaultSplitDimensions = parameters.defaultSplitDimensions;
     this.defaultDuration = parameters.defaultDuration;
     this.defaultSortMeasure = parameters.defaultSortMeasure;
     this.defaultSelectedMeasures = parameters.defaultSelectedMeasures;
@@ -517,7 +517,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       immutableEqual(this.timeAttribute, other.timeAttribute) &&
       immutableEqual(this.defaultTimezone, other.defaultTimezone) &&
       immutableEqual(this.defaultFilter, other.defaultFilter) &&
-      this.defaultSplitDimensions.equals(other.defaultSplitDimensions) &&
+      immutableEqual(this.defaultSplitDimensions, other.defaultSplitDimensions) &&
       immutableEqual(this.defaultDuration, other.defaultDuration) &&
       this.defaultSortMeasure === other.defaultSortMeasure &&
       Boolean(this.defaultSelectedMeasures) === Boolean(other.defaultSelectedMeasures) &&
@@ -1018,7 +1018,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public getDefaultSortExpression(): Sort {
-    return createSort({
+    return new Sort({
       reference: this.defaultSortMeasure,
       direction: SortDirection.descending
     });

@@ -16,16 +16,16 @@
  */
 
 import * as d3 from "d3";
-import { List } from "immutable";
-import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, r, Range, Set, SortExpression, TimeRange } from "plywood";
+import { List, Set } from "immutable";
+import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, Range } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BAR_CHART_MANIFEST } from "../../../common/manifests/bar-chart/bar-chart";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FixedTimeFilterClause, NumberFilterClause, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
+import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
@@ -79,16 +79,20 @@ export interface BarChartState extends BaseVisualizationState {
   maxNumberOfLeaves?: number[];
 }
 
-function getFilterFromDatum(splits: Splits, dataPath: Datum[], dataCube: DataCube): Filter {
-  return new Filter(List(dataPath.map((datum, i) => {
-    const split = splits.getSplit(i);
-    const segment: any = datum[split.getDimension(dataCube.dimensions).name];
+function getFilterFromDatum(splits: Splits, dataPath: Datum[]): Filter {
+  return new Filter({ clauses: List(dataPath.map((datum, i) => {
+    const { type, reference } = splits.getSplit(i);
+    const segment: any = datum[reference];
 
-    return new FilterClause({
-      expression: split.expression,
-      selection: r(TimeRange.isTimeRange(segment) ? segment : Set.fromJS([segment]))
-    });
-  })));
+    switch (type) {
+      case SplitType.number:
+        return new NumberFilterClause({ reference, values: List.of(segment) });
+      case SplitType.time:
+        return new FixedTimeFilterClause({ reference, values: List.of(segment) });
+      case SplitType.string:
+        return new StringFilterClause({ reference, values: Set.of(segment) });
+    }
+  }))});
 }
 
 function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Measure[]): Dataset {
@@ -272,10 +276,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const { path, chartIndex } = selectionInfo;
 
-    const { splits, dataCube } = essence;
+    const { splits } = essence;
     const measures = essence.getEffectiveMeasures().toArray();
 
-    const rowHighlight = getFilterFromDatum(splits, path, dataCube);
+    const rowHighlight = getFilterFromDatum(splits, path);
 
     if (essence.highlightOn(BarChart.id, measures[chartIndex].name)) {
       if (rowHighlight.equals(essence.highlight.delta)) {
@@ -463,12 +467,12 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   isSelected(path: Datum[], measure: Measure): boolean {
     const { essence } = this.props;
-    const { splits, dataCube } = essence;
+    const { splits } = essence;
 
     if (essence.highlightOnDifferentMeasure(BarChart.id, measure.name)) return false;
 
     if (essence.highlightOn(BarChart.id, measure.name)) {
-      return essence.highlight.delta.equals(getFilterFromDatum(splits, path, dataCube));
+      return essence.highlight.delta.equals(getFilterFromDatum(splits, path));
     }
 
     return false;
@@ -486,13 +490,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
   isHovered(path: Datum[], measure: Measure): boolean {
     const { essence } = this.props;
     const { hoverInfo } = this.state;
-    const { splits, dataCube } = essence;
+    const { splits } = essence;
 
     if (this.hasAnySelectionGoingOn()) return false;
     if (!hoverInfo) return false;
     if (hoverInfo.measure !== measure) return false;
 
-    const filter = (p: Datum[]) => getFilterFromDatum(splits, p, dataCube);
+    const filter = (path: Datum[]) => getFilterFromDatum(splits, path);
 
     return filter(hoverInfo.path).equals(filter(path));
   }
@@ -594,7 +598,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       height: roundToPx(Math.abs(height) + SELECTION_PAD * 2)
     };
 
-    return <div className="selection-highlight" style={style}/>;
+    return <div className="selection-highlight" style={style} />;
   }
 
   renderXAxis(data: Datum[], coordinates: BarCoordinates[], xAxisStage: Stage): JSX.Element {
@@ -646,7 +650,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     return <div className="x-axis" style={{ width: xAxisStage.width }}>
       <svg style={xAxisStage.getWidthHeight()} viewBox={xAxisStage.getViewBox()}>
-        <BucketMarks stage={xAxisStage} ticks={xTicks} scale={xScale}/>
+        <BucketMarks stage={xAxisStage} ticks={xTicks} scale={xScale} />
       </svg>
       {labels}
     </div>;
@@ -708,13 +712,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { isThumbnail, essence } = this.props;
     const mySplitDataset = dataset.data[0][SPLIT] as Dataset;
 
-    const measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]} showPrevious={essence.hasComparison()}/> : null;
+    const measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]} showPrevious={essence.hasComparison()} /> : null;
 
     // Invalid data, early return
     if (!this.hasValidYExtent(measure, mySplitDataset.data)) {
       return {
         chart: <div className="measure-bar-chart" key={measure.name} style={{ width: chartStage.width }}>
-          <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}/>
+          <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)} />
           {measureLabel}
         </div>,
         yAxis: null,

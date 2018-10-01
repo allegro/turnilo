@@ -14,95 +14,55 @@
  * limitations under the License.
  */
 
-import { $, r } from "plywood";
-import { FilterClause, PlywoodFilterMethod } from "./filter-clause";
+import { Duration } from "chronoshift";
+import { List, Set } from "immutable";
+import {
+  BooleanFilterClause,
+  DateRange,
+  FilterClause,
+  FixedTimeFilterClause,
+  NumberFilterClause, NumberRange,
+  RelativeTimeFilterClause,
+  StringFilterAction,
+  StringFilterClause,
+  TimeFilterPeriod
+} from "./filter-clause";
 
 export class FilterClauseFixtures {
 
-  static stringWithAction(ref: string, action: PlywoodFilterMethod, values: string | string[], exclude = false): FilterClause {
-    if (action !== PlywoodFilterMethod.OVERLAP && values instanceof Array && values.length !== 1) {
+  static stringWithAction(reference: string, action: StringFilterAction, values: string[], not = false): FilterClause {
+    if (action !== StringFilterAction.CONTAINS && values instanceof Array && values.length !== 1) {
       throw new Error(`Unsupported values: ${values} for action: ${action}.`);
     }
 
-    switch (action) {
-      case PlywoodFilterMethod.OVERLAP:
-      case undefined:
-        return this.stringIn(ref, typeof values === "string" ? [values] : values, exclude);
-      case PlywoodFilterMethod.CONTAINS:
-        return this.stringContains(ref, typeof values === "string" ? values : values[0], exclude);
-      case PlywoodFilterMethod.MATCH:
-        return this.stringMatch(ref, typeof values === "string" ? values : values[0], exclude);
-    }
+    return new StringFilterClause({ reference, action, values: Set(values), not });
   }
 
-  static stringIn(ref: string, values: string[], exclude = false): FilterClause {
-    return new FilterClause({
-      action: PlywoodFilterMethod.OVERLAP,
-      exclude,
-      selection: r(values),
-      expression: $(ref)
-    });
+  static stringIn(reference: string, values: string[], not = false): FilterClause {
+    return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set(values), not });
   }
 
-  static stringContains(dimension: string, value: string, exclude = false): FilterClause {
-    return new FilterClause({
-      action: PlywoodFilterMethod.CONTAINS,
-      exclude,
-      selection: r(value),
-      expression: $(dimension)
-    });
+  static stringContains(reference: string, value: string, not = false): FilterClause {
+    return new StringFilterClause({ reference, action: StringFilterAction.CONTAINS, values: Set.of(value), not });
   }
 
-  static stringMatch(dimension: string, value: string, exclude = false): FilterClause {
-    return new FilterClause({
-      action: PlywoodFilterMethod.MATCH,
-      exclude,
-      selection: value,
-      expression: $(dimension)
-    });
+  static stringMatch(reference: string, value: string, not = false): FilterClause {
+    return new StringFilterClause({ reference, action: StringFilterAction.MATCH, values: Set.of(value), not });
   }
 
-  static booleanIn(ref: string, values: boolean[], exclude = false): FilterClause {
-    return new FilterClause({
-      action: PlywoodFilterMethod.OVERLAP,
-      exclude,
-      selection: r(values),
-      expression: $(ref)
-    });
+  static boolean(reference: string, values: boolean[], not = false): FilterClause {
+    return new BooleanFilterClause({ reference, not, values: Set(values) });
   }
 
-  static numberRange(dimension: string, start: number, end: number, bounds = "[)", exclude = false): FilterClause {
-    return new FilterClause({
-      action: PlywoodFilterMethod.OVERLAP,
-      exclude,
-      selection: r([{ start, end, bounds, type: "NUMBER_RANGE" }]),
-      expression: $(dimension)
-    });
+  static numberRange(reference: string, start: number, end: number, bounds = "[)", not = false): FilterClause {
+    return new NumberFilterClause({ reference, not, values: List.of(new NumberRange({ bounds, start, end })) });
   }
 
-  static timeRange(dimension: string, start: Date, end: Date, exclude = false): FilterClause {
-    return new FilterClause({
-      action: PlywoodFilterMethod.OVERLAP,
-      exclude,
-      selection: r({ start, end, type: "TIME_RANGE" }),
-      expression: $(dimension)
-    });
+  static timeRange(reference: string, start: Date, end: Date): FilterClause {
+    return new FixedTimeFilterClause({ reference, values: List.of(new DateRange({ start, end })) });
   }
 
-  static timeDurationLatest(dimension: string, step: number, duration: string): FilterClause {
-    return new FilterClause({
-      action: PlywoodFilterMethod.OVERLAP,
-      selection: $(FilterClause.MAX_TIME_REF_NAME).timeRange(duration, step),
-      expression: $(dimension)
-    });
-  }
-
-  static timeDurationFloored(dimension: string, step: number, duration: string, exclude = false): FilterClause {
-    return new FilterClause({
-      action: PlywoodFilterMethod.OVERLAP,
-      exclude,
-      selection: $(FilterClause.NOW_REF_NAME).timeFloor(duration).timeRange(duration, step),
-      expression: $(dimension)
-    });
+  static timePeriod(reference: string, duration: string, period: TimeFilterPeriod): FilterClause {
+    return new RelativeTimeFilterClause({ reference, duration: Duration.fromJS(duration), period });
   }
 }

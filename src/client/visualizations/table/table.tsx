@@ -17,17 +17,18 @@
 
 import { Duration, Timezone } from "chronoshift";
 import * as d3 from "d3";
-import { List } from "immutable";
+import { List, Set } from "immutable";
 import * as moment from "moment-timezone";
-import { $, ApplyExpression, Datum, Direction, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
+import { Datum, NumberRange, PseudoDatum, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FixedTimeFilterClause, NumberFilterClause, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
-import { SORT_ON_DIMENSION_PLACEHOLDER, Split } from "../../../common/models/split/split";
+import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort/sort";
+import { Split, SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
@@ -85,18 +86,20 @@ function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataCube: Da
 
   const filterClauses = splitCombines
     .take(splitNesting)
-    .map(splitCombine => {
-      const dimensionName = splitCombine.reference;
-      const selectedValue = flatDatum[dimensionName];
+    .map(({ reference, type }) => {
+      const segment: any = flatDatum[reference];
 
-      // TODO: simmilar to barchart, crate filter based on dimension kind
-      return new FilterClause({
-        expression: splitCombine.expression,
-        selection: r(TimeRange.isTimeRange(selectedValue) ? selectedValue : Set.fromJS([selectedValue]))
-      });
+      switch (type) {
+        case SplitType.number:
+          return new NumberFilterClause({ reference, values: List.of(segment) });
+        case SplitType.time:
+          return new FixedTimeFilterClause({ reference, values: List.of(segment) });
+        case SplitType.string:
+          return new StringFilterClause({ reference, values: Set.of(segment) });
+      }
     });
 
-  return new Filter(List(filterClauses));
+  return new Filter({ clauses: List(filterClauses) });
 }
 
 function indexToColumnType(index: number): ColumnType {
@@ -187,22 +190,12 @@ export class Table extends BaseVisualization<TableState> {
     throw new Error(`Can't create sort reference for position element: ${element}`);
   }
 
-  // TODO: plywood internals are leaking
-  private getSortAction(ref: string, { columnType, measure }: PositionHover, direction: Direction): SortExpression {
-    if (columnType === ColumnType.DELTA) {
-      const name = measure.getDerivedName(MeasureDerivation.DELTA);
-      const expression = $(measure.name).subtract($(measure.getDerivedName(MeasureDerivation.PREVIOUS)));
-      return new ApplyExpression({ name, expression }).sort(ref, direction);
-    }
-    return new SortExpression({ expression: $(ref), direction });
-  }
-
-  private getSortExpression(position: PositionHover): SortExpression {
-    const sortReference = this.getSortRef(position);
+  private getSortExpression(position: PositionHover): Sort {
+    const reference = this.getSortRef(position);
     const commonSort = this.props.essence.getCommonSort();
-    const isDesc = (commonSort && commonSort.reference === sortReference && commonSort.direction === SortDirection.descending);
+    const isDesc = (commonSort && commonSort.reference === reference && commonSort.direction === SortDirection.descending);
     const direction = isDesc ? SortDirection.ascending : SortDirection.descending;
-    return this.getSortAction(sortReference, position, direction);
+    return new Sort({ reference, direction });
   }
 
   onClick(x: number, y: number) {

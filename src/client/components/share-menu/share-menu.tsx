@@ -20,6 +20,7 @@ import * as CopyToClipboard from "react-copy-to-clipboard";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { getFileString } from "../../../common/utils/formatter/formatter";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { download, FileFormat, makeFileName } from "../../utils/download/download";
@@ -42,7 +43,7 @@ export const ShareMenu: React.SFC<ShareMenuProps> = props => {
     const { dataCube, splits } = essence;
     if (!getDownloadableDataset) return;
 
-    const filters = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
+    const filters = getFileString(essence.getEffectiveFilter(timekeeper));
     const splitsString = splits.splits.toArray().map(split => {
       const dimension = dataCube.getDimension(split.reference);
       if (!dimension) return "";

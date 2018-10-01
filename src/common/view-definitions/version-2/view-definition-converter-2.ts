@@ -49,7 +49,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
       colors: definition.colors && Colors.fromJS(definition.colors),
       pinnedSort: dataCube.getMeasure(definition.pinnedSort) ? definition.pinnedSort : dataCube.getDefaultSortMeasure(),
       compare: null,
-      highlight: definition.highlight && Highlight.fromJS(definition.highlight)
+      highlight: definition.highlight && new Highlight(definition.highlight)
     });
   }
 
@@ -58,7 +58,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
   }
 }
 
-function filterJSConverter(filter: FilterJS): FilterJS {
+function filterJSConverter(filter: any): any {
   if (typeof filter === "string") {
     return filter;
   }

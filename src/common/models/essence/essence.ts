@@ -17,17 +17,18 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet, Record as ImmutableRecord, Set } from "immutable";
-import { Range, PlywoodRange, RefExpression, TimeRange } from "plywood";
+import { PlywoodRange, Range, RefExpression } from "plywood";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
 import { Colors } from "../colors/colors";
 import { DataCube } from "../data-cube/data-cube";
 import { Dimension } from "../dimension/dimension";
-import { FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, TimeFilterClause } from "../filter-clause/filter-clause";
+import { DateRange, FilterClause, FixedTimeFilterClause, isTimeFilter, NumberFilterClause, TimeFilterClause } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
 import { Manifest, Resolve } from "../manifest/manifest";
 import { Measure } from "../measure/measure";
-import { Sort, Split } from "../split/split";
+import { Sort } from "../sort/sort";
+import { Split } from "../split/split";
 import { Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
 import { Timekeeper } from "../timekeeper/timekeeper";
@@ -183,7 +184,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       visualizations: context.visualizations,
       visualization: null,
       timezone: dataCube.getDefaultTimezone(),
-      filter: null,
+      filter: dataCube.getDefaultFilter(),
       timeShift: TimeShift.empty(),
       splits: dataCube.getDefaultSplits(),
       measures: createMeasures({ isMulti: false, single: dataCube.getDefaultSortMeasure(), multi: dataCube.getDefaultSelectedMeasures() }),
@@ -213,21 +214,11 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       highlight
     } = parameters;
 
-    // TODO: that's stupid!
     if (!dataCube) throw new Error("Essence must have a dataCube");
 
     const { visResolve, visualization, colors, splits } = resolveVisualization(parameters);
 
-    function hasNoMeasureOrMeasureIsSelected(highlight: Highlight): boolean {
-      if (!highlight || !highlight.measure) {
-        return true;
-      }
-
-      const { measure } = highlight;
-      return measures.isMulti ? measures.multi.has(measure) : measure === measures.single;
-    }
-
-    const newHighlight = hasNoMeasureOrMeasureIsSelected(highlight) ? highlight : null;
+    const newHighlight = highlight && highlight.validForMeasures(measures) ? highlight : null;
 
     super({
       ...parameters,
@@ -300,8 +291,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return timeFilter.update("values", values =>
       values.flatMap(({ start, end }) =>
         [
-          { start, end },
-          { start: duration.shift(start, timezone, -1), end: duration.shift(end, timezone, -1) }
+          new DateRange({ start, end }),
+          new DateRange({ start: duration.shift(start, timezone, -1), end: duration.shift(end, timezone, -1) })
         ]));
   }
 
@@ -322,7 +313,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     const { timezone, timeShift } = this;
     const duration = timeShift.valueOf();
     return timeFilter.update("values", values =>
-      values.map(({ start, end }) => ({
+      values.map(({ start, end }) => new DateRange({
         start: duration.shift(start, timezone, -1),
         end: duration.shift(end, timezone, -1)
       })));
@@ -496,11 +487,11 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       strategy = VisStrategy.UnfairGame;
     }
 
-    let changedVisualisation: Manifest;
+    let newVisualization: Manifest = visualization;
     if (strategy !== VisStrategy.KeepAlways && strategy !== VisStrategy.UnfairGame) {
       const currentVisualization = (strategy === VisStrategy.FairGame ? null : visualization);
       const visAndResolve = Essence.getBestVisualization(visualizations, dataCube, splits, colors, currentVisualization);
-      changedVisualisation = visAndResolve.visualization;
+      newVisualization = visAndResolve.visualization;
     }
 
     function resetHighlight(essence: Essence): Essence {
@@ -513,7 +504,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
     return withoutHighlight
       .set("splits", splits)
-      .changeVisualization(changedVisualisation || visualization);
+      .changeVisualization(newVisualization);
   }
 
   public changeSplit(splitCombine: Split, strategy: VisStrategy): Essence {
@@ -571,10 +562,10 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   private setMultiMeasureMode(): Essence {
     const { measures: { multi, single } } = this;
-    const multiModeEssence = this.setIn(["measure", "isMulti"], true);
+    const multiModeEssence = this.setIn(["measures", "isMulti"], true);
     // Ensure that the singleMeasure is in the selectedMeasures
     if (multi.count() > 0 && !multi.has(single)) {
-      return multiModeEssence.setIn(["measure", "single"], multi.first());
+      return multiModeEssence.setIn(["measures", "single"], multi.first());
     }
     return multiModeEssence;
   }
@@ -582,7 +573,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   private setSingleMeasureMode(): Essence {
     const { measures: { multi, single }, dataCube } = this;
     return this
-      .setIn(["measure", "isMulti"], false)
+      .setIn(["measures", "isMulti"], false)
       .setIn(["measures", "multi"], addToSetInOrder(dataCube.measures.getMeasureNames(), multi, single));
   }
 
@@ -624,13 +615,14 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return this.changeFilter(highlight.applyToFilter(this.filter), true);
   }
 
-  public changeHighlight(owner: string, measure: string, delta: Filter): Essence {
+  public changeHighlight(newHighlight: Highlight): Essence {
+    if (!newHighlight.validForMeasures(this.measures)) return this;
     const { highlight, filter } = this;
 
     // If there is already a highlight from someone else accept it
-    const differentHighlight = highlight && highlight.owner !== owner;
+    const differentHighlight = highlight && highlight.owner !== newHighlight.owner;
     const essence = differentHighlight ? this.changeFilter(highlight.applyToFilter(filter)) : this;
-    return essence.set("highlight", new Highlight({ owner, delta, measure }));
+    return essence.set("highlight", newHighlight);
   }
 
   public dropHighlight(): Essence {

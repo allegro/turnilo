@@ -19,10 +19,10 @@ import { List, Set } from "immutable";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import {
-  BooleanFilterClause,
+  BooleanFilterClause, DateRange,
   FilterClause,
   FixedTimeFilterClause,
-  NumberFilterClause,
+  NumberFilterClause, NumberRange,
   RelativeTimeFilterClause,
   StringFilterAction,
   StringFilterClause,
@@ -133,7 +133,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
 
 const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClauseDefinition, NumberFilterClause> = {
   toFilterClause({ not, ranges }: NumberFilterClauseDefinition, { name }: Dimension): NumberFilterClause {
-    return new NumberFilterClause({ not, values: List(ranges), reference: name });
+    return new NumberFilterClause({ not, values: List(ranges.map(range => new NumberRange(range))), reference: name });
   },
 
   fromFilterClause({ not, reference, values }: NumberFilterClause): NumberFilterClauseDefinition {
@@ -164,7 +164,7 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
     if (timeRanges !== undefined) {
       return new FixedTimeFilterClause({
         reference: name,
-        values: List(timeRanges.map(range => ({ start: new Date(range.start), end: new Date(range.end) })))
+        values: List(timeRanges.map(range => new DateRange({ start: new Date(range.start), end: new Date(range.end) })))
       });
     }
     const { duration, step, type } = timePeriods[0];

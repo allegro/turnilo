@@ -20,7 +20,7 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { NumberFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { NumberFilterClause, NumberRange } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -123,7 +123,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     return filter.setClause(new NumberFilterClause({
       reference: dimension.name,
       not: filterMode === FilterMode.EXCLUDE,
-      values: List.of({ start, end, bounds: start === end ? "[]" : "[)" })
+      values: List.of(new NumberRange({ start, end, bounds: start === end ? "[]" : "[)" }))
     }));
   }
 

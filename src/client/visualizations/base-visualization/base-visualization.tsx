@@ -128,13 +128,16 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       // We don't need add apply expressions for:
       //   * dimensions - they're already defined as apply expressions because of splits
       //   * selected measures - they're defined as apply expressions already
-      //   * previous/delta - we need to define them earlier so they're present here
+      //   * previous - we need to define them earlier so they're present here
       const { name: sortMeasureName, derivation } = Measure.nominalName(sort.reference);
       if (sortMeasureName && derivation === MeasureDerivation.CURRENT) {
         const sortMeasure = dataCube.getMeasure(sortMeasureName);
         if (sortMeasure && !measures.contains(sortMeasure)) {
           subQuery = subQuery.performAction(sortMeasure.toApplyExpression(nestingLevel, new CurrentFilter(currentFilter)));
         }
+      }
+      if (sortMeasureName && derivation === MeasureDerivation.DELTA) {
+        subQuery = subQuery.apply(sort.reference, $(sortMeasureName).subtract($(Measure.derivedName(sortMeasureName, MeasureDerivation.PREVIOUS))));
       }
       subQuery = subQuery.performAction(new SortExpression({
         expression: $(sort.reference),

@@ -17,38 +17,11 @@
 
 import { Duration, minute, Timezone } from "chronoshift";
 import { List, Record, Set as ImmutableSet } from "immutable";
-import { $, Datum, Expression, r } from "plywood";
+import { $, Datum, Expression, NumberRange as PlywoodNumberRange, r, TimeRange } from "plywood";
 import { constructFilter } from "../../../client/components/time-filter-menu/presets";
+import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../time/time";
 
 type OmitType<T extends FilterDefinition> = Partial<Pick<T, Exclude<keyof T, "type">>>;
-
-// export enum PlywoodFilterMethod {
-//   OVERLAP = "overlap",
-//   CONTAINS = "contains",
-//   MATCH = "match"
-// }
-//
-// export const filterAction2PlywoodMethod = (action: StringFilterAction): PlywoodFilterMethod => {
-//   switch (action) {
-//     case StringFilterAction.IN:
-//       return PlywoodFilterMethod.OVERLAP;
-//     case StringFilterAction.MATCH:
-//       return PlywoodFilterMethod.MATCH;
-//     case StringFilterAction.CONTAINS:
-//       return PlywoodFilterMethod.CONTAINS;
-//   }
-// };
-//
-// export const plywoodMethod2FilterAction = (action: PlywoodFilterMethod): StringFilterAction => {
-//   switch (action) {
-//     case PlywoodFilterMethod.OVERLAP:
-//       return StringFilterAction.IN;
-//     case PlywoodFilterMethod.MATCH:
-//       return StringFilterAction.MATCH;
-//     case PlywoodFilterMethod.CONTAINS:
-//       return StringFilterAction.CONTAINS;
-//   }
-// };
 
 export enum FilterTypes { BOOLEAN, NUMBER, STRING, FIXED_TIME, RELATIVE_TIME }
 
@@ -75,10 +48,15 @@ export class BooleanFilterClause extends Record<BooleanFilterDefinition>(default
   }
 }
 
-export interface NumberRange {
+interface NumberRangeDefinition {
   start: number;
   end: number;
   bounds?: string;
+}
+
+const defaultNumberRange: NumberRangeDefinition = { start: null, end: null };
+
+export class NumberRange extends Record<NumberRangeDefinition>(defaultNumberRange) {
 }
 
 interface NumberFilterDefinition extends FilterDefinition {
@@ -127,9 +105,14 @@ export class StringFilterClause extends Record<StringFilterDefinition>(defaultSt
   }
 }
 
-export interface DateRange {
+interface DateRangeDefinition {
   start: Date;
   end: Date;
+}
+
+const defaultDateRange: DateRangeDefinition = { start: null, end: null };
+
+export class DateRange extends Record<DateRangeDefinition>(defaultDateRange) {
 }
 
 interface FixedTimeFilterDefinition extends FilterDefinition {
@@ -174,7 +157,8 @@ export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinitio
     const datum: Datum = {};
     datum[NOW_REF_NAME] = now;
     datum[MAX_TIME_REF_NAME] = maxTimeMinuteTop;
-    return selection.defineEnvironment({ timezone }).getFn()(datum);
+    const { start, end }: TimeRange = selection.defineEnvironment({ timezone }).getFn()(datum);
+    return new FixedTimeFilterClause({ reference: this.reference, values: List.of(new DateRange({ start, end })) });
   }
 }
 
@@ -197,7 +181,7 @@ export function toExpression(clause: FilterClause): Expression {
     }
     case FilterTypes.NUMBER: {
       const { not, values } = clause as NumberFilterClause;
-      const numExp = expression.overlap(r(values.toArray()));
+      const numExp = expression.overlap(r(values.map(range => new PlywoodNumberRange(range)).toArray()));
       return not ? numExp.not() : numExp;
     }
     case FilterTypes.STRING: {
@@ -217,18 +201,13 @@ export function toExpression(clause: FilterClause): Expression {
       return not ? stringExp.not() : stringExp;
     }
     case FilterTypes.FIXED_TIME: {
-      // TODO: wtf?
-      return null;
+      return expression.overlap(r(new TimeRange((clause as FixedTimeFilterClause).values.first())));
     }
     case FilterTypes.RELATIVE_TIME: {
-      // TODO: wtf?
-      return null;
+      throw new Error("Can't call toExpression on RelativeFilterClause. Evaluate clause first");
     }
   }
 }
-
-export const NOW_REF_NAME = "n";
-export const MAX_TIME_REF_NAME = "m";
 
 export function fromJS(parameters: FilterDefinition): FilterClause {
   const { type, reference } = parameters;
@@ -299,9 +278,3 @@ export function getValues(clause: FilterClause): ImmutableSet<boolean | string |
     }
   }
 }
-
-// public isLessThanFullDay(): boolean {
-//   let extent = this.getExtent();
-//   if (!extent) return false;
-//   return extent.end.valueOf() - extent.start.valueOf() < day.canonicalLength;
-// }

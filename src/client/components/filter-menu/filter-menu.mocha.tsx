@@ -28,7 +28,7 @@ class Wrap extends React.Component {
     return <FilterMenu
         clicker={null}
         containerStage={null}
-        dimension={DimensionFixtures.countryURL()}
+        dimension={DimensionFixtures.wikiCommentLength()}
         essence={EssenceFixtures.wikiTotals()}
         timekeeper={TimekeeperFixtures.fixed()}
         changePosition={null}

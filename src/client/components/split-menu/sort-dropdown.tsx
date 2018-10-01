@@ -19,7 +19,7 @@ import * as React from "react";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
-import { createSort, Sort } from "../../../common/models/split/split";
+import { Sort } from "../../../common/models/sort/sort";
 import { Unary } from "../../../common/utils/functional/functional";
 import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
 import { STRINGS } from "../../config/constants";
@@ -41,13 +41,13 @@ export const SortDropdown: React.SFC<SortDropdownProps> = ({ dataCube, dimension
   function toggleDirection() {
     const reference = sort.reference;
     const direction = sort.direction === SortDirection.descending ? SortDirection.ascending : SortDirection.descending;
-    onChange(createSort({ reference, direction }));
+    onChange(new Sort({ reference, direction }));
   }
 
   function selectSort(sortOn: SortOn) {
     const reference = sortOn.getName();
     const direction = sort ? sort.direction : SortDirection.descending;
-    onChange(createSort({ reference, direction }));
+    onChange(new Sort({ reference, direction }));
   }
 
   return <div className="sort-direction">

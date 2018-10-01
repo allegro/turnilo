@@ -16,36 +16,35 @@
  */
 
 import { Duration } from "chronoshift";
-import { $, LimitExpression, NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
-import { SortDirection, sortDirectionMapper } from "../../view-definitions/version-3/split-definition";
+import { SortDirection } from "../../view-definitions/version-3/split-definition";
+import { Sort } from "../sort/sort";
 import { Split } from "./split";
 
 export class SplitFixtures {
 
-  static stringSplitCombine(dimension: string, sortOn: string, sortDirection: SortDirection, limit: number): Split {
+  static stringSplitCombine(dimension: string, sortOn: string, direction: SortDirection, limit: number): Split {
     return new Split({
-      expression: $(dimension),
-      bucketAction: null,
-      sortAction: new SortExpression({ expression: $(sortOn), direction: sortDirectionMapper[sortDirection] }),
-      limitAction: new LimitExpression({ value: limit })
+      reference: dimension,
+      sort: new Sort({ reference: sortOn, direction }),
+      limit
     });
   }
 
-  static numberSplitCombine(dimension: string, granularity: number, sortOn: string, sortDirection: SortDirection, limit: number): Split {
+  static numberSplitCombine(dimension: string, granularity: number, sortOn: string, direction: SortDirection, limit: number): Split {
     return new Split({
-      expression: $(dimension),
-      bucketAction: new NumberBucketExpression({ size: granularity, offset: 0 }),
-      sortAction: new SortExpression({ expression: $(sortOn), direction: sortDirectionMapper[sortDirection] }),
-      limitAction: new LimitExpression({ value: limit })
+      reference: dimension,
+      bucket: granularity,
+      sort: new Sort({ reference: sortOn, direction }),
+      limit
     });
   }
 
-  static timeSplitCombine(dimension: string, granularity: string, sortOn: string, sortDirection: SortDirection, limit: number): Split {
+  static timeSplitCombine(dimension: string, granularity: string, sortOn: string, direction: SortDirection, limit: number): Split {
     return new Split({
-      expression: $(dimension),
-      bucketAction: new TimeBucketExpression({ duration: Duration.fromJS(granularity) }),
-      sortAction: new SortExpression({ expression: $(sortOn), direction: sortDirectionMapper[sortDirection] }),
-      limitAction: limit && new LimitExpression({ value: limit })
+      reference: dimension,
+      bucket: Duration.fromJS(granularity),
+      sort: new Sort({ reference: sortOn, direction }),
+      limit
     });
   }
 }

@@ -25,9 +25,9 @@ import * as ReactDOM from "react-dom";
 import { LINE_CHART_MANIFEST } from "../../../common/manifests/line-chart/line-chart";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FixedTimeFilterClause, NumberFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { DateRange, NumberRange as FilterNumberRange, FixedTimeFilterClause, NumberFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
-import { getLineChartTicks } from "../../../common/models/granularity/granularity";
+import { getBestBucketUnitForRange } from "../../../common/models/granularity/granularity";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
 import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
@@ -275,8 +275,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const reference = continuousDimension.name;
     const { start, end } = highlightRange;
     const filterClause = continuousDimension.kind === "number"
-      ? new NumberFilterClause({ reference, values: List.of({ start: start as number, end: end as number }) })
-      : new FixedTimeFilterClause({ reference, values: List.of({ start: start as Date, end: end as Date }) });
+      ? new NumberFilterClause({ reference, values: List.of(new FilterNumberRange({ start: start as number, end: end as number })) })
+      : new FixedTimeFilterClause({ reference, values: List.of(new DateRange({ start: start as Date, end: end as Date })) });
 
     clicker.changeHighlight(
       LineChart.id,
@@ -688,12 +688,33 @@ export class LineChart extends BaseVisualization<LineChartState> {
 
           newState.axisRange = axisRange;
           newState.scaleX = scaleFn.domain(domain).range(range);
-          newState.xTicks = getLineChartTicks(axisRange, timezone);
+          newState.xTicks = this.getLineChartTicks(axisRange, timezone);
         }
       }
     }
 
     this.setState(newState);
+  }
+
+  private getLineChartTicks(range: PlywoodRange, timezone: Timezone): Array<Date | number> {
+    if (range instanceof TimeRange) {
+      const { start, end } = range;
+      const tickDuration = getBestBucketUnitForRange(range, true) as Duration;
+      return tickDuration.materialize(start, end as Date, timezone);
+    }
+    if (range instanceof NumberRange) {
+      const { start, end } = range;
+      const unit = getBestBucketUnitForRange(range, true) as number;
+      let values: number[] = [];
+      let iter = Math.round((start as number) * unit) / unit;
+
+      while (iter <= end) {
+        values.push(iter);
+        iter += unit;
+      }
+      return values;
+    }
+    throw new Error(`Expected TimeRange or NumberRange. Gor ${range}`);
   }
 
   private getFilterRange(essence: Essence, continuousSplit: Split, timekeeper: Timekeeper): PlywoodRange {

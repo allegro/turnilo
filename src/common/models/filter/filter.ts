@@ -16,7 +16,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import { List, OrderedSet, Record } from "immutable";
+import { List, Record } from "immutable";
 import { Expression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
 import { Dimension } from "../dimension/dimension";
@@ -125,6 +125,10 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return this.clauses.find(clause => clause.reference === reference);
   }
 
+  public addClause(clause: FilterClause): Filter {
+    return this.updateClauses(clauses => clauses.push(clause));
+  }
+
   public removeClause(reference: string): Filter {
     const index = this.indexOfClause(reference);
     if (index === -1) return this;
@@ -177,6 +181,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
   public setExclusionForDimension(exclusion: boolean, { name }: Dimension): Filter {
     return this.updateClauses(clauses => {
       const idx = clauses.findIndex(clause => clause.reference === name);
+      if (idx === -1) return clauses;
       return clauses.setIn([idx, "not"], exclusion);
     });
   }

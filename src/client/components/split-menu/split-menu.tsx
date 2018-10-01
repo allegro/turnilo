@@ -16,14 +16,14 @@
  */
 
 import { Duration } from "chronoshift";
-import { Expression, LimitExpression, NumberBucketExpression, SortExpression, TimeBucketExpression } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { ContinuousDimensionKind, Granularity, granularityToString, isGranularityValid, validateGranularity } from "../../../common/models/granularity/granularity";
-import { Sort, Split } from "../../../common/models/split/split";
+import { granularityToString, isGranularityValid } from "../../../common/models/granularity/granularity";
+import { Sort } from "../../../common/models/sort/sort";
+import { Bucket, Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -100,26 +100,22 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     onClose();
   }
 
-  private constructGranularity(): Granularity {
+  private constructGranularity(): Bucket {
     const { dimension: { kind } } = this.props;
     const { granularity } = this.state;
     if (kind === "time") {
-      return new TimeBucketExpression({ duration: Duration.fromJS(granularity) });
+      return Duration.fromJS(granularity);
     }
     if (kind === "number") {
-      return new NumberBucketExpression({ size: parseInt(granularity, 10) });
+      return parseInt(granularity, 10);
     }
     return null;
   }
 
   private constructSplitCombine(): Split {
     const { limit, sort, reference } = this.state;
-    return new Split({
-      reference,
-      bucketAction: this.constructGranularity(),
-      limitAction: limit && LimitExpression.fromJS({ value: limit }),
-      sortAction: sort
-    });
+    const bucket = this.constructGranularity();
+    return new Split({ reference, limit, sort, bucket });
   }
 
   validate() {

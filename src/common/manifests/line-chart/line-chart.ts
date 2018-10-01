@@ -16,10 +16,10 @@
  */
 
 import { List } from "immutable";
-import { $, SortExpression } from "plywood";
 import { Colors } from "../../models/colors/colors";
 import { Manifest, Resolve } from "../../models/manifest/manifest";
-import { createSort, Sort, Split } from "../../models/split/split";
+import { Sort } from "../../models/sort/sort";
+import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -55,12 +55,12 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     let sort: Sort = null;
     if (sortStrategy && sortStrategy !== "self") {
-      sort = createSort({
+      sort = new Sort({
         reference: sortStrategy,
         direction: SortDirection.ascending
       });
     } else {
-      sort = createSort({
+      sort = new Sort({
         reference: continuousDimension.name,
         direction: SortDirection.ascending
       });
@@ -95,7 +95,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     let timeSplit = splits.getSplit(0);
     const timeDimension = dataCube.getDimension(timeSplit.reference);
 
-    const sort: Sort = createSort({
+    const sort: Sort = new Sort({
       reference: timeDimension.name,
       direction: SortDirection.ascending
     });
@@ -112,7 +112,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     let colorSplit = splits.getSplit(1);
 
-    if (!colorSplit.sort) {
+    if (colorSplit.sort.empty()) {
       colorSplit = colorSplit.changeSort(dataCube.getDefaultSortExpression());
     }
 
@@ -135,7 +135,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     let autoChanged = false;
 
-    const sort: Sort = new createSort({
+    const sort: Sort = new Sort({
       reference: timeDimension.name,
       direction: SortDirection.ascending
     });
@@ -154,7 +154,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     let colorSplit = splits.getSplit(0);
 
-    if (!colorSplit.sort) {
+    if (colorSplit.sort.empty()) {
       colorSplit = colorSplit.changeSort(dataCube.getDefaultSortExpression());
       autoChanged = true;
     }

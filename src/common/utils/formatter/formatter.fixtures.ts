@@ -14,73 +14,65 @@
  * limitations under the License.
  */
 
-import { $, r, RefExpression, TimeRange } from "plywood";
-import { FilterClause } from "../../models/filter-clause/filter-clause";
+import { Duration } from "chronoshift";
+import { List, Set } from "immutable";
+import {
+  DateRange,
+  FixedTimeFilterClause,
+  NumberFilterClause,
+  NumberRange,
+  RelativeTimeFilterClause,
+  StringFilterAction,
+  StringFilterClause,
+  TimeFilterPeriod
+} from "../../models/filter-clause/filter-clause";
 
 export class FormatterFixtures {
 
   static fixedTimeFilter(start: Date, end: Date) {
-    return new FilterClause({
-      expression: r("time"),
-      selection: r(TimeRange.fromJS({ start, end }))
+    return new FixedTimeFilterClause({
+      reference: "time",
+      values: List.of(new DateRange({ start, end }))
     });
   }
 
   static previousDuration(duration: string) {
-    const previousStep = -1;
-    return this.flooredDuration($(FilterClause.NOW_REF_NAME), duration, previousStep);
-  }
-
-  static flooredDuration(reference: RefExpression, duration: string, step: number) {
-    return new FilterClause({
-      expression: r("time"),
-      selection: reference.timeFloor(duration).timeRange(duration, step)
+    return new RelativeTimeFilterClause({
+      reference: "time",
+      period: TimeFilterPeriod.PREVIOUS,
+      duration: Duration.fromJS(duration)
     });
   }
 
   static currentDuration(duration: string) {
-    const currentStep = 1;
-    return this.flooredDuration($(FilterClause.NOW_REF_NAME), duration, currentStep);
+    return new RelativeTimeFilterClause({
+      reference: "time",
+      period: TimeFilterPeriod.CURRENT,
+      duration: Duration.fromJS(duration)
+    });
   }
 
-  static latestDuration(duration: string, step: number) {
-    return this.timeRangeDuration($(FilterClause.MAX_TIME_REF_NAME), duration, step);
-  }
-
-  static timeRangeDuration(reference: RefExpression, duration: string, step: number) {
-    return new FilterClause({
-      expression: r("time"),
-      selection: reference.timeRange(duration, step)
+  static latestDuration(duration: string) {
+    return new RelativeTimeFilterClause({
+      reference: "time",
+      period: TimeFilterPeriod.LATEST,
+      duration: Duration.fromJS(duration)
     });
   }
 
   static numberFilter() {
-    return FilterClause.fromJS({
-      expression: { op: "ref", name: "commentLength" },
-      selection: {
-        op: "literal",
-        value: {
-          setType: "NUMBER",
-          elements: [1, 2, 3]
-        },
-        type: "SET"
-      },
-      exclude: true
+    return new NumberFilterClause({
+      reference: "commentLength",
+      not: true,
+      values: List.of(new NumberRange({ start: 1, end: 3 }))
     });
   }
 
   static stringFilterShort() {
-    return FilterClause.fromJS({
-      expression: { op: "ref", name: "country" },
-      selection: {
-        op: "literal",
-        value: {
-          setType: "STRING",
-          elements: ["iceland"]
-        },
-        type: "SET"
-      }
+    return new StringFilterClause({
+      action: StringFilterAction.IN,
+      reference: "country",
+      values: Set.of("iceland")
     });
   }
-
 }

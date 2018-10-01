@@ -17,6 +17,7 @@
 
 import { Record } from "immutable";
 import { Dimensions } from "../dimension/dimensions";
+import { Measures } from "../essence/essence";
 import { EMPTY_FILTER, Filter } from "../filter/filter";
 
 export interface HighlightValue {
@@ -46,5 +47,15 @@ export class Highlight extends Record<HighlightValue>(defaultHighlight) {
     const newDelta = delta.constrainToDimensions(dimensions);
     if (newDelta.empty()) return null;
     return this.set("delta", newDelta);
+  }
+
+  public validForMeasures(measures: Measures): boolean {
+    if (!this.measure) {
+      return true;
+    }
+
+    const { measure } = this;
+    return measures.isMulti ? measures.multi.has(measure) : measure === measures.single;
+
   }
 }

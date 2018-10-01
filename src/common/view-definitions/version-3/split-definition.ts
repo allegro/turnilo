@@ -16,13 +16,8 @@
 
 import { Duration } from "chronoshift";
 import { Direction } from "plywood";
-import { createSort, Split } from "../../models/split/split";
-
-export enum SplitType {
-  number = "number",
-  string = "string",
-  time = "time"
-}
+import { Sort } from "../../models/sort/sort";
+import { Split, SplitType } from "../../models/split/split";
 
 export enum SortDirection {
   ascending = "ascending",
@@ -69,7 +64,7 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
     return new Split({
       reference: dimension,
       bucket: granularity,
-      sort: sort && createSort({ reference: sort.ref, direction: sort.direction }),
+      sort: sort && new Sort({ reference: sort.ref, direction: sort.direction }),
       limit
     });
   },
@@ -95,7 +90,7 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
     return new Split({
       reference: dimension,
       bucket: Duration.fromJS(granularity),
-      sort: sort && createSort({ reference: sort.ref, direction: sort.direction }),
+      sort: sort && new Sort({ reference: sort.ref, direction: sort.direction }),
       limit
     });
   },
@@ -121,7 +116,7 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
     const { dimension, limit, sort } = split;
     return new Split({
       reference: dimension,
-      sort: sort && createSort({ reference: sort.ref, direction: sort.direction }),
+      sort: sort && new Sort({ reference: sort.ref, direction: sort.direction }),
       limit
     });
   },
