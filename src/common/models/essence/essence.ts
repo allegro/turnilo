@@ -159,6 +159,7 @@ function resolveVisualization({ visualization, visualizations, dataCube, splits,
 
 export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
+
   static getBestVisualization(
     visualizations: Manifest[],
     dataCube: DataCube,
@@ -241,6 +242,44 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public toString(): string {
     return "[Essence]";
+  }
+
+  public toJS() {
+    // return super.toJS();
+    /*
+      visualization: Manifest;
+      dataCube: DataCube;
+      timezone: Timezone;
+      filter: Filter;
+      splits: Splits;
+      measures: Measures;
+      timeShift: TimeShift;
+      colors: Colors;
+      pinnedSort: string;
+      pinnedDimensions: OrderedSet<DimensionId>;
+      compare: Filter;
+      highlight: Highlight;
+      visResolve?: Resolve;
+      visualizations: Manifest[];
+     */
+    let js: any = {
+      visualization: this.visualization,
+      dataCube: this.dataCube.toJS(),
+      timezone: this.timezone.toJS(),
+      filter: this.filter.toJS(),
+      splits: this.splits.toJS(),
+      measures: this.measures.toJS(),
+      timeShift: this.timeShift.toJS(),
+      colors: this.colors.toJS(),
+      pinnedSort: this.pinnedSort,
+      pinnedDimensions: this.pinnedDimensions.toJS(),
+      compare: this.compare && this.compare.toJS(),
+      highlight: this.highlight.toJS(),
+      visResolve: this.visResolve,
+      visualizations: this.visualizations
+    };
+    console.log("eq?", js, super.toJS());
+    return js;
   }
 
   // getters

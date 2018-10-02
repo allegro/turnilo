@@ -15,8 +15,9 @@
  */
 
 import { expect } from "chai";
+import { Duration } from "chronoshift";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
-import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
+import { StringFilterAction, TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
 import { filterDefinitionConverter } from "./filter-definition";
 import { FilterDefinitionFixtures } from "./filter-definition.fixtures";
@@ -52,36 +53,36 @@ describe("FilterDefinition v3", () => {
     });
   });
 
-  // const stringFilterTests = [
-  //   { dimension: "channel", action: StringFilterAction.IN, clauseAction: PlywoodFilterMethod.OVERLAP, exclude: false, values: ["en", "pl"] },
-  //   { dimension: "channel", action: StringFilterAction.IN, clauseAction: PlywoodFilterMethod.OVERLAP, exclude: true, values: ["en", "pl"] },
-  //   { dimension: "channel", action: StringFilterAction.CONTAINS, clauseAction: PlywoodFilterMethod.CONTAINS, exclude: false, values: ["en"] },
-  //   { dimension: "channel", action: StringFilterAction.MATCH, clauseAction: PlywoodFilterMethod.MATCH, exclude: false, values: ["^en$"] }
-  // ];
+  const stringFilterTests = [
+    { dimension: "channel", action: StringFilterAction.IN, exclude: false, values: ["en", "pl"] },
+    { dimension: "channel", action: StringFilterAction.IN, exclude: true, values: ["en", "pl"] },
+    { dimension: "channel", action: StringFilterAction.CONTAINS, exclude: false, values: ["en"] },
+    { dimension: "channel", action: StringFilterAction.MATCH, exclude: false, values: ["^en$"] }
+  ];
 
-  // describe("string filter conversion to filter clause", () => {
-  //   stringFilterTests.forEach(({ dimension, action, clauseAction, exclude, values }) => {
-  //     it(`converts definition with "${action}" action`, () => {
-  //       const filterClauseDefinition = FilterDefinitionFixtures.stringFilterDefinition(dimension, action, values, exclude);
-  //       const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
-  //       const expected = FilterClauseFixtures.stringWithAction(dimension, clauseAction, values, exclude);
-  //
-  //       expect(filterClause).to.deep.equal(expected);
-  //     });
-  //   });
-  // });
-  //
-  // describe("string filter conversion from filter clause", () => {
-  //   stringFilterTests.forEach(({ dimension, action, clauseAction, exclude, values }) => {
-  //     it(`converts clause with "${clauseAction}" action`, () => {
-  //       const filterClause = FilterClauseFixtures.stringWithAction(dimension, clauseAction, values, exclude);
-  //       const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause, DataCubeFixtures.wiki());
-  //       const expected = FilterDefinitionFixtures.stringFilterDefinition(dimension, action, values, exclude);
-  //
-  //       expect(filterClauseDefinition).to.deep.equal(expected);
-  //     });
-  //   });
-  // });
+  describe("string filter conversion to filter clause", () => {
+    stringFilterTests.forEach(({ dimension, action, exclude, values }) => {
+      it(`converts definition with "${action}" action`, () => {
+        const filterClauseDefinition = FilterDefinitionFixtures.stringFilterDefinition(dimension, action, values, exclude);
+        const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
+        const expected = FilterClauseFixtures.stringWithAction(dimension, action, values, exclude);
+
+        expect(filterClause).to.deep.equal(expected);
+      });
+    });
+  });
+
+  describe("string filter conversion from filter clause", () => {
+    stringFilterTests.forEach(({ dimension, action, exclude, values }) => {
+      it(`converts clause with "${action}" action`, () => {
+        const filterClause = FilterClauseFixtures.stringWithAction(dimension, action, values, exclude);
+        const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause);
+        const expected = FilterDefinitionFixtures.stringFilterDefinition(dimension, action, values, exclude);
+
+        expect(filterClauseDefinition).to.deep.equal(expected);
+      });
+    });
+  });
 
   const numberFilterTests: Array<{ dimension: string, exclude: boolean, start?: number, end?: number, bounds?: string }> = [
     { dimension: "commentLength", exclude: false, start: 1, end: null, bounds: "[)" },
@@ -129,20 +130,21 @@ describe("FilterDefinition v3", () => {
 
     describe("latest time periods", () => {
       const latestTimeTests = [
-        { plywood: { multiple: -1, duration: "PT1H" }, clause: { duration: "PT1H" } },
-        { plywood: { multiple: -6, duration: "PT1H" }, clause: { duration: "PT6H" } },
-        { plywood: { multiple: -1, duration: "P1D" }, clause: { duration: "P1D" } },
-        { plywood: { multiple: -7, duration: "P1D" }, clause: { duration: "P7D" } },
-        { plywood: { multiple: -30, duration: "P1D" }, clause: { duration: "P30D" } }
+        {  multiple: -1, duration: "PT1H" },
+        {  multiple: -6, duration: "PT1H" },
+        {  multiple: -1, duration: "P1D" },
+        {  multiple: -7, duration: "P1D" },
+        {  multiple: -30, duration: "P1D" }
       ];
 
       describe("filter conversion to filter clause", () => {
-        latestTimeTests.forEach(({ plywood, clause }) => {
-          it(`converts ${-plywood.multiple} of ${plywood.duration}`, () => {
-            const filterClauseDefinition = FilterDefinitionFixtures.latestTimeFilterDefinition("time", plywood.multiple, plywood.duration);
+        latestTimeTests.forEach(({ duration, multiple }) => {
+          const multipliedDuration = Duration.fromJS(duration).multiply(Math.abs(multiple)).toJS();
+          it(`converts ${-multiple} of ${duration}`, () => {
+            const filterClauseDefinition = FilterDefinitionFixtures.latestTimeFilterDefinition("time", multiple, duration);
 
             const filterClause = filterDefinitionConverter.toFilterClause(filterClauseDefinition, DataCubeFixtures.wiki());
-            const expected = FilterClauseFixtures.timePeriod("time", clause.duration, TimeFilterPeriod.LATEST);
+            const expected = FilterClauseFixtures.timePeriod("time", multipliedDuration, TimeFilterPeriod.LATEST);
 
             expect(filterClause).to.deep.equal(expected);
           });
@@ -150,12 +152,13 @@ describe("FilterDefinition v3", () => {
       });
 
       describe("filter conversion from filter clause", () => {
-        latestTimeTests.forEach(({ plywood, clause }) => {
-          it(`converts ${-plywood.multiple} of ${plywood.duration}`, () => {
-            const filterClause = FilterClauseFixtures.timePeriod("time", clause.duration, TimeFilterPeriod.LATEST);
+        latestTimeTests.forEach(({ multiple, duration }) => {
+          const multipliedDuration = Duration.fromJS(duration).multiply(Math.abs(multiple)).toJS();
+          it(`converts ${-multiple} of ${duration}`, () => {
+            const filterClause = FilterClauseFixtures.timePeriod("time", multipliedDuration, TimeFilterPeriod.LATEST);
 
             const filterClauseDefinition = filterDefinitionConverter.fromFilterClause(filterClause);
-            const expected = FilterDefinitionFixtures.latestTimeFilterDefinition("time", plywood.multiple, plywood.duration);
+            const expected = FilterDefinitionFixtures.latestTimeFilterDefinition("time", -1, multipliedDuration);
 
             expect(filterClauseDefinition).to.deep.equal(expected);
           });
@@ -166,6 +169,7 @@ describe("FilterDefinition v3", () => {
     describe("floored time periods", () => {
       const flooredTimeDurations = [
         { duration: "P1D" },
+        { duration: "P3D" },
         { duration: "P1W" },
         { duration: "P1M" },
         { duration: "P3M" },

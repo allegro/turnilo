@@ -29,8 +29,13 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .otherwise(({ splits, dataCube, colors, isSelectedVisualization }) => {
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
-      const splitDimension = dataCube.getDimension(splits.get(0).reference);
-      const sortStrategy = splitDimension.sortStrategy;
+      const splitDimension = dataCube.getDimension(splits.first().reference);
+      let sortStrategy;
+      try {
+        sortStrategy = splitDimension.sortStrategy;
+      } catch {
+        console.log("no dim?", splitDimension,  splits.toJS());
+      }
 
       if (split.sort.empty()) {
         if (sortStrategy) {

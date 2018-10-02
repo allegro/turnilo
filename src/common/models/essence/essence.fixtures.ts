@@ -120,7 +120,7 @@ export class EssenceFixtures {
 
   static wikiLineChart() {
     const filterClauses = [
-      FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.PREVIOUS),
+      FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.LATEST),
       FilterClauseFixtures.stringIn("channel", ["en", "no", "sv", "de", "fr", "cs"])
     ];
     const splitCombines = [

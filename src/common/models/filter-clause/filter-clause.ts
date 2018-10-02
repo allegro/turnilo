@@ -54,7 +54,7 @@ interface NumberRangeDefinition {
   bounds?: string;
 }
 
-const defaultNumberRange: NumberRangeDefinition = { start: null, end: null };
+const defaultNumberRange: NumberRangeDefinition = { start: null, end: null, bounds: "[)" };
 
 export class NumberRange extends Record<NumberRangeDefinition>(defaultNumberRange) {
 }

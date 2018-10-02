@@ -31,7 +31,7 @@ import {
 export class FilterClauseFixtures {
 
   static stringWithAction(reference: string, action: StringFilterAction, values: string[], not = false): FilterClause {
-    if (action !== StringFilterAction.CONTAINS && values instanceof Array && values.length !== 1) {
+    if (action !== StringFilterAction.IN && values instanceof Array && values.length !== 1) {
       throw new Error(`Unsupported values: ${values} for action: ${action}.`);
     }
 

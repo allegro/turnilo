@@ -141,7 +141,7 @@ const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClause
       type: FilterType.number,
       ref: reference,
       not,
-      ranges: values.toArray()
+      ranges: values.toJS()
     };
   }
 };
@@ -170,7 +170,7 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
     const { duration, step, type } = timePeriods[0];
     return new RelativeTimeFilterClause({
       reference: name,
-      duration: Duration.fromJS(duration),
+      duration: Duration.fromJS(duration).multiply(Math.abs(step)),
       period: timeFilterPeriod(step, type)
     });
   },
