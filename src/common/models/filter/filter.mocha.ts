@@ -23,9 +23,7 @@ import { EMPTY_FILTER, Filter } from "./filter";
 
 describe("Filter", () => {
   it("works in empty case", () => {
-    const filter = EMPTY_FILTER;
-
-    expect(filter.toExpression().toJS()).to.deep.equal({
+    expect(EMPTY_FILTER.toExpression().toJS()).to.deep.equal({
       op: "literal",
       value: true
     });
@@ -36,7 +34,7 @@ describe("Filter", () => {
     const reference = "language";
     const $language = $(reference);
 
-    const clause = new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of("en") })
+    const clause = new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of("en") });
     filter = filter.addClause(clause);
 
     const en = $language.overlap(["en"]);

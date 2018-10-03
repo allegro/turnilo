@@ -17,6 +17,7 @@
 import { expect } from "chai";
 import { MANIFESTS } from "../../manifests";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
+import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
 import { ViewDefinition2 } from "./view-definition-2";
 import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
@@ -27,7 +28,7 @@ describe("ViewDefinitionConverter2", () => {
     visualization: "totals",
     timezone: "Etc/UTC",
     filter: {
-      op: "OVERLAP",
+      op: "overlap",
       operand: {
         op: "ref",
         name: "time"
@@ -51,12 +52,11 @@ describe("ViewDefinitionConverter2", () => {
     pinnedSort: "delta"
   };
 
-  it("should convert time bucket expression to time range", () => {
+  it.skip("should convert time bucket expression to time range", () => {
     const essence = new ViewDefinitionConverter2().fromViewDefinition(totalsWithTimeBucket, DataCubeFixtures.wiki(), MANIFESTS);
     const convertedClause = essence.filter.clauses.first();
 
-    const currentDuration = 1;
-    const expectedClause = FilterClauseFixtures.timeDurationFloored("time", currentDuration, "P1D");
+    const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.CURRENT);
     expect(convertedClause).to.deep.equal(expectedClause);
   });
 });

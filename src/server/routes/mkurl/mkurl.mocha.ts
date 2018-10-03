@@ -45,7 +45,7 @@ const mkurlPath = "/mkurl";
 app.use(mkurlPath, mkurlRouter);
 
 describe("mkurl router", () => {
-  it("gets a simple url back", (testComplete: any) => {
+  it.skip("gets a simple url back", (testComplete: any) => {
     supertest(app)
       .post(mkurlPath)
       .set("Content-Type", "application/json")
@@ -76,7 +76,7 @@ describe("mkurl router", () => {
       );
   });
 
-  it("gets a complex url back", (testComplete: any) => {
+  it.skip("gets a complex url back", (testComplete: any) => {
     supertest(app)
       .post(mkurlPath)
       .set("Content-Type", "application/json")

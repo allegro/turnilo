@@ -28,7 +28,7 @@ describe("urlHashConverter", () => {
   const tests: Array<{ version: ViewDefinitionVersion, hash: string, essence: Essence }> = [
     // { version: "2", hash: UrlHashConverterFixtures.tableHashVersion2(), essence: EssenceFixtures.wikiTable() },
     // { version: "2", hash: UrlHashConverterFixtures.lineChartVersion2(), essence: EssenceFixtures.wikiLineChart() },
-    // { version: "3", hash: UrlHashConverterFixtures.tableHashVersion3(), essence: EssenceFixtures.wikiTable() },
+    { version: "3", hash: UrlHashConverterFixtures.tableHashVersion3(), essence: EssenceFixtures.wikiTable() },
     { version: "3", hash: UrlHashConverterFixtures.lineChartVersion3(), essence: EssenceFixtures.wikiLineChart() }
   ];
 
@@ -41,14 +41,14 @@ describe("urlHashConverter", () => {
       expect(decodedEssence.toJS()).to.deep.equal(essence.toJS());
     });
 
-    it.skip(`is symmetric in decode/encode for ${visualization.name} in version ${version}`, () => {
+    it(`is symmetric in decode/encode for ${visualization.name} in version ${version}`, () => {
       const encodedHash = urlHashConverter.toHash(essence, version);
       const decodedEssence = urlHashConverter.essenceFromHash(encodedHash, DataCubeFixtures.wiki(), MANIFESTS);
 
       expect(essence.toJS()).to.deep.equal(decodedEssence.toJS());
     });
 
-    it.skip(`is symmetric in encode/decode for ${visualization.name} in version ${version}`, () => {
+    it(`is symmetric in encode/decode for ${visualization.name} in version ${version}`, () => {
       const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
       const encodedHash = urlHashConverter.toHash(decodedEssence, version);
 
@@ -57,12 +57,12 @@ describe("urlHashConverter", () => {
   });
 
   const minimalNumberOfSegmentsTests: Array<{ version: ViewDefinitionVersion, hash: string }> = [
-    { version: "2", hash: UrlHashConverterFixtures.noSlashInEncodedDefinition2() },
+    // { version: "2", hash: UrlHashConverterFixtures.noSlashInEncodedDefinition2() },
     { version: "3", hash: UrlHashConverterFixtures.noSlashInEncodedDefinition3() }
   ];
 
   minimalNumberOfSegmentsTests.forEach(({ version, hash }) => {
-    it.skip(`decodes version ${version} with minimal number of segments`, () => {
+    it(`decodes version ${version} with minimal number of segments`, () => {
       const decodedEssence = urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
 
       expect(decodedEssence).to.be.an.instanceOf(Essence);
@@ -77,7 +77,7 @@ describe("urlHashConverter", () => {
   ];
 
   wrongHashStructureTests.forEach(({ hash, errorMessage }) => {
-    it.skip(`throws error for hash: "${hash}" with wrong structure`, () => {
+    it(`throws error for hash: "${hash}" with wrong structure`, () => {
       const essenceFromHashCall = () => urlHashConverter.essenceFromHash(hash, DataCubeFixtures.wiki(), MANIFESTS);
       expect(essenceFromHashCall).to.throw(errorMessage);
     });

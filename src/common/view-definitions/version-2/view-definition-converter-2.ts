@@ -21,6 +21,7 @@ import { AndExpression, Expression, OverlapExpression, TimeBucketExpression } fr
 import { Colors } from "../../models/colors/colors";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { createMeasures, Essence } from "../../models/essence/essence";
+import { FilterClause } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
 import { Highlight } from "../../models/highlight/highlight";
 import { Manifest } from "../../models/manifest/manifest";
@@ -41,7 +42,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
       visualizations,
       visualization,
       timezone: definition.timezone && Timezone.fromJS(definition.timezone),
-      filter: Filter.fromJS(filterJSConverter(definition.filter)),
+      filter: Filter.fromClauses(filterJSConverter(definition.filter)),
       timeShift: TimeShift.empty(),
       splits: Splits.fromJS(definition.splits),
       pinnedDimensions: OrderedSet(definition.pinnedDimensions),
@@ -54,7 +55,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
   }
 
   toViewDefinition(essence: Essence): ViewDefinition2 {
-    return essence.toJS();
+    return essence.toJS() as any as ViewDefinition2;
   }
 }
 
@@ -69,7 +70,8 @@ function filterJSConverter(filter: any): any {
 
     return Expression.and(processedExpressions).toJS();
   } else {
-    return convertFilterExpression(filterExpression).toJS();
+    const expressionJS = convertFilterExpression(filterExpression).toJS();
+    return expressionJS;
   }
 }
 
