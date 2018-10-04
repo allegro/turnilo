@@ -42,9 +42,9 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return new Filter({ clauses: List(clauses) });
   }
 
-  static fromJS(definitions: FilterDefinition[]): Filter {
+  static fromJS(definition: { clauses: FilterDefinition[] }): Filter {
     return new Filter({
-      clauses: List(definitions.map(def => fromJS(def)))
+      clauses: List(definition.clauses.map(def => fromJS(def)))
     });
   }
 

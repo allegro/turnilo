@@ -23,7 +23,7 @@ import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../time/time";
 
 type OmitType<T extends FilterDefinition> = Partial<Pick<T, Exclude<keyof T, "type">>>;
 
-export enum FilterTypes { BOOLEAN, NUMBER, STRING, FIXED_TIME, RELATIVE_TIME }
+export enum FilterTypes { BOOLEAN = "boolean", NUMBER = "number", STRING = "string", FIXED_TIME = "fixed_time", RELATIVE_TIME = "relative_time" }
 
 export interface FilterDefinition {
   reference: string;
@@ -229,9 +229,10 @@ export function fromJS(parameters: FilterDefinition): FilterClause {
       });
     }
     case FilterTypes.STRING: {
-      const { not, values } = parameters as any;
+      const { not, values, action } = parameters as any;
       return new StringFilterClause({
         reference,
+        action,
         not,
         values: ImmutableSet(values)
       });
