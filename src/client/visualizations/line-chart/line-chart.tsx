@@ -36,6 +36,7 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { concatTruthy, flatMap, mapTruthy, Unary } from "../../../common/utils/functional/functional";
+import { readNumber } from "../../../common/utils/general/general";
 import { union } from "../../../common/utils/plywood/range";
 import { DisplayYear } from "../../../common/utils/time/time";
 import { ChartLine } from "../../components/chart-line/chart-line";
@@ -609,8 +610,8 @@ export class LineChart extends BaseVisualization<LineChartState> {
     const lineStage = chartStage.within({ top: TEXT_SPACER, right: Y_AXIS_WIDTH, bottom: 1 }); // leave 1 for border
     const yAxisStage = chartStage.within({ top: TEXT_SPACER, left: lineStage.width, bottom: 1 });
 
-    const getY: Unary<Datum, number> = (d: Datum) => d[measure.name] as number;
-    const getYP: Unary<Datum, number> = (d: Datum) => d[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
+    const getY: Unary<Datum, number> = (d: Datum) => readNumber(d[measure.name]);
+    const getYP: Unary<Datum, number> = (d: Datum) => readNumber(d[measure.getDerivedName(MeasureDerivation.PREVIOUS)]);
 
     const datum: Datum = dataset.data[0];
     const splitData = datum[SPLIT] as Dataset;

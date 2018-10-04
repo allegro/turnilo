@@ -955,7 +955,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public getDefaultFilter(): Filter {
     const filter = this.defaultFilter || DataCube.DEFAULT_DEFAULT_FILTER;
     if (!this.timeAttribute) return filter;
-    return filter.setClause(new RelativeTimeFilterClause({
+    return filter.insertByIndex(0, new RelativeTimeFilterClause({
       period: TimeFilterPeriod.LATEST,
       duration: this.getDefaultDuration(),
       reference: this.getTimeDimension().name

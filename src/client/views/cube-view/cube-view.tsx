@@ -99,7 +99,7 @@ const MAX_PANEL_WIDTH = 400;
 
 export interface DataSetWithTabOptions {
   dataset: Dataset;
-  options: TabulatorOptions;
+  options?: TabulatorOptions;
 }
 
 export class CubeView extends React.Component<CubeViewProps, CubeViewState> {

@@ -1,6 +1,6 @@
 {
   "name": "turnilo",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "A web-based exploratory visualization UI for Druid.io",
   "keywords": [
     "imply",
@@ -128,7 +128,7 @@
     "awesome-typescript-loader": "3.4.1",
     "chai": "4.1.2",
     "create-react-class": "15.6.2",
-    "css-loader": "0.28.7",
+    "css-loader": "0.28.11",
     "css-modules-require-hook": "4.2.3",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "1.1.1",

@@ -67,8 +67,8 @@ export const ChartLine: React.SFC<ChartLineProps> = ({ stage, dataset, getY, get
     }
 
     // Add the point itself
-    const y = scaleY(measureValue);
-    const dataPoint: [number, number] = [scaleX(rangeMidpoint), isNaN(y) ? 0 : y];
+    const y = scaleY(isNaN(measureValue) ? 0 : measureValue);
+    const dataPoint: [number, number] = [scaleX(rangeMidpoint), y];
     dataPoints.push(dataPoint);
     if (hoverRange && immutableEqual(hoverRange, range)) {
       hoverDataPoint = dataPoint;
