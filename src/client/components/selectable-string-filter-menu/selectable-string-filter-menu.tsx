@@ -244,7 +244,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   private renderRows() {
     const { dataset, selectedValues, promotedValues } = this.state;
-    if (!dataset) return null;
+    if (!dataset) return [];
     const { dimension, filterMode, searchText } = this.props;
     const promotedElements = promotedValues ? promotedValues.toArray() : [];
     const rowData = dataset.data.slice(0, TOP_N).filter(d => {
