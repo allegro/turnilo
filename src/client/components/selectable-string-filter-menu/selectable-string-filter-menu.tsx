@@ -138,8 +138,6 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
     const existingMode = filter.getModeForDimension(dimension);
 
-    console.log("clauses", filter.clauses.toJS());
-    console.log("dimension", dimension);
     const clause = filter.getClauseForDimension(dimension);
     if (!(clause instanceof StringFilterClause)) {
       throw new Error(`Expected string filter clause, got: ${clause}`);

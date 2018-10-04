@@ -30,12 +30,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     let autoChanged = false;
     const newSplits = splits.update("splits", splits => splits.map((split, i) => {
       const splitDimension = dataCube.getDimension(splits.first().reference);
-      let sortStrategy;
-      try {
-        sortStrategy = splitDimension.sortStrategy;
-      } catch {
-        console.log("no dim?", splitDimension,  splits.toJS());
-      }
+      const sortStrategy = splitDimension.sortStrategy;
 
       if (split.sort.empty()) {
         if (sortStrategy) {

@@ -247,34 +247,9 @@ export function fromJS(parameters: FilterDefinition): FilterClause {
       const { period, duration } = parameters as any;
       return new RelativeTimeFilterClause({
         reference,
-        // TODO: encode period
         period,
         duration: Duration.fromJS(duration)
       });
-    }
-  }
-}
-
-export function getValues(clause: FilterClause): ImmutableSet<boolean | string | NumberRange | DateRange> {
-  switch (clause.type) {
-    case FilterTypes.BOOLEAN: {
-      const { values } = clause as BooleanFilterClause;
-      return ImmutableSet(values);
-    }
-    case FilterTypes.NUMBER: {
-      const { values } = clause as NumberFilterClause;
-      return ImmutableSet(values);
-    }
-    case FilterTypes.STRING: {
-      const { values } = clause as StringFilterClause;
-      return ImmutableSet(values);
-    }
-    case FilterTypes.FIXED_TIME: {
-      const { values } = clause as FixedTimeFilterClause;
-      return ImmutableSet(values);
-    }
-    case FilterTypes.RELATIVE_TIME: {
-      return null;
     }
   }
 }

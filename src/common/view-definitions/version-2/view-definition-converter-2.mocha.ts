@@ -52,11 +52,11 @@ describe("ViewDefinitionConverter2", () => {
     pinnedSort: "delta"
   };
 
-  it.skip("should convert time bucket expression to time range", () => {
+  it("should convert time bucket expression to time range", () => {
     const essence = new ViewDefinitionConverter2().fromViewDefinition(totalsWithTimeBucket, DataCubeFixtures.wiki(), MANIFESTS);
     const convertedClause = essence.filter.clauses.first();
 
-    const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.CURRENT);
+    const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.LATEST);
     expect(convertedClause).to.deep.equal(expectedClause);
   });
 });

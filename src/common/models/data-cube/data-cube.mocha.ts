@@ -350,7 +350,6 @@ describe("DataCube", () => {
         clusterName: "druid",
         source: "wiki",
         introspection: "autofill-all",
-        defaultFilter: { op: "literal", value: true },
         defaultSortMeasure: "added",
         defaultTimezone: "Etc/UTC",
         dimensions: [
@@ -435,7 +434,6 @@ describe("DataCube", () => {
       source: "wiki",
       introspection: "autofill-all",
       defaultTimezone: "Etc/UTC",
-      defaultFilter: { op: "literal", value: true },
       refreshRule: {
         rule: "realtime"
       }
@@ -677,7 +675,6 @@ describe("DataCube", () => {
         subsetFormula: null,
         introspection: "autofill-all",
         defaultTimezone: "Etc/UTC",
-        defaultFilter: { op: "literal", value: true },
         refreshRule: {
           rule: "realtime"
         },
@@ -708,7 +705,6 @@ describe("DataCube", () => {
       subsetFormula: null,
       introspection: "autofill-all",
       defaultTimezone: "Etc/UTC",
-      defaultFilter: { op: "literal", value: true },
       refreshRule: {
         rule: "realtime"
       }

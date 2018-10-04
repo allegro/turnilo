@@ -61,7 +61,6 @@ describe("EssenceProps", () => {
     ],
     timeAttribute: "time",
     defaultTimezone: "Etc/UTC",
-    defaultFilter: { op: "literal", value: true },
     defaultSplits: "time",
     defaultDuration: "P3D",
     defaultSortMeasure: "count",

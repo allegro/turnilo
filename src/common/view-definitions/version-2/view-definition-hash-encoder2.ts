@@ -29,7 +29,9 @@ export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<Vie
       timezone: jsArray[0],
       filter: jsArray[1],
       splits: jsArray[2],
-      measures: { isMulti: jsArray[3], single: jsArray[4], multi: jsArray[5] },
+      multiMeasureMode: jsArray[3],
+      singleMeasure: jsArray[4],
+      selectedMeasures: jsArray[5],
       pinnedDimensions: jsArray[6],
       pinnedSort: jsArray[7],
       colors: jsArray[8] || null,
@@ -43,9 +45,9 @@ export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<Vie
       definition.timezone,         // 0
       definition.filter,           // 1
       definition.splits,           // 2
-      definition.measures.isMulti, // 3
-      definition.measures.single,  // 4
-      definition.measures.multi,   // 5
+      definition.multiMeasureMode, // 3
+      definition.singleMeasure,    // 4
+      definition.selectedMeasures, // 5
       definition.pinnedDimensions, // 6
       definition.pinnedSort,       // 7
       definition.colors,           // 8

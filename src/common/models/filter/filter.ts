@@ -21,7 +21,7 @@ import { Expression } from "plywood";
 import { Unary } from "../../utils/functional/functional";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
-import { FilterClause, FilterDefinition, RelativeTimeFilterClause, StringFilterAction, StringFilterClause, toExpression } from "../filter-clause/filter-clause";
+import { FilterClause, FilterDefinition, fromJS, RelativeTimeFilterClause, StringFilterAction, StringFilterClause, toExpression } from "../filter-clause/filter-clause";
 
 export enum FilterMode { EXCLUDE = "exclude", INCLUDE = "include", REGEX = "regex", CONTAINS = "contains" }
 
@@ -42,10 +42,9 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return new Filter({ clauses: List(clauses) });
   }
 
-  static fromJS(definitions: [FilterDefinition]): Filter {
-    // TODO: implement
+  static fromJS(definitions: FilterDefinition[]): Filter {
     return new Filter({
-      clauses: List([])
+      clauses: List(definitions.map(def => fromJS(def)))
     });
   }
 

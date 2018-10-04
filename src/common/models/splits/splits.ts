@@ -40,6 +40,10 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     return new Splits({ splits: List([split]) });
   }
 
+  static fromSplits(splits: Split[]): Splits {
+    return new Splits({ splits: List(splits) });
+  }
+
   static fromJS(splitsJS: any[]): Splits {
     const splits = List(splitsJS.map(split => Split.fromJS(split)));
     return new Splits({ splits });

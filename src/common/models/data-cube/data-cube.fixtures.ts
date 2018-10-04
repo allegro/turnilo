@@ -100,7 +100,6 @@ export class DataCubeFixtures {
       measures: [],
       timeAttribute: "time",
       defaultTimezone: "Etc/UTC",
-      defaultFilter: { op: "literal", value: true },
       defaultDuration: "P3D",
       refreshRule: {
         rule: "realtime"
