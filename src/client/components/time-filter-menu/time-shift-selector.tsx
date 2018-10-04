@@ -26,7 +26,8 @@ import { InputWithPresets } from "../input-with-presets/input-with-presets";
 import { COMPARISON_PRESETS } from "./presets";
 
 function timeShiftPreviewForRange({ shiftValue, time, timezone }: Pick<TimeShiftSelectorProps, "shiftValue" | "time" | "timezone">): string {
-  if (time === null || shiftValue === null || shiftValue.isEmpty()) return null;
+  if (shiftValue === null || shiftValue.isEmpty()) return null;
+  if (time === null || !time.start || !time.end) return null;
   const duration: Duration = shiftValue.valueOf();
   const shiftedTimeRange = TimeRange.fromJS({
     start: duration.shift(time.start, timezone, -1),
