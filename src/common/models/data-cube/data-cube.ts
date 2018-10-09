@@ -312,6 +312,15 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     const subsetFormula = parameters.subsetFormula || (parameters as any).subsetFilter;
 
+    let defaultFilter: Filter = null;
+    if (parameters.defaultFilter) {
+      try {
+        defaultFilter = Filter.fromJS(parameters.defaultFilter);
+      } catch {
+        console.warn(`Incorrect format of default filter for ${parameters.name}. Ignoring field`);
+      }
+    }
+
     let value: DataCubeValue = {
       executor: null,
       name: parameters.name,
@@ -332,7 +341,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       measures,
       timeAttribute,
       defaultTimezone: parameters.defaultTimezone ? Timezone.fromJS(parameters.defaultTimezone) : null,
-      defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : null,
+      defaultFilter,
       defaultSplitDimensions: parameters.defaultSplitDimensions ? List(parameters.defaultSplitDimensions) : null,
       defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : null,
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size() ? measures.first().name : null),
