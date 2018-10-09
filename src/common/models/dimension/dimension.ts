@@ -90,11 +90,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     };
 
     if (parameters.granularities) {
-      try {
-        value.granularities = parameters.granularities.map(granularityFromJS);
-      } catch {
-        console.warn(`Incorrect granularity format for ${parameters.name}`);
-      }
+      value.granularities = parameters.granularities.map(granularityFromJS);
     }
     if (parameters.bucketedBy) {
       value.bucketedBy = granularityFromJS(parameters.bucketedBy);
