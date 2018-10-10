@@ -62,9 +62,7 @@ export interface NumberFilterMenuState {
   leftOffset?: number;
   rightBound?: number;
   start?: number;
-  startInput?: string;
   end?: number;
-  endInput?: string;
   significantDigits?: number;
   filterMode?: FilterMode;
 }
@@ -77,10 +75,8 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     this.state = {
       leftOffset: null,
       rightBound: null,
-      start: null,
-      startInput: "",
-      end: null,
-      endInput: ""
+      start: ANY_VALUE,
+      end: ANY_VALUE
     };
 
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
@@ -89,6 +85,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   componentWillMount() {
     const { essence, dimension } = this.props;
     const clause = essence.filter.getClauseForDimension(dimension);
+    if (!clause) return;
     if (!(clause instanceof NumberFilterClause)) {
       throw new Error(`Expected number filter. Got: ${clause}`);
     }
@@ -97,8 +94,6 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
       const { start, end } = clause.values.first();
 
       this.setState({
-        startInput: numberOrAnyToString(start),
-        endInput: numberOrAnyToString(end),
         start,
         end,
         filterMode: essence.filter.getModeForDimension(dimension) || FilterMode.INCLUDE
@@ -119,6 +114,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     const { start, end, filterMode } = this.state;
 
     if (isNaN(start) || isNaN(end)) return null;
+    if (start === null && end === null) return null;
     if (start !== null && end !== null && start > end) return null;
     return filter.setClause(new NumberFilterClause({
       reference: dimension.name,
@@ -148,7 +144,6 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   onRangeInputStartChange(e: KeyboardEvent) {
     const startInput = (e.target as HTMLInputElement).value;
     this.setState({
-      startInput,
       start: stringToNumberOrAny(startInput)
     });
   }
@@ -156,17 +151,16 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   onRangeInputEndChange(e: KeyboardEvent) {
     const endInput = (e.target as HTMLInputElement).value;
     this.setState({
-      endInput,
       end: stringToNumberOrAny(endInput)
     });
   }
 
-  onRangeStartChange(newStart: number) {
-    this.setState({ startInput: numberOrAnyToString(newStart), start: newStart });
+  onRangeStartChange(start: number) {
+    this.setState({ start });
   }
 
-  onRangeEndChange(newEnd: number) {
-    this.setState({ endInput: numberOrAnyToString(newEnd), end: newEnd });
+  onRangeEndChange(end: number) {
+    this.setState({ end });
   }
 
   onSelectFilterOption(filterMode: FilterMode) {
@@ -175,12 +169,13 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
 
   actionEnabled() {
     const { essence } = this.props;
-    return !essence.filter.equals(this.constructFilter()) && Boolean(this.constructFilter());
+    const filter = this.constructFilter();
+    return Boolean(filter) && !essence.filter.equals(filter);
   }
 
   render() {
     const { essence, timekeeper, dimension, onClose, containerStage, openOn, inside } = this.props;
-    const { endInput, startInput, end, start, filterMode } = this.state;
+    const { end, start, filterMode } = this.state;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
 
     return <BubbleMenu
@@ -203,11 +198,11 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
         </div>
         <div className="group">
           <label className="input-top-label">Min</label>
-          <input value={startInput} onChange={this.onRangeInputStartChange.bind(this)} />
+          <input value={numberOrAnyToString(start)} onChange={this.onRangeInputStartChange.bind(this)} />
         </div>
         <div className="group">
           <label className="input-top-label">Max</label>
-          <input value={endInput} onChange={this.onRangeInputEndChange.bind(this)} />
+          <input value={numberOrAnyToString(end)} onChange={this.onRangeInputEndChange.bind(this)} />
         </div>
       </div>
 
