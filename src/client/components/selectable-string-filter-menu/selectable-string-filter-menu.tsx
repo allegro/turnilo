@@ -131,7 +131,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   }
 
   componentWillMount() {
-    const { essence, timekeeper, dimension, searchText } = this.props;
+    const { essence, dimension } = this.props;
     const { filter, colors } = essence;
 
     const myColors = (colors && colors.dimension === dimension.name ? colors : null);
@@ -139,16 +139,26 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     const existingMode = filter.getModeForDimension(dimension);
 
     const clause = filter.getClauseForDimension(dimension);
+    if (!clause) {
+      return this.initComponent(Set.of(), myColors);
+    }
     if (!(clause instanceof StringFilterClause)) {
       throw new Error(`Expected string filter clause, got: ${clause}`);
     }
-
     const valueSet = clause.values;
-    const selectedValues = (existingMode !== FilterMode.REGEX && valueSet) || (myColors ? Set(myColors.toArray()) : null) || Set.of(); // don't want regex to show up as a promoted value
+    const nonRegexValues = (existingMode !== FilterMode.REGEX && valueSet);
+    const valuesFromColors = (myColors ? Set(myColors.toArray()) : Set.of());
+    const selectedValues = nonRegexValues || valuesFromColors; // don't want regex to show up as a promoted value
+
+    this.initComponent(selectedValues, myColors);
+  }
+
+  private initComponent(selectedValues: Set<string>, colors: Colors) {
+    const { essence, timekeeper, dimension, searchText } = this.props;
     this.setState({
       selectedValues,
       promotedValues: selectedValues,
-      colors: myColors
+      colors
     });
 
     this.fetchData(essence, timekeeper, dimension, searchText);
