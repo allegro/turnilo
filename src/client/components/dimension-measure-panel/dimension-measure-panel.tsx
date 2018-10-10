@@ -23,11 +23,12 @@ import { Fn } from "../../../common/utils/general/general";
 import { clamp } from "../../utils/dom/dom";
 import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
 import { MeasuresTile } from "../measures-tile/measures-tile";
+import { Direction, ResizeHandle } from "../resize-handle/resize-handle";
 import "./dimension-measure-panel.scss";
 
-const TOTAL_FLEXES = 100;
-const MIN_FLEX = 20;
-const MIN_HEIGHT = 150;
+const MIN_PANEL_SIZE = 100;
+// TODO: extract this somehow from _constants.scss
+const HEADER_HEIGHT = 42;
 
 export interface DimensionMeasurePanelProps {
   clicker: Clicker;
@@ -39,30 +40,59 @@ export interface DimensionMeasurePanelProps {
 }
 
 export interface DimensionMeasurePanelState {
+  dividerPosition: number;
+  maxDividerPosition: number;
+  minDividerPosition: number;
+}
+
+function getDimensions() {
+  const height = window.innerHeight - HEADER_HEIGHT;
+  const max = Math.max(height - MIN_PANEL_SIZE, 0);
+  const min = Math.min(MIN_PANEL_SIZE, height);
+  return { height, max, min };
 }
 
 export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanelProps, DimensionMeasurePanelState> {
 
+  state: DimensionMeasurePanelState = this.initialState();
+
+  saveDividerPosition = (dividerPosition: number) => this.setState({ dividerPosition });
+
+  initialState(): DimensionMeasurePanelState {
+    const { essence: { dataCube } } = this.props;
+    const { height, max: maxDividerPosition, min: minDividerPosition } = getDimensions();
+    const dimensionsCount = dataCube.dimensions.size();
+    const measuresCount = dataCube.measures.size();
+    const ratio = dimensionsCount / (measuresCount + dimensionsCount);
+    const dividerPosition = clamp(height * ratio, minDividerPosition, maxDividerPosition);
+
+    return { dividerPosition, maxDividerPosition, minDividerPosition };
+  }
+
+  onResize = () => {
+    const { max: maxDividerPosition, min: minDividerPosition } = getDimensions();
+    this.setState({ maxDividerPosition, minDividerPosition });
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", this.onResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.onResize);
+  }
+
   render() {
     const { clicker, essence, menuStage, triggerFilterMenu, triggerSplitMenu, style } = this.props;
-    const { dataCube } = essence;
+    const { dividerPosition, minDividerPosition, maxDividerPosition } = this.state;
 
-    // Compute relative sizes by diving up TOTAL_FLEXES
-    var numDimensions = dataCube.dimensions.size();
-    var numMeasures = dataCube.measures.size();
+    const dimensionListStyle: React.CSSProperties = {
+      height: dividerPosition
+    };
 
-    var dimensionsFlex = clamp(
-      Math.ceil(TOTAL_FLEXES * numDimensions / (numDimensions + numMeasures)),
-      MIN_FLEX,
-      TOTAL_FLEXES - MIN_FLEX
-    );
-    var measuresFlex = TOTAL_FLEXES - dimensionsFlex;
-
-    var dimensionListStyle: any = { flex: dimensionsFlex };
-    if (dimensionsFlex === MIN_FLEX) dimensionListStyle.minHeight = MIN_HEIGHT;
-
-    var measuresStyle: any = { flex: measuresFlex };
-    if (measuresFlex === MIN_FLEX) measuresStyle.minHeight = MIN_HEIGHT;
+    const measureListStyle: React.CSSProperties = {
+      height: window.innerHeight - dividerPosition - HEADER_HEIGHT
+    };
 
     return <div className="dimension-measure-panel" style={style}>
       <DimensionListTile
@@ -73,10 +103,16 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
         triggerSplitMenu={triggerSplitMenu}
         style={dimensionListStyle}
       />
+      <ResizeHandle
+        onResize={this.saveDividerPosition}
+        direction={Direction.TOP}
+        min={minDividerPosition}
+        max={maxDividerPosition}
+        initialValue={dividerPosition} />
       <MeasuresTile
+        style={measureListStyle}
         clicker={clicker}
         essence={essence}
-        style={measuresStyle}
       />
     </div>;
   }
