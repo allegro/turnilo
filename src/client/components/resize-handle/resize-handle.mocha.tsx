@@ -21,13 +21,13 @@ import * as TestUtils from "react-dom/test-utils";
 
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
-import { ResizeHandle } from "./resize-handle";
+import { Direction, ResizeHandle } from "./resize-handle";
 
 describe("ResizeHandle", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <ResizeHandle
-        side="left"
+        direction={Direction.LEFT}
         min={240}
         max={400}
         initialValue={100}

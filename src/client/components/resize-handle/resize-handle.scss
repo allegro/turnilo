@@ -21,11 +21,8 @@
   $size: 18px;
 
   z-index: 1;
-  width: $size;
   position: absolute;
-  height: 100%;
 
-  cursor: ew-resize;
 
   > .svg-icon {
     width: 20px;
@@ -33,10 +30,19 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
 
     path {
       fill: #b4b4b4;
+    }
+  }
+
+  &.left, &.right {
+    cursor: ew-resize;
+    height: 100%;
+    width: $size;
+
+    > .svg-icon {
+      transform: translate(-50%, -50%);
     }
   }
 
@@ -50,4 +56,18 @@
     margin-right: -$tile-margin-h / 2;
   }
 
+  &.top, &.bottom {
+    cursor: ns-resize;
+    height: $size;
+    width: 100%;
+  }
+
+  &.top {
+    > .svg-icon {
+      transform: rotate(90deg) translate(-50%, 50%);
+    }
+  }
+
+  &.bottom {
+  }
 }
