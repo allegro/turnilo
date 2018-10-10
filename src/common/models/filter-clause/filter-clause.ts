@@ -181,7 +181,9 @@ export function toExpression(clause: FilterClause): Expression {
     }
     case FilterTypes.NUMBER: {
       const { not, values } = clause as NumberFilterClause;
-      const numExp = expression.overlap(r(values.map(range => new PlywoodNumberRange(range)).toArray()));
+      const elements = values.toArray().map(range => new PlywoodNumberRange(range));
+      const set = new PlywoodSet({ elements, setType: "NUMBER_RANGE" });
+      const numExp = expression.overlap(r(set));
       return not ? numExp.not() : numExp;
     }
     case FilterTypes.STRING: {
