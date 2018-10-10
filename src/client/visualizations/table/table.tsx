@@ -24,7 +24,7 @@ import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { FixedTimeFilterClause, NumberFilterClause, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
 import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort/sort";
@@ -95,7 +95,7 @@ function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataCube: Da
         case SplitType.time:
           return new FixedTimeFilterClause({ reference, values: List.of(segment) });
         case SplitType.string:
-          return new StringFilterClause({ reference, values: Set.of(segment) });
+          return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
       }
     });
 

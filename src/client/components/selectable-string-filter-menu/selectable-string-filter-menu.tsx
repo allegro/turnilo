@@ -22,7 +22,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { collect, Fn } from "../../../common/utils/general/general";
@@ -199,6 +199,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     if (selectedValues.count() === 0) return onClauseChange(null);
 
     const clause = new StringFilterClause({
+      action: StringFilterAction.IN,
       reference: name,
       values: selectedValues,
       not: filterMode === FilterMode.EXCLUDE

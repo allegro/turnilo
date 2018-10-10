@@ -22,7 +22,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BAR_CHART_MANIFEST } from "../../../common/manifests/bar-chart/bar-chart";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { FixedTimeFilterClause, NumberFilterClause, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
 import { SplitType } from "../../../common/models/split/split";
@@ -90,7 +90,7 @@ function getFilterFromDatum(splits: Splits, dataPath: Datum[]): Filter {
       case SplitType.time:
         return new FixedTimeFilterClause({ reference, values: List.of(segment) });
       case SplitType.string:
-        return new StringFilterClause({ reference, values: Set.of(segment) });
+        return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
     }
   }))});
 }
