@@ -97,12 +97,6 @@ export interface CubeViewState {
 const MIN_PANEL_WIDTH = 240;
 const MAX_PANEL_WIDTH = 400;
 
-const smallDeviceLayout = {
-  dimensionMeasurePanel: { width: 200 },
-  centerPanel: { left: 200, right: 200 },
-  pinboardPanel: { width: 200 }
-};
-
 export interface DataSetWithTabOptions {
   dataset: Dataset;
   options?: TabulatorOptions;
@@ -321,8 +315,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     });
   }
 
-  canDrop(): boolean {
+  private canDrop(): boolean {
     return Boolean(DragManager.getDragDimension());
+  }
+
+  private isSmallDevice(): boolean {
+    return this.state.deviceSize === DeviceSize.SMALL;
   }
 
   dragEnter(e: DragEvent) {
@@ -444,15 +442,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const clicker = this.clicker;
 
     const { getCubeViewHash, onNavClick, customization } = this.props;
-    const { deviceSize, layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
+    const { layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime } = this.state;
 
     if (!essence) return null;
 
-    const styles = deviceSize === "small" ? smallDeviceLayout : {
-      dimensionMeasurePanel: { width: layout.dimensionPanelWidth },
-      centerPanel: { left: layout.dimensionPanelWidth, right: layout.pinboardWidth },
-      pinboardPanel: { width: layout.pinboardWidth }
-    };
+    const styles = this.calculateStyles();
 
     const headerBar = <CubeHeaderBar
       clicker={clicker}
@@ -482,7 +476,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           triggerSplitMenu={this.triggerSplitMenu.bind(this)}
         />
 
-        {deviceSize !== "small" && <ResizeHandle
+        {!this.isSmallDevice() && <ResizeHandle
           direction={Direction.LEFT}
           initialValue={layout.dimensionPanelWidth}
           onResize={this.onDimensionPanelResize.bind(this)}
@@ -527,7 +521,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           </div>
         </div>
 
-        {deviceSize !== "small" && <ResizeHandle
+        {!this.isSmallDevice() && <ResizeHandle
           direction={Direction.RIGHT}
           initialValue={layout.pinboardWidth}
           onResize={this.onPinboardPanelResize.bind(this)}
@@ -548,6 +542,22 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     </div>;
   }
 
+  private calculateStyles() {
+    if (this.isSmallDevice()) {
+      return {
+        dimensionMeasurePanel: { width: 200 },
+        centerPanel: { left: 200, right: 200 },
+        pinboardPanel: { width: 200 }
+      };
+    }
+    const { layout } = this.state;
+    return {
+      dimensionMeasurePanel: { width: layout.dimensionPanelWidth },
+      centerPanel: { left: layout.dimensionPanelWidth, right: layout.pinboardWidth },
+      pinboardPanel: { width: layout.pinboardWidth }
+    };
+  }
+
   private manualFallback() {
     const { essence } = this.state;
     if (!essence.visResolve.isManual()) return null;
@@ -559,17 +569,16 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   private visElement() {
-    const { essence, visualizationStage } = this.state;
-    if (!(essence.visResolve.isReady() && visualizationStage)) return null;
-    const { timekeeper, deviceSize } = this.state;
+    const { essence, visualizationStage: stage } = this.state;
+    if (!(essence.visResolve.isReady() && stage)) return null;
+    const { timekeeper } = this.state;
     const { visualization } = essence;
     const clicker = this.clicker;
     const visProps: VisualizationProps = {
       clicker,
       timekeeper,
       essence,
-      stage: visualizationStage,
-      deviceSize,
+      stage,
       openRawDataModal: this.openRawDataModal.bind(this),
       registerDownloadableDataset: (dataset: Dataset) => {
         this.downloadableDataset = { dataset, options: tabularOptions(essence) };
