@@ -38,15 +38,14 @@ const Previous: React.SFC<PreviousProps> = ({ currentValue, previousValue, forma
 };
 
 export interface TotalProps {
-  ident: string;
   name: string;
   value?: number;
   previous?: number;
   formatter: Unary<number, string>;
 }
 
-export const Total: React.SFC<TotalProps> = ({ ident, name, value, previous, formatter }) => {
-  return <div className="total" key={ident}>
+export const Total: React.SFC<TotalProps> = ({ name, value, previous, formatter }) => {
+  return <div className="total">
     <div className="measure-name" title={name}>{name}</div>
     <div className="measure-value">{value ? formatter(value) : "-"}</div>
     {isTruthy(previous) && <Previous currentValue={value} previousValue={previous} formatter={formatter}/>}

@@ -81,7 +81,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     if (!datum) {
       return measures.map(measure => {
         return <Total
-          ident={measure.name}
+          key={measure.name}
           formatter={measure.formatFn}
           name={measure.title}
           value={null}/>;
@@ -93,7 +93,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
       const previousValue = essence.hasComparison() && datum[measure.getDerivedName(MeasureDerivation.PREVIOUS)] as number;
 
       return <Total
-        ident={measure.name}
+        key={measure.name}
         name={measure.title}
         value={currentValue}
         previous={previousValue}
