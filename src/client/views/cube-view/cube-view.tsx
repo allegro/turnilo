@@ -115,12 +115,6 @@ export interface CubeViewState {
 const MIN_PANEL_WIDTH = 240;
 const MAX_PANEL_WIDTH = 400;
 
-const smallDeviceLayout = {
-  dimensionMeasurePanel: { width: 200 },
-  centerPanel: { left: 200, right: 200 },
-  pinboardPanel: { width: 200 }
-};
-
 export interface DataSetWithTabOptions {
   dataset: Dataset;
   options?: TabulatorOptions;
