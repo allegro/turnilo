@@ -20,6 +20,13 @@
 $resize-handle-size: 12px;
 
 .dimension-measure-panel {
+
+  .dimension-measure-panel--container {
+    left: 0;
+    height: 100%;
+    right: 0;
+  }
+
   @include for-small-screens {
     padding: 0 1px 0 0;
     font-size: 0.9em;
