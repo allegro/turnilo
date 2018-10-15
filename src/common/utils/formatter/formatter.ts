@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import * as numeral from "numeral";
+import * as numbro from "numbro";
 
 import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
@@ -48,14 +48,14 @@ const scales: Record<string, Record<string, number>> = {
   },
   b: {
     B: 1,
-    KB: 1024,
-    MB: 1024 * 1024,
-    GB: 1024 * 1024 * 1024,
-    TB: 1024 * 1024 * 1024 * 1024,
-    PB: 1024 * 1024 * 1024 * 1024 * 1024,
-    EB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
-    ZB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
-    YB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024
+    KiB: 1024,
+    MiB: 1024 * 1024,
+    GiB: 1024 * 1024 * 1024,
+    TiB: 1024 * 1024 * 1024 * 1024,
+    PiB: 1024 * 1024 * 1024 * 1024 * 1024,
+    EiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
+    ZiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
+    YiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024
   }
 };
 
@@ -75,26 +75,33 @@ export function getMiddleNumber(values: number[]): number {
   }
 }
 
+function formatterUnit(middle: number, formatType: string): string {
+  const formatMiddle = numbro(middle).format("0 " + formatType);
+  if (formatType === "b") {
+    const match = formatMiddle.match(/(([A-Z]i)?B)$/);
+    return match && match[0];
+  }
+  return formatMiddle.split(" ")[1] || "";
+}
+
 export function formatterFromData(values: number[], format: string): Formatter {
   const match = format.match(/^(\S*)( ?)([ab])$/);
   if (match) {
     const numberFormat = match[1];
     const space = match[2];
     const formatType = match[3];
-    const middle = getMiddleNumber(values);
-    const formatMiddle = numeral(middle).format("0 " + formatType);
-    const unit = formatMiddle.split(" ")[1] || "";
+    const unit = formatterUnit(getMiddleNumber(values), formatType);
     const scale = scales[formatType][unit];
     const append = unit ? space + unit : "";
 
     return (n: number) => {
       if (isNaN(n) || !isFinite(n)) return "-";
-      return numeral(n / scale).format(numberFormat) + append;
+      return numbro(n / scale).format(numberFormat) + append;
     };
   } else {
     return (n: number) => {
       if (isNaN(n) || !isFinite(n)) return "-";
-      return numeral(n).format(format);
+      return numbro(n).format(format);
     };
   }
 }

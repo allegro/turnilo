@@ -17,8 +17,7 @@
 
 import { List } from "immutable";
 import { BaseImmutable, Property } from "immutable-class";
-
-import * as numeral from "numeral";
+import * as numbro from "numbro";
 import {
   $,
   ApplyExpression,
@@ -36,7 +35,7 @@ import { MeasureOrGroupVisitor } from "./measure-group";
 function formatFnFactory(format: string): (n: number) => string {
   return (n: number) => {
     if (isNaN(n) || !isFinite(n)) return "-";
-    return numeral(n).format(format);
+    return numbro(n).format(format);
   };
 }
 
