@@ -537,7 +537,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       {headerBar}
       <div className="container" ref="container">
         {!layout.factPanel.hidden && <DimensionMeasurePanel
-          style={styles.dimensionMeasurePanel}
+          style={styles.factPanel}
           clicker={clicker}
           essence={essence}
           menuStage={menuStage}
@@ -626,14 +626,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       const dimensionsWidth = isDimensionPanelHidden ? 0 : 200;
       const pinboardWidth = isPinboardHidden ? 0 : 200;
       return {
-        dimensionMeasurePanel: { width: dimensionsWidth },
+        factPanel: { width: dimensionsWidth },
         centerPanel: { left: dimensionsWidth, right: pinboardWidth },
         pinboardPanel: { width: pinboardWidth }
       };
     }
     const nonSmallLayoutPadding = 10;
     return {
-      dimensionMeasurePanel: {
+      factPanel: {
         width: isDimensionPanelHidden ? 0 : layout.factPanel.width
       },
       centerPanel: {
