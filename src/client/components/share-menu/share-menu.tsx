@@ -18,6 +18,7 @@
 import * as React from "react";
 import * as CopyToClipboard from "react-copy-to-clipboard";
 import { Essence } from "../../../common/models/essence/essence";
+import { ExternalView } from "../../../common/models/external-view/external-view";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { getFileString } from "../../../common/utils/formatter/formatter";
@@ -32,6 +33,7 @@ export interface ShareMenuProps {
   timekeeper: Timekeeper;
   openOn: Element;
   onClose: Fn;
+  externalViews?: ExternalView[];
   getCubeViewHash: (essence: Essence, withPrefix?: boolean) => string;
   getDownloadableDataset?: () => DataSetWithTabOptions;
 }
@@ -54,11 +56,7 @@ export const ShareMenu: React.SFC<ShareMenuProps> = props => {
     onClose();
   }
 
-  const { essence, timekeeper, openOn, getCubeViewHash, onClose } = props;
-
-  const withPrefix = true;
-  const url = getCubeViewHash(essence, withPrefix);
-  const fixedTimeUrl = essence.filter.isRelative() ? getCubeViewHash(essence.convertToSpecificFilter(timekeeper), withPrefix) : null;
+  const { essence, timekeeper, openOn, getCubeViewHash, onClose, externalViews = [] } = props;
 
   return <BubbleMenu
     className="header-menu"
@@ -68,20 +66,33 @@ export const ShareMenu: React.SFC<ShareMenuProps> = props => {
     onClose={onClose}
   >
     <ul className="bubble-list">
-      {<CopyToClipboard key="copy-url" text={url}>
+
+      <CopyToClipboard key="copy-url" text={getCubeViewHash(essence, true)}>
         <li onClick={onClose}>
-          {fixedTimeUrl ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}
+          {essence.filter.isRelative() ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}
+        </li>
+      </CopyToClipboard>
+
+      {essence.filter.isRelative() && <CopyToClipboard key="copy-specific-url" text={getCubeViewHash(essence.convertToSpecificFilter(timekeeper), true)}>
+        <li onClick={onClose}>
+          {STRINGS.copyFixedTimeUrl}
         </li>
       </CopyToClipboard>}
-      {fixedTimeUrl && <CopyToClipboard key="copy-specific-url" text={fixedTimeUrl}>
-        <li  onClick={onClose}>
-          {STRINGS.copyFixedTimeUrl}</li>
-      </CopyToClipboard>}
+
       {exportOptions.map(({ label, fileFormat }) =>
         <li key={`export-${fileFormat}`} onClick={() => onExport(fileFormat)}>
           {label}
         </li>
       )}
+
+      {externalViews.map((externalView: ExternalView, i: number) => {
+        const url = externalView.linkGeneratorFn(essence.dataCube, essence.timezone, essence.filter, essence.splits);
+        const title = `${STRINGS.openIn} ${externalView.title}`;
+        const target = externalView.sameWindow ? "_self" : "_blank";
+        return <li key={`custom-url-${i}`}>
+          <a href={url} target={target}>{title}</a>
+        </li>;
+      })}
     </ul>
   </BubbleMenu>;
 };
