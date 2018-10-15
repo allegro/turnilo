@@ -33,7 +33,7 @@ describe("NumberFilterMenu", () => {
     var renderedComponent = renderIntoDocument(
       <NumberFilterMenu
         clicker={null}
-        dimension={DimensionFixtures.time()}
+        dimension={DimensionFixtures.wikiCommentLength()}
         essence={EssenceFixtures.wikiTotals()}
         timekeeper={TimekeeperFixtures.fixed()}
         onClose={null}

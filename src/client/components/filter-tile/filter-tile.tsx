@@ -23,7 +23,7 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FilterClause, isTimeFilter } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -170,7 +170,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     });
   }
 
-  closeMenu() {
+  closeMenu = () => {
     const { menuOpenOn, possibleDimension } = this.state;
     if (!menuOpenOn) return;
     const newState: FilterTileState = {
@@ -186,7 +186,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       newState.overflowMenuOpenOn = null;
     }
     this.setState(newState);
-  }
+  };
 
   openOverflowMenu(target: Element): Q.Promise<any> {
     if (!target) return Q(null);
@@ -202,13 +202,13 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     return this.overflowMenuDeferred.promise;
   }
 
-  closeOverflowMenu() {
+  closeOverflowMenu = () => {
     const { overflowMenuOpenOn } = this.state;
     if (!overflowMenuOpenOn) return;
     this.setState({
       overflowMenuOpenOn: null
     });
-  }
+  };
 
   removeFilter(itemBlank: ItemBlank, e: MouseEvent) {
     const { essence, clicker } = this.props;
@@ -216,7 +216,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       if (itemBlank.source === "from-highlight") {
         clicker.dropHighlight();
       } else {
-        clicker.changeFilter(essence.filter.remove(itemBlank.clause.expression));
+        clicker.changeFilter(essence.filter.removeClause(itemBlank.clause.reference));
       }
     }
     this.closeMenu();
@@ -249,28 +249,28 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     return Boolean(DragManager.getDragDimension());
   }
 
-  dragEnter(e: DragEvent) {
+  dragEnter = (e: DragEvent) => {
     if (!this.canDrop(e)) return;
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
     this.setState({ dragPosition });
-  }
+  };
 
-  dragOver(e: DragEvent) {
+  dragOver = (e: DragEvent) => {
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
     this.setState({ dragPosition });
-  }
+  };
 
-  dragLeave(e: DragEvent) {
+  dragLeave = (e: DragEvent) => {
     this.setState({ dragPosition: null });
-  }
+  };
 
-  drop(e: DragEvent) {
+  drop = (e: DragEvent) => {
     if (!this.canDrop(e)) return;
     e.preventDefault();
     const { clicker, essence } = this.props;
@@ -287,10 +287,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       let tryingToReplaceTime = false;
       if (dragPosition.replace !== null) {
         const targetClause = filter.clauses.get(dragPosition.replace);
-        tryingToReplaceTime = targetClause && targetClause.expression.equals(dataCube.timeAttribute);
+        tryingToReplaceTime = targetClause && targetClause.reference === dataCube.getTimeDimension().name;
       }
 
-      const existingClause = filter.clauseForExpression(dimension.expression);
+      const existingClause = filter.clauseForReference(dimension.name);
       if (existingClause) {
         let newFilter: Filter;
         if (dragPosition.isReplace()) {
@@ -325,7 +325,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
 
     this.setState(newState);
-  }
+  };
 
   addDummy(dimension: Dimension, possiblePosition: DragPosition) {
     this.dummyDeferred = Q.defer() as Q.Deferred<Element>;
@@ -341,16 +341,16 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   // This will be called externally
   filterMenuRequest(dimension: Dimension) {
     const { filter } = this.props.essence;
-    if (filter.filteredOn(dimension.expression)) {
+    if (filter.filteredOn(dimension.name)) {
       this.openMenuOnDimension(dimension);
     } else {
       this.addDummy(dimension, new DragPosition({ insert: filter.length() }));
     }
   }
 
-  overflowButtonClick() {
+  overflowButtonClick = () => {
     this.openOverflowMenu(this.overflowButtonTarget());
-  }
+  };
 
   renderMenu(): JSX.Element {
     const { essence, timekeeper, clicker, menuStage } = this.props;
@@ -370,7 +370,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       openOn={menuOpenOn}
       dimension={menuDimension}
       changePosition={possiblePosition}
-      onClose={this.closeMenu.bind(this)}
+      onClose={this.closeMenu}
       inside={menuInside}
     />;
   }
@@ -394,7 +394,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       stage={Stage.fromSize(208, stageHeight)}
       fixedSize={true}
       openOn={overflowMenuOpenOn}
-      onClose={this.closeOverflowMenu.bind(this)}
+      onClose={this.closeOverflowMenu}
     >
       {filterItems}
     </BubbleMenu>;
@@ -408,7 +408,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       ref="overflow"
       key="overflow"
       style={style}
-      onClick={this.overflowButtonClick.bind(this)}
+      onClick={this.overflowButtonClick}
     >
       <div className="count">{"+" + overflowItemBlanks.length}</div>
       {this.renderOverflowMenu(overflowItemBlanks)}
@@ -452,7 +452,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       FILTER_CLASS_NAME,
       "type-" + dimension.className,
       source,
-      (clause && clause.exclude) ? "excluded" : "included",
+      (clause && !isTimeFilter(clause) && clause.not) ? "excluded" : "included",
       dimension === menuDimension ? "selected" : undefined
     ].filter(Boolean).join(" ");
 
@@ -504,7 +504,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     let itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
-        let dimension = dataCube.getDimensionByExpression(clause.expression);
+        const dimension = dataCube.getDimension(clause.reference);
         if (!dimension) return null;
         return {
           dimension,
@@ -518,7 +518,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       highlight.delta.clauses.forEach(clause => {
         let added = false;
         itemBlanks = itemBlanks.map(blank => {
-          if (clause.expression.equals(blank.clause.expression)) {
+          if (clause.equals(blank.clause)) {
             added = true;
             return {
               dimension: blank.dimension,
@@ -530,7 +530,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
           }
         });
         if (!added) {
-          const dimension = dataCube.getDimensionByExpression(clause.expression);
+          const dimension = dataCube.getDimension(clause.reference);
           if (dimension) {
             itemBlanks.push({
               dimension,
@@ -577,7 +577,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     return <div
       className="filter-tile"
-      onDragEnter={this.dragEnter.bind(this)}
+      onDragEnter={this.dragEnter}
 
     >
       <div className="title">{STRINGS.filter}</div>
@@ -587,10 +587,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       {dragPosition ? <FancyDragIndicator dragPosition={dragPosition} /> : null}
       {dragPosition ? <div
         className="drag-mask"
-        onDragOver={this.dragOver.bind(this)}
-        onDragLeave={this.dragLeave.bind(this)}
-        onDragExit={this.dragLeave.bind(this)}
-        onDrop={this.drop.bind(this)}
+        onDragOver={this.dragOver}
+        onDragLeave={this.dragLeave}
+        onDragExit={this.dragLeave}
+        onDrop={this.drop}
       /> : null}
       {this.renderMenu()}
     </div>;

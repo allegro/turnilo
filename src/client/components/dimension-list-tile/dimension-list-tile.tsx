@@ -40,8 +40,8 @@ export interface DimensionListTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  triggerFilterMenu: Fn;
-  triggerSplitMenu: Fn;
+  triggerFilterMenu: (dimension: Dimension) => void;
+  triggerSplitMenu: (dimension: Dimension) => void;
   style?: CSSProperties;
 }
 
@@ -61,17 +61,16 @@ const isFilteredOrSplitPredicate = (essence: Essence) => (dimension: Dimension):
   return isFiltered(dimension, filter, dataCube) || isSplit(dimension, splits, dataCube);
 };
 
-const isSplit = (dimension: Dimension, splits: Splits, dataCube: DataCube): boolean => {
+const isSplit = (dimension: Dimension, { splits }: Splits, dataCube: DataCube): boolean => {
   return splits
-    .splitCombines
-    .map(split => dataCube.dimensions.getDimensionByExpression(split.expression))
+    .map(split => dataCube.dimensions.getDimensionByName(split.reference))
     .contains(dimension);
 };
 
 const isFiltered = (dimension: Dimension, filter: Filter, dataCube: DataCube): boolean => {
   return filter
     .clauses
-    .map(clause => dataCube.dimensions.getDimensionByExpression(clause.expression))
+    .map(clause => dataCube.dimensions.getDimensionByName(clause.reference))
     .contains(dimension);
 };
 
@@ -80,16 +79,12 @@ const isSelectedDimensionPredicate = (menuDimension: Dimension) => (dimension: D
 };
 
 export class DimensionListTile extends Component<DimensionListTileProps, DimensionListTileState> {
-
-  constructor(props: DimensionListTileProps) {
-    super(props);
-    this.state = {
-      menuOpenOn: null,
-      menuDimension: null,
-      showSearch: false,
-      searchText: ""
-    };
-  }
+  state: DimensionListTileState = {
+    menuOpenOn: null,
+    menuDimension: null,
+    showSearch: false,
+    searchText: ""
+  };
 
   clickDimension = (dimensionName: string, e: MouseEvent<HTMLElement>) => {
     const { menuOpenOn } = this.state;
@@ -106,16 +101,16 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       menuOpenOn: target,
       menuDimension: dimension
     });
-  }
+  };
 
-  closeMenu() {
-    var { menuOpenOn } = this.state;
+  closeMenu = () => {
+    const { menuOpenOn } = this.state;
     if (!menuOpenOn) return;
     this.setState({
       menuOpenOn: null,
       menuDimension: null
     });
-  }
+  };
 
   dragStart = (dimensionName: string, e: DragEvent<HTMLElement>) => {
     const { essence: { dataCube } } = this.props;
@@ -129,30 +124,28 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     setDragGhost(dataTransfer, dimension.title);
 
     this.closeMenu();
-  }
+  };
 
-  toggleSearch() {
-    var { showSearch } = this.state;
-    this.setState({ showSearch: !showSearch });
+  toggleSearch = () => {
+    this.setState(({ showSearch }) => ({ showSearch: !showSearch }));
     this.onSearchChange("");
-  }
+  };
 
-  onSearchChange(text: string) {
-    var { searchText } = this.state;
-    var newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
+  onSearchChange = (text: string) => {
+    const { searchText } = this.state;
+    const newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
 
     if (searchText === newSearchText) return; // nothing to do;
 
     this.setState({
       searchText: newSearchText
     });
-  }
+  };
 
   renderMenu(): JSX.Element {
     var { essence, clicker, menuStage, triggerFilterMenu, triggerSplitMenu } = this.props;
     var { menuOpenOn, menuDimension } = this.state;
     if (!menuDimension) return null;
-    var onClose = this.closeMenu.bind(this);
 
     return <DimensionActionsMenu
       clicker={clicker}
@@ -163,7 +156,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       dimension={menuDimension}
       triggerFilterMenu={triggerFilterMenu}
       triggerSplitMenu={triggerSplitMenu}
-      onClose={onClose}
+      onClose={this.closeMenu}
     />;
   }
 
@@ -198,7 +191,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       {
         name: "search",
         ref: "search",
-        onClick: this.toggleSearch.bind(this),
+        onClick: this.toggleSearch,
         svg: require("../../icons/full-search.svg"),
         active: showSearch
       }
@@ -207,8 +200,8 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     return <SearchableTile
       style={style}
       title={STRINGS.dimensions}
-      toggleChangeFn={this.toggleSearch.bind(this)}
-      onSearchChange={this.onSearchChange.bind(this)}
+      toggleChangeFn={this.toggleSearch}
+      onSearchChange={this.onSearchChange}
       searchText={searchText}
       showSearch={showSearch}
       icons={icons}

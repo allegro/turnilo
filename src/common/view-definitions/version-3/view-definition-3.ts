@@ -18,7 +18,7 @@ import { TimeShiftJS } from "../../models/time-shift/time-shift";
 import { FilterClauseDefinition } from "./filter-definition";
 import { HighlightDefinition } from "./highlight-definition";
 import { LegendDefinition } from "./legend-definition";
-import { MeasuresDefinition } from "./measures-definition";
+import { MeasuresDefinitionJS } from "./measures-definition";
 import { SplitDefinition } from "./split-definition";
 
 export interface ViewDefinition3 {
@@ -26,7 +26,7 @@ export interface ViewDefinition3 {
   timezone: string;
   filters: FilterClauseDefinition[];
   splits: SplitDefinition[];
-  measures: MeasuresDefinition;
+  measures: MeasuresDefinitionJS;
   pinnedDimensions?: string[];
   pinnedSort?: string;
   legend?: LegendDefinition;

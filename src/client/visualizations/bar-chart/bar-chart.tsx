@@ -16,21 +16,22 @@
  */
 
 import * as d3 from "d3";
-import { List } from "immutable";
-import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, r, Range, Set, SortExpression, TimeRange } from "plywood";
+import { List, Set } from "immutable";
+import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, Range } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BAR_CHART_MANIFEST } from "../../../common/manifests/bar-chart/bar-chart";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
+import { SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatValue } from "../../../common/utils/formatter/formatter";
 import { DisplayYear } from "../../../common/utils/time/time";
+import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
 import { BucketMarks } from "../../components/bucket-marks/bucket-marks";
 import { GridLines } from "../../components/grid-lines/grid-lines";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
@@ -78,16 +79,20 @@ export interface BarChartState extends BaseVisualizationState {
   maxNumberOfLeaves?: number[];
 }
 
-function getFilterFromDatum(splits: Splits, dataPath: Datum[], dataCube: DataCube): Filter {
-  return new Filter(List(dataPath.map((datum, i) => {
-    const split = splits.get(i);
-    const segment: any = datum[split.getDimension(dataCube.dimensions).name];
+function getFilterFromDatum(splits: Splits, dataPath: Datum[]): Filter {
+  return new Filter({ clauses: List(dataPath.map((datum, i) => {
+    const { type, reference } = splits.getSplit(i);
+    const segment: any = datum[reference];
 
-    return new FilterClause({
-      expression: split.expression,
-      selection: r(TimeRange.isTimeRange(segment) ? segment : Set.fromJS([segment]))
-    });
-  })));
+    switch (type) {
+      case SplitType.number:
+        return new NumberFilterClause({ reference, values: List.of(segment) });
+      case SplitType.time:
+        return new FixedTimeFilterClause({ reference, values: List.of(segment) });
+      case SplitType.string:
+        return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
+    }
+  }))});
 }
 
 function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Measure[]): Dataset {
@@ -165,7 +170,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, BarChart.id) ||
       nextEssence.differentTimeShift(essence) ||
-      nextEssence.differentEffectiveSplits(essence) ||
+      nextEssence.differentSplits(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
       nextEssence.dataCube.refreshRule.isRealtime();
   }
@@ -238,23 +243,23 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return { path: [], coordinates: null };
   }
 
-  onScrollerScroll(scrollTop: number, scrollLeft: number) {
+  onScrollerScroll = (scrollTop: number, scrollLeft: number) => {
     this.setState({
       hoverInfo: null,
       scrollLeft,
       scrollTop
     });
-  }
+  };
 
-  onMouseMove(x: number, y: number) {
+  onMouseMove = (x: number, y: number) => {
     this.setState({ hoverInfo: this.calculateMousePosition(x, y) });
-  }
+  };
 
-  onMouseLeave() {
+  onMouseLeave = () => {
     this.setState({ hoverInfo: null });
-  }
+  };
 
-  onClick(x: number, y: number) {
+  onClick = (x: number, y: number) => {
     const { essence, clicker } = this.props;
 
     if (!clicker.changeHighlight || !clicker.dropHighlight) return;
@@ -271,10 +276,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const { path, chartIndex } = selectionInfo;
 
-    const { splits, dataCube } = essence;
+    const { splits } = essence;
     const measures = essence.getEffectiveMeasures().toArray();
 
-    const rowHighlight = getFilterFromDatum(splits, path, dataCube);
+    const rowHighlight = getFilterFromDatum(splits, path);
 
     if (essence.highlightOn(BarChart.id, measures[chartIndex].name)) {
       if (rowHighlight.equals(essence.highlight.delta)) {
@@ -286,7 +291,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     this.setState({ selectionInfo });
     clicker.changeHighlight(BarChart.id, measures[chartIndex].name, rowHighlight);
-  }
+  };
 
   getYExtent(data: Datum[], measure: Measure): number[] {
     const measureName = measure.name;
@@ -399,12 +404,12 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   renderSelectionBubble(hoverInfo: BubbleInfo): JSX.Element {
-    const { essence, stage, clicker, openRawDataModal } = this.props;
+    const { essence, clicker, openRawDataModal } = this.props;
     const { measure, path, chartIndex, segmentLabel, coordinates } = hoverInfo;
     const chartStage = this.getSingleChartStage();
 
     const { splits, dataCube } = essence;
-    const dimension = splits.get(hoverInfo.splitIndex).getDimension(dataCube.dimensions);
+    const dimension = dataCube.getDimension(splits.splits.get(hoverInfo.splitIndex).reference);
 
     const leftOffset = this.getBubbleLeftOffset(coordinates.middleX);
     const topOffset = this.getBubbleTopOffset(coordinates.y, chartIndex, chartStage);
@@ -420,14 +425,14 @@ export class BarChart extends BaseVisualization<BarChartState> {
         dimension={dimension}
         clicker={clicker}
         openRawDataModal={openRawDataModal}
-        onClose={this.onBubbleClose.bind(this)}
+        onClose={this.onBubbleClose}
       />}
     />;
   }
 
-  onBubbleClose() {
+  onBubbleClose = () => {
     this.setState({ selectionInfo: null });
-  }
+  };
 
   renderHoverBubble(hoverInfo: BubbleInfo): JSX.Element {
     const chartStage = this.getSingleChartStage();
@@ -462,12 +467,12 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   isSelected(path: Datum[], measure: Measure): boolean {
     const { essence } = this.props;
-    const { splits, dataCube } = essence;
+    const { splits } = essence;
 
     if (essence.highlightOnDifferentMeasure(BarChart.id, measure.name)) return false;
 
     if (essence.highlightOn(BarChart.id, measure.name)) {
-      return essence.highlight.delta.equals(getFilterFromDatum(splits, path, dataCube));
+      return essence.highlight.delta.equals(getFilterFromDatum(splits, path));
     }
 
     return false;
@@ -485,13 +490,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
   isHovered(path: Datum[], measure: Measure): boolean {
     const { essence } = this.props;
     const { hoverInfo } = this.state;
-    const { splits, dataCube } = essence;
+    const { splits } = essence;
 
     if (this.hasAnySelectionGoingOn()) return false;
     if (!hoverInfo) return false;
     if (hoverInfo.measure !== measure) return false;
 
-    const filter = (p: Datum[]) => getFilterFromDatum(splits, p, dataCube);
+    const filter = (path: Datum[]) => getFilterFromDatum(splits, path);
 
     return filter(hoverInfo.path).equals(filter(path));
   }
@@ -512,7 +517,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     let bars: JSX.Element[] = [];
     let highlight: JSX.Element;
 
-    const dimension = essence.splits.get(splitIndex).getDimension(essence.dataCube.dimensions);
+    const dimension = essence.dataCube.getDimension(essence.splits.splits.get(splitIndex).reference);
     const splitLength = essence.splits.length();
 
     data.forEach((d, i) => {
@@ -593,7 +598,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
       height: roundToPx(Math.abs(height) + SELECTION_PAD * 2)
     };
 
-    return <div className="selection-highlight" style={style}/>;
+    return <div className="selection-highlight" style={style} />;
   }
 
   renderXAxis(data: Datum[], coordinates: BarCoordinates[], xAxisStage: Stage): JSX.Element {
@@ -601,13 +606,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const xScale = this.getPrimaryXScale();
     const xTicks = xScale.domain();
 
-    const split = essence.splits.get(0);
-    const dimension = split.getDimension(essence.dataCube.dimensions);
+    const split = essence.splits.splits.first();
+    const dimension = essence.dataCube.getDimension(split.reference);
 
     const labels: JSX.Element[] = [];
     if (dimension.canBucketByDefault()) {
       const lastIndex = data.length - 1;
-      const ascending = split.sortAction.direction === SortExpression.ASCENDING;
+      const ascending = split.sort.direction === SortDirection.ascending;
       const leftThing = ascending ? "start" : "end";
       const rightThing = ascending ? "end" : "start";
       data.forEach((d, i) => {
@@ -645,7 +650,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     return <div className="x-axis" style={{ width: xAxisStage.width }}>
       <svg style={xAxisStage.getWidthHeight()} viewBox={xAxisStage.getViewBox()}>
-        <BucketMarks stage={xAxisStage} ticks={xTicks} scale={xScale}/>
+        <BucketMarks stage={xAxisStage} ticks={xTicks} scale={xScale} />
       </svg>
       {labels}
     </div>;
@@ -707,13 +712,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { isThumbnail, essence } = this.props;
     const mySplitDataset = dataset.data[0][SPLIT] as Dataset;
 
-    const measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]} showPrevious={essence.hasComparison()}/> : null;
+    const measureLabel = !isThumbnail ? <VisMeasureLabel measure={measure} datum={dataset.data[0]} showPrevious={essence.hasComparison()} /> : null;
 
     // Invalid data, early return
     if (!this.hasValidYExtent(measure, mySplitDataset.data)) {
       return {
         chart: <div className="measure-bar-chart" key={measure.name} style={{ width: chartStage.width }}>
-          <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)}/>
+          <svg style={chartStage.getWidthHeight(0, CHART_BOTTOM_PADDING)} viewBox={chartStage.getViewBox(0, CHART_BOTTOM_PADDING)} />
           {measureLabel}
         </div>,
         yAxis: null,
@@ -747,9 +752,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
     const { registerDownloadableDataset, essence } = props;
     const { splits } = essence;
-    const split = splits.get(0);
+    const split = splits.splits.first();
 
-    const dimension = split.getDimension(essence.dataCube.dimensions);
+    const dimension = essence.dataCube.getDimension(split.reference);
     const dimensionKind = dimension.kind;
     const measures = essence.getEffectiveMeasures().toArray();
 
@@ -784,7 +789,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
         nestingName: "__nest"
       });
 
-      const maxima = splits.toArray().map(() => 0); // initializing maxima to 0
+      const maxima = splits.splits.map(() => 0).toArray(); // initializing maxima to 0
       this.maxNumberOfLeaves(firstSplitDataSet.data, maxima, 0);
 
       newState.maxNumberOfLeaves = maxima;
@@ -812,7 +817,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const { essence } = this.props;
     const { splits, dataCube } = essence;
-    const dimension = splits.get(0).getDimension(dataCube.dimensions);
+    const firstSplit = splits.splits.first();
+    const dimension = dataCube.getDimension(firstSplit.reference);
 
     const getX = (d: Datum) => d[dimension.name] as string;
 
@@ -865,7 +871,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const measure = essence.getEffectiveMeasures().toArray()[chartIndex];
     const dataset = datasetLoad.dataset.data[0][SPLIT] as Dataset;
-    const dimension = splits.get(0).getDimension(dataCube.dimensions);
+
+    const firstSplit = splits.splits.first();
+    const dimension = dataCube.getDimension(firstSplit.reference);
 
     const chartStage = this.getSingleChartStage();
     const { yScale } = this.getYAxisStuff(dataset, measure, chartStage, chartIndex);
@@ -950,7 +958,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const { essence, stage } = this.props;
     const { datasetLoad } = this.state;
     const { splits, dataCube } = essence;
-    const dimension = splits.get(0).getDimension(dataCube.dimensions);
+
+    const firstSplit = splits.splits.first();
+    const dimension = dataCube.getDimension(firstSplit.reference);
 
     let scrollerLayout: ScrollerLayout;
     const measureCharts: JSX.Element[] = [];
@@ -996,10 +1006,10 @@ export class BarChart extends BaseVisualization<BarChartState> {
         body={measureCharts}
         overlay={overlay}
 
-        onClick={this.onClick.bind(this)}
-        onMouseMove={this.onMouseMove.bind(this)}
-        onMouseLeave={this.onMouseLeave.bind(this)}
-        onScroll={this.onScrollerScroll.bind(this)}
+        onClick={this.onClick}
+        onMouseMove={this.onMouseMove}
+        onMouseLeave={this.onMouseLeave}
+        onScroll={this.onScrollerScroll}
       />
     </div>;
   }

@@ -40,14 +40,7 @@ export interface ResizeHandleState {
 export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandleState> {
   private offset = 0;
 
-  constructor(props: ResizeHandleProps) {
-    super(props);
-
-    this.state = {};
-
-    this.onGlobalMouseUp = this.onGlobalMouseUp.bind(this);
-    this.onGlobalMouseMove = this.onGlobalMouseMove.bind(this);
-  }
+  state: ResizeHandleState = {};
 
   componentDidMount() {
     this.setState({
@@ -55,7 +48,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     });
   }
 
-  onMouseDown(event: MouseEvent) {
+  onMouseDown = (event: React.MouseEvent<HTMLElement>) => {
     window.addEventListener("mouseup", this.onGlobalMouseUp);
     window.addEventListener("mousemove", this.onGlobalMouseMove);
 
@@ -70,7 +63,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     });
 
     event.preventDefault();
-  }
+  };
 
   getValueFromX(x: number): number {
     if (this.props.side !== "right") {
@@ -84,7 +77,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     return clamp(value, this.props.min, this.props.max);
   }
 
-  onGlobalMouseMove(event: MouseEvent) {
+  onGlobalMouseMove = (event: MouseEvent) => {
     const { anchor } = this.state;
 
     let newX = this.getValueFromX(getXFromEvent(event)) - anchor;
@@ -96,9 +89,9 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     if (!!this.props.onResize) {
       this.props.onResize(newX);
     }
-  }
+  };
 
-  onGlobalMouseUp(event: MouseEvent) {
+  onGlobalMouseUp = (event: MouseEvent) => {
     this.setState({
       dragging: false
     });
@@ -108,7 +101,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     if (!!this.props.onResizeEnd) {
       this.props.onResizeEnd(this.state.currentValue);
     }
-  }
+  };
 
   render() {
     let { side } = this.props;
@@ -121,7 +114,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     return <div
       className={className}
       style={style}
-      onMouseDown={this.onMouseDown.bind(this)}
+      onMouseDown={this.onMouseDown}
     >
       <SvgIcon svg={require("../../icons/drag-handle.svg")} />
     </div>;

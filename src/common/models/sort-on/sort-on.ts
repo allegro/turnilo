@@ -16,36 +16,17 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from "immutable-class";
-import { $, Expression, RefExpression, SortExpression } from "plywood";
-import { DataCube } from "../data-cube/data-cube";
-import { Dimension, DimensionJS } from "../dimension/dimension";
-import { Measure, MeasureJS } from "../measure/measure";
+import { Dimension } from "../dimension/dimension";
+import { Measure } from "../measure/measure";
 
-export interface SortOnValue {
-  dimension?: Dimension;
-  measure?: Measure;
-}
-
-export interface SortOnJS {
-  dimension?: DimensionJS;
-  measure?: MeasureJS;
-}
-
-var check: Class<SortOnValue, SortOnJS>;
-
-export class SortOn implements Instance<SortOnValue, SortOnJS> {
-
-  static isSortOn(candidate: any): candidate is SortOn {
-    return candidate instanceof SortOn;
-  }
+export class SortOn {
 
   static equal(s1: SortOn, s2: SortOn): boolean {
-    return s1 === s2 || s1.equals(s2);
+    return s1.equals(s2);
   }
 
   static getName(s: SortOn): string {
-    return s.toName();
+    return s.getName();
   }
 
   static getTitle(s: SortOn): string {
@@ -53,82 +34,25 @@ export class SortOn implements Instance<SortOnValue, SortOnJS> {
   }
 
   static fromDimension(dimension: Dimension): SortOn {
-    return new SortOn({ dimension });
+    return new SortOn(dimension);
   }
 
   static fromMeasure(measure: Measure): SortOn {
-    return new SortOn({ measure });
+    return new SortOn(measure);
   }
 
-  static fromSortExpression(sortAction: SortExpression, dataCube: DataCube, fallbackDimension: Dimension): SortOn {
-    if (!sortAction) return SortOn.fromDimension(fallbackDimension);
-    var sortOnName = (sortAction.expression as RefExpression).name;
-    var measure = dataCube.getMeasure(sortOnName);
-    if (measure) return SortOn.fromMeasure(measure);
-    return SortOn.fromDimension(fallbackDimension);
+  constructor(public reference: Dimension | Measure) {
   }
 
-  static fromJS(parameters: SortOnJS): SortOn {
-    var value: SortOnValue = {};
-    if (parameters.dimension) {
-      value.dimension = Dimension.fromJS(parameters.dimension);
-    } else {
-      value.measure = Measure.fromJS(parameters.measure);
-    }
-    return new SortOn(value);
-  }
-
-  public dimension: Dimension;
-  public measure: Measure;
-
-  constructor(parameters: SortOnValue) {
-    this.dimension = parameters.dimension;
-    this.measure = parameters.measure;
-  }
-
-  public valueOf(): SortOnValue {
-    return {
-      dimension: this.dimension,
-      measure: this.measure
-    };
-  }
-
-  public toJS(): SortOnJS {
-    var js: SortOnJS = {};
-    if (this.dimension) {
-      js.dimension = this.dimension.toJS();
-    } else {
-      js.measure = this.measure.toJS();
-    }
-    return js;
-  }
-
-  public toJSON(): SortOnJS {
-    return this.toJS();
-  }
-
-  public toString(): string {
-    return `[SortOn: ${this.toName()}]`;
-  }
-
-  public equals(other: SortOn): boolean {
-    return SortOn.isSortOn(other) &&
-      (this.dimension ? this.dimension.equals(other.dimension) : this.measure.equals(other.measure));
-  }
-
-  public toName(): string {
-    var { measure } = this;
-    return measure ? measure.name : this.dimension.name;
+  public getName(): string {
+    return this.reference.name;
   }
 
   public getTitle(): string {
-    var { measure } = this;
-    return measure ? measure.title : this.dimension.title;
+    return this.reference.title;
   }
 
-  public getExpression(): Expression {
-    return $(this.toName());
+  public equals(other: SortOn): boolean {
+    return this.reference.equals(other.reference);
   }
 }
-
-check = SortOn;

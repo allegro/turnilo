@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
+import { Duration, Timezone } from "chronoshift";
 import * as d3 from "d3";
-import { List } from "immutable";
+import { List, Set } from "immutable";
 import * as moment from "moment-timezone";
-import { $, ApplyExpression, Datum, Direction, NumberRange, PseudoDatum, r, RefExpression, Set, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
+import { Datum, NumberRange, PseudoDatum, TimeRange } from "plywood";
 import * as React from "react";
 import { TABLE_MANIFEST } from "../../../common/manifests/table/table";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../common/models/filter/filter";
 import { Measure, MeasureDerivation } from "../../../common/models/measure/measure";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Sort, SORT_ON_DIMENSION_PLACEHOLDER } from "../../../common/models/sort/sort";
+import { Split, SplitType } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
 import { formatNumberRange, Formatter, formatterFromData } from "../../../common/utils/formatter/formatter";
 import { flatMap } from "../../../common/utils/functional/functional";
 import { integerDivision } from "../../../common/utils/general/general";
+import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
 import { Delta } from "../../components/delta/delta";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { SegmentActionButtons } from "../../components/segment-action-buttons/segment-action-buttons";
@@ -52,11 +54,11 @@ const SPACE_LEFT = 10;
 const SPACE_RIGHT = 10;
 const HIGHLIGHT_BUBBLE_V_OFFSET = -4;
 
-function formatSegment(value: any, timezone: Timezone, split?: SplitCombine): string {
+function formatSegment(value: any, timezone: Timezone, split?: Split): string {
   if (TimeRange.isTimeRange(value)) {
     const time = moment(value.start, timezone.toString()).toDate();
-    if (split && split.bucketAction instanceof TimeBucketExpression) {
-      const duration = split.bucketAction.duration;
+    if (split && split.bucket instanceof Duration) {
+      const duration = split.bucket;
       switch (duration.getSingleSpan()) {
         case "year":
           return d3.time.format("%Y")(time);
@@ -78,23 +80,26 @@ function formatSegment(value: any, timezone: Timezone, split?: SplitCombine): st
 
 function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum, dataCube: DataCube): Filter {
   const splitNesting = flatDatum["__nest"];
-  const { splitCombines } = splits;
+  const { splits: splitCombines } = splits;
 
   if (splitNesting === 0 || splitNesting > splitCombines.size) return null;
 
   const filterClauses = splitCombines
     .take(splitNesting)
-    .map(splitCombine => {
-      const dimensionName = splitCombine.getDimension(dataCube.dimensions).name;
-      const selectedValue = flatDatum[dimensionName];
+    .map(({ reference, type }) => {
+      const segment: any = flatDatum[reference];
 
-      return new FilterClause({
-        expression: splitCombine.expression,
-        selection: r(TimeRange.isTimeRange(selectedValue) ? selectedValue : Set.fromJS([selectedValue]))
-      });
+      switch (type) {
+        case SplitType.number:
+          return new NumberFilterClause({ reference, values: List.of(segment) });
+        case SplitType.time:
+          return new FixedTimeFilterClause({ reference, values: List.of(segment) });
+        case SplitType.string:
+          return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
+      }
     });
 
-  return new Filter(List(filterClauses));
+  return new Filter({ clauses: List(filterClauses) });
 }
 
 function indexToColumnType(index: number): ColumnType {
@@ -168,41 +173,32 @@ export class Table extends BaseVisualization<TableState> {
     return { element: HoverElement.ROW, row: datum };
   }
 
-  private getSortRef({ element, columnType, measure }: PositionHover): RefExpression {
+  private getSortRef({ element, columnType, measure }: PositionHover): string {
     if (element === HoverElement.CORNER) {
-      return $(SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER);
+      return SORT_ON_DIMENSION_PLACEHOLDER;
     }
     if (element === HoverElement.HEADER) {
       switch (columnType) {
         case ColumnType.CURRENT:
-          return $(measure.name);
+          return measure.name;
         case ColumnType.PREVIOUS:
-          return $(measure.getDerivedName(MeasureDerivation.PREVIOUS));
+          return measure.getDerivedName(MeasureDerivation.PREVIOUS);
         case ColumnType.DELTA:
-          return $(measure.getDerivedName(MeasureDerivation.DELTA));
+          return measure.getDerivedName(MeasureDerivation.DELTA);
       }
     }
     throw new Error(`Can't create sort reference for position element: ${element}`);
   }
 
-  private getSortAction(ref: RefExpression, { columnType, measure }: PositionHover, direction: Direction): SortExpression {
-    if (columnType === ColumnType.DELTA) {
-      const name = measure.getDerivedName(MeasureDerivation.DELTA);
-      const expression = $(measure.name).subtract($(measure.getDerivedName(MeasureDerivation.PREVIOUS)));
-      return new ApplyExpression({ name, expression }).sort(ref, direction);
-    }
-    return new SortExpression({ expression: ref, direction });
-  }
-
-  private getSortExpression(position: PositionHover): SortExpression {
-    const sortReference = this.getSortRef(position);
+  private getSortExpression(position: PositionHover): Sort {
+    const reference = this.getSortRef(position);
     const commonSort = this.props.essence.getCommonSort();
-    const isDesc = (commonSort && commonSort.expression.equals(sortReference) && commonSort.direction === SortExpression.DESCENDING);
-    const direction = isDesc ? SortExpression.ASCENDING : SortExpression.DESCENDING;
-    return this.getSortAction(sortReference, position, direction);
+    const isDesc = (commonSort && commonSort.reference === reference && commonSort.direction === SortDirection.descending);
+    const direction = isDesc ? SortDirection.ascending : SortDirection.descending;
+    return new Sort({ reference, direction });
   }
 
-  onClick(x: number, y: number) {
+  onClick = (x: number, y: number) => {
     const { clicker, essence } = this.props;
     const { splits, dataCube } = essence;
 
@@ -214,7 +210,7 @@ export class Table extends BaseVisualization<TableState> {
 
       const sortExpression = this.getSortExpression(mousePos);
       clicker.changeSplits(
-        splits.changeSortExpressionFromNormalized(sortExpression, essence.dataCube.dimensions),
+        splits.changeSortExpressionFromNormalized(sortExpression),
         VisStrategy.KeepAlways
       );
     } else if (element === HoverElement.ROW) {
@@ -233,9 +229,9 @@ export class Table extends BaseVisualization<TableState> {
 
       clicker.changeHighlight(Table.id, null, rowHighlight);
     }
-  }
+  };
 
-  onMouseMove(x: number, y: number) {
+  onMouseMove = (x: number, y: number) => {
     const { hoverMeasure, hoverRow } = this.state;
     const pos = this.calculateMousePosition(x, y);
     if (hoverMeasure !== pos.measure || hoverRow !== pos.row) {
@@ -244,9 +240,9 @@ export class Table extends BaseVisualization<TableState> {
         hoverRow: pos.row
       });
     }
-  }
+  };
 
-  onMouseLeave() {
+  onMouseLeave = () => {
     const { hoverMeasure, hoverRow } = this.state;
     if (hoverMeasure || hoverRow) {
       this.setState({
@@ -254,7 +250,7 @@ export class Table extends BaseVisualization<TableState> {
         hoverRow: null
       });
     }
-  }
+  };
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
     const { registerDownloadableDataset, essence } = props;
@@ -381,7 +377,7 @@ export class Table extends BaseVisualization<TableState> {
 
   renderHeaderColumns(essence: Essence, hoverMeasure: Measure, measureWidth: number): JSX.Element[] {
     const commonSort = essence.getCommonSort();
-    const commonSortName = commonSort ? (commonSort.expression as RefExpression).name : null;
+    const commonSortName = commonSort ? commonSort.reference : null;
 
     const sortArrowIcon = commonSort ? React.createElement(SvgIcon, {
       svg: require("../../icons/sort-arrow.svg"),
@@ -432,7 +428,7 @@ export class Table extends BaseVisualization<TableState> {
     const commonSort = essence.getCommonSort();
     if (!commonSort) return null;
 
-    if (commonSort.refName() === SplitCombine.SORT_ON_DIMENSION_PLACEHOLDER) {
+    if (commonSort.reference === SORT_ON_DIMENSION_PLACEHOLDER) {
       return <SvgIcon
         svg={require("../../icons/sort-arrow.svg")}
         className={"sort-arrow " + commonSort.direction}
@@ -442,9 +438,9 @@ export class Table extends BaseVisualization<TableState> {
     return null;
   }
 
-  onSimpleScroll(scrollTop: number, scrollLeft: number) {
+  onSimpleScroll = (scrollTop: number, scrollLeft: number) => {
     this.setState({ scrollLeft, scrollTop });
-  }
+  };
 
   getVisibleIndices(rowCount: number, height: number): number[] {
     const { scrollTop } = this.state;
@@ -460,7 +456,7 @@ export class Table extends BaseVisualization<TableState> {
     const { flatData, scrollTop, hoverMeasure, hoverRow } = this.state;
     const { splits, dataCube } = essence;
 
-    const segmentTitle = splits.getTitle(essence.dataCube.dimensions);
+    const segmentTitle = splits.splits.map(split => essence.dataCube.getDimension(split.reference).title).join(", ");
 
     const cornerSortArrow: JSX.Element = this.renderCornerSortArrow(essence);
     const idealWidth = this.getIdealColumnWidth(essence);
@@ -493,8 +489,8 @@ export class Table extends BaseVisualization<TableState> {
 
         const nest = d["__nest"];
 
-        const split = nest > 0 ? splits.get(nest - 1) : null;
-        const dimension = split ? split.getDimension(dataCube.dimensions) : null;
+        const split = nest > 0 ? splits.splits.get(nest - 1) : null;
+        const dimension = split ? dataCube.getDimension(split.reference) : null;
 
         const segmentValue = dimension ? d[dimension.name] : "";
         const segmentName = nest ? formatSegment(segmentValue, essence.timezone, split) : "Total";
@@ -528,7 +524,7 @@ export class Table extends BaseVisualization<TableState> {
             left
           };
 
-          const dimension = essence.dataCube.getDimensionByExpression(splits.splitCombines.get(nest - 1).expression);
+          const dimension = essence.dataCube.getDimension(splits.splits.get(nest - 1).reference);
 
           highlighter = <div className="highlighter" key="highlight" style={highlighterStyle} />;
 
@@ -590,10 +586,10 @@ export class Table extends BaseVisualization<TableState> {
         body={rows}
         overlay={overlay}
 
-        onClick={this.onClick.bind(this)}
-        onMouseMove={this.onMouseMove.bind(this)}
-        onMouseLeave={this.onMouseLeave.bind(this)}
-        onScroll={this.onSimpleScroll.bind(this)}
+        onClick={this.onClick}
+        onMouseMove={this.onMouseMove}
+        onMouseLeave={this.onMouseLeave}
+        onScroll={this.onSimpleScroll}
 
       />
 

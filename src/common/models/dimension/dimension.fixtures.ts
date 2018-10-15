@@ -65,6 +65,15 @@ export class DimensionFixtures {
     };
   }
 
+  static wikiCommentLengthJS(): DimensionJS {
+    return {
+      name: "commentLength",
+      title: "Comment Length",
+      formula: "$commentLength",
+      kind: "number"
+    };
+  }
+
   static wikiTime(): Dimension {
     return new Dimension({
       name: "time",
@@ -88,5 +97,9 @@ export class DimensionFixtures {
 
   static number() {
     return Dimension.fromJS(DimensionFixtures.NUMBER_JS);
+  }
+
+  static wikiCommentLength() {
+    return Dimension.fromJS(DimensionFixtures.wikiCommentLengthJS());
   }
 }

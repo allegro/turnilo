@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { second } from "chronoshift";
-import { LiteralExpression, Set, TimeRange, TimeRangeExpression } from "plywood";
+import { Duration, second } from "chronoshift";
+import { TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
+import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../../common/models/filter-clause/filter-clause";
 import { isValidTimeShift, TimeShift } from "../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../common/utils/general/general";
@@ -29,7 +30,7 @@ import { STRINGS } from "../../config/constants";
 import { ButtonGroup, GroupMember } from "../button-group/button-group";
 import { Button } from "../button/button";
 import { InputWithPresets } from "../input-with-presets/input-with-presets";
-import { constructFilter, getFilterPeriod, getTimeFilterPresets, LATEST_PRESETS, TimeFilterPeriod, TimeFilterPreset } from "./presets";
+import { getTimeFilterPresets, LATEST_PRESETS, TimeFilterPreset } from "./presets";
 import { TimeShiftSelector } from "./time-shift-selector";
 
 export interface PresetTimeTabProps {
@@ -47,15 +48,21 @@ export interface PresetTimeTabState {
 }
 
 function initialState(essence: Essence, dimension: Dimension): PresetTimeTabState {
-  const filterClause = essence.filter.getClausesForDimension(dimension).get(0);
-  const filterSelection = essence.filter.getSelection(dimension.expression) as TimeRangeExpression;
-  const filterPeriod = getFilterPeriod(filterClause);
-  const isValidPreset = filterPeriod !== null;
+  const filterClause = essence.filter.getClauseForDimension(dimension);
+  const timeShift = essence.timeShift.toJS();
+  if (filterClause instanceof RelativeTimeFilterClause) {
+    const { duration, period } = filterClause;
+    return { timeShift, filterDuration: duration.toJS(), filterPeriod: period };
+  }
   return {
-    filterPeriod: isValidPreset && filterPeriod,
-    timeShift: essence.timeShift.toJS(),
-    filterDuration: isValidPreset && filterSelection.duration.toJS()
+    filterPeriod: null,
+    filterDuration: null,
+    timeShift
   };
+}
+
+function constructFilter(period: TimeFilterPeriod, duration: string, reference: string) {
+  return new RelativeTimeFilterClause({ period, duration: Duration.fromJS(duration), reference });
 }
 
 export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTimeTabState> {
@@ -68,9 +75,9 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
 
   saveTimeFilter = () => {
     if (!this.validate()) return;
-    const { clicker, onClose, essence, dimension } = this.props;
+    const { clicker, onClose, essence, dimension: { name: dimensionName } } = this.props;
     const { filterPeriod, filterDuration, timeShift } = this.state;
-    clicker.changeFilter(essence.filter.setSelection(dimension.expression, constructFilter(filterPeriod, filterDuration)));
+    clicker.changeFilter(essence.filter.setClause(constructFilter(filterPeriod, filterDuration, dimensionName)));
     clicker.changeComparisonShift(TimeShift.fromJS(timeShift));
     onClose();
   }
@@ -111,24 +118,20 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     return <ButtonGroup title={title} groupMembers={groupMembers} />;
   }
 
-  private getPreviewTimeRange() {
+  private getFilterRange() {
     const { filterPeriod, filterDuration } = this.state;
+    const { name: dimensionName } = this.props.dimension;
     if (!isValidDuration(filterDuration)) return null;
-    const preset = constructFilter(filterPeriod, filterDuration);
-    if (!preset) return null;
-
+    const filter = constructFilter(filterPeriod, filterDuration, dimensionName);
+    if (!filter) return null;
     const { essence, timekeeper } = this.props;
-    if (preset && preset.type !== "TIME_RANGE") {
-      const { value } = preset as LiteralExpression;
-      if (!Set.isSet(value)) throw new Error(`Unrecognized filter value ${value}`);
-      if (value.size() !== 1) throw new Error("Can only filter on one time");
+    const fixedFilter = essence.evaluateSelection(filter, timekeeper);
+    const { start, end } = fixedFilter.values.get(0);
 
-      return new TimeRange({
-        start: second.shift(value.elements[0], essence.timezone, -1),
-        end: second.shift(value.elements[0], essence.timezone, 1)
-      });
-    }
-    return essence.evaluateSelection(preset, timekeeper);
+    return new TimeRange({
+      start: second.shift(start, essence.timezone, -1),
+      end: second.shift(end, essence.timezone, 1)
+    });
   }
 
   render() {
@@ -139,8 +142,8 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
 
     const { timezone } = essence;
 
-    const previewTimeRange = this.getPreviewTimeRange();
-    const previewText = previewTimeRange ? formatTimeRange(previewTimeRange, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
+    const previewFilter = this.getFilterRange();
+    const previewText = previewFilter ? formatTimeRange(previewFilter, timezone, DisplayYear.IF_DIFF) : STRINGS.noFilter;
 
     return <div className="cont">
       {essence.dataCube.isTimeAttribute(dimension.expression) && this.renderLatestPresets()}
@@ -149,7 +152,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
       <div className="preview preview--with-spacing">{previewText}</div>
       <TimeShiftSelector
         shift={timeShift}
-        time={previewTimeRange}
+        time={previewFilter}
         timezone={essence.timezone}
         shiftValue={isValidTimeShift(timeShift) ? TimeShift.fromJS(timeShift) : null}
         errorMessage={!isValidTimeShift(timeShift) && STRINGS.invalidDurationFormat}

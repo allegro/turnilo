@@ -15,40 +15,6 @@
  * limitations under the License.
  */
 
-import { testImmutableClass } from "immutable-class-tester";
+import { Highlight } from "./highlight";
 
-import { Highlight, HighlightJS } from "./highlight";
-
-describe("Highlight", () => {
-  it("is an immutable class", () => {
-    testImmutableClass<HighlightJS>(Highlight, [
-      {
-        owner: "Sunkist",
-        delta: {
-          op: "and",
-          operand: {
-            expression: {
-              op: "literal",
-              value: { setType: "STRING", elements: ["he"] },
-              type: "SET"
-            },
-            op: "overlap",
-            operand: { op: "ref", name: "language" }
-          },
-          expression: {
-            op: "overlap", operand: { op: "ref", name: "namespace" },
-            expression: {
-              op: "literal",
-              value: { setType: "STRING", elements: ["wikipedia"] },
-              type: "SET"
-            }
-          }
-        }
-      },
-      {
-        owner: "Dole",
-        delta: { op: "literal", value: true }
-      }
-    ]);
-  });
-});
+describe("Highlight", () => {});

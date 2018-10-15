@@ -53,7 +53,7 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
     };
   }
 
-  onChange(newSelectedItem: T) {
+  onChange = (newSelectedItem: T) => {
     const { instance, path, onChange, keyItem } = this.props;
 
     onChange(
@@ -62,7 +62,7 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
       path,
       undefined
     );
-  }
+  };
 
   render() {
     const { label, items, equal, renderItem, keyItem, instance, path } = this.props;
@@ -78,7 +78,7 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
       equal={equal}
       renderItem={renderItem}
       keyItem={keyItem}
-      onSelect={this.onChange.bind(this)}
+      onSelect={this.onChange}
     />;
   }
 }

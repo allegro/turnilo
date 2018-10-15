@@ -20,16 +20,22 @@ import { DimensionFixtures } from "./dimension.fixtures";
 
 export class DimensionsFixtures {
   static wikiNames(): string[] {
-    return ["time", "channel", "comment", "commentLength", "commentLengthOver100", "isRobot", "namespace", "articleName", "page", "userChars"];
+    return ["time", "country", "channel", "comment", "commentLength", "commentLengthOver100", "isRobot", "namespace", "articleName", "page", "userChars"];
   }
 
   static wikiTitles(): string[] {
-    return ["Time", "Channel", "Comment", "Comment Length", "Comment Length Over 100", "Is Robot", "Namespace", "Article Name", "Page", "User Chars"];
+    return ["Time", "Country", "Channel", "Comment", "Comment Length", "Comment Length Over 100", "Is Robot", "Namespace", "Article Name", "Page", "User Chars"];
   }
 
   static wikiJS(): DimensionOrGroupJS[] {
     return [
       DimensionFixtures.wikiTimeJS(),
+      {
+        kind: "string",
+        name: "country",
+        title: "Country",
+        formula: "$country"
+      },
       {
         kind: "string",
         name: "channel",

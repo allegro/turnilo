@@ -15,10 +15,14 @@
  */
 
 import { Timezone } from "chronoshift";
+import { List, OrderedSet } from "immutable";
+import { NamedArray } from "immutable-class";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
 import { Filter } from "../../models/filter/filter";
 import { Manifest } from "../../models/manifest/manifest";
+import { Splits } from "../../models/splits/splits";
+import { TimeShift } from "../../models/time-shift/time-shift";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 import { filterDefinitionConverter } from "./filter-definition";
 import { highlightConverter } from "./highlight-definition";
@@ -31,20 +35,39 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
   version = 3;
 
   fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube, visualizations: Manifest[]): Essence {
-    return Essence.fromJS({
-      visualization: definition.visualization,
-      timezone: Timezone.fromJS(definition.timezone).toJS(),
-      timeShift: definition.timeShift,
-      filter: Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube))).toJS(),
-      splits: definition.splits.map(splitConverter.toSplitCombine).map(sc => sc.toJS()),
-      multiMeasureMode: measuresDefinitionConverter.toMultiMeasureMode(definition.measures),
-      singleMeasure: measuresDefinitionConverter.toSingleMeasure(definition.measures),
-      selectedMeasures: measuresDefinitionConverter.toSelectedMeasures(definition.measures).toArray(),
-      pinnedDimensions: definition.pinnedDimensions,
-      pinnedSort: definition.pinnedSort,
-      colors: definition.legend && legendConverter.toColors(definition.legend),
-      highlight: definition.highlight && highlightConverter(dataCube).toHighlight(definition.highlight).toJS()
-    }, { dataCube, visualizations });
+    const timezone = Timezone.fromJS(definition.timezone);
+
+    const visualizationName = definition.visualization;
+    const visualization = NamedArray.findByName(visualizations, visualizationName);
+    const timeShift = definition.timeShift ? TimeShift.fromJS(definition.timeShift) : TimeShift.empty();
+
+    const filter = Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
+
+    const splitDefinitions = List(definition.splits);
+    const splits = new Splits({ splits: splitDefinitions.map(splitConverter.toSplitCombine) });
+
+    const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
+    const colors = definition.legend && legendConverter.toColors(definition.legend);
+    const pinnedSort = definition.pinnedSort;
+    const measures = measuresDefinitionConverter.toEssenceMeasures(definition.measures);
+    const highlight = definition.highlight && highlightConverter(dataCube)
+      .toHighlight(definition.highlight);
+
+    return new Essence({
+      dataCube,
+      visualizations,
+      visualization,
+      timezone,
+      filter,
+      timeShift,
+      splits,
+      pinnedDimensions,
+      measures,
+      colors,
+      pinnedSort,
+      compare: null,
+      highlight
+    });
   }
 
   toViewDefinition(essence: Essence): ViewDefinition3 {
@@ -53,9 +76,9 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     return {
       visualization: essence.visualization.name,
       timezone: essence.timezone.toJS(),
-      filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc, dataCube)).toArray(),
-      splits: essence.splits.splitCombines.map(splitConverter.fromSplitCombine).toArray(),
-      measures: measuresDefinitionConverter.fromSimpleValues(essence.multiMeasureMode, essence.singleMeasure, essence.selectedMeasures),
+      filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray(),
+      splits: essence.splits.splits.map(splitConverter.fromSplitCombine).toArray(),
+      measures: measuresDefinitionConverter.fromEssenceMeasures(essence.measures),
       pinnedDimensions: essence.pinnedDimensions.toArray(),
       pinnedSort: essence.pinnedSort,
       timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined,

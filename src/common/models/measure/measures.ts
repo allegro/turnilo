@@ -43,7 +43,7 @@ class FlattenMeasuresWithGroupsVisitor implements MeasureOrGroupVisitor<void> {
 function findDuplicateNames(items: List<MeasureOrGroup>): List<string> {
   return items
     .groupBy(measure => measure.name)
-    .filter(names => names.size > 1)
+    .filter(names => names.count() > 1)
     .map((names, name) => name)
     .toList();
 }
@@ -67,9 +67,7 @@ function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<{ na
 }
 
 function filterMeasures(items: List<MeasureOrGroup>): List<Measure> {
-  return List<Measure>(items
-    .filter(item => item.type === "measure")
-    .toList());
+  return items.filter(item => item.type === "measure") as List<Measure>;
 }
 
 export class Measures {

@@ -17,13 +17,14 @@
 import { expect } from "chai";
 import { MANIFESTS } from "../../manifests";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
-import { EssenceJS } from "../../models/essence/essence";
+import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../../models/filter-clause/filter-clause.fixtures";
+import { ViewDefinition2 } from "./view-definition-2";
 import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
 
 describe("ViewDefinitionConverter2", () => {
 
-  const totalsWithTimeBucket: EssenceJS = {
+  const totalsWithTimeBucket: ViewDefinition2 = {
     visualization: "totals",
     timezone: "Etc/UTC",
     filter: {
@@ -42,12 +43,12 @@ describe("ViewDefinitionConverter2", () => {
       }
     },
     splits: [],
-    singleMeasure: "delta",
-    selectedMeasures: [
-      "count"
-    ],
+    measures: {
+      isMulti: true,
+      multi: ["count"],
+      single: "delta"
+    },
     pinnedDimensions: [],
-    multiMeasureMode: true,
     pinnedSort: "delta"
   };
 
@@ -55,8 +56,7 @@ describe("ViewDefinitionConverter2", () => {
     const essence = new ViewDefinitionConverter2().fromViewDefinition(totalsWithTimeBucket, DataCubeFixtures.wiki(), MANIFESTS);
     const convertedClause = essence.filter.clauses.first();
 
-    const currentDuration = 1;
-    const expectedClause = FilterClauseFixtures.timeDurationFloored("time", currentDuration, "P1D");
+    const expectedClause = FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.LATEST);
     expect(convertedClause).to.deep.equal(expectedClause);
   });
 });

@@ -15,51 +15,23 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from "chronoshift";
-import { List } from "immutable";
-import { Class, Instance } from "immutable-class";
-import { AndExpression, Expression, ExpressionJS, r, Range, Set, TimeRange } from "plywood";
-import { immutableListsEqual } from "../../utils/general/general";
+import { Timezone } from "chronoshift";
+import { List, Record } from "immutable";
+import { Expression } from "plywood";
+import { Unary } from "../../utils/functional/functional";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
-import { FilterClause, FilterSelection } from "../filter-clause/filter-clause";
+import { FilterClause, FilterDefinition, fromJS, RelativeTimeFilterClause, StringFilterAction, StringFilterClause, toExpression } from "../filter-clause/filter-clause";
 
-function withholdClause(clauses: List<FilterClause>, clause: FilterClause, allowIndex: number): List<FilterClause> {
-  return <List<FilterClause>> clauses.filter((c, i) => {
-    return i === allowIndex || !c.equals(clause);
-  });
+export enum FilterMode { EXCLUDE = "exclude", INCLUDE = "include", REGEX = "regex", CONTAINS = "contains" }
+
+export interface FilterValue {
+  clauses: List<FilterClause>;
 }
 
-function swapClause(clauses: List<FilterClause>, clause: FilterClause, other: FilterClause, allowIndex: number): List<FilterClause> {
-  return <List<FilterClause>> clauses.map((c, i) => {
-    return (i === allowIndex || !c.equals(clause)) ? c : other;
-  });
-}
+const defaultFilter: FilterValue = { clauses: List([]) };
 
-function dateToFileString(date: Date): string {
-  return date.toISOString()
-    .replace("T", "_")
-    .replace("Z", "")
-    .replace(".000", "");
-}
-
-export type FilterMode = "exclude" | "include" | "regex" | "contains";
-export type FilterValue = List<FilterClause>;
-export type FilterJS = ExpressionJS | string;
-
-var check: Class<FilterValue, FilterJS>;
-
-export class Filter implements Instance<FilterValue, FilterJS> {
-  static EMPTY: Filter;
-
-  static EXCLUDED: FilterMode = "exclude";
-  static INCLUDED: FilterMode = "include";
-  static REGEX: FilterMode = "regex";
-  static CONTAINS: FilterMode = "contains";
-
-  static isFilter(candidate: any): candidate is Filter {
-    return candidate instanceof Filter;
-  }
+export class Filter extends Record<FilterValue>(defaultFilter) {
 
   static fromClause(clause: FilterClause): Filter {
     return this.fromClauses([clause]);
@@ -67,83 +39,58 @@ export class Filter implements Instance<FilterValue, FilterJS> {
 
   static fromClauses(clauses: FilterClause[]): Filter {
     if (!clauses) throw new Error("must have clause");
-    return new Filter(List(clauses));
+    return new Filter({ clauses: List(clauses) });
   }
 
-  static fromJS(parameters: FilterJS): Filter {
-    var expression = Expression.fromJSLoose(parameters);
-
-    var clauses: FilterClause[] = null;
-    if (expression.equals(Expression.TRUE)) {
-      clauses = [];
-    } else if (expression instanceof AndExpression) {
-      clauses = expression.getExpressionList().map(c => FilterClause.fromExpression(c));
-    } else {
-      clauses = [FilterClause.fromExpression(expression)];
-    }
-
-    return new Filter(<List<FilterClause>> List(clauses));
+  static fromJS(definition: { clauses: FilterDefinition[] }): Filter {
+    return new Filter({
+      clauses: List(definition.clauses.map(def => fromJS(def)))
+    });
   }
 
-  public clauses: List<FilterClause>;
-
-  constructor(parameters: FilterValue) {
-    this.clauses = parameters;
-  }
-
-  public valueOf(): FilterValue {
-    return this.clauses;
-  }
-
-  public toJS(): FilterJS {
-    return this.toExpression().toJS();
-  }
-
-  public toJSON(): FilterJS {
-    return this.toJS();
+  private updateClauses(updater: Unary<List<FilterClause>, List<FilterClause>>): Filter {
+    return this.update("clauses", updater);
   }
 
   public toString() {
     return this.clauses.map(clause => clause.toString()).join(" and ");
   }
 
-  public equals(other: Filter): boolean {
-    return Filter.isFilter(other) &&
-      immutableListsEqual(this.clauses, other.clauses);
+  public replaceByIndex(index: number, newClause: FilterClause): Filter {
+    if (this.length() === index) {
+      return this.insertByIndex(index, newClause);
+    }
+    return this.updateClauses((clauses: List<FilterClause>) => {
+      const newClauseIndex = clauses.findIndex(clause => clause.equals(newClause));
+      if (newClauseIndex === -1) return clauses.set(index, newClause);
+      const oldClause = clauses.get(index);
+      return clauses
+        .set(index, newClause)
+        .set(newClauseIndex, oldClause);
+    });
   }
 
-  public replaceByIndex(index: number, replace: FilterClause): Filter {
-    var { clauses } = this;
-    if (clauses.size === index) return this.insertByIndex(index, replace);
-    var replacedClause = clauses.get(index);
-    clauses = <List<FilterClause>> clauses.map((c, i) => i === index ? replace : c);
-    clauses = swapClause(clauses, replace, replacedClause, index);
-    return new Filter(clauses);
-  }
-
-  public insertByIndex(index: number, insert: FilterClause): Filter {
-    let { clauses } = this;
-    clauses = <List<FilterClause>> clauses.splice(index, 0, insert);
-    clauses = withholdClause(clauses, insert, index);
-    return new Filter(clauses);
+  public insertByIndex(index: number, newClause: FilterClause): Filter {
+    return this.updateClauses((clauses: List<FilterClause>) =>
+      clauses
+        .insert(index, newClause)
+        .filterNot((c, i) => c.equals(newClause) && i !== index));
   }
 
   public empty(): boolean {
-    return this.clauses.size === 0;
+    return this.clauses.count() === 0;
   }
 
   public single(): boolean {
-    return this.clauses.size === 1;
+    return this.clauses.count() === 1;
   }
 
   public length(): number {
-    return this.clauses.size;
+    return this.clauses.count();
   }
 
   public toExpression(): Expression {
-    var clauses = this.clauses.toArray().map(clause => {
-      return clause.toExpression();
-    });
+    const clauses = this.clauses.toArray().map(clause => toExpression(clause));
     switch (clauses.length) {
       case 0:
         return Expression.TRUE;
@@ -154,241 +101,89 @@ export class Filter implements Instance<FilterValue, FilterJS> {
     }
   }
 
-  public isEmpty(): boolean {
-    return this.clauses.isEmpty();
-  }
-
   public isRelative(): boolean {
-    return this.clauses.some(clause => clause.relative);
+    return this.clauses.some(clause => clause instanceof RelativeTimeFilterClause);
   }
 
   public getSpecificFilter(now: Date, maxTime: Date, timezone: Timezone): Filter {
     if (!this.isRelative()) return this;
-    return new Filter(this.clauses.map(c => c.evaluate(now, maxTime, timezone)) as List<FilterClause>);
+    return this.updateClauses(clauses =>
+      clauses.map(clause => {
+        if (clause instanceof RelativeTimeFilterClause) {
+          return clause.evaluate(now, maxTime, timezone);
+        }
+        return clause;
+      }));
   }
 
-  private indexOfClause(attribute: Expression): number {
-    return this.clauses.findIndex(clause => clause.expression.equals(attribute));
+  private indexOfClause(reference: string): number {
+    return this.clauses.findIndex(clause => clause.reference === reference);
   }
 
-  public clauseForExpression(attribute: Expression): FilterClause {
-    return this.clauses.find(clause => clause.expression.equals(attribute));
+  public clauseForReference(reference: string): FilterClause {
+    return this.clauses.find(clause => clause.reference === reference);
   }
 
-  public filteredOn(attribute: Expression): boolean {
-    return this.indexOfClause(attribute) !== -1;
+  public addClause(clause: FilterClause): Filter {
+    return this.updateClauses(clauses => clauses.push(clause));
   }
 
-  public filteredOnValue(attribute: Expression, value: any): boolean {
-    var clauses = this.clauses;
-    var index = this.indexOfClause(attribute);
-    if (index === -1) return false;
-    return clauses.get(index).getLiteralSet().contains(value);
-  }
-
-  public addValue(attribute: Expression, value: any): Filter {
-    var clauses = this.clauses;
-    var index = this.indexOfClause(attribute);
-    if (index === -1) {
-      return new Filter(<List<FilterClause>> clauses.concat(new FilterClause({
-        expression: attribute,
-        selection: r(Set.fromJS([value]))
-      })));
-    } else {
-      var clause = clauses.get(index);
-      var newSet = clause.getLiteralSet().add(value);
-      return new Filter(<List<FilterClause>> clauses.splice(index, 1, clause.changeSelection(r(newSet))));
-    }
-  }
-
-  public remove(attribute: Expression): Filter {
-    var clauses = this.clauses;
-    var index = this.indexOfClause(attribute);
+  public removeClause(reference: string): Filter {
+    const index = this.indexOfClause(reference);
     if (index === -1) return this;
-    return new Filter(clauses.delete(index));
+    return this.updateClauses(clauses => clauses.delete(index));
   }
 
-  public removeValue(attribute: Expression, value: any): Filter {
-    var clauses = this.clauses;
-    var index = this.indexOfClause(attribute);
-    if (index === -1) return this;
-    var clause = clauses.get(index);
-
-    var newSet = clause.getLiteralSet().remove(value);
-    if (newSet.empty()) {
-      return new Filter(clauses.delete(index));
-    } else {
-      clauses = <List<FilterClause>> clauses.splice(index, 1, clause.changeSelection(r(newSet)));
-      return new Filter(clauses);
-    }
+  public filteredOn(reference: string): boolean {
+    return this.indexOfClause(reference) !== -1;
   }
 
-  public toggleValue(attribute: Expression, value: any): Filter {
-    return this.filteredOnValue(attribute, value) ? this.removeValue(attribute, value) : this.addValue(attribute, value);
+  public getClauseForDimension({ name }: Dimension): FilterClause {
+    return this.clauses.find(clause => clause.reference === name);
   }
 
-  public getSelection(attribute: Expression): FilterSelection {
-    var clauses = this.clauses;
-    var index = this.indexOfClause(attribute);
-    if (index === -1) return null;
-    return clauses.get(index).selection;
-  }
-
-  public setSelection(attribute: Expression, selection: Expression): Filter {
-    var clauses = this.clauses;
-    var index = this.indexOfClause(attribute);
-    var newClause = new FilterClause({
-      expression: attribute,
-      selection
-    });
-    if (index === -1) {
-      clauses = <List<FilterClause>> clauses.push(newClause);
-    } else {
-      clauses = <List<FilterClause>> clauses.splice(index, 1, newClause);
-    }
-    return new Filter(clauses);
-  }
-
-  public getExtent(attribute: Expression): Range<any> {
-    var clauses = this.clauses;
-    var index = this.indexOfClause(attribute);
-    if (index === -1) return null;
-    return clauses.get(index).getExtent();
-  }
-
-  public getFileString(timeAttribute: Expression) {
-    var nonTimeClauseSize = this.clauses.size;
-    const timeRange = this.getExtent(timeAttribute); // ToDo: revisit this
-    const nonTimeFilters = ((nonTimeClauseSize: number) => {
-      return nonTimeClauseSize === 0 ? "" : `_filters-${nonTimeClauseSize}`;
-    });
-    if (timeRange) {
-      var { start, end } = timeRange;
-      nonTimeClauseSize--;
-      return `${dateToFileString(start)}_${dateToFileString(end)}${nonTimeFilters(nonTimeClauseSize)}`;
-    }
-    return nonTimeFilters(nonTimeClauseSize);
-  }
-
-  public getLiteralSet(attribute: Expression): Set {
-    var clauses = this.clauses;
-    var index = this.indexOfClause(attribute);
-    if (index === -1) return null;
-    return clauses.get(index).getLiteralSet();
-  }
-
-  public getClausesForDimension(dimension: Dimension): List<FilterClause> {
-    return this.clauses.filter(clause => {
-      return clause.expression.equals(dimension.expression);
-    }) as List<FilterClause>;
-  }
-
-  public getModeForDimension(dimension: Dimension): FilterMode {
-    var dimensionClauses = this.getClausesForDimension(dimension);
+  public getModeForDimension({ name }: Dimension): FilterMode {
+    const dimensionClauses = this.clauses.filter(clause => clause.reference === name);
 
     if (dimensionClauses.size > 0) {
-      if (dimensionClauses.every(clause => clause.action === "match")) return "regex";
-      if (dimensionClauses.every(clause => clause.action === "contains")) return "contains";
-      if (dimensionClauses.every(clause => clause.exclude)) return "exclude";
-      return "include";
+      if (dimensionClauses.every(clause =>
+        clause instanceof StringFilterClause && clause.action === StringFilterAction.MATCH)) {
+        return FilterMode.REGEX;
+      }
+      if (dimensionClauses.every(clause =>
+        clause instanceof StringFilterClause && clause.action === StringFilterAction.CONTAINS)) {
+        return FilterMode.CONTAINS;
+      }
+      if (dimensionClauses.every((clause: any) => clause.not)) {
+        return FilterMode.EXCLUDE;
+      }
+      return FilterMode.INCLUDE;
     }
 
     return undefined;
   }
 
-  public setClause(expression: FilterClause): Filter {
-    var expressionAttribute = expression.expression;
-    var added = false;
-    var newOperands = <List<FilterClause>> this.clauses.map(clause => {
-      if (clause.expression.equals(expressionAttribute)) {
-        added = true;
-        return expression;
-      } else {
-        return clause;
-      }
+  public setClause(newClause: FilterClause): Filter {
+    const idx = this.clauses.findIndex(clause => clause.reference === newClause.reference);
+    return this.updateClauses(clauses => idx === -1 ? clauses.concat([newClause]) : clauses.set(idx, newClause));
+  }
+
+  public applyDelta({ clauses: deltaClauses }: Filter): Filter {
+    return deltaClauses.reduce((filter, deltaClause) => filter.setClause(deltaClause), this);
+  }
+
+  public constrainToDimensions(dimensions: Dimensions): Filter {
+    return this.updateClauses(clauses =>
+      clauses.filter(clause => dimensions.getDimensionByName(clause.reference)));
+  }
+
+  public setExclusionForDimension(exclusion: boolean, { name }: Dimension): Filter {
+    return this.updateClauses(clauses => {
+      const idx = clauses.findIndex(clause => clause.reference === name);
+      if (idx === -1) return clauses;
+      return clauses.setIn([idx, "not"], exclusion);
     });
-    if (!added) {
-      newOperands = newOperands.push(expression);
-    }
-    return new Filter(newOperands);
-  }
-
-  public applyDelta(delta: Filter): Filter {
-    var newFilter: Filter = this;
-    var deltaClauses = delta.clauses;
-    deltaClauses.forEach(deltaClause => {
-      newFilter = newFilter.setClause(deltaClause);
-    });
-    return newFilter;
-  }
-
-  public getSingleClauseSet(): Set {
-    var clauses = this.clauses;
-    if (clauses.size !== 1) return null;
-    return clauses.get(0).getLiteralSet();
-  }
-
-  public constrainToDimensions(dimensions: Dimensions, timeAttribute: Expression, oldTimeAttribute: Expression = null): Filter {
-    var hasChanged = false;
-    var clauses: FilterClause[] = [];
-    this.clauses.forEach(clause => {
-      var clauseExpression = clause.expression;
-      if (dimensions.getDimensionByExpression(clauseExpression)) {
-        clauses.push(clause);
-      } else {
-        hasChanged = true;
-        // Special handling for time filter
-        if (timeAttribute && oldTimeAttribute && oldTimeAttribute.equals(clauseExpression)) {
-          clauses.push(new FilterClause({
-            expression: timeAttribute,
-            selection: clause.selection
-          }));
-        }
-      }
-    });
-
-    return hasChanged ? new Filter(List(clauses)) : this;
-  }
-
-  public getDifferentAttributes(other: Filter): Expression[] {
-    var diff: Expression[] = [];
-    this.clauses.forEach(clause => {
-      var clauseExpression = clause.expression;
-      var otherClause = other.clauseForExpression(clauseExpression);
-      if (!clause.equals(otherClause)) {
-        diff.push(clauseExpression);
-      }
-    });
-    return diff;
-  }
-
-  public overQuery(duration: Duration, timezone: Timezone, timeAttribute: Expression): Filter {
-    if (!timeAttribute) return this;
-
-    return new Filter(<List<FilterClause>> this.clauses.map(clause => {
-      if (clause.expression.equals(timeAttribute)) {
-        var timeRange: TimeRange = clause.getExtent() as TimeRange;
-        var newTimeRange = new TimeRange({
-          start: duration.shift(timeRange.start, timezone, -1),
-          end: duration.shift(timeRange.end, timezone, 1)
-        });
-        return clause.changeSelection(r(newTimeRange));
-      } else {
-        return clause;
-      }
-    }));
-  }
-
-  public setExclusionforDimension(exclusion: boolean, dimension: Dimension): Filter {
-    var clauses = this.clauses.map((clause: FilterClause) => {
-      if (!clause.expression.equals(dimension.expression)) return clause;
-      return clause.changeExclude(exclusion);
-    });
-
-    return new Filter(clauses as List<FilterClause>);
   }
 }
 
-check = Filter;
-
-Filter.EMPTY = new Filter(<List<FilterClause>> List());
+export const EMPTY_FILTER = new Filter({});

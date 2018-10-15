@@ -165,11 +165,9 @@ export interface NotificationsState {
 }
 
 export class Notifications extends React.Component<React.Props<any>, NotificationsState> {
-  constructor(props: React.Props<any>) {
-    super(props);
-    this.state = { notifications: [] };
-    this.onChange = this.onChange.bind(this);
-  }
+  state: NotificationsState = {
+    notifications: []
+  };
 
   componentDidMount() {
     Notifier.subscribe(this.onChange);
@@ -179,9 +177,9 @@ export class Notifications extends React.Component<React.Props<any>, Notificatio
     Notifier.unsubscribe(this.onChange);
   }
 
-  onChange(notifications: Notification[]) {
+  onChange = (notifications: Notification[]) => {
     this.setState({ notifications });
-  }
+  };
 
   renderCards(): JSX.Element[] {
     var cumuledHeight = 13;
@@ -208,11 +206,7 @@ export interface QuestionsState {
 }
 
 export class Questions extends React.Component<React.Props<any>, QuestionsState> {
-  constructor(props: React.Props<any>) {
-    super(props);
-    this.state = {};
-    this.onChange = this.onChange.bind(this);
-  }
+  state: QuestionsState = {};
 
   componentDidMount() {
     Notifier.subscribe(this.onChange);
@@ -222,9 +216,9 @@ export class Questions extends React.Component<React.Props<any>, QuestionsState>
     Notifier.unsubscribe(this.onChange);
   }
 
-  onChange(notifications: Notification[], question: Question) {
+  onChange = (notifications: Notification[], question: Question) => {
     this.setState({ question });
-  }
+  };
 
   render() {
     const { question } = this.state;

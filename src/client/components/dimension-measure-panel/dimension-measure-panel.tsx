@@ -24,6 +24,7 @@ import { clamp } from "../../utils/dom/dom";
 import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
 import { MeasuresTile } from "../measures-tile/measures-tile";
 import "./dimension-measure-panel.scss";
+import {Dimension} from "../../../common/models/dimension/dimension";
 
 const TOTAL_FLEXES = 100;
 const MIN_FLEX = 20;
@@ -33,8 +34,8 @@ export interface DimensionMeasurePanelProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  triggerFilterMenu: Fn;
-  triggerSplitMenu: Fn;
+  triggerFilterMenu: (dimension: Dimension) => void;
+  triggerSplitMenu: (dimension: Dimension) => void;
   style?: React.CSSProperties;
 }
 

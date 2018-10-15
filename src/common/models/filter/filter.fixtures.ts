@@ -20,7 +20,7 @@ export class FilterFixtures {
 
   static wikiLanguageIn(articleNames: string[]): FilterJS {
     return {
-      op: "overlap",
+      op: "OVERLAP",
       operand: { op: "ref", name: "articleName" },
       expression: {
         op: "literal",

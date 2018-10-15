@@ -63,6 +63,8 @@ export const HOME: ViewType = "home";
 export const CUBE: ViewType = "cube";
 export const NO_DATA: ViewType = "no-data";
 
+const transitionTimeout = { enter: 500, exit: 300 };
+
 export class SwivApplication extends React.Component<SwivApplicationProps, SwivApplicationState> {
   private hashUpdating = false;
   private readonly sideBarHrefFn: FunctionSlot<string>;
@@ -81,7 +83,6 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       viewHash: null,
       showAboutModal: false
     };
-    this.globalHashChangeListener = this.globalHashChangeListener.bind(this);
   }
 
   componentWillMount() {
@@ -154,10 +155,10 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     window.removeEventListener("hashchange", this.globalHashChangeListener);
   }
 
-  globalHashChangeListener(): void {
+  globalHashChangeListener = () => {
     if (this.hashUpdating) return;
     this.hashToState(window.location.hash);
-  }
+  };
 
   hashToState(hash: string) {
     const { dataCubes } = this.state.appSettings;
@@ -214,9 +215,13 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     return parts.join("/");
   }
 
-  sideDrawerOpen(drawerOpen: boolean): void {
-    this.setState({ drawerOpen });
-  }
+  sideDrawerOpen = () => {
+    this.setState({ drawerOpen: true });
+  };
+
+  sideDrawerClose = () => {
+    this.setState({ drawerOpen: false });
+  };
 
   changeHash(hash: string, force = false): void {
     this.hashUpdating = true;
@@ -232,7 +237,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     if (force) this.hashToState(hash);
   }
 
-  updateViewHash(viewHash: string, force = false): void {
+  updateViewHash = (viewHash: string, force = false) => {
     const { viewType } = this.state;
 
     let newHash: string;
@@ -243,13 +248,13 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     }
 
     this.changeHash(newHash, force);
-  }
+  };
 
   getCubeViewHash = (essence: Essence, withPrefix = false): string => {
     const cubeViewHash = this.urlHashConverter.toHash(essence);
 
     return withPrefix ? this.getUrlPrefix() + cubeViewHash : cubeViewHash;
-  }
+  };
 
   getUrlPrefix(baseOnly = false): string {
     const { viewType } = this.state;
@@ -267,17 +272,17 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     return urlBase + "#" + newPrefix;
   }
 
-  openAboutModal() {
+  openAboutModal = () => {
     this.setState({
       showAboutModal: true
     });
-  }
+  };
 
-  onAboutModalClose() {
+  onAboutModalClose = () => {
     this.setState({
       showAboutModal: false
     });
-  }
+  };
 
   renderAboutModal() {
     const { version } = this.props;
@@ -285,7 +290,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     if (!showAboutModal) return null;
     return <AboutModal
       version={version}
-      onClose={this.onAboutModalClose.bind(this)}
+      onClose={this.onAboutModalClose}
     />;
   }
 
@@ -302,14 +307,12 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     const { viewType, selectedItem, appSettings } = this.state;
     const { dataCubes, customization } = appSettings;
 
-    const closeSideDrawer: () => void = this.sideDrawerOpen.bind(this, false);
-
     return <SideDrawer
       key="drawer"
       selectedItem={selectedItem}
       dataCubes={dataCubes}
-      onOpenAbout={this.openAboutModal.bind(this)}
-      onClose={closeSideDrawer}
+      onOpenAbout={this.openAboutModal}
+      onClose={this.sideDrawerClose}
       customization={customization}
       user={user}
       itemHrefFn={this.sideBarHrefFn}
@@ -324,7 +327,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       classNames="side-drawer"
       mountOnEnter={true}
       unmountOnExit={true}
-      timeout={{ enter: 500, exit: 300 }}
+      timeout={transitionTimeout}
     >
       {this.renderSideDrawer()}
     </CSSTransition>;
@@ -339,8 +342,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
       case NO_DATA:
         return <NoDataView
           user={user}
-          onNavClick={this.sideDrawerOpen.bind(this, true)}
-          onOpenAbout={this.openAboutModal.bind(this)}
+          onNavClick={this.sideDrawerOpen}
+          onOpenAbout={this.openAboutModal}
           customization={customization}
           appSettings={appSettings}
           stateful={stateful}
@@ -350,8 +353,8 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
         return <HomeView
           user={user}
           dataCubes={dataCubes}
-          onNavClick={this.sideDrawerOpen.bind(this, true)}
-          onOpenAbout={this.openAboutModal.bind(this)}
+          onNavClick={this.sideDrawerOpen}
+          onOpenAbout={this.openAboutModal}
           customization={customization}
         />;
 
@@ -361,12 +364,12 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
           dataCube={selectedItem as DataCube}
           initTimekeeper={timekeeper}
           hash={viewHash}
-          updateViewHash={this.updateViewHash.bind(this)}
+          updateViewHash={this.updateViewHash}
           getCubeViewHash={this.getCubeViewHash}
           getEssenceFromHash={this.urlHashConverter.essenceFromHash}
           maxFilters={maxFilters}
           maxSplits={maxSplits}
-          onNavClick={this.sideDrawerOpen.bind(this, true)}
+          onNavClick={this.sideDrawerOpen}
           customization={customization}
           transitionFnSlot={this.sideBarHrefFn}
           supervisor={cubeViewSupervisor}

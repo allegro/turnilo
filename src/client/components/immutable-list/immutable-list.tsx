@@ -44,13 +44,13 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
     this.state = {};
   }
 
-  editItem(index: number) {
+  editItem = (index: number) => {
     this.setState({ editedIndex: index });
-  }
+  };
 
-  addItem() {
+  addItem = () => {
     this.setState({ pendingAddItem: this.props.getNewItem() });
-  }
+  };
 
   componentWillReceiveProps(nextProps: ImmutableListProps<T>) {
     if (nextProps.items) {
@@ -64,12 +64,12 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
     }
   }
 
-  deleteItem(index: number) {
+  deleteItem = (index: number) => {
     const { tempItems } = this.state;
     this.setState({ tempItems: tempItems.delete(index) }, this.onChange);
-  }
+  };
 
-  onReorder(oldIndex: number, newIndex: number) {
+  onReorder = (oldIndex: number, newIndex: number) => {
     var tempItems: List<any> = this.state.tempItems;
 
     var item = tempItems.get(oldIndex);
@@ -79,7 +79,7 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
         .delete(oldIndex)
         .insert(newIndex > oldIndex ? newIndex - 1 : newIndex, item)
     }, this.onChange);
-  }
+  };
 
   onChange() {
     this.props.onChange(this.state.tempItems);
@@ -126,14 +126,14 @@ export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, Imm
         <div className="label">{label}</div>
         <div className="actions">
           {toggleSuggestions ? <button key="suggestions" onClick={toggleSuggestions}>Suggestions</button> : null}
-          <button key="add" onClick={this.addItem.bind(this)}>Add item</button>
+          <button key="add" onClick={this.addItem}>Add item</button>
         </div>
       </div>
       <SimpleList
         rows={getRows(items)}
-        onEdit={this.editItem.bind(this)}
-        onRemove={this.deleteItem.bind(this)}
-        onReorder={this.onReorder.bind(this)}
+        onEdit={this.editItem}
+        onRemove={this.deleteItem}
+        onReorder={this.onReorder}
       />
       {editedIndex !== undefined ? this.renderEditModal(editedIndex) : null}
       {pendingAddItem ? this.renderAddModal(pendingAddItem) : null}

@@ -19,7 +19,7 @@ import { expect } from "chai";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
-import { Filter } from "../../../common/models/filter/filter";
+import { FilterMode } from "../../../common/models/filter/filter";
 import { TimekeeperFixtures } from "../../../common/models/timekeeper/timekeeper.fixtures";
 import { renderIntoDocument } from "../../utils/test-utils";
 
@@ -29,7 +29,7 @@ describe.skip("SelectableStringFilterMenu", () => {
   it("adds the correct class", () => {
     var renderedComponent = renderIntoDocument(
       <PreviewStringFilterMenu
-        filterMode={Filter.REGEX}
+        filterMode={FilterMode.REGEX}
         searchText=""
         onClauseChange={null}
         clicker={null}

@@ -102,14 +102,9 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     align: "center"
   };
 
-  constructor(props: BubbleMenuProps) {
-    super(props);
-    this.state = {
-      id: null
-    };
-    this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
-  }
+  state: BubbleMenuState = {
+    id: null
+  };
 
   componentWillMount() {
     const { alignOn, openOn, id } = this.props;
@@ -131,7 +126,7 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
     window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
-  globalMouseDownListener(e: MouseEvent) {
+  globalMouseDownListener = (e: MouseEvent) => {
     const { onClose, openOn } = this.props;
     const { id } = this.state;
     // can not use ReactDOM.findDOMNode(this) because portal?
@@ -141,13 +136,13 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
     if (isInside(target, myElement) || isInside(target, openOn)) return;
     onClose();
-  }
+  };
 
-  globalKeyDownListener(e: KeyboardEvent) {
+  globalKeyDownListener = (e: KeyboardEvent) => {
     if (!escapeKey(e)) return;
     const { onClose } = this.props;
     onClose();
-  }
+  };
 
   private calcBubbleCoordinates(rect: ClientRect): Coordinates {
     const { direction, align } = this.props;

@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-import { SortExpression } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
+import { Measure } from "../../../common/models/measure/measure";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { Sort } from "../../../common/models/sort/sort";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
 import { STRINGS } from "../../config/constants";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionTile } from "../dimension-tile/dimension-tile";
@@ -49,117 +51,117 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     };
   }
 
-  canDrop(e: DragEvent): boolean {
-    var dimension = DragManager.getDragDimension();
+  canDrop(e: React.DragEvent<HTMLElement>): boolean {
+    const dimension = DragManager.getDragDimension();
     if (dimension) {
-      var pinnedDimensions = this.props.essence.pinnedDimensions;
+      const pinnedDimensions = this.props.essence.pinnedDimensions;
       return !pinnedDimensions.has(dimension.name);
     }
     return false;
   }
 
-  dragEnter(e: DragEvent) {
+  dragEnter = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop(e)) return;
     e.preventDefault();
     this.setState({ dragOver: true });
-  }
+  };
 
-  dragOver(e: DragEvent) {
+  dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
-  }
+  };
 
-  dragLeave(e: DragEvent) {
+  dragLeave = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop(e)) return;
     this.setState({ dragOver: false });
-  }
+  };
 
-  drop(e: DragEvent) {
+  drop = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop(e)) return;
     e.preventDefault();
-    var dimension = DragManager.getDragDimension();
+    const dimension = DragManager.getDragDimension();
     if (dimension) {
       this.props.clicker.pin(dimension);
     }
     this.setState({ dragOver: false });
-  }
+  };
 
   getColorsSortOn(): SortOn {
-    var { essence } = this.props;
-    var { dataCube, splits, colors } = essence;
+    const { essence } = this.props;
+    const { dataCube, splits, colors } = essence;
     if (colors) {
-      var dimension = dataCube.getDimension(colors.dimension);
+      const dimension = dataCube.getDimension(colors.dimension);
       if (dimension) {
-        var split = splits.findSplitForDimension(dimension);
+        const split = splits.findSplitForDimension(dimension);
         if (split) {
-          return SortOn.fromSortExpression(split.sortAction, dataCube, dimension);
+          const sortReference = split.sort.reference;
+          return new SortOn(dataCube.getDimension(sortReference) || dataCube.getMeasure(sortReference));
         }
       }
     }
     return null;
   }
 
-  onLegendSortOnSelect(sortOn: SortOn) {
-    var { clicker, essence } = this.props;
-    var { dataCube, splits, colors } = essence;
+  onLegendSortOnSelect = (sortOn: SortOn) => {
+    const { clicker, essence } = this.props;
+    const { dataCube, splits, colors } = essence;
     if (colors) {
-      var dimension = dataCube.getDimension(colors.dimension);
+      const dimension = dataCube.getDimension(colors.dimension);
       if (dimension) {
-        var split = splits.findSplitForDimension(dimension);
+        const split = splits.findSplitForDimension(dimension);
         if (split) {
-          var sortAction = split.sortAction;
-          var direction = sortAction ? sortAction.direction : SortExpression.DESCENDING;
-          var newSplit = split.changeSortExpression(new SortExpression({
-            expression: sortOn.getExpression(),
+          const sort = split.sort;
+          const direction = sort ? sort.direction : SortDirection.descending;
+          const newSplit = split.changeSort(new Sort({
+            reference: sortOn.getName(),
             direction
           }));
-          var newColors = Colors.fromLimit(colors.dimension, 5);
+          const newColors = Colors.fromLimit(colors.dimension, 5);
           clicker.changeSplits(splits.replace(split, newSplit), VisStrategy.UnfairGame, newColors);
         }
       }
     }
-  }
+  };
 
-  onPinboardSortOnSelect(sortOn: SortOn) {
-    if (!sortOn.measure) return;
-    var { clicker } = this.props;
-    clicker.changePinnedSortMeasure(sortOn.measure);
-  }
+  onPinboardSortOnSelect = (sortOn: SortOn) => {
+    if (!(sortOn.reference instanceof Measure)) return;
+    this.props.clicker.changePinnedSortMeasure(sortOn.reference);
+  };
 
-  onRemoveLegend() {
-    var { clicker, essence } = this.props;
-    var { dataCube, splits, colors } = essence;
+  onRemoveLegend = () => {
+    const { clicker, essence } = this.props;
+    const { dataCube, splits, colors } = essence;
 
     if (colors) {
-      var dimension = dataCube.getDimension(colors.dimension);
+      const dimension = dataCube.getDimension(colors.dimension);
       if (dimension) {
-        var split = splits.findSplitForDimension(dimension);
+        const split = splits.findSplitForDimension(dimension);
         if (split) {
           clicker.changeSplits(splits.removeSplit(split), VisStrategy.UnfairGame, null);
         }
       }
     }
-  }
+  };
 
   render() {
-    var { clicker, essence, timekeeper, style } = this.props;
-    var { dragOver } = this.state;
-    var { dataCube, pinnedDimensions, colors } = essence;
+    const { clicker, essence, timekeeper, style } = this.props;
+    const { dragOver } = this.state;
+    const { dataCube, pinnedDimensions, colors } = essence;
 
-    var legendMeasureSelector: JSX.Element = null;
-    var legendDimensionTile: JSX.Element = null;
-    var colorDimension = colors ? colors.dimension : null;
+    let legendMeasureSelector: JSX.Element = null;
+    let legendDimensionTile: JSX.Element = null;
+    let colorDimension = colors ? colors.dimension : null;
     if (colorDimension) {
-      var dimension = dataCube.getDimension(colorDimension);
-      var colorsSortOn = this.getColorsSortOn();
+      const dimension = dataCube.getDimension(colorDimension);
+      const colorsSortOn = this.getColorsSortOn();
       if (dimension && colorsSortOn) {
         legendMeasureSelector = <PinboardMeasureTile
           essence={essence}
           title="Legend"
           dimension={dimension}
           sortOn={colorsSortOn}
-          onSelect={this.onLegendSortOnSelect.bind(this)}
+          onSelect={this.onLegendSortOnSelect}
         />;
 
         legendDimensionTile = <DimensionTile
@@ -169,15 +171,15 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
           dimension={dimension}
           sortOn={colorsSortOn}
           colors={colors}
-          onClose={this.onRemoveLegend.bind(this)}
+          onClose={this.onRemoveLegend}
         />;
       }
     }
 
-    var pinnedSortSortOn = SortOn.fromMeasure(essence.getPinnedSortMeasure());
-    var dimensionTiles: JSX.Element[] = [];
+    const pinnedSortSortOn = SortOn.fromMeasure(essence.getPinnedSortMeasure());
+    let dimensionTiles: JSX.Element[] = [];
     pinnedDimensions.forEach(dimensionName => {
-      var dimension = dataCube.getDimension(dimensionName);
+      const dimension = dataCube.getDimension(dimensionName);
       if (!dimension) return null;
 
       dimensionTiles.push(<DimensionTile
@@ -191,7 +193,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       />);
     });
 
-    var placeholder: JSX.Element = null;
+    let placeholder: JSX.Element = null;
     if (!dragOver && !dimensionTiles.length) {
       placeholder = <div className="placeholder">
         <SvgIcon svg={require("../../icons/preview-pin.svg")} />
@@ -201,7 +203,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
 
     return <div
       className="pinboard-panel"
-      onDragEnter={this.dragEnter.bind(this)}
+      onDragEnter={this.dragEnter}
       style={style}
     >
       {legendMeasureSelector}
@@ -210,17 +212,17 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         essence={essence}
         title={STRINGS.pinboard}
         sortOn={pinnedSortSortOn}
-        onSelect={this.onPinboardSortOnSelect.bind(this)}
+        onSelect={this.onPinboardSortOnSelect}
       />
       {dimensionTiles}
       {dragOver ? <div className="drop-indicator-tile" /> : null}
       {placeholder}
       {dragOver ? <div
         className="drag-mask"
-        onDragOver={this.dragOver.bind(this)}
-        onDragLeave={this.dragLeave.bind(this)}
-        onDragExit={this.dragLeave.bind(this)}
-        onDrop={this.drop.bind(this)}
+        onDragOver={this.dragOver}
+        onDragLeave={this.dragLeave}
+        onDragExit={this.dragLeave}
+        onDrop={this.drop}
       /> : null}
     </div>;
   }

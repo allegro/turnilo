@@ -50,17 +50,6 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
     left: "keydown"
   };
 
-  constructor(props: GlobalEventListenerProps) {
-    super(props);
-
-    this.onResize = this.onResize.bind(this);
-    this.onMousemove = this.onMousemove.bind(this);
-    this.onMouseup = this.onMouseup.bind(this);
-    this.onMousedown = this.onMousedown.bind(this);
-    this.onKeydown = this.onKeydown.bind(this);
-    this.onScroll = this.onScroll.bind(this);
-  }
-
   componentWillReceiveProps(nextProps: GlobalEventListenerProps) {
     this.refreshListeners(nextProps, this.props);
   }
@@ -104,25 +93,25 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
     window.removeEventListener(event, (this as any)[`on${firstUp(event)}`]);
   }
 
-  onResize() {
+  onResize = () => {
     if (this.props.resize) this.props.resize();
-  }
+  };
 
-  onScroll(e: MouseEvent) {
+  onScroll = (e: MouseEvent) => {
     if (this.props.scroll) this.props.scroll(e);
-  }
+  };
 
-  onMousedown(e: MouseEvent) {
+  onMousedown = (e: MouseEvent) => {
     if (this.props.mouseDown) this.props.mouseDown(e);
-  }
+  };
 
-  onMousemove(e: MouseEvent) {
+  onMousemove = (e: MouseEvent) => {
     if (this.props.mouseMove) this.props.mouseMove(e);
-  }
+  };
 
-  onMouseup(e: MouseEvent) {
+  onMouseup = (e: MouseEvent) => {
     if (this.props.mouseUp) this.props.mouseUp(e);
-  }
+  };
 
   onKeydown(e: KeyboardEvent) {
     if (this.props.escape && escapeKey(e)) this.props.escape(e);

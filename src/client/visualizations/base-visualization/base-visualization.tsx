@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-import { $, Dataset, Expression, ply, RefExpression } from "plywood";
+import { $, Dataset, Expression, LimitExpression, ply, SortExpression } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
+import { toExpression as filterClauseToExpression } from "../../../common/models/filter-clause/filter-clause";
 import { CurrentFilter, Measure, MeasureDerivation, PreviousFilter } from "../../../common/models/measure/measure";
+import { toExpression as splitToExpression } from "../../../common/models/split/split";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { DatasetLoad, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { sortDirectionMapper } from "../../../common/view-definitions/version-3/split-definition";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { Loader } from "../../components/loader/loader";
 import { QueryError } from "../../components/query-error/query-error";
@@ -78,11 +81,10 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const hasComparison = essence.hasComparison();
     const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId: this.id });
 
-    const currentFilter = essence.currentTimeFilter(timekeeper);
-    const previousFilter = hasComparison ? essence.previousTimeFilter(timekeeper) : null;
+    const currentFilter = filterClauseToExpression(essence.currentTimeFilter(timekeeper));
+    const previousFilter = hasComparison ? filterClauseToExpression(essence.previousTimeFilter(timekeeper)) : null;
 
-    const mainExp: Expression = ply()
-      .apply("main", $main.filter(mainFilter.toExpression()));
+    const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression()));
 
     function applyMeasures(query: Expression, nestingLevel = 0): Expression {
       return measures.reduce((query, measure) => {
@@ -100,16 +102,16 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     const queryWithMeasures = applyMeasures(mainExp);
 
     function applySplit(i: number): Expression {
-      const split = splits.get(i);
-      const splitDimension = dataCube.getDimensionByExpression(split.expression);
-      const { sortAction, limitAction } = split;
-      if (!sortAction) {
+      const split = splits.getSplit(i);
+      const splitDimension = dataCube.getDimension(split.reference);
+      const { sort, limit } = split;
+      if (!sort) {
         throw new Error("something went wrong during query generation");
       }
 
-      const currentSplit = !hasComparison ? split : split.withTimeShift(currentFilter, essence.timeShift.valueOf());
+      const currentSplit = splitToExpression(split, hasComparison && currentFilter, hasComparison && essence.timeShift.valueOf());
       let subQuery: Expression =
-        $main.split(currentSplit.toSplitExpression(), splitDimension.name);
+        $main.split(currentSplit, splitDimension.name);
 
       if (colors && colors.dimension === splitDimension.name) {
         const havingFilter = colors.toHavingFilter(splitDimension.name);
@@ -126,20 +128,26 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       // We don't need add apply expressions for:
       //   * dimensions - they're already defined as apply expressions because of splits
       //   * selected measures - they're defined as apply expressions already
-      //   * previous/delta - we need to define them earlier so they're present here
-      const { name: sortMeasureName, derivation } = Measure.nominalName((sortAction.expression as RefExpression).name);
+      //   * previous - we need to define them earlier so they're present here
+      const { name: sortMeasureName, derivation } = Measure.nominalName(sort.reference);
       if (sortMeasureName && derivation === MeasureDerivation.CURRENT) {
         const sortMeasure = dataCube.getMeasure(sortMeasureName);
         if (sortMeasure && !measures.contains(sortMeasure)) {
           subQuery = subQuery.performAction(sortMeasure.toApplyExpression(nestingLevel, new CurrentFilter(currentFilter)));
         }
       }
-      subQuery = subQuery.performAction(sortAction);
+      if (sortMeasureName && derivation === MeasureDerivation.DELTA) {
+        subQuery = subQuery.apply(sort.reference, $(sortMeasureName).subtract($(Measure.derivedName(sortMeasureName, MeasureDerivation.PREVIOUS))));
+      }
+      subQuery = subQuery.performAction(new SortExpression({
+        expression: $(sort.reference),
+        direction: sortDirectionMapper[sort.direction]
+      }));
 
       if (colors && colors.dimension === splitDimension.name) {
         subQuery = subQuery.performAction(colors.toLimitExpression());
-      } else if (limitAction) {
-        subQuery = subQuery.performAction(limitAction);
+      } else if (limit) {
+        subQuery = subQuery.performAction(new LimitExpression({ value: limit }));
       } else if (splitDimension.kind === "number") {
         // Hack: Plywood converts groupBys to topN if the limit is below a certain threshold.  Currently sorting on dimension in a groupBy query does not
         // behave as expected and in the future plywood will handle this, but for now add a limit so a topN query is performed.
@@ -215,7 +223,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return nextEssence.differentDataCube(essence) ||
       nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper, this.id) ||
       nextEssence.differentTimeShift(essence) ||
-      nextEssence.differentEffectiveSplits(essence) ||
+      nextEssence.differentSplits(essence) ||
       nextEssence.differentColors(essence) ||
       nextEssence.newEffectiveMeasures(essence) ||
       nextEssence.dataCube.refreshRule.isRealtime();
@@ -229,14 +237,14 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     this._isMounted = false;
   }
 
-  protected globalMouseMoveListener(e: MouseEvent) {
-  }
+  protected globalMouseMoveListener = (e: MouseEvent) => {
+  };
 
-  protected globalMouseUpListener(e: MouseEvent) {
-  }
+  protected globalMouseUpListener = (e: MouseEvent) => {
+  };
 
-  protected globalKeyDownListener(e: KeyboardEvent) {
-  }
+  protected globalKeyDownListener = (e: KeyboardEvent) => {
+  };
 
   protected renderInternals(): JSX.Element {
     return null;
@@ -255,9 +263,9 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
     return <div className={"base-visualization " + this.id}>
       <GlobalEventListener
-        mouseMove={this.globalMouseMoveListener.bind(this)}
-        mouseUp={this.globalMouseUpListener.bind(this)}
-        keyDown={this.globalKeyDownListener.bind(this)}
+        mouseMove={this.globalMouseMoveListener}
+        mouseUp={this.globalMouseUpListener}
+        keyDown={this.globalKeyDownListener}
       />
       {this.lastRenderResult}
       {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}

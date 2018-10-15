@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-import { $, Dataset, Datum, Expression, NumberRange, r, RefExpression, SortExpression, TimeBucketExpression, TimeRange } from "plywood";
+import { Duration } from "chronoshift";
+import { Set } from "immutable";
+import { $, Dataset, Datum, Expression, NumberRange, r, SortExpression, TimeRange } from "plywood";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Colors } from "../../../common/models/colors/colors";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterSelection } from "../../../common/models/filter-clause/filter-clause";
+import { isTimeFilter, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import {
   ContinuousDimensionKind,
   getBestGranularityForRange,
   getDefaultGranularityForKind,
   getGranularities,
-  Granularity,
   granularityEquals,
   granularityToString
 } from "../../../common/models/granularity/granularity";
+import { Measure } from "../../../common/models/measure/measure";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { Bucket, bucketToAction } from "../../../common/models/split/split";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { formatNumberRange, formatterFromData } from "../../../common/utils/formatter/formatter";
 import { collect, Fn } from "../../../common/utils/general/general";
@@ -68,7 +71,7 @@ export interface DimensionTileState {
   foldable?: boolean;
   showSearch?: boolean;
   searchText?: string;
-  selectedGranularity?: Granularity;
+  selectedGranularity?: Bucket;
   filterMode?: FilterMode;
 }
 
@@ -103,17 +106,36 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   }
 
-  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Granularity): void {
+  private bucketForDimension(dimension: Dimension): Bucket {
+    const { essence, timekeeper } = this.props;
+    const clause = essence.filter.getClauseForDimension(dimension);
+    if (clause) {
+      if (isTimeFilter(clause)) {
+        const fixedTimeFilter = essence.evaluateSelection(clause, timekeeper);
+        return getBestGranularityForRange(fixedTimeFilter.values.first(), true, dimension.bucketedBy, dimension.granularities);
+      }
+      if (clause instanceof NumberFilterClause) {
+        return getBestGranularityForRange(clause.values.first(), true, dimension.bucketedBy, dimension.granularities);
+      }
+      throw new Error(`Expected Time or Number FilterClause. Got ${clause.type}`);
+    }
+    return getDefaultGranularityForKind(
+      dimension.kind as ContinuousDimensionKind,
+      dimension.bucketedBy,
+      dimension.granularities);
+  }
+
+  fetchData(essence: Essence, timekeeper: Timekeeper, dimension: Dimension, sortOn: SortOn, unfolded: boolean, selectedGranularity?: Bucket): void {
     const { searchText, foldable } = this.state;
     const { dataCube, colors } = essence;
 
     let filter = essence.getEffectiveFilter(timekeeper);
     // don't remove filter if time
     if (unfolded && dimension !== essence.getTimeDimension()) {
-      filter = filter.remove(dimension.expression);
+      filter = filter.removeClause(dimension.name);
     }
 
-    filter = filter.setExclusionforDimension(false, dimension);
+    filter = filter.setExclusionForDimension(false, dimension);
 
     let filterExpression = filter.toExpression();
 
@@ -133,36 +155,22 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     let sortExpression: Expression = null;
 
     if (dimension.canBucketByDefault()) {
-      const dimensionExpression = dimension.expression as RefExpression;
-      const attributeName = dimensionExpression.name;
-
-      const filterSelection: FilterSelection = essence.filter.getSelection(dimensionExpression);
 
       if (!selectedGranularity) {
-        if (filterSelection) {
-          const range = dimension.kind === "time" ? essence.evaluateSelection(
-            filterSelection as Expression,
-            timekeeper) : (filterSelection as Expression).getLiteralValue().extent();
-          selectedGranularity = getBestGranularityForRange(range, true, dimension.bucketedBy, dimension.granularities);
-        } else {
-          selectedGranularity = getDefaultGranularityForKind(
-            dimension.kind as ContinuousDimensionKind,
-            dimension.bucketedBy,
-            dimension.granularities);
-        }
+        selectedGranularity = this.bucketForDimension(dimension);
       }
 
       this.setState({ selectedGranularity });
 
-      query = query.split($(attributeName).performAction(selectedGranularity), dimension.name);
+      query = query.split($(dimension.name).performAction(bucketToAction(selectedGranularity)), dimension.name);
       sortExpression = $(dimension.name);
     } else {
       query = query.split(dimension.expression, dimension.name);
-      sortExpression = sortOn.getExpression();
+      sortExpression = $(sortOn.getName());
     }
 
-    if (sortOn.measure) {
-      query = query.performAction(sortOn.measure.toApplyExpression(0));
+    if (sortOn.reference instanceof Measure) {
+      query = query.performAction(sortOn.reference.toApplyExpression(0));
     }
 
     query = query.sort(sortExpression, SortExpression.DESCENDING).limit(DimensionTile.TOP_N + 1);
@@ -196,7 +204,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
   updateFoldability(essence: Essence, dimension: Dimension, colors: Colors): boolean {
     let { unfolded } = this.state;
     let foldable = true;
-    if (essence.filter.filteredOn(dimension.expression)) { // has filter
+    if (essence.filter.filteredOn(dimension.name)) { // has filter
       if (colors) {
         foldable = false;
         unfolded = false;
@@ -232,8 +240,8 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const unfolded = this.updateFoldability(nextEssence, nextDimension, nextColors);
 
     // keep granularity selection if measures change or if autoupdate
-    const currentSelection = essence.getTimeSelection();
-    const nextSelection = nextEssence.getTimeSelection();
+    const currentSelection = essence.getTimeClause();
+    const nextSelection = nextEssence.getTimeClause();
     const differentTimeFilterSelection = currentSelection ? !currentSelection.equals(nextSelection) : Boolean(nextSelection);
     if (differentTimeFilterSelection) {
       // otherwise render will try to format exiting dataset based off of new granularity (before fetchData returns)
@@ -246,7 +254,6 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       essence.differentDataCube(nextEssence) ||
       essence.differentEffectiveFilter(nextEssence, timekeeper, nextTimekeeper, null, unfolded ? dimension : null) ||
       essence.differentColors(nextEssence) || !dimension.equals(nextDimension) || !sortOn.equals(nextSortOn) ||
-      essence.differentTimezoneMatters(nextEssence) ||
       (!essence.timezone.equals(nextEssence.timezone)) && dimension.kind === "time" ||
       differentTimeFilterSelection
     ) {
@@ -258,7 +265,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
   setFilterModeFromProps(props: DimensionTileProps) {
     if (props.colors) {
-      this.setState({ filterMode: Filter.INCLUDED });
+      this.setState({ filterMode: FilterMode.INCLUDE });
     } else {
       const filterMode = props.essence.filter.getModeForDimension(props.dimension);
       if (filterMode) this.setState({ filterMode });
@@ -275,7 +282,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     this.mounted = false;
   }
 
-  onRowClick(value: any, e: MouseEvent) {
+  onRowClick(value: any, event: MouseEvent) {
     const { clicker, essence, dimension } = this.props;
     const { dataset, filterMode } = this.state;
 
@@ -291,33 +298,44 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       colors = colors.toggle(value);
       clicker.changeColors(colors);
     } else {
-      if (e.altKey || e.ctrlKey || e.metaKey) {
-        let filteredOnMe = filter.filteredOnValue(dimension.expression, value);
-        let singleFilter = filter.getLiteralSet(dimension.expression).size() === 1;
-
-        if (filteredOnMe && singleFilter) {
-          filter = filter.remove(dimension.expression);
-        } else {
-          filter = filter.remove(dimension.expression).addValue(dimension.expression, value);
-        }
-      } else {
-        filter = filter.toggleValue(dimension.expression, value);
-      }
+      filter = this.selectValueInFilter(filter, dimension, value, event);
 
       // If no longer filtered switch unfolded to true for later
       const { unfolded } = this.state;
-      if (!unfolded && !filter.filteredOn(dimension.expression)) {
+      if (!unfolded && !filter.filteredOn(dimension.name)) {
         this.setState({ unfolded: true });
       }
 
-      clicker.changeFilter(filter.setExclusionforDimension(filterMode === Filter.EXCLUDED, dimension));
+      clicker.changeFilter(filter.setExclusionForDimension(filterMode === FilterMode.EXCLUDE, dimension));
     }
+  }
+
+  private selectValueInFilter(filter: Filter, dimension: Dimension, value: any, event: MouseEvent): Filter {
+    const filterClause = filter.getClauseForDimension(dimension);
+    if (!filterClause) {
+      return filter.addClause(new StringFilterClause({ reference: dimension.name, values: Set.of(value), action: StringFilterAction.IN }));
+    }
+    if (!(filterClause instanceof StringFilterClause)) {
+      throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
+    }
+    if (event.altKey || event.ctrlKey || event.metaKey) {
+      const values = filterClause.values;
+      const filteredOnMe = values.has(value);
+      const singleFilter = values.count() === 1;
+
+      if (filteredOnMe && singleFilter) {
+        return filter.removeClause(dimension.name);
+      }
+      return filter.removeClause(dimension.name).setClause(filterClause.update("values", values => values.add(value)));
+    }
+    return filter.setClause(filterClause.update("values", values =>
+      values.has(value) ? values.remove(value) : values.add(value)));
   }
 
   changeFilterMode(value: FilterMode) {
     const { clicker, essence, dimension } = this.props;
     this.setState({ filterMode: value }, () => {
-      clicker.changeFilter(essence.filter.setExclusionforDimension(value === Filter.EXCLUDED, dimension));
+      clicker.changeFilter(essence.filter.setExclusionForDimension(value === FilterMode.EXCLUDE, dimension));
     });
   }
 
@@ -327,7 +345,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     if (!essence || !dimension) return null;
 
-    const options: FilterMode[] = [Filter.INCLUDED, Filter.EXCLUDED];
+    const options: FilterMode[] = [FilterMode.INCLUDE, FilterMode.EXCLUDE];
 
     return options.map(value => {
       return {
@@ -339,15 +357,15 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     });
   }
 
-  toggleFold() {
+  toggleFold = () => {
     const { essence, timekeeper, dimension, sortOn } = this.props;
     let { unfolded } = this.state;
     unfolded = !unfolded;
     this.setState({ unfolded });
     this.fetchData(essence, timekeeper, dimension, sortOn, unfolded);
-  }
+  };
 
-  onDragStart(e: DragEvent) {
+  onDragStart = (e: React.DragEvent<HTMLElement>) => {
     const { dimension } = this.props;
 
     const dataTransfer = e.dataTransfer;
@@ -356,15 +374,14 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
 
     DragManager.setDragDimension(dimension, "dimension-tile");
     setDragGhost(dataTransfer, dimension.title);
-  }
+  };
 
-  toggleSearch() {
-    const { showSearch } = this.state;
-    this.setState({ showSearch: !showSearch });
+  toggleSearch = () => {
+    this.setState(({ showSearch }) => ({ showSearch: !showSearch }));
     this.onSearchChange("");
-  }
+  };
 
-  onSearchChange(text: string) {
+  onSearchChange = (text: string) => {
     const { searchText, dataset, fetchQueued, loading } = this.state;
     const newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
 
@@ -383,20 +400,19 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       fetchQueued: true
     });
     this.collectTriggerSearch();
-  }
+  };
 
   getTitleHeader(): string {
     const { dimension } = this.props;
     const { selectedGranularity } = this.state;
 
     if (selectedGranularity && dimension.kind === "time") {
-      const duration = (selectedGranularity as TimeBucketExpression).duration;
-      return `${dimension.title} (${duration.getDescription()})`;
+      return `${dimension.title} (${(selectedGranularity as Duration).getDescription()})`;
     }
     return dimension.title;
   }
 
-  onSelectGranularity(selectedGranularity: Granularity) {
+  onSelectGranularity(selectedGranularity: Bucket) {
     if (selectedGranularity === this.state.selectedGranularity) return;
     const { essence, timekeeper, dimension, colors, sortOn } = this.props;
     const unfolded = this.updateFoldability(essence, dimension, colors);
@@ -423,14 +439,18 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { essence, dimension } = this.props;
     const { dataset, unfolded, searchText } = this.state;
 
-    const filterSet = essence.filter.getLiteralSet(dimension.expression);
+    const filterClause = essence.filter.getClauseForDimension(dimension);
 
     if (dataset) {
       let rowData = dataset.data.slice(0, DimensionTile.TOP_N);
 
       if (!unfolded) {
-        if (filterSet) {
-          rowData = rowData.filter(d => filterSet.contains(d[dimension.name]));
+        if (filterClause) {
+          if (!(filterClause instanceof StringFilterClause)) {
+            throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
+          }
+          const values = filterClause.values;
+          rowData = rowData.filter(d => values.has(d[dimension.name] as string));
         }
       }
 
@@ -459,12 +479,16 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const { essence, dimension, sortOn, colors } = this.props;
     const { searchText, selectedGranularity, filterMode } = this.state;
 
-    const measure = sortOn.measure;
-    const measureName = measure ? measure.name : null;
-    const formatter = measure ? formatterFromData(rowData.map(d => d[measureName] as number), measure.getFormat()) : null;
+    const measure = sortOn.reference;
+    const sortOnMeasure = measure && measure instanceof Measure;
+    const measureName = sortOnMeasure ? measure.name : null;
+    const formatter = sortOnMeasure ? formatterFromData(rowData.map(d => d[measureName] as number), (measure as Measure).getFormat()) : null;
     const colorValues = this.prepareColorValues(colors, dimension, rowData);
-    const filterSet = essence.filter.getLiteralSet(dimension.expression);
-    const isExcluded = filterMode === Filter.EXCLUDED;
+    const filterClause = essence.filter.getClauseForDimension(dimension);
+    if (filterClause && !(filterClause instanceof StringFilterClause)) {
+      throw new Error(`Expected StringFilterClause, got: ${filterClause}`);
+    }
+    const isExcluded = filterMode === FilterMode.EXCLUDE;
 
     return rowData.map((datum, i) => {
       const segmentValue = datum[dimension.name];
@@ -472,12 +496,12 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       let className = "row";
       let checkbox: JSX.Element = null;
       let selected = false;
-      if ((filterSet || colors) && !continuous) {
+      if ((filterClause || colors) && !continuous) {
         if (colors) {
           selected = false;
           className += " color";
         } else {
-          selected = essence.filter.filteredOnValue(dimension.expression, segmentValue);
+          selected = (filterClause as StringFilterClause).values.has(segmentValue as string);
           className += " " + (selected ? "selected" : "not-selected");
         }
         checkbox = <Checkbox
@@ -491,7 +515,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
       if (segmentValue instanceof TimeRange) {
         segmentValueStr = formatTimeBasedOnGranularity(
           segmentValue,
-          (selectedGranularity as TimeBucketExpression).duration,
+          (selectedGranularity as Duration),
           essence.timezone,
           getLocale());
       } else if (segmentValue instanceof NumberRange) {
@@ -521,7 +545,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     if (isFoldable) {
       return <div
         className={classNames("folder", unfolded ? "folded" : "unfolded")}
-        onClick={this.toggleFold.bind(this)}
+        onClick={this.toggleFold}
       >
         <SvgIcon svg={require("../../icons/caret.svg")} />
         {unfolded ? "Show selection" : "Show all"}
@@ -572,7 +596,7 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     const icons: TileHeaderIcon[] = [{
       name: "search",
       ref: "search",
-      onClick: this.toggleSearch.bind(this),
+      onClick: this.toggleSearch,
       svg: require("../../icons/full-search.svg"),
       active: showSearch
     }];
@@ -597,9 +621,9 @@ export class DimensionTile extends React.Component<DimensionTileProps, Dimension
     return <SearchableTile
       style={style}
       title={this.getTitleHeader()}
-      toggleChangeFn={this.toggleSearch.bind(this)}
-      onDragStart={this.onDragStart.bind(this)}
-      onSearchChange={this.onSearchChange.bind(this)}
+      toggleChangeFn={this.toggleSearch}
+      onDragStart={this.onDragStart}
+      onSearchChange={this.onSearchChange}
       searchText={searchText}
       showSearch={showSearch}
       icons={icons}

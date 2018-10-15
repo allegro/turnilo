@@ -48,31 +48,31 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
     };
   }
 
-  onSelect(e: MouseEvent) {
-    var { onClose, clicker } = this.props;
+  onSelect = (e: MouseEvent) => {
+    const { onClose, clicker } = this.props;
     clicker.acceptHighlight();
     if (onClose) onClose();
-  }
+  };
 
-  onCancel(e: MouseEvent) {
-    var { onClose, clicker } = this.props;
+  onCancel = (e: MouseEvent) => {
+    const { onClose, clicker } = this.props;
     clicker.dropHighlight();
     if (onClose) onClose();
-  }
+  };
 
-  onMore(e: MouseEvent) {
+  onMore = (e: MouseEvent) => {
     const { moreMenuOpenOn } = this.state;
     if (moreMenuOpenOn) return this.closeMoreMenu();
     this.setState({
       moreMenuOpenOn: e.target as any
     });
-  }
+  };
 
-  closeMoreMenu() {
+  closeMoreMenu = () => {
     this.setState({
       moreMenuOpenOn: null
     });
-  }
+  };
 
   getUrl(): string {
     const { segmentLabel, dimension } = this.props;
@@ -80,11 +80,10 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
     return dimension.url.replace(/%s/g, segmentLabel);
   }
 
-  openRawDataModal(): void {
-    const { openRawDataModal } = this.props;
+  openRawDataModal = () => {
     this.closeMoreMenu();
-    openRawDataModal();
-  }
+    this.props.openRawDataModal();
+  };
 
   renderMoreMenu() {
     const { segmentLabel } = this.props;
@@ -96,13 +95,13 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
       <CopyToClipboard key="copyValue" text={segmentLabel}>
         <li
           className="clipboard"
-          onClick={this.closeMoreMenu.bind(this)}
+          onClick={this.closeMoreMenu}
         >{STRINGS.copyValue}</li>
       </CopyToClipboard>,
       <li
         className="view-raw-data"
         key="view-raw-data"
-        onClick={this.openRawDataModal.bind(this)}
+        onClick={this.openRawDataModal}
       >{STRINGS.displayRawData}</li>
     ];
 
@@ -110,7 +109,7 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
     if (url) {
       bubbleListItems.push(
         <li key="goToUrl">
-          <a href={url} onClick={this.closeMoreMenu.bind(this)} target="_blank">{STRINGS.goToUrl}</a>
+          <a href={url} onClick={this.closeMoreMenu} target="_blank">{STRINGS.goToUrl}</a>
         </li>
       );
     }
@@ -121,7 +120,7 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
       stage={menuSize}
       openOn={moreMenuOpenOn}
       align="start"
-      onClose={this.closeMoreMenu.bind(this)}
+      onClose={this.closeMoreMenu}
     >
       <ul className="bubble-list">
         {bubbleListItems}
@@ -137,19 +136,19 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
       <Button
         type="primary"
         className="mini"
-        onClick={this.onSelect.bind(this)}
+        onClick={this.onSelect}
         title={STRINGS.select}
       />
       <Button
         type="secondary"
         className="mini"
-        onClick={this.onCancel.bind(this)}
+        onClick={this.onCancel}
         title={STRINGS.cancel}
       />
       {disableMoreMenu ? null : <Button
         type="secondary"
         className="mini"
-        onClick={this.onMore.bind(this)}
+        onClick={this.onMore}
         svg={require("../../icons/full-more-mini.svg")}
         active={Boolean(moreMenuOpenOn)}
       />}

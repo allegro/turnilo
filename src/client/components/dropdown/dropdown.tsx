@@ -45,16 +45,9 @@ export interface DropdownState {
 }
 
 export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState> {
-
-  constructor(props: DropdownProps<T>) {
-    super(props);
-    this.state = {
-      open: false
-    };
-
-    this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
-  }
+  state: DropdownState = {
+    open: false
+  };
 
   componentDidMount() {
     window.addEventListener("mousedown", this.globalMouseDownListener);
@@ -66,12 +59,11 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
     window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
-  onClick() {
-    var { open } = this.state;
-    this.setState({ open: !open });
-  }
+  onClick = () => {
+    this.setState(({ open }) =>({ open: !open }));
+  };
 
-  globalMouseDownListener(e: MouseEvent) {
+  globalMouseDownListener = (e: MouseEvent) => {
     var { open } = this.state;
     if (!open) return;
 
@@ -81,14 +73,14 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
 
     if (isInside(target, myElement)) return;
     this.setState({ open: false });
-  }
+  };
 
-  globalKeyDownListener(e: KeyboardEvent) {
+  globalKeyDownListener = (e: KeyboardEvent) => {
     if (!escapeKey(e)) return;
     var { open } = this.state;
     if (!open) return;
     this.setState({ open: false });
-  }
+  };
 
   renderMenu() {
     var { items, renderItem, keyItem, selectedItem, equal, onSelect, menuClassName } = this.props;
@@ -123,7 +115,7 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
       labelElement = <div className="dropdown-label">{label}</div>;
     }
 
-    return <div className={classNames("dropdown", direction, className)} onClick={this.onClick.bind(this)}>
+    return <div className={classNames("dropdown", direction, className)} onClick={this.onClick}>
       {labelElement}
       <div className={classNames("selected-item", { active: open })}>{renderSelectedItem(selectedItem)}
         <SvgIcon className="caret-icon" svg={require("../../icons/dropdown-caret.svg")} />

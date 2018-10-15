@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-import { $, Expression, LiteralExpression, r, Set, TimeFloorExpression, TimeRange, TimeRangeExpression } from "plywood";
+import { Duration } from "chronoshift";
+import { List, Set } from "immutable";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
-import { FilterClause, FilterSelection, SupportedAction } from "../../models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause, DateRange,
+  FilterClause,
+  FixedTimeFilterClause,
+  NumberFilterClause, NumberRange,
+  RelativeTimeFilterClause,
+  StringFilterAction,
+  StringFilterClause,
+  TimeFilterClause,
+  TimeFilterPeriod
+} from "../../models/filter-clause/filter-clause";
 
 export enum FilterType {
   boolean = "boolean",
@@ -56,145 +67,87 @@ export interface TimeFilterClauseDefinition extends BaseFilterClauseDefinition {
   timePeriods?: TimePeriodDefinition[];
 }
 
+type TimePeriodType = "latest" | "floored";
+
 export interface TimePeriodDefinition {
-  type: "latest" | "floored";
+  type: TimePeriodType;
   duration: string;
   step: number;
-}
-
-export enum StringFilterAction {
-  in = "in",
-  match = "match",
-  contains = "contains"
 }
 
 export type FilterClauseDefinition =
   BooleanFilterClauseDefinition | NumberFilterClauseDefinition | StringFilterClauseDefinition | TimeFilterClauseDefinition;
 
-export interface FilterDefinitionConversion<In extends FilterClauseDefinition> {
-  toFilterClause(filter: In, dimension: Dimension): FilterClause;
+export interface FilterDefinitionConversion<In extends FilterClauseDefinition, Out> {
+  toFilterClause(filter: In, dimension: Dimension): Out;
 
-  fromFilterClause(filterClause: FilterClause, dimension: Dimension): In;
+  fromFilterClause(filterClause: Out): In;
 }
 
-const stringActionMap: { [action in StringFilterAction]: SupportedAction } = {
-  in: SupportedAction.overlap,
-  match: SupportedAction.match,
-  contains: SupportedAction.contains
-};
-
-const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClauseDefinition> = {
-  toFilterClause(clauseDefinition: BooleanFilterClauseDefinition, dimension: Dimension): FilterClause {
-    const { not, values } = clauseDefinition;
-    const { expression } = dimension;
-    const selection = r(values);
-
-    return new FilterClause({ action: SupportedAction.overlap, exclude: not, expression, selection });
+const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClauseDefinition, BooleanFilterClause> = {
+  toFilterClause({ not, values }: BooleanFilterClauseDefinition, { name }: Dimension): BooleanFilterClause {
+    return new BooleanFilterClause({ reference: name, not, values: Set(values) });
   },
 
-  fromFilterClause(filterClause: FilterClause, dimension: Dimension): BooleanFilterClauseDefinition {
-    const { exclude, selection } = filterClause;
-    const { name: referenceName } = dimension;
-
+  fromFilterClause({ values, not, reference }: BooleanFilterClause): BooleanFilterClauseDefinition {
     return {
       type: FilterType.boolean,
-      ref: referenceName,
-      values: (selection as LiteralExpression).value.elements,
-      not: exclude
+      ref: reference,
+      values: values.toArray(),
+      not
     };
   }
 };
 
-const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClauseDefinition> = {
-  toFilterClause(clauseDefinition: StringFilterClauseDefinition, dimension: Dimension): FilterClause {
-    const { action, not, values } = clauseDefinition;
-
+const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClauseDefinition, StringFilterClause> = {
+  toFilterClause({ action, not, values }: StringFilterClauseDefinition, dimension: Dimension): StringFilterClause {
     if (action === null) {
       throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
     }
-    if (StringFilterAction[action] === undefined) {
+    if (!(<any> Object).values(StringFilterAction).includes(action)) {
       throw Error(`Unknown string filter action. Dimension: ${dimension}`);
     }
-    if (action in [StringFilterAction.contains, StringFilterAction.match] && values.length !== 1) {
+    if (action in [StringFilterAction.CONTAINS, StringFilterAction.MATCH] && values.length !== 1) {
       throw Error(`Wrong string filter values: ${values} for action: ${action}. Dimension: ${dimension}`);
     }
+    const { name } = dimension;
 
-    const { expression } = dimension;
-
-    let selection: FilterSelection;
-    if (action === StringFilterAction.in) {
-      selection = r(values);
-    } else if (action === StringFilterAction.contains) {
-      selection = r(values[0]);
-    } else if (action === StringFilterAction.match) {
-      selection = values[0];
-    }
-
-    return new FilterClause({ action: stringActionMap[action], exclude: not, expression, selection });
+    return new StringFilterClause({
+      reference: name,
+      action,
+      not,
+      values: Set(values)
+    });
   },
 
-  fromFilterClause(filterClause: FilterClause, dimension: Dimension): StringFilterClauseDefinition {
-    const { action, exclude, selection } = filterClause;
-    const { name: referenceName } = dimension;
-
-    switch (action) {
-      case SupportedAction.overlap:
-      case undefined:
-        return {
-          type: FilterType.string,
-          ref: referenceName,
-          action: StringFilterAction.in,
-          values: (selection as LiteralExpression).value.elements,
-          not: exclude
-        };
-      case SupportedAction.contains:
-        return {
-          type: FilterType.string,
-          ref: referenceName,
-          action: StringFilterAction.contains,
-          values: [(selection as LiteralExpression).value],
-          not: exclude
-        };
-      case SupportedAction.match:
-        return {
-          type: FilterType.string,
-          ref: referenceName,
-          action: StringFilterAction.match,
-          values: [selection as string],
-          not: exclude
-        };
-    }
+  fromFilterClause({ action, reference, not, values }: StringFilterClause): StringFilterClauseDefinition {
+    return {
+      type: FilterType.string,
+      ref: reference,
+      action,
+      values: values.toArray(),
+      not
+    };
   }
 };
 
-const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClauseDefinition> = {
-  toFilterClause(filterModel: NumberFilterClauseDefinition, dimension: Dimension): FilterClause {
-    const { not, ranges } = filterModel;
-    const { expression } = dimension;
-    const selection: Expression = r(ranges);
-
-    return new FilterClause({ action: SupportedAction.overlap, exclude: not, expression, selection });
+const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClauseDefinition, NumberFilterClause> = {
+  toFilterClause({ not, ranges }: NumberFilterClauseDefinition, { name }: Dimension): NumberFilterClause {
+    return new NumberFilterClause({ not, values: List(ranges.map(range => new NumberRange(range))), reference: name });
   },
 
-  fromFilterClause(filterClause: FilterClause, dimension: Dimension): NumberFilterClauseDefinition {
-    const { exclude, selection } = filterClause;
-    const { name: referenceName } = dimension;
-
-    if (isNumberFilterSelection(selection) && selection.value instanceof Set) {
-      return {
-        type: FilterType.number,
-        ref: referenceName,
-        not: exclude,
-        ranges: selection.value.elements.map(range => ({ start: range.start, end: range.end, bounds: range.bounds }))
-      };
-    } else {
-      throw new Error(`Number filterClause expected, found: ${filterClause}. Dimension: ${referenceName}`);
-    }
+  fromFilterClause({ not, reference, values }: NumberFilterClause): NumberFilterClauseDefinition {
+    return {
+      type: FilterType.number,
+      ref: reference,
+      not,
+      ranges: values.toJS()
+    };
   }
 };
 
-const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefinition> = {
-  toFilterClause(filterModel: TimeFilterClauseDefinition, dimension: Dimension): FilterClause {
+const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefinition, TimeFilterClause> = {
+  toFilterClause(filterModel: TimeFilterClauseDefinition, dimension: Dimension): TimeFilterClause {
     const { timeRanges, timePeriods } = filterModel;
 
     if (timeRanges === undefined && timePeriods === undefined) {
@@ -207,65 +160,54 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
       throw Error(`Time filter support a single timePeriod only. Dimension: ${dimension}`);
     }
 
-    const { expression } = dimension;
-
-    let selection: Expression;
-    if (timeRanges !== undefined && timeRanges.length === 1) {
-      selection = r({ ...timeRanges[0], type: "TIME_RANGE" });
-    } else if (timePeriods !== null && timePeriods.length === 1) {
-      const timePeriod = timePeriods[0];
-      selection = timePeriodToExpression(timePeriod);
-    } else {
-      throw new Error(`Wrong time filter definition: ${filterModel}`);
+    const { name } = dimension;
+    if (timeRanges !== undefined) {
+      return new FixedTimeFilterClause({
+        reference: name,
+        values: List(timeRanges.map(range => new DateRange({ start: new Date(range.start), end: new Date(range.end) })))
+      });
     }
-
-    return new FilterClause({ action: SupportedAction.overlap, expression, selection });
+    const { duration, step, type } = timePeriods[0];
+    return new RelativeTimeFilterClause({
+      reference: name,
+      duration: Duration.fromJS(duration).multiply(Math.abs(step)),
+      period: timeFilterPeriod(step, type)
+    });
   },
 
-  fromFilterClause(filterClause: FilterClause, dimension: Dimension): TimeFilterClauseDefinition {
-    const { selection } = filterClause;
-    const { name: referenceName } = dimension;
+  fromFilterClause(filterClause: TimeFilterClause): TimeFilterClauseDefinition {
+    const { reference } = filterClause;
 
-    if (isFixedTimeRangeSelection(selection)) {
-      const timeRange = selection.value as TimeRange;
+    if (filterClause instanceof RelativeTimeFilterClause) {
+      const { duration, period } = filterClause;
+      const step = period === TimeFilterPeriod.CURRENT ? 1 : -1;
+      const type = period === TimeFilterPeriod.LATEST ? "latest" : "floored";
       return {
         type: FilterType.time,
-        ref: referenceName,
-        timeRanges: [{ start: timeRange.start.toISOString(), end: timeRange.end.toISOString() }]
+        ref: reference,
+        timePeriods: [{ duration: duration.toString(), step, type }]
       };
-    } else if (isRelativeTimeRangeSelection(selection)) {
-      if (selection.operand instanceof TimeFloorExpression) {
-        return {
-          type: FilterType.time,
-          ref: referenceName,
-          timePeriods: [{ duration: selection.duration.toJS(), type: "floored", step: selection.step }]
-        };
-      } else {
-        return {
-          type: FilterType.time,
-          ref: referenceName,
-          timePeriods: [{ duration: selection.duration.toJS(), type: "latest", step: selection.step }]
-        };
-      }
-    } else {
-      throw new Error(`Time filterClause expected, found: ${filterClause}. Dimension: ${referenceName}`);
     }
+    const { values } = filterClause;
+    return {
+      type: FilterType.time,
+      ref: reference,
+      timeRanges: values.map(value => ({ start: value.start.toISOString(), end: value.end.toISOString() })).toArray()
+    };
   }
 };
 
-function timePeriodToExpression(timePeriod: TimePeriodDefinition): Expression {
-  switch (timePeriod.type) {
-    case "latest":
-      return $(FilterClause.MAX_TIME_REF_NAME)
-        .timeRange(timePeriod.duration, timePeriod.step);
-    case "floored":
-      return $(FilterClause.NOW_REF_NAME)
-        .timeFloor(timePeriod.duration)
-        .timeRange(timePeriod.duration, timePeriod.step);
+function timeFilterPeriod(step: number, type: TimePeriodType): TimeFilterPeriod {
+  if (type === "latest") {
+    return TimeFilterPeriod.LATEST;
   }
+  if (step === 1) {
+    return TimeFilterPeriod.CURRENT;
+  }
+  return TimeFilterPeriod.PREVIOUS;
 }
 
-const filterClauseConverters: { [type in FilterType]: FilterDefinitionConversion<FilterClauseDefinition> } = {
+const filterClauseConverters: { [type in FilterType]: FilterDefinitionConversion<FilterClauseDefinition, FilterClause> } = {
   boolean: booleanFilterClauseConverter,
   number: numberFilterClauseConverter,
   string: stringFilterClauseConverter,
@@ -275,7 +217,7 @@ const filterClauseConverters: { [type in FilterType]: FilterDefinitionConversion
 export interface FilterDefinitionConverter {
   toFilterClause(filter: FilterClauseDefinition, dataCube: DataCube): FilterClause;
 
-  fromFilterClause(filterClause: FilterClause, dataCube: DataCube): FilterClauseDefinition;
+  fromFilterClause(filterClause: FilterClause): FilterClauseDefinition;
 }
 
 export const filterDefinitionConverter: FilterDefinitionConverter = {
@@ -294,35 +236,19 @@ export const filterDefinitionConverter: FilterDefinitionConverter = {
     return clauseConverter.toFilterClause(clauseDefinition, dimension);
   },
 
-  fromFilterClause(filterClause: FilterClause, dataCube: DataCube): FilterClauseDefinition {
-    const { expression, selection } = filterClause;
-
-    const dimension = dataCube.getDimensionByExpression(expression);
-
-    if (isBooleanFilterSelection(selection)) {
-      return booleanFilterClauseConverter.fromFilterClause(filterClause, dimension);
-    } else if (isNumberFilterSelection(selection)) {
-      return numberFilterClauseConverter.fromFilterClause(filterClause, dimension);
-    } else if (isFixedTimeRangeSelection(selection) || isRelativeTimeRangeSelection(selection)) {
-      return timeFilterClauseConverter.fromFilterClause(filterClause, dimension);
-    } else {
-      return stringFilterClauseConverter.fromFilterClause(filterClause, dimension);
+  fromFilterClause(filterClause: FilterClause): FilterClauseDefinition {
+    if (filterClause instanceof BooleanFilterClause) {
+      return booleanFilterClauseConverter.fromFilterClause(filterClause);
     }
+    if (filterClause instanceof NumberFilterClause) {
+      return numberFilterClauseConverter.fromFilterClause(filterClause);
+    }
+    if (filterClause instanceof FixedTimeFilterClause || filterClause instanceof RelativeTimeFilterClause) {
+      return timeFilterClauseConverter.fromFilterClause(filterClause);
+    }
+    if (filterClause instanceof StringFilterClause) {
+      return stringFilterClauseConverter.fromFilterClause(filterClause);
+    }
+    throw Error(`Unrecognized filter clause type ${filterClause}`);
   }
 };
-
-function isBooleanFilterSelection(selection: FilterSelection): selection is LiteralExpression {
-  return selection instanceof LiteralExpression && selection.type === "SET/BOOLEAN";
-}
-
-function isNumberFilterSelection(selection: FilterSelection): selection is LiteralExpression {
-  return selection instanceof LiteralExpression && selection.type === "SET/NUMBER_RANGE";
-}
-
-function isFixedTimeRangeSelection(selection: FilterSelection): selection is LiteralExpression {
-  return selection instanceof LiteralExpression && selection.type === "TIME_RANGE";
-}
-
-function isRelativeTimeRangeSelection(selection: FilterSelection): selection is TimeRangeExpression {
-  return selection instanceof TimeRangeExpression;
-}

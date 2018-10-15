@@ -17,7 +17,7 @@
 import { OrderedSet } from "immutable";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Resolution } from "../../models/manifest/manifest";
-import { SplitCombine } from "../../models/split-combine/split-combine";
+import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
 
 export class Resolutions {
@@ -31,7 +31,7 @@ export class Resolutions {
       return {
         description: `Add a split on ${dimension.title}`,
         adjustment: {
-          splits: Splits.fromSplitCombine(SplitCombine.fromExpression(dimension.expression))
+          splits: Splits.fromSplit(Split.fromDimension(dimension))
         }
       };
     });

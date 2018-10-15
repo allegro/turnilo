@@ -34,14 +34,9 @@ export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCente
     minPadding: 50
   };
 
-  constructor(props: GoldenCenterProps) {
-    super(props);
-    this.state = {
-      top: 0
-    };
-
-    this.globalResizeListener = this.globalResizeListener.bind(this);
-  }
+  state: GoldenCenterState = {
+    top: 0
+  };
 
   componentDidMount() {
     window.addEventListener("resize", this.globalResizeListener);
@@ -52,7 +47,7 @@ export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCente
     window.removeEventListener("resize", this.globalResizeListener);
   }
 
-  globalResizeListener() {
+  globalResizeListener = () => {
     var myNode = ReactDOM.findDOMNode(this);
     if (!myNode) return;
 
@@ -66,7 +61,7 @@ export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCente
 
     var top = Math.max((myRect.height - childRect.height) * topRatio, minPadding);
     this.setState({ top });
-  }
+  };
 
   render() {
     const { minPadding, children } = this.props;

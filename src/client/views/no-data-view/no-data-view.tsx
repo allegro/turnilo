@@ -72,7 +72,7 @@ export class NoDataView extends React.Component <NoDataViewProps, NoDataViewStat
     const { user, stateful } = this.props;
     if (!user || !user.allow["settings"] || !stateful) return null;
 
-    return <div className="icon-button" onClick={this.goToSettings.bind(this)}>
+    return <div className="icon-button" onClick={this.goToSettings}>
       <SvgIcon svg={require("../../icons/full-settings.svg")} />
     </div>;
   }

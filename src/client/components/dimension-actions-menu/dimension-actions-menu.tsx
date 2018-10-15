@@ -19,7 +19,7 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { STRINGS } from "../../config/constants";
@@ -46,43 +46,43 @@ export interface DimensionActionsMenuState {
 
 export class DimensionActionsMenu extends React.Component<DimensionActionsMenuProps, DimensionActionsMenuState> {
 
-  onFilter(): void {
-    var { dimension, triggerFilterMenu, onClose } = this.props;
+  onFilter = () => {
+    const { dimension, triggerFilterMenu, onClose } = this.props;
     triggerFilterMenu(dimension);
     onClose();
-  }
+  };
 
-  onSplit(): void {
-    var { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
+  onSplit = () => {
+    const { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
     if (essence.splits.hasSplitOn(dimension) && essence.splits.length() === 1) {
       triggerSplitMenu(dimension);
     } else {
-      clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
+      clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     onClose();
-  }
+  };
 
-  onSubsplit(): void {
-    var { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
+  onSubsplit = () => {
+    const { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
     if (essence.splits.hasSplitOn(dimension)) {
       triggerSplitMenu(dimension);
     } else {
-      clicker.addSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
+      clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     onClose();
-  }
+  };
 
-  onPin(): void {
-    var { clicker, dimension, onClose } = this.props;
+  onPin = () => {
+    const { clicker, dimension, onClose } = this.props;
     clicker.pin(dimension);
     onClose();
-  }
+  };
 
   render() {
-    var { direction, containerStage, openOn, dimension, onClose } = this.props;
+    const { direction, containerStage, openOn, dimension, onClose } = this.props;
     if (!dimension) return null;
 
-    var menuSize: Stage = Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2);
+    const menuSize: Stage = Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2);
     return <BubbleMenu
       className="dimension-actions-menu"
       direction={direction}
@@ -92,19 +92,19 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
       openOn={openOn}
       onClose={onClose}
     >
-      <div className="filter action" onClick={this.onFilter.bind(this)}>
+      <div className="filter action" onClick={this.onFilter}>
         <SvgIcon svg={require("../../icons/preview-filter.svg")} />
         <div className="action-label">{STRINGS.filter}</div>
       </div>
-      <div className="pin action" onClick={this.onPin.bind(this)}>
+      <div className="pin action" onClick={this.onPin}>
         <SvgIcon svg={require("../../icons/preview-pin.svg")} />
         <div className="action-label">{STRINGS.pin}</div>
       </div>
-      <div className="split action" onClick={this.onSplit.bind(this)}>
+      <div className="split action" onClick={this.onSplit}>
         <SvgIcon svg={require("../../icons/preview-split.svg")} />
         <div className="action-label">{STRINGS.split}</div>
       </div>
-      <div className="subsplit action" onClick={this.onSubsplit.bind(this)}>
+      <div className="subsplit action" onClick={this.onSubsplit}>
         <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
         <div className="action-label">{STRINGS.subsplit}</div>
       </div>

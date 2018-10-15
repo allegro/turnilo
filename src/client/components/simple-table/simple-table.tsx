@@ -264,15 +264,15 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
     return columns.reduce((a, b) => a + b.width, 0);
   }
 
-  onClick(x: number, y: number, part: ScrollerPart) {
+  onClick = (x: number, y: number, part: ScrollerPart) => {
     const { columns, rows, actions } = this.props;
 
     if (part === Scroller.TOP_RIGHT_CORNER) return;
 
     const headerWidth = this.getHeaderWidth(columns);
 
-    var columnIndex = this.getColumnIndex(x, headerWidth); // -1 means right gutter
-    var rowIndex = this.getRowIndex(y); // -1 means header
+    const columnIndex = this.getColumnIndex(x, headerWidth); // -1 means right gutter
+    const rowIndex = this.getRowIndex(y); // -1 means header
 
     if (part === Scroller.RIGHT_GUTTER) {
       let action = actions[this.getActionIndex(x, headerWidth)];
@@ -289,7 +289,7 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
     }
 
     this.onCellClick(rows[rowIndex], columns[columnIndex]);
-  }
+  };
 
   onCellClick(row: any, column: SimpleTableColumn) {
     if (this.props.onRowClick && row) {
@@ -308,24 +308,26 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
     action.callback(row);
   }
 
-  onMouseMove(x: number, y: number, part: ScrollerPart) {
+  onMouseMove = (x: number, y: number, part: ScrollerPart) => {
     const { rows, columns } = this.props;
     const headerWidth = this.getHeaderWidth(columns);
 
-    var rowIndex = this.getRowIndex(y);
+    const rowIndex = this.getRowIndex(y);
+    const hoveredRowIndex = rowIndex > rows.length ? undefined : rowIndex;
+    const hoveredActionIndex = part === Scroller.RIGHT_GUTTER ? this.getActionIndex(x, headerWidth) : undefined;
 
     this.setState({
-      hoveredRowIndex: rowIndex > rows.length ? undefined : rowIndex,
-      hoveredActionIndex: part === Scroller.RIGHT_GUTTER ? this.getActionIndex(x, headerWidth) : undefined
+      hoveredRowIndex,
+      hoveredActionIndex
     });
-  }
+  };
 
-  onMouseLeave() {
+  onMouseLeave = () => {
     this.setState({
       hoveredRowIndex: undefined,
       hoveredActionIndex: undefined
     });
-  }
+  };
 
   render() {
     const { columns, rows, actions } = this.props;
@@ -338,15 +340,15 @@ export class SimpleTable extends React.Component<SimpleTableProps, SimpleTableSt
         ref="scroller"
         layout={this.getLayout(columns, rows, actions)}
 
-        topRightCorner={<div></div>} // for styling purposes...
+        topRightCorner={<div />} // for styling purposes...
         topGutter={this.renderHeaders(columns, sortColumn, sortAscending)}
         rightGutter={this.renderActions(rows, actions)}
 
         body={this.renderRows(rows, columns, sortColumn, sortAscending)}
 
-        onClick={this.onClick.bind(this)}
-        onMouseMove={this.onMouseMove.bind(this)}
-        onMouseLeave={this.onMouseLeave.bind(this)}
+        onClick={this.onClick}
+        onMouseMove={this.onMouseMove}
+        onMouseLeave={this.onMouseLeave}
       />
     </div>;
   }

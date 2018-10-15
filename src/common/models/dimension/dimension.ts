@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-import { Class, immutableArraysEqual, Instance } from "immutable-class";
+import { Duration } from "chronoshift";
+import { Class, Instance } from "immutable-class";
 import { $, Expression } from "plywood";
 import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
-import { Granularity, granularityEquals, granularityFromJS, GranularityJS, granularityToJS } from "../granularity/granularity";
+import { granularityEquals, granularityFromJS, GranularityJS, granularityToJS } from "../granularity/granularity";
+import { Bucket } from "../split/split";
 import { DimensionOrGroupVisitor } from "./dimension-group";
 
-var geoName = /continent|country|city|region/i;
+const geoName = /continent|country|city|region/i;
 
 function isGeo(name: string): boolean {
   return geoName.test(name);
@@ -49,8 +51,8 @@ export interface DimensionValue {
   formula?: string;
   kind?: string;
   url?: string;
-  granularities?: Granularity[];
-  bucketedBy?: Granularity;
+  granularities?: Bucket[];
+  bucketedBy?: Bucket;
   bucketingStrategy?: BucketingStrategy;
   sortStrategy?: string;
 }
@@ -111,24 +113,24 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public kind: string;
   public className: string;
   public url: string;
-  public granularities: Granularity[];
-  public bucketedBy: Granularity;
+  public granularities: Bucket[];
+  public bucketedBy: Bucket;
   public bucketingStrategy: BucketingStrategy;
   public sortStrategy: string;
   public type = "dimension";
 
   constructor(parameters: DimensionValue) {
-    var name = parameters.name;
+    const name = parameters.name;
     verifyUrlSafeName(name);
     this.name = name;
     this.title = parameters.title || makeTitle(name);
     this.description = parameters.description;
 
-    var formula = parameters.formula || $(name).toString();
+    const formula = parameters.formula || $(name).toString();
     this.formula = formula;
     this.expression = Expression.parse(formula);
 
-    var kind = parameters.kind || typeToKind(this.expression.type) || "string";
+    const kind = parameters.kind || typeToKind(this.expression.type) || "string";
     this.kind = kind;
 
     if (kind === "string" && isGeo(name)) {
@@ -143,17 +145,14 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.url = parameters.url;
     }
 
-    var granularities = parameters.granularities;
+    const granularities = parameters.granularities;
     if (granularities) {
       if (!Array.isArray(granularities) || granularities.length !== 5) {
         throw new Error(`must have list of 5 granularities in dimension '${parameters.name}'`);
       }
-      var runningActionType: string = null;
-      this.granularities = granularities.map(g => {
-        if (runningActionType === null) runningActionType = g.op;
-        if (g.op !== runningActionType) throw new Error("granularities must have the same type of actions");
-        return g;
-      });
+      const sameType = granularities.every(g => typeof g === typeof granularities[0]);
+      if (!sameType) throw new Error("granularities must have the same type of actions");
+      this.granularities = granularities;
     }
     if (parameters.bucketedBy) this.bucketedBy = parameters.bucketedBy;
     if (parameters.bucketingStrategy) this.bucketingStrategy = parameters.bucketingStrategy;
@@ -211,10 +210,16 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.formula === other.formula &&
       this.kind === other.kind &&
       this.url === other.url &&
-      immutableArraysEqual(this.granularities, other.granularities) &&
+      this.granularitiesEqual(other.granularities) &&
       granularityEquals(this.bucketedBy, other.bucketedBy) &&
       this.bucketingStrategy === other.bucketingStrategy &&
       this.sortStrategy === other.sortStrategy;
+  }
+
+  private granularitiesEqual(otherGranularities: Bucket[]): boolean {
+    if (!otherGranularities) return !this.granularities;
+    if (otherGranularities.length !== this.granularities.length) return false;
+    return this.granularities.every((g, idx) => granularityEquals(g, otherGranularities[idx]));
   }
 
   public canBucketByDefault(): boolean {

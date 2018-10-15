@@ -79,13 +79,9 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     });
   }
 
-  goToPreviousMonth(): void {
-    return this.navigateToMonth(-1);
-  }
+  goToPreviousMonth = () => this.navigateToMonth(-1);
 
-  goToNextMonth(): void {
-    return this.navigateToMonth(1);
-  }
+  goToNextMonth = () => this.navigateToMonth(1);
 
   calculateHoverTimeRange(mouseEnteredDay: Date) {
     const { startTime, endTime } = this.props;
@@ -104,9 +100,9 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     this.setState({ hoverTimeRange });
   }
 
-  onCalendarMouseLeave() {
+  onCalendarMouseLeave = () => {
     this.setState({ hoverTimeRange: null });
-  }
+  };
 
   selectNewRange(startDate: Date, endDate?: Date) {
     const { onStartChange, onEndChange, timezone } = this.props;
@@ -203,14 +199,14 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     return <div className="calendar-nav">
       <div
         className="caret left"
-        onClick={this.goToPreviousMonth.bind(this)}
+        onClick={this.goToPreviousMonth}
       >
         <SvgIcon svg={require("../../icons/full-caret-left.svg")} />
       </div>
       {getWallTimeMonthWithYear(startDate, timezone)}
       <div
         className="caret right"
-        onClick={this.goToNextMonth.bind(this)}
+        onClick={this.goToNextMonth}
       >
         <SvgIcon svg={require("../../icons/full-caret-right.svg")} />
       </div>
@@ -225,12 +221,12 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     const isSingleDate = endTime ? getWallTimeDay(startTime, timezone) === getEndWallTimeInclusive(endTime, timezone).date() : true;
     return <div className="date-range-picker">
       <div>
-        <DateRangeInput label="Start" type="start" time={startTime} timezone={timezone} onChange={onStartChange.bind(this)} />
-        <DateRangeInput label="End" type="end" time={endTime} timezone={timezone} onChange={onEndChange.bind(this)} hide={!selectionSet} />
+        <DateRangeInput label="Start" type="start" time={startTime} timezone={timezone} onChange={onStartChange} />
+        <DateRangeInput label="End" type="end" time={endTime} timezone={timezone} onChange={onEndChange} hide={!selectionSet} />
       </div>
       <div
         className="calendar"
-        onMouseLeave={this.onCalendarMouseLeave.bind(this)}
+        onMouseLeave={this.onCalendarMouseLeave}
       >
         {this.renderCalendarNav(activeMonthStartDate)}
         <div className="week">

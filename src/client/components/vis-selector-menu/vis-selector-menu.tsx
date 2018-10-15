@@ -38,12 +38,6 @@ export interface VisSelectorMenuState {
 export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSelectorMenuState> {
   public mounted: boolean;
 
-  constructor(props: VisSelectorMenuProps) {
-    super(props);
-    this.globalMouseDownListener = this.globalMouseDownListener.bind(this);
-    this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
-  }
-
   componentDidMount() {
     window.addEventListener("mousedown", this.globalMouseDownListener);
     window.addEventListener("keydown", this.globalKeyDownListener);
@@ -54,7 +48,7 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     window.removeEventListener("keydown", this.globalKeyDownListener);
   }
 
-  globalMouseDownListener(e: MouseEvent) {
+  globalMouseDownListener = (e: MouseEvent) => {
     var { onClose, openOn } = this.props;
     var myElement = ReactDOM.findDOMNode(this);
     if (!myElement) return;
@@ -62,13 +56,13 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
 
     if (isInside(target, myElement) || isInside(target, openOn)) return;
     onClose();
-  }
+  };
 
-  globalKeyDownListener(e: KeyboardEvent) {
-    if (!escapeKey(e)) return;
-    var { onClose } = this.props;
-    onClose();
-  }
+  globalKeyDownListener = (e: KeyboardEvent) => {
+    if (escapeKey(e)) {
+      this.props.onClose();
+    }
+  };
 
   onVisSelect(v: Manifest) {
     var { clicker } = this.props;

@@ -20,48 +20,55 @@ import { List, OrderedSet } from "immutable";
 import { MANIFESTS } from "../../manifests";
 import { LINE_CHART_MANIFEST } from "../../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../../manifests/table/table";
+import { TOTALS_MANIFEST } from "../../manifests/totals/totals";
 import { SortDirection } from "../../view-definitions/version-3/split-definition";
 import { Colors } from "../colors/colors";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
+import { NumberFilterClause, NumberRange, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { FilterClauseFixtures } from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
 import { Highlight } from "../highlight/highlight";
-import { SplitCombineFixtures } from "../split-combine/split-combine.fixtures";
-import { Splits } from "../splits/splits";
+import { SplitFixtures } from "../split/split.fixtures";
+import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
-import { Essence, EssenceContext, EssenceJS } from "./essence";
+import { createMeasures, Essence, EssenceContext, EssenceValue } from "./essence";
+
+const defaultEssence: EssenceValue = {
+  dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
+  visualizations: MANIFESTS,
+  visualization: null,
+  timezone: Timezone.UTC,
+  pinnedDimensions: OrderedSet([]),
+  filter: new Filter({ clauses: List.of(new NumberFilterClause({ reference: "commentLength", values: List.of(new NumberRange({ start: 1, end: 100 })) })) }),
+  colors: null,
+  pinnedSort: null,
+  compare: null,
+  highlight: null,
+  splits: EMPTY_SPLITS,
+  timeShift: null,
+  measures: createMeasures()
+};
 
 export class EssenceFixtures {
-  static noVisualisationJS(): EssenceJS {
+  static noViz(): EssenceValue {
     return {
-      visualization: "totals",
-      timezone: "Etc/UTC",
-      pinnedDimensions: [],
-      selectedMeasures: ["count"],
-      splits: [],
-      timeShift: null
+      ...defaultEssence,
+      visualization: TOTALS_MANIFEST,
+      measures: createMeasures({ isMulti: true, multi: OrderedSet(["count"]) })
     };
   }
 
-  static totalsJS(): EssenceJS {
+  static totals(): EssenceValue {
     return {
-      visualization: "totals",
-      timezone: "Etc/UTC",
-      pinnedDimensions: [],
-      selectedMeasures: [],
-      splits: [],
-      timeShift: null
+      ...defaultEssence,
+      visualization: TOTALS_MANIFEST
     };
   }
 
-  static lineChartNoSplitJS(): EssenceJS {
+  static lineChart(): EssenceValue {
     return {
-      visualization: "line-chart",
-      timezone: "Etc/UTC",
-      pinnedDimensions: [],
-      selectedMeasures: [],
-      splits: [],
-      timeShift: null
+      ...defaultEssence,
+      visualization: LINE_CHART_MANIFEST
     };
   }
 
@@ -81,18 +88,18 @@ export class EssenceFixtures {
 
   static wikiTable(): Essence {
     const filterClauses = [
-      FilterClauseFixtures.timeRange("time", new Date("2015-09-12T00:00:00Z"), new Date("2015-09-13T00:00:00Z"), false),
+      FilterClauseFixtures.timeRange("time", new Date("2015-09-12T00:00:00Z"), new Date("2015-09-13T00:00:00Z")),
       FilterClauseFixtures.stringIn("channel", ["en"]),
-      FilterClauseFixtures.booleanIn("isRobot", [true], true),
+      FilterClauseFixtures.boolean("isRobot", [true], true),
       FilterClauseFixtures.stringContains("page", "Jeremy", false),
       FilterClauseFixtures.stringMatch("userChars", "^A$", false),
       FilterClauseFixtures.numberRange("commentLength", 3, null, "[)", false)
     ];
     const splitCombines = [
-      SplitCombineFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
-      SplitCombineFixtures.stringSplitCombine("isRobot", "delta", SortDirection.descending, 5),
-      SplitCombineFixtures.numberSplitCombine("commentLength", 10, "delta", SortDirection.descending, 5),
-      SplitCombineFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, 5)
+      SplitFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
+      SplitFixtures.stringSplitCombine("isRobot", "delta", SortDirection.descending, 5),
+      SplitFixtures.numberSplitCombine("commentLength", 10, "delta", SortDirection.descending, 5),
+      SplitFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, 5)
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
@@ -101,10 +108,8 @@ export class EssenceFixtures {
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
-      splits: new Splits(List(splitCombines)),
-      multiMeasureMode: true,
-      singleMeasure: "delta",
-      selectedMeasures: OrderedSet(["count", "added"]),
+      splits: new Splits({ splits: List(splitCombines) }),
+      measures: createMeasures({ isMulti: true, single: "delta", multi: OrderedSet(["count", "added"]) }),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       colors: null,
       pinnedSort: "delta",
@@ -115,15 +120,15 @@ export class EssenceFixtures {
 
   static wikiLineChart() {
     const filterClauses = [
-      FilterClauseFixtures.timeDurationLatest("time", -1, "P1D"),
+      FilterClauseFixtures.timePeriod("time", "P1D", TimeFilterPeriod.LATEST),
       FilterClauseFixtures.stringIn("channel", ["en", "no", "sv", "de", "fr", "cs"])
     ];
     const splitCombines = [
-      SplitCombineFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
-      SplitCombineFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, null)
+      SplitFixtures.stringSplitCombine("channel", "delta", SortDirection.descending, 50),
+      SplitFixtures.timeSplitCombine("time", "PT1H", "delta", SortDirection.descending, null)
     ];
     const highlightClauses = [
-      FilterClauseFixtures.timeRange("time", new Date("2015-09-12T10:00:00Z"), new Date("2015-09-12T11:00:00Z"), false)
+      FilterClauseFixtures.timeRange("time", new Date("2015-09-12T10:00:00Z"), new Date("2015-09-12T11:00:00Z"))
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
@@ -132,10 +137,8 @@ export class EssenceFixtures {
       timezone: Timezone.fromJS("Etc/UTC"),
       timeShift: TimeShift.empty(),
       filter: Filter.fromClauses(filterClauses),
-      splits: new Splits(List(splitCombines)),
-      multiMeasureMode: true,
-      singleMeasure: "delta",
-      selectedMeasures: OrderedSet(["count", "added"]),
+      splits: new Splits({ splits: List(splitCombines) }),
+      measures: createMeasures({ isMulti: true, single: "delta", multi: OrderedSet(["count", "added"]) }),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
       colors: new Colors({ dimension: "channel", values: { 0: "no", 1: "sv", 3: "fr", 4: "cs", 5: "en" } }),
       pinnedSort: "delta",
@@ -145,14 +148,14 @@ export class EssenceFixtures {
   }
 
   static wikiTotals() {
-    return Essence.fromJS(EssenceFixtures.totalsJS(), EssenceFixtures.getWikiContext());
+    return new Essence({ ...EssenceFixtures.totals(), ...EssenceFixtures.getWikiContext() });
   }
 
   static wikiLineChartNoSplit() {
-    return Essence.fromJS(EssenceFixtures.lineChartNoSplitJS(), EssenceFixtures.getWikiContext());
+    return new Essence({ ...EssenceFixtures.lineChart(), ...EssenceFixtures.getWikiContext() });
   }
 
   static twitterNoVisualisation() {
-    return Essence.fromJS(EssenceFixtures.noVisualisationJS(), EssenceFixtures.getTwitterContext());
+    return new Essence({ ...EssenceFixtures.noViz(), ...EssenceFixtures.getTwitterContext() });
   }
 }

@@ -38,34 +38,38 @@ export interface ClearableInputState {
 }
 
 export class ClearableInput extends React.Component<ClearableInputProps, ClearableInputState> {
+  static defaultProps = {
+    type: "text",
+    value: ""
+  };
 
-  onChange(e: KeyboardEvent) {
-    this.props.onChange((e.target as HTMLInputElement).value);
-  }
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.props.onChange(e.target.value);
+  };
 
-  onClear() {
+  onClear = () => {
     this.props.onChange("");
-  }
+  };
 
   render() {
     const { className, type, placeholder, focusOnMount, value, onBlur } = this.props;
 
-    var ref = focusOnMount ? focusOnInput : null;
+    const ref = focusOnMount ? focusOnInput : null;
 
-    var classNames = ["clearable-input"];
+    const classNames = ["clearable-input"];
     if (className) classNames.push(className);
     if (!value) classNames.push("empty");
 
     return <div className={classNames.join(" ")}>
       <input
-        type={type || "text"}
+        type={type}
         placeholder={placeholder}
-        value={value || ""}
-        onChange={this.onChange.bind(this)}
+        value={value}
+        onChange={this.onChange}
         onBlur={onBlur}
         ref={ref}
       />
-      <div className="clear" onClick={this.onClear.bind(this)}>
+      <div className="clear" onClick={this.onClear}>
         <SvgIcon svg={require("../../icons/x.svg")} />
       </div>
     </div>;

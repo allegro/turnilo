@@ -15,38 +15,6 @@
  * limitations under the License.
  */
 
-import { testImmutableClass } from "immutable-class-tester";
+import { SortOn } from "./sort-on";
 
-import { SortOn, SortOnJS } from "./sort-on";
-
-describe("SortOn", () => {
-  it("is an immutable class", () => {
-    testImmutableClass<SortOnJS>(SortOn, [
-
-      {
-        measure: {
-          name: "price",
-          title: "Price",
-          formula: "$main.min($price)"
-        }
-      },
-      {
-        measure: {
-          name: "price",
-          title: "Price",
-          formula: "$main.sum($price)"
-        }
-      },
-      {
-        dimension: {
-          name: "country",
-          title: "Country",
-          formula: "$country",
-          kind: "string"
-        }
-      }
-
-    ]);
-  });
-
-});
+describe("SortOn", () => {});

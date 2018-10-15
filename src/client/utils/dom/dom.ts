@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import * as React from "react";
 import * as d3 from "d3";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 
@@ -117,7 +118,7 @@ export function transformStyle(x: number, y: number): any {
   };
 }
 
-export function getXFromEvent(e: MouseEvent | DragEvent): number {
+export function getXFromEvent(e: MouseEvent | DragEvent | React.MouseEvent<HTMLElement>): number {
   return e.clientX || e.pageX;
 }
 

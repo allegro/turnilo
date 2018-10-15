@@ -16,7 +16,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import { Dataset, Expression, TabulatorOptions } from "plywood";
+import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { MANIFESTS } from "../../../common/manifests/index";
@@ -28,9 +28,10 @@ import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
+import { Highlight } from "../../../common/models/highlight/highlight";
 import { Manifest } from "../../../common/models/manifest/manifest";
 import { Measure } from "../../../common/models/measure/measure";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
@@ -135,24 +136,20 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         this.setState(state =>
           ({ ...state, essence: state.essence.changeComparisonShift(timeShift) }));
       },
-      changeTimeSelection: (selection: Expression) => {
-        const { essence } = this.state;
-        this.setState({ essence: essence.changeTimeSelection(selection) });
-      },
       changeSplits: (splits: Splits, strategy: VisStrategy, colors?: Colors) => {
         let { essence } = this.state;
         if (colors) essence = essence.changeColors(colors);
         this.setState({ essence: essence.changeSplits(splits, strategy) });
       },
-      changeSplit: (split: SplitCombine, strategy: VisStrategy) => {
+      changeSplit: (split: Split, strategy: VisStrategy) => {
         const { essence } = this.state;
         this.setState({ essence: essence.changeSplit(split, strategy) });
       },
-      addSplit: (split: SplitCombine, strategy: VisStrategy) => {
+      addSplit: (split: Split, strategy: VisStrategy) => {
         const { essence } = this.state;
         this.setState({ essence: essence.addSplit(split, strategy) });
       },
-      removeSplit: (split: SplitCombine, strategy: VisStrategy) => {
+      removeSplit: (split: Split, strategy: VisStrategy) => {
         const { essence } = this.state;
         this.setState({ essence: essence.removeSplit(split, strategy) });
       },
@@ -178,7 +175,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       },
       toggleMultiMeasureMode: () => {
         const { essence } = this.state;
-        this.setState({ essence: essence.toggleMultiMeasureMode() });
+        this.setState({ essence: essence.toggleMeasureMode() });
       },
       toggleEffectiveMeasure: (measure: Measure) => {
         this.setState(prevState => {
@@ -188,7 +185,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       },
       changeHighlight: (owner: string, measure: string, delta: Filter) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(owner, measure, delta) });
+        this.setState({ essence: essence.changeHighlight(new Highlight({ owner, measure, delta })) });
       },
       acceptHighlight: () => {
         const { essence } = this.state;
@@ -201,7 +198,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     };
   }
 
-  refreshMaxTime() {
+  refreshMaxTime = () => {
     const { essence, timekeeper } = this.state;
     const { dataCube } = essence;
     this.setState({ updatingMaxTime: true });
@@ -214,7 +211,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           updatingMaxTime: false
         });
       });
-  }
+  };
 
   componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
@@ -289,7 +286,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   getEssenceFromDataCube(dataCube: DataCube): Essence {
     const essence = Essence.fromDataCube(dataCube, { dataCube, visualizations: MANIFESTS });
     const isMulti = !!localStorage.get("is-multi-measure");
-    return essence.multiMeasureMode !== isMulti ? essence.toggleMultiMeasureMode() : essence;
+    return essence.measures.isMulti !== isMulti ? essence.toggleMeasureMode() : essence;
   }
 
   getEssenceFromHash(hash: string, dataCube: DataCube): Essence {
@@ -305,7 +302,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return getEssenceFromHash(hash, dataCube, MANIFESTS);
   }
 
-  globalResizeListener() {
+  globalResizeListener = () => {
     const { container, visualization } = this.refs;
     const containerDOM = ReactDOM.findDOMNode(container);
     const visualizationDOM = ReactDOM.findDOMNode(visualization);
@@ -316,49 +313,49 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
       visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect())
     });
-  }
+  };
 
-  canDrop(e: DragEvent): boolean {
+  canDrop(e: React.DragEvent<HTMLElement>): boolean {
     return Boolean(DragManager.getDragDimension());
   }
 
-  dragEnter(e: DragEvent) {
+  dragEnter = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop(e)) return;
     e.preventDefault();
     this.setState({ dragOver: true });
-  }
+  };
 
-  dragOver(e: DragEvent) {
+  dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
-  }
+  };
 
-  dragLeave(e: DragEvent) {
+  dragLeave = (e: React.DragEvent<HTMLElement>) => {
     this.setState({ dragOver: false });
-  }
+  };
 
-  drop(e: DragEvent) {
+  drop = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop(e)) return;
     e.preventDefault();
     const dimension = DragManager.getDragDimension();
     if (dimension) {
-      this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
+      this.clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     this.setState({ dragOver: false });
-  }
+  };
 
-  openRawDataModal() {
+  openRawDataModal = () => {
     this.setState({
       showRawDataModal: true
     });
-  }
+  };
 
-  onRawDataModalClose() {
+  onRawDataModalClose = () => {
     this.setState({
       showRawDataModal: false
     });
-  }
+  };
 
   renderRawDataModal() {
     const { showRawDataModal, essence, timekeeper } = this.state;
@@ -367,47 +364,47 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     return <RawDataModal
       essence={essence}
       timekeeper={timekeeper}
-      onClose={this.onRawDataModalClose.bind(this)}
+      onClose={this.onRawDataModalClose}
     />;
   }
 
-  openViewDefinitionModal() {
+  openViewDefinitionModal = () => {
     this.setState({
       showViewDefinitionModal: true
     });
-  }
+  };
 
-  onViewDefinitionModalClose() {
+  onViewDefinitionModalClose = () => {
     this.setState({
       showViewDefinitionModal: false
     });
-  }
+  };
 
   renderViewDefinitionModal() {
     const { showViewDefinitionModal, essence } = this.state;
     if (!showViewDefinitionModal) return null;
 
     return <ViewDefinitionModal
-      onClose={this.onViewDefinitionModalClose.bind(this)}
+      onClose={this.onViewDefinitionModalClose}
       essence={essence}
     />;
   }
 
-  triggerFilterMenu(dimension: Dimension) {
+  triggerFilterMenu = (dimension: Dimension) => {
     if (!dimension) return;
     (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
-  }
+  };
 
-  triggerSplitMenu(dimension: Dimension) {
+  triggerSplitMenu = (dimension: Dimension) => {
     if (!dimension) return;
     (this.refs["splitTile"] as SplitTile).splitMenuRequest(dimension);
-  }
+  };
 
-  changeTimezone(newTimezone: Timezone): void {
+  changeTimezone = (newTimezone: Timezone) => {
     const { essence } = this.state;
     const newEssence = essence.changeTimezone(newTimezone);
     this.setState({ essence: newEssence });
-  }
+  };
 
   getStoredLayout(): CubeViewLayout {
     return localStorage.get("cube-view-layout") || { dimensionPanelWidth: 240, pinboardWidth: 240 };
@@ -425,17 +422,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.storeLayout(layout);
   }
 
-  onPinboardPanelResize(value: number) {
+  onPinboardPanelResize = (value: number) => {
     let { layout } = this.state;
     layout.pinboardWidth = value;
 
     this.setState({ layout });
     this.storeLayout(layout);
-  }
+  };
 
-  onPanelResizeEnd() {
+  onPanelResizeEnd = () => {
     this.globalResizeListener();
-  }
+  };
 
   render() {
     const clicker = this.clicker;
@@ -455,7 +452,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         essence,
         stage: visualizationStage,
         deviceSize,
-        openRawDataModal: this.openRawDataModal.bind(this),
+        openRawDataModal: this.openRawDataModal,
         registerDownloadableDataset: (dataset: Dataset) => {
           this.downloadableDataset = { dataset, options: tabularOptions(essence) };
         }
@@ -492,18 +489,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       timekeeper={timekeeper}
       onNavClick={onNavClick}
       getCubeViewHash={getCubeViewHash}
-      refreshMaxTime={this.refreshMaxTime.bind(this)}
-      openRawDataModal={this.openRawDataModal.bind(this)}
-      openViewDefinitionModal={this.openViewDefinitionModal.bind(this)}
+      refreshMaxTime={this.refreshMaxTime}
+      openRawDataModal={this.openRawDataModal}
+      openViewDefinitionModal={this.openViewDefinitionModal}
       customization={customization}
       getDownloadableDataset={() => this.downloadableDataset}
-      changeTimezone={this.changeTimezone.bind(this)}
+      changeTimezone={this.changeTimezone}
       updatingMaxTime={updatingMaxTime}
     />;
 
     return <div className="cube-view">
       <GlobalEventListener
-        resize={this.globalResizeListener.bind(this)}
+        resize={this.globalResizeListener}
       />
       {headerBar}
       <div className="container" ref="container">
@@ -512,15 +509,15 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           clicker={clicker}
           essence={essence}
           menuStage={menuStage}
-          triggerFilterMenu={this.triggerFilterMenu.bind(this)}
-          triggerSplitMenu={this.triggerSplitMenu.bind(this)}
+          triggerFilterMenu={this.triggerFilterMenu}
+          triggerSplitMenu={this.triggerSplitMenu}
         />
 
         {deviceSize !== "small" ? <ResizeHandle
           side="left"
           initialValue={layout.dimensionPanelWidth}
-          onResize={this.onDimensionPanelResize.bind(this)}
-          onResizeEnd={this.onPanelResizeEnd.bind(this)}
+          onResize={this.onDimensionPanelResize}
+          onResizeEnd={this.onPanelResizeEnd}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
         /> : null}
@@ -542,21 +539,21 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 menuStage={visualizationStage}
               />
             </div>
-            <VisSelector clicker={clicker} essence={essence}/>
+            <VisSelector clicker={clicker} essence={essence} />
           </div>
           <div
             className="center-main"
-            onDragEnter={this.dragEnter.bind(this)}
+            onDragEnter={this.dragEnter}
           >
             <div className="visualization" ref="visualization">{visElement}</div>
             {manualFallback}
-            {dragOver ? <DropIndicator/> : null}
+            {dragOver ? <DropIndicator /> : null}
             {dragOver ? <div
               className="drag-mask"
-              onDragOver={this.dragOver.bind(this)}
-              onDragLeave={this.dragLeave.bind(this)}
-              onDragExit={this.dragLeave.bind(this)}
-              onDrop={this.drop.bind(this)}
+              onDragOver={this.dragOver}
+              onDragLeave={this.dragLeave}
+              onDragExit={this.dragLeave}
+              onDrop={this.drop}
             /> : null}
           </div>
         </div>
@@ -564,8 +561,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         {deviceSize !== "small" ? <ResizeHandle
           side="right"
           initialValue={layout.pinboardWidth}
-          onResize={this.onPinboardPanelResize.bind(this)}
-          onResizeEnd={this.onPanelResizeEnd.bind(this)}
+          onResize={this.onPinboardPanelResize}
+          onResizeEnd={this.onPanelResizeEnd}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
         /> : null}

@@ -100,13 +100,11 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       viewportHeight: 0,
       viewportWidth: 0
     };
-
-    this.globalResizeListener = this.globalResizeListener.bind(this);
   }
 
-  globalResizeListener() {
+  globalResizeListener = () => {
     this.updateViewport();
-  }
+  };
 
   private getGutterStyle(side: XSide | YSide): React.CSSProperties {
     const { layout } = this.props;
@@ -218,7 +216,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     return ReactDOM.findDOMNode(this.refs[refName]) as any;
   }
 
-  private onScroll(e: UIEvent) {
+  private onScroll = (e: UIEvent) => {
     const { bodyWidth, bodyHeight } = this.props.layout;
     const { viewportWidth, viewportHeight } = this.state;
     var target = e.target as Element;
@@ -237,7 +235,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
         scrollLeft
       });
     }
-  }
+  };
 
   getRelativeMouseCoordinates(event: MouseEvent): { x: number, y: number, part: ScrollerPart } {
     const { top, left, bodyWidth, bodyHeight } = this.props.layout;
@@ -270,23 +268,23 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     return { x, y, part: Scroller.PARTS[i][j] };
   }
 
-  onClick(event: MouseEvent) {
+  onClick = (event: MouseEvent) => {
     if (this.props.onClick === undefined) return;
 
     const { x, y, part } = this.getRelativeMouseCoordinates(event);
     if (y < 0 || x < 0) return;
 
     this.props.onClick(x, y, part);
-  }
+  };
 
-  onMouseMove(event: MouseEvent) {
+  onMouseMove = (event: MouseEvent) => {
     if (this.props.onMouseMove === undefined) return;
 
     const { x, y, part } = this.getRelativeMouseCoordinates(event);
     if (y < 0 || x < 0) return;
 
     this.props.onMouseMove(x, y, part);
-  }
+  };
 
   renderGutter(side: XSide | YSide): JSX.Element {
     var element = (this.props as any)[`${side}Gutter`];
@@ -404,9 +402,9 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
       <div
         className={eventContainerClasses}
         ref="eventContainer"
-        onScroll={this.onScroll.bind(this)}
-        onClick={this.onClick.bind(this)}
-        onMouseMove={this.onMouseMove.bind(this)}
+        onScroll={this.onScroll}
+        onClick={this.onClick}
+        onMouseMove={this.onMouseMove}
         onMouseLeave={onMouseLeave || null}
       >
         <div className="event-target" style={this.getTargetStyle()} />

@@ -303,7 +303,7 @@ The description of the dimension in the UI. Accepts Markdown format.
 A url associated with the dimension, with optional token '%s' that is replaced by the dimension value to generate
 a link specific to each value.
 
-**granularities** (string[5]), default: ["PT1M", "PT5M", "PT1H", "P1D", "P1W"]`
+**granularities** (string[5] or number[5]), default: ["PT1M", "PT5M", "PT1H", "P1D", "P1W"]`
 
 For time dimensions you can define a set of exactly 5 granularities that you want to be available for bucketing.
 
@@ -314,6 +314,8 @@ that divides into the larger period. For example, `P3M` is floorable because 3 d
 If you mainly care about smaller intervals, you might want to set it to: `['PT1S', 'PT15S', 'PT30S', 'PT1M', 'PT1H']`
 
 Alternatively, if you mainly care about large intervals, you might want to try: `['P1D', 'P1W', 'P1M', 'P3M', 'P1Y']`
+
+For number dimensions you can just provide 5 bucket sizes as integers.
 
 **bucketingStrategy** ("defaultBucket" | "defaultNoBucket")
 

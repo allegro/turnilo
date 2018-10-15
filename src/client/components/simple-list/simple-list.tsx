@@ -78,7 +78,7 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
     }
   }
 
-  dragEnd(e: DragEvent) {
+  dragEnd = (e: React.DragEvent<HTMLElement>) => {
     const { rows, onReorder } = this.props;
     const { draggedItem, dropIndex } = this.state;
 
@@ -88,7 +88,7 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
       draggedItem: undefined,
       dropIndex: -1
     });
-  }
+  };
 
   renderRows(rows: SimpleRow[]): JSX.Element[] {
     if (!rows || !rows.length) return [];
@@ -149,7 +149,7 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
     return <div
       className="simple-list"
       ref="list"
-      onDragEnd={this.dragEnd.bind(this)}
+      onDragEnd={this.dragEnd}
     >
       {this.renderRows(this.props.rows)}
     </div>;
