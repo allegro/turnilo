@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +14,19 @@
  * limitations under the License.
  */
 
-import { Highlight } from "./highlight";
+import { ColorsJS } from "../../models/colors/colors";
 
-describe("Highlight", () => {});
+export interface ViewDefinition2 {
+  visualization?: string;
+  timezone?: string;
+  filter?: any;
+  splits?: any;
+  singleMeasure: string;
+  selectedMeasures: string[];
+  multiMeasureMode: boolean;
+  pinnedDimensions?: string[];
+  colors?: ColorsJS;
+  pinnedSort?: string;
+  compare?: any;
+  highlight?: any;
+}

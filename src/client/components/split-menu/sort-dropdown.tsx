@@ -15,37 +15,39 @@
  * limitations under the License.
  */
 
-import { SortExpression } from "plywood";
 import * as React from "react";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { SortOn } from "../../../common/models/sort-on/sort-on";
+import { Sort } from "../../../common/models/sort/sort";
 import { Unary } from "../../../common/utils/functional/functional";
+import { SortDirection } from "../../../common/view-definitions/version-3/split-definition";
 import { STRINGS } from "../../config/constants";
 import { Dropdown } from "../dropdown/dropdown";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
 export interface SortDropdownProps {
-  sort: SortExpression;
+  sort: Sort;
   dimension: Dimension;
   dataCube: DataCube;
-  onChange: Unary<SortExpression, void>;
+  onChange: Unary<Sort, void>;
 }
 
 export const SortDropdown: React.SFC<SortDropdownProps> = ({ dataCube, dimension, sort, onChange }) => {
-  const selected = SortOn.fromSortExpression(sort, dataCube, dimension);
+  const selectedRef = dataCube.getDimension(sort.reference) || dataCube.getMeasure(sort.reference);
+  const selected = new SortOn(selectedRef);
   const options = [SortOn.fromDimension(dimension)].concat(dataCube.measures.mapMeasures(SortOn.fromMeasure));
 
   function toggleDirection() {
-    const expression = sort.expression;
-    const direction = sort.direction === SortExpression.DESCENDING ? SortExpression.ASCENDING : SortExpression.DESCENDING;
-    onChange(new SortExpression({ expression, direction }));
+    const reference = sort.reference;
+    const direction = sort.direction === SortDirection.descending ? SortDirection.ascending : SortDirection.descending;
+    onChange(new Sort({ reference, direction }));
   }
 
   function selectSort(sortOn: SortOn) {
-    const expression = sortOn.getExpression();
-    const direction = sort ? sort.direction : SortExpression.DESCENDING;
-    onChange(new SortExpression({ expression, direction }));
+    const reference = sortOn.getName();
+    const direction = sort ? sort.direction : SortDirection.descending;
+    onChange(new Sort({ reference, direction }));
   }
 
   return <div className="sort-direction">

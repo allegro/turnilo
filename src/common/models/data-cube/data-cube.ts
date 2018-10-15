@@ -37,22 +37,23 @@ import {
   PlyTypeSimple,
   r,
   RefExpression,
-  SimpleFullType,
-  SortExpression
+  SimpleFullType
 } from "plywood";
 import { hasOwnProperty, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { getWallTimeString } from "../../utils/time/time";
+import { SortDirection } from "../../view-definitions/version-3/split-definition";
 import { Cluster } from "../cluster/cluster";
 import { Dimension } from "../dimension/dimension";
 import { DimensionOrGroupJS } from "../dimension/dimension-group";
 import { Dimensions } from "../dimension/dimensions";
-import { FilterClause } from "../filter-clause/filter-clause";
-import { Filter, FilterJS } from "../filter/filter";
+import { RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
+import { EMPTY_FILTER, Filter } from "../filter/filter";
 import { Measure, MeasureJS } from "../measure/measure";
 import { MeasureOrGroupJS } from "../measure/measure-group";
 import { Measures } from "../measure/measures";
 import { RefreshRule, RefreshRuleJS } from "../refresh-rule/refresh-rule";
-import { Splits, SplitsJS } from "../splits/splits";
+import { Sort } from "../sort/sort";
+import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { Timekeeper } from "../timekeeper/timekeeper";
 
 function formatTimeDiff(diff: number): string {
@@ -79,7 +80,7 @@ function checkDimensionsAndMeasuresNamesUniqueness(dimensions: Dimensions, measu
     const duplicateNames = dimensionNames
       .concat(measureNames)
       .groupBy(name => name)
-      .filter(names => names.size > 1)
+      .filter(names => names.count() > 1)
       .map((names, name) => name)
       .toList();
 
@@ -112,7 +113,7 @@ export interface DataCubeValue {
   timeAttribute?: RefExpression;
   defaultTimezone?: Timezone;
   defaultFilter?: Filter;
-  defaultSplits?: Splits;
+  defaultSplitDimensions?: List<string>;
   defaultDuration?: Duration;
   defaultSortMeasure?: string;
   defaultSelectedMeasures?: OrderedSet<string>;
@@ -143,8 +144,8 @@ export interface DataCubeJS {
   measures?: MeasureOrGroupJS[];
   timeAttribute?: string;
   defaultTimezone?: string;
-  defaultFilter?: FilterJS;
-  defaultSplits?: SplitsJS;
+  defaultFilter?: any;
+  defaultSplitDimensions?: string[];
   defaultDuration?: string;
   defaultSortMeasure?: string;
   defaultSelectedMeasures?: string[];
@@ -156,16 +157,6 @@ export interface DataCubeOptions {
   customAggregations?: CustomDruidAggregations;
   customTransforms?: CustomDruidTransforms;
   druidContext?: Record<string, any>;
-
-  // Deprecated
-  defaultSplits?: SplitsJS;
-  defaultSplitDimension?: string;
-  skipIntrospection?: boolean;
-  disableAutofill?: boolean;
-  attributeOverrides?: AttributeJSs;
-
-  // Whatever
-  [thing: string]: any;
 }
 
 export interface DataCubeContext {
@@ -244,8 +235,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   static DEFAULT_INTROSPECTION: Introspection = "autofill-all";
   static INTROSPECTION_VALUES: Introspection[] = ["none", "no-autofill", "autofill-dimensions-only", "autofill-measures-only", "autofill-all"];
   static DEFAULT_DEFAULT_TIMEZONE = Timezone.UTC;
-  static DEFAULT_DEFAULT_FILTER = Filter.EMPTY;
-  static DEFAULT_DEFAULT_SPLITS = Splits.EMPTY;
+  static DEFAULT_DEFAULT_FILTER = EMPTY_FILTER;
+  static DEFAULT_DEFAULT_SPLITS = EMPTY_SPLITS;
   static DEFAULT_DEFAULT_DURATION = Duration.fromJS("P1D");
 
   static isDataCube(candidate: any): candidate is DataCube {
@@ -281,39 +272,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     const { cluster, executor } = context;
     if (!parameters.name) throw new Error("DataCube must have a name");
 
-    let clusterName = parameters.clusterName;
-    let introspection = parameters.introspection;
-    let defaultSplitsJS = parameters.defaultSplits;
-    let attributeOverrideJSs = parameters.attributeOverrides;
-
-    // Back compat.
-    if (!clusterName) {
-      clusterName = (parameters as any).engine;
-    }
-
-    let options = parameters.options || {};
-    if (options.skipIntrospection) {
-      if (!introspection) introspection = "none";
-      delete options.skipIntrospection;
-    }
-    if (options.disableAutofill) {
-      if (!introspection) introspection = "no-autofill";
-      delete options.disableAutofill;
-    }
-    if (options.attributeOverrides) {
-      if (!attributeOverrideJSs) attributeOverrideJSs = options.attributeOverrides;
-      delete options.attributeOverrides;
-    }
-    if (options.defaultSplitDimension) {
-      options.defaultSplits = options.defaultSplitDimension;
-      delete options.defaultSplitDimension;
-    }
-    if (options.defaultSplits) {
-      if (!defaultSplitsJS) defaultSplitsJS = options.defaultSplits;
-      delete options.defaultSplits;
-    }
-    // End Back compat.
-
+    const introspection = parameters.introspection;
     if (introspection && DataCube.INTROSPECTION_VALUES.indexOf(introspection) === -1) {
       throw new Error(`invalid introspection value ${introspection}, must be one of ${DataCube.INTROSPECTION_VALUES.join(", ")}`);
     }
@@ -326,7 +285,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     }
     const timeAttribute = timeAttributeName ? $(timeAttributeName) : null;
 
-    const attributeOverrides = AttributeInfo.fromJSs(attributeOverrideJSs || []);
+    const attributeOverrides = AttributeInfo.fromJSs(parameters.attributeOverrides || []);
     const attributes = AttributeInfo.fromJSs(parameters.attributes || []);
     let derivedAttributes: Record<string, Expression> = null;
     if (parameters.derivedAttributes) {
@@ -353,18 +312,27 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     const subsetFormula = parameters.subsetFormula || (parameters as any).subsetFilter;
 
+    let defaultFilter: Filter = null;
+    if (parameters.defaultFilter) {
+      try {
+        defaultFilter = Filter.fromJS(parameters.defaultFilter);
+      } catch {
+        console.warn(`Incorrect format of default filter for ${parameters.name}. Ignoring field`);
+      }
+    }
+
     let value: DataCubeValue = {
       executor: null,
       name: parameters.name,
       title: parameters.title,
       description: parameters.description,
       extendedDescription: parameters.extendedDescription,
-      clusterName,
+      clusterName: parameters.clusterName,
       source: parameters.source,
       group: parameters.group,
       subsetFormula,
       rollup: parameters.rollup,
-      options,
+      options: parameters.options,
       introspection,
       attributeOverrides,
       attributes,
@@ -373,8 +341,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       measures,
       timeAttribute,
       defaultTimezone: parameters.defaultTimezone ? Timezone.fromJS(parameters.defaultTimezone) : null,
-      defaultFilter: parameters.defaultFilter ? Filter.fromJS(parameters.defaultFilter) : null,
-      defaultSplits: defaultSplitsJS ? Splits.fromJS(defaultSplitsJS, { dimensions }) : null,
+      defaultFilter,
+      defaultSplitDimensions: parameters.defaultSplitDimensions ? List(parameters.defaultSplitDimensions) : null,
       defaultDuration: parameters.defaultDuration ? Duration.fromJS(parameters.defaultDuration) : null,
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size() ? measures.first().name : null),
       defaultSelectedMeasures: parameters.defaultSelectedMeasures ? OrderedSet(parameters.defaultSelectedMeasures) : null,
@@ -382,7 +350,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       refreshRule
     };
     if (cluster) {
-      if (clusterName !== cluster.name) throw new Error(`Cluster name '${clusterName}' was given but '${cluster.name}' cluster was supplied (must match)`);
+      if (parameters.clusterName !== cluster.name) throw new Error(`Cluster name '${parameters.clusterName}' was given but '${cluster.name}' cluster was supplied (must match)`);
       value.cluster = cluster;
     }
     if (executor) value.executor = executor;
@@ -409,7 +377,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public timeAttribute: RefExpression;
   public defaultTimezone: Timezone;
   public defaultFilter: Filter;
-  public defaultSplits: Splits;
+  public defaultSplitDimensions: List<string>;
   public defaultDuration: Duration;
   public defaultSortMeasure: string;
   public defaultSelectedMeasures: OrderedSet<string>;
@@ -440,7 +408,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     this.timeAttribute = parameters.timeAttribute;
     this.defaultTimezone = parameters.defaultTimezone;
     this.defaultFilter = parameters.defaultFilter;
-    this.defaultSplits = parameters.defaultSplits;
+    this.defaultSplitDimensions = parameters.defaultSplitDimensions;
     this.defaultDuration = parameters.defaultDuration;
     this.defaultSortMeasure = parameters.defaultSortMeasure;
     this.defaultSelectedMeasures = parameters.defaultSelectedMeasures;
@@ -486,7 +454,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       timeAttribute: this.timeAttribute,
       defaultTimezone: this.defaultTimezone,
       defaultFilter: this.defaultFilter,
-      defaultSplits: this.defaultSplits,
+      defaultSplitDimensions: this.defaultSplitDimensions,
       defaultDuration: this.defaultDuration,
       defaultSortMeasure: this.defaultSortMeasure,
       defaultSelectedMeasures: this.defaultSelectedMeasures,
@@ -515,7 +483,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     if (this.subsetFormula) js.subsetFormula = this.subsetFormula;
     if (this.defaultTimezone) js.defaultTimezone = this.defaultTimezone.toJS();
     if (this.defaultFilter) js.defaultFilter = this.defaultFilter.toJS();
-    if (this.defaultSplits) js.defaultSplits = this.defaultSplits.toJS();
+    if (this.defaultSplitDimensions) js.defaultSplitDimensions = this.defaultSplitDimensions.toArray();
     if (this.defaultDuration) js.defaultDuration = this.defaultDuration.toJS();
     if (this.defaultSortMeasure) js.defaultSortMeasure = this.defaultSortMeasure;
     if (this.defaultSelectedMeasures) js.defaultSelectedMeasures = this.defaultSelectedMeasures.toArray();
@@ -558,7 +526,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       immutableEqual(this.timeAttribute, other.timeAttribute) &&
       immutableEqual(this.defaultTimezone, other.defaultTimezone) &&
       immutableEqual(this.defaultFilter, other.defaultFilter) &&
-      immutableEqual(this.defaultSplits, other.defaultSplits) &&
+      immutableEqual(this.defaultSplitDimensions, other.defaultSplitDimensions) &&
       immutableEqual(this.defaultDuration, other.defaultDuration) &&
       this.defaultSortMeasure === other.defaultSortMeasure &&
       Boolean(this.defaultSelectedMeasures) === Boolean(other.defaultSelectedMeasures) &&
@@ -996,14 +964,15 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public getDefaultFilter(): Filter {
     const filter = this.defaultFilter || DataCube.DEFAULT_DEFAULT_FILTER;
     if (!this.timeAttribute) return filter;
-    return filter.insertByIndex(0, new FilterClause({
-      expression: this.timeAttribute,
-      selection: $(FilterClause.MAX_TIME_REF_NAME).timeRange(this.getDefaultDuration(), -1)
+    return filter.insertByIndex(0, new RelativeTimeFilterClause({
+      period: TimeFilterPeriod.LATEST,
+      duration: this.getDefaultDuration(),
+      reference: this.getTimeDimension().name
     }));
   }
 
   public getDefaultSplits(): Splits {
-    return this.defaultSplits || DataCube.DEFAULT_DEFAULT_SPLITS;
+    return this.defaultSplitDimensions ? Splits.fromDimensions(this.defaultSplitDimensions) : DataCube.DEFAULT_DEFAULT_SPLITS;
   }
 
   public getDefaultDuration(): Duration {
@@ -1057,10 +1026,10 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return this.change("measures", measures);
   }
 
-  public getDefaultSortExpression(): SortExpression {
-    return new SortExpression({
-      expression: $(this.defaultSortMeasure),
-      direction: SortExpression.DESCENDING
+  public getDefaultSortExpression(): Sort {
+    return new Sort({
+      reference: this.defaultSortMeasure,
+      direction: SortDirection.descending
     });
   }
 

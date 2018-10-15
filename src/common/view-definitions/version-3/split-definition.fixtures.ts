@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { SortDirection, SplitType, StringSplitDefinition } from "./split-definition";
+import { SplitType } from "../../models/split/split";
+import { SortDirection, StringSplitDefinition } from "./split-definition";
 
 export class SplitDefinitionFixtures {
   static stringSplitDefinition(dimension: string, sortOn: string, sortDirection: SortDirection, limit: number): StringSplitDefinition {

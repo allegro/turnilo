@@ -60,7 +60,7 @@ export class FilterDefinitionFixtures {
     };
   }
 
-  static latestTimeFilterDefinition(ref: string, multiple: number, duration: string): TimeFilterClauseDefinition {
+  static latestTimeFilterDefinition(ref: string, multiple: number, duration: string, multiply = false): TimeFilterClauseDefinition {
     return {
       ref,
       type: FilterType.time,

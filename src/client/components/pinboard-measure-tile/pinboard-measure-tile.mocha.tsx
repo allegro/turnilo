@@ -28,10 +28,10 @@ import { PinboardMeasureTile } from "./pinboard-measure-tile";
 describe("PinboardMeasureTile", () => {
   it("adds the correct class", () => {
 
-    var essence = EssenceFixtures.wikiTotals();
-    var sortOn = new SortOn({ dimension: essence.dataCube.getDimension("articleName") });
+    const essence = EssenceFixtures.wikiTotals();
+    const sortOn = new SortOn(essence.dataCube.getDimension("articleName"));
 
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <PinboardMeasureTile
         essence={essence}
         title="Pinboard"

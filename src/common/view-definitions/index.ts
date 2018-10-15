@@ -18,7 +18,8 @@ import { BAR_CHART_MANIFEST } from "../manifests/bar-chart/bar-chart";
 import { LINE_CHART_MANIFEST } from "../manifests/line-chart/line-chart";
 import { TABLE_MANIFEST } from "../manifests/table/table";
 import { TOTALS_MANIFEST } from "../manifests/totals/totals";
-import { Essence, EssenceJS } from "../models/essence/essence";
+import { Essence } from "../models/essence/essence";
+import { ViewDefinition2 } from "./version-2/view-definition-2";
 import { ViewDefinitionConverter2 } from "./version-2/view-definition-converter-2";
 import { ViewDefinitionHashEncoder2 } from "./version-2/view-definition-hash-encoder2";
 import { ViewDefinition3 } from "./version-3/view-definition-3";
@@ -27,7 +28,7 @@ import { ViewDefinitionHashEncoder3 } from "./version-3/view-definition-hash-enc
 import { ViewDefinitionConverter } from "./view-definition-converter";
 import { ViewDefinitionHashEncoder } from "./view-definition-hash-encoder";
 
-export type ViewDefinition = EssenceJS | ViewDefinition3;
+export type ViewDefinition = ViewDefinition2 | ViewDefinition3;
 export type ViewDefinitionVersion = "2" | "3";
 
 export const DEFAULT_VIEW_DEFINITION_VERSION = "3";

@@ -23,7 +23,7 @@ import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { formatFilterClause } from "../../../common/utils/formatter/formatter";
+import { formatFilterClause, getFileString } from "../../../common/utils/formatter/formatter";
 import { arraySum, Fn, makeTitle } from "../../../common/utils/general/general";
 import { Button } from "../../components/button/button";
 import { Loader } from "../../components/loader/loader";
@@ -147,7 +147,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataCube } = essence;
 
     return essence.getEffectiveFilter(timekeeper).clauses.map(clause => {
-      const dimension = dataCube.getDimensionByExpression(clause.expression);
+      const dimension = dataCube.getDimension(clause.reference);
       if (!dimension) return null;
       return formatFilterClause(dimension, clause, essence.timezone);
     }).toList();
@@ -263,8 +263,8 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
   }
 
   renderButtons(): JSX.Element {
-    const { onClose } = this.props;
     const { loading, error } = this.state;
+    const { onClose } = this.props;
 
     const buttons: JSX.Element[] = [];
 
@@ -294,7 +294,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataCube } = essence;
 
     const options = tabularOptions(essence);
-    const filtersString = essence.getEffectiveFilter(timekeeper).getFileString(dataCube.timeAttribute);
+    const filtersString = getFileString(essence.getEffectiveFilter(timekeeper));
     download({ dataset, options }, fileFormat, makeFileName(dataCube.name, filtersString, "raw"));
   }
 

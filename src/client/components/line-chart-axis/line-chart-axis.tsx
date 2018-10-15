@@ -62,15 +62,14 @@ export function timeFormat(scale: AxisScale): Unary<Date, string> {
 const floatFormat = d3.format(".1f");
 
 function labelFormatter(scale: AxisScale, timezone: Timezone): Unary<Date | number, string> {
-  const timeFormatter = timeFormat(scale);
-  const timezoneString = timezone.toString();
+  const [start] = scale.domain();
+  if (start instanceof Date) {
+    const timeFormatter = timeFormat(scale);
+    const timezoneString = timezone.toString();
+    return (value: Date) => timeFormatter(moment.tz(value, timezoneString).toDate());
+  }
+  return (value: number) => String(floatFormat(value));
 
-  return function formatLabel(v: Date | number) {
-    if (v instanceof Date) {
-      return timeFormatter(moment.tz(v, timezoneString).toDate());
-    }
-    return String(floatFormat(v as number));
-  };
 }
 
 export const LineChartAxis: React.SFC<LineChartAxisProps> = props => {
@@ -81,7 +80,7 @@ export const LineChartAxis: React.SFC<LineChartAxisProps> = props => {
 
   const lines = ticks.map((tick: any) => {
     const x = roundToHalfPx(scale(tick));
-    return <line key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_HEIGHT}/>;
+    return <line key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_HEIGHT} />;
   });
 
   const labelY = TICK_HEIGHT + TEXT_OFFSET;

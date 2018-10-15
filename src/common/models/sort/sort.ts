@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +14,22 @@
  * limitations under the License.
  */
 
-import { Highlight } from "./highlight";
+import { Record } from "immutable";
+import { SortDirection } from "../../view-definitions/version-3/split-definition";
 
-describe("Highlight", () => {});
+export const SORT_ON_DIMENSION_PLACEHOLDER = "__SWIV_SORT_ON_DIMENSIONS__";
+
+interface SortDefinition {
+  reference: string;
+  direction: SortDirection;
+}
+
+const defaultSort: SortDefinition = { reference: null, direction: null };
+
+export class Sort extends Record<SortDefinition>(defaultSort) {
+
+  empty(): boolean {
+    return this.reference === defaultSort.reference && this.direction === defaultSort.direction;
+  }
+
+}

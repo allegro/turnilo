@@ -33,24 +33,24 @@ export interface FilterOption {
 const FILTER_OPTIONS: FilterOption[] = [
   {
     label: STRINGS.include,
-    value: Filter.INCLUDED,
+    value: FilterMode.INCLUDE,
     svg: require("../../icons/filter-include.svg"),
     checkType: "check"
   },
   {
     label: STRINGS.exclude,
-    value: Filter.EXCLUDED,
+    value: FilterMode.EXCLUDE,
     svg: require("../../icons/filter-exclude.svg"),
     checkType: "cross"
   },
   {
     label: STRINGS.contains,
-    value: Filter.CONTAINS,
+    value: FilterMode.CONTAINS,
     svg: require("../../icons/filter-contains.svg")
   },
   {
     label: STRINGS.regex,
-    value: Filter.REGEX,
+    value: FilterMode.REGEX,
     svg: require("../../icons/filter-regex.svg")
   }
 ];

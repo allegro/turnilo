@@ -33,7 +33,7 @@ describe("NumberRangePicker", () => {
         onRangeStartChange={null}
         essence={EssenceFixtures.wikiTotals()}
         timekeeper={TimekeeperFixtures.fixed()}
-        dimension={DimensionFixtures.countryURL()}
+        dimension={DimensionFixtures.wikiCommentLength()}
         onRangeEndChange={null}
         exclude={false}
       />

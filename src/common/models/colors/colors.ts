@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { Class, Instance, isImmutableClass } from "immutable-class";
+import { Record as ImmutableRecord } from "immutable";
+import { isImmutableClass } from "immutable-class";
 import { $, FilterExpression, LimitExpression, Set, valueFromJS, valueToJS } from "plywood";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 
@@ -81,6 +82,13 @@ export interface ColorsValue {
   limit?: number;
 }
 
+const defaultColors: ColorsValue = {
+  dimension: null,
+  values: null,
+  hasNull: false,
+  limit: null
+};
+
 export interface ColorsJS {
   dimension: string;
   values?: Record<string, any>;
@@ -88,9 +96,7 @@ export interface ColorsJS {
   limit?: number;
 }
 
-var check: Class<ColorsValue, ColorsJS>;
-
-export class Colors implements Instance<ColorsValue, ColorsJS> {
+export class Colors extends ImmutableRecord<ColorsValue>(defaultColors) {
 
   static isColors(candidate: any): candidate is Colors {
     return candidate instanceof Colors;
@@ -155,12 +161,9 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   public limit: number;
 
   constructor(parameters: ColorsValue) {
-    this.dimension = parameters.dimension;
-    if (!this.dimension) throw new Error("must have a dimension");
-    this.values = parameters.values;
-    this.hasNull = parameters.hasNull;
-    this.limit = parameters.limit;
-    if (!this.values && !this.limit) throw new Error("must have values or limit");
+    if (!parameters.dimension) throw new Error("must have a dimension");
+    if (!parameters.values && !parameters.limit) throw new Error("must have values or limit");
+    super(parameters);
   }
 
   public valueOf(): ColorsValue {
@@ -241,7 +244,7 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
   }
 
   public toggle(v: any): Colors {
-    return this.has(v) ? this.remove(v) : this.add(v);
+    return this.hasColor(v) ? this.removeColor(v) : this.add(v);
   }
 
   public valueIndex(v: any): number {
@@ -264,13 +267,13 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return -1;
   }
 
-  public has(v: any): boolean {
+  public hasColor(v: any): boolean {
     if (v == null) return this.hasNull;
     return this.valueIndex(v) !== -1;
   }
 
   public add(v: any): Colors {
-    if (this.has(v)) return this;
+    if (this.hasColor(v)) return this;
     var value = this.valueOf();
 
     if (v === null) {
@@ -286,8 +289,8 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     return new Colors(value);
   }
 
-  public remove(v: any): Colors {
-    if (!this.has(v)) return this;
+  public removeColor(v: any): Colors {
+    if (!this.hasColor(v)) return this;
     var value = this.valueOf();
 
     if (v == null) {
@@ -331,5 +334,3 @@ export class Colors implements Instance<ColorsValue, ColorsJS> {
     }
   }
 }
-
-check = Colors;

@@ -44,7 +44,7 @@ describe("AppSettings", () => {
 
   });
 
-  describe("back compat", () => {
+  describe.skip("back compat", () => {
     it("works with dataSources", () => {
       var oldJS: any = AppSettingsFixtures.wikiOnlyJS();
       oldJS.dataSources = oldJS.dataCubes;
@@ -159,10 +159,6 @@ describe("AppSettings", () => {
             ],
             clusterName: "druid-wiki",
             defaultDuration: "P3D",
-            defaultFilter: {
-              op: "literal",
-              value: true
-            },
             defaultPinnedDimensions: [
               "articleName"
             ],
@@ -178,6 +174,12 @@ describe("AppSettings", () => {
                 kind: "time",
                 name: "time",
                 title: "Time"
+              },
+              {
+                kind: "string",
+                name: "country",
+                title: "Country",
+                formula: "$country"
               },
               {
                 formula: "$channel",

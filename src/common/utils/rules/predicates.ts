@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { SplitCombine } from "../../models/split-combine/split-combine";
+import { Split } from "../../models/split/split";
 import { VisualizationDependentPredicate } from "./visualization-dependent-evaluator";
 import { VisualizationIndependentPredicate } from "./visualization-independent-evaluator";
 
@@ -26,7 +26,7 @@ export class Predicates {
 
   public static areExactSplitKinds(...selectors: string[]): VisualizationDependentPredicate {
     return ({ splits, dataCube }) => {
-      var kinds: string[] = splits.toArray().map((split: SplitCombine) => split.getDimension(dataCube.dimensions).kind);
+      const kinds: string[] = splits.splits.map((split: Split) => dataCube.getDimension(split.reference).kind).toArray();
       return Predicates.strictCompare(selectors, kinds);
     };
   }
@@ -56,9 +56,9 @@ export class Predicates {
 
   public static haveAtLeastSplitKinds(...kinds: string[]): VisualizationDependentPredicate {
     return ({ splits, dataCube }) => {
-      let getKind = (split: SplitCombine) => split.getDimension(dataCube.dimensions).kind;
+      let getKind = (split: Split) => dataCube.getDimension(split.reference).kind;
 
-      let actualKinds = splits.toArray().map(getKind);
+      const actualKinds = splits.splits.map(getKind);
 
       return kinds.every(kind => actualKinds.indexOf(kind) > -1);
     };

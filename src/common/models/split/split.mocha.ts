@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
-import { Highlight } from "./highlight";
+import { Split } from "./split";
 
-describe("Highlight", () => {});
+describe("Split", () => {
+});

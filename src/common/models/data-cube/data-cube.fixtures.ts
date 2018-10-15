@@ -47,7 +47,6 @@ export class DataCubeFixtures {
       measures: MeasuresFixtures.wikiJS(),
       timeAttribute: "time",
       defaultTimezone: "Etc/UTC",
-      defaultFilter: { op: "literal", value: true },
       defaultDuration: "P3D",
       defaultSortMeasure: "count",
       defaultPinnedDimensions: ["articleName"],
@@ -71,7 +70,6 @@ export class DataCubeFixtures {
       measures: MeasuresFixtures.twitterJS(),
       timeAttribute: "time",
       defaultTimezone: "Etc/UTC",
-      defaultFilter: { op: "literal", value: true },
       defaultDuration: "P3D",
       defaultSortMeasure: "count",
       defaultPinnedDimensions: ["tweet"],
@@ -102,7 +100,6 @@ export class DataCubeFixtures {
       measures: [],
       timeAttribute: "time",
       defaultTimezone: "Etc/UTC",
-      defaultFilter: { op: "literal", value: true },
       defaultDuration: "P3D",
       refreshRule: {
         rule: "realtime"

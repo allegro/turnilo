@@ -16,14 +16,14 @@
  */
 
 import { Manifest, Resolve } from "../../models/manifest/manifest";
-import { Splits } from "../../models/splits/splits";
+import { EMPTY_SPLITS } from "../../models/splits/splits";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(() => Resolve.ready(10))
-  .otherwise(() => Resolve.automatic(3, { splits: Splits.EMPTY }))
+  .otherwise(() => Resolve.automatic(3, { splits: EMPTY_SPLITS }))
   .build();
 
 export const TOTALS_MANIFEST = new Manifest(

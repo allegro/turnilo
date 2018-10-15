@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { LiteralExpression, NumberRange, Set } from "plywood";
+import { List } from "immutable";
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { NumberFilterClause, NumberRange } from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -39,12 +39,12 @@ function numberOrAnyToString(start: number): string {
 }
 
 function stringToNumberOrAny(startInput: string): number {
-  var parse = parseFloat(startInput);
+  const parse = parseFloat(startInput);
   return isNaN(parse) ? ANY_VALUE : parse;
 }
 
 const MENU_WIDTH = 250;
-const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(Filter.INCLUDED, Filter.EXCLUDED);
+const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(FilterMode.INCLUDE, FilterMode.EXCLUDE);
 
 export interface NumberFilterMenuProps {
   clicker: Clicker;
@@ -62,9 +62,7 @@ export interface NumberFilterMenuState {
   leftOffset?: number;
   rightBound?: number;
   start?: number;
-  startInput?: string;
   end?: number;
-  endInput?: string;
   significantDigits?: number;
   filterMode?: FilterMode;
 }
@@ -77,43 +75,30 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
     this.state = {
       leftOffset: null,
       rightBound: null,
-      start: null,
-      startInput: "",
-      end: null,
-      endInput: ""
+      start: ANY_VALUE,
+      end: ANY_VALUE
     };
 
     this.globalKeyDownListener = this.globalKeyDownListener.bind(this);
   }
 
   componentWillMount() {
-    var { essence, dimension } = this.props;
-
-    var filter = essence.filter;
-    var valueSet = filter.getLiteralSet(dimension.expression);
-    var hasFilter = valueSet && valueSet.elements.length !== 0;
-    var start: number = null;
-    var end: number = null;
-
-    if (hasFilter) {
-      if (valueSet.setType === "NUMBER_RANGE") {
-        var range = valueSet.elements[0];
-        start = range.start;
-        end = range.end;
-      } else if (valueSet.setType === "NUMBER") {
-        var number = valueSet.elements[0];
-        start = number;
-        end = number;
-      }
+    const { essence, dimension } = this.props;
+    const clause = essence.filter.getClauseForDimension(dimension);
+    if (!clause) return;
+    if (!(clause instanceof NumberFilterClause)) {
+      throw new Error(`Expected number filter. Got: ${clause}`);
     }
+    const hasFilter = clause.values.count() !== 0;
+    if (hasFilter) {
+      const { start, end } = clause.values.first();
 
-    this.setState({
-      startInput: numberOrAnyToString(start),
-      endInput: numberOrAnyToString(end),
-      start,
-      end,
-      filterMode: filter.getModeForDimension(dimension) || Filter.INCLUDED
-    });
+      this.setState({
+        start,
+        end,
+        filterMode: essence.filter.getModeForDimension(dimension) || FilterMode.INCLUDE
+      });
+    }
   }
 
   componentDidMount() {
@@ -125,30 +110,17 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   }
 
   constructFilter(): Filter {
-    var { essence, dimension } = this.props;
-    var { start, end, filterMode } = this.state;
-    var { filter } = essence;
+    const { essence: { filter }, dimension } = this.props;
+    const { start, end, filterMode } = this.state;
 
-    var validFilter = false;
-    if ((start !== null && end !== null)) {
-      validFilter = start <= end;
-    } else {
-      validFilter = (!isNaN(start) && !(isNaN(end))) && (start !== null || end !== null);
-    }
-
-    if (validFilter) {
-
-      var bounds = start === end ? "[]" : "[)";
-      var newSet = Set.fromJS({ setType: "NUMBER_RANGE", elements: [NumberRange.fromJS({ start, end, bounds })] });
-      var clause = new FilterClause({
-        expression: dimension.expression,
-        selection: new LiteralExpression({ type: "SET/NUMBER_RANGE", value: newSet }),
-        exclude: filterMode === Filter.EXCLUDED
-      });
-      return filter.setClause(clause);
-    } else {
-      return null;
-    }
+    if (isNaN(start) || isNaN(end)) return null;
+    if (start === null && end === null) return null;
+    if (start !== null && end !== null && start > end) return null;
+    return filter.setClause(new NumberFilterClause({
+      reference: dimension.name,
+      not: filterMode === FilterMode.EXCLUDE,
+      values: List.of(new NumberRange({ start, end, bounds: start === end ? "[]" : "[)" }))
+    }));
   }
 
   globalKeyDownListener(e: KeyboardEvent) {
@@ -159,38 +131,36 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
 
   onOkClick() {
     if (!this.actionEnabled()) return;
-    var { clicker, onClose } = this.props;
+    const { clicker, onClose } = this.props;
     clicker.changeFilter(this.constructFilter());
     onClose();
   }
 
   onCancelClick() {
-    var { onClose } = this.props;
+    const { onClose } = this.props;
     onClose();
   }
 
   onRangeInputStartChange(e: KeyboardEvent) {
-    var startInput = (e.target as HTMLInputElement).value;
+    const startInput = (e.target as HTMLInputElement).value;
     this.setState({
-      startInput,
       start: stringToNumberOrAny(startInput)
     });
   }
 
   onRangeInputEndChange(e: KeyboardEvent) {
-    var endInput = (e.target as HTMLInputElement).value;
+    const endInput = (e.target as HTMLInputElement).value;
     this.setState({
-      endInput,
       end: stringToNumberOrAny(endInput)
     });
   }
 
-  onRangeStartChange(newStart: number) {
-    this.setState({ startInput: numberOrAnyToString(newStart), start: newStart });
+  onRangeStartChange(start: number) {
+    this.setState({ start });
   }
 
-  onRangeEndChange(newEnd: number) {
-    this.setState({ endInput: numberOrAnyToString(newEnd), end: newEnd });
+  onRangeEndChange(end: number) {
+    this.setState({ end });
   }
 
   onSelectFilterOption(filterMode: FilterMode) {
@@ -198,13 +168,14 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   }
 
   actionEnabled() {
-    var { essence } = this.props;
-    return !essence.filter.equals(this.constructFilter()) && Boolean(this.constructFilter());
+    const { essence } = this.props;
+    const filter = this.constructFilter();
+    return Boolean(filter) && !essence.filter.equals(filter);
   }
 
   render() {
     const { essence, timekeeper, dimension, onClose, containerStage, openOn, inside } = this.props;
-    const { endInput, startInput, end, start, filterMode } = this.state;
+    const { end, start, filterMode } = this.state;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
 
     return <BubbleMenu
@@ -227,11 +198,11 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
         </div>
         <div className="group">
           <label className="input-top-label">Min</label>
-          <input value={startInput} onChange={this.onRangeInputStartChange.bind(this)} />
+          <input value={numberOrAnyToString(start)} onChange={this.onRangeInputStartChange.bind(this)} />
         </div>
         <div className="group">
           <label className="input-top-label">Max</label>
-          <input value={endInput} onChange={this.onRangeInputEndChange.bind(this)} />
+          <input value={numberOrAnyToString(end)} onChange={this.onRangeInputEndChange.bind(this)} />
         </div>
       </div>
 
@@ -243,7 +214,7 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
         dimension={dimension}
         essence={essence}
         timekeeper={timekeeper}
-        exclude={filterMode === Filter.EXCLUDED}
+        exclude={filterMode === FilterMode.EXCLUDE}
       />
 
       <div className="ok-cancel-bar">

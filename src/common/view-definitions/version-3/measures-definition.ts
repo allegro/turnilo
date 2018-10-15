@@ -15,41 +15,23 @@
  */
 
 import { OrderedSet } from "immutable";
+import { createMeasures, Measures } from "../../models/essence/essence";
 
-export interface MeasuresDefinition {
+export interface MeasuresDefinitionJS {
   isMulti: boolean;
   single: string;
   multi: string[];
 }
 
 export interface MeasuresDefinitionConverter {
-  fromSimpleValues(multiMeasureMode: boolean, singleMeasure: string, selectedMeasures: OrderedSet<string>): MeasuresDefinition;
+  fromEssenceMeasures(measures: Measures): MeasuresDefinitionJS;
 
-  toMultiMeasureMode(measuresDefinition: MeasuresDefinition): boolean;
-
-  toSingleMeasure(measuresDefinition: MeasuresDefinition): string;
-
-  toSelectedMeasures(measuresDefinition: MeasuresDefinition): OrderedSet<string>;
+  toEssenceMeasures(measures: MeasuresDefinitionJS): Measures;
 }
 
 export const measuresDefinitionConverter: MeasuresDefinitionConverter = {
-  fromSimpleValues(multiMeasureMode: boolean, singleMeasure: string, selectedMeasures: OrderedSet<string>): MeasuresDefinition {
-    return {
-      isMulti: multiMeasureMode,
-      single: singleMeasure,
-      multi: selectedMeasures.toArray()
-    };
-  },
-
-  toMultiMeasureMode(measuresDefinition: MeasuresDefinition): boolean {
-    return measuresDefinition.isMulti;
-  },
-
-  toSingleMeasure(measuresDefinition: MeasuresDefinition): string {
-    return measuresDefinition.single;
-  },
-
-  toSelectedMeasures(measuresDefinition: MeasuresDefinition): OrderedSet<string> {
-    return OrderedSet(measuresDefinition.multi);
-  }
+  fromEssenceMeasures: ({ multi, isMulti, single }) =>
+    ({ isMulti, single, multi: multi.toArray() }),
+  toEssenceMeasures: ({ isMulti, multi, single }) =>
+    createMeasures({ isMulti, single, multi: OrderedSet.of(...multi) })
 };

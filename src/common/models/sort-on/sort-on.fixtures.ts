@@ -15,49 +15,45 @@
  * limitations under the License.
  */
 
-import { SortOn, SortOnJS } from "./sort-on";
+import { Dimension } from "../dimension/dimension";
+import { Measure } from "../measure/measure";
+import { SortOn } from "./sort-on";
 
 export class SortOnFixtures {
-  public static get DEFAULT_A_JS(): SortOnJS {
-    return {
-      measure: {
-        name: "price",
-        title: "Price",
-        formula: "$main.min($price)"
-      }
-    };
+  public static get DEFAULT_A_JS(): Measure {
+    return Measure.fromJS({
+      name: "price",
+      title: "Price",
+      formula: "$main.min($price)"
+    });
   }
 
-  public static get DEFAULT_B_JS(): SortOnJS {
-    return {
-      measure: {
-        name: "price",
-        title: "Price",
-        formula: "$main.sum($price)"
-      }
-    };
+  public static get DEFAULT_B_JS(): Measure {
+    return Measure.fromJS({
+      name: "price",
+      title: "Price",
+      formula: "$main.sum($price)"
+    });
   }
 
-  public static get DEFAULT_C_JS(): SortOnJS {
-    return {
-      dimension: {
-        name: "country",
-        title: "important countries",
-        formula: "$country",
-        kind: "string"
-      }
-    };
+  public static get DEFAULT_C_JS(): Dimension {
+    return Dimension.fromJS({
+      name: "country",
+      title: "important countries",
+      formula: "$country",
+      kind: "string"
+    });
   }
 
   static defaultA() {
-    return SortOn.fromJS(SortOnFixtures.DEFAULT_A_JS);
+    return new SortOn(SortOnFixtures.DEFAULT_A_JS);
   }
 
   static defaultB() {
-    return SortOn.fromJS(SortOnFixtures.DEFAULT_B_JS);
+    return new SortOn(SortOnFixtures.DEFAULT_B_JS);
   }
 
   static defaultC() {
-    return SortOn.fromJS(SortOnFixtures.DEFAULT_C_JS);
+    return new SortOn(SortOnFixtures.DEFAULT_C_JS);
   }
 }

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { EssenceJS } from "../../models/essence/essence";
 import { arrayToHash, hashToArray } from "../hash-conversions";
 import { ViewDefinitionHashEncoder } from "../view-definition-hash-encoder";
+import { ViewDefinition2 } from "./view-definition-2";
 
-export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<EssenceJS> {
-  decodeUrlHash(urlHash: string, visualization: string): EssenceJS {
+export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<ViewDefinition2> {
+  decodeUrlHash(urlHash: string, visualization: string): ViewDefinition2 {
     const jsArray = hashToArray(urlHash);
 
     if (!(8 <= jsArray.length && jsArray.length <= 11)) return null;
@@ -36,13 +36,12 @@ export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<Ess
       pinnedSort: jsArray[7],
       colors: jsArray[8] || null,
       compare: jsArray[9] || null,
-      highlight: jsArray[10] || null,
-      timeShift: null
+      highlight: jsArray[10] || null
     };
   }
 
-  encodeUrlHash(definition: EssenceJS): string {
-    var compressed: any[] = [
+  encodeUrlHash(definition: ViewDefinition2): string {
+    const compressed: any[] = [
       definition.timezone,         // 0
       definition.filter,           // 1
       definition.splits,           // 2

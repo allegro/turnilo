@@ -16,7 +16,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import { Dataset, Expression, TabulatorOptions } from "plywood";
+import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { MANIFESTS } from "../../../common/manifests/index";
@@ -28,9 +28,10 @@ import { Device, DeviceSize } from "../../../common/models/device/device";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
+import { Highlight } from "../../../common/models/highlight/highlight";
 import { Manifest } from "../../../common/models/manifest/manifest";
 import { Measure } from "../../../common/models/measure/measure";
-import { SplitCombine } from "../../../common/models/split-combine/split-combine";
+import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { TimeShift } from "../../../common/models/time-shift/time-shift";
@@ -135,24 +136,20 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         this.setState(state =>
           ({ ...state, essence: state.essence.changeComparisonShift(timeShift) }));
       },
-      changeTimeSelection: (selection: Expression) => {
-        const { essence } = this.state;
-        this.setState({ essence: essence.changeTimeSelection(selection) });
-      },
       changeSplits: (splits: Splits, strategy: VisStrategy, colors?: Colors) => {
         let { essence } = this.state;
         if (colors) essence = essence.changeColors(colors);
         this.setState({ essence: essence.changeSplits(splits, strategy) });
       },
-      changeSplit: (split: SplitCombine, strategy: VisStrategy) => {
+      changeSplit: (split: Split, strategy: VisStrategy) => {
         const { essence } = this.state;
         this.setState({ essence: essence.changeSplit(split, strategy) });
       },
-      addSplit: (split: SplitCombine, strategy: VisStrategy) => {
+      addSplit: (split: Split, strategy: VisStrategy) => {
         const { essence } = this.state;
         this.setState({ essence: essence.addSplit(split, strategy) });
       },
-      removeSplit: (split: SplitCombine, strategy: VisStrategy) => {
+      removeSplit: (split: Split, strategy: VisStrategy) => {
         const { essence } = this.state;
         this.setState({ essence: essence.removeSplit(split, strategy) });
       },
@@ -178,7 +175,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       },
       toggleMultiMeasureMode: () => {
         const { essence } = this.state;
-        this.setState({ essence: essence.toggleMultiMeasureMode() });
+        this.setState({ essence: essence.toggleMeasureMode() });
       },
       toggleEffectiveMeasure: (measure: Measure) => {
         this.setState(prevState => {
@@ -188,7 +185,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       },
       changeHighlight: (owner: string, measure: string, delta: Filter) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changeHighlight(owner, measure, delta) });
+        this.setState({ essence: essence.changeHighlight(new Highlight({ owner, measure, delta })) });
       },
       acceptHighlight: () => {
         const { essence } = this.state;
@@ -289,7 +286,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   getEssenceFromDataCube(dataCube: DataCube): Essence {
     const essence = Essence.fromDataCube(dataCube, { dataCube, visualizations: MANIFESTS });
     const isMulti = !!localStorage.get("is-multi-measure");
-    return essence.multiMeasureMode !== isMulti ? essence.toggleMultiMeasureMode() : essence;
+    return essence.measures.isMulti !== isMulti ? essence.toggleMeasureMode() : essence;
   }
 
   getEssenceFromHash(hash: string, dataCube: DataCube): Essence {
@@ -343,7 +340,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     e.preventDefault();
     const dimension = DragManager.getDragDimension();
     if (dimension) {
-      this.clicker.changeSplit(SplitCombine.fromExpression(dimension.expression), VisStrategy.FairGame);
+      this.clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     this.setState({ dragOver: false });
   }
@@ -542,7 +539,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 menuStage={visualizationStage}
               />
             </div>
-            <VisSelector clicker={clicker} essence={essence}/>
+            <VisSelector clicker={clicker} essence={essence} />
           </div>
           <div
             className="center-main"
@@ -550,7 +547,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           >
             <div className="visualization" ref="visualization">{visElement}</div>
             {manualFallback}
-            {dragOver ? <DropIndicator/> : null}
+            {dragOver ? <DropIndicator /> : null}
             {dragOver ? <div
               className="drag-mask"
               onDragOver={this.dragOver.bind(this)}

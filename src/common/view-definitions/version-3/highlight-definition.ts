@@ -42,7 +42,7 @@ export function highlightConverter(dataCube: DataCube): HighlightDefinitionConve
 
     fromHighlight(highlight: Highlight): HighlightDefinition {
       const { owner, delta, measure } = highlight;
-      const filters = delta.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc, dataCube)).toArray();
+      const filters = delta.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray();
 
       return { owner, filters, measure };
     }

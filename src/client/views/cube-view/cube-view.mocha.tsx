@@ -27,7 +27,7 @@ import { FilterTile } from "../../components/filter-tile/filter-tile";
 import { SplitTile } from "../../components/split-tile/split-tile";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import { mockReactComponent, renderIntoDocument } from "../../utils/test-utils";
-import { CubeView } from "./cube-view";
+import { CubeView, CubeViewState } from "./cube-view";
 
 describe("CubeView", () => {
   before(() => {
@@ -43,11 +43,11 @@ describe("CubeView", () => {
   });
 
   it("adds the correct class", () => {
-    var updateViewHash = sinon.stub();
+    const updateViewHash = sinon.stub();
     const getEssenceFromHash = sinon.stub();
     const getCubeViewHash = sinon.stub();
 
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <CubeView
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
@@ -65,13 +65,13 @@ describe("CubeView", () => {
   });
 
   it("remembers measure mode toggle click", () => {
-    var updateViewHash = sinon.stub();
+    const updateViewHash = sinon.stub();
     const getEssenceFromHash = sinon.stub();
     const getCubeViewHash = sinon.stub();
-    var stub = sinon.stub(localStorage, "get");
+    let stub = sinon.stub(localStorage, "get");
     stub.withArgs("is-multi-measure").returns(undefined);
 
-    var initialCubeView: any = renderIntoDocument(
+    const initialCubeView: any = renderIntoDocument(
       <CubeView
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
@@ -82,13 +82,13 @@ describe("CubeView", () => {
         getEssenceFromHash={getEssenceFromHash}
       />
     );
-    expect(initialCubeView.state.essence.multiMeasureMode, "default is single measure").to.equal(false);
+    expect((initialCubeView.state as CubeViewState).essence.measures.isMulti, "default is single measure").to.equal(false);
 
     stub.restore();
     stub = sinon.stub(localStorage, "get");
     stub.withArgs("is-multi-measure").returns(true);
 
-    var wikiCubeView: any = renderIntoDocument(
+    const wikiCubeView: any = renderIntoDocument(
       <CubeView
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
@@ -100,13 +100,13 @@ describe("CubeView", () => {
       />
     );
 
-    expect(wikiCubeView.state.essence.multiMeasureMode, "multi measure in local storage is respected -> true").to.equal(true);
+    expect((wikiCubeView.state as CubeViewState).essence.measures.isMulti, "multi measure in local storage is respected -> true").to.equal(true);
 
     stub.restore();
     stub = sinon.stub(localStorage, "get");
     stub.withArgs("is-multi-measure").returns(false);
 
-    var wikiCubeView2: any = renderIntoDocument(
+    const wikiCubeView2: any = renderIntoDocument(
       <CubeView
         hash={null}
         initTimekeeper={TimekeeperFixtures.fixed()}
@@ -118,6 +118,6 @@ describe("CubeView", () => {
       />
     );
 
-    expect(wikiCubeView2.state.essence.multiMeasureMode, "multi measure in local storage is respected -> false").to.equal(false);
+    expect((wikiCubeView2.state as CubeViewState).essence.measures.isMulti, "multi measure in local storage is respected -> false").to.equal(false);
   });
 });

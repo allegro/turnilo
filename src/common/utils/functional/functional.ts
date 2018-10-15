@@ -17,7 +17,8 @@
 import { isTruthy } from "../general/general";
 
 export type Unary<T, R> = (arg: T) => R;
-export type Binary<T, S, R> = (arg: T, arg2: S) => R;
+export type Binary<T, T2, R> = (arg: T, arg2: T2) => R;
+export type Ternary<T, T2, T3, R> = (arg: T, arg2: T2, arg3: T3) => R;
 
 export type Predicate<T> = Unary<T, boolean>;
 
