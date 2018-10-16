@@ -17,6 +17,7 @@
 
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
+import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
@@ -26,7 +27,7 @@ import { MeasuresTile } from "../measures-tile/measures-tile";
 import { Direction, ResizeHandle } from "../resize-handle/resize-handle";
 import "./dimension-measure-panel.scss";
 
-const MIN_PANEL_SIZE = 100;
+export const MIN_PANEL_SIZE = 100;
 const RESIZE_HANDLE_SIZE = 12;
 
 export interface DimensionMeasurePanelProps {
@@ -49,6 +50,15 @@ function dividerConstraints(height: number) {
   return { minDividerPosition, maxDividerPosition };
 }
 
+export function initialPosition(height: number, dataCube: DataCube) {
+  const dimensionsCount = dataCube.dimensions.size();
+  const measuresCount = dataCube.measures.size();
+  const ratio = dimensionsCount / (measuresCount + dimensionsCount);
+
+  const { minDividerPosition, maxDividerPosition } = dividerConstraints(height);
+  return clamp(height * ratio, minDividerPosition, maxDividerPosition);
+}
+
 export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanelProps, DimensionMeasurePanelState> {
 
   state: DimensionMeasurePanelState = {
@@ -58,19 +68,12 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
 
   containerRef: Element = null;
 
-  calculateInitialPosition = (container: Element) => {
+  getInitialState = (container: Element) => {
     if (!container) return;
 
     this.containerRef = container;
     const { height: containerHeight } = this.containerRef.getBoundingClientRect();
-
-    const { essence: { dataCube } } = this.props;
-    const dimensionsCount = dataCube.dimensions.size();
-    const measuresCount = dataCube.measures.size();
-    const ratio = dimensionsCount / (measuresCount + dimensionsCount);
-
-    const { minDividerPosition, maxDividerPosition } = dividerConstraints(containerHeight);
-    const dividerPosition = clamp(containerHeight * ratio, minDividerPosition, maxDividerPosition);
+    const dividerPosition = initialPosition(containerHeight, this.props.essence.dataCube);
 
     this.setState({ dividerPosition, containerHeight });
   }
@@ -103,7 +106,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
     const showResizeHandle = this.containerRef !== null;
 
     return <div className="dimension-measure-panel" style={style}>
-      <div ref={this.calculateInitialPosition} className="dimension-measure-panel--container">
+      <div ref={this.getInitialState} className="dimension-measure-panel--container">
         <DimensionListTile
           clicker={clicker}
           essence={essence}
