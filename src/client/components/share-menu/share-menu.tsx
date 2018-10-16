@@ -87,10 +87,10 @@ export const ShareMenu: React.SFC<ShareMenuProps> = props => {
 
       {externalViews.map((externalView: ExternalView, i: number) => {
         const url = externalView.linkGeneratorFn(essence.dataCube, essence.timezone, essence.filter, essence.splits);
-        const title = `${STRINGS.openIn} ${externalView.title}`;
-        const target = externalView.sameWindow ? "_self" : "_blank";
         return <li key={`custom-url-${i}`}>
-          <a href={url} target={target}>{title}</a>
+          <a href={url} target={externalView.sameWindow ? "_self" : "_blank"}>
+            {`${STRINGS.openIn} ${externalView.title}`}
+          </a>
         </li>;
       })}
     </ul>

@@ -441,27 +441,47 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   toggleDimensionPanel() {
-    let { layout } = this.state;
-    layout.dimensionPanel.hidden = !layout.dimensionPanel.hidden;
-    this.updateLayout(layout);
+    const { layout: { dimensionPanel }, layout } = this.state;
+    this.updateLayout({
+      ...layout,
+      dimensionPanel: {
+        ...dimensionPanel,
+        hidden: !dimensionPanel.hidden
+      }
+    });
   }
 
   togglePinboard() {
-    let { layout } = this.state;
-    layout.pinboard.hidden = !layout.pinboard.hidden;
-    this.updateLayout(layout);
+    const { layout: { pinboard }, layout } = this.state;
+    this.updateLayout({
+      ...layout,
+      pinboard: {
+        ...pinboard,
+        hidden: !pinboard.hidden
+      }
+    });
   }
 
-  onDimensionPanelResize(value: number) {
-    let { layout } = this.state;
-    layout.dimensionPanel.width = value;
-    this.updateLayout(layout);
+  onDimensionPanelResize(width: number) {
+    const { layout: { dimensionPanel }, layout } = this.state;
+    this.updateLayout({
+      ...layout,
+      dimensionPanel: {
+        ...dimensionPanel,
+        width
+      }
+    });
   }
 
-  onPinboardPanelResize(value: number) {
-    let { layout } = this.state;
-    layout.pinboard.width = value;
-    this.updateLayout(layout);
+  onPinboardPanelResize(width: number) {
+    const { layout: { pinboard }, layout } = this.state;
+    this.updateLayout({
+      ...layout,
+      pinboard: {
+        ... pinboard,
+        width
+      }
+    });
   }
 
   onPanelResizeEnd() {
@@ -518,7 +538,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           <div className="center-top-bar">
             <div className="dimension-panel-toggle"
                  onClick={this.toggleDimensionPanel.bind(this)}>
-              <ToggleArrow right={layout.dimensionPanel.hidden}/>
+              <ToggleArrow right={layout.dimensionPanel.hidden} />
             </div>
             <div className="filter-split-section">
               <FilterTile
@@ -538,7 +558,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
             <VisSelector clicker={clicker} essence={essence} />
             <div className="pinboard-toggle"
                  onClick={this.togglePinboard.bind(this)}>
-              <ToggleArrow right={!layout.pinboard.hidden}/>
+              <ToggleArrow right={!layout.pinboard.hidden} />
             </div>
           </div>
           <div

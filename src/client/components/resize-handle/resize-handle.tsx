@@ -16,6 +16,7 @@
  */
 
 import * as React from "react";
+import { isFunction } from "util";
 import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./resize-handle.scss";
@@ -66,7 +67,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     window.removeEventListener("mouseup", this.onGlobalMouseUp);
     window.removeEventListener("mousemove", this.onGlobalMouseMove);
 
-    if (!!this.props.onResizeEnd) {
+    if (isFunction(this.props.onResizeEnd)) {
       this.props.onResizeEnd(this.state.currentValue);
     }
   }
