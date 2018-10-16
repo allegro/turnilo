@@ -51,6 +51,7 @@ export class DataCubeFixtures {
       defaultSortMeasure: "count",
       defaultPinnedDimensions: ["articleName"],
       defaultSelectedMeasures: ["count"],
+      maxSplits: 4,
       refreshRule: {
         time: new Date("2016-04-30T12:39:51.350Z"),
         rule: "fixed"
@@ -101,6 +102,7 @@ export class DataCubeFixtures {
       timeAttribute: "time",
       defaultTimezone: "Etc/UTC",
       defaultDuration: "P3D",
+      maxSplits: 4,
       refreshRule: {
         rule: "realtime"
       }

@@ -292,6 +292,7 @@ describe("AppSettings", () => {
               rule: "fixed",
               time: new Date("2016-04-30T12:39:51.350Z")
             },
+            maxSplits: 4,
             source: "wiki",
             timeAttribute: "time",
             title: "Wiki"

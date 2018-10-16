@@ -15,6 +15,7 @@
  */
 
 import { Resolve } from "../../models/manifest/manifest";
+import { Splits } from "../../models/splits/splits";
 import { Resolutions } from "./resolutions";
 import { Action } from "./rules-evaluator-builder";
 import { VisualizationDependentAction } from "./visualization-dependent-evaluator";
@@ -28,6 +29,20 @@ export class Actions {
   static manualDimensionSelection(message: string): VisualizationDependentAction {
     return ({ dataCube }) => {
       return Resolve.manual(4, message, Resolutions.someDimensions(dataCube));
+    };
+  }
+
+  static removeExcessiveSplits(visualizationName = "Visualization"): VisualizationDependentAction {
+    return ({ splits, dataCube }) => {
+      const newSplits = splits.splits.take(dataCube.getMaxSplits());
+      return Resolve.manual(3, `${visualizationName} supports only ${dataCube.getMaxSplits()} splits`, [
+        {
+          description: "Remove excessive splits",
+          adjustment: {
+            splits: Splits.fromSplits(newSplits.toArray())
+          }
+        }
+      ]);
     };
   }
 
