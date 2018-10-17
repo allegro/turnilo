@@ -173,8 +173,8 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
         keyDown={this.globalKeyDownListener.bind(this)}
       />
       {this.lastRenderResult}
-      {datasetLoad.error ? <QueryError error={datasetLoad.error}/> : null}
-      {datasetLoad.loading ? <Loader/> : null}
+      {datasetLoad.error ? <QueryError error={datasetLoad.error} /> : null}
+      {datasetLoad.loading ? <Loader /> : null}
     </div>;
   }
 }

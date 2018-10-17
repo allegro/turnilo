@@ -61,10 +61,21 @@ export function toExpression({ reference, bucket, type }: Split, filter?: Expres
   return expression.performAction(bucketToAction(bucket));
 }
 
+function kindToType(kind: string): SplitType {
+  switch (kind) {
+    case "time":
+      return SplitType.time;
+    case "number":
+      return SplitType.number;
+    default:
+      return SplitType.string;
+  }
+}
+
 export class Split extends Record<SplitValue>(defaultSplit) {
 
-  static fromDimension({ name }: Dimension): Split {
-    return new Split({ reference: name });
+  static fromDimension({ name, kind }: Dimension): Split {
+    return new Split({ reference: name, type: kindToType(kind) });
   }
 
   static fromJS({ type, reference, bucket, sort, limit }: any): Split {

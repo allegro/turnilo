@@ -18,26 +18,22 @@ import { $, Expression, LimitExpression, ply, SortExpression } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
 import { toExpression as filterClauseToExpression } from "../../../common/models/filter-clause/filter-clause";
 import { toExpression as splitToExpression } from "../../../common/models/split/split";
+import { Colors } from "../../models/colors/colors";
+import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import { CurrentFilter, Measure, MeasureDerivation, PreviousFilter } from "../../models/measure/measure";
+import { Sort } from "../../models/sort/sort";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 import { sortDirectionMapper } from "../../view-definitions/version-3/split-definition";
+import { thread } from "../functional/functional";
 
-export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-  const { splits, colors, dataCube } = essence;
+const $main = $("main");
+
+function applyMeasures(essence: Essence, filters: Filters, nestingLevel = 0) {
   const measures = essence.getEffectiveMeasures();
-
-  const $main = $("main");
-
   const hasComparison = essence.hasComparison();
-  const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId: this.id });
 
-  const currentFilter = filterClauseToExpression(essence.currentTimeFilter(timekeeper));
-  const previousFilter = hasComparison ? filterClauseToExpression(essence.previousTimeFilter(timekeeper)) : null;
-
-  const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression()));
-
-  function applyMeasures(query: Expression, nestingLevel = 0): Expression {
+  return (query: Expression) => {
     return measures.reduce((query, measure) => {
       if (!hasComparison) {
         return query.performAction(
@@ -45,76 +41,124 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
         );
       }
       return query
-        .performAction(measure.toApplyExpression(nestingLevel, new CurrentFilter(currentFilter)))
-        .performAction(measure.toApplyExpression(nestingLevel, new PreviousFilter(previousFilter)));
+        .performAction(measure.toApplyExpression(nestingLevel, new CurrentFilter(filters.current)))
+        .performAction(measure.toApplyExpression(nestingLevel, new PreviousFilter(filters.previous)));
     }, query);
+  };
+}
+
+function applySortReferenceExpression(essence: Essence, query: Expression, nestingLevel: number, currentFilter: Expression, sort: Sort): Expression {
+  const { name: sortMeasureName, derivation } = Measure.nominalName(sort.reference);
+  if (sortMeasureName && derivation === MeasureDerivation.CURRENT) {
+    const sortMeasure = essence.dataCube.getMeasure(sortMeasureName);
+    if (sortMeasure && !essence.getEffectiveMeasures().contains(sortMeasure)) {
+      return query.performAction(sortMeasure.toApplyExpression(nestingLevel, new CurrentFilter(currentFilter)));
+    }
   }
+  if (sortMeasureName && derivation === MeasureDerivation.DELTA) {
+    return query.apply(sort.reference, $(sortMeasureName).subtract($(Measure.derivedName(sortMeasureName, MeasureDerivation.PREVIOUS))));
+  }
+  return query;
+}
 
-  const queryWithMeasures = applyMeasures(mainExp);
-
-  function applySplit(i: number): Expression {
-    const split = splits.getSplit(i);
-    const splitDimension = dataCube.getDimension(split.reference);
-    const { sort, limit } = split;
-    if (!sort) {
-      throw new Error("something went wrong during query generation");
-    }
-
-    const currentSplit = splitToExpression(split, hasComparison && currentFilter, hasComparison && essence.timeShift.valueOf());
-    let subQuery: Expression =
-      $main.split(currentSplit, splitDimension.name);
-
-    if (colors && colors.dimension === splitDimension.name) {
-      const havingFilter = colors.toHavingFilter(splitDimension.name);
-      if (havingFilter) {
-        subQuery = subQuery.performAction(havingFilter);
-      }
-    }
-
-    const nestingLevel = i + 1;
-
-    subQuery = applyMeasures(subQuery, nestingLevel);
-
-    // It's possible to define sort on measure that's not selected thus we need to add apply expression for that measure.
-    // We don't need add apply expressions for:
-    //   * dimensions - they're already defined as apply expressions because of splits
-    //   * selected measures - they're defined as apply expressions already
-    //   * previous - we need to define them earlier so they're present here
-    const { name: sortMeasureName, derivation } = Measure.nominalName(sort.reference);
-    if (sortMeasureName && derivation === MeasureDerivation.CURRENT) {
-      const sortMeasure = dataCube.getMeasure(sortMeasureName);
-      if (sortMeasure && !measures.contains(sortMeasure)) {
-        subQuery = subQuery.performAction(sortMeasure.toApplyExpression(nestingLevel, new CurrentFilter(currentFilter)));
-      }
-    }
-    if (sortMeasureName && derivation === MeasureDerivation.DELTA) {
-      subQuery = subQuery.apply(sort.reference, $(sortMeasureName).subtract($(Measure.derivedName(sortMeasureName, MeasureDerivation.PREVIOUS))));
-    }
-    subQuery = subQuery.performAction(new SortExpression({
+function applySort(essence: Essence, sort: Sort, currentFilter: Expression, nestingLevel: number) {
+  // It's possible to define sort on measure that's not selected thus we need to add apply expression for that measure.
+  // We don't need add apply expressions for:
+  //   * dimensions - they're already defined as apply expressions because of splits
+  //   * selected measures - they're defined as apply expressions already
+  //   * previous - we need to define them earlier so they're present here
+  return (query: Expression) => {
+    query = applySortReferenceExpression(essence, query, nestingLevel, currentFilter, sort);
+    return query.performAction(new SortExpression({
       expression: $(sort.reference),
       direction: sortDirectionMapper[sort.direction]
     }));
+  };
+}
 
-    if (colors && colors.dimension === splitDimension.name) {
-      subQuery = subQuery.performAction(colors.toLimitExpression());
-    } else if (limit) {
-      subQuery = subQuery.performAction(new LimitExpression({ value: limit }));
-    } else if (splitDimension.kind === "number") {
+function applyLimit(colors: Colors, limit: number, dimension: Dimension) {
+  return (query: Expression) => {
+    if (colors && colors.dimension === dimension.name) {
+      return query.performAction(colors.toLimitExpression());
+    }
+    if (limit) {
+      return query.performAction(new LimitExpression({ value: limit }));
+    }
+    if (dimension.kind === "number") {
       // Hack: Plywood converts groupBys to topN if the limit is below a certain threshold.  Currently sorting on dimension in a groupBy query does not
       // behave as expected and in the future plywood will handle this, but for now add a limit so a topN query is performed.
       // 5000 is just a randomly selected number that's high enough that it's not immediately obvious that there's a limit.
-      subQuery = subQuery.limit(5000);
+      return query.limit(5000);
     }
+    return query;
+  };
+}
 
-    if (i + 1 < splits.length()) {
-      subQuery = subQuery.apply(SPLIT, applySplit(i + 1));
+function applyHaving(colors: Colors, splitDimension: Dimension) {
+  return (query: Expression): Expression => {
+    if (colors && colors.dimension === splitDimension.name) {
+      const havingFilter = colors.toHavingFilter(splitDimension.name);
+      if (havingFilter) {
+        return query.performAction(havingFilter);
+      }
     }
+    return query;
+  };
+}
 
-    return subQuery;
+function applySubSplit(nestingLevel: number, essence: Essence, filters: Filters) {
+  return (query: Expression) => {
+    if (nestingLevel >= essence.splits.length()) return query;
+    return query.apply(SPLIT, applySplit(nestingLevel, essence, filters));
+  };
+}
+
+function applySplit(index: number, essence: Essence, filters: Filters): Expression {
+  const { splits, dataCube, colors } = essence;
+  const hasComparison = essence.hasComparison();
+  const split = splits.getSplit(index);
+  const dimension = dataCube.getDimension(split.reference);
+  const { sort, limit } = split;
+  if (!sort) {
+    throw new Error("something went wrong during query generation");
   }
 
+  const nestingLevel = index + 1;
+
+  const currentSplit = splitToExpression(split, hasComparison && filters.current, hasComparison && essence.timeShift.valueOf());
+
+  return thread(
+    $main.split(currentSplit, dimension.name),
+    applyHaving(colors, dimension),
+    applyMeasures(essence, filters, nestingLevel),
+    applySort(essence, sort, filters.current, nestingLevel),
+    applyLimit(colors, limit, dimension),
+    applySubSplit(nestingLevel, essence, filters)
+  );
+}
+
+interface Filters {
+  current: Expression;
+  previous?: Expression;
+}
+
+export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
+  const { splits } = essence;
+
+  const hasComparison = essence.hasComparison();
+  const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId: this.id });
+
+  const filters = {
+    current: filterClauseToExpression(essence.currentTimeFilter(timekeeper)),
+    previous: hasComparison ? filterClauseToExpression(essence.previousTimeFilter(timekeeper)) : undefined
+  };
+
+  const mainExp: Expression = ply().apply("main", $main.filter(mainFilter.toExpression()));
+
+  const queryWithMeasures = applyMeasures(essence, filters)(mainExp);
+
   if (splits.length() > 0) {
-    return queryWithMeasures.apply(SPLIT, applySplit(0));
+    return queryWithMeasures.apply(SPLIT, applySplit(0, essence, filters));
   }
   return queryWithMeasures;
 }
