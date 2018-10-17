@@ -593,7 +593,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       externalValue.timeAttribute = this.timeAttribute.name;
       externalValue.introspectionStrategy = cluster.getIntrospectionStrategy();
       externalValue.allowSelectQueries = true;
-      externalValue.querySelection = "no-top-n";
 
       let externalContext: Record<string, any> = options.druidContext || {};
       externalContext["timeout"] = cluster.getTimeout();
