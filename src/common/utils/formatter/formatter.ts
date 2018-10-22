@@ -17,12 +17,10 @@
 
 import { Duration, Timezone } from "chronoshift";
 import * as numbro from "numbro";
-
 import { NumberRange, TimeRange } from "plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { Dimension } from "../../models/dimension/dimension";
 import {
-  BooleanFilterClause,
   FilterClause,
   FixedTimeFilterClause,
   isTimeFilter,
@@ -33,31 +31,9 @@ import {
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
-
-import { DisplayYear, formatTimeRange } from "../../utils/time/time";
+import { DisplayYear, formatTimeRange } from "../time/time";
 
 export type Formatter = (n: number) => string;
-
-const scales: Record<string, Record<string, number>> = {
-  a: {
-    "": 1,
-    "k": 1e3,
-    "m": 1e6,
-    "b": 1e9,
-    "t": 1e12
-  },
-  b: {
-    B: 1,
-    KiB: 1024,
-    MiB: 1024 * 1024,
-    GiB: 1024 * 1024 * 1024,
-    TiB: 1024 * 1024 * 1024 * 1024,
-    PiB: 1024 * 1024 * 1024 * 1024 * 1024,
-    EiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
-    ZiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
-    YiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024
-  }
-};
 
 export function getMiddleNumber(values: number[]): number {
   const filteredAbsData: number[] = [];
@@ -75,13 +51,37 @@ export function getMiddleNumber(values: number[]): number {
   }
 }
 
-function formatterUnit(middle: number, formatType: string): string {
-  const formatMiddle = numbro(middle).format("0 " + formatType);
-  if (formatType === "b") {
-    const match = formatMiddle.match(/(([A-Z]i)?B)$/);
-    return match && match[0];
+type FormatType = "a" | "b";
+
+const scales: Record<FormatType, Record<string, number>> = {
+  a: {
+    k: 1e3,
+    m: 1e6,
+    b: 1e9,
+    t: 1e12
+  },
+  b: {
+    KiB: 1024,
+    MiB: 1024 * 1024,
+    GiB: 1024 * 1024 * 1024,
+    TiB: 1024 * 1024 * 1024 * 1024,
+    PiB: 1024 * 1024 * 1024 * 1024 * 1024,
+    EiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
+    ZiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
+    YiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024
   }
-  return formatMiddle.split(" ")[1] || "";
+};
+
+const baseUnits: Record<FormatType, string> = {
+  a: "",
+  b: "B"
+};
+
+function formatterUnit(middle: number, formatType: FormatType): { scale: number, unit: string } {
+  const formatMiddle = numbro(middle).format("0 " + formatType);
+  const unit = Object.keys(scales[formatType]).find(unit => formatMiddle.endsWith(unit));
+  if (!unit) return { unit: baseUnits[formatType], scale: 1 };
+  return { scale: scales[formatType][unit], unit };
 }
 
 export function formatterFromData(values: number[], format: string): Formatter {
@@ -89,14 +89,13 @@ export function formatterFromData(values: number[], format: string): Formatter {
   if (match) {
     const numberFormat = match[1];
     const space = match[2];
-    const formatType = match[3];
-    const unit = formatterUnit(getMiddleNumber(values), formatType);
-    const scale = scales[formatType][unit];
-    const append = unit ? space + unit : "";
+    const formatType = match[3] as FormatType;
+    const { unit, scale } = formatterUnit(getMiddleNumber(values), formatType);
+    const suffix = unit ? space + unit : "";
 
     return (n: number) => {
       if (isNaN(n) || !isFinite(n)) return "-";
-      return numbro(n / scale).format(numberFormat) + append;
+      return numbro(n / scale).format(numberFormat) + suffix;
     };
   } else {
     return (n: number) => {
