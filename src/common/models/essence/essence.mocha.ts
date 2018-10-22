@@ -266,6 +266,15 @@ describe("EssenceProps", () => {
       it("falls back when can't handle measures", () => {
         // todo
       });
+
+      it("should handle adding too many splits for table", () => {
+        const essence = EssenceFixtures.wikiTable();
+        const addedSplit = essence.addSplit(timeSplit, VisStrategy.KeepAlways);
+
+        expect(addedSplit.splits.length()).to.be.eq(5);
+        expect(addedSplit.visResolve.isManual()).to.be.true;
+        expect(addedSplit.visResolve.resolutions[0].adjustment.splits.length()).to.be.eq(4);
+      });
     });
 
     describe("#changeVisualisation", () => {
