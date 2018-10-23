@@ -15,7 +15,8 @@
  */
 
 import { expect } from "chai";
-import { compose, of, over, set, view } from "./lens";
+import { compose, over, set, view } from "./lens";
+import { of } from "./object-lens";
 
 interface Address {
   street: string;
@@ -58,7 +59,7 @@ const JohnDoe: Person = {
 const personLenses = of<Person>();
 const companyLenses = of<Company>();
 
-describe("Lens", () => {
+describe("Object lens", () => {
   describe("prop", () => {
     const age = personLenses.prop("age");
     it("view should work", () => {
