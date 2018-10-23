@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Resolve } from "../../models/manifest/manifest";
+import { HIGH_PRIORITY_ACTION, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
 import { Splits } from "../../models/splits/splits";
 import { Resolutions } from "./resolutions";
 import { Action } from "./rules-evaluator-builder";
@@ -28,16 +28,19 @@ export class Actions {
 
   static manualDimensionSelection(message: string): VisualizationDependentAction {
     return ({ dataCube }) => {
-      return Resolve.manual(4, message, Resolutions.someDimensions(dataCube));
+      return Resolve.manual(HIGH_PRIORITY_ACTION, message, Resolutions.someDimensions(dataCube));
     };
   }
 
   static removeExcessiveSplits(visualizationName = "Visualization"): VisualizationDependentAction {
     return ({ splits, dataCube }) => {
       const newSplits = splits.splits.take(dataCube.getMaxSplits());
-      return Resolve.manual(3, `${visualizationName} supports only ${dataCube.getMaxSplits()} splits`, [
+      const excessiveSplits = splits.splits
+        .skip(dataCube.getMaxSplits())
+        .map(split => dataCube.getDimension(split.reference).name);
+      return Resolve.manual(NORMAL_PRIORITY_ACTION, `${visualizationName} supports only ${dataCube.getMaxSplits()} splits`, [
         {
-          description: "Remove excessive splits",
+          description: `Remove excessive splits: ${excessiveSplits.toArray().join(", ")}`,
           adjustment: {
             splits: Splits.fromSplits(newSplits.toArray())
           }
@@ -51,7 +54,7 @@ export class Actions {
       const selectDefault = Resolutions.defaultSelectedMeasures(dataCube);
       const resolutions = selectDefault.length > 0 ? selectDefault : Resolutions.firstMeasure(dataCube);
 
-      return Resolve.manual(3, "At least one of the measures should be selected", resolutions);
+      return Resolve.manual(NORMAL_PRIORITY_ACTION, "At least one of the measures should be selected", resolutions);
     };
   }
 }

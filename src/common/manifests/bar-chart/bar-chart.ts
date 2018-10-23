@@ -16,7 +16,7 @@
  */
 
 import { Dimension } from "../../models/dimension/dimension";
-import { Manifest, Resolve } from "../../models/manifest/manifest";
+import { Manifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
 import { Sort } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
@@ -106,7 +106,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     const categoricalDimensions = dataCube.dimensions.filterDimensions(dimension => dimension.kind !== "time");
 
     return Resolve.manual(
-      3,
+      NORMAL_PRIORITY_ACTION,
       "The Bar Chart needs one or two splits",
       categoricalDimensions.slice(0, 2).map((dimension: Dimension) => {
         return {
