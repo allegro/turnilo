@@ -66,7 +66,7 @@ const ToggleArrow: React.SFC<{ right: boolean }> = ({ right }) =>
     : <SvgIcon svg={require("../../icons/full-caret-small-left.svg")} />;
 
 export interface CubeViewLayout {
-  dimensionPanel: {
+  factPanel: {
     width: number;
     hidden?: boolean;
   };
@@ -77,7 +77,7 @@ export interface CubeViewLayout {
 }
 
 const defaultLayout: CubeViewLayout = {
-  dimensionPanel: { width: 240 },
+  factPanel: { width: 240 },
   pinboard: { width: 240 }
 };
 
@@ -428,11 +428,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   getStoredLayout(): CubeViewLayout {
-    return localStorage.get("cube-view-layout-ver2") || defaultLayout;
+    return localStorage.get("cube-view-layout-v2") || defaultLayout;
   }
 
   storeLayout(layout: CubeViewLayout) {
-    localStorage.set("cube-view-layout-ver2", layout);
+    localStorage.set("cube-view-layout-v2", layout);
   }
 
   private updateLayout(layout: CubeViewLayout) {
@@ -440,13 +440,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.storeLayout(layout);
   }
 
-  toggleDimensionPanel() {
-    const { layout: { dimensionPanel }, layout } = this.state;
+  toggleFactPanel() {
+    const { layout: { factPanel }, layout } = this.state;
     this.updateLayout({
       ...layout,
-      dimensionPanel: {
-        ...dimensionPanel,
-        hidden: !dimensionPanel.hidden
+      factPanel: {
+        ...factPanel,
+        hidden: !factPanel.hidden
       }
     });
   }
@@ -462,12 +462,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     });
   }
 
-  onDimensionPanelResize(width: number) {
-    const { layout: { dimensionPanel }, layout } = this.state;
+  onFactPanelResize(width: number) {
+    const { layout: { factPanel }, layout } = this.state;
     this.updateLayout({
       ...layout,
-      dimensionPanel: {
-        ...dimensionPanel,
+      factPanel: {
+        ...factPanel,
         width
       }
     });
@@ -517,7 +517,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       <GlobalEventListener resize={this.globalResizeListener.bind(this)} />
       {headerBar}
       <div className="container" ref="container">
-        {!layout.dimensionPanel.hidden && <DimensionMeasurePanel
+        {!layout.factPanel.hidden && <DimensionMeasurePanel
           style={styles.dimensionMeasurePanel}
           clicker={clicker}
           essence={essence}
@@ -525,10 +525,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           triggerFilterMenu={this.triggerFilterMenu.bind(this)}
           triggerSplitMenu={this.triggerSplitMenu.bind(this)}
         />}
-        {!this.isSmallDevice() && !layout.dimensionPanel.hidden && <ResizeHandle
+        {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
           direction={Direction.LEFT}
-          initialValue={layout.dimensionPanel.width}
-          onResize={this.onDimensionPanelResize.bind(this)}
+          initialValue={layout.factPanel.width}
+          onResize={this.onFactPanelResize.bind(this)}
           onResizeEnd={this.onPanelResizeEnd.bind(this)}
           min={MIN_PANEL_WIDTH}
           max={MAX_PANEL_WIDTH}
@@ -537,8 +537,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         <div className="center-panel" style={styles.centerPanel}>
           <div className="center-top-bar">
             <div className="dimension-panel-toggle"
-                 onClick={this.toggleDimensionPanel.bind(this)}>
-              <ToggleArrow right={layout.dimensionPanel.hidden} />
+                 onClick={this.toggleFactPanel.bind(this)}>
+              <ToggleArrow right={layout.factPanel.hidden} />
             </div>
             <div className="filter-split-section">
               <FilterTile
@@ -600,7 +600,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   private calculateStyles() {
     const { layout } = this.state;
-    const isDimensionPanelHidden = layout.dimensionPanel.hidden;
+    const isDimensionPanelHidden = layout.factPanel.hidden;
     const isPinboardHidden = layout.pinboard.hidden;
     if (this.isSmallDevice()) {
       const dimensionsWidth = isDimensionPanelHidden ? 0 : 200;
@@ -614,10 +614,10 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const nonSmallLayoutPadding = 10;
     return {
       dimensionMeasurePanel: {
-        width: isDimensionPanelHidden ? 0 : layout.dimensionPanel.width
+        width: isDimensionPanelHidden ? 0 : layout.factPanel.width
       },
       centerPanel: {
-        left: isDimensionPanelHidden ? nonSmallLayoutPadding : layout.dimensionPanel.width,
+        left: isDimensionPanelHidden ? nonSmallLayoutPadding : layout.factPanel.width,
         right: isPinboardHidden ? nonSmallLayoutPadding : layout.pinboard.width
       },
       pinboardPanel: {
