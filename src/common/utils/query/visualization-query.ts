@@ -68,8 +68,8 @@ function applySort(essence: Essence, sort: Sort, currentFilter: Expression, nest
   //   * selected measures - they're defined as apply expressions already
   //   * previous - we need to define them earlier so they're present here
   return (query: Expression) => {
-    query = applySortReferenceExpression(essence, query, nestingLevel, currentFilter, sort);
-    return query.performAction(new SortExpression({
+    const queryWithReference = applySortReferenceExpression(essence, query, nestingLevel, currentFilter, sort);
+    return queryWithReference.performAction(new SortExpression({
       expression: $(sort.reference),
       direction: sortDirectionMapper[sort.direction]
     }));
@@ -125,7 +125,7 @@ function applySplit(index: number, essence: Essence, filters: Filters): Expressi
 
   const nestingLevel = index + 1;
 
-  const currentSplit = splitToExpression(split, hasComparison && filters.current, hasComparison && essence.timeShift.valueOf());
+  const currentSplit = splitToExpression(split, dimension, hasComparison && filters.current, hasComparison && essence.timeShift.valueOf());
 
   return thread(
     $main.split(currentSplit, dimension.name),

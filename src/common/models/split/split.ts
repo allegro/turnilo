@@ -53,12 +53,11 @@ export function bucketToAction(bucket: Bucket): Expression {
     : new NumberBucketExpression({ size: bucket });
 }
 
-export function toExpression({ reference, bucket, type }: Split, filter?: Expression, shift?: Duration) {
-  const ref = $(reference);
-  const withShift = shift && filter && type === SplitType.time;
-  const expression = withShift ? filter.then(ref).fallback(ref.timeShift((shift))) : ref;
-  if (!bucket) return expression;
-  return expression.performAction(bucketToAction(bucket));
+export function toExpression({ bucket, type }: Split, { expression }: Dimension, filter?: Expression, shift?: Duration): Expression {
+  const shouldApplyShift = shift && filter && type === SplitType.time;
+  const expWithShift = shouldApplyShift ? filter.then(expression).fallback(expression.timeShift((shift))) : expression;
+  if (!bucket) return expWithShift;
+  return expWithShift.performAction(bucketToAction(bucket));
 }
 
 function kindToType(kind: string): SplitType {
