@@ -39,7 +39,10 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { User } from "../../../common/models/user/user";
 import { ViewSupervisor } from "../../../common/models/view-supervisor/view-supervisor";
 import { VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
+import { negate } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
+import { over, set } from "../../../common/utils/lens/lens";
+import { of } from "../../../common/utils/lens/object-lens";
 import { DimensionMeasurePanel } from "../../components/dimension-measure-panel/dimension-measure-panel";
 import { DropIndicator } from "../../components/drop-indicator/drop-indicator";
 import { FilterTile } from "../../components/filter-tile/filter-tile";
@@ -76,6 +79,8 @@ export interface CubeViewLayout {
     hidden?: boolean;
   };
 }
+
+const cubeViewLayoutLenses = of<CubeViewLayout>();
 
 const defaultLayout: CubeViewLayout = {
   factPanel: { width: 240 },
@@ -459,47 +464,31 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   toggleFactPanel = () => {
-    const { layout: { factPanel }, layout } = this.state;
-    this.updateLayout({
-      ...layout,
-      factPanel: {
-        ...factPanel,
-        hidden: !factPanel.hidden
-      }
-    });
+    this.updateLayout(over(
+      cubeViewLayoutLenses.path("factPanel", "hidden"),
+      negate,
+      this.state.layout));
   }
 
   togglePinboard = () => {
-    const { layout: { pinboard }, layout } = this.state;
-    this.updateLayout({
-      ...layout,
-      pinboard: {
-        ...pinboard,
-        hidden: !pinboard.hidden
-      }
-    });
+    this.updateLayout(over(
+      cubeViewLayoutLenses.path("pinboard", "hidden"),
+      negate,
+      this.state.layout));
   }
 
   onFactPanelResize = (width: number) => {
-    const { layout: { factPanel }, layout } = this.state;
-    this.updateLayout({
-      ...layout,
-      factPanel: {
-        ...factPanel,
-        width
-      }
-    });
+    this.updateLayout(set(
+      cubeViewLayoutLenses.path("factPanel", "width"),
+      width,
+      this.state.layout));
   }
 
   onPinboardPanelResize = (width: number) => {
-    const { layout: { pinboard }, layout } = this.state;
-    this.updateLayout({
-      ...layout,
-      pinboard: {
-        ... pinboard,
-        width
-      }
-    });
+    this.updateLayout(set(
+      cubeViewLayoutLenses.path("pinboard", "width"),
+      width,
+      this.state.layout));
   }
 
   onPanelResizeEnd = () => {

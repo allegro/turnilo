@@ -25,6 +25,10 @@ export type Predicate<T> = Unary<T, boolean>;
 export function noop(...args: any[]): any {
 }
 
+export function negate(value: boolean): boolean {
+  return !value;
+}
+
 export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
 }
