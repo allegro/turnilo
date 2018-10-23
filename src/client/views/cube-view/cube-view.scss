@@ -17,6 +17,7 @@
 @import '../../imports';
 
 $toggle-width: 15px;
+$toggle-icon-width: 12px;
 
 .cube-view {
   .cube-header-bar,
@@ -83,7 +84,7 @@ $toggle-width: 15px;
         cursor: pointer;
 
         svg {
-          width: $toggle-width - 3;
+          width: $toggle-icon-width;
 
           path {
             fill: $background-dark;
