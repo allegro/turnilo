@@ -18,7 +18,7 @@
 import { Duration, Timezone } from "chronoshift";
 import * as numbro from "numbro";
 import { NumberRange, TimeRange } from "plywood";
-import { BYTE_UNITS, STRINGS } from "../../../client/config/constants";
+import { STRINGS } from "../../../client/config/constants";
 import { Dimension } from "../../models/dimension/dimension";
 import {
   FilterClause,
@@ -31,6 +31,7 @@ import {
   TimeFilterPeriod
 } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
+import { BYTE_PREFIXES, METRIC_PREFIXES } from "../number/units";
 import { DisplayYear, formatTimeRange } from "../time/time";
 
 export type Formatter = (n: number) => string;
@@ -54,13 +55,8 @@ export function getMiddleNumber(values: number[]): number {
 type FormatType = "a" | "b";
 
 const scales: Record<FormatType, Record<string, number>> = {
-  a: {
-    k: 1e3,
-    m: 1e6,
-    b: 1e9,
-    t: 1e12
-  },
-  b: BYTE_UNITS
+  a: METRIC_PREFIXES,
+  b: BYTE_PREFIXES
 };
 
 const baseUnits: Record<FormatType, string> = {
