@@ -180,3 +180,16 @@ export const exportOptions: Array<{ label: string, fileFormat: FileFormat }> = [
   { label: STRINGS.exportToCSV, fileFormat: "csv" },
   { label: STRINGS.exportToTSV, fileFormat: "tsv" }
 ];
+
+const KiB = 1024;
+const MiB = Math.pow(1024, 2);
+const GiB = Math.pow(1024, 3);
+const TiB = Math.pow(1024, 4);
+const PiB = Math.pow(1024, 5);
+const EiB = Math.pow(1024, 6);
+const ZiB = Math.pow(1024, 7);
+const YiB = Math.pow(1024, 8);
+
+export const BYTE_UNITS = {
+  KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB
+};

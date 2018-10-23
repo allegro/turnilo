@@ -18,7 +18,7 @@
 import { Duration, Timezone } from "chronoshift";
 import * as numbro from "numbro";
 import { NumberRange, TimeRange } from "plywood";
-import { STRINGS } from "../../../client/config/constants";
+import { BYTE_UNITS, STRINGS } from "../../../client/config/constants";
 import { Dimension } from "../../models/dimension/dimension";
 import {
   FilterClause,
@@ -60,16 +60,7 @@ const scales: Record<FormatType, Record<string, number>> = {
     b: 1e9,
     t: 1e12
   },
-  b: {
-    KiB: 1024,
-    MiB: 1024 * 1024,
-    GiB: 1024 * 1024 * 1024,
-    TiB: 1024 * 1024 * 1024 * 1024,
-    PiB: 1024 * 1024 * 1024 * 1024 * 1024,
-    EiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
-    ZiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024,
-    YiB: 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024
-  }
+  b: BYTE_UNITS
 };
 
 const baseUnits: Record<FormatType, string> = {
