@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { complement, concatTruthy, cons, flatMap, mapTruthy, thread, threadTruthy } from "./functional";
+import { complement, concatTruthy, cons, flatMap, mapTruthy, negate, thread, threadTruthy } from "./functional";
 
 const inc = (x: number) => x + 1;
 const double = (x: number) => x * 2;
@@ -23,6 +23,13 @@ const nil = (): void => null;
 const wrap = (...numbers: number[]) => numbers;
 
 describe("Functional utilities", () => {
+
+  describe("negate", () => {
+    it("should negate it's argument", () => {
+      expect(negate(true)).to.be.false;
+      expect(negate(false)).to.be.true;
+    });
+  });
 
   describe("cons", () => {
     it("should append to empty array", () => {
