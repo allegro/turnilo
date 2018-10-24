@@ -14,8 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
+
+$toggle-width: 15px;
+$toggle-icon-width: 12px;
 
 .cube-view {
   .cube-header-bar,
@@ -47,27 +49,55 @@
       @include pin-top($control-tile-height + 1px + $control-tile-height);
 
       .filter-split-section {
-        @include unpin-right($vis-selector-width + 1px);
-      }
+        @include unpin-full(0, $vis-selector-width + 1px + $toggle-width, 0, $toggle-width);
 
-      .filter-tile,
-      .split-tile {
-        height: $control-tile-height;
-      }
+        .filter-tile,
+        .split-tile {
+          height: $control-tile-height;
+        }
 
-      .filter-tile {
-        margin-bottom: 1px;
-        border-radius: $corner 0 0 0;
-      }
+        .filter-tile {
+          margin-bottom: 1px;
+          border-radius: $corner 0 0 0;
+        }
 
-      .split-tile {
-        border-radius: 0 0 0 $corner;
+        .split-tile {
+          border-radius: 0 0 0 $corner;
+        }
       }
 
       .vis-selector {
-        @include pin-right($vis-selector-width);
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: $toggle-width;
+        width: $vis-selector-width;
         z-index: 8;
         border-radius: 0 $corner $corner 0;
+      }
+
+      .dimension-panel-toggle, .pinboard-toggle {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        background-color: $background-lightest;
+        cursor: pointer;
+
+        svg {
+          width: $toggle-icon-width;
+
+          path {
+            fill: $background-dark;
+          }
+        }
+      }
+
+      .dimension-panel-toggle {
+        @include pin-left($toggle-width);
+      }
+
+      .pinboard-toggle {
+        @include pin-right($toggle-width);
       }
     }
 
@@ -119,4 +149,5 @@
       }
     }
   }
+
 }

@@ -30,7 +30,6 @@ export interface VisualizationProps {
   stage: Stage;
   openRawDataModal?: Fn;
   registerDownloadableDataset?: (dataset: Dataset) => void;
-  deviceSize?: DeviceSize;
   isThumbnail?: boolean;
 }
 

@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-export type DeviceSize = "small" | "medium" | "large";
+export enum DeviceSize { SMALL = "small", MEDIUM = "medium", LARGE = "large"}
 
 export class Device {
   static getSize(): DeviceSize {
-    if (window.innerWidth <= 1080) return "small";
-    if (window.innerWidth <= 1250) return "medium";
-
-    return "large";
+    if (window.innerWidth <= 1080) return DeviceSize.SMALL;
+    if (window.innerWidth <= 1250) return DeviceSize.MEDIUM;
+    return DeviceSize.LARGE;
   }
 }

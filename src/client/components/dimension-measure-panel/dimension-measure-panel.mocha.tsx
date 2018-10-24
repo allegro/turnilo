@@ -16,27 +16,21 @@
  */
 
 import { expect } from "chai";
+import { shallow } from "enzyme";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as TestUtils from "react-dom/test-utils";
+import { Clicker } from "../../../common/models/clicker/clicker";
+import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
-import { mockReactComponent, renderIntoDocument } from "../../utils/test-utils";
-import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
-import { DimensionMeasurePanel } from "./dimension-measure-panel";
+import { ResizeHandle } from "../resize-handle/resize-handle";
+import { DimensionMeasurePanel, initialPosition, MIN_PANEL_SIZE } from "./dimension-measure-panel";
 
 describe("DimensionMeasurePanel", () => {
-  before(() => {
-    mockReactComponent(DimensionListTile);
-  });
-
-  after(() => {
-    (DimensionListTile as any).restore();
-  });
-
-  it("adds the correct class", () => {
-    var clickyMcClickFace = { toggleMultiMeasureMode: () => {} };
-
-    var renderedComponent = renderIntoDocument(
+  function renderPanel() {
+    const clickyMcClickFace: Clicker = {
+      toggleMultiMeasureMode: () => {
+      }
+    };
+    return shallow(
       <DimensionMeasurePanel
         clicker={clickyMcClickFace}
         essence={EssenceFixtures.wikiTotals()}
@@ -45,9 +39,30 @@ describe("DimensionMeasurePanel", () => {
         triggerSplitMenu={null}
       />
     );
+  }
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(ReactDOM.findDOMNode(renderedComponent).className, "should contain class").to.contain("dimension-measure-panel");
+  describe("<DimensionMeasurePanel>", () => {
+    it("adds the correct class", () => {
+      const panel = renderPanel();
+      expect(panel.hasClass("dimension-measure-panel"), "should contain class").to.be.true;
+    });
+
+    it("should hide resize panel at start", () => {
+      const panel = renderPanel();
+      expect(panel.children(ResizeHandle).length).to.be.eq(0);
+    });
   });
 
+  describe("initialPosition", () => {
+    [300, 500, 1000].forEach(height => {
+      it(`should calculate position according to ratio for height ${height}`, () => {
+        const position = initialPosition(height, DataCubeFixtures.wiki());
+
+        expect(position, "lower than total height").to.be.lt(height);
+        expect(position, "should leave minimal space for dimensions").to.be.gte(MIN_PANEL_SIZE);
+        expect(position, "should leave minimal space for measures").to.be.lte(height - MIN_PANEL_SIZE);
+        expect(position, "should leave more space for dimensions").to.be.gt(height - position);
+      });
+    });
+  });
 });

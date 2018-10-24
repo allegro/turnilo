@@ -139,7 +139,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeShareMenu = () => this.setState({ shareMenuAnchor: null });
 
   renderShareMenu() {
-    const { essence, timekeeper, getCubeViewHash, getDownloadableDataset } = this.props;
+    const { customization, essence, timekeeper, getCubeViewHash, getDownloadableDataset } = this.props;
     const { shareMenuAnchor } = this.state;
     if (!shareMenuAnchor) return null;
 
@@ -148,6 +148,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       timekeeper={timekeeper}
       openOn={shareMenuAnchor}
       onClose={this.closeShareMenu}
+      externalViews={customization.externalViews}
       getCubeViewHash={getCubeViewHash}
       getDownloadableDataset={getDownloadableDataset}
     />;
