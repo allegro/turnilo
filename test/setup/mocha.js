@@ -15,7 +15,6 @@
  */
 
 require('ts-node/register');
-
 require('ignore-styles');
 
 var enzyme = require('enzyme');

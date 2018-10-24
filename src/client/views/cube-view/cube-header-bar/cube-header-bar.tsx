@@ -44,6 +44,7 @@ export interface CubeHeaderBarProps {
   updatingMaxTime?: boolean;
   openRawDataModal?: Fn;
   openViewDefinitionModal?: Fn;
+  openDruidQueryModal?: Fn;
   customization?: Customization;
   getDownloadableDataset?: () => DataSetWithTabOptions;
   changeTimezone?: (timezone: Timezone) => void;
@@ -138,7 +139,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeShareMenu = () => this.setState({ shareMenuAnchor: null });
 
   renderShareMenu() {
-    const { essence, timekeeper, getCubeViewHash, getDownloadableDataset } = this.props;
+    const { customization, essence, timekeeper, getCubeViewHash, getDownloadableDataset } = this.props;
     const { shareMenuAnchor } = this.state;
     if (!shareMenuAnchor) return null;
 
@@ -147,6 +148,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
       timekeeper={timekeeper}
       openOn={shareMenuAnchor}
       onClose={this.closeShareMenu}
+      externalViews={customization.externalViews}
       getCubeViewHash={getCubeViewHash}
       getDownloadableDataset={getDownloadableDataset}
     />;
@@ -214,9 +216,10 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     const { debugMenuAnchor } = this.state;
     if (!debugMenuAnchor) return null;
 
-    const { openRawDataModal, openViewDefinitionModal } = this.props;
+    const { openRawDataModal, openViewDefinitionModal, openDruidQueryModal } = this.props;
     return <DebugMenu
       openRawDataModal={openRawDataModal}
+      openDruidQueryModal={openDruidQueryModal}
       openViewDefinitionModal={openViewDefinitionModal}
       openOn={debugMenuAnchor}
       onClose={this.closeDebugMenu}/>;

@@ -25,9 +25,10 @@ export interface DebugMenuProps {
   onClose: Fn;
   openRawDataModal: Fn;
   openViewDefinitionModal: Fn;
+  openDruidQueryModal: Fn;
 }
 
-export const DebugMenu: React.SFC<DebugMenuProps> = ({ openOn, onClose, openRawDataModal, openViewDefinitionModal }) => {
+export const DebugMenu: React.SFC<DebugMenuProps> = ({ openOn, onClose, openDruidQueryModal, openRawDataModal, openViewDefinitionModal }) => {
 
   function displayRawData() {
     openRawDataModal();
@@ -36,6 +37,11 @@ export const DebugMenu: React.SFC<DebugMenuProps> = ({ openOn, onClose, openRawD
 
   function displayViewDefinition() {
     openViewDefinitionModal();
+    onClose();
+  }
+
+  function displayDruidQuery() {
+    openDruidQueryModal();
     onClose();
   }
 
@@ -52,6 +58,9 @@ export const DebugMenu: React.SFC<DebugMenuProps> = ({ openOn, onClose, openRawD
       </li>
       <li key="display-view-definition" onClick={displayViewDefinition}>
         {STRINGS.displayViewDefinition}
+      </li>
+      <li key="view-druid-query" onClick={displayDruidQuery}>
+        {STRINGS.displayDruidQuery}
       </li>
     </ul>
   </BubbleMenu>;

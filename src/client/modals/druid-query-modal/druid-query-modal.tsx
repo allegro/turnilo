@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
+import { External } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
-import { Fn, makeTitle } from "../../../common/utils/general/general";
-import { DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter } from "../../../common/view-definitions";
-import { STRINGS } from "../../config/constants";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { Fn } from "../../../common/utils/general/general";
+import makeQuery from "../../../common/utils/query/visualization-query";
 import { SourceModal } from "../source-modal/source-modal";
 
-export interface ViewDefinitionModalProps {
+interface DruidQueryModalProps {
   onClose: Fn;
   essence: Essence;
+  timekeeper: Timekeeper;
 }
 
-export const ViewDefinitionModal: React.SFC<ViewDefinitionModalProps> = () => {
-
-  const { essence, onClose } = this.props;
-  const viewDefinition = {
-    dataCubeName: essence.dataCube.name,
-    viewDefinitionVersion: DEFAULT_VIEW_DEFINITION_VERSION,
-    viewDefinition: defaultDefinitionConverter.toViewDefinition(essence)
-  };
-  const viewDefinitionAsJson = JSON.stringify(viewDefinition, null, 2);
+export const DruidQueryModal: React.SFC<DruidQueryModalProps> = ({ onClose, timekeeper, essence }) => {
+  const { dataCube: { attributes, source } } = essence;
+  const query = makeQuery(essence, timekeeper);
+  const external = External.fromJS({ engine: "druid", attributes, source });
+  const plan = query.simulateQueryPlan({ main: external });
+  const planSource = JSON.stringify(plan, null, 2);
 
   return <SourceModal
     onClose={onClose}
-    header={STRINGS.viewDefinitionSubtitle}
-    title={`${makeTitle(STRINGS.viewDefinition)}`}
-    source={viewDefinitionAsJson} />;
+    title="Druid query"
+    source={planSource} />;
 };

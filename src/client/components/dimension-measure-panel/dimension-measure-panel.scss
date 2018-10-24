@@ -17,7 +17,10 @@
 
 @import '../../imports';
 
+$resize-handle-size: 12px;
+
 .dimension-measure-panel {
+
   @include for-small-screens {
     padding: 0 1px 0 0;
     font-size: 0.9em;
@@ -25,15 +28,25 @@
 
   padding: $tile-margin-v $tile-margin-h;
 
-  display: flex;
-  flex-direction: column;
+  .dimension-measure-panel--container {
+    left: 0;
+    height: 100%;
+    right: 0;
+  }
 
   .dimension-list-tile {
-    margin-bottom: 1px;
     border-radius: $corner $corner 0 0;
+    margin-bottom: $resize-handle-size;
   }
 
   .measures-tile {
     border-radius: 0 0 $corner $corner;
+  }
+
+  .resize-handle {
+    border: 1px solid $background-base;
+    border-left-width: 0;
+    background-color: $background-lightest;
+    height: $resize-handle-size;
   }
 }
