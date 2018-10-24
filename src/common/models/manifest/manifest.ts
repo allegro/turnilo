@@ -26,6 +26,10 @@ export interface Adjustment {
   colors?: Colors;
 }
 
+export const HIGH_PRIORITY_ACTION = 4;
+export const NORMAL_PRIORITY_ACTION = 3;
+export const LOWEST_PRIORITY_ACTION = 0;
+
 export interface Resolution {
   description: string;
   adjustment: Adjustment;

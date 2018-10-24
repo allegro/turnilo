@@ -212,6 +212,10 @@ A filter defined as [Plywood expression](http://plywood.imply.io/expressions) th
 
 Refresh rule defining how the information about latest data in a data source is obtained.
 
+**maxSplits** (number)
+
+Number of splits data cube supports.
+
 ### Refresh rules
 
 The `refreshRule:` section of the data cube allows the customisation of latest data discovery mechanism.

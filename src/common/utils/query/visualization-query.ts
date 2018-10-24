@@ -143,7 +143,8 @@ interface Filters {
 }
 
 export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
-  const { splits } = essence;
+  const { splits, dataCube } = essence;
+  if (splits.length() > dataCube.getMaxSplits()) throw new Error(`Too many splits in query. DataCube "${dataCube.name}" supports only ${dataCube.getMaxSplits()} splits`);
 
   const hasComparison = essence.hasComparison();
   const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison, highlightId: this.id });
