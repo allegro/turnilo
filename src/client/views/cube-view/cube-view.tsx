@@ -50,6 +50,7 @@ import { Direction, ResizeHandle } from "../../components/resize-handle/resize-h
 import { SplitTile } from "../../components/split-tile/split-tile";
 import { SvgIcon } from "../../components/svg-icon/svg-icon";
 import { VisSelector } from "../../components/vis-selector/vis-selector";
+import { DruidQueryModal } from "../../modals/druid-query-modal/druid-query-modal";
 import { RawDataModal } from "../../modals/raw-data-modal/raw-data-modal";
 import { ViewDefinitionModal } from "../../modals/view-definition-modal/view-definition-modal";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
@@ -106,6 +107,7 @@ export interface CubeViewState {
   dragOver?: boolean;
   showRawDataModal?: boolean;
   showViewDefinitionModal?: boolean;
+  showDruidQueryModal?: boolean;
   layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
@@ -135,7 +137,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.state = {
       essence: null,
       dragOver: false,
-      showRawDataModal: false,
       layout: this.getStoredLayout(),
       updatingMaxTime: false
     };
@@ -411,6 +412,27 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     />;
   }
 
+  openDruidQueryModal() {
+    this.setState({
+      showDruidQueryModal: true
+    });
+  }
+
+  closeDruidQueryModal() {
+    this.setState({
+      showDruidQueryModal: false
+    });
+  }
+
+  renderDruidQueryModal() {
+    const { showDruidQueryModal, essence, timekeeper } = this.state;
+    if (!showDruidQueryModal) return null;
+    return <DruidQueryModal
+      timekeeper={timekeeper}
+      essence={essence}
+      onClose={this.closeDruidQueryModal.bind(this)} />;
+  }
+
   triggerFilterMenu(dimension: Dimension) {
     if (!dimension) return;
     (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
@@ -507,6 +529,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       refreshMaxTime={this.refreshMaxTime.bind(this)}
       openRawDataModal={this.openRawDataModal.bind(this)}
       openViewDefinitionModal={this.openViewDefinitionModal.bind(this)}
+      openDruidQueryModal={this.openDruidQueryModal.bind(this)}
       customization={customization}
       getDownloadableDataset={() => this.downloadableDataset}
       changeTimezone={this.changeTimezone.bind(this)}
@@ -593,6 +616,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           timekeeper={timekeeper}
         />}
       </div>
+      {this.renderDruidQueryModal()}
       {this.renderRawDataModal()}
       {this.renderViewDefinitionModal()}
     </div>;

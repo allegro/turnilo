@@ -1,5 +1,4 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2018 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
 
 $header-height: 30px;
 $row-height: 30px;
 
-.view-definition-modal {
+.source-modal {
+
+  .modal-window {
+    width: 70%;
+    height: 85%;
+    min-height: 200px;
+  }
 
   .content {
     @include unpin-top($modal-header-height + $control-height);
@@ -28,7 +32,7 @@ $row-height: 30px;
     right: $modal-window-padding;
     overflow: hidden;
 
-    .definition-view {
+    .source-modal__source {
       position: absolute;
       top: $control-height;
       bottom: $control-height + $modal-window-padding + $padding;
@@ -59,3 +63,4 @@ $row-height: 30px;
     }
   }
 }
+
