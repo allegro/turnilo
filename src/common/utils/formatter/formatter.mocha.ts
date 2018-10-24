@@ -53,15 +53,12 @@ describe("General", () => {
     it("works in KB case", () => {
       var values = [50000, 5000, 5000, 5000, 5000, 100, 10, 1, 0];
       var formatter = formatterFromData(values, "0,0.000 b");
-      expect(formatter(10)).to.equal("0.010 KB");
-      expect(formatter(12345)).to.equal("12.056 KB");
+      expect(formatter(10)).to.equal("0.010 KiB");
+      expect(formatter(12345)).to.equal("12.056 KiB");
     });
   });
 
   describe("formatFilterClause", () => {
-    const $now = $(NOW_REF_NAME);
-    const $max = $(MAX_TIME_REF_NAME);
-
     const latestDurationTests = [
       { duration: "PT1H", label: "Latest hour" },
       { duration: "PT6H", label: "Latest 6 hours" },
