@@ -18,6 +18,7 @@
 import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
@@ -26,7 +27,6 @@ import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
 import { MeasuresTile } from "../measures-tile/measures-tile";
 import { Direction, ResizeHandle } from "../resize-handle/resize-handle";
 import "./dimension-measure-panel.scss";
-import {Dimension} from "../../../common/models/dimension/dimension";
 
 export const MIN_PANEL_SIZE = 100;
 const RESIZE_HANDLE_SIZE = 12;

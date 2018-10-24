@@ -98,7 +98,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     const split = this.constructSplitCombine();
     clicker.changeSplits(essence.splits.replace(originalSplit, split), VisStrategy.UnfairGame, this.state.colors);
     onClose();
-  };
+  }
 
   private constructGranularity(): Bucket {
     const { dimension: { kind } } = this.props;

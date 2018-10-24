@@ -775,7 +775,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
       hoverRange: null,
       hoverMeasure: null
     }));
-  };
+  }
 
   renderInternals() {
     const { essence, stage } = this.props;

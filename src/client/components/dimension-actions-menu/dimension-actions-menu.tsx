@@ -50,7 +50,7 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
     const { dimension, triggerFilterMenu, onClose } = this.props;
     triggerFilterMenu(dimension);
     onClose();
-  };
+  }
 
   onSplit = () => {
     const { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
@@ -60,7 +60,7 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
       clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     onClose();
-  };
+  }
 
   onSubsplit = () => {
     const { clicker, essence, dimension, triggerSplitMenu, onClose } = this.props;
@@ -70,13 +70,13 @@ export class DimensionActionsMenu extends React.Component<DimensionActionsMenuPr
       clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     onClose();
-  };
+  }
 
   onPin = () => {
     const { clicker, dimension, onClose } = this.props;
     clicker.pin(dimension);
     onClose();
-  };
+  }
 
   render() {
     const { direction, containerStage, openOn, dimension, onClose } = this.props;

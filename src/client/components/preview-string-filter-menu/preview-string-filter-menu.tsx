@@ -170,7 +170,7 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     if (enterKey(e)) {
       this.onOkClick();
     }
-  };
+  }
 
   constructFilter(): Filter {
     const { dimension, filterMode, onClauseChange, searchText } = this.props;
@@ -199,11 +199,11 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     const { clicker, onClose } = this.props;
     clicker.changeFilter(this.constructFilter());
     onClose();
-  };
+  }
 
   onCancelClick = () => {
     this.props.onClose();
-  };
+  }
 
   actionEnabled() {
     const { regexErrorMessage } = this.state;

@@ -75,13 +75,13 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
 
   onSelectFilterOption = (filterMode: FilterMode) => {
     this.setState({ filterMode });
-  };
+  }
 
   updateSearchText = (searchText: string) => {
     this.setState({ searchText });
-  };
+  }
 
-  updateFilter: (clause: FilterClause) => Filter = (clause) => {
+  updateFilter: (clause: FilterClause) => Filter = clause => {
     const { essence, dimension, changePosition } = this.props;
     var { filter } = essence;
 
@@ -95,7 +95,7 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     } else {
       return filter.setClause(clause);
     }
-  };
+  }
 
   getFilterOptions() {
     const { dimension } = this.props;

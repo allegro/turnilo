@@ -50,13 +50,13 @@ export class NoDataHeaderBar extends React.Component<NoDataHeaderBarProps, NoDat
     this.setState({
       userMenuOpenOn: e.target as Element
     });
-  };
+  }
 
   onUserMenuClose = () => {
     this.setState({
       userMenuOpenOn: null
     });
-  };
+  }
 
   renderUserMenu() {
     const { user, customization } = this.props;

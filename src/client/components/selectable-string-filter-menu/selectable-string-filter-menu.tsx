@@ -190,7 +190,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     if (enterKey(e)) {
       this.onOkClick();
     }
-  };
+  }
 
   constructFilter(): Filter {
     const { dimension, filterMode, onClauseChange } = this.props;
@@ -223,11 +223,11 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     const { colors } = this.state;
     clicker.changeFilter(this.constructFilter(), colors);
     onClose();
-  };
+  }
 
   onCancelClick = () => {
     this.props.onClose();
-  };
+  }
 
   actionEnabled() {
     return !this.props.essence.filter.equals(this.constructFilter());

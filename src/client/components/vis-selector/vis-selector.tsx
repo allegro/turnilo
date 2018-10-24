@@ -47,13 +47,13 @@ export class VisSelector extends React.Component<VisSelectorProps, VisSelectorSt
     this.setState({
       menuOpenOn: target
     });
-  };
+  }
 
   closeMenu = () => {
     this.setState({
       menuOpenOn: null
     });
-  };
+  }
 
   render() {
     var { clicker, essence } = this.props;

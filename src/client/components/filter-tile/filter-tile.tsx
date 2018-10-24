@@ -186,7 +186,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       newState.overflowMenuOpenOn = null;
     }
     this.setState(newState);
-  };
+  }
 
   openOverflowMenu(target: Element): Q.Promise<any> {
     if (!target) return Q(null);
@@ -208,7 +208,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState({
       overflowMenuOpenOn: null
     });
-  };
+  }
 
   removeFilter(itemBlank: ItemBlank, e: MouseEvent) {
     const { essence, clicker } = this.props;
@@ -255,7 +255,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
     this.setState({ dragPosition });
-  };
+  }
 
   dragOver = (e: DragEvent) => {
     if (!this.canDrop(e)) return;
@@ -264,11 +264,11 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
     this.setState({ dragPosition });
-  };
+  }
 
   dragLeave = (e: DragEvent) => {
     this.setState({ dragPosition: null });
-  };
+  }
 
   drop = (e: DragEvent) => {
     if (!this.canDrop(e)) return;
@@ -325,7 +325,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     }
 
     this.setState(newState);
-  };
+  }
 
   addDummy(dimension: Dimension, possiblePosition: DragPosition) {
     this.dummyDeferred = Q.defer() as Q.Deferred<Element>;
@@ -350,7 +350,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   overflowButtonClick = () => {
     this.openOverflowMenu(this.overflowButtonTarget());
-  };
+  }
 
   renderMenu(): JSX.Element {
     const { essence, timekeeper, clicker, menuStage } = this.props;

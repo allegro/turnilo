@@ -45,11 +45,11 @@ export class ClearableInput extends React.Component<ClearableInputProps, Clearab
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.props.onChange(e.target.value);
-  };
+  }
 
   onClear = () => {
     this.props.onChange("");
-  };
+  }
 
   render() {
     const { className, type, placeholder, focusOnMount, value, onBlur } = this.props;

@@ -249,15 +249,15 @@ export class BarChart extends BaseVisualization<BarChartState> {
       scrollLeft,
       scrollTop
     });
-  };
+  }
 
   onMouseMove = (x: number, y: number) => {
     this.setState({ hoverInfo: this.calculateMousePosition(x, y) });
-  };
+  }
 
   onMouseLeave = () => {
     this.setState({ hoverInfo: null });
-  };
+  }
 
   onClick = (x: number, y: number) => {
     const { essence, clicker } = this.props;
@@ -291,7 +291,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     this.setState({ selectionInfo });
     clicker.changeHighlight(BarChart.id, measures[chartIndex].name, rowHighlight);
-  };
+  }
 
   getYExtent(data: Datum[], measure: Measure): number[] {
     const measureName = measure.name;
@@ -432,7 +432,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
   onBubbleClose = () => {
     this.setState({ selectionInfo: null });
-  };
+  }
 
   renderHoverBubble(hoverInfo: BubbleInfo): JSX.Element {
     const chartStage = this.getSingleChartStage();

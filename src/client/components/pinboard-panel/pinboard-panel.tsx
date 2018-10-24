@@ -64,18 +64,18 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
     if (!this.canDrop(e)) return;
     e.preventDefault();
     this.setState({ dragOver: true });
-  };
+  }
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop(e)) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
-  };
+  }
 
   dragLeave = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop(e)) return;
     this.setState({ dragOver: false });
-  };
+  }
 
   drop = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop(e)) return;
@@ -85,7 +85,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
       this.props.clicker.pin(dimension);
     }
     this.setState({ dragOver: false });
-  };
+  }
 
   getColorsSortOn(): SortOn {
     const { essence } = this.props;
@@ -122,12 +122,12 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         }
       }
     }
-  };
+  }
 
   onPinboardSortOnSelect = (sortOn: SortOn) => {
     if (!(sortOn.reference instanceof Measure)) return;
     this.props.clicker.changePinnedSortMeasure(sortOn.reference);
-  };
+  }
 
   onRemoveLegend = () => {
     const { clicker, essence } = this.props;
@@ -142,7 +142,7 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
         }
       }
     }
-  };
+  }
 
   render() {
     const { clicker, essence, timekeeper, style } = this.props;

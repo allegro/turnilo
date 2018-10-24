@@ -229,7 +229,7 @@ export class Table extends BaseVisualization<TableState> {
 
       clicker.changeHighlight(Table.id, null, rowHighlight);
     }
-  };
+  }
 
   onMouseMove = (x: number, y: number) => {
     const { hoverMeasure, hoverRow } = this.state;
@@ -240,7 +240,7 @@ export class Table extends BaseVisualization<TableState> {
         hoverRow: pos.row
       });
     }
-  };
+  }
 
   onMouseLeave = () => {
     const { hoverMeasure, hoverRow } = this.state;
@@ -250,7 +250,7 @@ export class Table extends BaseVisualization<TableState> {
         hoverRow: null
       });
     }
-  };
+  }
 
   precalculate(props: VisualizationProps, datasetLoad: DatasetLoad = null) {
     const { registerDownloadableDataset, essence } = props;
@@ -440,7 +440,7 @@ export class Table extends BaseVisualization<TableState> {
 
   onSimpleScroll = (scrollTop: number, scrollLeft: number) => {
     this.setState({ scrollLeft, scrollTop });
-  };
+  }
 
   getVisibleIndices(rowCount: number, height: number): number[] {
     const { scrollTop } = this.state;

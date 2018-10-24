@@ -120,7 +120,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     this.setState({
       autoRefreshRate: rate
     });
-  };
+  }
 
   clearTimerIfExists() {
     if (this.autoRefreshTimer) {
@@ -132,7 +132,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   toggleShareMenu = (e: React.MouseEvent<Element>) => {
     const { shareMenuAnchor } = this.state;
     shareMenuAnchor ? this.closeShareMenu() : this.openShareMenu(e.currentTarget);
-  };
+  }
 
   openShareMenu = (anchor: Element) => this.setState({ shareMenuAnchor: anchor });
 
@@ -157,7 +157,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   toggleAutoRefreshMenu = (e: React.MouseEvent<Element>) => {
     const { autoRefreshMenuAnchor } = this.state;
     autoRefreshMenuAnchor ? this.closeAutoRefreshMenu() : this.openAutoRefreshMenu(e.currentTarget);
-  };
+  }
 
   openAutoRefreshMenu = (anchor: Element) => this.setState({ autoRefreshMenuAnchor: anchor });
 
@@ -183,7 +183,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   toggleTimezoneMenu = (e: React.MouseEvent<Element>) => {
     const { timezoneMenuAnchor } = this.state;
     timezoneMenuAnchor ? this.closeTimezoneMenu() : this.openTimezoneMenu(e.currentTarget);
-  };
+  }
 
   openTimezoneMenu = (anchor: Element) => this.setState({ timezoneMenuAnchor: anchor });
 
@@ -206,7 +206,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   toggleDebugMenu = (e: React.MouseEvent<Element>) => {
     const { debugMenuAnchor } = this.state;
     debugMenuAnchor ? this.closeDebugMenu() : this.openDebugMenu(e.currentTarget);
-  };
+  }
 
   openDebugMenu = (anchor: Element) => this.setState({ debugMenuAnchor: anchor });
 

@@ -129,7 +129,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
       menuInside: null,
       menuSplit: null
     });
-  };
+  }
 
   getOverflowMenu(): Element {
     return document.getElementById(this.overflowMenuId);
@@ -155,7 +155,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     this.setState({
       overflowMenuOpenOn: null
     });
-  };
+  }
 
   removeSplit(split: Split, e: MouseEvent) {
     var { clicker } = this.props;
@@ -197,7 +197,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     this.setState({
       dragPosition: this.calculateDragPosition(e)
     });
-  };
+  }
 
   dragOver = (e: DragEvent) => {
     if (!this.canDrop(e)) return;
@@ -206,14 +206,14 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     var dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
     this.setState({ dragPosition });
-  };
+  }
 
   dragLeave = (e: DragEvent) => {
     if (!this.canDrop(e)) return;
     this.setState({
       dragPosition: null
     });
-  };
+  }
 
   drop = (e: DragEvent) => {
     if (!this.canDrop(e)) return;
@@ -247,7 +247,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     this.setState({
       dragPosition: null
     });
-  };
+  }
 
   // This will be called externally
   splitMenuRequest(dimension: Dimension) {
@@ -267,7 +267,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
 
   overflowButtonClick = () => {
     this.openOverflowMenu(this.overflowButtonTarget());
-  };
+  }
 
   renderMenu(): JSX.Element {
     const { essence, clicker, menuStage } = this.props;

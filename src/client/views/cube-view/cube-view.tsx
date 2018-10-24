@@ -225,7 +225,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
           updatingMaxTime: false
         });
       });
-  };
+  }
 
   componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
@@ -327,7 +327,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
       visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect())
     });
-  };
+  }
 
   private canDrop(): boolean {
     return DragManager.getDragDimension() !== null;
@@ -341,17 +341,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({ dragOver: true });
-  };
+  }
 
   dragOver = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
-  };
+  }
 
   dragLeave = () => {
     this.setState({ dragOver: false });
-  };
+  }
 
   drop = (e: React.DragEvent<HTMLElement>) => {
     if (!this.canDrop()) return;
@@ -361,19 +361,19 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       this.clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     this.setState({ dragOver: false });
-  };
+  }
 
   openRawDataModal = () => {
     this.setState({
       showRawDataModal: true
     });
-  };
+  }
 
   onRawDataModalClose = () => {
     this.setState({
       showRawDataModal: false
     });
-  };
+  }
 
   renderRawDataModal() {
     const { showRawDataModal, essence, timekeeper } = this.state;
@@ -390,13 +390,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({
       showViewDefinitionModal: true
     });
-  };
+  }
 
   onViewDefinitionModalClose = () => {
     this.setState({
       showViewDefinitionModal: false
     });
-  };
+  }
 
   renderViewDefinitionModal() {
     const { showViewDefinitionModal, essence } = this.state;
@@ -412,13 +412,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({
       showDruidQueryModal: true
     });
-  };
+  }
 
   closeDruidQueryModal = () => {
     this.setState({
       showDruidQueryModal: false
     });
-  };
+  }
 
   renderDruidQueryModal() {
     const { showDruidQueryModal, essence, timekeeper } = this.state;
@@ -432,18 +432,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   triggerFilterMenu = (dimension: Dimension) => {
     if (!dimension) return;
     (this.refs["filterTile"] as FilterTile).filterMenuRequest(dimension);
-  };
+  }
 
   triggerSplitMenu = (dimension: Dimension) => {
     if (!dimension) return;
     (this.refs["splitTile"] as SplitTile).splitMenuRequest(dimension);
-  };
+  }
 
   changeTimezone = (newTimezone: Timezone) => {
     const { essence } = this.state;
     const newEssence = essence.changeTimezone(newTimezone);
     this.setState({ essence: newEssence });
-  };
+  }
 
   getStoredLayout(): CubeViewLayout {
     return localStorage.get("cube-view-layout-v2") || defaultLayout;
@@ -467,7 +467,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         hidden: !factPanel.hidden
       }
     });
-  };
+  }
 
   togglePinboard = () => {
     const { layout: { pinboard }, layout } = this.state;
@@ -478,7 +478,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         hidden: !pinboard.hidden
       }
     });
-  };
+  }
 
   onFactPanelResize = (width: number) => {
     const { layout: { factPanel }, layout } = this.state;
@@ -489,7 +489,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         width
       }
     });
-  };
+  }
 
   onPinboardPanelResize = (width: number) => {
     const { layout: { pinboard }, layout } = this.state;
@@ -500,11 +500,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         width
       }
     });
-  };
+  }
 
   onPanelResizeEnd = () => {
     this.globalResizeListener();
-  };
+  }
 
   render() {
     const clicker = this.clicker;

@@ -136,13 +136,13 @@ export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState
 
     if (isInside(target, myElement) || isInside(target, openOn)) return;
     onClose();
-  };
+  }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
     if (!escapeKey(e)) return;
     const { onClose } = this.props;
     onClose();
-  };
+  }
 
   private calcBubbleCoordinates(rect: ClientRect): Coordinates {
     const { direction, align } = this.props;

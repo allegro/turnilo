@@ -143,13 +143,13 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
   }
 
   protected globalMouseMoveListener = (e: MouseEvent) => {
-  };
+  }
 
   protected globalMouseUpListener = (e: MouseEvent) => {
-  };
+  }
 
   protected globalKeyDownListener = (e: KeyboardEvent) => {
-  };
+  }
 
   protected renderInternals(): JSX.Element {
     return null;

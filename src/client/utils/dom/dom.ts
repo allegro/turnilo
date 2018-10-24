@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import * as React from "react";
 import * as d3 from "d3";
+import * as React from "react";
 import * as React from "react";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 

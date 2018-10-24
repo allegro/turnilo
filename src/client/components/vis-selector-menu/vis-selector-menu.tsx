@@ -56,13 +56,13 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
 
     if (isInside(target, myElement) || isInside(target, openOn)) return;
     onClose();
-  };
+  }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
     if (escapeKey(e)) {
       this.props.onClose();
     }
-  };
+  }
 
   onVisSelect(v: Manifest) {
     var { clicker } = this.props;

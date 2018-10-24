@@ -60,8 +60,8 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
   }
 
   onClick = () => {
-    this.setState(({ open }) =>({ open: !open }));
-  };
+    this.setState(({ open }) => ({ open: !open }));
+  }
 
   globalMouseDownListener = (e: MouseEvent) => {
     var { open } = this.state;
@@ -73,14 +73,14 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
 
     if (isInside(target, myElement)) return;
     this.setState({ open: false });
-  };
+  }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
     if (!escapeKey(e)) return;
     var { open } = this.state;
     if (!open) return;
     this.setState({ open: false });
-  };
+  }
 
   renderMenu() {
     var { items, renderItem, keyItem, selectedItem, equal, onSelect, menuClassName } = this.props;

@@ -157,7 +157,7 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
   globalHashChangeListener = () => {
     if (this.hashUpdating) return;
     this.hashToState(window.location.hash);
-  };
+  }
 
   hashToState(hash: string) {
     const { dataCubes } = this.state.appSettings;
@@ -216,11 +216,11 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
 
   sideDrawerOpen = () => {
     this.setState({ drawerOpen: true });
-  };
+  }
 
   sideDrawerClose = () => {
     this.setState({ drawerOpen: false });
-  };
+  }
 
   changeHash(hash: string, force = false): void {
     this.hashUpdating = true;
@@ -247,13 +247,13 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     }
 
     this.changeHash(newHash, force);
-  };
+  }
 
   getCubeViewHash = (essence: Essence, withPrefix = false): string => {
     const cubeViewHash = this.urlHashConverter.toHash(essence);
 
     return withPrefix ? this.getUrlPrefix() + cubeViewHash : cubeViewHash;
-  };
+  }
 
   getUrlPrefix(baseOnly = false): string {
     const { viewType } = this.state;
@@ -275,13 +275,13 @@ export class SwivApplication extends React.Component<SwivApplicationProps, SwivA
     this.setState({
       showAboutModal: true
     });
-  };
+  }
 
   onAboutModalClose = () => {
     this.setState({
       showAboutModal: false
     });
-  };
+  }
 
   renderAboutModal() {
     const { version } = this.props;

@@ -196,7 +196,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     const relativePosition = absolutePosition - leftOffset;
     const newValue = this.relativePositionToValue(addNubSize(relativePosition), "start");
     onRangeStartChange(newValue);
-  };
+  }
 
   updateEnd = (absolutePosition: number) => {
     const { onRangeEndChange } = this.props;
@@ -206,7 +206,7 @@ export class NumberRangePicker extends React.Component<NumberRangePickerProps, N
     const newValue = this.relativePositionToValue(relativePosition, "end");
 
     onRangeEndChange(newValue);
-  };
+  }
 
   render() {
     const { start, end, exclude } = this.props;

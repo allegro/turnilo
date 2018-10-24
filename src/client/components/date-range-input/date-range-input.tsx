@@ -74,7 +74,7 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     if (maybeFullyDefinedDate(dateString)) {
       this.changeDate(dateString, this.state.timeString);
     }
-  };
+  }
 
   timeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const timeString = e.target.value.replace(/[^\d:]/g, "");
@@ -84,7 +84,7 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     if (maybeFullyDefinedTime(timeString)) {
       this.changeDate(this.state.dateString, timeString);
     }
-  };
+  }
 
   changeDate(possibleDateString: string, possibleTimeString: string): void {
     const { timezone, onChange } = this.props;
