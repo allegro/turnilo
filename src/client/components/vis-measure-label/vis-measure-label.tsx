@@ -34,9 +34,11 @@ function renderPrevious(measure: Measure, datum: Datum): JSX.Element {
     <span className="measure-previous-value">
       {measure.formatFn(previous)}
       </span>
-    <Delta formatter={measure.formatFn}
-           currentValue={current}
-           previousValue={previous}/>
+    <Delta
+      formatter={measure.formatFn}
+      lowerIsBetter={measure.lowerIsBetter}
+      currentValue={current}
+      previousValue={previous} />
   </React.Fragment>;
 }
 
