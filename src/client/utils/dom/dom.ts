@@ -17,6 +17,7 @@
 
 import * as React from "react";
 import * as d3 from "d3";
+import * as React from "react";
 import { hasOwnProperty } from "../../../common/utils/general/general";
 
 export type JSXNode = JSX.Element | string;
@@ -122,7 +123,7 @@ export function getXFromEvent(e: MouseEvent | DragEvent | React.MouseEvent<HTMLE
   return e.clientX || e.pageX;
 }
 
-export function getYFromEvent(e: MouseEvent | DragEvent): number {
+export function getYFromEvent(e: MouseEvent | DragEvent | React.MouseEvent<HTMLElement>): number {
   return e.clientY || e.pageY;
 }
 

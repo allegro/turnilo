@@ -64,6 +64,10 @@ export class Predicates {
     };
   }
 
+  public static supportedSplitsCount(): VisualizationDependentPredicate {
+    return ({ splits, dataCube }) => dataCube.getMaxSplits() < splits.length();
+  }
+
   public static noSelectedMeasures(): VisualizationIndependentPredicate {
     return ({ multiMeasureMode, selectedMeasures }) => {
       return multiMeasureMode && selectedMeasures.isEmpty();

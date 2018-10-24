@@ -17,7 +17,7 @@
 
 import { List } from "immutable";
 import { Colors } from "../../models/colors/colors";
-import { Manifest, Resolve } from "../../models/manifest/manifest";
+import { Manifest, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/manifest/manifest";
 import { Sort } from "../../models/sort/sort";
 import { Split } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
@@ -32,7 +32,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(({ splits, dataCube }) => {
     const continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
-    return Resolve.manual(3, "This visualization requires a continuous dimension split",
+    return Resolve.manual(NORMAL_PRIORITY_ACTION, "This visualization requires a continuous dimension split",
       continuousDimensions.map(continuousDimension => {
         return {
           description: `Add a split on ${continuousDimension.title}`,
@@ -175,7 +175,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.haveAtLeastSplitKinds("time"))
   .then(({ splits, dataCube }) => {
     let timeSplit = splits.splits.find(split => dataCube.getDimension(split.reference).kind === "time");
-    return Resolve.manual(3, "Too many splits on the line chart", [
+    return Resolve.manual(NORMAL_PRIORITY_ACTION, "Too many splits on the line chart", [
       {
         description: "Remove all but the time split",
         adjustment: {
@@ -187,7 +187,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .otherwise(({ splits, dataCube }) => {
     let continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
-    return Resolve.manual(3, "The Line Chart needs one continuous dimension split",
+    return Resolve.manual(NORMAL_PRIORITY_ACTION, "The Line Chart needs one continuous dimension split",
       continuousDimensions.map(continuousDimension => {
         return {
           description: `Split on ${continuousDimension.title} instead`,

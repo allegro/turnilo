@@ -39,7 +39,7 @@ import {
   RefExpression,
   SimpleFullType
 } from "plywood";
-import { hasOwnProperty, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
+import { hasOwnProperty, isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { getWallTimeString } from "../../utils/time/time";
 import { SortDirection } from "../../view-definitions/version-3/split-definition";
 import { Cluster } from "../cluster/cluster";
@@ -119,6 +119,7 @@ export interface DataCubeValue {
   defaultSelectedMeasures?: OrderedSet<string>;
   defaultPinnedDimensions?: OrderedSet<string>;
   refreshRule?: RefreshRule;
+  maxSplits?: number;
 
   cluster?: Cluster;
   executor?: Executor;
@@ -151,6 +152,7 @@ export interface DataCubeJS {
   defaultSelectedMeasures?: string[];
   defaultPinnedDimensions?: string[];
   refreshRule?: RefreshRuleJS;
+  maxSplits?: number;
 }
 
 export interface DataCubeOptions {
@@ -238,6 +240,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   static DEFAULT_DEFAULT_FILTER = EMPTY_FILTER;
   static DEFAULT_DEFAULT_SPLITS = EMPTY_SPLITS;
   static DEFAULT_DEFAULT_DURATION = Duration.fromJS("P1D");
+  static DEFAULT_MAX_SPLITS = 3;
 
   static isDataCube(candidate: any): candidate is DataCube {
     return candidate instanceof DataCube;
@@ -347,6 +350,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultSortMeasure: parameters.defaultSortMeasure || (measures.size() ? measures.first().name : null),
       defaultSelectedMeasures: parameters.defaultSelectedMeasures ? OrderedSet(parameters.defaultSelectedMeasures) : null,
       defaultPinnedDimensions: parameters.defaultPinnedDimensions ? OrderedSet(parameters.defaultPinnedDimensions) : null,
+      maxSplits: parameters.maxSplits,
       refreshRule
     };
     if (cluster) {
@@ -383,6 +387,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public defaultSelectedMeasures: OrderedSet<string>;
   public defaultPinnedDimensions: OrderedSet<string>;
   public refreshRule: RefreshRule;
+  public maxSplits: number;
 
   public cluster: Cluster;
   public executor: Executor;
@@ -413,6 +418,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     this.defaultSortMeasure = parameters.defaultSortMeasure;
     this.defaultSelectedMeasures = parameters.defaultSelectedMeasures;
     this.defaultPinnedDimensions = parameters.defaultPinnedDimensions;
+    this.maxSplits = parameters.maxSplits;
 
     const { description, extendedDescription } = this.parseDescription(parameters);
     this.description = description;
@@ -459,7 +465,8 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       defaultSortMeasure: this.defaultSortMeasure,
       defaultSelectedMeasures: this.defaultSelectedMeasures,
       defaultPinnedDimensions: this.defaultPinnedDimensions,
-      refreshRule: this.refreshRule
+      refreshRule: this.refreshRule,
+      maxSplits: this.maxSplits
     };
     if (this.cluster) value.cluster = this.cluster;
     if (this.executor) value.executor = this.executor;
@@ -489,6 +496,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     if (this.defaultSelectedMeasures) js.defaultSelectedMeasures = this.defaultSelectedMeasures.toArray();
     if (this.defaultPinnedDimensions) js.defaultPinnedDimensions = this.defaultPinnedDimensions.toArray();
     if (this.rollup) js.rollup = true;
+    if (this.maxSplits) js.maxSplits = this.maxSplits;
     if (this.timeAttribute) js.timeAttribute = this.timeAttribute.name;
     if (this.attributeOverrides.length) js.attributeOverrides = AttributeInfo.toJSs(this.attributeOverrides);
     if (this.attributes.length) js.attributes = AttributeInfo.toJSs(this.attributes);
@@ -533,6 +541,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       (!this.defaultSelectedMeasures || this.defaultSelectedMeasures.equals(other.defaultSelectedMeasures)) &&
       Boolean(this.defaultPinnedDimensions) === Boolean(other.defaultPinnedDimensions) &&
       (!this.defaultPinnedDimensions || this.defaultPinnedDimensions.equals(other.defaultPinnedDimensions)) &&
+      this.maxSplits === other.maxSplits &&
       this.refreshRule.equals(other.refreshRule);
   }
 
@@ -989,6 +998,10 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     }
 
     return null;
+  }
+
+  public getMaxSplits(): number {
+    return isTruthy(this.maxSplits) ? this.maxSplits : DataCube.DEFAULT_MAX_SPLITS;
   }
 
   public getDefaultSelectedMeasures(): OrderedSet<string> {

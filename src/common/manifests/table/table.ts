@@ -17,6 +17,7 @@
 
 import { Manifest, Resolve } from "../../models/manifest/manifest";
 import { Sort } from "../../models/sort/sort";
+import { Splits } from "../../models/splits/splits";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -25,6 +26,8 @@ import { SortDirection } from "../../view-definitions/version-3/split-definition
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(Actions.manualDimensionSelection("The Table requires at least one split"))
+  .when(Predicates.supportedSplitsCount())
+  .then(Actions.removeExcessiveSplits("Table"))
 
   .otherwise(({ splits, dataCube, colors, isSelectedVisualization }) => {
     let autoChanged = false;

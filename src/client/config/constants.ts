@@ -151,6 +151,7 @@ export const STRINGS: any = {
   undo: "Click here to undo",
   updateTimezone: "Update Timezone",
   displayRawData: "Display raw data",
+  displayDruidQuery: "Display Druid query",
   displayViewDefinition: "Display view definition",
   viewDefinition: "View definition",
   viewDefinitionSubtitle: "View definition for mkurl",
