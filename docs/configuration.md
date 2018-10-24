@@ -214,7 +214,11 @@ Refresh rule defining how the information about latest data in a data source is 
 
 **maxSplits** (number)
 
-Number of splits data cube supports.
+Number of splits data cube supports. Defaults to 3.
+
+**maxQueries** (number)
+
+Number of queries that can be issued to druid. Defaults to 500.
 
 ### Refresh rules
 
