@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import { Duration } from "chronoshift";
 import { Class, Instance } from "immutable-class";
 import { $, Expression } from "plywood";
 import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";

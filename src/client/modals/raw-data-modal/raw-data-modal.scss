@@ -14,13 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import '../../imports';
 
 $header-height: 30px;
 $row-height: 30px;
 
 .raw-data-modal {
+
+  .modal-window {
+    width: 70%;
+    height: 85%;
+    min-height: 200px;
+  }
 
   .content {
     @include unpin-top($modal-header-height + $control-height);
