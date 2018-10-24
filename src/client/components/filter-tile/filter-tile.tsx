@@ -237,7 +237,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.closeOverflowMenu();
   }
 
-  calculateDragPosition(e: DragEvent): DragPosition {
+  calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
     const { essence } = this.props;
     const numItems = essence.filter.length();
     const rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
@@ -245,20 +245,20 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
 
-  canDrop(e: DragEvent): boolean {
+  canDrop(): boolean {
     return Boolean(DragManager.getDragDimension());
   }
 
-  dragEnter = (e: DragEvent) => {
-    if (!this.canDrop(e)) return;
+  dragEnter = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
     if (dragPosition.equals(this.state.dragPosition)) return;
     this.setState({ dragPosition });
   }
 
-  dragOver = (e: DragEvent) => {
-    if (!this.canDrop(e)) return;
+  dragOver = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
@@ -266,12 +266,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState({ dragPosition });
   }
 
-  dragLeave = (e: DragEvent) => {
+  dragLeave = () => {
     this.setState({ dragPosition: null });
   }
 
-  drop = (e: DragEvent) => {
-    if (!this.canDrop(e)) return;
+  drop = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     e.preventDefault();
     const { clicker, essence } = this.props;
     const { filter, dataCube } = essence;

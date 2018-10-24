@@ -178,7 +178,7 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     this.closeOverflowMenu();
   }
 
-  calculateDragPosition(e: DragEvent): DragPosition {
+  calculateDragPosition(e: React.DragEvent<HTMLElement>): DragPosition {
     const { essence } = this.props;
     var numItems = essence.splits.length();
     var rect = ReactDOM.findDOMNode(this.refs["items"]).getBoundingClientRect();
@@ -187,20 +187,20 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
 
-  canDrop(e: DragEvent): boolean {
+  canDrop(): boolean {
     return Boolean(DragManager.getDragSplit() || DragManager.getDragDimension());
   }
 
-  dragEnter = (e: DragEvent) => {
-    if (!this.canDrop(e)) return;
+  dragEnter = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({
       dragPosition: this.calculateDragPosition(e)
     });
   }
 
-  dragOver = (e: DragEvent) => {
-    if (!this.canDrop(e)) return;
+  dragOver = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
     var dragPosition = this.calculateDragPosition(e);
@@ -208,15 +208,15 @@ export class SplitTile extends React.Component<SplitTileProps, SplitTileState> {
     this.setState({ dragPosition });
   }
 
-  dragLeave = (e: DragEvent) => {
-    if (!this.canDrop(e)) return;
+  dragLeave = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     this.setState({
       dragPosition: null
     });
   }
 
-  drop = (e: DragEvent) => {
-    if (!this.canDrop(e)) return;
+  drop = (e: React.DragEvent<HTMLElement>) => {
+    if (!this.canDrop()) return;
     e.preventDefault();
     var { clicker, essence } = this.props;
     var { maxItems } = this.state;

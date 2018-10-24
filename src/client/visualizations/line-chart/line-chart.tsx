@@ -236,7 +236,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     }
   }
 
-  globalMouseMoveListener(e: MouseEvent) {
+  globalMouseMoveListener = (e: MouseEvent) => {
     const { dragStartValue } = this.state;
     if (dragStartValue === null) return;
 
@@ -247,7 +247,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     });
   }
 
-  globalMouseUpListener(e: MouseEvent) {
+  globalMouseUpListener = (e: MouseEvent) => {
     const { clicker, essence } = this.props;
     const { continuousDimension, dragStartValue, dragRange, dragOnMeasure } = this.state;
     if (dragStartValue === null) return;
@@ -286,7 +286,7 @@ export class LineChart extends BaseVisualization<LineChartState> {
     );
   }
 
-  globalKeyDownListener(e: KeyboardEvent) {
+  globalKeyDownListener = (e: KeyboardEvent) => {
     if (!escapeKey(e)) return;
 
     const { dragStartValue } = this.state;

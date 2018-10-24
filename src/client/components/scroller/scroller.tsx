@@ -216,7 +216,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     return ReactDOM.findDOMNode(this.refs[refName]) as any;
   }
 
-  private onScroll = (e: UIEvent) => {
+  private onScroll = (e: React.UIEvent<HTMLElement>) => {
     const { bodyWidth, bodyHeight } = this.props.layout;
     const { viewportWidth, viewportHeight } = this.state;
     var target = e.target as Element;
@@ -237,7 +237,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     }
   }
 
-  getRelativeMouseCoordinates(event: MouseEvent): { x: number, y: number, part: ScrollerPart } {
+  getRelativeMouseCoordinates(event: React.MouseEvent<HTMLElement>): { x: number, y: number, part: ScrollerPart } {
     const { top, left, bodyWidth, bodyHeight } = this.props.layout;
     const container = this.getDOMElement("eventContainer");
     const { scrollLeft, scrollTop, viewportHeight, viewportWidth } = this.state;
@@ -268,7 +268,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     return { x, y, part: Scroller.PARTS[i][j] };
   }
 
-  onClick = (event: MouseEvent) => {
+  onClick = (event: React.MouseEvent<HTMLElement>) => {
     if (this.props.onClick === undefined) return;
 
     const { x, y, part } = this.getRelativeMouseCoordinates(event);
@@ -277,7 +277,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     this.props.onClick(x, y, part);
   }
 
-  onMouseMove = (event: MouseEvent) => {
+  onMouseMove = (event: React.MouseEvent<HTMLElement>) => {
     if (this.props.onMouseMove === undefined) return;
 
     const { x, y, part } = this.getRelativeMouseCoordinates(event);

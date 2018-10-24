@@ -48,19 +48,19 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
     };
   }
 
-  onSelect = (e: MouseEvent) => {
+  onSelect = () => {
     const { onClose, clicker } = this.props;
     clicker.acceptHighlight();
     if (onClose) onClose();
   }
 
-  onCancel = (e: MouseEvent) => {
+  onCancel = () => {
     const { onClose, clicker } = this.props;
     clicker.dropHighlight();
     if (onClose) onClose();
   }
 
-  onMore = (e: MouseEvent) => {
+  onMore = (e: React.MouseEvent<HTMLElement>) => {
     const { moreMenuOpenOn } = this.state;
     if (moreMenuOpenOn) return this.closeMoreMenu();
     this.setState({

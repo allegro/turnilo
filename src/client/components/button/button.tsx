@@ -30,7 +30,7 @@ export interface ButtonProps {
   svg?: string;
   active?: boolean;
   disabled?: boolean;
-  onClick?: Fn;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 export interface ButtonState {
